@@ -66,6 +66,8 @@ const summary = runs => {
     getZCalls: metric("getZCalls"),
     getZIndexMs: metric("getZIndexMs"),
     getZP95Ms: metric("getZP95Ms"),
+    soilStorageMs: metric("soilStorageMs"),
+    soilStorageCalls: metric("soilStorageCalls"),
   };
 };
 
@@ -320,6 +322,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const frameSamples = samples.frame_ms || [];
   const getZSamples = samples.getZMs || [];
   const getZIndexSamples = samples.getZIndexMs || [];
+  const soilStorageSamples = samples.soilStorageMs || [];
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
   const togglePointsMs = await measureLayerToggle(page, "Points");
   const toggleWeedsMs = await measureLayerToggle(page, "Weeds");
@@ -379,6 +382,9 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     getZIndexMs: getZIndexSamples
       .reduce((total, value) => total + value, 0),
     getZP95Ms: percentile(getZSamples, 95),
+    soilStorageMs: soilStorageSamples
+      .reduce((total, value) => total + value, 0),
+    soilStorageCalls: soilStorageSamples.length,
     navPlantMs,
     navPointMs,
     navWeedMs,

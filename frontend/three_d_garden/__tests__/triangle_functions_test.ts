@@ -1,4 +1,6 @@
-import { getZFunc, precomputeTriangles } from "../triangle_functions";
+import {
+  getZFunc, parseStoredTriangles, precomputeTriangles, serializeTriangles,
+} from "../triangle_functions";
 
 describe("precomputeTriangles()", () => {
   it("computes triangles: zero", () => {
@@ -126,5 +128,32 @@ describe("getZFunc()", () => {
       9, 10, 11,
     ]);
     expect(getZFunc(triangles, -100)(1, 1)).toEqual(10);
+  });
+});
+
+describe("stored triangles", () => {
+  it("serializes compact triangles", () => {
+    const triangles = precomputeTriangles([
+      [0, 0, 10],
+      [2, 0, 20],
+      [0, 2, 30],
+    ], [0, 1, 2]);
+    expect(parseStoredTriangles(serializeTriangles(triangles)))
+      .toEqual(triangles);
+  });
+
+  it("parses legacy triangle objects", () => {
+    const triangles = precomputeTriangles([
+      [0, 0, 10],
+      [2, 0, 20],
+      [0, 2, 30],
+    ], [0, 1, 2]);
+    expect(parseStoredTriangles(JSON.stringify(triangles)))
+      .toEqual(triangles);
+  });
+
+  it("ignores invalid stored triangles", () => {
+    expect(parseStoredTriangles("[\"foo\"]")).toEqual([]);
+    expect(parseStoredTriangles("not json")).toEqual([]);
   });
 });

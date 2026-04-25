@@ -44,14 +44,14 @@ import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance } from "./constants";
-import { getZFunc } from "./triangle_functions";
+import { getZFunc, serializeTriangles } from "./triangle_functions";
 import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
 import { CameraSelectionUI } from "./camera_selection_ui";
 import {
-  PerfMark, perfMark, usePerfRenderCount,
+  PerfMark, perfMark, perfMeasure, usePerfRenderCount,
 } from "../performance/perf";
 import {
   botLoadInConfig, FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
@@ -271,8 +271,10 @@ export const GardenModel = (props: GardenModelProps) => {
   const soilSurface = React.useMemo(() =>
     getSurface(soilPoints), [soilPoints]);
   React.useEffect(() => {
-    sessionStorage.setItem("soilSurfaceTriangles",
-      JSON.stringify(soilSurface.triangles));
+    perfMeasure("soilStorageMs", () => {
+      sessionStorage.setItem("soilSurfaceTriangles",
+        serializeTriangles(soilSurface.triangles));
+    });
   }, [soilSurface.triangles]);
   const getZ = React.useMemo(
     () => getZFunc(soilSurface.triangles, -config.soilHeight),

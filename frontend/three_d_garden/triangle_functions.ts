@@ -32,6 +32,34 @@ interface TriangleIndex {
 const MAX_BUCKETS_PER_AXIS = 64;
 const MIN_INDEXED_TRIANGLES = 4;
 
+const triangleData = (
+  a: [number, number, number],
+  b: [number, number, number],
+  c: [number, number, number],
+) => {
+  const [x1, y1] = [a[0], a[1]];
+  const [x2, y2] = [b[0], b[1]];
+  const [x3, y3] = [c[0], c[1]];
+  const det = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
+  if (Math.abs(det) < 1e-10) { return undefined; }
+  return {
+    a,
+    b,
+    c,
+    minX: Math.min(x1, x2, x3),
+    maxX: Math.max(x1, x2, x3),
+    minY: Math.min(y1, y2, y3),
+    maxY: Math.max(y1, y2, y3),
+    x1,
+    y1,
+    x2,
+    y2,
+    x3,
+    y3,
+    det,
+  };
+};
+
 export const precomputeTriangles = (
   vertices: [number, number, number][],
   faces: number[],
@@ -42,32 +70,55 @@ export const precomputeTriangles = (
     const a = vertices[faces[i]];
     const b = vertices[faces[i + 1]];
     const c = vertices[faces[i + 2]];
-
-    const [x1, y1] = [a[0], a[1]];
-    const [x2, y2] = [b[0], b[1]];
-    const [x3, y3] = [c[0], c[1]];
-
-    const det = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3);
-    if (Math.abs(det) < 1e-10) { continue; }
-    triangles.push({
-      a,
-      b,
-      c,
-      minX: Math.min(x1, x2, x3),
-      maxX: Math.max(x1, x2, x3),
-      minY: Math.min(y1, y2, y3),
-      maxY: Math.max(y1, y2, y3),
-      x1,
-      y1,
-      x2,
-      y2,
-      x3,
-      y3,
-      det,
-    });
+    const triangle = triangleData(a, b, c);
+    triangle && triangles.push(triangle);
   }
 
   return triangles;
+};
+
+export const serializeTriangles = (triangles: TriangleData[]) =>
+  JSON.stringify(triangles.map(({ a, b, c }) => [
+    a[0], a[1], a[2],
+    b[0], b[1], b[2],
+    c[0], c[1], c[2],
+  ]));
+
+const pointFromArray = (
+  values: unknown[],
+  offset: number,
+): [number, number, number] | undefined => {
+  const point = values.slice(offset, offset + 3);
+  if (point.length != 3 || !point.every(Number.isFinite)) {
+    return undefined;
+  }
+  return point as [number, number, number];
+};
+
+const parseStoredTriangle = (value: unknown): TriangleData | undefined => {
+  if (Array.isArray(value)) {
+    const a = pointFromArray(value, 0);
+    const b = pointFromArray(value, 3);
+    const c = pointFromArray(value, 6);
+    return a && b && c ? triangleData(a, b, c) : undefined;
+  }
+  if (!value || typeof value != "object") { return undefined; }
+  const { a, b, c } = value as Partial<TriangleData>;
+  return Array.isArray(a) && Array.isArray(b) && Array.isArray(c)
+    ? triangleData(a, b, c)
+    : undefined;
+};
+
+export const parseStoredTriangles = (storedTriangles: string | null) => {
+  try {
+    const parsed = JSON.parse(storedTriangles || "[]") as unknown;
+    if (!Array.isArray(parsed)) { return []; }
+    return parsed
+      .map(parseStoredTriangle)
+      .filter((triangle): triangle is TriangleData => !!triangle);
+  } catch {
+    return [];
+  }
 };
 
 const clampCell = (value: number, min: number, size: number, count: number) =>
