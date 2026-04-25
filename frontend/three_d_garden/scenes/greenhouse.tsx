@@ -5,7 +5,7 @@ import { ASSETS } from "../constants";
 import { threeSpace } from "../helpers";
 import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
-import { StarterTray, PottedPlant, GreenhouseWall, People } from "./props";
+import { StarterTrays, PottedPlant, GreenhouseWall, People } from "./props";
 import { PopInGroup } from "../progressive_load";
 import { FocusVisibilityGroup } from "../focus_transition";
 
@@ -62,14 +62,10 @@ export const Greenhouse = (props: GreenhouseProps) => {
             side={DoubleSide}
           />
         </Box>
-        <Group name={"starter-tray-1"}
-          position={[2000, -shelfDepth / 2, shelfHeight + 25]}>
-          <StarterTray />
-        </Group>
-        <Group name={"starter-tray-2"}
-          position={[3000, -shelfDepth / 2, shelfHeight + 25]}>
-          <StarterTray />
-        </Group>
+        <StarterTrays positions={[
+          [2000, -shelfDepth / 2, shelfHeight + 25],
+          [3000, -shelfDepth / 2, shelfHeight + 25],
+        ]} />
       </Group>
 
       <Group
