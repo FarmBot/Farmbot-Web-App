@@ -24,8 +24,9 @@ import {
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
 import { Mode } from "../../farm_designer/map/interfaces";
-import moment from "moment";
-import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
+import {
+  calcSunCoordinate, calcSunI, getAnimatedSeasonDate,
+} from "./sun";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -111,11 +112,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
     if (seasonAnimating) {
-      const totalCycle = getCycleLength(config.plants);
       const currentTime = performance.now() / 1000;
       const t = currentTime - (startTimeRef.current || 0);
-      const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
-      const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
+      const date = getAnimatedSeasonDate(config.plants, t);
       sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
     }
     const brightness = plantIconBrightness(sunFactor);

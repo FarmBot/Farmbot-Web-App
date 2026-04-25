@@ -24,9 +24,19 @@ const shadowRadius = 8;
 const shadowBlurSamples = 8;
 const shadowBuffer = 1000;
 const SUN_COLOR = ["#FFD700", "#FFEA00", "#FFF700", "#FFE066"];
+const DAY_SECONDS = 24 * 60 * 60;
+const SUN_TIME_STEP_SECONDS = 60;
+const BELOW_HORIZON_SUN_SPEED = 10;
+const BELOW_HORIZON_SPEED_INCLINATION = -10;
+const sunAnimationCache: Record<string, SunAnimationSample[]> = {};
 
 export const getCycleLength = (season: string) =>
   SEASON_DURATIONS[season] || 20;
+
+interface SunAnimationSample {
+  animationSeconds: number;
+  sunSeconds: number;
+}
 
 export interface SunProps {
   config: Config;
@@ -61,6 +71,43 @@ export const calcSunCoordinate = (
     azimuth: (sunAzimuth - heading - 90 + 360) % 360,
     inclination: sunPosition.altitude * (180 / Math.PI),
   };
+};
+
+export const getAnimatedSeasonDate = (
+  season: string,
+  elapsedSeconds: number,
+  dayStart = moment().utc().startOf("day").toDate(),
+) => {
+  const totalCycle = getCycleLength(season);
+  const clampedElapsed = Math.min(Math.max(elapsedSeconds, 0), totalCycle);
+  const samples = getSunAnimationSamples(dayStart);
+  const totalAnimationSeconds = samples[samples.length - 1].animationSeconds;
+  const targetAnimationSeconds =
+    clampedElapsed / totalCycle * totalAnimationSeconds;
+  const sample = samples.find(({ animationSeconds }) =>
+    animationSeconds >= targetAnimationSeconds) || samples[samples.length - 1];
+  const date = new Date(dayStart.getTime() + sample.sunSeconds * 1000);
+  return date;
+};
+
+const getSunAnimationSamples = (dayStart: Date): SunAnimationSample[] => {
+  const cacheKey = dayStart.toISOString().slice(0, 10);
+  const cachedSamples = sunAnimationCache[cacheKey];
+  if (cachedSamples) { return cachedSamples; }
+  const samples: SunAnimationSample[] = [];
+  let animationSeconds = 0;
+  for (let sunSeconds = 0; sunSeconds <= DAY_SECONDS;
+    sunSeconds += SUN_TIME_STEP_SECONDS) {
+    samples.push({ animationSeconds, sunSeconds });
+    const date = new Date(dayStart.getTime() + sunSeconds * 1000);
+    const { inclination } = calcSunCoordinate(date, 0, 52, 0);
+    const speed = inclination < BELOW_HORIZON_SPEED_INCLINATION
+      ? BELOW_HORIZON_SUN_SPEED
+      : 1;
+    animationSeconds += SUN_TIME_STEP_SECONDS / speed;
+  }
+  sunAnimationCache[cacheKey] = samples;
+  return samples;
 };
 
 const toRad = (degrees: number) => degrees * Math.PI / 180;
@@ -192,11 +239,9 @@ export const Sun = (props: SunProps) => {
   useFrame(() => {
     if (!config.animateSeasons || !props.startTimeRef) { return; }
 
-    const totalCycle = getCycleLength(config.plants);
     const currentTime = performance.now() / 1000;
     const t = currentTime - props.startTimeRef.current;
-    const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
-    const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
+    const date = getAnimatedSeasonDate(config.plants, t);
     const { azimuth, inclination } = calcSunCoordinate(date, 0, 52, 0);
     const sunFactor = calcSunI(inclination);
     const position = (index: number) => {
