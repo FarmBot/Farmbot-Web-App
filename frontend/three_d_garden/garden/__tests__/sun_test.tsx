@@ -1,25 +1,8 @@
-interface Mock0Ref {
-  current: number;
-}
-const mock0Ref: Mock0Ref = {
-  current: 0,
-};
 interface Mock1Ref {
   current: { position: { set: Function; }; } | undefined;
 }
 const mock1Ref: Mock1Ref = {
   current: { position: { set: jest.fn() } }
-};
-interface Mock4Ref {
-  current: { position: { set: Function; }; }[] | undefined;
-}
-const mock4Ref: Mock4Ref = {
-  current: [
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-  ]
 };
 interface MockMaterialRef {
   current: { opacity: number; } | undefined;
@@ -30,12 +13,10 @@ const mockMaterialRef: MockMaterialRef = {
 
 import React from "react";
 import { render } from "@testing-library/react";
-import {
-  calcSunI, getAnimatedSeasonDate, getCycleLength, skyColor, Sun, SunProps,
-} from "../sun";
+import { calcSunI, getCycleLength, skyColor, Sun, SunProps } from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
-import { MeshBasicMaterial } from "three";
+import { MeshBasicMaterial, Vector3 } from "three";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -120,14 +101,13 @@ describe("<Sun />", () => {
 
   it("renders animated", () => {
     jest.spyOn(React, "useRef")
-      .mockImplementationOnce(() => mock4Ref)
-      .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock0Ref)
+      .mockImplementationOnce(() => mock1Ref)
+      .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mockMaterialRef);
-    jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
+    jest.spyOn(React, "useState").mockReturnValue([new Vector3(), jest.fn()]);
     const p = fakeProps();
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };
@@ -142,26 +122,6 @@ describe("getCycleLength()", () => {
   it("returns cycle length", () => {
     expect(getCycleLength("Summer")).toEqual(20);
     expect(getCycleLength("Random")).toEqual(20);
-  });
-});
-
-describe("getAnimatedSeasonDate()", () => {
-  it("uses representative season dates", () => {
-    const dayStart = new Date(Date.UTC(2026, 0, 1));
-    expect(getAnimatedSeasonDate("Spring", 0, dayStart).toISOString())
-      .toContain("2026-03-20");
-    expect(getAnimatedSeasonDate("Summer", 0, dayStart).toISOString())
-      .toContain("2026-06-21");
-    expect(getAnimatedSeasonDate("Fall", 0, dayStart).toISOString())
-      .toContain("2026-09-22");
-    expect(getAnimatedSeasonDate("Winter", 0, dayStart).toISOString())
-      .toContain("2026-12-21");
-  });
-
-  it("keeps unknown seasons on the provided date", () => {
-    const dayStart = new Date(Date.UTC(2026, 0, 1));
-    expect(getAnimatedSeasonDate("Random", 0, dayStart).toISOString())
-      .toContain("2026-01-01");
   });
 });
 

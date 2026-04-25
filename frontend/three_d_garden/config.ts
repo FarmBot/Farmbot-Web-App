@@ -578,10 +578,10 @@ type SeasonProperties = {
   cloudOpacity: number;
 };
 const SEASON_PROPERTIES: Record<string, SeasonProperties> = {
-  Winter: { sunIntensity: 4 / 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
-  Spring: { sunIntensity: 7 / 4, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
-  Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
-  Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
+  Winter: { sunIntensity: 4, sunColor: "#A0C4FF", cloudOpacity: 0.75 },
+  Spring: { sunIntensity: 7, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
+  Summer: { sunIntensity: 9, sunColor: "#FFFFFF", cloudOpacity: 0 },
+  Fall: { sunIntensity: 5.5, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
 };
 export const getSeasonProperties = (
   config: Config,
