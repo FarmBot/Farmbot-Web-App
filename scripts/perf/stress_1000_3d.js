@@ -68,6 +68,8 @@ const summary = runs => {
     getZP95Ms: metric("getZP95Ms"),
     soilStorageMs: metric("soilStorageMs"),
     soilStorageCalls: metric("soilStorageCalls"),
+    moistureSurfaceMs: metric("moistureSurfaceMs"),
+    moistureInstanceNodesMs: metric("moistureInstanceNodesMs"),
   };
 };
 
@@ -323,6 +325,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const getZSamples = samples.getZMs || [];
   const getZIndexSamples = samples.getZIndexMs || [];
   const soilStorageSamples = samples.soilStorageMs || [];
+  const moistureSurfaceSamples = samples.moistureSurfaceMs || [];
+  const moistureInstanceNodeSamples = samples.moistureInstanceNodesMs || [];
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
   const togglePointsMs = await measureLayerToggle(page, "Points");
   const toggleWeedsMs = await measureLayerToggle(page, "Weeds");
@@ -385,6 +389,10 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     soilStorageMs: soilStorageSamples
       .reduce((total, value) => total + value, 0),
     soilStorageCalls: soilStorageSamples.length,
+    moistureSurfaceMs: moistureSurfaceSamples
+      .reduce((total, value) => total + value, 0),
+    moistureInstanceNodesMs: moistureInstanceNodeSamples
+      .reduce((total, value) => total + value, 0),
     navPlantMs,
     navPointMs,
     navWeedMs,

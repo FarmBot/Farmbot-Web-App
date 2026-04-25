@@ -6,6 +6,8 @@ import { INITIAL } from "../../config";
 import {
   fakeSensor, fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
+import * as interpolationMap from
+  "../../../farm_designer/map/layers/points/interpolation_map";
 
 describe("<MoistureSurface />", () => {
   const fakeProps = (): MoistureSurfaceProps => ({
@@ -39,5 +41,13 @@ describe("<MoistureSurface />", () => {
     p.showMoistureReadings = false;
     const { container } = render(<MoistureSurface {...p} />);
     expect(container).toContainHTML("moisture-layer");
+  });
+
+  it("skips interpolation when the moisture map is hidden", () => {
+    const generateData = jest.spyOn(interpolationMap, "generateData");
+    const p = fakeProps();
+    p.showMoistureMap = false;
+    render(<MoistureSurface {...p} />);
+    expect(generateData).not.toHaveBeenCalled();
   });
 });

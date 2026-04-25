@@ -11,6 +11,7 @@ import {
   filterMoistureReadings, getMoistureColor,
 } from "../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
 import { InstancedBufferAttribute, InstancedMesh } from "three";
+import { perfMeasure } from "../../performance/perf";
 
 export interface MoistureSurfaceProps {
   position: [number, number, number];
@@ -25,21 +26,27 @@ export interface MoistureSurfaceProps {
 }
 
 export const MoistureSurface = (props: MoistureSurfaceProps) => {
-  const { readings: moistureReadings } =
-    filterMoistureReadings(props.sensorReadings, props.sensors);
   const options = {
     stepSize: props.config.interpolationStepSize,
     useNearest: props.config.interpolationUseNearest,
     power: props.config.interpolationPower,
   };
-  generateData({
-    kind: "SensorReading",
-    points: moistureReadings,
-    gridSize: { x: props.config.bedLengthOuter, y: props.config.bedWidthOuter },
-    getColor: getMoistureColor,
-    options,
+  const data = perfMeasure("moistureSurfaceMs", () => {
+    if (!props.showMoistureMap) { return []; }
+    const { readings: moistureReadings } =
+      filterMoistureReadings(props.sensorReadings, props.sensors);
+    generateData({
+      kind: "SensorReading",
+      points: moistureReadings,
+      gridSize: {
+        x: props.config.bedLengthOuter,
+        y: props.config.bedWidthOuter,
+      },
+      getColor: getMoistureColor,
+      options,
+    });
+    return getInterpolationData("SensorReading");
   });
-  const data = getInterpolationData("SensorReading");
   // eslint-disable-next-line no-null/no-null
   const ref = React.useRef<InstancedMesh>(null);
   React.useEffect(() => {
@@ -81,13 +88,13 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
                 "vec4 diffuseColor = vec4( diffuse, opacity );",
                 "vec4 diffuseColor = vec4( diffuse, opacity * vInstanceOpacity );");
           }} />
-        {data.map(p => {
+        {perfMeasure("moistureInstanceNodesMs", () => data.map(p => {
           const { x, y, z } = p;
           return <Instance
             key={`${x}-${y}`}
             position={[x, y, z / 2]}
             color={getMoistureColor(z).rgb} />;
-        })}
+        }))}
       </Instances>}
   </Group>;
 };
