@@ -53,6 +53,12 @@
     color: $off_white;
     text-align: center;
     text-shadow: 0 0 1rem $black;
+    opacity: 1;
+    transition: opacity 300ms ease;
+
+    &.three-d-load-progress-complete {
+      opacity: 0;
+    }
 
     .three-d-load-progress-bar {
       height: 0.7rem;
@@ -116,6 +122,23 @@
       background: linear-gradient(0deg, $translucent5, transparent);
       scrollbar-width: none;
 
+      .settings-bar-content {
+        display: flex;
+        gap: 1.25rem;
+        opacity: 0;
+        transform: translateY(1.5rem);
+        transition:
+        opacity 450ms ease,
+        transform 450ms ease;
+      }
+
+      &.settings-bar-loaded {
+        .settings-bar-content {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       @media screen and (max-width: 768px) {
         justify-content: left;
         pointer-events: all;
@@ -136,17 +159,29 @@
 
       .row {
         display: flex;
+        position: relative;
         margin: 0;
-        background: rgba(255, 255, 255, 0.6);
+        overflow: hidden;
+        background: transparent;
         box-shadow: $translucent2 0px 0px 1rem;
         border-radius: 2.5rem;
         height: 3.1rem;
         padding: 0.3rem;
         justify-content: space-evenly;
-        backdrop-filter: blur(5px);
         gap: 0.5rem;
-        &:after,
-        &:before {
+
+        &::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          background: rgba(255, 255, 255, 0.6);
+          backdrop-filter: blur(5px);
+        }
+
+        &:after {
           content: unset;
           display: unset;
           clear: unset;
@@ -154,6 +189,8 @@
       }
 
       button {
+        position: relative;
+        z-index: 1;
         padding: 0 0.85rem;
         border-radius: 2.5rem;
         font-weight: bold;
@@ -353,6 +390,41 @@
     }
   }
 
+  .focus-transition-dom {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+    opacity 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    transform 900ms cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: opacity, transform;
+
+    &.focus-transition-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.98);
+    }
+
+    &.focus-transition-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .focus-transition-opacity {
+    opacity: 1;
+    transition: opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: opacity;
+
+    &.focus-transition-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &.focus-transition-visible {
+      opacity: 1;
+    }
+  }
+
   .promo-info {
     display: grid;
     position: absolute;
@@ -364,6 +436,25 @@
     text-shadow: 0 0 3.5rem $black, 0 0 1rem $black;
     gap: 1rem;
     justify-items: right;
+
+    .title,
+    .description {
+      opacity: 0;
+      animation: promo-info-load-in 500ms ease forwards;
+    }
+
+    .title,
+    .description {
+      transform: translateY(1rem);
+    }
+
+    .title {
+      animation-delay: 0ms;
+    }
+
+    .description {
+      animation-delay: 150ms;
+    }
 
     .title {
       margin: 0;
@@ -395,11 +486,12 @@
 
     .buy-button {
       display: flex;
+      position: relative;
+      overflow: hidden;
       pointer-events: all;
-      background: #00a579e0;
+      background: transparent;
       border-radius: 7px;
       box-shadow: $translucent2 0px 0px 10px;
-      backdrop-filter: blur(5px);
       padding: 0.1rem 1.75rem;
       text-shadow: none;
       text-transform: uppercase;
@@ -407,7 +499,23 @@
       gap: 0.4rem;
       align-items: center;
 
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        background: #00a579e0;
+        backdrop-filter: blur(5px);
+        animation: buy-button-backdrop-load-in 500ms ease 275ms both;
+      }
+
       p {
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+        animation: promo-info-fade-in 500ms ease 275ms forwards;
         margin: 0;
         color: $off_white;
         font-size: 1.5rem;
@@ -429,21 +537,54 @@
       }
 
       &:hover {
-        background: #00bb89e5;
+        &::before {
+          background: #00bb89e5;
+        }
       }
+    }
+  }
+
+  .settings-bar.focus-transition-dom {
+    transform-origin: 50% 100%;
+    transform: none;
+    transition: opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: auto;
+
+    &.focus-transition-hidden {
+      transform: none;
+    }
+
+    &.focus-transition-visible {
+      transform: none;
+    }
+  }
+
+  .promo-info.focus-transition-dom {
+    transform-origin: 100% 0;
+    transform: none;
+    transition: opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: auto;
+
+    &.focus-transition-hidden {
+      transform: none;
+    }
+
+    &.focus-transition-visible {
+      transform: none;
     }
   }
 
   .beacon-info {
     width: 34rem;
-    background: $translucent8_white;
+    background: rgba(255, 255, 255, 0.6);
     color: $black;
     box-shadow: $translucent2 0px 0px 10px;
     border-radius: 0.5rem;
     padding: 1.5rem;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(20px);
     text-align: left;
-    user-select: none;
+    cursor: default;
+    user-select: text;
     p {
       margin-bottom: 0;
       margin-top: 1rem;
@@ -487,12 +628,17 @@
         text-align: center;
         background: rgba(255, 255, 255, 0.4);
         box-shadow: $translucent2 0px 0px 0.75rem;
+        user-select: none;
         &:hover {
           cursor: pointer;
           background: rgba(255, 255, 255, 0.6);
         }
       }
     }
+  }
+
+  .beacon-info.focus-transition-dom {
+    transform-origin: 50% 50%;
   }
 
   @media screen and (max-width: 768px) {
@@ -579,4 +725,36 @@
 .stats-gl {
   position: absolute;
   top: 3rem;
+}
+
+@keyframes promo-info-load-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes promo-info-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes buy-button-backdrop-load-in {
+  from {
+    background: rgba(0, 165, 121, 0);
+  }
+
+  to {
+    background: #00a579e0;
+  }
 }

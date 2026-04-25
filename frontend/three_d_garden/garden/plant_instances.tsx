@@ -34,12 +34,14 @@ export interface PlantInstancesProps {
   visible?: boolean;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
+  iconCapacities?: Record<string, number>;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
   icon: string;
   plants: ThreeDGardenPlant[];
   plantIndexes: number[];
+  capacity: number;
 }
 
 interface PlantIconUpdateState {
@@ -96,7 +98,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     const updateState = getUpdateState();
     updateState.needsMatrixUpdate = true;
     lastBrightness.current = undefined;
-  });
+  }, [config, getZ, plants, startTimeRef]);
 
   // eslint-disable-next-line complexity
   useFrame(state => {
@@ -161,7 +163,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
 
   return <InstancedMesh
     ref={instancedRef}
-    args={[undefined, undefined, plants.length]}
+    args={[undefined, undefined, props.capacity]}
+    count={plants.length}
+    frustumCulled={false}
     userData={{ plantIndexes }}
     visible={visible}
     onClick={onClick}
@@ -191,16 +195,24 @@ export const PlantInstances = React.memo((props: PlantInstancesProps) => {
           icon: plant.icon,
           plants: [plant],
           plantIndexes: [index],
+          capacity: 0,
           startTimeRef: props.startTimeRef,
           visible: props.visible,
         };
       }
     });
-    return Object.values(iconInstances);
+    return Object.values(iconInstances).map(instance => ({
+      ...instance,
+      capacity: Math.max(
+        instance.plants.length,
+        props.iconCapacities?.[instance.icon] || 0,
+      ),
+    }));
   }, [
     props.config,
     props.dispatch,
     props.getZ,
+    props.iconCapacities,
     props.plants,
     props.startTimeRef,
     props.visible,
@@ -209,7 +221,7 @@ export const PlantInstances = React.memo((props: PlantInstancesProps) => {
   return <>
     {instances.map(instance =>
       <PlantIconInstances
-        key={`${instance.icon}-${instance.plants.length}`}
+        key={`${instance.icon}-${instance.capacity}`}
         {...instance} />)}
   </>;
 });

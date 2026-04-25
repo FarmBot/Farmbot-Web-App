@@ -5,6 +5,10 @@ import {
 } from "../config";
 
 describe("modifyConfig()", () => {
+  it("enables labels on hover by default", () => {
+    expect(INITIAL.labelsOnHover).toEqual(true);
+  });
+
   it("modifies config: lab", () => {
     const initial = clone(INITIAL);
     const result = modifyConfig(initial, { scene: "Lab" });

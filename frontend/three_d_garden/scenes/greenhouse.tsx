@@ -7,6 +7,7 @@ import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
 import { StarterTray, PottedPlant, GreenhouseWall, People } from "./props";
 import { PopInGroup } from "../progressive_load";
+import { FocusVisibilityGroup } from "../focus_transition";
 
 export interface GreenhouseProps {
   config: Config;
@@ -97,7 +98,7 @@ export const Greenhouse = (props: GreenhouseProps) => {
           },
         ]} />
 
-      <Group
+      <FocusVisibilityGroup
         name="potted-plant"
         visible={props.activeFocus == ""}
         position={[
@@ -106,7 +107,7 @@ export const Greenhouse = (props: GreenhouseProps) => {
           groundZ,
         ]}>
         <PottedPlant />
-      </Group>
+      </FocusVisibilityGroup>
     </PopInGroup>
   </Group>;
 };

@@ -4,6 +4,10 @@ import { Bot, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<Bot />", () => {
   afterEach(() => {
@@ -63,6 +67,15 @@ describe("<Bot />", () => {
     p.config.kitVersion = "v1.8";
     const { container } = render(<Bot {...p} />);
     expect(container.querySelectorAll("[name='button-group']").length).toEqual(3);
+  });
+
+  it("hides FarmBot in Planter bed focus", () => {
+    const p = fakeProps();
+    p.activeFocus = "Planter bed";
+    const wrapper = createRenderer(<Bot {...p} />);
+    const bot = wrapper.root.findAll(node => node.props.name == "bot")[0];
+    expect(bot.props.visible).toEqual(false);
+    unmountRenderer(wrapper);
   });
 
   it("renders watering animation", () => {

@@ -101,6 +101,7 @@ export interface PlantSpreadInstancesProps {
   dispatch?: Function;
   activePositionRef: ActivePositionRef;
   spreadVisible: boolean;
+  instanceCapacity?: number;
 }
 
 interface PlantSpreadUpdateState {
@@ -115,6 +116,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
   } = props;
+  const instanceCapacity = Math.max(props.instanceCapacity || 0, plants.length);
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
@@ -157,9 +159,9 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
 
   const ensureInstanceColor = React.useCallback((mesh: InstancedMeshType) => {
     const needsResize = !mesh.instanceColor
-      || mesh.instanceColor.count != plants.length;
+      || mesh.instanceColor.count != instanceCapacity;
     if (needsResize) {
-      const colors = new Float32Array(plants.length * 3);
+      const colors = new Float32Array(instanceCapacity * 3);
       colors.fill(1);
       mesh.instanceColor = new InstancedBufferAttribute(colors, 3);
       if (mesh.geometry) {
@@ -173,7 +175,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
         material.needsUpdate = true;
       }
     }
-  }, [plants.length]);
+  }, [instanceCapacity]);
 
   React.useLayoutEffect(() => {
     const mesh = instancedRef.current;
@@ -184,7 +186,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   React.useEffect(() => {
     const updateState = getUpdateState();
     updateState.needsInstanceUpdate = true;
-  });
+  }, [activeDragSpread, config, getZ, plants]);
 
   // eslint-disable-next-line complexity
   useFrame(state => {
@@ -266,9 +268,10 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   };
 
   return <InstancedMesh
-    key={`plant-spread-${plants.length}`}
+    key={`plant-spread-${instanceCapacity}`}
     ref={instancedRef}
-    args={[undefined, undefined, plants.length]}
+    args={[undefined, undefined, instanceCapacity]}
+    count={plants.length}
     userData={{ plantIndexes }}
     visible={visible}
     onClick={onClick}>

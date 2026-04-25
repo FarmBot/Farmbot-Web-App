@@ -158,7 +158,7 @@ export const INITIAL: ConfigWithPosition = {
   showSoilPoints: false,
   plants: "Spring",
   labels: false,
-  labelsOnHover: false,
+  labelsOnHover: true,
   ground: true,
   grid: true,
   axes: false,

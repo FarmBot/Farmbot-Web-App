@@ -55,7 +55,10 @@ describe("getCameraOffset()", () => {
     const config = clone(INITIAL);
     const configPosition = clone(INITIAL_POSITION);
     const focus = FOCI(config, configPosition)[0];
-    expect(getCameraOffset(focus).position[1]).toEqual(0);
+    expect(getCameraOffset(focus).position[1])
+      .toEqual(getCameraOffset(focus).target[1] - 25);
+    expect(getCameraOffset(focus).position[0])
+      .toEqual(getCameraOffset(focus).target[0]);
   });
 
   it("returns camera offset: narrow", () => {
@@ -63,7 +66,10 @@ describe("getCameraOffset()", () => {
     const config = clone(INITIAL);
     const configPosition = clone(INITIAL_POSITION);
     const focus = FOCI(config, configPosition)[0];
-    expect(getCameraOffset(focus).position[1]).toEqual(-1000);
+    expect(getCameraOffset(focus).position[1])
+      .toEqual(getCameraOffset(focus).target[1] - 25);
+    expect(getCameraOffset(focus).position[0])
+      .toEqual(getCameraOffset(focus).target[0]);
   });
 });
 
@@ -75,8 +81,13 @@ describe("getCamera()", () => {
       position: [0, 0, 0],
       target: [0, 0, 0],
     };
-    expect(getCamera(config, configPosition, "What you can grow", fallback).position[0])
-      .toEqual(0);
+    const camera = getCamera(
+      config,
+      configPosition,
+      "What you can grow",
+      fallback,
+    );
+    expect(camera.position[1]).not.toEqual(camera.target[1]);
   });
 });
 

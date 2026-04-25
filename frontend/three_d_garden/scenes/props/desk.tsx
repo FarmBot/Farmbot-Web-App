@@ -5,6 +5,7 @@ import { ASSETS } from "../../constants";
 import { threeSpace } from "../../helpers";
 import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
+import { FocusVisibilityGroup } from "../../focus_transition";
 
 export interface DeskProps {
   config: Config;
@@ -36,7 +37,7 @@ export const Desk = (props: DeskProps) => {
     texture.wrapT = RepeatWrapping;
     return texture;
   }, [screenTextureBase]);
-  return <Group name={"desk"}
+  return <FocusVisibilityGroup name={"desk"}
     visible={props.config.desk && props.activeFocus == ""}
     position={[
       threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
@@ -113,5 +114,5 @@ export const Desk = (props: DeskProps) => {
         </Box>
       </Group>
     </Group>
-  </Group>;
+  </FocusVisibilityGroup>;
 };

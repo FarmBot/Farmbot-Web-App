@@ -34,6 +34,14 @@ describe("<PublicOverlay />", () => {
     expect(container.innerHTML).toContain("settings-bar");
   });
 
+  it("marks settings bar as loaded", () => {
+    const p = fakeProps();
+    p.loadComplete = true;
+    const { container } = render(<PublicOverlay {...p} />);
+    expect(container.querySelector(".settings-bar-loaded")).toBeTruthy();
+    expect(container.querySelector(".settings-bar-content")).toBeTruthy();
+  });
+
   it("changes preset", () => {
     const p = fakeProps();
     const { container } = render(<PublicOverlay {...p} />);

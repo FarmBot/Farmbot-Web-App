@@ -2,6 +2,7 @@ import React from "react";
 import { ConfigWithPosition, modifyConfig } from "./config";
 import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
+import { FocusVisibilityDiv } from "./focus_transition";
 
 export interface ToolTip {
   timeoutId: number;
@@ -15,6 +16,7 @@ export interface OverlayProps {
   setToolTip(tooltip: ToolTip): void;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  loadComplete?: boolean;
   startTimeRef?: React.RefObject<number>;
 }
 
@@ -74,10 +76,16 @@ const PublicOverlaySection = (props: SectionProps) => {
 export const PublicOverlay = (props: OverlayProps) => {
   const { config, setConfig, toolTip, setToolTip } = props;
   const commonSectionProps = { config, setConfig, toolTip, setToolTip };
+  const settingsBarClassName = [
+    "settings-bar",
+    props.loadComplete ? "settings-bar-loaded" : "",
+  ].join(" ");
 
   return <div className={"overlay"}>
-    {config.settingsBar && !props.activeFocus &&
-      <div className={"settings-bar"}>
+    <FocusVisibilityDiv
+      className={settingsBarClassName}
+      visible={config.settingsBar && !props.activeFocus}>
+      <div className={"settings-bar-content"}>
         <PublicOverlaySection
           {...commonSectionProps}
           title={"FarmBot"}
@@ -114,11 +122,15 @@ export const PublicOverlay = (props: OverlayProps) => {
             "lab": "Lab",
             "greenhouse": "Greenhouse",
           }} />
-      </div>}
-    {config.promoInfo && !props.activeFocus &&
+      </div>
+    </FocusVisibilityDiv>
+    <FocusVisibilityDiv
+      className={"promo-info"}
+      visible={config.promoInfo && !props.activeFocus}>
       <PromoInfo
         isGenesis={config.sizePreset == "Genesis"}
-        kitVersion={config.kitVersion} />}
+        kitVersion={config.kitVersion} />
+    </FocusVisibilityDiv>
   </div>;
 };
 
@@ -129,7 +141,7 @@ interface PromoInfoProps {
 
 const PromoInfo = (props: PromoInfoProps) => {
   const { isGenesis, kitVersion } = props;
-  return <div className="promo-info">
+  return <React.Fragment>
     <h2 className="title">Explore our models</h2>
     {isGenesis
       ? <div className="description">
@@ -157,19 +169,21 @@ const PromoInfo = (props: PromoInfoProps) => {
           universities, and commercial research facilities.
         </p>
       </div>}
-    <a className="buy-button"
-      target="_top"
-      href={isGenesis
-        ? ExternalUrl.Store.genesisKit(kitVersion)
-        : ExternalUrl.Store.genesisXlKit(kitVersion)}>
-      <p>Order Genesis</p>
-      <p className="genesis-xl"
-        style={{ display: isGenesis ? "none" : "inline-block" }}>
-        XL
-      </p>
-      <p style={{ textTransform: "none" }}>{kitVersion}</p>
-    </a>
-  </div>;
+    <div className={"buy-button-load-in"}>
+      <a className="buy-button"
+        target="_top"
+        href={isGenesis
+          ? ExternalUrl.Store.genesisKit(kitVersion)
+          : ExternalUrl.Store.genesisXlKit(kitVersion)}>
+        <p>Order Genesis</p>
+        <p className="genesis-xl"
+          style={{ display: isGenesis ? "none" : "inline-block" }}>
+          XL
+        </p>
+        <p style={{ textTransform: "none" }}>{kitVersion}</p>
+      </a>
+    </div>
+  </React.Fragment>;
 };
 
 interface ConfigRowProps {

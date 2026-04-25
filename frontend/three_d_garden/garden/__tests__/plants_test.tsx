@@ -191,6 +191,17 @@ describe("<ThreeDPlantSpread />", () => {
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
+  it("uses reserved spread capacity while rendering active plants", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    queueMeshRef();
+    const p = fakeProps();
+    p.instanceCapacity = 10;
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh?.getAttribute("args")).toContain("10");
+    expect(mesh?.getAttribute("count")).toEqual("2");
+  });
+
   it("doesn't build per-plant spread mesh keys while rendering", () => {
     const keySpy = jest.spyOn(meshKey, "instancedMeshKey");
     queueMeshRef();

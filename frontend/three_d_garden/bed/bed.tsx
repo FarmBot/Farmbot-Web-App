@@ -46,6 +46,7 @@ import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 import { soilSurfaceExtents } from "../triangles";
+import { FocusVisibilityGroup } from "../focus_transition";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -382,7 +383,8 @@ export const Bed = (props: BedProps) => {
       ]}>
       <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
     </Plane>
-    <Group name={"distance-indicator-group"}
+    <FocusVisibilityGroup name={"distance-indicator-group"}
+      preserveDepthWrite={true}
       visible={xyDimensions || props.activeFocus == "Planter bed"}>
       <DistanceIndicator
         start={{
@@ -406,7 +408,7 @@ export const Bed = (props: BedProps) => {
           y: threeSpace(bedWidthOuter, bedWidthOuter),
           z: groundZ,
         }} />
-    </Group>
+    </FocusVisibilityGroup>
     <Group visible={props.config.distanceIndicator == "bedHeight"}>
       <DistanceIndicator
         start={{

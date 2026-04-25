@@ -2,6 +2,8 @@ import React from "react";
 import { animated, useSpring } from "@react-spring/three";
 import { Html } from "@react-three/drei";
 import { Group } from "./components";
+import { Object3D } from "three";
+import { createFocusMaterialBinding } from "./focus_transition";
 
 const AnimatedGroup = animated(Group);
 
@@ -15,6 +17,8 @@ export const THREE_D_LOAD_STEPS = [
   { id: "farmbot", label: "Loading FarmBot" },
   { id: "details", label: "Loading scene details" },
 ] as const;
+
+export const THREE_D_LOAD_PROGRESS_FADE_MS = 300;
 
 export type ThreeDLoadStepId = typeof THREE_D_LOAD_STEPS[number]["id"];
 type ReadyStepTimes = Partial<Record<ThreeDLoadStepId, number>>;
@@ -127,15 +131,32 @@ interface ThreeDLoadProgressOverlayProps {
 
 export const ThreeDLoadProgressOverlay =
   (props: ThreeDLoadProgressOverlayProps) => {
-    if (props.progress.complete) { return undefined; }
+    const [mounted, setMounted] = React.useState(!props.progress.complete);
+
+    React.useEffect(() => {
+      if (!props.progress.complete) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMounted(true);
+        return;
+      }
+      const timeout = window.setTimeout(() =>
+        setMounted(false), THREE_D_LOAD_PROGRESS_FADE_MS);
+      return () => window.clearTimeout(timeout);
+    }, [props.progress.complete]);
+
+    if (!mounted) { return undefined; }
+    const className = [
+      "three-d-load-progress",
+      props.progress.complete ? "three-d-load-progress-complete" : "",
+    ].join(" ");
     return <Html fullscreen={true}>
-      <div className={"three-d-load-progress"}>
+      <div className={className}>
         <div className={"three-d-load-progress-bar"}
           aria-hidden={true}>
           <div className={"three-d-load-progress-fill"}
             style={{ width: `${props.progress.progress}%` }} />
         </div>
-        <p>{props.progress.currentStep?.label}</p>
+        <p>{props.progress.complete ? "Enjoy!" : props.progress.currentStep?.label}</p>
       </div>
     </Html>;
   };
@@ -145,33 +166,94 @@ const loadInConfig = {
   friction: 26,
 };
 
+export const botLoadInConfig = {
+  tension: 220,
+  friction: 30,
+  clamp: true,
+};
+
+type LoadInSpringConfig = typeof loadInConfig & {
+  clamp?: boolean;
+};
+
+const canTraverse = (value: unknown): value is Object3D =>
+  !!value
+  && typeof value == "object"
+  && typeof (value as Object3D).traverse == "function";
+
 interface LoadInGroupProps {
   name: string;
   children: React.ReactNode;
   onRest?: () => void;
+  config?: LoadInSpringConfig;
   fromPosition?: [number, number, number];
   toPosition?: [number, number, number];
   fromScale?: number | [number, number, number];
   toScale?: number | [number, number, number];
+  fadeIn?: boolean;
+  preserveDepthWrite?: boolean;
 }
 
 export const LoadInGroup = (props: LoadInGroupProps) => {
+  const fromPosition = props.fromPosition || [0, 0, 0];
+  const toPosition = props.toPosition || [0, 0, 0];
+  const fromScale = props.fromScale || 1;
+  const toScale = props.toScale || 1;
+  const groupRef = React.useRef<Object3D | undefined>(undefined);
+  const opacityRef = React.useRef(props.fadeIn ? 0 : 1);
+  const materialBinding = React.useRef<ReturnType<
+    typeof createFocusMaterialBinding
+  > | undefined>(undefined);
+  const applyOpacity = React.useCallback((opacity: number) => {
+    opacityRef.current = opacity;
+    if (!props.fadeIn || !canTraverse(groupRef.current)) { return; }
+    materialBinding.current ||= createFocusMaterialBinding(groupRef.current, {
+      preserveDepthWrite: props.preserveDepthWrite,
+    });
+    materialBinding.current.apply(opacity);
+  }, [props.fadeIn, props.preserveDepthWrite]);
+  const setRef = React.useCallback((value: Object3D | null) => {
+    groupRef.current = value || undefined;
+  }, []);
+  const restoreMaterialBinding = React.useCallback(() => {
+    materialBinding.current?.restore();
+    materialBinding.current = undefined;
+  }, []);
+
   const { position, scale } = useSpring({
     from: {
-      position: props.fromPosition || [0, 0, 0],
-      scale: props.fromScale || 1,
+      position: fromPosition,
+      scale: fromScale,
+      opacity: props.fadeIn ? 0 : 1,
     },
     to: {
-      position: props.toPosition || [0, 0, 0],
-      scale: props.toScale || 1,
+      position: toPosition,
+      scale: toScale,
+      opacity: 1,
     },
-    onRest: props.onRest,
-    config: loadInConfig,
+    onChange: result => {
+      const value = result.value as { opacity?: number };
+      applyOpacity(value.opacity ?? 1);
+    },
+    onRest: () => {
+      applyOpacity(1);
+      restoreMaterialBinding();
+      props.onRest?.();
+    },
+    config: props.config || loadInConfig,
   });
 
+  React.useLayoutEffect(() => {
+    if (!props.fadeIn) { return; }
+    applyOpacity(opacityRef.current);
+  }, [applyOpacity, props.fadeIn]);
+
+  React.useEffect(() => restoreMaterialBinding, [restoreMaterialBinding]);
+
   return <AnimatedGroup
+    ref={setRef}
     name={props.name}
-    position={position as unknown as [number, number, number]}
+    position={position}
     scale={scale}>
     {props.children}
   </AnimatedGroup>;
@@ -198,16 +280,22 @@ interface FallInGroupProps {
   name: string;
   children: React.ReactNode;
   onRest?: () => void;
+  config?: LoadInSpringConfig;
   distance?: number;
+  fadeIn?: boolean;
+  preserveDepthWrite?: boolean;
 }
 
 export const FallInGroup = (props: FallInGroupProps) =>
   <LoadInGroup
     name={props.name}
     onRest={props.onRest}
+    config={props.config}
     fromPosition={[0, 0, props.distance || 3000]}
     fromScale={1.02}
-    toScale={1}>
+    toScale={1}
+    fadeIn={props.fadeIn}
+    preserveDepthWrite={props.preserveDepthWrite}>
     {props.children}
   </LoadInGroup>;
 

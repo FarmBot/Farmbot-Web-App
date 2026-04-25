@@ -34,6 +34,7 @@ import {
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
+import { FocusVisibilityGroup } from "../focus_transition";
 
 export const extrusionWidth = 20;
 const utmRadius = 35;
@@ -249,7 +250,8 @@ export const Bot = (props: FarmbotModelProps) => {
     zZero - zDir * z - 140 + zGantryOffset + 20,
   );
 
-  return <Group name={"bot"}
+  return <FocusVisibilityGroup name={"bot"} keepMounted={true}
+    preserveDepthWrite={true}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
       const bedColumnYOffset =
@@ -655,5 +657,5 @@ export const Bot = (props: FarmbotModelProps) => {
     <PowerSupply config={config} />
     <XAxisWaterTube config={config} />
     <Bounds config={config} configPosition={props.configPosition} />
-  </Group>;
+  </FocusVisibilityGroup>;
 };

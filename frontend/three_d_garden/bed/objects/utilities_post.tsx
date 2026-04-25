@@ -9,6 +9,7 @@ import {
 import { outletDepth } from "../../bot";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial } from "../../components";
+import { FocusVisibilityGroup } from "../../focus_transition";
 
 export interface UtilitiesPostProps {
   config: Config;
@@ -50,8 +51,9 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
     return texture;
   }, [postWoodTextureBase]);
 
-  return <Group name={"utilities"}
+  return <FocusVisibilityGroup name={"utilities"}
     visible={utilitiesPost && props.activeFocus != "Planter bed"}
+    keepMounted={true}
     position={[
       threeSpace(bedLengthOuter + 600, bedLengthOuter),
       threeSpace(legSize / 2, bedWidthOuter),
@@ -170,5 +172,5 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
         <MeshPhongMaterial color="darkgreen" />
       </Tube>
     </Group>
-  </Group>;
+  </FocusVisibilityGroup>;
 };

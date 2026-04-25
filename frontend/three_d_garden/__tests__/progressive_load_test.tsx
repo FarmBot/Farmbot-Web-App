@@ -1,8 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
-  THREE_D_LOAD_STEPS, ThreeDLoadProgressOverlay, useThreeDLoadProgress,
+  THREE_D_LOAD_PROGRESS_FADE_MS, THREE_D_LOAD_STEPS,
+  ThreeDLoadProgressOverlay, useThreeDLoadProgress,
 } from "../progressive_load";
 
 describe("<PopInGroup />", () => {
@@ -88,6 +89,7 @@ describe("3D load progress", () => {
   };
 
   it("marks ready steps and hides the progress bar when complete", () => {
+    jest.useFakeTimers();
     const consoleLog = jest.spyOn(console, "log").mockImplementation(jest.fn());
     render(<ProgressHarness />);
 
@@ -107,9 +109,16 @@ describe("3D load progress", () => {
     });
 
     expect(screen.getByTestId("current-step").textContent).toEqual("complete");
+    expect(screen.getByText("Enjoy!")).toBeTruthy();
+    expect(document.querySelector(".three-d-load-progress-complete"))
+      .toBeTruthy();
+    act(() => {
+      jest.advanceTimersByTime(THREE_D_LOAD_PROGRESS_FADE_MS);
+    });
     expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
     expect(consoleLog).toHaveBeenCalledWith(expect.stringContaining("Total"));
     consoleLog.mockRestore();
+    jest.useRealTimers();
   });
 
   it("allows steps as soon as their dependencies are ready", () => {

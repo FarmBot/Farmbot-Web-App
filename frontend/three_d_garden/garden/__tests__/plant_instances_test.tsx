@@ -39,6 +39,10 @@ import { PLANT_ICON_ATLAS } from "../plant_icon_atlas";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
 import * as meshKey from "../instanced_mesh_key";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
@@ -98,6 +102,24 @@ describe("<PlantInstances />", () => {
     const { container } = render(<PlantInstances {...fakeProps()} />);
     const meshes = container.querySelectorAll("instancedmesh");
     expect(meshes.length).toBe(2);
+  });
+
+  it("uses reserved icon capacity while rendering only active plants", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    p.iconCapacities = { [p.plants[0].icon]: 10 };
+    const { container } = render(<PlantInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh?.getAttribute("args")).toContain("10");
+    expect(mesh?.getAttribute("count")).toEqual("1");
+  });
+
+  it("disables frustum culling for billboarded plant icons", () => {
+    const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
+    const mesh = wrapper.root.findAll(node =>
+      node.type == "instancedMesh")[0];
+    expect(mesh.props.frustumCulled).toEqual(false);
+    unmountRenderer(wrapper);
   });
 
   it("doesn't build per-plant mesh keys while rendering", () => {

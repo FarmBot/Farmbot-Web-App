@@ -3,7 +3,10 @@ let mockIsMobile = false;
 
 import React from "react";
 import { OrbitControls, useTexture } from "@react-three/drei";
-import { GardenModelProps, GardenModel } from "../garden_model";
+import {
+  GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
+  SMOOTH_XL_CAMERA_HEIGHT_SCALE,
+} from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render, waitFor } from "@testing-library/react";
@@ -21,6 +24,8 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
+import { cameraInit } from "../camera";
+import { getCamera } from "../zoom_beacons_constants";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -75,9 +80,10 @@ describe("<GardenModel />", () => {
     return wrapper;
   };
 
-  it("renders", () => {
+  it("renders", async () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
-    expect(container.innerHTML).toContain("zoom-beacons");
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("zoom-beacons"));
     expect(container.innerHTML).not.toContain("stats");
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
@@ -128,6 +134,53 @@ describe("<GardenModel />", () => {
     expect(camera?.props.zoom).toEqual(0.5);
   });
 
+  it("keeps focused camera coordinates with smooth transitions disabled", () => {
+    const p = fakeProps();
+    p.activeFocus = "What you can grow";
+    p.smoothFocusTransitions = true;
+    p.config.animate = false;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    const defaultCamera = cameraInit({
+      topDown: p.config.topDown,
+      viewpointHeading: p.config.viewpointHeading,
+      bedSize: { x: p.config.bedLengthOuter, y: p.config.bedWidthOuter },
+    });
+    const expectedCamera = getCamera(
+      p.config,
+      p.configPosition,
+      p.activeFocus,
+      defaultCamera,
+    );
+    expect(camera?.props.position).toEqual(expectedCamera.position);
+    expect(wrapper.root.findByType(OrbitControls).props.target)
+      .toEqual(expectedCamera.target);
+  });
+
+  it("moves the smooth XL default camera back and higher", () => {
+    const p = fakeProps();
+    p.smoothFocusTransitions = true;
+    p.config.animate = false;
+    p.config.sizePreset = "Genesis XL";
+    p.config.bedLengthOuter = 6000;
+    p.config.bedWidthOuter = 2860;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    const expectedCamera = cameraInit({
+      topDown: p.config.topDown,
+      viewpointHeading: p.config.viewpointHeading,
+      bedSize: {
+        x: p.config.bedLengthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
+        y: p.config.bedWidthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
+      },
+    });
+    expect(camera?.props.position).toEqual([
+      expectedCamera.position[0],
+      expectedCamera.position[1],
+      expectedCamera.position[2] * SMOOTH_XL_CAMERA_HEIGHT_SCALE,
+    ]);
+  });
+
   it("renders camera selection view", async () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
@@ -149,10 +202,24 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
     p.threeDPlants = convertPlants(p.config, [plant]);
     const { queryAllByText } = render(<GardenModel {...p} />);
     const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
+  });
+
+  it("doesn't build plant label nodes when labels are disabled", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = false;
+    p.config.labelsOnHover = false;
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(0);
   });
 
   it("preloads the atlas texture for mapped plant icons", () => {
@@ -242,7 +309,7 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).not.toContain('name="bot"');
   });
 
-  it("renders other options", () => {
+  it("renders other options", async () => {
     mockIsDesktop = false;
     const p = fakeProps();
     p.config.perspective = false;
@@ -260,7 +327,7 @@ describe("<GardenModel />", () => {
     p.addPlantProps = undefined;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("gray");
-    expect(container.innerHTML).toContain("stats");
+    await waitFor(() => expect(container.innerHTML).toContain("stats"));
   });
 
   it("renders debug options", () => {
