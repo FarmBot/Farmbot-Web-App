@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Box, Detailed, Extrude, Plane, useHelper, useTexture,
+  Box, Detailed, Extrude, Plane, useHelper,
 } from "@react-three/drei";
 import {
   DoubleSide,
@@ -47,6 +47,7 @@ import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 import { soilSurfaceExtents } from "../triangles";
 import { FocusVisibilityGroup } from "../focus_transition";
+import { useTextureVariant } from "../texture_variants";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -206,22 +207,16 @@ export const Bed = (props: BedProps) => {
     ];
   const casterHeight = legSize * 1.375;
 
-  const bedWoodTextureBase = useTexture(ASSETS.textures.wood + "?=bedWood");
-  const bedWoodTexture = React.useMemo(() => {
-    const texture = bedWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.0003, 0.003);
-    return texture;
-  }, [bedWoodTextureBase]);
-  const legWoodTextureBase = useTexture(ASSETS.textures.wood + "?=legWood");
-  const legWoodTexture = React.useMemo(() => {
-    const texture = legWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.02, 0.05);
-    return texture;
-  }, [legWoodTextureBase]);
+  const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.0003, 0.003],
+  });
+  const legWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.02, 0.05],
+  });
 
   // eslint-disable-next-line no-null/no-null
   const pointerPlantRef: PointerPlantRef = React.useRef(null);

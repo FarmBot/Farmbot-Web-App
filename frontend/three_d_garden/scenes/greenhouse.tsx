@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, useTexture } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { DoubleSide, RepeatWrapping } from "three";
 import { ASSETS } from "../constants";
 import { threeSpace } from "../helpers";
@@ -8,6 +8,7 @@ import { Group, MeshPhongMaterial } from "../components";
 import { StarterTrays, PottedPlant, GreenhouseWall, People } from "./props";
 import { PopInGroup } from "../progressive_load";
 import { FocusVisibilityGroup } from "../focus_transition";
+import { useTextureVariant } from "../texture_variants";
 
 export interface GreenhouseProps {
   config: Config;
@@ -25,14 +26,11 @@ export const Greenhouse = (props: GreenhouseProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
-  const shelfWoodTextureBase = useTexture(ASSETS.textures.wood + "?=shelf");
-  const shelfWoodTexture = React.useMemo(() => {
-    const texture = shelfWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.3, 0.3);
-    return texture;
-  }, [shelfWoodTextureBase]);
+  const shelfWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.3, 0.3],
+  });
 
   return <Group
     name={"greenhouse-environment"}

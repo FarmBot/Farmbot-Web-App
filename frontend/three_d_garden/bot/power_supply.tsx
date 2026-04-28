@@ -2,11 +2,12 @@
 import React from "react";
 import { RepeatWrapping } from "three";
 import * as THREE from "three";
-import { Box, Tube, useTexture } from "@react-three/drei";
+import { Box, Tube } from "@react-three/drei";
 import { ASSETS } from "../constants";
 import { threeSpace, easyCubicBezierCurve3 } from "../helpers";
 import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
+import { useTextureVariant } from "../texture_variants";
 
 export interface PowerSupplyProps {
   config: Config;
@@ -30,14 +31,11 @@ export const PowerSupply = (props: PowerSupplyProps) => {
   } = props.config;
   const zGround = -bedHeight - bedZOffset;
 
-  const powerSupplyTextureBase = useTexture(ASSETS.textures.aluminum + "?=powerSupply");
-  const powerSupplyTexture = React.useMemo(() => {
-    const texture = powerSupplyTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.01, 0.003);
-    return texture;
-  }, [powerSupplyTextureBase]);
+  const powerSupplyTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.003],
+  });
 
   const combinedCablePath = new THREE.CurvePath<THREE.Vector3>();
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 import {
-  Cylinder, Extrude, Trail, Tube, useGLTF, useTexture,
+  Cylinder, Extrude, Trail, Tube, useGLTF,
 } from "@react-three/drei";
 import {
   DoubleSide, ExtrudeGeometryOptions, Shape, RepeatWrapping,
@@ -37,6 +37,7 @@ import {
 import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
 import { FocusVisibilityGroup } from "../focus_transition";
+import { useTextureVariant } from "../texture_variants";
 
 export const extrusionWidth = 20;
 const utmRadius = 35;
@@ -183,14 +184,11 @@ export const Bot = (props: FarmbotModelProps) => {
         });
     }
   });
-  const aluminumTextureBase = useTexture(ASSETS.textures.aluminum + "?=bot");
-  const aluminumTexture = React.useMemo(() => {
-    const texture = aluminumTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.01, 0.0003);
-    return texture;
-  }, [aluminumTextureBase]);
+  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.0003],
+  });
 
   const yBeltPath = React.useCallback(() => {
     const radius = 12;
