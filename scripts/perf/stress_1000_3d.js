@@ -73,6 +73,7 @@ const summary = runs => {
     imageTextureSetupMs: metric("imageTextureSetupMs"),
     imageWrapperSetupMs: metric("imageWrapperSetupMs"),
     soilTextureRenders: metric("soilTextureRenders"),
+    spreadFrameUpdateMs: metric("spreadFrameUpdateMs"),
     moistureSurfaceMs: metric("moistureSurfaceMs"),
     moistureInstanceNodesMs: metric("moistureInstanceNodesMs"),
   };
@@ -358,6 +359,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const soilStorageSamples = samples.soilStorageMs || [];
   const imageTextureSetupSamples = samples.imageTextureSetupMs || [];
   const imageWrapperSetupSamples = samples.imageWrapperSetupMs || [];
+  const spreadFrameUpdateSamples = samples.spreadFrameUpdateMs || [];
   const moistureSurfaceSamples = samples.moistureSurfaceMs || [];
   const moistureInstanceNodeSamples = samples.moistureInstanceNodesMs || [];
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
@@ -431,6 +433,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     imageWrapperSetupMs: imageWrapperSetupSamples
       .reduce((total, value) => total + value, 0),
     soilTextureRenders: counts.soilTextureRenders || 0,
+    spreadFrameUpdateMs: spreadFrameUpdateSamples
+      .reduce((total, value) => total + value, 0),
     moistureSurfaceMs: moistureSurfaceSamples
       .reduce((total, value) => total + value, 0),
     moistureInstanceNodesMs: moistureInstanceNodeSamples
