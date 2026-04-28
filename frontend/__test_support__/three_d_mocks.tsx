@@ -809,8 +809,12 @@ jest.mock("@react-three/drei", () => {
       };
       return makeTexture();
     }),
-    RenderTexture: ({ children }: { children: ReactNode }) =>
-      <div className={"render-texture"}>{children}</div>,
+    RenderTexture: (
+      props: { children: ReactNode, frames?: number },
+    ) =>
+      <div className={"render-texture"} data-frames={props.frames}>
+        {props.children}
+      </div>,
     GizmoHelper: ({ name }: { name: string }) =>
       <div className={"gizmo-helper"}>{name}</div>,
     GizmoViewcube: ({ name }: { name: string }) =>

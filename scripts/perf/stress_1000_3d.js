@@ -72,6 +72,7 @@ const summary = runs => {
     soilStorageCalls: metric("soilStorageCalls"),
     imageTextureSetupMs: metric("imageTextureSetupMs"),
     imageWrapperSetupMs: metric("imageWrapperSetupMs"),
+    soilTextureRenders: metric("soilTextureRenders"),
     moistureSurfaceMs: metric("moistureSurfaceMs"),
     moistureInstanceNodesMs: metric("moistureInstanceNodesMs"),
   };
@@ -429,6 +430,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
       .reduce((total, value) => total + value, 0),
     imageWrapperSetupMs: imageWrapperSetupSamples
       .reduce((total, value) => total + value, 0),
+    soilTextureRenders: counts.soilTextureRenders || 0,
     moistureSurfaceMs: moistureSurfaceSamples
       .reduce((total, value) => total + value, 0),
     moistureInstanceNodesMs: moistureInstanceNodeSamples
@@ -513,6 +515,124 @@ const runBenchmark = async args => {
   }
 };
 
+const getSession = async (browser, baseUrl, sessionFile) => {
+  if (sessionFile && fs.existsSync(sessionFile)) {
+    return fs.readFileSync(sessionFile, "utf8");
+  }
+  const session = await createDemoSession(browser, baseUrl);
+  if (sessionFile) {
+    fs.mkdirSync(path.dirname(sessionFile), { recursive: true });
+    fs.writeFileSync(sessionFile, session);
+  }
+  return session;
+};
+
+const screenshot = async args => {
+  const baseUrl = args["base-url"] || DEFAULT_URL;
+  const out = args.out || "tmp/perf/three_d_garden.png";
+  const viewport = {
+    width: Number(args.width || DEFAULT_VIEWPORT.width),
+    height: Number(args.height || DEFAULT_VIEWPORT.height),
+  };
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--enable-gpu",
+    ],
+  });
+  try {
+    const session = await getSession(browser, baseUrl, args["session-file"]);
+    const context = await browser.newContext({ viewport });
+    await context.addInitScript(value => {
+      window.localStorage.setItem("session", value.session);
+      window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+      window.localStorage.setItem("FPS_LOGS", "false");
+    }, { session });
+    const page = await context.newPage();
+    page.setDefaultTimeout(TIMEOUT);
+    await page.goto(`${baseUrl}/app/designer/plants?fb_perf=1`, {
+      waitUntil: "domcontentloaded",
+    });
+    await waitFor3D(page);
+    await page.waitForTimeout(Number(args["settle-ms"] || 3_000));
+    await nextPaint(page);
+    const canvas = page.locator(".garden-bed-3d-model canvas").first();
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    await canvas.screenshot({ path: out });
+    await context.close();
+    console.log(`Wrote ${out}`);
+  } finally {
+    await browser.close();
+  }
+};
+
+const imageDiff = async args => {
+  const before = fs.readFileSync(args.before, "base64");
+  const after = fs.readFileSync(args.after, "base64");
+  const threshold = Number(args.threshold || 3);
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    const result = await page.evaluate(async ({ before, after, threshold }) => {
+      const load = data => new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = `data:image/png;base64,${data}`;
+      });
+      const [beforeImage, afterImage] =
+        await Promise.all([load(before), load(after)]);
+      const width = beforeImage.width;
+      const height = beforeImage.height;
+      if (width != afterImage.width || height != afterImage.height) {
+        throw new Error("Image dimensions differ.");
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+      context.drawImage(beforeImage, 0, 0);
+      const beforePixels =
+        context.getImageData(0, 0, width, height).data;
+      context.clearRect(0, 0, width, height);
+      context.drawImage(afterImage, 0, 0);
+      const afterPixels =
+        context.getImageData(0, 0, width, height).data;
+      let diffPixels = 0;
+      let maxDelta = 0;
+      let totalDelta = 0;
+      for (let i = 0; i < beforePixels.length; i += 4) {
+        const delta = Math.max(
+          Math.abs(beforePixels[i] - afterPixels[i]),
+          Math.abs(beforePixels[i + 1] - afterPixels[i + 1]),
+          Math.abs(beforePixels[i + 2] - afterPixels[i + 2]),
+          Math.abs(beforePixels[i + 3] - afterPixels[i + 3]),
+        );
+        maxDelta = Math.max(maxDelta, delta);
+        totalDelta += delta;
+        if (delta > threshold) { diffPixels++; }
+      }
+      const pixels = width * height;
+      return {
+        width,
+        height,
+        pixels,
+        diffPixels,
+        diffRatio: diffPixels / pixels,
+        maxDelta,
+        avgDelta: totalDelta / pixels,
+      };
+    }, { before, after, threshold });
+    console.log(result);
+    if (result.diffPixels > 0) { process.exitCode = 1; }
+  } finally {
+    await browser.close();
+  }
+};
+
 const readJson = file => JSON.parse(fs.readFileSync(file, "utf8"));
 
 const compare = args => {
@@ -547,6 +667,10 @@ const main = async () => {
   const args = parseArgs();
   if (args.command == "compare") {
     compare(args);
+  } else if (args.command == "screenshot") {
+    await screenshot(args);
+  } else if (args.command == "image-diff") {
+    await imageDiff(args);
   } else {
     await runBenchmark(args);
   }

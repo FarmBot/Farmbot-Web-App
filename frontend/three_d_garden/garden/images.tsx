@@ -20,7 +20,7 @@ import {
 } from "../../farm_designer/map/layers/images/map_image";
 import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
-import { perfMeasure } from "../../performance/perf";
+import { perfCount, perfMeasure } from "../../performance/perf";
 
 interface BaseProps {
   config: Config;
@@ -40,6 +40,7 @@ interface PlaneWrapperProps {
 const PlaneWrapper = (props: PlaneWrapperProps) =>
   <Plane
     args={[props.width, props.height]}
+    onBeforeRender={() => perfCount("soilTextureRenders")}
     position={[
       props.bedWallThickness + props.width / 2,
       props.bedWallThickness + props.height / 2,
@@ -160,6 +161,7 @@ export const ImageTexture = (props: ImageTextureProps) => {
   return <RenderTexture
     key={textureKey}
     attach={"map"}
+    frames={1}
     width={textureWidth}
     height={textureHeight}
     repeat={mirrorTextureProps.repeat}

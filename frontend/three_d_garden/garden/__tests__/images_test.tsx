@@ -61,6 +61,8 @@ describe("<ImageTexture />", () => {
     p.addPlantProps = apProps;
     render(<ImageTexture {...p} />);
     expect(screen.getAllByText("image").length).toEqual(3);
+    expect(document.querySelector(".render-texture"))
+      .toHaveAttribute("data-frames", "1");
   });
 
   it("renders when images missing", () => {
@@ -179,7 +181,7 @@ describe("<ImageTexture />", () => {
     const sensor = fakeSensor();
     p.sensors = [sensor];
     const key = getImageTextureKey(p);
-    sensor.body.pin = sensor.body.pin + 1;
+    sensor.body.pin = (sensor.body.pin || 0) + 1;
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 });
