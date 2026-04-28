@@ -50,6 +50,9 @@ const summary = runs => {
     jsEncodedBytes: metric("jsEncodedBytes"),
     jsTransferBytes: metric("jsTransferBytes"),
     jsResourceCount: metric("jsResourceCount"),
+    modelEncodedBytes: metric("modelEncodedBytes"),
+    modelTransferBytes: metric("modelTransferBytes"),
+    modelResourceCount: metric("modelResourceCount"),
     threeDGardenMapRenders: metric("threeDGardenMapRenders"),
     gardenModelRenders: metric("gardenModelRenders"),
     threeDGardenRenders: metric("threeDGardenRenders"),
@@ -100,8 +103,22 @@ const nextPaint = page =>
 const resourceSummary = async page => page.evaluate(() => {
   const jsResources = performance.getEntriesByType("resource")
     .filter(entry => entry.name.match(/\.js(\?|$)/));
+  const modelResources = performance.getEntriesByType("resource")
+    .filter(entry => entry.name.match(/\.(glb|gltf)(\?|$)/));
   const sum = key => jsResources
     .reduce((total, entry) => total + (entry[key] || 0), 0);
+  const modelSum = key => modelResources
+    .reduce((total, entry) => total + (entry[key] || 0), 0);
+  const largestModels = modelResources
+    .map(entry => ({
+      name: entry.name.split("/").pop(),
+      transferSize: entry.transferSize || 0,
+      encodedBodySize: entry.encodedBodySize || 0,
+      decodedBodySize: entry.decodedBodySize || 0,
+      duration: entry.duration || 0,
+    }))
+    .sort((a, b) => b.encodedBodySize - a.encodedBodySize)
+    .slice(0, 10);
   const largestJs = jsResources
     .map(entry => ({
       name: entry.name.split("/").pop(),
@@ -118,6 +135,11 @@ const resourceSummary = async page => page.evaluate(() => {
     jsEncodedBytes: sum("encodedBodySize"),
     jsDecodedBytes: sum("decodedBodySize"),
     largestJs,
+    modelResourceCount: modelResources.length,
+    modelTransferBytes: modelSum("transferSize"),
+    modelEncodedBytes: modelSum("encodedBodySize"),
+    modelDecodedBytes: modelSum("decodedBodySize"),
+    largestModels,
   };
 });
 
