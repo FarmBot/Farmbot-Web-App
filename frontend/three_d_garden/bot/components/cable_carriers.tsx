@@ -71,15 +71,16 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
     x: botSizeX / 2,
     y: (tracks ? 0 : extrusionWidth) - 15 - bedYOffset,
   });
+  const args = React.useMemo(() => [
+    ccPath(
+      botSizeX / 2, botSizeX / 2 - x + 20,
+      bedCCSupportHeight - 40,
+      true),
+    { steps: 1, depth: 22, bevelEnabled: false },
+  ] as [Shape, THREE.ExtrudeGeometryOptions], [bedCCSupportHeight, botSizeX, x]);
   return <Extrude name={"xCC"} visible={cableCarriers}
     castShadow={true}
-    args={[
-      ccPath(
-        botSizeX / 2, botSizeX / 2 - x + 20,
-        bedCCSupportHeight - 40,
-        true),
-      { steps: 1, depth: 22, bevelEnabled: false },
-    ]}
+    args={args}
     position={[
       position.x,
       position.y,
@@ -114,12 +115,13 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
     const position = get3DPosition({ x: x - 28, y: 20 });
     return [position.x, position.y, columnLength + 150];
   };
+  const args = React.useMemo(() => [
+    ccPath(botSizeY, y + 40, 70),
+    { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
+  ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeY, kitVersion, y]);
   return <Extrude name={"yCC"} visible={cableCarriers}
     castShadow={true}
-    args={[
-      ccPath(botSizeY, y + 40, 70),
-      { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
-    ]}
+    args={args}
     position={getPosition()}
     rotation={[-Math.PI / 2, -Math.PI / 2, 0]}>
     <MeshPhongMaterial color={distinguishableBlack} />
@@ -140,12 +142,13 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
   const zDir = zDirFunc(props.config);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const position = get3DPosition({ x: x - 41, y: y - 25 });
+  const args = React.useMemo(() => [
+    ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
+    { steps: 1, depth: 60, bevelEnabled: false },
+  ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeZ, z, zDir, zGantryOffset]);
   return <Extrude name={"zCC"} visible={cableCarriers}
     castShadow={true}
-    args={[
-      ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
-      { steps: 1, depth: 60, bevelEnabled: false },
-    ]}
+    args={args}
     position={[
       position.x,
       position.y,
@@ -174,6 +177,25 @@ export const CableCarrierSupportVertical =
       useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as unknown as CCSupportVertical;
     const verticalInstances = React.useMemo(() => range((zAxisLength - 350) / 200), [zAxisLength]);
     const verticalRef = React.useRef<THREE.InstancedMesh | undefined>(undefined);
+    const verticalGeometry = React.useMemo(() => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.lineTo(0, 20);
+      shape.lineTo(15, 20);
+      shape.lineTo(20, 1.5);
+      shape.lineTo(28.5, 1.5);
+      shape.lineTo(28.5, -61);
+      shape.lineTo(24, -63);
+      shape.lineTo(24, -61.5);
+      shape.lineTo(27, -60);
+      shape.lineTo(27, 0);
+      shape.lineTo(0, 0);
+      return new THREE.ExtrudeGeometry(shape, {
+        depth: zAxisLength - 350,
+        bevelEnabled: false,
+      });
+    }, [zAxisLength]);
+    React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
     React.useEffect(() => {
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
@@ -222,27 +244,7 @@ export const CableCarrierSupportVertical =
           <Mesh
             position={getPosition()}
             rotation={[0, 0, 0]}
-            geometry={new THREE.ExtrudeGeometry(
-              (() => {
-                const shape = new THREE.Shape();
-                shape.moveTo(0, 0);
-                shape.lineTo(0, 20);
-                shape.lineTo(15, 20);
-                shape.lineTo(20, 1.5);
-                shape.lineTo(28.5, 1.5);
-                shape.lineTo(28.5, -61);
-                shape.lineTo(24, -63);
-                shape.lineTo(24, -61.5);
-                shape.lineTo(27, -60);
-                shape.lineTo(27, 0);
-                shape.lineTo(0, 0);
-                return shape;
-              })(),
-              {
-                depth: zAxisLength - 350,
-                bevelEnabled: false,
-              },
-            )}>
+            geometry={verticalGeometry}>
             <MeshPhongMaterial color={"white"}
               opacity={0.8}
               transparent={true} />
@@ -268,6 +270,23 @@ export const CableCarrierSupportHorizontal =
     const horizontalInstances = React.useMemo(() => range((botSizeY - 10) / 300), [botSizeY]);
     const horizontalRef =
       React.useRef<THREE.InstancedMesh | undefined>(undefined);
+    const horizontalGeometry = React.useMemo(() => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.lineTo(0, 20);
+      shape.lineTo(-40, 20);
+      shape.lineTo(-41, 22.5);
+      shape.lineTo(-42.5, 22.5);
+      shape.lineTo(-41.5, 18.5);
+      shape.lineTo(-30, 18.5);
+      shape.lineTo(-25, 0);
+      shape.lineTo(0, 0);
+      return new THREE.ExtrudeGeometry(shape, {
+        depth: botSizeY - 30,
+        bevelEnabled: false,
+      });
+    }, [botSizeY]);
+    React.useEffect(() => () => horizontalGeometry.dispose(), [horizontalGeometry]);
     React.useEffect(() => {
       if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
@@ -313,26 +332,7 @@ export const CableCarrierSupportHorizontal =
               columnLength + 60,
             ]}
             rotation={[Math.PI / 2, 0, 0]}
-            geometry={new THREE.ExtrudeGeometry(
-              (() => {
-                const shape = new THREE.Shape();
-
-                shape.moveTo(0, 0);
-                shape.lineTo(0, 20);
-                shape.lineTo(-40, 20);
-                shape.lineTo(-41, 22.5);
-                shape.lineTo(-42.5, 22.5);
-                shape.lineTo(-41.5, 18.5);
-                shape.lineTo(-30, 18.5);
-                shape.lineTo(-25, 0);
-                shape.lineTo(0, 0);
-                return shape;
-              })(),
-              {
-                depth: botSizeY - 30,
-                bevelEnabled: false,
-              },
-            )}>
+            geometry={horizontalGeometry}>
             <MeshPhongMaterial color={"white"}
               opacity={0.8}
               {...(props.config.light ? EMISSIVE_PROPS : {})}

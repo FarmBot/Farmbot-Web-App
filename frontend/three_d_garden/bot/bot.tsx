@@ -4,7 +4,9 @@ import * as THREE from "three";
 import {
   Cylinder, Extrude, Trail, Tube, useGLTF, useTexture,
 } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping } from "three";
+import {
+  DoubleSide, ExtrudeGeometryOptions, Shape, RepeatWrapping,
+} from "three";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc,
   zDir as zDirFunc,
@@ -190,7 +192,7 @@ export const Bot = (props: FarmbotModelProps) => {
     return texture;
   }, [aluminumTextureBase]);
 
-  const yBeltPath = () => {
+  const yBeltPath = React.useCallback(() => {
     const radius = 12;
     const path = new Shape();
     path.moveTo(0, 0);
@@ -210,7 +212,11 @@ export const Bot = (props: FarmbotModelProps) => {
     path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
     path.lineTo(-2, 0);
     return path;
-  };
+  }, [botSizeY, y]);
+  const yBeltArgs = React.useMemo(() => [
+    yBeltPath(),
+    { steps: 1, depth: 6, bevelEnabled: false },
+  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
   const distanceToSoil = -props.getZ(x, y) - zDir * z;
 
   const defaultTrailWidth = config.perspective ? 500 : 0.1;
@@ -618,10 +624,7 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
     <Extrude name={"yBelt"}
-      args={[
-        yBeltPath(),
-        { steps: 1, depth: 6, bevelEnabled: false },
-      ]}
+      args={yBeltArgs}
       position={[
         ...gardenXY(x - 14.5, -100),
         columnLength + 100,
