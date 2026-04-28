@@ -277,6 +277,7 @@ const clickAndMeasure = async (
     count = await item.count();
   }
   if (count == 0) { return undefined; }
+  if (!await item.isVisible()) { return undefined; }
   const startedAt = await page.evaluate(() => performance.now());
   await item.click();
   await page.waitForSelector(panelSelector, { timeout: TIMEOUT });
@@ -290,6 +291,7 @@ const measureLayerToggle = async (page, labelText) => {
     .first();
   const count = await toggle.count();
   if (count == 0) { return undefined; }
+  if (!await toggle.isVisible()) { return undefined; }
   const beforeRenderCount = await page.evaluate(() =>
     window.__fbPerf?.counts?.["render.GardenModel"] || 0);
   const startedAt = await page.evaluate(() => performance.now());
@@ -311,6 +313,7 @@ const ensureLayerVisible = async (page, labelText) => {
     .first();
   const count = await toggle.count();
   if (count == 0) { return; }
+  if (!await toggle.isVisible()) { return; }
   const className = await toggle.getAttribute("class");
   if (className?.includes("green")) { return; }
   const beforeRenderCount = await page.evaluate(() =>
