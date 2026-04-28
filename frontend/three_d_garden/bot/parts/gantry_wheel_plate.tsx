@@ -5,6 +5,7 @@ import { InstancedBufferAttribute } from "three";
 import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent, InstancedMesh } from "../../components";
 import { ThreeElements } from "@react-three/fiber";
+import { mergedInstancedGeometry } from "./merged_instanced_geometry";
 
 type Mesh = THREE.Mesh & { instanceMatrix: InstancedBufferAttribute | undefined };
 
@@ -103,6 +104,19 @@ export type GantryWheelPlateFull = GLTF & {
 export const GantryWheelPlate = (model: GantryWheelPlateFull) =>
   (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
+    const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
+    if (mergedGeometry) {
+      return <Group {...props}>
+        <MeshComponent
+          geometry={nodes.Gantry_Wheel_Plate.geometry}
+          material={materials.PaletteMaterial001}
+          position={[0.002, 0.05, 0]}
+          rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
+        <MeshComponent
+          geometry={mergedGeometry}
+          material={materials.PaletteMaterial001} />
+      </Group>;
+    }
     return <Group {...props}>
       <MeshComponent
         geometry={nodes.Gantry_Wheel_Plate.geometry}
