@@ -266,10 +266,11 @@ export const GardenModel = (props: GardenModelProps) => {
   const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
 
   const soilPoints = React.useMemo(
-    () => filterSoilPoints({ points: props.mapPoints, config }),
+    () => perfMeasure("soilPointFilterMs", () =>
+      filterSoilPoints({ points: props.mapPoints, config })),
     [props.mapPoints, config]);
   const soilSurface = React.useMemo(() =>
-    getSurface(soilPoints), [soilPoints]);
+    perfMeasure("soilSurfaceMs", () => getSurface(soilPoints)), [soilPoints]);
   React.useEffect(() => {
     perfMeasure("soilStorageMs", () => {
       sessionStorage.setItem("soilSurfaceTriangles",

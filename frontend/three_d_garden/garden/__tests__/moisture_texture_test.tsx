@@ -43,6 +43,13 @@ describe("<MoistureSurface />", () => {
     expect(container).toContainHTML("moisture-layer");
   });
 
+  it("renders the moisture map with a native instanced mesh", () => {
+    const { container } = render(<MoistureSurface {...fakeProps()} />);
+    expect(container.querySelector("instancedmesh")).toBeTruthy();
+    expect(container.querySelector(".instances")).toBeFalsy();
+    expect(container.querySelector(".instance")).toBeFalsy();
+  });
+
   it("skips interpolation when the moisture map is hidden", () => {
     const generateData = jest.spyOn(interpolationMap, "generateData");
     const p = fakeProps();

@@ -66,6 +66,8 @@ const summary = runs => {
     getZCalls: metric("getZCalls"),
     getZIndexMs: metric("getZIndexMs"),
     getZP95Ms: metric("getZP95Ms"),
+    soilPointFilterMs: metric("soilPointFilterMs"),
+    soilSurfaceMs: metric("soilSurfaceMs"),
     soilStorageMs: metric("soilStorageMs"),
     soilStorageCalls: metric("soilStorageCalls"),
     moistureSurfaceMs: metric("moistureSurfaceMs"),
@@ -298,6 +300,21 @@ const measureLayerToggle = async (page, labelText) => {
   return elapsed;
 };
 
+const ensureLayerVisible = async (page, labelText) => {
+  const toggle = page.locator("fieldset")
+    .filter({ hasText: labelText })
+    .locator(".fb-layer-toggle")
+    .first();
+  const count = await toggle.count();
+  if (count == 0) { return; }
+  const className = await toggle.getAttribute("class");
+  if (className?.includes("green")) { return; }
+  const beforeRenderCount = await page.evaluate(() =>
+    window.__fbPerf?.counts?.["render.GardenModel"] || 0);
+  await toggle.click();
+  await waitForGardenRender(page, beforeRenderCount);
+};
+
 const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const context = await browser.newContext({
     viewport: options.viewport,
@@ -308,10 +325,19 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     window.localStorage.setItem("FPS_LOGS", "false");
   }, { session });
   const page = await context.newPage();
+  page.on("pageerror", error => console.error("pageerror", error));
+  page.on("console", message => {
+    if (message.type() == "error") {
+      console.error("console", message.text());
+    }
+  });
   page.setDefaultTimeout(TIMEOUT);
   const appUrl = `${baseUrl}/app/designer/plants?fb_perf=1`;
   await page.goto(appUrl, { waitUntil: "domcontentloaded" });
   await waitFor3D(page);
+  if (options.moistureMap) {
+    await ensureLayerVisible(page, "Moisture");
+  }
   await nextPaint(page);
   const resources = await resourceSummary(page);
   await page.waitForTimeout(options.sampleMs);
@@ -324,6 +350,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const frameSamples = samples.frame_ms || [];
   const getZSamples = samples.getZMs || [];
   const getZIndexSamples = samples.getZIndexMs || [];
+  const soilPointFilterSamples = samples.soilPointFilterMs || [];
+  const soilSurfaceSamples = samples.soilSurfaceMs || [];
   const soilStorageSamples = samples.soilStorageMs || [];
   const moistureSurfaceSamples = samples.moistureSurfaceMs || [];
   const moistureInstanceNodeSamples = samples.moistureInstanceNodesMs || [];
@@ -386,6 +414,10 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     getZIndexMs: getZIndexSamples
       .reduce((total, value) => total + value, 0),
     getZP95Ms: percentile(getZSamples, 95),
+    soilPointFilterMs: soilPointFilterSamples
+      .reduce((total, value) => total + value, 0),
+    soilSurfaceMs: soilSurfaceSamples
+      .reduce((total, value) => total + value, 0),
     soilStorageMs: soilStorageSamples
       .reduce((total, value) => total + value, 0),
     soilStorageCalls: soilStorageSamples.length,
@@ -437,11 +469,21 @@ const runBenchmark = async args => {
     if (lowDetail) {
       await setFarmwareEnv(baseUrl, session, "3D_lowDetail", "1");
     }
+    if (["1", "true"].includes(args["moisture-map"])) {
+      await apiJson(baseUrl, session, "/api/web_app_config/", {
+        method: "PUT",
+        body: JSON.stringify({
+          show_sensor_readings: true,
+          show_moisture_interpolation_map: true,
+        }),
+      });
+    }
     const measuredRuns = [];
     for (let i = 0; i < warmups + runs; i++) {
       const run = await collectRun(browser, baseUrl, session, i, {
         viewport,
         sampleMs,
+        moistureMap: ["1", "true"].includes(args["moisture-map"]),
       });
       console.log(`${i < warmups ? "warmup" : "run"} ${i + 1}`, run);
       if (i >= warmups) { measuredRuns.push(run); }
