@@ -13,9 +13,7 @@ import {
 import {
   filterMoistureReadings, getMoistureColor,
 } from "../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
-import {
-  Color, InstancedBufferAttribute, InstancedMesh, Matrix4,
-} from "three";
+import { Color, Matrix4 } from "three";
 import { perfMeasure } from "../../performance/perf";
 
 export interface MoistureSurfaceProps {
@@ -28,6 +26,12 @@ export interface MoistureSurfaceProps {
   readingZOverride?: number;
   showMoistureReadings: boolean;
   showMoistureMap: boolean;
+}
+
+interface MoistureInstanceBuffers {
+  matrices: Float32Array;
+  colors: Float32Array;
+  opacities: Float32Array;
 }
 
 export const MoistureSurface = (props: MoistureSurfaceProps) => {
@@ -70,30 +74,22 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
     props.sensors,
     props.showMoistureMap,
   ]);
-  // eslint-disable-next-line no-null/no-null
-  const ref = React.useRef<InstancedMesh>(null);
-  const tempMatrix = React.useMemo(() => new Matrix4(), []);
-  const tempColor = React.useMemo(() => new Color(), []);
-  React.useLayoutEffect(() => {
+  const buffers = React.useMemo<MoistureInstanceBuffers>(() =>
     perfMeasure("moistureInstanceNodesMs", () => {
-      const mesh = ref.current;
-      if (!mesh) { return; }
+      const matrices = new Float32Array(data.length * 16);
+      const colors = new Float32Array(data.length * 3);
       const opacities = new Float32Array(data.length);
+      const matrix = new Matrix4();
+      const instanceColor = new Color();
       data.map((d, i) => {
         const color = getMoistureColor(d.z);
-        tempMatrix.identity().setPosition(d.x, d.y, d.z / 2);
-        mesh.setMatrixAt(i, tempMatrix);
-        mesh.setColorAt(i, tempColor.set(color.rgb));
+        matrix.identity().setPosition(d.x, d.y, d.z / 2);
+        matrix.toArray(matrices, i * 16);
+        instanceColor.set(color.rgb).toArray(colors, i * 3);
         opacities[i] = color.a;
       });
-      mesh.instanceMatrix.needsUpdate = true;
-      if (mesh.instanceColor) {
-        mesh.instanceColor.needsUpdate = true;
-      }
-      mesh.geometry?.setAttribute("instanceOpacity",
-        new InstancedBufferAttribute(opacities, 1));
-    });
-  }, [data, tempColor, tempMatrix]);
+      return { matrices, colors, opacities };
+    }), [data]);
   return <Group position={props.position} name={"moisture-layer"}>
     {props.showMoistureReadings &&
       <MoistureReadings
@@ -104,11 +100,20 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
         readings={props.sensorReadings} />}
     {props.showMoistureMap &&
       <InstancedMeshComponent
-        ref={ref}
         args={[undefined, undefined, data.length]}
         count={data.length}>
+        <instancedBufferAttribute
+          attach={"instanceMatrix"}
+          args={[buffers.matrices, 16]} />
+        <instancedBufferAttribute
+          attach={"instanceColor"}
+          args={[buffers.colors, 3]} />
         <BoxGeometry
-          args={[options.stepSize, options.stepSize, options.stepSize]} />
+          args={[options.stepSize, options.stepSize, options.stepSize]}>
+          <instancedBufferAttribute
+            attach={"attributes-instanceOpacity"}
+            args={[buffers.opacities, 1]} />
+        </BoxGeometry>
         <MeshBasicMaterial transparent={true} opacity={0.75}
           onBeforeCompile={shader => {
             shader.vertexShader = `

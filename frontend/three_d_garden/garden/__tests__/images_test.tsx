@@ -8,7 +8,7 @@ import {
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
-  fakeImage, fakeSensorReading, fakeWebAppConfig,
+  fakeImage, fakeSensor, fakeSensorReading, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import * as mustBeOnline from "../../../devices/must_be_online";
@@ -171,6 +171,15 @@ describe("<ImageTexture />", () => {
     p.sensorReadings = [reading];
     const key = getImageTextureKey(p);
     reading.body.value = 800;
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key when moisture sensor metadata changes", () => {
+    const p = fakeProps();
+    const sensor = fakeSensor();
+    p.sensors = [sensor];
+    const key = getImageTextureKey(p);
+    sensor.body.pin = sensor.body.pin + 1;
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 });
