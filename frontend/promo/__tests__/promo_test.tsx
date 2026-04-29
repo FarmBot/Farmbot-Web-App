@@ -33,7 +33,7 @@ describe("<Promo />", () => {
   });
 
   afterEach(() => {
-    history.replaceState(undefined, "", `/${originalSearch}`);
+    window.location.search = originalSearch;
     jest.useRealTimers();
     console.error = originalConsoleError;
     canvasSpy.mockRestore();

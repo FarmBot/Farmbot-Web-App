@@ -110,14 +110,14 @@ describe("setUrlParam()", () => {
   });
 
   it("sets URL param", () => {
-    history.replaceState(undefined, "", "/app/designer");
+    window.location.search = "";
     setUrlParam("focus", "What you can grow");
     const url = getPushedUrl();
     expect(url.searchParams.get("focus")).toEqual("What you can grow");
   });
 
   it("removes URL param", () => {
-    history.replaceState(undefined, "", "/app/designer?focus=What+you+can+grow");
+    window.location.search = "?focus=What+you+can+grow";
     setUrlParam("focus", "");
     const url = getPushedUrl();
     expect(url.searchParams.get("focus")).toBeNull();

@@ -78,7 +78,7 @@ const findNodeByType = (
 
 describe("<Tools />", () => {
   afterEach(() => {
-    history.replaceState(undefined, "", Path.mock(originalPathname));
+    location.pathname = originalPathname;
     jest.useRealTimers();
   });
 
@@ -358,7 +358,7 @@ describe("<ToolSlotInventoryItem />", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    history.replaceState(undefined, "", Path.mock(originalPathname));
+    location.pathname = originalPathname;
     jest.useRealTimers();
     jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     jest.spyOn(crud, "save").mockImplementation(jest.fn());
