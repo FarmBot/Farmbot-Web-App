@@ -73,16 +73,22 @@ const materialState = (material: Material): MaterialState => ({
   depthWrite: material.depthWrite,
 });
 
+const cloneMaterial = (material: Material) => {
+  const clone = material.clone();
+  clone.onBeforeCompile = material.onBeforeCompile;
+  return clone;
+};
+
 const cloneSlot = (slot: MaterialSlot): {
   clones: MaterialSlot;
   states: MaterialState[];
 } | undefined => {
   if (Array.isArray(slot)) {
-    const clones = slot.map(material => material.clone());
+    const clones = slot.map(cloneMaterial);
     return { clones, states: clones.map(materialState) };
   }
   if (!isMaterial(slot)) { return undefined; }
-  const clone = slot.clone();
+  const clone = cloneMaterial(slot);
   return { clones: clone, states: [materialState(clone)] };
 };
 
