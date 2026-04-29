@@ -1,8 +1,3 @@
-jest.mock("../../three_d_garden/zoom_beacons_constants", () => ({
-  ...jest.requireActual("../../three_d_garden/zoom_beacons_constants"),
-  getFocusFromUrlParams: jest.fn(),
-}));
-
 import React from "react";
 import {
   act, render, screen, fireEvent, waitFor,
@@ -10,14 +5,10 @@ import {
 import { getPromoPlantCapacities, getSeasonTimings, Promo } from "../promo";
 import * as reactThreeFiber from "@react-three/fiber";
 import * as gardenModelModule from "../../three_d_garden/garden_model";
-import {
-  getFocusFromUrlParams,
-} from "../../three_d_garden/zoom_beacons_constants";
+import * as zoomBeaconConstants from
+  "../../three_d_garden/zoom_beacons_constants";
 import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
-
-const getFocusFromUrlParamsMock =
-  getFocusFromUrlParams as jest.Mock;
 
 describe("<Promo />", () => {
   const originalSearch = window.location.search;
@@ -25,6 +16,7 @@ describe("<Promo />", () => {
   let canvasSpy: jest.SpyInstance;
   let gardenModelSpy: jest.SpyInstance;
   let pushStateSpy: jest.SpyInstance;
+  let focusFromUrlParamsSpy: jest.SpyInstance;
 
   beforeEach(() => {
     canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
@@ -35,7 +27,9 @@ describe("<Promo />", () => {
         <div>{config.promoSpread ? "spread" : "garden-model"}</div>);
     pushStateSpy = jest.spyOn(history, "pushState")
       .mockImplementation(jest.fn());
-    getFocusFromUrlParamsMock.mockReturnValue("");
+    focusFromUrlParamsSpy = jest
+      .spyOn(zoomBeaconConstants, "getFocusFromUrlParams")
+      .mockReturnValue("");
   });
 
   afterEach(() => {
@@ -45,7 +39,7 @@ describe("<Promo />", () => {
     canvasSpy.mockRestore();
     gardenModelSpy.mockRestore();
     pushStateSpy.mockRestore();
-    getFocusFromUrlParamsMock.mockReset();
+    focusFromUrlParamsSpy.mockRestore();
   });
 
   it("renders", () => {
@@ -104,7 +98,7 @@ describe("<Promo />", () => {
   });
 
   it("clears active focus on Escape", async () => {
-    getFocusFromUrlParamsMock.mockReturnValue("What you can grow");
+    focusFromUrlParamsSpy.mockReturnValue("What you can grow");
     const addEventListenerSpy = jest.spyOn(window, "addEventListener");
     const { unmount } = render(<Promo />);
     try {
