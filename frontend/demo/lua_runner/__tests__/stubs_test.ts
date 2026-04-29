@@ -11,9 +11,11 @@ let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
 
 import {
   getDefaultAxisOrder,
+  getDeviceStatus,
   getGardenSize,
   getSafeZ,
 } from "../stubs";
+import { store } from "../../../redux/store";
 import * as getters from "../../../resources/getters";
 
 let getFirmwareConfigSpy: jest.SpyInstance;
@@ -91,5 +93,22 @@ describe("getDefaultAxisOrder()", () => {
     expect(getDefaultAxisOrder()).toEqual([
       { kind: "axis_order", args: { grouping: "xyz", route: "high" } },
     ]);
+  });
+});
+
+describe("getDeviceStatus()", () => {
+  it("gets device status", () => {
+    const originalGetState = store.getState;
+    const hardware = {
+      informational_settings: { locked: true },
+      jobs: { "Test job": { percent: 50, status: "Working" } },
+    };
+    (store as unknown as { getState: Function }).getState = () => ({
+      bot: { hardware },
+    });
+
+    expect(getDeviceStatus()).toEqual(hardware);
+
+    (store as unknown as { getState: Function }).getState = originalGetState;
   });
 });

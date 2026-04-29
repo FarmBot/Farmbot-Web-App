@@ -93,3 +93,8 @@ export const getJob = (jobName: string): JobProgress | undefined => {
         ? value
         : undefined)[0];
 };
+
+export const getDeviceStatus = () => {
+  const status = store.getState().bot.hardware;
+  return status;
+};

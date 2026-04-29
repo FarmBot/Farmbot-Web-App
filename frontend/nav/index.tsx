@@ -191,6 +191,16 @@ const mapConnectionStatusStateToProps =
   };
 
 const ConnectionStatus = (props: ConnectionStatusProps) => {
+  React.useEffect(() => {
+    if (forceOnline()) {
+      props.dispatch({
+        type: Actions.DEMO_SET_STATE,
+        payload: undefined,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const data = connectivityData({
     bot: props.bot,
     device: props.device,

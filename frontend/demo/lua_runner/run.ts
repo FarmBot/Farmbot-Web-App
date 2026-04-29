@@ -23,6 +23,7 @@ import {
 import {
   getFirmwareSettings, getGardenSize, getSafeZ, getSoilHeight,
   getGroupPoints, getJob,
+  getDeviceStatus,
 } from "./stubs";
 import { error } from "../../toast/toast";
 import { collectDemoSequenceActions } from "./index";
@@ -565,6 +566,13 @@ export const runLua =
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("garden_size"));
+
+    lua.lua_pushjsfunction(L, () => {
+      const status = getDeviceStatus();
+      jsToLua(L, status);
+      return 1;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("read_status"));
 
     lauxlib.luaL_loadstring(L, to_luastring(LUA_HELPERS));
     lua.lua_pushvalue(L, -2);

@@ -229,6 +229,26 @@ describe("botReducer", () => {
     expect(r.hardware.location_data.position).toEqual({ x: 1, y: 2, z: 3 });
   });
 
+  it("sets demo state", () => {
+    const state = initialState();
+    const action = { type: Actions.DEMO_SET_STATE, payload: undefined };
+    const r = botReducer(state, action);
+    expect(r.hardware.informational_settings).toEqual(expect.objectContaining({
+      uptime: 12345,
+      sync_status: "synced",
+      wifi_level_percent: 98,
+      wifi_level: -48,
+      video_devices: "1,0",
+      throttled: "0x0",
+      soc_temp: 50,
+      scheduler_usage: 1,
+      memory_usage: 50,
+      disk_usage: 20,
+      cpu_usage: 1,
+      firmware_version: "6.6.26.K",
+    }));
+  });
+
   it("set job progress", () => {
     const state = initialState();
     const action = {
