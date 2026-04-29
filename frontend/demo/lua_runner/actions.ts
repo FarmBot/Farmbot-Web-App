@@ -1,11 +1,10 @@
 import {
   ALLOWED_CHANNEL_NAMES,
-  ALLOWED_MESSAGE_TYPES,
   MoveBodyItem,
   ParameterApplication,
   PercentageProgress,
 } from "farmbot";
-import { info } from "../../toast/toast";
+import { error, info } from "../../toast/toast";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { TOAST_OPTIONS } from "../../toast/constants";
@@ -20,6 +19,7 @@ import { Point } from "farmbot/dist/resources/api_resources";
 import { calculateMove } from "./calculate_move";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
+import { isMessageType } from "../../sequences/interfaces";
 
 const almostEqual = (a: XyzNumber, b: XyzNumber) => {
   const epsilon = 0.01;
@@ -306,6 +306,11 @@ export const runActions = (
           return undefined;
         case "send_message":
           const type = "" + action.args[0];
+          if (!isMessageType(type)) {
+            return () => {
+              error(`Invalid message type: ${type}`);
+            };
+          }
           const msg = "" + action.args[1];
           const channelsStr = "" + action.args[2];
           const channels = channelsStr.split(",") as ALLOWED_CHANNEL_NAMES[];
@@ -317,7 +322,7 @@ export const runActions = (
             }
             const initAction = crud.init("Log", {
               message: msg,
-              type: type as ALLOWED_MESSAGE_TYPES,
+              type: type,
               ...logPosition,
               channels,
               verbosity,
