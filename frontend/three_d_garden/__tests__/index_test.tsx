@@ -15,6 +15,7 @@ import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 beforeEach(() => {
+  console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
   jest.spyOn(configStorageActions, "getWebAppConfigValue")

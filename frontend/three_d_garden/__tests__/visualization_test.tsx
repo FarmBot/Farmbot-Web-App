@@ -19,6 +19,7 @@ let originalGetState: typeof store.getState;
 
 describe("<Visualization />", () => {
   beforeEach(() => {
+    console.log = jest.fn();
     originalGetState = store.getState;
     (store as unknown as { getState: () => { resources: typeof mockResources } })
       .getState = () => ({ resources: mockResources });

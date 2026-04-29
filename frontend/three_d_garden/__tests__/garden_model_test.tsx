@@ -35,6 +35,7 @@ const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
+    console.log = jest.fn();
     mockIsDesktop = false;
     mockIsMobile = false;
     useStateSpy = jest.spyOn(React, "useState")
