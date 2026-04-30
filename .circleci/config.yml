@@ -4,7 +4,7 @@ executors:
   build-executor:
     machine:
       image: ubuntu-2404:current
-    resource_class: xlarge
+    resource_class: gpu.nvidia.small
     working_directory: /home/circleci/project
 
 commands:
