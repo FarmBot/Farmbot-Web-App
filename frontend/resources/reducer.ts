@@ -36,13 +36,13 @@ import { FolderUnion } from "../folders/interfaces";
 export const emptyState = (): RestResources => {
   return {
     consumers: {
-      sequences: sequenceState,
-      regimens: regimenState,
-      farm_designer: designerState,
-      photos: photosState,
-      farmware: farmwareState,
-      help: helpState,
-      alerts: alertState
+      sequences: defensiveClone(sequenceState),
+      regimens: defensiveClone(regimenState),
+      farm_designer: defensiveClone(designerState),
+      photos: defensiveClone(photosState),
+      farmware: defensiveClone(farmwareState),
+      help: defensiveClone(helpState),
+      alerts: defensiveClone(alertState)
     },
     loaded: [],
     index: {

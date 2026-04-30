@@ -1,8 +1,12 @@
 import React from "react";
-import { act, render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act, render, screen, fireEvent, waitFor,
+} from "@testing-library/react";
 import { getPromoPlantCapacities, getSeasonTimings, Promo } from "../promo";
 import * as reactThreeFiber from "@react-three/fiber";
 import * as gardenModelModule from "../../three_d_garden/garden_model";
+import * as zoomBeaconConstants from
+  "../../three_d_garden/zoom_beacons_constants";
 import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
 
@@ -12,6 +16,7 @@ describe("<Promo />", () => {
   let canvasSpy: jest.SpyInstance;
   let gardenModelSpy: jest.SpyInstance;
   let pushStateSpy: jest.SpyInstance;
+  let focusFromUrlParamsSpy: jest.SpyInstance;
 
   beforeEach(() => {
     canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
@@ -22,15 +27,19 @@ describe("<Promo />", () => {
         <div>{config.promoSpread ? "spread" : "garden-model"}</div>);
     pushStateSpy = jest.spyOn(history, "pushState")
       .mockImplementation(jest.fn());
+    focusFromUrlParamsSpy = jest
+      .spyOn(zoomBeaconConstants, "getFocusFromUrlParams")
+      .mockReturnValue("");
   });
 
   afterEach(() => {
-    history.replaceState(undefined, "", `/${originalSearch}`);
+    window.location.search = originalSearch;
     jest.useRealTimers();
     console.error = originalConsoleError;
     canvasSpy.mockRestore();
     gardenModelSpy.mockRestore();
     pushStateSpy.mockRestore();
+    focusFromUrlParamsSpy.mockRestore();
   });
 
   it("renders", () => {
@@ -89,13 +98,22 @@ describe("<Promo />", () => {
   });
 
   it("clears active focus on Escape", async () => {
-    window.location.search = "?focus=What%20you%20can%20grow";
+    focusFromUrlParamsSpy.mockReturnValue("What you can grow");
+    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
     const { unmount } = render(<Promo />);
-    fireEvent.keyDown(window, { key: "Escape" });
-    await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
-    const nextUrl = pushStateSpy.mock.calls[0][2] as string;
-    expect(nextUrl).not.toContain("focus=");
-    unmount();
+    try {
+      await waitFor(() => expect(addEventListenerSpy)
+        .toHaveBeenCalledWith("keydown", expect.any(Function)));
+      const onKeyDown = addEventListenerSpy.mock.calls
+        .find(([eventName]) => eventName == "keydown")?.[1] as EventListener;
+      act(() => onKeyDown(new KeyboardEvent("keydown", { key: "Escape" })));
+      expect(pushStateSpy).toHaveBeenCalled();
+      const nextUrl = pushStateSpy.mock.calls[0][2] as string;
+      expect(nextUrl).not.toContain("focus=");
+    } finally {
+      unmount();
+      addEventListenerSpy.mockRestore();
+    }
   });
 });
 

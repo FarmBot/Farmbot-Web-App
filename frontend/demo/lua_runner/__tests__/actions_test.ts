@@ -10,7 +10,7 @@ let mockResources = buildResourceIndex([]);
 let mockLocked = false;
 
 import { TOAST_OPTIONS } from "../../../toast/constants";
-import { info } from "../../../toast/toast";
+import { error, info } from "../../../toast/toast";
 import { store } from "../../../redux/store";
 import { eStop, expandActions, runActions, setCurrent } from "../actions";
 import * as lodash from "lodash";
@@ -53,6 +53,18 @@ describe("runActions()", () => {
     );
     jest.runAllTimers();
     expect(info).toHaveBeenCalledWith("Hello, world!", TOAST_OPTIONS().info);
+  });
+
+  it("shows an error for invalid message types", () => {
+    jest.useFakeTimers();
+    runActions(
+      [
+        { type: "send_message", args: ["nope", "Hello, world!", "toast", "{}"] },
+      ],
+    );
+    jest.runAllTimers();
+    expect(error).toHaveBeenCalledWith("Invalid message type: nope");
+    expect(info).not.toHaveBeenCalled();
   });
 
   it("runs actions: missing", () => {

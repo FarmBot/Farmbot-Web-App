@@ -219,10 +219,10 @@ export const Promo = () => {
           loadComplete={threeDLoaded}
           startTimeRef={startTimeRef} />
         {!config.config &&
-        <img className={"gear"} src={ASSETS.other.gear} title={"config"}
-          onClick={() => setConfig({ ...config, config: true })} />}
+          <img className={"gear"} src={ASSETS.other.gear} title={"config"}
+            onClick={() => setConfig({ ...config, config: true })} />}
         {config.config &&
-        <PrivateOverlay {...common} startTimeRef={startTimeRef} />}
+          <PrivateOverlay {...common} startTimeRef={startTimeRef} />}
         <span className={"tool-tip"} hidden={!toolTip.text}>
           {toolTip.text}
         </span>

@@ -155,6 +155,21 @@ export const botReducer = generateReducer<BotState>(initialState())
     });
     return s;
   })
+  .add<never>(Actions.DEMO_SET_STATE, (s) => {
+    s.hardware.informational_settings.uptime = 12345;
+    s.hardware.informational_settings.sync_status = "synced";
+    s.hardware.informational_settings.wifi_level_percent = 98;
+    s.hardware.informational_settings.wifi_level = -48;
+    s.hardware.informational_settings.video_devices = "1,0";
+    s.hardware.informational_settings.throttled = "0x0";
+    s.hardware.informational_settings.soc_temp = 50;
+    s.hardware.informational_settings.scheduler_usage = 1;
+    s.hardware.informational_settings.memory_usage = 50;
+    s.hardware.informational_settings.disk_usage = 20;
+    s.hardware.informational_settings.cpu_usage = 1;
+    s.hardware.informational_settings.firmware_version = "6.6.26.K";
+    return s;
+  })
   .add<[string, PercentageProgress]>(Actions.DEMO_SET_JOB_PROGRESS,
     (s, { payload }) => {
       s.hardware.jobs[payload[0]] = payload[1];

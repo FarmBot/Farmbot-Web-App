@@ -12,7 +12,7 @@ import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_
 import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
-import { resourceReducer } from "../reducer";
+import { emptyState, resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
 import {
@@ -35,6 +35,17 @@ describe("resource reducer", () => {
       payload: undefined,
     });
     expect(result).toBe(state);
+  });
+
+  it("returns fresh consumer state", () => {
+    const firstState = emptyState();
+    const secondState = emptyState();
+
+    firstState.consumers.sequences.stepIndex = 1;
+
+    expect(secondState.consumers.sequences.stepIndex).toBeUndefined();
+    expect(secondState.consumers.sequences).not.toBe(
+      firstState.consumers.sequences);
   });
 
   it("updates parent state only when child reducers change", () => {

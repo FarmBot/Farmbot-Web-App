@@ -3,6 +3,7 @@ const mockState = fakeState();
 
 import React from "react";
 import { render } from "@testing-library/react";
+import { HotkeysProvider } from "@blueprintjs/core";
 import {
   HotKey, HotKeys, HotKeysProps, hotkeysWithActions, HotkeysWithActionsProps,
   toggleHotkeyHelpOverlay,
@@ -128,16 +129,18 @@ describe("<HotKeys />", () => {
     dispatch: jest.fn(),
     designer: fakeDesignerState(),
   });
+  const renderHotKeys = (props: HotKeysProps) =>
+    render(<HotkeysProvider><HotKeys {...props} /></HotkeysProvider>);
 
   it("renders", () => {
     location.pathname = Path.mock(Path.designer("nope"));
-    const { container } = render(<HotKeys {...fakeProps()} />);
+    const { container } = renderHotKeys(fakeProps());
     expect(container.querySelectorAll("div").length).toEqual(1);
   });
 
   it("renders default", () => {
     location.pathname = Path.mock(Path.designer());
-    const { container } = render(<HotKeys {...fakeProps()} />);
+    const { container } = renderHotKeys(fakeProps());
     expect(container.querySelectorAll("div").length).toEqual(1);
   });
 });
