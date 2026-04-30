@@ -3,7 +3,7 @@ version: 2.1
 executors:
   build-executor:
     machine:
-      image: linux-cuda-13:default
+      image: linux-cuda-12:default
     resource_class: gpu.nvidia.small
     working_directory: /home/circleci/project
 
