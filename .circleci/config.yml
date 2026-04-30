@@ -4,7 +4,7 @@ executors:
   build-executor:
     machine:
       image: linux-cuda-12:default
-    resource_class: gpu.nvidia.small
+    resource_class: gpu.nvidia.medium
     working_directory: /home/circleci/project
 
 commands:
