@@ -12,10 +12,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and install deps
+      - name: Set up environment file
+        run: mv .circleci/circle_envs .env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker_configs/api.Dockerfile
+          load: true
+          tags: farmbot_web:latest
+          cache-from: type=gha,scope=farmbot-web
+          cache-to: type=gha,mode=max,scope=farmbot-web
+
+      - name: Cache bundle
+        uses: actions/cache@v4
+        with:
+          path: docker_volumes/bundle_cache
+          key: bundle-${{ runner.os }}-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            bundle-${{ runner.os }}-
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Install deps
         run: |
-          mv .circleci/circle_envs .env
-          sudo docker compose build web
           sudo docker compose run --rm web bash -lc '
             gem install bundler &&
             bundle install &&
