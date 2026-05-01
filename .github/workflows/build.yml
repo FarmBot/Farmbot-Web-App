@@ -89,7 +89,7 @@ jobs:
             sudo docker compose ps
 
       - name: Install playwright
-        run: sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=0 web bunx playwright install chromium --with-deps
+        run: sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright-browsers web bunx playwright install chromium --with-deps
 
       - name: Wait for load
         run: |
@@ -113,7 +113,7 @@ jobs:
                 continue
               fi
 
-              if ! fps_output=$(sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png" "tmp/fps_plot.png"); then
+              if ! fps_output=$(sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright-browsers web bun scripts/fps.js "${url}" "tmp/promo.png" "tmp/fps_plot.png"); then
                 echo "${fps_output}"
                 continue
               fi
