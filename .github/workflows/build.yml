@@ -74,7 +74,14 @@ jobs:
         run: sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
 
       - name: Run JS tests
-        run: sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+        run: |
+          set +e
+          sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml > test-results/js-test-output.log 2>&1
+          status=$?
+          head -n 200 test-results/js-test-output.log
+          tail -n 200 test-results/js-test-output.log
+          exit $status
+
 
       - name: Start services
         run: |
