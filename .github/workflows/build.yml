@@ -96,3 +96,12 @@ jobs:
         run: |
           echo $FPS_VALUE
           echo $SCENE_METRICS
+
+      - name: Upload image artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: images
+          path: |
+            tmp/promo.png
+            tmp/fps_plot.png
+          if-no-files-found: warn
