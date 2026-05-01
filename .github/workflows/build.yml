@@ -82,7 +82,6 @@ jobs:
           tail -n 5 test-results/js-test-output.log
           exit $status
 
-
       - name: Start services
         run: |
             sudo docker compose up -d
@@ -141,4 +140,14 @@ jobs:
           path: |
             tmp/promo.png
             tmp/fps_plot.png
+          if-no-files-found: warn
+
+      - name: Upload JS test artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: js-test-output
+          path: |
+            test-results/js-test-output.log
+            test-results/junit.xml
           if-no-files-found: warn
