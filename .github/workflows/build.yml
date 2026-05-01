@@ -46,3 +46,53 @@ jobs:
       - name: Run JS tests
         run: sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
 
+      - name: Start services
+        run: |
+            sudo docker compose up -d
+            sudo docker compose ps
+
+      - name: Install playwright
+        run: sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=0 web bunx playwright install chromium --with-deps
+
+      - name: Wait for load
+        run: |
+          for i in $(seq 1 90); do
+              if curl -fsS "http://127.0.0.1:3000/promo" >/dev/null; then
+                echo "web is up"
+                exit 0
+              fi
+              sleep 2
+            done
+          echo "web did not become ready"
+          exit 1
+
+      - name: Run playwright
+        run: |
+          attempts=2
+            for _ in $(seq 1 "$attempts"); do
+              url="http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
+              echo "Attempting FPS check via ${url}"
+              if ! sudo docker compose exec -T web curl -I "${url}" >/dev/null; then
+                continue
+              fi
+
+              if ! fps_output=$(sudo docker compose exec -T -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png" "tmp/fps_plot.png"); then
+                echo "${fps_output}"
+                continue
+              fi
+              echo "${fps_output}"
+
+              fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+              scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
+              echo "FPS_VALUE=${fps_value}" >> "$GITHUB_ENV"
+              echo "SCENE_METRICS=${scene_metrics}" >> "$GITHUB_ENV"
+
+              exit 0
+            done
+          echo "FPS check failed"
+          exit 1
+
+      - name: View values
+        run: |
+          echo $FPS_VALUE
+          echo $SCENE_METRICS
