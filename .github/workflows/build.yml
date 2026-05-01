@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and install deps
+        run: |
+          mv .circleci/circle_envs .env
+          sudo docker compose build web
+          sudo docker compose run --rm web bash -lc '
+            gem install bundler &&
+            bundle install &&
+            bun install
+          '
+
+      - name: Run setup tasks
+        run: |
+          sudo docker compose run --rm web bash -lc '
+            bundle exec rails db:create &&
+            bundle exec rails db:migrate &&
+            bundle exec rake keys:generate
+          '
+          mkdir -p test-results
+
+      - name: Run Ruby linters
+        run: sudo docker compose run --rm web bun run ruby-check
+
+      - name: Run Ruby tests
+        run: sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
+
+      - name: Run JS linters
+        run: sudo docker compose run --rm web bun run linters
+
+      - name: Check bun build
+        run: sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+
+      - name: Run JS tests
+        run: sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+
