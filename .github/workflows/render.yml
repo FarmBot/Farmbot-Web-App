@@ -1,0 +1,222 @@
+name: render
+
+on:
+  workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: false
+
+env:
+  NOTIFY: ${{ github.ref_name == 'staging' }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  PROMO_IMAGE: promo
+  FPS_SAMPLES_NAME: fps_samples
+  SCENE_METRICS_NAME: scene_metrics
+  FE_COVERAGE_NAME: fe_coverage
+  CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
+  FPS_METRICS_CACHE_KEY: fps-metrics-${{ github.ref_name }}
+  FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
+
+jobs:
+  render:
+    runs-on: gpu
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up CI
+        uses: ./.github/actions/setup-ci
+
+      - name: Start services
+        run: |
+          sudo docker compose up -d
+          sudo docker compose ps
+
+      - name: Install playwright
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          export PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright-browsers
+          echo "BUN_INSTALL=$BUN_INSTALL" >> "$GITHUB_ENV"
+          echo "$BUN_INSTALL/bin" >> "$GITHUB_PATH"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
+          bunx playwright install chromium --with-deps
+
+      - name: Set up GPU
+        run: |
+          sudo modprobe nvidia || true
+          sudo modprobe nvidia_uvm || true
+          ls -la /dev/nvidia* || true
+          nvidia-smi
+
+      - name: Wait for load
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fsS "http://127.0.0.1:3000/promo" >/dev/null; then
+              echo "web is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "web did not become ready"
+          exit 1
+
+      - name: Run playwright
+        run: |
+          attempts=2
+          for _ in $(seq 1 "$attempts"); do
+            url="http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
+            echo "Attempting FPS check via ${url}"
+            if ! sudo docker compose exec -T web curl -I "${url}" >/dev/null; then
+              continue
+            fi
+
+            if ! fps_output=$(bun scripts/fps.js "${url}" "/tmp/$PROMO_IMAGE.png" "/tmp/$FPS_SAMPLES_NAME.csv"); then
+              echo "${fps_output}"
+              continue
+            fi
+            echo "${fps_output}"
+
+            fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+            scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
+            echo "FPS_VALUE=${fps_value}" >> "$GITHUB_ENV"
+            echo "SCENE_METRICS=${scene_metrics}" >> "$GITHUB_ENV"
+
+            exit 0
+          done
+          echo "FPS check failed"
+          exit 1
+
+      - name: Restore FPS metrics
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            fps_value.txt
+            /tmp/${{ env.SCENE_METRICS_NAME }}.csv
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FPS_METRICS_CACHE_KEY }}-
+
+      - name: Track FPS value
+        run: |
+          if [ -f fps_value.txt ]; then
+            PREV=$(cat fps_value.txt)
+          else
+            PREV=60
+          fi
+          echo "Previous value: $PREV fps"
+          percent_change=$(CURRENT_VALUE="$FPS_VALUE" PREVIOUS_VALUE="$PREV" scripts/ci/percent-change)
+          echo "$FPS_VALUE fps ($percent_change% change)"
+          echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
+          echo "$FPS_VALUE" > fps_value.txt
+          scene_metrics_csv="/tmp/$SCENE_METRICS_NAME.csv"
+          if [ ! -f "$scene_metrics_csv" ]; then
+            printf '%s\n' "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes" > "$scene_metrics_csv"
+          fi
+          printf '%s\n' "$SCENE_METRICS" >> "$scene_metrics_csv"
+          cat "$scene_metrics_csv"
+
+      - name: Restore frontend coverage value
+        if: always()
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Plot metric CSVs
+        run: |
+          for metric in "$FPS_SAMPLES_NAME" "$SCENE_METRICS_NAME"; do
+            bun scripts/metric_plot.js "/tmp/$metric.csv"
+          done
+          if [ -f "$FE_COVERAGE_NAME.csv" ]; then
+            bun scripts/metric_plot.js "$FE_COVERAGE_NAME.csv"
+          fi
+
+      - name: Save FPS metrics
+        if: ${{ hashFiles('fps_value.txt') != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            fps_value.txt
+            /tmp/${{ env.SCENE_METRICS_NAME }}.csv
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+
+      - name: View values
+        run: |
+          echo $FPS_VALUE
+          echo $SCENE_METRICS
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "${FPS_VALUE} fps (${PERCENT_CHANGE}% change)"
+
+      - name: Upload image artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: images
+          path: |
+            /tmp/${{ env.PROMO_IMAGE }}.png
+            /tmp/${{ env.FPS_SAMPLES_NAME }}.png
+            /tmp/${{ env.SCENE_METRICS_NAME }}.png
+            /tmp/${{ env.FE_COVERAGE_NAME }}.png
+          if-no-files-found: warn
+
+      - name: Upload csv artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: scene-metrics-csv
+          path: |
+            /tmp/${{ env.FPS_SAMPLES_NAME }}.csv
+            /tmp/${{ env.SCENE_METRICS_NAME }}.csv
+          if-no-files-found: warn
+
+      - name: On failure
+        if: failure()
+        run: |
+          sudo docker compose ps || true
+          sudo docker compose logs --no-color --tail=500 || true
+
+      - name: Publish image links
+        if: success() && env.NOTIFY == 'true'
+        env:
+          ARTIFACT_BRANCH: ci-artifacts
+        run: |
+          worktree=$(mktemp -d)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin "$ARTIFACT_BRANCH" >/dev/null; then
+            git fetch origin "$ARTIFACT_BRANCH"
+            git worktree add "$worktree" "origin/$ARTIFACT_BRANCH"
+          else
+            git worktree add --detach "$worktree"
+            git -C "$worktree" switch --orphan "$ARTIFACT_BRANCH"
+          fi
+
+          mkdir -p "$worktree/build/latest" "$worktree/build/${GITHUB_RUN_ID}"
+          for image in "$PROMO_IMAGE" "$FPS_SAMPLES_NAME"; do
+            cp "/tmp/$image.png" "$worktree/build/latest/$image.png"
+            cp "/tmp/$image.png" "$worktree/build/${GITHUB_RUN_ID}/$image.png"
+          done
+          git -C "$worktree" add build
+          git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true
+          git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"
+
+          raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${ARTIFACT_BRANCH}/build/${GITHUB_RUN_ID}"
+          echo "SCREENSHOT_URL=${raw_base}/${PROMO_IMAGE}.png" >> "$GITHUB_ENV"
+          echo "FPS_PLOT_URL=${raw_base}/${FPS_SAMPLES_NAME}.png" >> "$GITHUB_ENV"
+
+      - name: Send notification
+        if: success() && env.NOTIFY == 'true'
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          for MESSAGE in \
+            "<${SCREENSHOT_URL:-$RUN_URL}|screenshot>" \
+            "<${FPS_PLOT_URL:-$RUN_URL}|fps>" \
+          do
+            scripts/ci/send-notification "$MESSAGE"
+          done

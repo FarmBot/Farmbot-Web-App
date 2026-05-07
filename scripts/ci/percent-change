@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+import os
+
+current = float(os.environ.get("CURRENT_VALUE", "0") or 0)
+previous = float(os.environ.get("PREVIOUS_VALUE", "0") or 0)
+
+print("n/a" if previous == 0 else f"{((current - previous) / previous) * 100:.2f}")

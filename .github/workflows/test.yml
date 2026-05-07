@@ -1,0 +1,203 @@
+name: test
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+      SLACK_WEBHOOK_URL:
+        required: false
+
+env:
+  NOTIFY: ${{ github.ref_name == 'staging' }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  FE_COVERAGE_NAME: fe_coverage
+  CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
+  FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 100
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run started"
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|logs>"
+
+      - name: Create compare link
+        if: env.NOTIFY == 'true'
+        run: |
+          DEPLOYS_URL_API="https://api.github.com/repos/Farmbot/Farmbot-Web-App/deployments"
+          COMPARE_URL_WEB="https://github.com/Farmbot/Farmbot-Web-App/compare/"
+          data=$(curl -fsS "$DEPLOYS_URL_API") || data="[]"
+          last_sha=$(DEPLOYS_DATA="$data" python3 - <<'PY'
+          import json
+          import os
+
+          data = json.loads(os.environ.get("DEPLOYS_DATA") or "[]")
+          deploy_index = 0
+          sha = (data[deploy_index] or {}).get("sha") if data else ""
+          print(sha or "")
+          PY
+          )
+          compare_url="$COMPARE_URL_WEB$last_sha...${GITHUB_SHA}"
+          echo "$compare_url"
+          echo "COMPARE_URL=$compare_url" >> "$GITHUB_ENV"
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "<${COMPARE_URL}|diff>"
+
+      - name: Set up CI
+        uses: ./.github/actions/setup-ci
+        with:
+          save-docker-cache: "true"
+
+      - name: Run Ruby linters
+        run: sudo docker compose run --rm web bun run ruby-check
+
+      - name: Run Ruby tests
+        run: sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
+
+      - name: Check app coverage status
+        if: always()
+        run: sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ "$NOTIFY" = "true" ]
+
+      - name: Upload app coverage to Codecov
+        if: ${{ hashFiles('coverage_api/coverage.xml') != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage_api/coverage.xml
+          fail_ci_if_error: false
+
+      - name: Run JS linters
+        run: sudo docker compose run --rm web bun run linters
+
+      - name: Check bun build
+        run: |
+          sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+          printf -- '-%.0s' {1..50}; printf '\n'
+          if grep -Ei '^(warn|error):' assets_precompile.log; then
+            exit 1
+          fi
+
+      - name: Run JS tests
+        run: |
+          set +e
+          sudo docker compose run -T --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+          status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "COVERAGE_AVAILABLE=true" >> "$GITHUB_ENV"
+          fi
+          exit $status
+
+      - name: Check frontend coverage status
+        if: always()
+        env:
+          GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
+        run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$NOTIFY" = "true" ]
+
+      - name: Check frontend file coverage status
+        if: always()
+        run: |
+          changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
+          sudo docker compose run --rm -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
+
+      - name: Report frontend coverage to Coveralls
+        if: env.COVERAGE_AVAILABLE == 'true'
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ github.token }}
+          file: coverage_fe/lcov.info
+          format: lcov
+          fail-on-error: false
+
+      - name: Restore frontend coverage value
+        if: always()
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Track frontend coverage value
+        if: always()
+        run: |
+          if [ "$COVERAGE_AVAILABLE" != "true" ]; then
+            echo "skipping"
+            exit 0
+          fi
+          eval "$(awk -F: '/^LH:/ { covered += $2 } /^LF:/ { total += $2 } END { printf "COVERED=%d\nTOTAL=%d\n", covered, total }' coverage_fe/lcov.info)"
+          FE_VALUE=$(awk "BEGIN { printf \"%.2f\", ($COVERED / $TOTAL) * 100 }")
+          fe_coverage_csv="$FE_COVERAGE_NAME.csv"
+          if [ -f "$fe_coverage_csv" ]; then
+            PREV_FE=$(python3 - <<'PY'
+          import csv
+          import os
+
+          with open(f"{os.environ['FE_COVERAGE_NAME']}.csv", newline="") as f:
+              reader = csv.reader(f)
+              next(reader, None)
+              rows = [float(row[0]) for row in reader if row and row[0]]
+          print(f"{rows[-1]:.2f}" if rows else "99.4")
+          PY
+          )
+          else
+            PREV_FE=99.4
+          fi
+          percent_change=$(CURRENT_VALUE="$FE_VALUE" PREVIOUS_VALUE="$PREV_FE" scripts/ci/percent-change)
+          echo "Covered lines: $COVERED, Total lines: $TOTAL, Coverage: $FE_VALUE%"
+          echo "$FE_VALUE% ($percent_change% change)"
+          if [ ! -f "$fe_coverage_csv" ]; then
+            printf '%s\n' "percent,covered lines,total lines,percent change" > "$fe_coverage_csv"
+          fi
+          printf '%s\n' "$FE_VALUE,$COVERED,$TOTAL,$percent_change" >> "$fe_coverage_csv"
+          cat "$fe_coverage_csv"
+
+      - name: Save frontend coverage value
+        if: ${{ always() && hashFiles(format('{0}.csv', env.FE_COVERAGE_NAME)) != '' }}
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: test-results
+          if-no-files-found: warn
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fe-coverage-csv
+          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          if-no-files-found: warn
+
+      - name: On failure
+        if: failure()
+        run: |
+          sudo docker compose ps || true
+          sudo docker compose logs --no-color --tail=500 || true
+
+      - name: Send notification
+        if: success() && env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run succeeded"
+
+      - name: Send notification
+        if: failure() && env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run failed"
