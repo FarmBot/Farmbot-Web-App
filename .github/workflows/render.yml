@@ -104,7 +104,7 @@ jobs:
           if [ -f fps_value.txt ]; then
             PREV=$(cat fps_value.txt)
           else
-            PREV=60
+            PREV=100
           fi
           echo "Previous value: $PREV fps"
           percent_change=$(CURRENT_VALUE="$FPS_VALUE" PREVIOUS_VALUE="$PREV" scripts/ci/percent-change)
@@ -216,7 +216,7 @@ jobs:
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           for MESSAGE in \
             "<${SCREENSHOT_URL:-$RUN_URL}|screenshot>" \
-            "<${FPS_PLOT_URL:-$RUN_URL}|fps>" \
+            "<${FPS_PLOT_URL:-$RUN_URL}|fps>"
           do
             scripts/ci/send-notification "$MESSAGE"
           done
