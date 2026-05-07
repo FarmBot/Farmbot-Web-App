@@ -10,9 +10,38 @@ const maxLoadingSamples = 240;
 const postLoadSamples = 10;
 const chosenPostLoadSample = 5;
 const sampleIntervalMs = 1000;
+const ci = Boolean(process.env.CI);
+const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
+const chromiumArgs = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--ignore-gpu-blocklist',
+    '--enable-features=Vulkan',
+    '--use-gl=angle',
+    '--enable-gpu-rasterization',
+    '--enable-zero-copy',
+    ...((openWindow && !ci) ? [] : ['--use-angle=vulkan']),
+];
 
 const pageIsLoading = page =>
     page.evaluate(() => Boolean(document.querySelector('.three-d-load-progress')));
+
+const webglRenderer = page =>
+    page.evaluate(() => {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+        if (!gl) { return { status: 'unavailable' }; }
+
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (!debugInfo) { return { status: 'available' }; }
+
+        return {
+            status: 'available',
+            vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+            renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+        };
+    });
 
 function printUsage() {
     console.log([
@@ -26,19 +55,19 @@ function printUsage() {
 }
 
 async function main() {
+    console.log(`Launching Chromium with args: ${chromiumArgs.join(' ')}`);
     const browser = await chromium.launch({
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--enable-gpu',
-        ],
+        headless: !openWindow,
+        args: chromiumArgs,
     });
     const page = await browser.newPage();
     page.setDefaultTimeout(120_000);
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const renderer = await webglRenderer(page);
+        console.log(`WEBGL_STATUS=${renderer.status}`);
+        if (renderer.vendor) { console.log(`WEBGL_VENDOR=${renderer.vendor}`); }
+        if (renderer.renderer) { console.log(`WEBGL_RENDERER=${renderer.renderer}`); }
         await page.waitForFunction(() => typeof window.__fps !== 'undefined');
 
         let lastSample = 0;

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+message="$*"
+if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+  exit 0
+fi
+
+MESSAGE="$message" python3 - <<'PY' | curl -fsS -X POST -H "Content-Type: application/json" --data @- "$SLACK_WEBHOOK_URL" || true
+import json
+import os
+
+print(json.dumps({"text": os.environ["MESSAGE"], "channel": "#software"}))
+PY
