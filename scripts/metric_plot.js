@@ -31,6 +31,7 @@ const normalizeMetricSamples = (samples, valueKey = 'value') => samples
             x,
             index,
             loading: typeof sample === 'object' ? sample.loading : undefined,
+            averaged: typeof sample === 'object' ? sample.averaged : undefined,
         };
     })
     .filter(({ value, x }) => Number.isFinite(value) && Number.isFinite(x));
@@ -66,17 +67,25 @@ function buildMetricPlotSvg(samples, options = {}) {
     const plotHeight = height - margin.top - margin.bottom;
     const finite = series.flatMap(item => item.samples);
     const values = finite.map(({ value }) => value);
+    const statSamples = options.statsAfterLoaded
+        ? finite.filter(({ loading }) => loading === false)
+        : finite;
+    const statValues = statSamples.map(({ value }) => value);
     const xValues = finite
         .map(({ x }) => x)
         .filter(value => Number.isFinite(value));
-    const minSample = values.length ? Math.min(...values) : 0;
-    const maxSample = values.length ? Math.max(...values) : 0;
-    const avgSample = values.length
-        ? values.reduce((total, value) => total + value, 0) / values.length
+    const minSample = statValues.length ? Math.min(...statValues) : 0;
+    const maxSample = statValues.length ? Math.max(...statValues) : 0;
+    const avgSample = statValues.length
+        ? statValues.reduce((total, value) => total + value, 0) / statValues.length
         : 0;
-    const lastSample = values.length ? values[values.length - 1] : 0;
-    const minValue = values.length ? minSample : 0;
-    const maxValue = Math.max(1, maxSample);
+    const lastSample = statValues.length ? statValues[statValues.length - 1] : 0;
+    const yMinSample = values.length ? Math.min(...values) : 0;
+    const minValue = values.length ? yMinSample : 0;
+    const yMaxSample = values.length > 1
+        ? [...values].sort((a, b) => b - a)[1]
+        : maxSample;
+    const maxValue = Math.max(1, yMaxSample);
     const valueRange = maxValue - minValue || 1;
     const minX = Math.min(0, xValues.length ? Math.min(...xValues) : 0);
     const maxX = Math.max(1, xValues.length ? Math.max(...xValues) : inputSamples.length - 1);
@@ -84,7 +93,10 @@ function buildMetricPlotSvg(samples, options = {}) {
     const xFor = x => margin.left + (
         (x - minX) / xRange
     ) * plotWidth;
-    const yFor = value => margin.top + ((maxValue - value) / valueRange) * plotHeight;
+    const yFor = value => {
+        const y = margin.top + ((maxValue - value) / valueRange) * plotHeight;
+        return Math.max(margin.top, Math.min(height - margin.bottom, y));
+    };
     const lines = series
         .map(item => {
             const points = item.samples
@@ -135,9 +147,21 @@ function buildMetricPlotSvg(samples, options = {}) {
             `<text x="${formatPoint(xFor(firstLoaded.x) + 6)}" y="${margin.top + 16}" fill="#c2410c" font-family="Arial, sans-serif" font-size="12" font-weight="700">Loaded</text>`,
         ].join('')
         : '';
-    const stats = escapeSvgText(values.length
-        ? `min ${formatStat(minSample)}   avg ${formatStat(avgSample)}   max ${formatStat(maxSample)}   last ${formatStat(lastSample)}`
-        : 'No valid samples');
+    const averageValue = Number(options.averageValue);
+    const averageLine = Number.isFinite(averageValue)
+        ? [
+            `<line x1="${formatPoint(firstLoaded ? xFor(firstLoaded.x) : margin.left)}" y1="${formatPoint(yFor(averageValue))}" x2="${width - margin.right}" y2="${formatPoint(yFor(averageValue))}" stroke="#1a7f37" stroke-width="2" stroke-dasharray="4 4" />`,
+            `<text x="${width - margin.right - 6}" y="${formatPoint(yFor(averageValue) - 6)}" text-anchor="end" fill="#1a7f37" font-family="Arial, sans-serif" font-size="12" font-weight="700">avg ${formatStat(averageValue)}</text>`,
+        ].join('')
+        : '';
+    const displayedAverage = Number.isFinite(averageValue)
+        ? averageValue
+        : avgSample;
+    const stats = options.hideStats
+        ? ''
+        : escapeSvgText(statValues.length
+            ? `min ${formatStat(minSample)}   avg ${formatStat(displayedAverage)}   max ${formatStat(maxSample)}   last ${formatStat(lastSample)}`
+            : 'No valid samples');
     const legend = multiSeries
         ? series
             .map((item, index) => {
@@ -168,6 +192,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#8c959f" />
     ${xTicks}
     ${loadedMarker}
+    ${averageLine}
     ${lines}
     ${circles}
     <text x="${(margin.left + width - margin.right) / 2}" y="${height - 8}" text-anchor="middle" fill="#57606a" font-family="Arial, sans-serif" font-size="12">${xLabel}</text>
@@ -242,6 +267,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         x: xHeader ? row[xHeader] : index,
         value: valueFor(row, valueHeader),
         loading: row.loading === undefined ? undefined : row.loading === 'true',
+        averaged: row.averaged === undefined ? undefined : row.averaged === 'true',
     });
     const plottableHeaders = headers
         .filter(header => !sceneMetricExcludedHeaders.includes(header))
@@ -259,6 +285,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             return {
                 title: 'Scene metrics',
                 xLabel: 'Runs',
+                hideStats: true,
                 series: plottableHeaders.map(header => ({
                     name: sceneMetricLabelFor(header),
                     samples: rows.map((row, index) => ({
@@ -275,11 +302,21 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         };
     }
     if (headers.includes('fps')) {
+        const averagedValues = rows
+            .filter(row => row.averaged === 'true')
+            .map(row => Number(row.fps))
+            .filter(Number.isFinite);
+        const averageValue = averagedValues.length
+            ? averagedValues.reduce((total, value) => total + value, 0)
+            / averagedValues.length
+            : undefined;
         const highlightIndex = rows.findIndex(row => row.chosen === 'true');
         return {
             title: 'FPS samples',
             xLabel: xHeader ? 'Seconds' : 'Samples',
             samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
+            statsAfterLoaded: true,
+            ...(Number.isFinite(averageValue) ? { averageValue } : {}),
             ...(highlightIndex >= 0 ? { highlightIndex } : {}),
         };
     }
