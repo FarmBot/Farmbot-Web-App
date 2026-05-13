@@ -1,0 +1,4 @@
+: "${PROMO_IMAGE:=promo}"
+: "${FPS_SAMPLES_NAME:=fps_samples}"
+: "${SCENE_METRICS_NAME:=scene_metrics}"
+: "${SCENE_METRICS_HEADER:=epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes}"

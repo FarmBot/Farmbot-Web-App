@@ -249,6 +249,7 @@ const parseCsv = content => {
 
 const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const basename = path.basename(filename);
+    const isSceneMetricsCsv = /^scene_metrics(?:_[^/]+)?\.csv$/.test(basename);
     const firstHeader = headers[0];
     const xHeader = headers.find(header =>
         ['elapsed seconds', 'elapsedSeconds'].includes(header));
@@ -281,7 +282,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         };
     }
     if (headers.includes('FPS')) {
-        if (basename === 'scene_metrics.csv') {
+        if (isSceneMetricsCsv) {
             return {
                 title: 'Scene metrics',
                 xLabel: 'Runs',

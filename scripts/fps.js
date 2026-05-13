@@ -85,7 +85,7 @@ async function main() {
         args: chromiumArgs,
     });
     const page = await browser.newPage();
-    page.setDefaultTimeout(120_000);
+    page.setDefaultTimeout(60_000);
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);

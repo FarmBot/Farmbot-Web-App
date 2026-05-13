@@ -69,7 +69,7 @@ jobs:
         run: sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
 
       - name: Check app coverage status
-        if: always()
+        if: ${{ always() && hashFiles('coverage_api/index.html') != '' }}
         run: sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ "$NOTIFY" = "true" ]
 
       - name: Upload app coverage to Codecov
@@ -102,7 +102,7 @@ jobs:
           exit $status
 
       - name: Check frontend coverage status
-        if: always()
+        if: ${{ always() && (hashFiles('coverage_fe/index.html') != '' || hashFiles('coverage_fe/coverage-final.json') != '' || hashFiles('coverage_fe/lcov.info') != '') }}
         env:
           GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
         run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$NOTIFY" = "true" ]
