@@ -1,0 +1,18 @@
+elapsed seconds,fps,loading,averaged
+0.013,0.00,true,false
+1.071,28.36,true,false
+3.510,107.35,true,false
+4.563,140.73,true,false
+5.628,59.31,true,false
+6.764,43.73,true,false
+7.792,55.00,true,false
+8.810,99.86,false,true
+9.831,105.54,false,true
+10.848,108.15,false,true
+11.868,101.27,false,true
+12.885,109.37,false,true
+13.901,111.99,false,true
+14.915,104.05,false,true
+15.938,104.13,false,true
+16.960,109.21,false,true
+17.982,106.81,false,true
