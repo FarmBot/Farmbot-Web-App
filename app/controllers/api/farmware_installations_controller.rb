@@ -31,7 +31,7 @@ module Api
     end
 
     def farmware_installation
-      @farmware_installation ||= farmware_installations.find(params[:id])
+      @farmware_installation ||= farmware_installations.find(params.expect(:id))
     end
   end
 end

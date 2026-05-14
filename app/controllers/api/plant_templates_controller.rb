@@ -25,7 +25,7 @@ module Api
     end
 
     def plant_template
-      @plant_template ||= plant_templates.find(params[:id])
+      @plant_template ||= plant_templates.find(params.expect(:id))
     end
   end
 end

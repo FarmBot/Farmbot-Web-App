@@ -7,7 +7,7 @@ module Api
     end
 
     def show
-      render json: current_device.farm_events.find(params[:id])
+      render json: current_device.farm_events.find(params.expect(:id))
     end
 
     def create
@@ -31,7 +31,7 @@ module Api
     private
 
     def farm_event
-      @farm_event ||= FarmEvent.find(params[:id])
+      @farm_event ||= FarmEvent.find(params.expect(:id))
     end
   end
 end

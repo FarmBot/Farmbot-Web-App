@@ -23,7 +23,7 @@ module Api
     private
 
     def sensor
-      @sensor ||= current_device.sensors.find(params[:id])
+      @sensor ||= current_device.sensors.find(params.expect(:id))
     end
   end
 end

@@ -25,7 +25,7 @@ module Api
     private
 
     def webcam
-      webcams.find(params[:id])
+      webcams.find(params.expect(:id))
     end
 
     def webcams

@@ -44,7 +44,7 @@ module Api
     end
 
     def image
-      @image ||= Image.where(device: current_device).find(params[:id])
+      @image ||= Image.where(device: current_device).find(params.expect(:id))
     end
   end
 end
