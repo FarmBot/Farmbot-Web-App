@@ -90,12 +90,8 @@ jobs:
         run: |
           . scripts/ci/render-env
           scripts/ci/restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
-          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
           if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
             echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
-          fi
-          if [ -f "/tmp/$FE_COVERAGE_NAME.csv" ]; then
-            echo "fe_coverage_found=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Restore FPS metrics
@@ -109,13 +105,21 @@ jobs:
             ${{ env.FPS_METRICS_CACHE_KEY }}-
 
       - name: Restore frontend coverage value
-        if: ${{ always() && steps.restore_metric_history.outputs.fe_coverage_found != 'true' }}
+        if: always()
         uses: actions/cache/restore@v5
         with:
           path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
           restore-keys: |
             ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Restore frontend coverage history fallback
+        if: always()
+        run: |
+          [ -f "/tmp/$FE_COVERAGE_NAME.csv" ] && exit 0
+
+          . scripts/ci/render-env
+          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
 
       - name: Run playwright
         run: scripts/ci/run-playwright-render
