@@ -100,6 +100,7 @@ async function main() {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
         if (screenshotOnly) {
+            await page.waitForTimeout(1000);
             fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
             await page.screenshot({
                 path: screenshotPath,

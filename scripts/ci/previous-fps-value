@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+import csv
+import os
+
+path = f"/tmp/{os.environ['SCENE_METRICS_NAME']}.csv"
+fallback = os.environ.get("FALLBACK_FPS_VALUE", "100")
+
+try:
+    with open(path, newline="") as f:
+        rows = list(csv.DictReader(f))
+except FileNotFoundError:
+    rows = []
+
+values = []
+for row in rows[:-1]:
+    try:
+        values.append(float(row["FPS"]))
+    except (KeyError, TypeError, ValueError):
+        pass
+
+print(f"{values[-1]:.2f}" if values else fallback)

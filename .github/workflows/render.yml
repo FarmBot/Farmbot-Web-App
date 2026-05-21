@@ -8,6 +8,7 @@ on:
 
 env:
   NOTIFY: ${{ github.ref_name == 'staging' }}
+  STAGING: ${{ github.ref_name == 'staging' }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   SCENE_METRICS_NAME: scene_metrics
   FE_COVERAGE_NAME: fe_coverage
@@ -25,6 +26,8 @@ jobs:
 
       - name: Set up CI
         uses: ./.github/actions/setup-ci
+        with:
+          rails-env: production
 
       - name: Set render service hosts
         run: |
@@ -82,40 +85,48 @@ jobs:
           echo "mqtt auth did not become ready"
           exit 1
 
-      - name: Run playwright
-        run: scripts/ci/run-playwright-render
+      - name: Restore metric history
+        id: restore_metric_history
+        run: |
+          . scripts/ci/render-env
+          scripts/ci/restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
+          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
+          if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
+            echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -f "/tmp/$FE_COVERAGE_NAME.csv" ]; then
+            echo "fe_coverage_found=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Restore FPS metrics
+        if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
         uses: actions/cache/restore@v5
         with:
           path: |
-            fps_value.txt
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
           key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
           restore-keys: |
             ${{ env.FPS_METRICS_CACHE_KEY }}-
 
+      - name: Restore frontend coverage value
+        if: ${{ always() && steps.restore_metric_history.outputs.fe_coverage_found != 'true' }}
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Run playwright
+        run: scripts/ci/run-playwright-render
+
       - name: Track FPS value
         run: |
-          if [ -f fps_value.txt ]; then
-            PREV=$(cat fps_value.txt)
-          else
-            PREV=100
-          fi
+          PREV=$(scripts/ci/previous-fps-value)
           echo "Previous value: $PREV fps"
           percent_change=$(CURRENT_VALUE="$FPS_VALUE" PREVIOUS_VALUE="$PREV" scripts/ci/percent-change)
           echo "$FPS_VALUE fps ($percent_change% change)"
           echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
-          echo "$FPS_VALUE" > fps_value.txt
-
-      - name: Restore frontend coverage value
-        if: always()
-        uses: actions/cache/restore@v5
-        with:
-          path: ${{ env.FE_COVERAGE_NAME }}.csv
-          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
-          restore-keys: |
-            ${{ env.FE_COVERAGE_CACHE_KEY }}-
 
       - name: Plot metric CSVs
         if: always()
@@ -124,16 +135,11 @@ jobs:
             [ -f "$csv" ] || continue
             bun scripts/metric_plot.js "$csv"
           done
-          if [ -f "$FE_COVERAGE_NAME.csv" ]; then
-            bun scripts/metric_plot.js "$FE_COVERAGE_NAME.csv"
-          fi
 
       - name: Save FPS metrics
-        if: ${{ hashFiles('fps_value.txt') != '' }}
         uses: actions/cache/save@v5
         with:
           path: |
-            fps_value.txt
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
           key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
 
@@ -173,9 +179,7 @@ jobs:
           sudo docker compose logs --no-color --tail=500 || true
 
       - name: Publish image links
-        if: success() && env.NOTIFY == 'true'
-        env:
-          ARTIFACT_BRANCH: ci-artifacts
+        if: success() && env.STAGING == 'true'
         run: |
           . scripts/ci/render-env
           worktree=$(mktemp -d)
@@ -196,7 +200,13 @@ jobs:
           done
           cp "/tmp/$FPS_SAMPLES_NAME.csv" "$worktree/build/latest/$FPS_SAMPLES_NAME.csv"
           cp "/tmp/$FPS_SAMPLES_NAME.csv" "$worktree/build/${GITHUB_RUN_ID}/$FPS_SAMPLES_NAME.csv"
+          for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FE_COVERAGE_NAME.csv"; do
+            [ -f "$metric" ] && cp "$metric" "$worktree/$(basename "$metric")"
+          done
           git -C "$worktree" add build
+          for artifact in "$SCENE_METRICS_NAME"*.csv "$FE_COVERAGE_NAME.csv"; do
+            [ -f "$worktree/$artifact" ] && git -C "$worktree" add "$artifact"
+          done
           git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true
           git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"
 

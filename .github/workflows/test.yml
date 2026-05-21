@@ -10,6 +10,7 @@ on:
 
 env:
   NOTIFY: ${{ github.ref_name == 'staging' }}
+  STAGING: ${{ github.ref_name == 'staging' }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   FE_COVERAGE_NAME: fe_coverage
   CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
@@ -60,6 +61,7 @@ jobs:
       - name: Set up CI
         uses: ./.github/actions/setup-ci
         with:
+          rails-env: test
           save-docker-cache: "true"
 
       - name: Run Ruby linters
@@ -70,7 +72,7 @@ jobs:
 
       - name: Check app coverage status
         if: ${{ always() && hashFiles('coverage_api/index.html') != '' }}
-        run: sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ "$NOTIFY" = "true" ]
+        run: sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ "$STAGING" = "true" ]
 
       - name: Upload app coverage to Codecov
         if: ${{ hashFiles('coverage_api/coverage.xml') != '' }}
@@ -105,7 +107,7 @@ jobs:
         if: ${{ always() && (hashFiles('coverage_fe/index.html') != '' || hashFiles('coverage_fe/coverage-final.json') != '' || hashFiles('coverage_fe/lcov.info') != '') }}
         env:
           GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
-        run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$NOTIFY" = "true" ]
+        run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$STAGING" = "true" ]
 
       - name: Check frontend file coverage status
         if: always()
@@ -126,10 +128,18 @@ jobs:
         if: always()
         uses: actions/cache/restore@v5
         with:
-          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
           restore-keys: |
             ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Restore frontend coverage history fallback
+        if: always()
+        run: |
+          [ -f "/tmp/$FE_COVERAGE_NAME.csv" ] && exit 0
+
+          . scripts/ci/render-env
+          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
 
       - name: Track frontend coverage value
         if: always()
@@ -140,13 +150,13 @@ jobs:
           fi
           eval "$(awk -F: '/^LH:/ { covered += $2 } /^LF:/ { total += $2 } END { printf "COVERED=%d\nTOTAL=%d\n", covered, total }' coverage_fe/lcov.info)"
           FE_VALUE=$(awk "BEGIN { printf \"%.2f\", ($COVERED / $TOTAL) * 100 }")
-          fe_coverage_csv="$FE_COVERAGE_NAME.csv"
+          fe_coverage_csv="/tmp/$FE_COVERAGE_NAME.csv"
           if [ -f "$fe_coverage_csv" ]; then
             PREV_FE=$(python3 - <<'PY'
           import csv
           import os
 
-          with open(f"{os.environ['FE_COVERAGE_NAME']}.csv", newline="") as f:
+          with open(f"/tmp/{os.environ['FE_COVERAGE_NAME']}.csv", newline="") as f:
               reader = csv.reader(f)
               next(reader, None)
               rows = [float(row[0]) for row in reader if row and row[0]]
@@ -166,10 +176,10 @@ jobs:
           cat "$fe_coverage_csv"
 
       - name: Save frontend coverage value
-        if: ${{ always() && hashFiles(format('{0}.csv', env.FE_COVERAGE_NAME)) != '' }}
+        if: ${{ always() && env.COVERAGE_AVAILABLE == 'true' }}
         uses: actions/cache/save@v5
         with:
-          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
 
       - name: Upload test results
@@ -185,7 +195,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: fe-coverage-csv
-          path: ${{ env.FE_COVERAGE_NAME }}.csv
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           if-no-files-found: warn
 
       - name: On failure

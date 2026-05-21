@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -f scripts/ci/render-env ]; then
+  # shellcheck disable=SC1091
+  . scripts/ci/render-env
+fi
+
+source_pattern="${1:?source path is required}"
+
+if ! git ls-remote --exit-code --heads origin "$ARTIFACT_BRANCH" >/dev/null; then
+  exit 0
+fi
+
+git fetch origin "$ARTIFACT_BRANCH"
+
+git ls-tree -r --name-only "origin/$ARTIFACT_BRANCH" | while IFS= read -r source_path; do
+  case "$source_path" in
+    $source_pattern)
+      destination_path="/tmp/$source_path"
+      mkdir -p "$(dirname "$destination_path")"
+      git show "origin/$ARTIFACT_BRANCH:$source_path" > "$destination_path"
+      ;;
+  esac
+done
