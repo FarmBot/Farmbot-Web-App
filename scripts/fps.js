@@ -11,6 +11,8 @@ const postLoadSamples = 10;
 const sampleIntervalMs = 1000;
 const ci = Boolean(process.env.CI);
 const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
+const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+const screenshotOnly = Boolean(process.env.SCREENSHOT_ONLY);
 const chromiumArgs = [
     '--no-sandbox',
     '--disable-setuid-sandbox',
@@ -52,6 +54,10 @@ function printUsage() {
         '  url                   Page URL that exposes window.__fps and window.__scene_metrics.',
         '  screenshot_path       Optional full-page screenshot PNG path. Default: /tmp/fps.png',
         '  fps_samples_csv_path  Optional FPS samples CSV path. Default: /tmp/fps_samples.csv',
+        '',
+        'Environment:',
+        '  PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH  Path to a Chrome/Chromium binary.',
+        '  SCREENSHOT_ONLY=1                    Take a screenshot without FPS metrics.',
     ].join('\n'));
 }
 
@@ -80,8 +86,12 @@ function saveFpsSamplesCsv(samples, destination) {
 
 async function main() {
     console.log(`Launching Chromium with args: ${chromiumArgs.join(' ')}`);
+    if (executablePath) {
+        console.log(`CHROMIUM_EXECUTABLE_PATH=${executablePath}`);
+    }
     const browser = await chromium.launch({
         headless: !openWindow,
+        executablePath,
         args: chromiumArgs,
     });
     const page = await browser.newPage();
@@ -89,6 +99,16 @@ async function main() {
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
+        if (screenshotOnly) {
+            fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+            await page.screenshot({
+                path: screenshotPath,
+                fullPage: true,
+                timeout: 60_000,
+            });
+            console.log(`SCREENSHOT=${screenshotPath}`);
+            return;
+        }
         const renderer = await webglRenderer(page);
         console.log(`WEBGL_STATUS=${renderer.status}`);
         if (renderer.vendor) { console.log(`WEBGL_VENDOR=${renderer.vendor}`); }

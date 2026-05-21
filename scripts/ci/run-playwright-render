@@ -20,28 +20,48 @@ attempts="${ATTEMPTS:-2}"
 GITHUB_ENV="${GITHUB_ENV:-/tmp/render-github-env}"
 
 urls=(
-  "promo|http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
-  "app|http://localhost:3000/try_farmbot?productLine=genesis_1.8"
-  # "stress|http://localhost:3000/try_farmbot?productLine=genesis_xl_1.8_stress_250"
+  "promo|fps|http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
+  "login|screenshot|http://localhost:3000/"
+  "os|screenshot|http://localhost:3000/os"
+  "demo|screenshot|http://localhost:3000/demo"
+  "password_reset|screenshot|http://localhost:3000/password_reset/abc"
+  "404|screenshot|http://localhost:3000/404"
+  "app|fps|http://localhost:3000/try_farmbot?productLine=genesis_1.8"
+  # "stress|fps|http://localhost:3000/try_farmbot?productLine=genesis_xl_1.8_stress_250"
 )
 
 for entry in "${urls[@]}"; do
   name="${entry%%|*}"
-  url="${entry#*|}"
+  rest="${entry#*|}"
+  mode="${rest%%|*}"
+  url="${rest#*|}"
   if [ "$name" = "promo" ]; then
     screenshot_path="/tmp/$PROMO_IMAGE.png"
     fps_samples_path="/tmp/$FPS_SAMPLES_NAME.csv"
     scene_metrics_path="/tmp/$SCENE_METRICS_NAME.csv"
   else
-    screenshot_path="/tmp/${PROMO_IMAGE}_${name}.png"
+    screenshot_path="/tmp/screenshot_${name}.png"
     fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
     scene_metrics_path="/tmp/${SCENE_METRICS_NAME}_${name}.csv"
   fi
 
   for _ in $(seq 1 "$attempts"); do
-    echo "Attempting FPS check via ${url}"
+    if [ "$mode" = "screenshot" ]; then
+      echo "Attempting screenshot via ${url}"
+    else
+      echo "Attempting FPS check via ${url}"
+    fi
     if ! sudo docker compose exec -T web curl -I "${url}" >/dev/null; then
       continue
+    fi
+
+    if [ "$mode" = "screenshot" ]; then
+      if ! screenshot_output=$(SCREENSHOT_ONLY=1 bun scripts/fps.js "${url}" "$screenshot_path"); then
+        echo "${screenshot_output}"
+        continue
+      fi
+      echo "${screenshot_output}"
+      continue 2
     fi
 
     if ! fps_output=$(bun scripts/fps.js "${url}" "$screenshot_path" "$fps_samples_path"); then
