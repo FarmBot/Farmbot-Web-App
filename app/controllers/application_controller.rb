@@ -1,6 +1,14 @@
 class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :null_session
+  # class static initialization block support
+  allow_browser versions: {
+    chrome: 94,
+    firefox: 93,
+    edge: 94,
+    ie: false
+  }
+
   after_action :unset_current_device
 
   def unset_current_device
