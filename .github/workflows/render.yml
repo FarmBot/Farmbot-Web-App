@@ -204,8 +204,8 @@ jobs:
             [ -f "$metric" ] && cp "$metric" "$worktree/$(basename "$metric")"
           done
           git -C "$worktree" add build
-          for artifact in "$SCENE_METRICS_NAME"*.csv "$FE_COVERAGE_NAME.csv"; do
-            [ -f "$worktree/$artifact" ] && git -C "$worktree" add "$artifact"
+          for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FE_COVERAGE_NAME.csv"; do
+            [ -f "$artifact" ] && git -C "$worktree" add "$(basename "$artifact")"
           done
           git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true
           git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"

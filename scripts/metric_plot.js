@@ -247,6 +247,12 @@ const parseCsv = content => {
     return { headers, rows };
 };
 
+const title = (basename, prefix) => {
+    const name = basename.replace(/\.csv$/, '').replace(/_/g, ' ');
+    const suffix = name.replace(prefix.toLowerCase(), '').trim();
+    return suffix ? `${prefix}: ${suffix}` : prefix;
+}
+
 const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const basename = path.basename(filename);
     const isSceneMetricsCsv = /^scene_metrics(?:_[^/]+)?\.csv$/.test(basename);
@@ -284,7 +290,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
     if (headers.includes('FPS')) {
         if (isSceneMetricsCsv) {
             return {
-                title: 'Scene metrics',
+                title: title(basename, 'Scene metrics'),
                 xLabel: 'Runs',
                 hideStats: true,
                 series: plottableHeaders.map(header => ({
@@ -297,7 +303,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             };
         }
         return {
-            title: 'FPS samples',
+            title: title(basename, 'FPS samples'),
             xLabel: 'Runs',
             samples: rows.map((row, index) => sampleFor(row, index, 'FPS')),
         };
@@ -313,7 +319,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             : undefined;
         const highlightIndex = rows.findIndex(row => row.chosen === 'true');
         return {
-            title: 'FPS samples',
+            title: title(basename, 'FPS samples'),
             xLabel: xHeader ? 'Seconds' : 'Samples',
             samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
             statsAfterLoaded: true,
