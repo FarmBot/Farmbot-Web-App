@@ -3,16 +3,59 @@ const fs = require('fs');
 const path = require('path');
 const { prepareStressResources } = require('./fps_stress_resources');
 
-const url = process.argv[2];
-const screenshotPath = process.argv[3] || '/tmp/fps.png';
-const samplesCsvPath = process.argv[4] || '/tmp/fps_samples.csv';
+function parseArgs(argv) {
+    const options = {
+        screenshotPath: '/tmp/fps.png',
+        samplesCsvPath: '/tmp/fps_samples.csv',
+        screenshotOnly: false,
+    };
+    const valueOptions = {
+        '--name': 'name',
+        '--url': 'url',
+        '--screenshot-path': 'screenshotPath',
+        '--fps-samples-path': 'samplesCsvPath',
+        '--click': 'click',
+        '--state': 'state',
+    };
+
+    for (let i = 0; i < argv.length; i++) {
+        const arg = argv[i];
+        if (arg === '-h' || arg === '--help') {
+            options.help = true;
+            continue;
+        }
+        if (arg === '--screenshot-only') {
+            options.screenshotOnly = true;
+            continue;
+        }
+        const optionName = valueOptions[arg];
+        if (!optionName) { throw new Error(`Unknown argument: ${arg}`); }
+        const value = argv[i + 1];
+        if (!value || value.startsWith('--')) {
+            throw new Error(`Missing value for ${arg}`);
+        }
+        options[optionName] = value;
+        i++;
+    }
+
+    return options;
+}
+
+const options = parseArgs(process.argv.slice(2));
+const name = options.name;
+const url = options.url;
+const screenshotPath = options.screenshotPath;
+const samplesCsvPath = options.samplesCsvPath;
 const maxLoadingSamples = 240;
 const postLoadSamples = 10;
 const sampleIntervalMs = 1000;
 const ci = Boolean(process.env.CI);
 const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
-const screenshotOnly = Boolean(process.env.SCREENSHOT_ONLY);
+const screenshotOnly = options.screenshotOnly;
+const click = options.click;
+const state = options.state ? path.join('/tmp', `${options.state}.json`) : undefined;
+const saveState = path.join('/tmp', `${name}.json`);
 const chromiumArgs = [
     '--no-sandbox',
     '--disable-setuid-sandbox',
@@ -48,16 +91,22 @@ const webglRenderer = page =>
 
 function printUsage() {
     console.log([
-        'Usage: bun scripts/fps.js <url> [screenshot_path] [fps_samples_csv_path]',
+        'Usage: bun scripts/fps.js --name <name> --url <url> [options]',
         '',
-        'Arguments:',
-        '  url                   Page URL that exposes window.__fps and window.__scene_metrics.',
-        '  screenshot_path       Optional full-page screenshot PNG path. Default: /tmp/fps.png',
-        '  fps_samples_csv_path  Optional FPS samples CSV path. Default: /tmp/fps_samples.csv',
+        'Options:',
+        '  --name <name>                          Scenario name used for storage state output.',
+        '  --url <url>                            Page URL that exposes window.__fps and window.__scene_metrics.',
+        '  --screenshot-path <path>               Full-page screenshot PNG path. Default: /tmp/fps.png',
+        '  --fps-samples-path <path>              FPS samples CSV path. Default: /tmp/fps_samples.csv',
+        '  --screenshot-only                      Take a screenshot without FPS metrics.',
+        '  --click <title>                        Click an element by title after page load.',
+        '  --state <name>                         Load cookies and localStorage from /tmp/<name>.json.',
         '',
         'Environment:',
-        '  PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH  Path to a Chrome/Chromium binary.',
-        '  SCREENSHOT_ONLY=1                    Take a screenshot without FPS metrics.',
+        '  CI                                    Use CI browser launch behavior.',
+        '  DISPLAY                               Display server used for headed local runs.',
+        '  OPEN_WINDOW                           Open a visible browser window when DISPLAY is set.',
+        '  PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH   Path to a Chrome/Chromium binary.',
     ].join('\n'));
 }
 
@@ -84,8 +133,14 @@ function saveFpsSamplesCsv(samples, destination) {
         .join('\n')}\n`);
 }
 
+async function saveStorage(page) {
+    fs.mkdirSync(path.dirname(saveState), { recursive: true });
+    await page.context().storageState({ path: saveState });
+    console.log(`SAVE_STATE=${saveState}`);
+}
+
 async function main() {
-    console.log(`Launching Chromium with args: ${chromiumArgs.join(' ')}`);
+    console.log(`Launching Chromium with args:\n  ${chromiumArgs.join('\n  ')}\n`);
     if (executablePath) {
         console.log(`CHROMIUM_EXECUTABLE_PATH=${executablePath}`);
     }
@@ -94,11 +149,20 @@ async function main() {
         executablePath,
         args: chromiumArgs,
     });
-    const page = await browser.newPage();
+    const contextOptions = state ? { storageState: state } : {};
+    if (state) {
+        console.log(`STATE=${state}`);
+    }
+    const context = await browser.newContext(contextOptions);
+    const page = await context.newPage();
     page.setDefaultTimeout(60_000);
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
+        if (click) {
+            await page.getByTitle(click).click();
+            console.log(`CLICK=${click}`);
+        }
         if (screenshotOnly) {
             await page.waitForTimeout(1000);
             fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
@@ -182,6 +246,7 @@ async function main() {
         console.log(`FPS_SCREENSHOT=${screenshotPath}`);
         saveFpsSamplesCsv(sampleValues, samplesCsvPath);
         console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
+        await saveStorage(page);
     } catch (err) {
         console.error('Failed to read window.__fps:', err.message || err);
         process.exitCode = 1;
@@ -190,9 +255,12 @@ async function main() {
     }
 }
 
-if (!url || url === '-h' || url === '--help') {
+if (options.help) {
     printUsage();
-    process.exitCode = url ? 0 : 1;
+    process.exitCode = 0;
+} else if (!name || !url) {
+    printUsage();
+    process.exitCode = 1;
 } else {
     main().catch((err) => {
         console.error('Unexpected error:', err);

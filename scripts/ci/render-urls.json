@@ -1,0 +1,49 @@
+[
+  {
+    "name": "promo",
+    "mode": "fps",
+    "url": "http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
+  },
+  {
+    "name": "login",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/"
+  },
+  {
+    "name": "os",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/os"
+  },
+  {
+    "name": "demo",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/demo"
+  },
+  {
+    "name": "password_reset",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/password_reset/abc"
+  },
+  {
+    "name": "404",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/404"
+  },
+  {
+    "name": "app",
+    "mode": "fps",
+    "url": "http://localhost:3000/try_farmbot?productLine=genesis_1.8"
+  },
+  {
+    "name": "stress",
+    "mode": "fps",
+    "url": "http://localhost:3000/try_farmbot?productLine=genesis_xl_1.8_stress_1000"
+  },
+  {
+    "name": "water",
+    "mode": "fps",
+    "url": "http://localhost:3000/app/designer/sequences/Water_all",
+    "click": "Run",
+    "state": "app"
+  }
+]
