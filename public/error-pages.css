@@ -1,0 +1,49 @@
+body {
+    min-width: 100vw;
+    min-height: 100vh;
+    background: linear-gradient(-135deg, #089460, #159ACC);
+    background-size: 100% 100%;
+    overflow: hidden;
+    text-shadow: 0px 1px 1px #555;
+}
+
+img {
+    display: block;
+    margin: 0 auto 2rem;
+    max-width: 20rem;
+}
+
+h1,
+h4,
+a {
+    font-family: "Cabin", "Cabin Fallback", sans-serif;
+    text-align: center;
+    color: #fff;
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+h4,
+a {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+a {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a:active,
+a:visited {
+    color: #fff;
+}
+
+.content {
+    padding: 0 2rem;
+    margin: 4rem auto 0;
+}
