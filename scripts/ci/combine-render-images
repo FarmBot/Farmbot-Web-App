@@ -1,0 +1,151 @@
+#!/usr/bin/env bun
+const fs = require('fs');
+const path = require('path');
+const { chromium } = require('playwright');
+
+const requiredEnv = name => {
+    const value = process.env[name];
+    if (!value) {
+        console.error(`${name} is required`);
+        process.exit(1);
+    }
+    return value;
+};
+
+const output = `/tmp/${requiredEnv('COMBINED_RENDER_IMAGE')}.png`;
+const screenshotName = requiredEnv('SCREENSHOT_NAME');
+const fpsSamplesName = requiredEnv('FPS_SAMPLES_NAME');
+const sceneMetricsName = requiredEnv('SCENE_METRICS_NAME');
+const feCoverageName = requiredEnv('FE_COVERAGE_NAME');
+const imagePath = name => `/tmp/${name}.png`;
+const imageData = filePath => {
+    const data = fs.readFileSync(filePath).toString('base64');
+    return `data:image/png;base64,${data}`;
+};
+
+const metricRow = name => [
+    [`${name} screenshot`, imagePath(`${screenshotName}_${name}`)],
+    [`${name} fps`, imagePath(`${fpsSamplesName}_${name}`)],
+    [`${name} metrics`, imagePath(`${sceneMetricsName}_${name}`)],
+];
+const screenshotCell = name => [
+    name.replace(/_/g, ' '),
+    imagePath(`${screenshotName}_${name}`),
+];
+const rows = [
+    metricRow('promo_xl'),
+    metricRow('app'),
+    metricRow('stress'),
+    metricRow('water'),
+    [
+        screenshotCell('login'),
+        screenshotCell('os'),
+        screenshotCell('demo'),
+    ],
+    [
+        screenshotCell('password_reset'),
+        screenshotCell('404'),
+        ['fe coverage', imagePath(feCoverageName)],
+    ],
+];
+
+const escapeHtml = value => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+const cell = ([title, filePath]) => {
+    if (!fs.existsSync(filePath)) {
+        return `
+          <figure class="missing">
+            <figcaption>${escapeHtml(title)}</figcaption>
+            <div>Missing ${escapeHtml(path.basename(filePath))}</div>
+          </figure>`;
+    }
+    return `
+      <figure>
+        <figcaption>${escapeHtml(title)}</figcaption>
+        <img src="${imageData(filePath)}" />
+      </figure>`;
+};
+const rowHtml = rows
+    .map(row => `<section class="row">${row.map(cell).join('')}</section>`)
+    .join('');
+const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f6f8fa;
+      color: #24292f;
+      font-family: Arial, sans-serif;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .row:last-child { margin-bottom: 0; }
+    figure {
+      margin: 0;
+      padding: 12px;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+    }
+    figcaption {
+      margin-bottom: 8px;
+      color: #57606a;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #ffffff;
+    }
+    .missing div {
+      min-height: 160px;
+      display: grid;
+      place-items: center;
+      color: #8c959f;
+      border: 1px dashed #d0d7de;
+      background: #f6f8fa;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  ${rowHtml}
+</body>
+</html>`;
+
+async function main() {
+    fs.mkdirSync(path.dirname(output), { recursive: true });
+    const browser = await chromium.launch({
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
+    });
+    try {
+        const page = await browser.newPage({ viewport: { width: 1800, height: 1200 } });
+        await page.setContent(html, { waitUntil: 'load' });
+        await page.screenshot({ path: output, fullPage: true });
+        console.log(`COMBINED_RENDER_IMAGE=${output}`);
+    } finally {
+        await browser.close();
+    }
+}
+
+main().catch(error => {
+    console.error('Failed to combine render images:', error.message || error);
+    process.exitCode = 1;
+});

@@ -12,7 +12,6 @@ env:
   NOTIFY: ${{ github.ref_name == 'staging' }}
   STAGING: ${{ github.ref_name == 'staging' }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  FE_COVERAGE_NAME: fe_coverage
   CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
   FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
 
@@ -26,6 +25,12 @@ jobs:
         with:
           fetch-depth: 100
 
+      - name: Set render env
+        run: scripts/ci/export-render-env
+
+      - name: Run CI script tests
+        run: python3 -m unittest scripts/ci/test_python_scripts.py
+
       - name: Send notification
         if: env.NOTIFY == 'true'
         run: scripts/ci/send-notification "CI run started"
@@ -37,20 +42,7 @@ jobs:
       - name: Create compare link
         if: env.NOTIFY == 'true'
         run: |
-          DEPLOYS_URL_API="https://api.github.com/repos/Farmbot/Farmbot-Web-App/deployments"
-          COMPARE_URL_WEB="https://github.com/Farmbot/Farmbot-Web-App/compare/"
-          data=$(curl -fsS "$DEPLOYS_URL_API") || data="[]"
-          last_sha=$(DEPLOYS_DATA="$data" python3 - <<'PY'
-          import json
-          import os
-
-          data = json.loads(os.environ.get("DEPLOYS_DATA") or "[]")
-          deploy_index = 0
-          sha = (data[deploy_index] or {}).get("sha") if data else ""
-          print(sha or "")
-          PY
-          )
-          compare_url="$COMPARE_URL_WEB$last_sha...${GITHUB_SHA}"
+          compare_url=$(scripts/ci/create-compare-link)
           echo "$compare_url"
           echo "COMPARE_URL=$compare_url" >> "$GITHUB_ENV"
 
@@ -128,8 +120,7 @@ jobs:
         id: restore_fe_coverage_history
         if: always()
         run: |
-          . scripts/ci/render-env
-          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
+          scripts/ci/git-restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
           if [ -f "/tmp/$FE_COVERAGE_NAME.csv" ]; then
             echo "fe_coverage_found=true" >> "$GITHUB_OUTPUT"
           fi
@@ -150,32 +141,7 @@ jobs:
             echo "skipping"
             exit 0
           fi
-          eval "$(awk -F: '/^LH:/ { covered += $2 } /^LF:/ { total += $2 } END { printf "COVERED=%d\nTOTAL=%d\n", covered, total }' coverage_fe/lcov.info)"
-          FE_VALUE=$(awk "BEGIN { printf \"%.2f\", ($COVERED / $TOTAL) * 100 }")
-          fe_coverage_csv="/tmp/$FE_COVERAGE_NAME.csv"
-          if [ -f "$fe_coverage_csv" ]; then
-            PREV_FE=$(python3 - <<'PY'
-          import csv
-          import os
-
-          with open(f"/tmp/{os.environ['FE_COVERAGE_NAME']}.csv", newline="") as f:
-              reader = csv.reader(f)
-              next(reader, None)
-              rows = [float(row[0]) for row in reader if row and row[0]]
-          print(f"{rows[-1]:.2f}" if rows else "99.4")
-          PY
-          )
-          else
-            PREV_FE=99.4
-          fi
-          percent_change=$(CURRENT_VALUE="$FE_VALUE" PREVIOUS_VALUE="$PREV_FE" scripts/ci/percent-change)
-          echo "Covered lines: $COVERED, Total lines: $TOTAL, Coverage: $FE_VALUE%"
-          echo "$FE_VALUE% ($percent_change% change)"
-          if [ ! -f "$fe_coverage_csv" ]; then
-            printf '%s\n' "percent,covered lines,total lines,percent change" > "$fe_coverage_csv"
-          fi
-          printf '%s\n' "$FE_VALUE,$COVERED,$TOTAL,$percent_change" >> "$fe_coverage_csv"
-          cat "$fe_coverage_csv"
+          scripts/ci/track-fe-coverage
 
       - name: Save frontend coverage value
         if: ${{ always() && env.COVERAGE_AVAILABLE == 'true' }}

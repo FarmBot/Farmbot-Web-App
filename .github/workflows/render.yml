@@ -10,8 +10,6 @@ env:
   NOTIFY: ${{ github.ref_name == 'staging' }}
   STAGING: ${{ github.ref_name == 'staging' }}
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  SCENE_METRICS_NAME: scene_metrics
-  FE_COVERAGE_NAME: fe_coverage
   CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
   FPS_METRICS_CACHE_KEY: fps-metrics-${{ github.ref_name }}
   FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
@@ -23,6 +21,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Set render env
+        run: scripts/ci/export-render-env
 
       - name: Set up CI
         uses: ./.github/actions/setup-ci
@@ -88,8 +89,7 @@ jobs:
       - name: Restore metric history
         id: restore_metric_history
         run: |
-          . scripts/ci/render-env
-          scripts/ci/restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
+          scripts/ci/git-restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
           if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
             echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
           fi
@@ -118,8 +118,7 @@ jobs:
         run: |
           [ -f "/tmp/$FE_COVERAGE_NAME.csv" ] && exit 0
 
-          . scripts/ci/render-env
-          scripts/ci/restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
+          scripts/ci/git-restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
 
       - name: Run playwright
         run: scripts/ci/run-playwright-render
@@ -128,7 +127,7 @@ jobs:
         run: |
           PREV=$(scripts/ci/previous-fps-value)
           echo "Previous value: $PREV fps"
-          percent_change=$(CURRENT_VALUE="$FPS_VALUE" PREVIOUS_VALUE="$PREV" scripts/ci/percent-change)
+          percent_change=$(scripts/ci/percent-change --new "$FPS_VALUE" --old "$PREV")
           echo "$FPS_VALUE fps ($percent_change% change)"
           echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
 
@@ -184,47 +183,14 @@ jobs:
 
       - name: Publish image links
         if: success() && env.STAGING == 'true'
-        run: |
-          . scripts/ci/render-env
-          worktree=$(mktemp -d)
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git ls-remote --exit-code --heads origin "$ARTIFACT_BRANCH" >/dev/null; then
-            git fetch origin "$ARTIFACT_BRANCH"
-            git worktree add "$worktree" "origin/$ARTIFACT_BRANCH"
-          else
-            git worktree add --detach "$worktree"
-            git -C "$worktree" switch --orphan "$ARTIFACT_BRANCH"
-          fi
-
-          mkdir -p "$worktree/build/latest" "$worktree/build/${GITHUB_RUN_ID}"
-          for image in "$PROMO_IMAGE" "$FPS_SAMPLES_NAME"; do
-            cp "/tmp/$image.png" "$worktree/build/latest/$image.png"
-            cp "/tmp/$image.png" "$worktree/build/${GITHUB_RUN_ID}/$image.png"
-          done
-          cp "/tmp/$FPS_SAMPLES_NAME.csv" "$worktree/build/latest/$FPS_SAMPLES_NAME.csv"
-          cp "/tmp/$FPS_SAMPLES_NAME.csv" "$worktree/build/${GITHUB_RUN_ID}/$FPS_SAMPLES_NAME.csv"
-          for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FE_COVERAGE_NAME.csv"; do
-            [ -f "$metric" ] && cp "$metric" "$worktree/$(basename "$metric")"
-          done
-          git -C "$worktree" add build
-          for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FE_COVERAGE_NAME.csv"; do
-            [ -f "$artifact" ] && git -C "$worktree" add "$(basename "$artifact")"
-          done
-          git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true
-          git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"
-
-          raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${ARTIFACT_BRANCH}/build/${GITHUB_RUN_ID}"
-          echo "SCREENSHOT_URL=${raw_base}/${PROMO_IMAGE}.png" >> "$GITHUB_ENV"
-          echo "FPS_PLOT_URL=${raw_base}/${FPS_SAMPLES_NAME}.png" >> "$GITHUB_ENV"
+        run: scripts/ci/git-publish-render-artifacts
 
       - name: Send notification
         if: success() && env.NOTIFY == 'true'
         run: |
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           for MESSAGE in \
-            "<${SCREENSHOT_URL:-$RUN_URL}|screenshot>" \
-            "<${FPS_PLOT_URL:-$RUN_URL}|fps>"
+            "<${RENDER_SUMMARY_URL:-$RUN_URL}|render summary>"
           do
             scripts/ci/send-notification "$MESSAGE"
           done

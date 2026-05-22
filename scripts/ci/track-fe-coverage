@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+import csv
+import os
+from pathlib import Path
+import subprocess
+
+fe_coverage_name = os.environ["FE_COVERAGE_NAME"]
+fallback = os.environ["FALLBACK_FE_COVERAGE_VALUE"]
+lcov_path = Path(os.environ.get("FE_LCOV_PATH", "coverage_fe/lcov.info"))
+csv_path = Path("/tmp") / f"{fe_coverage_name}.csv"
+
+covered = 0
+total = 0
+with lcov_path.open() as lcov:
+    for line in lcov:
+        if line.startswith("LH:"):
+            covered += int(line.split(":", 1)[1])
+        elif line.startswith("LF:"):
+            total += int(line.split(":", 1)[1])
+
+value = f"{(covered / total) * 100:.2f}"
+
+previous = fallback
+if csv_path.exists():
+    with csv_path.open(newline="") as csv_file:
+        reader = csv.reader(csv_file)
+        next(reader, None)
+        values = [float(row[0]) for row in reader if row and row[0]]
+    if values:
+        previous = f"{values[-1]:.2f}"
+
+percent_change = subprocess.check_output([
+    "scripts/ci/percent-change",
+    "--new",
+    value,
+    "--old",
+    previous,
+], text=True).strip()
+
+print(f"Covered lines: {covered}, Total lines: {total}, Coverage: {value}%")
+print(f"{value}% ({percent_change}% change)")
+
+if not csv_path.exists():
+    csv_path.write_text("percent,covered lines,total lines,percent change\n")
+
+with csv_path.open("a", newline="") as csv_file:
+    writer = csv.writer(csv_file)
+    writer.writerow([value, covered, total, percent_change])
+
+print(csv_path.read_text(), end="")

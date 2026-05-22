@@ -1,14 +1,25 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-message="$*"
-if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
-  exit 0
-fi
-
-MESSAGE="$message" python3 - <<'PY' | curl -fsS -X POST -H "Content-Type: application/json" --data @- "$SLACK_WEBHOOK_URL" || true
+#!/usr/bin/env python3
 import json
 import os
+import sys
+import urllib.request
 
-print(json.dumps({"text": os.environ["MESSAGE"], "channel": "#software"}))
-PY
+webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
+if not webhook_url:
+    raise SystemExit(0)
+
+payload = json.dumps({
+    "text": " ".join(sys.argv[1:]),
+    "channel": "#software",
+}).encode()
+request = urllib.request.Request(
+    webhook_url,
+    data=payload,
+    headers={"Content-Type": "application/json"},
+    method="POST",
+)
+
+try:
+    urllib.request.urlopen(request, timeout=30)
+except Exception as error:
+    print(f"Failed to send notification: {error}", file=sys.stderr)

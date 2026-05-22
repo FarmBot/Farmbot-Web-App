@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import os
+import argparse
 
-current = float(os.environ.get("CURRENT_VALUE", "0") or 0)
-previous = float(os.environ.get("PREVIOUS_VALUE", "0") or 0)
+parser = argparse.ArgumentParser()
+parser.add_argument("--new", required=True, type=float)
+parser.add_argument("--old", required=True, type=float)
+args = parser.parse_args()
 
-print("n/a" if previous == 0 else f"{((current - previous) / previous) * 100:.2f}")
+print("n/a" if args.old == 0 else f"{((args.new - args.old) / args.old) * 100:.2f}")

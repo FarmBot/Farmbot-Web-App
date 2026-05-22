@@ -1,6 +1,6 @@
 [
   {
-    "name": "promo",
+    "name": "promo_xl",
     "mode": "fps",
     "url": "http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
   },

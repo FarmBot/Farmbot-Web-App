@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ -f scripts/ci/render-env ]; then
-  # shellcheck disable=SC1091
-  . scripts/ci/render-env
-fi
-
 source_pattern="${1:?source path is required}"
+: "${ARTIFACT_BRANCH:?ARTIFACT_BRANCH is required}"
 
 if ! git ls-remote --exit-code --heads origin "$ARTIFACT_BRANCH" >/dev/null; then
   exit 0
