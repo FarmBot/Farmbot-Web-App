@@ -132,7 +132,7 @@ describe("<PlantInstances />", () => {
   it("disables frustum culling for billboarded plant icons", () => {
     const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
     const mesh = wrapper.root.findAll(node =>
-      node.type == "instancedMesh")[0];
+      (node.type as string) == "instancedMesh")[0];
     expect(mesh.props.frustumCulled).toEqual(false);
     unmountRenderer(wrapper);
   });

@@ -32,6 +32,7 @@ import * as deviceActions from "../../../devices/actions";
 import { ButtonPin } from "../list_and_label_support";
 import { BoxTopBaseProps } from "../interfaces";
 import { FirmwareHardware } from "farmbot";
+import * as ui from "../../../ui";
 
 describe("setZForAllInGroup()", () => {
   it("sets z", () => {
@@ -53,6 +54,7 @@ describe("<ElectronicsBoxModel />", () => {
   let execSequenceSpy: jest.SpyInstance;
   let useFrameSpy: jest.SpyInstance;
   let reactUseRefSpy: jest.SpyInstance;
+  let fbSelectSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -74,6 +76,8 @@ describe("<ElectronicsBoxModel />", () => {
       }));
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
+    fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation((() => <div />) as never);
   });
 
   afterEach(() => {
@@ -82,6 +86,7 @@ describe("<ElectronicsBoxModel />", () => {
     document.body.style.cursor = "default";
     reactUseRefSpy.mockRestore();
     useFrameSpy.mockRestore();
+    fbSelectSpy.mockRestore();
   });
 
   const fakeProps = (): BoxTopBaseProps => {

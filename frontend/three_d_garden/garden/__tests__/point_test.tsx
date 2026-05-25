@@ -98,7 +98,8 @@ describe("<Point />", () => {
   it("renders instanced point markers", () => {
     const wrapper = createRenderer(<PointInstances {...fakeInstanceProps()} />);
     mountedWrappers.push(wrapper);
-    const meshes = wrapper.root.findAll(node => node.type == "instancedMesh");
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
     expect(meshes.length).toEqual(3);
     expect(meshes[0].props.args[2]).toEqual(2);
   });

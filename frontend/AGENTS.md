@@ -10,6 +10,7 @@ Follow existing codebase conventions and style, for example:
 ## Testing Instructions
 - Jest mocks already exist for many modules in `frontend/__test_support__`.
 - New tests should be written using the `@testing-library/react` library.
+- Use only test-level mocks, avoid module-level mocks.
 - Do not terminate test commands before they are completed.
 
 ### For the files you change

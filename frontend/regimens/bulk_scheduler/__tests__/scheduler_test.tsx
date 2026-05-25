@@ -14,34 +14,14 @@ import { RegimenSchedulerProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { Path } from "../../../internal_urls";
 import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
+import {
+  findElementByType,
+} from "../../../__test_support__/react_element_search";
 
-const findByType = (
-  node: React.ReactNode,
-  type: unknown,
-): React.ReactElement<{
+interface DesignerPanelHeaderTestProps {
   children?: React.ReactNode;
   backTo?: string;
-}> | undefined => {
-  if (!node) { return undefined; }
-  if (Array.isArray(node)) {
-    for (const child of React.Children.toArray(node)) {
-      const found = findByType(child, type);
-      if (found) { return found; }
-    }
-    return undefined;
-  }
-  if (React.isValidElement(node)) {
-    if (node.type === type) {
-      return node as React.ReactElement<{
-        children?: React.ReactNode;
-        backTo?: string;
-      }>;
-    }
-    return findByType(
-      (node.props as { children?: React.ReactNode }).children, type);
-  }
-  return undefined;
-};
+}
 
 describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): RegimenSchedulerProps => ({
@@ -69,7 +49,8 @@ describe("<DesignerRegimenScheduler />", () => {
     const p = fakeProps();
     p.current = undefined;
     const element = new DesignerRegimenScheduler(p).render();
-    const header = findByType(element, DesignerPanelHeader);
+    const header = findElementByType<DesignerPanelHeaderTestProps>(
+      element, DesignerPanelHeader);
     expect(header?.props.backTo).toEqual(Path.regimens());
   });
 

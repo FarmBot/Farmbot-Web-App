@@ -8,12 +8,16 @@ import { TileExecute } from "../tile_execute";
 import { render } from "@testing-library/react";
 import { Execute, ParameterApplication, Coordinate } from "farmbot";
 import { LocalsList } from "../../locals_list/locals_list";
+import { LocalsListProps } from "../../locals_list/locals_list_support";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
-import { StepWrapper } from "../../step_ui";
+import { StepWrapper, StepWrapperProps } from "../../step_ui";
 import { ToolTips } from "../../../constants";
 import * as crud from "../../../api/crud";
 import * as selectorsById from "../../../resources/selectors_by_id";
+import {
+  findElementByType,
+} from "../../../__test_support__/react_element_search";
 
 const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
   ({ kind: "coordinate", args: { x, y, z } });
@@ -21,31 +25,6 @@ const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
 const fakeProps = (): StepParams<Execute> => ({
   ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
 });
-
-// eslint-disable-next-line comma-spacing
-const findByType = <P,>(
-  node: React.ReactNode,
-  type: React.ComponentType<P>,
-): React.ReactElement<P> | undefined => {
-  if (!node) { return undefined; }
-  if (Array.isArray(node)) {
-    for (const child of React.Children.toArray(node)) {
-      const found = findByType(child, type);
-      if (found) { return found; }
-    }
-    return undefined;
-  }
-  if (React.isValidElement(node)) {
-    if (node.type === type) {
-      return node as React.ReactElement<P>;
-    }
-    const elementWithChildren = node as React.ReactElement<{
-      children?: React.ReactNode;
-    }>;
-    return findByType(elementWithChildren.props.children, type);
-  }
-  return undefined;
-};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -96,7 +75,8 @@ describe("<TileExecute />", () => {
     p.currentStep.args.sequence_id = mockSequence.body.id;
     mockSequence.body.description = "description";
     const element = new TileExecute(p).render();
-    const wrapper = findByType(element, StepWrapper);
+    const wrapper = findElementByType<StepWrapperProps>(
+      element, StepWrapper);
     expect(wrapper?.props.helpText).toEqual("description");
   });
 
@@ -104,7 +84,8 @@ describe("<TileExecute />", () => {
     const p = fakeProps();
     mockSequence.body.description = "";
     const element = new TileExecute(p).render();
-    const wrapper = findByType(element, StepWrapper);
+    const wrapper = findElementByType<StepWrapperProps>(
+      element, StepWrapper);
     expect(wrapper?.props.helpText)
       .toEqual(ToolTips.EXECUTE_SEQUENCE);
   });
@@ -155,7 +136,8 @@ describe("<TileExecute />", () => {
     const p = fakeProps();
     p.currentStep.args.sequence_id = 0;
     const element = new TileExecute(p).render();
-    expect(findByType(element, LocalsList)).toBeUndefined();
+    expect(findElementByType<LocalsListProps>(
+      element, LocalsList)).toBeUndefined();
   });
 
   it("selects a location", () => {
@@ -181,7 +163,8 @@ describe("<TileExecute />", () => {
         }
       }
     };
-    const localsList = findByType(element, LocalsList);
+    const localsList = findElementByType<LocalsListProps>(
+      element, LocalsList);
     localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
@@ -251,7 +234,8 @@ describe("<TileExecute />", () => {
         }
       }
     };
-    const localsList = findByType(element, LocalsList);
+    const localsList = findElementByType<LocalsListProps>(
+      element, LocalsList);
     localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
