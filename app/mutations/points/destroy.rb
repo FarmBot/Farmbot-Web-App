@@ -1,9 +1,7 @@
 module Points
   class Destroy < Mutations::Command
-    STILL_IN_USE = "Could not delete the following item(s): %s. Item(s) are " \
-    "in use by the following sequence(s): %s."
-    JUST_ONE = "Could not delete %s. Item is in use by the following " \
-               "sequence(s): %s."
+    STILL_IN_USE = "Could not delete %s. Items are in use by %s."
+    JUST_ONE = "Could not delete %s. Item is in use by %s."
 
     required do
       model :device, class: Device
@@ -19,21 +17,18 @@ module Points
 
     def validate
       maybe_wrap_ids
-      # Collect names of sequences that still use this point.
-      problems = (tool_seq + point_seq + resource_update_seq)
-        .group_by(&:sequence_name)
-        .to_a
-        .each_with_object({ S => [], P => [] }) do |(seq_name, data), total|
-        total[S].push(seq_name)
-        total[P].push(*(data || []).map(&:fancy_name))
+      problems = point_usage.each_with_object({ S => [], P => [] }) do |usage, total|
+        owner, point = usage
+        total[S].push(owner_name(owner))
+        total[P].push(point.fancy_name)
       end
 
       p = problems[P].sort.uniq.join(", ")
 
       if p.present?
-        sequences = problems[S].sort.uniq.join(", ")
+        owners = problems[S].sort.uniq.join(", ")
         message = point_ids.many? ? STILL_IN_USE : JUST_ONE
-        problems = format(message, p, sequences)
+        problems = format(message, p, owners)
 
         add_error :whoops, :in_use, problems
       end
@@ -107,6 +102,68 @@ module Points
       @tool_seq ||= InUseTool
         .where(tool_id: every_tool_id_as_json, device_id: device.id)
         .to_a
+    end
+
+    def point_usage
+      @point_usage ||= sequence_point_usage + fragment_point_usage
+    end
+
+    def sequence_point_usage
+      @sequence_point_usage ||= sequence_usage
+        .group_by(&:sequence_id)
+        .to_a
+        .flat_map do |(sequence_id, data)|
+        sequence = sequence_owners[sequence_id]
+        next [] unless sequence
+
+        (data || []).map { |point| [sequence, point] }
+      end
+    end
+
+    def sequence_usage
+      @sequence_usage ||= tool_seq + point_seq + resource_update_seq
+    end
+
+    def sequence_owners
+      @sequence_owners ||= Sequence
+        .where(id: sequence_usage.map(&:sequence_id).uniq)
+        .index_by(&:id)
+    end
+
+    def fragment_point_usage
+      @fragment_point_usage ||= begin
+        primitives = point_ids.flat_map do |point_id|
+          Primitive
+            .where(fragment_id: fragment_owner_ids)
+            .where(value: point_id)
+        end
+        pairs = PrimitivePair
+          .includes(:primitive)
+          .where(arg_name_id: ArgName.find_or_create_by!(value: "pointer_id").id)
+          .where(primitive_id: primitives.map(&:id))
+        owners = Fragment
+          .includes(:owner)
+          .where(id: pairs.map(&:fragment_id).uniq)
+          .index_by(&:id)
+        points_by_id = points.index_by(&:id)
+
+        pairs.each_with_object([]) do |pair, result|
+          owner = owners[pair.fragment_id]&.owner
+          point = points_by_id[pair.primitive.value]
+          result.push([owner, point]) if owner && point
+        end
+      end
+    end
+
+    def fragment_owner_ids
+      @fragment_owner_ids ||= Fragment
+        .where(device_id: device.id,
+               owner_type: [FarmEvent.name, Regimen.name])
+        .pluck(:id)
+    end
+
+    def owner_name(owner)
+      "#{owner.class.name} '#{owner.fancy_name}'"
     end
 
     def maybe_wrap_ids

@@ -64,7 +64,28 @@ describe("deletePoints()", () => {
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "Some weeds failed to delete."));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "Are they in use by sequences?"));
+      "Are they in use by sequences, regimens, or events?"));
+  });
+
+  it("shows response errors when points can't be deleted", async () => {
+    mockDelete = Promise.reject({
+      response: {
+        data: {
+          whoops: "Could not delete point. Item is in use by the following: X.",
+        },
+      },
+    });
+    mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const dispatch = jest.fn();
+    const progressCb = jest.fn();
+    const query = { meta: { created_by: "plant-detection" } };
+    await actualDeletePoints().deletePoints("weeds", query, progressCb)(
+      dispatch, jest.fn());
+    await Promise.resolve();
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Some weeds failed to delete."));
+    expect(error).toHaveBeenCalledWith(
+      "Whoops: Could not delete point. Item is in use by the following: X.");
   });
 
   it("chunks points", async () => {
@@ -114,7 +135,23 @@ describe("deletePointsByIds()", () => {
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "Some points failed to delete."));
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "Are they in use by sequences?"));
+      "Are they in use by sequences, regimens, or events?"));
+    expect(success).not.toHaveBeenCalled();
+  });
+
+  it("shows response errors when points can't be deleted", async () => {
+    mockDelete = Promise.reject({
+      response: {
+        data: {
+          whoops: "Could not delete point. Item is in use by the following: X.",
+        },
+      },
+    });
+    await actualDeletePoints().deletePointsByIds("points", [1, 2, 3]);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Some points failed to delete."));
+    expect(error).toHaveBeenCalledWith(
+      "Whoops: Could not delete point. Item is in use by the following: X.");
     expect(success).not.toHaveBeenCalled();
   });
 });
