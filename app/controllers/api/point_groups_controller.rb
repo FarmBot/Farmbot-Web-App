@@ -25,7 +25,7 @@ module Api
     private
 
     def the_point_group
-      your_point_groups.find(params[:id])
+      your_point_groups.find(params.expect(:id))
     end
 
     def your_point_groups

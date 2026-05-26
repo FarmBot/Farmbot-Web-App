@@ -1,19 +1,10 @@
-import React from "react";
 import {
   allMatchedItems, FilterSearch, FilterSearchProps,
 } from "../filter_search";
 import { DropDownItem } from "../fb_select";
-import { ItemRendererProps } from "@blueprintjs/select";
-import {
-  actRenderer,
-  createRenderer,
-  getRendererInstance,
-  unmountRenderer,
-} from "../../__test_support__/test_renderer";
+import type { ItemRendererProps } from "@blueprintjs/select";
 
 describe("<FilterSearch />", () => {
-  const wrappers: ReturnType<typeof createRenderer>[] = [];
-
   const fakeItem = (extra?: Partial<DropDownItem>): DropDownItem =>
     Object.assign({ label: "label", value: "value" }, extra);
 
@@ -24,67 +15,46 @@ describe("<FilterSearch />", () => {
     nullChoice: fakeItem(),
   });
 
-  const createWrapper = (p = fakeProps()) => {
-    const wrapper = createRenderer(<FilterSearch {...p} />);
-    wrappers.push(wrapper);
-    return wrapper;
+  const createInstance = (p = fakeProps()) => {
+    const instance = new FilterSearch(p);
+    jest.spyOn(instance, "setState").mockImplementation(update => {
+      Object.assign(instance.state, update);
+    });
+    return instance;
   };
-
-  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<FilterSearch, React.ComponentProps<typeof FilterSearch>>(
-      wrapper, FilterSearch);
-
-  afterEach(() => {
-    while (wrappers.length > 0) {
-      const wrapper = wrappers.pop();
-      wrapper && unmountRenderer(wrapper);
-    }
-  });
 
   it("selects item", () => {
     const p = fakeProps();
-    const wrapper = createWrapper(p);
+    const instance = createInstance(p);
     const item = fakeItem();
-    actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](item);
-    });
+    instance["handleValueChange"](item);
     expect(p.onChange).toHaveBeenCalledWith(item);
   });
 
   it("doesn't select item", () => {
     const p = fakeProps();
-    const wrapper = createWrapper(p);
-    actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](undefined);
-    });
+    const instance = createInstance(p);
+    instance["handleValueChange"](undefined);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("doesn't select header", () => {
     const p = fakeProps();
-    const wrapper = createWrapper(p);
+    const instance = createInstance(p);
     const item = fakeItem({ heading: true });
-    actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](item);
-    });
+    instance["handleValueChange"](item);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("handles empty selection", () => {
-    const p = fakeProps();
-    const wrapper = createWrapper(p);
-    actRenderer(() => {
-      getInstance(wrapper).setState({
-        item: undefined,
-      });
-    });
-    expect(JSON.stringify(wrapper.toJSON()).toLowerCase())
+    const instance = createInstance();
+    instance.state.item = undefined;
+    expect(JSON.stringify(instance.render()).toLowerCase())
       .toContain("no selection");
   });
 
   it("handles empty item", () => {
-    const wrapper = createWrapper();
-    const renderItem = getInstance(wrapper)["default"];
+    const renderItem = createInstance()["default"];
     const item = { label: "label", value: "" };
     const renderProps = {
       handleClick: jest.fn(),
@@ -107,22 +77,22 @@ describe("<FilterSearch />", () => {
     ];
     const itemListFilter = jest.fn((items, query) =>
       query.toLowerCase().includes("stress") ? items : items.slice(0, 1));
-    const wrapper = createWrapper({ ...p, itemListFilter });
+    const instance = createInstance({ ...p, itemListFilter });
 
+    instance.render();
     expect(itemListFilter).toHaveBeenCalledWith(p.items, "");
-    actRenderer(() => {
-      getInstance(wrapper)["handleQueryChange"]("stress");
-    });
+    instance.state.query = "stress";
+    instance.render();
     expect(itemListFilter).toHaveBeenLastCalledWith(p.items, "stress");
   });
 
   it("shows section headings only when a child item matches", () => {
-    const wrapper = createWrapper();
+    const instance = createInstance();
     const items = [
       fakeItem({ label: "--- Plants", heading: true, headingId: "Plant" }),
       fakeItem({ label: "Mint", headingId: "Plant" }),
     ];
-    const filter = getInstance(wrapper)["filter"](items);
+    const filter = instance["filter"](items);
 
     expect(filter("plants", items[0])).toBeTruthy();
     expect(filter("tools", items[0])).toBeFalsy();

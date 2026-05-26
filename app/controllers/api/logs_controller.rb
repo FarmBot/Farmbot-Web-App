@@ -49,7 +49,7 @@ module Api
       if params[:id] == "all"
         render json: (current_device.logs.destroy_all && "")
       else
-        render json: (current_device.logs.find(params[:id]).destroy! && "")
+        render json: (current_device.logs.find(params.expect(:id)).destroy! && "")
       end
     end
 

@@ -13,7 +13,6 @@ const mockDevice = {
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import type { ReactTestInstance } from "react-test-renderer";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex, fakeDevice,
@@ -90,7 +89,6 @@ import * as messageCards from "../../messages/cards";
 import * as bootSequenceSelector from "../../settings/fbos_settings/boot_sequence_selector";
 import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
-import { DropdownConfig } from "../../photos/camera_calibration/config";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { createRenderer } from "../../__test_support__/test_renderer";
 
@@ -113,22 +111,6 @@ let changeFirmwareHardwareSpy: jest.SpyInstance | undefined;
 let emergencyUnlockSpy: jest.SpyInstance;
 let findHomeSpy: jest.SpyInstance;
 let findAxisLengthSpy: jest.SpyInstance;
-
-const findNodeByType = (
-  node: React.ReactNode,
-  matcher: (type: unknown) => boolean,
-): ReactTestInstance | undefined => {
-  if (!node || !React.isValidElement(node)) {
-    return undefined;
-  }
-  try {
-    return createRenderer(node).root
-      .findAll(element => matcher(element.type))
-      .filter(item => matcher(item.type))[0];
-  } catch {
-    return undefined;
-  }
-};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -951,10 +933,14 @@ describe("<CameraImageOrigin />", () => {
 
   it("changes origin", () => {
     const p = fakeProps();
-    const origin = findNodeByType(<CameraImageOrigin {...p} />,
-      type => type === DropdownConfig);
-    origin?.props.onChange(
-      "CAMERA_CALIBRATION_image_bot_origin_location", 2);
+    const fbSelectProps: ui.FBSelectProps[] = [];
+    fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+    render(<CameraImageOrigin {...p} />);
+    fbSelectProps[0].onChange({ label: "Top left", value: 2 });
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_image_bot_origin_location",
       value: "\"TOP_LEFT\"",

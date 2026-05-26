@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--new", required=True, type=float)
+parser.add_argument("--old", required=True, type=float)
+args = parser.parse_args()
+
+print("n/a" if args.old == 0 else f"{((args.new - args.old) / args.old) * 100:.2f}")

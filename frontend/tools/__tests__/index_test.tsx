@@ -2,7 +2,6 @@ const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 
 import React from "react";
 import { act, fireEvent, render } from "@testing-library/react";
-import type { ReactTestInstance } from "react-test-renderer";
 import {
   RawTools as Tools,
   ToolSlotInventoryItem,
@@ -17,7 +16,9 @@ import { Content, Actions } from "../../constants";
 import * as crud from "../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
-import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
+import {
+  ToolsProps, ToolSelectionProps, ToolSlotInventoryItemProps,
+} from "../interfaces";
 import * as mapActions from "../../farm_designer/map/actions";
 import * as mapUtil from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -26,11 +27,8 @@ import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { Path } from "../../internal_urls";
 import * as deviceModule from "../../device";
 import { NavigationContext } from "../../routes_helpers";
-import { FBSelect } from "../../ui/new_fb_select";
-import {
-  createRenderer,
-  unmountRenderer,
-} from "../../__test_support__/test_renderer";
+import * as toolSlotEditComponents from "../tool_slot_edit_components";
+import { findElement } from "../../__test_support__/react_element_search";
 
 const originalPathname = location.pathname;
 
@@ -40,41 +38,6 @@ const renderWithContext = (element: React.ReactElement) =>
       {element}
     </NavigationContext.Provider>,
   );
-
-const findNodeByType = (
-  node: React.ReactNode,
-  matcher: (type: React.ElementType) => boolean,
-): ReactTestInstance | undefined => {
-  if (!node || typeof node === "string" || typeof node === "number") {
-    return undefined;
-  }
-  if (Array.isArray(node)) {
-    for (const child of node as React.ReactNode[]) {
-      const found = findNodeByType(child, matcher);
-      if (found) {
-        return found;
-      }
-    }
-    return undefined;
-  }
-  if (React.isValidElement(node)) {
-    const element = node as React.ReactElement<{ children?: React.ReactNode }>;
-    if (matcher(element.type as React.ElementType)) {
-      return createRenderer(node as React.ReactElement).root;
-    }
-    let found: ReactTestInstance | undefined;
-    React.Children.forEach(element.props.children, (child: React.ReactNode) => {
-      if (found) {
-        return;
-      }
-      found = findNodeByType(child, matcher);
-    });
-    if (found) {
-      return found;
-    }
-  }
-  return undefined;
-};
 
 describe("<Tools />", () => {
   afterEach(() => {
@@ -256,7 +219,7 @@ describe("<Tools />", () => {
     const ref = React.createRef<Tools>();
     renderWithContext(<Tools {...p} ref={ref} />);
     const mountedTool = ref.current?.MountedToolInfo();
-    const toolSelection = findNodeByType(
+    const toolSelection = findElement<ToolSelectionProps>(
       mountedTool, type => type === ToolSelection);
     act(() => {
       toolSelection?.props.onChange({ tool_id: 123 });
@@ -385,19 +348,17 @@ describe("<ToolSlotInventoryItem />", () => {
 
   it("changes tool", () => {
     const p = fakeProps();
-    let wrapper: ReturnType<typeof createRenderer>;
-    act(() => {
-      wrapper = createRenderer(<ToolSlotInventoryItem {...p} />);
-    });
-    act(() => {
-      wrapper.root.findByType(FBSelect).props.onChange({ value: "1" });
-    });
+    const toolSelectionSpy = jest.spyOn(toolSlotEditComponents, "ToolSelection")
+      .mockImplementation((props: ToolSelectionProps) =>
+        <button onClick={() => props.onChange({ tool_id: 1 })} />);
+    const { getByRole } = render(<ToolSlotInventoryItem {...p} />);
+    fireEvent.click(getByRole("button"));
+
     expect(p.dispatch).toHaveBeenCalledTimes(2);
     expect(crud.edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
     expect(crud.save).toHaveBeenCalledWith(p.toolSlot.uuid);
-    act(() => {
-      unmountRenderer(wrapper);
-    });
+
+    toolSelectionSpy.mockRestore();
   });
 
   it("doesn't open tool slot", () => {

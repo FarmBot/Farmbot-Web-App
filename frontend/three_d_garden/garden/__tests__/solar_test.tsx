@@ -38,7 +38,7 @@ describe("<Solar />", () => {
     p.config.solar = true;
     const wrapper = createRenderer(<Solar {...p} />);
     const solarCells = wrapper.root.findAll(node =>
-      node.type == "instancedMesh");
+      (node.type as string) == "instancedMesh");
     expect(solarCells[0].props.frustumCulled).toEqual(false);
     expect(solarCells[0].props.renderOrder).toEqual(RenderOrder.one + 1);
     unmountRenderer(wrapper);
@@ -51,9 +51,10 @@ describe("<Solar />", () => {
     const wiring = wrapper.root.findAll(node =>
       node.props.name == "solar-wiring")[0];
     const panel = wrapper.root.findAll(node =>
-      node.type == "mesh" && node.props.renderOrder == RenderOrder.one)[0];
+      (node.type as string) == "mesh"
+      && node.props.renderOrder == RenderOrder.one)[0];
     const cells = wrapper.root.findAll(node =>
-      node.type == "instancedMesh")[0];
+      (node.type as string) == "instancedMesh")[0];
     const cellMaterial = wrapper.root.findAll(node =>
       node.props.side == DoubleSide)[0];
     expect(wiring.props.renderOrder).toEqual(RenderOrder.default);

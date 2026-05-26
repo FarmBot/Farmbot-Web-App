@@ -25,7 +25,7 @@ module Api
     private
 
     def peripheral
-      @peripheral ||= current_device.peripherals.find(params[:id])
+      @peripheral ||= current_device.peripherals.find(params.expect(:id))
     end
   end
 end

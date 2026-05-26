@@ -21,7 +21,7 @@ module Api
     end
 
     def show
-      render json: points.find(params[:id])
+      render json: points.find(params.expect(:id))
     end
 
     def search
@@ -39,14 +39,14 @@ module Api
     def destroy
       # TODO: We don't need to do batch requests like this any more.
       # This should be removed when possible. -RC 1 AUG 2018
-      ids = params[:id].to_s.split(",").map(&:to_i)
+      ids = params.expect(:id).to_s.split(",").map(&:to_i)
       mutate Points::Destroy.run({ point_ids: ids }, device_params)
     end
 
     private
 
     def point
-      @point ||= points.find(params[:id])
+      @point ||= points.find(params.expect(:id))
     end
 
     def points(filter = params[:filter])

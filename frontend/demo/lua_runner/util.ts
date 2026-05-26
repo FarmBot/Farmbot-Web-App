@@ -57,6 +57,12 @@ export const luaToJs = (L: unknown, idx: number): unknown => {
   }
 };
 
+export const flattenLuaPath = (path: unknown[]): string[] =>
+  path.flatMap(item =>
+    Array.isArray(item)
+      ? flattenLuaPath(item)
+      : ["" + item]);
+
 const luaTableToJs = (L: unknown, idx: number): unknown => {
   const absIndex = lua.lua_absindex(L, idx);
   const keyVals: [string | number, unknown][] = [];
@@ -71,7 +77,10 @@ const luaTableToJs = (L: unknown, idx: number): unknown => {
   const isArrayLike =
     keyVals.every(([k]) => typeof k === "number");
   if (isArrayLike) {
-    return keyVals.map(([, v]) => v).filter(v => v !== undefined);
+    return keyVals
+      .sort(([a], [b]) => (a as number) - (b as number))
+      .map(([, v]) => v)
+      .filter(v => v !== undefined);
   } else {
     const result: Record<string, unknown> = {};
     for (const [key, value] of keyVals) {

@@ -25,7 +25,7 @@ module Api
     private
 
     def the_regimen
-      your_regimens.find(params[:id])
+      your_regimens.find(params.expect(:id))
     end
 
     def your_regimens

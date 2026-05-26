@@ -9,6 +9,9 @@ import * as crud from "../../../api/crud";
 import { Path } from "../../../internal_urls";
 import * as popover from "../../../ui/popover";
 import { ColorPicker } from "../../../ui";
+import {
+  findElementByType,
+} from "../../../__test_support__/react_element_search";
 
 let selectRegimenSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -29,33 +32,10 @@ afterEach(() => {
   popoverSpy.mockRestore();
 });
 
-const findByType = (
-  node: React.ReactNode,
-  type: unknown,
-): React.ReactElement<{
+interface ColorPickerTestProps {
   children?: React.ReactNode;
   onChange?: (color: Color) => void;
-}> | undefined => {
-  if (!node) { return undefined; }
-  if (Array.isArray(node)) {
-    for (const child of React.Children.toArray(node)) {
-      const found = findByType(child, type);
-      if (found) { return found; }
-    }
-    return undefined;
-  }
-  if (React.isValidElement(node)) {
-    if (node.type === type) {
-      return node as React.ReactElement<{
-        children?: React.ReactNode;
-        onChange?: (color: Color) => void;
-      }>;
-    }
-    return findByType(
-      (node.props as { children?: React.ReactNode }).children, type);
-  }
-  return undefined;
-};
+}
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
@@ -118,8 +98,8 @@ describe("<RegimenListItem/>", () => {
       colorPickerCluster?.props.onChange("red");
       if (!colorPickerCluster) {
         const element = RegimenListItem(p);
-        const colorPicker = findByType(element, ColorPicker) as
-          React.ReactElement<{ onChange?: (color: Color) => void }> | undefined;
+        const colorPicker = findElementByType<ColorPickerTestProps>(
+          element, ColorPicker);
         colorPicker?.props.onChange?.("red");
       }
     }

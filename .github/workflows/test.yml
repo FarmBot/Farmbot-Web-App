@@ -1,0 +1,181 @@
+name: test
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+      SLACK_WEBHOOK_URL:
+        required: false
+
+env:
+  NOTIFY: ${{ github.ref_name == 'staging' }}
+  STAGING: ${{ github.ref_name == 'staging' }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
+  FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 100
+
+      - name: Set render env
+        run: scripts/ci/export-render-env
+
+      - name: Run CI script tests
+        run: python3 -m unittest scripts/ci/test_python_scripts.py
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run started"
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|logs>"
+
+      - name: Create compare link
+        if: env.NOTIFY == 'true'
+        run: |
+          compare_url=$(scripts/ci/create-compare-link)
+          echo "$compare_url"
+          echo "COMPARE_URL=$compare_url" >> "$GITHUB_ENV"
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "<${COMPARE_URL}|diff>"
+
+      - name: Set up CI
+        uses: ./.github/actions/setup-ci
+        with:
+          rails-env: test
+          save-docker-cache: "true"
+
+      - name: Run Ruby linters
+        run: sudo docker compose run --rm web bun run ruby-check
+
+      - name: Run Ruby tests
+        run: sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
+
+      - name: Check app coverage status
+        if: ${{ always() && hashFiles('coverage_api/index.html') != '' }}
+        run: sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ "$STAGING" = "true" ]
+
+      - name: Upload app coverage to Codecov
+        if: ${{ hashFiles('coverage_api/coverage.xml') != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage_api/coverage.xml
+          fail_ci_if_error: false
+
+      - name: Run JS linters
+        run: sudo docker compose run --rm web bun run linters
+
+      - name: Check bun build
+        run: |
+          sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+          printf -- '-%.0s' {1..50}; printf '\n'
+          if grep -Ei '^(warn|error):' assets_precompile.log; then
+            exit 1
+          fi
+
+      - name: Run JS tests
+        run: |
+          set +e
+          sudo docker compose run -T --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+          status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "COVERAGE_AVAILABLE=true" >> "$GITHUB_ENV"
+          fi
+          exit $status
+
+      - name: Check frontend coverage status
+        if: ${{ always() && (hashFiles('coverage_fe/index.html') != '' || hashFiles('coverage_fe/coverage-final.json') != '' || hashFiles('coverage_fe/lcov.info') != '') }}
+        env:
+          GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
+        run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$STAGING" = "true" ]
+
+      - name: Check frontend file coverage status
+        if: always()
+        run: |
+          changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
+          sudo docker compose run --rm -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
+
+      - name: Report frontend coverage to Coveralls
+        if: env.COVERAGE_AVAILABLE == 'true'
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ github.token }}
+          file: coverage_fe/lcov.info
+          format: lcov
+          fail-on-error: false
+
+      - name: Restore frontend coverage history
+        id: restore_fe_coverage_history
+        if: always()
+        run: |
+          scripts/ci/git-restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
+          if [ -f "/tmp/$FE_COVERAGE_NAME.csv" ]; then
+            echo "fe_coverage_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore frontend coverage cache fallback
+        if: ${{ always() && steps.restore_fe_coverage_history.outputs.fe_coverage_found != 'true' }}
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Track frontend coverage value
+        if: always()
+        run: |
+          if [ "$COVERAGE_AVAILABLE" != "true" ]; then
+            echo "skipping"
+            exit 0
+          fi
+          scripts/ci/track-fe-coverage
+
+      - name: Save frontend coverage value
+        if: ${{ always() && env.COVERAGE_AVAILABLE == 'true' }}
+        uses: actions/cache/save@v5
+        with:
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: test-results
+          if-no-files-found: warn
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fe-coverage-csv
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
+          if-no-files-found: warn
+
+      - name: On failure
+        if: failure()
+        run: |
+          sudo docker compose ps || true
+          sudo docker compose logs --no-color --tail=500 || true
+
+      - name: Send notification
+        if: success() && env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run succeeded"
+
+      - name: Send notification
+        if: failure() && env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "CI run failed"

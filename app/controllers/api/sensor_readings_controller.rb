@@ -33,7 +33,7 @@ module Api
     end
 
     def reading
-      @reading ||= readings.find(params[:id])
+      @reading ||= readings.find(params.expect(:id))
     end
   end
 end

@@ -22,14 +22,25 @@ import { ExpandableHeader } from "../../../ui/expandable_header";
 import * as blueprintCore from "@blueprintjs/core";
 import { CollapseProps } from "@blueprintjs/core";
 import {
-  actRenderer,
-  createRenderer,
-} from "../../../__test_support__/test_renderer";
+  findElementByType,
+} from "../../../__test_support__/react_element_search";
 
 let overwriteSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
 let collapseSpy: jest.SpyInstance;
 let originalInnerWidth = window.innerWidth;
+
+const createBlock = (p: StepParams<MoveAbsolute>) => {
+  const block = new TileMoveAbsolute(p);
+  jest.spyOn(block, "setState").mockImplementation(update => {
+    Object.assign(block.state, update);
+  });
+  return block;
+};
+
+const getHeader = (block: TileMoveAbsolute) =>
+  findElementByType<React.ComponentProps<typeof ExpandableHeader>>(
+    block.render(), ExpandableHeader);
 
 const setInnerWidth = (innerWidth: number) => {
   Object.defineProperty(window, "innerWidth", {
@@ -115,17 +126,13 @@ describe("<TileMoveAbsolute />", () => {
   it("renders options on wide screens", () => {
     const p = fakeProps();
     isDesktopSpy.mockReturnValue(true);
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    const header = rendered.root.findByType(ExpandableHeader);
-    expect(header.props.title).toEqual("Options");
+    expect(getHeader(createBlock(p))?.props.title).toEqual("Options");
   });
 
   it("doesn't render options on narrow screens", () => {
     const p = fakeProps();
     isDesktopSpy.mockReturnValue(false);
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    const header = rendered.root.findByType(ExpandableHeader);
-    expect(header.props.title).toEqual("");
+    expect(getHeader(createBlock(p))?.props.title).toEqual("");
   });
 
   it("expands form", () => {
@@ -133,28 +140,24 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    const header = rendered.root.findByType(ExpandableHeader);
-    expect(header.props.expanded).toBeFalsy();
-    actRenderer(() => {
-      header.props.onClick();
-    });
-    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
+    const block = createBlock(p);
+    const header = getHeader(block);
+    expect(header?.props.expanded).toBeFalsy();
+    header?.props.onClick();
+    expect(getHeader(block)?.props.expanded).toBeTruthy();
   });
 
   it("expands form by default", () => {
     const p = fakeProps();
     p.expandStepOptions = true;
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
+    expect(getHeader(createBlock(p))?.props.expanded).toBeTruthy();
   });
 
   it("expands form when offset is present", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
     p.currentStep.args.offset.args.z = 100;
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
+    expect(getHeader(createBlock(p))?.props.expanded).toBeTruthy();
   });
 
   it("not expanding form when speed is 100", () => {
@@ -162,8 +165,7 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeFalsy();
+    expect(getHeader(createBlock(p))?.props.expanded).toBeFalsy();
   });
 
   it("expands form when speed is not 100", () => {
@@ -171,8 +173,7 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 50;
-    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
-    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
+    expect(getHeader(createBlock(p))?.props.expanded).toBeTruthy();
   });
 
   it("returns correct node", () => {

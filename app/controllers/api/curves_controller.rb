@@ -23,7 +23,7 @@ module Api
     private
 
     def curve
-      @curve ||= current_device.curves.find(params[:id])
+      @curve ||= current_device.curves.find(params.expect(:id))
     end
   end
 end

@@ -33,7 +33,7 @@ module Api
     end
 
     def tool
-      @tool ||= Tool.join_tool_slot_and_find_by_id(params[:id].to_i)
+      @tool ||= Tool.join_tool_slot_and_find_by_id(params.expect(:id).to_i)
     end
   end
 end

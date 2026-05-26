@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  render:
+    needs: test
+    if: github.ref_name == 'staging' || github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip render]')
+    uses: ./.github/workflows/render.yml
+    permissions:
+      contents: write
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

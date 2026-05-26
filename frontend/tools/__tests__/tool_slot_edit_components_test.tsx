@@ -15,6 +15,7 @@ import {
 import {
   fakeTool, fakeToolSlot,
 } from "../../__test_support__/fake_state/resources";
+import * as ui from "../../ui";
 import { BlurableInput, FBSelect, NULL_CHOICE } from "../../ui";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -41,10 +42,13 @@ const createWrapper = (element: React.ReactElement) => {
   wrappers.push(wrapper);
   return wrapper;
 };
+let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation(((_: ui.FBSelectProps) => <div />) as never);
 });
 
 afterEach(() => {
@@ -53,6 +57,7 @@ afterEach(() => {
     const wrapper = wrappers.pop();
     wrapper && unmountRenderer(wrapper);
   }
+  fbSelectSpy.mockRestore();
 });
 
 describe("<GantryMountedInput />", () => {

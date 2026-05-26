@@ -75,7 +75,7 @@ module Api
     private
 
     def sequence_version
-      @sequence_version ||= SequenceVersion.find(params[:sequence_version_id])
+      @sequence_version ||= SequenceVersion.find(params.expect(:sequence_version_id))
     end
 
     def sequence_params
@@ -84,7 +84,7 @@ module Api
 
     # Retrieve a single sequence record directly associated with the current device
     def sequence
-      @sequence ||= Sequence.with_usage_reports.find_by!(id: params[:id], device: current_device)
+      @sequence ||= Sequence.with_usage_reports.find_by!(id: params.expect(:id), device: current_device)
     end
   end
 end

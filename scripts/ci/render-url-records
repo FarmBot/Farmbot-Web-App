@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as f:
+    entries = json.load(f)
+
+for entry in entries:
+    print("\034".join([
+        entry["name"],
+        entry["mode"],
+        entry["url"],
+        entry.get("click", ""),
+        entry.get("state", ""),
+    ]))

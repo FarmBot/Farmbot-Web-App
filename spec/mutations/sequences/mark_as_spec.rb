@@ -63,7 +63,7 @@ describe Sequences::Destroy do
       expect(weed_result.success?).to be false
       error = weed_result.errors.message_list.first
       expect(error).to include("Could not delete weed")
-      expect(error).to include("in use by the following sequence(s): #{s.name}")
+      expect(error).to include("in use by Sequence '#{s.name}'")
     end
   end
 
@@ -94,7 +94,7 @@ describe Sequences::Destroy do
       expect(plant_result.success?).to be false
       error = plant_result.errors.message_list.first
       expect(error).to include("Could not delete plant")
-      expect(error).to include("in use by the following sequence(s): #{s.name}")
+      expect(error).to include("in use by Sequence '#{s.name}'")
     end
   end
 

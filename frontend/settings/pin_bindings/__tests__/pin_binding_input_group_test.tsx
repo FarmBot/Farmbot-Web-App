@@ -27,7 +27,8 @@ import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { error, warning } from "../../../toast/toast";
-import { FBSelect } from "../../../ui";
+import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 import {
   actRenderer,
   createRenderer,
@@ -36,12 +37,15 @@ import {
 
 let getDeviceSpy: jest.SpyInstance;
 let initSaveSpy: jest.SpyInstance;
+let fbSelectMock: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
     .mockImplementation(() => mockDevice as never);
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  fbSelectMock = jest.spyOn(ui, "FBSelect")
+    .mockImplementation(((_props: FBSelectProps) => <div />) as never);
   mockDevice.registerGpio = jest.fn(() => Promise.resolve());
   mockDevice.unregisterGpio = jest.fn(() => Promise.resolve());
 });
@@ -49,6 +53,7 @@ beforeEach(() => {
 afterEach(() => {
   getDeviceSpy.mockRestore();
   initSaveSpy.mockRestore();
+  fbSelectMock.mockRestore();
 });
 
 const AVAILABLE_PIN = 18;
@@ -72,10 +77,18 @@ describe("<PinBindingInputGroup/>", () => {
     };
   };
 
+  const createInstance = (p = fakeProps()) => {
+    const instance = new PinBindingInputGroup(p);
+    jest.spyOn(instance, "setState").mockImplementation(update => {
+      Object.assign(instance.state, update);
+    });
+    return instance;
+  };
+
   it("renders", () => {
     const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
-    const buttons = wrapper.root.findAllByType("button");
-    expect(buttons.length).toBe(3);
+    const bindButton = wrapper.root.findByProps({ title: "BIND" });
+    expect(bindButton).toBeTruthy();
   });
 
   it("no pin selected", () => {
@@ -152,25 +165,19 @@ describe("<PinBindingInputGroup/>", () => {
     const key = Object.keys(p.resources.byKind.Sequence)[0];
     const s = p.resources.references[key];
     const id = s?.body.id;
-    const wrapper = createRenderer(<PinBindingInputGroup {...p} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
+    const instance = createInstance(p);
     expect(instance.state.sequenceIdInput).toEqual(undefined);
-    actRenderer(() => instance.changeBinding({
+    instance.changeBinding({
       label: "label", value: "" + id,
       headingId: PinBindingType.standard
-    }));
+    });
     expect(instance.state.sequenceIdInput).toEqual(id);
   });
 
   it("attempts to set pin 99", () => {
-    const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
+    const instance = createInstance();
     expect(instance.state.pinNumberInput).toEqual(undefined);
-    actRenderer(() => instance.setSelectedPin(99));
+    instance.setSelectedPin(99);
     expect(error).toHaveBeenCalledWith(
       "Invalid Raspberry Pi GPIO pin number.");
     expect(warning).not.toHaveBeenCalled();
@@ -179,12 +186,9 @@ describe("<PinBindingInputGroup/>", () => {
 
   it("attempts to set pin 1", () => {
     expect(validGpioPins.length).toBeGreaterThan(0);
-    const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
+    const instance = createInstance();
     expect(instance.state.pinNumberInput).toEqual(undefined);
-    actRenderer(() => instance.setSelectedPin(1));
+    instance.setSelectedPin(1);
     expect(error).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalledWith(
       "Reserved Raspberry Pi pin may not work as expected.");
@@ -193,13 +197,10 @@ describe("<PinBindingInputGroup/>", () => {
 
   it("rejects pin already in use", () => {
     const p = fakeProps();
-    const wrapper = createRenderer(<PinBindingInputGroup {...p} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
+    const instance = createInstance(p);
     expect(instance.state.pinNumberInput).toEqual(undefined);
     const { pin_number } = p.pinBindings[0];
-    actRenderer(() => instance.setSelectedPin(pin_number));
+    instance.setSelectedPin(pin_number);
     expect(error).toHaveBeenCalledWith(
       "Raspberry Pi GPIO pin already bound or in use.");
     expect(warning).not.toHaveBeenCalled();
@@ -208,27 +209,21 @@ describe("<PinBindingInputGroup/>", () => {
 
   it("changes pin number to available pin", () => {
     expect(validGpioPins.length).toBeGreaterThan(0);
-    const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
+    const instance = createInstance();
     expect(instance.state.pinNumberInput).toEqual(undefined);
-    actRenderer(() => instance.setSelectedPin(AVAILABLE_PIN));
+    instance.setSelectedPin(AVAILABLE_PIN);
     expect(error).not.toHaveBeenCalled();
     expect(warning).not.toHaveBeenCalled();
     expect(instance.state.pinNumberInput).toEqual(AVAILABLE_PIN);
   });
 
   it("changes special action", () => {
-    const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
-    const instance =
-      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
-        wrapper, PinBindingInputGroup);
-    actRenderer(() => instance.changeBinding({
+    const instance = createInstance();
+    instance.changeBinding({
       label: "",
       value: PinBindingSpecialAction.sync,
       headingId: PinBindingType.special,
-    }));
+    });
     expect(instance.state.specialActionInput)
       .toEqual(PinBindingSpecialAction.sync);
   });
@@ -244,8 +239,10 @@ describe("<PinNumberInputGroup />", () => {
 
   it("sets pin", () => {
     const p = fakeProps();
-    const wrapper = createRenderer(<PinNumberInputGroup {...p} />);
-    const select = wrapper.root.findByType(FBSelect);
+    const row = PinNumberInputGroup(p) as React.ReactElement<{
+      children: React.ReactNode[];
+    }>;
+    const select = row.props.children[2] as React.ReactElement<FBSelectProps>;
     select.props.onChange({
       label: "", value: AVAILABLE_PIN
     });
@@ -254,6 +251,20 @@ describe("<PinNumberInputGroup />", () => {
 });
 
 describe("<BindingTargetDropdown />", () => {
+  let fbSelectSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation((() => <div />) as never);
+  });
+
+  afterEach(() => {
+    fbSelectSpy.mockRestore();
+  });
+
+  const fbSelectProps = () =>
+    fbSelectSpy.mock.calls[0][0] as FBSelectProps;
+
   const fakeProps = (): BindingTargetDropdownProps => {
     const sequence0 = fakeSequence();
     sequence0.body.id = undefined;
@@ -272,27 +283,33 @@ describe("<BindingTargetDropdown />", () => {
   it("shows sequence selected", () => {
     const p = fakeProps();
     p.sequenceIdInput = 1;
-    const wrapper = createRenderer(<BindingTargetDropdown {...p} />);
-    expect(wrapper.root.findByType(FBSelect).props.selected).toEqual(undefined);
+    createRenderer(<BindingTargetDropdown {...p} />);
+    expect(fbSelectProps().selectedItem).toEqual({
+      label: "fake",
+      value: 1,
+    });
   });
 
   it("shows action selected", () => {
     const p = fakeProps();
     p.specialActionInput = PinBindingSpecialAction.sync;
-    const wrapper = createRenderer(<BindingTargetDropdown {...p} />);
-    expect(wrapper.root.findByType(FBSelect).props.selected).toEqual(undefined);
+    createRenderer(<BindingTargetDropdown {...p} />);
+    expect(fbSelectProps().selectedItem).toEqual({
+      label: "Sync",
+      value: "sync",
+    });
   });
 
   it("shows nothing selected", () => {
-    const wrapper = createRenderer(<BindingTargetDropdown {...fakeProps()} />);
-    expect(wrapper.root.findByType(FBSelect).props.selected).toEqual(undefined);
+    createRenderer(<BindingTargetDropdown {...fakeProps()} />);
+    expect(fbSelectProps().selectedItem).toEqual(undefined);
   });
 
   it("shows sequences", () => {
     const p = fakeProps();
     p.sequenceIdInput = 1;
-    const wrapper = createRenderer(<BindingTargetDropdown {...p} />);
-    const { list } = wrapper.root.findByType(FBSelect).props;
+    createRenderer(<BindingTargetDropdown {...p} />);
+    const { list } = fbSelectProps();
     expect(list?.length).toEqual(11);
     expect(list).toContainEqual({
       isNull: true,

@@ -14,7 +14,7 @@ module Api
       if params[:id] == "all"
         render json: (current_device.telemetries.destroy_all && "")
       else
-        render json: (current_device.telemetries.find(params[:id]).destroy! && "")
+        render json: (current_device.telemetries.find(params.expect(:id)).destroy! && "")
       end
     end
 

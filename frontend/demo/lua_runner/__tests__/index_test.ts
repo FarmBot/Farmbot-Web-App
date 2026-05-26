@@ -986,7 +986,7 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(console.log).toHaveBeenCalledWith("[3,2,1]");
+    expect(console.log).toHaveBeenCalledWith("[1,2,3]");
   });
 
   it("runs json.encode", () => {
@@ -997,7 +997,7 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(console.log).toHaveBeenCalledWith("[3,2,1]");
+    expect(console.log).toHaveBeenCalledWith("[1,2,3]");
   });
 
   it("runs json.decode", () => {
@@ -1265,6 +1265,26 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(console.log).toHaveBeenCalledWith("false");
+  });
+
+  it("runs read_status with a path", () => {
+    runDemoLuaCode(`
+      print(read_status("informational_settings", "locked"))
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("false");
+  });
+
+  it("runs read_status with a table path", () => {
+    runDemoLuaCode(`
+      print(read_status({"informational_settings", "locked"}))
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("false");
   });
 

@@ -98,7 +98,8 @@ export class RawApp extends React.Component<AppProps, {}> {
       }
     }, LOAD_TIME_FAILURE_MS);
     const browser = Bowser.getParser(window.navigator.userAgent);
-    !browser.satisfies({ chrome: ">85", firefox: ">75", edge: ">85" }) &&
+    /** css :has() support */
+    !browser.satisfies({ chrome: ">=105", firefox: ">=121", edge: ">=105" }) &&
       warning(t(Content.UNSUPPORTED_BROWSER));
   }
 
