@@ -18,6 +18,7 @@ jobs:
 
   render:
     needs: test
+    if: github.ref_name == 'staging' || github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip render]')
     uses: ./.github/workflows/render.yml
     permissions:
       contents: write
