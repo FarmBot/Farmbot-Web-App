@@ -287,6 +287,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
   const showFarmbot = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_farmbot);
+  const farmbotVisible = props.activeFocus != "Planter bed" && showFarmbot;
   const showPoints = config.showSoilPoints
     || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
@@ -568,9 +569,9 @@ export const GardenModel = (props: GardenModelProps) => {
         loadStep={"farmbot"}
         loadProgress={loadProgress}
         reveal={farmbotReveal}
-        markReadyOnMount={!showFarmbot}
+        markReadyOnMount={!farmbotVisible}
         markName={"three_d_bot_ready"}>
-        {showFarmbot &&
+        {farmbotVisible &&
         <FallInGroup
           name={"bot-load-in"}
           reveal={farmbotReveal}

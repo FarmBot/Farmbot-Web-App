@@ -2,7 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { OrbitControls, useTexture } from "@react-three/drei";
+import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
 import {
   GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
   SMOOTH_XL_CAMERA_HEIGHT_SCALE,
@@ -378,6 +378,23 @@ describe("<GardenModel />", () => {
     p.onLoadComplete = jest.fn();
     render(<GardenModel {...p} />);
     await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("doesn't mount FarmBot while Planter bed focus hides it", async () => {
+    const p = fakeProps();
+    p.activeFocus = "Planter bed";
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_farmbot);
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("farmbot-scene-boundary"));
+
+    expect(container.innerHTML).not.toContain("bot-load-in");
+    expect(useGltfMock).not.toHaveBeenCalled();
   });
 
   it("renders other options", async () => {

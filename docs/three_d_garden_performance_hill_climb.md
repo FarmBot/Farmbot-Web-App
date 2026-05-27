@@ -67,10 +67,33 @@ commit message. Roll back rejected implementation changes.
      return: fewer SVG asset requests and shape parses when the FarmBot layer
      is hidden and shown again, while first-load geometry remains identical.
 
+## Round 28 Candidate Ideas
+
+136. Do not mount the FarmBot model while the `Planter bed` focus hides the
+     whole Bot. Expected return: fewer hidden GLTF/SVG/texture loads and frame
+     callbacks when opening a bed-focused 3D scene; Bot visuals still load when
+     the user leaves that focus.
+137. Do not mount plant icon instances while the plant layer is disabled.
+     Expected return: fewer hidden plant texture loads, instanced meshes, and
+     frame callbacks for gardens where the user has hidden plants; plant
+     visuals still mount when the layer is enabled.
+138. Do not mount point marker instances while the point layer is disabled.
+     Expected return: fewer hidden point instanced meshes and frame callbacks
+     in point-heavy gardens; point visuals still mount when the layer is
+     enabled.
+139. Do not mount weed icon/spread instances while the weed layer is disabled.
+     Expected return: fewer hidden weed texture loads, instanced meshes, and
+     frame callbacks in weed-heavy gardens; weed visuals still mount when the
+     layer is enabled.
+140. Do not build plant label billboard nodes while focus mode hides the label
+     group. Expected return: lower focused-scene render work for label-heavy
+     gardens; labels still mount when the scene is not focused.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 136 | Skip hidden FarmBot model in `Planter bed` focus | `GardenModel` render with `activeFocus="Planter bed"` and FarmBot enabled, measuring hidden Bot GLTF hooks, SVG parses, texture hooks, frame callbacks, and load timing through Bun/Testing Library | 1 hidden Bot load-in group; 39 GLTF hook calls; 15 SVG shape parse calls; 34 texture hook calls; 14 frame callbacks; 404.754 ms test render | 0 Bot load-in groups; 0 GLTF hook calls; 0 SVG shape parse calls; 26 texture hook calls; 12 frame callbacks; 99.697 ms test render | 100% fewer hidden Bot GLTF hooks and SVG parses, 23.5% fewer texture hooks, 14.3% fewer frame callbacks, and 305.057 ms faster in this focused-scene benchmark | Accepted; the FarmBot load step is marked ready while focus hides the Bot, and the full Bot still mounts when the user leaves `Planter bed` focus | `Skip focused hidden FarmBot for 100% fewer model loads` |
 | 135 | Cache Bot SVG extrusion shapes across remounts | Three realistic `Bot` mounts with unmounts between them, matching a FarmBot layer hide/show/remount workflow, measuring `SVGLoader.createShapes` calls through Bun/Testing Library | 45 SVG shape parse calls; 61.037 ms test render/remount sequence | 15 SVG shape parse calls; 48.928 ms test render/remount sequence | 66.7% fewer SVG shape parse calls and 12.109 ms faster in this remount workflow, while first mount still performs the same 15 shape parses | Accepted; parsed extrusion shapes are cached after first load and reused on later Bot remounts with no geometry/detail changes | `Cache Bot SVG shapes for 66.7% fewer remount parses` |
 | 134 | Skip hidden plant spread instances in ordinary garden mode | Ordinary designer `GardenModel` render with 1,000 plants, plants visible, spread hidden, and other optional layers off, measuring instanced meshes and frame hook registrations through Bun/Testing Library | 2 plant instanced meshes; 14 total frame callbacks; 42.738 ms test render | 1 plant instanced mesh; 13 total frame callbacks; 45.044 ms test render | 100% fewer hidden spread instanced meshes and spread frame callbacks, removing one 1,000-capacity instanced sphere mesh and one callback from the normal plant layer; total frame callbacks dropped 7.1% and render timing stayed within harness noise | Accepted; spread instances no longer mount while hidden in ordinary mode, but the same spread layer still mounts when spread is visible, editing/adding a plant, or rendering a transient plant | `Skip hidden plant spread for 100% fewer spread callbacks` |
 | 133 | Skip hidden pointer preview setup in ordinary garden mode | Ordinary designer route render of `PointerObjects` with 1,000 dirty grid-preview points, measuring visible hover UI, crop texture hook calls, and grid-preview point reads through Bun/Testing Library | 0 visible hover groups; 1 crop texture hook call; 1,000 grid-preview point reads; 4.832 ms test render | 0 visible hover groups; 0 crop texture hook calls; 0 grid-preview point reads; 5.048 ms test render | 100% fewer hidden crop texture calls and 100% fewer hidden grid-preview scans in the normal editor path; render timing stayed within harness noise while removing one real texture hook and a realistic 1,000-point scan | Accepted; normal garden mode now exits before preview-only hooks and scans, while click-to-add and draw-point modes still mount the same hover UI through the active child component | `Skip hidden pointer preview for 100% fewer setup calls` |
