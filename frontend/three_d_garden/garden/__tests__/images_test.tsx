@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import {
   extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
-  ImageTexture, ImageTextureProps,
+  ImageTexture, ImageTextureProps, splitFilteredImages,
 } from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -183,6 +183,24 @@ describe("<ImageTexture />", () => {
     const key = getImageTextureKey(p);
     sensor.body.pin = (sensor.body.pin || 0) + 1;
     expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+});
+
+describe("splitFilteredImages()", () => {
+  it("separates highlighted images in existing order", () => {
+    const img0 = fakeImage();
+    const img1 = fakeImage();
+    const img2 = fakeImage();
+    const images = [
+      { ...img0, highlighted: false },
+      { ...img1, highlighted: true },
+      { ...img2, highlighted: false },
+    ];
+
+    const result = splitFilteredImages(images);
+
+    expect(result.imageArray).toEqual([images[0], images[2]]);
+    expect(result.lastImageArray).toEqual([images[1]]);
   });
 });
 

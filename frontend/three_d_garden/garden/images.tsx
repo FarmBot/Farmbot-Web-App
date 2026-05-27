@@ -121,6 +121,19 @@ export const getImageTextureKey = (props: ImageTextureProps) => {
   ].join(":");
 };
 
+export const splitFilteredImages = (filteredImages: TaggedImagePlus[]) => {
+  const imageArray: TaggedImagePlus[] = [];
+  const lastImageArray: TaggedImagePlus[] = [];
+  for (const image of filteredImages) {
+    if (image.highlighted) {
+      lastImageArray.push(image);
+    } else {
+      imageArray.push(image);
+    }
+  }
+  return { imageArray, lastImageArray };
+};
+
 export const ImageTexture = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
@@ -150,10 +163,7 @@ export const ImageTexture = (props: ImageTextureProps) => {
         getConfigValue,
         calibrationZ: "" + props.config.imgCalZ,
       });
-      return {
-        imageArray: filteredImages.filter(img => !img.highlighted),
-        lastImageArray: filteredImages.filter(img => img.highlighted),
-      };
+      return splitFilteredImages(filteredImages);
     });
   const highlightActive = lastImageArray[0]?.highlighted;
   const commonProps = { width, height, bedWallThickness };
