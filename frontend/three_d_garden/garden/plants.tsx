@@ -7,10 +7,12 @@ import {
   Group as GroupType,
   Color,
   WebGLProgramParametersWithUniforms,
-  InstancedMesh as InstancedMeshType,
+  InstancedMesh as ThreeInstancedMesh,
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
+  type Raycaster,
+  type Intersection,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -110,6 +112,15 @@ interface PlantSpreadUpdateState {
   lastUpdateKey: string;
 }
 
+const plantSpreadRaycast = function (
+  this: ThreeInstancedMesh,
+  raycaster: Raycaster,
+  intersects: Intersection[],
+) {
+  if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
+  ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
+
 const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
   needsInstanceUpdate: true,
   lastUpdateKey: "",
@@ -122,7 +133,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const instanceCapacity = Math.max(props.instanceCapacity || 0, plants.length);
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
-  const instancedRef = React.useRef<InstancedMeshType>(null);
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
@@ -161,7 +172,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const hasTransientPlant = React.useMemo(() =>
     plants.some(plant => !plant.id), [plants]);
 
-  const ensureInstanceColor = React.useCallback((mesh: InstancedMeshType) => {
+  const ensureInstanceColor = React.useCallback((mesh: ThreeInstancedMesh) => {
     const needsResize = !mesh.instanceColor
       || mesh.instanceColor.count != instanceCapacity;
     if (needsResize) {
@@ -292,6 +303,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     count={plants.length}
     userData={{ plantIndexes }}
     visible={visible}
+    raycast={plantSpreadRaycast}
     onClick={onClick}>
     <SphereGeometry args={[1, 32, 32]} />
     <MeshPhongMaterial
