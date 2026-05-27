@@ -171,6 +171,16 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("hides cable carrier support rails with the carrier layer", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelectorAll("[name='lower-cc-support']").length)
+      .toEqual(0);
+    expect(container.querySelectorAll("[name='upper-cc-support']").length)
+      .toEqual(0);
+  });
+
   it.each<[string, SpecialStatus]>([
     ["doesn't render", SpecialStatus.DIRTY],
     ["renders", SpecialStatus.SAVED],

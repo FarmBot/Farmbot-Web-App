@@ -420,28 +420,33 @@ const BedBase = (props: BedProps) => {
     <Group name={"axes-group"} visible={axes}>
       <FarmbotAxes config={props.config} />
     </Group>
-    <Box name={"lower-cc-support"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
-      position={[
-        threeSpace(bedLengthOuter / 4, bedLengthOuter),
-        threeSpace(-ccSupportSize / 2, bedWidthOuter),
-        -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
-      ]}>
-      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
-    </Box>
-    <Box name={"upper-cc-support"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
-      position={[
-        threeSpace(bedLengthOuter * 3 / 4, bedLengthOuter),
-        threeSpace(-ccSupportSize / 2, bedWidthOuter),
-        -50 - ccSupportSize / 2,
-      ]}>
-      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
-    </Box>
+    {props.config.cableCarriers &&
+      <>
+        <Box name={"lower-cc-support"}
+          castShadow={true}
+          receiveShadow={true}
+          args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
+          position={[
+            threeSpace(bedLengthOuter / 4, bedLengthOuter),
+            threeSpace(-ccSupportSize / 2, bedWidthOuter),
+            -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
+          ]}>
+          <MeshPhongMaterial map={legWoodTexture} color={bedColor}
+            side={DoubleSide} />
+        </Box>
+        <Box name={"upper-cc-support"}
+          castShadow={true}
+          receiveShadow={true}
+          args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
+          position={[
+            threeSpace(bedLengthOuter * 3 / 4, bedLengthOuter),
+            threeSpace(-ccSupportSize / 2, bedWidthOuter),
+            -50 - ccSupportSize / 2,
+          ]}>
+          <MeshPhongMaterial map={legWoodTexture} color={bedColor}
+            side={DoubleSide} />
+        </Box>
+      </>}
     {props.addPlantProps &&
       <PointerObjects
         pointerPlantRef={pointerPlantRef}
