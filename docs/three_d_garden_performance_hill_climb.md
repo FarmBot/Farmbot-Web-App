@@ -6,6 +6,8 @@ Comprehensively look at the code and come up with a list of 5 ideas that you thi
 
 Repeat the process for all items in the list.
 
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
+
 # Queued Follow Up Prompt
 
 Let's repeat the process with a new list of 5 items. As a reminder, here is the prompt and process to follow:
@@ -15,6 +17,8 @@ I want to optimize three_d_garden performance across all dimensions: load time, 
 Comprehensively look at the code and come up with a list of 5 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Before implementing an idea, benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100. Then implement the idea and check the benchmark. If you see at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit your changes with a descriptive message that includes the percent improvement achieved. If an improvement was not achieved, rollback the changes and move onto the next item. Make sure to record all results in the markdown doc.
 
 Repeat the process for all items in the list.
+
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
 
 # 3D Garden Performance Hill Climb
 
