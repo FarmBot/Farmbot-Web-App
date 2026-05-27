@@ -73,26 +73,24 @@ commit message. Roll back rejected implementation changes.
      whole Bot. Expected return: fewer hidden GLTF/SVG/texture loads and frame
      callbacks when opening a bed-focused 3D scene; Bot visuals still load when
      the user leaves that focus.
-137. Do not mount plant icon instances while the plant layer is disabled.
-     Expected return: fewer hidden plant texture loads, instanced meshes, and
-     frame callbacks for gardens where the user has hidden plants; plant
-     visuals still mount when the layer is enabled.
-138. Do not mount point marker instances while the point layer is disabled.
-     Expected return: fewer hidden point instanced meshes and frame callbacks
-     in point-heavy gardens; point visuals still mount when the layer is
-     enabled.
-139. Do not mount weed icon/spread instances while the weed layer is disabled.
-     Expected return: fewer hidden weed texture loads, instanced meshes, and
-     frame callbacks in weed-heavy gardens; weed visuals still mount when the
-     layer is enabled.
-140. Do not build plant label billboard nodes while focus mode hides the label
-     group. Expected return: lower focused-scene render work for label-heavy
-     gardens; labels still mount when the scene is not focused.
+137. Do not generate or mount grid line geometry while the grid is disabled or
+     while `Planter bed` focus hides the grid. Expected return: lower focused
+     and grid-off scene setup work; grid visuals still mount when visible.
+138. Do not build ground geometry or load the ground texture while the ground
+     layer is disabled. Expected return: lower scene setup work for users who
+     hide the ground; ground visuals still mount when enabled.
+139. Replace gantry beam light-strip per-LED frame callbacks with post-render
+     target updates. Expected return: fewer steady-state callbacks while lights
+     are on; light direction remains the same.
+140. Register the sun animation frame callback only when animated seasons are
+     enabled. Expected return: one fewer default-scene frame callback; animated
+     season visuals remain unchanged when enabled.
 
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 137 | Skip hidden grid line generation | Direct `Grid` render for a realistic 3,000 x 1,500 mm bed with `grid=false`, measuring soil-height samples, rendered primitives, and render time through Bun/Testing Library | 4,747 hidden `getZ` samples; 0 grid primitives; 5.214 ms test render | 0 hidden `getZ` samples; 0 grid primitives; 4.036 ms test render | 100% fewer hidden grid soil-height samples and 1.178 ms faster in the grid-off render | Accepted; `Grid` now exits before line generation when the grid is disabled or `Planter bed` focus hides it, and still renders the same active grid when visible | `Skip hidden grid generation for 100% fewer samples` |
 | 136 | Skip hidden FarmBot model in `Planter bed` focus | `GardenModel` render with `activeFocus="Planter bed"` and FarmBot enabled, measuring hidden Bot GLTF hooks, SVG parses, texture hooks, frame callbacks, and load timing through Bun/Testing Library | 1 hidden Bot load-in group; 39 GLTF hook calls; 15 SVG shape parse calls; 34 texture hook calls; 14 frame callbacks; 404.754 ms test render | 0 Bot load-in groups; 0 GLTF hook calls; 0 SVG shape parse calls; 26 texture hook calls; 12 frame callbacks; 99.697 ms test render | 100% fewer hidden Bot GLTF hooks and SVG parses, 23.5% fewer texture hooks, 14.3% fewer frame callbacks, and 305.057 ms faster in this focused-scene benchmark | Accepted; the FarmBot load step is marked ready while focus hides the Bot, and the full Bot still mounts when the user leaves `Planter bed` focus | `Skip focused hidden FarmBot for 100% fewer model loads` |
 | 135 | Cache Bot SVG extrusion shapes across remounts | Three realistic `Bot` mounts with unmounts between them, matching a FarmBot layer hide/show/remount workflow, measuring `SVGLoader.createShapes` calls through Bun/Testing Library | 45 SVG shape parse calls; 61.037 ms test render/remount sequence | 15 SVG shape parse calls; 48.928 ms test render/remount sequence | 66.7% fewer SVG shape parse calls and 12.109 ms faster in this remount workflow, while first mount still performs the same 15 shape parses | Accepted; parsed extrusion shapes are cached after first load and reused on later Bot remounts with no geometry/detail changes | `Cache Bot SVG shapes for 66.7% fewer remount parses` |
 | 134 | Skip hidden plant spread instances in ordinary garden mode | Ordinary designer `GardenModel` render with 1,000 plants, plants visible, spread hidden, and other optional layers off, measuring instanced meshes and frame hook registrations through Bun/Testing Library | 2 plant instanced meshes; 14 total frame callbacks; 42.738 ms test render | 1 plant instanced mesh; 13 total frame callbacks; 45.044 ms test render | 100% fewer hidden spread instanced meshes and spread frame callbacks, removing one 1,000-capacity instanced sphere mesh and one callback from the normal plant layer; total frame callbacks dropped 7.1% and render timing stayed within harness noise | Accepted; spread instances no longer mount while hidden in ordinary mode, but the same spread layer still mounts when spread is visible, editing/adding a plant, or rendering a transient plant | `Skip hidden plant spread for 100% fewer spread callbacks` |

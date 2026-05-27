@@ -44,6 +44,25 @@ describe("<Grid />", () => {
     expect(container).toContainHTML("grid");
   });
 
+  it("skips hidden grid generation", () => {
+    const p = fakeProps();
+    p.config.grid = false;
+    p.getZ = jest.fn(() => 0);
+    const { container } = render(<Grid {...p} />);
+    expect(container).not.toContainHTML("grid");
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("skips grid generation in Planter bed focus", () => {
+    const p = fakeProps();
+    p.config.grid = true;
+    p.activeFocus = "Planter bed";
+    p.getZ = jest.fn(() => 0);
+    const { container } = render(<Grid {...p} />);
+    expect(container).not.toContainHTML("grid");
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
   it("refreshes focus material binding when grid dimensions change", () => {
     const p = fakeProps();
     p.config.grid = true;

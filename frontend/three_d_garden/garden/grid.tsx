@@ -135,6 +135,12 @@ export interface GridProps {
 }
 
 export const Grid = (props: GridProps) => {
+  const visible = props.config.grid && props.activeFocus != "Planter bed";
+  if (!visible) { return <></>; }
+  return <VisibleGrid {...props} />;
+};
+
+const VisibleGrid = (props: GridProps) => {
   const { config } = props;
   const zero = zeroFunc(config);
   const { outerPositions, innerPositions } = React.useMemo(() =>
@@ -147,7 +153,7 @@ export const Grid = (props: GridProps) => {
     innerPositions.length,
   ].join(":");
   return <FocusVisibilityGroup name={"garden-grid"}
-    visible={config.grid && props.activeFocus != "Planter bed"}
+    visible={true}
     keepMounted={true}
     materialBindingKey={materialBindingKey}
     position={[0, 0, zero.z]}>
