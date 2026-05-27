@@ -5,6 +5,7 @@ import { InstancedBufferAttribute } from "three";
 import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent, InstancedMesh } from "../../components";
 import { ThreeElements } from "@react-three/fiber";
+import { mergedInstancedGeometry } from "./merged_instanced_geometry";
 
 type Mesh = THREE.Mesh & { instanceMatrix: InstancedBufferAttribute | undefined };
 
@@ -68,6 +69,19 @@ interface SoilSensorProps extends Omit<ThreeElements["group"], "ref"> {
 export const SoilSensorModel = (props: SoilSensorProps) => {
   const { model, ...groupProps } = props;
   const { nodes, materials } = model;
+  const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
+  if (mergedGeometry) {
+    // eslint-disable-next-line no-null/no-null
+    return <Group {...groupProps} dispose={null}>
+      <MeshComponent
+        geometry={nodes.Soil_Sensor.geometry}
+        material={materials.PaletteMaterial001}
+        position={[0, 0, -0.015]} />
+      <MeshComponent
+        geometry={mergedGeometry}
+        material={materials.PaletteMaterial001} />
+    </Group>;
+  }
   // eslint-disable-next-line no-null/no-null
   return <Group {...groupProps} dispose={null}>
     <MeshComponent
