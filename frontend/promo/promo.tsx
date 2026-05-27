@@ -42,17 +42,13 @@ interface PromoPlantCapacities {
 const calcCacheKey = (config: Config): string =>
   `${config.bedLengthOuter}x${config.bedWidthOuter}: ${config.plants}`;
 
-const calcPlantsCache = (
+const addPlantsToCache = (
   cache: ThreeDPlantsCache,
   config: Config,
 ): ThreeDPlantsCache => {
-  const cacheKey = calcCacheKey(config);
-  if (cache[cacheKey]) {
-    return cache;
-  }
   return {
     ...cache,
-    [cacheKey]: calculatePlantPositions(config),
+    [calcCacheKey(config)]: calculatePlantPositions(config),
   };
 };
 
@@ -60,7 +56,7 @@ const prewarmPlantsCache = () => {
   let next = PLANTS_CACHE;
   PROMO_BED_SIZES.map(({ length, width }) => {
     SEASONS.map(season => {
-      next = calcPlantsCache(next, {
+      next = addPlantsToCache(next, {
         ...INITIAL,
         bedLengthOuter: length,
         bedWidthOuter: width,
@@ -76,8 +72,9 @@ const getCachedPlants = (config: Config) => {
   const cachedPlants = PLANTS_CACHE[cacheKey];
   if (cachedPlants) { return cachedPlants; }
 
-  Object.assign(PLANTS_CACHE, calcPlantsCache(PLANTS_CACHE, config));
-  return PLANTS_CACHE[cacheKey] || [];
+  const plants = calculatePlantPositions(config);
+  Object.assign(PLANTS_CACHE, { [cacheKey]: plants });
+  return plants;
 };
 
 export const getPromoPlantCapacities = (config: Config): PromoPlantCapacities => {
@@ -166,16 +163,20 @@ export const Promo = () => {
     startTimeRef.current = performance.now() / 1000;
   }, []);
 
+  const clearActiveFocus = React.useCallback(() => {
+    setActiveFocus("");
+    setUrlParam("focus", "");
+  }, []);
+
   React.useEffect(() => {
     if (!activeFocus) { return; }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key != "Escape") { return; }
-      setActiveFocus("");
-      setUrlParam("focus", "");
+      clearActiveFocus();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeFocus]);
+  }, [activeFocus, clearActiveFocus]);
 
   const plants = React.useMemo(() => {
     return getCachedPlants(config);
@@ -195,7 +196,8 @@ export const Promo = () => {
   const plantCapacities = React.useMemo(() =>
     getPromoPlantCapacities(plantCapacityConfig), [plantCapacityConfig]);
 
-  return <div className={"three-d-garden promo"}>
+  return <div className={"three-d-garden promo"}
+    onKeyDown={e => activeFocus && e.key == "Escape" && clearActiveFocus()}>
     <div className={"garden-bed-3d-model"}>
       <FocusTransitionProvider enabled={config.animate}>
         <MemoryRouter>

@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  act, render, screen, fireEvent, waitFor,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   PublicOverlay, OverlayProps, PrivateOverlay, maybeAddParam,
 } from "../config_overlays";
@@ -19,6 +17,7 @@ beforeEach(() => {
 
 afterEach(() => {
   setUrlParamSpy.mockRestore();
+  jest.useRealTimers();
 });
 
 describe("<PublicOverlay />", () => {
@@ -196,22 +195,18 @@ describe("<PrivateOverlay />", () => {
 
   it("closes the config menu with Escape", async () => {
     const p = fakeProps();
-    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
-    const { unmount } = render(<PrivateOverlay {...p} />);
-    try {
-      await waitFor(() => expect(addEventListenerSpy)
-        .toHaveBeenCalledWith("keydown", expect.any(Function)));
-      const onKeyDown = addEventListenerSpy.mock.calls
-        .find(([eventName]) => eventName == "keydown")?.[1] as EventListener;
-      act(() => onKeyDown(new KeyboardEvent("keydown", { key: "Escape" })));
-      expect(p.setConfig).toHaveBeenCalledWith({
-        ...p.config,
-        config: false,
-      });
-    } finally {
-      unmount();
-      addEventListenerSpy.mockRestore();
-    }
+    render(<PrivateOverlay {...p} />);
+    await waitFor(() =>
+      expect(document.activeElement).toEqual(screen.getByPlaceholderText(
+        "Search configs",
+      )));
+    fireEvent.keyDown(screen.getByPlaceholderText("Search configs"), {
+      key: "Escape",
+    });
+    expect(p.setConfig).toHaveBeenCalledWith({
+      ...p.config,
+      config: false,
+    });
   });
 
   it("removes url param", () => {

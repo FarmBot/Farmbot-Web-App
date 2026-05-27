@@ -325,22 +325,17 @@ export const PrivateOverlay = (props: OverlayProps) => {
   const [search, setSearch] = React.useState("");
   // eslint-disable-next-line no-null/no-null
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const closeConfig = React.useCallback(() =>
+    setConfig(modifyConfig(config, { config: false })), [config, setConfig]);
   React.useEffect(() => {
     searchInputRef.current?.focus();
   }, []);
-  React.useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key != "Escape") { return; }
-      setConfig(modifyConfig(config, { config: false }));
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [config, setConfig]);
-  return <div className={"all-configs"}>
+  return <div className={"all-configs"}
+    onKeyDown={e => e.key == "Escape" && closeConfig()}>
     <div className={"config-title"}>
       {"Configs"}
       <p className={"close"}
-        onClick={() => setConfig(modifyConfig(config, { config: false }))}>
+        onClick={closeConfig}>
         X
       </p>
     </div>

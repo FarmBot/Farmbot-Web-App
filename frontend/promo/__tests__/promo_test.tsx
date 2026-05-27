@@ -9,6 +9,11 @@ import * as zoomBeaconConstants from
   "../../three_d_garden/zoom_beacons_constants";
 import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
+import * as screenSize from "../../screen_size";
+
+type CanvasComponentProps = React.ComponentProps<typeof reactThreeFiber.Canvas>;
+type CanvasCreatedState =
+  Parameters<NonNullable<CanvasComponentProps["onCreated"]>>[0];
 
 describe("<Promo />", () => {
   const originalSearch = window.location.search;
@@ -17,11 +22,20 @@ describe("<Promo />", () => {
   let gardenModelSpy: jest.SpyInstance;
   let pushStateSpy: jest.SpyInstance;
   let focusFromUrlParamsSpy: jest.SpyInstance;
+  let isMobileSpy: jest.SpyInstance;
 
   beforeEach(() => {
     canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
-      .mockImplementation(({ children }: { children?: React.ReactNode }) =>
-        <div>{children}</div>);
+      .mockImplementation(({
+        children,
+        onCreated,
+      }: CanvasComponentProps) => {
+        const state = {
+          gl: { localClippingEnabled: false },
+        } as CanvasCreatedState;
+        onCreated?.(state);
+        return <div>{children}</div>;
+      });
     gardenModelSpy = jest.spyOn(gardenModelModule, "GardenModel")
       .mockImplementation(({ config }: { config: { promoSpread?: boolean } }) =>
         <div>{config.promoSpread ? "spread" : "garden-model"}</div>);
@@ -30,6 +44,7 @@ describe("<Promo />", () => {
     focusFromUrlParamsSpy = jest
       .spyOn(zoomBeaconConstants, "getFocusFromUrlParams")
       .mockReturnValue("");
+    isMobileSpy = jest.spyOn(screenSize, "isMobile").mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -40,6 +55,7 @@ describe("<Promo />", () => {
     gardenModelSpy.mockRestore();
     pushStateSpy.mockRestore();
     focusFromUrlParamsSpy.mockRestore();
+    isMobileSpy.mockRestore();
   });
 
   it("renders", () => {
@@ -91,29 +107,32 @@ describe("<Promo />", () => {
   });
 
   it("renders spread", () => {
-    window.location.search = "?promoSpread=true";
+    window.location.search = "?promoSpread=true&bedLengthOuter=1234";
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("spread");
     unmount();
   });
 
+  it("adjusts the initial mobile heading", () => {
+    isMobileSpy.mockReturnValue(true);
+    const { unmount } = render(<Promo />);
+    expect(gardenModelSpy.mock.calls[0][0].config)
+      .toEqual(expect.objectContaining({ viewpointHeading: 80 }));
+    unmount();
+  });
+
   it("clears active focus on Escape", async () => {
     focusFromUrlParamsSpy.mockReturnValue("What you can grow");
-    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
     const { unmount } = render(<Promo />);
-    try {
-      await waitFor(() => expect(addEventListenerSpy)
-        .toHaveBeenCalledWith("keydown", expect.any(Function)));
-      const onKeyDown = addEventListenerSpy.mock.calls
-        .find(([eventName]) => eventName == "keydown")?.[1] as EventListener;
-      act(() => onKeyDown(new KeyboardEvent("keydown", { key: "Escape" })));
-      expect(pushStateSpy).toHaveBeenCalled();
-      const nextUrl = pushStateSpy.mock.calls[0][2] as string;
-      expect(nextUrl).not.toContain("focus=");
-    } finally {
-      unmount();
-      addEventListenerSpy.mockRestore();
-    }
+    await waitFor(() => expect(gardenModelSpy.mock.calls[0][0])
+      .toEqual(expect.objectContaining({ activeFocus: "What you can grow" })));
+    fireEvent.keyDown(window, { key: "Enter" });
+    fireEvent.keyDown(screen.getByText("garden-model")
+      .closest(".three-d-garden") as HTMLElement, { key: "Escape" });
+    await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
+    const nextUrl = pushStateSpy.mock.calls[0][2] as string;
+    expect(nextUrl).not.toContain("focus=");
+    unmount();
   });
 });
 
