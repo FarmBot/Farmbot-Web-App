@@ -23,6 +23,16 @@ describe("<ElectronicsBox />", () => {
     expect(container).toContainHTML("electronics-box");
   });
 
+  it("reuses static model internals while x position changes", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const { rerender } = render(<ElectronicsBox {...p} />);
+    const initialModelCalls = useGltfMock.mock.calls.length;
+    p.configPosition = { ...p.configPosition, x: p.configPosition.x + 1 };
+    rerender(<ElectronicsBox {...p} />);
+    expect(useGltfMock.mock.calls.length).toEqual(initialModelCalls);
+  });
+
   it("doesn't load hidden LEDs for v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";

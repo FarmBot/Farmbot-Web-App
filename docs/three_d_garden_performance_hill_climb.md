@@ -178,10 +178,29 @@ commit message. Roll back rejected implementation changes.
      and potted-plant subtree work while Bot position updates do not affect the
      Greenhouse props.
 
+## Round 34 Candidate Ideas
+
+166. Split the moving ElectronicsBox wrapper from its static model internals.
+     Expected return: on X-only Bot telemetry updates, move the outer group
+     without rebuilding the unchanged box, button, board, and LED JSX.
+167. Memoize the Sun subtree across Bot telemetry-only parent rerenders.
+     Expected return: skip unchanged light, sun sphere, star field, and debug
+     JSX when config and sky ref are stable.
+168. Memoize the Clouds subtree across Bot telemetry-only parent rerenders.
+     Expected return: skip unchanged cloud spring/mesh JSX while config is
+     stable and only Bot position updates.
+169. Memoize the PowerSupply subtree across Bot telemetry-only parent rerenders.
+     Expected return: skip unchanged power-supply box and cable JSX while bed
+     dimensions and debug config are stable.
+170. Memoize configured tool slot conversion across Bot telemetry updates.
+     Expected return: avoid repeated sorting/name-reduction of real tool slots
+     when only Bot position changes.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 166 | Split ElectronicsBox moving wrapper from static internals | Direct v1.7 `ElectronicsBox` render plus 49 x-only telemetry rerenders, measuring render time while the same box, five buttons, and LED group remain visible | 1 electronics box; 5 buttons; 1 LED group; 0.537 ms median rerender time | 1 electronics box; 5 buttons; 1 LED group; 0.056 ms median rerender time | 89.6% faster; 0.481 ms saved per x-only telemetry rerender | Accepted; the moving outer group still updates position, while memoized static internals avoid rebuilding unchanged box/button/board/LED JSX and GLTF hook calls | `Split electronics box internals for 89.6% faster rerenders` |
 | 165 | Memoize selected Greenhouse scene | Direct selected `Greenhouse` scene render plus 49 unchanged parent rerenders with stable scene config, active focus, reveal state, and load callback | 1 Greenhouse scene; 0.371 ms median rerender time | 1 Greenhouse scene; 0.032 ms median rerender time | 91.4% faster; 0.339 ms saved per unchanged selected Greenhouse rerender | Accepted; `Greenhouse` skips unchanged wall/shelf/tray/people/potted-plant subtree work during Bot telemetry-only parent updates while prop changes still rerender normally | `Memoize Greenhouse scene for 91.4% faster rerenders` |
 | 164 | Memoize selected Lab scene | Direct selected `Lab` scene render plus 49 unchanged parent rerenders with stable scene config, active focus, reveal state, and load callback | 1 Lab scene; 0.459 ms median rerender time | 1 Lab scene; 0.032 ms median rerender time | 93.0% faster; 0.427 ms saved per unchanged selected Lab rerender | Accepted; `Lab` skips unchanged wall/desk/people subtree work during Bot telemetry-only parent updates while prop changes still rerender normally | `Memoize Lab scene for 93.0% faster rerenders` |
 | 163 | Memoize Grid subtree | Direct visible `Grid` render plus 49 unchanged parent rerenders with stable default config and soil-height function | 1 grid group; 0.112 ms median rerender time | 1 grid group; 0.043 ms median rerender time | 61.6% faster, but only 0.069 ms saved per unchanged Grid rerender | Rejected and rolled back; existing internal memoization already keeps this path cheap, so a component memo wrapper is not worth the tiny absolute saving | None |

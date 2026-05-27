@@ -117,17 +117,27 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
     y: -20 - bedYOffset,
   });
 
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
-  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
-  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
-
   return <Group name={"electronics-box"}
     position={new THREE.Vector3(
       position.x,
       position.y,
       columnLength - 190,
     )}>
+    <ElectronicsBoxModel config={props.config} />
+  </Group>;
+};
+
+interface ElectronicsBoxModelProps {
+  config: Config;
+}
+
+const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
+  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
+  const farmduino =
+    useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
+  return <>
     <Group name={"box"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh name={"electronicsBox"}
@@ -185,5 +195,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
       scale={1000}
       geometry={pi.nodes[PartName.pi].geometry}
       material={pi.materials.PaletteMaterial001} />
-  </Group>;
+  </>;
 };
+
+const ElectronicsBoxModel = React.memo(ElectronicsBoxModelBase);
