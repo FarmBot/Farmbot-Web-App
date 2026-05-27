@@ -592,3 +592,36 @@ commit message. Roll back rejected implementation changes.
 | 98 | Memoize saved tool slot conversion | Docker 1000-plant default scene after round 19, 3 measured runs | 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects | 4.056s full-ready; 3.144s core-ready; 126.44 FPS median; 7.96 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects | 0.4% slower full-ready; 0.5% slower core-ready; no render-count or scene-size improvement; 0.2% better frame p95 | Rejected and rolled back; the saved slot list is small and stable enough that memoizing its sort/normalization did not produce a meaningful realistic app win | None |
 | 99 | Skip hidden sensor interpolation generation | Docker 1000-plant default scene after round 19, 3 measured runs with moisture overlay hidden | 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work | 4.072s full-ready; 3.188s core-ready; 126.61 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work | 0.8% slower full-ready; 1.9% slower core-ready; no scene, frame, or 3D moisture-work improvement | Rejected and rolled back; the hidden 2D interpolation generation was not a measurable default 3D startup bottleneck under the real Docker page | None |
 | 100 | Memoize sensor-layer filtering/options | Docker 1000-plant scene with moisture map/readings enabled after round 19, 3 measured before runs | 4.853s full-ready; 3.911s core-ready; 97.0 ms frame p95; 1,002.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 199 MB heap | Timed out waiting for 3D readiness during the first warmup after 180s | Benchmark did not complete; readiness regressed from under 5s to timeout | Rejected and rolled back; even a small hook/memo change in the sensor layer was not safe in the real moisture-map page, and the intended cached work was not the measured 1s 3D moisture bottleneck anyway | None |
+
+## Round 21 Candidate Ideas
+
+101. Mount the plant spread instanced mesh only while the spread overlay, plant
+     edit mode, click-to-add mode, or a transient add plant is active. Expected
+     return: fewer default-scene triangles and draw work from a hidden
+     1000-instance sphere mesh, while preserving identical spread visuals and
+     interactions whenever the spread feature is actually visible or active.
+102. Replace interpolation-map nearest lookup, weighted numerator, and weighted
+     denominator with one direct point-object scan using squared distances.
+     Expected return: much faster enabled moisture-map generation in the
+     realistic 1000-plant moisture benchmark with numerically equivalent
+     interpolation results.
+103. Generate interpolation grid cells with simple `for` loops instead of
+     nested lodash `range().map()` allocation. Expected return: lower
+     moisture-map generation CPU and garbage while producing the same grid
+     coordinates and tile values.
+104. Return freshly generated interpolation data from `generateData` and let
+     the 3D moisture surface consume that array directly while still updating
+     the shared localStorage cache. Expected return: less first-render
+     serialization/parsing work without repeating the previously rejected cache
+     bypass.
+105. Build 3D moisture instance color and opacity buffers numerically instead
+     of converting each tile through CSS color strings and `THREE.Color`.
+     Expected return: lower moisture instance-buffer setup time in the enabled
+     moisture-map scene with the same blue/transparent color ramp.
+
+## Round 21 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 101 | Mount plant spread mesh only while active | Docker 1000-plant default scene after round 20, 3 measured runs with spread toggle guardrail | 4.003s full-ready; 3.107s core-ready; 97 draw calls; 5,332,526 triangles; 490 scene objects; 9 instanced meshes; 562 ms spread toggle | 4.024s full-ready; 3.120s core-ready; 97 draw calls; 5,332,526 triangles; 490 scene objects; 9 instanced meshes; 577 ms spread toggle | 0.5% slower full-ready; 0.4% slower core-ready; no draw-call, triangle, object, or instanced-mesh reduction; 2.6% slower spread toggle | Rejected and rolled back; the realistic benchmark state still legitimately mounted the spread mesh, so the inactive gate produced no scene-size win and only added conditional complexity | None |
+| 102 | One-pass interpolation point scan | Docker 1000-plant scene with moisture map/readings enabled after item 101 rollback, 3 measured runs | 1,023.4 ms `moistureSurfaceMs`; 4.845s full-ready; 3.940s core-ready; 108.5 ms frame p95; 3.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 94.7% faster moisture interpolation, saving 968.7 ms; 16.6% faster full-ready, saving 803.2 ms; 20.2% faster core-ready; 92.6% better frame p95; moisture buffer setup 22.5 ms slower | Accepted; replacing sort plus duplicate weighted passes with one direct point-object scan removes the real moisture-map CPU bottleneck, while scene/resource metrics stayed unchanged and the small buffer-time increase is dwarfed by the near-second interpolation saving | `Optimize moisture interpolation scan for 94.7% faster maps` |

@@ -71,6 +71,36 @@ describe("interpolatedZ()", () => {
     expect(interpolatedZ({ x: 50, y: 50 }, [point0, point1],
       DEFAULT_INTERPOLATION_OPTIONS)).toEqual(100);
   });
+
+  it("interpolates weighted sensor readings in one scan", () => {
+    const reading0 = fakeSensorReading();
+    reading0.body.x = 0;
+    reading0.body.y = 0;
+    reading0.body.value = 0;
+    const reading1 = fakeSensorReading();
+    reading1.body.x = 200;
+    reading1.body.y = 0;
+    reading1.body.value = 100;
+    expect(interpolatedZ({ x: 100, y: 0 }, [reading0, reading1], {
+      ...DEFAULT_INTERPOLATION_OPTIONS,
+      power: 4,
+    })).toEqual(50);
+  });
+
+  it("uses the nearest reading when configured", () => {
+    const reading0 = fakeSensorReading();
+    reading0.body.x = 0;
+    reading0.body.y = 0;
+    reading0.body.value = 100;
+    const reading1 = fakeSensorReading();
+    reading1.body.x = 200;
+    reading1.body.y = 0;
+    reading1.body.value = 700;
+    expect(interpolatedZ({ x: 75, y: 0 }, [reading0, reading1], {
+      ...DEFAULT_INTERPOLATION_OPTIONS,
+      useNearest: true,
+    })).toEqual(100);
+  });
 });
 
 describe("generateData()", () => {
