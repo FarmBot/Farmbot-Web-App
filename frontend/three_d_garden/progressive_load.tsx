@@ -127,14 +127,16 @@ export const LoadStepReady = (props: LoadStepReadyProps) => {
 
 interface ThreeDLoadProgressOverlayProps {
   progress: ThreeDLoadProgress;
+  complete?: boolean;
 }
 
 export const ThreeDLoadProgressOverlay =
   (props: ThreeDLoadProgressOverlayProps) => {
-    const [mounted, setMounted] = React.useState(!props.progress.complete);
+    const complete = props.complete || props.progress.complete;
+    const [mounted, setMounted] = React.useState(!complete);
 
     React.useEffect(() => {
-      if (!props.progress.complete) {
+      if (!complete) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
         return;
@@ -142,32 +144,32 @@ export const ThreeDLoadProgressOverlay =
       const timeout = window.setTimeout(() =>
         setMounted(false), THREE_D_LOAD_PROGRESS_FADE_MS);
       return () => window.clearTimeout(timeout);
-    }, [props.progress.complete]);
+    }, [complete]);
 
     if (!mounted) { return undefined; }
     const className = [
       "three-d-load-progress",
-      props.progress.complete ? "three-d-load-progress-complete" : "",
+      complete ? "three-d-load-progress-complete" : "",
     ].join(" ");
     return <Html fullscreen={true}>
       <div className={className}>
         <div className={"three-d-load-progress-bar"}
           aria-hidden={true}>
           <div className={"three-d-load-progress-fill"}
-            style={{ width: `${props.progress.progress}%` }} />
+            style={{ width: `${complete ? 100 : props.progress.progress}%` }} />
         </div>
-        <p>{props.progress.complete ? "Enjoy!" : props.progress.currentStep?.label}</p>
+        <p>{complete ? "Enjoy!" : props.progress.currentStep?.label}</p>
       </div>
     </Html>;
   };
 
 const loadInConfig = {
-  tension: 220,
-  friction: 26,
+  tension: 240,
+  friction: 30,
 };
 
 export const botLoadInConfig = {
-  tension: 220,
+  tension: 240,
   friction: 30,
   clamp: true,
 };
@@ -184,6 +186,7 @@ const canTraverse = (value: unknown): value is Object3D =>
 interface LoadInGroupProps {
   name: string;
   children: React.ReactNode;
+  reveal?: boolean;
   onRest?: () => void;
   config?: LoadInSpringConfig;
   fromPosition?: [number, number, number];
@@ -195,12 +198,14 @@ interface LoadInGroupProps {
 }
 
 export const LoadInGroup = (props: LoadInGroupProps) => {
+  const reveal = props.reveal !== false;
   const fromPosition = props.fromPosition || [0, 0, 0];
   const toPosition = props.toPosition || [0, 0, 0];
   const fromScale = props.fromScale || 1;
   const toScale = props.toScale || 1;
+  const fromOpacity = props.fadeIn ? 0 : 1;
   const groupRef = React.useRef<Object3D | undefined>(undefined);
-  const opacityRef = React.useRef(props.fadeIn ? 0 : 1);
+  const opacityRef = React.useRef(fromOpacity);
   const materialBinding = React.useRef<ReturnType<
     typeof createFocusMaterialBinding
   > | undefined>(undefined);
@@ -224,18 +229,20 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
     from: {
       position: fromPosition,
       scale: fromScale,
-      opacity: props.fadeIn ? 0 : 1,
+      opacity: fromOpacity,
     },
     to: {
-      position: toPosition,
-      scale: toScale,
-      opacity: 1,
+      position: reveal ? toPosition : fromPosition,
+      scale: reveal ? toScale : fromScale,
+      opacity: reveal ? 1 : fromOpacity,
     },
+    immediate: !reveal,
     onChange: result => {
       const value = result.value as { opacity?: number };
       applyOpacity(value.opacity ?? 1);
     },
     onRest: () => {
+      if (!reveal) { return; }
       applyOpacity(1);
       restoreMaterialBinding();
       props.onRest?.();
@@ -262,6 +269,7 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
 interface PopInGroupProps {
   name: string;
   children: React.ReactNode;
+  reveal?: boolean;
   onRest?: () => void;
   distance?: number;
 }
@@ -269,6 +277,7 @@ interface PopInGroupProps {
 export const PopInGroup = (props: PopInGroupProps) =>
   <LoadInGroup
     name={props.name}
+    reveal={props.reveal}
     onRest={props.onRest}
     fromPosition={[0, 0, -(props.distance || 300)]}
     fromScale={[0.96, 0.96, 0.05]}
@@ -279,6 +288,7 @@ export const PopInGroup = (props: PopInGroupProps) =>
 interface FallInGroupProps {
   name: string;
   children: React.ReactNode;
+  reveal?: boolean;
   onRest?: () => void;
   config?: LoadInSpringConfig;
   distance?: number;
@@ -289,6 +299,7 @@ interface FallInGroupProps {
 export const FallInGroup = (props: FallInGroupProps) =>
   <LoadInGroup
     name={props.name}
+    reveal={props.reveal}
     onRest={props.onRest}
     config={props.config}
     fromPosition={[0, 0, props.distance || 3000]}
@@ -302,12 +313,14 @@ export const FallInGroup = (props: FallInGroupProps) =>
 interface GridRevealGroupProps {
   name: string;
   children: React.ReactNode;
+  reveal?: boolean;
   onRest?: () => void;
 }
 
 export const GridRevealGroup = (props: GridRevealGroupProps) =>
   <LoadInGroup
     name={props.name}
+    reveal={props.reveal}
     onRest={props.onRest}
     fromScale={[0.001, 0.001, 1]}
     toScale={[1, 1, 1]}>

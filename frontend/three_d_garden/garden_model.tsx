@@ -70,15 +70,21 @@ export const SMOOTH_XL_CAMERA_BED_SCALE = 1.9;
 export const SMOOTH_XL_CAMERA_HEIGHT_SCALE = 1.45;
 
 interface ZoomBeaconsLoadInProps extends ZoomBeaconsProps {
+  reveal?: boolean;
   onRest?: () => void;
 }
 
 const ZoomBeaconsLoadIn = (props: ZoomBeaconsLoadInProps) => {
-  const { onRest, ...zoomBeaconProps } = props;
+  const { onRest, reveal: revealProp, ...zoomBeaconProps } = props;
+  const reveal = revealProp !== false;
   const { scale, opacity } = useSpring({
     from: { scale: 0.35, opacity: 0 },
-    to: { scale: 1, opacity: 1 },
-    onRest,
+    to: {
+      scale: reveal ? 1 : 0.35,
+      opacity: reveal ? 1 : 0,
+    },
+    immediate: !reveal,
+    onRest: () => reveal && onRest?.(),
     config: {
       tension: 220,
       friction: 26,
@@ -97,24 +103,24 @@ interface SceneBoundaryProps {
   markName?: string;
   loadProgress?: ThreeDLoadProgress;
   loadStep?: ThreeDLoadStepId;
+  reveal?: boolean;
   markReadyOnMount?: boolean;
   children: React.ReactNode;
 }
 
 const SceneBoundary = (props: SceneBoundaryProps) => {
-  if (props.loadStep
-    && props.loadProgress
-    && !props.loadProgress.isStepAllowed(props.loadStep)) {
-    return undefined;
-  }
+  const reveal = props.reveal !== false;
   const markReadyOnMount = props.markReadyOnMount !== false;
   return <React.Suspense fallback={undefined}>
-    {props.children}
-    {markReadyOnMount && props.loadStep && props.loadProgress &&
+    <Group name={props.loadStep && `${props.loadStep}-scene-boundary`}
+      visible={reveal}>
+      {props.children}
+    </Group>
+    {reveal && markReadyOnMount && props.loadStep && props.loadProgress &&
       <LoadStepReady
         step={props.loadStep}
         markStep={props.loadProgress.markStep} />}
-    {props.markName && <PerfMark name={props.markName} />}
+    {reveal && props.markName && <PerfMark name={props.markName} />}
   </React.Suspense>;
 };
 
@@ -138,13 +144,16 @@ export interface GardenModelProps {
   smoothFocusTransitions?: boolean;
   plantIconCapacities?: Record<string, number>;
   plantInstanceCapacity?: number;
+  onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
 }
 
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
-  const { config, addPlantProps, onLoadComplete, threeDPlants } = props;
+  const {
+    config, addPlantProps, onDetailsRevealStart, onLoadComplete, threeDPlants,
+  } = props;
   const dispatch = addPlantProps?.dispatch;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
 
@@ -239,6 +248,15 @@ export const GardenModel = (props: GardenModelProps) => {
     // eslint-disable-next-line no-null/no-null
     React.useState<SmoothCameraControls | null>(null);
   const loadProgress = useThreeDLoadProgress();
+  const environmentReveal = loadProgress.isStepAllowed("environment");
+  const bedReveal = loadProgress.isStepAllowed("bed");
+  const gridReveal = loadProgress.isStepAllowed("grid");
+  const plantsReveal = loadProgress.isStepAllowed("plants");
+  const weedsReveal = loadProgress.isStepAllowed("weeds");
+  const pointsReveal = loadProgress.isStepAllowed("points");
+  const farmbotReveal = loadProgress.isStepAllowed("farmbot");
+  const detailsReveal = loadProgress.isStepAllowed("details");
+  const detailsRevealNotified = React.useRef(false);
   const loadCompleteNotified = React.useRef(false);
   const markLoadStep = loadProgress.markStep;
   const markDetailsLoaded = React.useCallback(() => {
@@ -248,6 +266,12 @@ export const GardenModel = (props: GardenModelProps) => {
   React.useEffect(() => {
     perfMark("garden_model_mounted");
   }, []);
+
+  React.useEffect(() => {
+    if (!detailsReveal || detailsRevealNotified.current) { return; }
+    detailsRevealNotified.current = true;
+    onDetailsRevealStart?.();
+  }, [detailsReveal, onDetailsRevealStart]);
 
   React.useEffect(() => {
     if (!loadProgress.complete || loadCompleteNotified.current) { return; }
@@ -377,10 +401,13 @@ export const GardenModel = (props: GardenModelProps) => {
         maxZoom={10}
         minDistance={config.lightsDebug ? 50 : 500}
         maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
-      <ThreeDLoadProgressOverlay progress={loadProgress} />
+      <ThreeDLoadProgressOverlay
+        progress={loadProgress}
+        complete={detailsReveal} />
       <SceneBoundary
         loadStep={"environment"}
         loadProgress={loadProgress}
+        reveal={environmentReveal}
         markName={"three_d_ground_ready"}>
         <Sky sunPosition={sunPosition(0, 0, 0)} />
         <Sphere args={[BigDistance.sky, 8, 16]}>
@@ -399,11 +426,13 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"bed"}
         loadProgress={loadProgress}
+        reveal={bedReveal}
         markReadyOnMount={false}
         markName={"three_d_bed_ready"}>
         <NorthArrow config={config} />
         <PopInGroup
           name={"bed-load-in"}
+          reveal={bedReveal}
           onRest={() => loadProgress.markStep("bed")}
           distance={config.bedHeight + config.bedZOffset}>
           <Bed
@@ -424,10 +453,12 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"grid"}
         loadProgress={loadProgress}
+        reveal={gridReveal}
         markReadyOnMount={false}
         markName={"three_d_grid_ready"}>
         <GridRevealGroup
           name={"grid-load-in"}
+          reveal={gridReveal}
           onRest={() => loadProgress.markStep("grid")}>
           <Grid
             config={config}
@@ -438,10 +469,12 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"plants"}
         loadProgress={loadProgress}
+        reveal={plantsReveal}
         markReadyOnMount={false}
         markName={"three_d_core_ready"}>
         <PopInGroup
           name={"plants-load-in"}
+          reveal={plantsReveal}
           onRest={() => loadProgress.markStep("plants")}
           distance={200}>
           <FocusVisibilityGroup
@@ -478,10 +511,12 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"weeds"}
         loadProgress={loadProgress}
+        reveal={weedsReveal}
         markReadyOnMount={false}
         markName={"three_d_weeds_ready"}>
         <PopInGroup
           name={"weeds-load-in"}
+          reveal={weedsReveal}
           onRest={() => loadProgress.markStep("weeds")}
           distance={200}>
           <Group name={"weeds"}
@@ -499,10 +534,12 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"points"}
         loadProgress={loadProgress}
+        reveal={pointsReveal}
         markReadyOnMount={false}
         markName={"three_d_points_ready"}>
         <FallInGroup
           name={"points-load-in"}
+          reveal={pointsReveal}
           onRest={() => loadProgress.markStep("points")}
           distance={config.columnLength + 1000}>
           <Group name={"points"}
@@ -520,11 +557,13 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"farmbot"}
         loadProgress={loadProgress}
+        reveal={farmbotReveal}
         markReadyOnMount={!showFarmbot}
         markName={"three_d_bot_ready"}>
         {showFarmbot &&
         <FallInGroup
           name={"bot-load-in"}
+          reveal={farmbotReveal}
           onRest={() => loadProgress.markStep("farmbot")}
           config={botLoadInConfig}
           distance={config.columnLength + 1500}
@@ -543,6 +582,7 @@ export const GardenModel = (props: GardenModelProps) => {
       <SceneBoundary
         loadStep={"details"}
         loadProgress={loadProgress}
+        reveal={detailsReveal}
         markReadyOnMount={false}
         markName={"three_d_details_ready"}>
         {config.stats && <StatsGl className={"stats-gl"} />}
@@ -553,6 +593,7 @@ export const GardenModel = (props: GardenModelProps) => {
           configPosition={props.configPosition}
           activeFocus={props.activeFocus}
           setActiveFocus={props.setActiveFocus}
+          reveal={detailsReveal}
           onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
         <AxesHelper args={[5000]} visible={config.threeAxes} />
         {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
@@ -579,12 +620,14 @@ export const GardenModel = (props: GardenModelProps) => {
         <Lab
           config={config}
           activeFocus={props.activeFocus}
+          reveal={detailsReveal}
           onDetailsLoadInRest={config.scene == "Lab"
             ? markDetailsLoaded
             : undefined} />
         <Greenhouse
           config={config}
           activeFocus={props.activeFocus}
+          reveal={detailsReveal}
           onDetailsLoadInRest={config.scene == "Greenhouse"
             ? markDetailsLoaded
             : undefined} />
@@ -593,7 +636,7 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           dispatch={dispatch}
           topDownAtStart={topDownAtStart} />}
-        {!animatedDetailsLoadIn &&
+        {detailsReveal && !animatedDetailsLoadIn &&
         <LoadStepReady
           step={"details"}
           markStep={loadProgress.markStep} />}

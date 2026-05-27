@@ -76,7 +76,7 @@ describe("<Promo />", () => {
     const { container, unmount } = render(<Promo />);
     expect(container.querySelector(".settings-bar-loaded")).toBeFalsy();
     act(() => {
-      gardenModelSpy.mock.calls[0][0].onLoadComplete();
+      gardenModelSpy.mock.calls[0][0].onDetailsRevealStart();
     });
     expect(container.querySelector(".settings-bar-loaded")).toBeTruthy();
     unmount();

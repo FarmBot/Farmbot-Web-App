@@ -15,6 +15,28 @@ describe("<PopInGroup />", () => {
     expect(container.innerHTML).toContain("bed-load-in");
     expect(screen.getByText("content")).toBeTruthy();
   });
+
+  it("keeps children mounted without resting before reveal", () => {
+    const onRest = jest.fn();
+    const { rerender } = render(<PopInGroup
+      name={"bed-load-in"}
+      reveal={false}
+      onRest={onRest}>
+      <span>content</span>
+    </PopInGroup>);
+
+    expect(screen.getByText("content")).toBeTruthy();
+    expect(onRest).not.toHaveBeenCalled();
+
+    rerender(<PopInGroup
+      name={"bed-load-in"}
+      reveal={true}
+      onRest={onRest}>
+      <span>content</span>
+    </PopInGroup>);
+
+    expect(onRest).toHaveBeenCalled();
+  });
 });
 
 describe("<FallInGroup />", () => {
@@ -157,5 +179,29 @@ describe("3D load progress", () => {
     const markStep = jest.fn();
     render(<LoadStepReady step={"plants"} markStep={markStep} />);
     expect(markStep).toHaveBeenCalledWith("plants");
+  });
+
+  it("can hide before all progress steps are ready", () => {
+    jest.useFakeTimers();
+    const CompleteHarness = ({ complete }: { complete: boolean }) => {
+      const progress = useThreeDLoadProgress();
+      return <ThreeDLoadProgressOverlay
+        progress={progress}
+        complete={complete} />;
+    };
+
+    const { rerender } = render(<CompleteHarness complete={false} />);
+    expect(document.querySelector(".three-d-load-progress")).toBeTruthy();
+
+    rerender(<CompleteHarness complete={true} />);
+
+    expect(screen.getByText("Enjoy!")).toBeTruthy();
+    expect(document.querySelector(".three-d-load-progress-complete"))
+      .toBeTruthy();
+    act(() => {
+      jest.advanceTimersByTime(THREE_D_LOAD_PROGRESS_FADE_MS);
+    });
+    expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
+    jest.useRealTimers();
   });
 });

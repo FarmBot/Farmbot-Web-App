@@ -213,7 +213,7 @@ export const Promo = () => {
               mapPoints={mapPoints}
               plantIconCapacities={plantCapacities.iconCapacities}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
-              onLoadComplete={handleThreeDLoadComplete}
+              onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true} />
           </Canvas>
         </MemoryRouter>

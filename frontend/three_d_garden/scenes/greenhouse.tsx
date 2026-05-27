@@ -13,6 +13,7 @@ import { useTextureVariant } from "../texture_variants";
 export interface GreenhouseProps {
   config: Config;
   activeFocus: string;
+  reveal?: boolean;
   onDetailsLoadInRest?(): void;
 }
 
@@ -37,6 +38,7 @@ export const Greenhouse = (props: GreenhouseProps) => {
     visible={config.scene == "Greenhouse"}>
     <PopInGroup
       name={"greenhouse-scene-details-load-in"}
+      reveal={props.reveal}
       onRest={props.onDetailsLoadInRest}
       distance={300}>
 

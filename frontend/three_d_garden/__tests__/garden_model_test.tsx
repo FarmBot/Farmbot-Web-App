@@ -93,6 +93,23 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("points-load-in");
     expect(container.innerHTML).toContain("weeds-load-in");
     expect(container.innerHTML).toContain("zoom-beacons-load-in");
+    expect(container.innerHTML).toContain("farmbot-scene-boundary");
+    expect(container.innerHTML).toContain("details-scene-boundary");
+  });
+
+  it("notifies when the progressive reveal completes", async () => {
+    const p = fakeProps();
+    p.onLoadComplete = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("notifies when scene details begin revealing", async () => {
+    const p = fakeProps();
+    p.onDetailsRevealStart = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() =>
+      expect(p.onDetailsRevealStart).toHaveBeenCalled());
   });
 
   it("renders top down view", () => {
@@ -308,6 +325,15 @@ describe("<GardenModel />", () => {
     p.addPlantProps.getConfigValue = () => false;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).not.toContain('name="bot"');
+  });
+
+  it("completes the progressive reveal without FarmBot", async () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = () => false;
+    p.onLoadComplete = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
   });
 
   it("renders other options", async () => {

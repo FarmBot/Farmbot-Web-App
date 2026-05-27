@@ -12,6 +12,7 @@ import { useTextureVariant } from "../texture_variants";
 export interface LabProps {
   config: Config;
   activeFocus: string;
+  reveal?: boolean;
   onDetailsLoadInRest?(): void;
 }
 
@@ -49,6 +50,7 @@ export const Lab = (props: LabProps) => {
   return <Group name={"lab-environment"} visible={config.scene == "Lab"}>
     <PopInGroup
       name={"lab-scene-details-load-in"}
+      reveal={props.reveal}
       onRest={props.onDetailsLoadInRest}
       distance={300}>
       <Group
