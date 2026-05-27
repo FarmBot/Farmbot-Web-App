@@ -91,27 +91,61 @@ const VisibleGround = (props: GroundProps) => {
   const groundZ = config.bedZOffset + config.bedHeight;
 
   const groundProperties = getGroundProperties(config.scene);
+  const common = { sceneName: config.scene, groundZ };
 
-  const highDetailGeometry = React.useMemo(
-    () => buildGroundGeometry(BigDistance.ground, 64),
-    [],
-  );
+  if (config.lowDetail) {
+    return <LowDetailGround
+      {...common}
+      color={groundProperties.lowDetailColor} />;
+  }
+
+  return <DetailedGround
+    {...common}
+    config={config}
+    color={groundProperties.lowDetailColor} />;
+};
+
+interface LowDetailGroundProps {
+  sceneName: string;
+  groundZ: number;
+  color: string;
+}
+
+const LowDetailGround = (props: LowDetailGroundProps) => {
   const lowDetailGeometry = React.useMemo(
     () => buildGroundGeometry(BigDistance.ground, 16),
     [],
   );
-  const common = { sceneName: config.scene, groundZ };
+  return <GroundWrapper
+    sceneName={props.sceneName}
+    groundZ={props.groundZ}
+    geometry={lowDetailGeometry}>
+    <MeshPhongMaterial
+      color={props.color}
+      shininess={0}
+      vertexColors={true} />
+  </GroundWrapper>;
+};
 
-  return <Detailed distances={detailLevels(config)}
-    visible={config.ground}>
+interface DetailedGroundProps extends LowDetailGroundProps {
+  config: Config;
+}
+
+const DetailedGround = (props: DetailedGroundProps) => {
+  const highDetailGeometry = React.useMemo(
+    () => buildGroundGeometry(BigDistance.ground, 64),
+    [],
+  );
+  const common = {
+    sceneName: props.sceneName,
+    groundZ: props.groundZ,
+  };
+
+  return <Detailed distances={detailLevels(props.config)}
+    visible={props.config.ground}>
     <GroundWrapper {...common} geometry={highDetailGeometry}>
-      <GroundMaterial sceneName={config.scene} />
+      <GroundMaterial sceneName={props.config.scene} />
     </GroundWrapper>
-    <GroundWrapper {...common} geometry={lowDetailGeometry}>
-      <MeshPhongMaterial
-        color={groundProperties.lowDetailColor}
-        shininess={0}
-        vertexColors={true} />
-    </GroundWrapper>
+    <LowDetailGround {...common} color={props.color} />
   </Detailed>;
 };

@@ -28,6 +28,15 @@ describe("<Ground />", () => {
     expect(useTexture).not.toHaveBeenCalled();
   });
 
+  it("renders low-detail ground without loading high-detail texture", () => {
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    const { container } = render(<Ground {...p} />);
+    expect(container.querySelectorAll("[name^='ground']").length).toEqual(1);
+    expect(container).toContainHTML("darkgreen");
+    expect(useTexture).not.toHaveBeenCalled();
+  });
+
   it.each<[string, string, string[]]>([
     [
       "Outdoor",

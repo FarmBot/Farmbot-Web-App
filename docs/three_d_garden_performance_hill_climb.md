@@ -304,6 +304,7 @@ commit message. Roll back rejected implementation changes.
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 196 | Render only low-detail `Ground` layer | Real low-detail `Ground` render with Testing Library, sampled 20 times at the shipped single-ground scale | 2 ground mesh nodes; 1 high-detail texture hook call; 0.308 ms median render setup | 1 ground mesh node; 0 texture hook calls; latest check 0.167 ms median render setup | 50% fewer ground nodes; 100% fewer texture hook calls; 20.8-45.8% faster render setup, saving 0.064-0.141 ms in this isolated component | Accepted; the absolute CPU saving is small, but the useful win is removing high-detail texture setup from low-detail mode while keeping the exact low-detail material already shown by LOD | `Render low-detail ground for 100% fewer texture loads` |
 
 ## Round 39 Candidate Ideas
 
