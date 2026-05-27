@@ -30,6 +30,7 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   const hoveredRef = React.useRef<Hovered | undefined>(undefined);
   const markerRefs =
     React.useRef<Record<string, Object3D | null>>({});
+  const markerNodes = React.useRef<Object3D[]>([]);
   const markerRefCallbacks =
     // eslint-disable-next-line func-call-spacing
     React.useRef<Record<string, (node: Object3D | null) => void>>({});
@@ -38,6 +39,8 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
     (markerId: string) => {
       markerRefCallbacks.current[markerId] ||= (node: Object3D | null) => {
         markerRefs.current[markerId] = node;
+        markerNodes.current = Object.values(markerRefs.current)
+          .filter((marker): marker is Object3D => !!marker);
       };
       return markerRefCallbacks.current[markerId];
     },
@@ -45,10 +48,8 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   useFrame(() => {
     if (!config.cameraSelectionView) { return; }
     raycaster.setFromCamera(pointer, camera);
-    const markerNodes = Object.values(markerRefs.current)
-      .filter((node): node is Object3D => !!node);
     const intersection = raycaster
-      .intersectObjects(markerNodes, false)
+      .intersectObjects(markerNodes.current, false)
       .find(hit => !!hit.object.userData.hovered);
     const nextHovered = intersection?.object.userData.hovered as
       Hovered | undefined;

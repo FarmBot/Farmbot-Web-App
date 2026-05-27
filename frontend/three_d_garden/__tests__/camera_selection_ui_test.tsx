@@ -160,6 +160,7 @@ describe("<CameraSelectionUI />", () => {
       frameHandler?.({} as never, 0);
     });
 
+    expect(intersectObjects.mock.calls[0][0].length).toEqual(12);
     const hoveredSphere = wrapper.root.findAll(node =>
       node.props.name == "head"
       && node.props.userData?.hovered?.angle == 30
