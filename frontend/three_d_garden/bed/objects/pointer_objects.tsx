@@ -70,10 +70,21 @@ export interface PointerObjectsProps extends AllRefs {
 }
 
 export const PointerObjects = (props: PointerObjectsProps) => {
+  const mode = getMode();
+  if (!HOVER_OBJECT_MODES.includes(mode) || isMobile()) { return <></>; }
+  return <ActivePointerObjects {...props} mode={mode} />;
+};
+
+interface ActivePointerObjectsProps extends PointerObjectsProps {
+  mode: Mode;
+}
+
+const ActivePointerObjects = (props: ActivePointerObjectsProps) => {
   const {
     config, mapPoints, addPlantProps,
     pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
     xCrosshairRef, yCrosshairRef,
+    mode,
   } = props;
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
@@ -94,8 +105,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
-  return HOVER_OBJECT_MODES.includes(getMode()) &&
-    !isMobile() &&
+  return (
     <Group name={"hover-elements"}>
       {!settingRadius &&
         !gridPreview &&
@@ -125,7 +135,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
         </Group>}
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
         <Group position={[0, 0, 0]}>
-          {DRAW_POINT_MODES.includes(getMode()) &&
+          {DRAW_POINT_MODES.includes(mode) &&
             !gridPreview &&
             drawnPoint &&
             <DrawnPoint
@@ -136,7 +146,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
               config={config}
               designer={addPlantProps.designer}
               usePosition={settingRadius} />}
-          {getMode() == Mode.clickToAdd &&
+          {mode == Mode.clickToAdd &&
             <Group>
               <Billboard follow={true} position={[0, 0, iconSize / 2]}>
                 <Mesh
@@ -168,7 +178,8 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             </Group>}
         </Group>
       </Group>
-    </Group>;
+    </Group>
+  );
 };
 
 export interface SoilClickProps {

@@ -24,6 +24,8 @@ import { ThreeEvent } from "@react-three/fiber";
 import * as plantActions from "../../../../farm_designer/map/layers/plants/plant_actions";
 import * as screenSize from "../../../../screen_size";
 import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
+import { fakePoint } from "../../../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "farmbot";
 
 let dropPlantSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -87,6 +89,30 @@ describe("<PointerObjects />", () => {
     render(<PointerObjects {...fakeProps()} />);
 
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+  });
+
+  it("skips hidden preview work in ordinary designer mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    mockIsMobile = false;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+    const gridMetaReads = { current: 0 };
+    const point = fakePoint();
+    point.specialStatus = SpecialStatus.DIRTY;
+    Object.defineProperty(point.body, "meta", {
+      get: () => {
+        gridMetaReads.current += 1;
+        return { gridId: 1 };
+      },
+    });
+    const p = fakeProps();
+    p.mapPoints = [point];
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("hover-elements");
+    expect(useTextureMock).not.toHaveBeenCalled();
+    expect(gridMetaReads.current).toEqual(0);
   });
 });
 
