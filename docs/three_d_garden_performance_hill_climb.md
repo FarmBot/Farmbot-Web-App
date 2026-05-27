@@ -141,10 +141,31 @@ commit message. Roll back rejected implementation changes.
      Expected return: fewer GLTF hooks/model requests for mounted UTM tools
      and slots with no pullout direction, without changing visible tool slots.
 
+## Round 32 Candidate Ideas
+
+156. Memoize UtilitiesPost hose paths while bed dimensions are unchanged.
+     Expected return: lower default bed rerender work by avoiding repeated
+     hose curve/vector allocation with identical utility-post visuals.
+157. Memoize the X-axis water-tube path while bed dimensions are unchanged.
+     Expected return: lower Bot rerender work by reusing the static X-axis
+     water path across parent updates.
+158. Memoize Solenoid water-tube paths while bot position and dimensions are
+     unchanged. Expected return: lower Bot rerender work during unchanged
+     parent updates without changing any tube geometry.
+159. Memoize the static GreenhouseWall subtree across Greenhouse rerenders.
+     Expected return: lower selected Greenhouse scene update work by avoiding
+     repeated pane/frame JSX generation for walls with no props.
+160. Reuse the Lab wall extrusion shape across Lab rerenders.
+     Expected return: lower selected Lab scene update work by avoiding repeated
+     wall outline shape creation with identical geometry.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 158 | Memoize Solenoid water-tube paths | Direct `Solenoid` render plus 99 unchanged rerenders with stable bot position and config, measuring render time through Bun/Testing Library | 4 water tubes; 14.169 ms median render time for 100 renders | 4 water tubes; 12.154 ms median render time for 100 renders | 14.2% faster; 2.015 ms saved across 100 unchanged renders | Accepted; the four tube paths and solenoid position are reused while bot position/config are unchanged, preserving identical tube geometry and still recalculating when position changes | `Memoize solenoid paths for 14.2% faster rerenders` |
+| 157 | Memoize X-axis water-tube path | Direct `XAxisWaterTube` render plus 99 unchanged rerenders, measuring render time through Bun/Testing Library | 8.031 ms median render time for 100 renders | 7.594 ms median render time for 100 renders | 5.4% faster; only 0.437 ms saved across 100 unchanged renders | Rejected and rolled back; the realistic unchanged-rerender path missed the 10% threshold and the absolute saving was too small | None |
+| 156 | Memoize UtilitiesPost hose paths | Direct visible `UtilitiesPost` render plus 99 unchanged rerenders, measuring render time through Bun/Testing Library | 22.136 ms median render time for 100 renders | 21.731 ms median render time for 100 renders | 1.8% faster; only 0.405 ms saved across 100 unchanged renders | Rejected and rolled back; the realistic render-path improvement missed 10% and was too small to justify memoizing two local curve objects | None |
 | 155 | Load toolbay model only for rendered bays | Configured `Tools` render with seven real tool slots and mounted weeder, measuring GLTF hooks and render time through Bun/Testing Library | 13 total model hooks; 6 `toolbay1` hooks; 0 `toolbay3` hooks; 1.980 ms median render time | 11 total model hooks; 4 `toolbay1` hooks; 0 `toolbay3` hooks; 2.118 ms median render time | 33.3% fewer `toolbay1` hooks and 15.4% fewer total model hooks, removing two unused model requests; render timing shifted by 0.138 ms within harness noise | Accepted; the toolbay model hook now lives in the rendered bay child, so mounted UTM tools and `NONE` pullout slots skip unused model work while visible bays are unchanged | `Load visible toolbay models for 33.3% fewer hooks` |
 | 154 | Skip disabled bed distance indicators | Full default `Bed` render with `xyDimensions=false` and no bed-height distance indicator, measuring mounted distance labels/arrows and render time through Bun/Testing Library | 0 hidden distance labels/arrows mounted by the test harness; 2.589 ms median render time | 0 labels/arrows; 2.177 ms median render time | 15.9% faster, but only 0.412 ms saved in the default Bed render | Rejected and rolled back; the percentage cleared 10%, but the sub-millisecond absolute gain and added conditional rendering were not worth keeping | None |
 | 153 | Skip disabled north-arrow geometry | Direct disabled `NorthArrow` render with `north=false`, measuring mounted arrow extrudes and render time through Bun/Testing Library | 0 arrow extrudes mounted by the test harness; 0.192 ms median render time | 0 arrow extrudes; 0.156 ms median render time | 18.8% faster, but only 0.036 ms saved in the disabled component render | Rejected and rolled back; the percentage cleared 10%, but the absolute improvement was negligible in the realistic disabled path | None |
