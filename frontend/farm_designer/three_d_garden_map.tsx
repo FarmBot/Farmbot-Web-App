@@ -4,7 +4,6 @@ import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
-import { clone } from "lodash";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import {
   TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
@@ -167,7 +166,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     [gridSize.x, gridSize.y]);
 
   const config = React.useMemo(() => {
-    const nextConfig = clone(INITIAL);
+    const nextConfig = { ...INITIAL };
     nextConfig.botSizeX = stableGridSize.x;
     nextConfig.botSizeY = stableGridSize.y;
     nextConfig.bedWidthOuter = stableGridSize.y + 160;
@@ -329,7 +328,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   ]);
 
   const position = React.useMemo(() => {
-    const nextPosition = clone(INITIAL_POSITION);
+    const nextPosition = { ...INITIAL_POSITION };
     nextPosition.x = props.botPosition.x || 0;
     nextPosition.y = props.botPosition.y || 0;
     nextPosition.z = props.botPosition.z || 0;
