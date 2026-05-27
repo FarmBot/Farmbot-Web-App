@@ -1,5 +1,7 @@
 import React from "react";
-import { namespace3D, ThreeDSettings } from "../three_d_settings";
+import {
+  get3DConfigValueFunction, namespace3D, ThreeDSettings,
+} from "../three_d_settings";
 import { ThreeDSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../__test_support__/panel_state";
 import { changeBlurableInputRTL } from "../../__test_support__/helpers";
@@ -92,5 +94,34 @@ describe("<ThreeDSettings />", () => {
     expect(crud.initSave).not.toHaveBeenCalled();
     expect(crud.edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
     expect(crud.save).toHaveBeenCalledWith(fakeEnv.uuid);
+  });
+});
+
+describe("get3DConfigValueFunction()", () => {
+  it("reads indexed 3D config values and defaults", () => {
+    const bedWallThickness = fakeFarmwareEnv();
+    bedWallThickness.body.key = namespace3D("bedWallThickness");
+    bedWallThickness.body.value = "99.5";
+    const unrelated = fakeFarmwareEnv();
+    unrelated.body.key = "bedHeight";
+    unrelated.body.value = "123";
+
+    const getValue = get3DConfigValueFunction([unrelated, bedWallThickness]);
+
+    expect(getValue("bedWallThickness")).toEqual(99.5);
+    expect(getValue("bedHeight")).toEqual(300);
+  });
+
+  it("preserves first matching env behavior", () => {
+    const first = fakeFarmwareEnv();
+    first.body.key = namespace3D("grid");
+    first.body.value = "1";
+    const second = fakeFarmwareEnv();
+    second.body.key = namespace3D("grid");
+    second.body.value = "0";
+
+    const getValue = get3DConfigValueFunction([first, second]);
+
+    expect(getValue("grid")).toEqual(1);
   });
 });
