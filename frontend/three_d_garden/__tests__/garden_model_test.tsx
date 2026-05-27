@@ -82,6 +82,15 @@ describe("<GardenModel />", () => {
     return wrapper;
   };
 
+  const defaultLayerSetting = (setting: string) =>
+    setting == BooleanSetting.show_plants
+    || setting == BooleanSetting.show_points
+    || setting == BooleanSetting.show_weeds
+    || setting == BooleanSetting.show_farmbot;
+  const findPlantInstanceNodes =
+    (wrapper: ReturnType<typeof createRenderer>) =>
+      wrapper.root.findAll(node => `${node.type}` == "instancedMesh");
+
   it("renders", async () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
     await waitFor(() =>
@@ -127,6 +136,64 @@ describe("<GardenModel />", () => {
     expect(after.mapPoints).toBe(before.mapPoints);
     expect(after.sensors).toBe(before.sensors);
     expect(after.sensorReadings).toBe(before.sensorReadings);
+  });
+
+  it("reuses static layers across telemetry position updates", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    (p.addPlantProps.getConfigValue as jest.Mock).mockClear();
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        x: p.configPosition.x + 10,
+        y: p.configPosition.y + 20,
+      }} />));
+
+    expect(p.addPlantProps.getConfigValue).not.toHaveBeenCalled();
+  });
+
+  it("updates static layers when layer settings change", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const wrapper = createWrapper(p);
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(1);
+
+    const nextAddPlantProps = fakeAddPlantProps();
+    nextAddPlantProps.getConfigValue = jest.fn(setting =>
+      defaultLayerSetting(setting)
+      || setting == BooleanSetting.show_spread);
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      addPlantProps={nextAddPlantProps} />));
+
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
+  });
+
+  it("updates static layers when the route changes", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const wrapper = createWrapper(p);
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(1);
+
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
   });
 
   it("renders top down view", () => {

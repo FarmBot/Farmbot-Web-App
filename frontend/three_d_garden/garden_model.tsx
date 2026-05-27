@@ -159,6 +159,277 @@ const EMPTY_IMAGES: TaggedImage[] = [];
 const EMPTY_SENSORS: TaggedSensor[] = [];
 const EMPTY_SENSOR_READINGS: TaggedSensorReading[] = [];
 
+interface GardenLayerVisibility {
+  showPlants: boolean;
+  plantsVisible: boolean;
+  farmbotVisible: boolean;
+  showPoints: boolean;
+  showWeeds: boolean;
+  showSpread: boolean;
+  shouldMountPlantSpreadInstances: boolean;
+  showMoistureMap: boolean;
+  showMoistureReadings: boolean;
+  topDownAtStart: boolean;
+}
+
+interface GardenLayerVisibilityParams {
+  addPlantProps: AddPlantProps | undefined;
+  activeFocus: string;
+  botVisibleInConfig: boolean;
+  showSoilPoints: boolean;
+  spreadHasTransientPlant: boolean;
+  routeKey: string;
+}
+
+// eslint-disable-next-line complexity
+function getGardenLayerVisibility(
+  params: GardenLayerVisibilityParams,
+): GardenLayerVisibility {
+  const getConfigValue = params.addPlantProps?.getConfigValue;
+  const showPlants = !params.addPlantProps
+    || !!getConfigValue?.(BooleanSetting.show_plants);
+  const plantsVisible = params.activeFocus != "Planter bed" && showPlants;
+  const showFarmbot = !params.addPlantProps
+    || !!getConfigValue?.(BooleanSetting.show_farmbot);
+  const farmbotVisible =
+    params.activeFocus != "Planter bed"
+    && showFarmbot
+    && params.botVisibleInConfig;
+  const showPoints = params.showSoilPoints
+    || !!getConfigValue?.(BooleanSetting.show_points);
+  const showWeeds = !!getConfigValue?.(BooleanSetting.show_weeds);
+  const showSpread = !!getConfigValue?.(BooleanSetting.show_spread);
+  const showMoistureMap = !!getConfigValue?.(
+    BooleanSetting.show_moisture_interpolation_map);
+  const showMoistureReadings = !!getConfigValue?.(
+    BooleanSetting.show_sensor_readings);
+  const topDownAtStart = !!getConfigValue?.(
+    BooleanSetting.top_down_view);
+  const shouldMountPlantSpreadInstances = showSpread
+    || getMode() == Mode.clickToAdd
+    || (Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum())
+    || params.spreadHasTransientPlant;
+  return {
+    showPlants,
+    plantsVisible,
+    farmbotVisible,
+    showPoints,
+    showWeeds,
+    showSpread,
+    shouldMountPlantSpreadInstances,
+    showMoistureMap,
+    showMoistureReadings,
+    topDownAtStart,
+  };
+}
+
+interface StaticGardenLayersProps {
+  config: Config;
+  loadProgress: ThreeDLoadProgress;
+  environmentReveal: boolean;
+  bedReveal: boolean;
+  gridReveal: boolean;
+  plantsReveal: boolean;
+  weedsReveal: boolean;
+  pointsReveal: boolean;
+  skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  activePositionRef: React.RefObject<{ x: number, y: number } | null>;
+  soilSurfaceGeometry: ReturnType<typeof getSurface>["geometry"];
+  getZ(x: number, y: number): number;
+  images: TaggedImage[];
+  activeFocus: string;
+  mapPoints: TaggedGenericPointer[];
+  showMoistureMap: boolean;
+  showMoistureReadings: boolean;
+  sensors: TaggedSensor[];
+  sensorReadings: TaggedSensorReading[];
+  addPlantProps: AddPlantProps | undefined;
+  plantLabelNodes: React.ReactNode;
+  plantsVisible: boolean;
+  plantInstancesVisible: boolean;
+  setHover(active: boolean):
+    ((e: ThreeEvent<PointerEvent>) => void) | undefined;
+  threeDPlants: ThreeDGardenPlant[];
+  plantIconCapacities: Record<string, number> | undefined;
+  startTimeRef: React.RefObject<number> | undefined;
+  dispatch: Function | undefined;
+  shouldMountPlantSpreadInstances: boolean;
+  showSpread: boolean;
+  plantInstanceCapacity: number | undefined;
+  showWeeds: boolean;
+  weeds: TaggedWeedPointer[];
+  showPoints: boolean;
+}
+
+const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
+  const {
+    config, loadProgress, environmentReveal, bedReveal, gridReveal,
+    plantsReveal, weedsReveal, pointsReveal, skyRef, activePositionRef,
+    soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
+    showMoistureMap, showMoistureReadings, sensors, sensorReadings,
+    addPlantProps, plantLabelNodes, plantsVisible, plantInstancesVisible,
+    setHover, threeDPlants, plantIconCapacities, startTimeRef, dispatch,
+    shouldMountPlantSpreadInstances, showSpread, plantInstanceCapacity,
+    showWeeds, weeds, showPoints,
+  } = props;
+
+  return <>
+    <SceneBoundary
+      loadStep={"environment"}
+      loadProgress={loadProgress}
+      reveal={environmentReveal}
+      markName={"three_d_ground_ready"}>
+      <Sky sunPosition={sunPosition(0, 0, 0)} />
+      <Sphere args={[BigDistance.sky, 8, 16]}>
+        <MeshBasicMaterial
+          ref={skyRef}
+          color={skyColor(config.sun)}
+          side={BackSide} />
+      </Sphere>
+      <Sun
+        config={config}
+        skyRef={skyRef}
+        startTimeRef={startTimeRef} />
+      <AmbientLight intensity={config.ambient / 100} />
+      <Ground config={config} />
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"bed"}
+      loadProgress={loadProgress}
+      reveal={bedReveal}
+      markReadyOnMount={false}
+      markName={"three_d_bed_ready"}>
+      <NorthArrow config={config} />
+      <PopInGroup
+        name={"bed-load-in"}
+        reveal={bedReveal}
+        onRest={() => loadProgress.markStep("bed")}
+        distance={config.bedHeight + config.bedZOffset}>
+        <Bed
+          config={config}
+          soilSurfaceGeometry={soilSurfaceGeometry}
+          getZ={getZ}
+          images={images}
+          activeFocus={activeFocus}
+          mapPoints={mapPoints}
+          showMoistureMap={showMoistureMap}
+          showMoistureReadings={showMoistureReadings}
+          sensors={sensors}
+          sensorReadings={sensorReadings}
+          activePositionRef={activePositionRef}
+          addPlantProps={addPlantProps} />
+      </PopInGroup>
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"grid"}
+      loadProgress={loadProgress}
+      reveal={gridReveal}
+      markReadyOnMount={false}
+      markName={"three_d_grid_ready"}>
+      <GridRevealGroup
+        name={"grid-load-in"}
+        reveal={gridReveal}
+        onRest={() => loadProgress.markStep("grid")}>
+        <Grid
+          config={config}
+          getZ={getZ}
+          activeFocus={activeFocus} />
+      </GridRevealGroup>
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"plants"}
+      loadProgress={loadProgress}
+      reveal={plantsReveal}
+      markReadyOnMount={false}
+      markName={"three_d_core_ready"}>
+      <PopInGroup
+        name={"plants-load-in"}
+        reveal={plantsReveal}
+        onRest={() => loadProgress.markStep("plants")}
+        distance={200}>
+        <FocusVisibilityGroup
+          name={"plant-labels"}
+          visible={!activeFocus && plantsVisible}>
+          {plantLabelNodes}
+        </FocusVisibilityGroup>
+        <FocusVisibilityGroup name={"plants"}
+          visible={plantsVisible}
+          keepMounted={true}
+          onPointerEnter={setHover(true)}
+          onPointerMove={setHover(true)}
+          onPointerLeave={setHover(false)}>
+          <PlantInstances
+            plants={threeDPlants}
+            config={config}
+            getZ={getZ}
+            visible={plantInstancesVisible}
+            iconCapacities={plantIconCapacities}
+            startTimeRef={startTimeRef}
+            dispatch={dispatch} />
+          {shouldMountPlantSpreadInstances &&
+          <PlantSpreadInstances
+            plants={threeDPlants}
+            visible={plantInstancesVisible}
+            spreadVisible={showSpread}
+            config={config}
+            instanceCapacity={plantInstanceCapacity}
+            activePositionRef={activePositionRef}
+            getZ={getZ}
+            dispatch={dispatch} />}
+        </FocusVisibilityGroup>
+      </PopInGroup>
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"weeds"}
+      loadProgress={loadProgress}
+      reveal={weedsReveal}
+      markReadyOnMount={false}
+      markName={"three_d_weeds_ready"}>
+      <PopInGroup
+        name={"weeds-load-in"}
+        reveal={weedsReveal}
+        onRest={() => loadProgress.markStep("weeds")}
+        distance={200}>
+        <Group name={"weeds"}
+          visible={showWeeds}>
+          {weeds.length > 0 &&
+          <WeedInstances
+            weeds={weeds}
+            visible={showWeeds}
+            config={config}
+            getZ={getZ}
+            dispatch={dispatch} />}
+        </Group>
+      </PopInGroup>
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"points"}
+      loadProgress={loadProgress}
+      reveal={pointsReveal}
+      markReadyOnMount={false}
+      markName={"three_d_points_ready"}>
+      <FallInGroup
+        name={"points-load-in"}
+        reveal={pointsReveal}
+        onRest={() => loadProgress.markStep("points")}
+        distance={config.columnLength + 1000}>
+        <Group name={"points"}
+          visible={showPoints}>
+          {mapPoints.length > 0 &&
+          <PointInstances
+            points={mapPoints}
+            visible={showPoints}
+            config={config}
+            getZ={getZ}
+            dispatch={dispatch} />}
+        </Group>
+      </FallInGroup>
+    </SceneBoundary>
+  </>;
+};
+
+const StaticGardenLayers = React.memo(StaticGardenLayersBase);
+
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
@@ -178,7 +449,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
 
-  const getI = (e: ThreeEvent<PointerEvent>) => {
+  const getI = React.useCallback((e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
     const intersection = e.intersections[0];
     const instanceId = intersection.instanceId;
@@ -190,9 +461,9 @@ export const GardenModel = (props: GardenModelProps) => {
       }
     }
     return parseInt(intersection.object.name);
-  };
+  }, []);
 
-  const setHover = (active: boolean) => {
+  const setHover = React.useCallback((active: boolean) => {
     return config.labelsOnHover
       ? (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
@@ -200,7 +471,7 @@ export const GardenModel = (props: GardenModelProps) => {
         setHoveredPlant(nextHover);
       }
       : undefined;
-  };
+  }, [config.labelsOnHover, getI]);
 
   const isXL = config.sizePreset == "Genesis XL";
   let modelScale = 1;
@@ -297,23 +568,29 @@ export const GardenModel = (props: GardenModelProps) => {
     onLoadComplete?.();
   }, [loadProgress.complete, onLoadComplete]);
 
-  const showPlants = !addPlantProps
-    || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
-  const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
-  const showFarmbot = !addPlantProps
-    || !!addPlantProps.getConfigValue(BooleanSetting.show_farmbot);
-  const farmbotVisible =
-    props.activeFocus != "Planter bed" && showFarmbot && config.bot;
-  const showPoints = config.showSoilPoints
-    || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
-  const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
-  const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
   const spreadHasTransientPlant = React.useMemo(() =>
     threeDPlants.some(plant => !plant.id), [threeDPlants]);
-  const shouldMountPlantSpreadInstances = showSpread
-    || getMode() == Mode.clickToAdd
-    || (Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum())
-    || spreadHasTransientPlant;
+  const routeKey = `${location.pathname}?${location.search}`;
+  const layerVisibility = React.useMemo(() => getGardenLayerVisibility({
+    addPlantProps,
+    activeFocus: props.activeFocus,
+    botVisibleInConfig: config.bot,
+    showSoilPoints: config.showSoilPoints,
+    spreadHasTransientPlant,
+    routeKey,
+  }), [
+    addPlantProps,
+    config.bot,
+    config.showSoilPoints,
+    props.activeFocus,
+    routeKey,
+    spreadHasTransientPlant,
+  ]);
+  const {
+    showPlants, plantsVisible, farmbotVisible, showPoints, showWeeds,
+    showSpread, shouldMountPlantSpreadInstances, showMoistureMap,
+    showMoistureReadings, topDownAtStart,
+  } = layerVisibility;
 
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
@@ -331,16 +608,10 @@ export const GardenModel = (props: GardenModelProps) => {
     () => getZFunc(soilSurface.triangles, -config.soilHeight),
     [soilSurface.triangles, config.soilHeight]);
 
-  const showMoistureMap = !!props.addPlantProps?.getConfigValue(
-    BooleanSetting.show_moisture_interpolation_map);
-  const showMoistureReadings = !!props.addPlantProps?.getConfigValue(
-    BooleanSetting.show_sensor_readings);
   const sceneDetailsLoadIn =
     config.scene == "Lab" || config.scene == "Greenhouse";
   const animatedDetailsLoadIn = sceneDetailsLoadIn || config.zoomBeacons;
 
-  const topDownAtStart = !!props.addPlantProps?.getConfigValue(
-    BooleanSetting.top_down_view);
   const topDownZoomLevel = 0.25 * 3000 / config.bedLengthOuter;
   const targetZoom = config.topDown ? topDownZoomLevel : 1;
   const focusTransitionsEnabled =
@@ -430,157 +701,41 @@ export const GardenModel = (props: GardenModelProps) => {
       <ThreeDLoadProgressOverlay
         progress={loadProgress}
         complete={detailsReveal} />
-      <SceneBoundary
-        loadStep={"environment"}
+      <StaticGardenLayers
+        config={config}
         loadProgress={loadProgress}
-        reveal={environmentReveal}
-        markName={"three_d_ground_ready"}>
-        <Sky sunPosition={sunPosition(0, 0, 0)} />
-        <Sphere args={[BigDistance.sky, 8, 16]}>
-          <MeshBasicMaterial
-            ref={skyRef}
-            color={skyColor(config.sun)}
-            side={BackSide} />
-        </Sphere>
-        <Sun
-          config={config}
-          skyRef={skyRef}
-          startTimeRef={props.startTimeRef} />
-        <AmbientLight intensity={config.ambient / 100} />
-        <Ground config={config} />
-      </SceneBoundary>
-      <SceneBoundary
-        loadStep={"bed"}
-        loadProgress={loadProgress}
-        reveal={bedReveal}
-        markReadyOnMount={false}
-        markName={"three_d_bed_ready"}>
-        <NorthArrow config={config} />
-        <PopInGroup
-          name={"bed-load-in"}
-          reveal={bedReveal}
-          onRest={() => loadProgress.markStep("bed")}
-          distance={config.bedHeight + config.bedZOffset}>
-          <Bed
-            config={config}
-            soilSurfaceGeometry={soilSurface.geometry}
-            getZ={getZ}
-            images={images}
-            activeFocus={props.activeFocus}
-            mapPoints={mapPoints}
-            showMoistureMap={showMoistureMap}
-            showMoistureReadings={showMoistureReadings}
-            sensors={sensors}
-            sensorReadings={sensorReadings}
-            activePositionRef={activePositionRef}
-            addPlantProps={addPlantProps} />
-        </PopInGroup>
-      </SceneBoundary>
-      <SceneBoundary
-        loadStep={"grid"}
-        loadProgress={loadProgress}
-        reveal={gridReveal}
-        markReadyOnMount={false}
-        markName={"three_d_grid_ready"}>
-        <GridRevealGroup
-          name={"grid-load-in"}
-          reveal={gridReveal}
-          onRest={() => loadProgress.markStep("grid")}>
-          <Grid
-            config={config}
-            getZ={getZ}
-            activeFocus={props.activeFocus} />
-        </GridRevealGroup>
-      </SceneBoundary>
-      <SceneBoundary
-        loadStep={"plants"}
-        loadProgress={loadProgress}
-        reveal={plantsReveal}
-        markReadyOnMount={false}
-        markName={"three_d_core_ready"}>
-        <PopInGroup
-          name={"plants-load-in"}
-          reveal={plantsReveal}
-          onRest={() => loadProgress.markStep("plants")}
-          distance={200}>
-          <FocusVisibilityGroup
-            name={"plant-labels"}
-            visible={!props.activeFocus && plantsVisible}>
-            {plantLabelNodes}
-          </FocusVisibilityGroup>
-          <FocusVisibilityGroup name={"plants"}
-            visible={plantsVisible}
-            keepMounted={true}
-            onPointerEnter={setHover(true)}
-            onPointerMove={setHover(true)}
-            onPointerLeave={setHover(false)}>
-            <PlantInstances
-              plants={threeDPlants}
-              config={config}
-              getZ={getZ}
-              visible={plantInstancesVisible}
-              iconCapacities={props.plantIconCapacities}
-              startTimeRef={props.startTimeRef}
-              dispatch={dispatch} />
-            {shouldMountPlantSpreadInstances &&
-            <PlantSpreadInstances
-              plants={threeDPlants}
-              visible={plantInstancesVisible}
-              spreadVisible={showSpread}
-              config={config}
-              instanceCapacity={props.plantInstanceCapacity}
-              activePositionRef={activePositionRef}
-              getZ={getZ}
-              dispatch={dispatch} />}
-          </FocusVisibilityGroup>
-        </PopInGroup>
-      </SceneBoundary>
-      <SceneBoundary
-        loadStep={"weeds"}
-        loadProgress={loadProgress}
-        reveal={weedsReveal}
-        markReadyOnMount={false}
-        markName={"three_d_weeds_ready"}>
-        <PopInGroup
-          name={"weeds-load-in"}
-          reveal={weedsReveal}
-          onRest={() => loadProgress.markStep("weeds")}
-          distance={200}>
-          <Group name={"weeds"}
-            visible={showWeeds}>
-            {weeds.length > 0 &&
-            <WeedInstances
-              weeds={weeds}
-              visible={showWeeds}
-              config={config}
-              getZ={getZ}
-              dispatch={dispatch} />}
-          </Group>
-        </PopInGroup>
-      </SceneBoundary>
-      <SceneBoundary
-        loadStep={"points"}
-        loadProgress={loadProgress}
-        reveal={pointsReveal}
-        markReadyOnMount={false}
-        markName={"three_d_points_ready"}>
-        <FallInGroup
-          name={"points-load-in"}
-          reveal={pointsReveal}
-          onRest={() => loadProgress.markStep("points")}
-          distance={config.columnLength + 1000}>
-          <Group name={"points"}
-            visible={showPoints}>
-            {mapPoints.length > 0 &&
-            <PointInstances
-              points={mapPoints}
-              visible={showPoints}
-              config={config}
-              getZ={getZ}
-              dispatch={dispatch} />}
-          </Group>
-        </FallInGroup>
-      </SceneBoundary>
+        environmentReveal={environmentReveal}
+        bedReveal={bedReveal}
+        gridReveal={gridReveal}
+        plantsReveal={plantsReveal}
+        weedsReveal={weedsReveal}
+        pointsReveal={pointsReveal}
+        skyRef={skyRef}
+        activePositionRef={activePositionRef}
+        soilSurfaceGeometry={soilSurface.geometry}
+        getZ={getZ}
+        images={images}
+        activeFocus={props.activeFocus}
+        mapPoints={mapPoints}
+        showMoistureMap={showMoistureMap}
+        showMoistureReadings={showMoistureReadings}
+        sensors={sensors}
+        sensorReadings={sensorReadings}
+        addPlantProps={addPlantProps}
+        plantLabelNodes={plantLabelNodes}
+        plantsVisible={plantsVisible}
+        plantInstancesVisible={plantInstancesVisible}
+        setHover={setHover}
+        threeDPlants={threeDPlants}
+        plantIconCapacities={props.plantIconCapacities}
+        startTimeRef={props.startTimeRef}
+        dispatch={dispatch}
+        shouldMountPlantSpreadInstances={shouldMountPlantSpreadInstances}
+        showSpread={showSpread}
+        plantInstanceCapacity={props.plantInstanceCapacity}
+        showWeeds={showWeeds}
+        weeds={weeds}
+        showPoints={showPoints} />
       <SceneBoundary
         loadStep={"farmbot"}
         loadProgress={loadProgress}
