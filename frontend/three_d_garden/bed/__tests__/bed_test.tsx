@@ -66,6 +66,7 @@ const mockInstancesRef: MockInstancesRef =
   { current: { geometry: { setAttribute: jest.fn() } } };
 
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import { INITIAL } from "../../config";
 import { Bed, BedProps } from "../bed";
 import { clone } from "lodash";
@@ -82,6 +83,7 @@ import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
 import * as plantActions from "../../../farm_designer/map/layers/plants/plant_actions";
 import * as screenSize from "../../../screen_size";
+import { ASSETS } from "../../constants";
 
 describe("<Bed />", () => {
   const originalPathname = location.pathname;
@@ -169,6 +171,17 @@ describe("<Bed />", () => {
     p.config.legsFlush = false;
     const { container } = render(<Bed {...p} />);
     expect(container).toContainHTML("bed-group");
+  });
+
+  it("renders low-detail bed without high-detail soil texture", () => {
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelectorAll("[name='soil']").length).toEqual(1);
+    expect(container.querySelector(".render-texture")).toBeNull();
+    const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
+      .map(([url]) => url);
+    expect(loadedTextures).not.toContain(ASSETS.textures.soil + "?=soilT");
   });
 
   it("hides cable carrier support rails with the carrier layer", () => {

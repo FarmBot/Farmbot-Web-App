@@ -12,6 +12,7 @@ import {
   BackSide,
   FrontSide,
   Color,
+  type Side,
 } from "three";
 import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
@@ -156,6 +157,101 @@ const SurfaceHeightMaterial = (props: { children: React.ReactNode }) =>
     lowColor={new Color(0.5, 0.5, 0.5)}
     highColor={new Color(0.5, 0, 0)} />;
 
+interface TexturedBedMaterialProps {
+  bedColor: string;
+}
+
+const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
+  const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.0003, 0.003],
+  });
+
+  return <MeshPhongMaterial
+    map={bedWoodTexture}
+    color={props.bedColor}
+    side={DoubleSide} />;
+};
+
+type BedFramePropsWithoutChildren = Omit<BedFrameProps, "children">;
+type SoilLayerPropsWithoutChildren = Omit<SoilLayerProps, "children">;
+
+interface LowDetailBedFrameProps {
+  commonBedFrameProps: BedFramePropsWithoutChildren;
+}
+
+const LowDetailBedFrame = (props: LowDetailBedFrameProps) =>
+  <BedFrame {...props.commonBedFrameProps}>
+    <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+  </BedFrame>;
+
+interface LowDetailSoilLayerProps {
+  layerProps: SoilLayerPropsWithoutChildren;
+}
+
+const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
+  <SoilLayer {...props.layerProps}>
+    <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
+  </SoilLayer>;
+
+interface DetailedSoilLayerProps {
+  bedProps: BedProps;
+  layerProps: SoilLayerPropsWithoutChildren;
+  soilSurfaceSide: Side;
+}
+
+const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
+  const { bedProps } = props;
+  const soilTexture = React.useMemo(
+    () => <ImageTexture
+      images={bedProps.images}
+      config={bedProps.config}
+      addPlantProps={bedProps.addPlantProps}
+      sensors={bedProps.sensors}
+      sensorReadings={bedProps.sensorReadings}
+      showMoistureReadings={bedProps.showMoistureReadings}
+      showMoistureMap={bedProps.showMoistureMap}
+      xOffset={bedProps.config.bedXOffset
+        - bedProps.config.bedLengthOuter / 2}
+      yOffset={bedProps.config.bedYOffset
+        - bedProps.config.bedWidthOuter / 2}
+      z={0} />,
+    [
+      bedProps.images,
+      bedProps.config,
+      bedProps.addPlantProps,
+      bedProps.sensors,
+      bedProps.sensorReadings,
+      bedProps.showMoistureReadings,
+      bedProps.showMoistureMap,
+    ]);
+
+  return <SoilLayer {...props.layerProps}>
+    <>
+      {bedProps.config.surfaceDebug == SurfaceDebugOption.normals &&
+        <MeshNormalMaterial
+          flatShading={true}
+          side={props.soilSurfaceSide}>
+          {soilTexture}
+        </MeshNormalMaterial>}
+      {bedProps.config.surfaceDebug == SurfaceDebugOption.height &&
+        <SurfaceHeightMaterial>
+          {soilTexture}
+        </SurfaceHeightMaterial>}
+      {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
+        .includes(bedProps.config.surfaceDebug) &&
+        <MeshPhongMaterial
+          flatShading={true}
+          side={props.soilSurfaceSide}
+          shininess={0}
+          color={getColorFromBrightness(bedProps.config.soilBrightness)}>
+          {soilTexture}
+        </MeshPhongMaterial>}
+    </>
+  </SoilLayer>;
+};
+
 export interface AddPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
@@ -207,11 +303,6 @@ const BedBase = (props: BedProps) => {
     ];
   const casterHeight = legSize * 1.375;
 
-  const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.0003, 0.003],
-  });
   const legWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -241,34 +332,6 @@ const BedBase = (props: BedProps) => {
 
   const navigate = useNavigate();
 
-  const commonSoil = {
-    side: DoubleSide,
-    shininess: 0,
-  };
-
-  const soilTexture = React.useMemo(
-    () => <ImageTexture
-      images={props.images}
-      config={props.config}
-      addPlantProps={props.addPlantProps}
-      sensors={props.sensors}
-      sensorReadings={props.sensorReadings}
-      showMoistureReadings={props.showMoistureReadings}
-      showMoistureMap={props.showMoistureMap}
-      xOffset={props.config.bedXOffset - props.config.bedLengthOuter / 2}
-      yOffset={props.config.bedYOffset - props.config.bedWidthOuter / 2}
-      z={0} />,
-    [
-      props.images,
-      props.config,
-      props.addPlantProps,
-      props.sensors,
-      props.sensorReadings,
-      props.showMoistureReadings,
-      props.showMoistureMap,
-    ]);
-
-  const surfaceTexture = soilTexture;
   const mirroredAxesCount =
     Number(props.config.mirrorX) + Number(props.config.mirrorY);
   const soilSurfaceSide = mirroredAxesCount % 2 == 1 ? FrontSide : BackSide;
@@ -359,15 +422,14 @@ const BedBase = (props: BedProps) => {
   };
 
   return <Group name={"bed-group"}>
-    <Detailed distances={detailLevels(props.config)}>
-      <BedFrame {...commonBedFrameProps}>
-        <MeshPhongMaterial
-          map={bedWoodTexture} color={bedColor} side={DoubleSide} />
-      </BedFrame>
-      <BedFrame {...commonBedFrameProps}>
-        <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
-      </BedFrame>
-    </Detailed>
+    {props.config.lowDetail
+      ? <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
+      : <Detailed distances={detailLevels(props.config)}>
+        <BedFrame {...commonBedFrameProps}>
+          <TexturedBedMaterial bedColor={bedColor} />
+        </BedFrame>
+        <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
+      </Detailed>}
     <Plane name={"bed-underside"}
       args={[bedLengthOuter, bedWidthOuter]}
       castShadow={true}
@@ -461,34 +523,15 @@ const BedBase = (props: BedProps) => {
         addPlantProps={props.addPlantProps}
         mapPoints={props.mapPoints} />}
     <React.Suspense>
-      <Detailed distances={detailLevels(props.config)}>
-        <SoilLayer {...commonSoilLayerProps}>
-          <>
-            {props.config.surfaceDebug == SurfaceDebugOption.normals &&
-              <MeshNormalMaterial
-                flatShading={true}
-                side={soilSurfaceSide}>
-                {surfaceTexture}
-              </MeshNormalMaterial>}
-            {props.config.surfaceDebug == SurfaceDebugOption.height &&
-              <SurfaceHeightMaterial>
-                {surfaceTexture}
-              </SurfaceHeightMaterial>}
-            {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
-              .includes(props.config.surfaceDebug) &&
-              <MeshPhongMaterial
-                flatShading={true}
-                side={soilSurfaceSide}
-                shininess={0}
-                color={getColorFromBrightness(props.config.soilBrightness)}>
-                {surfaceTexture}
-              </MeshPhongMaterial>}
-          </>
-        </SoilLayer>
-        <SoilLayer {...commonSoilLayerProps}>
-          <MeshPhongMaterial {...commonSoil} color={"#29231e"} />
-        </SoilLayer>
-      </Detailed>
+      {props.config.lowDetail
+        ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+        : <Detailed distances={detailLevels(props.config)}>
+          <DetailedSoilLayer
+            bedProps={props}
+            layerProps={commonSoilLayerProps}
+            soilSurfaceSide={soilSurfaceSide} />
+          <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+        </Detailed>}
     </React.Suspense>
     {props.config.moistureDebug &&
       <MoistureSurface
