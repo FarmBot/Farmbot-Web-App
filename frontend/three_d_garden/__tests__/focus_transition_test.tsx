@@ -5,6 +5,7 @@ import {
   applySmoothCameraState,
   cameraTransitionValue,
   createFocusMaterialBinding,
+  easeInOutCubic,
   FOCUS_TRANSITION_MS,
   FocusTransitionProvider,
   FocusVisibilityDiv,
@@ -15,6 +16,13 @@ import {
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
 
 describe("focus transitions", () => {
+  it("eases opacity symmetrically", () => {
+    expect(easeInOutCubic(0)).toEqual(0);
+    expect(easeInOutCubic(0.25)).toEqual(0.0625);
+    expect(easeInOutCubic(0.75)).toEqual(0.9375);
+    expect(easeInOutCubic(1)).toEqual(1);
+  });
+
   it("keeps exiting DOM content mounted until the fade completes", () => {
     jest.useFakeTimers();
     const { rerender } = render(
@@ -80,6 +88,26 @@ describe("focus transitions", () => {
 
     binding.restore();
     expect(mesh.material).toBe(material);
+  });
+
+  it("isolates array material opacity changes", () => {
+    const root = new Object3D();
+    const firstMaterial = new MeshBasicMaterial({ opacity: 0.4 });
+    const secondMaterial = new MeshBasicMaterial({ opacity: 0.8 });
+    const mesh = new Mesh(new BoxGeometry(), [firstMaterial, secondMaterial]);
+    root.add(mesh);
+
+    const binding = createFocusMaterialBinding(root);
+    const [firstClone, secondClone] = mesh.material;
+    expect(firstClone).not.toBe(firstMaterial);
+    expect(secondClone).not.toBe(secondMaterial);
+
+    binding.apply(0.5);
+    expect(firstClone.opacity).toEqual(0.2);
+    expect(secondClone.opacity).toEqual(0.4);
+
+    binding.restore();
+    expect(mesh.material).toEqual([firstMaterial, secondMaterial]);
   });
 
   it("applies material opacity without destroying original material state", () => {

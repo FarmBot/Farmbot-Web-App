@@ -23,7 +23,7 @@ const shelfThickness = 50;
 const shelfHeight = 800;
 const shelfDepth = 600;
 
-export const Greenhouse = (props: GreenhouseProps) => {
+const GreenhouseBase = (props: GreenhouseProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
@@ -107,3 +107,5 @@ export const Greenhouse = (props: GreenhouseProps) => {
     </PopInGroup>
   </Group>;
 };
+
+export const Greenhouse = React.memo(GreenhouseBase);
