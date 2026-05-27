@@ -21,6 +21,12 @@ const deskLegWidth = 50;
 const deskWoodDarkness = "#666";
 
 export const Desk = (props: DeskProps) => {
+  if (!props.config.desk) { return <></>; }
+
+  return <EnabledDesk {...props} />;
+};
+
+const EnabledDesk = (props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
   const deskWoodTexture = useTextureVariant(ASSETS.textures.wood, {
@@ -33,7 +39,7 @@ export const Desk = (props: DeskProps) => {
     rotation: Math.PI / 2,
   });
   return <FocusVisibilityGroup name={"desk"}
-    visible={props.config.desk && props.activeFocus == ""}
+    visible={props.activeFocus == ""}
     position={[
       threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
       threeSpace(config.bedWidthOuter / 2, config.bedWidthOuter),
