@@ -6,7 +6,9 @@ let mockResources = buildResourceIndex([]);
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { Visualization, VisualizationProps } from "../visualization";
+import {
+  getVisualizationPoints, Visualization, VisualizationProps,
+} from "../visualization";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import {
@@ -84,5 +86,23 @@ describe("<Visualization />", () => {
       findSequence(mockResources.index, sequence.uuid)?.uuid;
     render(<Visualization {...p} />);
     expect(screen.getByText("visualization")).toBeInTheDocument();
+  });
+
+  it("extracts visualization points from move actions", () => {
+    const config = clone(INITIAL);
+    const position = clone(INITIAL_POSITION);
+    position.x = 10;
+    position.y = 20;
+    position.z = 30;
+
+    const points = getVisualizationPoints(config, position, [
+      { type: "other", args: [] } as never,
+      { type: "expanded_move_absolute", args: [100, 200, 300] } as never,
+    ]);
+
+    expect(points).toEqual([
+      [-2710, -1300, 830],
+      [-1260, -460, 700],
+    ]);
   });
 });

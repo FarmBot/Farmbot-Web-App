@@ -13,10 +13,35 @@ export interface VisualizationProps {
   configPosition: PositionConfig;
 }
 
+type ExpandedAction = ReturnType<typeof expandActions>[number];
+
+export const getVisualizationPoints = (
+  config: Config,
+  stashedPos: PositionConfig,
+  actions: ExpandedAction[],
+) => {
+  const getWorldPosition = getWorldPositionFunc(config);
+  const { x, y, z } = stashedPos;
+  const points = [getWorldPosition({
+    x: x + config.bedXOffset - config.bedLengthOuter / 2,
+    y: y + config.bedYOffset - config.bedWidthOuter / 2,
+    z: z + config.columnLength + 40 - config.zGantryOffset,
+  })];
+  for (const action of actions) {
+    if (action.type != "expanded_move_absolute") { continue; }
+    const coordinate = action.args as [number, number, number];
+    points.push(getWorldPosition({
+      x: coordinate[0],
+      y: coordinate[1],
+      z: coordinate[2],
+    }));
+  }
+  return points;
+};
+
 export const Visualization = (props: VisualizationProps) => {
   const { visualizedSequenceUUID, config } = props;
   const { x, y, z } = props.configPosition;
-  const getWorldPosition = getWorldPositionFunc(config);
   const visualizationPoints = React.useMemo(() => {
     if (!visualizedSequenceUUID) { return []; }
     const resources = store.getState().resources.index;
@@ -25,23 +50,14 @@ export const Visualization = (props: VisualizationProps) => {
     const stashedPos = { x, y, z };
     const actions =
       collectDemoSequenceActions(0, resources, sequence.body.id, []);
-    const points = [[
-      stashedPos.x + config.bedXOffset - config.bedLengthOuter / 2,
-      stashedPos.y + config.bedYOffset - config.bedWidthOuter / 2,
-      z + config.columnLength + 40 - config.zGantryOffset,
-    ] as [number, number, number]]
-      .concat(expandActions(actions, [], stashedPos)
-        .filter(action => action.type == "expanded_move_absolute")
-        .map(action => action.args as [number, number, number]))
-      .map(coordinate => getWorldPosition({
-        x: coordinate[0],
-        y: coordinate[1],
-        z: coordinate[2],
-      }));
-    return points;
+    return getVisualizationPoints(
+      config,
+      stashedPos,
+      expandActions(actions, [], stashedPos),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visualizedSequenceUUID,
-    config, getWorldPosition, x, y, z]);
+    config, x, y, z]);
   return visualizationPoints.length > 0 &&
     <Line name={"visualization"}
       color={"orange"}
