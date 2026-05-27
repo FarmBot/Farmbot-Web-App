@@ -106,6 +106,13 @@ export interface FarmbotModelProps {
   dispatch?: Function;
 }
 
+interface RequestedShapes {
+  track: boolean;
+  beam: boolean;
+  column: boolean;
+  zAxis: boolean;
+}
+
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
   const { botSizeX, botSizeY, botSizeZ, trail, laser,
@@ -146,9 +153,16 @@ export const Bot = (props: FarmbotModelProps) => {
   const [beamShape, setBeamShape] = useState<Shape>();
   const [columnShape, setColumnShape] = useState<Shape>();
   const [zAxisShape, setZAxisShape] = useState<Shape>();
+  const requestedShapes = React.useRef<RequestedShapes>({
+    track: false,
+    beam: false,
+    column: false,
+    zAxis: false,
+  });
   useEffect(() => {
-    if (!(trackShape && beamShape && columnShape && zAxisShape)) {
-      const loader = new SVGLoader();
+    const loader = new SVGLoader();
+    if (!trackShape && !requestedShapes.current.track) {
+      requestedShapes.current.track = true;
       loader.load(ASSETS.shapes.track,
         svg => {
           const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
@@ -158,6 +172,9 @@ export const Bot = (props: FarmbotModelProps) => {
           outline.holes.push(largeCutout);
           setTrackShape(outline);
         });
+    }
+    if (!beamShape && !requestedShapes.current.beam) {
+      requestedShapes.current.beam = true;
       loader.load(ASSETS.shapes.beam,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[0])[0];
@@ -167,6 +184,9 @@ export const Bot = (props: FarmbotModelProps) => {
           });
           setBeamShape(outline);
         });
+    }
+    if (!columnShape && !requestedShapes.current.column) {
+      requestedShapes.current.column = true;
       loader.load(ASSETS.shapes.column,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[3])[0];
@@ -176,6 +196,9 @@ export const Bot = (props: FarmbotModelProps) => {
           });
           setColumnShape(outline);
         });
+    }
+    if (!zAxisShape && !requestedShapes.current.zAxis) {
+      requestedShapes.current.zAxis = true;
       loader.load(ASSETS.shapes.zAxis,
         svg => {
           const hole = SVGLoader.createShapes(svg.paths[1])[0];
@@ -184,7 +207,7 @@ export const Bot = (props: FarmbotModelProps) => {
           setZAxisShape(outline);
         });
     }
-  });
+  }, [beamShape, columnShape, trackShape, zAxisShape]);
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,

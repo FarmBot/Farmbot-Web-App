@@ -396,3 +396,33 @@ commit message. Roll back rejected implementation changes.
 | 68 | Merge soil sensor instanced geometry | Realistic single soil-sensor model render, matching the mounted/slot unit | 44 instanced submeshes plus 1 main mesh; about 45 draw nodes per soil sensor | 0 instanced submeshes plus 2 meshes when instance matrices are available | 95.6% fewer soil-sensor draw nodes, reducing the model from 45 to 2 drawable meshes | Accepted; uses the existing merged-geometry path, keeps the same GLTF geometry/material, and removes a meaningful per-frame draw-call cost for every visible soil sensor | `Merge soil sensor geometry for 95.6% fewer draw nodes` |
 | 69 | Skip no-op opacity traversal | Realistic user-tool render with mounted weeder plus 7 slots | 24 rendered group wrappers in the tool subtree | 19 rendered group wrappers after skipping opacity-1 wrappers | 20.8% fewer wrappers, but only 5 absolute wrapper/traversal opportunities removed | Rejected and rolled back; the percentage cleared 10%, but the realistic absolute saving was too small to justify an extra component split | None |
 | 70 | Load one-slot toolbay only when rendered | Realistic user-tool render with mounted weeder plus 7 slots | 6 one-slot toolbay `useGLTF` calls; 14 total model hook calls | 4 one-slot toolbay `useGLTF` calls; 12 total model hook calls | 33.3% fewer one-slot toolbay calls and 14.3% fewer total model hook calls, but only 2 absolute calls removed | Rejected and rolled back; the percentage cleared 10%, but two avoided hook calls in a realistic tool scene was not worth another component split | None |
+
+## Round 15 Candidate Ideas
+
+71. Cache FarmBot SVG extrusion shape loading across `Bot` renders instead of
+    firing fresh `SVGLoader.load()` calls while shape state is still settling.
+    Expected return: fewer duplicate SVG requests/state updates during default
+    FarmBot load-in without changing any geometry or animation.
+72. Lazy-load Lab and Greenhouse scene modules only when those scenes are
+    selected. Expected return: lower default Outdoor JS transfer/parse work
+    while preserving scene content when the user selects those environments.
+73. Skip hidden water-stream tube geometry and animation hooks when water flow
+    is off. Expected return: fewer default FarmBot objects/geometries/useFrame
+    callbacks while preserving visible water streams when flow is enabled.
+74. Avoid loading cable-carrier support GLTFs on v1.8 bots that use generated
+    support geometry. Expected return: fewer model hook calls and possible GLB
+    requests in the default Genesis XL v1.8 scene without changing v1.8 visuals.
+75. Reuse the bed frame and ground geometries across rerenders instead of
+    rebuilding fixed-size geometry for repeated 3D model renders. Expected
+    return: lower memory churn and setup work in the default scene while keeping
+    dimensions and materials unchanged.
+
+## Round 15 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 71 | Cache FarmBot SVG shape loading | Real Docker 1000-plant default scene, shape SVG resource entries during normal 3D load | 8 shape SVG resource entries: 4 unique plus 4 duplicate cached reloads; 9.0 ms total shape resource duration; 9.7 KB encoded shape bytes processed | 4 shape SVG resource entries; 6.1 ms total shape resource duration; 4.8 KB encoded shape bytes processed | 50.0% fewer shape resource entries; 50.0% fewer encoded shape bytes processed; 32.2% lower shape resource duration, saving 2.9 ms and 4 duplicate callbacks | Accepted; real app load was making duplicate cached SVG requests, and a small per-shape request guard removes them without changing geometry, animation, transfer bytes, or visual output | `Cache FarmBot SVG shape requests for 50.0% fewer loads` |
+| 72 | Lazy-load non-default scene modules | Docker 1000-plant default Outdoor scene, 3 measured runs | 38 JS resources; 2,412,133 encoded JS bytes; 10,033,306 decoded JS bytes; 4.320s full-ready | 41 JS resources; 2,411,439 encoded JS bytes; 10,011,490 decoded JS bytes; 4.225s full-ready | 0.03% fewer encoded bytes and 0.2% fewer decoded bytes, but 3 more JS requests | Rejected and rolled back; the scene modules are too small or already split enough, so the tiny byte reduction did not justify extra lazy boundaries and requests | None |
+| 73 | Skip inactive water streams | Realistic default Bot render with `waterFlow=false` | 5 hidden water-stream tubes/useFrame callbacks | 0 hidden water-stream tubes/useFrame callbacks | 100% fewer inactive water streams, but only 5 absolute hidden objects/hooks removed | Rejected and rolled back; the local percentage was large, but five hidden stream nodes in the default Bot was not a meaningful app-level improvement | None |
+| 74 | Avoid unused v1.8 support GLTFs | Realistic default v1.8 support render, counting support `useGLTF` calls | 2 support GLTF calls for the vertical and horizontal support models, about 10 KB of tiny GLB assets total | 0 support GLTF calls after moving model hooks into v1.7-only children | 100% fewer targeted support GLTF calls | Rejected and rolled back; the percentage was high, but avoiding two tiny model hooks/assets was not a meaningful app-level win and required extra component structure | None |
+| 75 | Reuse fixed bed/ground geometries | Docker 1000-plant default scene, 3 measured runs, with ground geometry already memoized and only bed-frame `Extrude` args trialed | 4.121s full-ready; 8.63 ms frame p95; 110 WebGL geometries; 188 MB JS heap | 5.230s full-ready; 136.67 ms frame p95; 611 WebGL geometries; 199 MB JS heap | 26.9% slower full-ready, much worse frame p95, and 455% more WebGL geometries | Rejected and rolled back; ground was already memoized, and sharing bed-frame `Extrude` args did not produce a real-scene win while showing clear degradation | None |
