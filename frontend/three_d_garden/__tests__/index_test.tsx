@@ -61,6 +61,14 @@ describe("<ThreeDGarden />", () => {
     expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
     expect(window.__fbPerf?.marks.three_d_garden_mounted.length).toEqual(1);
   });
+
+  it("skips rerenders when canvas props are unchanged", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    const { rerender } = render(<ThreeDGarden {...p} />);
+    rerender(<ThreeDGarden {...p} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
+  });
 });
 
 describe("<ThreeDGardenToggle />", () => {

@@ -45,7 +45,7 @@ export interface ThreeDGardenProps {
   sensors?: TaggedSensor[];
 }
 
-export const ThreeDGarden = (props: ThreeDGardenProps) => {
+export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   usePerfRenderCount("ThreeDGarden");
   React.useEffect(() => {
     perfMark("three_d_garden_mounted");
@@ -77,7 +77,9 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
       </Canvas>
     </div>
   </div>;
-};
+});
+
+ThreeDGarden.displayName = "ThreeDGarden";
 
 export interface ThreeDGardenToggleProps {
   navigate: NavigateFunction;

@@ -489,3 +489,40 @@ commit message. Roll back rejected implementation changes.
 | 83 | Preload core garden textures | Docker 1000-plant default scene, 3 measured runs | 4.172s full-ready; 3.286s core-ready; 50.5 ms image texture setup; 24 WebGL textures; 2,412,311 encoded JS bytes | 4.096s full-ready; 3.232s core-ready; 48.2 ms image texture setup; 24 WebGL textures; 2,412,496 encoded JS bytes | 1.8% faster full-ready, saving 75.5 ms; 1.6% faster core-ready; 4.6% lower image texture setup, saving 2.3 ms | Rejected and rolled back; texture preloading did not clear 10% and the absolute setup saving was too small to justify extra preload plumbing | None |
 | 84 | Mount visible point/weed layers only | Docker 1000-plant default scene, 3 measured runs, with point/weed toggles as guardrails | 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 554 ms points toggle; 646 ms weeds toggle | 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 548 ms points toggle; 631 ms weeds toggle | No scene object, mesh, draw-call, or triangle reduction; 1.2% faster points toggle; 2.3% faster weeds toggle | Rejected and rolled back; the hidden point/weed instance gate did not reduce real default scene size, so the extra conditional path had no payoff | None |
 | 85 | Field-aware plant inventory memo | Docker 1000-plant default scene, 3 measured runs, with plant navigation as a guardrail | 4,000 `PlantInventoryItem` renders; 4.172s full-ready; 3.286s core-ready; 736 ms plant nav; 7.92 ms frame p95 | 1,000 `PlantInventoryItem` renders; 4.100s full-ready; 3.197s core-ready; 777 ms plant nav; 8.05 ms frame p95 | 75.0% fewer plant row renders, removing 3,000 renders; 1.7% faster full-ready; 2.7% faster core-ready; plant nav sampled 5.5% slower | Accepted; the comparator skips real unchanged 1000-row rerenders during startup while checking every displayed/interaction-relevant field, and app-level guardrails stayed below a significant regression | `Memoize plant inventory rows for 75.0% fewer renders` |
+
+## Round 18 Candidate Ideas
+
+86. Memoize the `ThreeDGarden` canvas boundary so prop-stable Redux/resource
+    churn in the designer does not ask the whole 3D canvas subtree to rerender
+    during startup. Expected return: fewer real `ThreeDGarden` and
+    parent-driven `GardenModel` renders in the 1000-plant default scene without
+    changing canvas contents or interactions.
+87. Memoize the `Bed` subtree so progressive-load state changes in
+    `GardenModel` do not rerender the soil, frame, pointer, and texture
+    children when their inputs are unchanged. Expected return: less startup CPU
+    and soil render-texture setup work with identical bed geometry and
+    materials.
+88. Memoize the `Bot` subtree so load-progress renders and details reveals do
+    not rerender the static FarmBot model when bot inputs are unchanged.
+    Expected return: lower FarmBot startup CPU and fewer parent-driven renders
+    while preserving all bot geometry, animations, and interactions.
+89. Memoize the static environment subtree (`Sky`, `Sun`, `Ground`, and
+    ambient lighting) behind a component boundary so later load-stage renders
+    do not revisit the outdoor environment when config inputs are unchanged.
+    Expected return: fewer startup rerenders and texture/material setup calls
+    with the same visible environment.
+90. Memoize the soil render-texture component with a field-aware comparator so
+    unchanged soil/image/moisture inputs do not rebuild render-texture children
+    during parent churn. Expected return: lower `imageTextureSetupMs` and fewer
+    soil texture renders in the realistic default scene, with image and
+    moisture toggles checked as guardrails.
+
+## Round 18 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 86 | Memoize `ThreeDGarden` canvas boundary | Docker 1000-plant default scene, 3 measured runs after round 17 | 10 `ThreeDGarden` renders; 13 `GardenModel` renders; 5 soil texture renders; 4.053s full-ready; 3.191s core-ready; 7.98 ms frame p95; 2,412,492 encoded JS bytes | 5 `ThreeDGarden` renders; 9 `GardenModel` renders; 1 soil texture render; 4.075s full-ready; 3.180s core-ready; 8.02 ms frame p95; 2,412,561 encoded JS bytes | 50.0% fewer `ThreeDGarden` renders, removing 5 whole-canvas rerenders; 30.8% fewer `GardenModel` renders, removing 4 renders; 80.0% fewer soil texture renders; full-ready sampled 0.6% slower | Accepted; a one-line memo boundary removes real startup render churn and repeated soil render-texture passes with trivial code cost, while scene size, resources, FPS, and interaction guardrails stayed in the same band | `Memoize 3D garden canvas for 50.0% fewer renders` |
+| 87 | Memoize `Bed` subtree | Docker 1000-plant default scene after item 86, 3 measured runs | 1 soil texture render; 52.3 ms image texture setup; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 4.075s full-ready; 8.02 ms frame p95 | 1 soil texture render; 51.5 ms image texture setup; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 4.078s full-ready; 7.97 ms frame p95 | No soil render-count or model/canvas render-count improvement; 1.5% faster image texture setup, saving 0.8 ms; full-ready sampled 0.1% slower | Rejected and rolled back; item 86 already removed the parent churn that mattered, so an extra `Bed` memo boundary added code without a meaningful remaining real-world payoff | None |
+| 88 | Memoize `Bot` subtree | Docker 1000-plant default scene after item 86, 3 measured runs; first rerun with accidental moisture interpolation was discarded | 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.075s full-ready; 3.180s core-ready; 442 ms FarmBot toggle | 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.174s full-ready; 3.218s core-ready; 478 ms FarmBot toggle | No render-count, draw-call, or triangle improvement; 2.4% slower full-ready; 1.2% slower core-ready; 8.0% slower FarmBot toggle | Rejected and rolled back; the FarmBot subtree was not receiving meaningful extra parent-driven work after item 86, so wrapping it added no real payoff | None |
+| 89 | Memoize static environment subtree | Docker 1000-plant default scene after item 86, 3 measured runs | 4.075s full-ready; 3.180s core-ready; 97 draw calls; 5,332,526 triangles; 110 WebGL geometries; 3 model resources; 2,412,561 encoded JS bytes | 4.062s full-ready; 3.208s core-ready; 97 draw calls; 5,332,526 triangles; 111 WebGL geometries; 4 model resources; 2,412,631 encoded JS bytes | 0.3% faster full-ready, saving 13.6 ms; 0.9% slower core-ready; no draw-call or triangle improvement; 70 more encoded JS bytes | Rejected and rolled back; the environment boundary did not clear 10%, did not reduce scene work, and added component structure for a noise-level load shift | None |
+| 90 | Memoize soil render-texture component | Docker 1000-plant default scene after item 86, 3 measured runs | 1 soil texture render; 52.3 ms image texture setup; 4.075s full-ready; 3.180s core-ready; 110 WebGL geometries; 2,412,561 encoded JS bytes | 1 soil texture render; 53.9 ms image texture setup; 4.065s full-ready; 3.195s core-ready; 111 WebGL geometries; 2,412,690 encoded JS bytes | No soil render-count improvement; 3.1% slower image texture setup; 0.3% faster full-ready; 129 more encoded JS bytes | Rejected and rolled back; after item 86 the soil render-texture path was already down to one real render, so a comparator added complexity without reducing the measured work | None |

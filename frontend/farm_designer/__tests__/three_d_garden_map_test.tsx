@@ -49,7 +49,8 @@ const EMPTY_PROPS = {
 
 describe("<ThreeDGardenMap />", () => {
   const lastThreeDGardenProps = () => {
-    const calls = (threeDGarden.ThreeDGarden as jest.Mock).mock.calls;
+    const calls = (threeDGarden.ThreeDGarden as unknown as jest.Mock)
+      .mock.calls;
     return calls[calls.length - 1]?.[0];
   };
 
