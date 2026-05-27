@@ -114,6 +114,22 @@ interface RequestedShapes {
   zAxis: boolean;
 }
 
+interface BotShapeCache {
+  track?: Shape;
+  beam?: Shape;
+  column?: Shape;
+  zAxis?: Shape;
+}
+
+const botShapeCache: BotShapeCache = {};
+
+export const clearBotShapeCache = () => {
+  botShapeCache.track = undefined;
+  botShapeCache.beam = undefined;
+  botShapeCache.column = undefined;
+  botShapeCache.zAxis = undefined;
+};
+
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
   const { botSizeX, botSizeY, botSizeZ, trail, laser,
@@ -150,10 +166,14 @@ export const Bot = (props: FarmbotModelProps) => {
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
-  const [trackShape, setTrackShape] = useState<Shape>();
-  const [beamShape, setBeamShape] = useState<Shape>();
-  const [columnShape, setColumnShape] = useState<Shape>();
-  const [zAxisShape, setZAxisShape] = useState<Shape>();
+  const [trackShape, setTrackShape] =
+    useState<Shape | undefined>(() => botShapeCache.track);
+  const [beamShape, setBeamShape] =
+    useState<Shape | undefined>(() => botShapeCache.beam);
+  const [columnShape, setColumnShape] =
+    useState<Shape | undefined>(() => botShapeCache.column);
+  const [zAxisShape, setZAxisShape] =
+    useState<Shape | undefined>(() => botShapeCache.zAxis);
   const requestedShapes = React.useRef<RequestedShapes>({
     track: false,
     beam: false,
@@ -161,50 +181,58 @@ export const Bot = (props: FarmbotModelProps) => {
     zAxis: false,
   });
   useEffect(() => {
-    const loader = new SVGLoader();
+    let loader: SVGLoader | undefined;
+    const getLoader = () => {
+      loader ||= new SVGLoader();
+      return loader;
+    };
     if (!trackShape && !requestedShapes.current.track) {
       requestedShapes.current.track = true;
-      loader.load(ASSETS.shapes.track,
+      getLoader().load(ASSETS.shapes.track,
         svg => {
           const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
           const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
           const outline = SVGLoader.createShapes(svg.paths[2])[0];
           outline.holes.push(smallCutout);
           outline.holes.push(largeCutout);
+          botShapeCache.track = outline;
           setTrackShape(outline);
         });
     }
     if (!beamShape && !requestedShapes.current.beam) {
       requestedShapes.current.beam = true;
-      loader.load(ASSETS.shapes.beam,
+      getLoader().load(ASSETS.shapes.beam,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[0])[0];
           range(1, 6).map(i => {
             const hole = SVGLoader.createShapes(svg.paths[i])[0];
             outline.holes.push(hole);
           });
+          botShapeCache.beam = outline;
           setBeamShape(outline);
         });
     }
     if (!columnShape && !requestedShapes.current.column) {
       requestedShapes.current.column = true;
-      loader.load(ASSETS.shapes.column,
+      getLoader().load(ASSETS.shapes.column,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[3])[0];
           range(3).map(i => {
             const hole = SVGLoader.createShapes(svg.paths[i])[0];
             outline.holes.push(hole);
           });
+          botShapeCache.column = outline;
           setColumnShape(outline);
         });
     }
     if (!zAxisShape && !requestedShapes.current.zAxis) {
       requestedShapes.current.zAxis = true;
-      loader.load(ASSETS.shapes.zAxis,
+      getLoader().load(ASSETS.shapes.zAxis,
         svg => {
           const hole = SVGLoader.createShapes(svg.paths[1])[0];
           const outline = SVGLoader.createShapes(svg.paths[0])[0];
           outline.holes.push(hole);
+          botShapeCache.zAxis = outline;
           setZAxisShape(outline);
         });
     }

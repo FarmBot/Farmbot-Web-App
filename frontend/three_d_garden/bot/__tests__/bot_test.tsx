@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Bot, FarmbotModelProps } from "../bot";
+import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
@@ -11,6 +11,13 @@ import {
 } from "../../../__test_support__/test_renderer";
 
 describe("<Bot />", () => {
+  const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
+
+  beforeEach(() => {
+    clearBotShapeCache();
+    createShapesMock.mockClear();
+  });
+
   afterEach(() => {
     jest.useRealTimers();
   });
@@ -102,6 +109,16 @@ describe("<Bot />", () => {
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);
-    expect(SVGLoader.createShapes).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(15);
+  });
+
+  it("reuses parsed shapes across remounts", () => {
+    const p = fakeProps();
+    const first = render(<Bot {...p} />);
+    first.unmount();
+    const second = render(<Bot {...p} />);
+    second.unmount();
+
+    expect(createShapesMock).toHaveBeenCalledTimes(15);
   });
 });
