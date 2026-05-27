@@ -1,14 +1,13 @@
 import React from "react";
 import { Config } from "./config";
 import { getDefaultCameraPosition } from "./camera";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { ThreeEvent } from "@react-three/fiber";
 import { Cylinder, Line, Sphere } from "@react-three/drei";
 import { Group, MeshPhongMaterial } from "./components";
 import { debounce, uniq } from "lodash";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Actions } from "../constants";
-import { Object3D } from "three";
 
 export interface CameraSelectionUIProps {
   config: Config;
@@ -28,45 +27,21 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   const { config } = props;
   const [hovered, setHovered] = React.useState<Hovered | undefined>(undefined);
   const hoveredRef = React.useRef<Hovered | undefined>(undefined);
-  const markerRefs =
-    React.useRef<Record<string, Object3D | null>>({});
-  const markerNodes = React.useRef<Object3D[]>([]);
-  const markerRefCallbacks =
-    // eslint-disable-next-line func-call-spacing
-    React.useRef<Record<string, (node: Object3D | null) => void>>({});
-  const { camera, pointer, raycaster } = useThree();
-  const setMarkerRef = React.useCallback(
-    (markerId: string) => {
-      markerRefCallbacks.current[markerId] ||= (node: Object3D | null) => {
-        markerRefs.current[markerId] = node;
-        markerNodes.current = Object.values(markerRefs.current)
-          .filter((marker): marker is Object3D => !!marker);
-      };
-      return markerRefCallbacks.current[markerId];
-    },
-    []);
-  useFrame(() => {
-    if (!config.cameraSelectionView) { return; }
-    raycaster.setFromCamera(pointer, camera);
-    const intersection = raycaster
-      .intersectObjects(markerNodes.current, false)
-      .find(hit => !!hit.object.userData.hovered);
-    const nextHovered = intersection?.object.userData.hovered as
-      Hovered | undefined;
+  const setHoveredMarker = React.useCallback((nextHovered?: Hovered) => {
     if (hoveredRef.current?.angle == nextHovered?.angle
       && hoveredRef.current?.topDown == nextHovered?.topDown) {
       return;
     }
     hoveredRef.current = nextHovered;
     setHovered(nextHovered);
-  });
+  }, []);
   const topDownSelected = props.topDownAtStart;
   const common = {
     config: props.config,
     dispatch: props.dispatch,
     topDownAtStart: props.topDownAtStart,
     hovered,
-    setMarkerRef,
+    setHoveredMarker,
   };
   return <Group
     name={"camera-selection"}
@@ -100,16 +75,15 @@ interface CameraLocationProps extends Hovered {
   dispatch: Function | undefined;
   topDownAtStart: boolean;
   hovered: Hovered | undefined;
-  setMarkerRef(markerId: string): (node: Object3D | null) => void;
+  setHoveredMarker(hovered?: Hovered): void;
   debug: boolean;
 }
 
 const CameraLocation = (props: CameraLocationProps) => {
   const {
     config, dispatch, topDownAtStart, hovered,
-    setMarkerRef, angle, topDown, debug,
+    setHoveredMarker, angle, topDown, debug,
   } = props;
-  const markerId = `${topDown}-${debug}-${angle}`;
   const isSelected = (topDownAtStart == topDown)
     && angle == (config.viewpointHeading);
   const isHovered = hovered?.angle == angle && hovered?.topDown == topDown;
@@ -149,6 +123,8 @@ const CameraLocation = (props: CameraLocationProps) => {
     }
   });
   const hoveredData = { angle, topDown };
+  const onPointerMove = () => setHoveredMarker(hoveredData);
+  const onPointerOut = () => setHoveredMarker(undefined);
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     click();
@@ -156,10 +132,12 @@ const CameraLocation = (props: CameraLocationProps) => {
   return <Group>
     <Group position={scaledPosition}>
       <Sphere
-        ref={setMarkerRef(`${markerId}-head`)}
         userData={{ hovered: hoveredData }}
         name={"head"}
         args={[150, 32, 32]}
+        onPointerOver={onPointerMove}
+        onPointerMove={onPointerMove}
+        onPointerOut={onPointerOut}
         onClick={onClick}>
         <MeshPhongMaterial
           transparent={true}
@@ -168,12 +146,14 @@ const CameraLocation = (props: CameraLocationProps) => {
       </Sphere>
       {!topDown && config.lightsDebug &&
         <Cylinder
-          ref={setMarkerRef(`${markerId}-body`)}
           userData={{ hovered: hoveredData }}
           name={"body"}
           args={[50, 125, height]}
           position={[0, 0, -height / 2]}
           rotation={[Math.PI / 2, 0, 0]}
+          onPointerOver={onPointerMove}
+          onPointerMove={onPointerMove}
+          onPointerOut={onPointerOut}
           onClick={onClick}>
           <MeshPhongMaterial
             transparent={true}
