@@ -3761,10 +3761,46 @@ commit message. Roll back rejected implementation changes.
 
 **Description:** Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets. Expected return: animated-season gardens with several crop icons avoid repeated date lookup and sun-coordinate calculations in each icon bucket's `useFrame` callback, while all buckets use a consistent frame timestamp.
 
+**Benchmark:** Real `PlantInstances` seasonal animation frame benchmark with 1,000 plants split across 20 icon buckets and 60 animation frames, sampled 12 times
+
+**Before:** 20 icon-bucket frame callbacks; 1.545 ms median render setup; 9.911 ms median frame batch
+
+**After:** 20 icon-bucket frame callbacks; 1.637 ms median render setup; 9.281 ms median frame batch
+
+**Change:** 6.4% faster frame batch, saving 0.630 ms per 60 animated frames, with render setup 0.092 ms slower
+
+**Outcome:** Rejected and rolled back; the realistic multi-icon seasonal frame path improved, but it missed the 10% threshold and added shared-frame cache complexity
+
+**Commit:** Not committed
+
 ### Idea 229: Share solar-cell geometry and precomputed cell matrices across solar panels
 
 **Description:** Share solar-cell geometry and precomputed cell matrices across solar panels. Expected return: the optional solar array avoids rebuilding identical extruded cell geometry and static instance matrices for both panels when the solar layer is visible.
 
+**Benchmark:** Real visible `Solar` render with the optional two-panel solar array mounted, 50 cell instances per panel, sampled 30 times
+
+**Before:** 2 solar-cell instanced meshes; 0.586 ms median render setup
+
+**After:** 2 solar-cell instanced meshes; 0.447 ms median render setup
+
+**Change:** 23.8% faster setup, saving 0.139 ms on the optional solar-array render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time solar render saving was too small to matter and did not clear the meaningful-improvement bar
+
+**Commit:** Not committed
+
 ### Idea 230: Skip pointer-move soil-height lookup when the rendered pointer XY has not changed
 
 **Description:** Skip pointer-move soil-height lookup when the rendered pointer XY has not changed. Expected return: hover and drawing pointer movement avoids `getZ()` and world-position work for duplicate pointer locations, improving responsiveness on noisy pointer events without changing visible cursor behavior.
+
+**Benchmark:** Real `soilPointerMove` duplicate-position benchmark with 60 rendered pointer frames at the same garden position, sampled 20 times
+
+**Before:** 60 median `getZ` calls; 0.144 ms median handler batch
+
+**After:** 1 median `getZ` call; 0.124 ms median handler batch
+
+**Change:** 98.3% fewer `getZ` calls and 13.8% faster handler batch, saving 0.020 ms across the duplicate-frame batch
+
+**Outcome:** Accepted; the absolute timing gain is small, but the realistic call reduction is large and the code is a simpler guard ordering with no rendering, animation, resolution, or interaction change
+
+**Commit:** `Skip duplicate pointer heights for 98.3% fewer calls`

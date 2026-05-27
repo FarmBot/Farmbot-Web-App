@@ -277,13 +277,13 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
         || isMobile()
         || !pointerPlantRef.current) { return; }
       const { x, y } = get3DPosition(gardenPosition);
+      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
+        return;
+      }
       const [, , z] = getWorldPosition({
         ...gardenPosition,
         z: props.getZ(gardenPosition.x, gardenPosition.y),
       });
-      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
-        return;
-      }
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };

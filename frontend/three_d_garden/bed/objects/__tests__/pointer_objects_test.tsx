@@ -287,6 +287,8 @@ describe("soilPointerMove()", () => {
       return 1;
     });
     const p = fakeProps();
+    const getZ = jest.fn(() => 0);
+    p.getZ = getZ;
     p.config.columnLength = 100;
     const handler = soilPointerMove(p);
     const event = {
@@ -303,5 +305,6 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.yCrosshairRef.current?.position.set)
       .toHaveBeenCalledTimes(1);
+    expect(getZ).toHaveBeenCalledTimes(1);
   });
 });
