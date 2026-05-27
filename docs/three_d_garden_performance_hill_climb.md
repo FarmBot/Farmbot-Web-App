@@ -426,3 +426,34 @@ commit message. Roll back rejected implementation changes.
 | 73 | Skip inactive water streams | Realistic default Bot render with `waterFlow=false` | 5 hidden water-stream tubes/useFrame callbacks | 0 hidden water-stream tubes/useFrame callbacks | 100% fewer inactive water streams, but only 5 absolute hidden objects/hooks removed | Rejected and rolled back; the local percentage was large, but five hidden stream nodes in the default Bot was not a meaningful app-level improvement | None |
 | 74 | Avoid unused v1.8 support GLTFs | Realistic default v1.8 support render, counting support `useGLTF` calls | 2 support GLTF calls for the vertical and horizontal support models, about 10 KB of tiny GLB assets total | 0 support GLTF calls after moving model hooks into v1.7-only children | 100% fewer targeted support GLTF calls | Rejected and rolled back; the percentage was high, but avoiding two tiny model hooks/assets was not a meaningful app-level win and required extra component structure | None |
 | 75 | Reuse fixed bed/ground geometries | Docker 1000-plant default scene, 3 measured runs, with ground geometry already memoized and only bed-frame `Extrude` args trialed | 4.121s full-ready; 8.63 ms frame p95; 110 WebGL geometries; 188 MB JS heap | 5.230s full-ready; 136.67 ms frame p95; 611 WebGL geometries; 199 MB JS heap | 26.9% slower full-ready, much worse frame p95, and 455% more WebGL geometries | Rejected and rolled back; ground was already memoized, and sharing bed-frame `Extrude` args did not produce a real-scene win while showing clear degradation | None |
+
+## Round 16 Candidate Ideas
+
+76. Set inactive plant-spread instanced meshes to `count=0` while the spread
+    overlay/edit/add states are inactive instead of drawing 1000 zero-scale
+    spheres. Expected return: fewer default-scene triangles and less per-frame
+    GPU work with identical spread behavior when the overlay becomes active.
+77. Precompute interpolation point objects once per interpolation-map generation
+    instead of rebuilding them for every grid cell. Expected return: faster
+    moisture interpolation for the realistic enabled moisture-map path.
+78. Let the 3D moisture surface consume generated interpolation data directly
+    instead of writing it to `localStorage` and reading it back. Expected
+    return: less moisture-map CPU and serialization work without changing the
+    shared 2D map cache behavior.
+79. Render 3D moisture reading markers with one instanced mesh instead of one
+    sphere component per reading. Expected return: fewer scene objects and draw
+    calls when the readings layer is enabled, with the same marker size/color.
+80. Use straight grid-line segments when the soil surface is the default flat
+    bed instead of sampling each line 101 times. Expected return: fewer default
+    grid vertices and `getZ` calls while preserving curved sampling for real
+    soil-height surfaces.
+
+## Round 16 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 76 | Zero inactive spread draw count | Docker 1000-plant default scene, 3 measured runs | 5,332,526 triangles; 97 draw calls; 229.4 FPS; 7.97 ms frame p95; 4.202s full-ready | 5,332,526 triangles; 97 draw calls; 221.8 FPS; 7.96 ms frame p95; 4.147s full-ready | No triangle or draw-call improvement; 3.3% lower FPS; one run reported a React update-depth error | Rejected and rolled back; mutating the inactive spread mesh count did not move real render metrics and introduced runtime risk | None |
+| 77 | Precompute interpolation point objects | Docker 1000-plant scene with moisture map/readings enabled, 3 measured runs | 1,309.7 ms `moistureSurfaceMs`; 5.212s full-ready; 124.65 ms frame p95; 136.9 FPS | 999.9 ms `moistureSurfaceMs`; 4.912s full-ready; 105.86 ms frame p95; 129.2 FPS | 23.7% faster moisture interpolation, saving 309.8 ms; 5.8% faster full-ready; 15.1% better frame p95; FPS sampled 5.6% lower | Accepted; avoids rebuilding the same point-object array for every interpolation tile, a large real moisture-map CPU win with stable resource and scene metrics | `Precompute interpolation points for 23.7% faster moisture maps` |
+| 78 | Direct 3D moisture interpolation data | Pending | Pending | Pending | Pending | Pending | Pending |
+| 79 | Instance moisture reading markers | Pending | Pending | Pending | Pending | Pending | Pending |
+| 80 | Straight flat-soil grid segments | Pending | Pending | Pending | Pending | Pending | Pending |

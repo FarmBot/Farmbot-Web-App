@@ -74,6 +74,36 @@ describe("interpolatedZ()", () => {
 });
 
 describe("generateData()", () => {
+  it("generates weighted sensor reading data", () => {
+    localStorage.removeItem("interpolationDataMoisture");
+    localStorage.removeItem("interpolationHashMoisture");
+    const reading0 = fakeSensorReading();
+    reading0.uuid = "SensorReading.1";
+    reading0.body.x = 0;
+    reading0.body.y = 0;
+    reading0.body.value = 0;
+    const reading1 = fakeSensorReading();
+    reading1.uuid = "SensorReading.2";
+    reading1.body.x = 200;
+    reading1.body.y = 0;
+    reading1.body.value = 100;
+    generateData({
+      kind: "SensorReading",
+      points: [reading0, reading1],
+      gridSize: { x: 201, y: 100 },
+      getColor: jest.fn(() => ({ rgb: "rgb(0, 0, 255)", a: 0 })),
+      options: {
+        ...DEFAULT_INTERPOLATION_OPTIONS,
+        stepSize: 100,
+      },
+    });
+    expect(getInterpolationData("SensorReading")).toEqual([
+      { x: 0, y: 0, z: 0 },
+      { x: 100, y: 0, z: 50 },
+      { x: 200, y: 0, z: 100 },
+    ]);
+  });
+
   it("regenerates when a sensor reading value changes", () => {
     localStorage.removeItem("interpolationDataMoisture");
     localStorage.removeItem("interpolationHashMoisture");

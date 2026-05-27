@@ -104,6 +104,10 @@ const convertToPointObject =
       })
       : undefined;
 
+const convertToPointObjects =
+  (points: (TaggedPoint | TaggedSensorReading)[]): PointObject[] =>
+    betterCompact(points.map(convertToPointObject));
+
 const getInterpolationPointHash =
   (point: TaggedGenericPointer | TaggedSensorReading) => [
     point.uuid,
@@ -126,9 +130,11 @@ export const generateData = (props: GenerateInterpolationMapDataProps) => {
     : InterpolationKey;
   if (localStorage.getItem(Key.hash) == hash) { return; }
   const data: InterpolationData = [];
+  const pointObjects = convertToPointObjects(points);
   range(0, gridSize.x, stepSize).map(x =>
     range(0, gridSize.y, stepSize).map(y => {
-      const z = interpolatedZ({ x, y }, points, props.options);
+      const z = interpolatedZWithPointObjects(
+        { x, y }, points, pointObjects, props.options);
       if (!isUndefined(z)) { data.push({ x, y, z }); }
     }));
   localStorage.setItem(Key.data, JSON.stringify(data));
@@ -138,6 +144,15 @@ export const generateData = (props: GenerateInterpolationMapDataProps) => {
 export const interpolatedZ = (
   position: { x: number, y: number },
   points: (TaggedPoint | TaggedSensorReading)[],
+  options: InterpolationOptions,
+) =>
+  interpolatedZWithPointObjects(
+    position, points, convertToPointObjects(points), options);
+
+const interpolatedZWithPointObjects = (
+  position: { x: number, y: number },
+  points: (TaggedPoint | TaggedSensorReading)[],
+  pointObjects: PointObject[],
   options: InterpolationOptions,
 ) => {
   const { useNearest, power } = options;
@@ -149,7 +164,6 @@ export const interpolatedZ = (
     || useNearest) {
     return nearest.kind == "SensorReading" ? nearest.body.value : nearest.body.z;
   }
-  const pointObjects = betterCompact(points.map(convertToPointObject));
   return round(
     weightedSum(position, pointObjects, power, true)
     / weightedSum(position, pointObjects, power),
