@@ -96,4 +96,7 @@ if [ -z "${GITHUB_ACTIONS:-}" ]; then
     bun scripts/metric_plot.js "$csv"
   done
   echo -e "\n\n\n"
+  echo "Combining render images..."
+  bun scripts/ci/combine-render-images
+  echo -e "\n\n\n"
 fi

@@ -7,7 +7,10 @@ const escapeSvgText = value => String(value)
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 const formatStat = value => value.toFixed(2);
+const formatWholeStat = value => Math.round(value).toString();
 const formatPoint = value => Number(value.toFixed(2));
+const roundedAxisMax = (value, baseline) =>
+    Math.max(baseline, Math.ceil(value / (baseline / 2)) * (baseline / 2));
 const seriesColors = [
     '#0969da',
     '#1a7f37',
@@ -40,6 +43,8 @@ const normalizeSeries = (series, valueKey) => series
     .map((item, index) => ({
         name: item.name || `Series ${index + 1}`,
         color: item.color || seriesColors[index % seriesColors.length],
+        axis: item.axis || 'left',
+        strokeWidth: item.strokeWidth,
         samples: normalizeMetricSamples(item.samples || [], valueKey),
     }))
     .filter(item => item.samples.length);
@@ -52,21 +57,40 @@ function buildMetricPlotSvg(samples, options = {}) {
     const title = escapeSvgText(options.title || 'Metric samples');
     const xLabel = escapeSvgText(options.xLabel || 'Samples');
     const valueKey = options.valueKey || 'value';
+    const sceneMetricAxes = options.sceneMetricAxes === true;
+    const yMinOverride = Number(options.yMin);
+    const yMaxOverride = Number(options.yMax);
+    const yMaxBaseline = Number(options.yMaxBaseline);
+    const yTickInterval = Number(options.yTickInterval);
+    const wholeYAxisTicks = sceneMetricAxes || Number.isFinite(yMaxBaseline);
+    const formatTickValue = wholeYAxisTicks ? formatWholeStat : formatStat;
+    const formatSummaryValue = sceneMetricAxes ? formatWholeStat : formatStat;
     const series = normalizeSeries(options.series || [{
         name: options.seriesName || title,
         samples: inputSamples,
     }], valueKey);
     const multiSeries = series.length > 1;
+    const rightAxisSeries = series.filter(item => item.axis === 'right');
+    const leftAxisSeries = series.filter(item => item.axis !== 'right');
+    const hasRightAxis = rightAxisSeries.length > 0;
+    const rightAxisColor = rightAxisSeries[0]?.color || '#57606a';
+    const rightAxisLabel = escapeSvgText(rightAxisSeries[0]?.name || '');
     const margin = {
         top: multiSeries ? 76 : 52,
-        right: 24,
+        right: hasRightAxis ? 68 : 24,
         bottom: multiSeries ? 52 : 44,
         left: 54,
     };
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
     const finite = series.flatMap(item => item.samples);
-    const values = finite.map(({ value }) => value);
+    const leftValues = (leftAxisSeries.length ? leftAxisSeries : series)
+        .flatMap(item => item.samples)
+        .map(({ value }) => value);
+    const rightValues = rightAxisSeries
+        .flatMap(item => item.samples)
+        .map(({ value }) => value);
+    const values = leftValues;
     const statSamples = options.statsAfterLoaded
         ? finite.filter(({ loading }) => loading === false)
         : finite;
@@ -81,12 +105,29 @@ function buildMetricPlotSvg(samples, options = {}) {
         : 0;
     const lastSample = statValues.length ? statValues[statValues.length - 1] : 0;
     const yMinSample = values.length ? Math.min(...values) : 0;
-    const minValue = values.length ? yMinSample : 0;
+    const defaultMinValue = sceneMetricAxes
+        ? 0
+        : (values.length ? yMinSample : 0);
+    const minValue = Number.isFinite(yMinOverride) ? yMinOverride : defaultMinValue;
     const yMaxSample = values.length > 1
         ? [...values].sort((a, b) => b - a)[1]
-        : maxSample;
-    const maxValue = Math.max(1, yMaxSample);
+        : (sceneMetricAxes ? (values[0] ?? maxSample) : maxSample);
+    const defaultMaxValue = sceneMetricAxes
+        ? roundedAxisMax(yMaxSample, 2000)
+        : Number.isFinite(yMaxBaseline)
+            ? roundedAxisMax(yMaxSample, yMaxBaseline)
+            : Math.max(1, yMaxSample);
+    const maxValue = Number.isFinite(yMaxOverride) ? yMaxOverride : defaultMaxValue;
     const valueRange = maxValue - minValue || 1;
+    const rightDataMin = rightValues.length ? Math.min(...rightValues) : 0;
+    const rightDataMax = rightValues.length ? Math.max(...rightValues) : 0;
+    const rightMinValue = sceneMetricAxes
+        ? 0
+        : rightDataMin;
+    const rightMaxValue = sceneMetricAxes
+        ? roundedAxisMax(rightDataMax, 40)
+        : Math.max(1, rightDataMax);
+    const rightValueRange = rightMaxValue - rightMinValue || 1;
     const minX = Math.min(0, xValues.length ? Math.min(...xValues) : 0);
     const maxX = Math.max(1, xValues.length ? Math.max(...xValues) : inputSamples.length - 1);
     const xRange = maxX - minX || 1;
@@ -97,14 +138,19 @@ function buildMetricPlotSvg(samples, options = {}) {
         const y = margin.top + ((maxValue - value) / valueRange) * plotHeight;
         return Math.max(margin.top, Math.min(height - margin.bottom, y));
     };
+    const rightYFor = value => {
+        const y = margin.top + ((rightMaxValue - value) / rightValueRange) * plotHeight;
+        return Math.max(margin.top, Math.min(height - margin.bottom, y));
+    };
     const lines = series
         .map(item => {
+            const seriesYFor = item.axis === 'right' ? rightYFor : yFor;
             const points = item.samples
                 .map(({ value, x }) =>
-                    `${formatPoint(xFor(x))},${formatPoint(yFor(value))}`)
+                    `${formatPoint(xFor(x))},${formatPoint(seriesYFor(value))}`)
                 .join(' ');
             return points
-                ? `<polyline fill="none" stroke="${item.color}" stroke-width="${multiSeries ? 2 : 3}" stroke-linecap="round" stroke-linejoin="round" points="${points}" />`
+                ? `<polyline fill="none" stroke="${item.color}" stroke-width="${item.strokeWidth || (multiSeries ? 2 : 3)}" stroke-linecap="round" stroke-linejoin="round" points="${points}" />`
                 : '';
         })
         .join('');
@@ -113,22 +159,44 @@ function buildMetricPlotSvg(samples, options = {}) {
         : (series[0]?.samples || [])
             .map(({ value, x, index }) => {
                 const highlighted = index === highlightIndex;
+                const seriesYFor = series[0]?.axis === 'right' ? rightYFor : yFor;
                 return [
-                    `<circle cx="${formatPoint(xFor(x))}" cy="${formatPoint(yFor(value))}"`,
+                    `<circle cx="${formatPoint(xFor(x))}" cy="${formatPoint(seriesYFor(value))}"`,
                     ` r="${highlighted ? 5 : 3}" fill="${highlighted ? '#f97316' : series[0].color}" />`,
                 ].join('');
             })
             .join('');
-    const gridValues = [maxValue, (maxValue + minValue) / 2, minValue];
+    const gridValues = Number.isFinite(yTickInterval)
+        ? Array.from({ length: Math.floor((maxValue - minValue) / yTickInterval) + 1 },
+            (_value, index) => maxValue - (index * yTickInterval))
+        : sceneMetricAxes
+        ? Array.from({ length: Math.floor((maxValue - minValue) / 1000) + 1 },
+            (_value, index) => maxValue - (index * 1000))
+        : [maxValue, (maxValue + minValue) / 2, minValue];
     const grid = gridValues
         .map(value => {
             const y = formatPoint(yFor(value));
             return [
                 `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#d0d7de" />`,
-                `<text x="${margin.left - 10}" y="${formatPoint(y + 4)}" text-anchor="end" fill="#57606a" font-size="12">${formatStat(value)}</text>`,
+                `<text x="${margin.left - 10}" y="${formatPoint(y + 4)}" text-anchor="end" fill="#57606a" font-size="12">${formatTickValue(value)}</text>`,
             ].join('');
         })
         .join('');
+    const rightGridValues = sceneMetricAxes
+        ? Array.from({ length: Math.floor((rightMaxValue - rightMinValue) / 10) + 1 },
+            (_value, index) => rightMaxValue - (index * 10))
+        : [rightMaxValue, (rightMaxValue + rightMinValue) / 2, rightMinValue];
+    const rightAxisTicks = hasRightAxis
+        ? rightGridValues
+            .map(value => {
+                const y = formatPoint(rightYFor(value));
+                return [
+                    `<line x1="${width - margin.right}" y1="${y}" x2="${width - margin.right + 5}" y2="${y}" stroke="${rightAxisColor}" stroke-width="2" />`,
+                    `<text x="${width - margin.right + 10}" y="${formatPoint(y + 4)}" fill="${rightAxisColor}" font-size="12" font-weight="700">${formatTickValue(value)}</text>`,
+                ].join('');
+            })
+            .join('')
+        : '';
     const tickInterval = maxX <= 10 ? 1 : maxX <= 100 ? 10 : 100;
     const xTicks = Array.from({ length: Math.floor(maxX / tickInterval) + 1 },
         (_value, index) => {
@@ -151,7 +219,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     const averageLine = Number.isFinite(averageValue)
         ? [
             `<line x1="${formatPoint(firstLoaded ? xFor(firstLoaded.x) : margin.left)}" y1="${formatPoint(yFor(averageValue))}" x2="${width - margin.right}" y2="${formatPoint(yFor(averageValue))}" stroke="#1a7f37" stroke-width="2" stroke-dasharray="4 4" />`,
-            `<text x="${width - margin.right - 6}" y="${formatPoint(yFor(averageValue) - 6)}" text-anchor="end" fill="#1a7f37" font-family="Arial, sans-serif" font-size="12" font-weight="700">avg ${formatStat(averageValue)}</text>`,
+            `<text x="${width - margin.right - 6}" y="${formatPoint(yFor(averageValue) - 6)}" text-anchor="end" fill="#1a7f37" font-family="Arial, sans-serif" font-size="12" font-weight="700">avg ${formatSummaryValue(averageValue)}</text>`,
         ].join('')
         : '';
     const displayedAverage = Number.isFinite(averageValue)
@@ -160,7 +228,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     const stats = options.hideStats
         ? ''
         : escapeSvgText(statValues.length
-            ? `min ${formatStat(minSample)}   avg ${formatStat(displayedAverage)}   max ${formatStat(maxSample)}   last ${formatStat(lastSample)}`
+            ? `min ${formatSummaryValue(minSample)}   avg ${formatSummaryValue(displayedAverage)}   max ${formatSummaryValue(maxSample)}   last ${formatSummaryValue(lastSample)}`
             : 'No valid samples');
     const legend = multiSeries
         ? series
@@ -168,8 +236,8 @@ function buildMetricPlotSvg(samples, options = {}) {
                 const x = margin.left + (index % 5) * 112;
                 const y = 48 + Math.floor(index / 5) * 16;
                 return [
-                    `<line x1="${x}" y1="${y - 4}" x2="${x + 16}" y2="${y - 4}" stroke="${item.color}" stroke-width="3" />`,
-                    `<text x="${x + 21}" y="${y}" fill="#57606a" font-family="Arial, sans-serif" font-size="10">${escapeSvgText(item.name)}</text>`,
+                    `<line x1="${x}" y1="${y - 4}" x2="${x + 16}" y2="${y - 4}" stroke="${item.color}" stroke-width="${item.strokeWidth || 3}" />`,
+                    `<text x="${x + 21}" y="${y}" fill="${item.axis === 'right' ? item.color : '#57606a'}" font-family="Arial, sans-serif" font-size="10" font-weight="${item.axis === 'right' ? 700 : 400}">${escapeSvgText(item.name)}</text>`,
                 ].join('');
             })
             .join('')
@@ -189,6 +257,9 @@ function buildMetricPlotSvg(samples, options = {}) {
     ${legend}
     ${grid}
     <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#8c959f" />
+    ${hasRightAxis ? `<line x1="${width - margin.right}" y1="${margin.top}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${rightAxisColor}" stroke-width="2" />` : ''}
+    ${rightAxisTicks}
+    ${hasRightAxis ? `<text x="${width - 16}" y="${formatPoint((margin.top + height - margin.bottom) / 2)}" transform="rotate(90 ${width - 16} ${formatPoint((margin.top + height - margin.bottom) / 2)})" text-anchor="middle" fill="${rightAxisColor}" font-family="Arial, sans-serif" font-size="12" font-weight="700">${rightAxisLabel}</text>` : ''}
     <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#8c959f" />
     ${xTicks}
     ${loadedMarker}
@@ -293,8 +364,10 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
                 title: title(basename, 'Scene metrics'),
                 xLabel: 'Runs',
                 hideStats: true,
+                sceneMetricAxes: true,
                 series: plottableHeaders.map(header => ({
                     name: sceneMetricLabelFor(header),
+                    ...(header === 'FPS' ? { axis: 'right', strokeWidth: 4 } : {}),
                     samples: rows.map((row, index) => ({
                         x: index,
                         value: sceneMetricValueFor(row, header),
@@ -305,6 +378,9 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         return {
             title: title(basename, 'FPS samples'),
             xLabel: 'Runs',
+            yMin: 0,
+            yMaxBaseline: 200,
+            yTickInterval: 100,
             samples: rows.map((row, index) => sampleFor(row, index, 'FPS')),
         };
     }
@@ -321,6 +397,9 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         return {
             title: title(basename, 'FPS samples'),
             xLabel: xHeader ? 'Seconds' : 'Samples',
+            yMin: 0,
+            yMaxBaseline: 200,
+            yTickInterval: 100,
             samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
             statsAfterLoaded: true,
             ...(Number.isFinite(averageValue) ? { averageValue } : {}),

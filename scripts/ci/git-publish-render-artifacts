@@ -21,8 +21,6 @@ else
   git -C "$worktree" switch --orphan "$ARTIFACT_BRANCH"
 fi
 
-bun scripts/ci/combine-render-images
-
 mkdir -p "$worktree/build/latest" "$worktree/build/${GITHUB_RUN_ID}"
 for image in "$COMBINED_RENDER_IMAGE"; do
   cp "/tmp/$image.png" "$worktree/build/latest/$image.png"
