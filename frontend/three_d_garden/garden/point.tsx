@@ -248,6 +248,11 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
 };
 
 export const PointInstances = React.memo((props: PointInstancesProps) => {
+  if (!props.visible) { return <></>; }
+  return <VisiblePointInstances {...props} />;
+});
+
+const VisiblePointInstances = (props: PointInstancesProps) => {
   const buckets = React.useMemo(
     () => getPointInstanceBuckets(props.points, props.config, props.getZ),
     [props.points, props.config, props.getZ]);
@@ -258,7 +263,7 @@ export const PointInstances = React.memo((props: PointInstancesProps) => {
         {...props}
         bucket={bucket} />)}
   </>;
-});
+};
 
 export interface DrawnPointProps {
   designer: DesignerState;

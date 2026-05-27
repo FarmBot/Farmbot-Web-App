@@ -118,6 +118,15 @@ describe("<Point />", () => {
     expect(meshes[0].props.args[2]).toEqual(2);
   });
 
+  it("skips hidden point markers", () => {
+    const p = fakeInstanceProps();
+    p.visible = false;
+    p.getZ = jest.fn();
+    const { container } = render(<PointInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
   it("navigates from a point instance", () => {
     const p = fakeInstanceProps();
     const dispatch = jest.fn();
