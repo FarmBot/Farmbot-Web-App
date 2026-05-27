@@ -300,12 +300,37 @@ commit message. Roll back rejected implementation changes.
      geometries while keeping per-icon textures, material state, and instance
      transforms unchanged.
 
+## Round 45 Candidate Ideas
+
+221. Do not mount the FarmBot model when the 3D FarmBot config layer is off.
+     Expected return: users who hide FarmBot with `config.bot=false` skip the
+     same GLTF, SVG, texture, and frame-hook work already skipped for the
+     app-level FarmBot layer and `Planter bed` focus, with no change when the
+     layer is visible.
+222. Precompute static plant-spread instance placement for active spread
+     updates. Expected return: spread-visible and click-to-add updates for
+     dense gardens stop recalculating world position and soil height for every
+     plant on every active spread matrix rewrite.
+223. Merge point pin and sphere marker geometry into one instanced marker mesh.
+     Expected return: point-heavy gardens with the points layer visible use
+     fewer point-overlay instanced meshes and draw calls while preserving the
+     same cylinder, sphere, radius ring, color, opacity, and click behavior.
+224. Avoid per-frame `moment()` day-start allocation in seasonal sun animation.
+     Expected return: animated seasons stop allocating a date helper every
+     rendered frame for known seasons that use fixed representative dates.
+225. Binary-search seasonal sun animation samples instead of scanning them
+     linearly. Expected return: animated seasons find the current compressed
+     sun-time sample in logarithmic time on every animation frame.
+
 ## Round 44 Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
 | 216 | Replace deep-clone image filtering with a direct newest-to-oldest scan | Realistic image-heavy filter benchmark with 75 images, photo filters enabled, one hovered image highlighted, and the same helper used by the 3D soil texture, sampled 50 times | 70 filtered images; 1 highlighted image; 0.388 ms median filter time | 70 filtered images; 1 highlighted image; 0.239 ms median filter time | 38.5% faster, saving 0.149 ms per 75-image filter | Rejected and rolled back; the percentage qualified, but the absolute one-off setup saving was too small to justify replacing the compact existing filter chain with a longer custom scan | Not committed |
 | 217 | Cache the parsed 3D soil-surface height lookup used by Lua/sequence simulation | Sequence-style repeated soil-height benchmark with one stored 392-triangle 3D soil surface and 100 `getSoilHeight()` reads across realistic move coordinates, sampled 30 times | 11.834 ms median read batch | 0.009 ms median read batch | 99.9% faster, saving 11.825 ms per 100 repeated soil-height reads | Accepted; the cached lookup is keyed by the exact stored triangle string, so the same 3D soil surface reuses parsed triangles and the indexed `getZ` function while any changed soil surface still rebuilds the lookup | `Cache soil height lookup for 99.9% faster reads` |
+| 218 | Precompute static plant icon frame positions for camera movement | Real `PlantInstances` frame benchmark with 1,000 plants split across 5 crop icons, static seasons, and 60 camera-changing frames, plus render-time guardrail | 9.606 ms median frame batch; 60,000 frame-time `getZ` calls; 0.868 ms median render | 3.306 ms median frame batch; 0 frame-time `getZ` calls; 0.987 ms median render | 65.6% faster frame updates, saving 6.300 ms per 60 camera-moving frames; render setup increased 0.119 ms | Accepted; static plant icon world positions, soil heights, and base scales are now computed once per icon bucket, while seasonal animation still uses the live per-frame size path | `Precompute plant icon positions for 65.6% faster frames` |
+| 219 | Replace `getZFunc` string-key cache with a numeric nested-map cache | Realistic grid-height lookup benchmark with one 392-triangle 3D soil surface and 4,747 `getZ()` reads matching a 3000 x 1500 mm garden grid rebuild, sampled 40 times | 0.888 ms median grid-height batch | 0.448 ms median grid-height batch | 49.5% faster, saving 0.440 ms per grid rebuild | Rejected and rolled back; the percentage qualified, but the sub-millisecond setup-time saving was not enough to justify the extra nested-map cache and helper code | Not committed |
+| 220 | Share plant-icon plane geometry across icon buckets | Realistic plant-icon setup benchmark with 1,000 plants split across 20 icon buckets, sampled 30 times, plus direct Three.js construction timing for 20 tiny plane geometries | 0.616 ms median render setup; constructing 20 plane geometries took 0.016 ms median | 0.548 ms median render setup; one shared module geometry would replace per-bucket geometry objects | 11.1% faster render setup, saving 0.068 ms; per-bucket geometry construction was already only 0.016 ms total | Rejected and rolled back; the percentage barely qualified, but the absolute saving and memory reduction were too small to justify shared-object disposal/lifecycle complexity | Not committed |
 
 ## Round 43 Candidate Ideas
 

@@ -375,6 +375,26 @@ describe("<PlantInstances />", () => {
     expect(setMatrixAt).toHaveBeenCalled();
   });
 
+  it("reuses static icon positions when the camera changes", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    getZ.mockClear();
+    frameFn?.({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(getZ).not.toHaveBeenCalled();
+    expect(setMatrixAt).toHaveBeenCalled();
+  });
+
   it("updates material brightness when changed", () => {
     const setScalar = jest.fn();
     const instancedRef = {

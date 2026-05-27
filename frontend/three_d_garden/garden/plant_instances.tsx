@@ -54,6 +54,13 @@ interface PlantIconUpdateState {
   needsMatrixUpdate: boolean;
 }
 
+interface StaticPlantIconInstance {
+  x: number;
+  y: number;
+  z: number;
+  scale: number;
+}
+
 const newPlantIconUpdateState = (): PlantIconUpdateState => ({
   lastCameraQuaternion: new Quaternion(),
   hasCameraQuaternion: false,
@@ -106,6 +113,19 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     zZeroFunc(config)
     + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
+  const seasonAnimationEnabled = !!(config.animateSeasons && startTimeRef);
+  const staticInstances = React.useMemo<StaticPlantIconInstance[]>(() => {
+    if (seasonAnimationEnabled) { return []; }
+    return plants.map(plant => {
+      const position = get3DPosition({ x: plant.x, y: plant.y });
+      return {
+        x: position.x,
+        y: position.y,
+        z: getPlantZ(plant.size, plant),
+        scale: plant.size,
+      };
+    });
+  }, [get3DPosition, getPlantZ, plants, seasonAnimationEnabled]);
 
   React.useEffect(() => {
     const updateState = getUpdateState();
@@ -119,7 +139,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     if (!mesh || visible === false) { return; }
     if (plants.length == 0) { return; }
     const updateState = getUpdateState();
-    const seasonAnimating = !!(config.animateSeasons && startTimeRef);
+    const seasonAnimating = seasonAnimationEnabled;
     const cameraChanged = !updateState.hasCameraQuaternion
       || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
@@ -141,20 +161,29 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       return;
     }
     tempQuaternion.copy(state.camera.quaternion);
-    plants.forEach((plant, index) => {
-      const scale = (config.animateSeasons && startTimeRef)
-        ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
-        : plant.size;
-      const position = get3DPosition({ x: plant.x, y: plant.y });
-      tempPosition.set(
-        position.x,
-        position.y,
-        getPlantZ(scale, plant),
-      );
-      tempScale.set(scale, scale, scale);
-      tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
-      mesh.setMatrixAt(index, tempMatrix);
-    });
+    if (!seasonAnimating) {
+      staticInstances.forEach((instance, index) => {
+        tempPosition.set(instance.x, instance.y, instance.z);
+        tempScale.set(instance.scale, instance.scale, instance.scale);
+        tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
+        mesh.setMatrixAt(index, tempMatrix);
+      });
+    } else {
+      plants.forEach((plant, index) => {
+        const scale = (config.animateSeasons && startTimeRef)
+          ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
+          : plant.size;
+        const position = get3DPosition({ x: plant.x, y: plant.y });
+        tempPosition.set(
+          position.x,
+          position.y,
+          getPlantZ(scale, plant),
+        );
+        tempScale.set(scale, scale, scale);
+        tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
+        mesh.setMatrixAt(index, tempMatrix);
+      });
+    }
     mesh.instanceMatrix.needsUpdate = true;
     updateState.lastCameraQuaternion.copy(state.camera.quaternion);
     updateState.hasCameraQuaternion = true;
