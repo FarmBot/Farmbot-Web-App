@@ -457,3 +457,35 @@ commit message. Roll back rejected implementation changes.
 | 78 | Direct 3D moisture interpolation data | Docker 1000-plant scene with moisture map/readings enabled after item 77 | 999.9 ms `moistureSurfaceMs`; 4.912s full-ready; 106 ms frame p95; 646 ms spread toggle; 584 ms points toggle | 998.1 ms `moistureSurfaceMs`; 4.952s full-ready; 106 ms frame p95; 2.624s spread toggle; 2.531s points toggle | 0.2% faster moisture interpolation, but 1.948s slower points toggle and 1.979s slower spread toggle | Rejected and rolled back; bypassing the shared cache saved almost nothing on initial moisture generation and caused expensive recomputation during later route/toggle renders | None |
 | 79 | Instance moisture reading markers | Docker 1000-plant scene with moisture map/readings enabled after item 77 | 612 WebGL geometries; 97 draw calls; 5,332,526 triangles; 199 MB heap; 4.912s full-ready | 113 WebGL geometries; 97 draw calls; 5,332,526 triangles; 188 MB heap; 4.877s full-ready | 81.5% fewer WebGL geometries, removing 499 geometries; 5.5% lower heap; draw calls and triangles unchanged | Accepted; rendering readings as one instanced sphere mesh removes hundreds of duplicate geometries in the real moisture-readings scene without changing marker size, color, or positions | `Instance moisture readings for 81.5% fewer geometries` |
 | 80 | Straight flat-soil grid segments | Docker 1000-plant default scene after item 79, with strict flat-surface detection | 11,985 `getZ` calls; 3.7 ms total `getZ` time; 4.257s full-ready; 97 draw calls | 11,985 `getZ` calls; 3.6 ms total `getZ` time; 4.456s full-ready; 97 draw calls | No `getZ` call reduction; 2.7% lower `getZ` time, saving 0.1 ms; 4.7% slower full-ready | Rejected and rolled back; the realistic demo soil surface did not qualify as flat under a no-visual-risk detector, so the trial did not remove grid sampling work | None |
+
+## Round 17 Candidate Ideas
+
+81. Preload the lazy FarmBot module as soon as the FarmBot layer is expected to
+    be visible instead of waiting for the staged FarmBot reveal to request the
+    chunk. Expected return: shorter default full-ready time by removing a real
+    JS chunk waterfall without changing any animation or visible content.
+82. Preload the FarmBot GLB models and extrusion SVG shapes while earlier 3D
+    load steps are running. Expected return: shorter FarmBot ready time by
+    overlapping unavoidable asset requests for the default visible bot.
+83. Preload the core garden texture assets used by the default scene before the
+    bed, plant, and bot subtrees ask for them. Expected return: shorter default
+    load time by avoiding texture request waterfalls with the same source
+    images and resolution.
+84. Mount point and weed instance layers only when their layer toggles are
+    visible instead of keeping hidden instance layers in the default scene.
+    Expected return: fewer hidden objects/geometries in the 1000-plant default
+    scene, with point/weed toggle responsiveness checked as a guardrail.
+85. Add a field-aware equality check to the 1000-row plant inventory item memo
+    so unchanged rows do not rerender during 3D page startup resource churn.
+    Expected return: fewer plant row renders and faster default load/navigation
+    without changing item content or interactions.
+
+## Round 17 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 81 | Preload lazy FarmBot module | Docker 1000-plant default scene, 3 measured runs | 4.172s full-ready; 3.286s core-ready; 38 JS resources; 2,412,311 encoded JS bytes; 97 draw calls | 4.172s full-ready; 3.305s core-ready; 38 JS resources; 2,412,348 encoded JS bytes; 97 draw calls | No full-ready improvement; 0.6% slower core-ready; 37 more encoded JS bytes | Rejected and rolled back; preloading the lazy Bot module did not remove a measurable default load waterfall in the realistic app run | None |
+| 82 | Preload FarmBot model/shape assets | Docker 1000-plant default scene, 3 measured runs | 4.172s full-ready; 3.286s core-ready; 3 model resources; 27,960 encoded model bytes; 2,412,311 encoded JS bytes | 4.422s full-ready; 3.442s core-ready; 20 model resources; 533,196 encoded model bytes; 2,412,676 encoded JS bytes | 6.0% slower full-ready; 4.8% slower core-ready; 17 extra model requests; 505 KB more encoded model bytes | Rejected and rolled back; eager GLB/SVG preloading front-loaded many assets without a load-time win and added network/cache pressure | None |
+| 83 | Preload core garden textures | Docker 1000-plant default scene, 3 measured runs | 4.172s full-ready; 3.286s core-ready; 50.5 ms image texture setup; 24 WebGL textures; 2,412,311 encoded JS bytes | 4.096s full-ready; 3.232s core-ready; 48.2 ms image texture setup; 24 WebGL textures; 2,412,496 encoded JS bytes | 1.8% faster full-ready, saving 75.5 ms; 1.6% faster core-ready; 4.6% lower image texture setup, saving 2.3 ms | Rejected and rolled back; texture preloading did not clear 10% and the absolute setup saving was too small to justify extra preload plumbing | None |
+| 84 | Mount visible point/weed layers only | Docker 1000-plant default scene, 3 measured runs, with point/weed toggles as guardrails | 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 554 ms points toggle; 646 ms weeds toggle | 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 548 ms points toggle; 631 ms weeds toggle | No scene object, mesh, draw-call, or triangle reduction; 1.2% faster points toggle; 2.3% faster weeds toggle | Rejected and rolled back; the hidden point/weed instance gate did not reduce real default scene size, so the extra conditional path had no payoff | None |
+| 85 | Field-aware plant inventory memo | Docker 1000-plant default scene, 3 measured runs, with plant navigation as a guardrail | 4,000 `PlantInventoryItem` renders; 4.172s full-ready; 3.286s core-ready; 736 ms plant nav; 7.92 ms frame p95 | 1,000 `PlantInventoryItem` renders; 4.100s full-ready; 3.197s core-ready; 777 ms plant nav; 8.05 ms frame p95 | 75.0% fewer plant row renders, removing 3,000 renders; 1.7% faster full-ready; 2.7% faster core-ready; plant nav sampled 5.5% slower | Accepted; the comparator skips real unchanged 1000-row rerenders during startup while checking every displayed/interaction-relevant field, and app-level guardrails stayed below a significant regression | `Memoize plant inventory rows for 75.0% fewer renders` |
