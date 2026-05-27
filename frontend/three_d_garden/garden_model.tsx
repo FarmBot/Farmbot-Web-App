@@ -62,6 +62,9 @@ import {
   FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
   useSmoothCamera,
 } from "./focus_transition";
+import { getMode } from "../farm_designer/map/util";
+import { Mode } from "../farm_designer/map/interfaces";
+import { Path } from "../internal_urls";
 
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
@@ -288,6 +291,12 @@ export const GardenModel = (props: GardenModelProps) => {
     || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
   const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
+  const spreadHasTransientPlant = React.useMemo(() =>
+    threeDPlants.some(plant => !plant.id), [threeDPlants]);
+  const shouldMountPlantSpreadInstances = showSpread
+    || getMode() == Mode.clickToAdd
+    || (Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum())
+    || spreadHasTransientPlant;
 
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
@@ -496,6 +505,7 @@ export const GardenModel = (props: GardenModelProps) => {
               iconCapacities={props.plantIconCapacities}
               startTimeRef={props.startTimeRef}
               dispatch={dispatch} />
+            {shouldMountPlantSpreadInstances &&
             <PlantSpreadInstances
               plants={threeDPlants}
               visible={plantInstancesVisible}
@@ -504,7 +514,7 @@ export const GardenModel = (props: GardenModelProps) => {
               instanceCapacity={props.plantInstanceCapacity}
               activePositionRef={activePositionRef}
               getZ={getZ}
-              dispatch={dispatch} />
+              dispatch={dispatch} />}
           </FocusVisibilityGroup>
         </PopInGroup>
       </SceneBoundary>

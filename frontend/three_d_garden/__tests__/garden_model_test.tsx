@@ -26,6 +26,7 @@ import {
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
+import { BooleanSetting } from "../../session_keys";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -226,6 +227,49 @@ describe("<GardenModel />", () => {
     const { queryAllByText } = render(<GardenModel {...p} />);
     const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
+  });
+
+  it("doesn't mount hidden plant spread instances in ordinary mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(container.querySelectorAll("instancedmesh").length).toEqual(1);
+  });
+
+  it("mounts plant spread instances when spread is visible", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants
+      || setting == BooleanSetting.show_spread);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(container.querySelectorAll("instancedmesh").length).toEqual(2);
+  });
+
+  it("mounts plant spread instances while adding a plant", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(container.querySelectorAll("instancedmesh").length).toEqual(2);
   });
 
   it("doesn't build plant label nodes when labels are disabled", () => {
