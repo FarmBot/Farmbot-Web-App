@@ -171,13 +171,17 @@ const BeaconInfo = (props: BeaconInfoProps) => {
 export const ZoomBeacons = (props: ZoomBeaconsProps) => {
   const [hoveredFocus, setHoveredFocus] = React.useState("");
   const { activeFocus, setActiveFocus } = props;
+  const foci = React.useMemo(() => FOCI(props.config, props.configPosition), [
+    props.config,
+    props.configPosition,
+  ]);
   const gardenBedDiv =
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
 
   const beaconSize = isDesktop() ? 60 : 80;
   return <Group name={"zoom-beacons"}>
-    {FOCI(props.config, props.configPosition).map(focus => {
+    {foci.map(focus => {
       const camera = getCameraOffset(focus);
       const exitFocus = () => {
         setActiveFocus("");

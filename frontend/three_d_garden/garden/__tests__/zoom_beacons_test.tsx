@@ -6,6 +6,7 @@ import { ZoomBeacons, ZoomBeaconsProps } from "../zoom_beacons";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import * as screenSize from "../../../screen_size";
+import * as zoomConstants from "../../zoom_beacons_constants";
 import {
   actRenderer,
   createRenderer,
@@ -78,6 +79,22 @@ describe("<ZoomBeacons />", () => {
     });
     expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
     unmountRenderer(wrapper);
+  });
+
+  it("reuses focus definitions during hover rerenders", () => {
+    const fociSpy = jest.spyOn(zoomConstants, "FOCI");
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
+    actRenderer(() => sphere?.props.onPointerEnter());
+    const hoveredSphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
+    actRenderer(() => hoveredSphere?.props.onPointerLeave());
+    expect(fociSpy).toHaveBeenCalledTimes(1);
+    unmountRenderer(wrapper);
+    fociSpy.mockRestore();
   });
 
   it("hides beacon while focused", () => {
