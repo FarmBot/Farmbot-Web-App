@@ -1,10 +1,12 @@
 import React from "react";
 import {
-  InstancedMesh as InstancedMeshType,
+  InstancedMesh as ThreeInstancedMesh,
   Matrix4,
   Quaternion,
   Vector3,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
+  type Intersection,
+  type Raycaster,
 } from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { useNavigate } from "react-router";
@@ -60,6 +62,15 @@ const newPlantIconUpdateState = (): PlantIconUpdateState => ({
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
 
+const plantIconRaycast = function (
+  this: ThreeInstancedMesh,
+  raycaster: Raycaster,
+  intersects: Intersection[],
+) {
+  if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
+  ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
+
 const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const {
     config, plants, icon, visible, startTimeRef, dispatch, getZ, plantIndexes,
@@ -71,7 +82,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     () => getPlantIconTexture(baseTexture, icon),
     [baseTexture, icon]);
   // eslint-disable-next-line no-null/no-null
-  const instancedRef = React.useRef<InstancedMeshType>(null);
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   // eslint-disable-next-line no-null/no-null
   const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
   const lastBrightness = React.useRef<number | undefined>(undefined);
@@ -168,6 +179,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     frustumCulled={false}
     userData={{ plantIndexes }}
     visible={visible}
+    raycast={plantIconRaycast}
     onClick={onClick}
     renderOrder={RenderOrder.plants}>
     <PlaneGeometry args={[1, 1]} />

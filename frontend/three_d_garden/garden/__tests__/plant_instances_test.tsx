@@ -22,7 +22,12 @@ import { fireEvent, render } from "@testing-library/react";
 import { clone } from "lodash";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { Quaternion } from "three";
+import {
+  InstancedMesh as ThreeInstancedMesh,
+  Quaternion,
+  type Intersection,
+  type Raycaster,
+} from "three";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
 import {
@@ -200,6 +205,50 @@ describe("<PlantInstances />", () => {
     mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  const iconRaycast = (p = fakeProps()) => {
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const raycast = mesh.props.raycast as (
+      this: ThreeInstancedMesh,
+      raycaster: Raycaster,
+      intersects: Intersection[],
+    ) => void;
+    unmountRenderer(wrapper);
+    return raycast;
+  };
+
+  it.each([
+    Mode.clickToAdd,
+    Mode.createPoint,
+    Mode.createWeed,
+  ])("allows %s raycasts through plant icons", mode => {
+    getModeSpy.mockReturnValue(mode);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    );
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    iconRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).not.toHaveBeenCalled();
+    expect(intersects).toEqual([]);
+    defaultRaycast.mockRestore();
+  });
+
+  it("keeps plant icon raycasts outside placement modes", () => {
+    getModeSpy.mockReturnValue(Mode.none);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    ).mockImplementation(() => undefined);
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    iconRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).toHaveBeenCalledWith(raycaster, intersects);
+    defaultRaycast.mockRestore();
   });
 
   it("doesn't navigate with missing instanceId", () => {
