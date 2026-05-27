@@ -33,7 +33,9 @@ const mockRotaryRef = () => {
 };
 
 import { fireEvent, render } from "@testing-library/react";
+import { useGLTF } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
+import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
 import {
@@ -86,6 +88,8 @@ describe("<Tools />", () => {
 
   it("renders user tools", () => {
     const p = fakeProps();
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
     const tool0 = fakeTool();
     tool0.body.id = 1;
     tool0.body.name = "soil sensor";
@@ -137,6 +141,7 @@ describe("<Tools />", () => {
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
+    expect(useGltfMock).not.toHaveBeenCalledWith(ASSETS.models.toolbay3, expect.anything());
     expect(container).toContainHTML("soilSensor");
     expect(container).toContainHTML("weeder");
     expect(container).toContainHTML("seeder");

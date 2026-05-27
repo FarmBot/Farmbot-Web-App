@@ -114,18 +114,45 @@ export const convertSlotsWithTools =
     });
   };
 
-export const Tools = (props: ToolsProps) => {
+interface PromoToolbay3Props {
+  config: Config;
+}
+
+const PromoToolbay3 = (props: PromoToolbay3Props) => {
   const {
     bedLengthOuter, bedWidthOuter, bedWallThickness,
   } = props.config;
+  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as unknown as Toolbay3;
+  return <Group name={"toolbay3"}>
+    {((props.config.sizePreset == "Jr") ? [0] : [-200, 200]).map(yPosition =>
+      <Group key={yPosition}>
+        {[
+          { node: PartName.toolbay3, color: distinguishableBlack, id: "toolbay3" },
+          { node: PartName.toolbay3Logo, color: "white", id: "toolbay3Logo" },
+        ].map(part =>
+          <Mesh name={part.id} key={part.id}
+            position={[
+              threeSpace(105 + bedWallThickness, bedLengthOuter),
+              threeSpace(yPosition + bedWidthOuter / 2, bedWidthOuter),
+              50,
+            ]}
+            rotation={[0, 0, -Math.PI / 2]}
+            scale={1000}
+            geometry={
+              toolbay3.nodes[part.node as keyof Toolbay3["nodes"]].geometry}>
+            <MeshPhongMaterial color={part.color} />
+          </Mesh>)}
+      </Group>)}
+  </Group>;
+};
+
+export const Tools = (props: ToolsProps) => {
   const mirroredBotX = props.config.mirrorX
     ? props.config.botSizeX - props.configPosition.x
     : props.configPosition.x;
   const mountedToolName = isUndefined(props.toolSlots)
     ? props.config.tool
     : reduceToolName(props.mountedToolName);
-
-  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as unknown as Toolbay3;
 
   const tools = isUndefined(props.toolSlots)
     ? PROMO_TOOLS(props.config, props.configPosition)
@@ -141,27 +168,7 @@ export const Tools = (props: ToolsProps) => {
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
       inToolbay={false} />
-    {isUndefined(props.toolSlots) && <Group name={"toolbay3"}>
-      {((props.config.sizePreset == "Jr") ? [0] : [-200, 200]).map(yPosition =>
-        <Group key={yPosition}>
-          {[
-            { node: PartName.toolbay3, color: distinguishableBlack, id: "toolbay3" },
-            { node: PartName.toolbay3Logo, color: "white", id: "toolbay3Logo" },
-          ].map(part =>
-            <Mesh name={part.id} key={part.id}
-              position={[
-                threeSpace(105 + bedWallThickness, bedLengthOuter),
-                threeSpace(yPosition + bedWidthOuter / 2, bedWidthOuter),
-                50,
-              ]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={1000}
-              geometry={
-                toolbay3.nodes[part.node as keyof Toolbay3["nodes"]].geometry}>
-              <MeshPhongMaterial color={part.color} />
-            </Mesh>)}
-        </Group>)}
-    </Group>}
+    {isUndefined(props.toolSlots) && <PromoToolbay3 config={props.config} />}
     {tools.map((tool, i) =>
       <Tool key={i}
         {...props}

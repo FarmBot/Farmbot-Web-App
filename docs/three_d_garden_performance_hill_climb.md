@@ -49,6 +49,8 @@ commit message. Roll back rejected implementation changes.
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 126 | Collapse generated FarmBot fallback meshes | Production asset build FarmBot chunk containing the merged model fallback code | 2,098,224 raw bytes; 598,382 gzip bytes | 2,070,557 raw bytes; 596,373 gzip bytes | 1.3% smaller raw chunk, saving 27.7 KB; 0.34% smaller gzip, saving 2.0 KB | Rejected and rolled back; the generated fallback cleanup was mechanically nicer but did not clear the 10% threshold or a meaningful delivered-byte win | None |
+| 127 | Skip promo toolbay model for configured tools | Real `Tools` render with 7 configured tool slots and a mounted weeder, measuring GLTF hook calls through Bun/Testing Library | 14 GLTF hook calls; 1 unused `toolbay3` call; no rendered `toolbay3` meshes | 13 GLTF hook calls; 0 unused `toolbay3` calls; no rendered `toolbay3` meshes | 100% fewer unused promo toolbay model calls, removing one real GLTF hook/request from configured gardens; 7.1% fewer total tool GLTF hooks | Accepted; the configured-tool view no longer requests an invisible promo model, while demo-tool gardens still render the same `toolbay3` meshes through the conditional child component | `Avoid promo toolbay load for 100% fewer unused model calls` |
 | 1 | Gate `FPSProbe` default reporting | 50k-object scene traversal and metric formatting, 60 reports | 27.55 ms median | 0.025 ms median | 99.9% faster | Accepted; removes real per-second scene traversal and logging from normal sessions while explicit `FPS_LOGS=true` and perf benchmark modes still report full metrics | `Optimize 3D garden FPS probe reporting by 99.9%` |
 | 2 | Cache plant slug metadata | 10k repeated-slug plant conversions, 100 runs | 195.38 ms median | 9.20 ms median | 95.3% faster | Accepted; caches real plant conversion metadata for repeated crops with modest code cost and unchanged icon/spread output | `Cache 3D garden plant metadata by slug for 95.3% faster conversion` |
 | 3 | Replace lodash `clone` | Config+position initialization, 1M runs | 848.59 ms median | 48.37 ms median | 94.3% faster | Accepted; shallow spreads are simpler than lodash clones and existing config conversion/stability tests pass | `Replace 3D garden lodash clones for 94.3% faster initialization` |
@@ -765,3 +767,29 @@ commit message. Roll back rejected implementation changes.
 | 123 | Lazy-mount weed instances after first reveal | Docker 1000-plant default scene, 3 measured runs; default Weed layer remained visible, so comparable target metrics were scene size, load readiness, and Weed toggle timing | 3.732s full-ready; 2.842s core-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects; 9 instanced meshes; 430 ms Weed toggle | 4.048s full-ready; 3.177s core-ready; 8.20 ms frame p95; 97 draw calls; 490 scene objects; 9 instanced meshes; 468 ms Weed toggle | 8.5% slower full-ready; 11.8% slower core-ready; unchanged scene/draw-call metrics; 8.9% slower Weed toggle | Rejected and rolled back; the realistic default scene already shows weeds, so the lazy-mount gate added state complexity without reducing mounted objects or improving load/toggle behavior | None |
 | 124 | Skip camera-view point math when hidden | Realistic 10 disabled `CameraView` renders, matching the observed order of load-time renders, sampled 20 times through Bun/Testing Library | 0.266 ms render median; 0.043 ms camera-view point math across 10 renders; 200 lens-position clone calls across all samples | 0.248 ms render median; 0 lens-position clone calls | 6.6% faster render, saving 0.018 ms across 10 renders; point math eliminated but the absolute avoided work was only about 0.043 ms per 10 renders | Rejected and rolled back; below the 10% threshold and the absolute saving is too small to matter in the app despite the code looking superficially cleaner | None |
 | 125 | Build point instance buckets with direct bucket arrays | Realistic 1000-point `PointInstances` render, sampled 20 times through Bun/test-renderer | 0.756 ms median | 0.803 ms median | 6.2% slower | Rejected and rolled back; the direct-loop bucket list was slower at the shipped stress scale, so the existing `forEach`/`Object.values` path stays | None |
+
+## Round 26 Candidate Ideas
+
+126. Replace generated static fallback `InstancedMesh` lists in merged FarmBot
+     part components with one data-driven fallback renderer. Expected return:
+     smaller FarmBot JavaScript chunks and less parse/compile work while the
+     normal merged-geometry render path and fallback geometry remain identical.
+127. Avoid loading the promo `toolbay3` model when real tool slots are provided.
+     Expected return: one fewer GLTF hook/model request in normal configured
+     gardens, with unchanged promo toolbay rendering when demo slots are used.
+128. Avoid loading v1.7 cable-carrier support models on v1.8 kits that use
+     generated extrusion supports. Expected return: two fewer unused GLTF
+     hook/model requests for the Genesis XL v1.8 stress context, with unchanged
+     v1.7 support rendering.
+129. Avoid loading the electronics-box LED model on v1.8 kits where LEDs are not
+     rendered. Expected return: one fewer unused GLTF hook/model request in the
+     default v1.8 FarmBot model, with unchanged v1.7 LED rendering.
+130. Register the rotary-tool animation frame callback only for rendered rotary
+     tool models instead of every tool slot. Expected return: fewer steady-state
+     `useFrame` callbacks in normal tool-slot layouts while preserving rotary
+     animation when the mounted rotary tool is active.
+
+## Round 26 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
