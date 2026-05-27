@@ -380,4 +380,19 @@ describe("convertPlants()", () => {
     },
     ]);
   });
+
+  it("converts repeated crop slugs", () => {
+    const plant0 = fakePlant();
+    plant0.body.openfarm_slug = "spinach";
+    const plant1 = fakePlant();
+    plant1.body.openfarm_slug = "spinach";
+
+    const convertedPlants = convertPlants(INITIAL, [plant0, plant1]);
+
+    expect(convertedPlants.map(plant => plant.icon)).toEqual([
+      CROPS.spinach.icon,
+      CROPS.spinach.icon,
+    ]);
+    expect(convertedPlants.map(plant => plant.spread)).toEqual([20, 20]);
+  });
 });

@@ -378,17 +378,35 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 };
 
 const convertPlantResources = (plants: TaggedPlant[]): ThreeDGardenPlant[] =>
-  plants.map(plant => ({
-    id: plant.body.id,
-    label: plant.body.name,
-    icon: findIcon(plant.body.openfarm_slug),
-    size: plant.body.radius * 2,
-    spread: findCrop(plant.body.openfarm_slug).spread,
-    x: plant.body.x,
-    y: plant.body.y,
-    key: "",
-    seed: 0,
-  }));
+  plants.map(plant => {
+    const crop = plantDisplayProps(plant.body.openfarm_slug);
+    return {
+      id: plant.body.id,
+      label: plant.body.name,
+      icon: crop.icon,
+      size: plant.body.radius * 2,
+      spread: crop.spread,
+      x: plant.body.x,
+      y: plant.body.y,
+      key: "",
+      seed: 0,
+    };
+  });
+
+interface PlantDisplayProps {
+  icon: string;
+  spread: number;
+}
+
+const plantDisplayPropsBySlug: Record<string, PlantDisplayProps> = {};
+
+const plantDisplayProps = (slug: string): PlantDisplayProps => {
+  plantDisplayPropsBySlug[slug] ||= {
+    icon: findIcon(slug),
+    spread: findCrop(slug).spread,
+  };
+  return plantDisplayPropsBySlug[slug];
+};
 
 export const convertPlants =
   (_config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
