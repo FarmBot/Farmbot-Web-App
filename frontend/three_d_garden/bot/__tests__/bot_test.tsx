@@ -8,6 +8,7 @@ import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { Texture, TextureLoader } from "three";
 import { ASSETS } from "../../constants";
 import {
+  actRenderer,
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
@@ -130,6 +131,56 @@ describe("<Bot />", () => {
     expect(container.querySelectorAll("[name='xCCMount']").length).toEqual(0);
     expect(useGltfMock.mock.calls
       .filter(([url]) => url == ASSETS.models.xAxisCCMount)).toHaveLength(0);
+  });
+
+  it("skips X/Y-only model hooks during z-only rerenders", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        configPosition={{
+          ...p.configPosition,
+          z: p.configPosition.z + 10,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).not.toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.crossSlide);
+    expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
+    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).not.toContain(ASSETS.models.beltClip);
+    expect(urls).toContain(ASSETS.models.zStop);
+    unmountRenderer(wrapper);
+  });
+
+  it("updates X/Y-only model hooks when x changes", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        configPosition={{
+          ...p.configPosition,
+          x: p.configPosition.x + 10,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).toContain(ASSETS.models.crossSlide);
+    expect(urls).toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).toContain(ASSETS.models.beltClip);
+    unmountRenderer(wrapper);
   });
 
   it("reuses parsed shapes across remounts", () => {

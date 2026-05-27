@@ -146,10 +146,380 @@ export const clearBotShapeCache = () => {
   botShapeCache.zAxis = undefined;
 };
 
+const botGardenXY = (
+  config: Config,
+  gardenX: number,
+  gardenY: number,
+): [number, number] => {
+  const position = get3DPositionNoMirrorFunc(config)({
+    x: gardenX,
+    y: gardenY,
+  });
+  return [position.x, position.y];
+};
+
+const botOuterXY = (
+  config: Config,
+  gardenX: number,
+  outerY: number,
+): [number, number] =>
+  botGardenXY(config, gardenX, outerY - config.bedYOffset);
+
+interface BotXYSubassemblyProps {
+  config: Config;
+  configPosition: PositionConfig;
+}
+
+const sameBotXYSubassemblyProps = <P extends BotXYSubassemblyProps>(
+  prev: P,
+  next: P,
+) => {
+  return prev.config === next.config &&
+    prev.configPosition.x === next.configPosition.x &&
+    prev.configPosition.y === next.configPosition.y;
+};
+
+interface BotFrameSubassembliesProps
+  extends BotXYSubassemblyProps {
+  trackShape: Shape | undefined;
+  columnShape: Shape | undefined;
+}
+
+const sameBotFrameSubassembliesProps = (
+  prev: BotFrameSubassembliesProps,
+  next: BotFrameSubassembliesProps,
+) =>
+  sameBotXYSubassemblyProps(prev, next) &&
+  prev.trackShape === next.trackShape &&
+  prev.columnShape === next.columnShape;
+
+const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
+  const {
+    bedWidthOuter, tracks, columnLength, botSizeX,
+  } = props.config;
+  const { x, y } = props.configPosition;
+  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.0003],
+  });
+  const gantryWheelPlate =
+    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
+  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
+  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
+  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
+  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const horizontalMotorHousing = useGLTF(
+    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
+  return <>
+    {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
+      const bedColumnYOffset =
+        (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
+      return <Group key={outerY}>
+        <Extrude name={"columns"}
+          castShadow={true}
+          args={[
+            props.columnShape,
+            { steps: 1, depth: columnLength, bevelEnabled: false },
+          ]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - extrusionWidth - 12,
+              outerY + bedColumnYOffset,
+            ),
+            30,
+          ]}
+          rotation={[0, 0, Math.PI / 2]}>
+          <MeshPhongMaterial
+            color={"white"}
+            map={aluminumTexture}
+            side={DoubleSide} />
+        </Extrude>
+        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - extrusionWidth - 12,
+              outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
+            ),
+            columnLength - 30,
+          ]}
+          rotation={[Math.PI / 2, Math.PI / 2, 0]}
+          scale={1000}
+          geometry={index == 0
+            ? leftBracket.nodes[PartName.leftBracket].geometry
+            : rightBracket.nodes[PartName.rightBracket].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - (index == 0 ? 47 : 77),
+              outerY - (index == 0 ? 0 : -20) + bedColumnYOffset,
+            ),
+            columnLength + 70,
+          ]}
+          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
+          scale={1000}
+          geometry={undefined}
+          material={undefined} />
+        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 68,
+              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
+            ),
+            columnLength + 80,
+          ]}
+          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
+          scale={1000}
+          geometry={
+            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Cylinder name={"motorPulley"}
+          args={[8, 8, 40]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 63,
+              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
+            ),
+            columnLength + 55,
+          ]}
+          rotation={[0, 0, 0]}>
+          <MeshPhongMaterial color={"#999"} />
+        </Cylinder>
+        {tracks && <Extrude name={"tracks"}
+          castShadow={true}
+          args={[
+            props.trackShape,
+            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
+          ]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              index == 0
+                ? botSizeX + xTrackPadding / 2
+                : -xTrackPadding / 2,
+              outerY + (index == 0 ? 2.5 : 17.5),
+            ),
+            2,
+          ]}
+          rotation={[
+            index == 0 ? -Math.PI / 2 : -Math.PI / 2,
+            index == 0 ? -Math.PI / 2 : Math.PI / 2,
+            0,
+          ]}>
+          <MeshPhongMaterial
+            color={"white"}
+            map={aluminumTexture}
+            side={DoubleSide} />
+        </Extrude>}
+        <Mesh name={"xStopMin"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              -132,
+              outerY + 10 + bedColumnYOffset,
+            ),
+            2 + (index == 0 ? 0 : 5),
+          ]}
+          rotation={[
+            0,
+            index == 0 ? 0 : Math.PI,
+            (index == 0 ? 1 : -1) * Math.PI / 2,
+          ]}
+          scale={1000}
+          geometry={beltClip.nodes[PartName.beltClip].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"xStopMax"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              botSizeX - 5 + xTrackPadding / 2,
+              outerY + 10 + bedColumnYOffset,
+            ),
+            2 + (index == 0 ? 5 : 0),
+          ]}
+          rotation={[
+            0,
+            index == 0 ? Math.PI : 0,
+            (index == 0 ? 1 : -1) * Math.PI / 2,
+          ]}
+          scale={1000}
+          geometry={beltClip.nodes[PartName.beltClip].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <GantryWheelPlateComponent name={"gantryWheelPlate"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 42,
+              outerY + (index == 0 ? 0 : extrusionWidth + 5)
+              - 2 - (index == 0 ? 1 : 0)
+              + bedColumnYOffset,
+            ),
+            -30,
+          ]}
+          rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
+          scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
+      </Group>;
+    })}
+    {props.config.cableCarriers &&
+    <XAxisCCMountModel
+      position={[
+        ...botOuterXY(props.config, x - 32, -12),
+        -40,
+      ]} />}
+    <CableCarrierX
+      config={props.config}
+      configPosition={props.configPosition} />
+    <CrossSlideModel
+      model={crossSlide}
+      name={"crossSlide"}
+      position={[
+        ...botGardenXY(props.config, x - 1.5, y + 5),
+        columnLength + 105,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}
+      scale={1000} />
+  </>;
+};
+
+const BotFrameSubassemblies = React.memo(
+  BotFrameSubassembliesBase,
+  sameBotFrameSubassembliesProps,
+);
+
+interface BotGantrySubassembliesProps
+  extends BotXYSubassemblyProps {
+  beamShape: Shape | undefined;
+}
+
+const sameBotGantrySubassembliesProps = (
+  prev: BotGantrySubassembliesProps,
+  next: BotGantrySubassembliesProps,
+) =>
+  sameBotXYSubassemblyProps(prev, next) &&
+  prev.beamShape === next.beamShape;
+
+const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
+  const {
+    botSizeY, bedYOffset, columnLength,
+  } = props.config;
+  const { x, y } = props.configPosition;
+  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.0003],
+  });
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const yBeltPath = React.useCallback(() => {
+    const radius = 12;
+    const path = new Shape();
+    path.moveTo(0, 0);
+    path.lineTo(0, y + 30);
+    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true);
+    path.lineTo(45, y + 30);
+    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4);
+    path.lineTo(0, y + 100);
+    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true);
+    path.lineTo(0, botSizeY + 220);
+    path.lineTo(-2, botSizeY + 220);
+    path.lineTo(-2, y + 100);
+    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI);
+    path.lineTo(45, y + 50);
+    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true);
+    path.lineTo(radius, y + 40);
+    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
+    path.lineTo(-2, 0);
+    return path;
+  }, [botSizeY, y]);
+  const yBeltArgs = React.useMemo(() => [
+    yBeltPath(),
+    { steps: 1, depth: 6, bevelEnabled: false },
+  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
+  return <>
+    <GantryBeam
+      config={props.config}
+      configPosition={props.configPosition}
+      aluminumTexture={aluminumTexture}
+      beamShape={props.beamShape} />
+    <CableCarrierSupportHorizontal
+      config={props.config}
+      configPosition={props.configPosition} />
+    <CableCarrierY
+      config={props.config}
+      configPosition={props.configPosition} />
+    <Mesh name={"yStopMin"}
+      position={[
+        ...botOuterXY(props.config, x - extrusionWidth + 2, bedYOffset - 125),
+        columnLength + 40 + extrusionWidth * 3,
+      ]}
+      rotation={[0, 0, Math.PI]}
+      scale={1000}
+      geometry={beltClip.nodes[PartName.beltClip].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+    <Extrude name={"yBelt"}
+      args={yBeltArgs}
+      position={[
+        ...botGardenXY(props.config, x - 14.5, -100),
+        columnLength + 100,
+      ]}
+      rotation={[0, -Math.PI / 2, 0]}>
+      <MeshPhongMaterial color={distinguishableBlack} />
+    </Extrude>
+    <Mesh name={"yStopMax"}
+      position={[
+        ...botOuterXY(
+          props.config,
+          x - extrusionWidth + 2,
+          botSizeY + bedYOffset + 135,
+        ),
+        columnLength + 40 + extrusionWidth * 3 + 5,
+      ]}
+      rotation={[0, Math.PI, 0]}
+      scale={1000}
+      geometry={beltClip.nodes[PartName.beltClip].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+  </>;
+};
+
+const BotGantrySubassemblies = React.memo(
+  BotGantrySubassembliesBase,
+  sameBotGantrySubassembliesProps,
+);
+
+const BotElectronicsSubassemblyBase = (props: BotXYSubassemblyProps) =>
+  <ElectronicsBox
+    config={props.config}
+    configPosition={props.configPosition} />;
+
+const BotElectronicsSubassembly = React.memo(
+  BotElectronicsSubassemblyBase,
+  sameBotXYSubassemblyProps,
+);
+
+const BotBedUtilitySubassembliesBase = (props: { config: Config }) =>
+  <>
+    <PowerSupply config={props.config} />
+    <XAxisWaterTube config={props.config} />
+  </>;
+
+const BotBedUtilitySubassemblies =
+  React.memo(BotBedUtilitySubassembliesBase);
+
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
-  const { botSizeX, botSizeY, botSizeZ, trail, laser,
-    bedYOffset, bedWidthOuter, tracks,
+  const { botSizeZ, trail, laser, tracks,
     columnLength, zAxisLength, zGantryOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
@@ -160,21 +530,10 @@ export const Bot = (props: FarmbotModelProps) => {
     const position = get3DPosition({ x: gardenX, y: gardenY });
     return [position.x, position.y];
   };
-  const outerXY = (gardenX: number, outerY: number): [number, number] =>
-    gardenXY(gardenX, outerY - bedYOffset);
-  const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
-  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
-  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
   const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
   const housingVertical = useGLTF(
     ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
-  const horizontalMotorHousing = useGLTF(
-    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
   const zAxisMotorMount = useGLTF(
     ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
   const vacuumPumpCover = useGLTF(
@@ -257,32 +616,6 @@ export const Bot = (props: FarmbotModelProps) => {
     wrapT: RepeatWrapping,
     repeat: [0.01, 0.0003],
   });
-
-  const yBeltPath = React.useCallback(() => {
-    const radius = 12;
-    const path = new Shape();
-    path.moveTo(0, 0);
-    path.lineTo(0, y + 30);
-    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true);
-    path.lineTo(45, y + 30);
-    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4);
-    path.lineTo(0, y + 100);
-    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true);
-    path.lineTo(0, botSizeY + 220);
-    path.lineTo(-2, botSizeY + 220);
-    path.lineTo(-2, y + 100);
-    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI);
-    path.lineTo(45, y + 50);
-    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true);
-    path.lineTo(radius, y + 40);
-    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
-    path.lineTo(-2, 0);
-    return path;
-  }, [botSizeY, y]);
-  const yBeltArgs = React.useMemo(() => [
-    yBeltPath(),
-    { steps: 1, depth: 6, bevelEnabled: false },
-  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
   const distanceToSoil = -props.getZ(x, y) - zDir * z;
 
   const defaultTrailWidth = config.perspective ? 500 : 0.1;
@@ -339,157 +672,11 @@ export const Bot = (props: FarmbotModelProps) => {
   const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
     preserveDepthWrite={true}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
-    {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
-      const bedColumnYOffset =
-        (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
-      return <Group key={y}>
-        <Extrude name={"columns"}
-          castShadow={true}
-          args={[
-            columnShape,
-            { steps: 1, depth: columnLength, bevelEnabled: false },
-          ]}
-          position={[
-            ...outerXY(x - extrusionWidth - 12, y + bedColumnYOffset),
-            30,
-          ]}
-          rotation={[0, 0, Math.PI / 2]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>
-        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
-          position={[
-            ...outerXY(
-              x - extrusionWidth - 12,
-              y - (index == 0 ? 0 : 170) + bedColumnYOffset),
-            columnLength - 30,
-          ]}
-          rotation={[Math.PI / 2, Math.PI / 2, 0]}
-          scale={1000}
-          geometry={index == 0
-            ? leftBracket.nodes[PartName.leftBracket].geometry
-            : rightBracket.nodes[PartName.rightBracket].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...outerXY(
-              x - (index == 0 ? 47 : 77),
-              y - (index == 0 ? 0 : -20) + bedColumnYOffset),
-            columnLength + 70,
-          ]}
-          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
-          scale={1000}
-          geometry={undefined}
-          material={undefined} />
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...outerXY(
-              x - 68,
-              y - (index == 0 ? 5 : -25) + bedColumnYOffset),
-            columnLength + 80,
-          ]}
-          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
-          scale={1000}
-          geometry={
-            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Cylinder name={"motorPulley"}
-          args={[8, 8, 40]}
-          position={[
-            ...outerXY(
-              x - 63,
-              y - (index == 0 ? 5 : -25) + bedColumnYOffset),
-            columnLength + 55,
-          ]}
-          rotation={[0, 0, 0]}>
-          <MeshPhongMaterial color={"#999"} />
-        </Cylinder>
-        {tracks && <Extrude name={"tracks"}
-          castShadow={true}
-          args={[
-            trackShape,
-            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
-          ]}
-          position={[
-            ...outerXY(
-              index == 0
-                ? botSizeX + xTrackPadding / 2
-                : -xTrackPadding / 2,
-              y + (index == 0 ? 2.5 : 17.5)),
-            2,
-          ]}
-          rotation={[
-            index == 0 ? -Math.PI / 2 : -Math.PI / 2,
-            index == 0 ? -Math.PI / 2 : Math.PI / 2,
-            0,
-          ]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>}
-        <Mesh name={"xStopMin"}
-          position={[
-            ...outerXY(-132, y + 10 + bedColumnYOffset),
-            2 + (index == 0 ? 0 : 5),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? 0 : Math.PI,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"xStopMax"}
-          position={[
-            ...outerXY(botSizeX - 5 + xTrackPadding / 2,
-              y + 10 + bedColumnYOffset),
-            2 + (index == 0 ? 5 : 0),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? Math.PI : 0,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <GantryWheelPlateComponent name={"gantryWheelPlate"}
-          position={[
-            ...outerXY(
-              x - 42,
-              y + (index == 0 ? 0 : extrusionWidth + 5)
-              - 2 - (index == 0 ? 1 : 0)
-              + bedColumnYOffset),
-            -30,
-          ]}
-          rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
-          scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
-      </Group>;
-    })}
-    {config.cableCarriers &&
-    <XAxisCCMountModel
-      position={[
-        ...outerXY(x - 32, -12),
-        -40,
-      ]} />}
-    <CableCarrierX config={config} configPosition={props.configPosition} />
-    <CrossSlideModel
-      model={crossSlide}
-      name={"crossSlide"}
-      position={[
-        ...gardenXY(x - 1.5, y + 5),
-        columnLength + 105,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
+    <BotFrameSubassemblies
+      config={config}
+      configPosition={props.configPosition}
+      trackShape={trackShape}
+      columnShape={columnShape} />
     <Extrude name={"z-axis"}
       castShadow={true}
       args={[
@@ -670,46 +857,14 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z - distanceToSoil / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <GantryBeam
+    <BotGantrySubassemblies
       config={config}
       configPosition={props.configPosition}
-      aluminumTexture={aluminumTexture}
       beamShape={beamShape} />
-    <CableCarrierSupportHorizontal
+    <Solenoid config={config} configPosition={props.configPosition} />
+    <BotElectronicsSubassembly
       config={config}
       configPosition={props.configPosition} />
-    <CableCarrierY config={config} configPosition={props.configPosition} />
-    <Mesh name={"yStopMin"}
-      position={[
-        ...outerXY(x - extrusionWidth + 2, bedYOffset - 125),
-        columnLength + 40 + extrusionWidth * 3,
-      ]}
-      rotation={[0, 0, Math.PI]}
-      scale={1000}
-      geometry={beltClip.nodes[PartName.beltClip].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Extrude name={"yBelt"}
-      args={yBeltArgs}
-      position={[
-        ...gardenXY(x - 14.5, -100),
-        columnLength + 100,
-      ]}
-      rotation={[0, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
-    <Mesh name={"yStopMax"}
-      position={[
-        ...outerXY(x - extrusionWidth + 2, botSizeY + bedYOffset + 135),
-        columnLength + 40 + extrusionWidth * 3 + 5,
-      ]}
-      rotation={[0, Math.PI, 0]}
-      scale={1000}
-      geometry={beltClip.nodes[PartName.beltClip].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Solenoid config={config} configPosition={props.configPosition} />
-    <ElectronicsBox config={config} configPosition={props.configPosition} />
     <Tools
       dispatch={props.dispatch}
       config={config}
@@ -718,15 +873,12 @@ export const Bot = (props: FarmbotModelProps) => {
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
-      <React.Suspense fallback={undefined}>
-        <WateringAnimations
-          waterFlow={config.waterFlow}
-          config={config}
-          configPosition={props.configPosition}
-          getZ={props.getZ} />
-      </React.Suspense>}
-    <PowerSupply config={config} />
-    <XAxisWaterTube config={config} />
+      <WateringAnimations
+        waterFlow={config.waterFlow}
+        config={config}
+        configPosition={props.configPosition}
+        getZ={props.getZ} />}
+    <BotBedUtilitySubassemblies config={config} />
     <Bounds config={config} configPosition={props.configPosition} />
   </FocusVisibilityGroup>;
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>

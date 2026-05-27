@@ -4230,6 +4230,39 @@ larger instead of smaller. Implementation/test changes rolled back.
 
 ## Round 52
 
+### Idea 256: Split static FarmBot subassemblies away from Z-axis movement rerenders
+
+**Description:** Partition `Bot` rendering so static or X/Y-only subassemblies do not rerender during realistic Z-axis movement frames. Expected return: better frame responsiveness while preserving every model, cable, shadow, trail, water, and tool animation.
+
+**Benchmark:** Direct full-`Bot` react-test-renderer benchmark with loaded
+FarmBot model conditions: cable carriers, tracks, configured tools, trail,
+water flow, laser, light strip, and camera view enabled; Genesis v1.8
+dimensions; stable X/Y; seven realistic tool slots; and 90 Z-axis position
+rerenders. Sampled 13 measured batches after 3 warmups while measuring initial
+render, rerender batch CPU, intrinsic object counts, `useGLTF`,
+`SVGLoader.createShapes`, `getZ`, and `useFrame` calls.
+
+**Before:** 2.942 ms median initial render; 296.632 ms median 90-rerender
+batch; 52 groups, 58 meshes, 339 instanced meshes, 10 extrudes, 12 tubes, and
+14 cylinders; 1,260 update-time `useGLTF` calls; 0 shape parses; 270 `getZ`
+calls; 810 `useFrame` calls
+
+**After:** 2.918 ms median initial render; 88.382 ms median 90-rerender batch;
+same intrinsic object counts; 630 update-time `useGLTF` calls; 0 shape parses;
+270 `getZ` calls; 810 `useFrame` calls
+
+**Change:** 70.2% faster Z-axis rerender batch, saving 208.250 ms across 90
+realistic movement rerenders, with 50.0% fewer update-time `useGLTF` calls and
+no intrinsic scene object-count regression
+
+**Outcome:** Accepted; X/Y-only frame, gantry, electronics, and bed-utility
+subassemblies now sit behind memoized X/Y/config/shape boundaries, while
+Z-axis, UTM, camera, laser, vertical carrier/support, solenoid, tool, and water
+animation detail still updates on Z movement. Focused tests cover Z-only skip
+behavior and X-axis rerender behavior.
+
+**Commit:** `Split FarmBot statics for 70.2% faster z batches`
+
 ### Idea 258: Memoize electronics box against X-axis movement only
 
 **Description:** Keep the electronics box model from rerendering on Y/Z-only bot movement and unrelated config churn, since its visible position depends on X and a small set of config fields. Expected return: better bot movement responsiveness with the electronics box fully preserved.
