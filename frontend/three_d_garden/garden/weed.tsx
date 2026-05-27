@@ -317,6 +317,11 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
 };
 
 export const WeedInstances = React.memo((props: WeedInstancesProps) => {
+  if (!props.visible) { return <></>; }
+  return <VisibleWeedInstances {...props} />;
+});
+
+const VisibleWeedInstances = (props: WeedInstancesProps) => {
   const { weedInstances, buckets } = React.useMemo(
     () => getWeedInstanceData(props.weeds, props.config, props.getZ),
     [props.weeds, props.config, props.getZ]);
@@ -328,4 +333,4 @@ export const WeedInstances = React.memo((props: WeedInstancesProps) => {
         {...props}
         bucket={bucket} />)}
   </>;
-});
+};

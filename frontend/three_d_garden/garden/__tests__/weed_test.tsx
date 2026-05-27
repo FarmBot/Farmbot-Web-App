@@ -117,6 +117,15 @@ describe("<Weed />", () => {
     expect(meshes[2].props.name).toEqual("weed-radius");
   });
 
+  it("skips hidden weed instances", () => {
+    const p = fakeInstanceProps();
+    p.visible = false;
+    p.getZ = jest.fn();
+    const { container } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
   it("navigates from a weed instance", () => {
     const p = fakeInstanceProps();
     const dispatch = jest.fn();
