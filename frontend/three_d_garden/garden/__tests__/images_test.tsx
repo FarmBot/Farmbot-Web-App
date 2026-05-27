@@ -219,6 +219,45 @@ describe("<ImageTexture />", () => {
 
     expect(useTextureMock.mock.calls.length).toBeGreaterThan(initialCalls);
   });
+
+  it("reuses image wrappers across soil brightness churn", () => {
+    const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
+    const img0 = fakeImage();
+    img0.body.meta.x = 1;
+    img0.body.meta.y = 1;
+    img0.body.attachment_url = "https://example.com/image-0.jpg";
+    const img1 = fakeImage();
+    img1.body.meta.x = 2;
+    img1.body.meta.y = 2;
+    img1.body.attachment_url = "https://example.com/image-1.jpg";
+    p.images = [img0, img1];
+    const apProps = fakeAddPlantProps();
+    const config = fakeWebAppConfig();
+    config.body.show_images = true;
+    config.body.photo_filter_begin = "";
+    config.body.photo_filter_end = "";
+    apProps.getConfigValue = x => config.body[x];
+    p.addPlantProps = apProps;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+
+    const { rerender } = render(<ImageTexture {...p} />);
+    useTextureMock.mockClear();
+    rerender(<ImageTexture {...p} config={{
+      ...p.config,
+      soilBrightness: p.config.soilBrightness + 1,
+    }} />);
+    const callsAfterSoilChurn = useTextureMock.mock.calls.length;
+    rerender(<ImageTexture {...p} config={{
+      ...p.config,
+      imgScale: p.config.imgScale + 0.1,
+    }} />);
+
+    expect(callsAfterSoilChurn).toEqual(1);
+    expect(useTextureMock.mock.calls.length).toBeGreaterThan(callsAfterSoilChurn);
+  });
 });
 
 describe("splitFilteredImages()", () => {

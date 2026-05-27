@@ -20,6 +20,24 @@ Repeat the process for all items in the list.
 
 **Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
 
+# Subagent Prompt
+
+Let's repeat the process with a new list of 15 items. As a reminder, here is the prompt and process to follow:
+
+I want to optimize three_d_garden performance across all dimensions: load time, click responsiveness, memory use, frames per second, number of calls, etc. However, I strictly do not want to in any way degrade the user experience (no lowering of resolution, removing animations, or anything like that).
+
+Comprehensively look at the code and come up with a list of 15 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Then spin up sub agents for each idea.
+
+Before implementing an idea, each subagent must:
+- Benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100.
+- Implement the idea.
+- Check the benchmark. If there is at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit the changes with a descriptive message that includes the percent improvement achieved.
+- If an improvement was not achieved, rollback the changes.
+
+Make sure to record all results in the markdown doc.
+
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
+
 # 3D Garden Performance Hill Climb
 
 Goal: improve `three_d_garden` load time, click responsiveness, memory use,
@@ -4607,3 +4625,214 @@ and click/hover handlers are stable while preserving marker positions, selected
 and hovered colors, click dispatches, and top-down/heading marker behavior.
 
 **Commit:** `Reduce camera-selection marker churn by 95.6%`
+
+## Round 53
+
+### Idea 271: Index 3D FarmwareEnv config lookups
+
+**Description:** Replace repeated linear `FarmwareEnv` scans for 3D config values with an indexed lookup keyed by the `3D_` namespace. Expected return: lower adapter CPU on 3D Garden renders and settings-panel renders that read many 3D config keys, without changing defaults or saved config behavior.
+
+**Benchmark:** Realistic settings adapter benchmark with 129 `FarmwareEnv`
+entries and 43 map config keys over 60 render batches.
+
+**Before:** 2.234 ms median map config-read batch with 332,820 env checks;
+settings-panel batch was 0.595 ms.
+
+**After:** 0.136 ms median map config-read batch with 7,740 env checks;
+settings-panel batch was 0.091 ms.
+
+**Change:** 93.9% faster map config reads, saving 2.098 ms per realistic
+60-render batch; settings-panel reads were 84.7% faster.
+
+**Outcome:** Accepted; indexed 3D config reads preserve saved/default config
+behavior while removing repeated linear scans.
+
+**Commit:** `Index 3D config lookups for 93.9% faster reads`
+
+### Idea 272: Scan latest camera-capture logs without intermediate arrays
+
+**Description:** Replace the 3D Garden map's latest-camera-capture derivation with one direct scan over logs instead of `filter` plus `map` plus `Math.max(...ids)`. Expected return: lower adapter CPU when log arrays are realistic-sized and Bot position updates rerender the 3D map, with identical `lastImageCapture` behavior.
+
+**Benchmark:** Realistic 1,000-log mixed timeline benchmark over 60 scans,
+matching a busy device log list where camera-capture checks rerun with map
+state updates.
+
+**Before:** 3.348 ms median scan batch.
+
+**After:** 0.324 ms median scan batch.
+
+**Change:** 90.3% faster, saving 3.024 ms per realistic 60-scan batch.
+
+**Outcome:** Accepted; the latest camera capture is found in one pass with the
+same `lastImageCapture` result and no image/log behavior change.
+
+**Commit:** `Scan camera logs in one pass for 90.3% faster churn`
+
+### Idea 273: Narrow `GardenModel` load-stage and layer visibility churn
+
+**Description:** Move cheap-but-repeated 3D layer visibility derivations behind memoized boundaries keyed by their real inputs. Expected return: fewer repeated `getConfigValue`, route/mode checks, and transient-plant scans during Bot telemetry rerenders, without changing layer visibility or progressive-load behavior.
+
+### Idea 274: Add a relevant-field comparator to the visible `Bed` subtree
+
+**Description:** Let `Bed` skip unrelated config-object churn by comparing only the config fields and resource references that affect bed, soil, image, pointer, moisture, and overlay rendering. Expected return: faster settings-panel and telemetry rerenders where bed inputs are visually unchanged, without hiding any bed, soil, image, moisture, pointer, or overlay updates.
+
+**Benchmark:** Realistic visible-bed benchmark with unrelated config-object
+churn over 60 rerenders.
+
+**Before:** 194.567 ms median batch, with 120 texture calls and 120 soil helper
+calls.
+
+**After:** 1.663 ms median batch, with 0 texture calls and 0 soil helper calls.
+
+**Change:** 99.1% faster, saving 192.904 ms per realistic 60-rerender batch.
+
+**Outcome:** Accepted; bed, soil, image, moisture, sensor, and pointer fields
+still invalidate the subtree, while unrelated config churn is skipped.
+
+**Commit:** `Memoize bed config churn for 99.1% faster rerenders`
+
+### Idea 275: Split dynamic Bot Z-axis work from static UTM-adjacent model leaves
+
+**Description:** Partition the remaining dynamic Bot subtree so Z-axis motion updates transforms while static model leaves and GLTF-backed meshes avoid rerendering when their visible inputs have not changed. Expected return: faster realistic Bot movement batches with no change to model detail, water, trail, camera, laser, or tool behavior.
+
+**Benchmark:** Realistic Bot setup over 90 Z-movement rerenders.
+
+**Before:** 79.101 ms median batch with 630 update-time `useGLTF` calls.
+
+**After:** Full static-leaf split regressed to 116.183 ms; wrapper-only split
+was 76.385 ms, only 3.4% faster; zMotor-wrapper split lowered GLTF calls but
+regressed to 87.8-90.0 ms.
+
+**Change:** No qualifying win; the best absolute saving was 2.716 ms per
+90-rerender batch and below the 10% threshold.
+
+**Outcome:** Rejected and rolled back; the added component partitioning was
+not worth the complexity under realistic Bot movement.
+
+**Commit:** Not committed
+
+### Idea 276: Memoize Bot air-tube and camera-mount derived geometry inputs
+
+**Description:** Cache the Bot air-tube curve inputs, camera mount position, and related derived coordinates across rerenders that do not change their inputs. Expected return: less per-movement setup work in the live Bot path while preserving tube curvature, camera-view origin, laser distance, and camera mount visuals.
+
+**Benchmark:** Realistic Genesis v1.8 Bot with camera view, laser, and air tube
+enabled over 90 rerenders.
+
+**Before:** Mixed movement 537.588 ms, Z-only movement 241.835 ms, and stable
+config churn 789.588 ms; each batch had 450 `getZ` calls and 360 air-tube
+curve changes.
+
+**After:** Mixed movement regressed to 792.526 ms, Z-only movement regressed to
+251.104 ms despite `getZ` dropping to 1, and stable config churn regressed to
+922.099 ms despite curve/`getZ` churn dropping to 0.
+
+**Change:** No qualifying win; reduced derived-work counters did not translate
+to runtime improvement.
+
+**Outcome:** Rejected and rolled back; memoization added cost in the measured
+Bot path.
+
+**Commit:** Not committed
+
+### Idea 277: Reduce `Tools` coordinate-helper setup during Bot movement
+
+**Description:** Share configured 3D position converters and mirror flags across the `Tools` render instead of rebuilding helper closures inside every tool. Expected return: lower configured-tool rerender CPU during Bot telemetry updates while preserving mounted-tool position, gantry-mounted slots, mirroring, rotations, opacity, navigation, and rotary behavior.
+
+**Benchmark:** Realistic configured `Tools` benchmark over 90 Bot movement
+rerenders.
+
+**Before:** 37.430 ms median movement batch.
+
+**After:** 19.316 ms median movement batch.
+
+**Change:** 48.4% faster, saving 18.114 ms per realistic 90-rerender batch.
+
+**Outcome:** Accepted; shared coordinate setup preserves mounted-tool,
+gantry-slot, mirroring, rotation, opacity, and navigation behavior.
+
+**Commit:** `Memoize tools movement path for 48.4% faster rerenders`
+
+### Idea 278: Avoid unnecessary `OpacityFilter` traversal for already-opaque tools
+
+**Description:** Re-evaluate the current tool opacity wrapper now that tool models are memoized, and skip material traversal/cloning when the slot is already fully opaque if the realistic saved-tool render still shows meaningful cost. Expected return: lower configured-tool startup and mount-change work without changing the faded mounted-tool visual.
+
+### Idea 279: Reduce enabled bounds/dimension helper coordinate transforms
+
+**Description:** Compute each enabled `Bounds` dimension helper's transformed coordinates once per render instead of calling the same position converter repeatedly in JSX. Expected return: faster bounds/dimension overlay interactions with identical labels, edges, positions, and visibility.
+
+**Benchmark:** Realistic enabled-overlay config churn over 90 rerenders.
+
+**Before:** `bounds+zDimension` 18.928 ms with 1,080 coordinate conversions;
+`beamLength` 29.029 ms; `columnLength` 31.258 ms; `zAxisLength` 40.012 ms.
+
+**After:** `bounds+zDimension` 1.019 ms with 0 repeated conversions;
+`beamLength` 0.849 ms; `columnLength` 0.786 ms; `zAxisLength` 0.835 ms.
+
+**Change:** 94.6% faster for `bounds+zDimension`, saving 17.909 ms per
+90-rerender batch; individual dimension helpers were 97.1%-97.9% faster.
+
+**Outcome:** Accepted; helper labels, edges, endpoints, and visibility still
+update on relevant Bot position and config changes.
+
+**Commit:** `Memoize bounds for 94.6% faster config churn`
+
+### Idea 280: Memoize active `Solar` geometry placement and wiring points
+
+**Description:** Keep active solar-panel placement, wiring point arrays, and cell matrix setup stable across unrelated config churn. Expected return: faster scene-detail rerenders when the solar overlay is visible, while preserving focus fade, panel geometry, wiring, and solar visibility.
+
+**Benchmark:** Realistic visible solar config-churn batches over 60 rerenders,
+including Genesis XL, Genesis, focus-visible XL, and hidden-but-transitioned XL
+states.
+
+**Before:** Visible Genesis XL 18.685 ms; Genesis 16.291 ms; focus-visible XL
+19.111 ms; hidden transition-mounted XL 7.927 ms.
+
+**After:** Visible Genesis XL 2.474 ms; Genesis 2.045 ms; focus-visible XL
+2.556 ms; hidden transition-mounted XL 1.487 ms.
+
+**Change:** Visible Genesis XL was 86.8% faster, saving 16.211 ms per
+60-rerender batch; other measured states were 81.2%-87.4% faster.
+
+**Outcome:** Accepted; solar panel placement, wiring points, focus fade, and
+visibility behavior remain keyed to their real inputs.
+
+**Commit:** `Memoize solar hardware for 86.8% faster churn`
+
+### Idea 281: Narrow `Clouds` rerenders to season and cloud-relevant config fields
+
+**Description:** Add a relevant-field memo boundary around active cloud rendering so unrelated config object churn does not restart or revisit cloud setup. Expected return: faster scene-detail rerenders with clouds enabled, without changing cloud texture, density, animation, opacity, or disabled-cloud behavior.
+
+### Idea 282: Memoize `ThreeDPlantLabel` for visible all-label gardens
+
+**Description:** Add a relevant-field memo boundary around individual plant labels so all-label mode skips label billboards when unrelated config fields or parent state change. Expected return: faster dense labeled garden rerenders with identical label placement, text, hover behavior, and billboard following.
+
+### Idea 283: Stabilize active pointer-preview crop and grid-preview setup
+
+**Description:** In active pointer-preview modes, avoid repeated crop/icon lookup and full dirty-grid scans when route/mode, map-point references, and draw state are unchanged. Expected return: better pointer responsiveness in plant/point creation workflows without changing preview texture, crosshair, radius, or out-of-bounds visuals.
+
+### Idea 284: Reuse `ImageWrapper` setup for unchanged camera images
+
+**Description:** Memoize per-image wrapper setup by image metadata, texture identity, and relevant image calibration fields so unchanged camera-image decals do not recompute placement during soil texture rebuilds. Expected return: faster image-heavy soil texture setup without changing filtering, image order, highlighted image handling, texture resolution, or decal transforms.
+
+**Benchmark:** Temporary Bun/Testing Library `ImageTexture` benchmark with 24
+visible camera images and soil-brightness churn over five 60-rerender batches.
+This mirrors a realistic settings-slider interaction where the soil material
+changes but camera image URLs, metadata, calibration, and transforms do not.
+
+**Before:** 120.447 ms median batch with 7,500 texture hook calls.
+
+**After:** 33.218 ms median batch with 300 texture hook calls.
+
+**Change:** 72.4% faster, saving 87.229 ms per realistic 60-rerender batch;
+image texture hook calls dropped by 96.0%.
+
+**Outcome:** Accepted; image wrappers now skip unchanged non-demo camera
+images while image URL, highlight, position, calibration, debug, mirror, scale,
+and rotation changes still invalidate the decal setup. Demo soil images remain
+unmemoized so `forceOnline()` URL substitution is preserved.
+
+**Commit:** `Memoize image wrappers for 72.4% faster churn`
+
+### Idea 285: Reduce `SceneBoundary` load-step render churn
+
+**Description:** Narrow `SceneBoundary` and load-ready rendering so already-completed load steps stop revisiting readiness markers and perf marks on later GardenModel rerenders. Expected return: lower progressive-load overhead during startup and early telemetry churn without changing load order, reveal animations, or load-complete callbacks.

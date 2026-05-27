@@ -315,7 +315,51 @@ interface ImageWrapperProps {
   yOffset: number;
 }
 
-const ImageWrapper = (props: ImageWrapperProps) => {
+const IMAGE_WRAPPER_CONFIG_FIELDS: (keyof Config)[] = [
+  "botSizeX",
+  "botSizeY",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "lightsDebug",
+  "mirrorX",
+  "mirrorY",
+];
+
+const imageWrapperConfigFieldsEqual = (prev: Config, next: Config) =>
+  IMAGE_WRAPPER_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
+const imageWrapperImagesEqual = (
+  prev: TaggedImagePlus,
+  next: TaggedImagePlus,
+) =>
+  prev.uuid === next.uuid
+  && prev.highlighted === next.highlighted
+  && prev.body.attachment_url === next.body.attachment_url
+  && prev.body.meta.name === next.body.meta.name;
+
+const usesDemoSoilTexture = (image: TaggedImagePlus) =>
+  image.body.attachment_url.endsWith("/soil.png");
+
+const imageWrapperPropsEqual = (
+  prev: Readonly<ImageWrapperProps>,
+  next: Readonly<ImageWrapperProps>,
+) =>
+  !usesDemoSoilTexture(prev.image)
+  && !usesDemoSoilTexture(next.image)
+  && prev.x === next.x
+  && prev.y === next.y
+  && prev.z === next.z
+  && prev.xOffset === next.xOffset
+  && prev.yOffset === next.yOffset
+  && imageWrapperImagesEqual(prev.image, next.image)
+  && imageWrapperConfigFieldsEqual(prev.config, next.config);
+
+const ImageWrapperBase = (props: ImageWrapperProps) => {
   const { config } = props;
   const rawUrl = props.image.body.attachment_url;
   const url = (forceOnline() && rawUrl.endsWith("/soil.png"))
@@ -348,6 +392,8 @@ const ImageWrapper = (props: ImageWrapperProps) => {
       scale={[width, height, 1000]} />;
   });
 };
+
+const ImageWrapper = React.memo(ImageWrapperBase, imageWrapperPropsEqual);
 
 export const extraRotation = (config: Pick<Config, "imgOrigin">) => {
   switch (config.imgOrigin) {
