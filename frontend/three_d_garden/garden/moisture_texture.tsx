@@ -1,9 +1,8 @@
 import React from "react";
 import { Config } from "../config";
-import { Sphere } from "@react-three/drei";
 import {
   BoxGeometry, Group, InstancedMesh as InstancedMeshComponent,
-  MeshBasicMaterial,
+  MeshBasicMaterial, SphereGeometry,
 } from "../components";
 import { TaggedSensor, TaggedSensorReading } from "farmbot";
 import { threeSpace, zZero } from "../helpers";
@@ -148,6 +147,19 @@ export interface MoistureReadingsProps {
 
 export const MoistureReadings = (props: MoistureReadingsProps) => {
   const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = props.config;
+  const matrices = React.useMemo(() => {
+    const result = new Float32Array(props.readings.length * 16);
+    const matrix = new Matrix4();
+    props.readings.forEach((reading, index) => {
+      matrix.identity().setPosition(
+        reading.body.x || 0,
+        reading.body.y || 0,
+        props.readingZOverride ?? (reading.body.z || 0),
+      );
+      matrix.toArray(result, index * 16);
+    });
+    return result;
+  }, [props.readingZOverride, props.readings]);
   return <Group position={props.applyOffset
     ? [
       threeSpace(0, bedLengthOuter) + bedXOffset,
@@ -155,16 +167,14 @@ export const MoistureReadings = (props: MoistureReadingsProps) => {
       zZero(props.config),
     ]
     : [0, 0, 0]}>
-    {props.readings.map(reading =>
-      <Sphere
-        key={reading.uuid}
-        args={[props.radius, 16, 16]}
-        position={[
-          reading.body.x || 0,
-          reading.body.y || 0,
-          props.readingZOverride ?? (reading.body.z || 0),
-        ]}>
-        <MeshBasicMaterial color={props.color} />
-      </Sphere>)}
+    <InstancedMeshComponent
+      args={[undefined, undefined, props.readings.length]}
+      count={props.readings.length}>
+      <instancedBufferAttribute
+        attach={"instanceMatrix"}
+        args={[matrices, 16]} />
+      <SphereGeometry args={[props.radius, 16, 16]} />
+      <MeshBasicMaterial color={props.color} />
+    </InstancedMeshComponent>
   </Group>;
 };

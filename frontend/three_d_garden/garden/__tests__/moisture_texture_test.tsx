@@ -43,6 +43,16 @@ describe("<MoistureSurface />", () => {
     expect(container).toContainHTML("moisture-layer");
   });
 
+  it("renders readings with a native instanced mesh", () => {
+    const p = fakeProps();
+    p.showMoistureMap = false;
+    p.sensorReadings = [fakeSensorReading(), fakeSensorReading()];
+    const { container } = render(<MoistureSurface {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh).toBeTruthy();
+    expect(mesh?.getAttribute("count")).toEqual("2");
+  });
+
   it("renders the moisture map with a native instanced mesh", () => {
     const { container } = render(<MoistureSurface {...fakeProps()} />);
     expect(container.querySelector("instancedmesh")).toBeTruthy();
