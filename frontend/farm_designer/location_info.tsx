@@ -241,8 +241,17 @@ function groupItemsByLocation<T extends Item>(
 
 export function selectMostRecentPoints
   <T extends (TaggedGenericPointer | TaggedSensorReading)>(points: T[]) {
-  return Object.values(groupItemsByLocation(points, undefined))
-    .map(data => sortBy(data.items, "body.updated_at").reverse()[0]);
+  const byLocation = new Map<string, T>();
+  points.map(point => {
+    const { x, y, updated_at } = point.body;
+    if (isUndefined(x) || isUndefined(y)) { return; }
+    const key = `${round(x, -1)}:${round(y, -1)}`;
+    const previous = byLocation.get(key);
+    if (!previous || (updated_at || "") >= (previous.body.updated_at || "")) {
+      byLocation.set(key, point);
+    }
+  });
+  return Array.from(byLocation.values());
 }
 
 interface ItemListWrapperProps {

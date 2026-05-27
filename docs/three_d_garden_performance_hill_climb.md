@@ -628,3 +628,106 @@ commit message. Roll back rejected implementation changes.
 | 103 | Direct interpolation grid loops | Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs | 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers | 54.0 ms `moistureSurfaceMs`; 4.014s full-ready; 3.139s core-ready; 8.0 ms frame p95; 26.1 ms moisture instance buffers | 1.3% faster moisture interpolation, saving 0.7 ms; 0.7% faster full-ready; no meaningful frame or buffer improvement | Rejected and rolled back; after item 102, lodash range allocation is not a meaningful realistic bottleneck, and the absolute saving is below the complexity threshold | None |
 | 104 | Return generated interpolation data directly | Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs | 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers | 54.2 ms `moistureSurfaceMs`; 3.997s full-ready; 3.155s core-ready; 8.0 ms frame p95; 25.8 ms moisture instance buffers | 0.9% faster moisture interpolation, saving 0.5 ms; 1.1% faster full-ready; 0.4% slower core-ready; no meaningful frame or buffer improvement | Rejected and rolled back; preserving the shared cache while returning fresh data avoided almost no realistic work after item 102, so the API shape change was not worth keeping | None |
 | 105 | Numeric moisture color/opacity buffers | Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs | 26.4 ms moisture instance buffers; 54.7 ms `moistureSurfaceMs`; 81.1 ms combined moisture setup; 4.042s full-ready; 8.0 ms frame p95; 112 WebGL geometries | 3.0 ms moisture instance buffers; 58.8 ms `moistureSurfaceMs`; 61.8 ms combined moisture setup; 4.024s full-ready; 8.0 ms frame p95; 112 WebGL geometries | 88.6% faster buffer setup, saving 23.4 ms; 23.8% faster combined moisture setup, saving 19.3 ms; 7.5% slower interpolation, adding 4.1 ms; 0.5% faster full-ready | Accepted; replacing per-tile CSS color parsing with the same numeric blue/opacity ramp removes a frame-budget-sized buffer cost with unchanged scene/resource metrics and no visible color-ramp change | `Build moisture buffers numerically for 88.6% faster setup` |
+
+## Round 22 Candidate Ideas
+
+106. Fast-path the default inverse-distance weight calculation when the
+     interpolation power is 4. Expected return: lower enabled moisture-map
+     generation time by avoiding exponent work in the real per-tile inner loop
+     while preserving the same weighted interpolation result.
+107. Select the most recent interpolation point per rounded location in one
+     pass. Expected return: less enabled moisture-map setup CPU by replacing
+     repeated object-key scans and per-location sorting with direct latest-item
+     tracking for the same realistic sensor-reading set.
+108. Store interpolation point coordinates and values in numeric arrays before
+     scanning grid cells. Expected return: lower enabled moisture-map
+     generation CPU from simpler hot-loop reads while keeping the same
+     interpolation math and grid resolution.
+109. Mount water-stream meshes and texture animation callbacks only while water
+     is flowing. Expected return: fewer hidden tube geometries, materials, and
+     idle frame callbacks in the default water-off 3D scene, with identical
+     transparent tubing and the same animated water when the peripheral is on.
+110. Render the static sun without registering the season-animation frame loop
+     when season animation is disabled. Expected return: less idle per-frame
+     work in the default scene while preserving the same static sun position,
+     lighting, sky color, and debug objects.
+
+## Round 22 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 106 | Fast-path default interpolation weight | Docker 1000-plant scene with moisture map/readings enabled after round 21, 3 measured runs | 58.8 ms `moistureSurfaceMs`; 4.044s full-ready; 3.148s core-ready; 7.94 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 55.7 ms `moistureSurfaceMs`; 4.036s full-ready; 3.151s core-ready; 7.99 ms frame p95; 2.7 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 5.3% faster moisture interpolation, saving 3.1 ms; 0.2% faster full-ready; 0.5% worse frame p95; scene/resource metrics unchanged | Rejected and rolled back; the default-power fast path moved the hot loop in the right direction, but the realistic saving was below 10% and only a few milliseconds, so the extra branch was not worth keeping | None |
+| 107 | One-pass most-recent point selection | Docker 1000-plant scene with moisture map/readings enabled after item 106 rollback, 3 measured runs plus a 3-run confirmation for frame guardrails | 58.8 ms `moistureSurfaceMs`; 4.044s full-ready; 3.148s core-ready; 7.94 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 28.4 ms `moistureSurfaceMs`; 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 3.6 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 51.7% faster moisture interpolation, saving 30.4 ms; full-ready 1.0% slower; core-ready 1.3% slower; frame p95 0.4% worse; buffer setup 0.7 ms slower; scene/resource metrics unchanged | Accepted; replacing repeated object-key scans and per-location sorts with direct latest-item tracking removes a real half-frame moisture-map setup cost, while the confirmation run showed frame timing back in the baseline band and app-level load/resource metrics stayed stable | `Select latest interpolation points for 51.7% faster maps` |
+| 108 | Numeric interpolation point arrays | Docker 1000-plant scene with moisture map/readings enabled after item 107, 3 measured runs | 28.4 ms `moistureSurfaceMs`; 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 3.6 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 26.5 ms `moistureSurfaceMs`; 3.990s full-ready; 3.133s core-ready; 7.97 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries | 6.7% faster moisture interpolation, saving 1.9 ms; 2.3% faster full-ready; 1.7% faster core-ready; buffer setup 0.7 ms faster; scene/resource metrics unchanged | Rejected and rolled back; numeric arrays shaved a couple of milliseconds from the remaining hot loop, but the realistic improvement was below 10% and too small to justify changing a simple object-array helper into a custom packed-array representation | None |
+| 109 | Mount water streams only while flowing | Docker 1000-plant default water-off scene after item 107, 3 measured runs | 490 scene objects; 254 scene meshes; 110 WebGL geometries; 97 draw calls; 5,332,526 triangles; 3.986s full-ready; 7.94 ms frame p95 | 485 scene objects; 249 scene meshes; 110 WebGL geometries; 97 draw calls; 5,332,526 triangles; 4.072s full-ready; 7.96 ms frame p95 | 1.0% fewer scene objects and 2.0% fewer meshes, removing five hidden water-stream meshes; no draw-call, geometry, triangle, FPS, or frame improvement; full-ready 2.2% slower | Rejected and rolled back; gating the invisible water streams cleaned up a few scene nodes but did not move a meaningful real runtime metric, so it was not worth adding conditional mounting behavior | None |
+| 110 | Static sun without idle animation frame | Docker 1000-plant default scene after item 109 rollback, 3 measured runs | 3.986s full-ready; 3.111s core-ready; 7.94 ms frame p95; 126.46 FPS median; 490 scene objects; 97 draw calls; 5,332,526 triangles | 4.033s full-ready; 3.155s core-ready; 8.00 ms frame p95; 126.48 FPS median; 490 scene objects; 97 draw calls; 5,332,526 triangles | 1.2% slower full-ready; 1.4% slower core-ready; 0.8% worse frame p95; no FPS, scene-size, draw-call, or triangle improvement | Rejected and rolled back; removing the default no-op sun frame callback did not improve real frame timing or load metrics, so splitting the static and animated sun paths would add complexity without app-visible performance value | None |
+
+## Round 23 Candidate Ideas
+
+111. Memoize 3D soil texture setup inputs inside `ImageTexture` so stable
+     sensor/image/config props are not re-keyed and re-filtered on every normal
+     startup rerender. Expected return: lower default-scene startup CPU by
+     reducing the measured `imageTextureSetupMs` cost, with identical texture
+     keys and overlays when the underlying inputs change.
+112. Use the loaded soil texture directly for the default static-soil case when
+     images, moisture overlays, debug soil materials, mirroring, and soil tint
+     do not require an offscreen `RenderTexture`. Expected return: less texture
+     setup and one fewer offscreen soil render in the ordinary default scene,
+     while retaining the same full-resolution soil texture.
+113. Split the hidden solar-panel path so the default scene skips solar spring
+     setup until solar is visible or a focus transition requires it. Expected
+     return: less details-stage render CPU in the default non-solar scene while
+     preserving the same fade behavior whenever solar is shown.
+114. Avoid mounting `GroupOrderVisual` on non-group routes before it checks the
+     current URL. Expected return: less default details-stage route/group work
+     in ordinary plant, point, and weed views, while preserving group ordering
+     visuals on group and zone detail routes.
+115. Stop rebuilding plant icon buckets when only the plant layer visibility
+     flag changes. Expected return: faster realistic Plants layer toggles by
+     keeping the same 1000-plant icon grouping and updating only visibility,
+     with unchanged click targets, textures, and billboarding.
+
+## Round 23 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 111 | Memoize image texture setup inputs | Docker 1000-plant default scene after round 22, 3 measured runs | 55.4 ms `imageTextureSetupMs`; 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 650.5 ms Plants toggle | 54.2 ms `imageTextureSetupMs`; 3.928s full-ready; 3.074s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 684.8 ms Plants toggle | 2.2% faster image texture setup, saving 1.2 ms; 1.1% faster full-ready; 0.9% faster core-ready; Plants toggle 5.3% slower; scene metrics unchanged | Rejected and rolled back; the setup work was not being repeated enough in the real startup path for memoization to matter, and the absolute saving was too small to justify added hook dependency complexity | None |
+| 112 | Direct static soil texture fast path | Docker 1000-plant default scene after item 111 rollback, 3 measured runs | 55.4 ms `imageTextureSetupMs`; 3.974s full-ready; 3.103s core-ready; 1 soil texture render; 110 WebGL geometries; 22 WebGL textures; 97 draw calls | 56.9 ms `imageTextureSetupMs`; 4.044s full-ready; 3.163s core-ready; 1 soil texture render; 110 WebGL geometries; 22 WebGL textures; 97 draw calls | 2.7% slower image texture setup; 1.8% slower full-ready; 1.9% slower core-ready; no soil render, geometry, texture, or draw-call reduction | Rejected and rolled back; the real default scene still needed the existing offscreen soil texture path, so the guarded fast path did not activate and only added conditional code | None |
+| 113 | Split hidden solar spring setup | Docker 1000-plant moisture-map scene after item 112 rollback, compared to the existing post-round-22 moisture-map baseline because the trial run landed with moisture map enabled | 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 43.5 ms `imageTextureSetupMs`; 28.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 708.5 ms Plants toggle | 3.995s full-ready; 3.117s core-ready; 7.98 ms frame p95; 41.9 ms `imageTextureSetupMs`; 28.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 694.8 ms Plants toggle | 2.2% faster full-ready, saving 89.7 ms; 2.2% faster core-ready; 3.7% faster image texture setup; moisture and scene metrics unchanged; no primary metric cleared 10% | Rejected and rolled back; skipping hidden solar spring setup was directionally positive in this sampled context but below threshold, and the added split component was not worth keeping for a hidden feature that is not a real default bottleneck | None |
+| 114 | Gate group-order visualization by route | Docker 1000-plant default scene after item 113 rollback, 3 measured runs | 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 55.4 ms `imageTextureSetupMs`; 490 scene objects; 97 draw calls; 650.5 ms Plants toggle | 4.072s full-ready; 3.186s core-ready; 7.96 ms frame p95; 55.3 ms `imageTextureSetupMs`; 490 scene objects; 97 draw calls; 710.1 ms Plants toggle | 2.5% slower full-ready; 2.7% slower core-ready; no meaningful frame, setup, scene-size, or draw-call improvement; Plants toggle 9.2% slower | Rejected and rolled back; `GroupOrderVisual` already exits cheaply on non-group routes, so moving the route gate outward added code without a realistic performance win | None |
+| 115 | Keep plant icon buckets across visibility changes | Docker 1000-plant default scene after item 114 rollback, 3 measured runs | 650.5 ms Plants toggle; 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 9 instanced meshes | 694.7 ms Plants toggle; 4.081s full-ready; 3.207s core-ready; 8.63 ms frame p95; 97 draw calls; 5,332,526 triangles; 9 instanced meshes | 6.8% slower Plants toggle; 2.7% slower full-ready; 3.3% slower core-ready; 8.2% worse frame p95; no draw-call, triangle, or instanced-mesh improvement | Rejected and rolled back; plant icon bucketing was not the real toggle bottleneck, and keeping the visibility prop outside the bucket memo worsened the measured interaction path | None |
+
+## Round 24 Candidate Ideas
+
+116. Split the inactive pointer-preview path so ordinary designer routes do not
+     scan all map points for grid previews or resolve/load a crop icon before
+     returning no hover objects. Expected return: lower default startup/render
+     CPU in the 1000-point scene, with identical hover previews in
+     click-to-add, create-point, and create-weed modes.
+117. Guard plant hover-label state updates so pointer moves over the same
+     plant instance do not enqueue redundant React state work. Expected
+     return: faster realistic canvas pointer sweeps while preserving the same
+     hover label behavior and click targets.
+118. Cache atlas sub-texture clones per base texture and icon. Expected
+     return: less startup texture allocation and lower WebGL texture churn in
+     plant-heavy scenes with repeated crop icons, while preserving the same
+     atlas, UV transform, and full-resolution plant icons.
+119. Avoid active-crop spread lookup in `PlantSpreadInstances` unless the
+     current mode can actually use click-to-add or edit spread data. Expected
+     return: less default startup/render CPU without changing spread visuals or
+     overlap behavior in active plant-add/edit workflows.
+120. Use a static-color plant spread material outside click-to-add/edit modes
+     so the default spread layer does not allocate or update per-instance color
+     buffers when every visible spread sphere has the same color. Expected
+     return: lower plant-spread setup work and memory with unchanged visible
+     spread color in ordinary viewing mode.
+
+## Round 24 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 116 | Split inactive pointer-preview path | Docker 1000-plant default scene after round 23, 3 measured runs | 4.358s full-ready; 3.495s core-ready; 8.51 ms frame p95; 55.7 ms image texture setup; 97 draw calls; 490 scene objects; 687 ms plant nav; 248 ms point nav | 4.019s full-ready; 3.130s core-ready; 7.97 ms frame p95; 55.8 ms image texture setup; 97 draw calls; 490 scene objects; 707 ms plant nav; 295 ms point nav | Apparent 7.8% faster full-ready and 10.4% faster core-ready, but targeted setup/scene metrics were flat; point nav 19.2% slower and spread toggle 11.4% slower | Rejected and rolled back; the measured load movement matched same-round startup noise rather than a real pointer-preview bottleneck, and the route split did not reduce texture, scene, draw-call, or realistic interaction work | None |
+| 117 | Guard duplicate plant hover state updates | Docker 1000-plant pointer sweep over the 3D canvas, 180 realistic mouse moves, 3 measured runs | 2,258.9 ms pointer sweep; 14.33 ms frame p95; 157 `GardenModel` renders | 2,248.6 ms pointer sweep; 14.17 ms frame p95; 145 `GardenModel` renders | 0.5% faster pointer sweep, saving 10.3 ms across the full sweep; 1.1% better frame p95; 7.6% fewer `GardenModel` renders | Rejected and rolled back; the render-count drop did not translate into a meaningful user-facing pointer response improvement under realistic movement, so the extra ref/state guard was not worth keeping | None |
+| 118 | Cache atlas sub-texture clones | Docker 1000-plant default scene after item 117 rollback, 3 measured runs | 55.7 ms image texture setup; 22 WebGL textures; 4.358s full-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects | 52.3 ms image texture setup; 22 WebGL textures; 3.987s full-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects | 6.1% faster image texture setup, saving 3.4 ms; no texture-count, scene-size, draw-call, or stable frame improvement | Rejected and rolled back; the realistic atlas path was not cloning enough textures for a cache to matter, and a few milliseconds of noisy setup movement did not justify persistent texture-cache complexity | None |
+| 119 | Avoid inactive active-crop spread lookup | Docker 1000-plant default scene after item 118 rollback, 3 measured runs | 0.60 ms spread frame update; 4.358s full-ready; 3.495s core-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects | 0.50 ms spread frame update; 4.142s full-ready; 3.332s core-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects | 16.7% faster spread update but only 0.10 ms absolute saving; no scene/draw-call reduction; plant nav 4.1% slower and FarmBot toggle 9.9% slower | Rejected and rolled back; skipping one ordinary-mode crop lookup did not move a meaningful app metric, and the sub-millisecond absolute saving was below the complexity threshold | None |
+| 120 | Static-color spread material outside add/edit | Docker 1000-plant default scene after item 119 rollback, 3 measured runs, sanity-checked against the stable same-round original-material controls from items 116-119 | Opening baseline: 126.63 FPS median, 8.51 ms frame p95, 0.60 ms spread update; stable original-material controls: about 7.97 ms frame p95 | 135.11 FPS median; 7.43 ms frame p95; 0.50 ms spread update; 97 draw calls; 490 scene objects; 22 WebGL textures | 12.8% better frame p95 versus the noisy opening baseline, but only about 6.8% versus the stable same-round controls; 6.7% higher FPS; 0.10 ms spread-update saving | Rejected and rolled back; the realistic control comparison did not clear the 10% bar, and the only qualifying-looking metric came from baseline noise while the absolute spread-work saving was too small for mode/material switching complexity | None |
