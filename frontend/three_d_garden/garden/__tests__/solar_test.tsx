@@ -1,10 +1,11 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { Solar, SolarProps } from "../solar";
-import { INITIAL } from "../../config";
+import { INITIAL, PRESETS } from "../../config";
 import { clone } from "lodash";
 import { FocusTransitionProvider } from "../../focus_transition";
 import {
+  actRenderer,
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
@@ -63,5 +64,59 @@ describe("<Solar />", () => {
       .toBeGreaterThan(Number(panel.props.renderOrder));
     expect(cellMaterial.props.side).toEqual(DoubleSide);
     unmountRenderer(wrapper);
+  });
+
+  it("reuses solar placement during unrelated config churn", () => {
+    const p = fakeProps();
+    p.config = { ...clone(PRESETS["Genesis XL"]), solar: true };
+    const wrapper = createRenderer(<Solar {...p} />);
+    const solarArray = wrapper.root.findByProps({ name: "solar-array" });
+    const wiring = wrapper.root.findByProps({ name: "solar-wiring" });
+    const position = solarArray.props.position;
+    const points = wiring.props.points;
+
+    actRenderer(() => {
+      wrapper.update(<Solar {...p} config={{
+        ...p.config,
+        grid: !p.config.grid,
+      }} />);
+    });
+
+    expect(wrapper.root.findByProps({ name: "solar-array" }).props.position)
+      .toBe(position);
+    expect(wrapper.root.findByProps({ name: "solar-wiring" }).props.points)
+      .toBe(points);
+    unmountRenderer(wrapper);
+  });
+
+  it("updates solar placement when geometry inputs change", () => {
+    const p = fakeProps();
+    p.config = { ...clone(PRESETS["Genesis XL"]), solar: true };
+    const wrapper = createRenderer(<Solar {...p} />);
+    const solarArray = wrapper.root.findByProps({ name: "solar-array" });
+    const wiring = wrapper.root.findByProps({ name: "solar-wiring" });
+    const position = solarArray.props.position;
+    const points = wiring.props.points;
+
+    actRenderer(() => {
+      wrapper.update(<Solar {...p} config={{
+        ...p.config,
+        bedLengthOuter: p.config.bedLengthOuter + 100,
+      }} />);
+    });
+
+    expect(wrapper.root.findByProps({ name: "solar-array" }).props.position)
+      .not.toBe(position);
+    expect(wrapper.root.findByProps({ name: "solar-wiring" }).props.points)
+      .not.toBe(points);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders focused solar when the solar setting is disabled", () => {
+    const p = fakeProps();
+    p.config.solar = false;
+    p.activeFocus = "What you need to provide";
+    const { container } = render(<Solar {...p} />);
+    expect(container).toContainHTML("solar-wiring");
   });
 });
