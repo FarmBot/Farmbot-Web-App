@@ -86,10 +86,30 @@ commit message. Roll back rejected implementation changes.
      enabled. Expected return: one fewer default-scene frame callback; animated
      season visuals remain unchanged when enabled.
 
+## Round 29 Candidate Ideas
+
+141. Do not mount plant icon instances when the plant layer is hidden. Expected
+     return: fewer hidden crop texture loads, instanced meshes, and frame
+     callbacks for gardens where plants are disabled or hidden by a non-smooth
+     focus state; plant visuals still mount unchanged when visible.
+142. Do not mount weed instances when the weed layer is hidden. Expected
+     return: fewer hidden weed texture loads, bucket setup work, instanced
+     meshes, and frame callbacks in the default weeds-off designer view.
+143. Do not mount point marker instances when the point layer is hidden.
+     Expected return: less hidden marker bucketing, geometry setup, and mesh
+     creation in the default points-off designer view.
+144. Do not build moving cable-carrier extrusions when cable carriers are
+     disabled. Expected return: less hidden FarmBot geometry setup for users who
+     hide cable carriers, while enabled carriers render the same.
+145. Do not compute camera frustum points while the camera-view overlay is
+     disabled. Expected return: lower Bot render work during normal movement
+     updates when the overlay is off, while the enabled frustum is unchanged.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 141 | Skip hidden plant icon instances | Direct `PlantInstances` render for a realistic dense 200-plant garden with the plant layer explicitly hidden, measuring texture hooks, frame callbacks, instanced meshes, and render time through Bun/Testing Library | 5 hidden plant icon instanced meshes; 5 crop texture hook calls; 5 frame callbacks; 9.406 ms test render | 0 hidden plant icon instanced meshes; 0 crop texture hook calls; 0 frame callbacks; 4.015 ms test render | 100% fewer hidden plant icon meshes, texture hooks, and callbacks; 5.391 ms faster for the hidden 200-plant layer | Accepted; `PlantInstances` exits before icon bucketing and texture/frame setup when `visible=false`, while visible plant rendering is unchanged | `Skip hidden plant icons for 100% fewer callbacks` |
 | 140 | Scope sun frame callback to animated seasons | Direct default `Sun` render with animated seasons disabled, measuring frame hook registrations and one realistic 60-frame second of callback dispatch through Bun/Testing Library | 1 default no-op frame callback; 60 invocations per second; 0.0221 ms dispatch per simulated second; 7.474 ms test render | 0 default frame callbacks after the split; 0 invocations per second; 0.0047 ms dispatch per simulated second; 6.788 ms test render | 100% fewer default sun frame callbacks, but only 0.0174 ms saved per simulated second | Rejected and rolled back; the percentage improvement was real, but the realistic absolute saving was too small to justify adding another render-only component boundary | None |
 | 139 | Replace gantry light per-LED frame callbacks | Direct `GantryBeam` render with lights on, v1.8 kit, and a realistic 3,000 mm beam, measuring frame hook registrations through Bun/Testing Library | 10 light-strip frame callbacks; 6.899 ms test render | 0 light-strip frame callbacks; 7.485 ms test render | 100% fewer per-LED light-strip frame callbacks, removing 10 steady callbacks on a 3 m beam; render timing stayed within harness noise | Accepted; spotlight targets update after React renders instead of every frame, preserving downward light direction while removing 600 callback invocations per second at 60 FPS | `Replace gantry light callbacks for 100% fewer frames` |
 | 138 | Skip hidden ground setup | Direct `Ground` render with `config.ground=false`, measuring ground mesh nodes, texture hooks, and render time through Bun/Testing Library | 2 hidden ground mesh nodes; 1 texture hook call; 6.200 ms test render | 0 ground mesh nodes; 0 texture hook calls; 4.162 ms test render | 100% fewer hidden ground texture hooks and mesh nodes, and 2.038 ms faster while also skipping the two circle geometry builds | Accepted; `Ground` exits before texture and geometry setup when the layer is disabled, with the visible ground path unchanged | `Skip hidden ground setup for 100% fewer texture loads` |

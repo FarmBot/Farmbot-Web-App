@@ -109,6 +109,15 @@ describe("<PlantInstances />", () => {
     expect(meshes.length).toBe(2);
   });
 
+  it("skips hidden plant icon instances", () => {
+    const p = fakeProps();
+    p.visible = false;
+    const { container } = render(<PlantInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(useTexture).not.toHaveBeenCalled();
+    expect(useFrame).not.toHaveBeenCalled();
+  });
+
   it("uses reserved icon capacity while rendering only active plants", () => {
     const p = fakeProps();
     p.plants = [p.plants[0]];

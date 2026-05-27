@@ -193,6 +193,11 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
 };
 
 export const PlantInstances = React.memo((props: PlantInstancesProps) => {
+  if (props.visible === false) { return <></>; }
+  return <VisiblePlantInstances {...props} />;
+});
+
+const VisiblePlantInstances = (props: PlantInstancesProps) => {
   const instances = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
     Object.entries(props.iconCapacities || {}).map(([icon, capacity]) => {
@@ -250,4 +255,4 @@ export const PlantInstances = React.memo((props: PlantInstancesProps) => {
         key={`${instance.icon}-${instance.capacity}`}
         {...instance} />)}
   </>;
-});
+};
