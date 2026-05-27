@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  ThreeDGardenMapProps, ThreeDGardenMap, convertPlants,
+  ThreeDGardenMapProps, ThreeDGardenMap, convertPlants, lastImageCaptureTime,
 } from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
@@ -45,6 +45,22 @@ const EMPTY_PROPS = {
   images: [],
   sensors: [],
   sensorReadings: [],
+};
+
+const cameraLog = (localId: number, id?: number) => {
+  const log = fakeLog();
+  log.uuid = `Log.${id || 0}.${localId}`;
+  log.body.id = id;
+  log.body.message = "Taking photo";
+  return log;
+};
+
+const otherLog = (localId: number) => {
+  const log = fakeLog();
+  log.uuid = `Log.0.${localId}`;
+  log.body.id = undefined;
+  log.body.message = "Moving";
+  return log;
 };
 
 describe("<ThreeDGardenMap />", () => {
@@ -262,11 +278,7 @@ describe("<ThreeDGardenMap />", () => {
 
   it("converts props: logs", () => {
     const p = fakeProps();
-    const log = fakeLog();
-    log.uuid = "Log.0.123";
-    log.body.id = 0;
-    log.body.message = "Taking photo";
-    p.logs = [log];
+    p.logs = [cameraLog(123, 0)];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
@@ -278,6 +290,24 @@ describe("<ThreeDGardenMap />", () => {
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("finds the latest unsaved camera capture log", () => {
+    const savedCapture = cameraLog(999, 12);
+
+    expect(lastImageCaptureTime([
+      cameraLog(123),
+      otherLog(1500),
+      savedCapture,
+      cameraLog(456),
+    ])).toEqual(456);
+  });
+
+  it("falls back when no unsaved camera capture logs exist", () => {
+    expect(lastImageCaptureTime([
+      otherLog(789),
+      cameraLog(123, 12),
+    ])).toEqual(0);
   });
 
   it.each<[FirmwareHardware, string]>([

@@ -56,6 +56,16 @@ export interface ThreeDGardenMapProps {
   logs: TaggedLog[];
 }
 
+export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
+  let latest = 0;
+  for (const log of logs) {
+    if (!log.body.id && log.body.message === "Taking photo") {
+      latest = Math.max(latest, unpackUUID(log.uuid).localId);
+    }
+  }
+  return latest;
+};
+
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   usePerfRenderCount("ThreeDGardenMap");
   React.useEffect(() => {
@@ -144,13 +154,9 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     () => fetchInterpolationOptions(props.farmwareEnvs),
     [props.farmwareEnvs]);
 
-  const lastCaptureTime = React.useMemo(() => {
-    const localIds = props.logs
-      .filter(log => !log.body.id // new logs
-        && Object.values(["Taking photo"]).includes(log.body.message))
-      .map(log => unpackUUID(log.uuid).localId);
-    return Math.max(0, ...localIds);
-  }, [props.logs]);
+  const lastCaptureTime = React.useMemo(
+    () => lastImageCaptureTime(props.logs),
+    [props.logs]);
   const sunPositionConfig = valid
     ? calcSunCoordinate(
       get3DTime(props.designer.threeDTime).toDate(),
