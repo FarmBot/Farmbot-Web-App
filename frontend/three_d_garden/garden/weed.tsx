@@ -7,9 +7,11 @@ import {
 } from "../components";
 import { Image, Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
+  BufferGeometry,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Quaternion,
+  SphereGeometry,
   Vector3,
 } from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
@@ -23,6 +25,12 @@ import { RadiusRef, BillboardRef, ImageRef } from "../bed/objects/pointer_object
 import { clickWasDragged } from "../click_event";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
+
+let weedRadiusGeometry: BufferGeometry | undefined = undefined;
+const getWeedRadiusGeometry = () => {
+  weedRadiusGeometry ||= new SphereGeometry(1, 32, 32);
+  return weedRadiusGeometry;
+};
 
 export interface WeedProps {
   weed: TaggedWeedPointer;
@@ -275,6 +283,7 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   const navigateToWeed = useNavigateToWeed(dispatch, visible);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
+  const radiusGeometry = getWeedRadiusGeometry();
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
@@ -303,11 +312,12 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   return <InstancedMesh
     ref={instancedRef}
     name={"weed-radius"}
-    args={[undefined, undefined, bucket.weeds.length]}
+    args={[radiusGeometry, undefined, bucket.weeds.length]}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}
     visible={visible}
     onClick={onClick}
     renderOrder={RenderOrder.weedSpheres}>
-    <sphereGeometry args={[1, 32, 32]} />
     <MeshPhongMaterial
       color={bucket.color}
       depthWrite={false}

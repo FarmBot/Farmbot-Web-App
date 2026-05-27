@@ -117,6 +117,19 @@ describe("<Weed />", () => {
     expect(meshes[2].props.name).toEqual("weed-radius");
   });
 
+  it("shares weed radius geometry", () => {
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const radiusMeshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh" &&
+      node.props.name == "weed-radius");
+    expect(radiusMeshes.length).toEqual(2);
+    expect(radiusMeshes[0].props.args[0]).toBe(radiusMeshes[1].props.args[0]);
+  });
+
   it("skips hidden weed instances", () => {
     const p = fakeInstanceProps();
     p.visible = false;

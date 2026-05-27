@@ -3745,6 +3745,18 @@ commit message. Roll back rejected implementation changes.
 
 **Description:** Share weed radius sphere geometry across weed color buckets. Expected return: weed-heavy gardens with several weed colors allocate fewer identical 32-segment radius sphere geometries while keeping per-color materials and instance transforms unchanged.
 
+**Benchmark:** Real `WeedInstances` overlay benchmark with 1,000 weeds across 6 color buckets, sampled 20 times while measuring render setup and instanced-mesh geometry sharing
+
+**Before:** 7 instanced meshes; 6 radius meshes; 1.096 ms median render setup
+
+**After:** 7 instanced meshes; 6 radius meshes; 0.934 ms median render setup
+
+**Change:** 14.8% faster setup, saving 0.162 ms, plus 83.3% fewer radius sphere geometry objects for this six-bucket overlay
+
+**Outcome:** Accepted; weed radius buckets now share one 32-segment sphere geometry while preserving per-color materials, per-weed scale, and click targets
+
+**Commit:** `Share weed radius geometry for 14.8% faster setup`
+
 ### Idea 228: Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets
 
 **Description:** Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets. Expected return: animated-season gardens with several crop icons avoid repeated date lookup and sun-coordinate calculations in each icon bucket's `useFrame` callback, while all buckets use a consistent frame timestamp.
