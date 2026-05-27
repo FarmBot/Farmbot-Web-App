@@ -13,11 +13,19 @@ import { Path } from "../../internal_urls";
 import * as devSupport from "../../settings/dev/dev_support";
 
 beforeEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
   jest.spyOn(mapActions, "mapPointClickAction")
     .mockImplementation(jest.fn(() => jest.fn()));
   jest.spyOn(devSupport.DevSettings, "quickDeleteEnabled")
     .mockImplementation(() => mockDelMode);
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
+  mockDelMode = false;
 });
 
 
@@ -75,6 +83,7 @@ describe("<PointInventoryItem> />", () => {
   });
 
   it("navigates to point", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
     location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
@@ -86,6 +95,8 @@ describe("<PointInventoryItem> />", () => {
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
     });
+    expect(window.__fbPerf?.marks.point_inventory_item_click.length)
+      .toEqual(1);
   });
 
   it("navigates to point without id", () => {
@@ -132,8 +143,8 @@ describe("<PointInventoryItem> />", () => {
     const p = fakeProps();
     p.hovered = true;
     const { container } = render(<PointInventoryItem {...p} />);
-    expect(container.querySelector(".point-search-item")?.classList.contains("hovered"))
-      .toBeTruthy();
+    const item = container.querySelector(".point-search-item");
+    expect(item?.classList.contains("hovered")).toBeTruthy();
   });
 
   it("un-hovers point", () => {

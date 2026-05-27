@@ -1,6 +1,24 @@
 require "spec_helper"
 
 describe Devices::CreateSeedData do
+  it "accepts stress demo product lines" do
+    expect(described_class::PRODUCT_LINES.fetch("genesis_xl_1.8_stress_250"))
+      .to eq(Devices::Seeders::GenesisXlOneEight)
+    expect(described_class::PRODUCT_LINES.fetch("genesis_xl_1.8_stress_1000"))
+      .to eq(Devices::Seeders::GenesisXlOneEight)
+  end
+
+  it "rejects stress product lines outside of demo accounts" do
+    result = described_class.run(
+      device: FactoryBot.create(:device),
+      product_line: "genesis_xl_1.8_stress_250",
+    )
+
+    expect(result.success?).to be(false)
+    expect(result.errors.message_list)
+      .to include(described_class::STRESS_DEMO_ONLY)
+  end
+
   it "passes `none`" do
     device = FactoryBot.create(:device)
     previous_peripherals_count = device.peripherals.count

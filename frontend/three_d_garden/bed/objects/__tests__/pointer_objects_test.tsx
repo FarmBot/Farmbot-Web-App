@@ -16,6 +16,7 @@ import {
 import { render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { fakeAddPlantProps } from "../../../../__test_support__/fake_props";
+import { fakeDrawnPoint } from "../../../../__test_support__/fake_designer_state";
 import { clone } from "lodash";
 import { Path } from "../../../../internal_urls";
 import { Vector3 } from "three";
@@ -129,6 +130,42 @@ describe("soilClick()", () => {
     expect(dropPlantSpy).toHaveBeenCalledWith(expect.objectContaining({
       gardenCoords: { x: 1360, y: 660 },
     }));
+  });
+
+  it("doesn't create a plant after a drag", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    const e = {
+      stopPropagation: jest.fn(),
+      point: { x: 1, y: 2 },
+      delta: 3,
+    } as unknown as ThreeEvent<MouseEvent>;
+    soilClick(p)(e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+    expect(dropPlantSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["point", Path.points("add")],
+    ["weed", Path.weeds("add")],
+  ])("doesn't set %s location after a drag", (_label, path) => {
+    location.pathname = Path.mock(path);
+    mockIsMobile = false;
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    const e = {
+      stopPropagation: jest.fn(),
+      point: { x: 1, y: 2 },
+      delta: 3,
+    } as unknown as ThreeEvent<MouseEvent>;
+    soilClick(p)(e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+    expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
   });
 });
 

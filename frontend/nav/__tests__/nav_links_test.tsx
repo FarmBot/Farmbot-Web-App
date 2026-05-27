@@ -53,9 +53,11 @@ describe("<NavLinks />", () => {
     designer: fakeDesignerState(),
   });
 
-  const plantsLink = (container: ParentNode) =>
-    Array.from(container.querySelectorAll("a"))
-      .find(a => a.getAttribute("href") == Path.plants());
+  const plantsLink = (container: ParentNode) => {
+    const link = container.querySelector("img[title='Plants']")?.closest("a");
+    if (!link) { throw new Error("Plants link not found."); }
+    return link;
+  };
 
   it("toggles the mobile nav menu", () => {
     const p = fakeProps();
@@ -94,7 +96,7 @@ describe("<NavLinks />", () => {
   it("shows active link", () => {
     location.pathname = Path.mock(Path.plants());
     const { container } = render(<NavLinks {...fakeProps()} />);
-    expect(plantsLink(container)?.className).toContain("active");
+    expect(plantsLink(container).className).toContain("active");
   });
 
   it("clicks active link: closes panel", () => {
@@ -103,7 +105,7 @@ describe("<NavLinks />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<NavLinks {...p} />);
-    fireEvent.click(plantsLink(container) as Element);
+    fireEvent.click(plantsLink(container));
     expect(p.close).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
@@ -116,7 +118,7 @@ describe("<NavLinks />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<NavLinks {...p} />);
-    fireEvent.click(plantsLink(container) as Element);
+    fireEvent.click(plantsLink(container));
     expect(p.close).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,

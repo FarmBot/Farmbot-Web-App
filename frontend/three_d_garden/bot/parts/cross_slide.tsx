@@ -5,6 +5,7 @@ import { InstancedBufferAttribute } from "three";
 import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent, InstancedMesh } from "../../components";
 import { ThreeElements } from "@react-three/fiber";
+import { mergedInstancedGeometry } from "./merged_instanced_geometry";
 
 type Mesh = THREE.Mesh & { instanceMatrix: InstancedBufferAttribute | undefined };
 
@@ -153,6 +154,19 @@ interface CrossSlideProps extends Omit<ThreeElements["group"], "ref"> {
 export const CrossSlideModel = (props: CrossSlideProps) => {
   const { model, ...groupProps } = props;
   const { nodes, materials } = model;
+  const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
+  if (mergedGeometry) {
+    return <Group {...groupProps}>
+      <MeshComponent
+        geometry={nodes.Cable_Carrier_Spacer_Block.geometry}
+        material={materials.PaletteMaterial001}
+        position={[0.03, 0.005, 0.061]}
+        rotation={[-Math.PI / 2, 0, Math.PI]} />
+      <MeshComponent
+        geometry={mergedGeometry}
+        material={materials.PaletteMaterial001} />
+    </Group>;
+  }
   return <Group {...groupProps}>
     <MeshComponent
       geometry={nodes.Cable_Carrier_Spacer_Block.geometry}

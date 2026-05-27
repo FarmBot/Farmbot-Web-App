@@ -14,7 +14,8 @@ import { store } from "../../redux/store";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
 import { LUA_HELPERS } from "./lua";
 import {
-  clean, createRecursiveNotImplemented, csToLua, filterPoint, jsToLua, luaToJs,
+  clean, createRecursiveNotImplemented, csToLua, filterPoint, flattenLuaPath,
+  jsToLua, luaToJs,
 } from "./util";
 import { Action, XyzNumber } from "./interfaces";
 import {
@@ -23,10 +24,11 @@ import {
 import {
   getFirmwareSettings, getGardenSize, getSafeZ, getSoilHeight,
   getGroupPoints, getJob,
+  getDeviceStatus,
 } from "./stubs";
 import { error } from "../../toast/toast";
 import { collectDemoSequenceActions } from "./index";
-import { last } from "lodash";
+import { get, last } from "lodash";
 import { XYZ } from "../../devices/constants";
 
 export const runLua =
@@ -565,6 +567,19 @@ export const runLua =
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("garden_size"));
+
+    lua.lua_pushjsfunction(L, () => {
+      const status = getDeviceStatus();
+      const n = lua.lua_gettop(L);
+      const path: unknown[] = [];
+      for (let i = 1; i <= n; i++) {
+        path.push(luaToJs(L, i));
+      }
+      const flatPath = flattenLuaPath(path);
+      jsToLua(L, flatPath.length > 0 ? get(status, flatPath) : status);
+      return 1;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("read_status"));
 
     lauxlib.luaL_loadstring(L, to_luastring(LUA_HELPERS));
     lua.lua_pushvalue(L, -2);

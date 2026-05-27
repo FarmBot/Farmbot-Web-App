@@ -1,0 +1,73 @@
+name: Set up CI
+description: Prepare the FarmBot web Docker image and dependencies.
+inputs:
+  save-docker-cache:
+    description: Save Docker build layers to the GitHub Actions cache.
+    required: false
+    default: "false"
+  rails-env:
+    description: Rails environment to write to .env.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set up environment file
+      shell: bash
+      run: |
+        mv .ci_env .env
+        sed -i "s/^RAILS_ENV=.*/RAILS_ENV=${{ inputs.rails-env }}/" .env
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Build web image
+      if: inputs.save-docker-cache != 'true'
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        file: docker_configs/api.Dockerfile
+        load: true
+        tags: farmbot_web:latest
+        cache-from: type=gha,scope=farmbot-web
+
+    - name: Build web image and save Docker cache
+      if: inputs.save-docker-cache == 'true'
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        file: docker_configs/api.Dockerfile
+        load: true
+        tags: farmbot_web:latest
+        cache-from: type=gha,scope=farmbot-web
+        cache-to: type=gha,mode=max,scope=farmbot-web
+
+    - name: Cache bundle
+      uses: actions/cache@v5
+      with:
+        path: docker_volumes/bundle_cache
+        key: bundle-${{ runner.os }}-${{ hashFiles('Gemfile.lock') }}
+
+    - name: Cache node modules
+      uses: actions/cache@v5
+      with:
+        path: node_modules
+        key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+    - name: Install deps
+      shell: bash
+      run: |
+        sudo docker compose run --rm web bash -lc '
+          gem install bundler &&
+          bundle install &&
+          bun install
+        '
+
+    - name: Run setup tasks
+      shell: bash
+      run: |
+        sudo docker compose run --rm web bash -lc '
+          bundle exec rails db:create &&
+          bundle exec rails db:migrate &&
+          bundle exec rake keys:generate
+        '
+        mkdir -p test-results

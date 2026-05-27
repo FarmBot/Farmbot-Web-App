@@ -5,6 +5,7 @@ import { Config } from "../../config";
 import { threeSpace } from "../../helpers";
 import { Vector3, DoubleSide } from "three";
 import { ASSETS, RenderOrder } from "../../constants";
+import { FocusVisibilityGroup } from "../../focus_transition";
 
 export interface PeopleProps {
   config: Config;
@@ -15,7 +16,7 @@ export interface PeopleProps {
 export const People = (props: PeopleProps) => {
   const { people, config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
-  return <Group name={"people"}
+  return <FocusVisibilityGroup name={"people"}
     visible={config.people && props.activeFocus == ""}>
     {people.map((person, i) => {
       const offset = new Vector3(...person.offset);
@@ -28,7 +29,7 @@ export const People = (props: PeopleProps) => {
         <Person url={person.url} />
       </Billboard>;
     })}
-  </Group>;
+  </FocusVisibilityGroup>;
 };
 
 interface DataRecord {

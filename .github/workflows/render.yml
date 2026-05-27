@@ -1,0 +1,196 @@
+name: render
+
+on:
+  workflow_call:
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: false
+
+env:
+  NOTIFY: ${{ github.ref_name == 'staging' }}
+  STAGING: ${{ github.ref_name == 'staging' }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
+  FPS_METRICS_CACHE_KEY: fps-metrics-${{ github.ref_name }}
+  FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
+
+jobs:
+  render:
+    runs-on: gpu
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set render env
+        run: scripts/ci/export-render-env
+
+      - name: Set up CI
+        uses: ./.github/actions/setup-ci
+        with:
+          rails-env: production
+
+      - name: Set render service hosts
+        run: |
+          runner_ip=$(ip route get 1.1.1.1 | awk '{for (i=1; i<=NF; i++) if ($i == "src") {print $(i+1); exit}}')
+          echo "Runner IP: $runner_ip"
+          sed -i "s/^API_HOST=.*/API_HOST=$runner_ip/" .env
+          sed -i "s/^MQTT_HOST=.*/MQTT_HOST=$runner_ip/" .env
+          sudo docker compose run --rm web bundle exec rails runner RmqConfigWriter.render
+
+      - name: Start services
+        run: |
+          sudo docker compose up -d
+          sudo docker compose ps
+
+      - name: Install playwright
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          export PLAYWRIGHT_BROWSERS_PATH=/tmp/playwright-browsers
+          echo "BUN_INSTALL=$BUN_INSTALL" >> "$GITHUB_ENV"
+          echo "$BUN_INSTALL/bin" >> "$GITHUB_PATH"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
+          bunx playwright install chromium --with-deps
+
+      - name: Set up GPU
+        run: |
+          sudo modprobe nvidia || true
+          sudo modprobe nvidia_uvm || true
+          ls -la /dev/nvidia* || true
+          nvidia-smi
+
+      - name: Wait for load
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fsS "http://127.0.0.1:3000/promo" >/dev/null; then
+              echo "web is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "web did not become ready"
+          exit 1
+
+      - name: Wait for MQTT auth
+        run: |
+          admin_password=$(awk -F= '/^ADMIN_PASSWORD=/{print $2; exit}' .env)
+          for i in $(seq 1 90); do
+            if timeout 5s sudo docker compose exec -T mqtt rabbitmqctl authenticate_user admin "$admin_password" >/dev/null; then
+              echo "mqtt auth is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "mqtt auth did not become ready"
+          exit 1
+
+      - name: Restore metric history
+        id: restore_metric_history
+        run: |
+          scripts/ci/git-restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
+          if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
+            echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore FPS metrics
+        if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FPS_METRICS_CACHE_KEY }}-
+
+      - name: Restore frontend coverage value
+        if: always()
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
+          key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Restore frontend coverage history fallback
+        if: always()
+        run: |
+          [ -f "/tmp/$FE_COVERAGE_NAME.csv" ] && exit 0
+
+          scripts/ci/git-restore-artifact-branch-file "$FE_COVERAGE_NAME.csv"
+
+      - name: Run playwright
+        run: scripts/ci/run-playwright-render
+
+      - name: Track FPS value
+        run: |
+          PREV=$(scripts/ci/previous-fps-value)
+          echo "Previous value: $PREV fps"
+          percent_change=$(scripts/ci/percent-change --new "$FPS_VALUE" --old "$PREV")
+          echo "$FPS_VALUE fps ($percent_change% change)"
+          echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
+
+      - name: Plot metric CSVs
+        if: always()
+        run: |
+          for csv in /tmp/*.csv; do
+            [ -f "$csv" ] || continue
+            bun scripts/metric_plot.js "$csv"
+          done
+
+      - name: Save FPS metrics
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+
+      - name: View values
+        if: always()
+        run: |
+          echo $FPS_VALUE
+          echo $SCENE_METRICS
+
+      - name: Send notification
+        if: env.NOTIFY == 'true'
+        run: scripts/ci/send-notification "${FPS_VALUE} fps (${PERCENT_CHANGE}% change)"
+
+      - name: Upload image artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: images
+          path: |
+            /tmp/*.png
+            /tmp/${{ env.FE_COVERAGE_NAME }}.png
+          if-no-files-found: warn
+
+      - name: Upload csv artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: scene-metrics-csv
+          path: |
+            /tmp/*.csv
+          if-no-files-found: warn
+
+      - name: On failure
+        if: failure()
+        run: |
+          sudo docker compose ps || true
+          sudo docker compose logs --no-color --tail=500 || true
+
+      - name: Publish image links
+        if: success() && env.STAGING == 'true'
+        run: scripts/ci/git-publish-render-artifacts
+
+      - name: Send notification
+        if: success() && env.NOTIFY == 'true'
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          for MESSAGE in \
+            "<${RENDER_SUMMARY_URL:-$RUN_URL}|render summary>"
+          do
+            scripts/ci/send-notification "$MESSAGE"
+          done

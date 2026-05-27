@@ -12,7 +12,7 @@ import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_
 import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
-import { resourceReducer } from "../reducer";
+import { emptyState, resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
 import {
@@ -26,6 +26,40 @@ describe("resource reducer", () => {
 
   afterEach(() => {
     console.error = originalConsoleError;
+  });
+
+  it("returns the same state reference for unrelated actions", () => {
+    const state = fakeState().resources;
+    const result = resourceReducer(state, {
+      type: Actions.STATUS_UPDATE,
+      payload: undefined,
+    });
+    expect(result).toBe(state);
+  });
+
+  it("returns fresh consumer state", () => {
+    const firstState = emptyState();
+    const secondState = emptyState();
+
+    firstState.consumers.sequences.stepIndex = 1;
+
+    expect(secondState.consumers.sequences.stepIndex).toBeUndefined();
+    expect(secondState.consumers.sequences).not.toBe(
+      firstState.consumers.sequences);
+  });
+
+  it("updates parent state only when child reducers change", () => {
+    const state = fakeState().resources;
+    const result = resourceReducer(state, {
+      type: Actions.SELECT_POINT,
+      payload: ["Point.1.1"],
+    });
+    expect(result).not.toBe(state);
+    expect(result.index).toBe(state.index);
+    expect(result.consumers).not.toBe(state.consumers);
+    expect(result.consumers.farm_designer).not.toBe(
+      state.consumers.farm_designer);
+    expect(result.consumers.sequences).toBe(state.consumers.sequences);
   });
 
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {

@@ -25,7 +25,7 @@ module Api
     end
 
     def wizard_step_result
-      @wizard_step_result ||= wizard_step_results.find(params[:id])
+      @wizard_step_result ||= wizard_step_results.find(params.expect(:id))
     end
 
     def wizard_step_results

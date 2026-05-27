@@ -12,6 +12,7 @@ import {
   InterpolationSetting,
   InterpolationSettingProps,
   getZAtLocation,
+  generateData,
 } from "../interpolation_map";
 import { changeBlurableInput } from "../../../../../__test_support__/helpers";
 
@@ -69,6 +70,38 @@ describe("interpolatedZ()", () => {
     point1.body.value = 100;
     expect(interpolatedZ({ x: 50, y: 50 }, [point0, point1],
       DEFAULT_INTERPOLATION_OPTIONS)).toEqual(100);
+  });
+});
+
+describe("generateData()", () => {
+  it("regenerates when a sensor reading value changes", () => {
+    localStorage.removeItem("interpolationDataMoisture");
+    localStorage.removeItem("interpolationHashMoisture");
+    const reading = fakeSensorReading();
+    reading.uuid = "SensorReading.1";
+    reading.body.x = 0;
+    reading.body.y = 0;
+    reading.body.value = 100;
+    const props = {
+      kind: "SensorReading" as const,
+      points: [reading],
+      gridSize: { x: 100, y: 100 },
+      getColor: jest.fn(() => ({ rgb: "rgb(0, 0, 255)", a: 0 })),
+      options: {
+        ...DEFAULT_INTERPOLATION_OPTIONS,
+        stepSize: 100,
+      },
+    };
+    generateData(props);
+    expect(getInterpolationData("SensorReading")).toEqual([
+      { x: 0, y: 0, z: 100 },
+    ]);
+
+    reading.body.value = 800;
+    generateData(props);
+    expect(getInterpolationData("SensorReading")).toEqual([
+      { x: 0, y: 0, z: 800 },
+    ]);
   });
 });
 

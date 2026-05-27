@@ -2,6 +2,7 @@ import React from "react";
 import { ConfigWithPosition, modifyConfig } from "./config";
 import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
+import { FocusVisibilityDiv } from "./focus_transition";
 
 export interface ToolTip {
   timeoutId: number;
@@ -15,6 +16,7 @@ export interface OverlayProps {
   setToolTip(tooltip: ToolTip): void;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  loadComplete?: boolean;
   startTimeRef?: React.RefObject<number>;
 }
 
@@ -74,10 +76,16 @@ const PublicOverlaySection = (props: SectionProps) => {
 export const PublicOverlay = (props: OverlayProps) => {
   const { config, setConfig, toolTip, setToolTip } = props;
   const commonSectionProps = { config, setConfig, toolTip, setToolTip };
+  const settingsBarClassName = [
+    "settings-bar",
+    props.loadComplete ? "settings-bar-loaded" : "",
+  ].join(" ");
 
   return <div className={"overlay"}>
-    {config.settingsBar && !props.activeFocus &&
-      <div className={"settings-bar"}>
+    <FocusVisibilityDiv
+      className={settingsBarClassName}
+      visible={config.settingsBar && !props.activeFocus}>
+      <div className={"settings-bar-content"}>
         <PublicOverlaySection
           {...commonSectionProps}
           title={"FarmBot"}
@@ -114,11 +122,15 @@ export const PublicOverlay = (props: OverlayProps) => {
             "lab": "Lab",
             "greenhouse": "Greenhouse",
           }} />
-      </div>}
-    {config.promoInfo && !props.activeFocus &&
+      </div>
+    </FocusVisibilityDiv>
+    <FocusVisibilityDiv
+      className={"promo-info"}
+      visible={config.promoInfo && !props.activeFocus}>
       <PromoInfo
         isGenesis={config.sizePreset == "Genesis"}
-        kitVersion={config.kitVersion} />}
+        kitVersion={config.kitVersion} />
+    </FocusVisibilityDiv>
   </div>;
 };
 
@@ -129,7 +141,7 @@ interface PromoInfoProps {
 
 const PromoInfo = (props: PromoInfoProps) => {
   const { isGenesis, kitVersion } = props;
-  return <div className="promo-info">
+  return <React.Fragment>
     <h2 className="title">Explore our models</h2>
     {isGenesis
       ? <div className="description">
@@ -157,29 +169,35 @@ const PromoInfo = (props: PromoInfoProps) => {
           universities, and commercial research facilities.
         </p>
       </div>}
-    <a className="buy-button"
-      target="_top"
-      href={isGenesis
-        ? ExternalUrl.Store.genesisKit(kitVersion)
-        : ExternalUrl.Store.genesisXlKit(kitVersion)}>
-      <p>Order Genesis</p>
-      <p className="genesis-xl"
-        style={{ display: isGenesis ? "none" : "inline-block" }}>
-        XL
-      </p>
-      <p style={{ textTransform: "none" }}>{kitVersion}</p>
-    </a>
-  </div>;
+    <div className={"buy-button-load-in"}>
+      <a className="buy-button"
+        target="_top"
+        href={isGenesis
+          ? ExternalUrl.Store.genesisKit(kitVersion)
+          : ExternalUrl.Store.genesisXlKit(kitVersion)}>
+        <p>Order Genesis</p>
+        <p className="genesis-xl"
+          style={{ display: isGenesis ? "none" : "inline-block" }}>
+          XL
+        </p>
+        <p style={{ textTransform: "none" }}>{kitVersion}</p>
+      </a>
+    </div>
+  </React.Fragment>;
 };
 
 interface ConfigRowProps {
   configKey: keyof ConfigWithPosition;
   children: React.ReactNode;
   addLabel?: string;
+  searchTerms?: string[];
 }
+
+const ConfigSearchContext = React.createContext("");
 
 const ConfigRow = (props: ConfigRowProps) => {
   const { configKey } = props;
+  const search = React.useContext(ConfigSearchContext).trim().toLowerCase();
   const urlHasParam = (key: keyof ConfigWithPosition) =>
     !!(new URLSearchParams(window.location.search)).get(key);
   const removeParam = () => {
@@ -195,6 +213,10 @@ const ConfigRow = (props: ConfigRowProps) => {
   if (props.addLabel) {
     label += ` (${props.addLabel})`;
   }
+  const searchText = [label, ...(props.searchTerms || [])]
+    .join(" ")
+    .toLowerCase();
+  if (search && !searchText.includes(search)) { return <React.Fragment />; }
   return <div className={"config-row"} key={configKey + window.location.search}>
     {hasParam && <p className={"x"} onClick={removeParam}>x</p>}
     <span className={"config-key"}>{label}</span>
@@ -275,7 +297,10 @@ const Radio = (props: RadioProps) => {
     setConfig(modifyConfig(config, update));
     maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
   };
-  return <ConfigRow configKey={configKey} addLabel={props.addLabel}>
+  return <ConfigRow
+    configKey={configKey}
+    addLabel={props.addLabel}
+    searchTerms={options}>
     <div className={"options"}>
       {options.map(value =>
         <div key={value}>
@@ -297,145 +322,183 @@ export const PrivateOverlay = (props: OverlayProps) => {
   const bedMin = props.config.bedWallThickness * 2;
   const { config, setConfig } = props;
   const common = { ...props };
-  return <div className={"all-configs"}>
-    <details>
-      <summary>
-        {"Configs"}
-        <p className={"close"}
-          onClick={() => setConfig(modifyConfig(config, { config: false }))}>
-          X
-        </p>
-      </summary>
-      <div className={"spacer"} />
+  const [search, setSearch] = React.useState("");
+  // eslint-disable-next-line no-null/no-null
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const closeConfig = React.useCallback(() =>
+    setConfig(modifyConfig(config, { config: false })), [config, setConfig]);
+  React.useEffect(() => {
+    searchInputRef.current?.focus();
+  }, []);
+  return <div className={"all-configs"}
+    onKeyDown={e => e.key == "Escape" && closeConfig()}>
+    <div className={"config-title"}>
+      {"Configs"}
+      <p className={"close"}
+        onClick={closeConfig}>
+        X
+      </p>
+    </div>
+    <div className={"spacer"} />
+    <input
+      className={"config-search"}
+      ref={searchInputRef}
+      placeholder={"Search configs"}
+      value={search}
+      onChange={e => setSearch(e.target.value)}
+    />
+    <ConfigSearchContext.Provider value={search}>
       <Toggle {...common} configKey={"urlParamAutoAdd"} />
       <Toggle {...common} configKey={"promoInfo"} />
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />
-      <label>{"Presets"}</label>
-      <Radio {...common} configKey={"label"} addLabel={"packaging"}
-        options={["FarmBot Genesis", "FarmBot Genesis XL", "FarmBot Jr", "box"]} />
-      <Radio {...common} configKey={"kitVersion"}
-        options={["v1.8", "v1.7", "v1000"]} />
-      <Radio {...common} configKey={"sizePreset"}
-        options={["Jr", "Genesis", "Genesis XL"]} />
-      <Radio {...common} configKey={"bedType"}
-        options={["Standard", "Mobile"]} />
-      <Radio {...common} configKey={"otherPreset"}
-        options={["Initial", "Minimal", "Maximal", "Reset all"]} />
-      <label>{"Bot State"}</label>
-      <Slider {...common} configKey={"x"} min={0} max={props.config.botSizeX} />
-      <Slider {...common} configKey={"y"} min={0} max={props.config.botSizeY} />
-      <Slider {...common} configKey={"z"} min={0} max={props.config.botSizeZ} />
-      <Radio {...common} configKey={"tool"}
-        options={["wateringNozzle", "rotaryTool", "soilSensor", "weeder",
-          "seeder", "None"]} />
-      <Toggle {...common} configKey={"trail"} />
-      <Toggle {...common} configKey={"laser"} />
-      <Toggle {...common} configKey={"waterFlow"} />
-      <Toggle {...common} configKey={"light"} />
-      <Toggle {...common} configKey={"vacuum"} />
-      <Slider {...common} configKey={"rotary"} min={-1} max={1} />
-      <label>{"Bot Dimensions"}</label>
-      <Slider {...common} configKey={"botSizeX"} min={0} max={6000} />
-      <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
-      <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
-      <Toggle {...common} configKey={"bounds"} />
-      <Toggle {...common} configKey={"grid"} />
-      <Toggle {...common} configKey={"negativeZ"} />
-      <Toggle {...common} configKey={"mirrorX"} />
-      <Toggle {...common} configKey={"mirrorY"} />
-      <Toggle {...common} configKey={"xyDimensions"} />
-      <Toggle {...common} configKey={"zDimension"} />
-      <Toggle {...common} configKey={"axes"} />
-      <Slider {...common} configKey={"beamLength"} min={0} max={4000} />
-      <Slider {...common} configKey={"columnLength"} min={0} max={1000} />
-      <Slider {...common} configKey={"zAxisLength"} min={0} max={2000} />
-      <Slider {...common} configKey={"bedXOffset"} min={-500} max={500} />
-      <Slider {...common} configKey={"bedYOffset"} min={-1500} max={1500} />
-      <Slider {...common} configKey={"zGantryOffset"} min={0} max={500} />
-      <Toggle {...common} configKey={"tracks"} />
-      <Toggle {...common} configKey={"cableCarriers"} />
-      <Toggle {...common} configKey={"bot"} />
-      <Radio {...common} configKey={"distanceIndicator"}
-        options={["", "bedHeight", "beamLength", "columnLength", "zAxisLength"]} />
-      <label>{"Bot Camera View"}</label>
-      <Toggle {...common} configKey={"cameraView"} />
-      <Slider {...common} configKey={"imgScale"} min={0} max={10} />
-      <Slider {...common} configKey={"imgRotation"} min={0} max={360} />
-      <Slider {...common} configKey={"imgOffsetX"} min={0} max={1000} />
-      <Slider {...common} configKey={"imgOffsetY"} min={0} max={1000} />
-      <Slider {...common} configKey={"imgCenterX"} min={0} max={1000} />
-      <Slider {...common} configKey={"imgCenterY"} min={0} max={1000} />
-      <Radio {...common} configKey={"imgOrigin"}
-        options={["TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT"]} />
-      <Slider {...common} configKey={"lastImageCapture"} min={0} max={100000} />
-      <label>{"Bed Properties"}</label>
-      <Slider {...common} configKey={"bedWallThickness"} min={0} max={200} />
-      <Slider {...common} configKey={"bedHeight"} min={0} max={1000} />
-      <Slider {...common} configKey={"ccSupportSize"} min={0} max={200} />
-      <Slider {...common} configKey={"bedWidthOuter"} min={bedMin} max={3100} />
-      <Slider {...common} configKey={"bedLengthOuter"} min={bedMin} max={6100} />
-      <Slider {...common} configKey={"bedZOffset"} min={0} max={1000} />
-      <Slider {...common} configKey={"legSize"} min={0} max={200} />
-      <Toggle {...common} configKey={"legsFlush"} />
-      <Slider {...common} configKey={"extraLegsX"} min={0} max={10} />
-      <Slider {...common} configKey={"extraLegsY"} min={0} max={10} />
-      <Slider {...common} configKey={"bedBrightness"} min={1} max={12} />
-      <label>{"Soil"}</label>
-      <Slider {...common} configKey={"soilBrightness"} min={1} max={12} />
-      <Slider {...common} configKey={"soilHeight"} min={0} max={1000} />
-      <Radio {...common} configKey={"soilSurface"}
-        options={["flat", "random"]} />
-      <Slider {...common} configKey={"soilSurfacePointCount"} min={0} max={200} />
-      <Slider {...common} configKey={"soilSurfaceVariance"} min={0} max={1000} />
-      <Toggle {...common} configKey={"showSoilPoints"} />
-      <Toggle {...common} configKey={"exaggeratedZ"} />
-      <Toggle {...common} configKey={"moistureDebug"} />
-      <Slider {...common} configKey={"surfaceDebug"} min={0} max={2} />
-      <label>{"Plants"}</label>
-      <Radio {...common} configKey={"plants"} startTimeRef={props.startTimeRef}
-        options={["Winter", "Spring", "Summer", "Fall", "Random", "None"]} />
-      <Toggle {...common} configKey={"labels"} />
-      <Toggle {...common} configKey={"labelsOnHover"} />
-      <Toggle {...common} configKey={"promoSpread"} />
-      <Toggle {...common} configKey={"animate"} />
-      <Toggle {...common} configKey={"animateSeasons"} />
-      <label>{"Camera"}</label>
-      <Toggle {...common} configKey={"perspective"} />
-      <Toggle {...common} configKey={"zoom"} />
-      <Toggle {...common} configKey={"pan"} />
-      <Toggle {...common} configKey={"rotate"} />
-      <Toggle {...common} configKey={"topDown"} />
-      <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
-      <Toggle {...common} configKey={"cameraSelectionView"} />
-      <Toggle {...common} configKey={"lowDetail"} />
-      <label>{"Environment"}</label>
-      <Radio {...common} configKey={"scene"}
-        options={["Outdoor", "Lab", "Greenhouse"]} />
-      <Toggle {...common} configKey={"ground"} />
-      <Toggle {...common} configKey={"utilitiesPost"} />
-      <Toggle {...common} configKey={"packaging"} />
-      <Toggle {...common} configKey={"clouds"} />
-      <Toggle {...common} configKey={"solar"} />
-      <Toggle {...common} configKey={"desk"} />
-      <Toggle {...common} configKey={"people"} />
-      <Toggle {...common} configKey={"north"} />
-      <Slider {...common} configKey={"heading"} min={0} max={360} />
-      <label>{"Lighting"}</label>
-      <Slider {...common} configKey={"sunInclination"} min={-180} max={180} />
-      <Slider {...common} configKey={"sunAzimuth"} min={0} max={360} />
-      <Slider {...common} configKey={"sun"} min={0} max={200} />
-      <Slider {...common} configKey={"ambient"} min={0} max={200} />
-      <Toggle {...common} configKey={"light"} addLabel={"bot LEDs"} />
-      <Toggle {...common} configKey={"lightsDebug"} />
-      <label>{"Dev"}</label>
-      <Toggle {...common} configKey={"threeAxes"} />
-      <Toggle {...common} configKey={"stats"} />
-      <Toggle {...common} configKey={"viewCube"} />
-      <Toggle {...common} configKey={"eventDebug"} />
-      <Toggle {...common} configKey={"cableDebug"} />
-      <Toggle {...common} configKey={"zoomBeaconDebug"} />
-      <Toggle {...common} configKey={"config"} />
-    </details>
+      <div className={"config-section"}>
+        <label>{"Presets"}</label>
+        <Radio {...common} configKey={"label"} addLabel={"packaging"}
+          options={["FarmBot Genesis", "FarmBot Genesis XL", "FarmBot Jr", "box"]} />
+        <Radio {...common} configKey={"kitVersion"}
+          options={["v1.8", "v1.7", "v1000"]} />
+        <Radio {...common} configKey={"sizePreset"}
+          options={["Jr", "Genesis", "Genesis XL"]} />
+        <Radio {...common} configKey={"bedType"}
+          options={["Standard", "Mobile"]} />
+        <Radio {...common} configKey={"otherPreset"}
+          options={["Initial", "Minimal", "Maximal", "Reset all"]} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Bot State"}</label>
+        <Slider {...common} configKey={"x"} min={0} max={props.config.botSizeX} />
+        <Slider {...common} configKey={"y"} min={0} max={props.config.botSizeY} />
+        <Slider {...common} configKey={"z"} min={0} max={props.config.botSizeZ} />
+        <Radio {...common} configKey={"tool"}
+          options={["wateringNozzle", "rotaryTool", "soilSensor", "weeder",
+            "seeder", "None"]} />
+        <Toggle {...common} configKey={"trail"} />
+        <Toggle {...common} configKey={"laser"} />
+        <Toggle {...common} configKey={"waterFlow"} />
+        <Toggle {...common} configKey={"light"} />
+        <Toggle {...common} configKey={"vacuum"} />
+        <Slider {...common} configKey={"rotary"} min={-1} max={1} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Bot Dimensions"}</label>
+        <Slider {...common} configKey={"botSizeX"} min={0} max={6000} />
+        <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
+        <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
+        <Toggle {...common} configKey={"bounds"} />
+        <Toggle {...common} configKey={"grid"} />
+        <Toggle {...common} configKey={"negativeZ"} />
+        <Toggle {...common} configKey={"mirrorX"} />
+        <Toggle {...common} configKey={"mirrorY"} />
+        <Toggle {...common} configKey={"xyDimensions"} />
+        <Toggle {...common} configKey={"zDimension"} />
+        <Toggle {...common} configKey={"axes"} />
+        <Slider {...common} configKey={"beamLength"} min={0} max={4000} />
+        <Slider {...common} configKey={"columnLength"} min={0} max={1000} />
+        <Slider {...common} configKey={"zAxisLength"} min={0} max={2000} />
+        <Slider {...common} configKey={"bedXOffset"} min={-500} max={500} />
+        <Slider {...common} configKey={"bedYOffset"} min={-1500} max={1500} />
+        <Slider {...common} configKey={"zGantryOffset"} min={0} max={500} />
+        <Toggle {...common} configKey={"tracks"} />
+        <Toggle {...common} configKey={"cableCarriers"} />
+        <Toggle {...common} configKey={"bot"} />
+        <Radio {...common} configKey={"distanceIndicator"}
+          options={["", "bedHeight", "beamLength", "columnLength", "zAxisLength"]} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Bot Camera View"}</label>
+        <Toggle {...common} configKey={"cameraView"} />
+        <Slider {...common} configKey={"imgScale"} min={0} max={10} />
+        <Slider {...common} configKey={"imgRotation"} min={0} max={360} />
+        <Slider {...common} configKey={"imgOffsetX"} min={0} max={1000} />
+        <Slider {...common} configKey={"imgOffsetY"} min={0} max={1000} />
+        <Slider {...common} configKey={"imgCenterX"} min={0} max={1000} />
+        <Slider {...common} configKey={"imgCenterY"} min={0} max={1000} />
+        <Radio {...common} configKey={"imgOrigin"}
+          options={["TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT"]} />
+        <Slider {...common} configKey={"lastImageCapture"} min={0} max={100000} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Bed Properties"}</label>
+        <Slider {...common} configKey={"bedWallThickness"} min={0} max={200} />
+        <Slider {...common} configKey={"bedHeight"} min={0} max={1000} />
+        <Slider {...common} configKey={"ccSupportSize"} min={0} max={200} />
+        <Slider {...common} configKey={"bedWidthOuter"} min={bedMin} max={3100} />
+        <Slider {...common} configKey={"bedLengthOuter"} min={bedMin} max={6100} />
+        <Slider {...common} configKey={"bedZOffset"} min={0} max={1000} />
+        <Slider {...common} configKey={"legSize"} min={0} max={200} />
+        <Toggle {...common} configKey={"legsFlush"} />
+        <Slider {...common} configKey={"extraLegsX"} min={0} max={10} />
+        <Slider {...common} configKey={"extraLegsY"} min={0} max={10} />
+        <Slider {...common} configKey={"bedBrightness"} min={1} max={12} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Soil"}</label>
+        <Slider {...common} configKey={"soilBrightness"} min={1} max={12} />
+        <Slider {...common} configKey={"soilHeight"} min={0} max={1000} />
+        <Radio {...common} configKey={"soilSurface"}
+          options={["flat", "random"]} />
+        <Slider {...common} configKey={"soilSurfacePointCount"} min={0} max={200} />
+        <Slider {...common} configKey={"soilSurfaceVariance"} min={0} max={1000} />
+        <Toggle {...common} configKey={"showSoilPoints"} />
+        <Toggle {...common} configKey={"exaggeratedZ"} />
+        <Toggle {...common} configKey={"moistureDebug"} />
+        <Slider {...common} configKey={"surfaceDebug"} min={0} max={2} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Plants"}</label>
+        <Radio {...common} configKey={"plants"} startTimeRef={props.startTimeRef}
+          options={["Winter", "Spring", "Summer", "Fall", "Random", "None"]} />
+        <Toggle {...common} configKey={"labels"} />
+        <Toggle {...common} configKey={"labelsOnHover"} />
+        <Toggle {...common} configKey={"promoSpread"} />
+        <Toggle {...common} configKey={"animate"} />
+        <Toggle {...common} configKey={"animateSeasons"} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Camera"}</label>
+        <Toggle {...common} configKey={"perspective"} />
+        <Toggle {...common} configKey={"zoom"} />
+        <Toggle {...common} configKey={"pan"} />
+        <Toggle {...common} configKey={"rotate"} />
+        <Toggle {...common} configKey={"topDown"} />
+        <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
+        <Toggle {...common} configKey={"cameraSelectionView"} />
+        <Toggle {...common} configKey={"lowDetail"} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Environment"}</label>
+        <Radio {...common} configKey={"scene"}
+          options={["Outdoor", "Lab", "Greenhouse"]} />
+        <Toggle {...common} configKey={"ground"} />
+        <Toggle {...common} configKey={"utilitiesPost"} />
+        <Toggle {...common} configKey={"packaging"} />
+        <Toggle {...common} configKey={"clouds"} />
+        <Toggle {...common} configKey={"solar"} />
+        <Toggle {...common} configKey={"desk"} />
+        <Toggle {...common} configKey={"people"} />
+        <Toggle {...common} configKey={"north"} />
+        <Slider {...common} configKey={"heading"} min={0} max={360} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Lighting"}</label>
+        <Slider {...common} configKey={"sunInclination"} min={-180} max={180} />
+        <Slider {...common} configKey={"sunAzimuth"} min={0} max={360} />
+        <Slider {...common} configKey={"sun"} min={0} max={200} />
+        <Slider {...common} configKey={"ambient"} min={0} max={200} />
+        <Toggle {...common} configKey={"light"} addLabel={"bot LEDs"} />
+        <Toggle {...common} configKey={"lightsDebug"} />
+      </div>
+      <div className={"config-section"}>
+        <label>{"Dev"}</label>
+        <Toggle {...common} configKey={"threeAxes"} />
+        <Toggle {...common} configKey={"stats"} />
+        <Toggle {...common} configKey={"viewCube"} />
+        <Toggle {...common} configKey={"eventDebug"} />
+        <Toggle {...common} configKey={"cableDebug"} />
+        <Toggle {...common} configKey={"zoomBeaconDebug"} />
+        <Toggle {...common} configKey={"config"} />
+      </div>
+    </ConfigSearchContext.Provider>
   </div>;
 };

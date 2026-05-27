@@ -3,7 +3,7 @@ preload = [
   "./frontend/__test_support__/happydom.ts",
   "./frontend/__test_support__/bun_test_setup.ts"
 ]
-coverageReporter = ["text", "lcov"]
+coverageReporter = ["lcov"]
 coverageDir = "coverage_fe"
 coverage = true
 onlyFailures = true
@@ -13,7 +13,7 @@ coveragePathIgnorePatterns = [
 ]
 
 [test.reporter]
-dots = true
+dots = false
 
 [env]
 file = false

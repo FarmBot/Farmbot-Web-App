@@ -10,6 +10,6 @@ describe("<GantryWheelPlate />", () => {
     const Component = GantryWheelPlate(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");
-    expect(container.innerHTML).toContain("instancedmesh");
+    expect(container.querySelector("mesh, instancedmesh")).toBeTruthy();
   });
 });

@@ -41,6 +41,7 @@ import {
   getPlantIconTexture,
   getPlantIconTextureUrl,
 } from "../../garden/plant_icon_atlas";
+import { clickWasDragged } from "../../click_event";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -183,6 +184,7 @@ export const soilClick = (props: SoilClickProps) =>
     const { config, navigate, addPlantProps, pointerPlantRef } = props;
     const getGardenPosition = getGardenPositionFunc(config);
     e.stopPropagation();
+    if (clickWasDragged(e)) { return; }
     if (addPlantProps) {
       if (getMode() == Mode.clickToAdd) {
         dropPlant({

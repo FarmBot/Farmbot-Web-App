@@ -1,6 +1,6 @@
 import React from "react";
 import { Config } from "../config";
-import { Group, Primitive } from "../components";
+import { Primitive } from "../components";
 import {
   get3DPositionFunc, zero as zeroFunc,
 } from "../helpers";
@@ -13,6 +13,7 @@ import {
   LineSegmentsGeometry,
 } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
+import { FocusVisibilityGroup } from "../focus_transition";
 
 export const gridLineOffsets = (botDimension: number): number[] => {
   const lastRegularOffset = floor(botDimension, -2);
@@ -132,8 +133,17 @@ export const Grid = (props: GridProps) => {
     });
     return result;
   }, [config, props.getZ]);
-  return <Group name={"garden-grid"}
+  const materialBindingKey = [
+    config.botSizeX,
+    config.botSizeY,
+    zero.z,
+    outerPositions.length,
+    innerPositions.length,
+  ].join(":");
+  return <FocusVisibilityGroup name={"garden-grid"}
     visible={config.grid && props.activeFocus != "Planter bed"}
+    keepMounted={true}
+    materialBindingKey={materialBindingKey}
     position={[0, 0, zero.z]}>
     <LineSegments
       name={"grid-outer"}
@@ -147,5 +157,5 @@ export const Grid = (props: GridProps) => {
       color={"white"}
       opacity={0.5}
       linewidth={2} />
-  </Group>;
+  </FocusVisibilityGroup>;
 };

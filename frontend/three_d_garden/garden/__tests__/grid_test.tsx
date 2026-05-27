@@ -1,8 +1,13 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { Grid, gridLineOffsets, GridProps } from "../grid";
-import { INITIAL } from "../../config";
+import { INITIAL, PRESETS } from "../../config";
 import { clone } from "lodash";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("gridLineOffsets()", () => {
   it("calculates offsets", () => {
@@ -24,5 +29,21 @@ describe("<Grid />", () => {
     p.config.grid = true;
     const { container } = render(<Grid {...p} />);
     expect(container).toContainHTML("grid");
+  });
+
+  it("refreshes focus material binding when grid dimensions change", () => {
+    const p = fakeProps();
+    p.config.grid = true;
+    const wrapper = createRenderer(<Grid {...p} />);
+    const findGridGroup = () => wrapper.root.findAll(node =>
+      node.props.name == "garden-grid")[0];
+    const genesisBindingKey = findGridGroup().props.materialBindingKey;
+    p.config = { ...p.config, ...PRESETS["Genesis XL"] };
+    actRenderer(() => {
+      wrapper.update(<Grid {...p} />);
+    });
+    expect(findGridGroup().props.materialBindingKey)
+      .not.toEqual(genesisBindingKey);
+    unmountRenderer(wrapper);
   });
 });

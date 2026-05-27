@@ -7,6 +7,16 @@ import { noop, chunk } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
+import {
+  AxiosErrorResponse,
+  prettyPrintApiErrors,
+} from "../util/errors";
+
+const toastResponseErrors = (err: AxiosErrorResponse) => {
+  if (err.response?.data) {
+    error(prettyPrintApiErrors(err));
+  }
+};
 
 export function deletePoints(
   pointName: string,
@@ -30,7 +40,7 @@ export function deletePoints(
           return x;
         });
     });
-    Promise
+    return Promise
       .all(promises)
       .then(function () {
         dispatch({
@@ -42,10 +52,11 @@ export function deletePoints(
         }));
         prog.finish();
       })
-      .catch(function () {
+      .catch(function (err: AxiosErrorResponse) {
         error(trim(`${t("Some {{points}} failed to delete.",
           { points: pointName })}
-            ${t("Are they in use by sequences?")}`));
+            ${t("Are they in use by sequences, regimens, or events?")}`));
+        toastResponseErrors(err);
         prog.finish();
       });
   };
@@ -59,6 +70,8 @@ export const deletePointsByIds = (pointName: string, ids: number[]) =>
       success(t("Deleted {{num}} {{points}}", {
         num: ids.length, points: pointName,
       })))
-    .catch(() =>
+    .catch((err: AxiosErrorResponse) => {
       error(trim(`${t("Some {{points}} failed to delete.", { points: pointName })}
-                  ${t("Are they in use by sequences?")}`)));
+                  ${t("Are they in use by sequences, regimens, or events?")}`));
+      toastResponseErrors(err);
+    });

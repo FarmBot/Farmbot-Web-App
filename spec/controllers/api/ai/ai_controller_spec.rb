@@ -121,6 +121,14 @@ describe Api::AisController do
     expect(response.body).to eq("red")
   end
 
+  it "handles docs without front matter" do
+    allow(controller).to receive(:get_page_data).and_return("content")
+
+    result = controller.send(:process_dev_docs_page_data, "url")
+
+    expect(result).to eq("")
+  end
+
   it "throttles requests" do
     sign_in user
     payload = {

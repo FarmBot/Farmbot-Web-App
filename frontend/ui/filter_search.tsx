@@ -6,15 +6,17 @@ import { t } from "../i18next_wrapper";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
-interface FilterSearchProps {
+export interface FilterSearchProps {
   items: DropDownItem[];
   selectedItem: DropDownItem;
   onChange: (item: DropDownItem) => void;
   nullChoice: DropDownItem;
+  itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
 }
 
 interface State {
   item?: DropDownItem | undefined;
+  query?: string;
   resetOnSelect?: boolean;
 }
 
@@ -27,19 +29,23 @@ export class FilterSearch
   };
 
   render() {
-    const { item, ...flags } = this.state;
+    const { item, query = "", ...flags } = this.state;
+    const items = this.props.itemListFilter
+      ? this.props.itemListFilter(this.props.items, query)
+      : this.props.items;
     return <SelectComponent
       {...flags}
-      items={this.props.items}
-      itemPredicate={this.filter(this.props.items)}
+      items={items}
+      itemPredicate={this.filter(items)}
       itemRenderer={this.default}
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
+      onQueryChange={this.handleQueryChange}
       popoverProps={{
         popoverClassName: [
           "filter-search-popover",
           Classes.MINIMAL,
-          this.props.items.length < 4 ? "few-items" : "",
+          items.length < 4 ? "few-items" : "",
         ].join(" "),
         modifiers: { offset: { options: { offset: [0, 0] } } },
       }}>
@@ -85,6 +91,10 @@ export class FilterSearch
       this.props.onChange(item);
       this.setState({ item });
     }
+  };
+
+  private handleQueryChange = (query: string) => {
+    this.setState({ query });
   };
 
 }

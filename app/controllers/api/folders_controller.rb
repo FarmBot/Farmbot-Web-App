@@ -25,7 +25,7 @@ module Api
     private
 
     def folder
-      folders.find(params[:id])
+      folders.find(params.expect(:id))
     end
 
     def folders

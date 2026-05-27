@@ -1,10 +1,12 @@
 import React from "react";
 import { RepeatWrapping } from "three";
-import { Box, useTexture } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { ASSETS } from "../../constants";
 import { threeSpace } from "../../helpers";
 import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
+import { FocusVisibilityGroup } from "../../focus_transition";
+import { useTextureVariant } from "../../texture_variants";
 
 export interface DeskProps {
   config: Config;
@@ -21,22 +23,16 @@ const deskWoodDarkness = "#666";
 export const Desk = (props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
-  const deskWoodTextureBase = useTexture(ASSETS.textures.wood + "?=desk");
-  const deskWoodTexture = React.useMemo(() => {
-    const texture = deskWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.3, 0.3);
-    return texture;
-  }, [deskWoodTextureBase]);
-  const screenTextureBase = useTexture(ASSETS.textures.screen + "?=screen");
-  const screenTexture = React.useMemo(() => {
-    const texture = screenTextureBase.clone();
-    texture.rotation = Math.PI / 2;
-    texture.wrapT = RepeatWrapping;
-    return texture;
-  }, [screenTextureBase]);
-  return <Group name={"desk"}
+  const deskWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.3, 0.3],
+  });
+  const screenTexture = useTextureVariant(ASSETS.textures.screen, {
+    wrapT: RepeatWrapping,
+    rotation: Math.PI / 2,
+  });
+  return <FocusVisibilityGroup name={"desk"}
     visible={props.config.desk && props.activeFocus == ""}
     position={[
       threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
@@ -113,5 +109,5 @@ export const Desk = (props: DeskProps) => {
         </Box>
       </Group>
     </Group>
-  </Group>;
+  </FocusVisibilityGroup>;
 };

@@ -24,7 +24,10 @@ import {
 } from "../resources/selectors";
 import { validFwConfig, validFbosConfig } from "../util";
 import { validBotLocationData } from "../util/location";
-import { getWebAppConfigValue } from "../config_storage/actions";
+import {
+  getWebAppConfigValue,
+  getWebAppConfigValueFromResources,
+} from "../config_storage/actions";
 import { FarmDesignerProps, CameraCalibrationData } from "./interfaces";
 import { TaggedPlant, BotSize } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
@@ -46,14 +49,107 @@ const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
     plants.filter(x => x.uuid === uuid)[0];
 
-export const getPlants = (resources: RestResources) => {
+const memoizeLast = <Args extends unknown[], Result>(
+  fn: (...args: Args) => Result,
+) => {
+  let lastArgs: Args | undefined;
+  let lastResult: Result;
+  return (...args: Args): Result => {
+    if (lastArgs && args.every((arg, index) => arg === lastArgs?.[index])) {
+      return lastResult;
+    }
+    lastArgs = args;
+    lastResult = fn(...args);
+    return lastResult;
+  };
+};
+
+const selectCrops = memoizeLast(selectAllCrops);
+const selectGenericPoints = memoizeLast(selectAllGenericPointers);
+const selectWeedPointers = memoizeLast(selectAllWeedPointers);
+const selectVisibleWeeds = memoizeLast(
+  (allWeeds: ReturnType<typeof selectAllWeedPointers>, showHistoric: boolean) =>
+    showHistoric
+      ? allWeeds
+      : allWeeds.filter(x => x.body.plant_stage !== "removed"));
+const selectPointGroups = memoizeLast(selectAllPointGroups);
+const selectPoints = memoizeLast(selectAllPoints);
+const selectTools = memoizeLast(selectAllTools);
+const selectToolSlots = memoizeLast(joinToolsAndSlot);
+const selectPeripherals = memoizeLast(selectAllPeripherals);
+const selectImages = memoizeLast((index: RestResources["index"]) =>
+  chain(selectAllImages(index))
+    .sortBy(x => x.body.id)
+    .reverse()
+    .value());
+const selectSensorReadings = memoizeLast((index: RestResources["index"]) =>
+  chain(selectAllSensorReadings(index))
+    .sortBy(x => x.body.created_at)
+    .reverse()
+    .take(500)
+    .reverse()
+    .value());
+const selectSensors = memoizeLast(selectAllSensors);
+const selectLogs = memoizeLast(selectAllLogs);
+const selectFarmwareEnvs = memoizeLast(selectAllFarmwareEnvs);
+const selectCurves = memoizeLast(selectAllCurves);
+const selectTimeSettings = memoizeLast(maybeGetTimeSettings);
+const selectEnv = memoizeLast(getEnv);
+const selectCameraCalibrationData = memoizeLast(
+  (env: UserEnv) => getCameraCalibrationData(env));
+const selectGetConfigValue = memoizeLast(getWebAppConfigValueFromResources);
+const selectPlantsForDesigner = memoizeLast((
+  resources: RestResources,
+  openedSavedGarden: number | undefined,
+) => {
   const onlyPlants = selectAllPlantPointers(resources.index);
   const plantTemplates = selectAllPlantTemplates(resources.index);
-  const { openedSavedGarden } = resources.consumers.farm_designer;
   return isFinite(openedSavedGarden)
     ? plantTemplates.filter(x =>
       x.body.saved_garden_id === openedSavedGarden)
     : onlyPlants;
+});
+
+const selectPeripheralValues = (() => {
+  let lastKey = "";
+  let lastResult: ReturnType<typeof mapPeripheralValues> | undefined;
+  return (
+    peripherals: ReturnType<typeof selectAllPeripherals>,
+    pins: Everything["bot"]["hardware"]["pins"],
+  ) => {
+    const key = peripherals
+      .map(peripheral => {
+        const pin = peripheral.body.pin;
+        const value = pin ? pins[pin]?.value : undefined;
+        return `${peripheral.uuid}:${peripheral.body.label}:${pin}:${value}`;
+      })
+      .join("|");
+    if (key === lastKey && lastResult) {
+      return lastResult;
+    }
+    lastKey = key;
+    lastResult = mapPeripheralValues(peripherals, pins);
+    return lastResult;
+  };
+})();
+
+const mapPeripheralValues = (
+  peripherals: ReturnType<typeof selectAllPeripherals>,
+  pins: Everything["bot"]["hardware"]["pins"],
+) =>
+  uniq(peripherals)
+    .map(x => {
+      const label = x.body.label;
+      const pinStatus = x.body.pin
+        ? pins[x.body.pin]
+        : undefined;
+      const value = pinStatus ? pinStatus.value > 0 : false;
+      return { label, value };
+    });
+
+export const getPlants = (resources: RestResources) => {
+  const { openedSavedGarden } = resources.consumers.farm_designer;
+  return selectPlantsForDesigner(resources, openedSavedGarden);
 };
 
 export function mapStateToProps(props: Everything): FarmDesignerProps {
@@ -72,13 +168,13 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     maybeGetSequence(props.resources.index, visualizedSequenceUUID)?.body.body
     || [];
 
-  const getConfigValue = getWebAppConfigValue(() => props);
-  const allGenericPoints = selectAllGenericPointers(props.resources.index);
+  const getConfigValue = selectGetConfigValue(props.resources.index);
+  const allGenericPoints = selectGenericPoints(props.resources.index);
   const genericPoints = allGenericPoints;
-  const allWeeds = selectAllWeedPointers(props.resources.index);
-  const weeds = getConfigValue(BooleanSetting.show_historic_points)
-    ? allWeeds
-    : allWeeds.filter(x => x.body.plant_stage !== "removed");
+  const allWeeds = selectWeedPointers(props.resources.index);
+  const weeds = selectVisibleWeeds(
+    allWeeds,
+    !!getConfigValue(BooleanSetting.show_historic_points));
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { hardware } = props.bot;
@@ -102,35 +198,21 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     flipped: isToolFlipped(mountedToolSlotInfo?.meta),
   };
 
-  const groups = selectAllPointGroups(props.resources.index);
-  const allPoints = selectAllPoints(props.resources.index);
+  const groups = selectPointGroups(props.resources.index);
+  const allPoints = selectPoints(props.resources.index);
 
-  const peripheralValues = uniq(selectAllPeripherals(props.resources.index))
-    .map(x => {
-      const label = x.body.label;
-      const pinStatus = x.body.pin
-        ? hardware.pins[x.body.pin]
-        : undefined;
-      const value = pinStatus ? pinStatus.value > 0 : false;
-      return { label, value };
-    });
+  const peripheralValues = selectPeripheralValues(
+    selectPeripherals(props.resources.index),
+    hardware.pins);
 
-  const latestImages = chain(selectAllImages(props.resources.index))
-    .sortBy(x => x.body.id)
-    .reverse()
-    .value();
+  const latestImages = selectImages(props.resources.index);
 
-  const env = getEnv(props.resources.index);
+  const env = selectEnv(props.resources.index);
 
-  const sensorReadings = chain(selectAllSensorReadings(props.resources.index))
-    .sortBy(x => x.body.created_at)
-    .reverse()
-    .take(500)
-    .reverse()
-    .value();
+  const sensorReadings = selectSensorReadings(props.resources.index);
 
   return {
-    crops: selectAllCrops(props.resources.index),
+    crops: selectCrops(props.resources.index),
     dispatch: props.dispatch,
     device,
     selectedPlant,
@@ -138,8 +220,8 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     genericPoints,
     weeds,
     allPoints,
-    tools: selectAllTools(props.resources.index),
-    toolSlots: joinToolsAndSlot(props.resources.index),
+    tools: selectTools(props.resources.index),
+    toolSlots: selectToolSlots(props.resources.index),
     hoveredPlant,
     plants,
     botLocationData: validBotLocationData(hardware.location_data),
@@ -149,18 +231,18 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     eStopStatus: hardware.informational_settings.locked,
     deviceTarget: hardware.informational_settings.target,
     latestImages,
-    cameraCalibrationData: getCameraCalibrationData(env),
-    timeSettings: maybeGetTimeSettings(props.resources.index),
+    cameraCalibrationData: selectCameraCalibrationData(env),
+    timeSettings: selectTimeSettings(props.resources.index),
     getConfigValue,
     sensorReadings,
-    sensors: selectAllSensors(props.resources.index),
+    sensors: selectSensors(props.resources.index),
     groups,
     mountedToolInfo,
     visualizedSequenceBody,
-    logs: selectAllLogs(props.resources.index),
+    logs: selectLogs(props.resources.index),
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
-    farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
-    curves: selectAllCurves(props.resources.index),
+    farmwareEnvs: selectFarmwareEnvs(props.resources.index),
+    curves: selectCurves(props.resources.index),
   };
 }
 

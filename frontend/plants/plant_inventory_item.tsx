@@ -11,6 +11,7 @@ import { isUndefined, round } from "lodash";
 import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
 import { findIcon } from "../crops/find";
+import { perfMark, usePerfRenderCount } from "../performance/perf";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
@@ -20,7 +21,8 @@ export interface PlantInventoryItemProps {
 }
 
 // The individual plants that show up in the farm designer sub nav.
-export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
+export const PlantInventoryItem = React.memo((props: PlantInventoryItemProps) => {
+  usePerfRenderCount("PlantInventoryItem");
   const navigate = useNavigate();
 
   const { plant, dispatch } = props;
@@ -33,6 +35,7 @@ export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
   };
 
   const click = () => {
+    perfMark("plant_inventory_item_click");
     if (getMode() == Mode.boxSelect) {
       mapPointClickAction(navigate, dispatch, plant.uuid)();
       toggle("leave");
@@ -70,7 +73,9 @@ export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
         : daysOldText(plantAgeAndStage(plant))}
     </i>
   </div>;
-};
+});
+
+PlantInventoryItem.displayName = "PlantInventoryItem";
 
 export const daysOldText = ({ age, stage }: PlantStageAndAge) => {
   if (isUndefined(age)) { return "" + stage; }

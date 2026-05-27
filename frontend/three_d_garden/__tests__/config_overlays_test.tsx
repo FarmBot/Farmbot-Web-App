@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   PublicOverlay, OverlayProps, PrivateOverlay, maybeAddParam,
 } from "../config_overlays";
@@ -17,6 +17,7 @@ beforeEach(() => {
 
 afterEach(() => {
   setUrlParamSpy.mockRestore();
+  jest.useRealTimers();
 });
 
 describe("<PublicOverlay />", () => {
@@ -32,6 +33,14 @@ describe("<PublicOverlay />", () => {
   it("renders", () => {
     const { container } = render(<PublicOverlay {...fakeProps()} />);
     expect(container.innerHTML).toContain("settings-bar");
+  });
+
+  it("marks settings bar as loaded", () => {
+    const p = fakeProps();
+    p.loadComplete = true;
+    const { container } = render(<PublicOverlay {...p} />);
+    expect(container.querySelector(".settings-bar-loaded")).toBeTruthy();
+    expect(container.querySelector(".settings-bar-content")).toBeTruthy();
   });
 
   it("changes preset", () => {
@@ -97,6 +106,23 @@ describe("<PrivateOverlay />", () => {
   it("renders", () => {
     const { container } = render(<PrivateOverlay {...fakeProps()} />);
     expect(container.innerHTML).toContain("all-configs");
+    expect(container.querySelector("details")).toBeFalsy();
+  });
+
+  it("focuses the config search", () => {
+    const { getByPlaceholderText } = render(<PrivateOverlay {...fakeProps()} />);
+    expect(document.activeElement).toEqual(getByPlaceholderText("Search configs"));
+  });
+
+  it("filters configs", () => {
+    const { container, getByPlaceholderText } =
+      render(<PrivateOverlay {...fakeProps()} />);
+    fireEvent.change(getByPlaceholderText("Search configs"), {
+      target: { value: "promo" },
+    });
+    expect(container).toContainHTML("promoInfo");
+    expect(container).toContainHTML("promoSpread");
+    expect(container).not.toContainHTML("settingsBar");
   });
 
   it("changes value: number", () => {
@@ -161,6 +187,22 @@ describe("<PrivateOverlay />", () => {
     const { container } = render(<PrivateOverlay {...p} />);
     const close = container.querySelector(".close");
     close && fireEvent.click(close);
+    expect(p.setConfig).toHaveBeenCalledWith({
+      ...p.config,
+      config: false,
+    });
+  });
+
+  it("closes the config menu with Escape", async () => {
+    const p = fakeProps();
+    render(<PrivateOverlay {...p} />);
+    await waitFor(() =>
+      expect(document.activeElement).toEqual(screen.getByPlaceholderText(
+        "Search configs",
+      )));
+    fireEvent.keyDown(screen.getByPlaceholderText("Search configs"), {
+      key: "Escape",
+    });
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       config: false,

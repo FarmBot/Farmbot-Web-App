@@ -16,9 +16,20 @@ import { Actions } from "../../../constants";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
-import { Quaternion, WebGLProgramParametersWithUniforms } from "three";
+import {
+  InstancedMesh as ThreeInstancedMesh,
+  Quaternion,
+  WebGLProgramParametersWithUniforms,
+  type Intersection,
+  type Raycaster,
+} from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
+import * as meshKey from "../instanced_mesh_key";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 interface MockRef {
   current: {
@@ -190,6 +201,25 @@ describe("<ThreeDPlantSpread />", () => {
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
+  it("uses reserved spread capacity while rendering active plants", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    queueMeshRef();
+    const p = fakeProps();
+    p.instanceCapacity = 10;
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh?.getAttribute("args")).toContain("10");
+    expect(mesh?.getAttribute("count")).toEqual("2");
+  });
+
+  it("doesn't build per-plant spread mesh keys while rendering", () => {
+    const keySpy = jest.spyOn(meshKey, "instancedMeshKey");
+    queueMeshRef();
+    render(<PlantSpreadInstances {...fakeProps()} />);
+    expect(keySpy).not.toHaveBeenCalled();
+    keySpy.mockRestore();
+  });
+
   it("renders spread: edit plant mode", () => {
     location.pathname = Path.mock(Path.plants("1"));
     queueMeshRef();
@@ -223,6 +253,20 @@ describe("<ThreeDPlantSpread />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate after orbiting over a spread sphere", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    mesh.props.onClick({ instanceId: 0, delta: 3 });
+    unmountRenderer(wrapper);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate on spread click in camera selection mode", () => {
     setMockInstanceId(0);
     getModeSpy.mockReturnValue(Mode.cameraSelection);
@@ -235,6 +279,51 @@ describe("<ThreeDPlantSpread />", () => {
     mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  const spreadRaycast = (p = fakeProps()) => {
+    queueMeshRef();
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const raycast = mesh.props.raycast as (
+      this: ThreeInstancedMesh,
+      raycaster: Raycaster,
+      intersects: Intersection[],
+    ) => void;
+    unmountRenderer(wrapper);
+    return raycast;
+  };
+
+  it.each([
+    Mode.clickToAdd,
+    Mode.createPoint,
+    Mode.createWeed,
+  ])("allows %s raycasts through spread spheres", mode => {
+    getModeSpy.mockReturnValue(mode);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    );
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).not.toHaveBeenCalled();
+    expect(intersects).toEqual([]);
+    defaultRaycast.mockRestore();
+  });
+
+  it("keeps spread sphere raycasts outside placement modes", () => {
+    getModeSpy.mockReturnValue(Mode.none);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    ).mockImplementation(() => undefined);
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).toHaveBeenCalledWith(raycaster, intersects);
+    defaultRaycast.mockRestore();
   });
 
   it("updates instance colors on frame", () => {
@@ -270,6 +359,59 @@ describe("<ThreeDPlantSpread />", () => {
     expect(meshRef?.current?.instanceMatrix?.needsUpdate).toBeFalsy();
   });
 
+  it("skips repeated inactive spread frame updates", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.spreadVisible = false;
+    render(<PlantSpreadInstances {...p} />);
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    frameFn(state);
+    expect(setMatrixAt).not.toHaveBeenCalled();
+  });
+
+  it("skips repeated visible spread frame updates", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.spreadVisible = true;
+    render(<PlantSpreadInstances {...p} />);
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    frameFn(state);
+    expect(setMatrixAt).not.toHaveBeenCalled();
+  });
+
+  it("updates click-to-add spread when active position changes", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.spreadVisible = true;
+    getModeSpy.mockReturnValue(Mode.clickToAdd);
+    render(<PlantSpreadInstances {...p} />);
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    p.activePositionRef.current = { x: 100, y: 100 };
+    frameFn(state);
+    expect(setMatrixAt).toHaveBeenCalled();
+  });
+
   it("handles missing mesh in layout effect", () => {
     reactUseImperativeHandleSpy.mockImplementation(() => undefined);
     reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);
@@ -288,7 +430,9 @@ describe("<ThreeDPlantSpread />", () => {
       { current: undefined as unknown as { x: number; y: number } };
     location.pathname = Path.mock(Path.plants("1"));
     render(<PlantSpreadInstances {...p} />);
-    const mesh = getMeshRef()?.current as
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current as
       (MockRef["current"] & { material: { needsUpdate: boolean } }) | undefined;
     if (mesh) {
       mesh.instanceColor = { needsUpdate: false, count: 0 };

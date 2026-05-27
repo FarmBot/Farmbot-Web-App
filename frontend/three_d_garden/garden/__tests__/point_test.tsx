@@ -1,6 +1,9 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { DrawnPoint, DrawnPointProps, Point, PointProps } from "../point";
+import {
+  DrawnPoint, DrawnPointProps, Point, PointInstances, PointInstancesProps,
+  PointProps,
+} from "../point";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
@@ -11,10 +14,21 @@ import {
   fakeDesignerState, fakeDrawnPoint,
 } from "../../../__test_support__/fake_designer_state";
 import { SpecialStatus } from "farmbot";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<Point />", () => {
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
+
   beforeEach(() => {
     location.pathname = Path.mock(Path.points());
+  });
+
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      unmountRenderer(wrapper));
   });
 
   const fakeProps = (): PointProps => ({
@@ -64,6 +78,20 @@ describe("<Point />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
   });
 
+  it("doesn't navigate after orbiting over a point", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.point.body.id = 1;
+    const wrapper = createRenderer(<Point {...p} />);
+    mountedWrappers.push(wrapper);
+    const point = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    point.props.onClick({ delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate to point info", () => {
     const p = fakeProps();
     p.dispatch = undefined;
@@ -71,6 +99,52 @@ describe("<Point />", () => {
     const { container } = render(<Point {...p} />);
     const point = container.querySelector("[name='marker']");
     point && fireEvent.click(point);
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  const fakeInstanceProps = (): PointInstancesProps => ({
+    config: clone(INITIAL),
+    points: [fakePoint(), fakePoint()],
+    visible: true,
+    getZ: () => 0,
+  });
+
+  it("renders instanced point markers", () => {
+    const wrapper = createRenderer(<PointInstances {...fakeInstanceProps()} />);
+    mountedWrappers.push(wrapper);
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(3);
+    expect(meshes[0].props.args[2]).toEqual(2);
+  });
+
+  it("navigates from a point instance", () => {
+    const p = fakeInstanceProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.points[0].body.id = 1;
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const marker = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    marker.props.onClick({ instanceId: 0 });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
+  });
+
+  it("doesn't navigate after orbiting over a point instance", () => {
+    const p = fakeInstanceProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.points[0].body.id = 1;
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const marker = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    marker.props.onClick({ instanceId: 0, delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
@@ -93,6 +167,17 @@ describe("<DrawnPoint />", () => {
     p.designer.drawnPoint = undefined;
     const { container } = render(<DrawnPoint {...p} />);
     expect(container).toContainHTML("position=\"0,0,0\"");
+  });
+
+  it("draws point radius preview", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.r = 0;
+    p.designer.drawnPoint = point;
+    p.torusRef = { current: undefined as never };
+    const { container } = render(<DrawnPoint {...p} />);
+    expect(container.querySelector(".torus")).not.toBeNull();
   });
 
   it("doesn't draw point", () => {

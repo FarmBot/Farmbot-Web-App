@@ -1,25 +1,8 @@
-interface Mock0Ref {
-  current: number;
-}
-const mock0Ref: Mock0Ref = {
-  current: 0,
-};
 interface Mock1Ref {
   current: { position: { set: Function; }; } | undefined;
 }
 const mock1Ref: Mock1Ref = {
   current: { position: { set: jest.fn() } }
-};
-interface Mock4Ref {
-  current: { position: { set: Function; }; }[] | undefined;
-}
-const mock4Ref: Mock4Ref = {
-  current: [
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-  ]
 };
 interface MockMaterialRef {
   current: { opacity: number; } | undefined;
@@ -33,7 +16,7 @@ import { render } from "@testing-library/react";
 import { calcSunI, getCycleLength, skyColor, Sun, SunProps } from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
-import { MeshBasicMaterial } from "three";
+import { MeshBasicMaterial, Vector3 } from "three";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -97,6 +80,14 @@ describe("<Sun />", () => {
     expect(left).toBeLessThanOrEqual(-minBound);
   });
 
+  it("disables shadows in low-detail mode", () => {
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    const { container } = render(<Sun {...p} />);
+    const light = container.querySelector("directionallight");
+    expect(light?.getAttribute("castshadow")).not.toEqual("true");
+  });
+
   it("renders animated without ref", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;
@@ -110,14 +101,13 @@ describe("<Sun />", () => {
 
   it("renders animated", () => {
     jest.spyOn(React, "useRef")
-      .mockImplementationOnce(() => mock4Ref)
-      .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock0Ref)
+      .mockImplementationOnce(() => mock1Ref)
+      .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mockMaterialRef);
-    jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
+    jest.spyOn(React, "useState").mockReturnValue([new Vector3(), jest.fn()]);
     const p = fakeProps();
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };

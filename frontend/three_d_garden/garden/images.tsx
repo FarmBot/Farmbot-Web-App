@@ -20,6 +20,7 @@ import {
 } from "../../farm_designer/map/layers/images/map_image";
 import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
+import { perfCount, perfMeasure } from "../../performance/perf";
 
 interface BaseProps {
   config: Config;
@@ -39,6 +40,7 @@ interface PlaneWrapperProps {
 const PlaneWrapper = (props: PlaneWrapperProps) =>
   <Plane
     args={[props.width, props.height]}
+    onBeforeRender={() => perfCount("soilTextureRenders")}
     position={[
       props.bedWallThickness + props.width / 2,
       props.bedWallThickness + props.height / 2,
@@ -87,6 +89,38 @@ export interface ImageTextureProps extends BaseProps {
   showMoistureMap: boolean;
 }
 
+const getSensorKey = (sensors: TaggedSensor[]) => {
+  let key = "";
+  sensors.map(sensor => {
+    key += `${sensor.uuid},${sensor.body.label},`;
+    key += `${sensor.body.mode},${sensor.body.pin}|`;
+  });
+  return key;
+};
+
+const getSensorReadingKey = (readings: TaggedSensorReading[]) => {
+  let key = "";
+  readings.map(reading => {
+    key += `${reading.uuid},${reading.body.x},${reading.body.y},`;
+    key += `${reading.body.z},${reading.body.value},`;
+    key += `${reading.body.mode},${reading.body.pin},${reading.body.read_at}|`;
+  });
+  return key;
+};
+
+export const getImageTextureKey = (props: ImageTextureProps) => {
+  const extents = soilSurfaceExtents(props.config);
+  const moistureVisible = props.showMoistureMap || props.showMoistureReadings;
+  return [
+    extents.x.min, extents.x.max,
+    extents.y.min, extents.y.max,
+    props.showMoistureMap,
+    props.showMoistureReadings,
+    moistureVisible && getSensorKey(props.sensors),
+    moistureVisible && getSensorReadingKey(props.sensorReadings),
+  ].join(":");
+};
+
 export const ImageTexture = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
@@ -98,10 +132,8 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const textureHeight = height >= width
     ? textureSize
     : Math.max(1, Math.round(textureSize * height / width));
-  const textureKey = [
-    extents.x.min, extents.x.max,
-    extents.y.min, extents.y.max,
-  ].join(":");
+  const textureKey = perfMeasure("imageTextureSetupMs", () =>
+    getImageTextureKey(props));
   const { bedXOffset, bedYOffset, bedWallThickness } = props.config;
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soilT");
   const color = getColorFromBrightness(props.config.soilBrightness);
@@ -109,21 +141,27 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const designer = addPlantProps?.designer;
   const getConfigValue = addPlantProps?.getConfigValue;
   const visible = !!addPlantProps?.getConfigValue(BooleanSetting.show_images);
-  const filteredImages = filterImages({
-    visible,
-    designer,
-    images,
-    getConfigValue,
-    calibrationZ: "" + props.config.imgCalZ,
-  });
-  const imageArray = filteredImages.filter(img => !img.highlighted);
-  const lastImageArray = filteredImages.filter(img => img.highlighted);
+  const { imageArray, lastImageArray } =
+    perfMeasure("imageTextureSetupMs", () => {
+      const filteredImages = filterImages({
+        visible,
+        designer,
+        images,
+        getConfigValue,
+        calibrationZ: "" + props.config.imgCalZ,
+      });
+      return {
+        imageArray: filteredImages.filter(img => !img.highlighted),
+        lastImageArray: filteredImages.filter(img => img.highlighted),
+      };
+    });
   const highlightActive = lastImageArray[0]?.highlighted;
   const commonProps = { width, height, bedWallThickness };
   const mirrorTextureProps = getMirrorTextureProps(props.config);
   return <RenderTexture
     key={textureKey}
     attach={"map"}
+    frames={1}
     width={textureWidth}
     height={textureHeight}
     repeat={mirrorTextureProps.repeat}
@@ -213,27 +251,29 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   const texture = useTexture(url);
   const i = (texture.source?.data ?? texture.image) as HTMLImageElement | undefined;
   if (!i) { return; }
-  const aspect = i.width / i.height;
-  const height = i.height * config.imgScale;
-  const width = height * aspect;
-  if (!props.image.highlighted &&
-    !imageSizeCheck({ width: i.width, height: i.height },
-      { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
+  return perfMeasure("imageWrapperSetupMs", () => {
+    const aspect = i.width / i.height;
+    const height = i.height * config.imgScale;
+    const width = height * aspect;
+    if (!props.image.highlighted &&
+      !imageSizeCheck({ width: i.width, height: i.height },
+        { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
 
-  const alreadyRotated = isRotated(props.image.body.meta.name);
-  const initialRotation = alreadyRotated ? 0 : config.imgRotation;
-  const rotation = (initialRotation + extraRotation(config)) * Math.PI / 180;
+    const alreadyRotated = isRotated(props.image.body.meta.name);
+    const initialRotation = alreadyRotated ? 0 : config.imgRotation;
+    const rotation = (initialRotation + extraRotation(config)) * Math.PI / 180;
 
-  return <Decal
-    name={"image"}
-    map={texture}
-    position={getImagePosition(
-      config, props.x, props.y, props.xOffset, props.yOffset, props.z)}
-    debug={config.lightsDebug}
-    material-side={DoubleSide}
-    depthTest={true}
-    rotation={[0, 0, rotation]}
-    scale={[width, height, 1000]} />;
+    return <Decal
+      name={"image"}
+      map={texture}
+      position={getImagePosition(
+        config, props.x, props.y, props.xOffset, props.yOffset, props.z)}
+      debug={config.lightsDebug}
+      material-side={DoubleSide}
+      depthTest={true}
+      rotation={[0, 0, rotation]}
+      scale={[width, height, 1000]} />;
+  });
 };
 
 export const extraRotation = (config: Config) => {

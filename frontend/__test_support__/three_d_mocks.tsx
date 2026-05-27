@@ -229,15 +229,21 @@ jest.mock("@react-three/fiber", () => ({
 
 jest.mock("@react-spring/three", () => ({
   useSpring: (props: UseSpringProps) => {
-    if (typeof props == "function") { (props as Function)(); }
+    const springProps = typeof props == "function"
+      ? (props as Function)()
+      : props;
+    const onRest = springProps.onRest;
+    React.useEffect(() => {
+      onRest?.();
+    }, [onRest]);
     const resolvedTo =
-      props.to && typeof props.to == "object"
-        ? props.to
+      springProps.to && typeof springProps.to == "object"
+        ? springProps.to
         : {};
     const api = {
       start: jest.fn(() => Promise.resolve()),
     };
-    return [{ ...props, ...props.from, ...resolvedTo }, api];
+    return [{ ...springProps, ...springProps.from, ...resolvedTo }, api];
   },
 
   // mocks for `<animated.mesh...` and similar:
@@ -779,8 +785,11 @@ jest.mock("@react-three/drei", () => {
       <div className={"text"}>{children}</div>,
     Detailed: ({ children }: { children: ReactNode }) =>
       <div className={"detailed"}>{children}</div>,
-    Html: ({ children }: { children: ReactNode }) =>
-      <div className={"html"}>{children}</div>,
+    Html: ({ children, style }: {
+      children: ReactNode,
+      style?: React.CSSProperties,
+    }) =>
+      <div className={"html"} style={style}>{children}</div>,
     PerspectiveCamera: ({ name }: { name: string }) =>
       <div className={"perspective-camera"}>{name}</div>,
     useCursor: jest.fn(),
@@ -803,8 +812,12 @@ jest.mock("@react-three/drei", () => {
       };
       return makeTexture();
     }),
-    RenderTexture: ({ children }: { children: ReactNode }) =>
-      <div className={"render-texture"}>{children}</div>,
+    RenderTexture: (
+      props: { children: ReactNode, frames?: number },
+    ) =>
+      <div className={"render-texture"} data-frames={props.frames}>
+        {props.children}
+      </div>,
     GizmoHelper: ({ name }: { name: string }) =>
       <div className={"gizmo-helper"}>{name}</div>,
     GizmoViewcube: ({ name }: { name: string }) =>

@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
 } from "../index";
+import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
@@ -14,10 +15,18 @@ import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 beforeEach(() => {
+  console.log = jest.fn();
+  window.localStorage.clear();
+  delete window.__fbPerf;
   jest.spyOn(configStorageActions, "getWebAppConfigValue")
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
 });
 
 describe("<ThreeDGarden />", () => {
@@ -33,6 +42,24 @@ describe("<ThreeDGarden />", () => {
   it("renders", () => {
     const { container } = render(<ThreeDGarden {...fakeProps()} />);
     expect(container).toContainHTML("three-d-garden");
+  });
+
+  it("disables canvas shadows in low-detail mode", () => {
+    const canvasSpy = jest.spyOn(reactThreeFiber, "Canvas");
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    render(<ThreeDGarden {...p} />);
+    expect(canvasSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ shadows: false }),
+      undefined);
+    canvasSpy.mockRestore();
+  });
+
+  it("counts benchmark renders", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    render(<ThreeDGarden {...fakeProps()} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
+    expect(window.__fbPerf?.marks.three_d_garden_mounted.length).toEqual(1);
   });
 });
 

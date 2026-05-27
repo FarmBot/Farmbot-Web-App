@@ -7,10 +7,12 @@ import {
   Group as GroupType,
   Color,
   WebGLProgramParametersWithUniforms,
-  InstancedMesh as InstancedMeshType,
+  InstancedMesh as ThreeInstancedMesh,
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
+  type Raycaster,
+  type Intersection,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -32,7 +34,8 @@ import {
 import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCrop } from "../../crops/find";
-import { instancedMeshKey } from "./instanced_mesh_key";
+import { perfMeasure } from "../../performance/perf";
+import { clickWasDragged } from "../click_event";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -102,20 +105,52 @@ export interface PlantSpreadInstancesProps {
   dispatch?: Function;
   activePositionRef: ActivePositionRef;
   spreadVisible: boolean;
+  instanceCapacity?: number;
 }
 
-export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
+interface PlantSpreadUpdateState {
+  needsInstanceUpdate: boolean;
+  lastUpdateKey: string;
+}
+
+const plantSpreadRaycast = function (
+  this: ThreeInstancedMesh,
+  raycaster: Raycaster,
+  intersects: Intersection[],
+) {
+  if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
+  ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
+
+const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
+  needsInstanceUpdate: true,
+  lastUpdateKey: "",
+});
+
+export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
   } = props;
+  const instanceCapacity = Math.max(props.instanceCapacity || 0, plants.length);
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
-  const instancedRef = React.useRef<InstancedMeshType>(null);
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
   const tempColor = React.useMemo(() => new Color(), []);
+  const updateStateRef =
+    React.useRef<PlantSpreadUpdateState>(newPlantSpreadUpdateState());
+  const getUpdateState = () => {
+    const current =
+      updateStateRef.current as Partial<PlantSpreadUpdateState> | undefined;
+    if (typeof current?.needsInstanceUpdate != "boolean" ||
+      typeof current?.lastUpdateKey != "string") {
+      updateStateRef.current = newPlantSpreadUpdateState();
+    }
+    return updateStateRef.current;
+  };
   const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
@@ -135,12 +170,14 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   const activeDragSpread = editPlantMode
     ? currentPlant?.spread
     : findCrop(Path.getCropSlug()).spread;
+  const hasTransientPlant = React.useMemo(() =>
+    plants.some(plant => !plant.id), [plants]);
 
-  const ensureInstanceColor = React.useCallback((mesh: InstancedMeshType) => {
+  const ensureInstanceColor = React.useCallback((mesh: ThreeInstancedMesh) => {
     const needsResize = !mesh.instanceColor
-      || mesh.instanceColor.count != plants.length;
+      || mesh.instanceColor.count != instanceCapacity;
     if (needsResize) {
-      const colors = new Float32Array(plants.length * 3);
+      const colors = new Float32Array(instanceCapacity * 3);
       colors.fill(1);
       mesh.instanceColor = new InstancedBufferAttribute(colors, 3);
       if (mesh.geometry) {
@@ -154,7 +191,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
         material.needsUpdate = true;
       }
     }
-  }, [plants.length]);
+  }, [instanceCapacity]);
 
   React.useLayoutEffect(() => {
     const mesh = instancedRef.current;
@@ -162,69 +199,95 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
     ensureInstanceColor(mesh);
   }, [ensureInstanceColor]);
 
+  React.useEffect(() => {
+    const updateState = getUpdateState();
+    updateState.needsInstanceUpdate = true;
+  }, [activeDragSpread, config, getZ, plants]);
+
+  // eslint-disable-next-line complexity
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh || visible === false) { return; }
+    const updateState = getUpdateState();
+    const clickToAddMode = getMode() == Mode.clickToAdd;
+    const spreadActive =
+      spreadVisible || editPlantMode || clickToAddMode || hasTransientPlant;
+    if (!spreadActive && !updateState.needsInstanceUpdate) { return; }
     ensureInstanceColor(mesh);
     tempQuaternion.copy(state.camera.quaternion);
-    const worldPos = activePositionRef.current || { x: -10000, y: -10000 };
-    const activePointer = getGardenPositionFunc(config)(worldPos);
     const active = editPlantMode
       ? {
         x: currentPlant?.x || -10000,
         y: currentPlant?.y || -10000,
       }
-      : {
-        x: activePointer.x,
-        y: activePointer.y,
-      };
-    const clickToAddMode = getMode() == Mode.clickToAdd;
-    plants.forEach((plant, index) => {
-      const spreadRadii = getSpreadRadii({
-        activeDragSpread,
-        inactiveSpread: plant.spread,
-        radius: plant.size / 2,
-      });
-      const scale = (spreadVisible || !plant.id || editPlantMode)
-        ? spreadRadii.inactive
-        : 0;
-      const position = get3DPosition({ x: plant.x, y: plant.y });
-      tempPosition.set(
-        position.x,
-        position.y,
-        getPlantZ(plant.size, plant),
-      );
-      tempScale.set(scale, scale, scale);
-      tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
-      mesh.setMatrixAt(index, tempMatrix);
-      if (mesh.setColorAt) {
-        const overlap = getSpreadOverlap({
-          spreadRadii,
-          activeDragXY: {
-            x: round(active.x),
-            y: round(active.y),
-            z: 0,
-          },
-          plantXY: {
-            x: round(plant.x),
-            y: round(plant.y),
-            z: 0,
-          },
+      : getGardenPositionFunc(config)(
+        activePositionRef.current || { x: -10000, y: -10000 });
+    const activeKey = (clickToAddMode || editPlantMode)
+      ? `${round(active.x)}:${round(active.y)}`
+      : "";
+    const updateKey = [
+      spreadVisible,
+      editPlantMode,
+      clickToAddMode,
+      hasTransientPlant,
+      plantId,
+      activeDragSpread || "",
+      activeKey,
+    ].join(":");
+    if (!updateState.needsInstanceUpdate &&
+      updateState.lastUpdateKey == updateKey) { return; }
+    perfMeasure("spreadFrameUpdateMs", () => {
+      plants.forEach((plant, index) => {
+        const spreadRadii = getSpreadRadii({
+          activeDragSpread,
+          inactiveSpread: plant.spread,
+          radius: plant.size / 2,
         });
-        const color = (plant.id && (plantId != plant.id))
-          ? overlap.color.rgb
-          : [1, 1, 1];
-        const insideColor =
-          (clickToAddMode || editPlantMode) ? color : [0, 1, 0];
-        tempColor.setRGB(insideColor[0], insideColor[1], insideColor[2]);
-        mesh.setColorAt(index, tempColor);
-      }
+        const scale = (spreadVisible || !plant.id || editPlantMode)
+          ? spreadRadii.inactive
+          : 0;
+        const position = get3DPosition({ x: plant.x, y: plant.y });
+        tempPosition.set(
+          position.x,
+          position.y,
+          getPlantZ(plant.size, plant),
+        );
+        tempScale.set(scale, scale, scale);
+        tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
+        mesh.setMatrixAt(index, tempMatrix);
+        if (mesh.setColorAt) {
+          let insideColor = [0, 1, 0];
+          if (clickToAddMode || editPlantMode) {
+            const overlap = getSpreadOverlap({
+              spreadRadii,
+              activeDragXY: {
+                x: round(active.x),
+                y: round(active.y),
+                z: 0,
+              },
+              plantXY: {
+                x: round(plant.x),
+                y: round(plant.y),
+                z: 0,
+              },
+            });
+            insideColor = (plant.id && (plantId != plant.id))
+              ? overlap.color.rgb
+              : [1, 1, 1];
+          }
+          tempColor.setRGB(insideColor[0], insideColor[1], insideColor[2]);
+          mesh.setColorAt(index, tempColor);
+        }
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
     });
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
+    updateState.needsInstanceUpdate = false;
+    updateState.lastUpdateKey = updateKey;
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
@@ -236,11 +299,13 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   };
 
   return <InstancedMesh
-    key={instancedMeshKey(plants)}
+    key={`plant-spread-${instanceCapacity}`}
     ref={instancedRef}
-    args={[undefined, undefined, plants.length]}
+    args={[undefined, undefined, instanceCapacity]}
+    count={plants.length}
     userData={{ plantIndexes }}
     visible={visible}
+    raycast={plantSpreadRaycast}
     onClick={onClick}>
     <SphereGeometry args={[1, 32, 32]} />
     <MeshPhongMaterial
@@ -258,7 +323,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
       }}
       depthWrite={false} />
   </InstancedMesh>;
-};
+});
 
 
 export const getBoundsCenter = (config: Config) => () =>

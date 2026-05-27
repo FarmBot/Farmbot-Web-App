@@ -11,6 +11,7 @@ import { destroy } from "../api/crud";
 import { isUndefined, round } from "lodash";
 import { Path } from "../internal_urls";
 import { svgToUrl } from "../point_groups/point_group_item";
+import { perfMark } from "../performance/perf";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;
@@ -42,7 +43,7 @@ const PointGraphic = ({ hovered, colorOverride, color }: PointGraphicProps) => {
 };
 
 // The individual points that show up in the farm designer sub nav.
-export const PointInventoryItem = (props: PointInventoryItemProps) => {
+export const PointInventoryItem = React.memo((props: PointInventoryItemProps) => {
   const navigate = useNavigate();
   const point = props.tpp.body;
   const color = point.meta.color || "green";
@@ -58,6 +59,7 @@ export const PointInventoryItem = (props: PointInventoryItemProps) => {
   };
 
   const click = () => {
+    perfMark("point_inventory_item_click");
     if (DevSettings.quickDeleteEnabled()) {
       dispatch(destroy(tpp.uuid, true));
       return;
@@ -89,4 +91,6 @@ export const PointInventoryItem = (props: PointInventoryItemProps) => {
         <i>{` ${round(props.distance)}mm ${t("away")}`}</i>}
     </p>
   </div>;
-};
+});
+
+PointInventoryItem.displayName = "PointInventoryItem";

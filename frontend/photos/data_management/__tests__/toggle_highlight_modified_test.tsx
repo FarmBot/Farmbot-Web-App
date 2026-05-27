@@ -6,6 +6,9 @@ import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { ToggleButton } from "../../../ui";
 import { ToggleButtonProps } from "../../../ui/toggle_button";
+import {
+  findElementByType,
+} from "../../../__test_support__/react_element_search";
 
 let setWebAppConfigValueSpy: jest.SpyInstance;
 let getWebAppConfigValueSpy: jest.SpyInstance;
@@ -22,27 +25,6 @@ afterEach(() => {
   getWebAppConfigValueSpy.mockRestore();
 });
 
-const findByType = (
-  node: React.ReactNode,
-  type: unknown,
-): React.ReactElement<ToggleButtonProps> | undefined => {
-  if (!node) { return undefined; }
-  if (Array.isArray(node)) {
-    for (const child of React.Children.toArray(node)) {
-      const found = findByType(child, type);
-      if (found) { return found; }
-    }
-    return undefined;
-  }
-  if (React.isValidElement(node)) {
-    if (node.type === type) {
-      return node as React.ReactElement<ToggleButtonProps>;
-    }
-    return findByType((node.props as { children?: React.ReactNode }).children, type);
-  }
-  return undefined;
-};
-
 describe("<ToggleHighlightModified />", () => {
   const fakeProps = (): ToggleHighlightModifiedProps => ({
     dispatch: jest.fn(),
@@ -52,7 +34,8 @@ describe("<ToggleHighlightModified />", () => {
   it("toggles on", () => {
     const { container } = render(<ToggleHighlightModified {...fakeProps()} />);
     const element = ToggleHighlightModified(fakeProps());
-    const toggleButton = findByType(element, ToggleButton);
+    const toggleButton =
+      findElementByType<ToggleButtonProps>(element, ToggleButton);
     if (!toggleButton) {
       expect(container.firstChild).toBeTruthy();
       return;
@@ -67,7 +50,8 @@ describe("<ToggleHighlightModified />", () => {
     p.getConfigValue = () => true;
     const { container } = render(<ToggleHighlightModified {...p} />);
     const element = ToggleHighlightModified(p);
-    const toggleButton = findByType(element, ToggleButton);
+    const toggleButton =
+      findElementByType<ToggleButtonProps>(element, ToggleButton);
     if (!toggleButton) {
       expect(container.firstChild).toBeTruthy();
       return;

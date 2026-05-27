@@ -1,10 +1,12 @@
 import React from "react";
 import {
-  InstancedMesh as InstancedMeshType,
+  InstancedMesh as ThreeInstancedMesh,
   Matrix4,
   Quaternion,
   Vector3,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
+  type Intersection,
+  type Raycaster,
 } from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { useNavigate } from "react-router";
@@ -24,9 +26,10 @@ import {
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
 import { Mode } from "../../farm_designer/map/interfaces";
-import moment from "moment";
-import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
-import { instancedMeshKey } from "./instanced_mesh_key";
+import {
+  calcSunCoordinate, calcSunI, getAnimatedSeasonDate,
+} from "./sun";
+import { clickWasDragged } from "../click_event";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -35,16 +38,39 @@ export interface PlantInstancesProps {
   visible?: boolean;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
+  iconCapacities?: Record<string, number>;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
   icon: string;
   plants: ThreeDGardenPlant[];
   plantIndexes: number[];
+  capacity: number;
 }
+
+interface PlantIconUpdateState {
+  lastCameraQuaternion: Quaternion;
+  hasCameraQuaternion: boolean;
+  needsMatrixUpdate: boolean;
+}
+
+const newPlantIconUpdateState = (): PlantIconUpdateState => ({
+  lastCameraQuaternion: new Quaternion(),
+  hasCameraQuaternion: false,
+  needsMatrixUpdate: true,
+});
 
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
+
+const plantIconRaycast = function (
+  this: ThreeInstancedMesh,
+  raycaster: Raycaster,
+  intersects: Intersection[],
+) {
+  if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
+  ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
 
 const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const {
@@ -57,10 +83,20 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     () => getPlantIconTexture(baseTexture, icon),
     [baseTexture, icon]);
   // eslint-disable-next-line no-null/no-null
-  const instancedRef = React.useRef<InstancedMeshType>(null);
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   // eslint-disable-next-line no-null/no-null
   const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
   const lastBrightness = React.useRef<number | undefined>(undefined);
+  const updateStateRef =
+    React.useRef<PlantIconUpdateState>(newPlantIconUpdateState());
+  const getUpdateState = () => {
+    const current =
+      updateStateRef.current as Partial<PlantIconUpdateState> | undefined;
+    if (!current?.lastCameraQuaternion) {
+      updateStateRef.current = newPlantIconUpdateState();
+    }
+    return updateStateRef.current;
+  };
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
@@ -71,16 +107,26 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
 
+  React.useEffect(() => {
+    const updateState = getUpdateState();
+    updateState.needsMatrixUpdate = true;
+    lastBrightness.current = undefined;
+  }, [config, getZ, plants, startTimeRef]);
+
+  // eslint-disable-next-line complexity
   useFrame(state => {
     const mesh = instancedRef.current;
-    if (!mesh) { return; }
+    if (!mesh || visible === false) { return; }
+    if (plants.length == 0) { return; }
+    const updateState = getUpdateState();
+    const seasonAnimating = !!(config.animateSeasons && startTimeRef);
+    const cameraChanged = !updateState.hasCameraQuaternion
+      || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
-    if (config.animateSeasons && startTimeRef) {
-      const totalCycle = getCycleLength(config.plants);
+    if (seasonAnimating) {
       const currentTime = performance.now() / 1000;
       const t = currentTime - (startTimeRef.current || 0);
-      const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
-      const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
+      const date = getAnimatedSeasonDate(config.plants, t);
       sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
     }
     const brightness = plantIconBrightness(sunFactor);
@@ -89,6 +135,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       brightness != lastBrightness.current) {
       materialRef.current.color.setScalar(brightness);
       lastBrightness.current = brightness;
+    }
+    if (!updateState.needsMatrixUpdate && !seasonAnimating && !cameraChanged) {
+      return;
     }
     tempQuaternion.copy(state.camera.quaternion);
     const currentTime = performance.now() / 1000;
@@ -108,9 +157,13 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       mesh.setMatrixAt(index, tempMatrix);
     });
     mesh.instanceMatrix.needsUpdate = true;
+    updateState.lastCameraQuaternion.copy(state.camera.quaternion);
+    updateState.hasCameraQuaternion = true;
+    updateState.needsMatrixUpdate = false;
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
@@ -122,11 +175,13 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   };
 
   return <InstancedMesh
-    key={instancedMeshKey(plants)}
     ref={instancedRef}
-    args={[undefined, undefined, plants.length]}
+    args={[undefined, undefined, props.capacity]}
+    count={plants.length}
+    frustumCulled={false}
     userData={{ plantIndexes }}
     visible={visible}
+    raycast={plantIconRaycast}
     onClick={onClick}
     renderOrder={RenderOrder.plants}>
     <PlaneGeometry args={[1, 1]} />
@@ -138,9 +193,22 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   </InstancedMesh>;
 };
 
-export const PlantInstances = (props: PlantInstancesProps) => {
+export const PlantInstances = React.memo((props: PlantInstancesProps) => {
   const instances = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
+    Object.entries(props.iconCapacities || {}).map(([icon, capacity]) => {
+      iconInstances[icon] = {
+        config: props.config,
+        dispatch: props.dispatch,
+        getZ: props.getZ,
+        icon,
+        plants: [],
+        plantIndexes: [],
+        capacity,
+        startTimeRef: props.startTimeRef,
+        visible: props.visible,
+      };
+    });
     props.plants.forEach((plant, index) => {
       const instance = iconInstances[plant.icon];
       if (instance) {
@@ -148,20 +216,39 @@ export const PlantInstances = (props: PlantInstancesProps) => {
         instance.plantIndexes.push(index);
       } else {
         iconInstances[plant.icon] = {
-          ...props,
+          config: props.config,
+          dispatch: props.dispatch,
+          getZ: props.getZ,
           icon: plant.icon,
           plants: [plant],
           plantIndexes: [index],
+          capacity: 0,
+          startTimeRef: props.startTimeRef,
+          visible: props.visible,
         };
       }
     });
-    return Object.values(iconInstances);
-  }, [props]);
+    return Object.values(iconInstances).map(instance => ({
+      ...instance,
+      capacity: Math.max(
+        instance.plants.length,
+        props.iconCapacities?.[instance.icon] || 0,
+      ),
+    }));
+  }, [
+    props.config,
+    props.dispatch,
+    props.getZ,
+    props.iconCapacities,
+    props.plants,
+    props.startTimeRef,
+    props.visible,
+  ]);
 
   return <>
     {instances.map(instance =>
       <PlantIconInstances
-        key={instance.icon}
+        key={`${instance.icon}-${instance.capacity}`}
         {...instance} />)}
   </>;
-};
+});

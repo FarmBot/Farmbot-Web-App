@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+render_env="scripts/ci/render-env"
+github_env="${GITHUB_ENV:?GITHUB_ENV is required}"
+
+set -a
+# shellcheck disable=SC1091
+. "$render_env"
+set +a
+
+while IFS= read -r line; do
+  case "$line" in
+    ': "${'*':='*'}"')
+      name="${line#*: \"\$\{}"
+      name="${name%%:=*}"
+      echo "$name=${!name}" >> "$github_env"
+      ;;
+  esac
+done < "$render_env"

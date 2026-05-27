@@ -124,6 +124,7 @@ describe("<NavBar />", () => {
     const { container } = renderNavBar();
     const navWrapper = container.querySelector(".nav-wrapper");
     expect(navWrapper).toBeTruthy();
+    expect(navWrapper?.classList.contains("nav-load-in")).toBeTruthy();
     expect(navWrapper?.classList.contains("red")).toBeFalsy();
     expect(container.querySelector(".connectivity-button.hover")).toBeFalsy();
   });
@@ -133,6 +134,26 @@ describe("<NavBar />", () => {
     const { container } = renderNavBar();
     const text = container.textContent?.toLowerCase() || "";
     expect(text).toContain("using a demo account");
+  });
+
+  it("sets demo state when forced online", () => {
+    forceOnlineSpy.mockImplementation(() => true);
+    const p = fakeProps();
+    renderNavBar(p);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_STATE,
+      payload: undefined,
+    });
+  });
+
+  it("doesn't set demo state when not forced online", () => {
+    forceOnlineSpy.mockImplementation(() => false);
+    const p = fakeProps();
+    renderNavBar(p);
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_STATE,
+      payload: undefined,
+    });
   });
 
   it("displays links", () => {

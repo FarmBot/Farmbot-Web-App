@@ -1,9 +1,10 @@
 import React from "react";
 import { Config, detailLevels } from "../config";
-import { Detailed, useTexture } from "@react-three/drei";
+import { Detailed } from "@react-three/drei";
 import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
 import { CircleGeometry, Float32BufferAttribute, RepeatWrapping } from "three";
+import { useTextureVariant } from "../texture_variants";
 
 export interface GroundProps {
   config: Config;
@@ -44,30 +45,21 @@ export const Ground = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
 
-  const grassTextureBase = useTexture(ASSETS.textures.grass + "?=grass");
-  const grassTexture = React.useMemo(() => {
-    const texture = grassTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(24, 24);
-    return texture;
-  }, [grassTextureBase]);
-  const labFloorTextureBase = useTexture(ASSETS.textures.concrete + "?=labFloor");
-  const labFloorTexture = React.useMemo(() => {
-    const texture = labFloorTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(16, 24);
-    return texture;
-  }, [labFloorTextureBase]);
-  const brickTextureBase = useTexture(ASSETS.textures.bricks + "?=bricks");
-  const brickTexture = React.useMemo(() => {
-    const texture = brickTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(30, 30);
-    return texture;
-  }, [brickTextureBase]);
+  const grassTexture = useTextureVariant(ASSETS.textures.grass, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [24, 24],
+  });
+  const labFloorTexture = useTextureVariant(ASSETS.textures.concrete, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [16, 24],
+  });
+  const brickTexture = useTextureVariant(ASSETS.textures.bricks, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [30, 30],
+  });
 
   const getGroundProperties = (sceneName: string) => {
     switch (sceneName) {

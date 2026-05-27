@@ -588,6 +588,7 @@ describe("collectDemoSequenceActions()", () => {
   beforeEach(() => {
     localStorage.setItem("myBotIs", "online");
     setCurrent({ x: 0, y: 0, z: 0 });
+    console.log = jest.fn();
     runLuaSpy = jest.spyOn(runModule, "runLua")
       .mockImplementation((_depth, lua) => {
         if (lua.includes("\"x\"") || lua.includes("'x'")) {
@@ -985,7 +986,7 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(console.log).toHaveBeenCalledWith("[3,2,1]");
+    expect(console.log).toHaveBeenCalledWith("[1,2,3]");
   });
 
   it("runs json.encode", () => {
@@ -996,7 +997,7 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(console.log).toHaveBeenCalledWith("[3,2,1]");
+    expect(console.log).toHaveBeenCalledWith("[1,2,3]");
   });
 
   it("runs json.decode", () => {
@@ -1252,6 +1253,39 @@ describe("runDemoLuaCode()", () => {
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith("undefined");
+  });
+
+  it("runs read_status", () => {
+    mockLocked = false;
+    runDemoLuaCode(`
+      local status = read_status()
+      print(status.informational_settings.locked)
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(console.log).toHaveBeenCalledWith("false");
+  });
+
+  it("runs read_status with a path", () => {
+    runDemoLuaCode(`
+      print(read_status("informational_settings", "locked"))
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("false");
+  });
+
+  it("runs read_status with a table path", () => {
+    runDemoLuaCode(`
+      print(read_status({"informational_settings", "locked"}))
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("false");
   });
 
   it("runs find_home: all", () => {
@@ -1844,7 +1878,7 @@ describe("csToLua()", () => {
  * [   ] new_sensor_reading
  * [ y ] photo_grid
  * [ y ] read_pin
- * [   ] read_status
+ * [ y ] read_status
  * [ y ] rpc
  * [ y ] sequence
  * [ y ] send_message

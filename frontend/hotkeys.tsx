@@ -119,6 +119,7 @@ export const hotkeysWithActions = (props: HotkeysWithActionsProps) => {
         if (!isUndefined(designer.drawnPoint?.cx)) {
           dispatch(resetDrawnPointDataAction());
         } else {
+          navigate(Path.designer());
           dispatch(setPanelOpen(false));
         }
       },

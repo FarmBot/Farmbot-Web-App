@@ -132,7 +132,7 @@ describe("<Bed />", () => {
 
   afterEach(() => {
     requestAnimationFrameSpy.mockRestore();
-    history.replaceState(undefined, "", originalPathname);
+    location.pathname = originalPathname;
   });
 
   const fakeProps = (): BedProps => ({
@@ -169,7 +169,7 @@ describe("<Bed />", () => {
     ["renders", SpecialStatus.SAVED],
   ])("%s pointer point", (title, gridPointSpecialStatus) => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
@@ -194,7 +194,7 @@ describe("<Bed />", () => {
 
   it("adds a plant", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
     const { container } = render(<Bed {...p} />);
@@ -207,7 +207,7 @@ describe("<Bed />", () => {
 
   it("doesn't add a drawn point", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();
     addPlantProps.designer.drawnPoint = undefined;
@@ -220,7 +220,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: xy", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();
@@ -242,7 +242,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: radius", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();
@@ -264,7 +264,7 @@ describe("<Bed />", () => {
 
   it("updates pointer plant position", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.mock(Path.cropSearch("mint")));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
@@ -281,7 +281,7 @@ describe("<Bed />", () => {
 
   it("handles missing ref", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.mock(Path.cropSearch("mint")));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     mockPlantRef.current = undefined;
     mockXCrosshairRef.current = undefined;
@@ -297,7 +297,7 @@ describe("<Bed />", () => {
 
   it("handles missing crosshair refs", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.mock(Path.cropSearch("mint")));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockXCrosshairRef.current = undefined;
@@ -314,7 +314,7 @@ describe("<Bed />", () => {
 
   it("doesn't update pointer plant position: mobile", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.mock(Path.cropSearch("mint")));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = true;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
@@ -329,7 +329,7 @@ describe("<Bed />", () => {
 
   it("doesn't update pointer point position", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
@@ -345,7 +345,7 @@ describe("<Bed />", () => {
 
   it("updates pointer point position", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
@@ -367,7 +367,7 @@ describe("<Bed />", () => {
 
   it("updates pointer point radius", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
@@ -393,7 +393,7 @@ describe("<Bed />", () => {
 
   it("doesn't update pointer point radius: no ref", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = undefined;
@@ -419,7 +419,7 @@ describe("<Bed />", () => {
 
   it("doesn't update pointer point radius: already set", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };

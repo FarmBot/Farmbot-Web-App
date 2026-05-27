@@ -1,15 +1,19 @@
 import React from "react";
-import { Box, Extrude, useTexture } from "@react-three/drei";
+import { Box, Extrude } from "@react-three/drei";
 import { DoubleSide, Shape, RepeatWrapping } from "three";
 import { ASSETS } from "../constants";
 import { threeSpace } from "../helpers";
 import { Config } from "../config";
 import { Desk, People } from "./props";
 import { Group, MeshPhongMaterial } from "../components";
+import { PopInGroup } from "../progressive_load";
+import { useTextureVariant } from "../texture_variants";
 
 export interface LabProps {
   config: Config;
   activeFocus: string;
+  reveal?: boolean;
+  onDetailsLoadInRest?(): void;
 }
 
 const wallLength = 10000;
@@ -37,65 +41,68 @@ export const Lab = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
-  const shelfWoodTextureBase = useTexture(ASSETS.textures.wood + "?=shelf");
-  const shelfWoodTexture = React.useMemo(() => {
-    const texture = shelfWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.3, 0.3);
-    return texture;
-  }, [shelfWoodTextureBase]);
+  const shelfWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.3, 0.3],
+  });
 
   return <Group name={"lab-environment"} visible={config.scene == "Lab"}>
-    <Group
-      name={"lab-walls"}
-      position={[
-        threeSpace(-wallOffset, config.bedLengthOuter),
-        threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
-        groundZ,
-      ]}>
-      <Extrude
-        name={"walls"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[
-          wallStructure2D(),
-          { steps: 1, depth: wallHeight, bevelEnabled: false },
+    <PopInGroup
+      name={"lab-scene-details-load-in"}
+      reveal={props.reveal}
+      onRest={props.onDetailsLoadInRest}
+      distance={300}>
+      <Group
+        name={"lab-walls"}
+        position={[
+          threeSpace(-wallOffset, config.bedLengthOuter),
+          threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
+          groundZ,
         ]}>
-        <MeshPhongMaterial color={wallColor} side={DoubleSide} />
-      </Extrude>
-      {[wallHeight / 2, wallHeight / 3].map((shelfHeight, index) => (
-        <Box
-          name={"shelf"}
-          key={index}
+        <Extrude
+          name={"walls"}
           castShadow={true}
           receiveShadow={true}
-          args={[wallLength, wallThickness, shelfThickness]}
-          position={[
-            wallLength / 2,
-            -wallThickness / 2,
-            shelfHeight,
+          args={[
+            wallStructure2D(),
+            { steps: 1, depth: wallHeight, bevelEnabled: false },
           ]}>
-          <MeshPhongMaterial
-            map={shelfWoodTexture}
-            color={"#999"}
-            side={DoubleSide} />
-        </Box>
-      ))}
-    </Group>
-    <Desk config={config} activeFocus={props.activeFocus} />
-    <People
-      activeFocus={props.activeFocus}
-      config={config}
-      people={[
-        {
-          url: ASSETS.people.person1Flipped,
-          offset: [-300, -300],
-        },
-        {
-          url: ASSETS.people.person2Flipped,
-          offset: [config.bedLengthOuter / 2, config.bedWidthOuter + 500],
-        },
-      ]} />
+          <MeshPhongMaterial color={wallColor} side={DoubleSide} />
+        </Extrude>
+        {[wallHeight / 2, wallHeight / 3].map((shelfHeight, index) => (
+          <Box
+            name={"shelf"}
+            key={index}
+            castShadow={true}
+            receiveShadow={true}
+            args={[wallLength, wallThickness, shelfThickness]}
+            position={[
+              wallLength / 2,
+              -wallThickness / 2,
+              shelfHeight,
+            ]}>
+            <MeshPhongMaterial
+              map={shelfWoodTexture}
+              color={"#999"}
+              side={DoubleSide} />
+          </Box>
+        ))}
+      </Group>
+      <Desk config={config} activeFocus={props.activeFocus} />
+      <People
+        activeFocus={props.activeFocus}
+        config={config}
+        people={[
+          {
+            url: ASSETS.people.person1Flipped,
+            offset: [-300, -300],
+          },
+          {
+            url: ASSETS.people.person2Flipped,
+            offset: [config.bedLengthOuter / 2, config.bedWidthOuter + 500],
+          },
+        ]} />
+    </PopInGroup>
   </Group>;
 };

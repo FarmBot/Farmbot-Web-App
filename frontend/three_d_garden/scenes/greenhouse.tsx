@@ -1,15 +1,20 @@
 import React from "react";
-import { Box, useTexture } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { DoubleSide, RepeatWrapping } from "three";
 import { ASSETS } from "../constants";
 import { threeSpace } from "../helpers";
 import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
-import { StarterTray, PottedPlant, GreenhouseWall, People } from "./props";
+import { StarterTrays, PottedPlant, GreenhouseWall, People } from "./props";
+import { PopInGroup } from "../progressive_load";
+import { FocusVisibilityGroup } from "../focus_transition";
+import { useTextureVariant } from "../texture_variants";
 
 export interface GreenhouseProps {
   config: Config;
   activeFocus: string;
+  reveal?: boolean;
+  onDetailsLoadInRest?(): void;
 }
 
 const wallLength = 10000;
@@ -22,84 +27,83 @@ export const Greenhouse = (props: GreenhouseProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
-  const shelfWoodTextureBase = useTexture(ASSETS.textures.wood + "?=shelf");
-  const shelfWoodTexture = React.useMemo(() => {
-    const texture = shelfWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.3, 0.3);
-    return texture;
-  }, [shelfWoodTextureBase]);
+  const shelfWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.3, 0.3],
+  });
 
   return <Group
     name={"greenhouse-environment"}
     visible={config.scene == "Greenhouse"}>
+    <PopInGroup
+      name={"greenhouse-scene-details-load-in"}
+      reveal={props.reveal}
+      onRest={props.onDetailsLoadInRest}
+      distance={300}>
 
-    <Group
-      name={"right-greenhouse-wall"}
-      position={[
-        threeSpace(-wallOffset, config.bedLengthOuter),
-        threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
-        groundZ,
-      ]}>
-      <GreenhouseWall />
-      <Box
-        name={"shelf"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[wallLength, shelfDepth, shelfThickness]}
-        position={[wallLength / 2, -shelfDepth / 2, shelfHeight]}>
-        <MeshPhongMaterial
-          map={shelfWoodTexture}
-          color={"#aaa"}
-          side={DoubleSide}
-        />
-      </Box>
-      <Group name={"starter-tray-1"}
-        position={[2000, -shelfDepth / 2, shelfHeight + 25]}>
-        <StarterTray />
+      <Group
+        name={"right-greenhouse-wall"}
+        position={[
+          threeSpace(-wallOffset, config.bedLengthOuter),
+          threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
+          groundZ,
+        ]}>
+        <GreenhouseWall />
+        <Box
+          name={"shelf"}
+          castShadow={true}
+          receiveShadow={true}
+          args={[wallLength, shelfDepth, shelfThickness]}
+          position={[wallLength / 2, -shelfDepth / 2, shelfHeight]}>
+          <MeshPhongMaterial
+            map={shelfWoodTexture}
+            color={"#aaa"}
+            side={DoubleSide}
+          />
+        </Box>
+        <StarterTrays positions={[
+          [2000, -shelfDepth / 2, shelfHeight + 25],
+          [3000, -shelfDepth / 2, shelfHeight + 25],
+        ]} />
       </Group>
-      <Group name={"starter-tray-2"}
-        position={[3000, -shelfDepth / 2, shelfHeight + 25]}>
-        <StarterTray />
+
+      <Group
+        name={"left-greenhouse-wall"}
+        position={[
+          threeSpace(-wallOffset, config.bedLengthOuter),
+          threeSpace(config.bedWidthOuter + wallOffset - 10000,
+            config.bedWidthOuter),
+          groundZ,
+        ]}
+        rotation={[0, 0, Math.PI / 2]}>
+        <GreenhouseWall />
       </Group>
-    </Group>
 
-    <Group
-      name={"left-greenhouse-wall"}
-      position={[
-        threeSpace(-wallOffset, config.bedLengthOuter),
-        threeSpace(config.bedWidthOuter + wallOffset - 10000,
-          config.bedWidthOuter),
-        groundZ,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}>
-      <GreenhouseWall />
-    </Group>
+      <People
+        activeFocus={props.activeFocus}
+        config={config}
+        people={[
+          {
+            url: ASSETS.people.person3,
+            offset: [-400, -400],
+          },
+          {
+            url: ASSETS.people.person4Flipped,
+            offset: [0, config.bedWidthOuter + 900],
+          },
+        ]} />
 
-    <People
-      activeFocus={props.activeFocus}
-      config={config}
-      people={[
-        {
-          url: ASSETS.people.person3,
-          offset: [-400, -400],
-        },
-        {
-          url: ASSETS.people.person4Flipped,
-          offset: [0, config.bedWidthOuter + 900],
-        },
-      ]} />
-
-    <Group
-      name="potted-plant"
-      visible={props.activeFocus == ""}
-      position={[
-        threeSpace(-1750, config.bedLengthOuter),
-        threeSpace(850, -config.bedWidthOuter),
-        groundZ,
-      ]}>
-      <PottedPlant />
-    </Group>
+      <FocusVisibilityGroup
+        name="potted-plant"
+        visible={props.activeFocus == ""}
+        position={[
+          threeSpace(-1750, config.bedLengthOuter),
+          threeSpace(850, -config.bedWidthOuter),
+          groundZ,
+        ]}>
+        <PottedPlant />
+      </FocusVisibilityGroup>
+    </PopInGroup>
   </Group>;
 };

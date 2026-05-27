@@ -11,6 +11,8 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import { FocusTransitionProvider } from "../../focus_transition";
+import { RenderOrder } from "../../constants";
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
 let isDesktopSpy: jest.SpyInstance;
@@ -78,7 +80,7 @@ describe("<ZoomBeacons />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("changes cursor", () => {
+  it("hides beacon while focused", () => {
     const element = document.createElement("div");
     Object.defineProperty(document, "querySelector", {
       value: () => element,
@@ -89,19 +91,50 @@ describe("<ZoomBeacons />", () => {
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
     const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
-    actRenderer(() => {
-      sphere?.props.onPointerEnter();
-    });
-    expect(element.style.cursor).toEqual("zoom-out");
-    actRenderer(() => {
-      sphere?.props.onPointerLeave();
-    });
+    expect(sphere).toBeUndefined();
     expect(element.style.cursor).toEqual("");
-    actRenderer(() => {
-      sphere?.props.onClick();
-    });
-    expect(element.style.cursor).toEqual("");
-    expect(p.setActiveFocus).toHaveBeenCalledWith("");
+    expect(p.setActiveFocus).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("renders visible beacons without writing depth", () => {
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
+    const materials = wrapper.root.findAll(node =>
+      node.props.depthWrite === false);
+    expect(sphere.props.renderOrder).toEqual(RenderOrder.beacons);
+    expect(materials[0].props.depthTest).toBeUndefined();
+    expect(materials[0].props.depthWrite).toEqual(false);
+    unmountRenderer(wrapper);
+  });
+
+  it("applies load-in scale on each anchored beacon visual", () => {
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} loadInScale={0.35} />);
+    const beacon = wrapper.root.findAll(node =>
+      node.props.name == "zoom-beacon")[0];
+    const visual = wrapper.root.findAll(node =>
+      node.props.name == "beacon-visual")[0];
+    expect(beacon.props.position).toBeTruthy();
+    expect(visual.props.scale).toEqual(0.35);
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't mount stable focused beacon visuals", () => {
+    const p = fakeProps();
+    p.activeFocus = "What you can grow";
+    p.config.animate = false;
+    const wrapper = createRenderer(
+      <FocusTransitionProvider enabled={true}>
+        <ZoomBeacons {...p} />
+      </FocusTransitionProvider>,
+    );
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere").length).toEqual(0);
     unmountRenderer(wrapper);
   });
 
@@ -129,7 +162,8 @@ describe("<ZoomBeacons />", () => {
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
     const e = { stopPropagation: jest.fn() };
-    const info = wrapper.root.findAll(node => node.props.className == "beacon-info")[0];
+    const info = wrapper.root.findAll(node =>
+      (node.props.className || "").includes("beacon-info"))[0];
     actRenderer(() => {
       info?.props.onPointerDown(e);
       info?.props.onPointerMove(e);

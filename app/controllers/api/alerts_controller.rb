@@ -11,7 +11,7 @@ module Api
     private
 
     def alert
-      @alert ||= current_device.alerts.find(params[:id])
+      @alert ||= current_device.alerts.find(params.expect(:id))
     end
   end
 end

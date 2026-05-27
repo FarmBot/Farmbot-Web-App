@@ -32,6 +32,41 @@ describe("mapStateToProps()", () => {
     expect(mapStateToProps(state).hoveredPlant).toBeFalsy();
   });
 
+  it("reuses resource array props across bot-only updates", () => {
+    const state = fakeState();
+    const first = mapStateToProps(state);
+    const nextState = {
+      ...state,
+      bot: {
+        ...state.bot,
+        hardware: {
+          ...state.bot.hardware,
+          location_data: {
+            ...state.bot.hardware.location_data,
+            position: { x: 1, y: 2, z: 3 },
+          },
+          pins: { ...state.bot.hardware.pins },
+        },
+      },
+    };
+    const second = mapStateToProps(nextState);
+    expect(second.getConfigValue).toBe(first.getConfigValue);
+    expect(second.plants).toBe(first.plants);
+    expect(second.genericPoints).toBe(first.genericPoints);
+    expect(second.weeds).toBe(first.weeds);
+    expect(second.allPoints).toBe(first.allPoints);
+    expect(second.tools).toBe(first.tools);
+    expect(second.toolSlots).toBe(first.toolSlots);
+    expect(second.latestImages).toBe(first.latestImages);
+    expect(second.sensorReadings).toBe(first.sensorReadings);
+    expect(second.sensors).toBe(first.sensors);
+    expect(second.groups).toBe(first.groups);
+    expect(second.logs).toBe(first.logs);
+    expect(second.farmwareEnvs).toBe(first.farmwareEnvs);
+    expect(second.curves).toBe(first.curves);
+    expect(second.peripheralValues).toBe(first.peripheralValues);
+  });
+
   it("peripherals pins have correct states", () => {
     const state = fakeState();
     const peripheral1 = fakePeripheral();

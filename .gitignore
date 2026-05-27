@@ -31,3 +31,4 @@ upgrade_deps.sh
 storage/*
 tmp
 module_graph.*
+scripts/ci/__pycache__

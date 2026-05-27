@@ -12,19 +12,22 @@ import {
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { NavigateFunction } from "react-router";
-import { FilePath, Path } from "../internal_urls";
+import { Path } from "../internal_urls";
 import { t } from "../i18next_wrapper";
 import { Actions, Content, DeviceSetting } from "../constants";
 import { isMobile } from "../screen_size";
 import { Help } from "../ui";
 import { BooleanSetting } from "../session_keys";
 import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
-import { GetWebAppConfigValue, setWebAppConfigValue } from "../config_storage/actions";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue,
+} from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
 import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { isTopDown } from "./helpers";
+import { perfMark, usePerfRenderCount } from "../performance/perf";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -43,41 +46,35 @@ export interface ThreeDGardenProps {
 }
 
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
+  usePerfRenderCount("ThreeDGarden");
+  React.useEffect(() => {
+    perfMark("three_d_garden_mounted");
+  }, []);
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
-      <React.Suspense
-        fallback={
-          <div className={"three-d-garden-loading-container"}>
-            <img className={"three-d-garden-loading-image"}
-              src={FilePath.THREE_D_GARDEN_LOADING}
-              alt={"Loading 3D interactive experience..."} />
-            <h1 className={"three-d-garden-loading-text"}>
-              {t("Loading interactive 3D FarmBot...")}
-            </h1>
-          </div>}>
-        <Canvas
-          shadows={"variance"}
-          onCreated={({ gl }) => {
-            gl.localClippingEnabled = true;
-          }}>
-          <GardenModel
-            config={props.config}
-            configPosition={props.configPosition}
-            threeDPlants={props.threeDPlants}
-            activeFocus={""}
-            setActiveFocus={noop}
-            mapPoints={props.mapPoints}
-            weeds={props.weeds}
-            toolSlots={props.toolSlots}
-            mountedToolName={props.mountedToolName}
-            allPoints={props.allPoints}
-            groups={props.groups}
-            images={props.images}
-            sensorReadings={props.sensorReadings}
-            sensors={props.sensors}
-            addPlantProps={props.addPlantProps} />
-        </Canvas>
-      </React.Suspense>
+      <Canvas
+        shadows={props.config.lowDetail ? false : "variance"}
+        onCreated={({ gl }) => {
+          gl.localClippingEnabled = true;
+          perfMark("canvas_created");
+        }}>
+        <GardenModel
+          config={props.config}
+          configPosition={props.configPosition}
+          threeDPlants={props.threeDPlants}
+          activeFocus={""}
+          setActiveFocus={noop}
+          mapPoints={props.mapPoints}
+          weeds={props.weeds}
+          toolSlots={props.toolSlots}
+          mountedToolName={props.mountedToolName}
+          allPoints={props.allPoints}
+          groups={props.groups}
+          images={props.images}
+          sensorReadings={props.sensorReadings}
+          sensors={props.sensors}
+          addPlantProps={props.addPlantProps} />
+      </Canvas>
     </div>
   </div>;
 };

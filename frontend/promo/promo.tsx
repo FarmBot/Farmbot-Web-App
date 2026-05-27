@@ -9,7 +9,9 @@ import {
   PrivateOverlay, PublicOverlay, ToolTip,
 } from "../three_d_garden/config_overlays";
 import { ASSETS } from "../three_d_garden/constants";
-import { getFocusFromUrlParams } from "../three_d_garden/zoom_beacons_constants";
+import {
+  getFocusFromUrlParams, setUrlParam,
+} from "../three_d_garden/zoom_beacons_constants";
 import { MemoryRouter } from "react-router";
 import { calculatePlantPositions } from "./plants";
 import { ThreeDGardenPlant } from "../three_d_garden/garden";
@@ -17,6 +19,7 @@ import { TaggedGenericPointer } from "farmbot";
 import { calculatePointPositions } from "./points";
 import { SEASON_TIMINGS, SEASONS } from "./constants";
 import { isMobile } from "../screen_size";
+import { FocusTransitionProvider } from "../three_d_garden/focus_transition";
 
 const PROMO_BED_SIZES = [
   {
@@ -31,21 +34,21 @@ const PROMO_BED_SIZES = [
 
 type ThreeDPlantsCache = Record<string, ThreeDGardenPlant[]>;
 const PLANTS_CACHE: ThreeDPlantsCache = {};
+interface PromoPlantCapacities {
+  iconCapacities: Record<string, number>;
+  plantInstanceCapacity: number;
+}
 
 const calcCacheKey = (config: Config): string =>
   `${config.bedLengthOuter}x${config.bedWidthOuter}: ${config.plants}`;
 
-const calcPlantsCache = (
+const addPlantsToCache = (
   cache: ThreeDPlantsCache,
   config: Config,
 ): ThreeDPlantsCache => {
-  const cacheKey = calcCacheKey(config);
-  if (cache[cacheKey]) {
-    return cache;
-  }
   return {
     ...cache,
-    [cacheKey]: calculatePlantPositions(config),
+    [calcCacheKey(config)]: calculatePlantPositions(config),
   };
 };
 
@@ -53,7 +56,7 @@ const prewarmPlantsCache = () => {
   let next = PLANTS_CACHE;
   PROMO_BED_SIZES.map(({ length, width }) => {
     SEASONS.map(season => {
-      next = calcPlantsCache(next, {
+      next = addPlantsToCache(next, {
         ...INITIAL,
         bedLengthOuter: length,
         bedWidthOuter: width,
@@ -69,8 +72,33 @@ const getCachedPlants = (config: Config) => {
   const cachedPlants = PLANTS_CACHE[cacheKey];
   if (cachedPlants) { return cachedPlants; }
 
-  Object.assign(PLANTS_CACHE, calcPlantsCache(PLANTS_CACHE, config));
-  return PLANTS_CACHE[cacheKey] || [];
+  const plants = calculatePlantPositions(config);
+  Object.assign(PLANTS_CACHE, { [cacheKey]: plants });
+  return plants;
+};
+
+export const getPromoPlantCapacities = (config: Config): PromoPlantCapacities => {
+  const iconCapacities: Record<string, number> = {};
+  let plantInstanceCapacity = 0;
+  SEASONS.map(season => {
+    PROMO_BED_SIZES.map(({ length, width }) => {
+      const plants = getCachedPlants({
+        ...config,
+        bedLengthOuter: length,
+        bedWidthOuter: width,
+        plants: season,
+      });
+      plantInstanceCapacity = Math.max(plantInstanceCapacity, plants.length);
+      const iconCounts: Record<string, number> = {};
+      plants.map(plant => {
+        iconCounts[plant.icon] = (iconCounts[plant.icon] || 0) + 1;
+      });
+      Object.entries(iconCounts).map(([icon, count]) => {
+        iconCapacities[icon] = Math.max(iconCapacities[icon] || 0, count);
+      });
+    });
+  });
+  return { iconCapacities, plantInstanceCapacity };
 };
 
 prewarmPlantsCache();
@@ -96,6 +124,9 @@ export const Promo = () => {
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
   const [activeFocus, setActiveFocus] = React.useState(() =>
     getFocusFromUrlParams());
+  const [threeDLoaded, setThreeDLoaded] = React.useState(false);
+  const handleThreeDLoadComplete = React.useCallback(() =>
+    setThreeDLoaded(true), []);
   const common = {
     config, setConfig,
     toolTip, setToolTip,
@@ -132,6 +163,21 @@ export const Promo = () => {
     startTimeRef.current = performance.now() / 1000;
   }, []);
 
+  const clearActiveFocus = React.useCallback(() => {
+    setActiveFocus("");
+    setUrlParam("focus", "");
+  }, []);
+
+  React.useEffect(() => {
+    if (!activeFocus) { return; }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key != "Escape") { return; }
+      clearActiveFocus();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeFocus, clearActiveFocus]);
+
   const plants = React.useMemo(() => {
     return getCachedPlants(config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,31 +188,47 @@ export const Promo = () => {
       ? plants.map(plant => ({ ...plant, id: 0 }))
       : plants;
   }, [plants, config.promoSpread]);
+  const plantCapacityConfig = React.useMemo(() => ({
+    ...INITIAL,
+    bedLengthOuter: config.bedLengthOuter,
+    bedWidthOuter: config.bedWidthOuter,
+  }), [config.bedLengthOuter, config.bedWidthOuter]);
+  const plantCapacities = React.useMemo(() =>
+    getPromoPlantCapacities(plantCapacityConfig), [plantCapacityConfig]);
 
-  return <div className={"three-d-garden promo"}>
+  return <div className={"three-d-garden promo"}
+    onKeyDown={e => activeFocus && e.key == "Escape" && clearActiveFocus()}>
     <div className={"garden-bed-3d-model"}>
-      <MemoryRouter>
-        <Canvas
-          shadows={"variance"}
-          onCreated={({ gl }) => {
-            gl.localClippingEnabled = true;
-          }}>
-          <GardenModel {...common}
-            configPosition={{ x: config.x, y: config.y, z: config.z }}
-            startTimeRef={startTimeRef}
-            threeDPlants={threeDPlants}
-            mapPoints={mapPoints} />
-        </Canvas>
-      </MemoryRouter>
-      <PublicOverlay {...common} startTimeRef={startTimeRef} />
-      {!config.config &&
-        <img className={"gear"} src={ASSETS.other.gear} title={"config"}
-          onClick={() => setConfig({ ...config, config: true })} />}
-      {config.config &&
-        <PrivateOverlay {...common} startTimeRef={startTimeRef} />}
-      <span className={"tool-tip"} hidden={!toolTip.text}>
-        {toolTip.text}
-      </span>
+      <FocusTransitionProvider enabled={config.animate}>
+        <MemoryRouter>
+          <Canvas
+            shadows={"variance"}
+            onCreated={({ gl }) => {
+              gl.localClippingEnabled = true;
+            }}>
+            <GardenModel {...common}
+              configPosition={{ x: config.x, y: config.y, z: config.z }}
+              startTimeRef={startTimeRef}
+              threeDPlants={threeDPlants}
+              mapPoints={mapPoints}
+              plantIconCapacities={plantCapacities.iconCapacities}
+              plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
+              onDetailsRevealStart={handleThreeDLoadComplete}
+              smoothFocusTransitions={true} />
+          </Canvas>
+        </MemoryRouter>
+        <PublicOverlay {...common}
+          loadComplete={threeDLoaded}
+          startTimeRef={startTimeRef} />
+        {!config.config &&
+          <img className={"gear"} src={ASSETS.other.gear} title={"config"}
+            onClick={() => setConfig({ ...config, config: true })} />}
+        {config.config &&
+          <PrivateOverlay {...common} startTimeRef={startTimeRef} />}
+        <span className={"tool-tip"} hidden={!toolTip.text}>
+          {toolTip.text}
+        </span>
+      </FocusTransitionProvider>
     </div>
   </div>;
 };

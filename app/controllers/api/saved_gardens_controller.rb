@@ -36,7 +36,7 @@ module Api
     end
 
     def garden
-      @garden ||= gardens.find(params[:id])
+      @garden ||= gardens.find(params.expect(:id))
     end
   end
 end

@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import json
+import os
+import sys
+import urllib.request
+
+deploys_url = "https://api.github.com/repos/Farmbot/Farmbot-Web-App/deployments"
+compare_url_base = "https://github.com/Farmbot/Farmbot-Web-App/compare/"
+github_sha = os.environ["GITHUB_SHA"]
+
+try:
+    with urllib.request.urlopen(deploys_url, timeout=30) as response:
+        deployments = json.load(response)
+except Exception as error:
+    print(f"Failed to read deployments: {error}", file=sys.stderr)
+    deployments = []
+
+last_sha = deployments[0].get("sha", "") if deployments else ""
+print(f"{compare_url_base}{last_sha}...{github_sha}")

@@ -18,8 +18,9 @@ describe("<Greenhouse />", () => {
     const { container } = render(<Greenhouse {...p} />);
     expect(container).toContainHTML("greenhouse-environment");
     expect(container).not.toContainHTML("people");
-    expect(container).toContainHTML("starter-tray-1");
-    expect(container).toContainHTML("starter-tray-2");
+    expect(container).toContainHTML("starter-trays");
+    expect(container).toContainHTML("starter-tray-bases");
+    expect(container).toContainHTML("starter-tray-seedlings");
     expect(container).toContainHTML("left-greenhouse-wall");
     expect(container).toContainHTML("right-greenhouse-wall");
     expect(container).toContainHTML("potted-plant");
@@ -50,5 +51,15 @@ describe("<Greenhouse />", () => {
     const { container } = render(<Greenhouse {...p} />);
     expect(container).toContainHTML("greenhouse-environment");
     expect(container).not.toContainHTML("people");
+  });
+
+  it("animates scene details in", () => {
+    const p = fakeProps();
+    const onDetailsLoadInRest = jest.fn();
+    p.config.scene = "Greenhouse";
+    const { container } = render(<Greenhouse {...p}
+      onDetailsLoadInRest={onDetailsLoadInRest} />);
+    expect(container).toContainHTML("greenhouse-scene-details-load-in");
+    expect(onDetailsLoadInRest).toHaveBeenCalled();
   });
 });

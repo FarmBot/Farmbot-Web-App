@@ -3,15 +3,17 @@ let mockIsMobile = false;
 
 import React from "react";
 import { OrbitControls, useTexture } from "@react-three/drei";
-import { GardenModelProps, GardenModel } from "../garden_model";
+import {
+  GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
+  SMOOTH_XL_CAMERA_HEIGHT_SCALE,
+} from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
-import { ASSETS } from "../constants";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { convertPlants } from "../../farm_designer/three_d_garden_map";
@@ -22,6 +24,8 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
+import { cameraInit } from "../camera";
+import { getCamera } from "../zoom_beacons_constants";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -31,14 +35,14 @@ const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
+    console.log = jest.fn();
     mockIsDesktop = false;
     mockIsMobile = false;
-    let useStateCalls = 0;
     useStateSpy = jest.spyOn(React, "useState")
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
-        useStateCalls += 1;
-        if (useStateCalls == 2) {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
           return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
@@ -77,11 +81,35 @@ describe("<GardenModel />", () => {
     return wrapper;
   };
 
-  it("renders", () => {
+  it("renders", async () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
-    expect(container.innerHTML).toContain("zoom-beacons");
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("zoom-beacons"));
     expect(container.innerHTML).not.toContain("stats");
     expect(container.innerHTML).toContain("darkgreen");
+    expect(container.innerHTML).toContain("bed-load-in");
+    expect(container.innerHTML).toContain("grid-load-in");
+    expect(container.innerHTML).toContain("plants-load-in");
+    expect(container.innerHTML).toContain("points-load-in");
+    expect(container.innerHTML).toContain("weeds-load-in");
+    expect(container.innerHTML).toContain("zoom-beacons-load-in");
+    expect(container.innerHTML).toContain("farmbot-scene-boundary");
+    expect(container.innerHTML).toContain("details-scene-boundary");
+  });
+
+  it("notifies when the progressive reveal completes", async () => {
+    const p = fakeProps();
+    p.onLoadComplete = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("notifies when scene details begin revealing", async () => {
+    const p = fakeProps();
+    p.onDetailsRevealStart = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() =>
+      expect(p.onDetailsRevealStart).toHaveBeenCalled());
   });
 
   it("renders top down view", () => {
@@ -124,12 +152,60 @@ describe("<GardenModel />", () => {
     expect(camera?.props.zoom).toEqual(0.5);
   });
 
-  it("renders camera selection view", () => {
+  it("keeps focused camera coordinates with smooth transitions disabled", () => {
+    const p = fakeProps();
+    p.activeFocus = "What you can grow";
+    p.smoothFocusTransitions = true;
+    p.config.animate = false;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    const defaultCamera = cameraInit({
+      topDown: p.config.topDown,
+      viewpointHeading: p.config.viewpointHeading,
+      bedSize: { x: p.config.bedLengthOuter, y: p.config.bedWidthOuter },
+    });
+    const expectedCamera = getCamera(
+      p.config,
+      p.configPosition,
+      p.activeFocus,
+      defaultCamera,
+    );
+    expect(camera?.props.position).toEqual(expectedCamera.position);
+    expect(wrapper.root.findByType(OrbitControls).props.target)
+      .toEqual(expectedCamera.target);
+  });
+
+  it("moves the smooth XL default camera back and higher", () => {
+    const p = fakeProps();
+    p.smoothFocusTransitions = true;
+    p.config.animate = false;
+    p.config.sizePreset = "Genesis XL";
+    p.config.bedLengthOuter = 6000;
+    p.config.bedWidthOuter = 2860;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    const expectedCamera = cameraInit({
+      topDown: p.config.topDown,
+      viewpointHeading: p.config.viewpointHeading,
+      bedSize: {
+        x: p.config.bedLengthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
+        y: p.config.bedWidthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
+      },
+    });
+    expect(camera?.props.position).toEqual([
+      expectedCamera.position[0],
+      expectedCamera.position[1],
+      expectedCamera.position[2] * SMOOTH_XL_CAMERA_HEIGHT_SCALE,
+    ]);
+  });
+
+  it("renders camera selection view", async () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     p.config.viewpointHeading = 45;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("camera-selection");
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("camera-selection"));
   });
 
   it("renders no user plants", () => {
@@ -144,10 +220,24 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
     p.threeDPlants = convertPlants(p.config, [plant]);
     const { queryAllByText } = render(<GardenModel {...p} />);
     const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
+  });
+
+  it("doesn't build plant label nodes when labels are disabled", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = false;
+    p.config.labelsOnHover = false;
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(0);
   });
 
   it("preloads the atlas texture for mapped plant icons", () => {
@@ -184,15 +274,14 @@ describe("<GardenModel />", () => {
 
   it("renders only the hovered label when labels on hover are enabled", () => {
     useStateSpy.mockRestore();
-    let useStateCalls = 0;
     useStateSpy = jest.spyOn(React, "useState")
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
-        useStateCalls += 1;
-        if (useStateCalls == 1) {
+        if (initialState === undefined) {
           return [0, jest.fn()];
         }
-        if (useStateCalls == 2) {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
           return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
@@ -216,8 +305,8 @@ describe("<GardenModel />", () => {
     p.mapPoints = [fakePoint()];
     p.weeds = [fakeWeed()];
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("cylinder");
-    expect(container.innerHTML).toContain(ASSETS.other.weed);
+    expect(container.innerHTML).toContain("marker");
+    expect(container.innerHTML).toContain("weed-icons");
   });
 
   it("renders drawn point", () => {
@@ -238,7 +327,16 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).not.toContain('name="bot"');
   });
 
-  it("renders other options", () => {
+  it("completes the progressive reveal without FarmBot", async () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = () => false;
+    p.onLoadComplete = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("renders other options", async () => {
     mockIsDesktop = false;
     const p = fakeProps();
     p.config.perspective = false;
@@ -256,7 +354,7 @@ describe("<GardenModel />", () => {
     p.addPlantProps = undefined;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("gray");
-    expect(container.innerHTML).toContain("stats");
+    await waitFor(() => expect(container.innerHTML).toContain("stats"));
   });
 
   it("renders debug options", () => {

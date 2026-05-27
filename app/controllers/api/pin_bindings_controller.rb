@@ -31,7 +31,7 @@ module Api
     end
 
     def pin_binding
-      @pin_binding ||= pin_bindings.find(params[:id])
+      @pin_binding ||= pin_bindings.find(params.expect(:id))
     end
   end
 end

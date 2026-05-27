@@ -31,7 +31,7 @@ module Api
     private
 
     def farmware_env
-      farmware_envs.find(params[:id])
+      farmware_envs.find(params.expect(:id))
     end
 
     def farmware_envs

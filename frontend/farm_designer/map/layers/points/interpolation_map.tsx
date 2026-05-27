@@ -104,12 +104,20 @@ const convertToPointObject =
       })
       : undefined;
 
+const getInterpolationPointHash =
+  (point: TaggedGenericPointer | TaggedSensorReading) => [
+    point.uuid,
+    point.body.x,
+    point.body.y,
+    point.kind == "SensorReading" ? point.body.value : point.body.z,
+  ];
+
 export const generateData = (props: GenerateInterpolationMapDataProps) => {
   const points = selectMostRecentPoints(props.points);
   const { gridSize } = props;
   const { stepSize } = props.options;
   const hash = [
-    JSON.stringify(points.map(p => p.uuid)),
+    JSON.stringify(points.map(getInterpolationPointHash)),
     JSON.stringify(gridSize),
     JSON.stringify(props.options),
   ].join("");

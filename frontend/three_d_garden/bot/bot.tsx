@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 import {
-  Cylinder, Extrude, Trail, Tube, useGLTF, useTexture,
+  Cylinder, Extrude, Trail, Tube, useGLTF,
 } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping } from "three";
+import {
+  DoubleSide, ExtrudeGeometryOptions, Shape, RepeatWrapping,
+} from "three";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc,
   zDir as zDirFunc,
@@ -34,6 +36,8 @@ import {
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
+import { FocusVisibilityGroup } from "../focus_transition";
+import { useTextureVariant } from "../texture_variants";
 
 export const extrusionWidth = 20;
 const utmRadius = 35;
@@ -91,13 +95,12 @@ type XAxisCCMount = GLTF & {
   materials: never;
 }
 
-Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
-
 export interface FarmbotModelProps {
   config: Config;
   configPosition: PositionConfig;
   activeFocus: string;
   getZ(x: number, y: number): number;
+  trailReady?: boolean;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
@@ -182,16 +185,13 @@ export const Bot = (props: FarmbotModelProps) => {
         });
     }
   });
-  const aluminumTextureBase = useTexture(ASSETS.textures.aluminum + "?=bot");
-  const aluminumTexture = React.useMemo(() => {
-    const texture = aluminumTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.01, 0.0003);
-    return texture;
-  }, [aluminumTextureBase]);
+  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.0003],
+  });
 
-  const yBeltPath = () => {
+  const yBeltPath = React.useCallback(() => {
     const radius = 12;
     const path = new Shape();
     path.moveTo(0, 0);
@@ -211,10 +211,15 @@ export const Bot = (props: FarmbotModelProps) => {
     path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
     path.lineTo(-2, 0);
     return path;
-  };
+  }, [botSizeY, y]);
+  const yBeltArgs = React.useMemo(() => [
+    yBeltPath(),
+    { steps: 1, depth: 6, bevelEnabled: false },
+  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
   const distanceToSoil = -props.getZ(x, y) - zDir * z;
 
   const defaultTrailWidth = config.perspective ? 500 : 0.1;
+  const trailReady = props.trailReady !== false;
 
   const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
     switch (kitVersion) {
@@ -250,8 +255,22 @@ export const Bot = (props: FarmbotModelProps) => {
     ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
     zZero - zDir * z - 140 + zGantryOffset + 20,
   );
+  const utmComponent = <Group name={"UTM"}
+    position={[
+      ...gardenXY(x + 11, y),
+      zZero - zDir * z + utmHeight / 2 - 19,
+    ]}
+    rotation={[0, 0, Math.PI / 2]}
+    scale={1000}>
+    <Mesh
+      geometry={utm.nodes.M5_Barb.geometry}
+      material={utm.materials.PaletteMaterial001}
+      position={[0.015, 0.009, 0.036]}
+      rotation={[0, 0, 2.094]} />
+  </Group>;
 
-  return <Group name={"bot"}
+  return <FocusVisibilityGroup name={"bot"} keepMounted={true}
+    preserveDepthWrite={true}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
       const bedColumnYOffset =
@@ -566,29 +585,19 @@ export const Bot = (props: FarmbotModelProps) => {
       configPosition={props.configPosition}
       cameraMountPosition={cameraMountPosition}
       distanceToSoil={distanceToSoil} />
-    <Trail
-      width={trail ? defaultTrailWidth : 0}
-      attenuation={t => Math.pow(t, 3)}
-      color={"red"}
-      length={100}
-      decay={0.5}
-      local={false}
-      stride={0}
-      interval={1}>
-      <Group name={"UTM"}
-        position={[
-          ...gardenXY(x + 11, y),
-          zZero - zDir * z + utmHeight / 2 - 19,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}
-        scale={1000}>
-        <Mesh
-          geometry={utm.nodes.M5_Barb.geometry}
-          material={utm.materials.PaletteMaterial001}
-          position={[0.015, 0.009, 0.036]}
-          rotation={[0, 0, 2.094]} />
-      </Group>
-    </Trail>
+    {trailReady && trail
+      ? <Trail
+        width={defaultTrailWidth}
+        attenuation={t => Math.pow(t, 3)}
+        color={"red"}
+        length={100}
+        decay={0.5}
+        local={false}
+        stride={0}
+        interval={1}>
+        {utmComponent}
+      </Trail>
+      : utmComponent}
     <Cylinder
       visible={laser}
       material-color={"red"}
@@ -618,10 +627,7 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
     <Extrude name={"yBelt"}
-      args={[
-        yBeltPath(),
-        { steps: 1, depth: 6, bevelEnabled: false },
-      ]}
+      args={yBeltArgs}
       position={[
         ...gardenXY(x - 14.5, -100),
         columnLength + 100,
@@ -657,5 +663,5 @@ export const Bot = (props: FarmbotModelProps) => {
     <PowerSupply config={config} />
     <XAxisWaterTube config={config} />
     <Bounds config={config} configPosition={props.configPosition} />
-  </Group>;
+  </FocusVisibilityGroup>;
 };

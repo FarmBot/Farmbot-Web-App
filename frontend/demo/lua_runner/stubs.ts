@@ -19,7 +19,9 @@ import {
 import { pointsSelectedByGroup } from "../../point_groups/criteria/apply";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
 import { ResourceIndex } from "../../resources/interfaces";
-import { getZFunc, TriangleData } from "../../three_d_garden/triangle_functions";
+import {
+  getZFunc, parseStoredTriangles,
+} from "../../three_d_garden/triangle_functions";
 
 export const getFirmwareSettings = (): FirmwareConfig => {
   const fwConfig = getters.getFirmwareConfig(store.getState().resources.index);
@@ -56,8 +58,8 @@ export const getSafeZ = (): number => {
 };
 
 export const getSoilHeight = (x: number, y: number): number => {
-  const triangles = JSON.parse(
-    sessionStorage.getItem("soilSurfaceTriangles") || "[]") as TriangleData[];
+  const triangles = parseStoredTriangles(
+    sessionStorage.getItem("soilSurfaceTriangles"));
   const getZ = getZFunc(triangles, -500);
   return getZ(x, y);
 };
@@ -92,4 +94,9 @@ export const getJob = (jobName: string): JobProgress | undefined => {
       key === jobName
         ? value
         : undefined)[0];
+};
+
+export const getDeviceStatus = () => {
+  const status = store.getState().bot.hardware;
+  return status;
 };

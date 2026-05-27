@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -f scripts/ci/render-env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . scripts/ci/render-env
+  set +a
+fi
+
+if [ -z "${GITHUB_ACTIONS:-}" ]; then
+  export OPEN_WINDOW="${OPEN_WINDOW:-1}"
+fi
+
+attempts="${ATTEMPTS:-2}"
+: "${CHOSEN_NAME:?CHOSEN_NAME is required}"
+: "${SCREENSHOT_NAME:?SCREENSHOT_NAME is required}"
+: "${FPS_SAMPLES_NAME:?FPS_SAMPLES_NAME is required}"
+: "${SCENE_METRICS_NAME:?SCENE_METRICS_NAME is required}"
+: "${SCENE_METRICS_HEADER:?SCENE_METRICS_HEADER is required}"
+GITHUB_ENV="${GITHUB_ENV:-/tmp/render-github-env}"
+URLS_JSON="${URLS_JSON:-scripts/ci/render-urls.json}"
+chosen_seen=false
+
+while IFS=$'\034' read -r -u 3 name mode url click state; do
+  screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
+  fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
+  scene_metrics_path="/tmp/${SCENE_METRICS_NAME}_${name}.csv"
+
+  for _ in $(seq 1 "$attempts"); do
+    fps_args=(
+      --name "$name"
+      --url "$url"
+      --screenshot-path "$screenshot_path"
+      --fps-samples-path "$fps_samples_path"
+    )
+    [ -n "$click" ] && fps_args+=(--click "$click")
+    [ -n "$state" ] && fps_args+=(--state "$state")
+
+    echo -e "\n\n\n"
+    if [ "$mode" = "screenshot" ]; then
+      echo "Attempting screenshot via ${url}"
+    else
+      echo "Attempting FPS check via ${url}"
+    fi
+    if ! sudo docker compose exec -T web curl -I "${url}" >/dev/null; then
+      continue
+    fi
+
+    if [ "$mode" = "screenshot" ]; then
+      if ! screenshot_output=$(bun scripts/fps.js --screenshot-only "${fps_args[@]}"); then
+        echo "${screenshot_output}"
+        continue
+      fi
+      echo "${screenshot_output}"
+      continue 2
+    fi
+
+    if ! fps_output=$(bun scripts/fps.js "${fps_args[@]}"); then
+      echo "${fps_output}"
+      continue
+    fi
+    echo "${fps_output}"
+
+    fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+    scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
+    if [ ! -f "$scene_metrics_path" ]; then
+      printf '%s\n' "$SCENE_METRICS_HEADER" > "$scene_metrics_path"
+    fi
+    printf '%s\n' "$scene_metrics" >> "$scene_metrics_path"
+    echo "SCENE_METRICS=${scene_metrics_path}"
+
+    if [ "$name" = "${CHOSEN_NAME}" ]; then
+      echo "FPS_VALUE=${fps_value}" >> "$GITHUB_ENV"
+      echo "SCENE_METRICS=${scene_metrics}" >> "$GITHUB_ENV"
+      chosen_seen=true
+    fi
+
+    continue 2
+  done
+
+  echo "FPS check failed for ${url}"
+  exit 1
+done 3< <(scripts/ci/render-url-records "$URLS_JSON")
+
+if [ "$chosen_seen" != "true" ]; then
+  echo "Chosen FPS scenario '${CHOSEN_NAME}' was not found in ${URLS_JSON}"
+  exit 1
+fi
+
+if [ -z "${GITHUB_ACTIONS:-}" ]; then
+  echo -e "\n\n\n"
+  echo "Plotting metrics..."
+  for csv in /tmp/*.csv; do
+    [ -f "$csv" ] || continue
+    bun scripts/metric_plot.js "$csv"
+  done
+  echo -e "\n\n\n"
+fi

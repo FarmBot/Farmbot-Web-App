@@ -240,18 +240,18 @@ module Api
       "nothing for now",
     ]
 
+    DEV_DOCS_API_REF_URL = "https://raw.githubusercontent.com/FarmBot-Docs/farmbot-developers/refs/heads/main/v15/docs/web-app/api-docs.md"
+    SRC_CODE_BOT_STATE_URL = "https://raw.githubusercontent.com/FarmBot/farmbot-js/refs/heads/main/src/interfaces.ts"
+
     def page_url(page_name)
       "https://raw.githubusercontent.com/FarmBot-Docs/farmbot-developers/main/" \
       "v15/lua/functions/#{page_name}.md"
     end
 
-    def get_page_data(page_name)
-      url = page_url(page_name)
-      begin
-        URI.parse(url).open.read
-      rescue SocketError => exception
-        puts "AI Lua docs fetch error: #{exception.message}" unless Rails.env.test?
-      end
+    def get_page_data(url)
+      URI.parse(url).open.read
+    rescue SocketError => exception
+      puts "AI Lua docs fetch error: #{exception.message}" unless Rails.env.test?
     end
 
     def shorten_docs(docs)
@@ -275,18 +275,30 @@ module Api
       keep.join("\n")
     end
 
+    def process_dev_docs_page_data(url)
+      page_data = get_page_data(url)
+      if page_data.nil?
+        return ""
+      end
+
+      content = page_data.split("---").slice(2, page_data.length)
+      if content.nil?
+        return ""
+      end
+
+      content.join("---")
+    end
+
     def get_docs
       function_docs = ""
       PAGE_NAMES.each do |page_name|
-        page_data = get_page_data(page_name)
-        if page_data.nil?
-          return ""
-        end
-
-        page_content = page_data.split("---").slice(2, page_data.length).join("---")
-        function_docs += page_content
+        url = page_url(page_name)
+        function_docs += process_dev_docs_page_data(url)
       end
       short_docs = shorten_docs(function_docs)
+      short_docs += get_page_data(SRC_CODE_BOT_STATE_URL) || ""
+      short_docs += process_dev_docs_page_data(DEV_DOCS_API_REF_URL)
+
       puts "AI Lua docs fetched: #{short_docs.length} characters" unless Rails.env.test?
       short_docs
     end

@@ -63,8 +63,8 @@ describe Points::Destroy do
     expect(result.errors.message_list.count).to eq(1)
     expect(result.errors.message_list.first).to include(params[:name])
     coords = [:x, :y, :z].map { |c| points.first[c] }.join(", ")
-    expected = "Could not delete the following item(s): point at (#{coords})." \
-               " Item(s) are in use by the following sequence(s): Test Case I."
+    expected = "Could not delete point at (#{coords}). Items are in use " \
+               "by Sequence 'Test Case I'."
     expect(result.errors.message_list.first).to include(expected)
   end
 
@@ -73,9 +73,145 @@ describe Points::Destroy do
     point_ids = [s.tool_slot.id]
     result = Points::Destroy.run(point_ids: point_ids, device: s.device)
     expect(result.success?).to be(false)
-    expected = "Could not delete Scenario Tool. Item is in use by the " \
-               "following sequence(s): Scenario Sequence."
+    expected = "Could not delete Scenario Tool. Item is in use by " \
+               "Sequence 'Scenario Sequence'."
     expect(result.errors.message_list).to include(expected)
+  end
+
+  it "prevents deletion of points used by farm event fragments" do
+    point = FactoryBot.create(:generic_pointer,
+                              device: device,
+                              x: 4,
+                              y: 5,
+                              z: 6)
+    farm_event = FactoryBot.create(:farm_event,
+                                   device: device,
+                                   start_time: Time.now + 1.day)
+    Fragment.from_celery(device: device,
+                         owner: farm_event,
+                         kind: "internal_farm_event",
+                         args: {},
+                         body: [
+                           {
+                             kind: "parameter_application",
+                             args: {
+                               label: "location",
+                               data_value: {
+                                 kind: "point",
+                                 args: {
+                                   pointer_type: "GenericPointer",
+                                   pointer_id: point.id,
+                                 },
+                               },
+                             },
+                           },
+                         ])
+
+    result = Points::Destroy.run(point_ids: [point.id], device: device)
+
+    expect(result.success?).to be(false)
+    expected = "Could not delete point at (4.0, 5.0, 6.0). Item is in use " \
+               "by FarmEvent '#{farm_event.fancy_name}'."
+    expect(result.errors.message[:whoops]).to eq(expected)
+    expect(Point.exists?(point.id)).to be(true)
+  end
+
+  it "prevents deletion of points used by regimen fragments" do
+    point = FactoryBot.create(:generic_pointer,
+                              device: device,
+                              x: 4,
+                              y: 5,
+                              z: 6)
+    regimen = FactoryBot.create(:regimen,
+                                device: device,
+                                name: "Point user")
+    Fragment.from_celery(device: device,
+                         owner: regimen,
+                         kind: "internal_regimen",
+                         args: {},
+                         body: [
+                           {
+                             kind: "parameter_application",
+                             args: {
+                               label: "location",
+                               data_value: {
+                                 kind: "point",
+                                 args: {
+                                   pointer_type: "GenericPointer",
+                                   pointer_id: point.id,
+                                 },
+                               },
+                             },
+                           },
+                         ])
+
+    result = Points::Destroy.run(point_ids: [point.id], device: device)
+
+    expect(result.success?).to be(false)
+    expected = "Could not delete point at (4.0, 5.0, 6.0). Item is in use " \
+               "by Regimen 'Point user'."
+    expect(result.errors.message[:whoops]).to eq(expected)
+    expect(Point.exists?(point.id)).to be(true)
+  end
+
+  it "reports sequence and fragment point usage in one error" do
+    point = FactoryBot.create(:generic_pointer,
+                              device: device,
+                              x: 4,
+                              y: 5,
+                              z: 6)
+    Sequences::Create.run!(device: device,
+                           name: "Sequence user",
+                           body: [
+                             {
+                               kind: "move_absolute",
+                               args: {
+                                 location: {
+                                   kind: "point",
+                                   args: {
+                                     pointer_type: "GenericPointer",
+                                     pointer_id: point.id,
+                                   },
+                                 },
+                                 speed: 100,
+                                 offset: {
+                                   kind: "coordinate",
+                                   args: { x: 0, y: 0, z: 0 },
+                                 },
+                               },
+                             },
+                           ])
+    farm_event = FactoryBot.create(:farm_event,
+                                   device: device,
+                                   start_time: Time.now + 1.day)
+    Fragment.from_celery(device: device,
+                         owner: farm_event,
+                         kind: "internal_farm_event",
+                         args: {},
+                         body: [
+                           {
+                             kind: "parameter_application",
+                             args: {
+                               label: "location",
+                               data_value: {
+                                 kind: "point",
+                                 args: {
+                                   pointer_type: "GenericPointer",
+                                   pointer_id: point.id,
+                                 },
+                               },
+                             },
+                           },
+                         ])
+
+    result = Points::Destroy.run(point_ids: [point.id], device: device)
+
+    expect(result.success?).to be(false)
+    expect(result.errors.message_list.count).to eq(1)
+    expected = "Could not delete point at (4.0, 5.0, 6.0). Item is in use " \
+               "by FarmEvent '#{farm_event.fancy_name}', " \
+               "Sequence 'Sequence user'."
+    expect(result.errors.message[:whoops]).to eq(expected)
   end
 
   it "handles multiple sequence dep tracking issues at deletion time" do
@@ -152,9 +288,8 @@ describe Points::Destroy do
       .run(point_ids: [point.id, plant.id], device: device)
       .errors
       .message
-    expected = "Could not delete the following item(s): plant at (0.0, 1.0," \
-               " 0.0). Item(s) are in use by the following sequence(s): " \
-               "Sequence A, Sequence B."
+    expected = "Could not delete plant at (0.0, 1.0, 0.0). Items are " \
+               "in use by Sequence 'Sequence A', Sequence 'Sequence B'."
     expect(result[:whoops]).to eq(expected)
   end
 

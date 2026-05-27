@@ -1,9 +1,18 @@
 import React from "react";
-import { Shape } from "three";
-import { Extrude, Line } from "@react-three/drei";
+import {
+  DoubleSide, ExtrudeGeometry, InstancedMesh as ThreeInstancedMesh,
+  Object3D, Shape,
+} from "three";
+import { Line } from "@react-three/drei";
+import { animated, useSpring } from "@react-spring/three";
+import { SpringValue } from "@react-spring/core";
 import { threeSpace } from "../helpers";
 import { Config } from "../config";
-import { Group, Mesh, BoxGeometry, MeshPhongMaterial } from "../components";
+import {
+  Group, Mesh, BoxGeometry, MeshPhongMaterial, InstancedMesh,
+} from "../components";
+import { easeInOutCubic, useFocusTransition } from "../focus_transition";
+import { RenderOrder } from "../constants";
 
 export interface SolarProps {
   config: Config;
@@ -12,6 +21,11 @@ export interface SolarProps {
 
 const panelWidth = 540;
 const panelLength = 1040;
+const panelDepth = 30;
+const cellDepth = 2;
+const cellZ = panelDepth / 2 + cellDepth + 1;
+const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
+const AnimatedLine = animated(Line);
 
 const cell2D = () => {
   const cellSize = 95;
@@ -28,8 +42,8 @@ const cell2D = () => {
   return path;
 };
 
-const cellArray = () => {
-  const cells = [];
+const cellPositions = () => {
+  const positions: [number, number, number][] = [];
   const cellSize = 100;
   const cellsWide = Math.floor(panelWidth / cellSize);
   const cellsLong = Math.floor(panelLength / cellSize);
@@ -38,32 +52,85 @@ const cellArray = () => {
     for (let y = 0; y < cellsLong; y++) {
       const xPos = x * cellSize - (panelWidth / 2) + 20 + 2.5;
       const yPos = y * cellSize - (panelLength / 2) + 20 + 2.5;
-      cells.push(
-        <Mesh key={`${x}-${y}`} position={[xPos, yPos, 15]}>
-          <Extrude args={[cell2D(), { steps: 1, depth: 2, bevelEnabled: false }]}>
-            <MeshPhongMaterial color={"#131361"} />
-          </Extrude>
-        </Mesh>);
+      positions.push([xPos, yPos, cellZ]);
     }
   }
-  return cells;
+  return positions;
 };
 
-const SolarPanel = () => {
+const CELL_POSITIONS = cellPositions();
+
+interface SolarMaterialProps {
+  opacity: number | SpringValue<number>;
+  color: string;
+  side?: typeof DoubleSide;
+}
+
+const SolarMaterial = (props: SolarMaterialProps) =>
+  <AnimatedMeshPhongMaterial
+    color={props.color}
+    opacity={props.opacity}
+    side={props.side}
+    transparent={true}
+    depthWrite={false} />;
+
+const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
+  const geometry = React.useMemo(
+    () => new ExtrudeGeometry(cell2D(), {
+      steps: 1,
+      depth: cellDepth,
+      bevelEnabled: false,
+    }),
+    [],
+  );
+  const setRef = React.useCallback((mesh: ThreeInstancedMesh | null) => {
+    if (!mesh || typeof mesh.setMatrixAt != "function") { return; }
+    const dummy = new Object3D();
+    CELL_POSITIONS.map((position, index) => {
+      dummy.position.set(...position);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(index, dummy.matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+  }, []);
+
+  return <InstancedMesh
+    ref={setRef}
+    renderOrder={RenderOrder.one + 1}
+    frustumCulled={false}
+    args={[geometry, undefined, CELL_POSITIONS.length]}>
+    <SolarMaterial color={"#131361"} opacity={props.opacity}
+      side={DoubleSide} />
+  </InstancedMesh>;
+};
+
+const SolarPanel = (props: { opacity: SolarMaterialProps["opacity"] }) => {
   return <Group rotation={[0, Math.PI / 6, 0]}>
-    <Mesh>
-      <BoxGeometry args={[panelWidth, panelLength, 30]} />
-      <MeshPhongMaterial color={"silver"} />
+    <Mesh renderOrder={RenderOrder.one}>
+      <BoxGeometry args={[panelWidth, panelLength, panelDepth]} />
+      <SolarMaterial color={"silver"} opacity={props.opacity} />
     </Mesh>
-    {cellArray()}
+    <SolarCells opacity={props.opacity} />
   </Group>;
 };
 
 export const Solar = (props: SolarProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
-  return <Group name={"solar"}
-    visible={config.solar || props.activeFocus == "What you need to provide"}>
+  const transition = useFocusTransition();
+  const visible = config.solar || props.activeFocus == "What you need to provide";
+  const { opacity } = useSpring({
+    opacity: visible ? 1 : 0,
+    immediate: !transition.enabled,
+    config: {
+      duration: transition.duration,
+      easing: easeInOutCubic,
+    },
+  });
+  const rendered = transition.enabled || visible;
+  if (!rendered) { return undefined; }
+
+  return <Group name={"solar"} visible={rendered}>
     <Group name={"solar-array"}
       position={[
         threeSpace(config.bedLengthOuter + 2000, config.bedLengthOuter),
@@ -72,13 +139,14 @@ export const Solar = (props: SolarProps) => {
       ]}
       rotation={[0, 0, Math.PI]}>
       <Group position={[0, -525, 0]}>
-        <SolarPanel />
+        <SolarPanel opacity={opacity} />
       </Group>
       <Group position={[0, 525, 0]}>
-        <SolarPanel />
+        <SolarPanel opacity={opacity} />
       </Group>
     </Group>
-    <Line name={"solar-wiring"}
+    <AnimatedLine name={"solar-wiring"}
+      renderOrder={RenderOrder.default}
       points={[
         [
           threeSpace(config.bedLengthOuter + 587.5 - config.legSize / 2,
@@ -97,6 +165,8 @@ export const Solar = (props: SolarProps) => {
           zGround + 20,
         ]]}
       color={"yellow"}
+      transparent={true}
+      opacity={opacity}
       lineWidth={5} />
   </Group>;
 };

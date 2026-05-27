@@ -16,8 +16,10 @@ import { updateMotorHistoryArray } from "../controls/move/motor_position_plot";
 import { PercentageProgress, Xyz } from "farmbot";
 
 const afterEach = (state: BotState, a: ReduxAction<unknown>) => {
-  state.connectivity = connectivityReducer(state.connectivity, a);
-  return state;
+  const connectivity = connectivityReducer(state.connectivity, a);
+  return connectivity === state.connectivity
+    ? state
+    : { ...state, connectivity };
 };
 
 export const initialState = (): BotState => ({
@@ -151,6 +153,21 @@ export const botReducer = generateReducer<BotState>(initialState())
       raw_encoders: { x: undefined, y: undefined, z: undefined },
       scaled_encoders: payload,
     });
+    return s;
+  })
+  .add<never>(Actions.DEMO_SET_STATE, (s) => {
+    s.hardware.informational_settings.uptime = 12345;
+    s.hardware.informational_settings.sync_status = "synced";
+    s.hardware.informational_settings.wifi_level_percent = 98;
+    s.hardware.informational_settings.wifi_level = -48;
+    s.hardware.informational_settings.video_devices = "1,0";
+    s.hardware.informational_settings.throttled = "0x0";
+    s.hardware.informational_settings.soc_temp = 50;
+    s.hardware.informational_settings.scheduler_usage = 1;
+    s.hardware.informational_settings.memory_usage = 50;
+    s.hardware.informational_settings.disk_usage = 20;
+    s.hardware.informational_settings.cpu_usage = 1;
+    s.hardware.informational_settings.firmware_version = "6.6.26.K";
     return s;
   })
   .add<[string, PercentageProgress]>(Actions.DEMO_SET_JOB_PROGRESS,

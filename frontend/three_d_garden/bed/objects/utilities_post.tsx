@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Cylinder, RoundedBox, Tube, useTexture } from "@react-three/drei";
+import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
 import { RepeatWrapping } from "three";
 import { ASSETS } from "../../constants";
 import { Config } from "../../config";
@@ -9,6 +9,8 @@ import {
 import { outletDepth } from "../../bot";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial } from "../../components";
+import { FocusVisibilityGroup } from "../../focus_transition";
+import { useTextureVariant } from "../../texture_variants";
 
 export interface UtilitiesPostProps {
   config: Config;
@@ -41,17 +43,15 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
     new THREE.Vector3(barbX, barbY, barbZ),
   );
 
-  const postWoodTextureBase = useTexture(ASSETS.textures.wood + "?=post");
-  const postWoodTexture = React.useMemo(() => {
-    const texture = postWoodTextureBase.clone();
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(0.02, 0.05);
-    return texture;
-  }, [postWoodTextureBase]);
+  const postWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.02, 0.05],
+  });
 
-  return <Group name={"utilities"}
+  return <FocusVisibilityGroup name={"utilities"}
     visible={utilitiesPost && props.activeFocus != "Planter bed"}
+    keepMounted={true}
     position={[
       threeSpace(bedLengthOuter + 600, bedLengthOuter),
       threeSpace(legSize / 2, bedWidthOuter),
@@ -170,5 +170,5 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
         <MeshPhongMaterial color="darkgreen" />
       </Tube>
     </Group>
-  </Group>;
+  </FocusVisibilityGroup>;
 };

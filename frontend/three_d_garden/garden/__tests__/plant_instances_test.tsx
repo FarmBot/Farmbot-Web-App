@@ -22,7 +22,12 @@ import { fireEvent, render } from "@testing-library/react";
 import { clone } from "lodash";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { Quaternion } from "three";
+import {
+  InstancedMesh as ThreeInstancedMesh,
+  Quaternion,
+  type Intersection,
+  type Raycaster,
+} from "three";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
 import {
@@ -38,6 +43,11 @@ import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { PLANT_ICON_ATLAS } from "../plant_icon_atlas";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
+import * as meshKey from "../instanced_mesh_key";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
@@ -99,6 +109,46 @@ describe("<PlantInstances />", () => {
     expect(meshes.length).toBe(2);
   });
 
+  it("uses reserved icon capacity while rendering only active plants", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    p.iconCapacities = { [p.plants[0].icon]: 10 };
+    const { container } = render(<PlantInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh?.getAttribute("args")).toContain("10");
+    expect(mesh?.getAttribute("count")).toEqual("1");
+  });
+
+  it("keeps reserved icon meshes mounted without active plants", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    p.iconCapacities = {
+      [p.plants[0].icon]: 10,
+      "https://example.com/inactive-icon.avif": 5,
+    };
+    const { container } = render(<PlantInstances {...p} />);
+    const meshes = container.querySelectorAll("instancedmesh");
+    expect(meshes.length).toBe(2);
+    expect(meshes.item(1).getAttribute("args")).toContain("5");
+    expect(meshes.item(1).getAttribute("count")).toEqual("0");
+    expect(useTexture).toHaveBeenCalledWith("https://example.com/inactive-icon.avif");
+  });
+
+  it("disables frustum culling for billboarded plant icons", () => {
+    const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    expect(mesh.props.frustumCulled).toEqual(false);
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't build per-plant mesh keys while rendering", () => {
+    const keySpy = jest.spyOn(meshKey, "instancedMeshKey");
+    render(<PlantInstances {...fakeProps()} />);
+    expect(keySpy).not.toHaveBeenCalled();
+    keySpy.mockRestore();
+  });
+
   it("loads the atlas texture when an icon is mapped", () => {
     PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
@@ -135,6 +185,19 @@ describe("<PlantInstances />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate after orbiting over a plant icon", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    mesh.props.onClick({ instanceId: 0, delta: 3 });
+    unmountRenderer(wrapper);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate without dispatch", () => {
     setMockInstanceId(0);
     const p = fakeProps();
@@ -155,6 +218,50 @@ describe("<PlantInstances />", () => {
     mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  const iconRaycast = (p = fakeProps()) => {
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const raycast = mesh.props.raycast as (
+      this: ThreeInstancedMesh,
+      raycaster: Raycaster,
+      intersects: Intersection[],
+    ) => void;
+    unmountRenderer(wrapper);
+    return raycast;
+  };
+
+  it.each([
+    Mode.clickToAdd,
+    Mode.createPoint,
+    Mode.createWeed,
+  ])("allows %s raycasts through plant icons", mode => {
+    getModeSpy.mockReturnValue(mode);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    );
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    iconRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).not.toHaveBeenCalled();
+    expect(intersects).toEqual([]);
+    defaultRaycast.mockRestore();
+  });
+
+  it("keeps plant icon raycasts outside placement modes", () => {
+    getModeSpy.mockReturnValue(Mode.none);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    ).mockImplementation(() => undefined);
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    iconRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).toHaveBeenCalledWith(raycaster, intersects);
+    defaultRaycast.mockRestore();
   });
 
   it("doesn't navigate with missing instanceId", () => {
@@ -221,6 +328,24 @@ describe("<PlantInstances />", () => {
       .mock.calls[0][1];
     expect(matrix.elements[12]).toBeCloseTo(1260);
     expect(matrix.elements[13]).toBeCloseTo(460);
+  });
+
+  it("skips repeated icon matrix updates until camera changes", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    frameFn(state);
+    expect(setMatrixAt).not.toHaveBeenCalled();
+    frameFn({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(setMatrixAt).toHaveBeenCalled();
   });
 
   it("updates material brightness when changed", () => {

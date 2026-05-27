@@ -12,6 +12,8 @@ export interface Camera {
   target: VectorXyz;
 }
 
+const TOP_DOWN_FOCUS_AZIMUTH_OFFSET = 25;
+
 interface Focus {
   label: string;
   info: {
@@ -70,7 +72,7 @@ export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] =>
         narrow: {
           position: [
             0,
-            -1000,
+            -1000 - TOP_DOWN_FOCUS_AZIMUTH_OFFSET,
             config.sizePreset == "Genesis XL" ? 16000 : 8000,
           ],
           target: [
@@ -82,7 +84,7 @@ export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] =>
         wide: {
           position: [
             0,
-            0,
+            -TOP_DOWN_FOCUS_AZIMUTH_OFFSET,
             config.sizePreset == "Genesis XL" ? 10000 : 5000,
           ],
           target: [

@@ -10,7 +10,6 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as crud from "../../api/crud";
 import { mapStateToPropsEdit } from "../state_to_props";
-import { SlotEditRows } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { EditToolSlotProps } from "../interfaces";
 import * as toolGraphics from "../../farm_designer/map/layers/tool_slots/tool_graphics";
@@ -157,11 +156,19 @@ describe("<EditToolSlot />", () => {
   it("finds tool", () => {
     const p = fakeProps();
     const toolSlot = fakeToolSlot();
-    p.findToolSlot = () => toolSlot;
+    toolSlot.body.tool_id = 1;
+
     const tool = fakeTool();
+    tool.body.id = 1;
+
+    p.findToolSlot = () => toolSlot;
     p.findTool = () => tool;
-    const wrapper = createWrapper(p);
-    expect(wrapper.root.findAllByType(SlotEditRows)[0]?.props.tool).toEqual(tool);
+    p.tools = [tool];
+
+    const { getByText } = render(<EditToolSlot {...p} />);
+
+    expect(getByText("Tool or Seed Container")).toBeTruthy();
+    expect(getByText(tool.body.name as string)).toBeTruthy();
   });
 });
 
