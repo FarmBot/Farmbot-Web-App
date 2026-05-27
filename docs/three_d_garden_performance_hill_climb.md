@@ -4285,6 +4285,30 @@ output, and X movement plus kit-version model changes still update
 
 **Commit:** `Memoize electronics box for 97.1% faster yz batches`
 
+### Idea 260: Memoize zoom beacon focus definitions across unrelated config churn
+
+**Description:** Recompute zoom-beacon focus positions only when the config and bot-position fields that affect them change. Expected return: faster 3D settings-panel rerenders with zoom beacons enabled and no change to focus targets or labels.
+
+**Benchmark:** Direct `ZoomBeacons` render with zoom beacons enabled, realistic
+config/configPosition, default beacon animation, and 60 unrelated config-object
+churn rerenders, sampled 20 measured times after one warmup while measuring
+`FOCI` calls and rerender batch CPU
+
+**Before:** 61 `FOCI` calls; 20.334 ms median rerender batch
+
+**After:** 1 `FOCI` call; 1.750 ms median rerender batch
+
+**Change:** 98.4% fewer focus-definition builds; 91.4% faster rerender batch,
+saving 18.584 ms across 60 unrelated config-object churn rerenders
+
+**Outcome:** Accepted; zoom beacon focus definitions now cache against the
+config/configPosition fields that actually affect beacon anchors, labels, info,
+and cameras, and memoized per-beacon children skip unrelated config churn while
+preserving hover/click/info/debug behavior and relevant configPosition/config
+updates
+
+**Commit:** `Memoize zoom beacons for 91.4% faster churn`
+
 ### Idea 262: Memoize point overlay against relevant config fields
 
 **Description:** Keep `PointInstances` from rebuilding buckets and instance meshes when unrelated config object churn does not affect point positions, visibility, or click behavior. Expected return: faster settings/rerender batches in point-heavy gardens.

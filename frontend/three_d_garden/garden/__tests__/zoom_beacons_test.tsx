@@ -14,6 +14,8 @@ import {
 } from "../../../__test_support__/test_renderer";
 import { FocusTransitionProvider } from "../../focus_transition";
 import { RenderOrder } from "../../constants";
+import * as spring from "@react-spring/three";
+import * as springCore from "@react-spring/core";
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
 let isDesktopSpy: jest.SpyInstance;
@@ -32,6 +34,7 @@ describe("<ZoomBeacons />", () => {
       value: originalDocumentQuerySelector,
       configurable: true,
     });
+    jest.useRealTimers();
     isDesktopSpy.mockRestore();
   });
 
@@ -71,7 +74,8 @@ describe("<ZoomBeacons />", () => {
     const p = fakeProps();
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
     actRenderer(() => {
       sphere?.props.onPointerEnter();
       sphere?.props.onPointerLeave();
@@ -79,6 +83,41 @@ describe("<ZoomBeacons />", () => {
     });
     expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
     unmountRenderer(wrapper);
+  });
+
+  it("starts pulse animation", async () => {
+    jest.useFakeTimers();
+    const stop = new Error("stop");
+    const next = jest.fn()
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockImplementation(() => Promise.reject(stop));
+    let pulsePromise: Promise<unknown> | undefined;
+    const useSpringSpy = jest.spyOn(spring, "useSpring")
+      .mockImplementation(((springProps: unknown) => {
+        type SpringTo = (nextFn: typeof next) => Promise<unknown>;
+        const props = springProps as {
+          from?: object;
+          to?: SpringTo | object;
+        };
+        if (typeof props.to == "function" && !pulsePromise) {
+          pulsePromise = props.to(next).catch(() => undefined);
+        }
+        const resolvedTo = typeof props.to == "object" ? props.to : {};
+        return [{ ...props, ...props.from, ...resolvedTo }, {}] as never;
+      }) as never);
+    const wrapper = createRenderer(<ZoomBeacons {...fakeProps()} />);
+    await Promise.resolve();
+    jest.advanceTimersByTime(2000);
+    await pulsePromise;
+    expect(next).toHaveBeenCalledWith({ scale: 2.5, opacity: 0 });
+    expect(next).toHaveBeenCalledWith({
+      scale: 1,
+      opacity: 0.75,
+      immediate: true,
+    });
+    unmountRenderer(wrapper);
+    useSpringSpy.mockRestore();
   });
 
   it("reuses focus definitions during hover rerenders", () => {
@@ -97,6 +136,68 @@ describe("<ZoomBeacons />", () => {
     fociSpy.mockRestore();
   });
 
+  it("reuses focus definitions during unrelated config object churn", () => {
+    const fociSpy = jest.spyOn(zoomConstants, "FOCI");
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    actRenderer(() => {
+      wrapper.update(<ZoomBeacons {...p}
+        config={{
+          ...p.config,
+          ambient: p.config.ambient + 1,
+          stats: !p.config.stats,
+        }} />);
+    });
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
+    actRenderer(() => sphere?.props.onClick());
+    expect(fociSpy).toHaveBeenCalledTimes(1);
+    expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
+    unmountRenderer(wrapper);
+    fociSpy.mockRestore();
+  });
+
+  it("updates focus definitions when focus inputs change", () => {
+    const fociSpy = jest.spyOn(zoomConstants, "FOCI");
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const beaconPositions = () => {
+      const positions = wrapper.root.findAll(node =>
+        node.props.name == "zoom-beacon" && node.props.position)
+        .map(node => node.props.position);
+      return positions.filter((position, index) =>
+        positions.findIndex(other =>
+          JSON.stringify(other) == JSON.stringify(position)) == index);
+    };
+    const originalUtmPosition = beaconPositions()[2];
+    actRenderer(() => {
+      wrapper.update(<ZoomBeacons {...p}
+        configPosition={{
+          ...p.configPosition,
+          x: p.configPosition.x + 100,
+        }} />);
+    });
+    const movedUtmPosition = beaconPositions()[2];
+    actRenderer(() => {
+      wrapper.update(<ZoomBeacons {...p}
+        config={{
+          ...p.config,
+          bedLengthOuter: p.config.bedLengthOuter + 200,
+        }}
+        configPosition={{
+          ...p.configPosition,
+          x: p.configPosition.x + 100,
+        }} />);
+    });
+    expect(fociSpy).toHaveBeenCalledTimes(3);
+    expect(movedUtmPosition).not.toEqual(originalUtmPosition);
+    expect(beaconPositions()[2]).not.toEqual(movedUtmPosition);
+    unmountRenderer(wrapper);
+    fociSpy.mockRestore();
+  });
+
   it("hides beacon while focused", () => {
     const element = document.createElement("div");
     Object.defineProperty(document, "querySelector", {
@@ -107,7 +208,8 @@ describe("<ZoomBeacons />", () => {
     p.activeFocus = "What you can grow";
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
     expect(sphere).toBeUndefined();
     expect(element.style.cursor).toEqual("");
     expect(p.setActiveFocus).not.toHaveBeenCalled();
@@ -126,6 +228,20 @@ describe("<ZoomBeacons />", () => {
     expect(materials[0].props.depthTest).toBeUndefined();
     expect(materials[0].props.depthWrite).toEqual(false);
     unmountRenderer(wrapper);
+  });
+
+  it("combines focus, load-in, and pulse opacity", () => {
+    type ToMapper = (...values: number[]) => number;
+    const toSpy = jest.spyOn(springCore, "to")
+      .mockImplementation(((_values: unknown, mapper: ToMapper) =>
+        mapper(0.5, 0.25) as never) as never);
+    const p = fakeProps();
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p}
+      loadInOpacity={0.25 as never} />);
+    expect(toSpy).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+    toSpy.mockRestore();
   });
 
   it("applies load-in scale on each anchored beacon visual", () => {
@@ -155,6 +271,28 @@ describe("<ZoomBeacons />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("remounts transition-enabled beacons when focus exits", () => {
+    const p = fakeProps();
+    p.activeFocus = "What you can grow";
+    p.config.animate = false;
+    const wrapper = createRenderer(
+      <FocusTransitionProvider enabled={true}>
+        <ZoomBeacons {...p} />
+      </FocusTransitionProvider>,
+    );
+    p.activeFocus = "";
+    actRenderer(() => {
+      wrapper.update(
+        <FocusTransitionProvider enabled={true}>
+          <ZoomBeacons {...p} />
+        </FocusTransitionProvider>,
+      );
+    });
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere").length).toBeGreaterThan(0);
+    unmountRenderer(wrapper);
+  });
+
   it("changes cursor: zoom-in", () => {
     const element = document.createElement("div");
     Object.defineProperty(document, "querySelector", {
@@ -165,7 +303,8 @@ describe("<ZoomBeacons />", () => {
     p.activeFocus = "";
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    const sphere = wrapper.root.findAll(node =>
+      node.props.name == "beacon-sphere")[0];
     actRenderer(() => {
       sphere?.props.onPointerEnter();
     });
