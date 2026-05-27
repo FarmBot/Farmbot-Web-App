@@ -134,6 +134,39 @@ describe("<ThreeDPlantLabel />", () => {
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
 
+  it("skips all-label rerenders during unrelated config churn", () => {
+    const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
+    p.getZ = jest.fn(() => 0);
+    const { rerender } = render(<ThreeDPlantLabel {...p} />);
+    expect(p.getZ).toHaveBeenCalledTimes(1);
+    (p.getZ as jest.Mock).mockClear();
+
+    rerender(<ThreeDPlantLabel {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+      sunAzimuth: p.config.sunAzimuth + 10,
+    }} />);
+
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("updates labels when rendered plant text changes", () => {
+    const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
+    const { rerender } = render(<ThreeDPlantLabel {...p} />);
+
+    rerender(<ThreeDPlantLabel {...p} plant={{
+      ...p.plant,
+      label: "Chard",
+    }} />);
+
+    expect(screen.getByText("Chard")).toBeInTheDocument();
+  });
+
   it("keeps plant coordinates in garden space", () => {
     const p = fakeProps();
     expect(p.plant.x).toEqual(100);

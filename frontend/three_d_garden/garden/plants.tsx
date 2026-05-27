@@ -57,7 +57,43 @@ export interface ThreeDPlantLabelProps {
   getZ(x: number, y: number): number;
 }
 
-export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
+const plantLabelVisible = (props: ThreeDPlantLabelProps) =>
+  (props.config.labels && !props.config.labelsOnHover)
+  || props.i === props.hoveredPlant;
+
+const plantLabelConfigEqual = (
+  prev: Config,
+  next: Config,
+) =>
+  prev.bedLengthOuter == next.bedLengthOuter
+  && prev.bedWidthOuter == next.bedWidthOuter
+  && prev.bedXOffset == next.bedXOffset
+  && prev.bedYOffset == next.bedYOffset
+  && prev.columnLength == next.columnLength
+  && prev.zGantryOffset == next.zGantryOffset
+  && prev.mirrorX == next.mirrorX
+  && prev.mirrorY == next.mirrorY;
+
+const plantLabelPlantEqual = (
+  prev: ThreeDGardenPlant,
+  next: ThreeDGardenPlant,
+) =>
+  prev.label == next.label
+  && prev.size == next.size
+  && prev.x == next.x
+  && prev.y == next.y;
+
+const plantLabelPropsEqual = (
+  prev: ThreeDPlantLabelProps,
+  next: ThreeDPlantLabelProps,
+) =>
+  prev.i == next.i
+  && prev.getZ == next.getZ
+  && plantLabelVisible(prev) == plantLabelVisible(next)
+  && plantLabelConfigEqual(prev.config, next.config)
+  && plantLabelPlantEqual(prev.plant, next.plant);
+
+const ThreeDPlantLabelBase = (props: ThreeDPlantLabelProps) => {
   const { i, plant, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   // eslint-disable-next-line no-null/no-null
@@ -81,6 +117,9 @@ export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
       plant={plant} />
   </Billboard>;
 };
+
+export const ThreeDPlantLabel =
+  React.memo(ThreeDPlantLabelBase, plantLabelPropsEqual);
 
 interface LabelPartProps {
   visible: boolean;
