@@ -73,11 +73,11 @@ const changeItemsInGroup = (
   meshObject: MeshObject,
   cb: (x: MeshObject) => void,
 ) => {
-  meshObject.children.map(child => {
+  for (const child of meshObject.children) {
     const object = child as MeshObject;
     cb(object);
     changeItemsInGroup(object, cb);
-  });
+  }
 };
 
 type MeshObject = THREE.Mesh<BufferGeometry, THREE.MeshStandardMaterial>;

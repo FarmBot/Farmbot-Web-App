@@ -42,7 +42,13 @@ describe("<PresetButton />", () => {
         parent: {
           children: [
             { name: "btn", position: { z: 0 }, children: [] },
-            { name: "not-btn", position: { z: 0 }, children: [] },
+            {
+              name: "not-btn",
+              position: { z: 0 },
+              children: [
+                { name: "btn", position: { z: 0 }, children: [] },
+              ],
+            },
           ]
         }
       }
@@ -53,6 +59,7 @@ describe("<PresetButton />", () => {
     });
     expect(e.object.parent.children[0].position.z).toEqual(-10);
     expect(e.object.parent.children[1].position.z).toEqual(16);
+    expect(e.object.parent.children[1].children[0].position.z).toEqual(-10);
     unmountRenderer(wrapper);
   });
 
