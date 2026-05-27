@@ -127,6 +127,17 @@ const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
   lastUpdateKey: "",
 });
 
+export const findPlantById = (
+  plants: ThreeDGardenPlant[],
+  plantId: number,
+) => {
+  for (let index = 0; index < plants.length; index++) {
+    const plant = plants[index];
+    if (plant.id == plantId) { return plant; }
+  }
+  return undefined;
+};
+
 export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
@@ -165,8 +176,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const editPlantMode =
     Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
   const plantId = parseInt(Path.getSlug(Path.plants()));
-  const currentPlant =
-    plants.filter(p => p.id == plantId)[0] as ThreeDGardenPlant | undefined;
+  const currentPlant = findPlantById(plants, plantId);
   const activeDragSpread = editPlantMode
     ? currentPlant?.spread
     : findCrop(Path.getCropSlug()).spread;

@@ -9,6 +9,7 @@ import {
   PlantSpreadInstancesProps,
   ThreeDPlantLabel,
   ThreeDPlantLabelProps,
+  findPlantById,
   outOfBoundsShaderModification,
 } from "../plants";
 import { Path } from "../../../internal_urls";
@@ -227,6 +228,12 @@ describe("<ThreeDPlantSpread />", () => {
     p.spreadVisible = false;
     const { container } = render(<PlantSpreadInstances {...p} />);
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
+  });
+
+  it("finds the active plant directly", () => {
+    const plants = fakeProps().plants;
+    expect(findPlantById(plants, 2)?.icon).toEqual(plants[1].icon);
+    expect(findPlantById(plants, 999999)).toBeUndefined();
   });
 
   it("renders spread: edit plant mode without plant", () => {
