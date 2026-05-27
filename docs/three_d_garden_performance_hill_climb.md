@@ -278,6 +278,62 @@ commit message. Roll back rejected implementation changes.
      renders. Expected return: avoid rebuilding the sixteen water-stream curves
      on parent rerenders when water is flowing but nozzle geometry is unchanged.
 
+## Round 44 Candidate Ideas
+
+216. Replace deep-clone image filtering with a direct newest-to-oldest scan.
+     Expected return: image-heavy 3D soil textures avoid cloning every
+     `TaggedImage` before filtering, while returned highlighted/image overlay
+     objects remain independent of the resource array.
+217. Cache the parsed 3D soil-surface height lookup used by Lua/sequence
+     simulation. Expected return: repeated `getSoilHeight()` calls during
+     sequence visualization stop reparsing session storage and rebuilding the
+     triangle index for the same soil surface.
+218. Precompute static plant icon frame positions for camera movement. Expected
+     return: dense plant-icon frame updates avoid recalculating garden position,
+     soil height, and base scale on every camera quaternion change when seasons
+     are not animating.
+219. Replace the `getZFunc` string-key cache with a numeric nested-map cache.
+     Expected return: grid, plant, point, and weed height lookups avoid repeated
+     coordinate string allocation while preserving exact cache semantics.
+220. Share plant-icon plane geometry across icon buckets. Expected return:
+     dense gardens with several crop icons allocate fewer identical plane
+     geometries while keeping per-icon textures, material state, and instance
+     transforms unchanged.
+
+## Round 44 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 216 | Replace deep-clone image filtering with a direct newest-to-oldest scan | Realistic image-heavy filter benchmark with 75 images, photo filters enabled, one hovered image highlighted, and the same helper used by the 3D soil texture, sampled 50 times | 70 filtered images; 1 highlighted image; 0.388 ms median filter time | 70 filtered images; 1 highlighted image; 0.239 ms median filter time | 38.5% faster, saving 0.149 ms per 75-image filter | Rejected and rolled back; the percentage qualified, but the absolute one-off setup saving was too small to justify replacing the compact existing filter chain with a longer custom scan | Not committed |
+
+## Round 43 Candidate Ideas
+
+211. Memoize `ThreeDGardenMap` sun-position calculation across Bot telemetry
+     updates. Expected return: X/Y/Z position changes stop rerunning solar
+     date and coordinate math while the same sun config is passed through.
+212. Memoize `ThreeDGardenMap` peripheral state derivation across Bot telemetry
+     updates. Expected return: unchanged peripheral values stop rebuilding the
+     lookup closure and four derived state values during position-only rerenders.
+213. Split the Y cable carrier moving wrapper from its static carrier body.
+     Expected return: X-only Bot movement updates the carrier position while the
+     unchanged Y-axis extruded path and material subtree are reused.
+214. Split the Z cable carrier moving wrapper from its static carrier body.
+     Expected return: X/Y-only Bot movement updates the carrier position while
+     the unchanged Z-axis extruded path and material subtree are reused.
+215. Fast-path readings-only `MoistureSurface` renders before map interpolation
+     setup. Expected return: scenes showing moisture reading markers without the
+     interpolated map skip empty map options, data, and buffer setup.
+
+## Round 43 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 211 | Memoize `ThreeDGardenMap` sun-position calculation | Real `ThreeDGardenMap` adapter rerender benchmark with valid device latitude/longitude, fixed 3D time, no plants, mocked child garden, and 25 Bot X-position updates | 26 `SunCalc.getPosition` calls; 0.770 ms median rerender path | 1 `SunCalc.getPosition` call; 0.668 ms median rerender path | 96.2% fewer sun-position calls and 13.2% faster, but only 0.102 ms saved across 25 realistic telemetry updates | Rejected and rolled back; the percentage qualified, but the absolute adapter-level win is too small to justify adding memo dependencies to the already-stable config path | Not committed |
+| 212 | Memoize `ThreeDGardenMap` peripheral state derivation | Real `ThreeDGardenMap` adapter rerender benchmark with eight peripheral values, no plants, invalid device coordinates, mocked child garden, and 25 Bot X-position updates | 0.705 ms median rerender path | 0.622 ms median rerender path | 11.8% faster, but only 0.083 ms saved across 25 realistic telemetry updates | Rejected and rolled back; unchanged peripheral derivation is already too cheap for an extra memo object and dependency list to improve the real app meaningfully | Not committed |
+| 213 | Split the Y cable carrier moving wrapper from its static carrier body | Direct `CableCarrierY` benchmark with cable carriers enabled, realistic v1.8 dimensions, stable Y/Z position, and 25 Bot X-position updates | 1 shape build; 0.809 ms median rerender path | 1 shape build; 0.956 ms median rerender path | 18.1% slower, with no reduction in shape builds because the existing `args` memo already keeps the path stable | Rejected and rolled back; the wrapper split added hierarchy and memo work without removing meaningful real work from the X-only carrier path | Not committed |
+| 214 | Split the Z cable carrier moving wrapper from its static carrier body | Direct `CableCarrierZ` benchmark with cable carriers enabled, realistic Z carrier dimensions, stable Z position, and 25 Bot X/Y-position updates | 1 shape build; 0.883 ms median rerender path | 1 shape build; 1.046 ms median rerender path | 18.5% slower, with no reduction in shape builds because the existing `args` memo already keeps the path stable | Rejected and rolled back; the wrapper split added scene hierarchy and memo work while the current Z carrier already avoids rebuilding the expensive path on X/Y-only movement | Not committed |
+| 215 | Fast-path readings-only `MoistureSurface` renders before map interpolation setup | Direct readings-only `MoistureSurface` render with the interpolated map hidden, 100 sensor readings, and one visible readings instanced mesh, sampled 20 times | 1 instanced mesh; 0.281 ms median render | 1 instanced mesh; 0.263 ms median render | 6.6% faster, saving 0.019 ms across a realistic 100-reading render | Rejected and rolled back; the readings-only path is already sub-millisecond, and a child split for map hooks is not justified by this small, below-threshold result | Not committed |
+
 ## Round 42 Candidate Ideas
 
 206. Hoist nested coordinate helper construction inside `get3DPositionFunc` and
@@ -310,6 +366,7 @@ commit message. Roll back rejected implementation changes.
 | 207 | Fast-path disabled perf instrumentation checks | Disabled normal-session instrumentation burst: 250 `perfCount`/`perfMark`/`perfSample`/`perfMeasure` calls, sampled 50 times with no `fb_perf` query and no benchmark localStorage flag | 0.016 ms median instrumentation batch | 0.006 ms median instrumentation batch | 62.5% faster, but only 0.010 ms saved across 250 instrumentation calls | Rejected and rolled back; the normal disabled-perf path is already too cheap for the extra branch to matter in real 3D Garden renders | Not committed |
 | 208 | Memoize `useTextureVariant` lookups | Stable texture-variant rerender benchmark: one mounted hook plus 50 parent rerenders with the same loaded base texture and identical inline variant option values | 0.764 ms median rerender path | 0.742 ms median rerender path | 2.9% faster, saving 0.022 ms across 50 realistic stable rerenders | Rejected and rolled back; the existing WeakMap cache lookup is already cheap, so adding hook dependencies did not produce a qualifying or meaningful runtime win | Not committed |
 | 209 | Stabilize `GardenModel` plant hover handlers | Real `GardenModel` plant-layer rerender benchmark: 100 visible plants, hover labels enabled, FarmBot/extra overlays disabled, plus 25 Bot X-position rerenders | 31.165 ms median rerender path | 31.027 ms median rerender path | 0.4% faster, saving 0.138 ms across 25 rerenders | Rejected and rolled back; stable handler identities did not materially reduce the plant-layer rerender cost, so the extra memo/callback structure is not justified | Not committed |
+| 210 | Use stable empty fallback arrays for optional `GardenModel` detail props | Real `GardenModel` telemetry rerender benchmark with optional map/weed/group/image/sensor props absent, FarmBot/extra overlays disabled, and 25 Bot X-position rerenders | 31.964 ms median rerender path | 9.859 ms median rerender path | 69.2% faster, saving 22.105 ms across 25 realistic rerenders | Accepted; shared typed empty arrays preserve the same empty optional data while allowing memoized children such as `Bed` to skip rerenders when only Bot telemetry changes | `Reuse empty GardenModel arrays for 69.2% faster rerenders` |
 
 ## Round 41 Candidate Ideas
 

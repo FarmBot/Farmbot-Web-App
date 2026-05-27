@@ -151,6 +151,14 @@ export interface GardenModelProps {
   onLoadComplete?(): void;
 }
 
+const EMPTY_GENERIC_POINTERS: TaggedGenericPointer[] = [];
+const EMPTY_WEEDS: TaggedWeedPointer[] = [];
+const EMPTY_POINTS: TaggedPoint[] = [];
+const EMPTY_POINT_GROUPS: TaggedPointGroup[] = [];
+const EMPTY_IMAGES: TaggedImage[] = [];
+const EMPTY_SENSORS: TaggedSensor[] = [];
+const EMPTY_SENSOR_READINGS: TaggedSensorReading[] = [];
+
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
@@ -158,6 +166,13 @@ export const GardenModel = (props: GardenModelProps) => {
     config, addPlantProps, onDetailsRevealStart, onLoadComplete, threeDPlants,
   } = props;
   const dispatch = addPlantProps?.dispatch;
+  const mapPoints = props.mapPoints || EMPTY_GENERIC_POINTERS;
+  const weeds = props.weeds || EMPTY_WEEDS;
+  const allPoints = props.allPoints || EMPTY_POINTS;
+  const groups = props.groups || EMPTY_POINT_GROUPS;
+  const images = props.images || EMPTY_IMAGES;
+  const sensors = props.sensors || EMPTY_SENSORS;
+  const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
 
   const [hoveredPlant, setHoveredPlant] =
@@ -301,8 +316,8 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
-      filterSoilPoints({ points: props.mapPoints, config })),
-    [props.mapPoints, config]);
+      filterSoilPoints({ points: mapPoints, config })),
+    [mapPoints, config]);
   const soilSurface = React.useMemo(() =>
     perfMeasure("soilSurfaceMs", () => getSurface(soilPoints)), [soilPoints]);
   React.useEffect(() => {
@@ -449,13 +464,13 @@ export const GardenModel = (props: GardenModelProps) => {
             config={config}
             soilSurfaceGeometry={soilSurface.geometry}
             getZ={getZ}
-            images={props.images}
+            images={images}
             activeFocus={props.activeFocus}
-            mapPoints={props.mapPoints || []}
+            mapPoints={mapPoints}
             showMoistureMap={showMoistureMap}
             showMoistureReadings={showMoistureReadings}
-            sensors={props.sensors || []}
-            sensorReadings={props.sensorReadings || []}
+            sensors={sensors}
+            sensorReadings={sensorReadings}
             activePositionRef={activePositionRef}
             addPlantProps={addPlantProps} />
         </PopInGroup>
@@ -532,9 +547,9 @@ export const GardenModel = (props: GardenModelProps) => {
           distance={200}>
           <Group name={"weeds"}
             visible={showWeeds}>
-            {(props.weeds?.length || 0) > 0 &&
+            {weeds.length > 0 &&
             <WeedInstances
-              weeds={props.weeds || []}
+              weeds={weeds}
               visible={showWeeds}
               config={config}
               getZ={getZ}
@@ -555,9 +570,9 @@ export const GardenModel = (props: GardenModelProps) => {
           distance={config.columnLength + 1000}>
           <Group name={"points"}
             visible={showPoints}>
-            {(props.mapPoints?.length || 0) > 0 &&
+            {mapPoints.length > 0 &&
             <PointInstances
-              points={props.mapPoints || []}
+              points={mapPoints}
               visible={showPoints}
               config={config}
               getZ={getZ}
@@ -616,10 +631,10 @@ export const GardenModel = (props: GardenModelProps) => {
           radius={50}
           applyOffset={true}
           config={config}
-          readings={props.sensorReadings || []} />}
+          readings={sensorReadings} />}
         <GroupOrderVisual
-          allPoints={props.allPoints || []}
-          groups={props.groups || []}
+          allPoints={allPoints}
+          groups={groups}
           config={config}
           tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
           getZ={getZ} />

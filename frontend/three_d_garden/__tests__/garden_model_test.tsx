@@ -113,6 +113,22 @@ describe("<GardenModel />", () => {
       expect(p.onDetailsRevealStart).toHaveBeenCalled());
   });
 
+  it("reuses empty bed resource props across position updates", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const findBedProps = () => wrapper.root.find(node =>
+      node.props.soilSurfaceGeometry && node.props.activePositionRef).props;
+    const before = findBedProps();
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      configPosition={{ ...p.configPosition, x: p.configPosition.x + 1 }} />));
+    const after = findBedProps();
+    expect(after.images).toBe(before.images);
+    expect(after.mapPoints).toBe(before.mapPoints);
+    expect(after.sensors).toBe(before.sensors);
+    expect(after.sensorReadings).toBe(before.sensorReadings);
+  });
+
   it("renders top down view", () => {
     mockIsMobile = true;
     const p = fakeProps();
