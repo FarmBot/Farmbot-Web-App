@@ -179,7 +179,7 @@ export interface BedProps {
   activePositionRef: ActivePositionRef;
 }
 
-export const Bed = (props: BedProps) => {
+const BedBase = (props: BedProps) => {
   const {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness,
@@ -529,3 +529,5 @@ export const Bed = (props: BedProps) => {
     <Packaging config={props.config} />
   </Group>;
 };
+
+export const Bed = React.memo(BedBase);

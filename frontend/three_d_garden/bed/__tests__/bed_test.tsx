@@ -155,6 +155,13 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("memoizes unchanged bed props", () => {
+    const p = fakeProps();
+    render(<Bed {...p} />);
+    const memoized = Bed as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
   it("renders bed with extra legs", () => {
     const p = fakeProps();
     p.config.extraLegsX = 2;

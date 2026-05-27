@@ -159,10 +159,30 @@ commit message. Roll back rejected implementation changes.
      Expected return: lower selected Lab scene update work by avoiding repeated
      wall outline shape creation with identical geometry.
 
+## Round 33 Candidate Ideas
+
+161. Memoize the Bed subtree across Bot telemetry-only parent rerenders.
+     Expected return: avoid rebuilding the static bed, soil, legs, and overlay
+     JSX when only `configPosition` changes and all Bed props are stable.
+162. Memoize the visible Ground subtree across Bot telemetry-only parent
+     rerenders. Expected return: skip repeated ground material/LOD JSX work
+     when scene and bed dimensions are unchanged.
+163. Memoize the visible Grid subtree across Bot telemetry-only parent
+     rerenders. Expected return: skip repeated grid group/material JSX work
+     when grid props and soil-height function are unchanged.
+164. Memoize the selected Lab scene across Bot telemetry-only parent rerenders.
+     Expected return: skip unchanged Lab wall, desk, and people subtree work
+     while Bot position updates do not affect the Lab props.
+165. Memoize the selected Greenhouse scene across Bot telemetry-only parent
+     rerenders. Expected return: skip unchanged walls, shelf, trays, people,
+     and potted-plant subtree work while Bot position updates do not affect the
+     Greenhouse props.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 161 | Memoize Bed subtree | Direct default `Bed` render plus 49 unchanged parent rerenders with stable bed/config/resource props, matching Bot telemetry-only parent updates | 1 bed group; 0.919 ms median rerender time | 1 bed group; 0.032 ms median rerender time | 96.5% faster; 0.887 ms saved per unchanged Bed rerender | Accepted; `Bed` now skips rebuilding static bed/soil/leg/overlay JSX when its props are unchanged, while normal prop changes still rerender through shallow React memoization | `Memoize Bed subtree for 96.5% faster rerenders` |
 | 160 | Reuse Lab wall extrusion shape | Selected `Lab` scene render plus 49 unchanged rerenders with people hidden, measuring render time through Bun/Testing Library | 0.389 ms median render time for 50 renders | 0.404 ms median render time for 50 renders | 3.9% slower; no meaningful absolute improvement in an already sub-millisecond scene rerender path | Rejected and rolled back; the wall shape creation is not a real bottleneck under realistic Lab rerenders, so memoizing the extrusion args would add complexity without app-level value | None |
 | 159 | Memoize static GreenhouseWall subtree | Selected `Greenhouse` scene render plus 49 unchanged rerenders, measuring render time through Bun/Testing Library | 2 greenhouse walls; 63.129 ms median render time for 50 renders | 2 greenhouse walls; 14.656 ms median render time for 50 renders | 76.8% faster; 48.473 ms saved across 50 unchanged Greenhouse scene renders | Accepted; the prop-less wall component is memoized, so static pane/frame JSX is generated once per mount while the visible Greenhouse scene remains unchanged | `Memoize Greenhouse walls for 76.8% faster rerenders` |
 | 158 | Memoize Solenoid water-tube paths | Direct `Solenoid` render plus 99 unchanged rerenders with stable bot position and config, measuring render time through Bun/Testing Library | 4 water tubes; 14.169 ms median render time for 100 renders | 4 water tubes; 12.154 ms median render time for 100 renders | 14.2% faster; 2.015 ms saved across 100 unchanged renders | Accepted; the four tube paths and solenoid position are reused while bot position/config are unchanged, preserving identical tube geometry and still recalculating when position changes | `Memoize solenoid paths for 14.2% faster rerenders` |
