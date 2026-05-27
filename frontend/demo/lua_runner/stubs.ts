@@ -25,6 +25,7 @@ import {
 
 let cachedSoilSurfaceTriangles: string | null | undefined;
 let cachedSoilSurfaceGetZ: ReturnType<typeof getZFunc> | undefined;
+let cachedSoilSurfaceGetZFunc: typeof getZFunc | undefined;
 
 export const getFirmwareSettings = (): FirmwareConfig => {
   const fwConfig = getters.getFirmwareConfig(store.getState().resources.index);
@@ -62,8 +63,15 @@ export const getSafeZ = (): number => {
 
 export const getSoilHeight = (x: number, y: number): number => {
   const storedTriangles = sessionStorage.getItem("soilSurfaceTriangles");
-  if (storedTriangles !== cachedSoilSurfaceTriangles) {
+  if (typeof storedTriangles != "string") {
+    return getZFunc([], -500)(x, y);
+  }
+  if (
+    storedTriangles !== cachedSoilSurfaceTriangles ||
+    cachedSoilSurfaceGetZFunc !== getZFunc
+  ) {
     cachedSoilSurfaceTriangles = storedTriangles;
+    cachedSoilSurfaceGetZFunc = getZFunc;
     cachedSoilSurfaceGetZ = getZFunc(
       parseStoredTriangles(storedTriangles),
       -500,
