@@ -18,8 +18,14 @@ export interface UtilitiesPostProps {
 }
 
 export const UtilitiesPost = (props: UtilitiesPostProps) => {
+  if (!props.config.utilitiesPost) { return <></>; }
+
+  return <EnabledUtilitiesPost {...props} />;
+};
+
+const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
   const {
-    utilitiesPost, legSize, bedLengthOuter, bedWidthOuter,
+    legSize, bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
   } = props.config;
   const groundZ = -bedHeight - bedZOffset;
@@ -50,7 +56,7 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
   });
 
   return <FocusVisibilityGroup name={"utilities"}
-    visible={utilitiesPost && props.activeFocus != "Planter bed"}
+    visible={props.activeFocus != "Planter bed"}
     keepMounted={true}
     position={[
       threeSpace(bedLengthOuter + 600, bedLengthOuter),
