@@ -142,6 +142,8 @@ describe("<Tools />", () => {
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
     expect(useGltfMock).not.toHaveBeenCalledWith(ASSETS.models.toolbay3, expect.anything());
+    expect(useGltfMock.mock.calls
+      .filter(([url]) => url == ASSETS.models.toolbay1)).toHaveLength(4);
     expect(container).toContainHTML("soilSensor");
     expect(container).toContainHTML("weeder");
     expect(container).toContainHTML("seeder");

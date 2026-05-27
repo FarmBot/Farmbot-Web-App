@@ -123,10 +123,33 @@ commit message. Roll back rejected implementation changes.
      Expected return: lower bed rerender work for the default four casters and
      extra-leg layouts without changing caster visuals.
 
+## Round 31 Candidate Ideas
+
+151. Do not mount packaging geometry when the packaging layer is disabled.
+     Expected return: lower default bed setup by skipping hidden carton,
+     strap, edge-protector, and label geometry.
+152. Do not mount bed axes geometry when the axes layer is disabled.
+     Expected return: lower default bed setup by skipping three hidden arrow
+     extrusions while preserving the axes overlay when enabled.
+153. Do not mount north-arrow geometry when the north layer is disabled.
+     Expected return: lower default bed setup by skipping hidden compass
+     extrusions while preserving the arrow when enabled.
+154. Do not mount bed distance indicators when all bed dimension overlays are
+     disabled. Expected return: lower default bed setup by skipping hidden
+     distance line and label helpers unless XY or bed-height dimensions are on.
+155. Load the toolbay slot model only for slots with a rendered bay.
+     Expected return: fewer GLTF hooks/model requests for mounted UTM tools
+     and slots with no pullout direction, without changing visible tool slots.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 155 | Load toolbay model only for rendered bays | Configured `Tools` render with seven real tool slots and mounted weeder, measuring GLTF hooks and render time through Bun/Testing Library | 13 total model hooks; 6 `toolbay1` hooks; 0 `toolbay3` hooks; 1.980 ms median render time | 11 total model hooks; 4 `toolbay1` hooks; 0 `toolbay3` hooks; 2.118 ms median render time | 33.3% fewer `toolbay1` hooks and 15.4% fewer total model hooks, removing two unused model requests; render timing shifted by 0.138 ms within harness noise | Accepted; the toolbay model hook now lives in the rendered bay child, so mounted UTM tools and `NONE` pullout slots skip unused model work while visible bays are unchanged | `Load visible toolbay models for 33.3% fewer hooks` |
+| 154 | Skip disabled bed distance indicators | Full default `Bed` render with `xyDimensions=false` and no bed-height distance indicator, measuring mounted distance labels/arrows and render time through Bun/Testing Library | 0 hidden distance labels/arrows mounted by the test harness; 2.589 ms median render time | 0 labels/arrows; 2.177 ms median render time | 15.9% faster, but only 0.412 ms saved in the default Bed render | Rejected and rolled back; the percentage cleared 10%, but the sub-millisecond absolute gain and added conditional rendering were not worth keeping | None |
+| 153 | Skip disabled north-arrow geometry | Direct disabled `NorthArrow` render with `north=false`, measuring mounted arrow extrudes and render time through Bun/Testing Library | 0 arrow extrudes mounted by the test harness; 0.192 ms median render time | 0 arrow extrudes; 0.156 ms median render time | 18.8% faster, but only 0.036 ms saved in the disabled component render | Rejected and rolled back; the percentage cleared 10%, but the absolute improvement was negligible in the realistic disabled path | None |
+| 152 | Skip disabled bed axes geometry | Full default `Bed` render with `axes=false`, measuring mounted arrow nodes and render time through Bun/Testing Library | 0 arrow nodes mounted by the test harness; 2.443 ms median render time | 0 arrow nodes; 2.256 ms median render time | 7.7% faster and only 0.187 ms saved in the default Bed render | Rejected and rolled back; the realistic harness already pruned the hidden axes children, and the measured runtime gain missed 10% with too little absolute value | None |
+| 151 | Skip disabled packaging geometry | Direct disabled `Packaging` render with `packaging=false`, measuring mounted hidden nodes and render time through Bun/Testing Library | 0 rendered packaging nodes in the test harness; 0.255 ms median render time | 0 rendered packaging nodes; 0.173 ms median render time | 32.2% faster, but only 0.082 ms saved in the disabled component render | Rejected and rolled back; the percentage cleared 10%, but the realistic absolute saving was too small to justify another early-return branch | None |
 | 150 | Memoize caster bracket extrusion shape data | Full `Bed` render plus 49 unchanged rerenders with the default four casters, measuring path line-segment setup and render time through Bun/Testing Library | 1,600 path line segments; 37.245 ms median render time for 50 renders | 816 path line segments; 36.140 ms median render time for 50 renders | 49.0% fewer path line segments, but only 1.105 ms faster across 50 unchanged renders | Rejected and rolled back; in the realistic full-bed context, the runtime gain was 3.0% and about 0.022 ms per render, so the memoization did not provide enough absolute value | None |
 | 149 | Memoize bed-frame extrusion shape data | Full `Bed` render plus 49 unchanged rerenders with the default four casters, measuring path line-segment setup and render time through Bun/Testing Library | 1,600 path line segments; 34.994 ms median render time for 50 renders | 816 path line segments; 33.195 ms median render time for 50 renders | 49.0% fewer path line segments, but only 1.799 ms faster across 50 unchanged renders | Rejected and rolled back; the setup-call percentage looked good, but the realistic runtime gain was 5.1% and about 0.036 ms per render, too small to justify extra memoization and test-facing component export complexity | None |
 | 148 | Memoize PowerSupply cable path | Direct `PowerSupply` render plus 99 unchanged rerenders with stable bed dimensions, measuring cable-path segment additions and render time through Bun/Testing Library | 700 cable-path segment additions; 8.075 ms median render time for 100 renders | 7 cable-path segment additions; 6.361 ms median render time for 100 renders | 99.0% fewer cable-path additions; 1.714 ms faster across 100 unchanged renders | Accepted; cable geometry is rebuilt only when bed/support dimensions change, preserving the same visible cable path while avoiding repeated curve/vector allocation during parent rerenders | `Memoize power cable path for 99% fewer additions` |

@@ -242,6 +242,22 @@ const rotationFactor = (toolPulloutDirection: ToolPulloutDirection) => {
   }
 };
 
+const Toolbay1Model = () => {
+  const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as unknown as Toolbay1;
+  return <>
+    <Mesh name={"toolbay1"}
+      scale={1000}
+      geometry={toolbay1.nodes[PartName.toolbay1].geometry}>
+      <MeshPhongMaterial color={distinguishableBlack} />
+    </Mesh>
+    <Mesh name={"toolbay1-logo"}
+      scale={1000}
+      geometry={toolbay1.nodes[PartName.toolbay1Logo].geometry}>
+      <MeshPhongMaterial color={distinguishableBlack} />
+    </Mesh>
+  </>;
+};
+
 interface ToolbaySlotProps {
   position: Record<Xyz, number>;
   children?: React.ReactNode;
@@ -261,7 +277,6 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
       props.config.mirrorX,
       props.config.mirrorY));
   const navigate = useNavigate();
-  const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as unknown as Toolbay1;
   return <Group name={props.inToolbay ? "slot" : "utm-tool"}
     position={[
       position.x + 5,
@@ -278,16 +293,7 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
     {rotationMultiplier &&
       <Group name={"bay"}
         rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
-        <Mesh name={"toolbay1"}
-          scale={1000}
-          geometry={toolbay1.nodes[PartName.toolbay1].geometry}>
-          <MeshPhongMaterial color={distinguishableBlack} />
-        </Mesh>
-        <Mesh name={"toolbay1-logo"}
-          scale={1000}
-          geometry={toolbay1.nodes[PartName.toolbay1Logo].geometry}>
-          <MeshPhongMaterial color={distinguishableBlack} />
-        </Mesh>
+        <Toolbay1Model />
       </Group>}
     <OpacityFilter opacity={mounted ? 0.25 : 1}>
       {children}
