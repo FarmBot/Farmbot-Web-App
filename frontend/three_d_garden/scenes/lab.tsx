@@ -37,7 +37,7 @@ const wallStructure2D = () => {
   return shape;
 };
 
-export const Lab = (props: LabProps) => {
+const LabBase = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
@@ -106,3 +106,5 @@ export const Lab = (props: LabProps) => {
     </PopInGroup>
   </Group>;
 };
+
+export const Lab = React.memo(LabBase);

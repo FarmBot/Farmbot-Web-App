@@ -21,6 +21,14 @@ describe("<Lab />", () => {
     expect(container).not.toContainHTML("people");
   });
 
+  it("memoizes unchanged scene props", () => {
+    const p = fakeProps();
+    p.config.scene = "Lab";
+    render(<Lab {...p} />);
+    const memoized = Lab as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
   it("not visible when scene is not lab", () => {
     const p = fakeProps();
     p.config.scene = "Greenhouse";
