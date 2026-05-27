@@ -8,7 +8,8 @@ interface MockRef {
     };
   } | undefined;
 }
-let mockRef: MockRef = {
+
+const newMockRef = (): MockRef => ({
   current: {
     getWorldPosition: jest.fn(),
     copy: jest.fn(() => ({ add: jest.fn() })),
@@ -17,7 +18,9 @@ let mockRef: MockRef = {
       updateMatrixWorld: jest.fn(),
     },
   }
-};
+});
+
+let mockRef: MockRef = newMockRef();
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -25,17 +28,22 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
+import * as threeFiber from "@react-three/fiber";
 
 let reactUseRefSpy: jest.SpyInstance;
+let useFrameSpy: jest.SpyInstance;
 
 describe("<GantryBeam />", () => {
   beforeEach(() => {
+    mockRef = newMockRef();
     reactUseRefSpy = jest.spyOn(React, "useRef")
       .mockImplementation(() => mockRef);
+    useFrameSpy = jest.spyOn(threeFiber, "useFrame");
   });
 
   afterEach(() => {
     reactUseRefSpy.mockRestore();
+    useFrameSpy.mockRestore();
   });
 
   const fakeProps = (): GantryBeamProps => ({
@@ -66,6 +74,15 @@ describe("<GantryBeam />", () => {
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
     expect(container).toContainHTML("light");
+  });
+
+  it("renders lights without frame callbacks", () => {
+    const p = fakeProps();
+    p.config.light = true;
+    p.config.kitVersion = "v1.8";
+    const { container } = render(<GantryBeam {...p} />);
+    expect(container).toContainHTML("light");
+    expect(useFrameSpy).not.toHaveBeenCalled();
   });
 
   it("renders debug helpers", () => {

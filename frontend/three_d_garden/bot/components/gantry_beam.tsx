@@ -7,7 +7,6 @@ import {
   DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
 import { extrusionWidth } from "../bot";
-import { useFrame } from "@react-three/fiber";
 import { range } from "lodash";
 
 export interface GantryBeamProps {
@@ -97,16 +96,15 @@ const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
   const worldPosRef = React.useRef<Vector3>(new Vector3());
   const targetPosRef = React.useRef<Vector3>(new Vector3());
   const downVector = React.useMemo(() => new Vector3(0, 0, -1), []);
-  useFrame(() => {
-    if (lightRef.current) {
-      const light = lightRef.current;
-      const worldPos = worldPosRef.current;
-      const targetPos = targetPosRef.current;
-      light.getWorldPosition(worldPos);
-      targetPos.copy(worldPos).add(downVector);
-      light.target.position.copy(targetPos);
-      light.target.updateMatrixWorld();
-    }
+  React.useLayoutEffect(() => {
+    const light = lightRef.current;
+    if (!light || typeof light.getWorldPosition != "function") { return; }
+    const worldPos = worldPosRef.current;
+    const targetPos = targetPosRef.current;
+    light.getWorldPosition(worldPos);
+    targetPos.copy(worldPos).add(downVector);
+    light.target.position.copy(targetPos);
+    light.target.updateMatrixWorld();
   });
   return <SpotLight
     ref={lightRef}
