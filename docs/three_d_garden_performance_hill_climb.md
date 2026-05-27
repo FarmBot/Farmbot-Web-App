@@ -526,3 +526,69 @@ commit message. Roll back rejected implementation changes.
 | 88 | Memoize `Bot` subtree | Docker 1000-plant default scene after item 86, 3 measured runs; first rerun with accidental moisture interpolation was discarded | 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.075s full-ready; 3.180s core-ready; 442 ms FarmBot toggle | 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.174s full-ready; 3.218s core-ready; 478 ms FarmBot toggle | No render-count, draw-call, or triangle improvement; 2.4% slower full-ready; 1.2% slower core-ready; 8.0% slower FarmBot toggle | Rejected and rolled back; the FarmBot subtree was not receiving meaningful extra parent-driven work after item 86, so wrapping it added no real payoff | None |
 | 89 | Memoize static environment subtree | Docker 1000-plant default scene after item 86, 3 measured runs | 4.075s full-ready; 3.180s core-ready; 97 draw calls; 5,332,526 triangles; 110 WebGL geometries; 3 model resources; 2,412,561 encoded JS bytes | 4.062s full-ready; 3.208s core-ready; 97 draw calls; 5,332,526 triangles; 111 WebGL geometries; 4 model resources; 2,412,631 encoded JS bytes | 0.3% faster full-ready, saving 13.6 ms; 0.9% slower core-ready; no draw-call or triangle improvement; 70 more encoded JS bytes | Rejected and rolled back; the environment boundary did not clear 10%, did not reduce scene work, and added component structure for a noise-level load shift | None |
 | 90 | Memoize soil render-texture component | Docker 1000-plant default scene after item 86, 3 measured runs | 1 soil texture render; 52.3 ms image texture setup; 4.075s full-ready; 3.180s core-ready; 110 WebGL geometries; 2,412,561 encoded JS bytes | 1 soil texture render; 53.9 ms image texture setup; 4.065s full-ready; 3.195s core-ready; 111 WebGL geometries; 2,412,690 encoded JS bytes | No soil render-count improvement; 3.1% slower image texture setup; 0.3% faster full-ready; 129 more encoded JS bytes | Rejected and rolled back; after item 86 the soil render-texture path was already down to one real render, so a comparator added complexity without reducing the measured work | None |
+
+## Round 19 Candidate Ideas
+
+91. Load only the ground texture needed by the active scene instead of loading
+    Outdoor grass, Lab concrete, and Greenhouse bricks on every default 3D
+    startup. Expected return: fewer default texture requests, lower GPU texture
+    memory, and shorter load without lowering texture resolution or changing
+    any visible material.
+92. Split v1.8 FarmBot-only support/electronics paths away from v1.7-only GLB
+    hooks so the Genesis XL v1.8 default scene does not request hidden legacy
+    cable-support or LED models. Expected return: fewer model requests and less
+    model parse/memory work with identical visible v1.8 geometry.
+93. Load the promo `toolbay_3` GLB only when the 3D view is rendering promo
+    tools instead of a real account's saved tool slots. Expected return: fewer
+    unnecessary model bytes in the realistic Docker demo account while keeping
+    promo rendering unchanged.
+94. Cache parsed FarmBot SVG extrusion shapes across FarmBot layer remounts.
+    Expected return: faster FarmBot layer re-enable after a user toggles the
+    layer off and on, without changing extrusion geometry or startup visuals.
+95. Disable raycasting for the plant spread instanced mesh while the spread
+    overlay is inactive. Expected return: faster canvas pointer movement/click
+    handling in the default 1000-plant scene while preserving spread overlay
+    interaction whenever it is visible or in plant edit/add modes.
+
+## Round 19 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 91 | Load only active ground texture | Docker 1000-plant default Outdoor scene, 3 measured full-load resource runs after round 18 | 12 texture resources; 2,615,499 encoded texture bytes; 24 WebGL textures; 4.0s full-ready; 97 draw calls; 5,332,526 triangles | 10 texture resources; 2,448,768 encoded texture bytes; 22 WebGL textures; 4.1s full-ready; 97 draw calls; 5,332,526 triangles | 16.7% fewer texture requests, removing the hidden Lab/Greenhouse ground textures; 166.7 KB fewer encoded texture bytes; 8.3% fewer WebGL textures; full-ready sampled 2.1% slower | Accepted; this removes two real unused default-scene texture loads with a small component split, while keeping the same active texture, material colors, geometry, draw calls, triangles, and scene object counts | `Load active ground texture for 16.7% fewer requests` |
+| 92 | Split v1.8-only FarmBot model paths | Docker 1000-plant default scene after item 91, 3 measured full-load resource runs | 33 model resources; 946,112 encoded model bytes; 490 scene objects; 254 scene meshes; 4.1s full-ready; 97 draw calls | 31 model resources; 935,928 encoded model bytes; 477 scene objects; 246 scene meshes; 4.0s full-ready; 97 draw calls | 6.1% fewer model resources, removing two v1.7-only cable-support GLBs; 10.2 KB fewer encoded model bytes; 2.7% fewer scene objects; 3.1% fewer scene meshes; 1.6% faster full-ready | Rejected and rolled back; the measured savings were real but below 10% on the practical model/scene metrics, and 10 KB plus hidden-object cleanup was not worth splitting several FarmBot component paths | None |
+| 93 | Load promo toolbay model only for promo tools | Docker 1000-plant default scene after item 91, 3 measured full-load resource runs | 33 model resources; 946,112 encoded model bytes; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 490 scene objects | 32 model resources; 933,324 encoded model bytes; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 490 scene objects | 3.0% fewer model resources, removing `toolbay_3.glb`; 12.8 KB fewer encoded model bytes; full-ready sampled 0.7% slower; core-ready sampled 1.2% slower | Rejected and rolled back; avoiding one small promo-only model request in the real-account path did not clear 10% or produce a meaningful absolute app-level gain | None |
+| 94 | Cache FarmBot SVG shapes across layer remounts | Docker 1000-plant default scene after item 91, 3 measured FarmBot layer off/on re-enable runs | 679.9 ms FarmBot re-enable; 4.1s full-ready; 3.2s core-ready; 4 shape SVG resources; 4,828 encoded shape bytes | 666.0 ms FarmBot re-enable; 4.1s full-ready; 3.3s core-ready; 4 shape SVG resources; 4,828 encoded shape bytes | 2.0% faster FarmBot re-enable, saving 13.9 ms; full-ready sampled 1.9% slower; no SVG resource-count or byte reduction | Rejected and rolled back; normal browser/cache behavior already handles most of the remount cost, so module-level parsed shape cache state did not provide enough realistic interaction improvement | None |
+| 95 | Disable inactive plant spread raycast | Docker 1000-plant default scene after item 91, 3 measured 180-event canvas pointer sweeps | 479.6 ms pointer sweep; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 5,332,526 triangles | 481.0 ms pointer sweep; 4.2s full-ready; 3.3s core-ready; 97 draw calls; 5,332,526 triangles | 0.3% slower pointer sweep; full-ready sampled 2.8% slower; no draw-call, triangle, object, or texture improvement | Rejected and rolled back; disabling spread raycast while inactive did not reduce realistic canvas pointer handling time, so the extra event-state branch was not justified | None |
+
+## Round 20 Candidate Ideas
+
+96. Skip the `OpacityFilter` material-cloning wrapper for toolbay tools whose
+    opacity is already 1. Expected return: less real startup material traversal,
+    cloning, and heap churn in the default saved-tool scene, with identical
+    visuals because only the mounted tool should be faded.
+97. Register the rotary-tool frame callback only for the mounted rotary
+    implement instead of every rendered tool. Expected return: fewer per-frame
+    callbacks in the tool-heavy default scene and better frame timing, while
+    preserving rotary animation whenever the rotary peripheral is active.
+98. Memoize real-account tool slot conversion so startup/resource churn does
+    not repeatedly sort and normalize the same saved slots. Expected return:
+    less real render CPU in the default account with unchanged slot geometry,
+    ordering, and navigation behavior.
+99. Skip sensor moisture interpolation data generation while the interpolation
+    overlay is hidden. Expected return: less designer-map startup/render work
+    beside the 3D garden in the default scene, without changing sensor marker
+    rendering or visible overlay behavior.
+100. Memoize 2D sensor moisture filtering and interpolation options across
+    stable inputs. Expected return: less repeated sensor-layer CPU during
+    startup and layer toggles in realistic sensor-reading scenes, with the same
+    markers, labels, and interpolation tiles.
+
+## Round 20 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 96 | Skip no-op tool opacity cloning | Docker 1000-plant default scene after round 19, 3 measured runs | 4.040s full-ready; 3.128s core-ready; 7.98 ms frame p95; 97 draw calls; 5,332,526 triangles; 490 scene objects; 699 ms plant nav; 405 ms FarmBot toggle | 4.023s full-ready; 3.145s core-ready; 7.95 ms frame p95; 91 draw calls; 5,254,770 triangles; 483 scene objects; 723 ms plant nav; 470 ms FarmBot toggle | 0.4% faster full-ready, saving 16.2 ms; 0.5% slower core-ready; 6.2% fewer draw calls; 1.5% fewer triangles; 16.0% slower FarmBot toggle | Rejected and rolled back; removing no-op opacity wrappers reduced a few scene objects but did not clear 10% on a primary metric, saved only milliseconds at load, and worsened interaction guardrails enough that the extra rendering-path difference was not worth keeping | None |
+| 97 | Scope rotary frame callback to rotary model | Docker 1000-plant default scene after round 19, 3 measured runs | 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 97 draw calls; 490 scene objects; 405 ms FarmBot toggle | 4.054s full-ready; 3.157s core-ready; 126.61 FPS median; 8.56 ms frame p95; 97 draw calls; 490 scene objects; 470 ms FarmBot toggle | 0.3% slower full-ready; 0.9% slower core-ready; 0.0% FPS change; 7.3% worse frame p95; 15.9% slower FarmBot toggle | Rejected and rolled back; fewer theoretical frame callbacks did not improve the real default scene and the added rotary component branch worsened the sampled frame/interaction guardrails | None |
+| 98 | Memoize saved tool slot conversion | Docker 1000-plant default scene after round 19, 3 measured runs | 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects | 4.056s full-ready; 3.144s core-ready; 126.44 FPS median; 7.96 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects | 0.4% slower full-ready; 0.5% slower core-ready; no render-count or scene-size improvement; 0.2% better frame p95 | Rejected and rolled back; the saved slot list is small and stable enough that memoizing its sort/normalization did not produce a meaningful realistic app win | None |
+| 99 | Skip hidden sensor interpolation generation | Docker 1000-plant default scene after round 19, 3 measured runs with moisture overlay hidden | 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work | 4.072s full-ready; 3.188s core-ready; 126.61 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work | 0.8% slower full-ready; 1.9% slower core-ready; no scene, frame, or 3D moisture-work improvement | Rejected and rolled back; the hidden 2D interpolation generation was not a measurable default 3D startup bottleneck under the real Docker page | None |
+| 100 | Memoize sensor-layer filtering/options | Docker 1000-plant scene with moisture map/readings enabled after round 19, 3 measured before runs | 4.853s full-ready; 3.911s core-ready; 97.0 ms frame p95; 1,002.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 199 MB heap | Timed out waiting for 3D readiness during the first warmup after 180s | Benchmark did not complete; readiness regressed from under 5s to timeout | Rejected and rolled back; even a small hook/memo change in the sensor layer was not safe in the real moisture-map page, and the intended cached work was not the measured 1s 3D moisture bottleneck anyway | None |

@@ -41,36 +41,49 @@ const buildGroundGeometry = (radius: number, segments: number) => {
   return geometry;
 };
 
+const getGroundProperties = (sceneName: string) => {
+  switch (sceneName) {
+    case "Greenhouse":
+      return {
+        texture: ASSETS.textures.bricks,
+        repeat: [30, 30] as [number, number],
+        color: "#999",
+        lowDetailColor: "#8c6f64",
+      };
+    case "Lab":
+      return {
+        texture: ASSETS.textures.concrete,
+        repeat: [16, 24] as [number, number],
+        color: "#aaa",
+        lowDetailColor: "gray",
+      };
+    default:
+      return {
+        texture: ASSETS.textures.grass,
+        repeat: [24, 24] as [number, number],
+        color: "#ddd",
+        lowDetailColor: "darkgreen",
+      };
+  }
+};
+
+const GroundMaterial = (props: { sceneName: string }) => {
+  const properties = getGroundProperties(props.sceneName);
+  const texture = useTextureVariant(properties.texture, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: properties.repeat,
+  });
+  return <MeshPhongMaterial
+    map={texture}
+    color={properties.color}
+    shininess={0}
+    vertexColors={true} />;
+};
+
 export const Ground = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
-
-  const grassTexture = useTextureVariant(ASSETS.textures.grass, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [24, 24],
-  });
-  const labFloorTexture = useTextureVariant(ASSETS.textures.concrete, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [16, 24],
-  });
-  const brickTexture = useTextureVariant(ASSETS.textures.bricks, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [30, 30],
-  });
-
-  const getGroundProperties = (sceneName: string) => {
-    switch (sceneName) {
-      case "Greenhouse":
-        return { texture: brickTexture, color: "#999", lowDetailColor: "#8c6f64" };
-      case "Lab":
-        return { texture: labFloorTexture, color: "#aaa", lowDetailColor: "gray" };
-      default:
-        return { texture: grassTexture, color: "#ddd", lowDetailColor: "darkgreen" };
-    }
-  };
 
   const groundProperties = getGroundProperties(config.scene);
 
@@ -87,11 +100,7 @@ export const Ground = (props: GroundProps) => {
   return <Detailed distances={detailLevels(config)}
     visible={config.ground}>
     <GroundWrapper {...common} geometry={highDetailGeometry}>
-      <MeshPhongMaterial
-        map={groundProperties.texture}
-        color={groundProperties.color}
-        shininess={0}
-        vertexColors={true} />
+      <GroundMaterial sceneName={config.scene} />
     </GroundWrapper>
     <GroundWrapper {...common} geometry={lowDetailGeometry}>
       <MeshPhongMaterial
