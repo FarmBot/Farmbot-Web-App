@@ -574,6 +574,7 @@ export const GardenModel = (props: GardenModelProps) => {
             config={config}
             configPosition={props.configPosition}
             getZ={getZ}
+            trailReady={detailsReveal}
             activeFocus={props.activeFocus}
             mountedToolName={props.mountedToolName}
             toolSlots={props.toolSlots} />

@@ -100,6 +100,7 @@ export interface FarmbotModelProps {
   configPosition: PositionConfig;
   activeFocus: string;
   getZ(x: number, y: number): number;
+  trailReady?: boolean;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
@@ -218,6 +219,7 @@ export const Bot = (props: FarmbotModelProps) => {
   const distanceToSoil = -props.getZ(x, y) - zDir * z;
 
   const defaultTrailWidth = config.perspective ? 500 : 0.1;
+  const trailReady = props.trailReady !== false;
 
   const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
     switch (kitVersion) {
@@ -253,6 +255,19 @@ export const Bot = (props: FarmbotModelProps) => {
     ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
     zZero - zDir * z - 140 + zGantryOffset + 20,
   );
+  const utmComponent = <Group name={"UTM"}
+    position={[
+      ...gardenXY(x + 11, y),
+      zZero - zDir * z + utmHeight / 2 - 19,
+    ]}
+    rotation={[0, 0, Math.PI / 2]}
+    scale={1000}>
+    <Mesh
+      geometry={utm.nodes.M5_Barb.geometry}
+      material={utm.materials.PaletteMaterial001}
+      position={[0.015, 0.009, 0.036]}
+      rotation={[0, 0, 2.094]} />
+  </Group>;
 
   return <FocusVisibilityGroup name={"bot"} keepMounted={true}
     preserveDepthWrite={true}
@@ -570,29 +585,19 @@ export const Bot = (props: FarmbotModelProps) => {
       configPosition={props.configPosition}
       cameraMountPosition={cameraMountPosition}
       distanceToSoil={distanceToSoil} />
-    <Trail
-      width={trail ? defaultTrailWidth : 0}
-      attenuation={t => Math.pow(t, 3)}
-      color={"red"}
-      length={100}
-      decay={0.5}
-      local={false}
-      stride={0}
-      interval={1}>
-      <Group name={"UTM"}
-        position={[
-          ...gardenXY(x + 11, y),
-          zZero - zDir * z + utmHeight / 2 - 19,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}
-        scale={1000}>
-        <Mesh
-          geometry={utm.nodes.M5_Barb.geometry}
-          material={utm.materials.PaletteMaterial001}
-          position={[0.015, 0.009, 0.036]}
-          rotation={[0, 0, 2.094]} />
-      </Group>
-    </Trail>
+    {trailReady && trail
+      ? <Trail
+        width={defaultTrailWidth}
+        attenuation={t => Math.pow(t, 3)}
+        color={"red"}
+        length={100}
+        decay={0.5}
+        local={false}
+        stride={0}
+        interval={1}>
+        {utmComponent}
+      </Trail>
+      : utmComponent}
     <Cylinder
       visible={laser}
       material-color={"red"}
