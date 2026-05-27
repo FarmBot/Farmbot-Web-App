@@ -123,10 +123,11 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     const cameraChanged = !updateState.hasCameraQuaternion
       || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
+    let seasonT = 0;
     if (seasonAnimating) {
       const currentTime = performance.now() / 1000;
-      const t = currentTime - (startTimeRef.current || 0);
-      const date = getAnimatedSeasonDate(config.plants, t);
+      seasonT = currentTime - (startTimeRef.current || 0);
+      const date = getAnimatedSeasonDate(config.plants, seasonT);
       sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
     }
     const brightness = plantIconBrightness(sunFactor);
@@ -140,11 +141,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       return;
     }
     tempQuaternion.copy(state.camera.quaternion);
-    const currentTime = performance.now() / 1000;
-    const t = startTimeRef ? currentTime - (startTimeRef.current || 0) : 0;
     plants.forEach((plant, index) => {
       const scale = (config.animateSeasons && startTimeRef)
-        ? plant.size * getSizeAtTime(plant, config.plants, t)
+        ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
         : plant.size;
       const position = get3DPosition({ x: plant.x, y: plant.y });
       tempPosition.set(

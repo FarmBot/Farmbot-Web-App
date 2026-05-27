@@ -296,6 +296,24 @@ describe("<PlantInstances />", () => {
     expect(container).toBeTruthy();
   });
 
+  it("skips time lookup without season animation", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const now = jest.spyOn(performance, "now").mockReturnValue(1000);
+    const p = fakeProps();
+    p.config.animateSeasons = false;
+    render(<PlantInstances {...p} />);
+    now.mockClear();
+    frameFn?.({
+      clock: { getElapsedTime: jest.fn(() => 0) },
+      camera: { quaternion: new Quaternion() },
+    });
+    expect(now).not.toHaveBeenCalled();
+    now.mockRestore();
+  });
+
   it("handles missing ref", () => {
     mockRefImpl = () => ({ current: undefined });
     const p = fakeProps();
