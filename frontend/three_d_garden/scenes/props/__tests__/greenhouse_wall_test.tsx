@@ -7,4 +7,9 @@ describe("<GreenhouseWall />", () => {
     const { container } = render(<GreenhouseWall />);
     expect(container).toContainHTML("greenhouse-wall");
   });
+
+  it("memoizes the static wall subtree", () => {
+    const memoized = GreenhouseWall as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
 });

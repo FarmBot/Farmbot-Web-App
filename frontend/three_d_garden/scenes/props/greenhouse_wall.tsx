@@ -21,7 +21,7 @@ const openPanels = [
   { row: 2, col: 3 },
 ];
 
-export const GreenhouseWall = () => {
+const GreenhouseWallBase = () => {
 
   return <Group
     name={"greenhouse-wall"}>
@@ -85,3 +85,5 @@ export const GreenhouseWall = () => {
     ))}
   </Group>;
 };
+
+export const GreenhouseWall = React.memo(GreenhouseWallBase);
