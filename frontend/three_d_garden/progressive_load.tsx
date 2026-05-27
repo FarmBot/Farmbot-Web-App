@@ -151,7 +151,7 @@ export const ThreeDLoadProgressOverlay =
       "three-d-load-progress",
       complete ? "three-d-load-progress-complete" : "",
     ].join(" ");
-    return <Html fullscreen={true}>
+    return <Html fullscreen={true} style={{ pointerEvents: "none" }}>
       <div className={className}>
         <div className={"three-d-load-progress-bar"}
           aria-hidden={true}>

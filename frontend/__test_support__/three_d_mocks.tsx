@@ -785,8 +785,11 @@ jest.mock("@react-three/drei", () => {
       <div className={"text"}>{children}</div>,
     Detailed: ({ children }: { children: ReactNode }) =>
       <div className={"detailed"}>{children}</div>,
-    Html: ({ children }: { children: ReactNode }) =>
-      <div className={"html"}>{children}</div>,
+    Html: ({ children, style }: {
+      children: ReactNode,
+      style?: React.CSSProperties,
+    }) =>
+      <div className={"html"} style={style}>{children}</div>,
     PerspectiveCamera: ({ name }: { name: string }) =>
       <div className={"perspective-camera"}>{name}</div>,
     useCursor: jest.fn(),

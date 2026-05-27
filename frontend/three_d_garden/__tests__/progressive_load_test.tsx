@@ -204,4 +204,11 @@ describe("3D load progress", () => {
     expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
     jest.useRealTimers();
   });
+
+  it("doesn't block clicks outside the progress bar", () => {
+    render(<ProgressHarness />);
+
+    const html = document.querySelector(".html") as HTMLElement;
+    expect(html.style.pointerEvents).toEqual("none");
+  });
 });
