@@ -81,15 +81,7 @@ describe("<Tools />", () => {
     getZ: jest.fn(),
   });
 
-  it("renders promo tools", () => {
-    const { container } = render(<Tools {...fakeProps()} />);
-    expect(container).toContainHTML("toolbay3");
-  });
-
-  it("renders user tools", () => {
-    const p = fakeProps();
-    const useGltfMock = useGLTF as unknown as jest.Mock;
-    useGltfMock.mockClear();
+  const configuredUserTools = () => {
     const tool0 = fakeTool();
     tool0.body.id = 1;
     tool0.body.name = "soil sensor";
@@ -129,7 +121,7 @@ describe("<Tools />", () => {
     const toolSlot6 = fakeToolSlot();
     toolSlot6.body.tool_id = tool6.body.id;
     toolSlot6.body.gantry_mounted = true;
-    p.toolSlots = [
+    return [
       { toolSlot: toolSlot0, tool: tool0 },
       { toolSlot: toolSlot1, tool: tool1 },
       { toolSlot: toolSlot2, tool: tool2 },
@@ -138,6 +130,18 @@ describe("<Tools />", () => {
       { toolSlot: toolSlot5, tool: tool5 },
       { toolSlot: toolSlot6, tool: tool6 },
     ];
+  };
+
+  it("renders promo tools", () => {
+    const { container } = render(<Tools {...fakeProps()} />);
+    expect(container).toContainHTML("toolbay3");
+  });
+
+  it("renders user tools", () => {
+    const p = fakeProps();
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    p.toolSlots = configuredUserTools();
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
@@ -148,6 +152,20 @@ describe("<Tools />", () => {
     expect(container).toContainHTML("weeder");
     expect(container).toContainHTML("seeder");
     expect(container).toContainHTML("seedTroughWithAssembly");
+  });
+
+  it("reuses static tool models while x position changes", () => {
+    const p = fakeProps();
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    p.toolSlots = configuredUserTools();
+    p.mountedToolName = "weeder";
+    useGltfMock.mockClear();
+    const { rerender } = render(<Tools {...p} />);
+    const initialCalls = useGltfMock.mock.calls.length;
+    rerender(<Tools
+      {...p}
+      configPosition={{ ...p.configPosition, x: p.configPosition.x + 10 }} />);
+    expect(useGltfMock.mock.calls.length).toEqual(initialCalls);
   });
 
   it("uses mirrored xy position for tool slots", () => {

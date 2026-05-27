@@ -278,6 +278,39 @@ commit message. Roll back rejected implementation changes.
      renders. Expected return: avoid rebuilding the sixteen water-stream curves
      on parent rerenders when water is flowing but nozzle geometry is unchanged.
 
+## Round 42 Candidate Ideas
+
+206. Hoist nested coordinate helper construction inside `get3DPositionFunc` and
+     `getWorldPositionFunc`. Expected return: dense plant, weed, point, and
+     group-order setup stop allocating nested conversion closures for every
+     coordinate while returning identical world positions.
+207. Fast-path disabled perf instrumentation checks before parsing URL query
+     params. Expected return: normal non-benchmark 3D renders avoid repeated
+     `URLSearchParams` allocation for `perfCount`, `perfMark`, and
+     `perfMeasure`, while `fb_perf=1` and localStorage-enabled benchmarks still
+     record metrics.
+208. Memoize `useTextureVariant` lookups while the loaded base texture and
+     variant options are unchanged. Expected return: Bot and scene rerenders
+     with stable texture options skip repeated variant-key/cache work without
+     changing texture resolution or material settings.
+209. Stabilize `GardenModel` plant hover handlers across telemetry rerenders.
+     Expected return: the default plant layer keeps the same pointer handler
+     identities while config and label behavior are unchanged, reducing
+     unchanged plant-group prop churn.
+210. Use stable empty fallback arrays for optional `GardenModel` detail props.
+     Expected return: normal gardens with no groups, points, images, sensors, or
+     readings stop passing freshly allocated empty arrays into detail overlays
+     on every Bot telemetry update.
+
+## Round 42 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 206 | Hoist nested coordinate helper construction | Realistic dense coordinate setup: 1,000 plant XY conversions plus 1,000 point XYZ conversions with one stable 3D config, sampled 50 times | 0.060 ms median conversion batch | 0.040 ms median conversion batch | 33.3% faster, but only 0.020 ms saved across 2,000 realistic coordinate conversions | Rejected and rolled back; the helper hoist was mechanically cleaner but the absolute improvement is far below meaningful app-level value | Not committed |
+| 207 | Fast-path disabled perf instrumentation checks | Disabled normal-session instrumentation burst: 250 `perfCount`/`perfMark`/`perfSample`/`perfMeasure` calls, sampled 50 times with no `fb_perf` query and no benchmark localStorage flag | 0.016 ms median instrumentation batch | 0.006 ms median instrumentation batch | 62.5% faster, but only 0.010 ms saved across 250 instrumentation calls | Rejected and rolled back; the normal disabled-perf path is already too cheap for the extra branch to matter in real 3D Garden renders | Not committed |
+| 208 | Memoize `useTextureVariant` lookups | Stable texture-variant rerender benchmark: one mounted hook plus 50 parent rerenders with the same loaded base texture and identical inline variant option values | 0.764 ms median rerender path | 0.742 ms median rerender path | 2.9% faster, saving 0.022 ms across 50 realistic stable rerenders | Rejected and rolled back; the existing WeakMap cache lookup is already cheap, so adding hook dependencies did not produce a qualifying or meaningful runtime win | Not committed |
+| 209 | Stabilize `GardenModel` plant hover handlers | Real `GardenModel` plant-layer rerender benchmark: 100 visible plants, hover labels enabled, FarmBot/extra overlays disabled, plus 25 Bot X-position rerenders | 31.165 ms median rerender path | 31.027 ms median rerender path | 0.4% faster, saving 0.138 ms across 25 rerenders | Rejected and rolled back; stable handler identities did not materially reduce the plant-layer rerender cost, so the extra memo/callback structure is not justified | Not committed |
+
 ## Round 41 Candidate Ideas
 
 201. Memoize static Bot utility subtrees across telemetry updates.
@@ -305,6 +338,10 @@ commit message. Roll back rejected implementation changes.
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
 | 201 | Memoize static Bot utility subtrees | Real telemetry-like parent rerender benchmark for `PowerSupply` and `XAxisWaterTube`: one mount plus 50 parent rerenders with the same config object | 51 aluminum texture hook calls; 1 power supply; 1 X-axis water tube; 5.446 ms median update path | 1 aluminum texture hook call; 1 power supply; 1 X-axis water tube; 1.303 ms median update path | 98.0% fewer texture hook calls; 76.1% faster update path, saving 4.143 ms across 50 realistic telemetry-style rerenders | Accepted; both subtrees depend only on config, so Bot position updates can skip their cable/path/texture subtree work without changing utility geometry or water-tube visuals | `Memoize static utilities for 98.0% fewer texture calls` |
+| 202 | Memoize static tool model components | Real configured user-tools rerender benchmark: one mount plus 50 Bot X-position rerenders with 7 realistic tool slots, 4 toolbays, a mounted weeder, and stable tool/config data | 561 GLTF hook calls; 4 toolbay meshes; 44.483 ms median update path | 11 GLTF hook calls; 4 toolbay meshes; 10.999 ms median update path | 98.0% fewer GLTF hook calls; 75.3% faster update path, saving 33.484 ms across 50 telemetry-style rerenders | Accepted; only static model leaves are memoized, while slot positions, click handlers, opacity changes, mounted-tool animation state, and toolbay rotations remain on live parent wrappers | `Memoize tool models for 98.0% fewer GLTF calls` |
+| 203 | Split the solenoid GLTF mesh into a memoized static child | Real Solenoid telemetry rerender benchmark: one mount plus 50 x/y/z position rerenders with stable config and live water-tube path recalculation | 51 GLTF hook calls; 1 solenoid mesh; 7.080 ms median update path | 1 GLTF hook call; 1 solenoid mesh; 6.703 ms median update path | 98.0% fewer GLTF hook calls, but only 5.3% faster update path and 0.377 ms saved across 50 realistic rerenders | Rejected and rolled back; the percentage call reduction did not produce a qualifying or meaningful absolute runtime improvement because the cached GLTF hook was not the real bottleneck | Not committed |
+| 204 | Split the gantry beam moving wrapper from the static beam body | Real default-light GantryBeam benchmark: one mount plus 50 Bot X-position rerenders with stable config, beam shape, and aluminum texture | 1.717 ms median update path | 1.405 ms median update path | 18.2% faster update path, but only 0.312 ms saved across 50 realistic rerenders | Rejected and rolled back; even the safe extrusion-only split produced a micro-scale absolute gain, and memoizing the light strip would risk stale spotlight target updates while the gantry moves | Not committed |
+| 205 | Memoize the generated `GantryWheelPlate` component factory | Real full-Bot benchmark: one mount plus 50 Bot X-position rerenders with stable config and a cached gantry-wheel GLTF result matching runtime `useGLTF` cache behavior | 2 gantry wheel plates; 188.645 ms median update path | 2 gantry wheel plates; 189.664 ms median update path | 0.5% slower update path | Rejected and rolled back; stabilizing the generated component type did not reduce the measured full-Bot update cost, because the wheel-plate component still receives changing transform props and rerenders | Not committed |
 
 ## Round 40 Candidate Ideas
 

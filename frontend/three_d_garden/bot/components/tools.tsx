@@ -242,7 +242,7 @@ const rotationFactor = (toolPulloutDirection: ToolPulloutDirection) => {
   }
 };
 
-const Toolbay1Model = () => {
+const Toolbay1ModelBase = () => {
   const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as unknown as Toolbay1;
   return <>
     <Mesh name={"toolbay1"}
@@ -257,6 +257,7 @@ const Toolbay1Model = () => {
     </Mesh>
   </>;
 };
+const Toolbay1Model = React.memo(Toolbay1ModelBase);
 
 interface ToolbaySlotProps {
   position: Record<Xyz, number>;
@@ -315,32 +316,34 @@ interface ToolModelProps {
 
 const TOOL_X = 5.5;
 
-const RotaryToolModel = React.forwardRef<THREE.Mesh>((_props, ref) => {
-  const rotaryToolBase =
-    useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as unknown as Model;
-  const rotaryToolImplement =
-    useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as unknown as Model;
-  return <Group name={"rotaryTool"}
-    position={[
-      TOOL_X,
-      0,
-      10,
-    ]}
-    rotation={[0, 0, Math.PI / 2]}>
-    <ModelMesh name={"rotaryToolBase"}
-      model={rotaryToolBase} />
-    <Group
-      position={[0, -3, -52]}
-      rotation={[-10 * Math.PI / 180, 0, 0]}>
-      <ModelMesh name={"rotaryToolImplement"}
-        ref={ref}
-        model={rotaryToolImplement} />
-    </Group>
-  </Group>;
-});
+const RotaryToolModel = React.memo(
+  React.forwardRef<THREE.Mesh>((_props, ref) => {
+    const rotaryToolBase =
+      useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as unknown as Model;
+    const rotaryToolImplement =
+      useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as unknown as Model;
+    return <Group name={"rotaryTool"}
+      position={[
+        TOOL_X,
+        0,
+        10,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}>
+      <ModelMesh name={"rotaryToolBase"}
+        model={rotaryToolBase} />
+      <Group
+        position={[0, -3, -52]}
+        rotation={[-10 * Math.PI / 180, 0, 0]}>
+        <ModelMesh name={"rotaryToolImplement"}
+          ref={ref}
+          model={rotaryToolImplement} />
+      </Group>
+    </Group>;
+  }),
+);
 RotaryToolModel.displayName = "RotaryToolModel";
 
-const WateringNozzleToolModel = () => {
+const WateringNozzleToolModel = React.memo(() => {
   const wateringNozzle = useGLTF(
     ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
   return <Mesh name={"wateringNozzle"}
@@ -353,9 +356,9 @@ const WateringNozzleToolModel = () => {
     scale={1000}
     geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
     material={wateringNozzle.materials.PaletteMaterial001} />;
-};
+});
 
-const SeedBinToolModel = () => {
+const SeedBinToolModel = React.memo(() => {
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as unknown as SeedBin;
   return <Mesh name={"seedBin"}
     position={[
@@ -368,9 +371,9 @@ const SeedBinToolModel = () => {
     geometry={seedBin.nodes[PartName.seedBin].geometry}>
     <MeshPhongMaterial color={"silver"} />
   </Mesh>;
-};
+});
 
-const SeedTrayToolModel = () => {
+const SeedTrayToolModel = React.memo(() => {
   const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as unknown as SeedTray;
   return <Mesh name={"seedTray"}
     position={[
@@ -383,9 +386,9 @@ const SeedTrayToolModel = () => {
     geometry={seedTray.nodes[PartName.seedTray].geometry}>
     <MeshPhongMaterial color={"silver"} />
   </Mesh>;
-};
+});
 
-const SoilSensorToolModel = () => {
+const SoilSensorToolModel = React.memo(() => {
   const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as unknown as SoilSensorFull;
   return <SoilSensorModel
     model={soilSensor}
@@ -397,9 +400,9 @@ const SoilSensorToolModel = () => {
     ]}
     rotation={[0, 0, Math.PI / 2]}
     scale={1000} />;
-};
+});
 
-const SeederToolModel = (props: ToolModelProps) => {
+const SeederToolModel = React.memo((props: ToolModelProps) => {
   const seeder = useGLTF(ASSETS.models.seeder, LIB_DIR) as unknown as Seeder;
   return <>
     <Mesh name={"seeder"}
@@ -417,9 +420,11 @@ const SeederToolModel = (props: ToolModelProps) => {
         <SuctionAnimations zValues={[-50, -80, -95, -100]} />
       </Group>}
   </>;
-};
+}, (prev, next) =>
+  prev.inToolbay == next.inToolbay &&
+  prev.config.vacuum == next.config.vacuum);
 
-const WeederToolModel = () => {
+const WeederToolModel = React.memo(() => {
   const weeder = useGLTF(ASSETS.models.weeder, LIB_DIR) as unknown as Weeder;
   return <Mesh name={"weeder"}
     position={[
@@ -431,13 +436,13 @@ const WeederToolModel = () => {
     scale={1000}
     geometry={weeder.nodes[PartName.weeder].geometry}
     material={weeder.materials.PaletteMaterial001} />;
-};
+});
 
 interface SeedTroughToolModelProps {
   firstTrough?: boolean;
 }
 
-const SeedTroughWithAssemblyToolModel = () => {
+const SeedTroughWithAssemblyToolModel = React.memo(() => {
   const seedTroughHolder = useGLTF(
     ASSETS.models.seedTroughHolder, LIB_DIR) as unknown as SeedTroughHolderFull;
   const seedTroughAssembly = useGLTF(
@@ -454,9 +459,9 @@ const SeedTroughWithAssemblyToolModel = () => {
       name={"seedTroughHolder"}
       scale={1000} />
   </Group>;
-};
+});
 
-const SeedTroughOnlyToolModel = () => {
+const SeedTroughOnlyToolModel = React.memo(() => {
   const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as unknown as SeedTrough;
   return <Mesh name={"seedTrough"}
     position={[
@@ -467,12 +472,12 @@ const SeedTroughOnlyToolModel = () => {
     scale={1000}
     geometry={seedTrough.nodes[PartName.seedTrough].geometry}
     material={seedTrough.materials[SeedTroughAssemblyMaterial.two]} />;
-};
+});
 
-const SeedTroughToolModel = (props: SeedTroughToolModelProps) =>
+const SeedTroughToolModel = React.memo((props: SeedTroughToolModelProps) =>
   props.firstTrough
     ? <SeedTroughWithAssemblyToolModel />
-    : <SeedTroughOnlyToolModel />;
+    : <SeedTroughOnlyToolModel />);
 
 // eslint-disable-next-line complexity
 const Tool = (props: ToolProps) => {
