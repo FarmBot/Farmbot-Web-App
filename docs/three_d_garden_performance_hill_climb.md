@@ -731,3 +731,33 @@ commit message. Roll back rejected implementation changes.
 | 118 | Cache atlas sub-texture clones | Docker 1000-plant default scene after item 117 rollback, 3 measured runs | 55.7 ms image texture setup; 22 WebGL textures; 4.358s full-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects | 52.3 ms image texture setup; 22 WebGL textures; 3.987s full-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects | 6.1% faster image texture setup, saving 3.4 ms; no texture-count, scene-size, draw-call, or stable frame improvement | Rejected and rolled back; the realistic atlas path was not cloning enough textures for a cache to matter, and a few milliseconds of noisy setup movement did not justify persistent texture-cache complexity | None |
 | 119 | Avoid inactive active-crop spread lookup | Docker 1000-plant default scene after item 118 rollback, 3 measured runs | 0.60 ms spread frame update; 4.358s full-ready; 3.495s core-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects | 0.50 ms spread frame update; 4.142s full-ready; 3.332s core-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects | 16.7% faster spread update but only 0.10 ms absolute saving; no scene/draw-call reduction; plant nav 4.1% slower and FarmBot toggle 9.9% slower | Rejected and rolled back; skipping one ordinary-mode crop lookup did not move a meaningful app metric, and the sub-millisecond absolute saving was below the complexity threshold | None |
 | 120 | Static-color spread material outside add/edit | Docker 1000-plant default scene after item 119 rollback, 3 measured runs, sanity-checked against the stable same-round original-material controls from items 116-119 | Opening baseline: 126.63 FPS median, 8.51 ms frame p95, 0.60 ms spread update; stable original-material controls: about 7.97 ms frame p95 | 135.11 FPS median; 7.43 ms frame p95; 0.50 ms spread update; 97 draw calls; 490 scene objects; 22 WebGL textures | 12.8% better frame p95 versus the noisy opening baseline, but only about 6.8% versus the stable same-round controls; 6.7% higher FPS; 0.10 ms spread-update saving | Rejected and rolled back; the realistic control comparison did not clear the 10% bar, and the only qualifying-looking metric came from baseline noise while the absolute spread-work saving was too small for mode/material switching complexity | None |
+
+## Round 25 Candidate Ideas
+
+121. Share one animated water texture and one frame callback across the 16
+     active watering streams instead of loading and animating the same texture
+     in every stream. Expected return: far fewer texture-load calls, WebGL
+     texture objects, and per-frame callbacks while preserving the same water
+     animation at the real 16-stream scale.
+122. Replace the camera-selection hover raycast that runs every frame with
+     pointer handlers on the camera markers themselves. Expected return:
+     fewer active camera-selection frame calls and raycast calls while keeping
+     the same hover colors and click behavior.
+123. Mount weed instance meshes only while the Weed layer is visible or after
+     the user has revealed it once. Expected return: less default-scene hidden
+     texture, matrix, and object setup while keeping the first real Weed-layer
+     reveal and subsequent toggles visually identical.
+124. Avoid calculating camera-view frustum points when the 3D camera-view area
+     is disabled. Expected return: less default FarmBot render CPU from hidden
+     camera-view vector math, with identical frustum geometry whenever the
+     camera-view overlay is actually enabled.
+125. Build point instance buckets with indexed loops and direct bucket arrays
+     instead of per-point callback/object-value churn. Expected return: faster
+     realistic point-layer setup and point navigation in the 1000-point scene
+     while preserving the same marker, radius, color, and click behavior.
+
+## Round 25 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 121 | Share water-flow texture and frame callback | Real `WateringAnimations` water-on render at the shipped 16-stream scale, with `TextureLoader.load` and `useFrame` call counts measured through Bun/Testing Library | 16 visible water streams; 16 water texture load calls; 16 frame callbacks | 16 visible water streams; 1 water texture load call; 2 frame callbacks | 93.8% fewer water texture load calls, removing 15 duplicate loads; 87.5% fewer frame callbacks, removing 14 per-frame registrations | Accepted; the same 16 animated streams share the same water texture and offset animation, so the visible water effect is unchanged while the real water-on setup and per-frame work are materially lower | `Share watering texture for 93.8% fewer loads` |

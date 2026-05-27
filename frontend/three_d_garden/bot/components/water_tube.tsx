@@ -1,7 +1,7 @@
 import React from "react";
 import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial, Group } from "../../components";
-import { WaterStream } from "./water_stream";
+import { WaterStream, useWaterFlowTexture } from "./water_stream";
 import { Curve, Vector3 } from "three";
 import { RenderOrder } from "../../constants";
 
@@ -18,6 +18,7 @@ export const WaterTube = (props: WaterTubeProps) => {
   const {
     tubeName, tubePath, tubularSegments, radius, radialSegments, waterFlow,
   } = props;
+  const waterTexture = useWaterFlowTexture(waterFlow);
 
   return <Group name={tubeName}>
     <Tube name={tubeName + "-tube"}
@@ -30,6 +31,7 @@ export const WaterTube = (props: WaterTubeProps) => {
     </Tube>
     <WaterStream name={tubeName + "-water-stream"}
       args={[tubePath, tubularSegments, radius - 2, radialSegments]}
+      waterTexture={waterTexture}
       waterFlow={waterFlow} />
   </Group>;
 };

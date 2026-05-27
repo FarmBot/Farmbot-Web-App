@@ -3,7 +3,7 @@ import { range } from "lodash";
 import { Group } from "../../components";
 import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
-import { WaterStream } from "./water_stream";
+import { WaterStream, useWaterFlowTexture } from "./water_stream";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
 } from "../../helpers";
@@ -24,6 +24,7 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
   const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
   const nozzleToSoil = getZ(x, y) - utmZ;
   const [visible, setVisible] = React.useState(false);
+  const waterTexture = useWaterFlowTexture(waterFlow);
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(true);
@@ -43,6 +44,7 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
       return <WaterStream key={i}
         name={`water-stream-${i}`}
         waterFlow={waterFlow}
+        waterTexture={waterTexture}
         position={[0, 0, utmZ]}
         args={[easyCubicBezierCurve3(
           [12.5 * Math.sin(angle), 12.5 * Math.cos(angle), 0],

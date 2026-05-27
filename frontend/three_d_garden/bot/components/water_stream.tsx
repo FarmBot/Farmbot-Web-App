@@ -7,6 +7,7 @@ import { ASSETS } from "../../constants";
 
 export interface WaterStreamProps extends React.ComponentProps<typeof Tube> {
   waterFlow: boolean;
+  waterTexture?: Texture;
 }
 
 export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => {
@@ -33,11 +34,10 @@ export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => 
 };
 
 export const WaterStream = (props: WaterStreamProps) => {
-  const { waterFlow } = props;
-  const waterTexture = useWaterFlowTexture(waterFlow);
+  const { waterFlow, waterTexture, ...tubeProps } = props;
 
   return <Tube
-    {...props}
+    {...tubeProps}
     castShadow={true}
     receiveShadow={true}
     visible={waterFlow}>

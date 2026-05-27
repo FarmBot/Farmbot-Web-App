@@ -15,6 +15,7 @@ describe("<WaterStream />", () => {
     name: "mock-water-stream",
     args: [],
     waterFlow: true,
+    waterTexture: new Texture(),
   });
 
   beforeEach(() => {
@@ -31,15 +32,15 @@ describe("<WaterStream />", () => {
 
   it("renders when water is flowing", () => {
     expect(() => render(<WaterStream {...fakeProps()} />)).not.toThrow();
-    expect(loadTextureSpy).toHaveBeenCalledTimes(1);
-    expect(useFrameSpy).toHaveBeenCalledTimes(1);
+    expect(loadTextureSpy).not.toHaveBeenCalled();
+    expect(useFrameSpy).not.toHaveBeenCalled();
   });
 
   it("renders when water flow is disabled", () => {
     const props = { ...fakeProps(), waterFlow: false };
     expect(() => render(<WaterStream {...props} />)).not.toThrow();
     expect(loadTextureSpy).not.toHaveBeenCalled();
-    expect(useFrameSpy).toHaveBeenCalledTimes(1);
+    expect(useFrameSpy).not.toHaveBeenCalled();
   });
 });
 
