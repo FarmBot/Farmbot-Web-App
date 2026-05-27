@@ -74,6 +74,100 @@ describe("<GroupOrderVisual />", () => {
     expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(1);
   });
 
+  it("reuses selected group points across unrelated array churn", () => {
+    const p = fakeProps();
+    const group = fakePointGroup();
+    group.body.sort_type = "random";
+    mockGroup = group;
+    const point = fakePlant();
+    mockGroupPoints = [point];
+    p.allPoints = [point];
+    p.groups = [group];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    rerender(<GroupOrderVisual {...p}
+      allPoints={[point]}
+      groups={[fakePointGroup(), group]} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(1);
+    expect(sortGroupBySpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("reselects group points when criteria changes", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.id = 1;
+    const group2 = clone(group1);
+    group2.body = {
+      ...group1.body,
+      criteria: {
+        ...group1.body.criteria,
+        string_eq: { pointer_type: ["Plant"] },
+      },
+    };
+    const point = fakePlant();
+    mockGroup = group1;
+    mockGroupPoints = [point];
+    p.allPoints = [point];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    mockGroup = group2;
+    rerender(<GroupOrderVisual {...p} allPoints={[point]} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("reselects group points when manual point count changes", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.point_ids = [1];
+    const group2 = clone(group1);
+    group2.body = { ...group1.body, point_ids: [1, 2] };
+    const point = fakePlant();
+    mockGroup = group1;
+    mockGroupPoints = [point];
+    p.allPoints = [point];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    mockGroup = group2;
+    rerender(<GroupOrderVisual {...p} allPoints={[point]} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("reselects group points when manual point ids change", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.point_ids = [1, 2];
+    const group2 = clone(group1);
+    group2.body = { ...group1.body, point_ids: [2, 1] };
+    const point = fakePlant();
+    mockGroup = group1;
+    mockGroupPoints = [point];
+    p.allPoints = [point];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    mockGroup = group2;
+    rerender(<GroupOrderVisual {...p} allPoints={[point]} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it("resorts cached selected group points when sort type changes", () => {
+    const p = fakeProps();
+    const group1 = fakePointGroup();
+    group1.body.sort_type = "xy_ascending";
+    group1.body.point_ids = [1];
+    const group2 = clone(group1);
+    group2.body = {
+      ...group1.body,
+      point_ids: [...group1.body.point_ids],
+      sort_type: "random",
+    };
+    const point = fakePlant();
+    mockGroup = group1;
+    mockGroupPoints = [point];
+    p.allPoints = [point];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    mockGroup = group2;
+    rerender(<GroupOrderVisual {...p} allPoints={[point]} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(1);
+    expect(sortGroupBySpy).toHaveBeenCalledTimes(2);
+    expect(sortGroupBySpy).toHaveBeenLastCalledWith("random", mockGroupPoints);
+  });
+
   it("doesn't render order visual when no group is found", () => {
     const p = fakeProps();
     mockGroup = undefined;
@@ -130,6 +224,14 @@ describe("areGroupOrderPropsEqual()", () => {
   it("returns not equal: points", () => {
     const pp = fakeProps();
     const np = fakeProps();
+    np.groupPoints = [fakePlant()];
+    expect(areGroupOrderPropsEqual(pp, np)).toBeFalsy();
+  });
+
+  it("returns not equal: point uuid", () => {
+    const pp = fakeProps();
+    const np = fakeProps();
+    pp.groupPoints = [fakePlant()];
     np.groupPoints = [fakePlant()];
     expect(areGroupOrderPropsEqual(pp, np)).toBeFalsy();
   });

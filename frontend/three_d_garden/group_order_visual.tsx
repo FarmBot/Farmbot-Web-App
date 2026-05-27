@@ -10,6 +10,7 @@ import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 import { Group, MeshPhongMaterial } from "./components";
 import { Text } from "./elements";
 import { RenderOrder } from "./constants";
+import { isEqual } from "lodash";
 
 interface CommonProps {
   config: Config;
@@ -22,11 +23,61 @@ export interface GroupOrderVisualProps extends CommonProps {
   groups: TaggedPointGroup[];
 }
 
+interface SelectedGroupPointsCache {
+  group: TaggedPointGroup;
+  allPoints: TaggedPoint[];
+  groupPoints: TaggedPoint[];
+}
+
+let selectedGroupPointsCache: SelectedGroupPointsCache | undefined = undefined;
+
+const samePointRefs = (prev: TaggedPoint[], next: TaggedPoint[]) => {
+  if (prev == next) { return true; }
+  if (prev.length != next.length) { return false; }
+  for (let i = 0; i < prev.length; i++) {
+    if (prev[i] != next[i]) { return false; }
+  }
+  return true;
+};
+
+const samePointIds = (prev: number[], next: number[]) => {
+  if (prev == next) { return true; }
+  if (prev.length != next.length) { return false; }
+  for (let i = 0; i < prev.length; i++) {
+    if (prev[i] != next[i]) { return false; }
+  }
+  return true;
+};
+
+const sameGroupSelection = (
+  prev: TaggedPointGroup,
+  next: TaggedPointGroup,
+) =>
+  prev == next ||
+  (prev.uuid == next.uuid &&
+    prev.body.id == next.body.id &&
+    samePointIds(prev.body.point_ids, next.body.point_ids) &&
+    isEqual(prev.body.criteria, next.body.criteria));
+
+const selectedGroupPointsFor = (
+  group: TaggedPointGroup | undefined,
+  allPoints: TaggedPoint[],
+) => {
+  if (!group) { return []; }
+  const cached = selectedGroupPointsCache;
+  if (cached &&
+    sameGroupSelection(cached.group, group) &&
+    samePointRefs(cached.allPoints, allPoints)) {
+    return cached.groupPoints;
+  }
+  const groupPoints = pointsSelectedByGroup(group, allPoints);
+  selectedGroupPointsCache = { group, allPoints, groupPoints };
+  return groupPoints;
+};
+
 export const GroupOrderVisual = (props: GroupOrderVisualProps) => {
   const group = findGroupFromUrl(props.groups);
-  const groupPoints = React.useMemo(() =>
-    group ? pointsSelectedByGroup(group, props.allPoints) : [],
-  [group, props.allPoints]);
+  const groupPoints = selectedGroupPointsFor(group, props.allPoints);
   if (!group) { return; }
   if (groupPoints.length == 0) { return; }
   return <MemoGroupOrder {...props}

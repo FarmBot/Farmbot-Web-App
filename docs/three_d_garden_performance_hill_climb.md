@@ -4412,3 +4412,33 @@ mirror, and Z-base config changes, with spread colors, overlap updates,
 click-to-add active-position updates, and click behavior covered by tests.
 
 **Commit:** `Memoize plant spread setup for 71.1% faster churn`
+
+### Idea 266: Avoid group-order work on unrelated group/resource churn
+
+**Description:** Narrow group-order visualization recomputation so selected group points are not reselected and resorted when unrelated groups/resources change. Expected return: faster group-open rerenders without changing line order, labels, or selection criteria.
+
+**Benchmark:** Temporary Bun/Testing Library `GroupOrderVisual` benchmark with
+an open point group selecting 300 of 1,200 realistic mixed active points,
+20 point groups, stable selected point object references, and 60 unrelated
+resource/group churn rerenders via new `allPoints` arrays plus unrelated group
+object churn. Sampled 15 measured batches after 4 warmups while measuring
+`pointsSelectedByGroup`, sort, `getZ`-driven position work, and rerender CPU.
+
+**Before:** 33.945 ms median 60-rerender churn batch; 61
+`pointsSelectedByGroup` calls taking 22.807 ms; 18,300 selected-point outputs;
+1 sort call taking 0.146 ms; 225 `getZ` position calls
+
+**After:** 7.173 ms median 60-rerender churn batch; 1
+`pointsSelectedByGroup` call taking 0.401 ms; 300 selected-point outputs;
+1 sort call taking 0.120 ms; 225 `getZ` position calls
+
+**Change:** 78.9% faster churn batch, saving 26.772 ms across 60 unrelated
+resource/group churn rerenders, with 98.4% fewer group-selection calls and
+unchanged sort/position work
+
+**Outcome:** Accepted; group-order selection now reuses selected points when
+the URL-selected group selection inputs match and the active point array churns
+with the same point objects, while changed criteria still reselect and changed
+sort settings still resort the cached selected point list
+
+**Commit:** `Memoize group order selection for 78.9% faster churn`
