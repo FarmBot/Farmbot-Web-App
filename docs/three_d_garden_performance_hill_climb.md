@@ -105,10 +105,29 @@ commit message. Roll back rejected implementation changes.
      disabled. Expected return: lower Bot render work during normal movement
      updates when the overlay is off, while the enabled frustum is unchanged.
 
+## Round 30 Candidate Ideas
+
+146. Do not mount cable-carrier support geometry when cable carriers are
+     disabled. Expected return: the cable-carrier layer toggle removes both the
+     moving carrier chains and their support geometry/model loads.
+147. Do not mount Bot bounds and distance helper overlays when all related
+     overlay settings are disabled. Expected return: lower default Bot setup
+     work by skipping hidden bounds boxes and distance indicators.
+148. Memoize the PowerSupply cable path while bed dimensions are unchanged.
+     Expected return: lower Bot rerender work during position/config updates by
+     avoiding repeated curve/vector allocation with identical visuals.
+149. Memoize bed-frame extrusion shape data while bed dimensions are unchanged.
+     Expected return: lower bed rerender work by reusing the raised-bed outline
+     and soil cutout shape for both bed-frame material passes.
+150. Memoize caster bracket extrusion shape data while leg size is unchanged.
+     Expected return: lower bed rerender work for the default four casters and
+     extra-leg layouts without changing caster visuals.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 146 | Skip disabled cable-carrier supports | Direct v1.8 vertical and horizontal support render with `cableCarriers=false`, measuring support meshes, generated support shape setup, and render time through Bun/Testing Library | 2 hidden support meshes; 2 support shapes built; 6.692 ms test render | 0 support meshes; 0 support shapes built; 3.962 ms test render | 100% fewer disabled support meshes and shape builds; 2.730 ms faster for the disabled support set | Accepted; the cable-carrier layer toggle now skips support geometry as well as moving carrier geometry, with enabled supports unchanged | `Skip disabled carrier supports for 100% fewer shapes` |
 | 145 | Skip disabled camera-view math | Direct disabled `CameraView` render plus 99 realistic Bot-position rerenders, measuring hidden frustum point calculations and total update time through Bun/Testing Library | 100 hidden camera-lens vector clones; 0 frustum nodes; 7.902 ms for 100 updates | 0 hidden camera-lens vector clones; 0 frustum nodes; 7.323 ms for 100 updates | 100% fewer hidden frustum point calculations, but only 7.3% and 0.579 ms faster across 100 updates | Rejected and rolled back; the hidden math was real, but the measured runtime gain missed the 10% threshold and was too small to justify code churn | None |
 | 144 | Skip disabled moving cable-carrier geometry | Direct render of X/Y/Z moving cable-carrier components with `cableCarriers=false`, measuring hidden carrier shape construction and render time through Bun/Testing Library | 3 hidden carrier path shapes built; 0 rendered carrier extrudes; 5.274 ms test render | 0 hidden carrier path shapes built; 0 rendered carrier extrudes; 3.878 ms test render | 100% fewer hidden carrier path shapes; 1.396 ms faster for the disabled moving-carrier set | Accepted; moving cable carriers return before `ccPath`/extrusion argument setup when disabled, while enabled carriers render the same | `Skip disabled cable carriers for 100% fewer shapes` |
 | 143 | Skip hidden point marker instances | Direct `PointInstances` render for 100 hidden generic points, measuring soil-height samples, instanced meshes, and render time through Bun/Testing Library | 100 hidden `getZ` samples; 12 hidden point instanced meshes; 10.659 ms test render | 0 hidden `getZ` samples; 0 hidden point instanced meshes; 5.701 ms test render | 100% fewer hidden point samples and marker meshes; 4.958 ms faster for the hidden 100-point layer | Accepted; `PointInstances` exits before marker bucketing and mesh setup when `visible=false`, while visible point markers are unchanged | `Skip hidden point markers for 100% fewer meshes` |

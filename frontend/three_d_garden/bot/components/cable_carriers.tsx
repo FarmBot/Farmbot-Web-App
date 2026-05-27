@@ -181,6 +181,7 @@ export interface CableCarrierSupportVerticalProps {
 
 export const CableCarrierSupportVertical =
   (props: CableCarrierSupportVerticalProps) => {
+    if (!props.config.cableCarriers) { return <></>; }
     switch (props.config.kitVersion) {
       case "v1.7":
         return <CableCarrierSupportVerticalV17 {...props} />;
@@ -292,6 +293,7 @@ export interface CableCarrierSupportHorizontalProps {
 
 export const CableCarrierSupportHorizontal =
   (props: CableCarrierSupportHorizontalProps) => {
+    if (!props.config.cableCarriers) { return <></>; }
     switch (props.config.kitVersion) {
       case "v1.7":
         return <CableCarrierSupportHorizontalV17 {...props} />;

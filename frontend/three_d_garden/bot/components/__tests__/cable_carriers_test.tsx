@@ -63,6 +63,18 @@ describe("<CableCarrierVertical />", () => {
     expect(useGltfMock).not.toHaveBeenCalledWith(
       ASSETS.models.ccSupportVertical, expect.anything());
   });
+
+  it("skips disabled vertical support", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { container } = render(<CableCarrierSupportVertical {...p} />);
+    expect(container.querySelectorAll("mesh").length).toBe(0);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(moveToSpy).not.toHaveBeenCalled();
+    expect(useGltfMock).not.toHaveBeenCalled();
+    moveToSpy.mockRestore();
+  });
 });
 
 describe("<CableCarrierHorizontal />", () => {
@@ -98,5 +110,17 @@ describe("<CableCarrierHorizontal />", () => {
     const { container } = render(<CableCarrierSupportHorizontal {...p} />);
     expect(container.innerHTML).toContain("ccSupportHorizontal");
     expect(container.querySelectorAll("mesh").length).toBe(1);
+  });
+
+  it("skips disabled horizontal support", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { container } = render(<CableCarrierSupportHorizontal {...p} />);
+    expect(container.querySelectorAll("mesh").length).toBe(0);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(moveToSpy).not.toHaveBeenCalled();
+    expect(useGltfMock).not.toHaveBeenCalled();
+    moveToSpy.mockRestore();
   });
 });
