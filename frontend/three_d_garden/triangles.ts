@@ -19,27 +19,20 @@ export const filterMoisturePoints = (props: FilterMoisturePointsProps) => {
   const { readings: moistureReadings } =
     filterMoistureReadings(props.readings, props.sensors);
   const recentReadings = selectMostRecentPoints(moistureReadings);
-  const moisturePoints = recentReadings
-    .filter(p =>
-      !isUndefined(p.body.x) &&
-      !isUndefined(p.body.y))
-    .map(p => [p.body.x, p.body.y, p.body.value]);
+  const moisturePoints = [];
+  for (const point of recentReadings) {
+    if (isUndefined(point.body.x) || isUndefined(point.body.y)) { continue; }
+    moisturePoints.push([point.body.x, point.body.y, point.body.value]);
+  }
   const params = boundaryPoints(props.config);
-  const outerPoints = [
-    { x: params.outer.x.min, y: params.outer.y.min },
-    { x: params.outer.x.min, y: params.outer.y.max },
-    { x: params.outer.x.max, y: params.outer.y.min },
-    { x: params.outer.x.max, y: params.outer.y.max },
-  ];
-  const innerPoints = [
-    { x: params.inner.x.min, y: params.inner.y.min },
-    { x: params.inner.x.min, y: params.inner.y.max },
-    { x: params.inner.x.max, y: params.inner.y.min },
-    { x: params.inner.x.max, y: params.inner.y.max },
-  ];
-  [...outerPoints, ...innerPoints].map(p => {
-    moisturePoints.push([p.x, p.y, 0]);
-  });
+  moisturePoints.push([params.outer.x.min, params.outer.y.min, 0]);
+  moisturePoints.push([params.outer.x.min, params.outer.y.max, 0]);
+  moisturePoints.push([params.outer.x.max, params.outer.y.min, 0]);
+  moisturePoints.push([params.outer.x.max, params.outer.y.max, 0]);
+  moisturePoints.push([params.inner.x.min, params.inner.y.min, 0]);
+  moisturePoints.push([params.inner.x.min, params.inner.y.max, 0]);
+  moisturePoints.push([params.inner.x.max, params.inner.y.min, 0]);
+  moisturePoints.push([params.inner.x.max, params.inner.y.max, 0]);
   return moisturePoints;
 };
 
