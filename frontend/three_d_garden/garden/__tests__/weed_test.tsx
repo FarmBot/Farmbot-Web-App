@@ -104,13 +104,17 @@ describe("<Weed />", () => {
   });
 
   it("renders instanced weeds", () => {
-    const wrapper = createRenderer(<WeedInstances {...fakeInstanceProps()} />);
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<WeedInstances {...p} />);
     mountedWrappers.push(wrapper);
     const meshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
-    expect(meshes.length).toEqual(2);
+    expect(meshes.length).toEqual(3);
     expect(meshes[0].props.name).toEqual("weed-icons");
     expect(meshes[1].props.name).toEqual("weed-radius");
+    expect(meshes[2].props.name).toEqual("weed-radius");
   });
 
   it("navigates from a weed instance", () => {

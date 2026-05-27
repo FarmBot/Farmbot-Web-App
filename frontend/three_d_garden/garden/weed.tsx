@@ -123,6 +123,11 @@ interface WeedColorBucket {
   weeds: WeedInstance[];
 }
 
+interface WeedInstanceData {
+  weedInstances: WeedInstance[];
+  buckets: WeedColorBucket[];
+}
+
 export interface WeedInstancesProps {
   weeds: TaggedWeedPointer[];
   config: Config;
@@ -131,18 +136,19 @@ export interface WeedInstancesProps {
   getZ(x: number, y: number): number;
 }
 
-const weedSize = (weed: TaggedWeedPointer) =>
-  weed.body.radius == 0 ? 50 : weed.body.radius;
-
-const getWeedInstances = (
+const getWeedInstanceData = (
   weeds: TaggedWeedPointer[],
   config: Config,
   getZ: (x: number, y: number) => number,
-) => {
+): WeedInstanceData => {
   const getWorldPosition = getWorldPositionFunc(config);
-  return weeds.map(weed => {
-    const size = weedSize(weed);
-    return {
+  const weedInstances: WeedInstance[] = new Array(weeds.length);
+  const buckets: Record<string, WeedColorBucket> = {};
+
+  for (let index = 0; index < weeds.length; index++) {
+    const weed = weeds[index];
+    const size = weed.body.radius == 0 ? 50 : weed.body.radius;
+    const instance = {
       weed,
       position: getWorldPosition({
         x: weed.body.x,
@@ -152,18 +158,14 @@ const getWeedInstances = (
       weedSize: size,
       iconSize: size * WEED_IMG_SIZE_FRACTION,
     };
-  });
-};
-
-const getWeedColorBuckets = (weeds: WeedInstance[]) => {
-  const buckets: Record<string, WeedColorBucket> = {};
-  weeds.forEach(weed => {
-    const color = weed.weed.body.meta.color;
+    weedInstances[index] = instance;
+    const color = weed.body.meta.color;
     const key = color || "";
-    buckets[key] ||= { color, weeds: [] };
-    buckets[key].weeds.push(weed);
-  });
-  return Object.values(buckets);
+    let bucket = buckets[key];
+    if (!bucket) { bucket = buckets[key] = { color, weeds: [] }; }
+    bucket.weeds.push(instance);
+  }
+  return { weedInstances, buckets: Object.values(buckets) };
 };
 
 interface WeedIconUpdateState {
@@ -315,12 +317,9 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
 };
 
 export const WeedInstances = React.memo((props: WeedInstancesProps) => {
-  const weedInstances = React.useMemo(
-    () => getWeedInstances(props.weeds, props.config, props.getZ),
+  const { weedInstances, buckets } = React.useMemo(
+    () => getWeedInstanceData(props.weeds, props.config, props.getZ),
     [props.weeds, props.config, props.getZ]);
-  const buckets = React.useMemo(
-    () => getWeedColorBuckets(weedInstances),
-    [weedInstances]);
   return <>
     <WeedIconInstances {...props} weedInstances={weedInstances} />
     {buckets.map(bucket =>
