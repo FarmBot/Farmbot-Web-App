@@ -278,6 +278,33 @@ commit message. Roll back rejected implementation changes.
      renders. Expected return: avoid rebuilding the sixteen water-stream curves
      on parent rerenders when water is flowing but nozzle geometry is unchanged.
 
+## Round 41 Candidate Ideas
+
+201. Memoize static Bot utility subtrees across telemetry updates.
+     Expected return: `PowerSupply` and `XAxisWaterTube` skip cable/path,
+     texture-hook, and tube subtree rerenders while Bot x/y/z telemetry changes,
+     because they depend only on stable configuration.
+202. Memoize static tool model components across telemetry updates. Expected
+     return: configured tool slots stop re-running unchanged GLTF model hooks
+     and mesh subtrees while the mounted Bot position updates, with the same
+     toolbay and mounted-tool visuals.
+203. Split the solenoid GLTF mesh into a memoized static child. Expected
+     return: Solenoid tube paths can still follow x/y/z telemetry, while the
+     unchanged solenoid model hook and mesh subtree stop rerendering.
+204. Split the gantry beam moving wrapper from the static beam body. Expected
+     return: Bot x telemetry moves the wrapper, while the beam extrusion and
+     optional light strip reuse the same rendered subtree until config or shape
+     inputs change.
+205. Memoize the generated `GantryWheelPlate` component factory. Expected
+     return: Bot telemetry updates stop creating a new component type and
+     remounting wheel-plate subtrees, while the same cached merged geometry and
+     wheel-plate transforms render.
+
+## Round 41 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+
 ## Round 40 Candidate Ideas
 
 196. Render only the low-detail `Ground` layer when `lowDetail` is enabled.
@@ -306,6 +333,9 @@ commit message. Roll back rejected implementation changes.
 |---|------|-----------|--------|-------|--------|---------|--------|
 | 196 | Render only low-detail `Ground` layer | Real low-detail `Ground` render with Testing Library, sampled 20 times at the shipped single-ground scale | 2 ground mesh nodes; 1 high-detail texture hook call; 0.308 ms median render setup | 1 ground mesh node; 0 texture hook calls; latest check 0.167 ms median render setup | 50% fewer ground nodes; 100% fewer texture hook calls; 20.8-45.8% faster render setup, saving 0.064-0.141 ms in this isolated component | Accepted; the absolute CPU saving is small, but the useful win is removing high-detail texture setup from low-detail mode while keeping the exact low-detail material already shown by LOD | `Render low-detail ground for 100% fewer texture loads` |
 | 197 | Render only low-detail `Bed` layers | Real low-detail `Bed` render with Testing Library, sampled 20 times at the shipped single-bed scale | 2 soil layers; 1 render texture; 4 texture hook calls; 1.295 ms median render setup | 1 soil layer; 0 render textures; 2 texture hook calls; latest check 0.787 ms median render setup | 50% fewer soil layers; 100% fewer render textures; 50% fewer texture hook calls; 12.5-39.2% faster render setup, saving 0.162-0.508 ms | Accepted; the isolated CPU saving is modest but real, and the meaningful low-detail win is skipping the high-detail soil render texture and high-detail bed/soil texture setup while rendering the same low-detail bed and soil layers | `Render low-detail bed for 100% fewer render textures` |
+| 198 | Gate progressive-load console timing logs | Real `useThreeDLoadProgress` completion through the shipped 8 load steps, sampled 20 times with default logging disabled | 9 console calls on completion; 0.498 ms median completion path | 0 console calls on completion; latest check 0.387 ms median completion path | 100% fewer default console calls, removing 9 calls per 3D load; 22.3% faster measured completion path, saving 0.111 ms | Accepted; the CPU timing is tiny, but removing a real 9-call console burst from every normal 3D load is a meaningful call-count and developer-console cleanup, with the same logs still available under perf logging | `Gate 3D load logs for 100% fewer console calls` |
+| 199 | Fast-path idle static-season plant icon frames | Realistic 1000-plant scene split across 5 icon groups, simulating 60 unchanged-camera idle frames after the first matrix update | 0 matrix calls; 0 brightness writes; 0.011 ms median idle-frame callback work across all 60 frames | Trial fast path: 0 matrix calls; 0 brightness writes; 0.009 ms median idle-frame callback work | 18.2% faster, but only 0.002 ms saved across one second of realistic idle frames | Rejected and rolled back; the percentage clears 10%, but the absolute saving is not meaningful and would add conditional frame-path complexity for effectively no user-visible gain | None |
+| 200 | Scope bed soil-surface helper hook to debug modes | Real default `Bed` render with surface debug off, sampled 20 times at the shipped single-bed scale | 2 soil layers; 2 helper hook calls; 1.292 ms median render setup | Trial split: 2 soil layers; 0 helper hook calls; 1.316 ms latest median render setup | 100% fewer helper hook calls, but the render path was 1.9% slower in the stable rerun and saved only two no-op hook calls | Rejected and rolled back; the call-count improvement was real but too small to matter, and the component split added complexity without a meaningful render-time win | None |
 
 ## Round 39 Candidate Ideas
 

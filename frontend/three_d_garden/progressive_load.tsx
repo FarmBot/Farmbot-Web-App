@@ -4,6 +4,7 @@ import { Html } from "@react-three/drei";
 import { Group } from "./components";
 import { Object3D } from "three";
 import { createFocusMaterialBinding } from "./focus_transition";
+import { perfEnabled } from "../performance/perf";
 
 const AnimatedGroup = animated(Group);
 
@@ -60,6 +61,13 @@ export interface ThreeDLoadProgress {
 
 const rounded = (value: number | undefined) => Math.round(value || 0);
 
+const hasLocalStorage = () => typeof localStorage !== "undefined";
+
+export const threeDLoadLogEnabled = () =>
+  perfEnabled()
+  || (hasLocalStorage()
+    && localStorage.getItem("THREE_D_LOAD_LOGS") == "true");
+
 export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
   const startTimeRef = React.useRef(now());
   const loggedRef = React.useRef(false);
@@ -88,7 +96,7 @@ export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
   const progress = readyStepCount / THREE_D_LOAD_STEPS.length * 100;
 
   React.useEffect(() => {
-    if (!complete || loggedRef.current) { return; }
+    if (!complete || loggedRef.current || !threeDLoadLogEnabled()) { return; }
     loggedRef.current = true;
     let totalElapsed = 0;
     THREE_D_LOAD_STEPS.forEach(step => {

@@ -141,8 +141,24 @@ describe("3D load progress", () => {
       jest.advanceTimersByTime(THREE_D_LOAD_PROGRESS_FADE_MS);
     });
     expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
+    expect(consoleLog).not.toHaveBeenCalled();
+    consoleLog.mockRestore();
+    jest.useRealTimers();
+  });
+
+  it("logs load timing when perf logging is enabled", () => {
+    jest.useFakeTimers();
+    localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const consoleLog = jest.spyOn(console, "log").mockImplementation(jest.fn());
+    render(<ProgressHarness />);
+
+    THREE_D_LOAD_STEPS.forEach(() => {
+      fireEvent.click(screen.getByText("advance"));
+    });
+
     expect(consoleLog).toHaveBeenCalledWith(expect.stringContaining("Total"));
     consoleLog.mockRestore();
+    localStorage.clear();
     jest.useRealTimers();
   });
 
