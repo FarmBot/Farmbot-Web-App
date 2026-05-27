@@ -196,10 +196,32 @@ commit message. Roll back rejected implementation changes.
      Expected return: avoid repeated sorting/name-reduction of real tool slots
      when only Bot position changes.
 
+## Round 35 Candidate Ideas
+
+171. Skip Greenhouse starter-tray seedling matrix rewrites when the camera
+     quaternion has not changed. Expected return: fewer per-frame matrix writes
+     in the real two-tray Greenhouse scene while seedlings still billboard on
+     the first frame, camera movement, and tray-position changes.
+172. Do not mount people billboards or their image assets while people are
+     disabled or hidden by focus. Expected return: fewer hidden image loads and
+     Billboard/Image objects in Lab and Greenhouse scenes when the People layer
+     is off, while enabled people still render the same.
+173. Load Bot track SVG shape data only when tracks are enabled. Expected
+     return: one fewer SVG request/parse and no hidden track extrudes for
+     track-off configurations, while default track-on rendering is unchanged.
+174. Do not mount bed cable-carrier support rails when the cable-carrier layer
+     is disabled. Expected return: fewer hidden support boxes/materials in
+     carrier-off gardens, matching the already-hidden moving carriers and Bot
+     support geometry.
+175. Hoist grid coordinate conversion setup out of each grid line. Expected
+     return: lower enabled-grid startup CPU for the normal bed-sized grid by
+     avoiding repeated position helper construction, with identical line points.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 171 | Skip starter-tray idle seedling matrix rewrites | Real Greenhouse `StarterTrays` scale with two trays and 70 seedlings per tray, simulating one stationary-camera 60-frame second | 8,400 seedling matrix writes; 1.093 ms frame dispatch | 140 seedling matrix writes; 0.211 ms frame dispatch | 98.3% fewer matrix writes; 80.7% faster frame dispatch, saving 8,260 writes and 0.882 ms per visible idle second | Accepted; seedlings still update on first frame, tray-position changes, and camera quaternion changes, while idle frames stop rewriting identical billboard matrices | `Skip tray seedling writes for 98.3% fewer matrices` |
 | 170 | Memoize configured tool slot conversion | Configured `Tools` render with seven real tool slots plus 49 x-only `configPosition` rerenders, matching Bot telemetry updates while the tool-slot array remains stable | 7 configured slots; 5 rendered slot groups; 1 mounted UTM tool; 1.030 ms median rerender time | 7 configured slots; 5 rendered slot groups; 1 mounted UTM tool; 1.101 ms median rerender time | 6.9% slower; no call-count win translated into faster realistic rendering | Rejected and rolled back; sorting/reducing seven slots is not the bottleneck in the configured tool rerender path, and the added hooks/dependencies made the measured path worse | None |
 | 169 | Memoize PowerSupply subtree | Direct default `PowerSupply` render plus 49 unchanged parent rerenders with stable config, matching Bot telemetry-only parent updates after the existing cable-path memo | 1 power-supply group; 0.115 ms median rerender time | 1 power-supply group; 0.043 ms median rerender time | 62.6% faster, but only 0.072 ms saved per unchanged PowerSupply rerender | Rejected and rolled back; the existing cable-path memo already removed the meaningful repeated work, so another component memo wrapper would add complexity for a sub-tenth-millisecond saving | None |
 | 168 | Memoize Clouds subtree | Direct default `Clouds` render plus 49 unchanged parent rerenders with stable config, matching Bot telemetry-only parent updates | 1 cloud group; 0.075 ms median rerender time | 1 cloud group; 0.047 ms median rerender time | 37.3% faster, but only 0.028 ms saved per unchanged Clouds rerender | Rejected and rolled back; the component is already too cheap for another memo wrapper to provide meaningful app-level value | None |

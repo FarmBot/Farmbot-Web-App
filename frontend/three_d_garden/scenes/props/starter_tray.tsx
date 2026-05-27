@@ -45,6 +45,9 @@ export const StarterTrays = (props: StarterTraysProps) => {
   const scale = React.useMemo(() => new Vector3(), []);
   const trayQuaternion = React.useMemo(() => new Quaternion(), []);
   const seedlingQuaternion = React.useMemo(() => new Quaternion(), []);
+  const lastCameraQuaternion = React.useMemo(() => new Quaternion(), []);
+  const seedlingMatrixNeedsUpdate = React.useRef(true);
+  const hasCameraQuaternion = React.useRef(false);
 
   React.useEffect(() => {
     const mesh = trayRef.current;
@@ -62,9 +65,16 @@ export const StarterTrays = (props: StarterTraysProps) => {
     mesh.instanceMatrix.needsUpdate = true;
   }, [matrix, position, props.positions, scale, trayQuaternion]);
 
+  React.useEffect(() => {
+    seedlingMatrixNeedsUpdate.current = true;
+  }, [props.positions]);
+
   useFrame(state => {
     const mesh = seedlingRef.current;
     if (!mesh) { return; }
+    const cameraChanged = !hasCameraQuaternion.current
+      || !lastCameraQuaternion.equals(state.camera.quaternion);
+    if (!seedlingMatrixNeedsUpdate.current && !cameraChanged) { return; }
     seedlingQuaternion.copy(state.camera.quaternion);
     scale.set(seedlingSize, seedlingSize, seedlingSize);
     props.positions.forEach((trayPosition, trayIndex) => {
@@ -80,6 +90,9 @@ export const StarterTrays = (props: StarterTraysProps) => {
       });
     });
     mesh.instanceMatrix.needsUpdate = true;
+    lastCameraQuaternion.copy(state.camera.quaternion);
+    hasCameraQuaternion.current = true;
+    seedlingMatrixNeedsUpdate.current = false;
   });
 
   return <Group name={"starter-trays"}>
