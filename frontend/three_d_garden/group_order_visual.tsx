@@ -42,8 +42,12 @@ export const areGroupOrderPropsEqual =
     if (prev.config.exaggeratedZ != next.config.exaggeratedZ) { return false; }
     if (prev.sortType != next.sortType) { return false; }
     if (prev.tryGroupSortType != next.tryGroupSortType) { return false; }
-    const uuids = (pts: TaggedPoint[]) => JSON.stringify(pts.map(p => p.uuid));
-    if (uuids(prev.groupPoints) != uuids(next.groupPoints)) { return false; }
+    if (prev.groupPoints.length != next.groupPoints.length) { return false; }
+    for (let i = 0; i < prev.groupPoints.length; i++) {
+      if (prev.groupPoints[i].uuid != next.groupPoints[i].uuid) {
+        return false;
+      }
+    }
     return true;
   };
 
