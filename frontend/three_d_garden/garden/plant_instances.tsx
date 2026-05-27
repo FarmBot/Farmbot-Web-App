@@ -77,6 +77,39 @@ const getPlantIconGeometry = () => {
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
 
+const PLANT_ICON_CONFIG_KEYS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "zGantryOffset",
+  "mirrorX",
+  "mirrorY",
+  "sunInclination",
+  "animateSeasons",
+  "plants",
+];
+
+const plantIconConfigEquals = (prev: Config, next: Config) => {
+  for (const key of PLANT_ICON_CONFIG_KEYS) {
+    if (prev[key] !== next[key]) { return false; }
+  }
+  return true;
+};
+
+const plantInstancesPropsEqual = (
+  prev: PlantInstancesProps,
+  next: PlantInstancesProps,
+) =>
+  prev.plants === next.plants &&
+  prev.getZ === next.getZ &&
+  prev.visible === next.visible &&
+  prev.startTimeRef === next.startTimeRef &&
+  prev.dispatch === next.dispatch &&
+  prev.iconCapacities === next.iconCapacities &&
+  plantIconConfigEquals(prev.config, next.config);
+
 const plantIconRaycast = function (
   this: ThreeInstancedMesh,
   raycaster: Raycaster,
@@ -229,10 +262,13 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   </InstancedMesh>;
 };
 
-export const PlantInstances = React.memo((props: PlantInstancesProps) => {
-  if (props.visible === false) { return <></>; }
-  return <VisiblePlantInstances {...props} />;
-});
+export const PlantInstances = React.memo(
+  (props: PlantInstancesProps) => {
+    if (props.visible === false) { return <></>; }
+    return <VisiblePlantInstances {...props} />;
+  },
+  plantInstancesPropsEqual,
+);
 
 const VisiblePlantInstances = (props: PlantInstancesProps) => {
   const instances = React.useMemo(() => {

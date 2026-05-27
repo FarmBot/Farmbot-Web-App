@@ -425,6 +425,78 @@ describe("<PlantInstances />", () => {
     expect(setMatrixAt).toHaveBeenCalled();
   });
 
+  it.each([
+    ["static seasons", false],
+    ["animated seasons", true],
+  ])("memoizes %s icon setup across unrelated config churn",
+    (_label, animateSeasons) => {
+      const getZ = jest.fn(() => 0);
+      const p = fakeProps();
+      p.config.animateSeasons = animateSeasons;
+      p.startTimeRef = animateSeasons ? { current: 0 } : undefined;
+      p.getZ = getZ;
+      p.plants = [p.plants[0]];
+      const { rerender } = render(<PlantInstances {...p} />);
+      const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+      getZ.mockClear();
+
+      rerender(<PlantInstances {...p} config={{
+        ...p.config,
+        heading: p.config.heading + 45,
+        label: "unrelated config churn",
+        sunAzimuth: p.config.sunAzimuth + 15,
+      }} />);
+
+      expect(getZ).not.toHaveBeenCalled();
+      expect(useFrame).toHaveBeenCalledTimes(frameCalls);
+    });
+
+  it("updates icon setup when position config changes", () => {
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    getZ.mockClear();
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+
+    expect(getZ).toHaveBeenCalledWith(100, 200);
+  });
+
+  it("rerenders icons when brightness config changes", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      sunInclination: p.config.sunInclination - 10,
+    }} />);
+
+    expect(useFrame).toHaveBeenCalledTimes(frameCalls + 1);
+  });
+
+  it("rerenders animated icons when the season changes", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      plants: "Winter",
+    }} />);
+
+    expect(useFrame).toHaveBeenCalledTimes(frameCalls + 1);
+  });
+
   it("updates material brightness when changed", () => {
     const setScalar = jest.fn();
     const instancedRef = {

@@ -4279,3 +4279,19 @@ object churn skips bucket and instance setup while mirror/offset/Z-base changes
 still rebuild identical point positions, radius rings, opacity, and clicks.
 
 **Commit:** `Memoize point overlay for config churn`
+
+### Idea 264: Memoize plant icon overlay against relevant config fields
+
+**Description:** Keep `PlantInstances` from rebuilding icon buckets and static instance data when unrelated config object churn does not affect plant icon positions, season animation, or click behavior. Expected return: faster rerenders in plant-heavy gardens.
+
+**Benchmark:** Bun/React `PlantInstances` churn benchmark with 1,000 realistic plants across 15 icon buckets and 60 unrelated config-object rerenders, sampled 10 times while measuring median rerender batch CPU and `getZ` static setup calls for both non-seasonal and `animateSeasons` paths.
+
+**Before:** Static season: 75.350 ms median churn batch and 60,000 static setup calls; `animateSeasons`: 70.369 ms and 60,000 setup calls
+
+**After:** Static season: 0.967 ms median churn batch and 0 static setup calls; `animateSeasons`: 0.764 ms and 0 setup calls
+
+**Change:** Static season was 98.7% faster, saving 74.383 ms per 60-rerender churn batch; `animateSeasons` was 98.9% faster, saving 69.605 ms; both paths avoided 100% of unrelated static setup work
+
+**Outcome:** Accepted; `PlantInstances` now memoizes against plant-icon-relevant props and config fields, so unrelated config object churn skips bucket/static setup while position, texture, brightness, seasonal animation, click, capacity, and relevant config changes still rerender
+
+**Commit:** `Memoize plant icons for 98.7% faster churn`
