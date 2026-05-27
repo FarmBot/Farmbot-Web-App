@@ -4379,3 +4379,36 @@ mirror/position config changes still rebuild instance positions
 **Outcome:** Accepted; `PlantInstances` now memoizes against plant-icon-relevant props and config fields, so unrelated config object churn skips bucket/static setup while position, texture, brightness, seasonal animation, click, capacity, and relevant config changes still rerender
 
 **Commit:** `Memoize plant icons for 98.7% faster churn`
+
+### Idea 265: Memoize plant spread overlay against relevant config fields
+
+**Description:** Keep `PlantSpreadInstances` from rebuilding static spread instance data when unrelated config object churn does not affect spread geometry, bounds, or active-drag behavior. Expected return: faster spread-visible rerenders in dense gardens.
+
+**Benchmark:** Bun/React `PlantSpreadInstances` benchmark with 1,000 realistic
+plants, spread visible, 60 unrelated config-object churn rerenders, and a
+click-to-add active-drag cross-check, sampled 12 times while measuring rerender
+batch CPU, static `getZ` setup calls, initial spread frame setup, unchanged
+static frame work, and 60 active-position frame updates.
+
+**Before:** Static spread: 13.975 ms median churn batch, 60,000 static setup
+calls, 0.834 ms initial frame, and 0.202 ms unchanged static frame.
+Click-to-add: 13.703 ms churn batch, 60,000 setup calls, 0.845 ms initial
+frame, and 16.393 ms per 60 active-position frames.
+
+**After:** Static spread: 4.043 ms median churn batch, 0 static setup calls,
+0.831 ms initial frame, and 0.036 ms unchanged static frame. Click-to-add:
+3.733 ms churn batch, 0 setup calls, 0.850 ms initial frame, and 18.909 ms per
+60 active-position frames.
+
+**Change:** Static churn was 71.1% faster, saving 9.932 ms per 60-rerender
+batch; click-to-add churn was 72.8% faster, saving 9.969 ms per batch. Both
+paths avoided 100% of static spread placement setup during unrelated config
+churn; active-frame update logic was left unchanged and covered as a behavior
+cross-check.
+
+**Outcome:** Accepted; `PlantSpreadInstances` now reuses static spread placement
+across unrelated config object churn while rebuilding for bed size, bed offset,
+mirror, and Z-base config changes, with spread colors, overlap updates,
+click-to-add active-position updates, and click behavior covered by tests.
+
+**Commit:** `Memoize plant spread setup for 71.1% faster churn`

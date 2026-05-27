@@ -441,6 +441,71 @@ describe("<ThreeDPlantSpread />", () => {
     expect(getZ).not.toHaveBeenCalled();
   });
 
+  it("memoizes spread placement across unrelated config churn", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.getZ = jest.fn(() => 0);
+    p.spreadVisible = true;
+    const { rerender } = render(<PlantSpreadInstances {...p} />);
+    expect(p.getZ).toHaveBeenCalledTimes(p.plants.length);
+    (p.getZ as jest.Mock).mockClear();
+
+    rerender(<PlantSpreadInstances {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+      sunAzimuth: p.config.sunAzimuth + 10,
+    }} />);
+
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("updates spread placement when position config changes", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.getZ = jest.fn(() => 0);
+    p.spreadVisible = true;
+    const { rerender } = render(<PlantSpreadInstances {...p} />);
+    expect(p.getZ).toHaveBeenCalledTimes(p.plants.length);
+    (p.getZ as jest.Mock).mockClear();
+
+    rerender(<PlantSpreadInstances {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+
+    expect(p.getZ).toHaveBeenCalledTimes(p.plants.length);
+  });
+
+  it("updates click-to-add spread after unrelated config churn", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.getZ = jest.fn(() => 0);
+    p.spreadVisible = true;
+    getModeSpy.mockReturnValue(Mode.clickToAdd);
+    const { rerender } = render(<PlantSpreadInstances {...p} />);
+    (p.getZ as jest.Mock).mockClear();
+
+    rerender(<PlantSpreadInstances {...p} config={{
+      ...p.config,
+      label: "unrelated config churn",
+    }} />);
+
+    expect(p.getZ).not.toHaveBeenCalled();
+    const frameCalls = (useFrame as jest.Mock).mock.calls;
+    const frameFn = frameCalls[frameCalls.length - 1][0];
+    const meshRefs = allRefs.filter(ref => !!ref.current?.setMatrixAt);
+    const mesh = meshRefs[meshRefs.length - 1].current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const setColorAt = mesh?.setColorAt as jest.Mock;
+    setMatrixAt.mockClear();
+    setColorAt.mockClear();
+    p.activePositionRef.current = { x: 100, y: 100 };
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    expect(setMatrixAt).toHaveBeenCalled();
+    expect(setColorAt).toHaveBeenCalled();
+  });
+
   it("handles missing mesh in layout effect", () => {
     reactUseImperativeHandleSpy.mockImplementation(() => undefined);
     reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);

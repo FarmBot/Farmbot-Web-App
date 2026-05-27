@@ -138,6 +138,10 @@ const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
   lastUpdateKey: "",
 });
 
+type PlantSpreadPositionConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
+
 export const findPlantById = (
   plants: ThreeDGardenPlant[],
   plantId: number,
@@ -173,14 +177,41 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     }
     return updateStateRef.current;
   };
-  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
+  const {
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
+    columnLength, zGantryOffset, mirrorX, mirrorY,
+  } = config;
+  const positionConfig = React.useMemo(
+    (): PlantSpreadPositionConfig => ({
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    }),
+    [
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    ]);
+  const get3DPosition = React.useMemo(() =>
+    get3DPositionFunc(positionConfig as Config), [positionConfig]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
   const plantIndexes = React.useMemo(() =>
     plants.map((_, index) => index), [plants]);
-  const zBase = React.useMemo(() => zZeroFunc(config), [config]);
+  const zBase = React.useMemo(() =>
+    zZeroFunc(positionConfig as Config), [positionConfig]);
   const staticInstances = React.useMemo<StaticPlantSpreadInstance[]>(() =>
     plants.map(plant => {
       const position = get3DPosition({ x: plant.x, y: plant.y });
