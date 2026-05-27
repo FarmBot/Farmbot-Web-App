@@ -12,7 +12,7 @@ import {
 import {
   filterMoistureReadings, getMoistureColor,
 } from "../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
-import { Color, Matrix4 } from "three";
+import { Matrix4 } from "three";
 import { perfMeasure } from "../../performance/perf";
 
 export interface MoistureSurfaceProps {
@@ -32,6 +32,11 @@ interface MoistureInstanceBuffers {
   colors: Float32Array;
   opacities: Float32Array;
 }
+
+export const getMoistureOpacity = (value: number) =>
+  value > 900
+    ? 0
+    : Math.round((0.75 * value / 900) ** 3 * 100) / 100;
 
 export const MoistureSurface = (props: MoistureSurfaceProps) => {
   const {
@@ -79,13 +84,11 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
       const colors = new Float32Array(data.length * 3);
       const opacities = new Float32Array(data.length);
       const matrix = new Matrix4();
-      const instanceColor = new Color();
       data.map((d, i) => {
-        const color = getMoistureColor(d.z);
         matrix.identity().setPosition(d.x, d.y, d.z / 2);
         matrix.toArray(matrices, i * 16);
-        instanceColor.set(color.rgb).toArray(colors, i * 3);
-        opacities[i] = color.a;
+        if (d.z <= 900) { colors[i * 3 + 2] = 1; }
+        opacities[i] = getMoistureOpacity(d.z);
       });
       return { matrices, colors, opacities };
     }), [data]);

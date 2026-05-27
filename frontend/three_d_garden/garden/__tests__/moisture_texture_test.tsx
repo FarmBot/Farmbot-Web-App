@@ -1,6 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { MoistureSurface, MoistureSurfaceProps } from "../moisture_texture";
+import {
+  getMoistureOpacity, MoistureSurface, MoistureSurfaceProps,
+} from "../moisture_texture";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
 import {
@@ -8,6 +10,8 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import * as interpolationMap from
   "../../../farm_designer/map/layers/points/interpolation_map";
+import { getMoistureColor } from
+  "../../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
 
 describe("<MoistureSurface />", () => {
   const fakeProps = (): MoistureSurfaceProps => ({
@@ -66,5 +70,10 @@ describe("<MoistureSurface />", () => {
     p.showMoistureMap = false;
     render(<MoistureSurface {...p} />);
     expect(generateData).not.toHaveBeenCalled();
+  });
+
+  it("calculates moisture opacity without parsing color strings", () => {
+    [0, 200, 700, 900, 1024].map(value =>
+      expect(getMoistureOpacity(value)).toEqual(getMoistureColor(value).a));
   });
 });
