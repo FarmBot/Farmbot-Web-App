@@ -175,7 +175,7 @@ export const calcSunI = (inclination: number) => {
   return 1;
 };
 
-export const Sun = (props: SunProps) => {
+const SunBase = (props: SunProps) => {
   const { config } = props;
 
   const sunParams = getSeasonProperties(config, "Summer");
@@ -314,6 +314,8 @@ export const Sun = (props: SunProps) => {
     </Sphere>}
   </Group>;
 };
+
+export const Sun = React.memo(SunBase);
 
 const generateOtherSuns = () => {
   const points = [];

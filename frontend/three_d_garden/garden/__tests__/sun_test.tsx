@@ -37,6 +37,12 @@ describe("<Sun />", () => {
     expect(container).not.toContainHTML("line");
   });
 
+  it("memoizes unchanged sun props", () => {
+    render(<Sun {...fakeProps()} />);
+    const memoized = Sun as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
   it("doesn't render animated", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;
