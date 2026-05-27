@@ -139,6 +139,30 @@ describe("<Weed />", () => {
     expect(p.getZ).not.toHaveBeenCalled();
   });
 
+  it("memoizes weed instances across unrelated config churn", () => {
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    p.getZ = jest.fn(() => 0);
+    const { container, rerender } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(p.getZ).toHaveBeenCalledTimes(2);
+
+    rerender(<WeedInstances {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+    }} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(p.getZ).toHaveBeenCalledTimes(2);
+
+    rerender(<WeedInstances {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+    expect(p.getZ).toHaveBeenCalledTimes(4);
+  });
+
   it("navigates from a weed instance", () => {
     const p = fakeInstanceProps();
     const dispatch = jest.fn();

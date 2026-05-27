@@ -136,6 +136,27 @@ interface WeedInstanceData {
   buckets: WeedColorBucket[];
 }
 
+type WeedPositionConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
+type WeedPositionConfigField = keyof WeedPositionConfig;
+
+const WEED_POSITION_CONFIG_FIELDS: WeedPositionConfigField[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "zGantryOffset",
+  "mirrorX",
+  "mirrorY",
+];
+
+const sameWeedPositionConfigFields = (
+  prev: Config,
+  next: Config,
+) => WEED_POSITION_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
 export interface WeedInstancesProps {
   weeds: TaggedWeedPointer[];
   config: Config;
@@ -146,10 +167,10 @@ export interface WeedInstancesProps {
 
 const getWeedInstanceData = (
   weeds: TaggedWeedPointer[],
-  config: Config,
+  config: WeedPositionConfig,
   getZ: (x: number, y: number) => number,
 ): WeedInstanceData => {
-  const getWorldPosition = getWorldPositionFunc(config);
+  const getWorldPosition = getWorldPositionFunc(config as Config);
   const weedInstances: WeedInstance[] = new Array(weeds.length);
   const buckets: Record<string, WeedColorBucket> = {};
 
@@ -326,15 +347,53 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   </InstancedMesh>;
 };
 
+const weedInstancesPropsEqual = (
+  prev: Readonly<WeedInstancesProps>,
+  next: Readonly<WeedInstancesProps>,
+) => {
+  if (!prev.visible && !next.visible) { return true; }
+  return prev.weeds === next.weeds
+    && prev.getZ === next.getZ
+    && prev.dispatch === next.dispatch
+    && prev.visible === next.visible
+    && sameWeedPositionConfigFields(prev.config, next.config);
+};
+
 export const WeedInstances = React.memo((props: WeedInstancesProps) => {
   if (!props.visible) { return <></>; }
   return <VisibleWeedInstances {...props} />;
-});
+}, weedInstancesPropsEqual);
 
 const VisibleWeedInstances = (props: WeedInstancesProps) => {
+  const { weeds, config, getZ } = props;
+  const {
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
+    columnLength, zGantryOffset, mirrorX, mirrorY,
+  } = config;
+  const positionConfig = React.useMemo(
+    () => ({
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    }),
+    [
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    ]);
   const { weedInstances, buckets } = React.useMemo(
-    () => getWeedInstanceData(props.weeds, props.config, props.getZ),
-    [props.weeds, props.config, props.getZ]);
+    () => getWeedInstanceData(weeds, positionConfig, getZ),
+    [weeds, positionConfig, getZ]);
   return <>
     <WeedIconInstances {...props} weedInstances={weedInstances} />
     {buckets.map(bucket =>

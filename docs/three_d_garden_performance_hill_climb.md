@@ -4313,6 +4313,33 @@ still rebuild identical point positions, radius rings, opacity, and clicks.
 
 **Commit:** `Memoize point overlay for config churn`
 
+### Idea 263: Memoize weed overlay against relevant config fields
+
+**Description:** Keep `WeedInstances` from rebuilding icon/radius buckets when unrelated config object churn does not affect weed positions or click behavior. Expected return: faster settings/rerender batches in weed-heavy gardens.
+
+**Benchmark:** Temporary Bun/react-test-renderer `WeedInstances` benchmark with
+900 realistic weeds spread across 8 color buckets and 8 radius values, plus 60
+unrelated config-object churn rerenders, sampled 20 measured times after one
+warmup while measuring `getZ`-derived bucket builds, icon/radius instanced mesh
+counts, and render setup CPU
+
+**Before:** 60 churn bucket builds; 1 icon mesh; 8 radius meshes; 149.114 ms
+median 60-rerender batch
+
+**After:** 0 churn bucket builds; 1 icon mesh; 8 radius meshes; 0.399 ms
+median 60-rerender batch
+
+**Change:** 100% fewer churn bucket builds; 99.7% faster rerender batch,
+saving 148.715 ms across 60 unrelated config-object churn rerenders
+
+**Outcome:** Accepted; weed instances now memoize against the weed array,
+visibility, click dispatch, `getZ`, and only the config fields that affect
+world-position transforms, while unrelated config-object churn preserves icon
+billboarding, radius/color mesh counts, and click behavior, and relevant
+mirror/position config changes still rebuild instance positions
+
+**Commit:** `Memoize weed overlay for 99.7% faster churn batches`
+
 ### Idea 264: Memoize plant icon overlay against relevant config fields
 
 **Description:** Keep `PlantInstances` from rebuilding icon buckets and static instance data when unrelated config object churn does not affect plant icon positions, season animation, or click behavior. Expected return: faster rerenders in plant-heavy gardens.
