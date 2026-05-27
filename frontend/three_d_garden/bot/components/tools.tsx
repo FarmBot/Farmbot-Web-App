@@ -34,7 +34,7 @@ import { getMode } from "../../../farm_designer/map/util";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
-import { SuctionAnimation } from "./suction_animation";
+import { SuctionAnimations } from "./suction_animation";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -414,8 +414,7 @@ const SeederToolModel = (props: ToolModelProps) => {
       material={seeder.materials.PaletteMaterial001} />
     {!props.inToolbay && props.config.vacuum &&
       <Group position={[20, 0, -30]}>
-        {[-50, -80, -95, -100].map(z =>
-          <SuctionAnimation key={z} z={z} />)}
+        <SuctionAnimations zValues={[-50, -80, -95, -100]} />
       </Group>}
   </>;
 };

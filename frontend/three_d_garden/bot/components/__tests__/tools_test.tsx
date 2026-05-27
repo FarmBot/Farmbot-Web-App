@@ -63,7 +63,7 @@ describe("<Tools />", () => {
         // eslint-disable-next-line no-null/no-null
         return null;
       }));
-    suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimation")
+    suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimations")
       .mockImplementation((() => <></>));
     wateringAnimationsSpy = jest.spyOn(
       wateringAnimationsModule, "WateringAnimations")
@@ -225,6 +225,10 @@ describe("<Tools />", () => {
     p.mountedToolName = "seeder";
     render(<Tools {...p} />);
     expect(suctionAnimationSpy).toHaveBeenCalled();
+    expect(suctionAnimationSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ zValues: [-50, -80, -95, -100] }),
+      undefined,
+    );
   });
 
   it.each<[number, number]>([
