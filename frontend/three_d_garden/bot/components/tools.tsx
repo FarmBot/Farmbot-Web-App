@@ -154,13 +154,26 @@ export const Tools = (props: ToolsProps) => {
     ? props.config.tool
     : reduceToolName(props.mountedToolName);
 
-  const tools = isUndefined(props.toolSlots)
+  const configuredTools = React.useMemo(
+    () => isUndefined(props.toolSlots)
+      ? undefined
+      : convertSlotsWithTools(props.toolSlots),
+    [props.toolSlots]);
+  const tools = isUndefined(configuredTools)
     ? PROMO_TOOLS(props.config, props.configPosition)
-    : convertSlotsWithTools(props.toolSlots);
+    : configuredTools;
+  const positionHelpers = React.useMemo(() => ({
+    get3DPosition: get3DPositionFunc(props.config),
+    get3DPositionNoMirror: get3DPositionNoMirrorFunc(props.config),
+    zZero: zZeroFunc(props.config),
+    zDir: zDirFunc(props.config),
+  }), [props.config]);
 
   return <Group name={"tools"}>
     <Tool
-      {...props}
+      config={props.config}
+      dispatch={props.dispatch}
+      positionHelpers={positionHelpers}
       mountedToolName={mountedToolName}
       x={props.configPosition.x}
       y={props.configPosition.y}
@@ -171,7 +184,9 @@ export const Tools = (props: ToolsProps) => {
     {isUndefined(props.toolSlots) && <PromoToolbay3 config={props.config} />}
     {tools.map((tool, i) =>
       <Tool key={i}
-        {...props}
+        config={props.config}
+        dispatch={props.dispatch}
+        positionHelpers={positionHelpers}
         mountedToolName={mountedToolName}
         {...tool}
         x={tool.gantryMounted ? mirroredBotX : tool.x}
@@ -307,6 +322,12 @@ interface ToolProps extends ThreeDTool {
   mountedToolName: string | undefined;
   config: Config;
   dispatch?: Function;
+  positionHelpers: {
+    get3DPosition: ReturnType<typeof get3DPositionFunc>;
+    get3DPositionNoMirror: ReturnType<typeof get3DPositionNoMirrorFunc>;
+    zZero: number;
+    zDir: number;
+  };
 }
 
 interface ToolModelProps {
@@ -480,20 +501,19 @@ const SeedTroughToolModel = React.memo((props: SeedTroughToolModelProps) =>
     : <SeedTroughOnlyToolModel />);
 
 // eslint-disable-next-line complexity
-const Tool = (props: ToolProps) => {
+const ToolBase = (props: ToolProps) => {
   const {
     toolPulloutDirection, inToolbay, id, mountedToolName, config, dispatch,
   } = props;
   const mounted = inToolbay && props.toolName == mountedToolName;
-  const get3DPosition = get3DPositionFunc(config);
-  const get3DPositionNoMirror = get3DPositionNoMirrorFunc(config);
+  const {
+    get3DPosition, get3DPositionNoMirror, zZero, zDir,
+  } = props.positionHelpers;
   const mirroredPosition = get3DPosition({ x: props.x, y: props.y });
   const noMirrorPosition = get3DPositionNoMirror({
     x: props.x,
     y: props.y,
   });
-  const zZero = zZeroFunc(props.config);
-  const zDir = zDirFunc(props.config);
   const position = {
     x: inToolbay ? mirroredPosition.x : noMirrorPosition.x,
     y: inToolbay && !props.gantryMounted
@@ -558,3 +578,5 @@ const Tool = (props: ToolProps) => {
       return <ToolbaySlot {...common} />;
   }
 };
+
+const Tool = React.memo(ToolBase);

@@ -168,6 +168,51 @@ describe("<Tools />", () => {
     expect(useGltfMock.mock.calls.length).toEqual(initialCalls);
   });
 
+  it("updates moving tool positions during bot movement", () => {
+    const p = fakeProps();
+    const staticTool = fakeTool();
+    staticTool.body.id = 1;
+    staticTool.body.name = "soil sensor";
+    const gantryTool = fakeTool();
+    gantryTool.body.id = 2;
+    gantryTool.body.name = "weeder";
+    const staticSlot = fakeToolSlot();
+    staticSlot.body.id = 1;
+    staticSlot.body.tool_id = staticTool.body.id;
+    staticSlot.body.x = 100;
+    staticSlot.body.y = 100;
+    const gantrySlot = fakeToolSlot();
+    gantrySlot.body.id = 2;
+    gantrySlot.body.tool_id = gantryTool.body.id;
+    gantrySlot.body.y = 200;
+    gantrySlot.body.gantry_mounted = true;
+    p.toolSlots = [
+      { toolSlot: staticSlot, tool: staticTool },
+      { toolSlot: gantrySlot, tool: gantryTool },
+    ];
+    p.mountedToolName = "weeder";
+
+    const { container, rerender } = render(<Tools {...p} />);
+    const mountedBefore =
+      container.querySelector("[name='utm-tool']")?.getAttribute("position");
+    const slotsBefore = Array.from(container.querySelectorAll("[name='slot']"))
+      .map(slot => slot.getAttribute("position"));
+    rerender(<Tools {...p} configPosition={{
+      ...p.configPosition,
+      x: p.configPosition.x + 50,
+      y: p.configPosition.y + 25,
+      z: p.configPosition.z + 5,
+    }} />);
+    const mountedAfter =
+      container.querySelector("[name='utm-tool']")?.getAttribute("position");
+    const slotsAfter = Array.from(container.querySelectorAll("[name='slot']"))
+      .map(slot => slot.getAttribute("position"));
+
+    expect(mountedAfter).not.toEqual(mountedBefore);
+    expect(slotsAfter[0]).toEqual(slotsBefore[0]);
+    expect(slotsAfter[1]).not.toEqual(slotsBefore[1]);
+  });
+
   it("uses mirrored xy position for tool slots", () => {
     const p = fakeProps();
     p.config.mirrorX = true;
