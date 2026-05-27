@@ -14,11 +14,24 @@ export interface WaterTubeProps {
   waterFlow: boolean;
 }
 
+type WaterTubeStreamProps =
+  Omit<WaterTubeProps, "tubeName"> & { name: string };
+
+const WaterTubeStream = (props: WaterTubeStreamProps) => {
+  const {
+    name, tubePath, tubularSegments, radius, radialSegments,
+  } = props;
+  const waterTexture = useWaterFlowTexture(true);
+  return <WaterStream name={name}
+    args={[tubePath, tubularSegments, radius - 2, radialSegments]}
+    waterTexture={waterTexture}
+    waterFlow={true} />;
+};
+
 export const WaterTube = (props: WaterTubeProps) => {
   const {
     tubeName, tubePath, tubularSegments, radius, radialSegments, waterFlow,
   } = props;
-  const waterTexture = useWaterFlowTexture(waterFlow);
 
   return <Group name={tubeName}>
     <Tube name={tubeName + "-tube"}
@@ -29,9 +42,13 @@ export const WaterTube = (props: WaterTubeProps) => {
       <MeshPhongMaterial transparent={true}
         opacity={0.4} />
     </Tube>
-    <WaterStream name={tubeName + "-water-stream"}
-      args={[tubePath, tubularSegments, radius - 2, radialSegments]}
-      waterTexture={waterTexture}
-      waterFlow={waterFlow} />
+    {waterFlow &&
+      <WaterTubeStream
+        name={tubeName + "-water-stream"}
+        tubePath={tubePath}
+        tubularSegments={tubularSegments}
+        radius={radius}
+        radialSegments={radialSegments}
+        waterFlow={waterFlow} />}
   </Group>;
 };

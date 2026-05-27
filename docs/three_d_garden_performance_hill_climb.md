@@ -45,10 +45,33 @@ commit message. Roll back rejected implementation changes.
    outdoor scene has less JavaScript to parse and execute at startup. Expected
    return: lower 3D Garden initial bundle/load cost.
 
+## Round 27 Candidate Ideas
+
+131. Do not mount `WaterTube` water-stream geometry or its animation hook while
+     `waterFlow` is false. Expected return: fewer default-scene objects,
+     geometries, and frame callbacks; water-on visuals remain identical because
+     the stream mounts when flow starts.
+132. Share one animated water texture across the real Bot water tube streams
+     and watering nozzle streams when `waterFlow` is true. Expected return:
+     fewer texture loads and frame callbacks in the water-on path, with the
+     same animated water material.
+133. Split active pointer preview rendering so normal garden mode does not load
+     crop icon textures or scan dirty grid preview points for hidden hover UI.
+     Expected return: lower default editor setup work while click-to-add and
+     point drawing still mount the same preview UI.
+134. Do not mount plant spread instances in ordinary view mode when the spread
+     layer is hidden and there is no add/edit/transient plant interaction.
+     Expected return: fewer default-scene instanced meshes, buffers, and frame
+     callbacks; spread visuals still mount when the user reveals or edits them.
+135. Cache parsed FarmBot SVG extrusion shapes across Bot remounts. Expected
+     return: fewer SVG asset requests and shape parses when the FarmBot layer
+     is hidden and shown again, while first-load geometry remains identical.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 131 | Skip hidden water-tube streams while water is off | Real default-off Solenoid plus X-axis water tube render, covering the five Bot water tubes, with stream DOM nodes, texture loads, and frame hooks counted through Bun/Testing Library | 5 tube groups; 5 hidden water-stream tubes; 0 water texture loads; 5 frame callbacks | 5 tube groups; 0 hidden water-stream tubes; 0 water texture loads; 0 frame callbacks | 100% fewer hidden water-stream geometries and 100% fewer water-off frame callbacks, removing five invisible stream tubes from the default Bot path | Accepted; visible translucent water tubes remain mounted, and the animated water stream still mounts when `waterFlow` is enabled | `Skip hidden water streams for 100% fewer off callbacks` |
 | 126 | Collapse generated FarmBot fallback meshes | Production asset build FarmBot chunk containing the merged model fallback code | 2,098,224 raw bytes; 598,382 gzip bytes | 2,070,557 raw bytes; 596,373 gzip bytes | 1.3% smaller raw chunk, saving 27.7 KB; 0.34% smaller gzip, saving 2.0 KB | Rejected and rolled back; the generated fallback cleanup was mechanically nicer but did not clear the 10% threshold or a meaningful delivered-byte win | None |
 | 127 | Skip promo toolbay model for configured tools | Real `Tools` render with 7 configured tool slots and a mounted weeder, measuring GLTF hook calls through Bun/Testing Library | 14 GLTF hook calls; 1 unused `toolbay3` call; no rendered `toolbay3` meshes | 13 GLTF hook calls; 0 unused `toolbay3` calls; no rendered `toolbay3` meshes | 100% fewer unused promo toolbay model calls, removing one real GLTF hook/request from configured gardens; 7.1% fewer total tool GLTF hooks | Accepted; the configured-tool view no longer requests an invisible promo model, while demo-tool gardens still render the same `toolbay3` meshes through the conditional child component | `Avoid promo toolbay load for 100% fewer unused model calls` |
 | 128 | Skip v1.7 cable-carrier support models on v1.8 kits | Real v1.8 vertical and horizontal cable-carrier support render, measuring support GLTF hook calls through Bun/Testing Library | 2 GLTF hook calls; 2 unused support model calls; 1 vertical generated mesh; 1 horizontal generated mesh | 0 GLTF hook calls; 0 unused support model calls; 1 vertical generated mesh; 1 horizontal generated mesh | 100% fewer v1.8 support model calls, removing both unused support GLTF hooks/requests from the default v1.8 kit path | Accepted; the v1.8 generated extrusion supports render unchanged, and v1.7 model-backed supports still load and render through their own child components | `Skip v1.8 support models for 100% fewer carrier loads` |
