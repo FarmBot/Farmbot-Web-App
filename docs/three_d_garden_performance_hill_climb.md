@@ -259,10 +259,30 @@ commit message. Roll back rejected implementation changes.
      who hide clouds skip spring setup in the default details stage, while the
      visible cloud animation and seasonal opacity remain unchanged.
 
+## Round 38 Candidate Ideas
+
+186. Collapse active-focus camera lookup to one `FOCI` build. Expected return:
+     fewer focus-definition builds during active focus camera rerenders, while
+     returning the same focused camera and fallback camera.
+187. Memoize `GroupOrderVisual` group selection across unchanged group/point
+     inputs. Expected return: avoid repeating group criteria selection during
+     telemetry-only rerenders while the same group-order overlay is visible.
+188. Cache the `ZoomBeacons` garden-bed DOM lookup across hover rerenders.
+     Expected return: less repeated DOM querying during normal beacon hover
+     interactions, while cursor behavior remains unchanged.
+189. Use tuple positions for visible plant labels instead of allocating
+     `Vector3` objects per label render. Expected return: less allocation work
+     when plant labels are visible for normal gardens, with identical label
+     placement.
+190. Memoize watering stream curve props across unchanged active watering
+     renders. Expected return: avoid rebuilding the sixteen water-stream curves
+     on parent rerenders when water is flowing but nozzle geometry is unchanged.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 186 | Collapse active-focus camera lookup to one `FOCI` build | Direct `getCamera` active-focus path with 20 repeated lookups for the same focused camera, sampled 20 times while measuring `FOCI` calls and lookup time | 40 `FOCI` calls; focused camera x=-560; 0.594 ms median lookup path | 20 `FOCI` calls; focused camera x=-560; 0.321 ms median lookup path | 50.0% fewer focus-definition builds; 46.0% faster lookup path, saving 0.273 ms across 20 active-focus rerenders | Accepted; this removes a duplicate focus-list build and simplifies the lookup without changing focused or fallback camera behavior | `Collapse focus camera lookup for 50.0% fewer foci builds` |
 | 185 | Split disabled `Clouds` before opacity spring | Direct hidden `Clouds` render with `clouds=false`, default config otherwise, sampled 20 times while measuring spring hooks, mounted clouds, and render time | 1 spring hook; 0 cloud nodes; 0.066 ms median render | 0 spring hooks; 0 cloud nodes; 0.061 ms median render | 100% fewer hidden spring hooks, but only 7.6% faster and 0.005 ms saved | Rejected and rolled back; the absolute disabled-cloud setup cost is too small, and render time did not meet the 10% threshold under realistic conditions | None |
 | 184 | Skip no-op `MoistureSurface` setup | Direct hidden `MoistureSurface` render with neither readings nor map shown, empty sensors/readings, and default config, sampled 20 times while measuring moisture-layer nodes, instanced meshes, and render time | 3 moisture-layer test nodes; 0 instanced meshes; 0.090 ms median render | 0 moisture-layer nodes; 0 instanced meshes; 0.063 ms median render | 100% fewer hidden moisture-layer nodes and 30.0% faster, but only 0.027 ms saved in the direct default no-op path | Rejected and rolled back; the percentage qualified, but the absolute hidden-component win was too small to justify even a small split in this already-simple default path | None |
 | 183 | Memoize enabled `CameraView` frustum inputs | Direct enabled `CameraView` render with one mounted camera view and 20 unchanged rerenders using stable camera/config inputs, sampled 10 times while measuring convex geometry builds and rerender time | 21 geometry builds; camera view still mounted; 1.532 ms median rerender path | 1 geometry build; camera view still mounted; 0.617 ms median rerender path | 95.2% fewer frustum geometry builds, removing 20 rebuilds; 59.7% faster rerender path, saving 0.915 ms across 20 unchanged rerenders | Accepted; unchanged enabled camera-view renders now reuse frustum points/geometry, and changed camera inputs still rebuild the same geometry | `Memoize camera view for 95.2% fewer geometry builds` |
