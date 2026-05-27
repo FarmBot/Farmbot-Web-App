@@ -4251,3 +4251,31 @@ movement and unrelated config object churn while preserving identical stable-X
 output, and X movement plus kit-version model changes still update
 
 **Commit:** `Memoize electronics box for 97.1% faster yz batches`
+
+### Idea 262: Memoize point overlay against relevant config fields
+
+**Description:** Keep `PointInstances` from rebuilding buckets and instance meshes when unrelated config object churn does not affect point positions, visibility, or click behavior. Expected return: faster settings/rerender batches in point-heavy gardens.
+
+**Benchmark:** Direct `PointInstances` config-churn benchmark with 1,000
+realistic generic points across 6 color buckets and 5 radius values, sampled
+20 times after warmup through Bun/test-renderer. Each sample rendered once,
+then applied 60 cloned config objects that changed only unrelated fields while
+measuring bucket rebuilds via `getZ` calls, final instanced meshes, and rerender
+setup time.
+
+**Before:** 60 bucket rebuilds per churn batch; 12 rendered instanced meshes;
+141.111 ms median rerender setup, 140.891 ms average, 149.197 ms p95.
+
+**After:** 0 bucket rebuilds per churn batch; 12 rendered instanced meshes;
+0.466 ms median rerender setup, 0.501 ms average, 0.894 ms p95.
+
+**Change:** 100% fewer bucket rebuilds during unrelated config churn and 99.7%
+faster churn rerender setup, saving 140.644 ms per 60-rerender batch while
+leaving rendered mesh count unchanged.
+
+**Outcome:** Accepted; point overlays now compare only the config fields that
+affect world positions plus point/click visibility inputs, so unrelated config
+object churn skips bucket and instance setup while mirror/offset/Z-base changes
+still rebuild identical point positions, radius rings, opacity, and clicks.
+
+**Commit:** `Memoize point overlay for config churn`

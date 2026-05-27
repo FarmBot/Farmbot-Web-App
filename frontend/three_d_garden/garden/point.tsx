@@ -274,10 +274,30 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
   </>;
 };
 
+const pointPositionConfigEquals = (a: Config, b: Config) =>
+  a.bedLengthOuter == b.bedLengthOuter &&
+  a.bedWidthOuter == b.bedWidthOuter &&
+  a.bedXOffset == b.bedXOffset &&
+  a.bedYOffset == b.bedYOffset &&
+  a.columnLength == b.columnLength &&
+  a.zGantryOffset == b.zGantryOffset &&
+  a.mirrorX == b.mirrorX &&
+  a.mirrorY == b.mirrorY;
+
+const pointInstancesPropsEqual = (
+  prev: PointInstancesProps,
+  next: PointInstancesProps,
+) =>
+  prev.points == next.points &&
+  prev.visible == next.visible &&
+  prev.getZ == next.getZ &&
+  prev.dispatch == next.dispatch &&
+  pointPositionConfigEquals(prev.config, next.config);
+
 export const PointInstances = React.memo((props: PointInstancesProps) => {
   if (!props.visible) { return <></>; }
   return <VisiblePointInstances {...props} />;
-});
+}, pointInstancesPropsEqual);
 
 const VisiblePointInstances = (props: PointInstancesProps) => {
   const buckets = React.useMemo(
