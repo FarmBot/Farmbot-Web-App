@@ -4,9 +4,11 @@ I want to optimize three_d_garden performance across all dimensions: load time, 
 
 Comprehensively look at the code and come up with a list of 5 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Before implementing an idea, benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100. Then implement the idea and check the benchmark. If you see at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit your changes with a descriptive message that includes the percent improvement achieved. If an improvement was not achieved, rollback the changes and move onto the next item. Make sure to record all results in the markdown doc.
 
+Repeat the process for all items in the list.
+
 # Queued Follow Up Prompt
 
-Let's repeat the process with a new list of 5 items. As a reminder, here is the original prompt and process to follow:
+Let's repeat the process with a new list of 5 items. As a reminder, here is the prompt and process to follow:
 
 I want to optimize three_d_garden performance across all dimensions: load time, click responsiveness, memory use, frames per second, number of calls, etc. However, I strictly do not want to in any way degrade the user experience (no lowering of resolution, removing animations, or anything like that).
 
@@ -307,3 +309,61 @@ commit message. Roll back rejected implementation changes.
 | 53 | Optimize watering stream angles | 16 watering stream offsets built 1m times | 178.40 ms median | 153.73 ms median | 13.8% faster | Rejected; there are only 16 streams, so precomputing angle data saved noise-level time | None |
 | 54 | Optimize SVG hole extraction | 1m beam/column SVG hole extraction loops | 51.37 ms median | 23.98 ms median | 53.3% faster | Rejected; SVG hole extraction runs over a handful of paths, not 1m loops | None |
 | 55 | Optimize tool-slot conversion | 50k tool slots sorted and converted per run | 7.30 ms median | 2.90 ms median | 60.3% faster | Rejected; real tool-slot counts are small and lodash `sortBy().map()` was clearer | None |
+
+## Round 12 Candidate Ideas
+
+56. Conditionally mount only the selected non-default scene instead of mounting
+    hidden Lab and Greenhouse scene trees in the default outdoor garden.
+    Expected return: lower default load/setup work and fewer hidden scene
+    objects without changing what the user sees.
+57. Load only the active ground texture instead of preparing grass, concrete,
+    and brick textures on every garden mount. Expected return: lower texture
+    memory and load work for the selected scene without lowering resolution.
+58. Defer pointer preview texture/object setup until a pointer placement mode is
+    active. Expected return: lower default page load texture work while keeping
+    placement behavior unchanged.
+59. Mount plant spread instances only when the spread overlay or plant editing
+    state needs them. Expected return: fewer default scene objects/draw calls
+    while preserving the spread overlay when enabled.
+60. Skip daylight-only starfield geometry when stars are fully transparent and
+    season animation is disabled. Expected return: fewer default scene objects
+    and geometries with no visual change in daylight.
+
+## Round 12 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 56 | Conditionally mount selected scene | Docker 1000-plant default scene, 3 measured runs | 681 scene objects; 412 meshes; 31 textures; 212 MB heap | 533 scene objects; 297 meshes; 24 textures; 188 MB heap | 21.7% fewer scene objects; 22.6% fewer textures; 11.3% lower heap | Accepted; removes real hidden Lab/Greenhouse mount work in the default scene while load, FPS, and interactions stayed in the same app-level band | `Mount only selected 3D garden scene details for 21.7% fewer objects` |
+| 57 | Load only active ground texture | Docker 1000-plant default scene, 3 measured runs | 24 textures; 212 MB heap; 3.91s full-ready | 22 textures; 199 MB heap; 4.11s full-ready | 8.3% fewer textures; 6.1% lower heap; 5.2% slower full-ready | Rejected and rolled back; below 10% and the absolute win did not justify added selection plumbing | None |
+| 58 | Defer inactive pointer preview setup | Docker 1000-plant default scene, 3 measured runs | 24 textures; 533 scene objects; 199 MB heap; 3.91s full-ready | 24 textures; 533 scene objects; 199 MB heap; 4.00s full-ready | No texture/object/heap improvement; 2.2% slower full-ready | Rejected and rolled back; default mode already avoids meaningful pointer preview cost, so the split added code without payoff | None |
+| 59 | Mount plant spread mesh only when active | Docker 1000-plant default scene, 3 measured runs with spread toggle | 53 instanced meshes; 183 draw calls; 0.60 ms spread setup; 586 ms spread toggle | 53 instanced meshes; 183 draw calls; 0.60 ms spread setup; 596 ms spread toggle | No mesh/draw/setup improvement; 1.8% slower spread toggle | Rejected and rolled back; the realistic benchmark did not show a meaningful default gain and introduced spread-toggle risk | None |
+| 60 | Skip invisible daylight starfield | Docker 1000-plant default daylight scene, 3 measured runs | 533 scene objects; 154 geometries; 183 draw calls; 3.85s full-ready | 532 scene objects; 152 geometries; 182 draw calls; 4.05s full-ready | 0.2% fewer objects; 1.3% fewer geometries; 5.1% slower full-ready | Rejected and rolled back; the absolute scene reduction was too small to justify conditional rendering | None |
+
+## Round 13 Candidate Ideas
+
+61. Add browser `content-visibility` containment to long plant/point/weed
+    inventory rows. Expected return: faster initial paint and navigation in
+    realistic 1000-item panels without changing the DOM or visual design.
+62. Cache crop and icon lookup results by slug in the crop finder. Expected
+    return: less repeated lookup/string work while rendering 1000 plant rows
+    and converting repeated crops for the 3D garden.
+63. Use a direct soil texture path when images and moisture overlays are
+    inactive instead of rendering a one-frame offscreen texture. Expected
+    return: lower default load work and fewer offscreen soil texture renders
+    with identical soil appearance.
+64. Pre-index 3D Farmware environment values once per config reader instead of
+    filtering the environment list for every 3D setting. Expected return:
+    lower 3D map render/setup CPU when the app has realistic settings data.
+65. Reuse one current date while rendering plant inventory ages instead of
+    creating a new `moment()` per row. Expected return: faster 1000-plant
+    inventory rendering when plants have planted dates.
+
+## Round 13 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 61 | Add inventory row content visibility | Docker 1000-plant default scene, 3 measured runs | 3.996s full-ready; 738 ms plant nav; 237 ms point nav; 663 ms weed nav | 3.948s full-ready; 769 ms plant nav; 282 ms point nav; 657 ms weed nav | 1.2% faster full-ready; plant/point nav slower | Rejected and rolled back; the tiny load gain did not justify slower navigation responsiveness | None |
+| 62 | Cache crop/icon finder lookups | Docker 1000-plant default scene, 3 measured runs | 3.976s full-ready; 731 ms plant nav; 667 ms weed nav | 4.007s full-ready; 746 ms plant nav; 662 ms weed nav | 0.8% slower full-ready; 2.0% slower plant nav | Rejected and rolled back; repeated finder lookups were not a meaningful bottleneck in the real app run | None |
+| 63 | Use direct default soil texture | Docker 1000-plant default scene, 3 measured runs | 50.8 ms image texture setup; 2 soil texture renders; 24 textures; 4.021s full-ready | 52.8 ms image texture setup; 2 soil texture renders; 24 textures; 3.984s full-ready | 3.9% slower texture setup; no texture/render-count win; 0.9% faster full-ready | Rejected and rolled back; the realistic default session still needed the render-texture path, so the conditional added complexity without removing the measured setup cost | None |
+| 64 | Pre-index 3D config env values | Realistic 43-key config batch across 7 initial renders with 83 Farmware envs, 100 sampled app-load batches for timing stability | 0.194 ms median per 7-render config batch | 0.022 ms median per 7-render config batch | 88.6% faster, saving 0.172 ms per realistic load batch | Rejected and rolled back; the percentage cleared the bar but the absolute app-load saving was far below meaningful and did not justify extra indexing code | None |
+| 65 | Reuse plant inventory current date | Realistic 1000 planted plant age calculations, 50 sampled inventory-render batches for timing stability | 2.705 ms median; 4.015 ms p95 | 2.638 ms median; 3.791 ms p95 | 2.5% faster, saving 0.067 ms per 1000-row age batch | Rejected and rolled back; the improvement was below 10% and the absolute saving was not worth parent-to-row date plumbing | None |

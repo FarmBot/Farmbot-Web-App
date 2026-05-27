@@ -499,6 +499,34 @@ describe("<GardenModel />", () => {
       expect(container.innerHTML).toContain(expectedClass);
     });
 
+  it("mounts only the selected scene details", () => {
+    const countSceneNodes = (
+      wrapper: ReturnType<typeof createRenderer>,
+      name: string,
+    ) =>
+      wrapper.root.findAll(node =>
+        `${node.type}` == "group" && node.props.name == name).length;
+
+    const outdoorProps = fakeProps();
+    outdoorProps.config.scene = "Outdoor";
+    const outdoorWrapper = createWrapper(outdoorProps);
+    expect(countSceneNodes(outdoorWrapper, "lab-environment")).toEqual(0);
+    expect(countSceneNodes(outdoorWrapper, "greenhouse-environment")).toEqual(0);
+
+    const labProps = fakeProps();
+    labProps.config.scene = "Lab";
+    const labWrapper = createWrapper(labProps);
+    expect(countSceneNodes(labWrapper, "lab-environment")).toEqual(1);
+    expect(countSceneNodes(labWrapper, "greenhouse-environment")).toEqual(0);
+
+    const greenhouseProps = fakeProps();
+    greenhouseProps.config.scene = "Greenhouse";
+    const greenhouseWrapper = createWrapper(greenhouseProps);
+    expect(countSceneNodes(greenhouseWrapper, "lab-environment")).toEqual(0);
+    expect(countSceneNodes(greenhouseWrapper,
+      "greenhouse-environment")).toEqual(1);
+  });
+
   it("shows night sky", () => {
     const p = fakeProps();
     p.config.sun = 0;

@@ -618,20 +618,18 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           configPosition={props.configPosition} />}
         <Solar config={config} activeFocus={props.activeFocus} />
+        {config.scene == "Lab" &&
         <Lab
           config={config}
           activeFocus={props.activeFocus}
           reveal={detailsReveal}
-          onDetailsLoadInRest={config.scene == "Lab"
-            ? markDetailsLoaded
-            : undefined} />
+          onDetailsLoadInRest={markDetailsLoaded} />}
+        {config.scene == "Greenhouse" &&
         <Greenhouse
           config={config}
           activeFocus={props.activeFocus}
           reveal={detailsReveal}
-          onDetailsLoadInRest={config.scene == "Greenhouse"
-            ? markDetailsLoaded
-            : undefined} />
+          onDetailsLoadInRest={markDetailsLoaded} />}
         {config.cameraSelectionView &&
         <CameraSelectionUI
           config={config}
