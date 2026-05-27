@@ -10,8 +10,15 @@ describe("<Bounds />", () => {
     configPosition: clone(INITIAL_POSITION),
   });
 
-  it("renders bounds", () => {
+  it("skips disabled overlays", () => {
     const { container } = render(<Bounds {...fakeProps()} />);
+    expect(container.innerHTML).toEqual("");
+  });
+
+  it("renders bounds", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    const { container } = render(<Bounds {...p} />);
     expect(container).toContainHTML("bounds");
   });
 });

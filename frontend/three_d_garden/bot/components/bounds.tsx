@@ -17,6 +17,11 @@ export interface BoundsProps {
 }
 
 export const Bounds = (props: BoundsProps) => {
+  if (!props.config.bounds &&
+    !props.config.zDimension &&
+    !props.config.distanceIndicator) {
+    return <></>;
+  }
   const {
     bedLengthOuter, bedWidthOuter,
     zAxisLength, columnLength, beamLength, bounds,
