@@ -8,6 +8,7 @@ import {
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
 import { maybeBeacon } from "../help/tours";
+import { Path } from "../internal_urls";
 
 export const getLinks = (): Panel[] => [
   Panel.Plants,
@@ -29,22 +30,22 @@ export const getLinks = (): Panel[] => [
 export const NavLinks = (props: NavLinksProps) =>
   <div className={"links"}>
     <div className={"nav-links"}>
-      <a id={"map"}
+      <Link id={"map"}
+        to={Path.designer()}
         draggable={false}
         className={getCurrentPanel(props.designer) === Panel.Map
           ? "active"
           : ""}
-        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-          e.preventDefault();
+        onClick={() => {
           props.close();
           props.dispatch(setPanelOpen(false));
         }}>
         <NavIconAndText panel={Panel.Map} alertCount={props.alertCount} />
-      </a>
+      </Link>
       {getLinks().map(panel => {
         const isActive = getCurrentPanel(props.designer) === panel;
         return <Link
-          to={getPanelPath(panel)}
+          to={isActive ? Path.designer() : getPanelPath(panel)}
           className={[
             isActive ? "active" : "",
             maybeBeacon(PANEL_SLUG[panel], "soft", props.helpState),

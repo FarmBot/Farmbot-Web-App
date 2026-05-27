@@ -200,7 +200,7 @@ const NavTab = (props: NavTabProps) => {
   const { panel, dispatch, designer } = props;
   const isActive = getCurrentPanel(designer) === panel;
   return <Link id={PANEL_SLUG[panel]}
-    to={getPanelPath(panel)}
+    to={isActive ? Path.designer() : getPanelPath(panel)}
     style={{ flex: 0.3 }}
     onClick={() => dispatch(setPanelOpen(!isActive))}
     className={isActive ? "active" : ""}>
@@ -264,19 +264,17 @@ export class DesignerNavTabs
     return <div className={`panel-nav ${hidden}`}>
       {!this.state.atEnd && <div className={"scroll-indicator"} />}
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
-        <a id={Panel.Map}
+        <Link id={Panel.Map}
+          to={Path.designer()}
           style={{ flex: 0.3 }}
           className={getCurrentPanel(this.props.designer) === Panel.Map
             ? "active"
             : ""}
-          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-            e.preventDefault();
-            this.props.dispatch(setPanelOpen(false));
-          }}>
+          onClick={() => this.props.dispatch(setPanelOpen(false))}>
           <img width={35} height={30}
             src={FilePath.icon(Icon.map)}
             title={PANEL_TITLE()[Panel.Map]} />
-        </a>
+        </Link>
         <NavTab {...common} panel={Panel.Plants} />
         <NavTab {...common} panel={Panel.Weeds} />
         <NavTab {...common} panel={Panel.Points} />
