@@ -38,6 +38,7 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
+import { WaterFlowTextureProvider } from "./components/water_stream";
 
 export const extrusionWidth = 20;
 const utmRadius = 35;
@@ -292,7 +293,7 @@ export const Bot = (props: FarmbotModelProps) => {
       rotation={[0, 0, 2.094]} />
   </Group>;
 
-  return <FocusVisibilityGroup name={"bot"} keepMounted={true}
+  const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
     preserveDepthWrite={true}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
@@ -689,4 +690,7 @@ export const Bot = (props: FarmbotModelProps) => {
     <XAxisWaterTube config={config} />
     <Bounds config={config} configPosition={props.configPosition} />
   </FocusVisibilityGroup>;
+  return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
+    {botModel}
+  </WaterFlowTextureProvider>;
 };

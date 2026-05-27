@@ -1,7 +1,9 @@
 import React from "react";
 import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial, Group } from "../../components";
-import { WaterStream, useWaterFlowTexture } from "./water_stream";
+import {
+  WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
+} from "./water_stream";
 import { Curve, Vector3 } from "three";
 import { RenderOrder } from "../../constants";
 
@@ -17,7 +19,7 @@ export interface WaterTubeProps {
 type WaterTubeStreamProps =
   Omit<WaterTubeProps, "tubeName"> & { name: string };
 
-const WaterTubeStream = (props: WaterTubeStreamProps) => {
+const LocalWaterTubeStream = (props: WaterTubeStreamProps) => {
   const {
     name, tubePath, tubularSegments, radius, radialSegments,
   } = props;
@@ -25,6 +27,18 @@ const WaterTubeStream = (props: WaterTubeStreamProps) => {
   return <WaterStream name={name}
     args={[tubePath, tubularSegments, radius - 2, radialSegments]}
     waterTexture={waterTexture}
+    waterFlow={true} />;
+};
+
+const WaterTubeStream = (props: WaterTubeStreamProps) => {
+  const sharedWaterTexture = useSharedWaterFlowTexture();
+  if (!sharedWaterTexture) { return <LocalWaterTubeStream {...props} />; }
+  const {
+    name, tubePath, tubularSegments, radius, radialSegments,
+  } = props;
+  return <WaterStream name={name}
+    args={[tubePath, tubularSegments, radius - 2, radialSegments]}
+    waterTexture={sharedWaterTexture}
     waterFlow={true} />;
 };
 

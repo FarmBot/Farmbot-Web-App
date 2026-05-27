@@ -4,6 +4,7 @@ import { Bot, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
+import { Texture, TextureLoader } from "three";
 import {
   createRenderer,
   unmountRenderer,
@@ -86,6 +87,16 @@ describe("<Bot />", () => {
     jest.runAllTimers();
     rerender(<Bot {...p} />);
     expect(container).toContainHTML("watering-animations");
+  });
+
+  it("shares water texture across Bot water effects", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
+      .mockImplementation(() => new Texture());
+    render(<Bot {...p} />);
+    expect(loadTextureSpy).toHaveBeenCalledTimes(1);
+    loadTextureSpy.mockRestore();
   });
 
   it("loads shapes", () => {

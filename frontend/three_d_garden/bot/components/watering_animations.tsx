@@ -3,12 +3,15 @@ import { range } from "lodash";
 import { Group } from "../../components";
 import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
-import { WaterStream, useWaterFlowTexture } from "./water_stream";
+import {
+  WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
+} from "./water_stream";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
 } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import { utmHeight } from "../bot";
+import { Texture } from "three";
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
@@ -17,14 +20,33 @@ export interface WateringAnimationsProps {
   getZ(x: number, y: number): number;
 }
 
+interface WateringAnimationsContentProps extends WateringAnimationsProps {
+  waterTexture: Texture | undefined;
+}
+
+const LocalWateringAnimations = (props: WateringAnimationsProps) => {
+  const waterTexture = useWaterFlowTexture(props.waterFlow);
+  return <WateringAnimationsContent
+    {...props}
+    waterTexture={waterTexture} />;
+};
+
 export const WateringAnimations = (props: WateringAnimationsProps) => {
+  const sharedWaterTexture = useSharedWaterFlowTexture();
+  return sharedWaterTexture
+    ? <WateringAnimationsContent
+      {...props}
+      waterTexture={sharedWaterTexture} />
+    : <LocalWateringAnimations {...props} />;
+};
+
+const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, getZ, config } = props;
   const { x, y, z } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(config);
   const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
   const nozzleToSoil = getZ(x, y) - utmZ;
   const [visible, setVisible] = React.useState(false);
-  const waterTexture = useWaterFlowTexture(waterFlow);
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(true);
@@ -44,7 +66,7 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
       return <WaterStream key={i}
         name={`water-stream-${i}`}
         waterFlow={waterFlow}
-        waterTexture={waterTexture}
+        waterTexture={props.waterTexture}
         position={[0, 0, utmZ]}
         args={[easyCubicBezierCurve3(
           [12.5 * Math.sin(angle), 12.5 * Math.cos(angle), 0],
