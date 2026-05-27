@@ -9,7 +9,7 @@ import {
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
-import { Shape } from "three";
+import { Object3D, Shape } from "three";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
 
@@ -27,13 +27,60 @@ describe("moving cable carriers", () => {
     const p = fakeProps();
     p.config.cableCarriers = false;
     const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
-    const { container } = render(<>
+    const { container, rerender } = render(<>
       <CableCarrierX {...p} />
       <CableCarrierY {...p} />
       <CableCarrierZ {...p} />
     </>);
     expect(container.querySelectorAll("extrude").length).toBe(0);
     expect(moveToSpy).not.toHaveBeenCalled();
+    const updatedProps = fakeProps();
+    updatedProps.config.cableCarriers = false;
+    updatedProps.configPosition.z += 10;
+    rerender(<>
+      <CableCarrierX {...updatedProps} />
+      <CableCarrierY {...updatedProps} />
+      <CableCarrierZ {...updatedProps} />
+    </>);
+    expect(moveToSpy).not.toHaveBeenCalled();
+    moveToSpy.mockRestore();
+  });
+
+  it("memoizes moving carriers by relevant axes", () => {
+    const p = fakeProps();
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const Carriers = (props: typeof p) => <React.Fragment>
+      <CableCarrierX {...props} />
+      <CableCarrierY {...props} />
+      <CableCarrierZ {...props} />
+    </React.Fragment>;
+    const { rerender } = render(<Carriers {...p} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(3);
+    rerender(<Carriers {...p} configPosition={{
+      ...p.configPosition, z: p.configPosition.z + 10,
+    }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(4);
+    rerender(<Carriers {...p} configPosition={{
+      ...p.configPosition, y: p.configPosition.y + 10,
+      z: p.configPosition.z + 10,
+    }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(5);
+    rerender(<Carriers {...p} configPosition={{
+      ...p.configPosition, x: p.configPosition.x + 10,
+      y: p.configPosition.y + 10,
+      z: p.configPosition.z + 10,
+    }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(6);
+    moveToSpy.mockRestore();
+  });
+
+  it("renders v1.8 Y carrier depth", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.8";
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { container } = render(<CableCarrierY {...p} />);
+    expect(container.innerHTML).toContain("yCC");
+    expect(moveToSpy).toHaveBeenCalledTimes(1);
     moveToSpy.mockRestore();
   });
 });
@@ -75,6 +122,23 @@ describe("<CableCarrierVertical />", () => {
     expect(useGltfMock).not.toHaveBeenCalled();
     moveToSpy.mockRestore();
   });
+
+  it("updates v1.7 when a relevant axis changes", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const updateMatrixSpy = jest.spyOn(Object3D.prototype, "updateMatrix");
+    const { rerender } = render(<CableCarrierSupportVertical {...p} />);
+    const initialCalls = updateMatrixSpy.mock.calls.length;
+    expect(initialCalls).toBeGreaterThan(0);
+    rerender(<CableCarrierSupportVertical
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        z: p.configPosition.z + 10,
+      }} />);
+    expect(updateMatrixSpy.mock.calls.length).toBeGreaterThan(initialCalls);
+    updateMatrixSpy.mockRestore();
+  });
 });
 
 describe("<CableCarrierHorizontal />", () => {
@@ -110,6 +174,53 @@ describe("<CableCarrierHorizontal />", () => {
     const { container } = render(<CableCarrierSupportHorizontal {...p} />);
     expect(container.innerHTML).toContain("ccSupportHorizontal");
     expect(container.querySelectorAll("mesh").length).toBe(1);
+  });
+
+  it("memoizes v1.7 by the x axis", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const updateMatrixSpy = jest.spyOn(Object3D.prototype, "updateMatrix");
+    const { rerender } = render(<CableCarrierSupportHorizontal {...p} />);
+    const initialCalls = updateMatrixSpy.mock.calls.length;
+    expect(initialCalls).toBeGreaterThan(0);
+    rerender(<CableCarrierSupportHorizontal
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        y: p.configPosition.y + 10,
+      }} />);
+    expect(updateMatrixSpy).toHaveBeenCalledTimes(initialCalls);
+    rerender(<CableCarrierSupportHorizontal
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        x: p.configPosition.x + 10,
+      }} />);
+    expect(updateMatrixSpy.mock.calls.length).toBeGreaterThan(initialCalls);
+    updateMatrixSpy.mockRestore();
+  });
+
+  it("memoizes v1.8 by geometry config fields", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.8";
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { rerender } = render(<CableCarrierSupportHorizontal {...p} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(1);
+    rerender(<CableCarrierSupportHorizontal
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        y: p.configPosition.y + 10,
+      }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(1);
+    rerender(<CableCarrierSupportHorizontal
+      {...p}
+      config={{
+        ...p.config,
+        botSizeY: p.config.botSizeY + 10,
+      }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(2);
+    moveToSpy.mockRestore();
   });
 
   it("skips disabled horizontal support", () => {

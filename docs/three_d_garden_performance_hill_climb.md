@@ -4135,6 +4135,67 @@ commit message. Roll back rejected implementation changes.
 
 ## Round 51
 
+### Idea 251: Lazy-load optional 3D diagnostics and view helpers
+
+**Description:** Move rarely enabled detail helpers such as stats overlays, view cube helpers, or camera-selection UI out of the default 3D garden bundle when doing so does not change normal rendering. Expected return: lower default JavaScript parse/execute cost and faster initial 3D garden load while preserving the optional helpers when enabled.
+
+**Benchmark:** Production Bun JS build with all DashboardController JS entries
+(`NODE_ENV=production RAILS_ENV=production`) into a temp `ASSET_OUTDIR`;
+measured recursive static ESM import closure for the FarmDesigner lazy route
+chunk. Promo entry and main app initial closure were cross-checks. Rebuilt the
+current-worktree baseline immediately before the candidate to avoid concurrent
+worker noise.
+
+**Before:** FarmDesigner route static closure: 2,408,261 bytes raw /
+813,876 gzip across 23 JS files. Cross-checks: promo entry 1,447,036 raw /
+492,044 gzip; main app initial 1,325,547 raw / 431,563 gzip.
+
+**After:** Local-helper lazy candidate: 3,512,531 bytes raw / 1,124,833 gzip
+across 29 JS files. Cross-checks: promo entry 1,464,761 raw / 499,403 gzip;
+main app initial 2,431,741 raw / 742,673 gzip. Top-level and direct Drei lazy
+variants also regressed.
+
+**Change:** -45.9% raw / -38.2% gzip improvement on the primary FarmDesigner
+route metric (+1,104,270 raw bytes and +310,957 gzip bytes regression)
+
+**Outcome:** Rejected; Bun split the lazy helpers into extra chunks but kept
+their shared code in the static closure, so normal 3D garden static load got
+larger instead of smaller. Implementation/test changes rolled back.
+
+**Commit:** Not committed
+
+### Idea 252: Return generated interpolation data directly to 3D moisture rendering
+
+**Description:** Avoid the 3D moisture map's localStorage serialize/parse round trip after generating interpolation data by returning the generated data to the caller while preserving the existing cached localStorage path for 2D consumers. Expected return: faster moisture map setup when interpolation is visible with realistic sensor-reading counts.
+
+**Benchmark:** Focused cold visible 3D moisture-map setup with 25 soil-moisture readings, Genesis 3000x1360 mm bed, 50 mm interpolation cells producing 1,680 tiles, full generation plus localStorage write/read plus moisture instance buffers, 15 warmups and 60 measured samples; Chromium localhost storage cross-check used the same scenario.
+
+**Before:** 0.802 ms median setup (p25 0.785 ms, p75 0.834 ms); Chromium storage cross-check 0.300 ms median
+
+**After:** 0.716 ms median setup (p25 0.681 ms, p75 0.757 ms) with generated-data return; Chromium storage cross-check 0.200 ms median
+
+**Change:** 10.7% faster in the focused code path, saving 0.086 ms; Chromium storage cross-check saved 0.100 ms
+
+**Outcome:** Rejected; the percentage barely cleared the threshold, but the realistic visible setup saved far less than 1 ms and did not provide a meaningful user-visible absolute win
+
+**Commit:** Not committed
+
+### Idea 253: Remove deep cloning from image filtering used by 3D soil textures
+
+**Description:** Replace deep-clone/reverse image filtering with reverse iteration and shallow result objects, provided existing image-layer behavior remains unchanged. Expected return: faster 3D soil texture setup when camera images are visible, especially with dozens of images.
+
+**Benchmark:** Bun benchmark of `filterImages` with 120 camera-image resources, image layer visible, realistic photo date config, `hideUnShownImages` enabled, shown-image filtering, three hidden images, one hovered/highlighted image, placeholder URLs, mixed image types, and camera-Z filtering. 80 samples x 200 calls after warmup; behavior checks confirmed identical output count/order, highlighted-last handling, hidden/unshown omission, and placeholder omission.
+
+**Before:** 0.3353 ms median per call
+
+**After:** 0.1701 ms median per call
+
+**Change:** -0.1652 ms per call, 49.3% faster
+
+**Outcome:** Rejected; the relative win was large, but the realistic absolute improvement was only 0.1652 ms per visible-image filtering call, below the roughly 1 ms acceptance threshold
+
+**Commit:** Not committed
+
 ### Idea 254: Avoid remounting mirrored soil geometry and render texture work on unrelated config churn
 
 **Description:** Narrow memo dependencies around mirrored soil geometry and detailed soil texture creation so unrelated config object changes do not clone soil geometry or remount expensive soil texture subtrees. Expected return: faster rerenders in realistic mirrored gardens and settings-panel interactions without changing soil shape, texture resolution, images, or moisture overlays.
@@ -4150,3 +4211,19 @@ commit message. Roll back rejected implementation changes.
 **Outcome:** Accepted; narrowed mirrored soil geometry memo dependencies and memoized image texture setup by relevant soil, image, mirror, moisture, debug, and texture-size inputs
 
 **Commit:** `Memoize 3D soil churn for 56.2% faster rerenders`
+
+### Idea 255: Memoize cable-carrier pieces by the axes and config fields they actually use
+
+**Description:** Add focused memoization to cable-carrier components so bot position updates on unrelated axes do not rebuild extruded carrier geometry or support meshes. Expected return: better frame responsiveness during bot movement with cable carriers enabled while preserving full carrier detail and animation on relevant axes.
+
+**Benchmark:** Direct carrier-set benchmark (`CableCarrierX/Y/Z` plus v1.8 vertical/horizontal supports) with cable carriers enabled, realistic Genesis v1.8 dimensions, stable X/Y, and 90 Z-axis bot position rerenders
+
+**Before:** 7.093 ms median rerender batch; 95 shape path setups
+
+**After:** 3.925 ms median rerender batch; 95 shape path setups
+
+**Change:** 44.7% faster, saving 3.168 ms across 90 realistic Z-axis bot movement rerenders
+
+**Outcome:** Accepted; public cable-carrier pieces now memoize against only the config fields and bot axes they consume, so unrelated-axis movement skips component/effect work while relevant carrier animation still updates
+
+**Commit:** `Memoize cable carriers for 44.7% faster z batches`

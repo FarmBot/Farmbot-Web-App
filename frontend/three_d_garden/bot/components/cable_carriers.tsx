@@ -26,6 +26,129 @@ type CCSupportVertical = GLTF & {
   materials: never;
 }
 
+interface CableCarrierBaseProps {
+  config: Config;
+  configPosition: PositionConfig;
+}
+
+type ConfigField = keyof Config;
+type PositionField = keyof PositionConfig;
+
+const positionTransformConfigFields: ConfigField[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+];
+
+const cableCarrierXConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "bedHeight",
+  "botSizeX",
+  "tracks",
+  ...positionTransformConfigFields,
+];
+
+const cableCarrierYConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "columnLength",
+  "botSizeY",
+  "kitVersion",
+  ...positionTransformConfigFields,
+];
+
+const cableCarrierZConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "botSizeZ",
+  "zGantryOffset",
+  "columnLength",
+  "negativeZ",
+  ...positionTransformConfigFields,
+];
+
+const supportVerticalConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "kitVersion",
+  "zAxisLength",
+  "columnLength",
+  "zGantryOffset",
+  "negativeZ",
+  ...positionTransformConfigFields,
+];
+
+const supportHorizontalConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "kitVersion",
+  "botSizeY",
+  "columnLength",
+  ...positionTransformConfigFields,
+];
+
+const supportHorizontalV18ConfigFields: ConfigField[] = [
+  ...supportHorizontalConfigFields,
+  "light",
+];
+
+const sameFields = <T extends object, K extends keyof T>(
+  prev: T,
+  next: T,
+  fields: K[],
+) => fields.every(field => prev[field] === next[field]);
+
+const sameCableCarrierProps = (
+  prev: CableCarrierBaseProps,
+  next: CableCarrierBaseProps,
+  configFields: ConfigField[],
+  positionFields: PositionField[],
+) => {
+  if (!prev.config.cableCarriers && !next.config.cableCarriers) {
+    return true;
+  }
+  return sameFields(prev.config, next.config, configFields) &&
+    sameFields(prev.configPosition, next.configPosition, positionFields);
+};
+
+const sameCableCarrierXProps = (
+  prev: CableCarrierXProps,
+  next: CableCarrierXProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierXConfigFields, ["x"],
+);
+
+const sameCableCarrierYProps = (
+  prev: CableCarrierYProps,
+  next: CableCarrierYProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierYConfigFields, ["x", "y"],
+);
+
+const sameCableCarrierZProps = (
+  prev: CableCarrierZProps,
+  next: CableCarrierZProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierZConfigFields, ["x", "y", "z"],
+);
+
+const sameCableCarrierSupportVerticalProps = (
+  prev: CableCarrierSupportVerticalProps,
+  next: CableCarrierSupportVerticalProps,
+) => sameCableCarrierProps(
+  prev, next, supportVerticalConfigFields, ["x", "y", "z"],
+);
+
+const sameCableCarrierSupportHorizontalProps = (
+  prev: CableCarrierSupportHorizontalProps,
+  next: CableCarrierSupportHorizontalProps,
+) => {
+  const configFields = prev.config.kitVersion == "v1.8" ||
+    next.config.kitVersion == "v1.8"
+    ? supportHorizontalV18ConfigFields
+    : supportHorizontalConfigFields;
+  return sameCableCarrierProps(
+    prev, next, configFields, ["x"],
+  );
+};
+
 const ccPath =
   (axisLength: number, y: number, curveDia: number, isX?: boolean) => {
     const lowerLength = (y + axisLength + 180) / 2;
@@ -55,15 +178,12 @@ const ccPath =
     return path;
   };
 
-interface CableCarrierXProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierXProps extends CableCarrierBaseProps { }
 
-export const CableCarrierX = (props: CableCarrierXProps) => {
+export const CableCarrierX = React.memo((props: CableCarrierXProps) => {
   if (!props.config.cableCarriers) { return <></>; }
   return <VisibleCableCarrierX {...props} />;
-};
+}, sameCableCarrierXProps);
 
 const VisibleCableCarrierX = (props: CableCarrierXProps) => {
   const {
@@ -96,15 +216,12 @@ const VisibleCableCarrierX = (props: CableCarrierXProps) => {
   </Extrude>;
 };
 
-interface CableCarrierYProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierYProps extends CableCarrierBaseProps { }
 
-export const CableCarrierY = (props: CableCarrierYProps) => {
+export const CableCarrierY = React.memo((props: CableCarrierYProps) => {
   if (!props.config.cableCarriers) { return <></>; }
   return <VisibleCableCarrierY {...props} />;
-};
+}, sameCableCarrierYProps);
 
 const VisibleCableCarrierY = (props: CableCarrierYProps) => {
   const {
@@ -138,15 +255,12 @@ const VisibleCableCarrierY = (props: CableCarrierYProps) => {
   </Extrude>;
 };
 
-interface CableCarrierZProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierZProps extends CableCarrierBaseProps { }
 
-export const CableCarrierZ = (props: CableCarrierZProps) => {
+export const CableCarrierZ = React.memo((props: CableCarrierZProps) => {
   if (!props.config.cableCarriers) { return <></>; }
   return <VisibleCableCarrierZ {...props} />;
-};
+}, sameCableCarrierZProps);
 
 const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const {
@@ -174,13 +288,11 @@ const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   </Extrude>;
 };
 
-export interface CableCarrierSupportVerticalProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+export interface CableCarrierSupportVerticalProps
+  extends CableCarrierBaseProps { }
 
 export const CableCarrierSupportVertical =
-  (props: CableCarrierSupportVerticalProps) => {
+  React.memo((props: CableCarrierSupportVerticalProps) => {
     if (!props.config.cableCarriers) { return <></>; }
     switch (props.config.kitVersion) {
       case "v1.7":
@@ -188,7 +300,7 @@ export const CableCarrierSupportVertical =
       case "v1.8":
         return <CableCarrierSupportVerticalV18 {...props} />;
     }
-  };
+  }, sameCableCarrierSupportVerticalProps);
 
 const CableCarrierSupportVerticalV17 =
   (props: CableCarrierSupportVerticalProps) => {
@@ -286,13 +398,11 @@ const CableCarrierSupportVerticalV18 =
     </Group>;
   };
 
-export interface CableCarrierSupportHorizontalProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+export interface CableCarrierSupportHorizontalProps
+  extends CableCarrierBaseProps { }
 
 export const CableCarrierSupportHorizontal =
-  (props: CableCarrierSupportHorizontalProps) => {
+  React.memo((props: CableCarrierSupportHorizontalProps) => {
     if (!props.config.cableCarriers) { return <></>; }
     switch (props.config.kitVersion) {
       case "v1.7":
@@ -300,7 +410,7 @@ export const CableCarrierSupportHorizontal =
       case "v1.8":
         return <CableCarrierSupportHorizontalV18 {...props} />;
     }
-  };
+  }, sameCableCarrierSupportHorizontalProps);
 
 const CableCarrierSupportHorizontalV17 =
   (props: CableCarrierSupportHorizontalProps) => {
