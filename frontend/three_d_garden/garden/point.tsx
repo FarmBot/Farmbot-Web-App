@@ -28,6 +28,7 @@ import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import {
   BillboardRef, ImageRef, RadiusRef, TorusRef,
 } from "../bed/objects/pointer_objects";
+import { clickWasDragged } from "../click_event";
 
 const POINT_PIN_RADIUS = 12.5;
 const POINT_PIN_HEIGHT = 50;
@@ -58,7 +59,8 @@ export const Point = (props: PointProps) => {
       y: point.body.y,
       z: props.getZ(point.body.x, point.body.y),
     }}
-    onClick={() => {
+    onClick={(event) => {
+      if (clickWasDragged(event)) { return; }
       if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
         props.dispatch(setPanelOpen(true));
@@ -186,6 +188,7 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
 
   const onClick = (instances: PointInstance[]) =>
     (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event)) { return; }
       const instanceId = event.instanceId;
       if (isUndefined(instanceId)) { return; }
       const point = instances[instanceId]?.point;
@@ -292,7 +295,7 @@ export const DrawnPoint = (props: DrawnPointProps) => {
 interface PointBaseProps {
   pointName: string;
   position?: Record<Xyz, number>;
-  onClick?: () => void;
+  onClick?: (event: ThreeEvent<MouseEvent>) => void;
   color: string | undefined;
   radius: number;
   alpha: number;

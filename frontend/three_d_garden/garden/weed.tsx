@@ -20,6 +20,7 @@ import { isUndefined } from "lodash";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
 import { RadiusRef, BillboardRef, ImageRef } from "../bed/objects/pointer_objects";
+import { clickWasDragged } from "../click_event";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
 
@@ -37,7 +38,8 @@ export const Weed = (props: WeedProps) => {
   return <WeedBase
     pointName={"" + weed.body.id}
     alpha={1}
-    onClick={() => {
+    onClick={(event) => {
+      if (clickWasDragged(event)) { return; }
       if (weed.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
         props.dispatch(setPanelOpen(true));
@@ -57,7 +59,7 @@ export const Weed = (props: WeedProps) => {
 interface WeedBaseProps {
   pointName: string;
   position?: Record<Xyz, number>;
-  onClick?: () => void;
+  onClick?: (event: ThreeEvent<MouseEvent>) => void;
   color: string | undefined;
   radius: number;
   alpha: number;
@@ -241,6 +243,7 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     navigateToWeed(weedInstances[instanceId]?.weed);
@@ -289,6 +292,7 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   }, [bucket.weeds, noRotation, tempMatrix, tempPosition, tempScale]);
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     navigateToWeed(bucket.weeds[instanceId]?.weed);

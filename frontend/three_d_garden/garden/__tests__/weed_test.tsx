@@ -9,6 +9,8 @@ import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
+import { useFrame } from "@react-three/fiber";
+import { Quaternion } from "three";
 import {
   createRenderer,
   unmountRenderer,
@@ -16,16 +18,20 @@ import {
 
 describe("<Weed />", () => {
   let getModeSpy: jest.SpyInstance;
+  let reactUseRefSpy: jest.SpyInstance | undefined;
   const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
   beforeEach(() => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+    (useFrame as jest.Mock).mockClear();
   });
 
   afterEach(() => {
     mountedWrappers.splice(0).forEach(wrapper =>
       unmountRenderer(wrapper));
     getModeSpy.mockRestore();
+    reactUseRefSpy?.mockRestore();
+    reactUseRefSpy = undefined;
   });
 
   const fakeProps = (): WeedProps => ({
@@ -64,6 +70,20 @@ describe("<Weed />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
+  });
+
+  it("doesn't navigate after orbiting over a weed", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.weed.body.id = 1;
+    const wrapper = createRenderer(<Weed {...p} />);
+    mountedWrappers.push(wrapper);
+    const weed = wrapper.root
+      .findAll(node => node.props.name == "weed-1")[0];
+    weed.props.onClick({ delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("doesn't navigate to weed info", () => {
@@ -107,5 +127,65 @@ describe("<Weed />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
+  });
+
+  it("navigates from a weed radius instance", () => {
+    const p = fakeInstanceProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.weeds[0].body.id = 1;
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const weedRadius = wrapper.root
+      .findAll(node => node.props.name == "weed-radius")[0];
+    weedRadius.props.onClick({ instanceId: 0 });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
+  });
+
+  it("doesn't navigate after orbiting over weed instances", () => {
+    const p = fakeInstanceProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.weeds[0].body.id = 1;
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const weedIcons = wrapper.root
+      .findAll(node => node.props.name == "weed-icons")[0];
+    const weedRadius = wrapper.root
+      .findAll(node => node.props.name == "weed-radius")[0];
+    weedIcons.props.onClick({ instanceId: 0, delta: 3 });
+    weedRadius.props.onClick({ instanceId: 0, delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("updates weed icon matrices on frame", () => {
+    const iconRef = {
+      current: {
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      },
+    };
+    const radiusRef = {
+      current: {
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      },
+    };
+    const updateStateRef = { current: {} };
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementationOnce(() => iconRef)
+      .mockImplementationOnce(() => updateStateRef)
+      .mockImplementationOnce(() => radiusRef)
+      .mockImplementation(value => ({ current: value }));
+    const wrapper = createRenderer(<WeedInstances {...fakeInstanceProps()} />);
+    mountedWrappers.push(wrapper);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    expect(iconRef.current.setMatrixAt).toHaveBeenCalled();
+    expect(iconRef.current.instanceMatrix.needsUpdate).toEqual(true);
   });
 });

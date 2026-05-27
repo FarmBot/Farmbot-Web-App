@@ -78,6 +78,20 @@ describe("<Point />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
   });
 
+  it("doesn't navigate after orbiting over a point", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.point.body.id = 1;
+    const wrapper = createRenderer(<Point {...p} />);
+    mountedWrappers.push(wrapper);
+    const point = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    point.props.onClick({ delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate to point info", () => {
     const p = fakeProps();
     p.dispatch = undefined;
@@ -118,6 +132,20 @@ describe("<Point />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
+  });
+
+  it("doesn't navigate after orbiting over a point instance", () => {
+    const p = fakeInstanceProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.points[0].body.id = 1;
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const marker = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    marker.props.onClick({ instanceId: 0, delta: 3 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 

@@ -185,6 +185,19 @@ describe("<PlantInstances />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate after orbiting over a plant icon", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    mesh.props.onClick({ instanceId: 0, delta: 3 });
+    unmountRenderer(wrapper);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate without dispatch", () => {
     setMockInstanceId(0);
     const p = fakeProps();

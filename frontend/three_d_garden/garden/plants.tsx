@@ -35,6 +35,7 @@ import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCrop } from "../../crops/find";
 import { perfMeasure } from "../../performance/perf";
+import { clickWasDragged } from "../click_event";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -286,6 +287,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];

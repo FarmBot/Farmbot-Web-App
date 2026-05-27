@@ -253,6 +253,20 @@ describe("<ThreeDPlantSpread />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate after orbiting over a spread sphere", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    mesh.props.onClick({ instanceId: 0, delta: 3 });
+    unmountRenderer(wrapper);
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("doesn't navigate on spread click in camera selection mode", () => {
     setMockInstanceId(0);
     getModeSpy.mockReturnValue(Mode.cameraSelection);

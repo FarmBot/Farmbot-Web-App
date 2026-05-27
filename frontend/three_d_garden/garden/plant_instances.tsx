@@ -29,6 +29,7 @@ import { Mode } from "../../farm_designer/map/interfaces";
 import {
   calcSunCoordinate, calcSunI, getAnimatedSeasonDate,
 } from "./sun";
+import { clickWasDragged } from "../click_event";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -162,6 +163,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
