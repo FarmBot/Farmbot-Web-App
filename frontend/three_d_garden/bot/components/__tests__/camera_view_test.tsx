@@ -4,6 +4,7 @@ import { render } from "@testing-library/react";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { CameraView, CameraViewProps } from "../camera_view";
+import { ConvexGeometry } from "three-stdlib";
 
 describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
@@ -33,5 +34,21 @@ describe("<CameraView />", () => {
     p.config.lastImageCapture = 123;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
+  });
+
+  it("reuses unchanged frustum geometry and rebuilds when inputs change", () => {
+    const normalsSpy = jest.spyOn(
+      ConvexGeometry.prototype,
+      "computeVertexNormals",
+    );
+    const p = fakeProps();
+    p.config.cameraView = true;
+    const { rerender } = render(<CameraView {...p} />);
+    rerender(<CameraView {...p} />);
+    expect(normalsSpy).toHaveBeenCalledTimes(1);
+    rerender(<CameraView {...p}
+      cameraMountPosition={new THREE.Vector3(101, 200, 300)} />);
+    expect(normalsSpy).toHaveBeenCalledTimes(2);
+    normalsSpy.mockRestore();
   });
 });

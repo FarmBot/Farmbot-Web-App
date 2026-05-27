@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { Config, PositionConfig } from "../../config";
 import { Mesh, MeshStandardMaterial } from "../../components";
 import { Edges } from "@react-three/drei";
-import { zDir } from "../../helpers";
 import { ConvexGeometry } from "three-stdlib";
 import { cameraMountOffset, cameraMountToLensOffset } from "../bot";
 import { extraRotation } from "../../garden/images";
@@ -37,14 +36,49 @@ export interface CameraViewProps {
   cameraMountPosition: THREE.Vector3;
 }
 
-export const getCameraViewPoints = (props: CameraViewProps) => {
-  const { config, distanceToSoil, cameraMountPosition } = props;
-  const cameraLensPosition = cameraMountPosition.clone()
-    .add(cameraMountToLensOffset);
-  const soilZ = distanceToSoil + zDir(config) * props.configPosition.z;
+type CameraViewPointConfig = Pick<Config,
+  "negativeZ"
+  | "imgCenterX"
+  | "imgCenterY"
+  | "imgScale"
+  | "imgOffsetX"
+  | "imgOffsetY"
+  | "imgRotation"
+  | "imgOrigin">;
 
-  const widthAtSoilFromZero = config.imgCenterX * 2 * config.imgScale;
-  const heightAtSoilFromZero = config.imgCenterY * 2 * config.imgScale;
+interface CameraViewPointInputs extends CameraViewPointConfig {
+  configZ: number;
+  distanceToSoil: number;
+  cameraMountX: number;
+  cameraMountY: number;
+  cameraMountZ: number;
+}
+
+const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
+  const {
+    negativeZ,
+    imgCenterX,
+    imgCenterY,
+    imgScale,
+    imgOffsetX,
+    imgOffsetY,
+    imgRotation,
+    configZ,
+    distanceToSoil,
+    cameraMountX,
+    cameraMountY,
+    cameraMountZ,
+  } = inputs;
+  const cameraLensPosition = new THREE.Vector3(
+    cameraMountX,
+    cameraMountY,
+    cameraMountZ,
+  )
+    .add(cameraMountToLensOffset);
+  const soilZ = distanceToSoil + (negativeZ ? -1 : 1) * configZ;
+
+  const widthAtSoilFromZero = imgCenterX * 2 * imgScale;
+  const heightAtSoilFromZero = imgCenterY * 2 * imgScale;
   const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
   const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
   const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
@@ -56,9 +90,9 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
   const yCenter = -cameraMountOffset.y - cameraMountToLensOffset.y;
   const bottomCenter = toV([xCenter, yCenter, 0]);
 
-  const offset = toV([config.imgOffsetX, config.imgOffsetY, 0]);
+  const offset = toV([imgOffsetX, imgOffsetY, 0]);
 
-  const rotation = config.imgRotation + extraRotation(config);
+  const rotation = imgRotation + extraRotation(inputs);
   const rotateTop = (point: V3) =>
     rotatePoint(point, rotation, topCenter);
   const rotateBottom = (point: V3) =>
@@ -85,9 +119,70 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
   };
 };
 
+export const getCameraViewPoints = (props: CameraViewProps) => {
+  const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
+  return getCameraViewPointsFromInputs({
+    negativeZ: config.negativeZ,
+    imgCenterX: config.imgCenterX,
+    imgCenterY: config.imgCenterY,
+    imgScale: config.imgScale,
+    imgOffsetX: config.imgOffsetX,
+    imgOffsetY: config.imgOffsetY,
+    imgRotation: config.imgRotation,
+    imgOrigin: config.imgOrigin,
+    configZ: configPosition.z,
+    distanceToSoil,
+    cameraMountX: cameraMountPosition.x,
+    cameraMountY: cameraMountPosition.y,
+    cameraMountZ: cameraMountPosition.z,
+  });
+};
+
 export const CameraView = (props: CameraViewProps) => {
-  const { config } = props;
-  const { cameraLensPosition, points } = getCameraViewPoints(props);
+  const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
+  const {
+    negativeZ,
+    imgCenterX,
+    imgCenterY,
+    imgScale,
+    imgOffsetX,
+    imgOffsetY,
+    imgRotation,
+    imgOrigin,
+  } = config;
+  const { x: cameraMountX, y: cameraMountY, z: cameraMountZ } =
+    cameraMountPosition;
+  const configZ = configPosition.z;
+  const { cameraLensPosition, points } = React.useMemo(() =>
+    getCameraViewPointsFromInputs({
+      negativeZ,
+      imgCenterX,
+      imgCenterY,
+      imgScale,
+      imgOffsetX,
+      imgOffsetY,
+      imgRotation,
+      imgOrigin,
+      configZ,
+      distanceToSoil,
+      cameraMountX,
+      cameraMountY,
+      cameraMountZ,
+    }), [
+    negativeZ,
+    imgCenterX,
+    imgCenterY,
+    imgScale,
+    imgOffsetX,
+    imgOffsetY,
+    imgRotation,
+    imgOrigin,
+    configZ,
+    distanceToSoil,
+    cameraMountX,
+    cameraMountY,
+    cameraMountZ,
+  ]);
   return config.cameraView
     ? <Frustum points={points} position={cameraLensPosition} config={config} />
     : <></>;

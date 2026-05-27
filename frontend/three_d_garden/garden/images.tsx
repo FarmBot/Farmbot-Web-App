@@ -286,7 +286,7 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   });
 };
 
-export const extraRotation = (config: Config) => {
+export const extraRotation = (config: Pick<Config, "imgOrigin">) => {
   switch (config.imgOrigin) {
     case "BOTTOM_LEFT":
       return 0;
