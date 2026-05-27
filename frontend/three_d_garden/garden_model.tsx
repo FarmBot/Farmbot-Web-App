@@ -479,7 +479,7 @@ export const GardenModel = (props: GardenModelProps) => {
           distance={200}>
           <FocusVisibilityGroup
             name={"plant-labels"}
-            visible={!props.activeFocus}>
+            visible={!props.activeFocus && plantsVisible}>
             {plantLabelNodes}
           </FocusVisibilityGroup>
           <FocusVisibilityGroup name={"plants"}
