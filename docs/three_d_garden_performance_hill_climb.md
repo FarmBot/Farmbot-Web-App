@@ -278,10 +278,67 @@ commit message. Roll back rejected implementation changes.
      renders. Expected return: avoid rebuilding the sixteen water-stream curves
      on parent rerenders when water is flowing but nozzle geometry is unchanged.
 
+## Round 40 Candidate Ideas
+
+196. Render only the low-detail `Ground` layer when `lowDetail` is enabled.
+     Expected return: low-detail mode skips high-detail ground texture and
+     geometry setup while showing the same low-detail ground material it already
+     selects through LOD.
+197. Render only low-detail `Bed` frame/soil LOD layers when `lowDetail` is
+     enabled. Expected return: low-detail mode skips high-detail bed frame and
+     soil render-texture setup while preserving the existing low-detail bed and
+     soil visuals.
+198. Gate 3D progressive-load console timing logs behind the existing perf/log
+     controls. Expected return: normal loads avoid a burst of console work after
+     readiness, while explicit perf/debug sessions can still inspect timings.
+199. Fast-path idle static-season plant icon frames before recalculating
+     brightness. Expected return: dense gardens skip repeated per-icon-group
+     brightness work after the first static frame, while animated seasons and
+     camera billboarding still update.
+200. Scope the bed soil-surface helper hook to debug surface modes only.
+     Expected return: default bed renders avoid registering no-op helper work
+     for both soil LOD layers, while normals/height debug helpers remain
+     unchanged.
+
+## Round 40 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+
+## Round 39 Candidate Ideas
+
+191. Memoize `GardenModel` active-focus camera calculation across unchanged
+     active-focus rerenders. Expected return: avoid repeated `getCamera`/`FOCI`
+     work while the focus target, config, and bot position are stable, with the
+     same camera recalculated when any camera input changes.
+192. Skip hidden plant label node construction while a focus is active and
+     smooth focus transitions are disabled. Expected return: avoid building
+     invisible label billboards for dense gardens in the default immediate-hide
+     focus mode, while transition-enabled fades still keep labels mounted.
+193. Move `ZoomBeacons` debug camera-offset lookup behind the debug flag.
+     Expected return: normal beacon hover rerenders skip camera-offset work
+     that is only used for debug helper geometry, while debug mode remains
+     unchanged.
+194. Gate unrevealed `SceneBoundary` children until their load step is allowed.
+     Expected return: less initial hidden subtree work during progressive load,
+     while the same step order and reveal animations are preserved.
+195. Reuse the `Sky` scale vector instead of allocating one on every sky render.
+     Expected return: less environment rerender allocation in a cheap path,
+     with identical sky scale and uniforms.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 195 | Reuse `Sky` scale vector | Direct `Sky` render plus 20 unchanged rerenders with a stable sun position, sampled 10 times while measuring primitive presence and render/rerender time | 1 primitive; 0.909 ms median render+rerender path | 1 primitive; 0.903 ms median render+rerender path | 0.7% faster, saving 0.006 ms across 21 renders | Rejected and rolled back; the realistic sky path was already sub-millisecond and the measured change missed both the 10% threshold and any meaningful absolute improvement | None |
+| 194 | Gate unrevealed `SceneBoundary` children until load step reveal | Full `GardenModel` progressive-load render with default config and no plants, sampled 5 times while measuring initial render time, load-complete time, and boundary presence | 1 bed load-in group; 1 FarmBot boundary; 30.288 ms median initial render; 30.122 ms median load-complete | 1 bed load-in group; 1 FarmBot boundary; 30.605 ms median initial render; 30.429 ms median load-complete | 1.0% slower initial render and 1.0% slower load-complete, adding about 0.31 ms to both measured paths | Rejected and rolled back; the realistic progressive-load path did not benefit, so hiding subtree construction would add lifecycle complexity without improving startup | None |
+| 193 | Move `ZoomBeacons` debug camera-offset lookup behind debug flag | Direct non-debug `ZoomBeacons` render with default twelve beacons and 12 hover enter/leave pairs, sampled 10 times while measuring `getCameraOffset` calls, debug groups, beacon count, and interaction time | 150 camera-offset calls; 0 debug groups; 12 beacons; 6.712 ms median interaction path | 0 camera-offset calls; 0 debug groups; 12 beacons; 6.948 ms median interaction path | 100% fewer debug-only offset calls, but 3.5% slower and 0.236 ms worse | Rejected and rolled back; the call-count improvement did not improve the realistic non-debug hover path, so the extra branch was not worth keeping | None |
+| 192 | Skip hidden plant labels during non-transition active focus | Active-focus `GardenModel` render with 100 plants, labels enabled, zoom beacons off, and smooth focus transitions disabled, sampled 10 times while measuring render time | 10.740 ms median render | 10.121 ms median render | 5.8% faster, saving 0.619 ms | Rejected and rolled back; the realistic dense-label path improved, but it missed the 10% threshold and would add another branch to `GardenModel` label construction | None |
+| 191 | Memoize `GardenModel` active-focus camera calculation | Active-focus `GardenModel` with zoom beacons off and 20 unchanged rerenders, sampled 10 times while measuring `FOCI` calls, focused camera x, and rerender time | 46 `FOCI` calls; camera x=-560; 21.080 ms median rerender path | 1 `FOCI` call; camera x=-560; 20.792 ms median rerender path | 97.8% fewer focus-definition builds, but only 1.4% faster and 0.288 ms saved across 20 rerenders | Rejected and rolled back; the call-count win did not translate into a meaningful realistic runtime gain, so adding another `GardenModel` memo was not justified | None |
+| 190 | Memoize watering stream curve props | Direct active `WateringAnimations` render with water flowing plus 20 unchanged rerenders, sampled 10 times while measuring stream-curve builds and rerender time | 336 curve builds; 16 streams; 0.989 ms median rerender path | 16 curve builds; 16 streams; 0.878 ms median rerender path | 95.2% fewer curve builds and 11.2% faster, but only 0.111 ms saved across 20 unchanged active-watering rerenders | Rejected and rolled back; the percentage qualified, but the realistic absolute win was too small for the extra stream-prop memoization complexity | None |
+| 189 | Use tuple positions for visible plant labels | Direct render of 100 visible `ThreeDPlantLabel` components with labels enabled and normal garden positions, sampled 10 times while measuring render time | 2.514 ms median render | 2.778 ms median render | 10.5% slower, adding 0.264 ms | Rejected and rolled back; avoiding `Vector3` allocation did not improve realistic visible-label rendering and made the measured path worse | None |
+| 188 | Cache `ZoomBeacons` garden-bed DOM lookup | Direct `ZoomBeacons` render with default twelve beacons, a real garden-bed element, and 12 hover enter/leave pairs, sampled 10 times while measuring `querySelector` calls, beacon count, and interaction time | 25 DOM queries; 12 beacons; 7.256 ms median interaction path | 1 DOM query; 12 beacons; 7.637 ms median interaction path | 96.0% fewer DOM queries, but 5.3% slower and 0.381 ms worse | Rejected and rolled back; caching removed the query calls but did not improve the realistic hover interaction path, so the extra ref/callback code was not justified | None |
+| 187 | Memoize `GroupOrderVisual` group selection | Visible group-order overlay with 100 selected points and 20 unchanged rerenders, sampled 10 times while measuring point-selection calls and rerender time | 21 point-selection calls; 0.671 ms median rerender path | 1 point-selection call; 0.380 ms median rerender path | 95.2% fewer point-selection calls; 43.4% faster rerender path, saving 0.291 ms across 20 unchanged rerenders | Accepted; the visible overlay now reuses selected group points when the selected group object and point resources are unchanged, while URL/resource changes still recompute | `Memoize group order for 95.2% fewer selections` |
 | 186 | Collapse active-focus camera lookup to one `FOCI` build | Direct `getCamera` active-focus path with 20 repeated lookups for the same focused camera, sampled 20 times while measuring `FOCI` calls and lookup time | 40 `FOCI` calls; focused camera x=-560; 0.594 ms median lookup path | 20 `FOCI` calls; focused camera x=-560; 0.321 ms median lookup path | 50.0% fewer focus-definition builds; 46.0% faster lookup path, saving 0.273 ms across 20 active-focus rerenders | Accepted; this removes a duplicate focus-list build and simplifies the lookup without changing focused or fallback camera behavior | `Collapse focus camera lookup for 50.0% fewer foci builds` |
 | 185 | Split disabled `Clouds` before opacity spring | Direct hidden `Clouds` render with `clouds=false`, default config otherwise, sampled 20 times while measuring spring hooks, mounted clouds, and render time | 1 spring hook; 0 cloud nodes; 0.066 ms median render | 0 spring hooks; 0 cloud nodes; 0.061 ms median render | 100% fewer hidden spring hooks, but only 7.6% faster and 0.005 ms saved | Rejected and rolled back; the absolute disabled-cloud setup cost is too small, and render time did not meet the 10% threshold under realistic conditions | None |
 | 184 | Skip no-op `MoistureSurface` setup | Direct hidden `MoistureSurface` render with neither readings nor map shown, empty sensors/readings, and default config, sampled 20 times while measuring moisture-layer nodes, instanced meshes, and render time | 3 moisture-layer test nodes; 0 instanced meshes; 0.090 ms median render | 0 moisture-layer nodes; 0 instanced meshes; 0.063 ms median render | 100% fewer hidden moisture-layer nodes and 30.0% faster, but only 0.027 ms saved in the direct default no-op path | Rejected and rolled back; the percentage qualified, but the absolute hidden-component win was too small to justify even a small split in this already-simple default path | None |

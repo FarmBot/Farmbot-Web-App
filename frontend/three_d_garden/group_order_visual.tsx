@@ -24,8 +24,10 @@ export interface GroupOrderVisualProps extends CommonProps {
 
 export const GroupOrderVisual = (props: GroupOrderVisualProps) => {
   const group = findGroupFromUrl(props.groups);
+  const groupPoints = React.useMemo(() =>
+    group ? pointsSelectedByGroup(group, props.allPoints) : [],
+  [group, props.allPoints]);
   if (!group) { return; }
-  const groupPoints = pointsSelectedByGroup(group, props.allPoints);
   if (groupPoints.length == 0) { return; }
   return <MemoGroupOrder {...props}
     sortType={group.body.sort_type}

@@ -22,10 +22,11 @@ import { INITIAL } from "../config";
 import { clone } from "lodash";
 import { TaggedPointGroup } from "farmbot";
 let sortGroupBySpy: jest.SpyInstance;
+let pointsSelectedByGroupSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.spyOn(groupDetail, "findGroupFromUrl").mockImplementation(() => mockGroup);
-  jest.spyOn(criteriaApply, "pointsSelectedByGroup")
+  pointsSelectedByGroupSpy = jest.spyOn(criteriaApply, "pointsSelectedByGroup")
     .mockImplementation(() => mockGroupPoints);
   sortGroupBySpy = jest.spyOn(pointGroupSort, "sortGroupBy")
     .mockImplementation(((_method, pts) => pts));
@@ -61,6 +62,16 @@ describe("<GroupOrderVisual />", () => {
     const { container } = render(<GroupOrderVisual {...p} />);
     expect(container).toContainHTML("group-order");
     expect(sortGroupBySpy).toHaveBeenCalledWith("nn", mockGroupPoints);
+  });
+
+  it("reuses selected group points across unchanged rerenders", () => {
+    const p = fakeProps();
+    mockGroup = fakePointGroup();
+    mockGroup.body.sort_type = "random";
+    mockGroupPoints = [fakePlant(), fakePlant()];
+    const { rerender } = render(<GroupOrderVisual {...p} />);
+    rerender(<GroupOrderVisual {...p} />);
+    expect(pointsSelectedByGroupSpy).toHaveBeenCalledTimes(1);
   });
 
   it("doesn't render order visual when no group is found", () => {
