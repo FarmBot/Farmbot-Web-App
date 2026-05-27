@@ -30,6 +30,7 @@ import {
   TaggedSensorReading,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting, StringSetting } from "../../session_keys";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
 import {
@@ -160,7 +161,7 @@ interface TexturedBedMaterialProps {
   bedColor: string;
 }
 
-const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
+export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
   const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -273,6 +274,84 @@ export interface BedProps {
   sensorReadings: TaggedSensorReading[];
   activePositionRef: ActivePositionRef;
 }
+
+const BED_CONFIG_FIELDS: (keyof Config)[] = [
+  "axes",
+  "bedBrightness",
+  "bedHeight",
+  "bedLengthOuter",
+  "bedType",
+  "bedWallThickness",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "bedZOffset",
+  "botSizeX",
+  "botSizeY",
+  "botSizeZ",
+  "cableCarriers",
+  "ccSupportSize",
+  "columnLength",
+  "distanceIndicator",
+  "extraLegsX",
+  "extraLegsY",
+  "imgCalZ",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "interpolationPower",
+  "interpolationStepSize",
+  "interpolationUseNearest",
+  "kitVersion",
+  "label",
+  "legSize",
+  "legsFlush",
+  "lightsDebug",
+  "lowDetail",
+  "mirrorX",
+  "mirrorY",
+  "moistureDebug",
+  "packaging",
+  "sizePreset",
+  "soilBrightness",
+  "surfaceDebug",
+  "utilitiesPost",
+  "xyDimensions",
+  "zGantryOffset",
+];
+
+const BED_SETTING_FIELDS = [
+  BooleanSetting.show_images,
+  StringSetting.photo_filter_begin,
+  StringSetting.photo_filter_end,
+] as const;
+
+const bedConfigFieldsEqual = (prev: Config, next: Config) =>
+  BED_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
+const bedSettingFieldsEqual = (prev: BedProps, next: BedProps) =>
+  BED_SETTING_FIELDS.every(field =>
+    prev.addPlantProps?.getConfigValue(field)
+    === next.addPlantProps?.getConfigValue(field));
+
+const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
+  prev.activeFocus === next.activeFocus
+  && prev.mapPoints === next.mapPoints
+  && prev.addPlantProps === next.addPlantProps
+  && prev.getZ === next.getZ
+  && prev.images === next.images
+  && prev.soilSurfaceGeometry === next.soilSurfaceGeometry
+  && prev.showMoistureMap === next.showMoistureMap
+  && prev.showMoistureReadings === next.showMoistureReadings
+  && prev.sensors === next.sensors
+  && prev.sensorReadings === next.sensorReadings
+  && prev.activePositionRef === next.activePositionRef
+  && bedConfigFieldsEqual(prev.config, next.config)
+  && bedSettingFieldsEqual(prev, next);
 
 const BedBase = (props: BedProps) => {
   const {
@@ -584,4 +663,4 @@ const BedBase = (props: BedProps) => {
   </Group>;
 };
 
-export const Bed = React.memo(BedBase);
+export const Bed = React.memo(BedBase, bedPropsEqual);

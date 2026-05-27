@@ -66,9 +66,9 @@ const mockInstancesRef: MockInstancesRef =
   { current: { geometry: { setAttribute: jest.fn() } } };
 
 import React from "react";
-import { useTexture } from "@react-three/drei";
-import { INITIAL } from "../../config";
-import { Bed, BedProps } from "../bed";
+import { useHelper, useTexture } from "@react-three/drei";
+import { INITIAL, SurfaceDebugOption } from "../../config";
+import { Bed, BedProps, TexturedBedMaterial } from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
 import { Path } from "../../../internal_urls";
@@ -76,7 +76,9 @@ import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import { Actions } from "../../../constants";
 import { fakeDrawnPoint } from "../../../__test_support__/fake_designer_state";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeImage, fakePoint, fakeSensorReading,
+} from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
@@ -164,6 +166,57 @@ describe("<Bed />", () => {
     expect(memoized.$$typeof.toString()).toContain("react.memo");
   });
 
+  it("skips visible bed rerenders on unrelated config churn", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.axes = true;
+    p.config.xyDimensions = true;
+    p.config.moistureDebug = true;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const { rerender } = render(<Bed {...p} />);
+    const textureCalls = (useTexture as unknown as jest.Mock).mock.calls.length;
+    const helperCalls = (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    rerender(<Bed {...p} config={{
+      ...p.config,
+      clouds: !p.config.clouds,
+      heading: p.config.heading + 45,
+      perspective: !p.config.perspective,
+      viewpointHeading: p.config.viewpointHeading + 90,
+    }} />);
+
+    expect(useTexture).toHaveBeenCalledTimes(textureCalls);
+    expect(useHelper).toHaveBeenCalledTimes(helperCalls);
+  });
+
+  it("rerenders when visible bed config or resources change", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.moistureDebug = true;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const { rerender } = render(<Bed {...p} />);
+    const initialHelperCalls =
+      (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    const changedConfig = {
+      ...p.config,
+      bedBrightness: p.config.bedBrightness + 1,
+    };
+    rerender(<Bed {...p} config={changedConfig} />);
+    const configHelperCalls =
+      (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    rerender(<Bed {...p}
+      config={changedConfig}
+      images={[fakeImage()]}
+      sensorReadings={[fakeSensorReading()]} />);
+
+    expect(configHelperCalls).toBeGreaterThan(initialHelperCalls);
+    expect(useHelper).toHaveBeenCalledTimes(configHelperCalls + 2);
+  });
+
   it("renders bed with extra legs", () => {
     const p = fakeProps();
     p.config.extraLegsX = 2;
@@ -182,6 +235,20 @@ describe("<Bed />", () => {
     const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
       .map(([url]) => url);
     expect(loadedTextures).not.toContain(ASSETS.textures.soil + "?=soilT");
+  });
+
+  it("renders textured bed material", () => {
+    render(<TexturedBedMaterial bedColor={"#abcdef"} />);
+
+    expect(useTexture).toHaveBeenCalledWith(ASSETS.textures.wood);
+  });
+
+  it("renders height debug soil material", () => {
+    const p = fakeProps();
+    p.config.surfaceDebug = SurfaceDebugOption.height;
+    const { container } = render(<Bed {...p} />);
+
+    expect(container.querySelector("[name='soil']")).not.toBeNull();
   });
 
   it("hides cable carrier support rails with the carrier layer", () => {
