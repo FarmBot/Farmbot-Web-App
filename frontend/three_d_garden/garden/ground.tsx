@@ -82,6 +82,11 @@ const GroundMaterial = (props: { sceneName: string }) => {
 };
 
 export const Ground = (props: GroundProps) => {
+  if (!props.config.ground) { return <></>; }
+  return <VisibleGround {...props} />;
+};
+
+const VisibleGround = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
 

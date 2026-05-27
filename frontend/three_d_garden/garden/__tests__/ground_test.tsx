@@ -20,6 +20,14 @@ describe("<Ground />", () => {
     expect(container).toContainHTML("ground");
   });
 
+  it("skips hidden ground setup", () => {
+    const p = fakeProps();
+    p.config.ground = false;
+    const { container } = render(<Ground {...p} />);
+    expect(container).not.toContainHTML("ground");
+    expect(useTexture).not.toHaveBeenCalled();
+  });
+
   it.each<[string, string, string[]]>([
     [
       "Outdoor",
