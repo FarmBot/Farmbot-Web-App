@@ -108,7 +108,19 @@ export interface ElectronicsBoxProps {
   configPosition: PositionConfig;
 }
 
-export const ElectronicsBox = (props: ElectronicsBoxProps) => {
+const electronicsBoxPropsEqual = (
+  prevProps: ElectronicsBoxProps,
+  nextProps: ElectronicsBoxProps,
+) =>
+  prevProps.configPosition.x == nextProps.configPosition.x &&
+  prevProps.config.bedXOffset == nextProps.config.bedXOffset &&
+  prevProps.config.bedYOffset == nextProps.config.bedYOffset &&
+  prevProps.config.bedLengthOuter == nextProps.config.bedLengthOuter &&
+  prevProps.config.bedWidthOuter == nextProps.config.bedWidthOuter &&
+  prevProps.config.columnLength == nextProps.config.columnLength &&
+  prevProps.config.kitVersion == nextProps.config.kitVersion;
+
+const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
   const { bedYOffset, columnLength } = props.config;
   const { x } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -123,12 +135,15 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
       position.y,
       columnLength - 190,
     )}>
-    <ElectronicsBoxModel config={props.config} />
+    <ElectronicsBoxModel kitVersion={props.config.kitVersion} />
   </Group>;
 };
 
+export const ElectronicsBox = React.memo(
+  ElectronicsBoxBase, electronicsBoxPropsEqual);
+
 interface ElectronicsBoxModelProps {
-  config: Config;
+  kitVersion: string;
 }
 
 const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
@@ -157,7 +172,7 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
         scale={1000} />
       <Group name={"buttons"}
         position={[0, 0, 130]}>
-        {buttons(props.config.kitVersion).map(button => {
+        {buttons(props.kitVersion).map(button => {
           const { position, color } = button;
           const btnPosition = position;
           return <Group key={btnPosition} name={"button-group"}>
@@ -181,7 +196,7 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
           </Group>;
         })}
       </Group>
-      {ledsPresent(props.config.kitVersion) && <LedIndicators />}
+      {ledsPresent(props.kitVersion) && <LedIndicators />}
     </Group>
     <Mesh name={"farmduino"}
       position={[-60, -10, -110]}

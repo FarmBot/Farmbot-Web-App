@@ -4227,3 +4227,27 @@ larger instead of smaller. Implementation/test changes rolled back.
 **Outcome:** Accepted; public cable-carrier pieces now memoize against only the config fields and bot axes they consume, so unrelated-axis movement skips component/effect work while relevant carrier animation still updates
 
 **Commit:** `Memoize cable carriers for 44.7% faster z batches`
+
+## Round 52
+
+### Idea 258: Memoize electronics box against X-axis movement only
+
+**Description:** Keep the electronics box model from rerendering on Y/Z-only bot movement and unrelated config churn, since its visible position depends on X and a small set of config fields. Expected return: better bot movement responsiveness with the electronics box fully preserved.
+
+**Benchmark:** Direct Genesis v1.8 `ElectronicsBox` render with unrelated
+config object churn, stable X, 90 Y/Z-only bot-position rerenders, and a +25 X
+cross-check; measured mount/rerender timing plus GLTF and box-model calls
+
+**Before:** 0.435 ms median mount; 23.976 ms median 90-rerender Y/Z batch;
+364 Y/Z-batch GLTF calls; 91 box-model calls; +25 X cross-check moved +25
+
+**After:** 0.341 ms median mount; 0.685 ms median 90-rerender Y/Z batch;
+0 Y/Z-batch GLTF calls; 0 box-model calls; +25 X cross-check moved +25
+
+**Change:** 97.1% faster, saving 23.291 ms per realistic 90-rerender Y/Z batch
+
+**Outcome:** Accepted; the electronics-box wrapper now ignores Y/Z-only
+movement and unrelated config object churn while preserving identical stable-X
+output, and X movement plus kit-version model changes still update
+
+**Commit:** `Memoize electronics box for 97.1% faster yz batches`
