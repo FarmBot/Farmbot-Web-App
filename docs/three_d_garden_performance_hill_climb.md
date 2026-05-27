@@ -3722,3 +3722,37 @@ commit message. Roll back rejected implementation changes.
 **Outcome:** Rejected and rolled back; the percentage was strong, but the absolute saving remains sub-millisecond even across the realistic seasonal-animation callers and was not worth adding a separate search helper
 
 **Commit:** Not committed
+
+## Round 46
+
+### Idea 226: Share point radius-ring torus geometry across point color buckets
+
+**Description:** Share point radius-ring torus geometry across point color buckets. Expected return: point-heavy gardens with visible point radii stop constructing identical high-segment torus geometries per color/alpha bucket, while preserving radius scale, color, opacity, and click behavior.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring render setup and instanced-mesh draw-call proxies
+
+**Before:** 12 instanced meshes; 6 marker meshes; 6 radius-ring meshes; 1.267 ms median render setup
+
+**After:** 12 instanced meshes; 6 marker meshes; 6 radius-ring meshes; 1.120 ms median render setup
+
+**Change:** 11.6% faster setup, saving 0.147 ms, plus 83.3% fewer radius-ring torus geometry objects for this six-bucket overlay
+
+**Outcome:** Accepted; point radius rings now share one high-segment torus geometry while each bucket keeps its own instanced mesh, material, scale, opacity, and click target
+
+**Commit:** `Share point ring geometry for 11.6% faster setup`
+
+### Idea 227: Share weed radius sphere geometry across weed color buckets
+
+**Description:** Share weed radius sphere geometry across weed color buckets. Expected return: weed-heavy gardens with several weed colors allocate fewer identical 32-segment radius sphere geometries while keeping per-color materials and instance transforms unchanged.
+
+### Idea 228: Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets
+
+**Description:** Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets. Expected return: animated-season gardens with several crop icons avoid repeated date lookup and sun-coordinate calculations in each icon bucket's `useFrame` callback, while all buckets use a consistent frame timestamp.
+
+### Idea 229: Share solar-cell geometry and precomputed cell matrices across solar panels
+
+**Description:** Share solar-cell geometry and precomputed cell matrices across solar panels. Expected return: the optional solar array avoids rebuilding identical extruded cell geometry and static instance matrices for both panels when the solar layer is visible.
+
+### Idea 230: Skip pointer-move soil-height lookup when the rendered pointer XY has not changed
+
+**Description:** Skip pointer-move soil-height lookup when the rendered pointer XY has not changed. Expected return: hover and drawing pointer movement avoids `getZ()` and world-position work for duplicate pointer locations, improving responsiveness on noisy pointer events without changing visible cursor behavior.

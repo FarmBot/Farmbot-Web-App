@@ -130,6 +130,18 @@ describe("<Point />", () => {
     expect(markers[0].props.args[0]).toBe(markers[1].props.args[0]);
   });
 
+  it("shares point radius geometry", () => {
+    const p = fakeInstanceProps();
+    p.points[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const rings = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh" &&
+      node.props.name == "marker-radius");
+    expect(rings.length).toEqual(2);
+    expect(rings[0].props.args[0]).toBe(rings[1].props.args[0]);
+  });
+
   it("skips hidden point markers", () => {
     const p = fakeInstanceProps();
     p.visible = false;

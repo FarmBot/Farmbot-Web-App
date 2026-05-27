@@ -14,6 +14,7 @@ import {
   Mesh as ThreeMesh,
   Quaternion,
   SphereGeometry,
+  TorusGeometry,
   Vector3,
 } from "three";
 import { mergeGeometries } from
@@ -73,6 +74,17 @@ let pointMarkerGeometry: BufferGeometry | undefined = undefined;
 const getPointMarkerGeometry = () => {
   pointMarkerGeometry ||= makePointMarkerGeometry();
   return pointMarkerGeometry;
+};
+
+let pointRadiusGeometry: BufferGeometry | undefined = undefined;
+const getPointRadiusGeometry = () => {
+  pointRadiusGeometry ||= new TorusGeometry(
+    1,
+    POINT_CYLINDER_TUBE_SIZE,
+    SEGMENTS,
+    SEGMENTS,
+  );
+  return pointRadiusGeometry;
 };
 
 export interface PointProps {
@@ -179,6 +191,7 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
   // eslint-disable-next-line no-null/no-null
   const ringRef = React.useRef<InstancedMeshType>(null);
   const markerGeometry = getPointMarkerGeometry();
+  const radiusGeometry = getPointRadiusGeometry();
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
@@ -247,12 +260,12 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       <InstancedMesh
         ref={ringRef}
         name={"marker-radius"}
-        args={[undefined, undefined, bucket.ringPoints.length]}
+        args={[radiusGeometry, undefined, bucket.ringPoints.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
         visible={visible}
         onClick={onClick(bucket.ringPoints)}
         renderOrder={RenderOrder.default}>
-        <torusGeometry
-          args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]} />
         <MeshPhongMaterial
           color={bucket.color}
           transparent={true}
