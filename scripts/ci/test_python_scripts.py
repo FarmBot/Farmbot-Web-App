@@ -68,10 +68,10 @@ class CiPythonScriptTest(unittest.TestCase):
         metrics_name = f"scene_metrics_test_{os.getpid()}"
         path = Path("/tmp") / f"{metrics_name}.csv"
         path.write_text(
-            "epoch,FPS\n"
-            "1,80\n"
-            "2,90\n"
-            "3,100\n",
+            "epoch, FPS, Calls\n"
+            "1, 80, 1\n"
+            "2, 90, 1\n"
+            "3, 100, 1\n",
         )
         try:
             code, stdout, stderr = run_script("previous-fps-value", env={
