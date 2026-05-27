@@ -114,8 +114,20 @@ describe("<Point />", () => {
     mountedWrappers.push(wrapper);
     const meshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
-    expect(meshes.length).toEqual(3);
+    expect(meshes.length).toEqual(2);
     expect(meshes[0].props.args[2]).toEqual(2);
+  });
+
+  it("shares merged point marker geometry", () => {
+    const p = fakeInstanceProps();
+    p.points[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const markers = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh" &&
+      node.props.name == "marker");
+    expect(markers.length).toEqual(2);
+    expect(markers[0].props.args[0]).toBe(markers[1].props.args[0]);
   });
 
   it("skips hidden point markers", () => {

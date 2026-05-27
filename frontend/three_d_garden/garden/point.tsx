@@ -6,14 +6,18 @@ import {
 } from "../components";
 import { Cylinder, Sphere, Torus } from "@react-three/drei";
 import {
+  BufferGeometry,
+  CylinderGeometry,
   DoubleSide,
-  Euler,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Mesh as ThreeMesh,
   Quaternion,
+  SphereGeometry,
   Vector3,
 } from "three";
+import { mergeGeometries } from
+  "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ThreeEvent } from "@react-three/fiber";
 import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
@@ -38,6 +42,38 @@ const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
 export const POINT_CYLINDER_SCALE_FACTOR =
   round(1 / POINT_CYLINDER_TUBE_SIZE ** 2);
 const SEGMENTS = 64;
+
+const makePointMarkerGeometry = () => {
+  const pinGeometry = new CylinderGeometry(
+    POINT_PIN_RADIUS,
+    0,
+    POINT_PIN_HEIGHT,
+    16,
+    2,
+    true,
+  );
+  pinGeometry.rotateX(Math.PI / 2);
+  pinGeometry.translate(0, 0, POINT_PIN_HEIGHT / 2);
+  const sphereGeometry = new SphereGeometry(
+    POINT_PIN_RADIUS,
+    16,
+    16,
+  );
+  sphereGeometry.translate(0, 0, POINT_PIN_HEIGHT);
+  const markerGeometry = mergeGeometries(
+    [pinGeometry, sphereGeometry],
+    false,
+  ) || new BufferGeometry();
+  pinGeometry.dispose();
+  sphereGeometry.dispose();
+  return markerGeometry;
+};
+
+let pointMarkerGeometry: BufferGeometry | undefined = undefined;
+const getPointMarkerGeometry = () => {
+  pointMarkerGeometry ||= makePointMarkerGeometry();
+  return pointMarkerGeometry;
+};
 
 export interface PointProps {
   point: TaggedGenericPointer;
@@ -139,35 +175,27 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
   const { bucket, dispatch, visible } = props;
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
-  const pinRef = React.useRef<InstancedMeshType>(null);
-  // eslint-disable-next-line no-null/no-null
-  const sphereRef = React.useRef<InstancedMeshType>(null);
+  const markerRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null
   const ringRef = React.useRef<InstancedMeshType>(null);
+  const markerGeometry = getPointMarkerGeometry();
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
-  const pinRotation = React.useMemo(() =>
-    new Quaternion().setFromEuler(new Euler(Math.PI / 2, 0, 0)), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const noScale = React.useMemo(() => new Vector3(1, 1, 1), []);
   const ringScale = React.useMemo(() => new Vector3(), []);
 
   React.useEffect(() => {
-    const pinMesh = pinRef.current;
-    const sphereMesh = sphereRef.current;
-    if (!pinMesh?.setMatrixAt || !sphereMesh?.setMatrixAt) { return; }
+    const markerMesh = markerRef.current;
+    if (!markerMesh?.setMatrixAt) { return; }
     bucket.points.forEach((instance, index) => {
       const [x, y, z] = instance.position;
-      tempPosition.set(x, y, z + POINT_PIN_HEIGHT / 2);
-      tempMatrix.compose(tempPosition, pinRotation, noScale);
-      pinMesh.setMatrixAt(index, tempMatrix);
-      tempPosition.set(x, y, z + POINT_PIN_HEIGHT);
+      tempPosition.set(x, y, z);
       tempMatrix.compose(tempPosition, noRotation, noScale);
-      sphereMesh.setMatrixAt(index, tempMatrix);
+      markerMesh.setMatrixAt(index, tempMatrix);
     });
-    pinMesh.instanceMatrix.needsUpdate = true;
-    sphereMesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.points, noRotation, noScale, pinRotation, tempMatrix, tempPosition]);
+    markerMesh.instanceMatrix.needsUpdate = true;
+  }, [bucket.points, noRotation, noScale, tempMatrix, tempPosition]);
 
   React.useEffect(() => {
     const ringMesh = ringRef.current;
@@ -201,28 +229,14 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
 
   return <>
     <InstancedMesh
-      ref={pinRef}
+      ref={markerRef}
       name={"marker"}
-      args={[undefined, undefined, bucket.points.length]}
+      args={[markerGeometry, undefined, bucket.points.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
       visible={visible}
       onClick={onClick(bucket.points)}
       renderOrder={RenderOrder.default}>
-      <cylinderGeometry
-        args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 16, 2, true]} />
-      <MeshPhongMaterial
-        color={bucket.color}
-        side={DoubleSide}
-        transparent={true}
-        opacity={1 * bucket.alpha} />
-    </InstancedMesh>
-    <InstancedMesh
-      ref={sphereRef}
-      name={"marker"}
-      args={[undefined, undefined, bucket.points.length]}
-      visible={visible}
-      onClick={onClick(bucket.points)}
-      renderOrder={RenderOrder.default}>
-      <sphereGeometry args={[POINT_PIN_RADIUS, 16, 16]} />
       <MeshPhongMaterial
         color={bucket.color}
         side={DoubleSide}
