@@ -304,6 +304,7 @@ commit message. Roll back rejected implementation changes.
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 201 | Memoize static Bot utility subtrees | Real telemetry-like parent rerender benchmark for `PowerSupply` and `XAxisWaterTube`: one mount plus 50 parent rerenders with the same config object | 51 aluminum texture hook calls; 1 power supply; 1 X-axis water tube; 5.446 ms median update path | 1 aluminum texture hook call; 1 power supply; 1 X-axis water tube; 1.303 ms median update path | 98.0% fewer texture hook calls; 76.1% faster update path, saving 4.143 ms across 50 realistic telemetry-style rerenders | Accepted; both subtrees depend only on config, so Bot position updates can skip their cable/path/texture subtree work without changing utility geometry or water-tube visuals | `Memoize static utilities for 98.0% fewer texture calls` |
 
 ## Round 40 Candidate Ideas
 

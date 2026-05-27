@@ -24,7 +24,7 @@ const cableColor = (enabled: boolean) => {
   return `hsl(${hue}, 100%, 50%)`;
 };
 
-export const PowerSupply = (props: PowerSupplyProps) => {
+const PowerSupplyBase = (props: PowerSupplyProps) => {
   const {
     bedWidthOuter, bedLengthOuter, bedHeight, botSizeX,
     legSize, ccSupportSize, bedZOffset
@@ -174,3 +174,5 @@ export const PowerSupply = (props: PowerSupplyProps) => {
     </Box>
   </Group>;
 };
+
+export const PowerSupply = React.memo(PowerSupplyBase);

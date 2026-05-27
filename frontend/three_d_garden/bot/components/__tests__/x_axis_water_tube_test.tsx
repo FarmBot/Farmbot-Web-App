@@ -14,4 +14,9 @@ describe("<XAxisWaterTube />", () => {
     const { container } = render(<XAxisWaterTube {...p} />);
     expect(container).toContainHTML("x-axis-water-tube");
   });
+
+  it("memoizes unchanged water tube props", () => {
+    const memoized = XAxisWaterTube as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
 });

@@ -9,7 +9,7 @@ export interface XAxisWaterTubeProps {
   config: Config;
 }
 
-export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
+const XAxisWaterTubeBase = (props: XAxisWaterTubeProps) => {
   const { config } = props;
   const groundZ = -config.bedHeight - config.bedZOffset;
   const barbX = threeSpace(config.bedLengthOuter / 2 + 400, config.bedLengthOuter);
@@ -49,3 +49,5 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
     </Cylinder>
   </Group>;
 };
+
+export const XAxisWaterTube = React.memo(XAxisWaterTubeBase);
