@@ -1,4 +1,5 @@
 import React from "react";
+import * as reactSpring from "@react-spring/three";
 import { act, render, screen } from "@testing-library/react";
 import {
   applyFocusMaterialOpacity,
@@ -9,6 +10,7 @@ import {
   FOCUS_TRANSITION_MS,
   FocusTransitionProvider,
   FocusVisibilityDiv,
+  FocusVisibilityGroup,
   interpolateCameraState,
   readSmoothCameraState,
   shouldUnmountFocusVisibilityGroup,
@@ -60,6 +62,27 @@ describe("focus transitions", () => {
       .toEqual(false);
     expect(shouldUnmountFocusVisibilityGroup(true, false, false))
       .toEqual(false);
+  });
+
+  it("skips group spring setup when transitions are disabled", () => {
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring");
+    render(<FocusVisibilityGroup visible={false}>
+      <div>hidden</div>
+    </FocusVisibilityGroup>);
+    expect(useSpringSpy).not.toHaveBeenCalled();
+  });
+
+  it("uses group spring setup when transitions are enabled", () => {
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring");
+    const { container } = render(
+      <FocusTransitionProvider enabled={true}>
+        <FocusVisibilityGroup visible={true}>
+          <div>shown</div>
+        </FocusVisibilityGroup>
+      </FocusTransitionProvider>,
+    );
+    expect(container.innerHTML).toContain("shown");
+    expect(useSpringSpy).toHaveBeenCalled();
   });
 
   it("isolates material opacity changes and restores originals", () => {

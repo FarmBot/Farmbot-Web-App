@@ -188,10 +188,35 @@ export const shouldUnmountFocusVisibilityGroup = (
 export const FocusVisibilityGroup =
   React.forwardRef<Object3D, FocusVisibilityGroupProps>((props, forwardedRef) => {
     const {
-      visible, keepMounted, materialBindingKey, preserveDepthWrite, children,
-      ...groupProps
+      visible, keepMounted: _keepMounted, materialBindingKey: _materialBindingKey,
+      preserveDepthWrite: _preserveDepthWrite, children, ...groupProps
     } = props;
     const transition = useFocusTransition();
+    if (!transition.enabled) {
+      return <Group {...groupProps} visible={visible} ref={forwardedRef}>
+        {children}
+      </Group>;
+    }
+
+    return <TransitionFocusVisibilityGroup
+      {...props}
+      ref={forwardedRef}
+      transition={transition} />;
+  });
+
+interface TransitionFocusVisibilityGroupProps extends FocusVisibilityGroupProps {
+  transition: FocusTransitionContextValue;
+}
+
+const TransitionFocusVisibilityGroup =
+  React.forwardRef<Object3D, TransitionFocusVisibilityGroupProps>((
+    props,
+    forwardedRef,
+  ) => {
+    const {
+      visible, keepMounted, materialBindingKey, preserveDepthWrite, children,
+      transition, ...groupProps
+    } = props;
     const enabled = transition.enabled;
     const [rendered, setRendered] = React.useState(visible || !!keepMounted);
     const [groupVisible, setGroupVisible] = React.useState(visible);

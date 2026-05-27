@@ -236,10 +236,34 @@ commit message. Roll back rejected implementation changes.
      render work when solar is off, while solar and focus-transition reveal
      behavior stays the same.
 
+## Round 37 Candidate Ideas
+
+181. Split `FocusVisibilityGroup` into a non-transition fast path before the
+     spring/state/material-binding setup. Expected return: fewer spring hooks
+     and less render CPU in the common default non-smooth focus mode, while
+     transition-enabled fading behavior remains unchanged.
+182. Memoize `ZoomBeacons` focus definitions across internal hover/focus
+     rerenders. Expected return: less repeated React element and camera/position
+     object construction for the default twelve-beacon overlay, with the same
+     beacon positions, descriptions, and click behavior.
+183. Memoize enabled `CameraView` frustum point construction across unchanged
+     camera-view renders. Expected return: fewer repeated point arrays and
+     convex geometry rebuilds when the camera view overlay is enabled but the
+     camera/config have not moved, with identical frustum geometry when inputs
+     change.
+184. Skip no-op `MoistureSurface` setup when neither moisture readings nor the
+     moisture map are shown. Expected return: less default soil texture render
+     setup by avoiding empty interpolation/buffer work, while readings and map
+     modes still mount unchanged.
+185. Split disabled `Clouds` before the opacity spring. Expected return: users
+     who hide clouds skip spring setup in the default details stage, while the
+     visible cloud animation and seasonal opacity remain unchanged.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 181 | Fast-path non-transition `FocusVisibilityGroup` | Default non-smooth `GardenModel` render with no plants, sampled as 10 single renders and measuring spring hooks plus render time | 37 spring hooks; 9.903 ms median render | 22 spring hooks; 9.489 ms median render | 40.5% fewer spring hooks, removing 15 default-render spring setups; 4.2% faster, saving 0.414 ms | Accepted; transition-disabled groups now return the same immediate visible group before spring/material-binding state setup, while transition-enabled fade behavior remains in the split child | `Fast-path focus groups for 40.5% fewer springs` |
 | 180 | Return from hidden Solar before opacity spring setup | Direct hidden `Solar` render with `solar=false`, no active focus, and focus transitions disabled, sampled as 20 single renders while measuring spring hooks, mounted solar nodes, and render time | 20 spring hooks; 0 solar nodes; 0 wiring nodes; 0 cell meshes; 0.153 ms median render | 0 spring hooks; 0 solar nodes; 0 wiring nodes; 0 cell meshes; 0.159 ms median render | 100% fewer hidden spring hooks, but 3.9% slower and only 0.006 ms changed in the wrong direction | Rejected and rolled back; hidden solar geometry was already absent, and removing a single hidden spring hook did not produce a meaningful realistic runtime win | None |
 | 179 | Consolidate seeder suction animation callbacks | Direct mounted-seeder `Tools` render with `vacuum=true`, sampled as 20 single renders and measuring frame registrations, Clouds wrappers, suction cloud count, and render time | 100 total frame callbacks; 80 Clouds wrappers; 80 suction clouds; 0.437 ms median render | 40 total frame callbacks; 20 Clouds wrappers; 80 suction clouds; 0.428 ms median render | 60.0% fewer total frame callbacks; 75.0% fewer Clouds wrappers; same suction cloud count; 2.1% faster render, saving 0.009 ms | Accepted; the visible four-particle suction effect is unchanged, while the vacuum-on seeder path removes three ongoing frame callback invocations per rendered frame | `Consolidate suction clouds for 60.0% fewer frame callbacks` |
 | 178 | Skip Lab desk internals when disabled | Direct `Desk` render with `desk=false`, sampled as 20 single disabled renders and measuring texture hooks plus render time | 0 desk nodes; 2 texture hooks; 0.217 ms median render | 0 desk nodes; 0 texture hooks; 0.148 ms median render | 100% fewer disabled texture hooks; 31.8% faster, saving 0.069 ms | Accepted; the disabled desk layer now exits before wood/screen texture setup and desk/laptop JSX, while enabled desk and focus-hidden enabled-desk behavior are unchanged | `Skip disabled desk setup for 100% fewer texture hooks` |
