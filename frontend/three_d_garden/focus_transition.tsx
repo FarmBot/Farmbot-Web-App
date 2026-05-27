@@ -95,7 +95,9 @@ const cloneSlot = (slot: MaterialSlot): {
 const forEachMaterial =
   (slot: MaterialSlot, callback: (material: Material, index: number) => void) => {
     if (Array.isArray(slot)) {
-      slot.map(callback);
+      for (let index = 0; index < slot.length; index++) {
+        callback(slot[index], index);
+      }
     } else if (isMaterial(slot)) {
       callback(slot, 0);
     }
@@ -140,20 +142,21 @@ export const createFocusMaterialBinding = (
 
   return {
     apply: (opacity: number) => {
-      records.map(record =>
+      for (const record of records) {
         forEachMaterial(record.clones, (material, index) =>
           applyFocusMaterialOpacity(
             material,
             record.states[index],
             opacity,
             !!options.preserveDepthWrite,
-          )));
+          ));
+      }
     },
     restore: () => {
-      records.map(record => {
+      for (const record of records) {
         record.owner.material = record.original;
         forEachMaterial(record.clones, material => material.dispose());
-      });
+      }
     },
   };
 };
