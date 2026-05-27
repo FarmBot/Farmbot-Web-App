@@ -186,7 +186,7 @@ export const Bot = (props: FarmbotModelProps) => {
       loader ||= new SVGLoader();
       return loader;
     };
-    if (!trackShape && !requestedShapes.current.track) {
+    if (tracks && !trackShape && !requestedShapes.current.track) {
       requestedShapes.current.track = true;
       getLoader().load(ASSETS.shapes.track,
         svg => {
@@ -236,7 +236,7 @@ export const Bot = (props: FarmbotModelProps) => {
           setZAxisShape(outline);
         });
     }
-  }, [beamShape, columnShape, trackShape, zAxisShape]);
+  }, [beamShape, columnShape, trackShape, tracks, zAxisShape]);
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -393,7 +393,7 @@ export const Bot = (props: FarmbotModelProps) => {
           rotation={[0, 0, 0]}>
           <MeshPhongMaterial color={"#999"} />
         </Cylinder>
-        <Extrude name={"tracks"} visible={tracks}
+        {tracks && <Extrude name={"tracks"}
           castShadow={true}
           args={[
             trackShape,
@@ -416,7 +416,7 @@ export const Bot = (props: FarmbotModelProps) => {
             color={"white"}
             map={aluminumTexture}
             side={DoubleSide} />
-        </Extrude>
+        </Extrude>}
         <Mesh name={"xStopMin"}
           position={[
             ...outerXY(-132, y + 10 + bedColumnYOffset),

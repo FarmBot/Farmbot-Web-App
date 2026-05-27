@@ -112,6 +112,13 @@ describe("<Bot />", () => {
     expect(createShapesMock).toHaveBeenCalledTimes(15);
   });
 
+  it("skips track shape loading when tracks are disabled", () => {
+    const p = fakeProps();
+    p.config.tracks = false;
+    render(<Bot {...p} />);
+    expect(createShapesMock).toHaveBeenCalledTimes(12);
+  });
+
   it("reuses parsed shapes across remounts", () => {
     const p = fakeProps();
     const first = render(<Bot {...p} />);
