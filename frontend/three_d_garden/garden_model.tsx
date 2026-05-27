@@ -302,7 +302,8 @@ export const GardenModel = (props: GardenModelProps) => {
   const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
   const showFarmbot = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_farmbot);
-  const farmbotVisible = props.activeFocus != "Planter bed" && showFarmbot;
+  const farmbotVisible =
+    props.activeFocus != "Planter bed" && showFarmbot && config.bot;
   const showPoints = config.showSoilPoints
     || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);

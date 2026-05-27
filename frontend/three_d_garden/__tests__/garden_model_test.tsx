@@ -413,6 +413,23 @@ describe("<GardenModel />", () => {
     expect(useGltfMock).not.toHaveBeenCalled();
   });
 
+  it("doesn't mount FarmBot while the 3D Bot layer is hidden", async () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_farmbot);
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("farmbot-scene-boundary"));
+
+    expect(container.innerHTML).not.toContain("bot-load-in");
+    expect(useGltfMock).not.toHaveBeenCalled();
+  });
+
   it("renders other options", async () => {
     mockIsDesktop = false;
     const p = fakeProps();

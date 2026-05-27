@@ -322,6 +322,12 @@ commit message. Roll back rejected implementation changes.
      linearly. Expected return: animated seasons find the current compressed
      sun-time sample in logarithmic time on every animation frame.
 
+## Round 45 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 221 | Do not mount the FarmBot model when the 3D FarmBot config layer is off | Real `GardenModel` render with the app-level FarmBot setting on, `config.bot=false`, no plants, and optional overlays off, sampled 10 times while measuring hidden Bot mounts and asset hooks | 1 hidden Bot load-in group; 36 GLTF hook calls; 12 texture hook calls; 13.693 ms median render | 0 Bot load-in groups; 0 GLTF hook calls; 9 texture hook calls; 10.714 ms median render | 100% fewer hidden Bot GLTF hooks, 25.0% fewer texture hooks, and 21.8% faster, saving 2.979 ms in this hidden-layer render | Accepted; the FarmBot load step now treats `config.bot=false` the same as other hidden FarmBot paths and marks ready without mounting the invisible Bot subtree | `Skip hidden 3D Bot layer for 100% fewer GLTF hooks` |
+
 ## Round 44 Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
