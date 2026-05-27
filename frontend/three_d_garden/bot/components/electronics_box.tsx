@@ -74,6 +74,35 @@ const ledsPresent = (kitVersion: string) => {
   }
 };
 
+const LED_INDICATORS = [
+  { position: -45, color: IColor.sync.on },
+  { position: -15, color: IColor.connect.on },
+  { position: 15, color: IColor.blank.on },
+  { position: 45, color: IColor.blank.on },
+];
+
+const LedIndicators = () => {
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
+  return <Group name={"leds"} position={[0, 0, 130]}>
+    {LED_INDICATORS.map(ledIndicator => {
+      const { position, color } = ledIndicator;
+      return <Group key={position}>
+        <Mesh name={"led-housing"}
+          geometry={led.nodes.LED.geometry}
+          material={led.materials[ElectronicsBoxMaterial.led]}
+          position={[-50, position, 0]}
+          material-color={0xcccccc}
+          scale={1000} />
+        <Cylinder name={"led-color"}
+          material-color={color}
+          args={[6.75, 6.75, 3]}
+          position={[-50, position, 0]}
+          rotation={[Math.PI / 2, 0, 0]} />
+      </Group>;
+    })}
+  </Group>;
+};
+
 export interface ElectronicsBoxProps {
   config: Config;
   configPosition: PositionConfig;
@@ -90,7 +119,6 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
 
   const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
   const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
   const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
   const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
 
@@ -143,31 +171,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
           </Group>;
         })}
       </Group>
-      <Group name={"leds"}
-        position={[0, 0, 130]}
-        visible={ledsPresent(props.config.kitVersion)}>
-        {[
-          { position: -45, color: IColor.sync.on },
-          { position: -15, color: IColor.connect.on },
-          { position: 15, color: IColor.blank.on },
-          { position: 45, color: IColor.blank.on },
-        ].map(ledIndicator => {
-          const { position, color } = ledIndicator;
-          return <Group key={position}>
-            <Mesh name={"led-housing"}
-              geometry={led.nodes.LED.geometry}
-              material={led.materials[ElectronicsBoxMaterial.led]}
-              position={[-50, position, 0]}
-              material-color={0xcccccc}
-              scale={1000} />
-            <Cylinder name={"led-color"}
-              material-color={color}
-              args={[6.75, 6.75, 3]}
-              position={[-50, position, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-          </Group>;
-        })}
-      </Group>
+      {ledsPresent(props.config.kitVersion) && <LedIndicators />}
     </Group>
     <Mesh name={"farmduino"}
       position={[-60, -10, -110]}
