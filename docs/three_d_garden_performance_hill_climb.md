@@ -305,6 +305,7 @@ commit message. Roll back rejected implementation changes.
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
 | 216 | Replace deep-clone image filtering with a direct newest-to-oldest scan | Realistic image-heavy filter benchmark with 75 images, photo filters enabled, one hovered image highlighted, and the same helper used by the 3D soil texture, sampled 50 times | 70 filtered images; 1 highlighted image; 0.388 ms median filter time | 70 filtered images; 1 highlighted image; 0.239 ms median filter time | 38.5% faster, saving 0.149 ms per 75-image filter | Rejected and rolled back; the percentage qualified, but the absolute one-off setup saving was too small to justify replacing the compact existing filter chain with a longer custom scan | Not committed |
+| 217 | Cache the parsed 3D soil-surface height lookup used by Lua/sequence simulation | Sequence-style repeated soil-height benchmark with one stored 392-triangle 3D soil surface and 100 `getSoilHeight()` reads across realistic move coordinates, sampled 30 times | 11.834 ms median read batch | 0.009 ms median read batch | 99.9% faster, saving 11.825 ms per 100 repeated soil-height reads | Accepted; the cached lookup is keyed by the exact stored triangle string, so the same 3D soil surface reuses parsed triangles and the indexed `getZ` function while any changed soil surface still rebuilds the lookup | `Cache soil height lookup for 99.9% faster reads` |
 
 ## Round 43 Candidate Ideas
 
