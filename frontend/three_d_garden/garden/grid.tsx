@@ -4,7 +4,6 @@ import { Primitive } from "../components";
 import {
   get3DPositionFunc, zero as zeroFunc,
 } from "../helpers";
-import { chain, floor, range } from "lodash";
 import { useThree } from "@react-three/fiber";
 import {
   LineSegments2,
@@ -16,36 +15,43 @@ import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { FocusVisibilityGroup } from "../focus_transition";
 
 export const gridLineOffsets = (botDimension: number): number[] => {
-  const lastRegularOffset = floor(botDimension, -2);
-  return chain(range(0, lastRegularOffset + 100, 100))
-    .concat(botDimension)
-    .uniq()
-    .value();
+  const offsets = [0];
+  const lastRegularOffset = Math.floor(botDimension / 100) * 100;
+  for (let offset = 100; offset <= lastRegularOffset; offset += 100) {
+    offsets.push(offset);
+  }
+  if (offsets[offsets.length - 1] != botDimension) {
+    offsets.push(botDimension);
+  }
+  return offsets;
 };
 
-const lineSegmentsFor = (
+const pushLineSegmentsFor = (
+  positions: number[],
   start: { x: number, y: number },
   end: { x: number, y: number },
   getZ: (x: number, y: number) => number,
   config: Config,
 ) => {
-  const positions: number[] = [];
   const get3DPosition = get3DPositionFunc(config);
-  let prev: { x: number, y: number, z: number } | undefined;
-  range(101).forEach(i => {
+  let hasPrev = false;
+  let prevX = 0;
+  let prevY = 0;
+  let prevZ = 0;
+  for (let i = 0; i <= 100; i++) {
     const t = i / 100;
-    const gardenPosition = {
-      x: start.x + (end.x - start.x) * t,
-      y: start.y + (end.y - start.y) * t,
-    };
-    const { x, y } = get3DPosition(gardenPosition);
-    const z = getZ(gardenPosition.x, gardenPosition.y);
-    if (prev) {
-      positions.push(prev.x, prev.y, prev.z, x, y, z);
+    const gardenX = start.x + (end.x - start.x) * t;
+    const gardenY = start.y + (end.y - start.y) * t;
+    const { x, y } = get3DPosition({ x: gardenX, y: gardenY });
+    const z = getZ(gardenX, gardenY);
+    if (hasPrev) {
+      positions.push(prevX, prevY, prevZ, x, y, z);
     }
-    prev = { x, y, z };
-  });
-  return positions;
+    prevX = x;
+    prevY = y;
+    prevZ = z;
+    hasPrev = true;
+  }
 };
 
 interface LineSegmentsProps {
@@ -87,6 +93,41 @@ const LineSegments = (props: LineSegmentsProps) => {
   return <Primitive object={line} />;
 };
 
+export const gridLinePositions = (
+  config: Config,
+  getZ: (x: number, y: number) => number,
+) => {
+  const result = {
+    outerPositions: [] as number[],
+    innerPositions: [] as number[],
+  };
+  gridLineOffsets(config.botSizeX).forEach(xOffset => {
+    const positions = xOffset === 0 || xOffset === config.botSizeX
+      ? result.outerPositions
+      : result.innerPositions;
+    pushLineSegmentsFor(positions, {
+      x: xOffset,
+      y: 0,
+    }, {
+      x: xOffset,
+      y: config.botSizeY,
+    }, getZ, config);
+  });
+  gridLineOffsets(config.botSizeY).forEach(yOffset => {
+    const positions = yOffset === 0 || yOffset === config.botSizeY
+      ? result.outerPositions
+      : result.innerPositions;
+    pushLineSegmentsFor(positions, {
+      x: 0,
+      y: yOffset,
+    }, {
+      x: config.botSizeX,
+      y: yOffset,
+    }, getZ, config);
+  });
+  return result;
+};
+
 export interface GridProps {
   config: Config;
   getZ(x: number, y: number): number;
@@ -96,43 +137,8 @@ export interface GridProps {
 export const Grid = (props: GridProps) => {
   const { config } = props;
   const zero = zeroFunc(config);
-  const { outerPositions, innerPositions } = React.useMemo(() => {
-    const result = {
-      outerPositions: [] as number[],
-      innerPositions: [] as number[],
-    };
-    gridLineOffsets(config.botSizeX).forEach(xOffset => {
-      const isOuterLine = xOffset === 0 || xOffset === config.botSizeX;
-      const positions = lineSegmentsFor({
-        x: xOffset,
-        y: 0,
-      }, {
-        x: xOffset,
-        y: config.botSizeY,
-      }, props.getZ, config);
-      if (isOuterLine) {
-        result.outerPositions.push(...positions);
-      } else {
-        result.innerPositions.push(...positions);
-      }
-    });
-    gridLineOffsets(config.botSizeY).forEach(yOffset => {
-      const isOuterLine = yOffset === 0 || yOffset === config.botSizeY;
-      const positions = lineSegmentsFor({
-        x: 0,
-        y: yOffset,
-      }, {
-        x: config.botSizeX,
-        y: yOffset,
-      }, props.getZ, config);
-      if (isOuterLine) {
-        result.outerPositions.push(...positions);
-      } else {
-        result.innerPositions.push(...positions);
-      }
-    });
-    return result;
-  }, [config, props.getZ]);
+  const { outerPositions, innerPositions } = React.useMemo(() =>
+    gridLinePositions(config, props.getZ), [config, props.getZ]);
   const materialBindingKey = [
     config.botSizeX,
     config.botSizeY,
