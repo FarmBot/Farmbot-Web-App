@@ -46,7 +46,6 @@ import { ImageTexture } from "../garden";
 import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
-import { soilSurfaceExtents } from "../triangles";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
 
@@ -280,8 +279,9 @@ const BedBase = (props: BedProps) => {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness,
     ccSupportSize, axes, xyDimensions, bedXOffset, bedYOffset,
+    bedWallThickness, mirrorX, mirrorY,
   } = props.config;
-  const thickness = props.config.bedWallThickness;
+  const thickness = bedWallThickness;
   const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness };
   const bedStartZ = bedHeight;
   const bedColor = getColorFromBrightness(bedBrightness);
@@ -332,31 +332,29 @@ const BedBase = (props: BedProps) => {
 
   const navigate = useNavigate();
 
-  const mirroredAxesCount =
-    Number(props.config.mirrorX) + Number(props.config.mirrorY);
+  const mirroredAxesCount = Number(mirrorX) + Number(mirrorY);
   const soilSurfaceSide = mirroredAxesCount % 2 == 1 ? FrontSide : BackSide;
   const renderSoilSurfaceGeometry = React.useMemo(() => {
-    if (!props.config.mirrorX && !props.config.mirrorY) {
+    if (!mirrorX && !mirrorY) {
       return props.soilSurfaceGeometry;
     }
     const geometry = props.soilSurfaceGeometry.clone();
     const position = geometry.getAttribute("position");
     const normal = geometry.getAttribute("normal");
-    const extents = soilSurfaceExtents(props.config);
-    const xMid = (extents.x.min + extents.x.max) / 2;
-    const yMid = (extents.y.min + extents.y.max) / 2;
+    const xMid = bedLengthOuter / 2 - bedXOffset;
+    const yMid = bedWidthOuter / 2 - bedYOffset;
     for (let i = 0; i < position.count; i++) {
-      if (props.config.mirrorX) {
+      if (mirrorX) {
         position.setX(i, 2 * xMid - position.getX(i));
       }
-      if (props.config.mirrorY) {
+      if (mirrorY) {
         position.setY(i, 2 * yMid - position.getY(i));
       }
       if (normal) {
-        if (props.config.mirrorX) {
+        if (mirrorX) {
           normal.setX(i, -normal.getX(i));
         }
-        if (props.config.mirrorY) {
+        if (mirrorY) {
           normal.setY(i, -normal.getY(i));
         }
       }
@@ -366,7 +364,15 @@ const BedBase = (props: BedProps) => {
     geometry.computeBoundingBox();
     geometry.computeBoundingSphere();
     return geometry;
-  }, [props.soilSurfaceGeometry, props.config]);
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    mirrorX,
+    mirrorY,
+    props.soilSurfaceGeometry,
+  ]);
   const soilPosition: [number, number, number] = [
     threeSpace(0, bedLengthOuter) + bedXOffset,
     threeSpace(0, bedWidthOuter) + bedYOffset,

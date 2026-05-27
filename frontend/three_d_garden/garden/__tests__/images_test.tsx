@@ -1,5 +1,6 @@
 let mockDemo = false;
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import { render, screen } from "@testing-library/react";
 import {
   extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
@@ -183,6 +184,40 @@ describe("<ImageTexture />", () => {
     const key = getImageTextureKey(p);
     sensor.body.pin = (sensor.body.pin || 0) + 1;
     expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("memoizes texture setup across unrelated config churn", () => {
+    const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
+    const img0 = fakeImage();
+    img0.body.meta.x = 1;
+    img0.body.meta.y = 1;
+    p.images = [img0];
+    const apProps = fakeAddPlantProps();
+    const config = fakeWebAppConfig();
+    config.body.show_images = true;
+    config.body.photo_filter_begin = "";
+    config.body.photo_filter_end = "";
+    apProps.getConfigValue = x => config.body[x];
+    p.addPlantProps = apProps;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+
+    const { rerender } = render(<ImageTexture {...p} />);
+    const initialCalls = useTextureMock.mock.calls.length;
+    rerender(<ImageTexture {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+    }} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(initialCalls);
+    rerender(<ImageTexture {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+
+    expect(useTextureMock.mock.calls.length).toBeGreaterThan(initialCalls);
   });
 });
 

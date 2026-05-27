@@ -510,4 +510,37 @@ describe("<Bed />", () => {
     expect(normal.getY(1)).toEqual(-5);
     expect(normal.getZ(1)).toEqual(6);
   });
+
+  it("reuses mirrored soil geometry on unrelated config churn", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = false;
+    p.config.bedLengthOuter = 1000;
+    p.config.bedWidthOuter = 800;
+    p.config.bedXOffset = 50;
+    p.config.bedYOffset = 25;
+    const geometry = new BufferGeometry();
+    geometry.setAttribute("position", new Float32BufferAttribute([
+      150, 200, 10,
+      300, 400, 20,
+    ], 3));
+    geometry.setAttribute("normal", new Float32BufferAttribute([
+      1, 2, 3,
+      4, 5, 6,
+    ], 3));
+    p.soilSurfaceGeometry = geometry;
+    const cloneSpy = jest.spyOn(geometry, "clone");
+
+    const { rerender } = render(<Bed {...p} />);
+    rerender(<Bed {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+    }} />);
+    expect(cloneSpy).toHaveBeenCalledTimes(1);
+    rerender(<Bed {...p} config={{ ...p.config, mirrorY: true }} />);
+
+    expect(cloneSpy).toHaveBeenCalledTimes(2);
+  });
 });

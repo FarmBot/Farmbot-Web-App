@@ -4132,3 +4132,21 @@ commit message. Roll back rejected implementation changes.
 **Outcome:** Rejected; the guard avoids the storage write itself, but serialization dominates the realistic code path, so the full effect does not improve
 
 **Commit:** Not committed
+
+## Round 51
+
+### Idea 254: Avoid remounting mirrored soil geometry and render texture work on unrelated config churn
+
+**Description:** Narrow memo dependencies around mirrored soil geometry and detailed soil texture creation so unrelated config object changes do not clone soil geometry or remount expensive soil texture subtrees. Expected return: faster rerenders in realistic mirrored gardens and settings-panel interactions without changing soil shape, texture resolution, images, or moisture overlays.
+
+**Benchmark:** Real React/Bun mirrored Bed rerender benchmark: high-detail mirrored bed with 400 rough soil triangles, 75 camera images, 100 moisture readings, one mount plus 60 unrelated config-object churn rerenders, sampled 12 times
+
+**Before:** 166.700 ms median rerender batch
+
+**After:** 73.065 ms median rerender batch
+
+**Change:** 56.2% faster, saving 93.635 ms per 60-rerender batch
+
+**Outcome:** Accepted; narrowed mirrored soil geometry memo dependencies and memoized image texture setup by relevant soil, image, mirror, moisture, debug, and texture-size inputs
+
+**Commit:** `Memoize 3D soil churn for 56.2% faster rerenders`
