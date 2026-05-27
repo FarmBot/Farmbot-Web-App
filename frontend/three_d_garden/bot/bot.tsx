@@ -96,6 +96,22 @@ type XAxisCCMount = GLTF & {
   materials: never;
 }
 
+interface XAxisCCMountModelProps {
+  position: [number, number, number];
+}
+
+const XAxisCCMountModel = (props: XAxisCCMountModelProps) => {
+  const xAxisCCMount =
+    useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
+  return <Mesh name={"xCCMount"}
+    position={props.position}
+    rotation={[0, 0, Math.PI / 2]}
+    scale={1000}
+    geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
+    <MeshPhongMaterial color={"silver"} />
+  </Mesh>;
+};
+
 export interface FarmbotModelProps {
   config: Config;
   configPosition: PositionConfig;
@@ -165,7 +181,6 @@ export const Bot = (props: FarmbotModelProps) => {
     ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
-  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
   const [trackShape, setTrackShape] =
     useState<Shape | undefined>(() => botShapeCache.track);
   const [beamShape, setBeamShape] =
@@ -459,16 +474,12 @@ export const Bot = (props: FarmbotModelProps) => {
           scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
       </Group>;
     })}
-    <Mesh name={"xCCMount"}
+    {config.cableCarriers &&
+    <XAxisCCMountModel
       position={[
         ...outerXY(x - 32, -12),
         -40,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
+      ]} />}
     <CableCarrierX config={config} configPosition={props.configPosition} />
     <CrossSlideModel
       model={crossSlide}

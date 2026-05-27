@@ -217,10 +217,30 @@ commit message. Roll back rejected implementation changes.
      return: lower enabled-grid startup CPU for the normal bed-sized grid by
      avoiding repeated position helper construction, with identical line points.
 
+## Round 36 Candidate Ideas
+
+176. Hide the X-axis cable-carrier mount model when the cable-carrier layer is
+     disabled. Expected return: one fewer GLTF hook/model mesh in carrier-off
+     Bot renders, while carrier-on renders keep the same mount.
+177. Do not mount UtilitiesPost internals while the utilities-post layer is
+     disabled. Expected return: skip hidden wood texture setup, hose curve
+     construction, and utility object JSX in utilities-off Bed renders.
+178. Do not mount Lab desk internals while the desk layer is disabled.
+     Expected return: skip hidden desk wood/screen texture setup and laptop/desk
+     JSX when users hide the desk, with the enabled desk unchanged.
+179. Consolidate seeder suction animation clouds into one frame callback.
+     Expected return: fewer `useFrame` registrations in the real vacuum-on
+     mounted-seeder path while preserving the same four suction cloud particles.
+180. Return from hidden Solar before setting up its opacity spring when focus
+     transitions are disabled. Expected return: less default Outdoor details
+     render work when solar is off, while solar and focus-transition reveal
+     behavior stays the same.
+
 ## Results
 
 | # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
 |---|------|-----------|--------|-------|--------|---------|--------|
+| 176 | Hide X-axis cable-carrier mount when carriers are disabled | Direct carrier-off `Bot` render with default dimensions, measuring `xCCMount` meshes, GLTF hooks, total GLTF hooks, and render time | 1 `xCCMount` mesh; 2 `xAxisCCMount` GLTF hooks; 55 total GLTF hooks; 32.472 ms render | 0 `xCCMount` meshes; 0 `xAxisCCMount` GLTF hooks; 53 total GLTF hooks; 29.966 ms render | 100% fewer carrier-mount hooks and meshes; 3.6% fewer total GLTF hooks; 7.7% faster render, saving 2.506 ms | Accepted; the mount model now follows the cable-carrier layer, while carrier-on renders still load and display the same mount | `Skip carrier-off X mount for 100% fewer mount loads` |
 | 175 | Hoist grid coordinate conversion setup | Default enabled-grid `gridLinePositions` build, sampled as 20 single-build measurements at the normal Genesis bed size | 4,343 `getZ` calls; 2,400 outer position values; 23,400 inner position values; 0.423 ms median build | 4,343 `getZ` calls; 2,400 outer position values; 23,400 inner position values; 0.459 ms median build | 8.5% slower; no call-count or output-size improvement | Rejected and rolled back; helper construction was not the grid bottleneck at the realistic grid size, and the attempted hoist made the measured path worse | None |
 | 174 | Skip bed cable-carrier support rails when carriers are disabled | Direct default `Bed` render with `cableCarriers=false`, measuring bed-level carrier support boxes and render time | 1 lower support; 1 upper support; 18.017 ms render | 0 lower supports; 0 upper supports; 17.457 ms render | 100% fewer hidden bed carrier support rails; 3.1% faster render, saving 0.560 ms | Accepted; the bed support rails now follow the same carrier-layer toggle as moving carriers and Bot support geometry, while carrier-on renders keep the rails | `Skip carrier-off bed rails for 100% fewer supports` |
 | 173 | Load Bot track shape only when tracks are enabled | Direct track-off `Bot` render with default dimensions, measuring mounted track nodes, SVG shape parses, and render time | 0 track nodes; 15 SVG shape parses; 32.533 ms render | 0 track nodes; 12 SVG shape parses; 33.095 ms render | 20.0% fewer SVG shape parses, removing the three unused track parses; render timing shifted 1.7% slower within harness noise | Accepted; track-off Bot configs no longer request/parse hidden track shape data, while track-on configs still load and render the same tracks | `Skip track-off shape parses for 20.0% fewer SVG shapes` |

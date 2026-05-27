@@ -1,10 +1,12 @@
 import React from "react";
 import { render } from "@testing-library/react";
+import { useGLTF } from "@react-three/drei";
 import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { Texture, TextureLoader } from "three";
+import { ASSETS } from "../../constants";
 import {
   createRenderer,
   unmountRenderer,
@@ -117,6 +119,17 @@ describe("<Bot />", () => {
     p.config.tracks = false;
     render(<Bot {...p} />);
     expect(createShapesMock).toHaveBeenCalledTimes(12);
+  });
+
+  it("skips X-axis carrier mount model when carriers are disabled", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const { container } = render(<Bot {...p} />);
+    expect(container.querySelectorAll("[name='xCCMount']").length).toEqual(0);
+    expect(useGltfMock.mock.calls
+      .filter(([url]) => url == ASSETS.models.xAxisCCMount)).toHaveLength(0);
   });
 
   it("reuses parsed shapes across remounts", () => {
