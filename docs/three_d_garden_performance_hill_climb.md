@@ -4442,3 +4442,40 @@ with the same point objects, while changed criteria still reselect and changed
 sort settings still resort the cached selected point list
 
 **Commit:** `Memoize group order selection for 78.9% faster churn`
+
+### Idea 270: Reduce camera-selection marker setup churn
+
+**Description:** Memoize camera-selection marker angle lists and click handlers so camera-selection rerenders do less setup work. Expected return: faster camera-selection UI interactions while preserving all camera choices, hover behavior, and saved settings.
+
+**Benchmark:** Temporary Bun/react-test-renderer camera-selection benchmark with
+`cameraSelectionView` enabled, default heading, normal and `lightsDebug` marker
+sets, and 60 unchanged config-object rerenders plus 60 hover-driven rerenders.
+Measured rendered marker counts, `uniq` marker-list setup calls, `debounce`
+click-handler allocations, and rerender batch CPU across 25 measured samples
+after 5 warmups.
+
+**Before:** Normal markers: 12 heads, 0 bodies, 0 lines; config churn
+21.912 ms median with 120 list setups and 720 debounce allocations; hover
+churn 20.748 ms median with 120 list setups and 720 debounce allocations.
+`lightsDebug`: 20 heads, 16 bodies, 8 lines; config churn 51.301 ms median
+with 180 list setups and 1,200 debounce allocations; hover churn 50.096 ms
+median with 180 list setups and 1,200 debounce allocations.
+
+**After:** Marker counts unchanged. Normal config churn: 1.813 ms median with
+0 list setups and 0 debounce allocations; normal hover churn: 3.663 ms median
+with 0 list setups and 0 debounce allocations. `lightsDebug` config churn:
+2.278 ms median with 0 list setups and 0 debounce allocations; `lightsDebug`
+hover churn: 7.497 ms median with 0 list setups and 0 debounce allocations.
+
+**Change:** Normal config churn was 91.7% faster, saving 20.099 ms per
+60-rerender batch; normal hover churn was 82.3% faster, saving 17.085 ms.
+`lightsDebug` config churn was 95.6% faster, saving 49.023 ms; `lightsDebug`
+hover churn was 85.0% faster, saving 42.600 ms. Unchanged rerenders avoided
+100% of measured marker-list setup and debounce allocation churn.
+
+**Outcome:** Accepted; camera-selection angle lists now reuse stable choices,
+marker components receive scalar props and skip unrelated config-object churn,
+and click/hover handlers are stable while preserving marker positions, selected
+and hovered colors, click dispatches, and top-down/heading marker behavior.
+
+**Commit:** `Reduce camera-selection marker churn`

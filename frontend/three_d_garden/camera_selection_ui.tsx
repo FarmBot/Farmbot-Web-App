@@ -4,7 +4,7 @@ import { getDefaultCameraPosition } from "./camera";
 import { ThreeEvent } from "@react-three/fiber";
 import { Cylinder, Line, Sphere } from "@react-three/drei";
 import { Group, MeshPhongMaterial } from "./components";
-import { debounce, uniq } from "lodash";
+import { debounce } from "lodash";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Actions } from "../constants";
@@ -22,6 +22,10 @@ interface Hovered {
 
 const ORTHOGONAL_ANGLES = [0, 90, 180, 270];
 const ISO_ANGLES = [30, 150, 210, 330];
+const CAMERA_ANGLES = ORTHOGONAL_ANGLES.concat(ISO_ANGLES);
+
+const angleList = (angles: number[], angle: number) =>
+  angles.includes(angle) ? angles : angles.concat(angle);
 
 export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   const { config } = props;
@@ -36,77 +40,99 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
     setHovered(nextHovered);
   }, []);
   const topDownSelected = props.topDownAtStart;
+  const topDownAngles = React.useMemo(
+    () => angleList(ORTHOGONAL_ANGLES,
+      topDownSelected ? config.viewpointHeading : 0),
+    [topDownSelected, config.viewpointHeading],
+  );
+  const isoAngles = React.useMemo(
+    () => angleList(CAMERA_ANGLES,
+      topDownSelected ? 0 : config.viewpointHeading),
+    [topDownSelected, config.viewpointHeading],
+  );
   const common = {
-    config: props.config,
     dispatch: props.dispatch,
-    topDownAtStart: props.topDownAtStart,
-    hovered,
     setHoveredMarker,
+    bedLengthOuter: config.bedLengthOuter,
+    bedWidthOuter: config.bedWidthOuter,
+    bedZOffset: config.bedZOffset,
+    bedHeight: config.bedHeight,
+    lightsDebug: config.lightsDebug,
   };
   return <Group
     name={"camera-selection"}
     visible={config.cameraSelectionView}>
-    {uniq(ORTHOGONAL_ANGLES.concat(
-      topDownSelected ? config.viewpointHeading : 0))
-      .map(angle =>
-        <CameraLocation key={`top-down-${angle}`} {...common}
-          angle={angle}
-          topDown={true}
-          debug={false} />)}
-    {uniq(ORTHOGONAL_ANGLES.concat(ISO_ANGLES).concat(
-      topDownSelected ? 0 : config.viewpointHeading))
-      .map(angle =>
-        <CameraLocation key={`iso-${angle}`} {...common}
-          angle={angle}
-          topDown={false}
-          debug={false} />)}
-    {config.lightsDebug &&
-      uniq(ORTHOGONAL_ANGLES.concat(ISO_ANGLES))
-        .map(angle =>
-          <CameraLocation key={`debug-${angle}`} {...common}
-            angle={angle}
-            topDown={false}
-            debug={true} />)}
+    {topDownAngles.map(angle =>
+      <CameraLocation key={`top-down-${angle}`} {...common}
+        angle={angle}
+        topDown={true}
+        selected={topDownSelected && angle == config.viewpointHeading}
+        hovered={hovered?.angle == angle && hovered.topDown}
+        debug={false} />)}
+    {isoAngles.map(angle =>
+      <CameraLocation key={`iso-${angle}`} {...common}
+        angle={angle}
+        topDown={false}
+        selected={!topDownSelected && angle == config.viewpointHeading}
+        hovered={hovered?.angle == angle && hovered.topDown === false}
+        debug={false} />)}
+    {config.lightsDebug && CAMERA_ANGLES.map(angle =>
+      <CameraLocation key={`debug-${angle}`} {...common}
+        angle={angle}
+        topDown={false}
+        selected={!topDownSelected && angle == config.viewpointHeading}
+        hovered={hovered?.angle == angle && hovered.topDown === false}
+        debug={true} />)}
   </Group>;
 };
 
 interface CameraLocationProps extends Hovered {
-  config: Config;
   dispatch: Function | undefined;
-  topDownAtStart: boolean;
-  hovered: Hovered | undefined;
+  selected: boolean;
+  hovered: boolean;
   setHoveredMarker(hovered?: Hovered): void;
+  bedLengthOuter: number;
+  bedWidthOuter: number;
+  bedZOffset: number;
+  bedHeight: number;
+  lightsDebug: boolean;
   debug: boolean;
 }
 
-const CameraLocation = (props: CameraLocationProps) => {
+const CameraLocation = React.memo((props: CameraLocationProps) => {
   const {
-    config, dispatch, topDownAtStart, hovered,
-    setHoveredMarker, angle, topDown, debug,
+    dispatch, selected, hovered, setHoveredMarker, angle, topDown, debug,
+    bedLengthOuter, bedWidthOuter, bedZOffset, bedHeight, lightsDebug,
   } = props;
-  const isSelected = (topDownAtStart == topDown)
-    && angle == (config.viewpointHeading);
-  const isHovered = hovered?.angle == angle && hovered?.topDown == topDown;
-  const baseColor = isSelected ? "blue" : "orange";
-  const color = isHovered ? "cyan" : baseColor;
-  const bedSize = { x: config.bedLengthOuter, y: config.bedWidthOuter };
-  const position = getDefaultCameraPosition({
-    heading: angle,
-    bedSize,
-    topDown,
-    visual: !debug,
-  });
-  const baseScaleXY = debug ? 1 : 0.5;
-  const scale = topDown ? 0.1 : baseScaleXY;
-  const baseScaleZ = debug ? 1 : 0.5 * 0.25;
-  const zScale = topDown ? 0 : baseScaleZ;
-  const scaledPosition: [number, number, number] = [
-    position[0] * scale,
-    position[1] * scale,
-    position[2] * zScale,
-  ];
-  const height = config.bedZOffset + config.bedHeight + scaledPosition[2];
-  const click = debounce(() => {
+  const baseColor = selected ? "blue" : "orange";
+  const color = hovered ? "cyan" : baseColor;
+  const markerPosition = React.useMemo(() => {
+    const bedSize = { x: bedLengthOuter, y: bedWidthOuter };
+    const position = getDefaultCameraPosition({
+      heading: angle,
+      bedSize,
+      topDown,
+      visual: !debug,
+    });
+    const baseScaleXY = debug ? 1 : 0.5;
+    const scale = topDown ? 0.1 : baseScaleXY;
+    const baseScaleZ = debug ? 1 : 0.5 * 0.25;
+    const zScale = topDown ? 0 : baseScaleZ;
+    const scaledPosition: [number, number, number] = [
+      position[0] * scale,
+      position[1] * scale,
+      position[2] * zScale,
+    ];
+    return {
+      height: bedZOffset + bedHeight + scaledPosition[2],
+      position,
+      scaledPosition,
+    };
+  }, [
+    angle, bedHeight, bedLengthOuter, bedWidthOuter,
+    bedZOffset, debug, topDown,
+  ]);
+  const click = React.useMemo(() => debounce(() => {
     if (dispatch) {
       dispatch(setWebAppConfigValue(
         NumericSetting.viewpoint_heading, angle));
@@ -121,16 +147,20 @@ const CameraLocation = (props: CameraLocationProps) => {
         payload: topDown,
       });
     }
-  });
-  const hoveredData = { angle, topDown };
-  const onPointerMove = () => setHoveredMarker(hoveredData);
-  const onPointerOut = () => setHoveredMarker(undefined);
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
+  }), [angle, dispatch, topDown]);
+  React.useEffect(() => () => click.cancel?.(), [click]);
+  const hoveredData = React.useMemo(() => ({ angle, topDown }),
+    [angle, topDown]);
+  const onPointerMove = React.useCallback(() => setHoveredMarker(hoveredData),
+    [hoveredData, setHoveredMarker]);
+  const onPointerOut = React.useCallback(() => setHoveredMarker(undefined),
+    [setHoveredMarker]);
+  const onClick = React.useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     click();
-  };
+  }, [click]);
   return <Group>
-    <Group position={scaledPosition}>
+    <Group position={markerPosition.scaledPosition}>
       <Sphere
         userData={{ hovered: hoveredData }}
         name={"head"}
@@ -144,12 +174,12 @@ const CameraLocation = (props: CameraLocationProps) => {
           opacity={1}
           color={color} />
       </Sphere>
-      {!topDown && config.lightsDebug &&
+      {!topDown && lightsDebug &&
         <Cylinder
           userData={{ hovered: hoveredData }}
           name={"body"}
-          args={[50, 125, height]}
-          position={[0, 0, -height / 2]}
+          args={[50, 125, markerPosition.height]}
+          position={[0, 0, -markerPosition.height / 2]}
           rotation={[Math.PI / 2, 0, 0]}
           onPointerOver={onPointerMove}
           onPointerMove={onPointerMove}
@@ -162,6 +192,6 @@ const CameraLocation = (props: CameraLocationProps) => {
         </Cylinder>}
     </Group>
     {debug &&
-      <Line points={[position, [0, 0, 0]]} color={color} />}
+      <Line points={[markerPosition.position, [0, 0, 0]]} color={color} />}
   </Group>;
-};
+});

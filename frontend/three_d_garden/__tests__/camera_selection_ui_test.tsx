@@ -6,6 +6,7 @@ import * as lodash from "lodash";
 import { INITIAL } from "../config";
 import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
+import { getDefaultCameraPosition } from "../camera";
 import {
   actRenderer,
   createRenderer,
@@ -21,7 +22,8 @@ describe("<CameraSelectionUI />", () => {
   const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
   beforeEach(() => {
-    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions,
+      "setWebAppConfigValue")
       .mockImplementation(jest.fn());
     debounceSpy = jest.spyOn(lodash, "debounce")
       .mockImplementation((fn => fn) as typeof lodash.debounce);
@@ -51,6 +53,51 @@ describe("<CameraSelectionUI />", () => {
     topDownAtStart: false,
   });
 
+  const findHead = (
+    wrapper: ReturnType<typeof createRenderer>,
+    angle: number,
+    topDown: boolean,
+  ) => wrapper.root.findAll(node =>
+    node.props.name == "head"
+    && node.props.userData?.hovered?.angle == angle
+    && node.props.userData?.hovered?.topDown === topDown)[0];
+
+  const markerPosition = (
+    head: ReturnType<typeof findHead>,
+  ): [number, number, number] | undefined => {
+    let parent = head?.parent;
+    while (parent && parent.props.position === undefined) {
+      parent = parent.parent;
+    }
+    return parent?.props.position;
+  };
+
+  const expectedMarkerPosition = (
+    config: CameraSelectionUIProps["config"],
+    angle: number,
+    topDown: boolean,
+    debug = false,
+  ): [number, number, number] => {
+    const position = getDefaultCameraPosition({
+      heading: angle,
+      bedSize: {
+        x: config.bedLengthOuter,
+        y: config.bedWidthOuter,
+      },
+      topDown,
+      visual: !debug,
+    });
+    const baseScaleXY = debug ? 1 : 0.5;
+    const scale = topDown ? 0.1 : baseScaleXY;
+    const baseScaleZ = debug ? 1 : 0.5 * 0.25;
+    const zScale = topDown ? 0 : baseScaleZ;
+    return [
+      position[0] * scale,
+      position[1] * scale,
+      position[2] * zScale,
+    ];
+  };
+
   it("renders hidden by default", () => {
     const wrapper = createRenderer(<CameraSelectionUI {...fakeProps()} />);
     mountedWrappers.push(wrapper);
@@ -71,6 +118,52 @@ describe("<CameraSelectionUI />", () => {
     p.config.viewpointHeading = 30;
     const { container } = render(<CameraSelectionUI {...p} />);
     expect(container.querySelectorAll(".spherehead").length).toEqual(12);
+  });
+
+  it("keeps top-down heading marker choices and selection", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    p.config.viewpointHeading = 45;
+    p.topDownAtStart = true;
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    mountedWrappers.push(wrapper);
+
+    expect(findHead(wrapper, 45, true)).toBeTruthy();
+    expect(findHead(wrapper, 45, false)).toBeFalsy();
+    const material = findHead(wrapper, 45, true)?.findAll(node =>
+      node.props.color !== undefined)[0];
+    expect(material?.props.color).toEqual("blue");
+  });
+
+  it("keeps marker positions stable across unchanged config churn", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    mountedWrappers.push(wrapper);
+
+    expect(markerPosition(findHead(wrapper, 30, false))).toEqual(
+      expectedMarkerPosition(p.config, 30, false));
+
+    actRenderer(() => {
+      wrapper.update(<CameraSelectionUI {...p} config={clone(p.config)} />);
+    });
+
+    expect(markerPosition(findHead(wrapper, 30, false))).toEqual(
+      expectedMarkerPosition(p.config, 30, false));
+  });
+
+  it("reuses marker setup across unchanged config churn", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    mountedWrappers.push(wrapper);
+    debounceSpy.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<CameraSelectionUI {...p} config={clone(p.config)} />);
+    });
+
+    expect(debounceSpy).not.toHaveBeenCalled();
   });
 
   it("dispatches heading update", () => {
