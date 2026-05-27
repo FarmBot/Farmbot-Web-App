@@ -122,6 +122,17 @@ const plantSpreadRaycast = function (
   ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
 };
 
+interface StaticPlantSpreadInstance {
+  id?: number;
+  x: number;
+  y: number;
+  z: number;
+  positionX: number;
+  positionY: number;
+  size: number;
+  spread: number;
+}
+
 const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
   needsInstanceUpdate: true,
   lastUpdateKey: "",
@@ -169,10 +180,21 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const halfSize = React.useMemo(getHalfSize(config), []);
   const plantIndexes = React.useMemo(() =>
     plants.map((_, index) => index), [plants]);
-  const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
-    zZeroFunc(config)
-    + getZ(plant.x, plant.y)
-    + size / 2, [config, getZ]);
+  const zBase = React.useMemo(() => zZeroFunc(config), [config]);
+  const staticInstances = React.useMemo<StaticPlantSpreadInstance[]>(() =>
+    plants.map(plant => {
+      const position = get3DPosition({ x: plant.x, y: plant.y });
+      return {
+        id: plant.id,
+        x: plant.x,
+        y: plant.y,
+        z: zBase + getZ(plant.x, plant.y) + plant.size / 2,
+        positionX: position.x,
+        positionY: position.y,
+        size: plant.size,
+        spread: plant.spread,
+      };
+    }), [get3DPosition, getZ, plants, zBase]);
   const editPlantMode =
     Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
   const plantId = parseInt(Path.getSlug(Path.plants()));
@@ -212,7 +234,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   React.useEffect(() => {
     const updateState = getUpdateState();
     updateState.needsInstanceUpdate = true;
-  }, [activeDragSpread, config, getZ, plants]);
+  }, [activeDragSpread, staticInstances]);
 
   // eslint-disable-next-line complexity
   useFrame(state => {
@@ -247,7 +269,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     if (!updateState.needsInstanceUpdate &&
       updateState.lastUpdateKey == updateKey) { return; }
     perfMeasure("spreadFrameUpdateMs", () => {
-      plants.forEach((plant, index) => {
+      staticInstances.forEach((plant, index) => {
         const spreadRadii = getSpreadRadii({
           activeDragSpread,
           inactiveSpread: plant.spread,
@@ -256,11 +278,10 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
         const scale = (spreadVisible || !plant.id || editPlantMode)
           ? spreadRadii.inactive
           : 0;
-        const position = get3DPosition({ x: plant.x, y: plant.y });
         tempPosition.set(
-          position.x,
-          position.y,
-          getPlantZ(plant.size, plant),
+          plant.positionX,
+          plant.positionY,
+          plant.z,
         );
         tempScale.set(scale, scale, scale);
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);

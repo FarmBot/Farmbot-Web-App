@@ -419,6 +419,28 @@ describe("<ThreeDPlantSpread />", () => {
     expect(setMatrixAt).toHaveBeenCalled();
   });
 
+  it("reuses spread placement during click-to-add updates", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.getZ = jest.fn(() => 0);
+    p.spreadVisible = true;
+    getModeSpy.mockReturnValue(Mode.clickToAdd);
+    render(<PlantSpreadInstances {...p} />);
+    const getZ = p.getZ as jest.Mock;
+    expect(getZ).toHaveBeenCalledTimes(p.plants.length);
+    getZ.mockClear();
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const state = { camera: { quaternion: new Quaternion() } };
+    p.activePositionRef.current = { x: 100, y: 100 };
+    frameFn(state);
+    expect(setMatrixAt).toHaveBeenCalled();
+    expect(getZ).not.toHaveBeenCalled();
+  });
+
   it("handles missing mesh in layout effect", () => {
     reactUseImperativeHandleSpy.mockImplementation(() => undefined);
     reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);
