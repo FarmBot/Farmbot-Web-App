@@ -137,6 +137,10 @@ describe("<Tools />", () => {
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
+    expect(container).toContainHTML("soilSensor");
+    expect(container).toContainHTML("weeder");
+    expect(container).toContainHTML("seeder");
+    expect(container).toContainHTML("seedTroughWithAssembly");
   });
 
   it("uses mirrored xy position for tool slots", () => {

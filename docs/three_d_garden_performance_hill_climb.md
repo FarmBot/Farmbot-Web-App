@@ -367,3 +367,32 @@ commit message. Roll back rejected implementation changes.
 | 63 | Use direct default soil texture | Docker 1000-plant default scene, 3 measured runs | 50.8 ms image texture setup; 2 soil texture renders; 24 textures; 4.021s full-ready | 52.8 ms image texture setup; 2 soil texture renders; 24 textures; 3.984s full-ready | 3.9% slower texture setup; no texture/render-count win; 0.9% faster full-ready | Rejected and rolled back; the realistic default session still needed the render-texture path, so the conditional added complexity without removing the measured setup cost | None |
 | 64 | Pre-index 3D config env values | Realistic 43-key config batch across 7 initial renders with 83 Farmware envs, 100 sampled app-load batches for timing stability | 0.194 ms median per 7-render config batch | 0.022 ms median per 7-render config batch | 88.6% faster, saving 0.172 ms per realistic load batch | Rejected and rolled back; the percentage cleared the bar but the absolute app-load saving was far below meaningful and did not justify extra indexing code | None |
 | 65 | Reuse plant inventory current date | Realistic 1000 planted plant age calculations, 50 sampled inventory-render batches for timing stability | 2.705 ms median; 4.015 ms p95 | 2.638 ms median; 3.791 ms p95 | 2.5% faster, saving 0.067 ms per 1000-row age batch | Rejected and rolled back; the improvement was below 10% and the absolute saving was not worth parent-to-row date plumbing | None |
+
+## Round 14 Candidate Ideas
+
+66. Unmount hidden `FocusVisibilityGroup` children when focus transitions are
+    disabled and `keepMounted` is not requested. Expected return: fewer hidden
+    default scene objects, especially focus-only labels and indicators, without
+    changing visible content.
+67. Load only the GLTF model required by each rendered tool instead of loading
+    every tool model in every `Tool` component. Expected return: fewer model
+    requests and less FarmBot/toolbay setup work in realistic tool scenes.
+68. Merge the Soil Sensor GLTF's static instanced submeshes using the existing
+    merged-geometry path. Expected return: far fewer draw calls and scene
+    meshes when the soil sensor is mounted or shown in a toolbay.
+69. Skip `OpacityFilter` material traversal and cloning when opacity is `1`.
+    Expected return: less toolbay mount work and fewer cloned materials for
+    normal non-mounted tools with no visual opacity change.
+70. Load the one-slot toolbay GLTF only for tool slots that actually render a
+    bay. Expected return: avoid a model request/setup for the mounted UTM tool
+    and any slots with no pullout direction.
+
+## Round 14 Results
+
+| # | Idea | Benchmark | Before | After | Change | Outcome | Commit |
+|---|------|-----------|--------|-------|--------|---------|--------|
+| 66 | Unmount hidden non-transition focus groups | Docker 1000-plant default scene, 3 measured runs | 533 scene objects; 297 meshes; 183 draw calls; 199 MB heap; 3.965s full-ready | 490 scene objects; 283 meshes; 183 draw calls; 188 MB heap; 3.922s full-ready | 8.1% fewer objects; 4.7% fewer meshes; no draw-call win; 1.1% faster full-ready | Rejected and rolled back; hidden object reduction was real but below 10%, with no meaningful app-level load or draw-call improvement | None |
+| 67 | Load only selected tool GLTFs | Realistic user-tool render with mounted weeder plus 7 slots; Docker 1000-plant default-scene guardrail | 95 `useGLTF` calls; guardrail 183 draw calls, 533 objects, 199 MB heap, 3.965s full-ready, 262.7 FPS | 14 `useGLTF` calls; guardrail 183 draw calls, 533 objects, 188 MB heap, 3.985s full-ready, 219.1 FPS | 85.3% fewer GLTF hook calls, avoiding 81 unused model dependencies; guardrail scene/draw/resource counts stayed flat while FPS sampled lower without a render-count increase | Accepted; the call reduction is meaningful for realistic tool scenes and keeps visual output unchanged, with no measured scene-size, draw-call, model-request, or heap regression in the default app guardrail | `Load only rendered 3D garden tool models for 85.3% fewer GLTF calls` |
+| 68 | Merge soil sensor instanced geometry | Pending | Pending | Pending | Pending | Pending | Pending |
+| 69 | Skip no-op opacity traversal | Pending | Pending | Pending | Pending | Pending | Pending |
+| 70 | Load one-slot toolbay only when rendered | Pending | Pending | Pending | Pending | Pending | Pending |
