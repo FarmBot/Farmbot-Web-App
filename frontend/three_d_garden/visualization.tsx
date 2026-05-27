@@ -4,7 +4,6 @@ import { collectDemoSequenceActions } from "../demo/lua_runner";
 import { store } from "../redux/store";
 import { findSequence } from "../resources/selectors_by_kind";
 import { expandActions } from "../demo/lua_runner/actions";
-import { getWorldPositionFunc } from "./helpers";
 import { Config, PositionConfig } from "./config";
 
 export interface VisualizationProps {
@@ -14,13 +13,35 @@ export interface VisualizationProps {
 }
 
 type ExpandedAction = ReturnType<typeof expandActions>[number];
+type SequenceAction = ReturnType<typeof collectDemoSequenceActions>[number];
+type VisualizationPoint = [number, number, number];
+type VisualizationConfig = Pick<Config,
+  "bedXOffset" | "bedYOffset" | "bedLengthOuter" | "bedWidthOuter"
+  | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
+
+const EMPTY_SEQUENCE_ACTIONS: SequenceAction[] = [];
+const EMPTY_EXPANDED_ACTIONS: ExpandedAction[] = [];
+const EMPTY_VISUALIZATION_POINTS: VisualizationPoint[] = [];
+
+const getVisualizationWorldPositionFunc = (config: VisualizationConfig) =>
+  (gardenPosition: Record<"x" | "y" | "z", number>): VisualizationPoint => {
+    const x = gardenPosition.x + config.bedXOffset
+      - config.bedLengthOuter / 2;
+    const y = gardenPosition.y + config.bedYOffset
+      - config.bedWidthOuter / 2;
+    return [
+      config.mirrorX ? -x : x,
+      config.mirrorY ? -y : y,
+      config.columnLength + 40 - config.zGantryOffset + gardenPosition.z,
+    ];
+  };
 
 export const getVisualizationPoints = (
-  config: Config,
+  config: VisualizationConfig,
   stashedPos: PositionConfig,
   actions: ExpandedAction[],
 ) => {
-  const getWorldPosition = getWorldPositionFunc(config);
+  const getWorldPosition = getVisualizationWorldPositionFunc(config);
   const { x, y, z } = stashedPos;
   const points = [getWorldPosition({
     x: x + config.bedXOffset - config.bedLengthOuter / 2,
@@ -39,28 +60,60 @@ export const getVisualizationPoints = (
   return points;
 };
 
+interface VisualizationLineProps {
+  points: VisualizationPoint[];
+}
+
+const VisualizationLine = React.memo((props: VisualizationLineProps) =>
+  <Line name={"visualization"}
+    color={"orange"}
+    linewidth={2}
+    points={props.points} />);
+
 export const Visualization = (props: VisualizationProps) => {
   const { visualizedSequenceUUID, config } = props;
   const { x, y, z } = props.configPosition;
+  const resources = store.getState().resources.index;
+  const sequence = visualizedSequenceUUID
+    ? findSequence(resources, visualizedSequenceUUID)
+    : undefined;
+  const sequenceId = sequence?.body.id;
+  const stashedPos = React.useMemo(() => ({ x, y, z }), [x, y, z]);
+  const sequenceActions = React.useMemo(() => {
+    if (!visualizedSequenceUUID || !sequenceId) {
+      return EMPTY_SEQUENCE_ACTIONS;
+    }
+    return collectDemoSequenceActions(0, resources, sequenceId, []);
+  }, [visualizedSequenceUUID, resources, sequenceId]);
+  const expandedActions = React.useMemo(() => {
+    if (!sequenceId) { return EMPTY_EXPANDED_ACTIONS; }
+    return expandActions(sequenceActions, [], stashedPos);
+  }, [sequenceId, sequenceActions, stashedPos]);
+  const {
+    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter,
+    columnLength, zGantryOffset, mirrorX, mirrorY,
+  } = config;
+  const visualizationConfig = React.useMemo(() => ({
+    bedXOffset,
+    bedYOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    columnLength,
+    zGantryOffset,
+    mirrorX,
+    mirrorY,
+  }), [
+    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter,
+    columnLength, zGantryOffset, mirrorX, mirrorY,
+  ]);
   const visualizationPoints = React.useMemo(() => {
-    if (!visualizedSequenceUUID) { return []; }
-    const resources = store.getState().resources.index;
-    const sequence = findSequence(resources, visualizedSequenceUUID);
-    if (!sequence.body.id) { return []; }
-    const stashedPos = { x, y, z };
-    const actions =
-      collectDemoSequenceActions(0, resources, sequence.body.id, []);
+    if (!sequenceId) { return EMPTY_VISUALIZATION_POINTS; }
     return getVisualizationPoints(
-      config,
+      visualizationConfig,
       stashedPos,
-      expandActions(actions, [], stashedPos),
+      expandedActions,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visualizedSequenceUUID,
-    config, x, y, z]);
+  }, [sequenceId, visualizationConfig, stashedPos, expandedActions]);
   return visualizationPoints.length > 0 &&
-    <Line name={"visualization"}
-      color={"orange"}
-      linewidth={2}
-      points={visualizationPoints} />;
+    <VisualizationLine points={visualizationPoints} />;
 };

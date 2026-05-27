@@ -4263,6 +4263,22 @@ behavior and X-axis rerender behavior.
 
 **Commit:** `Split FarmBot statics for 70.2% faster z batches`
 
+### Idea 257: Remove inactive tool frame callbacks
+
+**Description:** Register the rotary-tool `useFrame` callback only for the mounted active rotary tool when rotation is enabled instead of every rendered tool slot. Expected return: lower per-frame CPU in gardens with multiple tool slots and no active rotary animation.
+
+**Benchmark:** Temporary Bun/Testing Library `Tools` render with a mounted rotary tool plus 8, 10, and 12 realistic configured slots, covering `config.rotary=0` and `config.rotary=1`; measured registered frame callback count and median CPU for 60/120 manual frame dispatches, then compared against an ideal active-only callback list without changing production code.
+
+**Before:** 8 slots: 9 callbacks, 0.0072 ms/60 off and 0.0113 ms/60 on; 10 slots: 11 callbacks, 0.0083 ms/60 off and 0.0110 ms/60 on; 12 slots: 13 callbacks, 0.0083 ms/60 off and 0.0119 ms/60 on. The 120-frame batches topped out at 0.0282 ms.
+
+**After:** Ideal active-only callback simulation: 0 callbacks when rotary was off and 1 callback when rotary was on, with 60-frame batches between 0.0011 ms and 0.0053 ms; 120-frame batches topped out at 0.0130 ms.
+
+**Change:** Up to 100% fewer callbacks when rotary was off and 92.3% fewer callbacks with 12 slots while rotary was on, but the largest measured CPU win was only 0.0076 ms per 60-frame batch and 0.0152 ms per 120-frame batch.
+
+**Outcome:** Rejected before implementation; the callback-count win is real, but the measured frame-batch CPU saving is far below the 1 ms/60-frame target and not meaningful enough to risk extra rotary animation indirection.
+
+**Commit:** None
+
 ### Idea 258: Memoize electronics box against X-axis movement only
 
 **Description:** Keep the electronics box model from rerendering on Y/Z-only bot movement and unrelated config churn, since its visible position depends on X and a small set of config fields. Expected return: better bot movement responsiveness with the electronics box fully preserved.
@@ -4284,6 +4300,33 @@ movement and unrelated config object churn while preserving identical stable-X
 output, and X movement plus kit-version model changes still update
 
 **Commit:** `Memoize electronics box for 97.1% faster yz batches`
+
+### Idea 259: Speed up animated season sun lookup
+
+**Description:** Replace per-frame linear sun-animation sample lookup with a faster equivalent lookup for animated seasons. Expected return: lower per-frame CPU while preserving the same sun path, sky fade, shadows, and plant seasonal scaling inputs.
+
+**Benchmark:** Warm-cache animated-season sun frame lookup benchmark across
+Spring/Summer/Fall/Winter, calling `getAnimatedSeasonDate()`,
+`calcSunCoordinate()`, `calcSunI()`, and the three `sunPosition()` updates
+used by the `Sun` frame callback. Measured both 120 frames spread across the
+full 20-second season cycle and a worst linear-scan 120-frame 60 fps window
+from 18.000s to 19.983s; each was sampled 80 times after 20 warmups
+
+**Before:** Full-cycle median: 0.121 ms per 120-frame season batch, 0.482 ms
+for all four seasons. End-cycle window median: 0.172 ms per 120-frame season
+batch, 0.688 ms for all four seasons
+
+**After:** Not implemented
+
+**Change:** Rejected before implementation because the full measured
+120-frame season batch is already below the 1 ms absolute-win target even in
+the worst realistic scan window
+
+**Outcome:** Rejected; even a perfect lookup removal cannot save a meaningful
+absolute amount in the realistic animated-sun frame budget, so no sun path,
+sky fade, light intensity, or seasonal date behavior was changed
+
+**Commit:** Not committed
 
 ### Idea 260: Memoize zoom beacon focus definitions across unrelated config churn
 
@@ -4308,6 +4351,33 @@ preserving hover/click/info/debug behavior and relevant configPosition/config
 updates
 
 **Commit:** `Memoize zoom beacons for 91.4% faster churn`
+
+### Idea 261: Reduce focus-transition material opacity churn
+
+**Description:** Avoid redundant material opacity writes and `needsUpdate` flips during focus transitions when a material is already at the requested state. Expected return: smoother focus transitions on scenes with many meshes while preserving fade behavior.
+
+**Benchmark:** Bun focus-material benchmark with a nested 300-owner
+`Object3D` tree, 350 cloned materials including array-material slots, and 60
+eased opacity samples plus final rest apply. Counts measured opacity,
+transparent, depthWrite, and `needsUpdate` writes; CPU includes clone, apply,
+and restore. A guarded-write prototype was benchmarked without editing source.
+
+**Before:** 0.282 ms median, 0.335 ms average, 0.780 ms p95; 21,350
+opacity writes, 21,350 transparent writes, 21,350 depthWrite writes, and
+21,350 `needsUpdate` flips per transition.
+
+**After:** Prototype: 0.314 ms median, 0.381 ms average, 0.825 ms p95;
+21,000 opacity writes, 632 transparent writes, 560 depthWrite writes, and
+686 `needsUpdate` flips per transition.
+
+**Change:** None; source left untouched because the guarded-write path added
+branching overhead and did not improve realistic transition CPU.
+
+**Outcome:** Rejected; despite fewer material flag writes and update flips, CPU
+regressed by 11.3% median and the baseline was already far below the 2 ms
+absolute-win target.
+
+**Commit:** N/A
 
 ### Idea 262: Memoize point overlay against relevant config fields
 
@@ -4335,7 +4405,7 @@ affect world positions plus point/click visibility inputs, so unrelated config
 object churn skips bucket and instance setup while mirror/offset/Z-base changes
 still rebuild identical point positions, radius rings, opacity, and clicks.
 
-**Commit:** `Memoize point overlay for config churn`
+**Commit:** `Memoize point overlay for 99.7% faster config churn`
 
 ### Idea 263: Memoize weed overlay against relevant config fields
 
@@ -4443,6 +4513,48 @@ sort settings still resort the cached selected point list
 
 **Commit:** `Memoize group order selection for 78.9% faster churn`
 
+### Idea 267: Avoid sequence visualization expansion on unrelated config churn
+
+**Description:** Keep 3D sequence visualization from recollecting and re-expanding actions when unrelated config fields change. Expected return: faster rerenders while visualizing long movement sequences, with identical line points.
+
+**Benchmark:** Temporary Bun/Testing Library `Visualization` benchmark with a visualized 150-step mixed move/action sequence and 60 unrelated config-object churn rerenders. Measured direct collect/expand/point-conversion CPU before implementation, then measured rerender batch CPU and collect/expand/line-call counts across 10 measured churn batches after warmup.
+
+**Before:** 150 collected actions; 480 expanded actions; 211 line points. Direct 60-pass phase medians: 17252.478 ms collect, 16.681 ms expand, 1.484 ms point conversion. Full 60-rerender churn batch median: 17196.697 ms.
+
+**After:** 1 initial collect, 1 initial expand, and 1 initial line render; 0 collect calls, 0 expand calls, and 0 line renders during measured churn. Full 60-rerender churn batch median: 1.381 ms.
+
+**Change:** 100% fewer collect/expand/line updates during unrelated config churn; 99.99% faster render batch, saving 17195.316 ms across 60 churn rerenders.
+
+**Outcome:** Accepted; sequence collection and expansion now cache against the visualized sequence/resources and current position, while point conversion caches against only visualization geometry fields. Unrelated config-object churn preserves the same line points, and sequence resource, configPosition, and geometry config changes still update the visualization.
+
+**Commit:** `Memoize sequence visualization for 99.99% faster churn`
+
+### Idea 268: Reduce moisture reading matrix setup cost
+
+**Description:** Build translation-only moisture reading instance matrices with a cheaper equivalent path if the realistic visible-readings setup cost is meaningful. Expected return: faster sensor-reading overlay setup without changing sphere count, radius, color, or positions.
+
+**Benchmark:** Direct readings-only `MoistureSurface` benchmark with 200
+realistic visible sensor readings, moisture interpolation hidden, and 60
+measured matrix-buffer setup samples after 15 warmups; the real render
+guardrail measured rendered moisture-reading instanced mesh count.
+
+**Before:** 0.0093 ms median Matrix4/toArray setup for 200 reading matrices
+(0.0104 ms average, 0.0194 ms p95); render guardrail: 1 instanced mesh with
+count 200.
+
+**After:** Translation-only prototype: 0.0034 ms median setup (0.0044 ms
+average, 0.0112 ms p95) with byte-identical matrix buffers; render guardrail
+remained 1 instanced mesh with count 200.
+
+**Change:** Prototype was 63.2% faster but saved only 0.0059 ms per realistic
+200-reading setup.
+
+**Outcome:** Rejected before implementation; sphere count, radius, color,
+offsets, and positions could be preserved, but the absolute setup saving was
+far below the 1 ms visible-readings target and not a meaningful batch win.
+
+**Commit:** Not committed
+
 ### Idea 269: Memoize gantry beam light-strip work
 
 **Description:** Keep gantry beam and light-strip child work from rerendering when bot movement or config churn does not affect beam length, lighting, or X position. Expected return: faster bot rerender batches with lights enabled while preserving all LEDs, shadows, and extrusion detail.
@@ -4494,4 +4606,4 @@ marker components receive scalar props and skip unrelated config-object churn,
 and click/hover handlers are stable while preserving marker positions, selected
 and hovered colors, click dispatches, and top-down/heading marker behavior.
 
-**Commit:** `Reduce camera-selection marker churn`
+**Commit:** `Reduce camera-selection marker churn by 95.6%`
