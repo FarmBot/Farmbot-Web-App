@@ -61,8 +61,13 @@ interface CableCarrierXProps {
 }
 
 export const CableCarrierX = (props: CableCarrierXProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierX {...props} />;
+};
+
+const VisibleCableCarrierX = (props: CableCarrierXProps) => {
   const {
-    bedHeight, cableCarriers, botSizeX, tracks, bedYOffset,
+    bedHeight, botSizeX, tracks, bedYOffset,
   } = props.config;
   const { x } = props.configPosition;
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
@@ -78,7 +83,7 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
       true),
     { steps: 1, depth: 22, bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [bedCCSupportHeight, botSizeX, x]);
-  return <Extrude name={"xCC"} visible={cableCarriers}
+  return <Extrude name={"xCC"}
     castShadow={true}
     args={args}
     position={[
@@ -97,8 +102,13 @@ interface CableCarrierYProps {
 }
 
 export const CableCarrierY = (props: CableCarrierYProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierY {...props} />;
+};
+
+const VisibleCableCarrierY = (props: CableCarrierYProps) => {
   const {
-    columnLength, cableCarriers, botSizeY, kitVersion,
+    columnLength, botSizeY, kitVersion,
   } = props.config;
   const { x, y } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -119,7 +129,7 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
     ccPath(botSizeY, y + 40, 70),
     { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeY, kitVersion, y]);
-  return <Extrude name={"yCC"} visible={cableCarriers}
+  return <Extrude name={"yCC"}
     castShadow={true}
     args={args}
     position={getPosition()}
@@ -134,8 +144,13 @@ interface CableCarrierZProps {
 }
 
 export const CableCarrierZ = (props: CableCarrierZProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierZ {...props} />;
+};
+
+const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const {
-    cableCarriers, botSizeZ, zGantryOffset,
+    botSizeZ, zGantryOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(props.config);
@@ -146,7 +161,7 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
     ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
     { steps: 1, depth: 60, bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeZ, z, zDir, zGantryOffset]);
-  return <Extrude name={"zCC"} visible={cableCarriers}
+  return <Extrude name={"zCC"}
     castShadow={true}
     args={args}
     position={[

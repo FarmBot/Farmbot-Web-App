@@ -2,17 +2,40 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
 import {
+  CableCarrierX, CableCarrierY, CableCarrierZ,
   CableCarrierSupportVertical, CableCarrierSupportVerticalProps,
   CableCarrierSupportHorizontal, CableCarrierSupportHorizontalProps,
 } from "../cable_carriers";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
+import { Shape } from "three";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
 
 beforeEach(() => {
   useGltfMock.mockClear();
+});
+
+describe("moving cable carriers", () => {
+  const fakeProps = () => ({
+    config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
+  });
+
+  it("skips disabled moving carriers", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { container } = render(<>
+      <CableCarrierX {...p} />
+      <CableCarrierY {...p} />
+      <CableCarrierZ {...p} />
+    </>);
+    expect(container.querySelectorAll("extrude").length).toBe(0);
+    expect(moveToSpy).not.toHaveBeenCalled();
+    moveToSpy.mockRestore();
+  });
 });
 
 describe("<CableCarrierVertical />", () => {
