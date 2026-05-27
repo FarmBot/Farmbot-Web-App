@@ -16,10 +16,20 @@ import { Actions } from "../../../constants";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
-import { Quaternion, WebGLProgramParametersWithUniforms } from "three";
+import {
+  InstancedMesh as ThreeInstancedMesh,
+  Quaternion,
+  WebGLProgramParametersWithUniforms,
+  type Intersection,
+  type Raycaster,
+} from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
 import * as meshKey from "../instanced_mesh_key";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 interface MockRef {
   current: {
@@ -255,6 +265,51 @@ describe("<ThreeDPlantSpread />", () => {
     mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  const spreadRaycast = (p = fakeProps()) => {
+    queueMeshRef();
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const raycast = mesh.props.raycast as (
+      this: ThreeInstancedMesh,
+      raycaster: Raycaster,
+      intersects: Intersection[],
+    ) => void;
+    unmountRenderer(wrapper);
+    return raycast;
+  };
+
+  it.each([
+    Mode.clickToAdd,
+    Mode.createPoint,
+    Mode.createWeed,
+  ])("allows %s raycasts through spread spheres", mode => {
+    getModeSpy.mockReturnValue(mode);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    );
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).not.toHaveBeenCalled();
+    expect(intersects).toEqual([]);
+    defaultRaycast.mockRestore();
+  });
+
+  it("keeps spread sphere raycasts outside placement modes", () => {
+    getModeSpy.mockReturnValue(Mode.none);
+    const defaultRaycast = jest.spyOn(
+      ThreeInstancedMesh.prototype,
+      "raycast",
+    ).mockImplementation(() => undefined);
+    const intersects: Intersection[] = [];
+    const raycaster = {} as Raycaster;
+    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
+    expect(defaultRaycast).toHaveBeenCalledWith(raycaster, intersects);
+    defaultRaycast.mockRestore();
   });
 
   it("updates instance colors on frame", () => {

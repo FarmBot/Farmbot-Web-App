@@ -10,6 +10,7 @@ import {
   Euler,
   InstancedMesh as InstancedMeshType,
   Matrix4,
+  Mesh as ThreeMesh,
   Quaternion,
   Vector3,
 } from "three";
@@ -334,7 +335,7 @@ const PointBase = (props: PointBaseProps) => {
           opacity={1 * alpha} />
       </Sphere>
     </Group>
-    {radius > 0 &&
+    {(radius > 0 || torusRef) &&
       <HollowCylinder
         torusRef={torusRef}
         radius={radius}
@@ -352,12 +353,23 @@ interface HollowCylinderProps {
   torusRef?: TorusRef;
 }
 
+const setTorusRefCurrent = (torusRef: TorusRef, node: ThreeMesh | null) => {
+  (torusRef as React.MutableRefObject<ThreeMesh | null>).current = node;
+};
+
 const HollowCylinder = (
   { radius, color, alpha, torusRef }: HollowCylinderProps,
 ) => {
+  const setTorusRef = React.useCallback((node: ThreeMesh | null) => {
+    if (!torusRef) { return; }
+    const maybeMesh = node as Partial<ThreeMesh> | null;
+    if (!node || maybeMesh?.scale) {
+      setTorusRefCurrent(torusRef, node);
+    }
+  }, [torusRef]);
   return torusRef
     ? <Torus
-      ref={torusRef}
+      ref={setTorusRef}
       scale={[radius, radius, POINT_CYLINDER_SCALE_FACTOR]}
       rotation={[-Math.PI / 2, 0, 0]}
       args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]}>

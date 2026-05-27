@@ -141,6 +141,17 @@ describe("<DrawnPoint />", () => {
     expect(container).toContainHTML("position=\"0,0,0\"");
   });
 
+  it("draws point radius preview", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.r = 0;
+    p.designer.drawnPoint = point;
+    p.torusRef = { current: undefined as never };
+    const { container } = render(<DrawnPoint {...p} />);
+    expect(container.querySelector(".torus")).not.toBeNull();
+  });
+
   it("doesn't draw point", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
