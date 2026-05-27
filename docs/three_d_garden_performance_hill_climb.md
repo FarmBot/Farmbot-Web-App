@@ -3804,3 +3804,331 @@ commit message. Roll back rejected implementation changes.
 **Outcome:** Accepted; the absolute timing gain is small, but the realistic call reduction is large and the code is a simpler guard ordering with no rendering, animation, resolution, or interaction change
 
 **Commit:** `Skip duplicate pointer heights for 98.3% fewer calls`
+
+## Round 47
+
+### Idea 231: Precompute seasonal plant icon base positions and soil heights
+
+**Description:** Precompute each plant icon's static 3D XY position and soil-height base even when seasonal animation is enabled. Expected return: animated-season frames stop recalculating garden-to-world XY and cached `getZ()` values for every plant on every frame, while preserving per-frame plant scale, billboard rotation, and sun brightness.
+
+**Benchmark:** Real `PlantInstances` seasonal animation frame benchmark with 1,000 plants split across 20 icon buckets and 60 animation frames, sampled 12 times
+
+**Before:** 20 icon-bucket frame callbacks; 1.598 ms median render setup; 15.823 ms median frame batch; 60,000 median `getZ` calls
+
+**After:** 20 icon-bucket frame callbacks; 1.762 ms median render setup; 7.404 ms median frame batch; 1,000 median `getZ` calls
+
+**Change:** 53.2% faster frame batch, saving 8.419 ms per 60 animated frames; 98.3% fewer `getZ` calls; render setup 0.164 ms slower from the one-time precompute
+
+**Outcome:** Accepted; seasonal plant icons now reuse static XY and soil-height bases while retaining per-frame seasonal size, camera-facing billboard rotation, and sun brightness updates
+
+**Commit:** `Precompute seasonal plant bases for 53.2% faster frames`
+
+### Idea 232: Share plant icon plane geometry across crop icon buckets
+
+**Description:** Share one unit plane geometry across all plant icon instanced meshes. Expected return: gardens with many crop icon buckets allocate fewer identical plane geometries while keeping each bucket's texture, material, instance count, click behavior, and billboard matrix updates unchanged.
+
+**Benchmark:** Real `PlantInstances` setup benchmark with 1,000 plants split across 20 crop icon buckets, sampled 20 times
+
+**Before:** 20 plant icon instanced meshes; 1.469 ms median render setup
+
+**After:** 20 plant icon instanced meshes; 1.253 ms median render setup
+
+**Change:** 14.7% faster setup, saving 0.216 ms, plus one shared unit plane geometry instead of one geometry per crop icon bucket
+
+**Outcome:** Accepted; plant icon buckets now share the same unit plane geometry while retaining per-bucket textures, materials, counts, raycasts, and billboard matrix updates
+
+**Commit:** `Share plant icon geometry for 14.7% faster setup`
+
+### Idea 233: Use static instance matrix buffers for point marker and radius meshes
+
+**Description:** Build point marker and radius instance matrices as typed buffers during bucket preparation instead of filling them with `setMatrixAt()` effects after mount. Expected return: point-heavy overlays skip post-render matrix effects and reduce setup work while preserving marker geometry, radius rings, colors, opacity, and click targets.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring render setup
+
+**Before:** 12 instanced meshes; 0.995 ms median render setup
+
+**After:** 12 instanced meshes; 1.874 ms median render setup
+
+**Change:** 88.4% slower setup, adding 0.879 ms
+
+**Outcome:** Rejected and rolled back; replacing `setMatrixAt()` effects with prebuilt typed matrix buffers increased setup time and added complexity without any user-visible benefit
+
+**Commit:** Not committed
+
+### Idea 234: Skip zero-count plant icon buckets created only from retained capacities
+
+**Description:** Avoid mounting plant icon instanced meshes when a retained icon capacity has no current plants. Expected return: gardens that previously had plants of an icon type do not keep empty instanced meshes around after those plants are removed, without changing visible plant rendering or future capacity handling for non-empty buckets.
+
+**Benchmark:** Real `PlantInstances` retained-capacity setup with 100 current plants across 2 active icon buckets and retained capacities for 20 icon buckets, sampled 20 times
+
+**Before:** 20 plant icon meshes; 20 texture hook calls; 0.990 ms median render setup
+
+**After:** 2 plant icon meshes; 2 texture hook calls; 0.384 ms median render setup
+
+**Change:** 90.0% fewer plant icon meshes, 90.0% fewer texture hook calls, and 61.2% faster setup, saving 0.606 ms
+
+**Outcome:** Accepted; retained capacities still size non-empty icon buckets, but inactive icon buckets no longer mount invisible instanced meshes or load unused textures
+
+**Commit:** `Skip empty plant icon buckets for 61.2% faster setup`
+
+### Idea 235: Do not mount inactive moisture overlay components inside the soil render texture
+
+**Description:** Skip the `MoistureSurface` subtree inside `ImageTexture` when both moisture interpolation and moisture readings are hidden. Expected return: the normal soil-texture render path avoids inactive moisture memo work and empty instanced mesh wrappers without changing image, soil, or moisture behavior when those layers are visible.
+
+**Benchmark:** Real `ImageTexture` render with no images and both moisture interpolation and moisture readings hidden, sampled 30 times
+
+**Before:** 1 inactive moisture layer; 0.275 ms median render setup
+
+**After:** 0 inactive moisture layers; 0.215 ms median render setup
+
+**Change:** 21.8% faster setup, saving 0.060 ms on the normal hidden-moisture soil texture render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to clear the meaningful-improvement bar
+
+**Commit:** Not committed
+
+## Round 48
+
+### Idea 236: Build plant icon buckets from active plants only
+
+**Description:** Stop pre-seeding `PlantInstances` buckets from retained icon capacities, since empty capacity buckets are already filtered out. Expected return: retained-capacity renders avoid constructing and filtering unused bucket objects while preserving reserved capacity for every non-empty icon bucket.
+
+**Benchmark:** Real `PlantInstances` retained-capacity setup with 100 current plants across 2 active icon buckets and retained capacities for 20 icon buckets, sampled 20 times
+
+**Before:** 2 plant icon meshes; 2 texture hook calls; 0.374 ms median render setup
+
+**After:** 2 plant icon meshes; 2 texture hook calls; 0.466 ms median render setup
+
+**Change:** 24.5% slower setup, adding 0.092 ms
+
+**Outcome:** Rejected and rolled back; removing capacity pre-seeding looked simpler but regressed the realistic retained-capacity path
+
+**Commit:** Not committed
+
+### Idea 237: Skip steady plant icon frame work before brightness calculation
+
+**Description:** In non-seasonal plant icon frames, return before recalculating brightness when the camera has not changed and the material already has the current brightness. Expected return: static dense gardens with many icon buckets avoid repeated per-bucket brightness checks every frame while preserving brightness updates after config changes and all seasonal animation behavior.
+
+**Benchmark:** Real `PlantInstances` steady-frame benchmark with 1,000 plants split across 20 icon buckets after initial matrix setup, running 60 unchanged-camera frames and sampled 20 times
+
+**Before:** 20 icon-bucket frame callbacks; 0.036 ms median steady-frame batch
+
+**After:** 20 icon-bucket frame callbacks; 0.036 ms median steady-frame batch
+
+**Change:** 0.3% slower, adding 0.000 ms at this precision
+
+**Outcome:** Rejected and rolled back; the existing non-seasonal steady-frame path is already effectively free, so the extra guard ordering did not produce a meaningful improvement
+
+**Commit:** Not committed
+
+### Idea 238: Precompute inactive plant spread scale
+
+**Description:** Store each plant spread instance's inactive spread radius during static spread preparation. Expected return: spread-visible updates for dense gardens avoid recalculating inactive spread radii for every plant when not dragging or editing, while preserving overlap colors and active-drag behavior.
+
+**Benchmark:** Real `PlantSpreadInstances` visible-spread benchmark with 1,000 plants and the initial spread frame update, sampled 12 times
+
+**Before:** 0.503 ms median render setup; 0.155 ms median frame update
+
+**After:** 0.521 ms median render setup; 0.145 ms median frame update
+
+**Change:** 6.5% faster frame update, saving 0.010 ms, with render setup 0.018 ms slower
+
+**Outcome:** Rejected and rolled back; the realistic spread-visible frame path improved slightly but missed the 10% threshold and the absolute saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 239: Share ground circle geometries across ground detail wrappers
+
+**Description:** Share the low-detail and high-detail ground circle geometries instead of rebuilding identical colored circle geometries per ground mount. Expected return: environment setup avoids repeated geometry/color-buffer allocation while keeping the same terrain radius, segment counts, vertex colors, textures, and LOD behavior.
+
+**Benchmark:** Real detailed `Ground` render with high- and low-detail LOD meshes mounted, sampled 30 times
+
+**Before:** 2 ground meshes; 0.276 ms median render setup
+
+**After:** 2 ground meshes; 0.233 ms median render setup
+
+**Change:** 15.7% faster setup, saving 0.043 ms on the one-time environment render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to justify shared geometry lifetime handling
+
+**Commit:** Not committed
+
+### Idea 240: Skip zero-count moisture reading instanced meshes
+
+**Description:** Avoid mounting `MoistureReadings` instanced meshes when sensor readings are visible but there are no readings. Expected return: empty reading states avoid an unnecessary instanced mesh wrapper without changing rendering when readings exist.
+
+**Benchmark:** Real `MoistureSurface` render with moisture readings visible, moisture interpolation hidden, and no sensor readings, sampled 30 times
+
+**Before:** 1 zero-count reading instanced mesh; 0.205 ms median render setup
+
+**After:** 0 reading instanced meshes; 0.190 ms median render setup
+
+**Change:** 7.3% faster setup, saving 0.015 ms
+
+**Outcome:** Rejected and rolled back; the zero-count mesh guard missed the 10% threshold and the absolute saving was not meaningful
+
+**Commit:** Not committed
+
+## Round 49
+
+### Idea 241: Hoist nested 3D position helpers inside world-position conversion
+
+**Description:** Create the no-mirror and world-position helper closures once per configured converter instead of recreating nested converters on every point. Expected return: dense point, weed, plant-label, grid, and group-order setup paths avoid repeated helper allocation while preserving all mirror, offset, and Z behavior.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring setup
+
+**Before:** 12 instanced meshes; 1.194 ms median render setup
+
+**After:** 12 instanced meshes; 1.335 ms median render setup with exact dynamic Z behavior preserved
+
+**Change:** 11.8% slower setup, adding 0.141 ms
+
+**Outcome:** Rejected and rolled back; the exact-semantics helper hoist did not produce a reliable dense-overlay win, and caching the Z base would change behavior if a converter's config object is mutated after creation
+
+**Commit:** Not committed
+
+### Idea 242: Compute grid sample positions with one hoisted position converter
+
+**Description:** Pass one configured `get3DPosition` function through grid line generation instead of reconstructing it per grid line. Expected return: visible grid setup avoids repeated helper construction across every row and column while preserving the same 100 samples per line and terrain-following Z values.
+
+**Benchmark:** Real `gridLinePositions()` generation for the Genesis XL preset with visible grid sampling, sampled 30 times
+
+**Before:** 0.305 ms median grid line generation
+
+**After:** 0.301 ms median grid line generation
+
+**Change:** 1.4% faster, saving 0.004 ms
+
+**Outcome:** Rejected and rolled back; the hoisted converter was harmless but the realistic grid setup saving was far below the threshold and not meaningful
+
+**Commit:** Not committed
+
+### Idea 243: Use pre-sized arrays for grid line position buffers
+
+**Description:** Allocate grid line position arrays at their final size and fill by index instead of repeatedly pushing segment coordinates. Expected return: large beds with visible grids avoid repeated dynamic array growth while preserving identical line segment positions and detail.
+
+**Benchmark:** Real `gridLinePositions()` generation for the Genesis XL preset with visible grid sampling, sampled 30 times
+
+**Before:** 0.305 ms median grid line generation
+
+**After:** 0.265 ms median grid line generation
+
+**Change:** 13.2% faster, saving 0.040 ms on one-time grid setup
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to justify the more complex indexed buffer-fill code
+
+**Commit:** Not committed
+
+### Idea 244: Fill moisture map instance matrices without `Matrix4`
+
+**Description:** Write translation-only instance matrices directly into the typed matrix buffer for moisture interpolation boxes. Expected return: visible moisture maps with many interpolation cells avoid per-cell `Matrix4.identity().setPosition().toArray()` calls while preserving all box positions, colors, opacity, and dimensions.
+
+**Benchmark:** Real warm-cache `MoistureSurface` render with moisture map visible, 25 soil-moisture readings, and 50 mm interpolation cells, sampled 20 times
+
+**Before:** 1 moisture-map instanced mesh; 0.374 ms median render setup
+
+**After:** 1 moisture-map instanced mesh; 0.327 ms median render setup
+
+**Change:** 12.5% faster setup, saving 0.047 ms
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute warm-cache moisture-map setup saving was too small to justify less-readable manual matrix buffer writes
+
+**Commit:** Not committed
+
+### Idea 245: Cache image texture key strings for unchanged sensor reading arrays
+
+**Description:** Cache image texture key fragments for sensor and sensor-reading arrays by array identity. Expected return: normal soil texture renders with unchanged moisture inputs avoid rebuilding long key strings while still changing the key whenever the arrays are replaced or moisture visibility changes.
+
+**Benchmark:** Real `ImageTexture` rerender benchmark with unchanged props, 100 moisture readings, moisture map/readings visible, and 60 rerenders, sampled 12 times
+
+**Before:** 14.365 ms median rerender batch
+
+**After:** 13.016 ms median rerender batch using a React memoized texture key
+
+**Change:** 9.4% faster rerender batch, saving 1.348 ms across 60 unchanged rerenders
+
+**Outcome:** Rejected and rolled back; the absolute saving was plausible, but the improvement missed the 10% threshold
+
+**Commit:** Not committed
+
+## Round 50
+
+### Idea 246: Compute soil surface bounds in one pass
+
+**Description:** Find `computeSurface()` texture bounds while preparing the projected 2D points instead of creating separate X and Y arrays and spreading them into `Math.min`/`Math.max`. Expected return: realistic soil-surface setup avoids extra full-array allocations and large argument spreads while preserving identical Delaunay input, vertices, normals, UVs, and terrain shape.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` benchmark with 200 realistic soil points producing 1,182 surface vertices, sampled 40 times
+
+**Before:** 0.100 ms median surface conversion
+
+**After:** 0.150 ms median surface conversion with one-pass bounds
+
+**Change:** 49.9% slower, adding 0.050 ms
+
+**Outcome:** Rejected; the proposed one-pass bounds path was slower in the realistic benchmark
+
+**Commit:** Not committed
+
+### Idea 247: Pre-size soil surface output buffers
+
+**Description:** Allocate `computeSurface()` vertex, face, UV, and vertex-list buffers at their final realistic triangle sizes and fill by index. Expected return: realistic soil-surface setup avoids dynamic array growth during Delaunay triangle conversion while preserving identical geometry and UV detail.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` benchmark with 200 realistic soil points producing 1,182 surface vertices, sampled 40 times
+
+**Before:** 0.100 ms median surface conversion
+
+**After:** 0.094 ms median surface conversion with pre-sized buffers
+
+**Change:** 6.2% faster, saving 0.006 ms
+
+**Outcome:** Rejected; the improvement missed the 10% threshold and the absolute one-time setup saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 248: Parse compact stored triangles without slice allocations
+
+**Description:** Read compact serialized triangle points by numeric index instead of allocating three-element slices for every parsed point. Expected return: page reload and Lua-stub initialization avoid thousands of short-lived arrays when restoring stored soil-surface triangles while preserving accepted legacy and compact formats.
+
+**Benchmark:** Standalone compact stored-triangle parse benchmark with 394 realistic soil-surface triangles and a 65,883-byte payload, sampled 40 times
+
+**Before:** 0.131 ms median parse
+
+**After:** 0.119 ms median parse with indexed point reads
+
+**Change:** 9.3% faster, saving 0.012 ms
+
+**Outcome:** Rejected; the improvement missed the 10% threshold and the absolute reload/Lua-stub initialization saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 249: Use nested numeric height cache buckets
+
+**Description:** Replace `getZFunc()` string-key cache entries with nested numeric map buckets keyed by X and Y. Expected return: repeated terrain-height lookups avoid coordinate string construction while preserving exact cache identity for repeated numeric coordinates.
+
+**Benchmark:** Standalone terrain-height lookup benchmark with 394 realistic soil-surface triangles and 1,000 realistic overlay coordinates, measuring initial cache fill and immediate cache hits across 30 samples
+
+**Before:** 0.245 ms median initial-fill batch; 0.143 ms median cache-hit batch
+
+**After:** 0.166 ms median initial-fill batch; 0.049 ms median cache-hit batch with nested numeric `Map` cache
+
+**Change:** 32.3% faster initial fill, saving 0.079 ms per 1,000 lookups; 65.5% faster cache hits, saving 0.093 ms per 1,000 repeated lookups
+
+**Outcome:** Rejected; the percentage qualified, but saving less than 0.1 ms per 1,000 lookups is not a meaningful runtime win for the added cache-structure complexity
+
+**Commit:** Not committed
+
+### Idea 250: Skip unchanged soil surface storage writes
+
+**Description:** Avoid rewriting `sessionStorage.soilSurfaceTriangles` when the serialized soil-surface triangle payload is unchanged. Expected return: config or Redux updates that recreate equivalent soil-surface arrays avoid repeated JSON storage writes while keeping the same stored data for Lua stubs and reloads.
+
+**Benchmark:** Headless browser benchmark at `localhost:3000` with 394 realistic triangle records and a 51,574-byte serialized payload, measuring full `serializeTriangles()` plus storage behavior across 60 samples
+
+**Before:** 0.100 ms median serialize-and-write
+
+**After:** 0.100 ms median serialize-and-compare with unchanged-write guard
+
+**Change:** 0.0% improvement
+
+**Outcome:** Rejected; the guard avoids the storage write itself, but serialization dominates the realistic code path, so the full effect does not improve
+
+**Commit:** Not committed

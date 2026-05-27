@@ -128,7 +128,7 @@ describe("<PlantInstances />", () => {
     expect(mesh?.getAttribute("count")).toEqual("1");
   });
 
-  it("keeps reserved icon meshes mounted without active plants", () => {
+  it("skips reserved icon meshes without active plants", () => {
     const p = fakeProps();
     p.plants = [p.plants[0]];
     p.iconCapacities = {
@@ -137,10 +137,9 @@ describe("<PlantInstances />", () => {
     };
     const { container } = render(<PlantInstances {...p} />);
     const meshes = container.querySelectorAll("instancedmesh");
-    expect(meshes.length).toBe(2);
-    expect(meshes.item(1).getAttribute("args")).toContain("5");
-    expect(meshes.item(1).getAttribute("count")).toEqual("0");
-    expect(useTexture).toHaveBeenCalledWith("https://example.com/inactive-icon.avif");
+    expect(meshes.length).toBe(1);
+    expect(useTexture).not.toHaveBeenCalledWith(
+      "https://example.com/inactive-icon.avif");
   });
 
   it("disables frustum culling for billboarded plant icons", () => {
@@ -148,6 +147,15 @@ describe("<PlantInstances />", () => {
     const mesh = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];
     expect(mesh.props.frustumCulled).toEqual(false);
+    unmountRenderer(wrapper);
+  });
+
+  it("shares plant icon geometry across icon buckets", () => {
+    const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(2);
+    expect(meshes[0].props.args[0]).toBe(meshes[1].props.args[0]);
     unmountRenderer(wrapper);
   });
 
@@ -382,6 +390,28 @@ describe("<PlantInstances />", () => {
     });
     const getZ = jest.fn(() => 0);
     const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    getZ.mockClear();
+    frameFn?.({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(getZ).not.toHaveBeenCalled();
+    expect(setMatrixAt).toHaveBeenCalled();
+  });
+
+  it("reuses static icon positions during seasonal animation", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
     p.getZ = getZ;
     p.plants = [p.plants[0]];
     render(<PlantInstances {...p} />);

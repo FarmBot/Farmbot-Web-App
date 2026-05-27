@@ -2,6 +2,7 @@ import React from "react";
 import {
   InstancedMesh as ThreeInstancedMesh,
   Matrix4,
+  PlaneGeometry as ThreePlaneGeometry,
   Quaternion,
   Vector3,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
@@ -20,7 +21,7 @@ import { getMode } from "../../farm_designer/map/util";
 import { getSizeAtTime } from "../../promo/plants";
 import { get3DPositionFunc, zZero as zZeroFunc } from "../helpers";
 import { ThreeDGardenPlant } from "./plants";
-import { PlaneGeometry, InstancedMesh, MeshBasicMaterial } from "../components";
+import { InstancedMesh, MeshBasicMaterial } from "../components";
 import {
   getPlantIconTexture,
   getPlantIconTextureUrl,
@@ -57,7 +58,7 @@ interface PlantIconUpdateState {
 interface StaticPlantIconInstance {
   x: number;
   y: number;
-  z: number;
+  groundZ: number;
   scale: number;
 }
 
@@ -66,6 +67,12 @@ const newPlantIconUpdateState = (): PlantIconUpdateState => ({
   hasCameraQuaternion: false,
   needsMatrixUpdate: true,
 });
+
+let plantIconGeometry: ThreePlaneGeometry | undefined = undefined;
+const getPlantIconGeometry = () => {
+  plantIconGeometry ||= new ThreePlaneGeometry(1, 1);
+  return plantIconGeometry;
+};
 
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
@@ -109,23 +116,19 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
   const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
-  const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
-    zZeroFunc(config)
-    + getZ(plant.x, plant.y)
-    + size / 2, [config, getZ]);
   const seasonAnimationEnabled = !!(config.animateSeasons && startTimeRef);
+  const zBase = React.useMemo(() => zZeroFunc(config), [config]);
   const staticInstances = React.useMemo<StaticPlantIconInstance[]>(() => {
-    if (seasonAnimationEnabled) { return []; }
     return plants.map(plant => {
       const position = get3DPosition({ x: plant.x, y: plant.y });
       return {
         x: position.x,
         y: position.y,
-        z: getPlantZ(plant.size, plant),
+        groundZ: zBase + getZ(plant.x, plant.y),
         scale: plant.size,
       };
     });
-  }, [get3DPosition, getPlantZ, plants, seasonAnimationEnabled]);
+  }, [get3DPosition, getZ, plants, zBase]);
 
   React.useEffect(() => {
     const updateState = getUpdateState();
@@ -163,21 +166,25 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     tempQuaternion.copy(state.camera.quaternion);
     if (!seasonAnimating) {
       staticInstances.forEach((instance, index) => {
-        tempPosition.set(instance.x, instance.y, instance.z);
+        tempPosition.set(
+          instance.x,
+          instance.y,
+          instance.groundZ + instance.scale / 2,
+        );
         tempScale.set(instance.scale, instance.scale, instance.scale);
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
         mesh.setMatrixAt(index, tempMatrix);
       });
     } else {
       plants.forEach((plant, index) => {
+        const instance = staticInstances[index];
         const scale = (config.animateSeasons && startTimeRef)
           ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
           : plant.size;
-        const position = get3DPosition({ x: plant.x, y: plant.y });
         tempPosition.set(
-          position.x,
-          position.y,
-          getPlantZ(scale, plant),
+          instance.x,
+          instance.y,
+          instance.groundZ + scale / 2,
         );
         tempScale.set(scale, scale, scale);
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
@@ -204,7 +211,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
 
   return <InstancedMesh
     ref={instancedRef}
-    args={[undefined, undefined, props.capacity]}
+    args={[getPlantIconGeometry(), undefined, props.capacity]}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}
     count={plants.length}
     frustumCulled={false}
     userData={{ plantIndexes }}
@@ -212,7 +221,6 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     raycast={plantIconRaycast}
     onClick={onClick}
     renderOrder={RenderOrder.plants}>
-    <PlaneGeometry args={[1, 1]} />
     <MeshBasicMaterial
       ref={materialRef}
       map={texture}
@@ -261,13 +269,15 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
         };
       }
     });
-    return Object.values(iconInstances).map(instance => ({
-      ...instance,
-      capacity: Math.max(
-        instance.plants.length,
-        props.iconCapacities?.[instance.icon] || 0,
-      ),
-    }));
+    return Object.values(iconInstances)
+      .filter(instance => instance.plants.length > 0)
+      .map(instance => ({
+        ...instance,
+        capacity: Math.max(
+          instance.plants.length,
+          props.iconCapacities?.[instance.icon] || 0,
+        ),
+      }));
   }, [
     props.config,
     props.dispatch,
