@@ -205,7 +205,9 @@ interface OpacityFilterProps {
 const OpacityFilter = (props: OpacityFilterProps) => {
   // eslint-disable-next-line no-null/no-null
   const groupRef = React.useRef<THREE.Group>(null);
+  const appliedOpacityRef = React.useRef<number | undefined>(undefined);
   React.useLayoutEffect(() => {
+    if (props.opacity >= 1 && isUndefined(appliedOpacityRef.current)) { return; }
     const current = groupRef.current as THREE.Group | { traverse?: Function } | null;
     if (current && typeof current.traverse == "function") {
       current.traverse((child: THREE.Object3D) => {
@@ -216,6 +218,7 @@ const OpacityFilter = (props: OpacityFilterProps) => {
           child.material.needsUpdate = true;
         }
       });
+      appliedOpacityRef.current = props.opacity;
     }
   }, [props.opacity]);
   return <Group ref={groupRef}>{props.children}</Group>;

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import React from "react";
 import * as threeFiber from "@react-three/fiber";
+import TestRenderer from "react-test-renderer";
 
 const mockRotation = { z: 0 };
 
@@ -130,6 +131,56 @@ describe("<Tools />", () => {
       { toolSlot: toolSlot5, tool: tool5 },
       { toolSlot: toolSlot6, tool: tool6 },
     ];
+  };
+
+  const savedToolSlots = (toolNames: string[]) =>
+    toolNames.map((name, index) => {
+      const tool = fakeTool();
+      tool.body.id = index + 1;
+      tool.body.name = name;
+      const toolSlot = fakeToolSlot();
+      toolSlot.body.id = index + 1;
+      toolSlot.body.tool_id = tool.body.id;
+      toolSlot.body.y = index * 100;
+      return { toolSlot, tool };
+    });
+
+  interface OpacityMetrics {
+    traversals: number;
+    clones: number;
+    opacities: number[];
+  }
+
+  const mockOpacityNodes = (
+    meshCounts: number[],
+    metrics: OpacityMetrics,
+  ) => (node: React.ReactElement) => {
+    if (node.type == "mesh") { return new THREE.Mesh(); }
+    if (node.type != "group") { return {}; }
+    const meshCount = meshCounts.shift() || 0;
+    const meshes = Array.from({ length: meshCount }, () => {
+      const mesh = new THREE.Mesh();
+      const instrumentMaterial = (material: THREE.Material) => {
+        const clone = material.clone.bind(material);
+        jest.spyOn(material, "clone").mockImplementation(() => {
+          metrics.clones++;
+          const next = clone();
+          instrumentMaterial(next);
+          return next;
+        });
+      };
+      instrumentMaterial(mesh.material as THREE.Material);
+      return mesh;
+    });
+    return {
+      traverse: (callback: (child: THREE.Object3D) => void) => {
+        metrics.traversals++;
+        meshes.forEach(mesh => callback(mesh));
+        metrics.opacities.push(
+          ...meshes.map(mesh => (mesh.material as THREE.Material).opacity),
+        );
+      },
+    };
   };
 
   it("renders promo tools", () => {
@@ -371,5 +422,74 @@ describe("<Tools />", () => {
     const slot = container.querySelector("[name='slot']");
     slot && fireEvent.click(slot);
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("doesn't clone materials for initially opaque tools", () => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots([
+      "soil sensor",
+      "weeder",
+      "seeder",
+      "watering nozzle",
+      "rotary tool",
+      "seed bin",
+      "seed tray",
+    ]);
+    p.mountedToolName = "weeder";
+    const metrics: OpacityMetrics = {
+      traversals: 0,
+      clones: 0,
+      opacities: [],
+    };
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(<Tools {...p} />, {
+        createNodeMock: mockOpacityNodes([
+          1, // mounted UTM tool
+          2, // soil sensor
+          1, // mounted/faded weeder
+          1, // seeder
+          1, // watering nozzle
+          2, // rotary tool
+          1, // seed bin
+          1, // seed tray
+        ], metrics),
+      });
+    });
+
+    expect(metrics.traversals).toEqual(1);
+    expect(metrics.clones).toEqual(1);
+    expect(metrics.opacities).toEqual([0.25]);
+
+    TestRenderer.act(() => view?.unmount());
+  });
+
+  it("restores opacity when a faded tool becomes opaque", () => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots(["weeder"]);
+    p.mountedToolName = "weeder";
+    const metrics: OpacityMetrics = {
+      traversals: 0,
+      clones: 0,
+      opacities: [],
+    };
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(<Tools {...p} />, {
+        createNodeMock: mockOpacityNodes([
+          1, // mounted UTM tool
+          1, // mounted/faded weeder
+        ], metrics),
+      });
+    });
+    TestRenderer.act(() => {
+      view?.update(<Tools {...p} mountedToolName={"seeder"} />);
+    });
+
+    expect(metrics.traversals).toEqual(2);
+    expect(metrics.clones).toEqual(2);
+    expect(metrics.opacities).toEqual([0.25, 1]);
+
+    TestRenderer.act(() => view?.unmount());
   });
 });
