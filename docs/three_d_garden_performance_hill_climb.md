@@ -4443,6 +4443,22 @@ sort settings still resort the cached selected point list
 
 **Commit:** `Memoize group order selection for 78.9% faster churn`
 
+### Idea 269: Memoize gantry beam light-strip work
+
+**Description:** Keep gantry beam and light-strip child work from rerendering when bot movement or config churn does not affect beam length, lighting, or X position. Expected return: faster bot rerender batches with lights enabled while preserving all LEDs, shadows, and extrusion detail.
+
+**Benchmark:** Bun/Testing Library `GantryBeam` benchmark with lights enabled, a realistic Genesis XL 3,000 mm beam, stable X/beam config, and 90 Y/Z-only bot movement rerenders after mount; measured rerender batch CPU and `useHelper` light-child render calls
+
+**Before:** 900 light-child renders; 12.202 ms median rerender batch
+
+**After:** 0 light-child renders; 1.170 ms median rerender batch
+
+**Change:** 100% fewer light-child renders and 90.4% faster rerender batch, saving 11.032 ms across 90 realistic Y/Z-only rerenders
+
+**Outcome:** Accepted; `GantryBeam` now reuses the beam and light strip when Y/Z movement or unrelated config churn leaves the beam inputs unchanged, while X movement, beam length, light visibility, debug helpers, kit version LEDs, beam shape, texture, and beam-position config still rerender and preserve the same light count and shadow props
+
+**Commit:** `Memoize gantry beam light work for 90.4% faster yz batches`
+
 ### Idea 270: Reduce camera-selection marker setup churn
 
 **Description:** Memoize camera-selection marker angle lists and click handlers so camera-selection rerenders do less setup work. Expected return: faster camera-selection UI interactions while preserving all camera choices, hover behavior, and saved settings.

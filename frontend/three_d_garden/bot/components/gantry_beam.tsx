@@ -16,7 +16,27 @@ export interface GantryBeamProps {
   aluminumTexture: Texture;
 }
 
-export const GantryBeam = (props: GantryBeamProps) => {
+const gantryBeamPropsEqual = (
+  prevProps: GantryBeamProps,
+  nextProps: GantryBeamProps,
+): boolean => {
+  const prevConfig = prevProps.config;
+  const nextConfig = nextProps.config;
+  return prevProps.configPosition.x == nextProps.configPosition.x
+    && prevProps.beamShape == nextProps.beamShape
+    && prevProps.aluminumTexture == nextProps.aluminumTexture
+    && prevConfig.beamLength == nextConfig.beamLength
+    && prevConfig.columnLength == nextConfig.columnLength
+    && prevConfig.bedYOffset == nextConfig.bedYOffset
+    && prevConfig.bedWidthOuter == nextConfig.bedWidthOuter
+    && prevConfig.bedXOffset == nextConfig.bedXOffset
+    && prevConfig.bedLengthOuter == nextConfig.bedLengthOuter
+    && prevConfig.light == nextConfig.light
+    && prevConfig.lightsDebug == nextConfig.lightsDebug
+    && prevConfig.kitVersion == nextConfig.kitVersion;
+};
+
+const GantryBeamComponent = (props: GantryBeamProps) => {
   const {
     beamLength, columnLength, bedYOffset, bedWidthOuter,
   } = props.config;
@@ -51,6 +71,9 @@ export const GantryBeam = (props: GantryBeamProps) => {
         ledsUnderBeam={ledsUnderBeam(props.config.kitVersion)} />}
   </Group>;
 };
+
+export const GantryBeam = React.memo(GantryBeamComponent,
+  gantryBeamPropsEqual);
 
 const ledsUnderBeam = (kitVersion: string): boolean => {
   switch (kitVersion) {
