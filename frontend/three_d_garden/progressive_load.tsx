@@ -75,11 +75,15 @@ export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
       .every(stepId => readyStepTimes[stepId] !== undefined);
   }, [readyStepTimes]);
 
-  const readyStepCount =
-    THREE_D_LOAD_STEPS.filter(step => readyStepTimes[step.id] !== undefined)
-      .length;
-  const currentStep =
-    THREE_D_LOAD_STEPS.find(step => readyStepTimes[step.id] === undefined);
+  let readyStepCount = 0;
+  let currentStep: typeof THREE_D_LOAD_STEPS[number] | undefined;
+  for (const step of THREE_D_LOAD_STEPS) {
+    if (readyStepTimes[step.id] !== undefined) {
+      readyStepCount++;
+    } else if (currentStep === undefined) {
+      currentStep = step;
+    }
+  }
   const complete = readyStepCount == THREE_D_LOAD_STEPS.length;
   const progress = readyStepCount / THREE_D_LOAD_STEPS.length * 100;
 

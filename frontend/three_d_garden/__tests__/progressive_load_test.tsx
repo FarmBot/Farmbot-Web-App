@@ -68,6 +68,7 @@ describe("3D load progress", () => {
     return <div>
       <ThreeDLoadProgressOverlay progress={progress} />
       <p data-testid={"current-step"}>{currentStep?.id || "complete"}</p>
+      <p data-testid={"progress"}>{progress.progress}</p>
       <p data-testid={"bed-allowed"}>
         {"" + progress.isStepAllowed("bed")}
       </p>
@@ -117,6 +118,7 @@ describe("3D load progress", () => {
 
     expect(screen.getByTestId("current-step").textContent)
       .toEqual("environment");
+    expect(screen.getByTestId("progress").textContent).toEqual("0");
     expect(screen.getByTestId("bed-allowed").textContent).toEqual("false");
     expect(screen.getByTestId("grid-allowed").textContent).toEqual("false");
     expect(screen.getByTestId("plants-allowed").textContent).toEqual("false");
@@ -131,6 +133,7 @@ describe("3D load progress", () => {
     });
 
     expect(screen.getByTestId("current-step").textContent).toEqual("complete");
+    expect(screen.getByTestId("progress").textContent).toEqual("100");
     expect(screen.getByText("Enjoy!")).toBeTruthy();
     expect(document.querySelector(".three-d-load-progress-complete"))
       .toBeTruthy();
