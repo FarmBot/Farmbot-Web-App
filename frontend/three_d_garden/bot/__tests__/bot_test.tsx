@@ -20,6 +20,7 @@ import {
   CableCarrierZ,
 } from "../components/cable_carriers";
 import { Bounds } from "../components/bounds";
+import { WaterFlowTextureProvider } from "../components/water_stream";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -115,6 +116,22 @@ describe("<Bot />", () => {
     render(<Bot {...p} />);
     expect(loadTextureSpy).toHaveBeenCalledTimes(1);
     loadTextureSpy.mockRestore();
+  });
+
+  it("skips disabled water texture provider", () => {
+    const p = fakeProps();
+    p.config.waterFlow = false;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("mounts enabled water texture provider", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(1);
+    unmountRenderer(wrapper);
   });
 
   it("loads shapes", () => {

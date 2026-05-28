@@ -39,9 +39,10 @@ export const peoplePropsEqual = (prev: PeopleProps, next: PeopleProps) =>
 
 const PeopleBase = (props: PeopleProps) => {
   const { people, config } = props;
+  if (!config.people) { return <></>; }
   const groundZ = -config.bedZOffset - config.bedHeight;
   return <FocusVisibilityGroup name={"people"}
-    visible={config.people && props.activeFocus == ""}>
+    visible={props.activeFocus == ""}>
     {people.map((person, i) => {
       const offset = new Vector3(...person.offset);
       return <Billboard key={i}

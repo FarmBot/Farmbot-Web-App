@@ -21,6 +21,15 @@ describe("<People />", () => {
     expect(container).toContainHTML("people");
   });
 
+  it("doesn't render disabled people", () => {
+    const p = fakeProps();
+    p.config.people = false;
+    p.people = [{ url: ASSETS.people.person1, offset: [1, 2] }];
+    const { container } = render(<People {...p} />);
+    expect(container).not.toContainHTML("people");
+    expect(container).not.toContainHTML(ASSETS.people.person1);
+  });
+
   it("compares people-relevant inputs", () => {
     const p = fakeProps();
     p.config.people = true;

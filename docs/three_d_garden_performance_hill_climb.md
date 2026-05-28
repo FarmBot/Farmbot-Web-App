@@ -17176,3 +17176,101 @@ indicators disabled: 0.014542 ms median, 0.025917 ms p95.
 for this state; enabled bounds and dimension indicators still mount normally.
 
 **Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+## Round 154
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 786. Skip disabled camera-view geometry preparation | Avoid camera frustum point math when `config.cameraView=false` | One disabled `CameraView` render | Rejected |
+| 787. Skip disabled scene people before image tree creation | Avoid constructing hidden person billboards and image nodes when `config.people=false` | `People` render with two scene people disabled | Accepted |
+| 788. Skip disabled water-flow texture provider wrapper in FarmBot | Avoid one disabled provider component around the FarmBot tree when `config.waterFlow=false` | Disabled `WaterFlowTextureProvider` wrapper render | Accepted |
+| 789. Skip empty starter-tray instancing setup | Avoid texture, refs, effects, and frame callback when `StarterTrays` has no positions | Empty `StarterTrays` render | Accepted |
+| 790. Memoize Lab wall shape creation | Avoid rebuilding the static wall shape on Lab scene renders | Lab scene render | Rejected |
+
+### 786. Skip disabled camera-view geometry preparation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `CameraView` render: 0.067542 ms median, 0.184083 ms
+p95.
+
+**After:** Early return before camera frustum point setup: 0.064875 ms median,
+0.196708 ms p95.
+
+**Change:** 3.95% faster by median, saving about 0.002667 ms for one disabled
+camera-view render.
+
+**Outcome:** Rejected after rollback. The path stayed visually equivalent but
+did not clear the 10% improvement threshold.
+
+**Commit:** None
+
+### 787. Skip disabled scene people before image tree creation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `People` render with two scene people: 0.060000 ms median,
+0.081791 ms p95.
+
+**After:** Early return when `config.people=false`: 0.050959 ms median,
+0.065750 ms p95, with zero disabled person image nodes.
+
+**Change:** 15.07% faster by median, saving about 0.009041 ms and removing two
+disabled image billboard trees from the scene path.
+
+**Outcome:** Accepted. Disabled people had no visible output; enabled people
+still render through the same `FocusVisibilityGroup`.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 788. Skip disabled water-flow texture provider wrapper in FarmBot
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `WaterFlowTextureProvider` wrapper: 0.068875 ms median,
+0.205791 ms p95.
+
+**After:** Direct FarmBot child path without the disabled provider wrapper:
+0.053542 ms median, 0.079334 ms p95.
+
+**Change:** 22.26% faster by median, saving about 0.015333 ms for the default
+no-water-flow FarmBot render path.
+
+**Outcome:** Accepted. Water-flow texture sharing is still enabled unchanged
+when `config.waterFlow=true`; the default disabled path skips only a wrapper
+that provided no texture.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 789. Skip empty starter-tray instancing setup
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Empty `StarterTrays` render: 0.147250 ms median, 0.187958 ms p95.
+
+**After:** Early return for an empty `positions` array: 0.044084 ms median,
+0.062583 ms p95.
+
+**Change:** 70.06% faster by median, saving about 0.103166 ms and avoiding the
+empty instanced-mesh setup plus frame callback registration.
+
+**Outcome:** Accepted. Empty starter-tray input had no visible output; non-empty
+starter trays still render normally.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 790. Memoize Lab wall shape creation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Lab render: 0.303333 ms median, 1.642167 ms p95.
+
+**After:** Memoized static wall shape on the Lab component: 0.388416 ms median,
+1.538458 ms p95.
+
+**Change:** 28.05% slower by median for the measured mount path.
+
+**Outcome:** Rejected after rollback. The idea may help repeated Lab rerenders,
+but it did not improve the realistic mount benchmark used for this round.
+
+**Commit:** None

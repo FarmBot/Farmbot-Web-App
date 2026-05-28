@@ -22,6 +22,15 @@ describe("<StarterTray />", () => {
 });
 
 describe("<StarterTrays />", () => {
+  it("doesn't render empty starter trays", () => {
+    const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(() => undefined as never);
+    const { container } = render(<StarterTrays positions={[]} />);
+    expect(container).not.toContainHTML("starter-trays");
+    expect(useFrameSpy).not.toHaveBeenCalled();
+    useFrameSpy.mockRestore();
+  });
+
   it("renders instanced starter trays and seedlings", () => {
     const { container } = render(<StarterTrays positions={[
       [100, 200, 300],

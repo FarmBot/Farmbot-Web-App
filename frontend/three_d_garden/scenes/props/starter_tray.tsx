@@ -50,6 +50,12 @@ export const starterTraysPropsEqual = (
 ) => samePositions(prev.positions, next.positions);
 
 const StarterTraysBase = (props: StarterTraysProps) => {
+  return props.positions.length == 0
+    ? <></>
+    : <EnabledStarterTrays {...props} />;
+};
+
+const EnabledStarterTrays = (props: StarterTraysProps) => {
   // eslint-disable-next-line no-null/no-null
   const trayRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null
