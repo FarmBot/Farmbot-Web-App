@@ -18824,3 +18824,195 @@ rollback: 0.239667 ms median, 0.318208 ms p95.
 **Outcome:** Rejected after rollback. The render was slower.
 
 **Commit:** None
+
+## Round 171
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 871. Use array positions for people offsets | Avoid allocating a `Vector3` per person when rendering scene people | `People` render with 8 visible people | Rejected |
+| 872. Reuse static person image position tuples | Avoid allocating a `Vector3` inside every `Person` image render | `Person` render for each configured person asset | Rejected |
+| 873. Use indexed loops for starter tray matrix updates | Reduce callback allocation and nested iterator overhead for tray and seedling matrices | `StarterTrays` matrix update with 4 trays | Rejected |
+| 874. Instance desk legs | Replace four repeated leg box subtrees with one instanced mesh while preserving geometry and materials | Enabled `Desk` render | Accepted |
+| 875. Skip greenhouse wall matrix effects for static matrices | Move static wall instance matrix writes to callback refs so effects do not rescan static arrays | `GreenhouseWall` render | Rejected |
+
+### 871. Use array positions for people offsets
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `People` render with 8 visible people: 0.233792 ms median,
+0.673916 ms p95.
+
+**After:** Directly read `person.offset` array entries instead of allocating
+a `Vector3` per person: 0.212917 ms median, 0.285417 ms p95. A focused
+repeat measured 0.253875 ms median, 0.418291 ms p95.
+
+**Change:** 8.93% faster by median in the full benchmark run, but the focused
+repeat was slower than the original median.
+
+**Outcome:** Rejected after rollback. The median did not reliably clear the
+10% threshold.
+
+**Commit:** None
+
+### 872. Reuse static person image position tuples
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `Person` render for each configured person asset: 0.153791 ms
+median, 0.234666 ms p95.
+
+**After:** Pass the static `SCALING_DATA` position tuple directly to `Image`:
+0.197667 ms median, 0.357792 ms p95.
+
+**Change:** 28.53% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 873. Use indexed loops for starter tray matrix updates
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `StarterTrays` render and matrix update with 4 trays after item
+872 rollback: 0.149083 ms median, 0.276125 ms p95.
+
+**After:** Indexed loops for tray and seedling matrix writes: 0.141875 ms
+median, 0.282000 ms p95.
+
+**Change:** 4.83% faster by median, with p95 slightly slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+### 874. Instance desk legs
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** Enabled `Desk` render after item 873 rollback: 0.213625 ms median,
+0.399916 ms p95.
+
+**After:** A single instanced leg mesh with four static matrices and the same
+box dimensions, wood texture, material color, and shadow flags: 0.191584 ms
+median, 0.373083 ms p95.
+
+**Change:** 10.32% faster by median, saving about 0.022041 ms per enabled
+desk render.
+
+**Outcome:** Accepted. The four desk legs keep the same dimensions,
+positions, material, and shadows while reducing repeated React/R3F subtrees.
+
+**Commit:** This commit (`Instance desk legs for 10.3% faster desk renders`)
+
+### 875. Skip greenhouse wall matrix effects for static matrices
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `GreenhouseWall` render after item 874: 0.172333 ms median,
+0.259917 ms p95.
+
+**After:** Callback refs wrote static wall matrices on mesh assignment:
+0.163791 ms median, 0.271333 ms p95.
+
+**Change:** 4.96% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+## Round 172
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 876. Cache lab wall extrude shape and args | Avoid rebuilding the same lab wall `Shape` and extrude options on each lab scene render | `Lab` render with walls enabled and desk/people disabled | Rejected |
+| 877. Instance lab shelves | Replace two repeated shelf box subtrees with one instanced mesh while preserving shelf geometry and material | `Lab` render with shelves enabled and desk/people disabled | Rejected |
+| 878. Precompute watering stream directions | Avoid 32 trigonometry calls and range allocation when rendering 16 water streams | `WateringAnimations` render with water flow enabled | Rejected |
+| 879. Precompute electronics box button layouts | Avoid rebuilding kit-version button layout arrays on electronics box renders | `ElectronicsBox` render for v1.7 and v1.8 | Rejected |
+| 880. Reuse electronics box position tuple | Avoid allocating a `Vector3` for the electronics box group position | `ElectronicsBox` render for v1.8 | Rejected |
+
+### 876. Cache lab wall extrude shape and args
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** `Lab` render with walls enabled and desk/people disabled:
+0.117583 ms median, 0.182375 ms p95.
+
+**After:** Module-level lab wall `Shape` and extrude options:
+0.153375 ms median, 0.271250 ms p95.
+
+**Change:** 30.44% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 877. Instance lab shelves
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `Lab` render with walls and shelves enabled after item
+876 rollback: 0.154167 ms median, 0.269833 ms p95.
+
+**After:** A single instanced shelf mesh with two static matrices and the same
+box dimensions, texture, color, material side, and shadow flags: 0.154792 ms
+median, 0.257792 ms p95.
+
+**Change:** 0.41% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 878. Precompute watering stream directions
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `WateringAnimations` render with water flow enabled:
+0.084917 ms median, 0.186667 ms p95.
+
+**After:** Static 16-entry direction table with precomputed sine and cosine
+values for each water stream: 0.083458 ms median, 0.197959 ms p95.
+
+**Change:** 1.72% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+### 879. Precompute electronics box button layouts
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused electronics box render: v1.7 0.424167 ms median,
+0.924542 ms p95; v1.8 0.216417 ms median, 0.763459 ms p95.
+
+**After:** Module-level button layout arrays reused by `buttons()`:
+v1.7 0.487584 ms median, 0.926792 ms p95; v1.8 0.220083 ms median,
+0.391500 ms p95.
+
+**Change:** v1.7 was 14.95% slower by median, and v1.8 was 1.69% slower by
+median.
+
+**Outcome:** Rejected after rollback. Both targeted median renders were slower.
+
+**Commit:** None
+
+### 880. Reuse electronics box position tuple
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `ElectronicsBox` v1.8 render after item 879 rollback:
+0.266333 ms median, 0.461542 ms p95.
+
+**After:** Pass a numeric position tuple to the electronics box group instead
+of allocating a `Vector3`: 0.284458 ms median, 0.456458 ms p95.
+
+**Change:** 6.81% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None

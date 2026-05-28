@@ -1,10 +1,19 @@
 import React from "react";
-import { RepeatWrapping } from "three";
+import {
+  InstancedMesh as InstancedMeshType,
+  Matrix4,
+  RepeatWrapping,
+} from "three";
 import { Box } from "@react-three/drei";
 import { ASSETS } from "../../constants";
 import { threeSpace } from "../../helpers";
 import { Config } from "../../config";
-import { Group, MeshPhongMaterial } from "../../components";
+import {
+  BoxGeometry,
+  Group,
+  InstancedMesh,
+  MeshPhongMaterial,
+} from "../../components";
 import { FocusVisibilityGroup } from "../../focus_transition";
 import { useTextureVariant } from "../../texture_variants";
 
@@ -19,6 +28,13 @@ const deskHeight = 550;
 const deskOffset = 800;
 const deskLegWidth = 50;
 const deskWoodDarkness = "#666";
+const deskLegMatrices = [
+  [(-deskDepth + deskLegWidth) / 2, (-deskWidth + deskLegWidth) / 2],
+  [(-deskDepth + deskLegWidth) / 2, (deskWidth - deskLegWidth) / 2],
+  [(deskDepth - deskLegWidth) / 2, (-deskWidth + deskLegWidth) / 2],
+  [(deskDepth - deskLegWidth) / 2, (deskWidth - deskLegWidth) / 2],
+].map(([xOffset, yOffset]) =>
+  new Matrix4().makeTranslation(xOffset, yOffset, deskHeight / 2));
 
 const DESK_CONFIG_FIELDS: (keyof Config)[] = [
   "bedHeight",
@@ -40,6 +56,8 @@ const DeskBase = (props: DeskProps) => {
 
 const EnabledDesk = (props: DeskProps) => {
   const { config } = props;
+  // eslint-disable-next-line no-null/no-null
+  const legRef = React.useRef<InstancedMeshType>(null);
   const zGround = -config.bedZOffset - config.bedHeight;
   const deskWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
@@ -50,6 +68,14 @@ const EnabledDesk = (props: DeskProps) => {
     wrapT: RepeatWrapping,
     rotation: Math.PI / 2,
   });
+  React.useEffect(() => {
+    const mesh = legRef.current;
+    if (!mesh) { return; }
+    deskLegMatrices.forEach((matrix, index) => {
+      mesh.setMatrixAt(index, matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+  }, []);
   return <FocusVisibilityGroup name={"desk"}
     visible={props.activeFocus == ""}
     position={[
@@ -65,23 +91,16 @@ const EnabledDesk = (props: DeskProps) => {
       position={[0, 0, deskHeight + 25]}>
       <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
     </Box>
-    <Group name={"desk-legs"}>
-      {[
-        [(-deskDepth + deskLegWidth) / 2, (-deskWidth + deskLegWidth) / 2],
-        [(-deskDepth + deskLegWidth) / 2, (deskWidth - deskLegWidth) / 2],
-        [(deskDepth - deskLegWidth) / 2, (-deskWidth + deskLegWidth) / 2],
-        [(deskDepth - deskLegWidth) / 2, (deskWidth - deskLegWidth) / 2],
-      ].map(([xOffset, yOffset], index) =>
-        <Box
-          name={"desk-leg"}
-          key={index}
-          castShadow={true}
-          receiveShadow={true}
-          args={[deskLegWidth, deskLegWidth, deskHeight]}
-          position={[xOffset, yOffset, deskHeight / 2]}>
-          <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
-        </Box>)}
-    </Group>
+    <InstancedMesh
+      ref={legRef}
+      name={"desk-legs"}
+      castShadow={true}
+      receiveShadow={true}
+      args={[undefined, undefined, deskLegMatrices.length]}
+      count={deskLegMatrices.length}>
+      <BoxGeometry args={[deskLegWidth, deskLegWidth, deskHeight]} />
+      <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
+    </InstancedMesh>
     <Group name={"laptop"}
       position={[0, 0, deskHeight + 50]}>
       <Group name={"laptop-bottom"}
