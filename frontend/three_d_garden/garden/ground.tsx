@@ -81,10 +81,24 @@ const GroundMaterial = (props: { sceneName: string }) => {
     vertexColors={true} />;
 };
 
-export const Ground = (props: GroundProps) => {
+const GroundBase = (props: GroundProps) => {
   if (!props.config.ground) { return <></>; }
   return <VisibleGround {...props} />;
 };
+
+const GROUND_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedZOffset",
+  "ground",
+  "lowDetail",
+  "scene",
+];
+
+export const groundPropsEqual = (prev: GroundProps, next: GroundProps) =>
+  GROUND_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const Ground = React.memo(GroundBase, groundPropsEqual);
 
 const VisibleGround = (props: GroundProps) => {
   const { config } = props;

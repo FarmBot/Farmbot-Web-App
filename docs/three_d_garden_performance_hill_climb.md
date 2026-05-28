@@ -5098,6 +5098,22 @@ comparing only ground visibility, scene, low-detail, bed height/offset, and
 detail-level inputs. Expected return: less always-mounted environment churn
 without changing texture choice, LOD behavior, geometry, or material color.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the normal
+high-detail ground layer 90 times with only an unrelated config field changed.
+
+**Before:** 6.970 ms per 90-rerender batch.
+
+**After:** 1.169 ms per 90-rerender batch.
+
+**Change:** 83.2% faster, saving 5.801 ms per realistic ground
+config-churn batch.
+
+**Outcome:** Accepted; the ground now skips unrelated config-object churn while
+ground visibility, scene texture/color, low-detail mode, and vertical placement
+changes still invalidate the layer.
+
+**Commit:** `Memoize ground config churn for 83.2% faster rerenders`
+
 ### Idea 293: Add a relevant-field comparator to `NorthArrow`
 
 **Description:** Let the north arrow skip unrelated config-object churn by

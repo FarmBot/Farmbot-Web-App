@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { useTexture } from "@react-three/drei";
-import { Ground, GroundProps } from "../ground";
+import { Ground, groundPropsEqual, GroundProps } from "../ground";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { ASSETS } from "../../constants";
@@ -35,6 +35,19 @@ describe("<Ground />", () => {
     expect(container.querySelectorAll("[name^='ground']").length).toEqual(1);
     expect(container).toContainHTML("darkgreen");
     expect(useTexture).not.toHaveBeenCalled();
+  });
+
+  it("compares ground-relevant config fields", () => {
+    const p = fakeProps();
+    expect(groundPropsEqual(p, {
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(groundPropsEqual(p, {
+      config: { ...p.config, scene: "Lab" },
+    })).toBeFalsy();
+    expect(groundPropsEqual(p, {
+      config: { ...p.config, lowDetail: !p.config.lowDetail },
+    })).toBeFalsy();
   });
 
   it.each<[string, string, string[]]>([
