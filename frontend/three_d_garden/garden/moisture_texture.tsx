@@ -38,7 +38,32 @@ export const getMoistureOpacity = (value: number) =>
     ? 0
     : Math.round((0.75 * value / 900) ** 3 * 100) / 100;
 
-export const MoistureSurface = (props: MoistureSurfaceProps) => {
+const MOISTURE_SURFACE_CONFIG_FIELDS: (keyof Config)[] = [
+  "interpolationStepSize",
+  "interpolationUseNearest",
+  "interpolationPower",
+  "bedLengthOuter",
+  "bedWidthOuter",
+];
+
+export const moistureSurfacePropsEqual = (
+  prev: MoistureSurfaceProps,
+  next: MoistureSurfaceProps,
+) =>
+  prev.position[0] === next.position[0] &&
+  prev.position[1] === next.position[1] &&
+  prev.position[2] === next.position[2] &&
+  prev.sensors === next.sensors &&
+  prev.sensorReadings === next.sensorReadings &&
+  prev.color === next.color &&
+  prev.radius === next.radius &&
+  prev.readingZOverride === next.readingZOverride &&
+  prev.showMoistureReadings === next.showMoistureReadings &&
+  prev.showMoistureMap === next.showMoistureMap &&
+  MOISTURE_SURFACE_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const MoistureSurfaceBase = (props: MoistureSurfaceProps) => {
   const {
     interpolationStepSize,
     interpolationUseNearest,
@@ -138,6 +163,11 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
       </InstancedMeshComponent>}
   </Group>;
 };
+
+export const MoistureSurface = React.memo(
+  MoistureSurfaceBase,
+  moistureSurfacePropsEqual,
+);
 
 export interface MoistureReadingsProps {
   readings: TaggedSensorReading[];

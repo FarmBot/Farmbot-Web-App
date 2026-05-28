@@ -5759,6 +5759,25 @@ when sensors/readings and interpolation inputs are unchanged. Expected return:
 faster moisture-debug rerenders without changing interpolation, opacity,
 reading markers, or map placement.
 
+**Benchmark:** Real `MoistureSurface` render with 25 soil readings, matching
+sensors, moisture readings and moisture map both visible, a fresh position tuple
+per rerender like the image-texture call site, and 90 rerenders where only
+unrelated `config.sun` changed.
+
+**Before:** 24.874 ms per 90-rerender batch.
+
+**After:** 1.052 ms per 90-rerender batch.
+
+**Change:** 95.8% faster, saving 23.822 ms per realistic moisture-surface
+config-churn batch.
+
+**Outcome:** Accepted; the full moisture surface now skips unrelated config
+churn while value-equivalent position tuples are tolerated, and sensor/readings
+identity, visibility, marker display, and interpolation field changes still
+rerender.
+
+**Commit:** `Memoize moisture surface for 95.8% faster rerenders`
+
 ### Idea 320: Memoize Bot bed utility wrapper
 
 **Description:** Add a relevant-field comparator around the Bot bed utility
@@ -5766,3 +5785,18 @@ subassembly wrapper so unrelated config churn skips PowerSupply and X-axis
 water tube wrapper work together. Expected return: faster Bot utility
 rerenders while power cable, water tube, adapter, and water-flow changes still
 update.
+
+**Benchmark:** Full `Bot` render with tracks and cable carriers enabled, then
+90 rerenders where only unrelated `config.sun` changed. This keeps the
+benchmark on the realistic parent path where the utility wrapper actually runs,
+after the PowerSupply and X-axis water tube children already have their own
+accepted comparators.
+
+**Before:** 320.162 ms per 90-rerender batch.
+
+**After:** 329.541 ms per 90-rerender batch.
+
+**Change:** 2.9% slower.
+
+**Outcome:** Rejected and rolled back; the extra wrapper comparator did not
+improve the real Bot rerender path and only duplicated child-level memo logic.

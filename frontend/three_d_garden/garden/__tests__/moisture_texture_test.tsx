@@ -1,8 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import {
-  getMoistureOpacity, moistureReadingsPropsEqual, MoistureSurface,
-  MoistureSurfaceProps,
+  getMoistureOpacity, moistureReadingsPropsEqual,
+  moistureSurfacePropsEqual, MoistureSurface, MoistureSurfaceProps,
 } from "../moisture_texture";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
@@ -112,6 +112,43 @@ describe("<MoistureSurface />", () => {
     expect(moistureReadingsPropsEqual(previous, {
       ...previous,
       config: { ...previous.config, bedXOffset: previous.config.bedXOffset + 1 },
+    })).toBeFalsy();
+  });
+
+  it("compares only moisture surface inputs that affect rendering", () => {
+    const previous = fakeProps();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      position: [...previous.position],
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    })).toBeTruthy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      position: [
+        previous.position[0] + 1,
+        previous.position[1],
+        previous.position[2],
+      ],
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      sensorReadings: [fakeSensorReading()],
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      showMoistureMap: false,
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      config: {
+        ...previous.config,
+        interpolationStepSize: previous.config.interpolationStepSize + 1,
+      },
     })).toBeFalsy();
   });
 });
