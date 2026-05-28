@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Lab, LabProps } from "../lab";
+import { Lab, labPropsEqual, LabProps } from "../lab";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 
@@ -27,6 +27,20 @@ describe("<Lab />", () => {
     render(<Lab {...p} />);
     const memoized = Lab as unknown as { $$typeof: symbol };
     expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
+  it("compares lab-relevant config fields", () => {
+    const p = fakeProps();
+    p.config.scene = "Lab";
+    expect(labPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(labPropsEqual(p, {
+      ...p,
+      config: { ...p.config, desk: !p.config.desk },
+    })).toBeFalsy();
+    expect(labPropsEqual(p, { ...p, activeFocus: "desk" })).toBeFalsy();
   });
 
   it("not visible when scene is not lab", () => {

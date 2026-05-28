@@ -4997,6 +4997,23 @@ comparing only scene, bed dimension, people, desk, active-focus, reveal, and
 load-callback inputs. Expected return: faster visible Lab detail rerenders
 without changing walls, shelves, desk, people, focus fade, or load-in behavior.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering a visible
+Lab scene 90 times with people and desk enabled while only an unrelated config
+field changed.
+
+**Before:** 38.133 ms per 90-rerender batch.
+
+**After:** 1.439 ms per 90-rerender batch.
+
+**Change:** 96.2% faster, saving 36.694 ms per realistic Lab config-churn
+batch.
+
+**Outcome:** Accepted; Lab now skips unrelated config-object churn while scene,
+bed dimensions, people, desk, focus, reveal, and load callback changes still
+invalidate the scene.
+
+**Commit:** `Memoize Lab scene churn for 96.2% faster rerenders`
+
 ### Idea 289: Add a relevant-field comparator to `Greenhouse`
 
 **Description:** Let the Greenhouse scene skip unrelated config-object churn by

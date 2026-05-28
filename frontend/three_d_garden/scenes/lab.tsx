@@ -107,4 +107,21 @@ const LabBase = (props: LabProps) => {
   </Group>;
 };
 
-export const Lab = React.memo(LabBase);
+const LAB_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "desk",
+  "people",
+  "scene",
+];
+
+export const labPropsEqual = (prev: LabProps, next: LabProps) =>
+  prev.activeFocus === next.activeFocus
+  && prev.reveal === next.reveal
+  && prev.onDetailsLoadInRest === next.onDetailsLoadInRest
+  && LAB_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const Lab = React.memo(LabBase, labPropsEqual);
