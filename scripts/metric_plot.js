@@ -11,6 +11,11 @@ const formatWholeStat = value => Math.round(value).toString();
 const formatPoint = value => Number(value.toFixed(2));
 const roundedAxisMax = (value, baseline) =>
     Math.max(baseline, Math.ceil(value / (baseline / 2)) * (baseline / 2));
+const prefixLabelWithValue = (label, value) => {
+    const match = label.match(/^(.*) \(([^)]+)\)$/);
+    if (!match) { return `${value} ${label}`; }
+    return `${value}${match[2]} ${match[1].toLowerCase()}`;
+};
 const seriesColors = [
     '#0969da',
     '#1a7f37',
@@ -57,14 +62,15 @@ function buildMetricPlotSvg(samples, options = {}) {
     const title = escapeSvgText(options.title || 'Metric samples');
     const xLabel = escapeSvgText(options.xLabel || 'Samples');
     const valueKey = options.valueKey || 'value';
-    const sceneMetricAxes = options.sceneMetricAxes === true;
     const yMinOverride = Number(options.yMin);
     const yMaxOverride = Number(options.yMax);
     const yMaxBaseline = Number(options.yMaxBaseline);
     const yTickInterval = Number(options.yTickInterval);
-    const wholeYAxisTicks = sceneMetricAxes || Number.isFinite(yMaxBaseline);
-    const formatTickValue = wholeYAxisTicks ? formatWholeStat : formatStat;
-    const formatSummaryValue = sceneMetricAxes ? formatWholeStat : formatStat;
+    const rightYMinOverride = Number(options.rightYMin);
+    const rightYMaxBaseline = Number(options.rightYMaxBaseline);
+    const rightYTickInterval = Number(options.rightYTickInterval);
+    const decimalValues = options.decimalValues === true;
+    const formatMetricValue = decimalValues ? formatStat : formatWholeStat;
     const series = normalizeSeries(options.series || [{
         name: options.seriesName || title,
         samples: inputSamples,
@@ -75,6 +81,16 @@ function buildMetricPlotSvg(samples, options = {}) {
     const hasRightAxis = rightAxisSeries.length > 0;
     const rightAxisColor = rightAxisSeries[0]?.color || '#57606a';
     const rightAxisLabel = escapeSvgText(rightAxisSeries[0]?.name || '');
+    if (!Number.isFinite(yTickInterval)) {
+        throw new Error('yTickInterval is required');
+    }
+    if (hasRightAxis && ![
+        rightYMinOverride,
+        rightYMaxBaseline,
+        rightYTickInterval,
+    ].every(Number.isFinite)) {
+        throw new Error('rightYMin, rightYMaxBaseline, and rightYTickInterval are required for right-axis series');
+    }
     const margin = {
         top: multiSeries ? 76 : 52,
         right: hasRightAxis ? 68 : 24,
@@ -91,42 +107,33 @@ function buildMetricPlotSvg(samples, options = {}) {
         .flatMap(item => item.samples)
         .map(({ value }) => value);
     const values = leftValues;
-    const statSamples = options.statsAfterLoaded
-        ? finite.filter(({ loading }) => loading === false)
-        : finite;
-    const statValues = statSamples.map(({ value }) => value);
+    const labelableSamples = series.flatMap(item =>
+        item.samples.map(sample => ({
+            ...sample,
+            axis: item.axis,
+            color: item.color,
+        })));
+    const summarySamples = options.summaryStatsAfterLoaded
+        ? labelableSamples.filter(({ loading }) => loading === false)
+        : labelableSamples;
+    const summaryValues = summarySamples.map(({ value }) => value);
     const xValues = finite
         .map(({ x }) => x)
         .filter(value => Number.isFinite(value));
-    const minSample = statValues.length ? Math.min(...statValues) : 0;
-    const maxSample = statValues.length ? Math.max(...statValues) : 0;
-    const avgSample = statValues.length
-        ? statValues.reduce((total, value) => total + value, 0) / statValues.length
-        : 0;
-    const lastSample = statValues.length ? statValues[statValues.length - 1] : 0;
+    const maxSample = summaryValues.length ? Math.max(...summaryValues) : 0;
     const yMinSample = values.length ? Math.min(...values) : 0;
-    const defaultMinValue = sceneMetricAxes
-        ? 0
-        : (values.length ? yMinSample : 0);
+    const defaultMinValue = values.length ? yMinSample : 0;
     const minValue = Number.isFinite(yMinOverride) ? yMinOverride : defaultMinValue;
     const yMaxSample = values.length > 1
         ? [...values].sort((a, b) => b - a)[1]
-        : (sceneMetricAxes ? (values[0] ?? maxSample) : maxSample);
-    const defaultMaxValue = sceneMetricAxes
-        ? roundedAxisMax(yMaxSample, 2000)
-        : Number.isFinite(yMaxBaseline)
-            ? roundedAxisMax(yMaxSample, yMaxBaseline)
-            : Math.max(1, yMaxSample);
+        : maxSample;
+    const defaultMaxValue = roundedAxisMax(yMaxSample, yMaxBaseline);
     const maxValue = Number.isFinite(yMaxOverride) ? yMaxOverride : defaultMaxValue;
     const valueRange = maxValue - minValue || 1;
     const rightDataMin = rightValues.length ? Math.min(...rightValues) : 0;
     const rightDataMax = rightValues.length ? Math.max(...rightValues) : 0;
-    const rightMinValue = sceneMetricAxes
-        ? 0
-        : rightDataMin;
-    const rightMaxValue = sceneMetricAxes
-        ? roundedAxisMax(rightDataMax, 40)
-        : Math.max(1, rightDataMax);
+    const rightMinValue = rightYMinOverride;
+    const rightMaxValue = roundedAxisMax(rightDataMax, rightYMaxBaseline);
     const rightValueRange = rightMaxValue - rightMinValue || 1;
     const minX = Math.min(0, xValues.length ? Math.min(...xValues) : 0);
     const maxX = Math.max(1, xValues.length ? Math.max(...xValues) : inputSamples.length - 1);
@@ -166,33 +173,59 @@ function buildMetricPlotSvg(samples, options = {}) {
                 ].join('');
             })
             .join('');
-    const gridValues = Number.isFinite(yTickInterval)
-        ? Array.from({ length: Math.floor((maxValue - minValue) / yTickInterval) + 1 },
-            (_value, index) => maxValue - (index * yTickInterval))
-        : sceneMetricAxes
-        ? Array.from({ length: Math.floor((maxValue - minValue) / 1000) + 1 },
-            (_value, index) => maxValue - (index * 1000))
-        : [maxValue, (maxValue + minValue) / 2, minValue];
+    const summaryPoints = options.labelSummaryPoints === false || !summarySamples.length
+        ? []
+        : [
+            ['min', summarySamples.reduce((best, sample) =>
+                sample.value < best.value ? sample : best, summarySamples[0])],
+            ['max', summarySamples.reduce((best, sample) =>
+                sample.value > best.value ? sample : best, summarySamples[0])],
+            ['last', summarySamples[summarySamples.length - 1]],
+        ];
+    const groupedSummaryPoints = summaryPoints.reduce((groups, [label, sample]) => {
+        const key = `${sample.index}:${sample.x}:${sample.value}`;
+        const group = groups.get(key) || { labels: [], sample };
+        group.labels.push(label);
+        groups.set(key, group);
+        return groups;
+    }, new Map());
+    const pointLabels = Array.from(groupedSummaryPoints.values())
+        .map(({ labels, sample: { axis, color, value, x } }) => {
+            const seriesYFor = axis === 'right' ? rightYFor : yFor;
+            const pointX = xFor(x);
+            const pointY = seriesYFor(value);
+            const labelX = Math.max(margin.left + 4, Math.min(width - margin.right - 4, pointX));
+            const labelY = labels.includes('min') && !labels.includes('max')
+                ? Math.min(height - 20, pointY + 14)
+                : Math.max(12, pointY - 8);
+            const textAnchor = pointX > width - margin.right - 24
+                ? 'end'
+                : pointX < margin.left + 24 ? 'start' : 'middle';
+            return `<text x="${formatPoint(labelX)}" y="${formatPoint(labelY)}" text-anchor="${textAnchor}" fill="${color}" font-family="Arial, sans-serif" font-size="10" font-weight="700">${labels.join('/')} ${formatMetricValue(value)}</text>`;
+        })
+        .join('');
+    const gridValues = Array.from({ length: Math.floor((maxValue - minValue) / yTickInterval) + 1 },
+        (_value, index) => maxValue - (index * yTickInterval));
     const grid = gridValues
         .map(value => {
             const y = formatPoint(yFor(value));
             return [
                 `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#d0d7de" />`,
-                `<text x="${margin.left - 10}" y="${formatPoint(y + 4)}" text-anchor="end" fill="#57606a" font-size="12">${formatTickValue(value)}</text>`,
+                `<text x="${margin.left - 10}" y="${formatPoint(y + 4)}" text-anchor="end" fill="#57606a" font-size="12">${formatMetricValue(value)}</text>`,
             ].join('');
         })
         .join('');
-    const rightGridValues = sceneMetricAxes
-        ? Array.from({ length: Math.floor((rightMaxValue - rightMinValue) / 10) + 1 },
-            (_value, index) => rightMaxValue - (index * 10))
-        : [rightMaxValue, (rightMaxValue + rightMinValue) / 2, rightMinValue];
+    const rightGridValues = hasRightAxis
+        ? Array.from({ length: Math.floor((rightMaxValue - rightMinValue) / rightYTickInterval) + 1 },
+            (_value, index) => rightMaxValue - (index * rightYTickInterval))
+        : [];
     const rightAxisTicks = hasRightAxis
         ? rightGridValues
             .map(value => {
                 const y = formatPoint(rightYFor(value));
                 return [
                     `<line x1="${width - margin.right}" y1="${y}" x2="${width - margin.right + 5}" y2="${y}" stroke="${rightAxisColor}" stroke-width="2" />`,
-                    `<text x="${width - margin.right + 10}" y="${formatPoint(y + 4)}" fill="${rightAxisColor}" font-size="12" font-weight="700">${formatTickValue(value)}</text>`,
+                    `<text x="${width - margin.right + 10}" y="${formatPoint(y + 4)}" fill="${rightAxisColor}" font-size="12" font-weight="700">${formatMetricValue(value)}</text>`,
                 ].join('');
             })
             .join('')
@@ -219,25 +252,21 @@ function buildMetricPlotSvg(samples, options = {}) {
     const averageLine = Number.isFinite(averageValue)
         ? [
             `<line x1="${formatPoint(firstLoaded ? xFor(firstLoaded.x) : margin.left)}" y1="${formatPoint(yFor(averageValue))}" x2="${width - margin.right}" y2="${formatPoint(yFor(averageValue))}" stroke="#1a7f37" stroke-width="2" stroke-dasharray="4 4" />`,
-            `<text x="${width - margin.right - 6}" y="${formatPoint(yFor(averageValue) - 6)}" text-anchor="end" fill="#1a7f37" font-family="Arial, sans-serif" font-size="12" font-weight="700">avg ${formatSummaryValue(averageValue)}</text>`,
+            `<text x="${width - margin.right - 6}" y="${formatPoint(yFor(0) - 6)}" text-anchor="end" fill="#1a7f37" font-family="Arial, sans-serif" font-size="12" font-weight="700">avg ${formatMetricValue(averageValue)}</text>`,
         ].join('')
         : '';
-    const displayedAverage = Number.isFinite(averageValue)
-        ? averageValue
-        : avgSample;
-    const stats = options.hideStats
-        ? ''
-        : escapeSvgText(statValues.length
-            ? `min ${formatSummaryValue(minSample)}   avg ${formatSummaryValue(displayedAverage)}   max ${formatSummaryValue(maxSample)}   last ${formatSummaryValue(lastSample)}`
-            : 'No valid samples');
     const legend = multiSeries
         ? series
             .map((item, index) => {
                 const x = margin.left + (index % 5) * 112;
                 const y = 48 + Math.floor(index / 5) * 16;
+                const lastValue = item.samples[item.samples.length - 1]?.value;
+                const label = Number.isFinite(lastValue)
+                    ? prefixLabelWithValue(item.name, formatMetricValue(lastValue))
+                    : item.name;
                 return [
                     `<line x1="${x}" y1="${y - 4}" x2="${x + 16}" y2="${y - 4}" stroke="${item.color}" stroke-width="${item.strokeWidth || 3}" />`,
-                    `<text x="${x + 21}" y="${y}" fill="${item.axis === 'right' ? item.color : '#57606a'}" font-family="Arial, sans-serif" font-size="10" font-weight="${item.axis === 'right' ? 700 : 400}">${escapeSvgText(item.name)}</text>`,
+                    `<text x="${x + 21}" y="${y}" fill="${item.axis === 'right' ? item.color : '#57606a'}" font-family="Arial, sans-serif" font-size="10" font-weight="${item.axis === 'right' ? 700 : 400}">${escapeSvgText(label)}</text>`,
                 ].join('');
             })
             .join('')
@@ -253,7 +282,6 @@ function buildMetricPlotSvg(samples, options = {}) {
   <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
     <rect width="${width}" height="${height}" fill="#ffffff" />
     <text x="${margin.left}" y="28" fill="#24292f" font-family="Arial, sans-serif" font-size="20" font-weight="700">${title}</text>
-    <text x="${width - margin.right}" y="28" text-anchor="end" fill="#57606a" font-family="Arial, sans-serif" font-size="12">${stats}</text>
     ${legend}
     ${grid}
     <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#8c959f" />
@@ -266,6 +294,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     ${averageLine}
     ${lines}
     ${circles}
+    ${pointLabels}
     <text x="${(margin.left + width - margin.right) / 2}" y="${height - 8}" text-anchor="middle" fill="#57606a" font-family="Arial, sans-serif" font-size="12">${xLabel}</text>
   </svg>
 </body>
@@ -355,6 +384,9 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         return {
             title: 'Frontend coverage',
             xLabel: 'Runs',
+            yMaxBaseline: 100,
+            yTickInterval: 0.1,
+            decimalValues: true,
             samples: rows.map((row, index) => sampleFor(row, index, 'percent')),
         };
     }
@@ -363,8 +395,13 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             return {
                 title: title(basename, 'Scene metrics'),
                 xLabel: 'Runs',
-                hideStats: true,
-                sceneMetricAxes: true,
+                yMin: 0,
+                yMaxBaseline: 2000,
+                yTickInterval: 1000,
+                rightYMin: 0,
+                rightYMaxBaseline: 40,
+                rightYTickInterval: 10,
+                labelSummaryPoints: false,
                 series: plottableHeaders.map(header => ({
                     name: sceneMetricLabelFor(header),
                     ...(header === 'FPS' ? { axis: 'right', strokeWidth: 4 } : {}),
@@ -401,7 +438,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             yMaxBaseline: 200,
             yTickInterval: 100,
             samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
-            statsAfterLoaded: true,
+            summaryStatsAfterLoaded: true,
             ...(Number.isFinite(averageValue) ? { averageValue } : {}),
             ...(highlightIndex >= 0 ? { highlightIndex } : {}),
         };
