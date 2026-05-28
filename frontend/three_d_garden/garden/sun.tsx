@@ -67,7 +67,7 @@ export const calcSunCoordinate = (
 export const getAnimatedSeasonDate = (
   season: string,
   elapsedSeconds: number,
-  dayStart = moment().utc().startOf("day").toDate(),
+  dayStart?: Date,
 ) => {
   const totalCycle = getCycleLength(season);
   const clampedElapsed = Math.min(Math.max(elapsedSeconds, 0), totalCycle);
@@ -76,15 +76,33 @@ export const getAnimatedSeasonDate = (
   const totalAnimationSeconds = samples[samples.length - 1].animationSeconds;
   const targetAnimationSeconds =
     clampedElapsed / totalCycle * totalAnimationSeconds;
-  const sample = samples.find(({ animationSeconds }) =>
-    animationSeconds >= targetAnimationSeconds) || samples[samples.length - 1];
+  const sample = findSunAnimationSample(samples, targetAnimationSeconds);
   const date = new Date(seasonDayStart.getTime() + sample.sunSeconds * 1000);
   return date;
 };
 
-const getSeasonDayStart = (season: string, dayStart: Date) => {
+const findSunAnimationSample = (
+  samples: SunAnimationSample[],
+  targetAnimationSeconds: number,
+) => {
+  let low = 0;
+  let high = samples.length - 1;
+  while (low < high) {
+    const mid = Math.floor((low + high) / 2);
+    if (samples[mid].animationSeconds >= targetAnimationSeconds) {
+      high = mid;
+    } else {
+      low = mid + 1;
+    }
+  }
+  return samples[low];
+};
+
+const getSeasonDayStart = (season: string, dayStart?: Date) => {
   const seasonDate = SEASON_SUN_DATES[season];
-  if (!seasonDate) { return dayStart; }
+  if (!seasonDate) {
+    return dayStart ?? moment().utc().startOf("day").toDate();
+  }
   const [month, day] = seasonDate;
   return new Date(Date.UTC(2016, month, day));
 };
@@ -250,6 +268,8 @@ const SunBase = (props: SunProps) => {
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
   const renderedSunFactor = calcSunI(config.sunInclination);
+  const showOtherSuns =
+    renderedSunFactor < 1 || !!(config.animateSeasons && props.startTimeRef);
   const shadowBounds = React.useMemo(() => {
     const bedXBounds = Math.max(
       Math.abs(config.bedXOffset),
@@ -333,7 +353,7 @@ const SunBase = (props: SunProps) => {
         BigDistance.sunVisual)}>
       <MeshBasicMaterial color={SUN_COLOR} />
     </Sphere>
-    <OtherSuns starsRef={starsRef} />
+    {showOtherSuns && <OtherSuns starsRef={starsRef} />}
     {config.lightsDebug && <SkyGrid config={config} />}
     {config.lightsDebug && <Sphere
       ref={sunFlatRef}

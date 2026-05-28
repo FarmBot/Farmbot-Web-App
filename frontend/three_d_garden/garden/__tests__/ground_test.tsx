@@ -5,10 +5,21 @@ import { Ground, groundPropsEqual, GroundProps } from "../ground";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { ASSETS } from "../../constants";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<Ground />", () => {
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
+
   beforeEach(() => {
     (useTexture as unknown as jest.Mock).mockClear();
+  });
+
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      unmountRenderer(wrapper));
   });
 
   const fakeProps = (): GroundProps => ({
@@ -18,6 +29,16 @@ describe("<Ground />", () => {
   it("renders", () => {
     const { container } = render(<Ground {...fakeProps()} />);
     expect(container).toContainHTML("ground");
+  });
+
+  it("renders detailed ground vertex colors", () => {
+    const wrapper = createRenderer(<Ground {...fakeProps()} />);
+    mountedWrappers.push(wrapper);
+    const ground = wrapper.root.findAll(node =>
+      node.props.name == "ground Outdoor")[0];
+    const color = ground.props.geometry.attributes.color;
+    expect(color.array).toBeInstanceOf(Float32Array);
+    expect(color.itemSize).toEqual(3);
   });
 
   it("skips hidden ground setup", () => {

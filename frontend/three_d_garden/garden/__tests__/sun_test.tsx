@@ -15,11 +15,17 @@ import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import {
-  calcSunI, getCycleLength, skyColor, Sun, sunPropsEqual, SunProps,
+  calcSunI, getAnimatedSeasonDate, getCycleLength, skyColor, Sun,
+  sunPropsEqual, SunProps,
 } from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { MeshBasicMaterial, Vector3 } from "three";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
+import { Points } from "../../components";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -27,6 +33,13 @@ beforeEach(() => {
 
 
 describe("<Sun />", () => {
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
+
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      unmountRenderer(wrapper));
+  });
+
   const fakeProps = (): SunProps => ({
     config: clone(INITIAL),
     skyRef: {
@@ -38,6 +51,24 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("skips fully invisible static daylight stars", () => {
+    const p = fakeProps();
+    p.config.sunInclination = 45;
+    p.config.animateSeasons = false;
+    const wrapper = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(wrapper);
+    expect(wrapper.root.findAllByType(Points)).toHaveLength(0);
+  });
+
+  it("renders stars outside full static daylight", () => {
+    const p = fakeProps();
+    p.config.sunInclination = -15;
+    p.config.animateSeasons = false;
+    const wrapper = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(wrapper);
+    expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
   });
 
   it("skips season animation frame setup by default", () => {
@@ -160,6 +191,22 @@ describe("getCycleLength()", () => {
   it("returns cycle length", () => {
     expect(getCycleLength("Summer")).toEqual(20);
     expect(getCycleLength("Random")).toEqual(20);
+  });
+});
+
+describe("getAnimatedSeasonDate()", () => {
+  it("uses fixed dates for recognized seasons", () => {
+    const date = getAnimatedSeasonDate("Summer", 0);
+    expect(date.getUTCMonth()).toEqual(5);
+    expect(date.getUTCDate()).toEqual(21);
+  });
+
+  it("uses the provided day start for unknown seasons", () => {
+    const dayStart = new Date(Date.UTC(2026, 0, 2));
+    const date = getAnimatedSeasonDate("Custom", 0, dayStart);
+    expect(date.getUTCFullYear()).toEqual(2026);
+    expect(date.getUTCMonth()).toEqual(0);
+    expect(date.getUTCDate()).toEqual(2);
   });
 });
 

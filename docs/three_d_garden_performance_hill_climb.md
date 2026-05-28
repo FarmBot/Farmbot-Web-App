@@ -18347,3 +18347,103 @@ threshold.
 p95.
 
 **Commit:** None
+
+## Round 166
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 846. Avoid default `moment` work for recognized animated seasons | Avoid constructing a UTC day-start date on every animated sun frame when the season maps to a fixed date | 60 `getAnimatedSeasonDate("Summer", t)` calls | Accepted |
+| 847. Binary-search animated sun samples | Replace linear sample scan during animated-season sun lookup | 60 `getAnimatedSeasonDate("Summer", t)` calls | Accepted |
+| 848. Skip static daylight star field | Avoid generating and rendering fully invisible stars when seasons are static and the sun is fully above the horizon | Default `Sun` render | Accepted |
+| 849. Fill ground vertex colors with a typed array | Avoid dynamic array pushes while building detailed ground geometry | Default detailed `Ground` render | Accepted |
+| 850. Skip zero-opacity clouds before spring setup | Avoid spring and cloud wrapper setup when enabled clouds resolve to zero opacity for the current season | `CloudsBase` render with `clouds=true`, `plants="Summer"` | Rejected |
+
+### 846. Avoid default `moment` work for recognized animated seasons
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** 60 `getAnimatedSeasonDate("Summer", t)` calls: 0.219625 ms
+median, 0.244375 ms p95.
+
+**After:** Defer default day-start creation unless the season is not one of the
+fixed season dates: 0.191083 ms median, 0.199583 ms p95.
+
+**Change:** 13.00% faster by median, saving about 0.028542 ms per 60 animated
+sun-frame date lookups.
+
+**Outcome:** Accepted. Recognized seasons still resolve to their fixed season
+dates, and custom seasons still use the provided or current day start.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 847. Binary-search animated sun samples
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** 60 animated season date lookups after item 846: 0.191083 ms median,
+0.199583 ms p95.
+
+**After:** Binary search for the first sample at or after the target animation
+time: 0.014208 ms median, 0.025834 ms p95.
+
+**Change:** 92.56% faster by median, saving about 0.176875 ms per 60 animated
+sun-frame date lookups.
+
+**Outcome:** Accepted. The search returns the same first sample whose animation
+time is greater than or equal to the target.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 848. Skip static daylight star field
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** Default `Sun` render after item 847: 0.662250 ms median,
+0.930583 ms p95.
+
+**After:** Skip the `OtherSuns` points when seasons are not animating and the
+static sun factor is already 1: 0.223208 ms median, 0.533000 ms p95.
+
+**Change:** 66.30% faster by median, saving about 0.439042 ms per static
+daylight `Sun` render.
+
+**Outcome:** Accepted. The skipped star field was fully invisible in static
+daylight; stars still render when the static sun is below full daylight or when
+season animation can make them visible later.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 849. Fill ground vertex colors with a typed array
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** Default detailed `Ground` render: 0.201417 ms median,
+0.403583 ms p95.
+
+**After:** Fill a pre-sized `Float32Array` for ground vertex colors instead of
+pushing to a dynamic array: 0.177000 ms median, 0.230916 ms p95.
+
+**Change:** 12.12% faster by median, saving about 0.024417 ms per detailed
+ground render.
+
+**Outcome:** Accepted. The color attribute has the same item size and per-vertex
+shade values.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 850. Skip zero-opacity clouds before spring setup
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** `CloudsBase` render with `clouds=true`, `plants="Summer"`:
+0.053500 ms median, 0.064625 ms p95.
+
+**After:** Hook-safe wrapper split that returned before `useSpring` when cloud
+opacity was zero: 0.051834 ms median, 0.070459 ms p95.
+
+**Change:** 3.11% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and p95 regressed.
+
+**Commit:** None

@@ -29,13 +29,16 @@ const groundFade = 1;
 const buildGroundGeometry = (radius: number, segments: number) => {
   const geometry = new CircleGeometry(radius, segments);
   const positions = geometry.attributes.position;
-  const colors: number[] = [];
+  const colors = new Float32Array(positions.count * 3);
   for (let i = 0; i < positions.count; i++) {
     const x = positions.getX(i);
     const y = positions.getY(i);
     const t = Math.min(Math.sqrt(x * x + y * y) / radius, 1);
     const shade = 1 - t * groundFade;
-    colors.push(shade, shade, shade);
+    const offset = i * 3;
+    colors[offset] = shade;
+    colors[offset + 1] = shade;
+    colors[offset + 2] = shade;
   }
   geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
   return geometry;
