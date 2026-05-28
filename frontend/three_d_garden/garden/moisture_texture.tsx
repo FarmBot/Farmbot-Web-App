@@ -7,7 +7,7 @@ import {
 import { TaggedSensor, TaggedSensorReading } from "farmbot";
 import { threeSpace, zZero } from "../helpers";
 import {
-  generateData, getInterpolationData,
+  generateData, getInterpolationData, type InterpolationData,
 } from "../../farm_designer/map/layers/points/interpolation_map";
 import {
   filterMoistureReadings, getMoistureColor,
@@ -37,6 +37,26 @@ export const getMoistureOpacity = (value: number) =>
   value > 900
     ? 0
     : Math.round((0.75 * value / 900) ** 3 * 100) / 100;
+
+export const buildMoistureInstanceBuffers =
+  (data: InterpolationData): MoistureInstanceBuffers => {
+    const matrices = new Float32Array(data.length * 16);
+    const colors = new Float32Array(data.length * 3);
+    const opacities = new Float32Array(data.length);
+    data.map((d, i) => {
+      const matrixOffset = i * 16;
+      matrices[matrixOffset] = 1;
+      matrices[matrixOffset + 5] = 1;
+      matrices[matrixOffset + 10] = 1;
+      matrices[matrixOffset + 12] = d.x;
+      matrices[matrixOffset + 13] = d.y;
+      matrices[matrixOffset + 14] = d.z / 2;
+      matrices[matrixOffset + 15] = 1;
+      if (d.z <= 900) { colors[i * 3 + 2] = 1; }
+      opacities[i] = getMoistureOpacity(d.z);
+    });
+    return { matrices, colors, opacities };
+  };
 
 const MOISTURE_SURFACE_CONFIG_FIELDS: (keyof Config)[] = [
   "interpolationStepSize",
@@ -104,19 +124,8 @@ const MoistureSurfaceBase = (props: MoistureSurfaceProps) => {
     props.showMoistureMap,
   ]);
   const buffers = React.useMemo<MoistureInstanceBuffers>(() =>
-    perfMeasure("moistureInstanceNodesMs", () => {
-      const matrices = new Float32Array(data.length * 16);
-      const colors = new Float32Array(data.length * 3);
-      const opacities = new Float32Array(data.length);
-      const matrix = new Matrix4();
-      data.map((d, i) => {
-        matrix.identity().setPosition(d.x, d.y, d.z / 2);
-        matrix.toArray(matrices, i * 16);
-        if (d.z <= 900) { colors[i * 3 + 2] = 1; }
-        opacities[i] = getMoistureOpacity(d.z);
-      });
-      return { matrices, colors, opacities };
-    }), [data]);
+    perfMeasure("moistureInstanceNodesMs", () =>
+      buildMoistureInstanceBuffers(data)), [data]);
   return <Group position={props.position} name={"moisture-layer"}>
     {props.showMoistureReadings &&
       <MoistureReadings

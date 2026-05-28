@@ -424,20 +424,21 @@ const BedBase = (props: BedProps) => {
     const normal = geometry.getAttribute("normal");
     const xMid = bedLengthOuter / 2 - bedXOffset;
     const yMid = bedWidthOuter / 2 - bedYOffset;
+    const positionArray = position.array;
+    const normalArray = normal?.array;
     for (let i = 0; i < position.count; i++) {
+      const offset = i * 3;
       if (mirrorX) {
-        position.setX(i, 2 * xMid - position.getX(i));
+        positionArray[offset] = 2 * xMid - positionArray[offset];
       }
       if (mirrorY) {
-        position.setY(i, 2 * yMid - position.getY(i));
+        positionArray[offset + 1] = 2 * yMid - positionArray[offset + 1];
       }
-      if (normal) {
-        if (mirrorX) {
-          normal.setX(i, -normal.getX(i));
-        }
-        if (mirrorY) {
-          normal.setY(i, -normal.getY(i));
-        }
+      if (normalArray && mirrorX) {
+        normalArray[offset] = -normalArray[offset];
+      }
+      if (normalArray && mirrorY) {
+        normalArray[offset + 1] = -normalArray[offset + 1];
       }
     }
     position.needsUpdate = true;

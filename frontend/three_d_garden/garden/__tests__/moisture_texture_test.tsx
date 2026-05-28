@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import {
-  getMoistureOpacity, moistureReadingsPropsEqual,
+  buildMoistureInstanceBuffers, getMoistureOpacity, moistureReadingsPropsEqual,
   moistureSurfacePropsEqual, MoistureSurface, MoistureSurfaceProps,
 } from "../moisture_texture";
 import { clone } from "lodash";
@@ -63,6 +63,27 @@ describe("<MoistureSurface />", () => {
     expect(container.querySelector("instancedmesh")).toBeTruthy();
     expect(container.querySelector(".instances")).toBeFalsy();
     expect(container.querySelector(".instance")).toBeFalsy();
+  });
+
+  it("builds moisture map instance buffers", () => {
+    const buffers = buildMoistureInstanceBuffers([
+      { x: 10, y: 20, z: 800 },
+      { x: 30, y: 40, z: 950 },
+    ]);
+
+    expect(Array.from(buffers.matrices)).toEqual([
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      10, 20, 400, 1,
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      30, 40, 475, 1,
+    ]);
+    expect(Array.from(buffers.colors)).toEqual([0, 0, 1, 0, 0, 0]);
+    expect(buffers.opacities[0]).toBeCloseTo(getMoistureOpacity(800));
+    expect(buffers.opacities[1]).toBeCloseTo(getMoistureOpacity(950));
   });
 
   it("skips interpolation when the moisture map is hidden", () => {

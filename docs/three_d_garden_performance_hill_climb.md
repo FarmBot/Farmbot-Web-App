@@ -8049,3 +8049,226 @@ times, including realistic `getZ` calls and world-position conversion.
 for this realistic route-specific render work.
 
 **Commit:** None
+
+## Round 80
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 416. Faster Lua `clean()` helper for returned API/group data | Reduce object-entry allocation when Lua helpers clean API bodies | `runLua` executing one realistic `/api/points` GET over 300 points | Rejected |
+| 417. Direct moisture-map matrix buffer filling | Avoid per-cell `Matrix4` mutation and serialization while building moisture map instance buffers | Build 1,024 moisture cells 20 times | Accepted |
+| 418. Direct mirrored soil geometry attribute transforms | Avoid `BufferAttribute` getter/setter overhead when mirroring downloaded soil surface geometry | Mirror a 10,000-vertex soil surface five times | Accepted |
+| 419. Weed icon frame loop cleanup | Reduce per-frame callback overhead for weed icon billboards | Update 300 weed icons over 60 frames | Rejected |
+| 420. Plant icon bucket construction cleanup | Avoid creating empty icon buckets for icons not visible in the current plant set | Bucket 300 visible plants across 12 icons 100 times | Rejected |
+
+### Idea 416: Faster Lua `clean()` helper for returned API/group data
+
+**Description:** Replace the object-entry mapping path in `clean()` with a
+direct property loop. Expected return: less allocation when Lua helpers return
+API or group data.
+
+**Benchmark:** `runLua` executing one realistic `/api/points` GET over 300
+points.
+
+**Before:** 2.784 ms median; one emitted action.
+
+**After:** 2.773 ms median; one emitted action.
+
+**Change:** 0.4% faster, saving 0.011 ms.
+
+**Outcome:** Rejected and rolled back; the realistic one-call path does not
+justify changing the shared Lua cleaning helper.
+
+**Commit:** None
+
+### Idea 417: Direct moisture-map matrix buffer filling
+
+**Description:** Fill instance matrix arrays directly for moisture map cells
+instead of mutating and serializing a `Matrix4` per cell. Expected return:
+lower CPU and allocation when the interpolated moisture map rebuilds.
+
+**Benchmark:** Build 1,024 moisture cells 20 times.
+
+**Before:** 0.607 ms median.
+
+**After:** 0.242 ms median.
+
+**Change:** 60.1% faster, saving 0.365 ms across the benchmarked moisture
+buffer builds.
+
+**Outcome:** Accepted; the direct fill writes the same identity-plus-translation
+matrices, colors, and opacities without reducing moisture map fidelity or
+animation behavior.
+
+**Commit:** `Optimize 3D moisture and mirrored soil buffers by 60.1% and 29.9%`
+
+### Idea 418: Direct mirrored soil geometry attribute transforms
+
+**Description:** Mirror cloned soil surface geometry by writing the underlying
+typed arrays directly instead of calling `BufferAttribute` getters and setters
+for every vertex. Expected return: lower CPU when a mirrored soil surface is
+loaded or mirror settings change.
+
+**Benchmark:** Mirror a 10,000-vertex soil surface five times.
+
+**Before:** 1.296 ms median.
+
+**After:** 0.909 ms median.
+
+**Change:** 29.9% faster, saving 0.387 ms across the benchmarked mirror
+rebuilds.
+
+**Outcome:** Accepted; the cloned geometry still receives the same mirrored
+positions and normals, and the change only removes attribute wrapper overhead.
+The 3D bundle changed from 3,675,254 to 3,675,306 bytes, a negligible 52-byte
+increase.
+
+**Commit:** `Optimize 3D moisture and mirrored soil buffers by 60.1% and 29.9%`
+
+### Idea 419: Weed icon frame loop cleanup
+
+**Description:** Replace the weed icon frame `.forEach` update with an indexed
+loop. Expected return: lower callback overhead while many weed icon billboards
+face the camera.
+
+**Benchmark:** Update 300 weed icons over 60 frames.
+
+**Before:** 0.304 ms median.
+
+**After:** 0.414 ms median.
+
+**Change:** 35.9% slower.
+
+**Outcome:** Rejected and rolled back; the direct loop was slower under the
+realistic frame workload.
+
+**Commit:** None
+
+### Idea 420: Plant icon bucket construction cleanup
+
+**Description:** Build plant icon buckets only for icons present in the current
+visible plants instead of pre-seeding all recorded icon capacities. Expected
+return: lower render-time work when many icon-capacity entries are empty.
+
+**Benchmark:** Bucket 300 visible plants across 12 icons 100 times.
+
+**Before:** 0.276 ms median.
+
+**After:** 0.323 ms median.
+
+**Change:** 17.3% slower.
+
+**Outcome:** Rejected and rolled back; the existing pre-seeded bucket path is
+faster for the realistic plant count and keeps capacity handling explicit.
+
+**Commit:** None
+
+## Round 81
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 421. Inline 3D/world position helper math | Reduce setup allocations while preparing plant, weed, point, and label positions | Convert 900 positions for one mixed layer setup | Rejected |
+| 422. Direct plant icon matrix writes | Reduce camera-move frame work for many billboarded plant icons | Update 300 plant icons over 60 camera-change frames | Rejected |
+| 423. Direct plant spread matrix and color writes | Improve click-to-add/edit-plant drag responsiveness by avoiding `Matrix4` and `Color` writes per plant | Update 300 plant spread instances over 60 drag frames | Rejected |
+| 424. Direct weed icon matrix writes | Reduce camera-move frame work for many billboarded weed icons | Update 300 weed icons over 60 camera-change frames | Rejected |
+| 425. Single-pass soil surface projection and extents | Reduce initial soil-surface setup by avoiding extra projection/extents passes | Compute a 300-point soil surface once | Rejected |
+
+### Idea 421: Inline 3D/world position helper math
+
+**Description:** Inline `get3DPositionFunc` and `getWorldPositionFunc` math so
+each position conversion avoids nested closure creation and an intermediate
+position object. Expected return: lower setup CPU and allocation for plant,
+weed, point, and label position preparation.
+
+**Benchmark:** Convert 900 positions for one mixed layer setup.
+
+**Before:** 0.011 ms median.
+
+**After:** Prototype measured 0.003 ms median for the same setup.
+
+**Change:** 76.5% faster, saving 0.009 ms in the realistic setup.
+
+**Outcome:** Rejected before code changes; the percentage clears the threshold,
+but the absolute saving is far below a meaningful app-level improvement and
+would touch shared coordinate helpers.
+
+**Commit:** None
+
+### Idea 422: Direct plant icon matrix writes
+
+**Description:** Write billboarded plant icon instance matrices directly into
+the instance matrix buffer instead of composing a `Matrix4` and calling
+`setMatrixAt` for every icon. Expected return: lower CPU while orbiting a view
+with many plant icons.
+
+**Benchmark:** Update 300 plant icons over 60 camera-change frames.
+
+**Before:** 0.277 ms median.
+
+**After:** Prototype measured 0.114 ms median.
+
+**Change:** 58.9% faster, saving 0.163 ms across the 60-frame interaction.
+
+**Outcome:** Rejected before code changes; the direct quaternion-to-matrix path
+adds nontrivial math code while saving only about 0.003 ms per frame.
+
+**Commit:** None
+
+### Idea 423: Direct plant spread matrix and color writes
+
+**Description:** Write plant spread matrices and RGB values directly into
+instance buffers instead of using `Matrix4.compose`, `setMatrixAt`,
+`Color.setRGB`, and `setColorAt`. Expected return: better drag responsiveness
+while click-to-add or edit-plant spread coloring is active.
+
+**Benchmark:** Update 300 plant spread instances over 60 drag frames.
+
+**Before:** 0.333 ms median.
+
+**After:** Prototype measured 0.078 ms median.
+
+**Change:** 76.7% faster, saving 0.255 ms across the 60-frame drag.
+
+**Outcome:** Rejected before code changes; the frame-level saving is about
+0.004 ms, not enough to justify replacing straightforward Three.js APIs with
+manual buffer writes in an interactive path.
+
+**Commit:** None
+
+### Idea 424: Direct weed icon matrix writes
+
+**Description:** Write weed icon billboard matrices directly into the instance
+matrix buffer instead of composing a `Matrix4` per weed. Expected return: lower
+frame CPU while orbiting a weed-heavy garden.
+
+**Benchmark:** Update 300 weed icons over 60 camera-change frames.
+
+**Before:** 0.367 ms median.
+
+**After:** Prototype measured 0.054 ms median.
+
+**Change:** 85.2% faster, saving 0.313 ms across the 60-frame interaction.
+
+**Outcome:** Rejected before code changes; the realistic absolute saving is
+still only about 0.005 ms per frame, so the manual matrix path is not worth the
+added complexity.
+
+**Commit:** None
+
+### Idea 425: Single-pass soil surface projection and extents
+
+**Description:** Build the Delaunay projection input and min/max extents in
+one pass instead of mapping `points` three times. Expected return: lower
+initial soil-surface setup CPU.
+
+**Benchmark:** Compute a 300-point soil surface once.
+
+**Before:** 0.058 ms median.
+
+**After:** Prototype measured 0.055 ms median.
+
+**Change:** 5.1% faster, saving 0.003 ms.
+
+**Outcome:** Rejected before code changes; the improvement misses the
+percentage threshold and the absolute saving is not meaningful.
+
+**Commit:** None
