@@ -9547,37 +9547,6 @@ absolute savings across the full observed load window were not meaningful.
 
 ## Round 92
 
-### Idea 476: Use individual plant icon textures for small visible icon sets
-
-**Description:** Avoid loading the full generated plant icon atlas when the 3D
-garden only needs a small number of unique crop icons. Use individual crop AVIFs
-for small visible icon sets and keep the atlas path for large diverse gardens.
-
-**Benchmark:** Docker app on port 3000 using the demo account with
-`FB_PERF_BENCHMARK=true`, comparing requested 3D/crop asset bytes and checking
-load/render counters.
-
-**Before:** The demo requested `/crops/icons/atlas.avif` at 2,154,900 bytes for
-three visible crop icons. The individual broccoli, spinach, and beet icons
-already appeared in the page at about 27,752 bytes total. The minified 3D entry
-bundle was 3,620,281 bytes.
-
-**After:** The demo no longer requested `/crops/icons/atlas.avif`; plant icon
-instances used `/crops/icons/broccoli.avif`, `/crops/icons/spinach.avif`, and
-`/crops/icons/beet.avif`. The minified 3D entry bundle was 3,620,399 bytes.
-
-**Change:** Removed a 2,154,900 byte image request from the demo 3D load,
-replacing atlas use with already-needed small crop icon requests for this
-garden. That is a 98.7% reduction in plant-icon image bytes for the demo icon
-set, with a 118 byte JS increase.
-
-**Outcome:** Accepted. Visual quality is preserved by using the same crop icon
-assets directly, GPU memory improves by avoiding the 8000x8000 atlas texture for
-small gardens, and large diverse gardens still use the atlas once 32 or more
-unique icon buckets are visible.
-
-**Commit:** `Optimize 3D garden plant icon loading by 98.7%`
-
 ### Idea 477: Combine 3D image filtering into a single pass
 
 **Description:** Consider replacing the post-Round-91 `filterImages()` chain

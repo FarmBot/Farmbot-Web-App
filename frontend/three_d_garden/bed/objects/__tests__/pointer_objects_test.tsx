@@ -73,7 +73,7 @@ describe("<PointerObjects />", () => {
     expect(container).toContainHTML("pointerPlant");
   });
 
-  it("loads the individual texture for the pointer plant preview", () => {
+  it("loads the atlas texture for the pointer plant preview", () => {
     PLANT_ICON_ATLAS["/crops/icons/mint.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
       textureWidth: 256,
@@ -88,8 +88,7 @@ describe("<PointerObjects />", () => {
 
     render(<PointerObjects {...fakeProps()} />);
 
-    expect(useTexture).toHaveBeenCalledWith("/crops/icons/mint.avif");
-    expect(useTexture).not.toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 
   it("skips hidden preview work in ordinary designer mode", () => {

@@ -8,7 +8,7 @@ import {
   Quaternion,
   Vector3,
 } from "three";
-import { ASSETS, RenderOrder } from "../../constants";
+import { RenderOrder } from "../../constants";
 import {
   BoxGeometry,
   Group,
@@ -18,6 +18,12 @@ import {
   PlaneGeometry,
 } from "../../components";
 import { range } from "lodash";
+import {
+  GENERIC_PLANT_ICON,
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+  type PlantIconAtlas,
+} from "../../garden/plant_icon_atlas";
 
 const length = 250;
 const width = 700;
@@ -32,6 +38,7 @@ const trayCells = range(5).flatMap(row =>
 
 export interface StarterTraysProps {
   positions: [number, number, number][];
+  plantIconAtlas?: PlantIconAtlas;
 }
 
 const samePositions = (
@@ -47,7 +54,9 @@ const samePositions = (
 export const starterTraysPropsEqual = (
   prev: StarterTraysProps,
   next: StarterTraysProps,
-) => samePositions(prev.positions, next.positions);
+) =>
+  samePositions(prev.positions, next.positions) &&
+  prev.plantIconAtlas === next.plantIconAtlas;
 
 const StarterTraysBase = (props: StarterTraysProps) => {
   return props.positions.length == 0
@@ -60,7 +69,14 @@ const EnabledStarterTrays = (props: StarterTraysProps) => {
   const trayRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null
   const seedlingRef = React.useRef<InstancedMeshType>(null);
-  const plantTexture = useTexture(ASSETS.other.plant);
+  const plantTextureUrl = getPlantIconTextureUrl(
+    GENERIC_PLANT_ICON, props.plantIconAtlas);
+  const basePlantTexture = useTexture(plantTextureUrl);
+  const plantTexture = React.useMemo(() =>
+    getPlantIconTexture(basePlantTexture, GENERIC_PLANT_ICON,
+      props.plantIconAtlas), [
+    basePlantTexture, props.plantIconAtlas,
+  ]);
   const matrix = React.useMemo(() => new Matrix4(), []);
   const position = React.useMemo(() => new Vector3(), []);
   const scale = React.useMemo(() => new Vector3(), []);

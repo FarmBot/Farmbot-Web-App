@@ -191,7 +191,7 @@ describe("<PlantInstances />", () => {
     keySpy.mockRestore();
   });
 
-  it("loads individual textures when few mapped icons are visible", () => {
+  it("loads the atlas texture when an icon is mapped", () => {
     PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
       textureWidth: 256,
@@ -201,9 +201,10 @@ describe("<PlantInstances />", () => {
       width: 64,
       height: 64,
     };
-    render(<PlantInstances {...fakeProps()} />);
-    expect(useTexture).toHaveBeenCalledWith("/crops/icons/strawberry.avif");
-    expect(useTexture).not.toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    const { container } = render(<PlantInstances {...fakeProps()} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
   });
 
   it("loads the atlas texture when many mapped icons are visible", () => {

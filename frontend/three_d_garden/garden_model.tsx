@@ -64,6 +64,7 @@ import {
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";
 import { Path } from "../internal_urls";
+import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
@@ -149,6 +150,7 @@ export interface GardenModelProps {
   sensors?: TaggedSensor[];
   smoothFocusTransitions?: boolean;
   plantIconCapacities?: Record<string, number>;
+  plantIconAtlas?: PlantIconAtlas;
   plantInstanceCapacity?: number;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
@@ -250,6 +252,7 @@ interface StaticGardenLayersProps {
   plantLabelNodes: React.ReactNode;
   plantsVisible: boolean;
   plantInstancesVisible: boolean;
+  plantIconAtlas: PlantIconAtlas | undefined;
   setHover(active: boolean):
     ((e: ThreeEvent<PointerEvent>) => void) | undefined;
   threeDPlants: ThreeDGardenPlant[];
@@ -271,9 +274,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
     showMoistureMap, showMoistureReadings, sensors, sensorReadings,
     addPlantProps, plantLabelNodes, plantsVisible, plantInstancesVisible,
-    setHover, threeDPlants, plantIconCapacities, startTimeRef, dispatch,
-    shouldMountPlantSpreadInstances, showSpread, plantInstanceCapacity,
-    showWeeds, weeds, showPoints,
+    plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
+    dispatch, shouldMountPlantSpreadInstances, showSpread,
+    plantInstanceCapacity, showWeeds, weeds, showPoints,
   } = props;
   const gridVisible = config.grid && activeFocus != "Planter bed";
   const plantLayerHasWork =
@@ -375,6 +378,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             getZ={getZ}
             visible={plantInstancesVisible}
             iconCapacities={plantIconCapacities}
+            plantIconAtlas={plantIconAtlas}
             startTimeRef={startTimeRef}
             dispatch={dispatch} />
           {shouldMountPlantSpreadInstances &&
@@ -767,6 +771,7 @@ export const GardenModel = (props: GardenModelProps) => {
         plantLabelNodes={plantLabelNodes}
         plantsVisible={plantsVisible}
         plantInstancesVisible={plantInstancesVisible}
+        plantIconAtlas={props.plantIconAtlas}
         setHover={setHover}
         threeDPlants={threeDPlants}
         plantIconCapacities={props.plantIconCapacities}
@@ -853,6 +858,7 @@ export const GardenModel = (props: GardenModelProps) => {
         <Greenhouse
           config={config}
           activeFocus={props.activeFocus}
+          plantIconAtlas={props.plantIconAtlas}
           reveal={detailsReveal}
           onDetailsLoadInRest={markDetailsLoaded} />}
         {config.cameraSelectionView &&

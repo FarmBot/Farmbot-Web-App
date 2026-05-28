@@ -8,6 +8,16 @@ import {
   PLANT_ICON_ATLAS_TEXTURE_WIDTH,
   PLANT_ICON_ATLAS_URL,
 } from "./generated_plant_icon_atlas";
+import {
+  PROMO_PLANT_ICON_ATLAS_CELL_HEIGHT,
+  PROMO_PLANT_ICON_ATLAS_CELL_WIDTH,
+  PROMO_PLANT_ICON_ATLAS_COLUMNS,
+  PROMO_PLANT_ICON_ATLAS_FRAMES,
+  PROMO_PLANT_ICON_ATLAS_ICON_SLUGS,
+  PROMO_PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  PROMO_PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  PROMO_PLANT_ICON_ATLAS_URL,
+} from "./generated_promo_plant_icon_atlas";
 import { Texture } from "three";
 
 export interface PlantIconAtlasFrame {
@@ -25,45 +35,94 @@ export interface PlantIconTextureTransform {
   repeat: [number, number];
 }
 
-const compactAtlasFrames = () =>
-  PLANT_ICON_ATLAS_ICON_SLUGS.split(",").map((slug, index) => [
+export type PlantIconAtlas = Record<string, PlantIconAtlasFrame>;
+
+interface GeneratedPlantIconAtlas {
+  atlasUrl: string;
+  textureWidth: number;
+  textureHeight: number;
+  cellWidth: number;
+  cellHeight: number;
+  columns: number;
+  iconSlugs: string;
+  frames: readonly (readonly [string, number, number, number, number])[];
+}
+
+export const GENERIC_PLANT_ICON = "/crops/icons/generic-plant.avif";
+export const LAVENDER_ICON = "/crops/icons/lavender.avif";
+
+const fullPlantIconAtlas: GeneratedPlantIconAtlas = {
+  atlasUrl: PLANT_ICON_ATLAS_URL,
+  textureWidth: PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  textureHeight: PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  cellWidth: PLANT_ICON_ATLAS_CELL_WIDTH,
+  cellHeight: PLANT_ICON_ATLAS_CELL_HEIGHT,
+  columns: PLANT_ICON_ATLAS_COLUMNS,
+  iconSlugs: PLANT_ICON_ATLAS_ICON_SLUGS,
+  frames: PLANT_ICON_ATLAS_FRAMES,
+};
+
+const promoPlantIconAtlas: GeneratedPlantIconAtlas = {
+  atlasUrl: PROMO_PLANT_ICON_ATLAS_URL,
+  textureWidth: PROMO_PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  textureHeight: PROMO_PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  cellWidth: PROMO_PLANT_ICON_ATLAS_CELL_WIDTH,
+  cellHeight: PROMO_PLANT_ICON_ATLAS_CELL_HEIGHT,
+  columns: PROMO_PLANT_ICON_ATLAS_COLUMNS,
+  iconSlugs: PROMO_PLANT_ICON_ATLAS_ICON_SLUGS,
+  frames: PROMO_PLANT_ICON_ATLAS_FRAMES,
+};
+
+const compactAtlasFrames = (atlas: GeneratedPlantIconAtlas) =>
+  atlas.iconSlugs.split(",").map((slug, index) => [
     `/crops/icons/${slug}.avif`,
-    (index % PLANT_ICON_ATLAS_COLUMNS) * PLANT_ICON_ATLAS_CELL_WIDTH,
-    Math.floor(index / PLANT_ICON_ATLAS_COLUMNS) * PLANT_ICON_ATLAS_CELL_HEIGHT,
-    PLANT_ICON_ATLAS_CELL_WIDTH,
-    PLANT_ICON_ATLAS_CELL_HEIGHT,
+    (index % atlas.columns) * atlas.cellWidth,
+    Math.floor(index / atlas.columns) * atlas.cellHeight,
+    atlas.cellWidth,
+    atlas.cellHeight,
   ] as const);
 
-const plantIconAtlasFrames = PLANT_ICON_ATLAS_ICON_SLUGS
-  ? compactAtlasFrames()
-  : PLANT_ICON_ATLAS_FRAMES;
+const plantIconAtlasFrames = (atlas: GeneratedPlantIconAtlas) =>
+  atlas.iconSlugs
+    ? compactAtlasFrames(atlas)
+    : atlas.frames;
 
-export const PLANT_ICON_ATLAS = Object.fromEntries(
-  plantIconAtlasFrames.map(([icon, x, y, width, height]) => [
-    icon,
-    {
-      atlasUrl: PLANT_ICON_ATLAS_URL,
-      textureWidth: PLANT_ICON_ATLAS_TEXTURE_WIDTH,
-      textureHeight: PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
-      x,
-      y,
-      width,
-      height,
-    },
-  ]),
-) as Record<string, PlantIconAtlasFrame>;
+const buildPlantIconAtlas = (
+  atlas: GeneratedPlantIconAtlas,
+): PlantIconAtlas =>
+  Object.fromEntries(
+    plantIconAtlasFrames(atlas)
+      .map(([icon, x, y, width, height]) => [
+        icon,
+        {
+          atlasUrl: atlas.atlasUrl,
+          textureWidth: atlas.textureWidth,
+          textureHeight: atlas.textureHeight,
+          x,
+          y,
+          width,
+          height,
+        },
+      ]),
+  );
+
+export const PLANT_ICON_ATLAS = buildPlantIconAtlas(fullPlantIconAtlas);
+
+export const PROMO_PLANT_ICON_ATLAS =
+  buildPlantIconAtlas(promoPlantIconAtlas);
 
 export const getPlantIconTextureUrl = (
   icon: string,
-  useAtlas = true,
+  atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
 ): string =>
-  useAtlas
-    ? PLANT_ICON_ATLAS[icon]?.atlasUrl || icon
-    : icon;
+  atlas[icon]?.atlasUrl || icon;
 
 export const getPlantIconTextureTransform =
-  (icon: string): PlantIconTextureTransform | undefined => {
-    const frame = PLANT_ICON_ATLAS[icon];
+  (
+    icon: string,
+    atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
+  ): PlantIconTextureTransform | undefined => {
+    const frame = atlas[icon];
     if (!frame) { return undefined; }
     return {
       offset: [
@@ -80,10 +139,9 @@ export const getPlantIconTextureTransform =
 export const getPlantIconTexture = (
   baseTexture: Texture,
   icon: string,
-  useAtlas = true,
+  atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
 ) => {
-  if (!useAtlas) { return baseTexture; }
-  const transform = getPlantIconTextureTransform(icon);
+  const transform = getPlantIconTextureTransform(icon, atlas);
   if (!transform) { return baseTexture; }
 
   const atlasTexture = baseTexture.clone();

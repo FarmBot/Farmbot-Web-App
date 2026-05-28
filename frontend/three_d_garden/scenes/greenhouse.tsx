@@ -9,11 +9,13 @@ import { StarterTrays, PottedPlant, GreenhouseWall, People } from "./props";
 import { PopInGroup } from "../progressive_load";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
+import { type PlantIconAtlas } from "../garden/plant_icon_atlas";
 
 export interface GreenhouseProps {
   config: Config;
   activeFocus: string;
   reveal?: boolean;
+  plantIconAtlas?: PlantIconAtlas;
   onDetailsLoadInRest?(): void;
 }
 
@@ -70,7 +72,7 @@ const EnabledGreenhouse = (props: GreenhouseProps) => {
         <StarterTrays positions={[
           [2000, -shelfDepth / 2, shelfHeight + 25],
           [3000, -shelfDepth / 2, shelfHeight + 25],
-        ]} />
+        ]} plantIconAtlas={props.plantIconAtlas} />
       </Group>
 
       <Group
@@ -107,7 +109,7 @@ const EnabledGreenhouse = (props: GreenhouseProps) => {
           threeSpace(850, -config.bedWidthOuter),
           groundZ,
         ]}>
-        <PottedPlant />
+        <PottedPlant plantIconAtlas={props.plantIconAtlas} />
       </FocusVisibilityGroup>
     </PopInGroup>
   </Group>;
@@ -128,6 +130,7 @@ export const greenhousePropsEqual = (
 ) =>
   prev.activeFocus === next.activeFocus
   && prev.reveal === next.reveal
+  && prev.plantIconAtlas === next.plantIconAtlas
   && prev.onDetailsLoadInRest === next.onDetailsLoadInRest
   && GREENHOUSE_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);

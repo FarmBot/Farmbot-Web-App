@@ -1,9 +1,17 @@
 /* eslint-disable no-null/no-null */
 import React from "react";
-import { Billboard, Circle, Image } from "@react-three/drei";
+import { Billboard, Circle, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { Group, MeshPhongMaterial, Mesh } from "../../components";
+import {
+  Group, MeshBasicMaterial, MeshPhongMaterial, Mesh, PlaneGeometry,
+} from "../../components";
 import { RenderOrder } from "../../constants";
+import {
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+  LAVENDER_ICON,
+  type PlantIconAtlas,
+} from "../../garden/plant_icon_atlas";
 
 const potHeight = 400;
 const plantHeight = 500;
@@ -20,7 +28,20 @@ const potPoints = [
 ];
 const potGeometry = new THREE.LatheGeometry(potPoints, 32, 0, Math.PI * 2);
 
-const PottedPlantBase = () => {
+export interface PottedPlantProps {
+  plantIconAtlas?: PlantIconAtlas;
+}
+
+const PottedPlantBase = (props: PottedPlantProps) => {
+  const lavenderTextureUrl = getPlantIconTextureUrl(
+    LAVENDER_ICON, props.plantIconAtlas);
+  const lavenderBaseTexture = useTexture(lavenderTextureUrl);
+  const lavenderTexture = React.useMemo(() =>
+    getPlantIconTexture(lavenderBaseTexture, LAVENDER_ICON,
+      props.plantIconAtlas), [
+    lavenderBaseTexture, props.plantIconAtlas,
+  ]);
+
   return <Group name="pot-with-plant">
     <Mesh geometry={potGeometry}
       dispose={null}
@@ -34,13 +55,16 @@ const PottedPlantBase = () => {
       <MeshPhongMaterial color="#3A1502" />
     </Circle>
     <Billboard follow={true} position={[0, 0, potHeight - plantHeight / 8]}>
-      <Image
-        url={"/crops/icons/lavender.avif"}
-        scale={plantHeight}
-        transparent={true}
+      <Mesh
         renderOrder={RenderOrder.one}
-        position={[0, plantHeight / 2, 0]}
-      />
+        position={[0, plantHeight / 2, 0]}>
+        <PlaneGeometry args={[plantHeight, plantHeight]} />
+        <MeshBasicMaterial
+          map={lavenderTexture}
+          alphaTest={0.1}
+          transparent={true}
+          depthWrite={false} />
+      </Mesh>
     </Billboard>
   </Group>;
 };

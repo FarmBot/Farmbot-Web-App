@@ -20,6 +20,9 @@ import { calculatePointPositions } from "./points";
 import { SEASON_TIMINGS, SEASONS } from "./constants";
 import { isMobile } from "../screen_size";
 import { FocusTransitionProvider } from "../three_d_garden/focus_transition";
+import {
+  PROMO_PLANT_ICON_ATLAS,
+} from "../three_d_garden/garden/plant_icon_atlas";
 
 const PROMO_BED_SIZES = [
   {
@@ -212,6 +215,7 @@ export const Promo = () => {
               threeDPlants={threeDPlants}
               mapPoints={mapPoints}
               plantIconCapacities={plantCapacities.iconCapacities}
+              plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true} />
