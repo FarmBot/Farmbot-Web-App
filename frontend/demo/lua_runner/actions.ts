@@ -32,6 +32,7 @@ const movementChunks = (
   current: XyzNumber,
   target: XyzNumber,
   mmPerTimeStep: number,
+  disableChunking: boolean,
 ): XyzNumber[] => {
   const dx = target.x - current.x;
   const dy = target.y - current.y;
@@ -44,7 +45,7 @@ const movementChunks = (
     y: dy / length,
     z: dz / length,
   };
-  const steps = localStorage.getItem("DISABLE_CHUNKING") === "true"
+  const steps = disableChunking
     ? 0
     : Math.floor(length / mmPerTimeStep);
   const chunks: XyzNumber[] = [];
@@ -95,6 +96,7 @@ export const expandActions = (
   const expanded: Action[] = [];
   const timeStepMs = parseInt(localStorage.getItem("timeStepMs") || "250");
   const mmPerSecond = parseInt(localStorage.getItem("mmPerSecond") || "500");
+  const disableChunking = localStorage.getItem("DISABLE_CHUNKING") === "true";
   const mmPerTimeStep = (mmPerSecond * timeStepMs) / 1000;
   const addPosition = (position: XyzNumber) => {
     expanded.push({
@@ -115,7 +117,8 @@ export const expandActions = (
           y: action.args[1] as number,
           z: action.args[2] as number,
         });
-        movementChunks(current, moveAbsoluteTarget, mmPerTimeStep).map(addPosition);
+        movementChunks(current, moveAbsoluteTarget, mmPerTimeStep, disableChunking)
+          .map(addPosition);
         setCurrent(moveAbsoluteTarget);
         break;
       case "move_relative":
@@ -124,7 +127,8 @@ export const expandActions = (
           y: current.y + (action.args[1] as number),
           z: current.z + (action.args[2] as number),
         });
-        movementChunks(current, moveRelativeTarget, mmPerTimeStep).map(addPosition);
+        movementChunks(current, moveRelativeTarget, mmPerTimeStep, disableChunking)
+          .map(addPosition);
         setCurrent(moveRelativeTarget);
         break;
       case "_move":
@@ -141,7 +145,8 @@ export const expandActions = (
         });
         const actualMoveTargets = moves.map(clampTarget);
         actualMoveTargets.map(actualMoveTarget => {
-          movementChunks(current, actualMoveTarget, mmPerTimeStep).map(addPosition);
+          movementChunks(current, actualMoveTarget, mmPerTimeStep, disableChunking)
+            .map(addPosition);
           setCurrent(actualMoveTarget);
         });
         break;
@@ -231,7 +236,8 @@ export const expandActions = (
             y: axis == "y" ? 0 : current.y,
             z: axis == "z" ? 0 : current.z,
           };
-          movementChunks(current, homeTarget, mmPerTimeStep).map(addPosition);
+          movementChunks(current, homeTarget, mmPerTimeStep, disableChunking)
+            .map(addPosition);
           setCurrent(homeTarget);
         });
         break;

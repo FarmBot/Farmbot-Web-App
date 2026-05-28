@@ -103,6 +103,7 @@ describe("expandActions()", () => {
     setCurrent({ x: 0, y: 0, z: 0 });
     localStorage.removeItem("timeStepMs");
     localStorage.removeItem("mmPerSecond");
+    localStorage.removeItem("DISABLE_CHUNKING");
     console.log = jest.fn();
     mockResources = buildResourceIndex([
       fakeFirmwareConfig(),
@@ -159,6 +160,18 @@ describe("expandActions()", () => {
       { type: "wait_ms", args: [250] },
       { type: "expanded_move_absolute", args: [2000, 0, 0] },
     ]);
+  });
+
+  it("reads chunking preference once per expansion", () => {
+    const getItem = jest.spyOn(localStorage, "getItem");
+    expect(expandActions([
+      { type: "move_absolute", args: [300, 0, 0] },
+      { type: "move_relative", args: [0, 300, 0] },
+      { type: "find_home", args: ["all"] },
+    ], []).length).toBeGreaterThan(0);
+    expect(getItem.mock.calls
+      .filter(([key]) => key === "DISABLE_CHUNKING")).toHaveLength(1);
+    getItem.mockRestore();
   });
 
   it("chunks movements: warns", () => {

@@ -7706,3 +7706,120 @@ bundle cannot shed `lodash` from this change. This would be style churn, not a
 meaningful app improvement.
 
 **Commit:** None
+
+## Round 77
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 401. Hoist movement chunking preference reads out of per-move chunk generation | Reduce synchronous `localStorage` calls while expanding long visualized movement sequences | Expand an 80-step movement sequence 20 times, matching a long routine across repeated visualization refreshes | Accepted |
+| 402. Cache body-variable labels while collecting sequence-local variables | Reduce repeated label-array allocation during sequence collection | Collect a sequence with 20 local variables and 10 provided body variables 100 times | Rejected |
+| 403. Use the resource index for point-group lookup in demo sequence expansion | Avoid scanning all point groups before applying group membership criteria | Resolve one 100-point group 20 times from 300 points and 50 groups | Rejected |
+| 404. Use `.find` for `_move` identifier variable lookup | Avoid filter/map allocation while calculating identifier-based movement targets | Calculate 100 `_move` bodies with 10 variables and five identifier overwrites | Rejected |
+| 405. Replace `JSON.stringify` sequence-call keys for common variable kinds | Reduce point-group sequence collector key generation work | Collect a 100-point point-group sequence 10 times | Rejected |
+
+### Idea 401: Hoist movement chunking preference reads out of per-move chunk generation
+
+**Description:** Read `DISABLE_CHUNKING` once in `expandActions` and pass the
+boolean into `movementChunks`. Expected return: fewer synchronous storage calls
+while expanding long visualized movement sequences, with identical chunking
+behavior.
+
+**Benchmark:** `expandActions` over an 80-step movement sequence repeated 20
+times, a realistic long farm routine across repeated visualization refreshes.
+
+**Before:** 1,640 `localStorage.getItem` calls; 1.424 ms median; 3,560 expanded
+actions.
+
+**After:** 60 `localStorage.getItem` calls; 1.418 ms median; 3,560 expanded
+actions.
+
+**Change:** 96.3% fewer storage reads, removing 1,580 synchronous calls in the
+benchmarked context. Timing stayed effectively flat. Bundle size changed from
+3,675,241 to 3,675,259 bytes, a negligible 18-byte increase.
+
+**Outcome:** Accepted; the call reduction is meaningful under a realistic
+sequence-expansion workload, the implementation is small, and existing behavior
+is preserved by the chunking tests.
+
+**Commit:** `Optimize 3D movement expansion for 96.3% fewer storage reads`
+
+### Idea 402: Cache body-variable labels while collecting sequence-local variables
+
+**Description:** Build a `Set` of provided body-variable labels before
+filtering sequence-local variable declarations. Expected return: less repeated
+array allocation during sequence collection.
+
+**Benchmark:** `collectDemoSequenceActions` for a sequence with 20 local
+variable declarations and 10 provided body variables, repeated 100 times.
+
+**Before:** 0.323 ms median.
+
+**After:** 0.294 ms median.
+
+**Change:** 8.9% faster, saving 0.029 ms per 100 collector runs.
+
+**Outcome:** Rejected and rolled back; the change missed the 10% threshold and
+the absolute saving is not meaningful in a realistic runtime context.
+
+**Commit:** None
+
+### Idea 403: Use the resource index for point-group lookup in demo sequence expansion
+
+**Description:** Replace `selectAllPointGroups(resources).filter(...)` with a
+direct `byKindAndId` lookup before applying group criteria. Expected return:
+faster point-group sequence variable expansion on accounts with many groups.
+
+**Benchmark:** Resolve one 100-point group 20 times from a resource index with
+300 points and 50 groups.
+
+**Before:** 1.190 ms median.
+
+**After:** 1.198 ms median.
+
+**Change:** 0.7% slower.
+
+**Outcome:** Rejected and rolled back; the group scan is not the meaningful
+cost compared with point criteria and sorting.
+
+**Commit:** None
+
+### Idea 404: Use `.find` for `_move` identifier variable lookup
+
+**Description:** Replace filter/map lookup of identifier variables in
+`calculateMove` with `.find`. Expected return: less allocation while expanding
+identifier-based `_move` steps.
+
+**Benchmark:** 100 `_move` calculations with 10 variables and five identifier
+overwrites per body.
+
+**Before:** 0.118 ms median.
+
+**After:** 0.083 ms median.
+
+**Change:** 29.5% faster, saving 0.035 ms per 100 move calculations.
+
+**Outcome:** Rejected and rolled back; although the percentage cleared 10%, the
+absolute benefit is too small to justify touching stable movement logic.
+
+**Commit:** None
+
+### Idea 405: Replace `JSON.stringify` sequence-call keys for common variable kinds
+
+**Description:** Build sequence call-stack keys directly for coordinate,
+numeric, point, and point-group variables instead of stringifying variable args.
+Expected return: faster circular-call checks during point-group sequence
+visualization.
+
+**Benchmark:** `collectDemoSequenceActions` for a sequence with one point-group
+variable expanded across 100 points, repeated 10 times.
+
+**Before:** 1.327 ms median.
+
+**After:** 1.448 ms median.
+
+**Change:** 9.1% slower.
+
+**Outcome:** Rejected and rolled back; native stringify is faster for this
+realistic context and the custom path adds unnecessary complexity.
+
+**Commit:** None
