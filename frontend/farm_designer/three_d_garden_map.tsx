@@ -23,7 +23,6 @@ import { SCENES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
-import { unpackUUID } from "../util";
 import { isTopDown } from "../three_d_garden/helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 
@@ -56,11 +55,16 @@ export interface ThreeDGardenMapProps {
   logs: TaggedLog[];
 }
 
+const localIdFromUuid = (uuid: string) => {
+  const index = uuid.lastIndexOf(".");
+  return parseInt(uuid.slice(index + 1), 10);
+};
+
 export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
   let latest = 0;
   for (const log of logs) {
     if (!log.body.id && log.body.message === "Taking photo") {
-      latest = Math.max(latest, unpackUUID(log.uuid).localId);
+      latest = Math.max(latest, localIdFromUuid(log.uuid));
     }
   }
   return latest;

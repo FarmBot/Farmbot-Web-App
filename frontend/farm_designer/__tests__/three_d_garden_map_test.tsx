@@ -303,6 +303,13 @@ describe("<ThreeDGardenMap />", () => {
     ])).toEqual(456);
   });
 
+  it("uses the local UUID id for unsaved camera captures", () => {
+    const capture = cameraLog(1234);
+    capture.uuid = "Log.0.9876";
+
+    expect(lastImageCaptureTime([capture])).toEqual(9876);
+  });
+
   it("falls back when no unsaved camera capture logs exist", () => {
     expect(lastImageCaptureTime([
       otherLog(789),

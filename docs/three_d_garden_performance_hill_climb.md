@@ -6267,3 +6267,223 @@ read used by 3D moisture rendering.
 **Outcome:** Rejected and rolled back; the attempted direct-loop rewrite did not
 meet the required 10% improvement threshold, and the absolute saving was below
 a meaningful load-time improvement.
+
+## Round 65
+
+### Idea 341: Memoize `ThreeDGardenMap` config value reads across telemetry-only renders
+
+**Description:** Cache the block of 3D setting lookups inside `ThreeDGardenMap`
+so telemetry-only bot position updates do not re-read every 3D config setting
+before the memoized canvas props are assembled. Expected return: lower CPU for
+position updates while config changes still flow through new config getter
+inputs.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, 80 FarmwareEnv rows,
+250 logs, and stable resources, then 90 rerenders where only bot position
+changed.
+
+**Before:** 2.625 ms per 90 telemetry rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even if config reads disappeared
+entirely, the realistic telemetry batch budget was only 2.625 ms across 90
+updates, so the likely absolute win was too small for extra memoization
+dependencies.
+
+### Idea 342: Stabilize `get3DConfigValueFunction()` across parent renders
+
+**Description:** Cache the generated 3D config getter for an unchanged
+FarmwareEnv array so Farm Designer parent renders can pass a stable getter to
+`ThreeDGardenMap`. Expected return: fewer avoidable config-path updates while
+resource-array changes still rebuild the getter.
+
+**Benchmark:** 90 `get3DConfigValueFunction()` calls with an unchanged
+80-entry FarmwareEnv array, matching Farm Designer parent renders that rebuild
+the getter.
+
+**Before:** 0.079 ms per 90 getter creations.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; getter creation is already
+effectively free at realistic FarmwareEnv sizes, so a cache would add stale
+reference risk without app-level payoff.
+
+### Idea 343: Avoid full UUID unpacking while scanning latest camera-capture logs
+
+**Description:** Extract the local log id directly from the UUID string in
+`lastImageCaptureTime()` instead of constructing a full unpacked UUID object
+for each matching "Taking photo" log. Expected return: faster log-resource
+rerenders with many logs while preserving the same latest-unsaved-capture
+result.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, 80 FarmwareEnv rows,
+250 logs, and stable resources, then 90 rerenders with prebuilt changed log
+arrays.
+
+**Before:** 44.463 ms per 90 log-resource rerenders.
+
+**After:** 27.992 ms per 90 log-resource rerenders.
+
+**Change:** 37.1% faster, saving 16.471 ms per realistic log-update batch.
+
+**Outcome:** Accepted; latest camera-capture scanning now reads the local UUID
+id directly while preserving the same unsaved "Taking photo" filtering and
+latest-id result.
+
+**Commit:** `Speed up camera log scans for 37.1% faster rerenders`
+
+### Idea 344: Reduce repeated plant conversion work on plant-resource churn
+
+**Description:** Reuse crop display metadata and avoid extra object churn while
+converting plant resources for `ThreeDGardenMap` during plant updates.
+Expected return: faster plant-list rerenders with hundreds of plants while
+keeping labels, icons, spread, size, and coordinates unchanged.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, then 90 rerenders
+where the first plant resource changed and the full plant conversion path ran.
+
+**Before:** 3.157 ms per 90 plant rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic 120-plant
+conversion batch costs about 0.035 ms per update, so further object-churn
+cleanup would not make a meaningful app difference.
+
+### Idea 345: Reduce peripheral-state recomputation during bot peripheral updates
+
+**Description:** Avoid repeated active-peripheral scans when deriving water,
+light, vacuum, and rotary state in `ThreeDGardenMap`. Expected return: faster
+peripheral-resource rerenders while preserving the same derived FarmBot
+peripheral flags.
+
+**Benchmark:** `ThreeDGardenMap` mounted with stable resources, then 90
+rerenders where peripheral values changed and water/light/vacuum/rotary state
+was derived.
+
+**Before:** 2.052 ms per 90 peripheral rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the whole peripheral derivation
+batch is already roughly 2 ms across 90 updates, below a meaningful absolute
+budget for added indexing or memoization.
+
+## Round 66
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 346. Reuse valid-location sun coordinates across unrelated garden-map rerenders | Avoid repeated `moment` + `SunCalc` work while preserving fixed-time sun behavior | Rerender `ThreeDGardenMap` 90 times with valid lat/lng and a fixed 3D time | Rejected |
+| 347. Build image texture moisture keys with lower allocation overhead | Reduce string churn when moisture overlays are visible and texture keys include sensor metadata | Build texture keys 20 times with 12 sensors and 120 readings | Rejected |
+| 348. Filter moisture readings in one pass | Reduce sensor lookup and filtering work before moisture surface generation | Filter 120 readings against 12 sensors 20 times | Rejected |
+| 349. Select most recent moisture points without callback churn | Reduce allocation/callback overhead before triangulation/interpolation | Select most recent points from 120 readings 20 times | Rejected |
+| 350. Split filtered image lists without extra branch work | Reduce image-texture setup cost when many historical images are visible | Split 80 filtered image entries 50 times | Rejected |
+
+### Idea 346: Reuse valid-location sun coordinates across unrelated garden-map rerenders
+
+**Description:** Cache fixed-time valid-location sun coordinate work across
+unrelated `ThreeDGardenMap` rerenders. Expected return: less repeated
+`moment` and `SunCalc` work while preserving fixed-time sun behavior.
+
+**Benchmark:** `ThreeDGardenMap` mounted with valid San Francisco latitude and
+longitude, a fixed 3D time of `12:00`, stable resources, and 90 rerenders where
+only bot position changed.
+
+**Before:** 2.732 ms per 90 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even a total elimination of this
+work would save only about 0.030 ms per bot-position update, and broad real-time
+memoization would risk changing current-time sun semantics.
+
+### Idea 347: Build image texture moisture keys with lower allocation overhead
+
+**Description:** Replace the string-concatenation callback path in image texture
+moisture keys with a lower-allocation direct key builder. Expected return:
+faster texture-key setup when moisture map or moisture readings are visible.
+
+**Benchmark:** `getImageTextureKey()` built 20 times with 12 sensors and 120
+readings, matching a garden with moisture overlays enabled and a moderate
+reading history.
+
+**Before:** 0.247 ms per 20 key builds.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic batch cost is about
+0.012 ms per key build, so any percentage win would be lost in measurement
+noise and not worth extra key-building code.
+
+### Idea 348: Filter moisture readings in one pass
+
+**Description:** Collapse moisture-reading filtering into a single direct pass
+after sensor lookup construction. Expected return: less callback and array
+allocation work before moisture surface generation.
+
+**Benchmark:** `filterMoistureReadings()` run 20 times with 12 sensors and 120
+readings.
+
+**Before:** 0.063 ms per 20 filters.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; filtering is effectively free at
+realistic sizes, with the entire 20-filter batch below one tenth of a
+millisecond.
+
+### Idea 349: Select most recent moisture points without callback churn
+
+**Description:** Convert `selectMostRecentPoints()` from a callback-style scan
+to a direct loop. Expected return: less callback overhead before
+triangulation/interpolation.
+
+**Benchmark:** `selectMostRecentPoints()` run 20 times with 120 moisture
+readings spread across repeated rounded XY locations.
+
+**Before:** 1.067 ms per 20 selects.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic cost is about
+0.053 ms per select, so the absolute savings would be too small for a
+readability-only loop rewrite.
+
+### Idea 350: Split filtered image lists without extra branch work
+
+**Description:** Reduce image-texture setup overhead in `splitFilteredImages()`
+for gardens with many visible historical images. Expected return: faster
+texture setup while preserving highlighted-image handling and image order.
+
+**Benchmark:** `splitFilteredImages()` run 50 times with 80 filtered image
+entries, including highlighted entries.
+
+**Before:** 0.060 ms per 50 splits.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; splitting 80 images is already
+about 0.001 ms per call in the realistic benchmark, leaving no meaningful
+optimization budget.
