@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+/* eslint-disable no-null/no-null */
+import React from "react";
 import { Billboard, Circle, Image } from "@react-three/drei";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial, Mesh } from "../../components";
@@ -6,25 +7,23 @@ import { RenderOrder } from "../../constants";
 
 const potHeight = 400;
 const plantHeight = 500;
+const potPoints = [
+  new THREE.Vector2(0, 0),
+  new THREE.Vector2(0.3, 0),
+  new THREE.Vector2(0.35, 0.1),
+  new THREE.Vector2(0.25, 0.6),
+  new THREE.Vector2(0.3, 0.8),
+  new THREE.Vector2(0.4, 1),
+  new THREE.Vector2(0.35, 1),
+  new THREE.Vector2(0.2, 0.6),
+  new THREE.Vector2(0, 0.6),
+];
+const potGeometry = new THREE.LatheGeometry(potPoints, 32, 0, Math.PI * 2);
 
 const PottedPlantBase = () => {
-  const points = useMemo(() => [
-    new THREE.Vector2(0, 0),
-    new THREE.Vector2(0.3, 0),
-    new THREE.Vector2(0.35, 0.1),
-    new THREE.Vector2(0.25, 0.6),
-    new THREE.Vector2(0.3, 0.8),
-    new THREE.Vector2(0.4, 1),
-    new THREE.Vector2(0.35, 1),
-    new THREE.Vector2(0.2, 0.6),
-    new THREE.Vector2(0, 0.6),
-  ], []);
-
-  const geometry = useMemo(() =>
-    new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points]);
-
   return <Group name="pot-with-plant">
-    <Mesh geometry={geometry}
+    <Mesh geometry={potGeometry}
+      dispose={null}
       scale={[potHeight, potHeight, potHeight]}
       rotation={[Math.PI / 2, 0, 0]}
       receiveShadow={true}>

@@ -38,6 +38,11 @@ const wallStructure2D = () => {
 };
 
 const LabBase = (props: LabProps) => {
+  if (props.config.scene != "Lab") { return <></>; }
+  return <EnabledLab {...props} />;
+};
+
+const EnabledLab = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 

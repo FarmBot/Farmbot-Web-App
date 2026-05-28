@@ -24,6 +24,11 @@ const shelfHeight = 800;
 const shelfDepth = 600;
 
 const GreenhouseBase = (props: GreenhouseProps) => {
+  if (props.config.scene != "Greenhouse") { return <></>; }
+  return <EnabledGreenhouse {...props} />;
+};
+
+const EnabledGreenhouse = (props: GreenhouseProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 

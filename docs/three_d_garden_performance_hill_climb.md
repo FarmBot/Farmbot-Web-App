@@ -17865,3 +17865,190 @@ the realistic no-cloud summer render.
 10% threshold and p95 regressed.
 
 **Commit:** None
+
+## Round 161
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 821. Skip hidden greenhouse scene before texture and prop setup | Avoid building greenhouse walls, trays, people, potted plant, and shelf texture hooks when `scene!="Greenhouse"` | Default Outdoor `Greenhouse` render | Accepted |
+| 822. Skip hidden lab scene before texture and wall setup | Avoid building lab walls, shelves, desk, people, and texture hooks when `scene!="Lab"` | Default Outdoor `Lab` render | Accepted |
+| 823. Hoist the lab wall shape and extrude options | Avoid recreating the same wall `Shape` and options array during enabled lab renders | Enabled `Lab` render | Rejected |
+| 824. Avoid per-person `Vector3` offsets while rendering people | Use raw offset numbers instead of allocating a `Vector3` for every person billboard | Enabled two-person `People` render | Rejected |
+| 825. Share potted-plant lathe geometry across instances | Avoid rebuilding the same pot profile and `LatheGeometry` for each mounted potted plant | First `PottedPlant` render | Accepted |
+
+### 821. Skip hidden greenhouse scene before texture and prop setup
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Default Outdoor `Greenhouse` render: 0.076333 ms median,
+0.290000 ms p95.
+
+**After:** Hook-safe early return before hidden greenhouse texture and child
+setup: 0.063500 ms median, 0.227250 ms p95.
+
+**Change:** 16.81% faster by median, saving about 0.012833 ms per default
+hidden greenhouse render.
+
+**Outcome:** Accepted. The greenhouse scene was already not visible outside the
+Greenhouse scene; the enabled Greenhouse path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+### 822. Skip hidden lab scene before texture and wall setup
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Default Outdoor `Lab` render: 0.068042 ms median,
+0.087625 ms p95.
+
+**After:** Hook-safe early return before hidden lab texture, wall, desk, and
+people setup: 0.049916 ms median, 0.074875 ms p95.
+
+**Change:** 26.64% faster by median, saving about 0.018126 ms per default
+hidden lab render.
+
+**Outcome:** Accepted. The lab scene was already not visible outside the Lab
+scene; the enabled Lab path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+### 823. Hoist the lab wall shape and extrude options
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Enabled `Lab` render: 0.429791 ms median, 1.168792 ms p95.
+
+**After:** Module-level wall shape, extrude options, and shelf heights:
+0.423417 ms median, 1.772250 ms p95.
+
+**Change:** 1.48% faster by median, with p95 much slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and the tail latency regression was significant.
+
+**Commit:** None
+
+### 824. Avoid per-person `Vector3` offsets while rendering people
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Enabled two-person `People` render: 0.094583 ms median,
+0.122375 ms p95.
+
+**After:** Raw numeric person offsets instead of a temporary `Vector3`:
+0.104542 ms median, 0.123000 ms p95.
+
+**Change:** 10.53% slower by median.
+
+**Outcome:** Rejected after rollback. The direct numeric version was slower for
+the realistic two-person render.
+
+**Commit:** None
+
+### 825. Share potted-plant lathe geometry across instances
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** First `PottedPlant` render: 0.110625 ms median, 0.169209 ms p95.
+
+**After:** Module-level pot profile and `LatheGeometry` shared across mounts:
+0.090083 ms median, 0.105000 ms p95.
+
+**Change:** 18.57% faster by median, saving about 0.020542 ms per potted-plant
+mount.
+
+**Outcome:** Accepted. The geometry is identical and shared with
+`dispose={null}` to avoid disposing the module-level instance on unmount.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+## Round 162
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 826. Reuse converted bounds distance endpoints | Avoid calling `get3DPosition` twice for the same distance-indicator point | `Bounds` render with `distanceIndicator="beamLength"` | Rejected |
+| 827. Cache repeated arrow extrude arguments | Avoid rebuilding identical arrow `Shape` and options arrays for repeated distance arrows | `DistanceIndicator` render | Rejected |
+| 828. Cache caster bracket extrude arguments by leg size | Avoid rebuilding the same caster bracket `Shape` for repeated default caster renders | Default `Caster` render | Rejected |
+| 829. Reuse person image position vectors from scaling data | Avoid allocating a new `Vector3` for every `Person` image render | Single `Person` render | Rejected |
+| 830. Precompute repeated power-supply cable coordinates | Avoid repeated `threeSpace` and support-height calculations while building the cable path | Default `PowerSupply` render | Rejected |
+
+### 826. Reuse converted bounds distance endpoints
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** `Bounds` render with `distanceIndicator="beamLength"`:
+0.270459 ms median, 0.893542 ms p95.
+
+**After:** Shared converted start/end positions for repeated x/y fields:
+0.268625 ms median, 0.878583 ms p95.
+
+**Change:** 0.68% faster by median, saving about 0.001834 ms.
+
+**Outcome:** Rejected after rollback. The improvement was far below the 10%
+threshold and the absolute savings were not meaningful.
+
+**Commit:** None
+
+### 827. Cache repeated arrow extrude arguments
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** `DistanceIndicator` render: 0.164042 ms median, 0.250625 ms p95.
+
+**After:** Cached arrow `Shape` and extrude options by length and width:
+0.162500 ms median, 0.279750 ms p95.
+
+**Change:** 0.94% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and tail latency moved in the wrong direction.
+
+**Commit:** None
+
+### 828. Cache caster bracket extrude arguments by leg size
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Default `Caster` render: 0.088959 ms median, 0.115709 ms p95.
+
+**After:** Cached caster bracket `Shape` and extrude options keyed by leg size:
+0.089000 ms median, 0.148791 ms p95.
+
+**Change:** 0.05% slower by median.
+
+**Outcome:** Rejected after rollback. The cache did not improve the realistic
+caster render and p95 regressed.
+
+**Commit:** None
+
+### 829. Reuse person image position vectors from scaling data
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Single `Person` render: 0.057916 ms median, 0.083209 ms p95.
+
+**After:** Reused module-level `Vector3` positions in the scaling data:
+0.073708 ms median, 0.196375 ms p95.
+
+**Change:** 27.27% slower by median.
+
+**Outcome:** Rejected after rollback. Reusing vectors in the scaling data made
+the render slower and substantially worsened p95.
+
+**Commit:** None
+
+### 830. Precompute repeated power-supply cable coordinates
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Default `PowerSupply` render: 0.105959 ms median, 0.222041 ms p95.
+
+**After:** Precomputed repeated cable x/y/z values before constructing the
+curve path: 0.103375 ms median, 0.204750 ms p95.
+
+**Change:** 2.44% faster by median, saving about 0.002584 ms.
+
+**Outcome:** Rejected after rollback. The improvement was below the 10%
+threshold and too small in absolute terms.
+
+**Commit:** None
