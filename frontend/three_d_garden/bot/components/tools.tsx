@@ -439,7 +439,9 @@ const Tool = (props: ToolProps) => {
         {!inToolbay && props.config.vacuum &&
           <Group position={[20, 0, -30]}>
             {[-50, -80, -95, -100].map(z =>
-              <SuctionAnimation key={z} z={z} />)}
+              <React.Suspense key={z} fallback={undefined}>
+                <SuctionAnimation z={z} />
+              </React.Suspense>)}
           </Group>}
       </ToolbaySlot>;
     case ToolName.weeder:
