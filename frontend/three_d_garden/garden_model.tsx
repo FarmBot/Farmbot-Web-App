@@ -308,7 +308,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       reveal={bedReveal}
       markReadyOnMount={false}
       markName={"three_d_bed_ready"}>
-      <NorthArrow config={config} />
+      {config.north && <NorthArrow config={config} />}
       <PopInGroup
         name={"bed-load-in"}
         reveal={bedReveal}
@@ -640,6 +640,9 @@ export const GardenModel = (props: GardenModelProps) => {
   const targetZoom = config.topDown ? topDownZoomLevel : 1;
   const focusTransitionsEnabled =
     !!props.smoothFocusTransitions && config.animate;
+  const solarVisible =
+    config.solar || props.activeFocus == "What you need to provide";
+  const renderSolar = focusTransitionsEnabled || solarVisible;
   const renderedCamera = useSmoothCamera({
     camera,
     zoom: targetZoom,
@@ -817,7 +820,7 @@ export const GardenModel = (props: GardenModelProps) => {
           setActiveFocus={props.setActiveFocus}
           reveal={detailsReveal}
           onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
-        <AxesHelper args={[5000]} visible={config.threeAxes} />
+        {config.threeAxes && <AxesHelper args={[5000]} />}
         {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
         <Clouds config={config} />
         {showMoistureMap && props.config.moistureDebug &&
@@ -838,7 +841,8 @@ export const GardenModel = (props: GardenModelProps) => {
           visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
           config={config}
           configPosition={props.configPosition} />}
-        <Solar config={config} activeFocus={props.activeFocus} />
+        {renderSolar &&
+        <Solar config={config} activeFocus={props.activeFocus} />}
         {config.scene == "Lab" &&
         <Lab
           config={config}

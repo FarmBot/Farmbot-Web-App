@@ -16974,3 +16974,104 @@ absolute saving is about two hundredths of a millisecond on a details-stage
 empty render and does not meet the meaningful absolute-improvement threshold.
 
 **Commit:** None
+
+## Round 152
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 776. Skip disabled packaging tree mount | Avoid mounting the full hidden packaging box/text tree when `config.packaging=false` | Default bed render with packaging disabled | Rejected |
+| 777. Unmount hidden focus groups when transitions are disabled | Avoid mounting hidden non-keepMounted focus groups in ordinary 3D mode | Hidden `FocusVisibilityGroup` and default bed distance indicators | Rejected |
+| 778. Skip disabled north-arrow tree mount | Avoid mounting hidden extrude geometry when `config.north=false` | Default garden/bed render with north arrow disabled | Accepted |
+| 779. Skip inactive solar helper before spring setup | Avoid mounting the solar component and spring when solar is disabled and no focus transition can reveal it | Default garden details render with solar disabled | Accepted |
+| 780. Skip disabled three-axes helper mount | Avoid mounting a hidden `AxesHelper` when `config.threeAxes=false` | Default garden details render with three axes disabled | Accepted |
+
+### 776. Skip disabled packaging tree mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Disabled `Packaging` render: 0.056666 ms median, 0.128458 ms p95.
+
+**After:** Simulated parent gate: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 99.93% faster by median, saving 0.056624 ms for one disabled
+packaging render.
+
+**Outcome:** Rejected after rollback. The direct win was measurable, but this
+path is owned by the bed render and a focused bed click-to-add check did not
+pass during validation. I left the bed component unchanged rather than risk
+altering pointer behavior.
+
+**Commit:** None
+
+### 777. Unmount hidden focus groups when transitions are disabled
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Hidden `FocusVisibilityGroup` without transitions: 0.020916 ms
+median, 0.034000 ms p95.
+
+**After:** Simulated early unmount: 0.000041 ms median, 0.000042 ms p95.
+
+**Change:** 99.80% faster by median, saving 0.020875 ms for one hidden
+focus-group render.
+
+**Outcome:** Rejected after rollback. The broad semantic change from hidden but
+mounted to unmounted is too risky for shared focus groups and refs without a
+larger audit.
+
+**Commit:** None
+
+### 778. Skip disabled north-arrow tree mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Disabled `NorthArrow` render: 0.020875 ms median, 0.028834 ms p95.
+Default `GardenModel` mounted one hidden north-arrow group.
+
+**After:** Parent gate when `config.north=false`: zero `NorthArrow` mounts in
+default `GardenModel`.
+
+**Change:** 100.00% fewer disabled north-arrow mounts, saving about 0.020875 ms
+for one default-off render path.
+
+**Outcome:** Accepted. When the north-arrow setting is off, the extruded arrow
+has no visible output. Enabling `config.north` still mounts the same component.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+### 779. Skip inactive solar helper before spring setup
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Inactive `Solar` render with `config.solar=false` and no solar
+focus: 0.013959 ms median, 0.024709 ms p95.
+
+**After:** Parent gate when solar is disabled, unfocused, and no smooth focus
+transition is active: zero `Solar` mounts in default `GardenModel`.
+
+**Change:** 100.00% fewer inactive solar helper mounts, saving about
+0.013959 ms for one default details render path.
+
+**Outcome:** Accepted. The solar hardware is still mounted when the setting is
+enabled, when the "What you need to provide" focus needs to reveal it, or when
+smooth focus transitions need it for fade behavior.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+### 780. Skip disabled three-axes helper mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Hidden `AxesHelper` render: 0.014542 ms median, 0.021291 ms p95.
+Default `GardenModel` mounted one hidden axes helper.
+
+**After:** Parent gate when `config.threeAxes=false`: zero `AxesHelper` mounts
+in default `GardenModel`.
+
+**Change:** 100.00% fewer disabled axes-helper mounts, saving about 0.014542 ms
+for one default details render path.
+
+**Outcome:** Accepted. The helper is invisible when disabled and still mounts
+unchanged when `config.threeAxes` is enabled.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`

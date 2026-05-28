@@ -30,6 +30,9 @@ import { BooleanSetting } from "../../session_keys";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
 } from "../progressive_load";
+import { AxesHelper } from "../components";
+import { NorthArrow } from "../garden/north_arrow";
+import { Solar } from "../garden/solar";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -165,6 +168,30 @@ describe("<GardenModel />", () => {
       .map(node => node.props.step);
     expect(readySteps).toContain("grid");
     expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(0);
+  });
+
+  it("skips disabled default-off helper mounts", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.config.north = false;
+    p.config.solar = false;
+    p.config.threeAxes = false;
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Solar)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(0);
+  });
+
+  it("mounts enabled default-off helpers", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.config.north = true;
+    p.config.solar = true;
+    p.config.threeAxes = true;
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Solar)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(1);
   });
 
   it("reuses empty bed resource props across position updates", () => {
