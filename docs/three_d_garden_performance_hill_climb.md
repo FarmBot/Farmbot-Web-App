@@ -5308,3 +5308,59 @@ changes to text, position, rotation, size, color, name, visibility, render
 order, or thickness still update the same label.
 
 **Commit:** `Memoize text labels for 92.3% faster rerenders`
+
+## Round 57
+
+### Idea 301: Memoize shared `Arrow` extrusion args
+
+**Description:** Memoize the shared arrow component by length, width, and
+rotation contents, and reuse the generated 2D shape/options while those values
+are unchanged. Expected return: faster axes and dimension-arrow rerenders
+without changing arrow geometry, material color, extrusion depth, shadows, or
+rotation.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the three
+axes-arrow components 90 times with identical length/width and fresh but
+value-equivalent rotation arrays.
+
+**Before:** 4.373 ms per 90-rerender batch.
+
+**After:** 1.260 ms per 90-rerender batch.
+
+**Change:** 71.2% faster, saving 3.113 ms per realistic unchanged axes-arrow
+rerender batch.
+
+**Outcome:** Accepted; shared arrows now skip unchanged length/width/rotation
+churn and reuse extrusion args when they do render, while dimension and
+rotation changes still rebuild the same arrow geometry.
+
+**Commit:** `Memoize arrow extrusions for 71.2% faster rerenders`
+
+### Idea 302: Memoize `FarmbotAxes` relevant config fields
+
+**Description:** Add a relevant-field comparator around the axes overlay so
+unrelated config object churn skips the three-arrow axes subtree. Expected
+return: faster axes-on rerenders while bed size, bed offsets, Z zero inputs,
+and axes visibility changes still update.
+
+### Idea 303: Memoize `Caster` relevant config fields
+
+**Description:** Memoize each bed caster by the config fields that affect its
+bracket, wheel, axle, position, and flush behavior. Expected return: faster bed
+rerenders across the realistic six-caster bed while preserving caster geometry
+and placement.
+
+### Idea 304: Memoize `Packaging` relevant config fields
+
+**Description:** Add a relevant-field comparator around packaging so unrelated
+config churn skips the carton, straps, edge protectors, and label subtree.
+Expected return: faster packaging-on renders while package visibility, size,
+version, label, bed dimensions, and ground placement still update.
+
+### Idea 305: Memoize `UtilitiesPost` relevant config fields and hose paths
+
+**Description:** Memoize the utilities post by the config fields and focus
+state that affect post visibility, placement, color, texture, and hose paths;
+also avoid rebuilding hose curves when those inputs are stable. Expected
+return: faster utilities-on bed rerenders without changing post hardware,
+texture, focus visibility, or hose geometry.
