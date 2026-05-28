@@ -936,6 +936,27 @@ describe("runDemoLuaCode()", () => {
     expect(console.log).toHaveBeenCalledWith("2");
   });
 
+  it("runs repeated get_group reads", () => {
+    const group = fakePointGroup();
+    group.body.id = 1;
+    group.body.point_ids = [1, 2];
+    const point1 = fakePoint();
+    point1.body.id = 1;
+    const point2 = fakePoint();
+    point2.body.id = 2;
+    mockResources = buildResourceIndex([group, point1, point2]);
+    runDemoLuaCode(`
+      local first = get_group(1)
+      local second = get_group(1)
+      print(#first, #second)
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(console.log).toHaveBeenCalledWith("2	2");
+  });
+
   it("runs group", () => {
     const group = fakePointGroup();
     group.body.id = 1;

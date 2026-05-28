@@ -7938,3 +7938,114 @@ variables.
 realistic variable counts.
 
 **Commit:** None
+
+## Round 79
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 411. Cache repeated Lua `get_group` and `group` results within one Lua run | Avoid repeated point-group selection, sorting, and cleaning for scripts that read the same group multiple times | `runLua` executing 10 `get_group(1)` calls for a 100-point group from 300 points | Accepted |
+| 412. Cache repeated filtered `get_plants` results within one Lua run | Avoid repeated filtering and cleaning after the selector cache from Round 78 | `runLua` executing 20 `get_plants()` calls over 120 planted plants | Rejected |
+| 413. Cache repeated `/api/tools` GET results within one Lua run | Avoid repeated tool body cleaning for scripts that inspect tools repeatedly | `runLua` executing 10 `/api/tools` GET calls over 20 tools | Rejected |
+| 414. Replace Lua curve lookup map/filter with cached direct lookup | Avoid repeated curve body array allocation for scripts reading the same curve | `runLua` executing 10 `/api/curves/10` GET calls over 20 curves | Rejected |
+| 415. Replace group-order position `.map` with direct loop | Reduce route-specific group-order render allocation | Generate positions for a 100-point group 20 times | Rejected |
+
+### Idea 411: Cache repeated Lua `get_group` and `group` results within one Lua run
+
+**Description:** Cache cleaned group point bodies and point IDs by group ID
+inside a single `runLua` evaluation. Expected return: lower CPU for visualized
+Lua scripts that repeatedly inspect the same point group.
+
+**Benchmark:** `runLua` executing 10 `get_group(1)` calls for a 100-point group
+selected from 300 points.
+
+**Before:** 6.308 ms median; 10 emitted print actions.
+
+**After:** 5.031 ms median; 10 emitted print actions.
+
+**Change:** 20.2% faster, saving 1.276 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; the cache is scoped to one Lua run, preserves the same
+returned group data, and avoids repeated group selection/sort/clean work.
+The 3D bundle changed from 3,675,237 to 3,675,254 bytes, a negligible 17-byte
+increase.
+
+**Commit:** `Optimize 3D Lua group reads by 20.2%`
+
+### Idea 412: Cache repeated filtered `get_plants` results within one Lua run
+
+**Description:** Cache `get_plants` results by serialized params inside one
+Lua evaluation. Expected return: avoid repeated plant filtering and cleaning
+after the resource selector cache from Round 78.
+
+**Benchmark:** `runLua` executing 20 `get_plants()` calls over 120 planted
+plants.
+
+**Before:** 11.087 ms median; 20 emitted print actions.
+
+**After:** 11.074 ms median; 20 emitted print actions.
+
+**Change:** 0.1% faster, saving 0.013 ms.
+
+**Outcome:** Rejected and rolled back; Lua table conversion and cache-key setup
+dominate the realistic context, so the result cache adds complexity without a
+meaningful win.
+
+**Commit:** None
+
+### Idea 413: Cache repeated `/api/tools` GET results within one Lua run
+
+**Description:** Cache cleaned `/api/tools` GET results during one Lua
+evaluation. Expected return: lower CPU for scripts that repeatedly inspect
+tool metadata.
+
+**Benchmark:** `runLua` executing 10 `/api/tools` GET calls over 20 tools.
+
+**Before:** 2.461 ms median; 10 emitted print actions.
+
+**After:** 2.694 ms median; 10 emitted print actions.
+
+**Change:** 9.5% slower.
+
+**Outcome:** Rejected and rolled back; realistic tool counts are too small for
+the cache to pay for itself.
+
+**Commit:** None
+
+### Idea 414: Replace Lua curve lookup map/filter with cached direct lookup
+
+**Description:** Cache cleaned curve bodies by ID and replace map/filter curve
+lookup with direct `.find`. Expected return: less work for scripts that read
+the same curve repeatedly.
+
+**Benchmark:** `runLua` executing 10 `/api/curves/10` GET calls over 20 curves.
+
+**Before:** 2.129 ms median; 10 emitted print actions.
+
+**After:** 2.268 ms median; 10 emitted print actions.
+
+**Change:** 6.5% slower.
+
+**Outcome:** Rejected and rolled back; realistic curve counts are small and
+the cache branch was slower than the existing path.
+
+**Commit:** None
+
+### Idea 415: Replace group-order position `.map` with direct loop
+
+**Description:** Generate group-order visualization positions with a direct
+loop instead of `.map`. Expected return: lower render allocation for large
+group-order routes.
+
+**Benchmark:** Generate sorted group-order positions for a 100-point group 20
+times, including realistic `getZ` calls and world-position conversion.
+
+**Before:** 0.429 ms median.
+
+**After:** 0.444 ms median.
+
+**Change:** 3.4% slower.
+
+**Outcome:** Rejected and rolled back; the current map path is already faster
+for this realistic route-specific render work.
+
+**Commit:** None

@@ -55,6 +55,8 @@ export const runLua =
     const allGenericPoints = () =>
       allGenericPointsCache ||= selectAllGenericPointers(resources);
     let apiPointsGetCache: Point[] | undefined;
+    const groupBodiesCache: Record<number, Point[]> = {};
+    const groupIdsCache: Record<number, (number | undefined)[]> = {};
 
     lua.lua_newtable(L); // stack: [env]
     const envIndex = lua.lua_gettop(L);
@@ -282,18 +284,18 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const groupId = luaToJs(L, 1) as number;
-      const points = getGroupPoints(resources, groupId)
+      groupBodiesCache[groupId] ||= getGroupPoints(resources, groupId)
         .map(point => point.body).map(clean);
-      jsToLua(L, points);
+      jsToLua(L, groupBodiesCache[groupId]);
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("get_group"));
 
     lua.lua_pushjsfunction(L, () => {
       const groupId = luaToJs(L, 1) as number;
-      const points = getGroupPoints(resources, groupId)
+      groupIdsCache[groupId] ||= getGroupPoints(resources, groupId)
         .map(point => point.body.id).map(clean);
-      jsToLua(L, points);
+      jsToLua(L, groupIdsCache[groupId]);
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("group"));
