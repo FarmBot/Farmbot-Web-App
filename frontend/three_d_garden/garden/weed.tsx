@@ -8,6 +8,7 @@ import {
 import { Image, Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
   BufferGeometry,
+  Color,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Quaternion,
@@ -126,16 +127,6 @@ interface WeedInstance {
   iconSize: number;
 }
 
-interface WeedColorBucket {
-  color: string | undefined;
-  weeds: WeedInstance[];
-}
-
-interface WeedInstanceData {
-  weedInstances: WeedInstance[];
-  buckets: WeedColorBucket[];
-}
-
 type WeedPositionConfig = Pick<Config,
   "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
   | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
@@ -165,19 +156,18 @@ export interface WeedInstancesProps {
   getZ(x: number, y: number): number;
 }
 
-const getWeedInstanceData = (
+const getWeedInstances = (
   weeds: TaggedWeedPointer[],
   config: WeedPositionConfig,
   getZ: (x: number, y: number) => number,
-): WeedInstanceData => {
+): WeedInstance[] => {
   const getWorldPosition = getWorldPositionFunc(config as Config);
   const weedInstances: WeedInstance[] = new Array(weeds.length);
-  const buckets: Record<string, WeedColorBucket> = {};
 
   for (let index = 0; index < weeds.length; index++) {
     const weed = weeds[index];
     const size = weed.body.radius == 0 ? 50 : weed.body.radius;
-    const instance = {
+    weedInstances[index] = {
       weed,
       position: getWorldPosition({
         x: weed.body.x,
@@ -187,14 +177,8 @@ const getWeedInstanceData = (
       weedSize: size,
       iconSize: size * WEED_IMG_SIZE_FRACTION,
     };
-    weedInstances[index] = instance;
-    const color = weed.body.meta.color;
-    const key = color || "";
-    let bucket = buckets[key];
-    if (!bucket) { bucket = buckets[key] = { color, weeds: [] }; }
-    bucket.weeds.push(instance);
   }
-  return { weedInstances, buckets: Object.values(buckets) };
+  return weedInstances;
 };
 
 interface WeedIconUpdateState {
@@ -296,11 +280,11 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
 };
 
 interface WeedRadiusInstancesProps extends WeedInstancesProps {
-  bucket: WeedColorBucket;
+  weedInstances: WeedInstance[];
 }
 
 const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
-  const { bucket, dispatch, visible } = props;
+  const { weedInstances, dispatch, visible } = props;
   const navigateToWeed = useNavigateToWeed(dispatch, visible);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
@@ -309,41 +293,52 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
+  const tempColor = React.useMemo(() => new Color(), []);
 
   React.useEffect(() => {
     const mesh = instancedRef.current;
     if (!mesh?.setMatrixAt) { return; }
-    bucket.weeds.forEach((weed, index) => {
+    weedInstances.forEach((weed, index) => {
       const [x, y, z] = weed.position;
       tempPosition.set(x, y, z + weed.iconSize / 2);
       tempScale.set(weed.weedSize, weed.weedSize, weed.weedSize);
       tempMatrix.compose(tempPosition, noRotation, tempScale);
       mesh.setMatrixAt(index, tempMatrix);
+      mesh.setColorAt(index,
+        tempColor.set(weed.weed.body.meta.color || "white"));
     });
     mesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.weeds, noRotation, tempMatrix, tempPosition, tempScale]);
+    if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
+  }, [
+    noRotation,
+    tempColor,
+    tempMatrix,
+    tempPosition,
+    tempScale,
+    weedInstances,
+  ]);
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
     if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
-    navigateToWeed(bucket.weeds[instanceId]?.weed);
+    navigateToWeed(weedInstances[instanceId]?.weed);
   };
 
   return <InstancedMesh
     ref={instancedRef}
     name={"weed-radius"}
-    args={[radiusGeometry, undefined, bucket.weeds.length]}
+    args={[radiusGeometry, undefined, weedInstances.length]}
     // eslint-disable-next-line no-null/no-null
     dispose={null}
     visible={visible}
     onClick={onClick}
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
-      color={bucket.color}
       depthWrite={false}
       transparent={true}
-      opacity={0.5} />
+      opacity={0.5}
+      vertexColors={true} />
   </InstancedMesh>;
 };
 
@@ -391,15 +386,12 @@ const VisibleWeedInstances = (props: WeedInstancesProps) => {
       mirrorX,
       mirrorY,
     ]);
-  const { weedInstances, buckets } = React.useMemo(
-    () => getWeedInstanceData(weeds, positionConfig, getZ),
+  const weedInstances = React.useMemo(
+    () => getWeedInstances(weeds, positionConfig, getZ),
     [weeds, positionConfig, getZ]);
   return <>
     <WeedIconInstances {...props} weedInstances={weedInstances} />
-    {buckets.map(bucket =>
-      <WeedRadiusInstances
-        key={bucket.color || ""}
-        {...props}
-        bucket={bucket} />)}
+    {weedInstances.length > 0 &&
+      <WeedRadiusInstances {...props} weedInstances={weedInstances} />}
   </>;
 };

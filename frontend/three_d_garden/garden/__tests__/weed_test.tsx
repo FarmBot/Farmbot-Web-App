@@ -111,13 +111,12 @@ describe("<Weed />", () => {
     mountedWrappers.push(wrapper);
     const meshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
-    expect(meshes.length).toEqual(3);
+    expect(meshes.length).toEqual(2);
     expect(meshes[0].props.name).toEqual("weed-icons");
     expect(meshes[1].props.name).toEqual("weed-radius");
-    expect(meshes[2].props.name).toEqual("weed-radius");
   });
 
-  it("shares weed radius geometry", () => {
+  it("uses weed radius instance colors", () => {
     const p = fakeInstanceProps();
     p.weeds[0].body.meta.color = "red";
     p.weeds[1].body.meta.color = "blue";
@@ -126,8 +125,9 @@ describe("<Weed />", () => {
     const radiusMeshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh" &&
       node.props.name == "weed-radius");
-    expect(radiusMeshes.length).toEqual(2);
-    expect(radiusMeshes[0].props.args[0]).toBe(radiusMeshes[1].props.args[0]);
+    expect(radiusMeshes.length).toEqual(1);
+    expect(radiusMeshes[0].findAll(node =>
+      node.props.vertexColors).length).toBeGreaterThan(0);
   });
 
   it("skips hidden weed instances", () => {
@@ -145,7 +145,7 @@ describe("<Weed />", () => {
     p.weeds[1].body.meta.color = "blue";
     p.getZ = jest.fn(() => 0);
     const { container, rerender } = render(<WeedInstances {...p} />);
-    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
     expect(p.getZ).toHaveBeenCalledTimes(2);
 
     rerender(<WeedInstances {...p} config={{
@@ -153,7 +153,7 @@ describe("<Weed />", () => {
       heading: p.config.heading + 10,
       label: "unrelated config churn",
     }} />);
-    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
     expect(p.getZ).toHaveBeenCalledTimes(2);
 
     rerender(<WeedInstances {...p} config={{
@@ -222,6 +222,7 @@ describe("<Weed />", () => {
     const radiusRef = {
       current: {
         setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
         instanceMatrix: { needsUpdate: false },
       },
     };

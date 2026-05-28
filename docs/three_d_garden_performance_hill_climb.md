@@ -12281,3 +12281,142 @@ but measured median frame time did not improve.
 the absolute frame-time cost is below meaningful measurement resolution.
 
 **Commit:** None
+
+## Round 113
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 581. Generate grid line coordinates directly | Reduce grid setup time by avoiding per-sampled-point object allocation | Faster grid geometry setup | Default 3,000 x 1,500 bed and XL 6,000 x 3,000 bed line-position generation | Rejected |
+| 582. Precompute plant-spread overlap loop inputs | Reduce click-to-add/edit spread frame work | Faster plant-spread update frame | 100, 250, and 500 plant spread update batches | Rejected |
+| 583. Use direct moisture buffer loops | Reduce moisture map setup callback overhead | Faster moisture instance buffer construction | 450, 1,800, and 7,200 moisture cells | Rejected |
+| 584. Merge weed radius color buckets into one instanced mesh | Reduce per-frame draw calls for weed radii without changing weed colors | Fewer instanced draw calls | 50 weeds across 8 colors, matching a dense weed cleanup map | Accepted |
+| 585. Lower the plant icon atlas activation threshold | Reduce plant icon texture requests and draw calls for medium icon diversity | Fewer texture requests and draw calls | 31 unique plant icons compared with the 8,000 x 8,000 atlas asset | Rejected |
+
+### Idea 581: Generate grid line coordinates directly
+
+**Description:** `gridLinePositions()` samples each grid line at 101 points.
+The current path calls `get3DPositionFunc(config)` per line and passes a fresh
+`{ x, y }` object for every sampled point. A direct-coordinate version can keep
+the same output while avoiding those allocations.
+
+**Benchmark:** Generate line positions for a default 3,000 x 1,500 bed and an
+XL 6,000 x 3,000 bed with a realistic uneven `getZ()` function. Repetitions
+were used only to stabilize timing; each sample generated one grid.
+
+**Before:** Default bed: 0.070958 ms median, 0.196542 ms p95 for 28,200
+position values. XL bed: 0.108958 ms median, 0.125708 ms p95 for 55,200
+position values.
+
+**After:** Simulated direct-coordinate version: default bed 0.050542 ms median,
+0.100708 ms p95; XL bed 0.082500 ms median, 0.086000 ms p95. The generated
+position arrays matched the current output.
+
+**Change:** 28.77% faster for the default bed, saving 0.020416 ms; 24.28%
+faster for XL, saving 0.026458 ms.
+
+**Outcome:** Rejected before code changes. The percentage gain is real, but
+the absolute setup win is only hundredths of a millisecond when a grid is
+rebuilt.
+
+**Commit:** None
+
+### Idea 582: Precompute plant-spread overlap loop inputs
+
+**Description:** The plant-spread click-to-add/edit frame update rebuilds
+spread-radius objects, active/plant coordinate objects, and rounded plant
+coordinates inside the per-plant loop. Precomputing static plant loop inputs
+could reduce pointer responsiveness work.
+
+**Benchmark:** Simulated the current frame update loop and an equivalent
+precomputed-input loop for 100, 250, and 500 plants. Repetitions were used only
+to stabilize timing; each sample represented one spread update batch.
+
+**Before:** 100 plants: 0.014291 ms median, 0.032250 ms p95. 250 plants:
+0.022292 ms median, 0.028125 ms p95. 500 plants: 0.034833 ms median,
+0.047417 ms p95.
+
+**After:** Simulated precomputed loop: 100 plants 0.005834 ms median,
+0.010250 ms p95; 250 plants 0.009167 ms median, 0.011958 ms p95; 500 plants
+0.016042 ms median, 0.017125 ms p95.
+
+**Change:** 53.95% to 59.18% faster, but only 0.008457 to 0.018791 ms saved
+per update batch.
+
+**Outcome:** Rejected before code changes. The loop is already too cheap in a
+realistic frame context for the measured absolute savings to matter.
+
+**Commit:** None
+
+### Idea 583: Use direct moisture buffer loops
+
+**Description:** `buildMoistureInstanceBuffers()` uses `.map()` for side
+effects while writing typed arrays. A direct `for` loop can avoid callback
+overhead without changing matrix, color, or opacity buffers.
+
+**Benchmark:** Build moisture instance buffers for 450 cells, 1,800 cells, and
+7,200 cells. These cover common bed step sizes and a deliberately dense map.
+Repetitions were used only to stabilize timing.
+
+**Before:** 450 cells: 0.008958 ms median, 0.024084 ms p95. 1,800 cells:
+0.022209 ms median, 0.029417 ms p95. 7,200 cells: 0.053792 ms median,
+0.084625 ms p95.
+
+**After:** Simulated direct loop: 450 cells 0.005750 ms median, 0.017625 ms
+p95; 1,800 cells 0.018541 ms median, 0.026792 ms p95; 7,200 cells
+0.031458 ms median, 0.053458 ms p95. Output opacity arrays matched.
+
+**Change:** 16.52% to 41.52% faster, but only 0.003668 ms saved at the
+realistic 1,800-cell size and 0.022334 ms even at the dense 7,200-cell size.
+
+**Outcome:** Rejected before code changes. The absolute savings are below a
+meaningful setup threshold.
+
+**Commit:** None
+
+### Idea 584: Merge weed radius color buckets into one instanced mesh
+
+**Description:** Weed icons already render as one instanced mesh, but weed
+radius spheres were grouped into one instanced mesh per color. Render the
+radius spheres as a single instanced mesh with per-instance colors so the same
+weed colors are preserved with fewer draw calls.
+
+**Benchmark:** A dense weed cleanup map with 50 weeds across 8 colors. Before
+implementation, this required 1 icon instanced mesh plus 8 radius instanced
+meshes. After implementation, it requires 1 icon instanced mesh plus 1 radius
+instanced mesh.
+
+**Before:** 9 instanced draw calls for weed rendering.
+
+**After:** 2 instanced draw calls for weed rendering.
+
+**Change:** 77.78% fewer weed instanced draw calls, saving 7 draw calls in the
+50-weed, 8-color benchmark.
+
+**Outcome:** Accepted. The radius material now uses instance colors, preserving
+the same per-weed colors while reducing draw calls for multi-color weed maps.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/weed_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D weed radius draws by 77.8%`
+
+### Idea 585: Lower the plant icon atlas activation threshold
+
+**Description:** Plant icons use individual icon textures until icon diversity
+reaches the atlas threshold. Lowering that threshold could reduce texture
+requests and draw calls for medium-diversity gardens.
+
+**Benchmark:** Compare 31 unique plant icons, just below the current
+32-icon atlas threshold, against loading the 8,000 x 8,000 atlas.
+
+**Before:** The first 31 atlas-listed individual icons totaled 298,646 bytes.
+
+**After:** The atlas asset is 2,154,900 bytes.
+
+**Change:** Forcing atlas use at 31 icons would add 1,856,254 bytes, a 621.56%
+request-byte increase, to reduce draw calls and texture requests.
+
+**Outcome:** Rejected before code changes. The draw-call reduction is not worth
+loading the large atlas earlier.
+
+**Commit:** None
