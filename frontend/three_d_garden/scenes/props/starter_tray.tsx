@@ -34,7 +34,22 @@ export interface StarterTraysProps {
   positions: [number, number, number][];
 }
 
-export const StarterTrays = (props: StarterTraysProps) => {
+const samePositions = (
+  prev: StarterTraysProps["positions"],
+  next: StarterTraysProps["positions"],
+) =>
+  prev.length === next.length &&
+  prev.every((position, index) =>
+    position[0] === next[index][0] &&
+    position[1] === next[index][1] &&
+    position[2] === next[index][2]);
+
+export const starterTraysPropsEqual = (
+  prev: StarterTraysProps,
+  next: StarterTraysProps,
+) => samePositions(prev.positions, next.positions);
+
+const StarterTraysBase = (props: StarterTraysProps) => {
   // eslint-disable-next-line no-null/no-null
   const trayRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null
@@ -122,6 +137,11 @@ export const StarterTrays = (props: StarterTraysProps) => {
     </InstancedMesh>
   </Group>;
 };
+
+export const StarterTrays = React.memo(
+  StarterTraysBase,
+  starterTraysPropsEqual,
+);
 
 export const StarterTray = () => {
 

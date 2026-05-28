@@ -1,6 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { StarterTray, StarterTrays } from "../starter_tray";
+import {
+  StarterTray, StarterTrays, starterTraysPropsEqual,
+} from "../starter_tray";
 import { InstancedMesh, Quaternion, Vector3 } from "three";
 import * as threeFiber from "@react-three/fiber";
 
@@ -31,6 +33,30 @@ describe("<StarterTrays />", () => {
     expect(container.querySelectorAll("instancedmesh").length).toEqual(2);
     expect(container.querySelectorAll(".billboard").length).toEqual(0);
     expect(container.querySelectorAll(".image").length).toEqual(0);
+  });
+
+  it("compares starter tray positions", () => {
+    const positions: [number, number, number][] = [
+      [100, 200, 300],
+      [400, 500, 600],
+    ];
+    expect(starterTraysPropsEqual({ positions }, {
+      positions: [
+        [100, 200, 300],
+        [400, 500, 600],
+      ],
+    })).toBeTruthy();
+    expect(starterTraysPropsEqual({ positions }, {
+      positions: [
+        [100, 200, 300],
+      ],
+    })).toBeFalsy();
+    expect(starterTraysPropsEqual({ positions }, {
+      positions: [
+        [100, 200, 300],
+        [400, 501, 600],
+      ],
+    })).toBeFalsy();
   });
 
   it("updates tray and seedling instance matrices", () => {

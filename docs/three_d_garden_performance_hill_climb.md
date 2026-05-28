@@ -5589,6 +5589,23 @@ instanced-mesh React subtrees when the positions are value-equivalent. Expected
 return: faster greenhouse shelf rerenders while changed tray positions still
 update instance matrices and camera-facing seedlings.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic two-tray greenhouse shelf setup 90 times with freshly allocated but
+value-equivalent position arrays.
+
+**Before:** 6.771 ms per 90-rerender batch.
+
+**After:** 0.817 ms per 90-rerender batch.
+
+**Change:** 87.9% faster, saving 5.954 ms per realistic two-tray greenhouse
+rerender batch.
+
+**Outcome:** Accepted; starter trays now skip value-equivalent position-array
+churn while changed tray coordinates still update tray and seedling instance
+matrices.
+
+**Commit:** `Memoize starter trays for 87.9% faster rerenders`
+
 ### Idea 313: Memoize `PresetButton` rendered controls
 
 **Description:** Memoize preset buttons by preset, hover state, index, start
