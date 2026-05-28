@@ -866,7 +866,10 @@ const BotBedUtilitySubassembliesBase = (props: { config: Config }) =>
 const BotBedUtilitySubassemblies =
   React.memo(BotBedUtilitySubassembliesBase);
 
-export const Bot = (props: FarmbotModelProps) => {
+export const Bot = (props: FarmbotModelProps) =>
+  props.config.bot ? <EnabledBot {...props} /> : undefined;
+
+const EnabledBot = (props: FarmbotModelProps) => {
   const config = props.config;
   const { tracks } = props.config;
   const [trackShape, setTrackShape] =
@@ -944,7 +947,7 @@ export const Bot = (props: FarmbotModelProps) => {
 
   const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
     preserveDepthWrite={true}
-    visible={props.config.bot && props.activeFocus != "Planter bed"}>
+    visible={props.activeFocus != "Planter bed"}>
     <BotFrameSubassemblies
       config={config}
       configPosition={props.configPosition}

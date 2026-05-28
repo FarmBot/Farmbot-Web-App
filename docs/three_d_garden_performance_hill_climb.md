@@ -18052,3 +18052,298 @@ curve path: 0.103375 ms median, 0.204750 ms p95.
 threshold and too small in absolute terms.
 
 **Commit:** None
+
+## Round 163
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 831. Skip disabled Bot subtree before shape/model setup | Avoid shape-loader state, effects, GLTF hooks, and heavy subassemblies when the bot layer is off | `Bot` render with `config.bot=false` | Accepted |
+| 832. Skip hidden bed XY dimension indicators | Avoid constructing two hidden `DistanceIndicator` trees when XY dimensions are off and the Planter bed focus is inactive | Default `Bed` render | Rejected |
+| 833. Skip inactive bed-height distance indicator | Avoid constructing a hidden bed-height `DistanceIndicator` unless the bed-height indicator is selected | Default `Bed` render and bed-height indicator render | Rejected |
+| 834. Skip group-order URL lookup when there are no groups | Avoid route lookup and selection-cache work in the default empty-groups case | `GroupOrderVisual` render with `groups=[]` | Rejected |
+| 835. Skip group-order point selection when no points exist | Avoid `pointsSelectedByGroup` when an active group exists but the point list is empty | `GroupOrderVisual` render with one group and `allPoints=[]` | Rejected |
+
+### 831. Skip disabled Bot subtree before shape/model setup
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `Bot` render with `config.bot=false`: 0.115708 ms median,
+0.261750 ms p95.
+
+**After:** Exported `Bot` returns before the enabled-only shape-loader state,
+effects, GLTF hooks, and model subassemblies are mounted: 0.099167 ms median,
+0.273083 ms p95.
+
+**Change:** 14.30% faster by median, saving about 0.016541 ms per disabled-bot
+render. The p95 increase was about 0.011333 ms and did not indicate meaningful
+tail degradation.
+
+**Outcome:** Accepted. The visible enabled-bot path is unchanged except that
+the enabled wrapper no longer repeats the already-true `config.bot` visibility
+check.
+
+**Commit:** This commit (`Skip disabled bot work for 14.3% faster renders`)
+
+### 832. Skip hidden bed XY dimension indicators
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render: 0.843583 ms median, 2.509000 ms p95.
+
+**After:** Conditional `distance-indicator-group` mounting when XY dimensions or
+Planter bed focus are active: 0.840083 ms median, 2.433541 ms p95.
+
+**Change:** 0.41% faster by median, saving about 0.003500 ms.
+
+**Outcome:** Rejected after rollback. The improvement was far below the 10%
+threshold and too small in absolute terms.
+
+**Commit:** None
+
+### 833. Skip inactive bed-height distance indicator
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `Bed` render with the bed-height indicator selected: 0.747083 ms
+median, 2.192542 ms p95.
+
+**After:** Conditional bed-height `DistanceIndicator` mounting only when the
+bed-height indicator is selected: 0.717167 ms median, 2.203625 ms p95.
+
+**Change:** 4.00% faster by median, saving about 0.029916 ms.
+
+**Outcome:** Rejected after rollback. The selected-indicator render improved,
+but not enough to clear the threshold.
+
+**Commit:** None
+
+### 834. Skip group-order URL lookup when there are no groups
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `GroupOrderVisual` render with `groups=[]`: 0.044000 ms median,
+0.058209 ms p95.
+
+**After:** Early return before `findGroupFromUrl` when there are no groups:
+0.040166 ms median, 0.050125 ms p95.
+
+**Change:** 8.71% faster by median, saving about 0.003834 ms.
+
+**Outcome:** Rejected after rollback. The improvement did not clear 10% and the
+absolute savings were negligible.
+
+**Commit:** None
+
+### 835. Skip group-order point selection when no points exist
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `GroupOrderVisual` render with one group and `allPoints=[]`:
+0.040500 ms median, 0.068542 ms p95.
+
+**After:** Early return before `pointsSelectedByGroup` when the active group has
+no available points to select from: 0.039667 ms median, 0.104208 ms p95.
+
+**Change:** 2.06% faster by median, with p95 slower by about 0.035666 ms.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and tail latency regressed.
+
+**Commit:** None
+
+## Round 164
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 836. Skip hidden plant instance rerenders during plant-array churn | Avoid re-rendering an empty `PlantInstances` wrapper when the plant layer is hidden and resource arrays churn | Hidden `PlantInstances` rerender with 100 changed plants | Rejected |
+| 837. Skip hidden point instance rerenders during point-array churn | Avoid re-rendering an empty `PointInstances` wrapper when the point layer is hidden and point arrays churn | Hidden `PointInstances` rerender with 100 changed points | Rejected |
+| 838. Skip empty visible plant instance rerenders | Avoid wrapper rerenders and instance grouping when the visible plant layer has no plants | Empty visible `PlantInstances` rerender | Rejected |
+| 839. Skip empty visible point instance rerenders | Avoid grouping work when the visible point layer has no points | Empty visible `PointInstances` rerender | Rejected |
+| 840. Skip empty visible weed instance rerenders | Avoid wrapper rerenders when the visible weed layer has no weeds | Empty visible `WeedInstances` rerender | Rejected |
+
+### 836. Skip hidden plant instance rerenders during plant-array churn
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Hidden `PlantInstances` rerender with 100 changed plants:
+0.023417 ms median, 0.106791 ms p95.
+
+**After:** Comparator short-circuit when both previous and next plant instance
+layers are hidden: 0.018958 ms median, 0.068792 ms p95.
+
+**Change:** 19.04% faster by median, saving about 0.004459 ms per hidden-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute median savings were below 0.005 ms and not meaningful enough for
+an accepted change.
+
+**Commit:** None
+
+### 837. Skip hidden point instance rerenders during point-array churn
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Hidden `PointInstances` rerender with 100 changed points:
+0.015500 ms median, 0.025584 ms p95.
+
+**After:** Comparator short-circuit when both previous and next point instance
+layers are hidden: 0.013666 ms median, 0.021042 ms p95.
+
+**Change:** 11.83% faster by median, saving about 0.001834 ms per hidden-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The median cleared 10%, but the absolute
+savings were too small to matter in the realistic render path.
+
+**Commit:** None
+
+### 838. Skip empty visible plant instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` rerender: 0.020250 ms median,
+0.030875 ms p95.
+
+**After:** Comparator and render guard for empty plant arrays: 0.011333 ms
+median, 0.017084 ms p95.
+
+**Change:** 44.03% faster by median, saving about 0.008917 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percentage was strong, but the
+absolute savings were still below 0.01 ms per rerender.
+
+**Commit:** None
+
+### 839. Skip empty visible point instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `PointInstances` rerender: 0.017542 ms median,
+0.024000 ms p95.
+
+**After:** Comparator and render guard for empty point arrays: 0.010458 ms
+median, 0.014208 ms p95.
+
+**Change:** 40.38% faster by median, saving about 0.007084 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The improvement was measurable but too
+small in absolute terms for an accepted code change.
+
+**Commit:** None
+
+### 840. Skip empty visible weed instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `WeedInstances` rerender: 0.012416 ms median,
+0.016541 ms p95.
+
+**After:** Comparator short-circuit when both weed arrays are empty:
+0.010583 ms median, 0.014417 ms p95.
+
+**Change:** 14.76% faster by median, saving about 0.001833 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percent improvement cleared the
+threshold, but the absolute savings were negligible.
+
+**Commit:** None
+
+## Round 165
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 841. Cache plant icon atlas texture transforms | Avoid recomputing offset/repeat objects for repeated icon atlas lookups | 100 atlas transform lookups across 40 repeated icons | Rejected |
+| 842. Cache repeated atlas UV transforms while filling buffers | Avoid repeated atlas lookup work while building instance UV buffers for repeated icons | Atlas `PlantInstances` render with 100 plants across 40 icons | Rejected |
+| 843. Use indexed loops for moisture instance buffers | Avoid callback overhead and repeated offset math while filling map matrices/colors/opacities | `buildMoistureInstanceBuffers` with 500 interpolation cells | Rejected |
+| 844. Fill moisture-reading matrices directly | Avoid a `Matrix4` method chain per reading while building reading instance matrices | `MoistureReadings` render with 100 readings | Rejected |
+| 845. Build image texture sensor keys with indexed loops | Reduce callback overhead when deriving render-texture keys for moisture sensors/readings | `getImageTextureKey` with 20 sensors and 100 readings | Rejected |
+
+### 841. Cache plant icon atlas texture transforms
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** 100 atlas transform lookups across 40 repeated icons:
+0.005708 ms median, 0.014083 ms p95.
+
+**After:** Module-level transform cache keyed by icon and atlas frame object:
+0.004542 ms median, 0.006584 ms p95.
+
+**Change:** 20.43% faster by median, saving about 0.001166 ms per 100 lookups.
+
+**Outcome:** Rejected after rollback. The percent improvement cleared the
+threshold, but the absolute savings were negligible.
+
+**Commit:** None
+
+### 842. Cache repeated atlas UV transforms while filling buffers
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** Atlas `PlantInstances` render with 100 plants across 40 icons:
+0.290333 ms median, 0.556875 ms p95.
+
+**After:** Local transform cache while filling atlas UV buffers:
+0.275875 ms median, 0.597000 ms p95.
+
+**Change:** 4.98% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and tail latency regressed.
+
+**Commit:** None
+
+### 843. Use indexed loops for moisture instance buffers
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `buildMoistureInstanceBuffers` with 500 interpolation cells:
+0.015042 ms median, 0.020542 ms p95.
+
+**After:** Indexed loop with precomputed matrix and color offsets:
+0.011875 ms median, 0.022583 ms p95.
+
+**Change:** 21.05% faster by median, saving about 0.003167 ms for 500 cells,
+with p95 slightly slower.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute savings were too small and p95 moved in the wrong direction.
+
+**Commit:** None
+
+### 844. Fill moisture-reading matrices directly
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `MoistureReadings` render with 100 readings: 0.170875 ms median,
+0.253042 ms p95.
+
+**After:** Direct `Float32Array` matrix writes instead of a `Matrix4` method
+chain per reading: 0.164500 ms median, 0.200458 ms p95.
+
+**Change:** 3.73% faster by median, saving about 0.006375 ms.
+
+**Outcome:** Rejected after rollback. The improvement did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 845. Build image texture sensor keys with indexed loops
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `getImageTextureKey` with 20 sensors and 100 readings:
+0.013125 ms median, 0.034917 ms p95.
+
+**After:** Indexed loops for sensor and reading key construction:
+0.015375 ms median, 0.046959 ms p95.
+
+**Change:** 17.14% slower by median.
+
+**Outcome:** Rejected after rollback. The loop rewrite was slower and worsened
+p95.
+
+**Commit:** None

@@ -98,6 +98,18 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("skips disabled FarmBot model work", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.bot = false;
+    const { container } = render(<Bot {...p} />);
+
+    expect(container.querySelector("[name='bot']")).toBeNull();
+    expect(createShapesMock).not.toHaveBeenCalled();
+    expect(useGltfMock).not.toHaveBeenCalled();
+  });
+
   it("renders watering animation", () => {
     const p = fakeProps();
     p.config.waterFlow = true;
