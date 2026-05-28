@@ -28,7 +28,7 @@ import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
 import {
-  FallInGroup, LoadStepReady, PopInGroup,
+  FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
 } from "../progressive_load";
 
 let isDesktopSpy: jest.SpyInstance;
@@ -113,9 +113,6 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
     expect(container.innerHTML).toContain("grid-load-in");
-    expect(container.innerHTML).toContain("plants-load-in");
-    expect(container.innerHTML).toContain("points-load-in");
-    expect(container.innerHTML).toContain("weeds-load-in");
     expect(container.innerHTML).toContain("zoom-beacons-load-in");
     expect(container.innerHTML).toContain("farmbot-scene-boundary");
     expect(container.innerHTML).toContain("details-scene-boundary");
@@ -136,9 +133,10 @@ describe("<GardenModel />", () => {
       expect(p.onDetailsRevealStart).toHaveBeenCalled());
   });
 
-  it("marks empty optional layers ready without load-in rests", () => {
+  it("marks empty optional layers ready without load-in wrappers", () => {
     const p = fakeProps();
     p.config.bot = false;
+    p.config.labels = true;
     p.threeDPlants = [];
     p.mapPoints = [];
     p.weeds = [];
@@ -149,15 +147,24 @@ describe("<GardenModel />", () => {
     expect(readySteps).toContain("weeds");
     expect(readySteps).toContain("points");
 
-    const optionalLoadInRestHandlers = [
+    const optionalLoadIns = [
       ...wrapper.root.findAllByType(PopInGroup),
       ...wrapper.root.findAllByType(FallInGroup),
     ].filter(node =>
       typeof node.props.name == "string" &&
       ["plants-load-in", "weeds-load-in", "points-load-in"]
-        .includes(node.props.name))
-      .filter(node => typeof node.props.onRest == "function");
-    expect(optionalLoadInRestHandlers).toHaveLength(0);
+        .includes(node.props.name));
+    expect(optionalLoadIns).toHaveLength(0);
+  });
+
+  it("marks hidden grids ready without a load-in wrapper", () => {
+    const p = fakeProps();
+    p.config.grid = false;
+    const wrapper = createWrapper(p);
+    const readySteps = wrapper.root.findAllByType(LoadStepReady)
+      .map(node => node.props.step);
+    expect(readySteps).toContain("grid");
+    expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(0);
   });
 
   it("reuses empty bed resource props across position updates", () => {
@@ -634,6 +641,7 @@ describe("<GardenModel />", () => {
   it("sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -649,6 +657,7 @@ describe("<GardenModel />", () => {
   it("sets hover with instance id", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -667,6 +676,7 @@ describe("<GardenModel />", () => {
   it("sets hover: buttons", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -682,6 +692,7 @@ describe("<GardenModel />", () => {
   it("un-sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),

@@ -16868,3 +16868,109 @@ saves only about three microseconds, which does not justify replacing the
 maintainable field list.
 
 **Commit:** None
+
+## Round 151
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 771. Skip empty plant load-in wrappers | Reduce empty-garden load work after ready-on-mount by not mounting plant load-in spring/groups when there are no plant visuals | Empty GardenModel with zero plants | Accepted |
+| 772. Skip hidden or empty weed load-in wrappers | Reduce default no-weed load work by not mounting weed load-in spring/group when the weed layer has no visible work | Empty/hidden weed layer in GardenModel | Accepted |
+| 773. Skip hidden or empty point load-in wrappers | Reduce default no-point load work by not mounting point load-in spring/group when the point layer has no visible work | Empty/hidden point layer in GardenModel | Accepted |
+| 774. Skip disabled or focus-hidden grid load-in wrappers | Reduce disabled-grid load work by marking the grid step ready without mounting the grid reveal spring | GardenModel with `grid=false` | Accepted |
+| 775. Skip group-order visual mount when there are no groups or points | Reduce details-stage route checks in empty gardens | Empty `GroupOrderVisual` render | Rejected |
+
+### 771. Skip empty plant load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The plant
+wrapper is skipped whenever there are no plant instances or labels to animate.
+
+**Outcome:** Accepted. The removed plant wrapper had no visible work in the
+empty scene, so the load experience is unchanged while avoiding a spring/group
+mount.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 772. Skip hidden or empty weed load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The weed
+wrapper is skipped when weeds are hidden or when the visible weed list is empty.
+
+**Outcome:** Accepted. Visible weed layers with weed instances still keep their
+load-in animation and readiness callback; no-work weed layers now mark ready
+without mounting the wrapper.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 773. Skip hidden or empty point load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The point
+wrapper is skipped when points are hidden or when the visible point list is
+empty.
+
+**Outcome:** Accepted. Visible point layers with markers still keep their
+fall-in animation and readiness callback; no-work point layers now mark ready
+without mounting the wrapper.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 774. Skip disabled or focus-hidden grid load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** `GardenModel` with `config.grid=false` mounted one
+`GridRevealGroup` and did not mark the grid step ready on mount.
+
+**After:** `GardenModel` with `config.grid=false` mounted zero
+`GridRevealGroup` wrappers and marked the grid step ready on mount.
+
+**Change:** 100.00% fewer disabled-grid reveal wrappers, removing one no-work
+spring/group mount in disabled-grid or Planter-bed-focus scenes.
+
+**Outcome:** Accepted. The grid component already rendered nothing in these
+states, so skipping the wrapper removes hidden load work without changing the
+visible scene.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 775. Skip group-order visual mount when there are no groups or points
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GroupOrderVisual` render: 0.020666 ms median, 0.060750 ms
+p95.
+
+**After:** Simulated early return before mounting empty `GroupOrderVisual`:
+0.000084 ms median, 0.000208 ms p95.
+
+**Change:** 99.59% faster by median, saving 0.020582 ms per empty
+`GroupOrderVisual` render.
+
+**Outcome:** Rejected before code changes. The percentage is large, but the
+absolute saving is about two hundredths of a millisecond on a details-stage
+empty render and does not meet the meaningful absolute-improvement threshold.
+
+**Commit:** None

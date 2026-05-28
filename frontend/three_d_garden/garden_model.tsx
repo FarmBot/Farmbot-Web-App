@@ -275,10 +275,12 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     shouldMountPlantSpreadInstances, showSpread, plantInstanceCapacity,
     showWeeds, weeds, showPoints,
   } = props;
-  const plantsReadyOnMount =
-    threeDPlants.length == 0 && !plantLabelNodes;
-  const weedsReadyOnMount = !showWeeds || weeds.length == 0;
-  const pointsReadyOnMount = !showPoints || mapPoints.length == 0;
+  const gridVisible = config.grid && activeFocus != "Planter bed";
+  const plantLayerHasWork =
+    threeDPlants.length > 0
+    || React.Children.count(plantLabelNodes) > 0;
+  const weedLayerHasWork = showWeeds && weeds.length > 0;
+  const pointLayerHasWork = showPoints && mapPoints.length > 0;
 
   return <>
     <SceneBoundary
@@ -331,8 +333,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"grid"}
       loadProgress={loadProgress}
       reveal={gridReveal}
-      markReadyOnMount={false}
+      markReadyOnMount={!gridVisible}
       markName={"three_d_grid_ready"}>
+      {gridVisible &&
       <GridRevealGroup
         name={"grid-load-in"}
         reveal={gridReveal}
@@ -341,20 +344,19 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           config={config}
           getZ={getZ}
           activeFocus={activeFocus} />
-      </GridRevealGroup>
+      </GridRevealGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"plants"}
       loadProgress={loadProgress}
       reveal={plantsReveal}
-      markReadyOnMount={plantsReadyOnMount}
+      markReadyOnMount={!plantLayerHasWork}
       markName={"three_d_core_ready"}>
+      {plantLayerHasWork &&
       <PopInGroup
         name={"plants-load-in"}
         reveal={plantsReveal}
-        onRest={plantsReadyOnMount
-          ? undefined
-          : () => loadProgress.markStep("plants")}
+        onRest={() => loadProgress.markStep("plants")}
         distance={200}>
         <FocusVisibilityGroup
           name={"plant-labels"}
@@ -386,57 +388,53 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             getZ={getZ}
             dispatch={dispatch} />}
         </FocusVisibilityGroup>
-      </PopInGroup>
+      </PopInGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"weeds"}
       loadProgress={loadProgress}
       reveal={weedsReveal}
-      markReadyOnMount={weedsReadyOnMount}
+      markReadyOnMount={!weedLayerHasWork}
       markName={"three_d_weeds_ready"}>
+      {weedLayerHasWork &&
       <PopInGroup
         name={"weeds-load-in"}
         reveal={weedsReveal}
-        onRest={weedsReadyOnMount
-          ? undefined
-          : () => loadProgress.markStep("weeds")}
+        onRest={() => loadProgress.markStep("weeds")}
         distance={200}>
         <Group name={"weeds"}
           visible={showWeeds}>
-          {weeds.length > 0 &&
           <WeedInstances
             weeds={weeds}
             visible={showWeeds}
             config={config}
             getZ={getZ}
-            dispatch={dispatch} />}
+            dispatch={dispatch} />
         </Group>
-      </PopInGroup>
+      </PopInGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"points"}
       loadProgress={loadProgress}
       reveal={pointsReveal}
-      markReadyOnMount={pointsReadyOnMount}
+      markReadyOnMount={!pointLayerHasWork}
       markName={"three_d_points_ready"}>
+      {pointLayerHasWork &&
       <FallInGroup
         name={"points-load-in"}
         reveal={pointsReveal}
-        onRest={pointsReadyOnMount
-          ? undefined
-          : () => loadProgress.markStep("points")}
+        onRest={() => loadProgress.markStep("points")}
         distance={config.columnLength + 1000}>
         <Group name={"points"}
           visible={showPoints}>
-          {mapPoints.length > 0 &&
           <PointInstances
             points={mapPoints}
             visible={showPoints}
             config={config}
             getZ={getZ}
-            dispatch={dispatch} />}
+            dispatch={dispatch} />
         </Group>
-      </FallInGroup>
+      </FallInGroup>}
     </SceneBoundary>
   </>;
 };
