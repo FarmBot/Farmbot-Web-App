@@ -5367,6 +5367,23 @@ bracket, wheel, axle, position, and flush behavior. Expected return: faster bed
 rerenders across the realistic six-caster bed while preserving caster geometry
 and placement.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic six bed casters 90 times while only an unrelated config field
+changed.
+
+**Before:** 27.899 ms per 90-rerender batch.
+
+**After:** 1.785 ms per 90-rerender batch.
+
+**Change:** 93.6% faster, saving 26.114 ms per realistic six-caster
+config-churn batch.
+
+**Outcome:** Accepted; each caster now skips unrelated config churn while
+leg size, bed height, bed Z offset, and flush behavior still update the same
+bracket, wheel, axle, and placement.
+
+**Commit:** `Memoize bed casters for 93.6% faster rerenders`
+
 ### Idea 304: Memoize `Packaging` relevant config fields
 
 **Description:** Add a relevant-field comparator around packaging so unrelated

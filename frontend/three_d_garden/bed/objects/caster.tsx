@@ -8,20 +8,33 @@ export interface CasterProps {
   config: Config;
 }
 
-export const Caster = (props: CasterProps) => {
+const CASTER_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedZOffset",
+  "legSize",
+  "legsFlush",
+];
+
+export const casterPropsEqual = (prev: CasterProps, next: CasterProps) =>
+  CASTER_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
+
+const CasterBase = (props: CasterProps) => {
   const {
     bedHeight, bedZOffset, legSize, legsFlush,
   } = props.config;
   const casterHeight = legSize * 1.375;
-  const casterBracket2D = () => {
+  const casterBracketArgs = React.useMemo(() => {
     const shape = new Shape();
     shape.moveTo(0, 0);
     shape.lineTo(legSize, 0);
     shape.lineTo(legSize / 3 * 2, -legSize);
     shape.lineTo(legSize / 3, -legSize);
     shape.lineTo(0, 0);
-    return shape;
-  };
+    return [
+      shape,
+      { steps: 1, depth: legSize, bevelEnabled: false },
+    ] as const;
+  }, [legSize]);
   return <Group name={"caster"}
     position={[
       -legSize / 2,
@@ -32,10 +45,7 @@ export const Caster = (props: CasterProps) => {
     <Extrude name={"caster-bracket"}
       castShadow={true}
       receiveShadow={true}
-      args={[
-        casterBracket2D(),
-        { steps: 1, depth: legSize, bevelEnabled: false },
-      ]}>
+      args={casterBracketArgs}>
       <MeshPhongMaterial color={"silver"} />
     </Extrude>
     <Group name={"caster-wheel"}
@@ -56,3 +66,5 @@ export const Caster = (props: CasterProps) => {
     </Group>
   </Group>;
 };
+
+export const Caster = React.memo(CasterBase, casterPropsEqual);
