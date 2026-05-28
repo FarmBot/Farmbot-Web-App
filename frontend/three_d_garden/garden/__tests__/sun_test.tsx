@@ -13,6 +13,7 @@ const mockMaterialRef: MockMaterialRef = {
 
 import React from "react";
 import { render } from "@testing-library/react";
+import * as threeFiber from "@react-three/fiber";
 import {
   calcSunI, getCycleLength, skyColor, Sun, sunPropsEqual, SunProps,
 } from "../sun";
@@ -37,6 +38,19 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("skips season animation frame setup by default", () => {
+    render(<Sun {...fakeProps()} />);
+    expect(threeFiber.useFrame as jest.Mock).not.toHaveBeenCalled();
+  });
+
+  it("registers season animation frame setup when seasons animate", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    render(<Sun {...p} />);
+    expect(threeFiber.useFrame as jest.Mock).toHaveBeenCalledTimes(1);
   });
 
   it("memoizes unchanged sun props", () => {

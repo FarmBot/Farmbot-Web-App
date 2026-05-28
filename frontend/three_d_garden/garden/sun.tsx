@@ -175,6 +175,55 @@ export const calcSunI = (inclination: number) => {
   return 1;
 };
 
+interface AnimatedSunFrameProps extends SunProps {
+  lightRef: React.RefObject<ThreeDirectionalLight | null>;
+  debugSunRef: React.RefObject<Mesh | null>;
+  sunRef: React.RefObject<Mesh | null>;
+  sunFlatRef: React.RefObject<Mesh | null>;
+  lineRef: React.RefObject<Line2 | null>;
+  sunIntensity: number;
+  setPoint: React.Dispatch<React.SetStateAction<Vector3>>;
+  setSunSky(sunFactor: number, sunValue: number): void;
+}
+
+const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
+  const {
+    config, startTimeRef, lightRef, debugSunRef, sunRef, sunFlatRef, lineRef,
+    sunIntensity, setPoint, setSunSky,
+  } = props;
+  useFrame(() => {
+    if (!startTimeRef) { return; }
+
+    const currentTime = performance.now() / 1000;
+    const t = currentTime - startTimeRef.current;
+    const date = getAnimatedSeasonDate(config.plants, t);
+    const { azimuth, inclination } = calcSunCoordinate(date, 0, 35, 0);
+    const sunFactor = calcSunI(inclination);
+    const position = sunPosition(inclination, azimuth, BigDistance.sunActual);
+
+    setSunSky(sunFactor, config.sun);
+
+    const light = lightRef.current;
+    if (light) {
+      light.position?.set(position.x, position.y, position.z);
+      light.intensity = sunIntensity * config.sun / 100 * sunFactor;
+    }
+
+    debugSunRef.current?.position.set(position.x, position.y, position.z);
+
+    const visualPos = sunPosition(inclination, azimuth, BigDistance.sunVisual);
+    sunRef.current?.position?.set(visualPos.x, visualPos.y, visualPos.z);
+    const flatPos = sunPosition(0, azimuth, BigDistance.ground);
+    sunFlatRef.current?.position?.set(flatPos.x, flatPos.y, flatPos.z);
+
+    if (lineRef.current) {
+      setPoint(position);
+    }
+  });
+
+  return undefined;
+};
+
 const SunBase = (props: SunProps) => {
   const { config } = props;
 
@@ -234,38 +283,18 @@ const SunBase = (props: SunProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.sunInclination, config.sun]);
 
-
-  useFrame(() => {
-    if (!config.animateSeasons || !props.startTimeRef) { return; }
-
-    const currentTime = performance.now() / 1000;
-    const t = currentTime - props.startTimeRef.current;
-    const date = getAnimatedSeasonDate(config.plants, t);
-    const { azimuth, inclination } = calcSunCoordinate(date, 0, 35, 0);
-    const sunFactor = calcSunI(inclination);
-    const position = sunPosition(inclination, azimuth, BigDistance.sunActual);
-
-    setSunSky(sunFactor, config.sun);
-
-    if (lightRef.current) {
-      lightRef.current.position?.set(position.x, position.y, position.z);
-      lightRef.current.intensity =
-        sunIntensity * config.sun / 100 * sunFactor;
-    }
-
-    debugSunRef.current?.position.set(position.x, position.y, position.z);
-
-    const visualPos = sunPosition(inclination, azimuth, BigDistance.sunVisual);
-    sunRef.current?.position?.set(visualPos.x, visualPos.y, visualPos.z);
-    const flatPos = sunPosition(0, azimuth, BigDistance.ground);
-    sunFlatRef.current?.position?.set(flatPos.x, flatPos.y, flatPos.z);
-
-    if (lineRef.current) {
-      setPoint(position);
-    }
-  });
-
   return <Group name={"sun"}>
+    {config.animateSeasons && props.startTimeRef &&
+      <AnimatedSunFrame
+        {...props}
+        lightRef={lightRef}
+        debugSunRef={debugSunRef}
+        sunRef={sunRef}
+        sunFlatRef={sunFlatRef}
+        lineRef={lineRef}
+        sunIntensity={sunIntensity}
+        setPoint={setPoint}
+        setSunSky={setSunSky} />}
     <DirectionalLight
       ref={lightRef}
       intensity={sunIntensity * config.sun / 100 * renderedSunFactor}

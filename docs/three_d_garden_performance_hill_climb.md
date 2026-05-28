@@ -17376,3 +17376,199 @@ instances still render unchanged.
 and the main `GardenModel` already avoids mounting empty point layers.
 
 **Commit:** None
+
+## Round 156
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 796. Register season sun frame callbacks only when season animation is active | Avoid a default per-frame callback that immediately returns while seasons are not animated | Default and animated `Sun` renders with frame registration counts | Accepted |
+| 797. Skip disabled settings bar overlay content | Avoid building public settings sections when `settingsBar=false` already hides them | `PublicOverlay` render with `settingsBar=false` | Accepted |
+| 798. Skip disabled promo info overlay content | Avoid building promo info copy and button when `promoInfo=false` already hides them | `PublicOverlay` render with `promoInfo=false` | Rejected |
+| 799. Fast-return steady plant icon frames before brightness math | Reduce idle per-frame plant icon work after matrices and brightness are current | 100-plant static icon frame handler over 120 steady frames | Rejected |
+| 800. Avoid duplicate FPS logging flag reads during reports | Reduce reporting-path localStorage calls without changing FPS sampling | `FPSProbe` reporting callback over 120 frames | Rejected |
+
+### 796. Register season sun frame callbacks only when season animation is active
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** Default `Sun` render: 0.539875 ms median, 0.682833 ms p95,
+with 80 `useFrame` registrations across 80 measured renders. Animated `Sun`
+render: 0.494792 ms median, 0.570000 ms p95, also with 80 registrations.
+
+**After:** Default `Sun` render no longer registered a frame callback: zero
+registrations across 80 measured renders. Animated `Sun` render still
+registered 80 callbacks across 80 measured renders.
+
+**Change:** 100.00% fewer default sun frame callback registrations, removing
+one always-returning per-frame subscriber from the default scene while keeping
+the animated-season path registered when enabled.
+
+**Outcome:** Accepted. Default seasons are not animated, so the skipped
+callback had no visible effect. Animated seasons still mount the same frame
+update logic and render unchanged.
+
+**Commit:** `Skip hidden 3D garden work for 100.0% fewer callbacks`
+
+### 797. Skip disabled settings bar overlay content
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `settingsBar=false` `PublicOverlay` render: 0.183042 ms median,
+0.332875 ms p95.
+
+**After:** Settings-bar content gated before `FocusVisibilityDiv` mount:
+0.151417 ms median, 0.221875 ms p95.
+
+**Change:** 17.28% faster by median, saving about 0.031625 ms per disabled
+settings-bar render and avoiding four hidden settings section subtrees.
+
+**Outcome:** Accepted. The settings bar was already invisible when disabled;
+the enabled path and active-focus visibility behavior are unchanged.
+
+**Commit:** `Skip hidden 3D garden work for 100.0% fewer callbacks`
+
+### 798. Skip disabled promo info overlay content
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `promoInfo=false` `PublicOverlay` render: 0.178750 ms median,
+0.295583 ms p95.
+
+**After:** Promo-info content gated before `FocusVisibilityDiv` mount:
+0.225000 ms median, 0.361708 ms p95.
+
+**Change:** 25.87% slower by median.
+
+**Outcome:** Rejected after rollback. The disabled promo subtree was small
+enough that the extra branch did not improve the measured render path.
+
+**Commit:** None
+
+### 799. Fast-return steady plant icon frames before brightness math
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** 100-plant static icon frame handler over 120 steady frames:
+0.004833 ms median, 0.007209 ms p95.
+
+**After:** Early steady-frame return before brightness calculation:
+0.005750 ms median, 0.009334 ms p95.
+
+**Change:** 18.98% slower by median.
+
+**Outcome:** Rejected after rollback. The existing brightness calculation is
+already too cheap for this guard to help the realistic steady-frame case.
+
+**Commit:** None
+
+### 800. Avoid duplicate FPS logging flag reads during reports
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `FPSProbe` reporting callback over 120 frames: 5.979292 ms median,
+9.167000 ms p95.
+
+**After:** Reused the `FPS_LOGS` value for the reporting tick: 5.718042 ms
+median, 9.411625 ms p95.
+
+**Change:** 4.37% faster by median, with a slightly slower p95.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 moved in the wrong direction.
+
+**Commit:** None
+
+## Round 157
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 801. Build soil-surface projection and bounds in one pass | Avoid extra `map` arrays and spread min/max calls during soil surface generation | `getSurface` with a realistic 50-point generated soil surface | Rejected |
+| 802. Flip computed soil normals through the typed array | Avoid per-normal `setX`/`setY`/`setZ` calls after normal computation | `getSurface` with the same 50-point generated soil surface | Rejected |
+| 803. Serialize soil triangles with a preallocated numeric array | Avoid per-triangle nested array allocation before `JSON.stringify` | `serializeTriangles` on the generated soil triangles | Rejected |
+| 804. Build image moisture texture keys without side-effect `map` calls | Avoid array allocation while scanning sensors and readings for texture keys | `getImageTextureKey` with 8 sensors and 80 readings | Rejected |
+| 805. Filter soil-height points with a simple loop and cached bounds | Reduce callback and repeated config lookup overhead for realistic point lists | `filterSoilPoints` with 100 map points and 50 soil-height points | Rejected |
+
+### 801. Build soil-surface projection and bounds in one pass
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getSurface` with 54 filtered soil points: 0.006791 ms median,
+0.017416 ms p95.
+
+**After:** Combined prototype for one-pass bounds plus typed-array normal
+flipping: 0.007541 ms median, 0.017500 ms p95.
+
+**Change:** 11.04% slower by median.
+
+**Outcome:** Rejected after rollback. The extra manual loop did not improve the
+realistic soil surface size measured here.
+
+**Commit:** None
+
+### 802. Flip computed soil normals through the typed array
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getSurface` with 54 filtered soil points: 0.006791 ms median,
+0.017416 ms p95.
+
+**After:** Combined prototype for one-pass bounds plus typed-array normal
+flipping: 0.007541 ms median, 0.017500 ms p95.
+
+**Change:** 11.04% slower by median for the combined surface-generation path.
+
+**Outcome:** Rejected after rollback. The measured surface path did not improve
+when normal flipping was changed along with the bounds loop.
+
+**Commit:** None
+
+### 803. Serialize soil triangles with a preallocated numeric array
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `serializeTriangles` for generated soil triangles: 0.000250 ms
+median, 0.001042 ms p95.
+
+**After:** Preallocated outer array before `JSON.stringify`: 0.000541 ms
+median, 0.001875 ms p95.
+
+**Change:** 116.40% slower by median.
+
+**Outcome:** Rejected after rollback. The existing `map` version is clearer and
+faster for the realistic triangle count.
+
+**Commit:** None
+
+### 804. Build image moisture texture keys without side-effect `map` calls
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getImageTextureKey` with 8 sensors and 80 readings: 0.008625 ms
+median, 0.014166 ms p95.
+
+**After:** `for...of` key builders for sensors and readings: 0.008042 ms
+median, 0.018792 ms p95.
+
+**Change:** 6.76% faster by median, but p95 was slower and the median did not
+clear the 10% threshold.
+
+**Outcome:** Rejected after rollback.
+
+**Commit:** None
+
+### 805. Filter soil-height points with a simple loop and cached bounds
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `filterSoilPoints` with 100 map points, 50 of them soil-height
+points: 0.003959 ms median, 0.007291 ms p95.
+
+**After:** `for...of` loop with cached points array: 0.003708 ms median,
+0.006209 ms p95.
+
+**Change:** 6.34% faster by median, saving about 0.000251 ms.
+
+**Outcome:** Rejected after rollback. The percentage and absolute savings were
+both below the acceptance bar.
+
+**Commit:** None

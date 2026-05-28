@@ -82,9 +82,10 @@ export const PublicOverlay = (props: OverlayProps) => {
   ].join(" ");
 
   return <div className={"overlay"}>
+    {config.settingsBar &&
     <FocusVisibilityDiv
       className={settingsBarClassName}
-      visible={config.settingsBar && !props.activeFocus}>
+      visible={!props.activeFocus}>
       <div className={"settings-bar-content"}>
         <PublicOverlaySection
           {...commonSectionProps}
@@ -123,7 +124,7 @@ export const PublicOverlay = (props: OverlayProps) => {
             "greenhouse": "Greenhouse",
           }} />
       </div>
-    </FocusVisibilityDiv>
+    </FocusVisibilityDiv>}
     <FocusVisibilityDiv
       className={"promo-info"}
       visible={config.promoInfo && !props.activeFocus}>
