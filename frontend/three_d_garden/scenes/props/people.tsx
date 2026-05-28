@@ -80,7 +80,22 @@ export interface PersonProps {
   rotation?: [number, number, number];
 }
 
-export const Person = (props: PersonProps) => {
+const sameVector = (
+  prev: [number, number, number] | undefined,
+  next: [number, number, number] | undefined,
+) =>
+  prev === next ||
+  (!!prev && !!next &&
+    prev[0] === next[0] &&
+    prev[1] === next[1] &&
+    prev[2] === next[2]);
+
+export const personPropsEqual = (prev: PersonProps, next: PersonProps) =>
+  prev.url === next.url &&
+  sameVector(prev.position, next.position) &&
+  sameVector(prev.rotation, next.rotation);
+
+const PersonBase = (props: PersonProps) => {
   const scalingData = SCALING_DATA[props.url];
   return <Group
     position={props.position}
@@ -96,3 +111,5 @@ export const Person = (props: PersonProps) => {
       renderOrder={RenderOrder.clouds} />
   </Group>;
 };
+
+export const Person = React.memo(PersonBase, personPropsEqual);

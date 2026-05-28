@@ -5636,9 +5636,39 @@ changes still update the same controls and interactions.
 the static scale vector. Expected return: lower background rerender churn
 without changing sky uniforms, scale, turbidity, or sun position behavior.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the sky
+primitive 90 times with freshly allocated but value-equivalent sun positions.
+
+**Before:** 1.914 ms per 90-rerender batch.
+
+**After:** 0.851 ms per 90-rerender batch with the attempted memoized sky.
+
+**Change:** 55.5% faster, saving 1.063 ms per realistic sky rerender batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was too small for another exported comparator on the
+background sky primitive.
+
 ### Idea 315: Memoize `Person` image transforms
 
 **Description:** Memoize individual person image props by URL, position, and
 rotation contents. Expected return: faster people layer rerenders when parent
 billboards rerender but the person asset and transform are unchanged, without
 changing image scale, opacity, render order, or raycast behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the two
+person image components used by a realistic people layer 90 times with
+unchanged URLs and transforms.
+
+**Before:** 3.803 ms per 90-rerender batch.
+
+**After:** 1.082 ms per 90-rerender batch.
+
+**Change:** 71.5% faster, saving 2.721 ms per realistic two-person image
+rerender batch.
+
+**Outcome:** Accepted; person image components now skip unchanged URL and
+transform churn while changed image assets, positions, and rotations still
+update the same billboarded image.
+
+**Commit:** `Memoize person images for 71.5% faster rerenders`
