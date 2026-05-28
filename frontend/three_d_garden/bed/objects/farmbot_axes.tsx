@@ -25,6 +25,7 @@ export const farmbotAxesPropsEqual = (
   AXES_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
 
 const FarmbotAxesBase = (props: FarmbotAxesProps) => {
+  if (!props.config.axes) { return <></>; }
   const {
     bedLengthOuter, bedXOffset, bedWidthOuter, bedYOffset,
   } = props.config;

@@ -9,6 +9,11 @@ describe("<Packaging />", () => {
     config: clone(INITIAL),
   });
 
+  it("skips disabled packaging", () => {
+    const { container } = render(<Packaging {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("packaging");
+  });
+
   it("renders", () => {
     const p = fakeProps();
     p.config.packaging = true;

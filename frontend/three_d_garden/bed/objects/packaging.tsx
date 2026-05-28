@@ -49,6 +49,7 @@ export const packagingPropsEqual = (
 
 const PackagingBase = (props: PackagingProps) => {
   const { config } = props;
+  if (!config.packaging) { return <></>; }
   const isXL = config.sizePreset == "Genesis XL";
   const mainCartonLength = 1060;
   const mainCartonWidth = 420;
@@ -71,7 +72,6 @@ const PackagingBase = (props: PackagingProps) => {
   const edgeProtectorColor = "#9d6c40";
 
   return <Group name={"packaging"}
-    visible={config.packaging}
     position={[
       threeSpace(config.bedLengthOuter - 800, config.bedLengthOuter),
       threeSpace(-700, config.bedWidthOuter),

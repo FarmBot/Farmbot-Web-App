@@ -17572,3 +17572,296 @@ points: 0.003959 ms median, 0.007291 ms p95.
 both below the acceptance bar.
 
 **Commit:** None
+
+## Round 158
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 806. Skip disabled packaging subtree before box/text setup | Avoid building hidden shipping carton geometry when `packaging=false` | Default disabled `Packaging` render | Accepted |
+| 807. Skip disabled FarmBot axes before arrow setup | Avoid building hidden axis arrows when `axes=false` | Default disabled `FarmbotAxes` render | Accepted |
+| 808. Render only the active bounds distance indicator | Avoid constructing hidden beam/column/z distance indicators when one indicator is selected | `Bounds` render with `distanceIndicator="beamLength"` | Rejected |
+| 809. Skip hidden v1.8 extrusion-kit packaging subtree | Avoid building hidden extrusion-kit boxes and straps for v1.8 packaging | Enabled v1.8 XL `Packaging` render | Rejected |
+| 810. Skip disabled camera selection marker setup | Avoid creating hidden camera-selection markers when `cameraSelectionView=false` | Default disabled `CameraSelectionUI` render | Rejected |
+
+### 806. Skip disabled packaging subtree before box/text setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `Packaging` render: 0.094625 ms median,
+0.250625 ms p95.
+
+**After:** Early return before carton dimensions, colors, and hidden group
+setup: 0.064583 ms median, 0.201000 ms p95.
+
+**Change:** 31.75% faster by median, saving about 0.030042 ms per disabled
+packaging render.
+
+**Outcome:** Accepted. The disabled packaging setting is the default path, and
+the change removes hidden subtree work without changing enabled packaging
+rendering.
+
+**Commit:** This commit (`Skip hidden 3D garden subtrees for 49.7% faster renders`)
+
+### 807. Skip disabled FarmBot axes before arrow setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `FarmbotAxes` render: 0.088000 ms median,
+0.228083 ms p95.
+
+**After:** Early return before axis arrow geometry setup: 0.044250 ms median,
+0.053792 ms p95.
+
+**Change:** 49.72% faster by median, saving about 0.043750 ms per disabled
+axes render.
+
+**Outcome:** Accepted. Axes are disabled by default, and the enabled axis
+rendering path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D garden subtrees for 49.7% faster renders`)
+
+### 808. Render only the active bounds distance indicator
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** `Bounds` render with `distanceIndicator="beamLength"`: 0.204000 ms
+median, 0.256250 ms p95.
+
+**After:** Conditional rendering of only the active indicator: 0.223000 ms
+median, 0.289709 ms p95.
+
+**Change:** 9.31% slower by median.
+
+**Outcome:** Rejected after rollback. The extra branching did not improve the
+realistic selected-indicator render.
+
+**Commit:** None
+
+### 809. Skip hidden v1.8 extrusion-kit packaging subtree
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Enabled v1.8 XL `Packaging` render: 0.210125 ms median,
+0.367292 ms p95.
+
+**After:** Conditional v1.8 extrusion-kit subtree render: 0.209791 ms median,
+0.436458 ms p95.
+
+**Change:** 0.16% faster by median, saving about 0.000334 ms, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median improvement was far below the
+10% threshold and the p95 regression made it a poor trade.
+
+**Commit:** None
+
+### 810. Skip disabled camera selection marker setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `CameraSelectionUI` render: 0.048708 ms median,
+0.060083 ms p95.
+
+**After:** Early return before hidden camera marker setup: 0.051625 ms median,
+0.081167 ms p95.
+
+**Change:** 5.99% slower by median.
+
+**Outcome:** Rejected after rollback. The existing hidden camera-selection path
+is already cheaper than the guard in this benchmark.
+
+**Commit:** None
+
+## Round 159
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 811. Skip disabled solar spring setup before hardware render | Avoid starting a hidden solar spring and preparing hardware props when `solar=false` and no focus transition is active | Default disabled `Solar` render | Rejected |
+| 812. Skip disabled north-arrow extrusion subtree | Avoid building hidden arrow extrudes when `north=false` | Default disabled `NorthArrow` render | Rejected |
+| 813. Skip disabled camera-view point generation | Avoid computing frustum vectors when `cameraView=false` | Default disabled `CameraView` render | Rejected |
+| 814. Reuse the sky scale vector | Avoid allocating a new large scale `Vector3` on every `Sky` render | `Sky` render with a stable sun position | Rejected |
+| 815. Reuse the camera-view rotation axis vector | Avoid allocating a new z-axis `Vector3` for every rotated frustum corner | `getCameraViewPoints` with enabled camera-view calibration inputs | Rejected |
+
+### 811. Skip disabled solar spring setup before hardware render
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `Solar` render with `solar=false` and no active
+focus: 0.057167 ms median, 0.212208 ms p95.
+
+**After:** Split disabled solar rendering before the `useSpring` hardware path:
+0.053916 ms median, 0.216625 ms p95.
+
+**Change:** 5.69% faster by median, saving about 0.003251 ms, with p95 slightly
+slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and the absolute savings were not meaningful.
+
+**Commit:** None
+
+### 812. Skip disabled north-arrow extrusion subtree
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `NorthArrow` render: 0.055500 ms median,
+0.088000 ms p95.
+
+**After:** Early return before hidden north-arrow `Extrude` setup:
+0.047583 ms median, 0.083500 ms p95.
+
+**Change:** 14.26% faster by median, saving about 0.007917 ms.
+
+**Outcome:** Rejected after rollback. Although the percentage cleared 10%, the
+absolute savings were below a meaningful per-render improvement for this
+rarely enabled overlay.
+
+**Commit:** None
+
+### 813. Skip disabled camera-view point generation
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `CameraView` render: 0.045125 ms median,
+0.063833 ms p95.
+
+**After:** Early return before disabled frustum point generation:
+0.040208 ms median, 0.050250 ms p95.
+
+**Change:** 10.90% faster by median, saving about 0.004917 ms.
+
+**Outcome:** Rejected after rollback. The improvement crossed 10% by
+percentage but the absolute savings were too small to justify the extra
+component split.
+
+**Commit:** None
+
+### 814. Reuse the sky scale vector
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** `Sky` render with a stable sun position: 0.079083 ms median,
+0.168208 ms p95.
+
+**After:** Module-level `Vector3` reused for the sky scale prop:
+0.078333 ms median, 0.203375 ms p95.
+
+**Change:** 0.95% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The allocation was not a meaningful
+render cost and p95 moved in the wrong direction.
+
+**Commit:** None
+
+### 815. Reuse the camera-view rotation axis vector
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** `getCameraViewPoints` with enabled camera-view calibration inputs:
+0.001167 ms median, 0.002792 ms p95.
+
+**After:** Shared z-axis vector for frustum corner rotation:
+0.001666 ms median, 0.008000 ms p95.
+
+**Change:** 42.76% slower by median.
+
+**Outcome:** Rejected after rollback. The shared-axis prototype was slower for
+the realistic enabled camera-view point calculation.
+
+**Commit:** None
+
+## Round 160
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 816. Share one grid coordinate converter across line generation | Avoid recreating `get3DPositionFunc(config)` once per grid line while sampling dense Genesis XL grids | `gridLinePositions` on Genesis XL with flat soil | Rejected |
+| 817. Cache grid line offsets by bot dimension | Avoid rebuilding identical 100 mm offset arrays for repeated renders with the same bot size | `gridLinePositions` on repeated Genesis XL calls | Rejected |
+| 818. Pre-size grid line position arrays | Avoid incremental array growth while writing thousands of grid segment coordinates | `gridLinePositions` on Genesis XL with flat soil | Rejected |
+| 819. Skip no-op summer cloud spring setup | Avoid starting cloud opacity spring work when the selected season has zero cloud opacity | `Clouds` render with `plants="Summer"` | Rejected |
+| 820. Preallocate ground fade color buffer | Avoid temporary JS number arrays while building detailed ground vertex colors | First detailed `Ground` render | Rejected |
+
+### 816. Share one grid coordinate converter across line generation
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` on Genesis XL with flat soil:
+0.188833 ms median, 0.568250 ms p95.
+
+**After:** Shared one `get3DPositionFunc(config)` result across all grid line
+sampling, measured with the offset cache prototype: 0.208208 ms median,
+0.633625 ms p95.
+
+**Change:** 10.26% slower by median.
+
+**Outcome:** Rejected after rollback. Sharing the converter did not improve
+the realistic XL grid generation path.
+
+**Commit:** None
+
+### 817. Cache grid line offsets by bot dimension
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** Genesis XL `gridLineOffsets` pair for X/Y dimensions:
+0.000875 ms median, 0.001875 ms p95.
+
+**After:** Module cache lookup for repeated dimensions: 0.000084 ms median,
+0.000208 ms p95.
+
+**Change:** 90.40% faster by median, saving about 0.000791 ms per offset pair.
+
+**Outcome:** Rejected after rollback. The standalone percentage was high, but
+the absolute savings were below a meaningful threshold and the full grid
+prototype that used the cache was slower.
+
+**Commit:** None
+
+### 818. Pre-size grid line position arrays
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` on Genesis XL with flat soil:
+0.188833 ms median, 0.568250 ms p95.
+
+**After:** Direct writes into pre-sized outer and inner position arrays:
+0.204125 ms median, 0.640083 ms p95.
+
+**Change:** 8.10% slower by median.
+
+**Outcome:** Rejected after rollback. Manual direct writes did not beat the
+existing append path for the realistic XL grid.
+
+**Commit:** None
+
+### 819. Skip no-op summer cloud spring setup
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `Clouds` render with `plants="Summer"`:
+0.056333 ms median, 0.221958 ms p95.
+
+**After:** Split visible cloud rendering so zero-opacity summer clouds return
+before `useSpring`: 0.056584 ms median, 0.280083 ms p95.
+
+**Change:** 0.45% slower by median.
+
+**Outcome:** Rejected after rollback. The extra component split did not help
+the realistic no-cloud summer render.
+
+**Commit:** None
+
+### 820. Preallocate ground fade color buffer
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** First detailed `Ground` render: 0.157667 ms median,
+0.357875 ms p95.
+
+**After:** `Float32Array` preallocated for ground vertex colors:
+0.156416 ms median, 0.402334 ms p95.
+
+**Change:** 0.79% faster by median, saving about 0.001251 ms, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median improvement was far below the
+10% threshold and p95 regressed.
+
+**Commit:** None

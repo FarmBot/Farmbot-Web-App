@@ -12,8 +12,15 @@ describe("<FarmbotAxes />", () => {
   });
 
   it("renders", () => {
-    const { container } = render(<FarmbotAxes {...fakeProps()} />);
+    const p = fakeProps();
+    p.config.axes = true;
+    const { container } = render(<FarmbotAxes {...p} />);
     expect(container.innerHTML).toContain("extrude");
+  });
+
+  it("skips disabled axes", () => {
+    const { container } = render(<FarmbotAxes {...fakeProps()} />);
+    expect(container.innerHTML).toEqual("");
   });
 
   it("compares axes-relevant config fields", () => {
