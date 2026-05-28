@@ -47,6 +47,7 @@ interface PlantIconInstancesProps extends PlantInstancesProps {
   plants: ThreeDGardenPlant[];
   plantIndexes: number[];
   capacity: number;
+  useAtlas: boolean;
 }
 
 interface PlantIconUpdateState {
@@ -73,6 +74,8 @@ const getPlantIconGeometry = () => {
   plantIconGeometry ||= new ThreePlaneGeometry(1, 1);
   return plantIconGeometry;
 };
+
+const PLANT_ICON_ATLAS_MIN_ICON_COUNT = 32;
 
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
@@ -122,13 +125,14 @@ const plantIconRaycast = function (
 const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const {
     config, plants, icon, visible, startTimeRef, dispatch, getZ, plantIndexes,
+    useAtlas,
   } = props;
   const navigate = useNavigate();
-  const textureUrl = getPlantIconTextureUrl(icon);
+  const textureUrl = getPlantIconTextureUrl(icon, useAtlas);
   const baseTexture = useTexture(textureUrl);
   const texture = React.useMemo(
-    () => getPlantIconTexture(baseTexture, icon),
-    [baseTexture, icon]);
+    () => getPlantIconTexture(baseTexture, icon, useAtlas),
+    [baseTexture, icon, useAtlas]);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   // eslint-disable-next-line no-null/no-null
@@ -282,6 +286,7 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
         plants: [],
         plantIndexes: [],
         capacity,
+        useAtlas: false,
         startTimeRef: props.startTimeRef,
         visible: props.visible,
       };
@@ -300,15 +305,20 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           plants: [plant],
           plantIndexes: [index],
           capacity: 0,
+          useAtlas: false,
           startTimeRef: props.startTimeRef,
           visible: props.visible,
         };
       }
     });
-    return Object.values(iconInstances)
-      .filter(instance => instance.plants.length > 0)
+    const visibleInstances = Object.values(iconInstances)
+      .filter(instance => instance.plants.length > 0);
+    const useAtlas =
+      visibleInstances.length >= PLANT_ICON_ATLAS_MIN_ICON_COUNT;
+    return visibleInstances
       .map(instance => ({
         ...instance,
+        useAtlas,
         capacity: Math.max(
           instance.plants.length,
           props.iconCapacities?.[instance.icon] || 0,

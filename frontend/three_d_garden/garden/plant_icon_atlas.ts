@@ -53,8 +53,13 @@ export const PLANT_ICON_ATLAS = Object.fromEntries(
   ]),
 ) as Record<string, PlantIconAtlasFrame>;
 
-export const getPlantIconTextureUrl = (icon: string): string =>
-  PLANT_ICON_ATLAS[icon]?.atlasUrl || icon;
+export const getPlantIconTextureUrl = (
+  icon: string,
+  useAtlas = true,
+): string =>
+  useAtlas
+    ? PLANT_ICON_ATLAS[icon]?.atlasUrl || icon
+    : icon;
 
 export const getPlantIconTextureTransform =
   (icon: string): PlantIconTextureTransform | undefined => {
@@ -72,7 +77,12 @@ export const getPlantIconTextureTransform =
     };
   };
 
-export const getPlantIconTexture = (baseTexture: Texture, icon: string) => {
+export const getPlantIconTexture = (
+  baseTexture: Texture,
+  icon: string,
+  useAtlas = true,
+) => {
+  if (!useAtlas) { return baseTexture; }
   const transform = getPlantIconTextureTransform(icon);
   if (!transform) { return baseTexture; }
 

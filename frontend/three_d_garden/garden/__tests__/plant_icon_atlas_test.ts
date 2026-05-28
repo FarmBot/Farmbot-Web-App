@@ -37,6 +37,20 @@ describe("plant icon atlas helpers", () => {
     });
   });
 
+  it("can keep mapped icons on their original urls", () => {
+    PLANT_ICON_ATLAS[icon] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 128,
+      x: 64,
+      y: 16,
+      width: 32,
+      height: 48,
+    };
+
+    expect(getPlantIconTextureUrl(icon, false)).toEqual(icon);
+  });
+
   it("resolves generated compact atlas frame data", () => {
     const atlasIcon = "/crops/icons/acorn-squash.avif";
 
@@ -62,5 +76,20 @@ describe("plant icon atlas helpers", () => {
     const texture = getPlantIconTexture(baseTexture, icon);
 
     expect(texture).not.toBe(baseTexture);
+  });
+
+  it("uses base textures directly when atlas mode is disabled", () => {
+    PLANT_ICON_ATLAS[icon] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 128,
+      x: 64,
+      y: 16,
+      width: 32,
+      height: 48,
+    };
+    const baseTexture = new Texture();
+
+    expect(getPlantIconTexture(baseTexture, icon, false)).toBe(baseTexture);
   });
 });

@@ -367,7 +367,7 @@ describe("<GardenModel />", () => {
     expect(plantLabels.length).toEqual(0);
   });
 
-  it("preloads the atlas texture for mapped plant icons", () => {
+  it("preloads individual textures for small mapped plant icon sets", () => {
     PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
       textureWidth: 256,
@@ -384,7 +384,8 @@ describe("<GardenModel />", () => {
 
     render(<GardenModel {...p} />);
 
-    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/strawberry.avif");
+    expect(useTexture).not.toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 
   it("doesn't render hover labels without a hovered plant", () => {

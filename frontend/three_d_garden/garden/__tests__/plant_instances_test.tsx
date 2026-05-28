@@ -83,6 +83,10 @@ describe("<PlantInstances />", () => {
     reactUseRefSpy.mockRestore();
     getModeSpy.mockRestore();
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
+    delete PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"];
+    Object.keys(PLANT_ICON_ATLAS)
+      .filter(key => key.startsWith("/crops/icons/round92-"))
+      .forEach(key => delete PLANT_ICON_ATLAS[key]);
   });
 
   const fakeProps = (): PlantInstancesProps => {
@@ -166,8 +170,8 @@ describe("<PlantInstances />", () => {
     keySpy.mockRestore();
   });
 
-  it("loads the atlas texture when an icon is mapped", () => {
-    PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
+  it("loads individual textures when few mapped icons are visible", () => {
+    PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
       textureWidth: 256,
       textureHeight: 256,
@@ -177,6 +181,32 @@ describe("<PlantInstances />", () => {
       height: 64,
     };
     render(<PlantInstances {...fakeProps()} />);
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/strawberry.avif");
+    expect(useTexture).not.toHaveBeenCalledWith("/crops/icons/atlas.avif");
+  });
+
+  it("loads the atlas texture when many mapped icons are visible", () => {
+    const p = fakeProps();
+    p.plants = Array.from({ length: 32 }, (_, index) => {
+      const icon = `/crops/icons/round92-${index}.avif`;
+      PLANT_ICON_ATLAS[icon] = {
+        atlasUrl: "/crops/icons/atlas.avif",
+        textureWidth: 256,
+        textureHeight: 256,
+        x: 0,
+        y: 0,
+        width: 64,
+        height: 64,
+      };
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+
+    render(<PlantInstances {...p} />);
+
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 

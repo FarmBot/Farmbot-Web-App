@@ -9544,3 +9544,237 @@ renders.
 absolute savings across the full observed load window were not meaningful.
 
 **Commit:** None
+
+## Round 92
+
+### Idea 476: Use individual plant icon textures for small visible icon sets
+
+**Description:** Avoid loading the full generated plant icon atlas when the 3D
+garden only needs a small number of unique crop icons. Use individual crop AVIFs
+for small visible icon sets and keep the atlas path for large diverse gardens.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true`, comparing requested 3D/crop asset bytes and checking
+load/render counters.
+
+**Before:** The demo requested `/crops/icons/atlas.avif` at 2,154,900 bytes for
+three visible crop icons. The individual broccoli, spinach, and beet icons
+already appeared in the page at about 27,752 bytes total. The minified 3D entry
+bundle was 3,620,281 bytes.
+
+**After:** The demo no longer requested `/crops/icons/atlas.avif`; plant icon
+instances used `/crops/icons/broccoli.avif`, `/crops/icons/spinach.avif`, and
+`/crops/icons/beet.avif`. The minified 3D entry bundle was 3,620,399 bytes.
+
+**Change:** Removed a 2,154,900 byte image request from the demo 3D load,
+replacing atlas use with already-needed small crop icon requests for this
+garden. That is a 98.7% reduction in plant-icon image bytes for the demo icon
+set, with a 118 byte JS increase.
+
+**Outcome:** Accepted. Visual quality is preserved by using the same crop icon
+assets directly, GPU memory improves by avoiding the 8000x8000 atlas texture for
+small gardens, and large diverse gardens still use the atlas once 32 or more
+unique icon buckets are visible.
+
+**Commit:** `Optimize 3D garden plant icon loading by 98.7%`
+
+### Idea 477: Combine 3D image filtering into a single pass
+
+**Description:** Consider replacing the post-Round-91 `filterImages()` chain
+with one reverse loop to reduce callback and intermediate-array work in the 3D
+soil texture path.
+
+**Benchmark:** Realistic 300, 1,000, and 2,000 image filter passes with hidden,
+shown, placeholder, type, and camera-Z checks.
+
+**Before:** 300 images: 0.0225 ms median. 1,000 images: 0.0968 ms median.
+2,000 images: 0.2180 ms median.
+
+**After:** Not implemented. The single-pass equivalent measured 0.0074 ms,
+0.0265 ms, and 0.0508 ms respectively.
+
+**Change:** Potential 67-77% faster, but only 0.015-0.167 ms saved for the
+tested realistic image counts.
+
+**Outcome:** Rejected before code changes. After the Round 91 deep-clone fix,
+the remaining filter-chain cost is too small to justify reducing readability.
+
+**Commit:** None
+
+### Idea 478: Replace `selectImages()` lodash chain sorting with native sort
+
+**Description:** Consider replacing `chain(selectAllImages()).sortBy(...).reverse()`
+with a native copied descending sort before the 3D map receives latest images.
+
+**Benchmark:** Realistic 300, 1,000, and 2,000 image selector sorts.
+
+**Before:** 300 images: 0.0339 ms median. 1,000 images: 0.1207 ms median.
+2,000 images: 0.2585 ms median.
+
+**After:** Not implemented. The native equivalent measured 0.0123 ms,
+0.0528 ms, and 0.1287 ms respectively.
+
+**Change:** Potential 50-64% faster, but only 0.022-0.130 ms saved for the
+tested image counts.
+
+**Outcome:** Rejected before code changes. The absolute selector savings are
+not meaningful enough for this 3D hill climb.
+
+**Commit:** None
+
+### Idea 479: Move rotary-tool `useFrame` registration out of every `Tool`
+
+**Description:** Consider moving the rotary animation frame callback so only
+the visible rotary tool registers it, instead of every tool slot running a
+per-frame guard.
+
+**Benchmark:** 9 tool callbacks over 600 frames, matching a toolbay with one
+active rotary tool and several inactive tool slots.
+
+**Before:** 0.0231 ms median over 600 frames.
+
+**After:** Not implemented. The one-callback equivalent measured 0.0140 ms
+median over 600 frames.
+
+**Change:** Potential 39.5% faster, but only about 0.0091 ms saved over 600
+frames.
+
+**Outcome:** Rejected before code changes. The per-frame guard is not a
+meaningful FPS cost under realistic tool counts.
+
+**Commit:** None
+
+### Idea 480: Cache generated background star positions
+
+**Description:** Consider caching the 1,000 generated background star positions
+instead of generating a fresh random field on each `Sun` mount.
+
+**Benchmark:** One 1,000-star `Float32Array` generation, matching a 3D garden
+mount.
+
+**Before:** 0.0674 ms median.
+
+**After:** Not implemented. Reusing a cached array measured 0.00013 ms median.
+
+**Change:** Potential 99.8% faster, but only about 0.067 ms saved per mount.
+
+**Outcome:** Rejected before code changes. The percentage was high, but the
+absolute initialization cost is below the meaningful threshold and caching would
+make all mounts share the same random star field.
+
+**Commit:** None
+
+## Round 93
+
+### Idea 481: Replace 3D garden Drei barrel imports with narrow exports
+
+**Description:** Trial a local `three_d_garden/drei` export wrapper that imports
+only the Drei modules used by the 3D garden instead of importing from
+`@react-three/drei` barrels throughout the 3D tree.
+
+**Benchmark:** Minified 3D entry bundle built with esbuild, matching the
+existing hill-climb bundle-size benchmark.
+
+**Before:** 3,620,399 bytes.
+
+**After:** Trial bundle measured 3,619,666 bytes.
+
+**Change:** 733 bytes saved, or 0.02% of the 3D entry bundle.
+
+**Outcome:** Rejected and rolled back. The bundler already tree-shakes the
+barrel path enough that the wrapper only produces a cosmetic byte reduction.
+The absolute gain is not meaningful and the wrapper would add import indirection.
+
+**Commit:** None
+
+### Idea 482: Lazy-load sequence visualization details
+
+**Description:** Trial lazy-loading `Visualization` so normal 3D garden loads do
+not eagerly include sequence-visualization and Lua-runner code unless a sequence
+is being visualized.
+
+**Benchmark:** Minified 3D entry bundle and split-bundle esbuild build. The
+baseline single bundle showed about 259 KB of visualization/Lua-related input
+bytes, so the split build was used to check whether those bytes actually moved
+out of the initial route.
+
+**Before:** Single-file 3D entry bundle was 3,620,399 bytes.
+
+**After:** Single-file trial bundle measured 3,620,615 bytes. In the split-bundle
+trial, the lazy visualization chunk was only 1,475 bytes because the Lua runner
+remained in shared chunks through other app imports.
+
+**Change:** No real initial-load improvement; the single-file bundle regressed
+by 216 bytes and the realistic split chunk only deferred 1.4 KB.
+
+**Outcome:** Rejected and rolled back. The apparent large source contribution
+was shared dependency weight, not visualization-only weight.
+
+**Commit:** None
+
+### Idea 483: Cache rounded plant coordinates for spread-overlap frames
+
+**Description:** Consider storing rounded plant coordinates in
+`StaticPlantSpreadInstance` so click-to-add and plant-edit spread frames do not
+round every plant coordinate on every active spread update.
+
+**Benchmark:** Realistic 200-plant active spread-overlap loop over 600 updates,
+representing about 10 seconds at 60 fps while placing or editing a plant.
+
+**Before:** 2.334 ms median over 600 updates; 2.503 ms p95.
+
+**After:** Not implemented. The cached-rounded-coordinate equivalent measured
+0.470 ms median over 600 updates; 0.853 ms p95.
+
+**Change:** Potential 79.9% faster for this micro-path, but only about 1.864 ms
+saved over a full 10-second interaction.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute runtime improvement is not meaningful in a realistic interaction and
+would add more cached fields to the spread instance shape.
+
+**Commit:** None
+
+### Idea 484: Lazy-load group-order visualization
+
+**Description:** Trial route-gating and lazy-loading `GroupOrderVisual` so normal
+3D garden loads avoid point-group sorting and visualization code unless the user
+is on a group or zone route.
+
+**Benchmark:** Minified 3D entry bundle and split-bundle esbuild build, with the
+normal demo route as the realistic baseline.
+
+**Before:** 3,620,399 bytes in the single-file 3D entry bundle.
+
+**After:** Trial single-file bundle measured 3,620,716 bytes. In the split-bundle
+trial, the group-order chunk was only 2,147 bytes.
+
+**Change:** The single-file benchmark regressed by 317 bytes, and the realistic
+deferred split chunk was only about 2.1 KB.
+
+**Outcome:** Rejected and rolled back. The route gate and lazy boundary are not
+worth the small optional-code movement.
+
+**Commit:** None
+
+### Idea 485: Lazy-load Stats and StatsGl debug widgets
+
+**Description:** Consider lazy-loading the `Stats` and `StatsGl` debug widgets
+because `config.stats` is normally false.
+
+**Benchmark:** Minified 3D entry bundle metafile contribution for the stats-only
+debug path.
+
+**Before:** Stats-related output contribution was about 12,086 bytes:
+`stats.js` 1,906 bytes, Drei `Stats` 465 bytes, `stats-gl` panel/main 8,953
+bytes, Drei `StatsGl` 762 bytes.
+
+**After:** Not implemented. Even a perfect deferral would only remove about
+12 KB from a 3,620,399 byte 3D entry bundle.
+
+**Change:** Best-case potential is about 0.33% of the 3D entry bundle.
+
+**Outcome:** Rejected before code changes. The absolute bundle win is too small
+to justify adding debug-only lazy components and suspense handling.
+
+**Commit:** None

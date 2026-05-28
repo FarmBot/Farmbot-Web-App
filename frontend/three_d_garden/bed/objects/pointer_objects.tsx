@@ -167,9 +167,9 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
   const icon = findIcon(cropSlug);
-  const baseTexture = useTexture(getPlantIconTextureUrl(icon));
+  const baseTexture = useTexture(getPlantIconTextureUrl(icon, false));
   const plantIconTexture = React.useMemo(
-    () => getPlantIconTexture(baseTexture, icon),
+    () => getPlantIconTexture(baseTexture, icon, false),
     [baseTexture, icon]);
 
   const { drawnPoint } = addPlantProps.designer;
