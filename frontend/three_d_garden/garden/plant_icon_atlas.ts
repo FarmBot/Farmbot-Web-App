@@ -1,5 +1,9 @@
 import {
+  PLANT_ICON_ATLAS_CELL_HEIGHT,
+  PLANT_ICON_ATLAS_CELL_WIDTH,
+  PLANT_ICON_ATLAS_COLUMNS,
   PLANT_ICON_ATLAS_FRAMES,
+  PLANT_ICON_ATLAS_ICON_SLUGS,
   PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
   PLANT_ICON_ATLAS_TEXTURE_WIDTH,
   PLANT_ICON_ATLAS_URL,
@@ -21,8 +25,21 @@ export interface PlantIconTextureTransform {
   repeat: [number, number];
 }
 
+const compactAtlasFrames = () =>
+  PLANT_ICON_ATLAS_ICON_SLUGS.split(",").map((slug, index) => [
+    `/crops/icons/${slug}.avif`,
+    (index % PLANT_ICON_ATLAS_COLUMNS) * PLANT_ICON_ATLAS_CELL_WIDTH,
+    Math.floor(index / PLANT_ICON_ATLAS_COLUMNS) * PLANT_ICON_ATLAS_CELL_HEIGHT,
+    PLANT_ICON_ATLAS_CELL_WIDTH,
+    PLANT_ICON_ATLAS_CELL_HEIGHT,
+  ] as const);
+
+const plantIconAtlasFrames = PLANT_ICON_ATLAS_ICON_SLUGS
+  ? compactAtlasFrames()
+  : PLANT_ICON_ATLAS_FRAMES;
+
 export const PLANT_ICON_ATLAS = Object.fromEntries(
-  PLANT_ICON_ATLAS_FRAMES.map(([icon, x, y, width, height]) => [
+  plantIconAtlasFrames.map(([icon, x, y, width, height]) => [
     icon,
     {
       atlasUrl: PLANT_ICON_ATLAS_URL,

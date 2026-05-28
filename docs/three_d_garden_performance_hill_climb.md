@@ -6599,3 +6599,114 @@ remount-like passes.
 **Outcome:** Rejected without implementation; transform lookup is effectively
 free at realistic icon-bucket counts, so precomputing UVs would add generated
 metadata with no app-level benefit.
+
+## Round 68
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 356. Generate uniform plant icon atlas metadata from slugs and grid constants | Further reduce 3D garden JavaScript bytes after Round 67 while preserving atlas pixels and UVs | Compare bundled/minified `plant_icon_atlas` bytes before/after and run generated atlas helper tests | Accepted |
+| 357. Avoid sessionStorage writes for unchanged soil surface triangles | Reduce storage serialization/write work during unrelated garden model rerenders | Measure `GardenModel` soil-surface effect behavior across 20 rerenders with unchanged soil triangles | Rejected |
+| 358. Defer visualization sequence expansion until visualization is active | Reduce load/render work for default 3D garden sessions that do not show sequence visualization | Measure `Visualization` render with no demo sequence and stable position across 20 rerenders | Rejected |
+| 359. Gate `GroupOrderVisual` URL/group selection earlier in GardenModel | Reduce ordinary non-group route render work | Measure `GardenModel` non-group render with 120 plants and 20 groups across 20 rerenders | Rejected |
+| 360. Reuse generated plant atlas lookup objects after helper reads | Reduce repeated object allocation from atlas helper access | Measure 20 icon-bucket texture URL/transform reads across 20 remount-like passes | Rejected |
+
+### Idea 356: Generate uniform plant icon atlas metadata from slugs and grid constants
+
+**Description:** When all generated plant icon atlas frames use the same cell
+size and grid layout, emit a compact slug string plus shared grid constants
+instead of one tuple per icon. Expected return: lower 3D garden JavaScript
+bytes and parse work without changing the atlas image, icon URLs, frame UVs, or
+the public `PLANT_ICON_ATLAS` lookup shape.
+
+**Benchmark:** Bundled and minified `frontend/three_d_garden/garden/plant_icon_atlas.ts`
+with esbuild, after the Round 67 compact tuple format.
+
+**Before:** 13,513 bundled/minified bytes.
+
+**After:** 4,052 bundled/minified bytes.
+
+**Change:** 70.0% smaller bundled/minified atlas helper, saving 9,461 bytes.
+
+**Outcome:** Accepted; generated atlas metadata now stores the uniform grid as
+shared constants and icon slugs while `plant_icon_atlas.ts` reconstructs the
+same public frame objects for existing callers and tests.
+
+**Commit:** `Generate uniform atlas metadata for 70.0% smaller bundle`
+
+### Idea 357: Avoid sessionStorage writes for unchanged soil surface triangles
+
+**Description:** Skip soil-surface triangle serialization/storage when the
+triangle array is unchanged. Expected return: lower render-side storage work
+during garden model rerenders.
+
+**Benchmark:** Serialize and write a realistic 100-point soil surface triangle
+set to `sessionStorage` 20 times.
+
+**Before:** 0.006 ms per 20 writes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic storage benchmark
+is effectively free in this environment, and the existing React dependency
+already limits writes to soil-surface changes.
+
+### Idea 358: Defer visualization sequence expansion until visualization is active
+
+**Description:** Avoid sequence-visualization setup work when no sequence is
+currently visualized. Expected return: faster default 3D garden renders where
+the visualization path is inactive.
+
+**Benchmark:** `Visualization` rendered with no visualized sequence and 20
+unrelated config rerenders.
+
+**Before:** 0.503 ms per 20 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; inactive visualization rendering
+costs about 0.025 ms per rerender, so moving guards would not produce a
+meaningful app-level improvement.
+
+### Idea 359: Gate `GroupOrderVisual` URL/group selection earlier in GardenModel
+
+**Description:** Skip `GroupOrderVisual` entirely on ordinary non-group routes
+before it checks URL/group state. Expected return: less default details-stage
+work when group ordering is not visible.
+
+**Benchmark:** `GroupOrderVisual` rendered on a non-group route with 120 points
+and 20 groups across 20 unrelated config rerenders.
+
+**Before:** 0.415 ms per 20 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic non-group route
+batch costs about 0.021 ms per rerender, which is below a meaningful budget for
+additional route gating.
+
+### Idea 360: Reuse generated plant atlas lookup objects after helper reads
+
+**Description:** Cache or reuse generated plant atlas lookup objects after
+helper reads. Expected return: less object allocation while resolving plant
+icon texture URLs and UV transforms.
+
+**Benchmark:** Resolve URL and transform helpers for 20 icon buckets across 20
+remount-like passes.
+
+**Before:** 0.029 ms per 400 icon helper passes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; helper reads are already far
+below a meaningful setup budget, so adding another cache would only complicate
+the atlas path.
