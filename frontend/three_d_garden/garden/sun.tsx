@@ -315,7 +315,29 @@ const SunBase = (props: SunProps) => {
   </Group>;
 };
 
-export const Sun = React.memo(SunBase);
+const SUN_CONFIG_FIELDS: (keyof Config)[] = [
+  "animateSeasons",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "botSizeY",
+  "lightsDebug",
+  "lowDetail",
+  "plants",
+  "sun",
+  "sunAzimuth",
+  "sunInclination",
+];
+
+export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
+  prev.skyRef === next.skyRef
+  && prev.startTimeRef === next.startTimeRef
+  && SUN_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const Sun = React.memo(SunBase, sunPropsEqual);
 
 const generateOtherSuns = () => {
   const points = [];

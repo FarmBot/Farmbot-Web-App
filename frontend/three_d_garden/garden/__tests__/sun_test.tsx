@@ -13,7 +13,9 @@ const mockMaterialRef: MockMaterialRef = {
 
 import React from "react";
 import { render } from "@testing-library/react";
-import { calcSunI, getCycleLength, skyColor, Sun, SunProps } from "../sun";
+import {
+  calcSunI, getCycleLength, skyColor, Sun, sunPropsEqual, SunProps,
+} from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { MeshBasicMaterial, Vector3 } from "three";
@@ -41,6 +43,22 @@ describe("<Sun />", () => {
     render(<Sun {...fakeProps()} />);
     const memoized = Sun as unknown as { $$typeof: symbol };
     expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
+  it("compares sun-relevant config fields", () => {
+    const p = fakeProps();
+    expect(sunPropsEqual(p, {
+      ...p,
+      config: { ...p.config, botSizeZ: p.config.botSizeZ + 1 },
+    })).toBeTruthy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      startTimeRef: { current: 0 },
+    })).toBeFalsy();
   });
 
   it("doesn't render animated", () => {

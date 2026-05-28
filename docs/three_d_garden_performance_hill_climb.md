@@ -4938,3 +4938,76 @@ memo boundary to a path that was already small after earlier GardenModel work.
 not worth additional component complexity.
 
 **Commit:** Not committed
+
+## Round 54
+
+### Idea 286: Binary-search animated sun samples
+
+**Description:** Replace the animated-season sun sample linear scan with a
+binary search over the cached day samples. Expected return: lower per-frame CPU
+when season animation is enabled, with identical accelerated night traversal,
+sun position, sky color, shadows, and debug helpers.
+
+**Benchmark:** Temporary Bun helper benchmark over 600 calls to
+`getAnimatedSeasonDate("Summer", frame / 60)`, representing 10 seconds of
+60 FPS animated-season frames.
+
+**Before:** 1.378 ms per 600-frame batch.
+
+**After:** 0.175 ms per 600-frame batch.
+
+**Change:** 87.3% faster, saving 1.203 ms across 600 frames, or roughly
+0.002 ms per frame.
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the
+absolute saving is too small for a real frame budget and not worth adding a
+separate search helper.
+
+**Commit:** Not committed
+
+### Idea 287: Add a relevant-field comparator to `Sun`
+
+**Description:** Let `Sun` skip unrelated config-object churn by comparing only
+sun, sky, shadow, animation, debug, and bed-size fields that affect rendering.
+Expected return: faster settings/config rerenders in the always-mounted
+environment layer without changing sun lighting, sky color, shadows, stars, or
+debug visuals.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering `Sun` 90
+times with unrelated config-object churn while keeping all sun, sky, shadow,
+and animation inputs unchanged.
+
+**Before:** 39.958 ms per 90-rerender batch.
+
+**After:** 1.391 ms per 90-rerender batch.
+
+**Change:** 96.5% faster, saving 38.567 ms per realistic config-churn batch.
+
+**Outcome:** Accepted; `Sun` now compares only rendering-relevant config fields
+and refs, so unrelated Bot/config fields do not rebuild the sun, stars, and
+debug subtree while sun lighting, sky color, shadows, season animation, and
+debug visuals still update.
+
+**Commit:** `Memoize Sun config churn for 96.5% faster rerenders`
+
+### Idea 288: Add a relevant-field comparator to `Lab`
+
+**Description:** Let the Lab scene skip unrelated config-object churn by
+comparing only scene, bed dimension, people, desk, active-focus, reveal, and
+load-callback inputs. Expected return: faster visible Lab detail rerenders
+without changing walls, shelves, desk, people, focus fade, or load-in behavior.
+
+### Idea 289: Add a relevant-field comparator to `Greenhouse`
+
+**Description:** Let the Greenhouse scene skip unrelated config-object churn by
+comparing only scene, bed dimension, people, active-focus, reveal, and
+load-callback inputs. Expected return: faster visible Greenhouse detail
+rerenders without changing walls, shelves, starter trays, people, potted plant,
+focus fade, or load-in behavior.
+
+### Idea 290: Reuse `People` scene placement for unchanged props
+
+**Description:** Memoize the People billboard layer and per-person image
+placement by relevant scene config and person data. Expected return: less
+scene-detail churn during focus/config updates with identical person sprites,
+opacity, placement, billboard behavior, and focus visibility.
