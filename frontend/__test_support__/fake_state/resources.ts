@@ -406,6 +406,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     three_d_garden: false,
     dark_mode: true,
     view_celery_script: false,
+    top_down_view: false,
+    viewpoint_heading: 0,
   });
 }
 

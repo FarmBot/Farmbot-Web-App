@@ -26,7 +26,6 @@ export const initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   hardware: {
-    gpio_registry: {},
     mcu_params: {},
     jobs: {},
     location_data: {

@@ -4,8 +4,8 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey | "top_down_view";
-type WebAppNumberConfigKeyAll = WebAppNumberConfigKey | "viewpoint_heading";
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
 type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
@@ -50,7 +50,7 @@ export const BooleanSetting: BooleanSettings = {
   clip_image_layer: "clip_image_layer",
   highlight_modified_settings: "highlight_modified_settings",
   three_d_garden: "three_d_garden",
-  top_down_view: "top_down_view" as WebAppBooleanConfigKey,
+  top_down_view: "top_down_view",
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",
@@ -97,7 +97,7 @@ export const NumericSetting: NumericSettings = {
   map_size_y: "map_size_y",
   bot_origin_quadrant: "bot_origin_quadrant",
   default_plant_depth: "default_plant_depth",
-  viewpoint_heading: "viewpoint_heading" as WebAppNumberConfigKey,
+  viewpoint_heading: "viewpoint_heading",
 
   /** App settings */
   beep_verbosity: "beep_verbosity",
