@@ -5245,6 +5245,22 @@ camera calibration, mount position, Z, capture flash, and visibility changes
 still update. Expected return: faster camera-view debug rerenders without
 changing frustum shape, flash animation, opacity, or edges.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering enabled
+camera view 90 times with only an unrelated config field changed.
+
+**Before:** 3.412 ms per 90-rerender batch.
+
+**After:** 1.102 ms per 90-rerender batch.
+
+**Change:** 67.7% faster, saving 2.310 ms per realistic enabled-camera-view
+config-churn batch.
+
+**Outcome:** Accepted; camera view now skips unrelated config-object churn
+while camera visibility, calibration, mount position, Z, distance, and capture
+flash changes still rebuild or animate the same frustum.
+
+**Commit:** `Memoize camera view churn for 67.7% faster rerenders`
+
 ### Idea 299: Memoize `DistanceIndicator` labels and arrows
 
 **Description:** Memoize distance indicator geometry by start/end/visibility

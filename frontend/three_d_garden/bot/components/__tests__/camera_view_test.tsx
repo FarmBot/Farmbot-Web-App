@@ -3,7 +3,9 @@ import * as THREE from "three";
 import { render } from "@testing-library/react";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
-import { CameraView, CameraViewProps } from "../camera_view";
+import {
+  CameraView, cameraViewPropsEqual, CameraViewProps,
+} from "../camera_view";
 import { ConvexGeometry } from "three-stdlib";
 
 describe("<CameraView />", () => {
@@ -50,5 +52,26 @@ describe("<CameraView />", () => {
       cameraMountPosition={new THREE.Vector3(101, 200, 300)} />);
     expect(normalsSpy).toHaveBeenCalledTimes(2);
     normalsSpy.mockRestore();
+  });
+
+  it("compares camera-view-relevant inputs", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, imgScale: p.config.imgScale + 1 },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      cameraMountPosition: new THREE.Vector3(101, 200, 300),
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, lastImageCapture: p.config.lastImageCapture + 1 },
+    })).toBeFalsy();
   });
 });

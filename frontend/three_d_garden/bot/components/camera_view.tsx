@@ -138,7 +138,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
   });
 };
 
-export const CameraView = (props: CameraViewProps) => {
+const CameraViewBase = (props: CameraViewProps) => {
   const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
   const {
     negativeZ,
@@ -187,6 +187,33 @@ export const CameraView = (props: CameraViewProps) => {
     ? <Frustum points={points} position={cameraLensPosition} config={config} />
     : <></>;
 };
+
+const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
+  "cameraView",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "lastImageCapture",
+  "negativeZ",
+];
+
+export const cameraViewPropsEqual = (
+  prev: CameraViewProps,
+  next: CameraViewProps,
+) =>
+  prev.distanceToSoil === next.distanceToSoil &&
+  prev.configPosition.z === next.configPosition.z &&
+  prev.cameraMountPosition.x === next.cameraMountPosition.x &&
+  prev.cameraMountPosition.y === next.cameraMountPosition.y &&
+  prev.cameraMountPosition.z === next.cameraMountPosition.z &&
+  CAMERA_VIEW_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const CameraView = React.memo(CameraViewBase, cameraViewPropsEqual);
 
 interface FrustumProps {
   points: THREE.Vector3[];
