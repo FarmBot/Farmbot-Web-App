@@ -175,4 +175,24 @@ const PowerSupplyBase = (props: PowerSupplyProps) => {
   </Group>;
 };
 
-export const PowerSupply = React.memo(PowerSupplyBase);
+const POWER_SUPPLY_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "botSizeX",
+  "cableDebug",
+  "ccSupportSize",
+  "legSize",
+];
+
+export const powerSupplyPropsEqual = (
+  prev: PowerSupplyProps,
+  next: PowerSupplyProps,
+) =>
+  !prev.config.cableDebug &&
+  !next.config.cableDebug &&
+  POWER_SUPPLY_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const PowerSupply = React.memo(PowerSupplyBase, powerSupplyPropsEqual);

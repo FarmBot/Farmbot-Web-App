@@ -5433,3 +5433,59 @@ focus state, placement, brightness, texture inputs, and hose dimensions still
 update the same hardware subtree.
 
 **Commit:** `Memoize utilities post for 94.1% faster rerenders`
+
+## Round 58
+
+### Idea 306: Memoize `PowerSupply` relevant config fields
+
+**Description:** Replace shallow memoization with a relevant-field comparator
+for the power supply, preserving cable-debug color cycling by rerendering when
+debug coloring is enabled. Expected return: faster Bot utility rerenders when
+only unrelated config fields change, without changing the supply box, cable
+path, plug placement, texture, or debug coloring behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the power
+supply 90 times with normal cable debugging off while only an unrelated config
+field changed.
+
+**Before:** 5.300 ms per 90-rerender batch.
+
+**After:** 1.133 ms per 90-rerender batch.
+
+**Change:** 78.6% faster, saving 4.167 ms per realistic power-supply
+config-churn batch.
+
+**Outcome:** Accepted; power supply now skips unrelated config churn while
+bed/cable dimensions still update the same path and cable-debug mode still
+rerenders to preserve debug color cycling.
+
+**Commit:** `Memoize power supply for 78.6% faster rerenders`
+
+### Idea 307: Memoize `CameraSelectionUI` relevant config fields
+
+**Description:** Add a relevant-field comparator around camera selection UI so
+unrelated config churn skips the camera marker subtree while internal hover
+state still updates. Expected return: faster camera-selection overlay rerenders
+without changing marker positions, selected state, hover colors, click actions,
+or debug-light markers.
+
+### Idea 308: Memoize `Solar` relevant config fields
+
+**Description:** Memoize the solar hardware entry point by visibility/focus and
+bed-placement fields so unrelated config churn skips the panel, cell, and wire
+subtree. Expected return: faster solar-on scene rerenders without changing
+focus fade behavior, panel geometry, wiring, or placement.
+
+### Idea 309: Memoize `Desk` relevant config fields
+
+**Description:** Add a relevant-field comparator around the desk prop so
+unrelated config churn skips the desk, laptop, and textured material subtree.
+Expected return: faster scene-prop rerenders while desk visibility, focus
+visibility, bed dimensions, and ground placement still update.
+
+### Idea 310: Memoize `People` relevant config fields and people data
+
+**Description:** Memoize the people prop layer by visibility/focus, bed
+placement fields, and person URL/offset data. Expected return: faster people-on
+scene rerenders without changing billboard placement, person image assets,
+opacity, render order, or focus visibility.
