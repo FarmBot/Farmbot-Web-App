@@ -5063,3 +5063,60 @@ layer for two person sprites is not worth the complexity after the parent
 scenes now skip unrelated churn.
 
 **Commit:** Not committed
+
+## Round 55
+
+### Idea 291: Add a relevant-field comparator to visible `Grid`
+
+**Description:** Let the garden grid skip unrelated config-object churn by
+comparing only grid visibility, active focus, bed/bot dimensions, offsets,
+mirroring, and `getZ`. Expected return: lower settings/telemetry rerender CPU
+when the grid is visible, without changing line positions, terrain following,
+focus fade, or material binding.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the normal
+Genesis visible grid 90 times with only an unrelated config field changed.
+
+**Before:** 355.815 ms per 90-rerender batch.
+
+**After:** 1.179 ms per 90-rerender batch.
+
+**Change:** 99.7% faster, saving 354.636 ms per realistic visible-grid
+config-churn batch.
+
+**Outcome:** Accepted; the grid now skips unrelated config-object churn while
+grid visibility, active focus, bed/bot dimensions, offsets, mirroring, and
+`getZ` changes still rebuild the same terrain-following lines and material
+binding.
+
+**Commit:** `Memoize grid config churn for 99.7% faster rerenders`
+
+### Idea 292: Add a relevant-field comparator to `Ground`
+
+**Description:** Let the ground layer skip unrelated config-object churn by
+comparing only ground visibility, scene, low-detail, bed height/offset, and
+detail-level inputs. Expected return: less always-mounted environment churn
+without changing texture choice, LOD behavior, geometry, or material color.
+
+### Idea 293: Add a relevant-field comparator to `NorthArrow`
+
+**Description:** Let the north arrow skip unrelated config-object churn by
+comparing only north visibility, heading, bed dimensions, and bed height/offset.
+Expected return: less bed-layer churn without changing arrow placement,
+rotation, geometry, or visibility.
+
+### Idea 294: Memoize `GroupOrderVisual` wrapper inputs
+
+**Description:** Add a relevant-field memo boundary around the group-order
+visual wrapper so unrelated config-object churn does not repeatedly resolve the
+selected group or selected points. Expected return: faster details-layer rerenders
+when a group is selected, without changing selected-group sorting, labels, line
+positions, or URL-driven group selection.
+
+### Idea 295: Narrow `DrawnPoint` config churn
+
+**Description:** Memoize the active drawn-point preview by mode, drawn point,
+position usage, refs, and point-position config fields. Expected return: better
+point/weed creation responsiveness during unrelated settings churn without
+changing preview marker geometry, weed base choice, radius, color, refs, or
+placement.

@@ -134,11 +134,33 @@ export interface GridProps {
   activeFocus: string;
 }
 
-export const Grid = (props: GridProps) => {
+const GRID_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "botSizeY",
+  "columnLength",
+  "grid",
+  "mirrorX",
+  "mirrorY",
+  "zGantryOffset",
+];
+
+export const gridPropsEqual = (prev: GridProps, next: GridProps) =>
+  prev.activeFocus === next.activeFocus
+  && prev.getZ === next.getZ
+  && GRID_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const GridBase = (props: GridProps) => {
   const visible = props.config.grid && props.activeFocus != "Planter bed";
   if (!visible) { return <></>; }
   return <VisibleGrid {...props} />;
 };
+
+export const Grid = React.memo(GridBase, gridPropsEqual);
 
 const VisibleGrid = (props: GridProps) => {
   const { config } = props;

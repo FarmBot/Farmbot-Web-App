@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import {
-  Grid, gridLineOffsets, gridLinePositions, GridProps,
+  Grid, gridLineOffsets, gridLinePositions, gridPropsEqual, GridProps,
 } from "../grid";
 import { INITIAL, PRESETS } from "../../config";
 import { clone } from "lodash";
@@ -61,6 +61,23 @@ describe("<Grid />", () => {
     const { container } = render(<Grid {...p} />);
     expect(container).not.toContainHTML("grid");
     expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("compares grid-relevant config fields", () => {
+    const p = fakeProps();
+    p.config.grid = true;
+    expect(gridPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(gridPropsEqual(p, {
+      ...p,
+      config: { ...p.config, botSizeX: p.config.botSizeX + 1 },
+    })).toBeFalsy();
+    expect(gridPropsEqual(p, {
+      ...p,
+      activeFocus: "Planter bed",
+    })).toBeFalsy();
   });
 
   it("refreshes focus material binding when grid dimensions change", () => {
