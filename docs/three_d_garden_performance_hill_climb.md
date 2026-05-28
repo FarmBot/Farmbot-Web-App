@@ -5537,3 +5537,20 @@ update the same desk/laptop subtree.
 placement fields, and person URL/offset data. Expected return: faster people-on
 scene rerenders without changing billboard placement, person image assets,
 opacity, render order, or focus visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic two-person scene layer 90 times while focus stayed stable and only an
+unrelated config field changed.
+
+**Before:** 5.831 ms per 90-rerender batch.
+
+**After:** 1.080 ms per 90-rerender batch.
+
+**Change:** 81.5% faster, saving 4.751 ms per realistic people-on config-churn
+batch.
+
+**Outcome:** Accepted; people now skip unrelated config churn and
+value-equivalent inline people arrays while visibility, focus state, bed
+placement fields, URLs, and offsets still update the same billboards.
+
+**Commit:** `Memoize people layer for 81.5% faster rerenders`

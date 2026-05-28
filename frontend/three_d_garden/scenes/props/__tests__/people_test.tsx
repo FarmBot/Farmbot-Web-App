@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { People, PeopleProps, Person } from "../people";
+import { People, peoplePropsEqual, PeopleProps, Person } from "../people";
 import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
 import { INITIAL } from "../../../config";
@@ -17,6 +17,33 @@ describe("<People />", () => {
     p.config.people = true;
     const { container } = render(<People {...p} />);
     expect(container).toContainHTML("people");
+  });
+
+  it("compares people-relevant inputs", () => {
+    const p = fakeProps();
+    p.config.people = true;
+    p.people = [{ url: ASSETS.people.person1, offset: [1, 2] }];
+    expect(peoplePropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+      people: [{ url: ASSETS.people.person1, offset: [1, 2] }],
+    })).toBeTruthy();
+    expect(peoplePropsEqual(p, {
+      ...p,
+      activeFocus: "Planter bed",
+    })).toBeFalsy();
+    expect(peoplePropsEqual(p, {
+      ...p,
+      config: { ...p.config, bedWidthOuter: p.config.bedWidthOuter + 1 },
+    })).toBeFalsy();
+    expect(peoplePropsEqual(p, {
+      ...p,
+      people: [{ url: ASSETS.people.person2, offset: [1, 2] }],
+    })).toBeFalsy();
+    expect(peoplePropsEqual(p, {
+      ...p,
+      people: [{ url: ASSETS.people.person1, offset: [1, 3] }],
+    })).toBeFalsy();
   });
 });
 

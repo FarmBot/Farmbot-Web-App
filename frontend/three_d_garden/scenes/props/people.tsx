@@ -13,7 +13,31 @@ export interface PeopleProps {
   people: { url: string, offset: number[] }[];
 }
 
-export const People = (props: PeopleProps) => {
+const PEOPLE_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "people",
+];
+
+const samePeople = (
+  prev: PeopleProps["people"],
+  next: PeopleProps["people"],
+) =>
+  prev.length === next.length &&
+  prev.every((person, index) =>
+    person.url === next[index].url &&
+    person.offset.length === next[index].offset.length &&
+    person.offset.every((value, offsetIndex) =>
+      value === next[index].offset[offsetIndex]));
+
+export const peoplePropsEqual = (prev: PeopleProps, next: PeopleProps) =>
+  prev.activeFocus === next.activeFocus &&
+  samePeople(prev.people, next.people) &&
+  PEOPLE_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
+
+const PeopleBase = (props: PeopleProps) => {
   const { people, config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
   return <FocusVisibilityGroup name={"people"}
@@ -31,6 +55,8 @@ export const People = (props: PeopleProps) => {
     })}
   </FocusVisibilityGroup>;
 };
+
+export const People = React.memo(PeopleBase, peoplePropsEqual);
 
 interface DataRecord {
   scale: [number, number];
