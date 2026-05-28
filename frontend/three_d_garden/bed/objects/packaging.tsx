@@ -29,7 +29,25 @@ export interface PackagingProps {
   config: Config;
 }
 
-export const Packaging = (props: PackagingProps) => {
+const PACKAGING_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "kitVersion",
+  "label",
+  "packaging",
+  "sizePreset",
+];
+
+export const packagingPropsEqual = (
+  prev: PackagingProps,
+  next: PackagingProps,
+) =>
+  PACKAGING_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const PackagingBase = (props: PackagingProps) => {
   const { config } = props;
   const isXL = config.sizePreset == "Genesis XL";
   const mainCartonLength = 1060;
@@ -119,3 +137,5 @@ export const Packaging = (props: PackagingProps) => {
     </Group>
   </Group>;
 };
+
+export const Packaging = React.memo(PackagingBase, packagingPropsEqual);

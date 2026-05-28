@@ -5391,6 +5391,23 @@ config churn skips the carton, straps, edge protectors, and label subtree.
 Expected return: faster packaging-on renders while package visibility, size,
 version, label, bed dimensions, and ground placement still update.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering packaging
+enabled for a Genesis XL v1.7 kit 90 times while only an unrelated config field
+changed.
+
+**Before:** 17.542 ms per 90-rerender batch.
+
+**After:** 1.029 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 16.513 ms per realistic packaging-on
+config-churn batch.
+
+**Outcome:** Accepted; packaging now skips unrelated config churn while
+visibility, kit version, size preset, label, bed dimensions, and ground
+placement still update the same carton subtree.
+
+**Commit:** `Memoize packaging for 94.1% faster rerenders`
+
 ### Idea 305: Memoize `UtilitiesPost` relevant config fields and hose paths
 
 **Description:** Memoize the utilities post by the config fields and focus

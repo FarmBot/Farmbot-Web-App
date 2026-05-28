@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Packaging, PackagingProps } from "../packaging";
+import { Packaging, packagingPropsEqual, PackagingProps } from "../packaging";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 
@@ -37,5 +37,25 @@ describe("<Packaging />", () => {
     const { container } = render(<Packaging {...p} />);
     expect(container.innerHTML).not.toContain("170");
     expect(container.innerHTML).not.toContain("100");
+  });
+
+  it("compares packaging-relevant config fields", () => {
+    const p = fakeProps();
+    p.config.packaging = true;
+    expect(packagingPropsEqual(p, {
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(packagingPropsEqual(p, {
+      config: { ...p.config, packaging: false },
+    })).toBeFalsy();
+    expect(packagingPropsEqual(p, {
+      config: { ...p.config, kitVersion: `${p.config.kitVersion}-updated` },
+    })).toBeFalsy();
+    expect(packagingPropsEqual(p, {
+      config: { ...p.config, bedLengthOuter: p.config.bedLengthOuter + 1 },
+    })).toBeFalsy();
+    expect(packagingPropsEqual(p, {
+      config: { ...p.config, label: `${p.config.label} updated` },
+    })).toBeFalsy();
   });
 });
