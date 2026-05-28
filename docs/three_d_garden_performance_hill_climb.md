@@ -5960,6 +5960,23 @@ support, Y carrier, belt, stops, and XY placement. Expected return: faster full
 Bot rerenders during unrelated config churn while gantry geometry and carrier
 layout still update when their inputs change.
 
+**Benchmark:** Full `Bot` render after the frame comparator change, with tracks
+and cable carriers enabled, then 90 rerenders where only unrelated `config.sun`
+changed while bot position and gantry-relevant dimensions stayed unchanged.
+
+**Before:** 38.195 ms per 90-rerender batch.
+
+**After:** 32.028 ms per 90-rerender batch.
+
+**Change:** 16.1% faster, saving 6.167 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Accepted; the gantry subassembly now skips unrelated config churn
+while XY position, beam shape, cable carrier layout, kit version, light, and
+gantry dimension changes still rerender.
+
+**Commit:** `Memoize Bot gantry for 16.1% faster rerenders`
+
 ### Idea 328: Memoize Bot electronics wrapper by relevant config fields
 
 **Description:** Replace object-identity config comparison on the electronics

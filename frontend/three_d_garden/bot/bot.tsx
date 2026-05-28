@@ -422,11 +422,25 @@ interface BotGantrySubassembliesProps
   beamShape: Shape | undefined;
 }
 
+const BOT_GANTRY_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeY",
+  "cableCarriers",
+  "columnLength",
+  "kitVersion",
+  "light",
+];
+
 const sameBotGantrySubassembliesProps = (
   prev: BotGantrySubassembliesProps,
   next: BotGantrySubassembliesProps,
 ) =>
-  sameBotXYSubassemblyProps(prev, next) &&
+  sameConfigFields(prev.config, next.config, BOT_GANTRY_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
   prev.beamShape === next.beamShape;
 
 const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {

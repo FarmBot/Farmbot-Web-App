@@ -160,7 +160,7 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("skips frame model hooks during unrelated config rerenders", () => {
+  it("skips frame and gantry model hooks during unrelated config rerenders", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();
     const wrapper = createRenderer(<Bot {...p} />);
@@ -182,6 +182,7 @@ describe("<Bot />", () => {
     expect(urls).not.toContain(ASSETS.models.crossSlide);
     expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
     expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).not.toContain(ASSETS.models.beltClip);
     unmountRenderer(wrapper);
   });
 
