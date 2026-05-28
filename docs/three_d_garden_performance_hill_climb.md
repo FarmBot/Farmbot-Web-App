@@ -5613,6 +5613,23 @@ position, and callback identity. Expected return: faster 3D preset UI rerenders
 when sibling controls update, without changing hover, press, release, or click
 behavior.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering three
+preset buttons 90 times with stable callbacks, stable hover state, and freshly
+allocated but value-equivalent start positions.
+
+**Before:** 8.998 ms per 90-rerender batch.
+
+**After:** 1.246 ms per 90-rerender batch.
+
+**Change:** 86.2% faster, saving 7.752 ms per realistic three-button UI
+rerender batch.
+
+**Outcome:** Accepted; preset buttons now skip unchanged rendered-control
+rerenders while hover state, callbacks, index, preset label, and start position
+changes still update the same controls and interactions.
+
+**Commit:** `Memoize preset buttons for 86.2% faster rerenders`
+
 ### Idea 314: Memoize `Sky` primitive props
 
 **Description:** Memoize the sky primitive by sun position contents and reuse
