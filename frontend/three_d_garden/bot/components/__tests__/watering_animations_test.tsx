@@ -3,7 +3,8 @@ import { act, render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import { Texture, TextureLoader } from "three";
 import {
-  WateringAnimations, WateringAnimationsProps,
+  WateringAnimations, wateringAnimationsPropsEqual,
+  WateringAnimationsProps,
 } from "../watering_animations";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
@@ -46,5 +47,29 @@ describe("<WateringAnimations />", () => {
     expect(useFrameSpy.mock.calls.length).toBeLessThan(16);
     loadTextureSpy.mockRestore();
     useFrameSpy.mockRestore();
+  });
+
+  it("compares only watering animation inputs that affect rendering", () => {
+    const previous = fakeProps();
+    const unrelatedConfig = fakeProps();
+    unrelatedConfig.getZ = previous.getZ;
+    unrelatedConfig.config.sun = previous.config.sun + 1;
+    expect(wateringAnimationsPropsEqual(previous, unrelatedConfig)).toBeTruthy();
+
+    const waterFlowChanged = fakeProps();
+    waterFlowChanged.waterFlow = false;
+    expect(wateringAnimationsPropsEqual(previous, waterFlowChanged)).toBeFalsy();
+
+    const terrainChanged = fakeProps();
+    terrainChanged.getZ = () => 1;
+    expect(wateringAnimationsPropsEqual(previous, terrainChanged)).toBeFalsy();
+
+    const positionChanged = fakeProps();
+    positionChanged.configPosition.x += 1;
+    expect(wateringAnimationsPropsEqual(previous, positionChanged)).toBeFalsy();
+
+    const routingChanged = fakeProps();
+    routingChanged.config.zGantryOffset += 1;
+    expect(wateringAnimationsPropsEqual(previous, routingChanged)).toBeFalsy();
   });
 });

@@ -20,6 +20,28 @@ export interface WateringAnimationsProps {
   getZ(x: number, y: number): number;
 }
 
+const WATERING_ANIMATION_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "negativeZ",
+  "zGantryOffset",
+];
+
+export const wateringAnimationsPropsEqual = (
+  prev: WateringAnimationsProps,
+  next: WateringAnimationsProps,
+) =>
+  prev.waterFlow === next.waterFlow &&
+  prev.getZ === next.getZ &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  WATERING_ANIMATION_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
 interface WateringAnimationsContentProps extends WateringAnimationsProps {
   waterTexture: Texture | undefined;
 }
@@ -31,7 +53,7 @@ const LocalWateringAnimations = (props: WateringAnimationsProps) => {
     waterTexture={waterTexture} />;
 };
 
-export const WateringAnimations = (props: WateringAnimationsProps) => {
+const WateringAnimationsBase = (props: WateringAnimationsProps) => {
   const sharedWaterTexture = useSharedWaterFlowTexture();
   return sharedWaterTexture
     ? <WateringAnimationsContent
@@ -39,6 +61,11 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
       waterTexture={sharedWaterTexture} />
     : <LocalWateringAnimations {...props} />;
 };
+
+export const WateringAnimations = React.memo(
+  WateringAnimationsBase,
+  wateringAnimationsPropsEqual,
+);
 
 const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, getZ, config } = props;

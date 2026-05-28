@@ -5708,6 +5708,24 @@ tool position, water flow state, terrain lookup, and water-routing fields are
 unchanged. Expected return: faster watering-on rerenders without changing water
 stream curves, mist placement, shared texture usage, or delayed visibility.
 
+**Benchmark:** Direct `WateringAnimations` water-on render with the shipped 16
+streams plus mist, then 90 rerenders where only unrelated `config.sun` changed
+while tool position, terrain lookup, water flow, and water-routing fields stayed
+unchanged.
+
+**Before:** 3.802 ms per 90-rerender batch.
+
+**After:** 1.053 ms per 90-rerender batch.
+
+**Change:** 72.3% faster, saving 2.749 ms per realistic watering-animation
+config-churn batch.
+
+**Outcome:** Accepted; watering animations now skip unrelated config churn while
+water flow, terrain lookup, tool position, and routing geometry changes still
+rerender the same water streams and mist.
+
+**Commit:** `Memoize watering animations for 72.3% faster rerenders`
+
 ### Idea 318: Memoize `MoistureReadings` config churn
 
 **Description:** Memoize moisture reading markers by readings identity,
