@@ -72,21 +72,18 @@ export const getAtlasLayout = (icons: IconSize[]): AtlasLayout => {
 
 export const formatAtlasModule = (layout: AtlasLayout) => {
   const entries = layout.frames.map(frame =>
-    `  "${frame.iconUrl}": {\n`
-    + `    atlasUrl: "${ATLAS_URL}",\n`
-    + `    textureWidth: ${layout.textureWidth},\n`
-    + `    textureHeight: ${layout.textureHeight},\n`
-    + `    x: ${frame.x},\n`
-    + `    y: ${frame.y},\n`
-    + `    width: ${frame.width},\n`
-    + `    height: ${frame.height},\n`
-    + "  },");
+    `  ["${frame.iconUrl}", ${frame.x}, ${frame.y}, `
+    + `${frame.width}, ${frame.height}],`);
 
   return `${generatedHeader}
 
-export const PLANT_ICON_ATLAS = {
+export const PLANT_ICON_ATLAS_URL = "${ATLAS_URL}";
+export const PLANT_ICON_ATLAS_TEXTURE_WIDTH = ${layout.textureWidth};
+export const PLANT_ICON_ATLAS_TEXTURE_HEIGHT = ${layout.textureHeight};
+
+export const PLANT_ICON_ATLAS_FRAMES = [
 ${entries.join("\n")}
-};
+] as const;
 `;
 };
 

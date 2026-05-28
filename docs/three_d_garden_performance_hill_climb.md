@@ -6487,3 +6487,115 @@ entries, including highlighted entries.
 **Outcome:** Rejected without implementation; splitting 80 images is already
 about 0.001 ms per call in the realistic benchmark, leaving no meaningful
 optimization budget.
+
+## Round 67
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 351. Compact the generated plant icon atlas module | Reduce 3D garden JavaScript bytes and parse work without changing icon atlas pixels or lookup behavior | Compare bundled/minified `plant_icon_atlas` bytes and import/lookup timing for the 496-entry atlas | Accepted |
+| 352. Cache clipped plant icon texture variants | Avoid repeated `Texture.clone()` work when plant icon buckets remount with the same atlas texture and icon | Build atlas textures for 20 realistic icon buckets across 5 remount-like passes | Rejected |
+| 353. Avoid inactive plant-spread per-frame mode checks | Reduce steady-state frame CPU when spread overlays are inactive | Measure 60 inactive spread-frame mode checks, matching one second at 60 FPS | Rejected |
+| 354. Stabilize `LoadInGroup` default spring inputs | Avoid avoidable spring input churn from freshly allocated default arrays/scalars | Render the eight load groups across 20 unrelated parent rerenders | Rejected |
+| 355. Precompute plant icon atlas texture transforms | Avoid repeated division/object allocation when resolving icon atlas UVs | Resolve transforms for 20 icon buckets across 20 remount-like passes | Rejected |
+
+### Idea 351: Compact the generated plant icon atlas module
+
+**Description:** Generate the plant icon atlas metadata as compact frame tuples
+with shared atlas URL and texture dimensions, then build the public
+`PLANT_ICON_ATLAS` lookup from those tuples. Expected return: lower 3D garden
+JavaScript bytes and parse work while preserving the same atlas image,
+coordinates, public lookup shape, mutability, and icon texture behavior.
+
+**Benchmark:** Bundled and minified `frontend/three_d_garden/garden/plant_icon_atlas.ts`
+with esbuild, plus 496 generated atlas URL lookups.
+
+**Before:** 34,940 bundled/minified bytes; 0.014 ms per 496 URL lookups.
+
+**After:** 13,513 bundled/minified bytes; 0.007 ms per 496 URL lookups.
+
+**Change:** 61.3% smaller bundled/minified atlas helper, saving 21,427 bytes;
+URL lookup timing also improved by 50.0%, saving 0.007 ms per full-atlas scan.
+
+**Outcome:** Accepted; generated atlas metadata now avoids repeating the same
+atlas URL and texture dimensions in every frame while keeping helper behavior
+and generated icon UVs unchanged.
+
+**Commit:** `Compact plant icon atlas for 61.3% smaller bundle`
+
+### Idea 352: Cache clipped plant icon texture variants
+
+**Description:** Cache atlas-clipped plant icon textures by base texture and
+icon to avoid repeated `Texture.clone()` work when plant icon buckets remount.
+Expected return: faster setup for gardens with many crop-icon buckets.
+
+**Benchmark:** `getPlantIconTexture()` for 20 realistic icon buckets across 5
+remount-like passes.
+
+**Before:** 0.086 ms per 100 texture resolutions.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; current texture clone/setup work
+is below 0.001 ms per icon resolution in this realistic benchmark, so caching
+would add lifecycle complexity without a meaningful runtime payoff.
+
+### Idea 353: Avoid inactive plant-spread per-frame mode checks
+
+**Description:** Avoid checking full map mode on every inactive plant-spread
+frame. Expected return: lower steady-state FPS CPU when spread overlays are not
+visible or interactive.
+
+**Benchmark:** 60 inactive spread-frame mode checks, matching one second at
+60 FPS.
+
+**Before:** 0.060 ms per 60 checks.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the full one-second mode-check
+budget is about six hundredths of a millisecond, too small to justify changing
+mode freshness semantics in frame code.
+
+### Idea 354: Stabilize `LoadInGroup` default spring inputs
+
+**Description:** Reuse default `LoadInGroup` spring input arrays instead of
+allocating equivalent defaults on parent rerenders. Expected return: less
+load-group spring churn during staged 3D load.
+
+**Benchmark:** Eight realistic load groups rendered through 20 unrelated parent
+rerenders.
+
+**Before:** 3.887 ms per 20 parent rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the total load-group rerender
+budget is already under 4 ms across 20 parent updates, and default array reuse
+would only address a small fraction of that cost.
+
+### Idea 355: Precompute plant icon atlas texture transforms
+
+**Description:** Store atlas UV transform values directly or cache them so
+transform lookup avoids division and object allocation. Expected return:
+faster plant icon bucket setup.
+
+**Benchmark:** `getPlantIconTextureTransform()` for 20 icon buckets across 20
+remount-like passes.
+
+**Before:** 0.009 ms per 400 transform lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; transform lookup is effectively
+free at realistic icon-bucket counts, so precomputing UVs would add generated
+metadata with no app-level benefit.

@@ -1,5 +1,8 @@
 import {
-  PLANT_ICON_ATLAS as GENERATED_PLANT_ICON_ATLAS,
+  PLANT_ICON_ATLAS_FRAMES,
+  PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  PLANT_ICON_ATLAS_URL,
 } from "./generated_plant_icon_atlas";
 import { Texture } from "three";
 
@@ -18,8 +21,20 @@ export interface PlantIconTextureTransform {
   repeat: [number, number];
 }
 
-export const PLANT_ICON_ATLAS =
-  GENERATED_PLANT_ICON_ATLAS as Record<string, PlantIconAtlasFrame>;
+export const PLANT_ICON_ATLAS = Object.fromEntries(
+  PLANT_ICON_ATLAS_FRAMES.map(([icon, x, y, width, height]) => [
+    icon,
+    {
+      atlasUrl: PLANT_ICON_ATLAS_URL,
+      textureWidth: PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+      textureHeight: PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+      x,
+      y,
+      width,
+      height,
+    },
+  ]),
+) as Record<string, PlantIconAtlasFrame>;
 
 export const getPlantIconTextureUrl = (icon: string): string =>
   PLANT_ICON_ATLAS[icon]?.atlasUrl || icon;

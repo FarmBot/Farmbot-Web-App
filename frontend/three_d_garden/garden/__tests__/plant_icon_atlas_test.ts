@@ -37,6 +37,16 @@ describe("plant icon atlas helpers", () => {
     });
   });
 
+  it("resolves generated compact atlas frame data", () => {
+    const atlasIcon = "/crops/icons/acorn-squash.avif";
+
+    expect(getPlantIconTextureUrl(atlasIcon)).toEqual("/crops/icons/atlas.avif");
+    expect(getPlantIconTextureTransform(atlasIcon)).toEqual({
+      offset: [0, 0.9375],
+      repeat: [0.0625, 0.0625],
+    });
+  });
+
   it("gets atlas textures per base texture and icon", () => {
     PLANT_ICON_ATLAS[icon] = {
       atlasUrl: "/crops/icons/atlas.avif",
