@@ -5,8 +5,10 @@ import { soilHeightPoint } from "../points/soil_height";
 import { zZero } from "./helpers";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { precomputeTriangles } from "./triangle_functions";
-import { filterMoistureReadings } from "../farm_designer/map/layers";
-import { selectMostRecentPoints } from "../farm_designer/location_info";
+import {
+  filterMoistureReadings,
+} from "../farm_designer/map/layers/sensor_readings/filter_moisture_readings";
+import { selectMostRecentPoints } from "../farm_designer/recent_points";
 import { isUndefined } from "lodash";
 
 export interface FilterMoisturePointsProps {

@@ -39,7 +39,7 @@ import { keyboardEvent } from "../../../__test_support__/fake_html_events";
 import * as lodash from "lodash";
 import { Path } from "../../../internal_urls";
 import * as profile from "../profile";
-import * as groupDetail from "../../../point_groups/group_detail";
+import * as groupDetail from "../../../point_groups/find_group_from_url";
 import { NavigationContext } from "../../../routes_helpers";
 
 const ActualGardenMap = (jest.requireActual("../garden_map")).GardenMap;

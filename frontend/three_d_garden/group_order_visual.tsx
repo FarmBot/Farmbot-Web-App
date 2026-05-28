@@ -5,7 +5,7 @@ import { Config } from "./config";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { sortGroupBy } from "../point_groups/point_group_sort";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
-import { findGroupFromUrl } from "../point_groups/group_detail";
+import { findGroupFromUrl } from "../point_groups/find_group_from_url";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 import { Group, MeshPhongMaterial } from "./components";
 import { Text } from "./elements";

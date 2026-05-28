@@ -3,7 +3,7 @@ import {
   fakeToolSlot,
   fakeWeed,
 } from "../../__test_support__/fake_state/resources";
-import * as groupDetail from "../../point_groups/group_detail";
+import * as groupDetail from "../../point_groups/find_group_from_url";
 import * as criteriaApply from "../../point_groups/criteria/apply";
 import * as pointGroupSort from "../../point_groups/point_group_sort";
 

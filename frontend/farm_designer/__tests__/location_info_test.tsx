@@ -2,8 +2,9 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
-  ImageListItem, ImageListItemProps, selectMostRecentPoints,
+  ImageListItem, ImageListItemProps,
 } from "../location_info";
+import { selectMostRecentPoints } from "../recent_points";
 import { fakeState } from "../../__test_support__/fake_state";
 import { BooleanSetting } from "../../session_keys";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";

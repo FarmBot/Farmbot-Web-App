@@ -1,13 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../interfaces";
-import { initSave } from "../api/crud";
 import { Row, BlurableInput, ColorPicker } from "../ui";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
-import {
-  GenericPointer, WeedPointer,
-} from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
@@ -18,7 +14,6 @@ import { validBotLocationData } from "../util/location";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ListItem } from "../plants/plant_panel";
-import { success } from "../toast/toast";
 import { PlantGrid } from "../plants/grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
@@ -32,6 +27,10 @@ import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
 import { Mode } from "../farm_designer/map/interfaces";
 import { getMode } from "../farm_designer/map/util";
+import { createPoint, CreatePointProps } from "./create_point_action";
+
+export { createPoint };
+export type { CreatePointProps };
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { drawnPoint } = props.resources.consumers.farm_designer;
@@ -42,44 +41,6 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   };
 }
-
-export interface CreatePointProps {
-  navigate: NavigateFunction;
-  dispatch: Function;
-  drawnPoint: DrawnPointPayl;
-}
-
-export const createPoint = (props: CreatePointProps) => {
-  const { dispatch, drawnPoint, navigate } = props;
-  const panel = getMode() == Mode.createWeed ? "weeds" : "points";
-  const body: GenericPointer | WeedPointer = {
-    pointer_type: panel == "weeds" ? "Weed" : "GenericPointer",
-    name: drawnPoint.name ||
-      (panel == "weeds"
-        ? t("Created Weed")
-        : t("Created Point")),
-    meta: {
-      color: drawnPoint.color,
-      created_by: "farm-designer",
-      type: panel == "weeds" ? "weed" : "point",
-      ...(drawnPoint.at_soil_level ? { at_soil_level: "true" } : {}),
-    },
-    x: drawnPoint.cx || 0,
-    y: drawnPoint.cy || 0,
-    z: drawnPoint.z,
-    plant_stage: "active",
-    radius: drawnPoint.r,
-  };
-  dispatch(initSave("Point", body));
-  success(panel == "weeds"
-    ? t("Weed created.")
-    : t("Point created."));
-  dispatch({
-    type: Actions.SET_DRAWN_POINT_DATA,
-    payload: undefined,
-  });
-  navigate(Path.designer(panel));
-};
 
 export const resetDrawnPointDataAction = () => {
   const payload: DrawnPointPayl = {

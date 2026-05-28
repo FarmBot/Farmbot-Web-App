@@ -5,7 +5,7 @@ import { Actions } from "../../constants";
 import { Mode } from "../map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../../redux/interfaces";
-import { findGroupFromUrl } from "../../point_groups/group_detail";
+import { findGroupFromUrl } from "../../point_groups/find_group_from_url";
 import { TaggedPoint } from "farmbot";
 import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";

@@ -7327,3 +7327,248 @@ uses from the emitted 3D bundle, so the change has no user-facing performance
 effect.
 
 **Commit:** None
+
+## Round 74
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 386. Extract 3D-used pure helpers and click action from UI-heavy modules | Reduce 3D JavaScript load/parse by keeping helper-only imports out of designer panels, point-creation panels, and all-layer barrels | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and emitted import graph | Accepted |
+| 387. Split sequence visualization Lua runner out of the default 3D bundle with idle preload | Reduce default 3D JavaScript load while preserving sequence visualization after startup | Emitted bytes for `fengari-web` and first-use visualization behavior | Rejected |
+| 388. Split optional 3D stats overlays out of the default scene module | Reduce default 3D JavaScript load by isolating `Stats`/`StatsGl` debug helpers | Emitted bytes for stats modules and debug-first-use behavior | Rejected |
+| 389. Split the pure `ThreeDGarden` canvas from the 3D toggle UI after helper extractions | Reduce 3D map JavaScript load by avoiding toggle/help/settings UI imports in the canvas path | Full bundled/minified map/canvas entry bytes | Rejected |
+| 390. Replace 3D-needed image filter imports with a pure helper module | Reduce 3D JavaScript load by avoiding 2D image-layer UI paths while preserving image filtering behavior | Full bundled/minified 3D entry bytes and image filter behavior | Rejected |
+
+### Idea 386: Extract 3D-used pure helpers and click action from UI-heavy modules
+
+**Description:** Move tiny 3D-used helpers out of UI-heavy modules:
+`findGroupFromUrl` from the group-detail panel, `selectMostRecentPoints` from
+the location-info panel, `filterMoistureReadings` from the all-map-layers
+barrel, and `createPoint` from the point-creation panel. Expected return:
+lower 3D JavaScript load and parse cost while preserving group-order,
+moisture-map, interpolation-map, and click-to-create behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild, with the same asset externals used in prior rounds.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 3,675,078 bytes.
+
+**Change:** 12.8% smaller bundled/minified 3D entry, saving 541,024 bytes.
+
+**Outcome:** Accepted; the 3D bundle no longer pulls full designer panels,
+point-creation UI, or all 2D map layers for pure helper/action code, and the
+same helper behavior remains covered through existing focused tests.
+
+**Commit:** `Extract 3D helper imports for 12.8% smaller bundle`
+
+### Idea 387: Split sequence visualization Lua runner out of the default 3D bundle with idle preload
+
+**Description:** Lazy-load the Lua-backed sequence visualization runner from
+`Visualization`, potentially preloading it after initial 3D load. Expected
+return: lower default 3D JavaScript load when no sequence is visualized.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `fengari-web` emits 223,729 bytes; `frontend/demo/lua_runner/lua.ts`
+emits 23,758 bytes; `frontend/demo/lua_runner/run.ts` emits 11,743 bytes.
+Together they account for 259,230 bytes, or 7.1% of the 3,675,078-byte 3D
+entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even removing the full Lua
+runner path would miss the 10% bundle threshold, and lazy loading could delay
+the sequence path when a visualized sequence is already active.
+
+**Commit:** None
+
+### Idea 388: Split optional 3D stats overlays out of the default scene module
+
+**Description:** Move `Stats` and `StatsGl` debug overlays behind a lazy
+boundary so default sessions do not load stats helpers. Expected return: lower
+default JavaScript load while preserving stats when enabled.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `stats-gl` emits 6,519 bytes and Drei `Stats` emits 465 bytes,
+for 6,984 bytes total, or 0.2% of the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the maximum possible saving is
+far below the 10% threshold and only affects an optional debug overlay.
+
+**Commit:** None
+
+### Idea 389: Split the pure `ThreeDGarden` canvas from the 3D toggle UI after helper extractions
+
+**Description:** Move the canvas-only `ThreeDGarden` export to its own module
+so `ThreeDGardenMap` can avoid importing toggle/help/settings UI code.
+Expected return: lower 3D map bundle load.
+
+**Benchmark:** Full bundled/minified `frontend/farm_designer/three_d_garden_map.tsx`
+after Idea 386.
+
+**Before:** 3,678,934 bytes. The current map bundle attributes only 870 bytes
+to `frontend/three_d_garden/index.tsx`, 32 bytes to `LayerToggle`, and 729
+bytes to `settings/three_d_settings.tsx`; `Help` is already tree-shaken out.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the remaining toggle-related
+emitted bytes are far below a meaningful load-time budget and below the 10%
+threshold.
+
+**Commit:** None
+
+### Idea 390: Replace 3D-needed image filter imports with a pure helper module
+
+**Description:** Move the image filtering helpers used by 3D soil texture
+setup out of the 2D image-layer module. Expected return: lower 3D JavaScript
+load while preserving image filtering behavior.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `frontend/farm_designer/map/layers/images/image_layer.tsx` emits
+1,453 bytes and `frontend/photos/photo_filter_settings/util.ts` emits 765
+bytes in the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the maximum possible emitted
+saving is about 2.2 KB, far below the 10% threshold and not worth another
+helper split.
+
+**Commit:** None
+
+## Round 75
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 391. Import 3D toggle `Help` without the shared UI barrel | Reduce 3D JavaScript load by avoiding unrelated UI barrel exports while keeping the same Help/Markdown UI | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after direct-import prototype | Rejected |
+| 392. Use a local 3D toggle button instead of shared `LayerToggle` | Reduce 3D JavaScript load from map-layer toggle/default-value dependencies while preserving the same visible toggle | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after local-toggle prototype | Rejected |
+| 393. Lazy-load sequence visualization as a whole | Reduce default 3D JavaScript load when no sequence visualization is active | Import-graph cut of `GardenModel -> Visualization` in the current emitted bundle | Rejected |
+| 394. Lazy-load group-order visualization | Reduce default 3D JavaScript load when not on a group/zone route | Import-graph cut of `GardenModel -> GroupOrderVisual` in the current emitted bundle | Rejected |
+| 395. Replace point-group criteria `moment` usage for the 3D path | Reduce 3D JavaScript load by avoiding `moment` from group-order criteria matching | Emitted-byte attribution for `moment` and criteria modules in the current bundle | Rejected |
+
+### Idea 391: Import 3D toggle `Help` without the shared UI barrel
+
+**Description:** Change the 3D toggle from `../ui` barrel imports to direct
+`Help`, `Markdown`, and `Popover` module imports. Expected return: avoid
+pulling unrelated UI exports into the 3D entry while preserving the same Help
+popover and markdown behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after a direct-import prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,675,085 bytes.
+
+**Change:** 0.0002% larger, adding 7 bytes.
+
+**Outcome:** Rejected and rolled back; tree shaking already removes the
+unrelated UI barrel exports, and direct imports made the emitted output
+slightly larger.
+
+**Commit:** None
+
+### Idea 392: Use a local 3D toggle button instead of shared `LayerToggle`
+
+**Description:** Replace the 3D toggle's `LayerToggle` use with a local button
+that renders the same label, colors, classes, title, and click behavior.
+Expected return: avoid map-layer toggle and default-value helper code in the
+3D entry.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after a local-toggle prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,673,771 bytes.
+
+**Change:** 0.04% smaller, saving 1,307 bytes.
+
+**Outcome:** Rejected and rolled back; the byte saving is far below the 10%
+threshold and not enough to justify duplicating shared toggle markup.
+
+**Commit:** None
+
+### Idea 393: Lazy-load sequence visualization as a whole
+
+**Description:** Move the whole sequence visualization component behind a lazy
+boundary instead of only considering the Lua runner. Expected return: lower
+default load when no sequence is visualized.
+
+**Benchmark:** Import-graph cut of `GardenModel -> Visualization` in the
+current emitted bundle, measuring modules that become unreachable from the 3D
+entry.
+
+**Before:** 3,675,078 bytes; `Visualization` itself emits 1,319 bytes.
+
+**After:** Not attempted.
+
+**Change:** Maximum graph-cut saving is 1,319 bytes, or 0.04%.
+
+**Outcome:** Rejected without implementation; almost all visualization
+dependencies are still reachable through other current paths, and a lazy
+boundary would risk first-use delay for active sequence visualization.
+
+**Commit:** None
+
+### Idea 394: Lazy-load group-order visualization
+
+**Description:** Move group-order visualization behind a lazy boundary so
+default non-group routes do not load it. Expected return: lower default 3D
+JavaScript load.
+
+**Benchmark:** Import-graph cut of `GardenModel -> GroupOrderVisual` in the
+current emitted bundle, measuring modules that become unreachable from the 3D
+entry.
+
+**Before:** 3,675,078 bytes; `GroupOrderVisual` itself emits 1,962 bytes.
+
+**After:** Not attempted.
+
+**Change:** Maximum graph-cut saving is 1,962 bytes, or 0.05%.
+
+**Outcome:** Rejected without implementation; the emitted saving is far below
+the threshold, and a lazy boundary would only affect route-specific optional
+visualization.
+
+**Commit:** None
+
+### Idea 395: Replace point-group criteria `moment` usage for the 3D path
+
+**Description:** Replace `moment` in point-group criteria matching with native
+date logic, or split a 3D-only criteria helper. Expected return: lower 3D
+JavaScript load from group-order criteria matching.
+
+**Benchmark:** Emitted-byte attribution in the current bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `moment` emits 62,698 bytes, and
+`frontend/point_groups/criteria/apply.ts` emits 1,005 bytes, for at most 63,703
+bytes, or 1.7% of the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even the ideal emitted-byte
+saving misses the 10% threshold, and replacing date comparison behavior in
+group criteria risks subtle behavior drift.
+
+**Commit:** None

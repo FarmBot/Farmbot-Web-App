@@ -6,7 +6,7 @@ import {
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isUndefined, range, round } from "lodash";
-import { selectMostRecentPoints } from "../../../location_info";
+import { selectMostRecentPoints } from "../../../recent_points";
 import { betterCompact } from "../../../../util";
 import { t } from "../../../../i18next_wrapper";
 import { BlurableInput, ToggleButton } from "../../../../ui";

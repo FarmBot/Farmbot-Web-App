@@ -32,7 +32,7 @@ import { Mesh as MeshType, Group as GroupType, Color } from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
 import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
-import { createPoint } from "../../../points/create_points";
+import { createPoint } from "../../../points/create_point_action";
 import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";

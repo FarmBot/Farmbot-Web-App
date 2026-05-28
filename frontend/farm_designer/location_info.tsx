@@ -47,6 +47,7 @@ import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
 import { DrawnPointPayl } from "./interfaces";
 import { getFbosConfig } from "../resources/getters";
+import { selectMostRecentPoints } from "./recent_points";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -237,21 +238,6 @@ function groupItemsByLocation<T extends Item>(
     }
   });
   return byLocation;
-}
-
-export function selectMostRecentPoints
-  <T extends (TaggedGenericPointer | TaggedSensorReading)>(points: T[]) {
-  const byLocation = new Map<string, T>();
-  points.map(point => {
-    const { x, y, updated_at } = point.body;
-    if (isUndefined(x) || isUndefined(y)) { return; }
-    const key = `${round(x, -1)}:${round(y, -1)}`;
-    const previous = byLocation.get(key);
-    if (!previous || (updated_at || "") >= (previous.body.updated_at || "")) {
-      byLocation.set(key, point);
-    }
-  });
-  return Array.from(byLocation.values());
 }
 
 interface ItemListWrapperProps {
