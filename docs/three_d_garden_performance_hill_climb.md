@@ -12420,3 +12420,125 @@ request-byte increase, to reduce draw calls and texture requests.
 loading the large atlas earlier.
 
 **Commit:** None
+
+## Round 114
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 586. Merge point marker and radius color buckets by alpha | Reduce point draw calls while preserving per-point colors and saved/unsaved opacity | Fewer instanced draw calls | 50 points across 8 colors and two saved states | Accepted |
+| 587. Replace starter-tray nested callback loops | Reduce greenhouse tray seedling matrix update work | Faster starter tray matrix update | Two greenhouse trays with 140 seedling cells total | Rejected |
+| 588. Skip suction animation frame work when idle | Reduce per-frame vacuum animation JavaScript | Lower frame callback work | Four suction clouds for the mounted seeder vacuum animation | Rejected |
+| 589. Avoid FPS probe frame callback when reporting is disabled | Reduce default per-frame bookkeeping | Lower default frame callback work | 300 default FPS probe frames with reporting disabled | Rejected |
+| 590. Memoize watering stream curve construction | Reduce water-flow mount setup | Faster watering animation setup | 16 water stream cubic curves for one watering animation mount | Rejected |
+
+### Idea 586: Merge point marker and radius color buckets by alpha
+
+**Description:** Generic point instances were bucketed by color and saved-state
+opacity. This preserved colors but created a marker instanced mesh and a radius
+instanced mesh for every color/alpha pair. Merge buckets by alpha and use
+per-instance colors for both marker and radius meshes.
+
+**Benchmark:** A dense point-annotation map with 50 points across 8 colors and
+two saved states. Before implementation, this shape requires 16 color/alpha
+buckets, with a marker mesh and radius mesh for each bucket. After
+implementation, it requires two alpha groups, again with marker and radius
+meshes.
+
+**Before:** 32 instanced draw calls for point markers and radius rings.
+
+**After:** 4 instanced draw calls for point markers and radius rings.
+
+**Change:** 87.50% fewer point instanced draw calls, saving 28 draw calls in
+the 50-point benchmark.
+
+**Outcome:** Accepted. Point colors are still per-point via instance colors,
+and saved/unsaved opacity remains separated by alpha group.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/point_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D point draws by 87.5%`
+
+### Idea 587: Replace starter-tray nested callback loops
+
+**Description:** Greenhouse starter trays update seedling billboard matrices
+with nested `.forEach()` calls. A direct indexed loop could avoid callback
+overhead during camera-facing seedling updates.
+
+**Benchmark:** Two greenhouse trays with 70 seedling cells each, matching the
+current Greenhouse scene. Repetitions were used only to stabilize timing; each
+sample represented one matrix update.
+
+**Before:** 0.001084 ms median, 0.003334 ms p95 for 140 seedling cell
+positions.
+
+**After:** Simulated indexed loop: 0.001375 ms median, 0.001792 ms p95.
+
+**Change:** Median time was 26.85% slower, though p95 was lower.
+
+**Outcome:** Rejected before code changes. The realistic case did not improve
+median runtime and the absolute cost is already about one microsecond.
+
+**Commit:** None
+
+### Idea 588: Skip suction animation frame work when idle
+
+**Description:** The seeder vacuum suction animation updates four cloud refs
+each frame while vacuum is enabled. Check whether additional frame gating would
+save meaningful frame time.
+
+**Benchmark:** Four suction clouds, matching the mounted seeder vacuum
+animation. Repetitions were used only to stabilize timing; each sample
+represented one frame.
+
+**Before:** 0.001208 ms median, 0.001458 ms p95.
+
+**After:** Best-case empty callback: 0.000083 ms median, 0.000125 ms p95.
+
+**Change:** 93.13% faster in the best case, saving 0.001125 ms per frame.
+
+**Outcome:** Rejected before code changes. The animation is already visible
+only when vacuum is enabled, and the absolute frame-time savings are too small.
+
+**Commit:** None
+
+### Idea 589: Avoid FPS probe frame callback when reporting is disabled
+
+**Description:** `FPSProbe` always registers a frame callback so it can update
+`window.__fps` and optionally report scene metrics. Check whether avoiding this
+default callback would provide meaningful frame-time savings.
+
+**Benchmark:** 300 default FPS probe frame callbacks with reporting disabled.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000125 ms median, 0.000167 ms p95.
+
+**After:** Best-case empty callback: 0.000083 ms median, 0.000084 ms p95.
+
+**Change:** 33.60% faster in the best case, saving 0.000042 ms per frame.
+
+**Outcome:** Rejected before code changes. The absolute frame-time savings are
+below a meaningful threshold, and `window.__fps` remains useful for diagnostics.
+
+**Commit:** None
+
+### Idea 590: Memoize watering stream curve construction
+
+**Description:** Watering animation mount builds 16 cubic curves for the water
+streams. Memoizing or precomputing the curve inputs could reduce setup when
+water flow starts.
+
+**Benchmark:** Construct the 16 `CubicBezierCurve3` paths used by one mounted
+watering animation. Repetitions were used only to stabilize timing.
+
+**Before:** 0.005000 ms median, 0.009292 ms p95.
+
+**After:** Not implemented. Even a perfect memoized setup would save at most
+0.005000 ms per water-flow mount in this benchmark.
+
+**Change:** Best-case 100% setup reduction, but only 0.005000 ms absolute.
+
+**Outcome:** Rejected before code changes. The setup cost is too small and the
+animation only mounts when water flow is active.
+
+**Commit:** None

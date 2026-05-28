@@ -120,7 +120,7 @@ describe("<Point />", () => {
     expect(meshes[0].props.args[2]).toEqual(2);
   });
 
-  it("shares merged point marker geometry", () => {
+  it("uses point marker instance colors", () => {
     const p = fakeInstanceProps();
     p.points[1].body.meta.color = "blue";
     const wrapper = createRenderer(<PointInstances {...p} />);
@@ -128,20 +128,23 @@ describe("<Point />", () => {
     const markers = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh" &&
       node.props.name == "marker");
-    expect(markers.length).toEqual(2);
-    expect(markers[0].props.args[0]).toBe(markers[1].props.args[0]);
+    expect(markers.length).toEqual(1);
+    expect(markers[0].findAll(node =>
+      node.props.vertexColors).length).toBeGreaterThan(0);
   });
 
   it("renders mirrored point instance positions", () => {
     const markerRef = {
       current: {
         setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
         instanceMatrix: { needsUpdate: false },
       },
     };
     const ringRef = {
       current: {
         setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
         instanceMatrix: { needsUpdate: false },
       },
     };
@@ -165,7 +168,7 @@ describe("<Point />", () => {
     useRefSpy.mockRestore();
   });
 
-  it("shares point radius geometry", () => {
+  it("uses point radius instance colors", () => {
     const p = fakeInstanceProps();
     p.points[1].body.meta.color = "blue";
     const wrapper = createRenderer(<PointInstances {...p} />);
@@ -173,8 +176,9 @@ describe("<Point />", () => {
     const rings = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh" &&
       node.props.name == "marker-radius");
-    expect(rings.length).toEqual(2);
-    expect(rings[0].props.args[0]).toBe(rings[1].props.args[0]);
+    expect(rings.length).toEqual(1);
+    expect(rings[0].findAll(node =>
+      node.props.vertexColors).length).toBeGreaterThan(0);
   });
 
   it("skips hidden point markers", () => {

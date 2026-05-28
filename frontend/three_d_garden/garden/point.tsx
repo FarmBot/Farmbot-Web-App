@@ -7,6 +7,7 @@ import {
 import { Cylinder, Sphere, Torus } from "@react-three/drei";
 import {
   BufferGeometry,
+  Color,
   CylinderGeometry,
   DoubleSide,
   InstancedMesh as InstancedMeshType,
@@ -127,8 +128,7 @@ interface PointInstance {
   radius: number;
 }
 
-interface PointInstanceBucket {
-  color: string | undefined;
+interface PointInstanceGroup {
   alpha: number;
   points: PointInstance[];
   ringPoints: PointInstance[];
@@ -145,19 +145,16 @@ export interface PointInstancesProps {
 const pointAlpha = (point: TaggedGenericPointer) =>
   point.specialStatus !== SpecialStatus.SAVED ? 0.5 : 1;
 
-const pointBucketKey = (point: TaggedGenericPointer) =>
-  `${point.body.meta.color || ""}-${pointAlpha(point)}`;
-
-const getPointInstanceBuckets = (
+const getPointInstanceGroups = (
   points: TaggedGenericPointer[],
   config: Config,
   getZ: (x: number, y: number) => number,
 ) => {
   const getWorldPosition = getWorldPositionFunc(config);
-  const buckets: Record<string, PointInstanceBucket> = {};
+  const groups: Record<string, PointInstanceGroup> = {};
   points.forEach(point => {
     const alpha = pointAlpha(point);
-    const key = pointBucketKey(point);
+    const key = "" + alpha;
     const instance = {
       point,
       position: getWorldPosition({
@@ -167,24 +164,23 @@ const getPointInstanceBuckets = (
       }),
       radius: point.body.radius,
     };
-    buckets[key] ||= {
-      color: point.body.meta.color,
+    groups[key] ||= {
       alpha,
       points: [],
       ringPoints: [],
     };
-    buckets[key].points.push(instance);
-    if (point.body.radius > 0) { buckets[key].ringPoints.push(instance); }
+    groups[key].points.push(instance);
+    if (point.body.radius > 0) { groups[key].ringPoints.push(instance); }
   });
-  return Object.values(buckets);
+  return Object.values(groups);
 };
 
 interface PointInstanceBucketProps extends PointInstancesProps {
-  bucket: PointInstanceBucket;
+  group: PointInstanceGroup;
 }
 
 const PointBucketInstances = (props: PointInstanceBucketProps) => {
-  const { bucket, dispatch, visible } = props;
+  const { group, dispatch, visible } = props;
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
   const markerRef = React.useRef<InstancedMeshType>(null);
@@ -197,23 +193,36 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const noScale = React.useMemo(() => new Vector3(1, 1, 1), []);
   const ringScale = React.useMemo(() => new Vector3(), []);
+  const tempColor = React.useMemo(() => new Color(), []);
 
   React.useEffect(() => {
     const markerMesh = markerRef.current;
     if (!markerMesh?.setMatrixAt) { return; }
-    bucket.points.forEach((instance, index) => {
+    group.points.forEach((instance, index) => {
       const [x, y, z] = instance.position;
       tempPosition.set(x, y, z);
       tempMatrix.compose(tempPosition, noRotation, noScale);
       markerMesh.setMatrixAt(index, tempMatrix);
+      markerMesh.setColorAt(index,
+        tempColor.set(instance.point.body.meta.color || "white"));
     });
     markerMesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.points, noRotation, noScale, tempMatrix, tempPosition]);
+    if (markerMesh.instanceColor) {
+      markerMesh.instanceColor.needsUpdate = true;
+    }
+  }, [
+    group.points,
+    noRotation,
+    noScale,
+    tempColor,
+    tempMatrix,
+    tempPosition,
+  ]);
 
   React.useEffect(() => {
     const ringMesh = ringRef.current;
     if (!ringMesh?.setMatrixAt) { return; }
-    bucket.ringPoints.forEach((instance, index) => {
+    group.ringPoints.forEach((instance, index) => {
       const [x, y, z] = instance.position;
       tempPosition.set(x, y, z);
       ringScale.set(
@@ -223,9 +232,21 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       );
       tempMatrix.compose(tempPosition, noRotation, ringScale);
       ringMesh.setMatrixAt(index, tempMatrix);
+      ringMesh.setColorAt(index,
+        tempColor.set(instance.point.body.meta.color || "white"));
     });
     ringMesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.ringPoints, noRotation, ringScale, tempMatrix, tempPosition]);
+    if (ringMesh.instanceColor) {
+      ringMesh.instanceColor.needsUpdate = true;
+    }
+  }, [
+    group.ringPoints,
+    noRotation,
+    ringScale,
+    tempColor,
+    tempMatrix,
+    tempPosition,
+  ]);
 
   const onClick = (instances: PointInstance[]) =>
     (event: ThreeEvent<MouseEvent>) => {
@@ -244,32 +265,32 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
     <InstancedMesh
       ref={markerRef}
       name={"marker"}
-      args={[markerGeometry, undefined, bucket.points.length]}
+      args={[markerGeometry, undefined, group.points.length]}
       // eslint-disable-next-line no-null/no-null
       dispose={null}
       visible={visible}
-      onClick={onClick(bucket.points)}
+      onClick={onClick(group.points)}
       renderOrder={RenderOrder.default}>
       <MeshPhongMaterial
-        color={bucket.color}
         side={DoubleSide}
         transparent={true}
-        opacity={1 * bucket.alpha} />
+        opacity={1 * group.alpha}
+        vertexColors={true} />
     </InstancedMesh>
-    {bucket.ringPoints.length > 0 &&
+    {group.ringPoints.length > 0 &&
       <InstancedMesh
         ref={ringRef}
         name={"marker-radius"}
-        args={[radiusGeometry, undefined, bucket.ringPoints.length]}
+        args={[radiusGeometry, undefined, group.ringPoints.length]}
         // eslint-disable-next-line no-null/no-null
         dispose={null}
         visible={visible}
-        onClick={onClick(bucket.ringPoints)}
+        onClick={onClick(group.ringPoints)}
         renderOrder={RenderOrder.default}>
         <MeshPhongMaterial
-          color={bucket.color}
           transparent={true}
-          opacity={0.5 * bucket.alpha} />
+          opacity={0.5 * group.alpha}
+          vertexColors={true} />
       </InstancedMesh>}
   </>;
 };
@@ -300,15 +321,15 @@ export const PointInstances = React.memo((props: PointInstancesProps) => {
 }, pointInstancesPropsEqual);
 
 const VisiblePointInstances = (props: PointInstancesProps) => {
-  const buckets = React.useMemo(
-    () => getPointInstanceBuckets(props.points, props.config, props.getZ),
+  const groups = React.useMemo(
+    () => getPointInstanceGroups(props.points, props.config, props.getZ),
     [props.points, props.config, props.getZ]);
   return <>
-    {buckets.map(bucket =>
+    {groups.map(group =>
       <PointBucketInstances
-        key={`${bucket.color || ""}-${bucket.alpha}`}
+        key={group.alpha}
         {...props}
-        bucket={bucket} />)}
+        group={group} />)}
   </>;
 };
 
