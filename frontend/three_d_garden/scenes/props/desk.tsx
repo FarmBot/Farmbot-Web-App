@@ -20,7 +20,19 @@ const deskOffset = 800;
 const deskLegWidth = 50;
 const deskWoodDarkness = "#666";
 
-export const Desk = (props: DeskProps) => {
+const DESK_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "desk",
+];
+
+export const deskPropsEqual = (prev: DeskProps, next: DeskProps) =>
+  prev.activeFocus === next.activeFocus &&
+  DESK_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
+
+const DeskBase = (props: DeskProps) => {
   if (!props.config.desk) { return <></>; }
 
   return <EnabledDesk {...props} />;
@@ -117,3 +129,5 @@ const EnabledDesk = (props: DeskProps) => {
     </Group>
   </FocusVisibilityGroup>;
 };
+
+export const Desk = React.memo(DeskBase, deskPropsEqual);

@@ -5492,12 +5492,44 @@ bed-placement fields so unrelated config churn skips the panel, cell, and wire
 subtree. Expected return: faster solar-on scene rerenders without changing
 focus fade behavior, panel geometry, wiring, or placement.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering solar
+enabled 90 times while focus stayed stable and only an unrelated config field
+changed.
+
+**Before:** 2.396 ms per 90-rerender batch.
+
+**After:** 1.048 ms per 90-rerender batch with the attempted comparator.
+
+**Change:** 56.3% faster, saving 1.348 ms per realistic solar-on config-churn
+batch.
+
+**Outcome:** Rejected and rolled back; the percentage improvement qualified,
+but the absolute saving was too small for another exported comparator on a
+less common scene prop.
+
 ### Idea 309: Memoize `Desk` relevant config fields
 
 **Description:** Add a relevant-field comparator around the desk prop so
 unrelated config churn skips the desk, laptop, and textured material subtree.
 Expected return: faster scene-prop rerenders while desk visibility, focus
 visibility, bed dimensions, and ground placement still update.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+desk prop 90 times while focus stayed stable and only an unrelated config field
+changed.
+
+**Before:** 15.666 ms per 90-rerender batch.
+
+**After:** 1.097 ms per 90-rerender batch.
+
+**Change:** 93.0% faster, saving 14.569 ms per realistic desk-on config-churn
+batch.
+
+**Outcome:** Accepted; desk now skips unrelated config churn while desk
+visibility, focus visibility, bed dimensions, and ground placement still
+update the same desk/laptop subtree.
+
+**Commit:** `Memoize desk prop for 93.0% faster rerenders`
 
 ### Idea 310: Memoize `People` relevant config fields and people data
 
