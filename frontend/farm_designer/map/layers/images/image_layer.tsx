@@ -3,7 +3,7 @@ import { MapTransformProps } from "../../interfaces";
 import { CameraCalibrationData, DesignerState } from "../../../interfaces";
 import { TaggedImage } from "farmbot";
 import { cameraZCheck, MapImage } from "./map_image";
-import { reverse, cloneDeep, some } from "lodash";
+import { some } from "lodash";
 import { equals } from "../../../../util";
 import { BooleanSetting, StringSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
@@ -37,7 +37,7 @@ export const filterImages = (props: FilterImagesProps): TaggedImagePlus[] => {
   const hoveredImage: TaggedImage | undefined =
     images.filter(img => hoveredMapImage && img.body.id == hoveredMapImage
       || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];
-  const filteredImages = reverse(cloneDeep(images))
+  const filteredImages = images.slice().reverse()
     .filter(img =>
       (rangeOverride && shownImages.includes(img.body.id || 0))
       || imageInRange(img, imageFilterBegin, imageFilterEnd))

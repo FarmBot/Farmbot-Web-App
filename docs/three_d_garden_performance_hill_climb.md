@@ -9431,3 +9431,116 @@ did not produce a reliable performance win and showed unfavorable secondary
 metrics.
 
 **Commit:** None
+
+## Round 91
+
+### Idea 471: Remove deep image cloning from 3D soil texture image filtering
+
+**Description:** Replace the `cloneDeep` plus mutating lodash reverse in
+`filterImages()` with a non-mutating shallow reverse. The 3D soil texture path
+only reads image objects and returns shallow highlighted wrappers, so deep
+cloning every image is unnecessary load work for photo-heavy gardens.
+
+**Benchmark:** Realistic 300 camera-image filter pass, matching a photo-heavy
+garden texture setup without inflating call counts.
+
+**Before:** 2.045 ms median; 2.278 ms p95.
+
+**After:** 0.0093 ms median; 0.0116 ms p95.
+
+**Change:** 99.6% faster; about 2.036 ms saved per 300-image texture filter.
+The minified 3D entry bundle changed from 3,620,296 bytes to 3,620,281 bytes.
+
+**Outcome:** Accepted. The absolute win is meaningful for photo-heavy gardens,
+the code is simpler, source image order remains unchanged, and the rendered
+reverse order is preserved.
+
+**Commit:** `Optimize 3D garden image filtering by 99.6%`
+
+### Idea 472: Add a custom memo comparator to `ThreeDGarden`
+
+**Description:** Trial a conservative `React.memo` comparator for
+`ThreeDGarden` that shallow-compares config/designer values, bot position, and
+data-array references to reduce the high wrapper render count seen during demo
+load.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true`, comparing 12-second load render counters and scene
+metrics.
+
+**Before:** Three baseline runs showed `render.ThreeDGarden` at 174, 174, and
+174, with `render.GardenModel` around 7 and `soilTextureRenders: 1`.
+
+**After:** Trial runs showed `render.ThreeDGarden` at 173, 174, and 174, while
+`render.GardenModel` increased to 9, 9, and 11.
+
+**Change:** No meaningful `ThreeDGarden` render-count improvement; secondary
+render count regressed.
+
+**Outcome:** Rejected and rolled back. The high wrapper count is driven by real
+prop changes outside the comparator's safe skip surface, and the added
+comparison code did not improve runtime behavior.
+
+**Commit:** None
+
+### Idea 473: Replace hovered-image `filter()[0]` with `find()`
+
+**Description:** Consider replacing the hovered-image lookup inside
+`filterImages()` with `find()` to avoid allocating a temporary filtered array.
+
+**Benchmark:** Realistic 300-image hovered-image lookup with no hovered image,
+matching the common default photo-layer state.
+
+**Before:** 0.00058 ms median; 0.00204 ms p95.
+
+**After:** Not implemented. The equivalent `find()` path measured 0.00038 ms
+median; 0.00050 ms p95.
+
+**Change:** Potential 35.8% faster, but only about 0.00021 ms saved.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is far too small to matter in a realistic texture setup.
+
+**Commit:** None
+
+### Idea 474: Rewrite plant icon bucketing with direct loops
+
+**Description:** Consider replacing `Object.entries(...).map`, `forEach`,
+`Object.values`, `filter`, and `map` in plant icon instance bucketing with direct
+loops.
+
+**Benchmark:** Realistic 200-plant, 8-icon garden icon-bucketing pass.
+
+**Before:** 0.00325 ms median; 0.00583 ms p95.
+
+**After:** Not implemented. The direct-loop equivalent measured 0.00113 ms
+median; 0.00225 ms p95.
+
+**Change:** Potential 65.4% faster, but only about 0.00213 ms saved per setup.
+
+**Outcome:** Rejected before code changes. The existing code is clear and the
+realistic absolute win is too small to justify changing it.
+
+**Commit:** None
+
+### Idea 475: Cache `get3DConfigValueFunction()` indexes by FarmwareEnv array
+
+**Description:** Consider caching the indexed 3D config map used by
+`get3DConfigValueFunction()` so repeated `FarmDesigner` renders do not rebuild
+the same FarmwareEnv lookup table.
+
+**Benchmark:** 175 function creations over a realistic 50-record FarmwareEnv
+array, matching the observed demo map-render count.
+
+**Before:** 0.112 ms median; 0.155 ms p95.
+
+**After:** Not implemented. A WeakMap-cache equivalent measured 0.010 ms
+median; 0.018 ms p95.
+
+**Change:** Potential 90.8% faster, but only about 0.101 ms saved across 175
+renders.
+
+**Outcome:** Rejected before code changes. The percentage was high, but the
+absolute savings across the full observed load window were not meaningful.
+
+**Commit:** None
