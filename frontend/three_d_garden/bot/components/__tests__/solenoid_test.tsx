@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
-import { Solenoid, SolenoidProps } from "../solenoid";
+import { Solenoid, SolenoidProps, solenoidPropsEqual } from "../solenoid";
 import {
   actRenderer,
   createRenderer,
@@ -41,5 +41,31 @@ describe("<Solenoid />", () => {
     const after = wrapper.root.findAllByType(WaterTube)
       .map(node => node.props.tubePath);
     expect(after).toEqual(before);
+  });
+
+  it("compares only solenoid inputs that affect rendering", () => {
+    const previous = fakeProps();
+    expect(solenoidPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    })).toBeTruthy();
+    expect(solenoidPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, waterFlow: !previous.config.waterFlow },
+    })).toBeFalsy();
+    expect(solenoidPropsEqual(previous, {
+      ...previous,
+      configPosition: {
+        ...previous.configPosition,
+        z: previous.configPosition.z + 1,
+      },
+    })).toBeFalsy();
+    expect(solenoidPropsEqual(previous, {
+      ...previous,
+      config: {
+        ...previous.config,
+        zGantryOffset: previous.config.zGantryOffset + 1,
+      },
+    })).toBeFalsy();
   });
 });

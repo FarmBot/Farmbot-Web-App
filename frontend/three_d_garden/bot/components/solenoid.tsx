@@ -20,7 +20,28 @@ export interface SolenoidProps {
   configPosition: PositionConfig;
 }
 
-export const Solenoid = (props: SolenoidProps) => {
+const SOLENOID_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "negativeZ",
+  "waterFlow",
+  "zGantryOffset",
+];
+
+export const solenoidPropsEqual = (
+  prev: SolenoidProps,
+  next: SolenoidProps,
+) =>
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  SOLENOID_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const SolenoidBase = (props: SolenoidProps) => {
   const { config } = props;
   const {
     bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, columnLength,
@@ -147,3 +168,5 @@ export const Solenoid = (props: SolenoidProps) => {
       radialSegments={8} />
   </Group>;
 };
+
+export const Solenoid = React.memo(SolenoidBase, solenoidPropsEqual);

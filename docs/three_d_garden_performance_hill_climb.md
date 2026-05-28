@@ -5800,3 +5800,62 @@ accepted comparators.
 
 **Outcome:** Rejected and rolled back; the extra wrapper comparator did not
 improve the real Bot rerender path and only duplicated child-level memo logic.
+
+## Round 61
+
+### Idea 321: Memoize `Solenoid` relevant inputs
+
+**Description:** Add a relevant-field comparator around the solenoid and water
+tube assembly so unrelated config churn skips the four tube wrappers and model
+subtree when bot position, water flow, and tube-routing dimensions are
+unchanged. Expected return: faster Bot rerenders without changing solenoid
+placement, tube geometry, or water-flow visibility.
+
+**Benchmark:** Direct `Solenoid` render with the normal four water tube
+wrappers and solenoid model, then 90 rerenders where only unrelated
+`config.sun` changed while bot position, water flow, and routing dimensions
+stayed unchanged.
+
+**Before:** 4.227 ms per 90-rerender batch.
+
+**After:** 1.143 ms per 90-rerender batch.
+
+**Change:** 73.0% faster, saving 3.084 ms per realistic solenoid config-churn
+batch.
+
+**Outcome:** Accepted; solenoid rendering now skips unrelated config churn
+while bot position, water flow, and tube-routing dimension changes still
+rerender the water tube assembly.
+
+**Commit:** `Memoize solenoid for 73.0% faster rerenders`
+
+### Idea 322: Memoize `Tools` relevant inputs
+
+**Description:** Add a relevant-input comparator around the full tools
+subtree, covering mounted tool state, tool slots, bot position, dispatch/getZ
+callbacks, and the config fields used by tool placement and visibility.
+Expected return: faster Bot rerenders with configured tools or promo tools
+when unrelated config fields change, without changing mounted tool rendering,
+toolbay slots, pullout directions, or animations.
+
+### Idea 323: Memoize `ZoomBeacons` relevant inputs
+
+**Description:** Memoize the zoom beacon collection by active focus, callbacks,
+load-in spring handles, bot position, and focus-layout config fields. Expected
+return: faster scene-detail rerenders while hover state, focus transitions,
+debug beacons, animation, and layout changes still update.
+
+### Idea 324: Skip hidden `Bounds` position churn
+
+**Description:** Tighten the `Bounds` comparator so bot position changes are
+ignored when bounds, Z dimension, and distance indicators are all hidden.
+Expected return: faster default Bot movement rerenders without changing visible
+bounds or distance indicator behavior.
+
+### Idea 325: Memoize `GroupOrderVisual` selection wrapper
+
+**Description:** Add a relevant-input comparator around the group-order
+selection wrapper so unrelated config churn skips URL group lookup and selected
+point cache checks when group/order inputs are unchanged. Expected return:
+faster group-order visualization rerenders while group selection, point lists,
+sort type, terrain lookup, and exaggerated-Z changes still update.
