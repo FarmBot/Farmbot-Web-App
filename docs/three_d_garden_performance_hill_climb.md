@@ -5672,3 +5672,61 @@ transform churn while changed image assets, positions, and rotations still
 update the same billboarded image.
 
 **Commit:** `Memoize person images for 71.5% faster rerenders`
+
+## Round 60
+
+### Idea 316: Memoize `XAxisWaterTube` relevant config fields
+
+**Description:** Replace shallow memoization on the X-axis water tube with a
+relevant-field comparator and stable tube path construction. Expected return:
+faster Bot utility rerenders when unrelated config fields change, without
+changing tube geometry, adapter placement, water-flow visibility, or material
+behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow X-axis water tube 90 times while only an unrelated config field
+changed.
+
+**Before:** 7.980 ms per 90-rerender batch.
+
+**After:** 1.067 ms per 90-rerender batch.
+
+**Change:** 86.6% faster, saving 6.913 ms per realistic Bot utility
+config-churn batch.
+
+**Outcome:** Accepted; X-axis water tube now skips unrelated config churn and
+reuses its tube path across relevant rerenders while bed dimensions, ground Z,
+and water-flow changes still update the same tube and adapters.
+
+**Commit:** `Memoize X-axis water tube for 86.6% faster rerenders`
+
+### Idea 317: Memoize `WateringAnimations` relevant inputs
+
+**Description:** Add a relevant-input comparator around watering animations so
+unrelated config churn skips the 16 stream curves and mist subtree when the
+tool position, water flow state, terrain lookup, and water-routing fields are
+unchanged. Expected return: faster watering-on rerenders without changing water
+stream curves, mist placement, shared texture usage, or delayed visibility.
+
+### Idea 318: Memoize `MoistureReadings` config churn
+
+**Description:** Memoize moisture reading markers by readings identity,
+display settings, and the config fields used for offset placement. Expected
+return: faster moisture-debug rerenders with readings visible while changed
+reading data, radius, color, Z override, or bed offsets still update.
+
+### Idea 319: Memoize `MoistureSurface` relevant inputs
+
+**Description:** Add a relevant-field comparator around the full moisture
+surface so unrelated config churn skips the moisture map and reading subtree
+when sensors/readings and interpolation inputs are unchanged. Expected return:
+faster moisture-debug rerenders without changing interpolation, opacity,
+reading markers, or map placement.
+
+### Idea 320: Memoize Bot bed utility wrapper
+
+**Description:** Add a relevant-field comparator around the Bot bed utility
+subassembly wrapper so unrelated config churn skips PowerSupply and X-axis
+water tube wrapper work together. Expected return: faster Bot utility
+rerenders while power cable, water tube, adapter, and water-flow changes still
+update.

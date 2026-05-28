@@ -9,13 +9,28 @@ export interface XAxisWaterTubeProps {
   config: Config;
 }
 
+const X_AXIS_WATER_TUBE_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "waterFlow",
+];
+
+export const xAxisWaterTubePropsEqual = (
+  prev: XAxisWaterTubeProps,
+  next: XAxisWaterTubeProps,
+) =>
+  X_AXIS_WATER_TUBE_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
 const XAxisWaterTubeBase = (props: XAxisWaterTubeProps) => {
   const { config } = props;
   const groundZ = -config.bedHeight - config.bedZOffset;
   const barbX = threeSpace(config.bedLengthOuter / 2 + 400, config.bedLengthOuter);
   const barbY = threeSpace(-50, config.bedWidthOuter);
   const barbZ = groundZ + 20;
-  const tubePath = easyCubicBezierCurve3(
+  const tubePath = React.useMemo(() => easyCubicBezierCurve3(
     [barbX, barbY, barbZ],
     [-300, 0, 0],
     [300, 0, 0],
@@ -24,7 +39,7 @@ const XAxisWaterTubeBase = (props: XAxisWaterTubeProps) => {
       threeSpace(-30, config.bedWidthOuter),
       -140,
     ],
-  );
+  ), [barbX, barbY, barbZ, config.bedLengthOuter, config.bedWidthOuter]);
 
   return <Group>
     <WaterTube tubeName={"x-axis-water-tube"}
@@ -50,4 +65,7 @@ const XAxisWaterTubeBase = (props: XAxisWaterTubeProps) => {
   </Group>;
 };
 
-export const XAxisWaterTube = React.memo(XAxisWaterTubeBase);
+export const XAxisWaterTube = React.memo(
+  XAxisWaterTubeBase,
+  xAxisWaterTubePropsEqual,
+);
