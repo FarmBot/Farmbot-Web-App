@@ -13730,3 +13730,131 @@ by 0.000459 ms.
 meaningful interaction win and the p95 moved in the wrong direction.
 
 **Commit:** None
+
+## Round 125
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 641. Narrow GardenModel soil-surface memo dependencies | Avoid soil filtering, Delaunay surface rebuild, and storage payload work during unrelated config churn | 60 unrelated config updates with 100 soil-height points | Accepted |
+| 642. Precompute private config-row search text | Reduce config-panel search work across all rows | One 110-row config search pass | Rejected |
+| 643. Memoize 3D controls help text parsing | Avoid splitting and cleaning static help markdown on each toggle render | One 3D controls help render | Rejected |
+| 644. Replace active-focus lodash `findIndex` with native `find` | Reduce active focus lookup overhead after focus definitions are built | One active focus lookup across 12 focus definitions | Rejected |
+| 645. Use `Math.round` for default camera positions | Avoid lodash `round` helper overhead during default camera placement | Four default camera position calculations | Rejected |
+
+### Idea 641: Narrow GardenModel soil-surface memo dependencies
+
+**Description:** `GardenModel` memoized soil-point filtering against the whole
+`config` object, so unrelated config churn such as `sun` rebuilt soil points,
+the Delaunay surface, and the serialized soil triangle payload. Narrowing the
+dependency list to only fields used by `filterSoilPoints()` keeps the soil mesh
+stable when unrelated config fields change.
+
+**Benchmark:** 60 unrelated config updates with 100 soil-height points,
+including soil filtering, surface generation, and the triangle storage payload.
+
+**Before:** Current full recompute path: 2.982 ms median, 3.442 ms p95.
+
+**After:** Narrowed soil dependencies with one reused storage payload:
+0.055 ms median, 0.077 ms p95.
+
+**Change:** 98.1% faster, saving 2.927 ms median and 3.364 ms p95 across the
+60-update batch.
+
+**Outcome:** Accepted. Unrelated config updates now reuse the same soil surface
+geometry, while soil-affecting config such as `soilHeight` still rebuilds it.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/garden_model_test.tsx`,
+`bun run typecheck`, `git diff --check`
+
+**Commit:** `Optimize 3D soil surface churn by 98.1%`
+
+### Idea 642: Precompute private config-row search text
+
+**Description:** Each `ConfigRow` rebuilds its searchable label text from the
+config key, optional label, and search terms. Precomputing that row text could
+reduce work while typing in the private config search box.
+
+**Benchmark:** One 110-row config search pass with a realistic `soil` query.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current per-row search text construction: 0.007333 ms median,
+0.010500 ms p95.
+
+**After:** Simulated precomputed row text: 0.001084 ms median,
+0.001125 ms p95.
+
+**Change:** 85.22% faster, saving 0.006249 ms.
+
+**Outcome:** Rejected before code changes. The config search path is optional,
+and the absolute saving is only a few microseconds per full search pass.
+
+**Commit:** None
+
+### Idea 643: Memoize 3D controls help text parsing
+
+**Description:** `ThreeDControlsHelp` splits and cleans a small static help
+string on render. Memoizing the parsed title and items could avoid that work
+while the 3D toggle row rerenders.
+
+**Benchmark:** One 3D controls help render. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current split/map/replace path: 0.000250 ms median,
+0.000791 ms p95.
+
+**After:** Simulated memoized parsed help: 0.000042 ms median,
+0.000125 ms p95.
+
+**Change:** 83.20% faster, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The help text is tiny and the
+absolute saving is not meaningful.
+
+**Commit:** None
+
+### Idea 644: Replace active-focus lodash `findIndex` with native `find`
+
+**Description:** Active focus lookup builds the focus definitions and then uses
+lodash `findIndex()` to select the active focus by label. A native `find()`
+could avoid the lodash predicate wrapper work.
+
+**Benchmark:** One active focus lookup across 12 focus definitions, with the
+active focus near the end of the list. Repetitions were used only to stabilize
+timing.
+
+**Before:** Current lodash `findIndex()` lookup: 0.000250 ms median,
+0.000459 ms p95.
+
+**After:** Simulated native `find()` lookup: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 50.00% faster, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The lookup itself is already
+effectively free at the shipped focus count.
+
+**Commit:** None
+
+### Idea 645: Use `Math.round` for default camera positions
+
+**Description:** `getDefaultCameraPosition()` calls lodash `round()` for
+integer camera coordinates. `Math.round` could avoid helper overhead while
+preserving integer placement.
+
+**Benchmark:** Four default camera position calculations covering perspective
+and top-down paths. Repetitions were used only to stabilize timing.
+
+**Before:** Current lodash `round()` path: 0.000458 ms median,
+0.000667 ms p95.
+
+**After:** Simulated `Math.round()` path: 0.000375 ms median,
+0.000875 ms p95.
+
+**Change:** 18.12% faster by median, saving 0.000083 ms, while p95 was slower
+by 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The median saving is far below a
+meaningful load or interaction improvement, and p95 moved in the wrong
+direction.
+
+**Commit:** None

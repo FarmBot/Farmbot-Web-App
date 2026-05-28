@@ -598,7 +598,20 @@ export const GardenModel = (props: GardenModelProps) => {
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
       filterSoilPoints({ points: mapPoints, config })),
-    [mapPoints, config]);
+    [
+      mapPoints,
+      config.bedHeight,
+      config.bedLengthOuter,
+      config.bedWallThickness,
+      config.bedWidthOuter,
+      config.bedXOffset,
+      config.bedYOffset,
+      config.columnLength,
+      config.exaggeratedZ,
+      config.perspective,
+      config.soilHeight,
+      config.zGantryOffset,
+    ]);
   const soilSurface = React.useMemo(() =>
     perfMeasure("soilSurfaceMs", () => getSurface(soilPoints)), [soilPoints]);
   React.useEffect(() => {

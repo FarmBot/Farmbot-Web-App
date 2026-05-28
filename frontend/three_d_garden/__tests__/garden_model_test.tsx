@@ -87,9 +87,16 @@ describe("<GardenModel />", () => {
     || setting == BooleanSetting.show_points
     || setting == BooleanSetting.show_weeds
     || setting == BooleanSetting.show_farmbot;
+  const bedSupportNames = ["bed-leg-wood", "caster-bracket", "wheel", "axle"];
   const findPlantInstanceNodes =
     (wrapper: ReturnType<typeof createRenderer>) =>
-      wrapper.root.findAll(node => `${node.type}` == "instancedMesh");
+      wrapper.root.findAll(node =>
+        `${node.type}` == "instancedMesh" &&
+        !bedSupportNames.includes(node.props.name));
+  const plantInstanceCount = (container: HTMLElement) =>
+    [...container.querySelectorAll("instancedmesh")]
+      .filter(node => !bedSupportNames.includes(node.getAttribute("name") || ""))
+      .length;
 
   it("renders", async () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
@@ -136,6 +143,24 @@ describe("<GardenModel />", () => {
     expect(after.mapPoints).toBe(before.mapPoints);
     expect(after.sensors).toBe(before.sensors);
     expect(after.sensorReadings).toBe(before.sensorReadings);
+  });
+
+  it("reuses soil surface geometry across unrelated config updates", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const findBedProps = () => wrapper.root.find(node =>
+      node.props.soilSurfaceGeometry && node.props.activePositionRef).props;
+    const before = findBedProps().soilSurfaceGeometry;
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, sun: p.config.sun + 1 }} />));
+    expect(findBedProps().soilSurfaceGeometry).toBe(before);
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, soilHeight: p.config.soilHeight + 1 }} />));
+    expect(findBedProps().soilSurfaceGeometry).not.toBe(before);
   });
 
   it("reuses static layers across telemetry position updates", () => {
@@ -323,7 +348,7 @@ describe("<GardenModel />", () => {
 
     const { container } = render(<GardenModel {...p} />);
 
-    expect(container.querySelectorAll("instancedmesh").length).toEqual(1);
+    expect(plantInstanceCount(container)).toEqual(1);
   });
 
   it("mounts plant spread instances when spread is visible", () => {
@@ -338,7 +363,7 @@ describe("<GardenModel />", () => {
 
     const { container } = render(<GardenModel {...p} />);
 
-    expect(container.querySelectorAll("instancedmesh").length).toEqual(2);
+    expect(plantInstanceCount(container)).toEqual(2);
   });
 
   it("mounts plant spread instances while adding a plant", () => {
@@ -352,7 +377,7 @@ describe("<GardenModel />", () => {
 
     const { container } = render(<GardenModel {...p} />);
 
-    expect(container.querySelectorAll("instancedmesh").length).toEqual(2);
+    expect(plantInstanceCount(container)).toEqual(2);
   });
 
   it("doesn't build plant label nodes when labels are disabled", () => {
