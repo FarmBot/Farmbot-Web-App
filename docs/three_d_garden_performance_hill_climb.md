@@ -8272,3 +8272,496 @@ initial soil-surface setup CPU.
 percentage threshold and the absolute saving is not meaningful.
 
 **Commit:** None
+
+## Round 82
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 426. Generate cross-slide fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `cross_slide.tsx` to the 3D bundle | Accepted |
+| 427. Generate soil-sensor fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `soil_sensor.tsx` to the 3D bundle | Accepted |
+| 428. Generate gantry-wheel-plate fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `gantry_wheel_plate.tsx` to the 3D bundle | Accepted |
+| 429. Replace `mergedInstancedGeometry` entry filtering with a direct loop | Reduce first-render bot part merge CPU by avoiding entry/filter allocation | Merge 108 instanced mesh nodes with eight instances each | Rejected |
+| 430. Build the plant icon atlas lookup with a direct loop | Reduce 3D module initialization work for icon atlas lookup construction | Build the 248-icon atlas lookup once | Rejected |
+
+### Idea 426: Generate cross-slide fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated cross-slide fallback JSX list with a
+shared fallback generator that creates instanced meshes from matching GLTF node
+keys. Expected return: less JavaScript to download, parse, and compile while
+keeping the same merged-geometry primary render path and fallback behavior.
+
+**Benchmark:** Esbuild metafile bytes contributed by `cross_slide.tsx` to the
+3D bundle.
+
+**Before:** 17,905 bytes in the minified 3D bundle.
+
+**After:** 432 bytes in the minified 3D bundle.
+
+**Change:** 97.6% smaller, saving 17,473 bundle bytes from the cross-slide
+input.
+
+**Outcome:** Accepted; fallback rendering is generated from the same GLTF
+nodes, while the primary merged geometry path is unchanged.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 427: Generate soil-sensor fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated soil-sensor fallback JSX list with the
+shared fallback generator. Expected return: less 3D bundle code for the same
+rendered model behavior.
+
+**Benchmark:** Esbuild metafile bytes contributed by `soil_sensor.tsx` to the
+3D bundle.
+
+**Before:** 6,354 bytes in the minified 3D bundle.
+
+**After:** 394 bytes in the minified 3D bundle.
+
+**Change:** 93.8% smaller, saving 5,960 bundle bytes from the soil-sensor
+input.
+
+**Outcome:** Accepted; the merged geometry path still renders first, and the
+fallback path now derives its instance meshes from matching GLTF nodes instead
+of static generated JSX.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 428: Generate gantry-wheel-plate fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated gantry-wheel-plate fallback JSX list
+with the shared fallback generator. Expected return: less 3D bundle code and
+less parse work for the same model.
+
+**Benchmark:** Esbuild metafile bytes contributed by
+`gantry_wheel_plate.tsx` to the 3D bundle.
+
+**Before:** 11,752 bytes in the minified 3D bundle.
+
+**After:** 409 bytes in the minified 3D bundle.
+
+**Change:** 96.5% smaller, saving 11,343 bundle bytes from the
+gantry-wheel-plate input.
+
+**Outcome:** Accepted; the model keeps the same merged geometry path and a
+node-derived fallback path. Across the full 3D bundle, the accepted bot part
+changes reduced size from 3,675,306 to 3,640,743 bytes, saving 34,563 bytes.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 429: Replace `mergedInstancedGeometry` entry filtering with a direct loop
+
+**Description:** Replace `Object.entries(...).filter(...).forEach(...)` in
+`mergedInstancedGeometry` with a direct `for...in` loop. Expected return:
+lower first-render CPU when bot part models bake many instanced nodes into one
+geometry.
+
+**Benchmark:** Merge 108 instanced mesh nodes with eight instances each.
+
+**Before:** 0.264 ms median.
+
+**After:** 0.257 ms median.
+
+**Change:** 2.7% faster, saving 0.007 ms.
+
+**Outcome:** Rejected and rolled back; the improvement missed the threshold and
+the absolute first-render saving is not meaningful.
+
+**Commit:** None
+
+### Idea 430: Build the plant icon atlas lookup with a direct loop
+
+**Description:** Build `PLANT_ICON_ATLAS` directly from the compact slug list
+instead of creating an intermediate frames array and using
+`Object.fromEntries`. Expected return: lower 3D module initialization work.
+
+**Benchmark:** Build the 248-icon atlas lookup once.
+
+**Before:** 0.019 ms median.
+
+**After:** Prototype measured 0.012 ms median.
+
+**Change:** 37.7% faster, saving 0.007 ms.
+
+**Outcome:** Rejected before code changes; the percentage is high, but the
+absolute module-initialization saving is not meaningful.
+
+**Commit:** None
+
+## Round 83
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 431. Lazy-load sequence visualization and Lua runner | Reduce normal 3D initial load bytes by keeping sequence visualization code, Lua action collection, and `fengari-web` out of the default 3D entry when no sequence is visualized | Esbuild splitting initial static dependency bytes for `frontend/three_d_garden/index.tsx`, plus single-bundle size guardrail | Rejected |
+| 432. Remove full `lodash` from the default 3D entry | Reduce normal 3D load bytes by replacing 3D-runtime `lodash` imports with native code or method-level imports where behavior is simple | Esbuild metafile bytes for `node_modules/lodash/lodash.js` and initial static dependency bytes | Rejected |
+| 433. Gate group order visualization behind a route-aware lazy boundary | Reduce normal 3D initial load bytes by loading point group sorting/criteria code only when a point group order path is being shown | Esbuild splitting initial static dependency bytes, with active point group route as the realistic guardrail | Rejected |
+| 434. Lazy-load non-default scene detail components | Reduce default outdoor-scene initial load bytes by keeping Lab and Greenhouse detail props out of the initial 3D entry until those scenes are selected | Esbuild splitting initial static dependency bytes, with default Outdoor scene as the realistic context | Rejected |
+| 435. Lazy-load optional stats instrumentation | Reduce normal 3D initial load bytes by loading `StatsGl`/stats UI only when `config.stats` is enabled | Esbuild splitting initial static dependency bytes, with `config.stats` disabled as the realistic default context | Rejected |
+
+### Idea 431: Lazy-load sequence visualization and Lua runner
+
+**Description:** Replace the static `Visualization` import in `GardenModel` with a
+lazy import so the default 3D view does not load sequence visualization, demo Lua
+action collection, or `fengari-web` until a sequence visualization is active.
+Expected return: lower normal 3D initial load bytes without changing the
+visualized sequence rendering path after the chunk loads.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for
+`frontend/three_d_garden/index.tsx`, with the single bundled entry size as a
+no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,587,203 initial static dependency bytes; 3,641,023 single bundled
+entry bytes.
+
+**Change:** 0.23% smaller initial static dependency set, saving 8,269 bytes;
+single bundled entry grew by 280 bytes.
+
+**Outcome:** Rejected and rolled back; the change did not reach the 10%
+threshold, the absolute initial-load saving was small, and the single-bundle
+guardrail regressed.
+
+**Commit:** None
+
+### Idea 432: Remove full `lodash` from the default 3D entry
+
+**Description:** Rewrite 3D-runtime `lodash` imports to method-level imports.
+Expected return: remove `node_modules/lodash/lodash.js` from the 3D bundle while
+preserving behavior through the same lodash method implementations.
+
+**Benchmark:** Esbuild single bundled entry bytes, full lodash input presence,
+and splitting initial static dependency bytes.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 initial static
+dependency bytes; `node_modules/lodash/lodash.js` present at 545,945 source
+bytes.
+
+**After:** 3,682,029 single bundled entry bytes; 3,636,773 initial static
+dependency bytes; `node_modules/lodash/lodash.js` still present at 545,945
+source bytes, plus method-level lodash modules.
+
+**Change:** 1.13% larger single bundled entry and 1.15% larger initial static
+dependency set.
+
+**Outcome:** Rejected and rolled back; full lodash remains through broader app
+imports used by the 3D graph, so method-level imports only added code.
+
+**Commit:** None
+
+### Idea 433: Gate group order visualization behind a route-aware lazy boundary
+
+**Description:** Load `GroupOrderVisual` only when the current route points at a
+specific group or zone. Expected return: lower default 3D initial load bytes by
+keeping point group sorting and criteria code out of ordinary garden views.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,587,272 initial static dependency bytes; 3,641,218 single bundled
+entry bytes.
+
+**Change:** 0.23% smaller initial static dependency set, saving 8,200 bytes;
+single bundled entry grew by 475 bytes.
+
+**Outcome:** Rejected and rolled back; the split-load saving is too small for the
+added lazy boundary, and the single-bundle guardrail regressed.
+
+**Commit:** None
+
+### Idea 434: Lazy-load non-default scene detail components
+
+**Description:** Lazy-load Lab and Greenhouse scene detail modules while keeping
+the existing `config.scene` checks. Expected return: lower default Outdoor scene
+initial load bytes without removing any scene detail when Lab or Greenhouse is
+selected.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+Outdoor 3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,579,062 initial static dependency bytes; 3,641,553 single bundled
+entry bytes.
+
+**Change:** 0.46% smaller initial static dependency set, saving 16,410 bytes;
+single bundled entry grew by 810 bytes.
+
+**Outcome:** Rejected and rolled back; the absolute split-load saving is small,
+the percentage threshold was missed, and the single-bundle guardrail regressed.
+
+**Commit:** None
+
+### Idea 435: Lazy-load optional stats instrumentation
+
+**Description:** Lazy-load `StatsGl` and `Stats` because `config.stats` is
+disabled in normal use. Expected return: keep optional stats instrumentation out
+of the default 3D initial load.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 4,885,057 initial static dependency bytes; 5,102,913 single bundled
+entry bytes.
+
+**Change:** 35.9% larger initial static dependency set and 40.2% larger single
+bundled entry.
+
+**Outcome:** Rejected and rolled back; dynamic-importing the Drei barrel pulled
+large additional chunks into the graph instead of reducing default load.
+
+**Commit:** None
+
+## Round 84
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 436. Replace 3D Garden Drei barrel imports with direct module imports | Reduce default 3D load bytes by avoiding unused Drei/three-stdlib loaders, controls, media, and helper exports | Esbuild single bundled entry bytes and split initial static dependency bytes for `frontend/three_d_garden/index.tsx` | Rejected |
+| 437. Remove `moment` from 3D sun-date calculations | Reduce 3D load bytes and module initialization by replacing one 3D-specific `moment` use with native UTC start-of-day code | Esbuild single bundled entry bytes and `moment` input presence after the direct-Drei change | Rejected |
+| 438. Split `ThreeDGardenToggle` out of the render entry | Reduce default 3D render bundle inputs by moving settings/toggle UI dependencies away from the canvas component module | Esbuild single bundled entry bytes for the 3D render entry and main app import guardrail | Rejected |
+| 439. Replace SVGLoader-based UTM logo parsing with cached static shapes | Reduce bot chunk load/parse time by removing runtime SVG parsing for fixed bot extrusion paths | Esbuild 3D entry bytes and build validity | Rejected |
+| 440. Defer point group order selection work until route is known active without lazy import overhead | Reduce normal 3D render CPU by avoiding group lookup and selected-point caching work on non-group routes | Route check benchmark for a realistic 10-group garden on a non-group route | Rejected |
+
+### Idea 436: Replace 3D Garden Drei barrel imports with direct module imports
+
+**Description:** Replace runtime `@react-three/drei` barrel imports in the 3D
+Garden graph with leaf module imports, including the transitive pin binding
+model import that also reaches the 3D graph. Expected return: avoid unused
+Drei and three-stdlib loader/control/media modules while preserving the same
+components and hooks.
+
+**Benchmark:** Esbuild single bundled entry bytes and split initial static
+dependency bytes for `frontend/three_d_garden/index.tsx`.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes.
+
+**After:** 3,639,585 single bundled entry bytes; 3,594,580 split initial static
+dependency bytes.
+
+**Change:** 0.03% smaller single bundled entry, saving 1,158 bytes; 0.02%
+smaller split initial static dependency set, saving 892 bytes.
+
+**Outcome:** Rejected and rolled back; `@react-three/drei/index.js` was removed,
+but the used Drei leaf modules still import the `three-stdlib` barrel, so the
+large unused loader graph stayed in the bundle. The absolute saving is not worth
+the import churn.
+
+**Commit:** None
+
+### Idea 437: Remove `moment` from 3D sun-date calculations
+
+**Description:** Replace the `moment().utc().startOf("day")` default in
+`getAnimatedSeasonDate` with native `Date.UTC` logic. Expected return: reduce
+3D load bytes and module initialization if the sun module is the last `moment`
+edge in the 3D graph.
+
+**Benchmark:** Esbuild single bundled entry bytes, split initial static
+dependency bytes, and `moment` input presence.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes; `node_modules/moment/moment.js` present at 176,435 source
+bytes.
+
+**After:** 3,640,773 single bundled entry bytes; 3,595,485 split initial static
+dependency bytes; `node_modules/moment/moment.js` still present at 176,435
+source bytes.
+
+**Change:** 30 bytes larger single bundled entry and 13 bytes larger split
+initial static dependency set.
+
+**Outcome:** Rejected and rolled back; `moment` remains through other modules in
+the 3D graph, so the native date replacement does not improve load performance.
+
+**Commit:** None
+
+### Idea 438: Split `ThreeDGardenToggle` out of the render entry
+
+**Description:** Move `ThreeDGardenToggle` into a separate module so the canvas
+render component entry does not also include the settings/toggle UI code.
+Expected return: lower 3D render entry bytes while keeping the farm designer
+toggle behavior unchanged through an updated import.
+
+**Benchmark:** Esbuild single bundled entry bytes and split initial static
+dependency bytes for `frontend/three_d_garden/index.tsx`.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes.
+
+**After:** 3,636,737 single bundled entry bytes; 3,591,457 split initial static
+dependency bytes.
+
+**Change:** 0.11% smaller single bundled entry, saving 4,006 bytes; 0.11%
+smaller split initial static dependency set, saving 4,015 bytes.
+
+**Outcome:** Rejected and rolled back; the savings are real but too small for
+the added module boundary and below the 10% threshold.
+
+**Commit:** None
+
+### Idea 439: Replace SVGLoader import path for fixed bot extrusion shapes
+
+**Description:** Try replacing the `three/examples` `SVGLoader` import in the
+bot model with a `three-stdlib` loader import. Expected return: reduce bot
+chunk load bytes while keeping the same runtime SVG parsing and extrusion
+shapes.
+
+**Benchmark:** Esbuild build validity and 3D entry bytes.
+
+**Before:** 3,640,743 single bundled entry bytes.
+
+**After:** Build failed; `three-stdlib/loaders/SVGLoader` is not exported by the
+installed package.
+
+**Change:** No valid benchmark after implementation.
+
+**Outcome:** Rejected and rolled back; the candidate does not produce a valid
+build with the installed package exports.
+
+**Commit:** None
+
+### Idea 440: Defer point group order selection work until route is known active
+
+**Description:** Add a route gate before rendering `GroupOrderVisual` on normal
+non-group routes. Expected return: reduce normal 3D render CPU by avoiding group
+lookup and selected-point cache checks when there is no active group route.
+
+**Benchmark:** Realistic non-group route check with 10 point groups.
+
+**Before:** 0.000250 ms median; 0.001750 ms p95.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; even a 100% improvement would not
+produce a meaningful real-world render-time saving.
+
+**Commit:** None
+
+## Round 85
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 441. Avoid inactive rotary tool frame callbacks | Reduce normal FPS work by not registering per-tool `useFrame` callbacks unless a rotary tool is mounted and spinning | 12 inactive tools over 300 frames, matching a realistic several-second idle view | Rejected |
+| 442. Avoid disabled sun animation frame callback | Reduce normal FPS work by not registering the sun animation callback when seasonal animation is disabled | 300 idle frames with `animateSeasons=false` | Rejected |
+| 443. Avoid FPS probe callback when reporting is disabled | Reduce normal FPS work by not running the FPS probe frame callback unless perf reporting or FPS logs are enabled | 300 frames with `FPS_LOGS` and perf reporting disabled | Rejected |
+| 444. Avoid static plant icon billboard frame guard work | Reduce normal FPS work when the camera is still and plant icons do not need matrix updates | 100 plant icons over 300 frames with no camera change | Rejected |
+| 445. Avoid static weed icon billboard frame guard work | Reduce normal FPS work when the camera is still and weed icons do not need matrix updates | 20 weed icons over 300 frames with no camera change | Rejected |
+
+### Idea 441: Avoid inactive rotary tool frame callbacks
+
+**Description:** Move the rotary tool `useFrame` registration out of every
+tool instance and only mount it when a rotary tool is outside the toolbay and
+spinning. Expected return: fewer frame callbacks in normal gardens with tool
+slots and no active rotary motion.
+
+**Benchmark:** 12 inactive tools over 300 frames, matching about five seconds of
+idle rendering at 60 FPS.
+
+**Before:** 0.004208 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; even completely removing the guard
+path would save about four microseconds over five seconds of idle rendering,
+which is not meaningful.
+
+**Commit:** None
+
+### Idea 442: Avoid disabled sun animation frame callback
+
+**Description:** Split the animated sun update into a child component that only
+mounts when seasonal animation is enabled. Expected return: avoid a frame
+callback that returns immediately in normal static-sun views.
+
+**Benchmark:** 300 idle frames with `animateSeasons=false`.
+
+**Before:** 0.001500 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the callback guard costs about two
+microseconds over five seconds, so the added component split would not improve
+the app in practice.
+
+**Commit:** None
+
+### Idea 443: Avoid FPS probe callback when reporting is disabled
+
+**Description:** Mount the FPS probe only when perf reporting or FPS logs are
+enabled. Expected return: avoid the default frame counter callback when nobody
+is collecting diagnostics.
+
+**Benchmark:** 300 frames with `FPS_LOGS` and perf reporting disabled.
+
+**Before:** 0.004167 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the default probe path only updates
+simple counters and `window.__fps`, and the measured idle-frame cost is not
+meaningful enough to justify changing diagnostics behavior.
+
+**Commit:** None
+
+### Idea 444: Avoid static plant icon billboard frame guard work
+
+**Description:** Replace the plant icon per-frame camera-change guard with a
+more event-driven update path for static cameras. Expected return: reduce frame
+work for gardens with many plants when the camera is not moving.
+
+**Benchmark:** 100 plant icons over 300 frames with no camera change and no
+season animation.
+
+**Before:** 0.006333 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the guard path is already extremely
+cheap, and replacing it would add camera-event complexity without a meaningful
+FPS improvement.
+
+**Commit:** None
+
+### Idea 445: Avoid static weed icon billboard frame guard work
+
+**Description:** Replace the weed icon per-frame camera-change guard with a more
+event-driven update path for static cameras. Expected return: reduce frame work
+for gardens with weeds when the camera is not moving.
+
+**Benchmark:** 20 weed icons over 300 frames with no camera change.
+
+**Before:** 0.006417 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the absolute baseline cost is only a
+few microseconds over five seconds, so the change would not produce a better
+app.
+
+**Commit:** None
