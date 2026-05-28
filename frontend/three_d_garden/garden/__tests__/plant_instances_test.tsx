@@ -205,9 +205,10 @@ describe("<PlantInstances />", () => {
       };
     });
 
-    render(<PlantInstances {...p} />);
+    const { container } = render(<PlantInstances {...p} />);
 
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("clamps plant icon brightness", () => {

@@ -12542,3 +12542,121 @@ watering animation. Repetitions were used only to stabilize timing.
 animation only mounts when water flow is active.
 
 **Commit:** None
+
+## Round 115
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 591. Merge atlas-backed plant icon meshes | Reduce draw calls for high-diversity planted gardens while preserving atlas pixels | Fewer instanced draw calls | 40 unique atlas-mapped plant icons | Accepted |
+| 592. Replace plant icon grouping callback loops | Reduce plant icon setup time for large planted gardens | Faster icon grouping setup | 100 plants across 40 icons with reserved capacities | Rejected |
+| 593. Use direct static plant icon setup loops | Reduce plant icon position setup allocations | Faster static icon setup | 100 plant icon static instances | Rejected |
+| 594. Cache atlas UV transform buffers | Reduce atlas mesh setup work | Faster atlas UV buffer setup | 40 atlas-mapped plant icons | Rejected |
+| 595. Replace plant icon frame `forEach` updates with indexed loops | Reduce camera-facing plant icon frame work | Faster icon matrix frame updates | 100 plant icon matrix updates | Rejected |
+
+### Idea 591: Merge atlas-backed plant icon meshes
+
+**Description:** When at least 32 mapped plant icons are visible, plant icons
+load the atlas texture but still render one instanced mesh per icon, using
+cloned atlas textures with per-icon UV offsets. Use one atlas-backed instanced
+mesh with per-instance UV offset/repeat attributes, while keeping the
+individual-texture path for smaller gardens and unmapped icons.
+
+**Benchmark:** 40 unique atlas-mapped plant icons, matching a diverse planted
+garden just beyond the atlas threshold.
+
+**Before:** 40 plant icon instanced draw calls.
+
+**After:** 1 atlas-backed plant icon instanced draw call.
+
+**Change:** 97.50% fewer plant icon instanced draw calls, saving 39 draw calls
+in the 40-icon benchmark.
+
+**Outcome:** Accepted. The atlas path still uses the same atlas texture and
+frame UVs, preserves per-plant click mapping and hover index mapping, and
+leaves smaller/unmapped icon sets on the existing texture path.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/plant_instances_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D atlas plant icon draws by 97.5%`
+
+### Idea 592: Replace plant icon grouping callback loops
+
+**Description:** `VisiblePlantInstances` groups plants by icon with
+`Object.entries(...).map()` for side effects and `forEach()`. Direct indexed
+loops could reduce setup time for large planted gardens.
+
+**Benchmark:** 100 plants across 40 icons with reserved icon capacities,
+matching a large garden that has enough icon diversity to activate atlas
+handling. Repetitions were used only to stabilize timing.
+
+**Before:** 0.004375 ms median, 0.016750 ms p95.
+
+**After:** Simulated direct-loop grouping: 0.004917 ms median, 0.009125 ms p95.
+
+**Change:** Median time was 12.39% slower, though p95 was lower.
+
+**Outcome:** Rejected before code changes. The realistic median did not
+improve and the absolute setup time is already only a few microseconds.
+
+**Commit:** None
+
+### Idea 593: Use direct static plant icon setup loops
+
+**Description:** Static plant icon position setup maps plants into cached
+world-space instance data. A direct pre-sized loop can avoid `.map()` callback
+overhead.
+
+**Benchmark:** 100 plant icon static instances with a realistic uneven `getZ()`
+function. Repetitions were used only to stabilize timing.
+
+**Before:** 0.003084 ms median, 0.014125 ms p95.
+
+**After:** Simulated direct loop: 0.002417 ms median, 0.007791 ms p95.
+
+**Change:** 21.63% faster, saving 0.000667 ms.
+
+**Outcome:** Rejected before code changes. The percentage gain is real, but
+the absolute savings are far below a meaningful setup threshold.
+
+**Commit:** None
+
+### Idea 594: Cache atlas UV transform buffers
+
+**Description:** The new atlas mesh builds per-instance UV offset/repeat
+buffers from atlas frame transforms. Caching these buffers by icon list could
+avoid rebuilding them during repeated renders with the same icon composition.
+
+**Benchmark:** Build UV offset/repeat buffers for 40 atlas-mapped plant icons.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000667 ms median, 0.006708 ms p95.
+
+**After:** Best-case cached lookup: 0.000083 ms median, 0.000084 ms p95.
+
+**Change:** 87.56% faster in the best case, saving 0.000584 ms per atlas
+buffer setup.
+
+**Outcome:** Rejected before code changes. The current UV buffer setup is
+already below one microsecond at the realistic 40-icon size.
+
+**Commit:** None
+
+### Idea 595: Replace plant icon frame `forEach` updates with indexed loops
+
+**Description:** Camera-facing plant icon matrix updates use `.forEach()` over
+static instances. Indexed loops could reduce frame work when the camera moves.
+
+**Benchmark:** 100 plant icon matrix updates, matching a large planted garden
+camera-change frame. Repetitions were used only to stabilize timing.
+
+**Before:** 0.001666 ms median, 0.012917 ms p95.
+
+**After:** Simulated indexed loop: 0.001542 ms median, 0.019500 ms p95.
+
+**Change:** 7.44% faster by median, saving 0.000124 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement is below the 10%
+threshold, the absolute savings are negligible, and p95 worsened.
+
+**Commit:** None

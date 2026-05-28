@@ -24,6 +24,7 @@ import { ThreeDGardenPlant } from "./plants";
 import { InstancedMesh, MeshBasicMaterial } from "../components";
 import {
   getPlantIconTexture,
+  getPlantIconTextureTransform,
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -48,6 +49,13 @@ interface PlantIconInstancesProps extends PlantInstancesProps {
   plantIndexes: number[];
   capacity: number;
   useAtlas: boolean;
+}
+
+interface AtlasPlantIconInstancesProps extends PlantInstancesProps {
+  plants: ThreeDGardenPlant[];
+  plantIndexes: number[];
+  capacity: number;
+  atlasUrl: string;
 }
 
 interface PlantIconUpdateState {
@@ -122,21 +130,41 @@ const plantIconRaycast = function (
   ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
 };
 
-const PlantIconInstances = (props: PlantIconInstancesProps) => {
+const useStaticPlantIconInstances = (
+  plants: ThreeDGardenPlant[],
+  config: Config,
+  getZ: (x: number, y: number) => number,
+) => {
+  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
+  const zBase = React.useMemo(() => zZeroFunc(config), [config]);
+  return React.useMemo<StaticPlantIconInstance[]>(() => {
+    return plants.map(plant => {
+      const position = get3DPosition({ x: plant.x, y: plant.y });
+      return {
+        x: position.x,
+        y: position.y,
+        groundZ: zBase + getZ(plant.x, plant.y),
+        scale: plant.size,
+      };
+    });
+  }, [get3DPosition, getZ, plants, zBase]);
+};
+
+interface UsePlantIconFrameProps {
+  config: Config;
+  plants: ThreeDGardenPlant[];
+  visible?: boolean;
+  startTimeRef?: React.RefObject<number>;
+  staticInstances: StaticPlantIconInstance[];
+  instancedRef: React.RefObject<ThreeInstancedMesh | null>;
+  materialRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+}
+
+const usePlantIconFrame = (props: UsePlantIconFrameProps) => {
   const {
-    config, plants, icon, visible, startTimeRef, dispatch, getZ, plantIndexes,
-    useAtlas,
+    config, plants, visible, startTimeRef, staticInstances,
+    instancedRef, materialRef,
   } = props;
-  const navigate = useNavigate();
-  const textureUrl = getPlantIconTextureUrl(icon, useAtlas);
-  const baseTexture = useTexture(textureUrl);
-  const texture = React.useMemo(
-    () => getPlantIconTexture(baseTexture, icon, useAtlas),
-    [baseTexture, icon, useAtlas]);
-  // eslint-disable-next-line no-null/no-null
-  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
-  // eslint-disable-next-line no-null/no-null
-  const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
   const lastBrightness = React.useRef<number | undefined>(undefined);
   const updateStateRef =
     React.useRef<PlantIconUpdateState>(newPlantIconUpdateState());
@@ -152,26 +180,13 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
-  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   const seasonAnimationEnabled = !!(config.animateSeasons && startTimeRef);
-  const zBase = React.useMemo(() => zZeroFunc(config), [config]);
-  const staticInstances = React.useMemo<StaticPlantIconInstance[]>(() => {
-    return plants.map(plant => {
-      const position = get3DPosition({ x: plant.x, y: plant.y });
-      return {
-        x: position.x,
-        y: position.y,
-        groundZ: zBase + getZ(plant.x, plant.y),
-        scale: plant.size,
-      };
-    });
-  }, [get3DPosition, getZ, plants, zBase]);
 
   React.useEffect(() => {
     const updateState = getUpdateState();
     updateState.needsMatrixUpdate = true;
     lastBrightness.current = undefined;
-  }, [config, getZ, plants, startTimeRef]);
+  }, [config, plants, startTimeRef, staticInstances]);
 
   // eslint-disable-next-line complexity
   useFrame(state => {
@@ -233,8 +248,15 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     updateState.hasCameraQuaternion = true;
     updateState.needsMatrixUpdate = false;
   });
+};
 
-  const onClick = (event: ThreeEvent<MouseEvent>) => {
+const usePlantIconClick = (
+  plants: ThreeDGardenPlant[],
+  dispatch: Function | undefined,
+  visible: boolean | undefined,
+) => {
+  const navigate = useNavigate();
+  return (event: ThreeEvent<MouseEvent>) => {
     if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
@@ -245,6 +267,122 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       navigate(Path.plants(plant.id));
     }
   };
+};
+
+const onAtlasMaterialCompile = (
+  shader: { vertexShader?: string },
+) => {
+  if (!shader.vertexShader) { return; }
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <common>",
+    `#include <common>
+     attribute vec2 instanceUvOffset;
+     attribute vec2 instanceUvRepeat;`,
+  ).replace(
+    "#include <uv_vertex>",
+    `#include <uv_vertex>
+     #ifdef USE_MAP
+       vMapUv = MAP_UV * instanceUvRepeat + instanceUvOffset;
+     #endif`,
+  );
+};
+
+const atlasUvBuffers = (
+  plants: ThreeDGardenPlant[],
+  capacity: number,
+) => {
+  const offsets = new Float32Array(capacity * 2);
+  const repeats = new Float32Array(capacity * 2);
+  for (let index = 0; index < capacity; index++) {
+    repeats[index * 2] = 1;
+    repeats[index * 2 + 1] = 1;
+  }
+  plants.forEach((plant, index) => {
+    const transform = getPlantIconTextureTransform(plant.icon);
+    if (!transform) { return; }
+    offsets[index * 2] = transform.offset[0];
+    offsets[index * 2 + 1] = transform.offset[1];
+    repeats[index * 2] = transform.repeat[0];
+    repeats[index * 2 + 1] = transform.repeat[1];
+  });
+  return { offsets, repeats };
+};
+
+const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
+  const {
+    config, plants, visible, startTimeRef, dispatch, getZ, plantIndexes,
+  } = props;
+  const texture = useTexture(props.atlasUrl);
+  // eslint-disable-next-line no-null/no-null
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const staticInstances = useStaticPlantIconInstances(plants, config, getZ);
+  const uvBuffers = React.useMemo(() =>
+    atlasUvBuffers(plants, props.capacity), [plants, props.capacity]);
+  usePlantIconFrame({
+    config,
+    plants,
+    visible,
+    startTimeRef,
+    staticInstances,
+    instancedRef,
+    materialRef,
+  });
+  const onClick = usePlantIconClick(plants, dispatch, visible);
+
+  return <InstancedMesh
+    ref={instancedRef}
+    args={[getPlantIconGeometry(), undefined, props.capacity]}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}
+    count={plants.length}
+    frustumCulled={false}
+    userData={{ plantIndexes }}
+    visible={visible}
+    raycast={plantIconRaycast}
+    onClick={onClick}
+    renderOrder={RenderOrder.plants}>
+    <instancedBufferAttribute
+      attach={"geometry-attributes-instanceUvOffset"}
+      args={[uvBuffers.offsets, 2]} />
+    <instancedBufferAttribute
+      attach={"geometry-attributes-instanceUvRepeat"}
+      args={[uvBuffers.repeats, 2]} />
+    <MeshBasicMaterial
+      ref={materialRef}
+      map={texture}
+      alphaTest={0.1}
+      transparent={true}
+      onBeforeCompile={onAtlasMaterialCompile} />
+  </InstancedMesh>;
+};
+
+const PlantIconInstances = (props: PlantIconInstancesProps) => {
+  const {
+    config, plants, icon, visible, startTimeRef, dispatch, getZ, plantIndexes,
+    useAtlas,
+  } = props;
+  const textureUrl = getPlantIconTextureUrl(icon, useAtlas);
+  const baseTexture = useTexture(textureUrl);
+  const texture = React.useMemo(
+    () => getPlantIconTexture(baseTexture, icon, useAtlas),
+    [baseTexture, icon, useAtlas]);
+  // eslint-disable-next-line no-null/no-null
+  const instancedRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const staticInstances = useStaticPlantIconInstances(plants, config, getZ);
+  usePlantIconFrame({
+    config,
+    plants,
+    visible,
+    startTimeRef,
+    staticInstances,
+    instancedRef,
+    materialRef,
+  });
+  const onClick = usePlantIconClick(plants, dispatch, visible);
 
   return <InstancedMesh
     ref={instancedRef}
@@ -275,7 +413,7 @@ export const PlantInstances = React.memo(
 );
 
 const VisiblePlantInstances = (props: PlantInstancesProps) => {
-  const instances = React.useMemo(() => {
+  const { atlas, instances } = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
     Object.entries(props.iconCapacities || {}).map(([icon, capacity]) => {
       iconInstances[icon] = {
@@ -315,7 +453,7 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
       .filter(instance => instance.plants.length > 0);
     const useAtlas =
       visibleInstances.length >= PLANT_ICON_ATLAS_MIN_ICON_COUNT;
-    return visibleInstances
+    const instances = visibleInstances
       .map(instance => ({
         ...instance,
         useAtlas,
@@ -324,6 +462,33 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           props.iconCapacities?.[instance.icon] || 0,
         ),
       }));
+    if (!useAtlas) { return { atlas: undefined, instances }; }
+    const atlasPlants: ThreeDGardenPlant[] = [];
+    const atlasPlantIndexes: number[] = [];
+    let atlasCapacity = 0;
+    let atlasUrl = "";
+    const individualInstances: PlantIconInstancesProps[] = [];
+    instances.forEach(instance => {
+      if (getPlantIconTextureTransform(instance.icon)) {
+        if (!atlasUrl) {
+          atlasUrl = getPlantIconTextureUrl(instance.icon, true);
+        }
+        atlasPlants.push(...instance.plants);
+        atlasPlantIndexes.push(...instance.plantIndexes);
+        atlasCapacity += instance.capacity;
+      } else {
+        individualInstances.push({ ...instance, useAtlas: false });
+      }
+    });
+    const atlas = atlasPlants.length > 0
+      ? {
+        plants: atlasPlants,
+        plantIndexes: atlasPlantIndexes,
+        capacity: Math.max(atlasPlants.length, atlasCapacity),
+        atlasUrl,
+      }
+      : undefined;
+    return { atlas, instances: individualInstances };
   }, [
     props.config,
     props.dispatch,
@@ -335,6 +500,14 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
   ]);
 
   return <>
+    {atlas &&
+      <AtlasPlantIconInstances
+        key={`atlas-${atlas.capacity}`}
+        {...props}
+        plants={atlas.plants}
+        plantIndexes={atlas.plantIndexes}
+        capacity={atlas.capacity}
+        atlasUrl={atlas.atlasUrl} />}
     {instances.map(instance =>
       <PlantIconInstances
         key={`${instance.icon}-${instance.capacity}`}
