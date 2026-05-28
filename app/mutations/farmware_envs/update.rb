@@ -6,7 +6,7 @@ module FarmwareEnvs
 
     optional do
       string :key
-      duck :value, methods: [:to_json]
+      string :value
     end
 
     def execute
