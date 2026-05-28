@@ -178,7 +178,7 @@ body:has(.app.darl) {
     &.shown {
       cursor: pointer;
       &:hover {
-        background: $light_gray;
+        background: var(--main-bg);
       }
     }
     p {

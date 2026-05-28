@@ -20,14 +20,17 @@ export const ToolTip = (props: ToolTipProps) => {
     <div className={`title-help-text ${isOpen ? "open" : ""}`}>
       <i className={"title-help-text-text"}>{t(helpText)}</i>
       {docPage &&
-        <a onClick={docLinkClick({
-          slug: docPage,
-          navigate,
-          dispatch,
-        })}>
-          {" " + t("Documentation")}
-          <i className="fa fa-external-link" />
-        </a>}
+        <>
+          {" "}
+          <a onClick={docLinkClick({
+            slug: docPage,
+            navigate,
+            dispatch,
+          })}>
+            {t("Documentation")}
+            <i className="fa fa-external-link" />
+          </a>
+        </>}
     </div>
   </div>;
 };
