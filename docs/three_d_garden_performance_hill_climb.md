@@ -7823,3 +7823,118 @@ variable expanded across 100 points, repeated 10 times.
 realistic context and the custom path adds unnecessary complexity.
 
 **Commit:** None
+
+## Round 78
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 406. Cache resource selector results within one Lua run | Reduce repeated resource-index scans for Lua helpers used while visualizing Lua-heavy sequences | `runLua` executing 20 `get_plants()` calls over 100 plants | Accepted |
+| 407. Cache repeated `/api/points` GET results within one Lua run | Avoid repeated point sorting and cleaning when Lua code reads the same points API repeatedly | `runLua` executing 10 `/api/points` GET calls over 300 points | Accepted |
+| 408. Reduce plant spread drag-frame allocation | Improve click-to-add/edit-plant responsiveness by avoiding repeated active-position rounding and per-plant color array allocation | 60 plant-spread drag frames over 300 plants | Accepted |
+| 409. Replace callback-style loops in `expandActions` with direct loops | Reduce callback overhead while expanding long visualized movement sequences | Expand an 80-step mixed movement sequence 20 times | Rejected |
+| 410. Cache Lua variables by label in a `Map` | Avoid repeated filter/map lookup in Lua `variable()` calls | `runLua` executing 100 `variable("v9")` calls with 10 variables | Rejected |
+
+### Idea 406: Cache resource selector results within one Lua run
+
+**Description:** Capture the resource index once per `runLua` call and lazily
+cache selected point, tool, curve, plant, weed, and generic-point arrays for Lua
+helpers. Expected return: lower CPU work for visualized Lua code that calls
+resource helpers repeatedly during one evaluation.
+
+**Benchmark:** `runLua` executing 20 `get_plants()` calls over 100 plants.
+
+**Before:** 2.441 ms median; 20 emitted print actions.
+
+**After:** 2.098 ms median; 20 emitted print actions.
+
+**Change:** 14.1% faster, saving 0.344 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; this removes repeated selector scans in a realistic
+Lua-heavy visualization context, keeps results scoped to the current Lua run,
+and does not change returned Lua data.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 407: Cache repeated `/api/points` GET results within one Lua run
+
+**Description:** Reuse the sorted and cleaned `/api/points` GET result for
+subsequent identical point API reads during one Lua evaluation. Expected
+return: lower CPU when Lua scripts repeatedly inspect the point list.
+
+**Benchmark:** `runLua` executing 10 `/api/points` GET calls over 300 points,
+after the selector-cache change from Idea 406.
+
+**Before:** 14.536 ms median; 10 emitted print actions.
+
+**After:** 11.546 ms median; 10 emitted print actions.
+
+**Change:** 20.6% faster, saving 2.990 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; repeated point API reads now avoid repeated sort/clean
+work while preserving the same data returned by the demo Lua API.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 408: Reduce plant spread drag-frame allocation
+
+**Description:** Round the active pointer position once per plant-spread frame
+and avoid allocating a temporary RGB array for every plant. Expected return:
+lower per-frame CPU and allocation while click-to-add or edit-plant spread
+overlap coloring is active.
+
+**Benchmark:** Simulated plant-spread frame update for 60 drag frames over 300
+plants, including matrix composition, spread radii, overlap color calculation,
+and color assignment.
+
+**Before:** 1.386 ms median.
+
+**After:** 0.917 ms median.
+
+**Change:** 33.8% faster, saving 0.469 ms over 60 drag frames.
+
+**Outcome:** Accepted; the change is local to per-frame spread coloring, keeps
+the same overlap colors, and reduces drag-frame work without visual changes.
+The 3D bundle changed from 3,675,259 to 3,675,237 bytes, a negligible 22-byte
+decrease.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 409: Replace callback-style loops in `expandActions` with direct loops
+
+**Description:** Replace side-effect `.map` calls in `expandActions` with
+direct `for` loops. Expected return: lower callback overhead for long visualized
+movement sequences.
+
+**Benchmark:** Expand an 80-step mixed absolute/relative movement sequence 20
+times.
+
+**Before:** 1.290 ms median; 3,560 expanded actions.
+
+**After:** 1.272 ms median; 3,560 expanded actions.
+
+**Change:** 1.4% faster, saving 0.018 ms in the benchmarked context.
+
+**Outcome:** Rejected and rolled back; the improvement missed the threshold and
+the absolute saving is not meaningful enough to touch stable expansion flow.
+
+**Commit:** None
+
+### Idea 410: Cache Lua variables by label in a `Map`
+
+**Description:** Build a variable-label map once per `runLua` call and use it
+for Lua `variable()` lookups instead of filtering the variable list. Expected
+return: faster Lua variable access in scripts that repeatedly read variables.
+
+**Benchmark:** `runLua` executing 100 `variable("v9")` calls with 10 provided
+variables.
+
+**Before:** 1.756 ms median; one emitted print action.
+
+**After:** 1.779 ms median; one emitted print action.
+
+**Change:** 1.3% slower.
+
+**Outcome:** Rejected and rolled back; the extra map setup did not pay off for
+realistic variable counts.
+
+**Commit:** None

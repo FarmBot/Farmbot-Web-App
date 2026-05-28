@@ -35,6 +35,26 @@ export const runLua =
   (depth: number, luaCode: string, variables: ParameterApplication[]): Action[] => {
     const actions: Action[] = [];
     const L = lauxlib.luaL_newstate(); // stack: []
+    const resources = store.getState().resources.index;
+    let allPointsCache: ReturnType<typeof selectAllPoints> | undefined;
+    let allToolSlotsCache: ReturnType<typeof selectAllToolSlotPointers> | undefined;
+    let allToolsCache: ReturnType<typeof selectAllTools> | undefined;
+    let allCurvesCache: ReturnType<typeof selectAllCurves> | undefined;
+    let allPlantsCache: ReturnType<typeof selectAllPlantPointers> | undefined;
+    let allWeedsCache: ReturnType<typeof selectAllWeedPointers> | undefined;
+    let allGenericPointsCache:
+      ReturnType<typeof selectAllGenericPointers> | undefined;
+    const allPoints = () => allPointsCache ||= selectAllPoints(resources);
+    const allToolSlots = () =>
+      allToolSlotsCache ||= selectAllToolSlotPointers(resources);
+    const allTools = () => allToolsCache ||= selectAllTools(resources);
+    const allCurves = () => allCurvesCache ||= selectAllCurves(resources);
+    const allPlants = () =>
+      allPlantsCache ||= selectAllPlantPointers(resources);
+    const allWeeds = () => allWeedsCache ||= selectAllWeedPointers(resources);
+    const allGenericPoints = () =>
+      allGenericPointsCache ||= selectAllGenericPointers(resources);
+    let apiPointsGetCache: Point[] | undefined;
 
     lua.lua_newtable(L); // stack: [env]
     const envIndex = lua.lua_gettop(L);
@@ -124,12 +144,12 @@ export const runLua =
           jsToLua(L, n.args);
           break;
         case "point":
-          const point = selectAllPoints(store.getState().resources.index)
+          const point = allPoints()
             .find(p => p.body.id === n.args.pointer_id)?.body;
           jsToLua(L, clean(point));
           break;
         case "tool":
-          const slot = selectAllToolSlotPointers(store.getState().resources.index)
+          const slot = allToolSlots()
             .find(ts => ts.body.tool_id === n.args.tool_id)?.body;
           jsToLua(L, clean(slot));
           break;
@@ -185,11 +205,11 @@ export const runLua =
       lua.lua_pop(L, 1);
 
       if (url == "/api/points") {
-        const points = selectAllPoints(store.getState().resources.index);
+        const points = allPoints();
         if (method == "GET") {
-          const results = sortGroupBy("yx_alternating", points)
+          apiPointsGetCache ||= sortGroupBy("yx_alternating", points)
             .map(p => p.body).map(clean);
-          jsToLua(L, results);
+          jsToLua(L, apiPointsGetCache);
           return 1;
         }
         if (method == "POST") {
@@ -202,13 +222,13 @@ export const runLua =
           return 1;
         }
       } else if (method == "GET" && url == "/api/tools") {
-        const results = selectAllTools(store.getState().resources.index)
+        const results = allTools()
           .map(p => p.body).map(clean);
         jsToLua(L, results);
         return 1;
       } else if (method == "GET" && url.startsWith("/api/curves")) {
         const curveId = parseInt("" + last(url.split("/")));
-        const curve = selectAllCurves(store.getState().resources.index)
+        const curve = allCurves()
           .map(curve => curve.body)
           .filter(curve => curve.id == curveId)[0];
         jsToLua(L, clean(curve));
@@ -229,7 +249,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const params = luaToJs(L, 1) as Partial<Record<string, string | number>>;
-      const plants = selectAllPlantPointers(store.getState().resources.index)
+      const plants = allPlants()
         .map(plant => plant.body)
         .filter(filterPoint(params, "planted"))
         .map(clean);
@@ -240,7 +260,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const params = luaToJs(L, 1) as Partial<Record<string, string | number>>;
-      const weeds = selectAllWeedPointers(store.getState().resources.index)
+      const weeds = allWeeds()
         .map(weed => weed.body)
         .filter(filterPoint(params, "active"))
         .map(clean);
@@ -251,7 +271,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const params = luaToJs(L, 1) as Partial<Record<string, string | number>>;
-      const points = selectAllGenericPointers(store.getState().resources.index)
+      const points = allGenericPoints()
         .map(point => point.body)
         .filter(filterPoint(params, undefined))
         .map(clean);
@@ -262,7 +282,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const groupId = luaToJs(L, 1) as number;
-      const points = getGroupPoints(store.getState().resources.index, groupId)
+      const points = getGroupPoints(resources, groupId)
         .map(point => point.body).map(clean);
       jsToLua(L, points);
       return 1;
@@ -271,7 +291,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const groupId = luaToJs(L, 1) as number;
-      const points = getGroupPoints(store.getState().resources.index, groupId)
+      const points = getGroupPoints(resources, groupId)
         .map(point => point.body.id).map(clean);
       jsToLua(L, points);
       return 1;
@@ -304,11 +324,10 @@ export const runLua =
       const cmd = (luaToJs(L, 1) as RpcRequest).body?.[0];
       if (!cmd) { return 0; }
       if (cmd.kind == "execute") {
-        const ri = store.getState().resources.index;
         const sequenceId = cmd.args.sequence_id;
         const seqVariables = cmd.body;
         const seqActions = collectDemoSequenceActions(
-          depth + 1, ri, sequenceId, seqVariables);
+          depth + 1, resources, sequenceId, seqVariables);
         actions.push(...seqActions);
       } else {
         const luaActions = runLua(depth, csToLua(cmd), variables);

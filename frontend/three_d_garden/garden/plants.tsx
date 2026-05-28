@@ -339,6 +339,8 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     if (!updateState.needsInstanceUpdate &&
       updateState.lastUpdateKey == updateKey) { return; }
     perfMeasure("spreadFrameUpdateMs", () => {
+      const roundedActiveX = round(active.x);
+      const roundedActiveY = round(active.y);
       staticInstances.forEach((plant, index) => {
         const spreadRadii = getSpreadRadii({
           activeDragSpread,
@@ -357,13 +359,15 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
         mesh.setMatrixAt(index, tempMatrix);
         if (mesh.setColorAt) {
-          let insideColor = [0, 1, 0];
+          let r = 0;
+          let g = 1;
+          let b = 0;
           if (clickToAddMode || editPlantMode) {
             const overlap = getSpreadOverlap({
               spreadRadii,
               activeDragXY: {
-                x: round(active.x),
-                y: round(active.y),
+                x: roundedActiveX,
+                y: roundedActiveY,
                 z: 0,
               },
               plantXY: {
@@ -372,11 +376,15 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
                 z: 0,
               },
             });
-            insideColor = (plant.id && (plantId != plant.id))
-              ? overlap.color.rgb
-              : [1, 1, 1];
+            if (plant.id && plantId != plant.id) {
+              [r, g, b] = overlap.color.rgb;
+            } else {
+              r = 1;
+              g = 1;
+              b = 1;
+            }
           }
-          tempColor.setRGB(insideColor[0], insideColor[1], insideColor[2]);
+          tempColor.setRGB(r, g, b);
           mesh.setColorAt(index, tempColor);
         }
       });

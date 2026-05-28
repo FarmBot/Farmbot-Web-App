@@ -704,6 +704,23 @@ describe("runDemoLuaCode()", () => {
     expect(info).not.toHaveBeenCalled();
   });
 
+  it("runs repeated api point reads", () => {
+    const point1 = fakePoint();
+    point1.body.id = 1;
+    const point2 = fakePoint();
+    point2.body.id = 2;
+    mockResources = buildResourceIndex([point1, point2]);
+    runDemoLuaCode(`
+      local first = api{url="/api/points"}
+      local second = api{url="/api/points"}
+      print(#first, #second)
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("2	2");
+    expect(info).not.toHaveBeenCalled();
+  });
+
   it("runs api: handles the unexpected", () => {
     const point = fakePoint();
     point.body.id = 1;
