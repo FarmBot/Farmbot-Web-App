@@ -666,7 +666,21 @@ export const GardenModel = (props: GardenModelProps) => {
           getZ={getZ}
           hoveredPlant={hoveredPlant} />);
     },
-    [threeDPlants, config, getZ, hoveredPlant]);
+    [
+      threeDPlants,
+      config.bedLengthOuter,
+      config.bedWidthOuter,
+      config.bedXOffset,
+      config.bedYOffset,
+      config.columnLength,
+      config.labels,
+      config.labelsOnHover,
+      config.mirrorX,
+      config.mirrorY,
+      config.zGantryOffset,
+      getZ,
+      hoveredPlant,
+    ]);
 
   const plantInstancesVisible = props.smoothFocusTransitions
     ? showPlants

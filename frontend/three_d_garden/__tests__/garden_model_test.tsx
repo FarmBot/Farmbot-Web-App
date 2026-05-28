@@ -163,6 +163,27 @@ describe("<GardenModel />", () => {
     expect(findBedProps().soilSurfaceGeometry).not.toBe(before);
   });
 
+  it("reuses plant label nodes across unrelated config updates", () => {
+    const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    const findLabels = () => wrapper.root.find(node =>
+      node.props.name == "plant-labels").props.children;
+    const before = findLabels();
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, sun: p.config.sun + 1 }} />));
+    expect(findLabels()).toBe(before);
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, bedLengthOuter: p.config.bedLengthOuter + 1 }} />));
+    expect(findLabels()).not.toBe(before);
+  });
+
   it("reuses static layers across telemetry position updates", () => {
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();

@@ -13858,3 +13858,2887 @@ meaningful load or interaction improvement, and p95 moved in the wrong
 direction.
 
 **Commit:** None
+
+## Round 126
+
+New candidate list after Round 125:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 646. Narrow GardenModel plant-label memo dependencies | Reduce React element churn when unrelated 3D config values change while labels are visible | 40 visible labels across 40 unrelated config updates | Accepted |
+| 647. Cache GardenModel route key between location changes | Avoid string concatenation during static-layer memo setup | 40 rerenders with unchanged location | Rejected |
+| 648. Reuse empty camera prop objects during smooth focus transitions | Avoid tiny object allocation during animated focus frames | 60 smooth-focus transition frames | Rejected |
+| 649. Precompute top-down zoom scalar across unrelated renders | Avoid repeated bed-length zoom division while top-down state is unchanged | 60 top-down rerenders with unchanged bed length | Rejected |
+| 650. Build event-debug intersection names with a direct loop | Reduce allocation work when debug pointer logging is enabled | One pointer event with 20 intersections | Rejected |
+
+### Idea 646: Narrow GardenModel plant-label memo dependencies
+
+**Description:** `GardenModel` already memoized the plant label node list, but
+the dependency list included the whole `config` object. Unrelated config churn
+such as `sun` rebuilt all label React elements when labels were visible. The
+memo now depends only on label visibility and coordinate fields used by label
+placement.
+
+**Benchmark:** 40 visible plant labels across 40 unrelated config updates.
+
+**Before:** Current full label-node rebuild path: 0.6233 ms median,
+2.9535 ms p95.
+
+**After:** Narrowed label-node dependencies with reused nodes across unrelated
+updates: 0.0001 ms median, 0.0018 ms p95.
+
+**Change:** 100.0% faster, saving 0.6232 ms median and 2.9517 ms p95 across
+the 40-update batch.
+
+**Outcome:** Accepted. Unrelated 3D config updates now reuse the same plant
+label node list, while label visibility and coordinate-affecting config fields
+still rebuild the labels.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/garden_model_test.tsx`,
+`bun run typecheck`, `git diff --check`
+
+**Commit:** `Optimize 3D plant label churn by 100.0%`
+
+### Idea 647: Cache GardenModel route key between location changes
+
+**Description:** `GardenModel` builds a route key string from
+`location.pathname` and `location.search` during render. Caching that key could
+avoid repeated concatenation while static-layer dependencies are evaluated.
+
+**Benchmark:** 40 rerenders with an unchanged route matching the designer page.
+
+**Before:** Current route-key construction: 0.0022 ms median, 0.0035 ms p95.
+
+**After:** Simulated cached route key: 0.0011 ms median, 0.0013 ms p95.
+
+**Change:** 48.1% faster by median, saving 0.0010 ms.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is about one microsecond across 40 rerenders.
+
+**Commit:** None
+
+### Idea 648: Reuse empty camera prop objects during smooth focus transitions
+
+**Description:** During smooth focus transitions, `GardenModel` passes empty
+camera and orbit-control prop objects so the transition hook owns the camera
+state. Reusing empty objects could avoid per-frame allocations during the
+transition.
+
+**Benchmark:** 60 smooth-focus transition frames with camera props omitted.
+
+**Before:** Current empty object allocation path: 0.0013 ms median,
+0.0031 ms p95.
+
+**After:** Simulated shared empty prop objects: 0.0004 ms median,
+0.0028 ms p95.
+
+**Change:** 67.7% faster by median, saving 0.0009 ms.
+
+**Outcome:** Rejected before code changes. The saving is below a microsecond
+across a full 60-frame transition and does not justify changing the prop shape.
+
+**Commit:** None
+
+### Idea 649: Precompute top-down zoom scalar across unrelated renders
+
+**Description:** Top-down camera zoom recomputes the bed-length division on
+each render. Memoizing or precomputing the scalar could avoid this arithmetic
+when bed length and top-down state are unchanged.
+
+**Benchmark:** 60 top-down rerenders with unchanged bed length.
+
+**Before:** Current per-render zoom calculation: 0.0011 ms median,
+0.0045 ms p95.
+
+**After:** Simulated cached zoom scalar: 0.0005 ms median, 0.0023 ms p95.
+
+**Change:** 53.8% faster by median, saving 0.0006 ms.
+
+**Outcome:** Rejected before code changes. The arithmetic is effectively free
+in realistic render counts.
+
+**Commit:** None
+
+### Idea 650: Build event-debug intersection names with a direct loop
+
+**Description:** The optional event-debug pointer handler logs intersection
+object names with `.map()`. A direct loop could avoid callback overhead when
+debug logging is enabled.
+
+**Benchmark:** One event-debug pointer event with 20 intersections.
+
+**Before:** Current `.map()` name extraction: 0.0002 ms median, 0.0016 ms p95.
+
+**After:** Simulated direct-loop name extraction: 0.0005 ms median,
+0.0017 ms p95.
+
+**Change:** 116.8% slower by median and 0.0003 ms worse.
+
+**Outcome:** Rejected before code changes. The direct-loop version was slower,
+and this path is optional debug instrumentation.
+
+**Commit:** None
+
+## Round 127
+
+New candidate list after Round 126:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 651. Use an indexed loop while filtering soil-height points | Reduce callback overhead during realistic soil surface input preparation | 100 soil-height point resources filtered once | Rejected |
+| 652. Parse stored soil triangles in one pass | Avoid intermediate `map()` and `filter()` arrays when restoring compact triangle payloads | 394 stored soil triangles parsed once | Rejected |
+| 653. Fill the decorative sun/star buffer directly | Avoid temporary number-array growth before creating the 1,000-point star `Float32Array` | One `OtherSuns` 1,000-point buffer build | Rejected |
+| 654. Build enabled camera-view frustum points without callback mapping | Reduce enabled camera-view vector setup allocations while preserving the same frustum points | One enabled camera-view point calculation | Rejected |
+| 655. Reuse mirror texture repeat/offset tuples | Avoid small array/object allocation during soil render-texture setup | One image texture mirror prop calculation | Rejected |
+
+### Idea 651: Use an indexed loop while filtering soil-height points
+
+**Description:** `filterSoilPoints()` scans soil-height point resources with a
+callback. An indexed loop could avoid callback overhead while preserving the
+same boundary checks and transformed Z values.
+
+**Benchmark:** 100 soil-height point resources filtered once, matching a large
+but realistic configured soil-height set.
+
+**Before:** Current callback scan: 0.006666 ms median, 0.019459 ms p95.
+
+**After:** Simulated indexed scan: 0.005208 ms median, 0.018833 ms p95.
+
+**Change:** 21.9% faster by median, saving 0.001458 ms.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is about 1.5 microseconds per soil-point filter pass.
+
+**Commit:** None
+
+### Idea 652: Parse stored soil triangles in one pass
+
+**Description:** `parseStoredTriangles()` currently maps each parsed triangle
+through `parseStoredTriangle()` and then filters undefined results. A one-pass
+push loop could avoid the intermediate array while keeping compact and legacy
+stored formats.
+
+**Benchmark:** 394 compact stored soil triangles parsed once from a realistic
+stored payload.
+
+**Before:** Current `map()` plus `filter()` parse path: 0.088083 ms median,
+0.191750 ms p95.
+
+**After:** Simulated one-pass parser: 0.075750 ms median, 0.124750 ms p95.
+
+**Change:** 14.0% faster by median, saving 0.012333 ms.
+
+**Outcome:** Rejected before code changes. This parse happens only when stored
+soil triangles are restored, and the absolute saving is roughly 12 microseconds.
+
+**Commit:** None
+
+### Idea 653: Fill the decorative sun/star buffer directly
+
+**Description:** `OtherSuns` builds 1,000 random background points by pushing
+numbers into a temporary array and then copying them into a `Float32Array`.
+Filling the typed array directly could reduce one-time mount allocation.
+
+**Benchmark:** One `OtherSuns` 1,000-point buffer build.
+
+**Before:** Current temporary-array build: 0.060583 ms median,
+0.094083 ms p95.
+
+**After:** Simulated direct `Float32Array` fill: 0.032708 ms median,
+0.081500 ms p95.
+
+**Change:** 46.0% faster by median, saving 0.027875 ms.
+
+**Outcome:** Rejected before code changes. The one-time saving is less than
+0.03 ms, and the current code is simpler.
+
+**Commit:** None
+
+### Idea 654: Build enabled camera-view frustum points without callback mapping
+
+**Description:** Enabled camera-view frustum point construction maps top and
+bottom corner arrays through rotation helpers. Direct point assignment could
+avoid callback and spread-array allocation when the camera-view overlay is on.
+
+**Benchmark:** One enabled camera-view point calculation.
+
+**Before:** Current mapped frustum point setup: 0.003458 ms median,
+0.027167 ms p95.
+
+**After:** Simulated direct point assignment: 0.001458 ms median,
+0.002167 ms p95.
+
+**Change:** 57.8% faster by median, saving 0.002000 ms.
+
+**Outcome:** Rejected before code changes. The overlay setup is already
+microsecond-scale and the direct version is more repetitive.
+
+**Commit:** None
+
+### Idea 655: Reuse mirror texture repeat/offset tuples
+
+**Description:** `getMirrorTextureProps()` allocates two tiny tuples and one
+object for the soil render texture repeat/offset props. Reusing four cached
+mirror combinations could avoid that allocation.
+
+**Benchmark:** One image texture mirror prop calculation.
+
+**Before:** Current tuple/object allocation: 0.000125 ms median,
+0.000291 ms p95.
+
+**After:** Simulated cached mirror prop lookup: 0.000125 ms median,
+0.000500 ms p95.
+
+**Change:** No median improvement, with p95 0.000209 ms slower.
+
+**Outcome:** Rejected before code changes. The current allocation is already
+effectively free, and the cached lookup made p95 worse.
+
+**Commit:** None
+
+## Round 128
+
+New candidate list after Round 127:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 656. Split static promo toolbay tools from the moving promo seed trough | Avoid rebuilding five static demo tool records during bot telemetry updates | 60 promo-mode bot X-position updates | Rejected |
+| 657. Use static keys for distance indicator labels | Avoid `JSON.stringify()` key generation for fixed label placements | Three rendered distance indicators, 12 labels total | Rejected |
+| 658. Cache electronics box button descriptors by kit version | Avoid button descriptor array allocation during electronics box model renders | One v1.7 and one v1.8 electronics button render pass | Rejected |
+| 659. Replace SVG hole `range().map()` calls with direct loops | Avoid temporary arrays while loading beam and column SVG cutouts | One beam and one column SVG hole load, eight holes total | Rejected |
+| 660. Build bed support positions with direct loops | Avoid lodash `range()`, `slice()`, `flatMap()`, and nested `map()` allocation on bed support layout changes | One XL bed support layout with four extra X legs and two extra Y legs | Rejected |
+
+### Idea 656: Split static promo toolbay tools from the moving promo seed trough
+
+**Description:** Promo-mode `Tools` rebuilds all six demo tool records on each
+bot position update, even though only the mounted seed trough depends on the
+bot X position. Splitting the five static toolbay records from the moving
+trough could reduce allocation during telemetry-driven movement.
+
+**Benchmark:** 60 promo-mode bot X-position updates.
+
+**Before:** Current `PROMO_TOOLS(config, position)` rebuild path:
+0.003291 ms median, 0.006041 ms p95.
+
+**After:** Simulated static toolbay list plus moving trough record:
+0.001500 ms median, 0.004125 ms p95.
+
+**Change:** 54.4% faster by median, saving 0.001791 ms across 60 updates.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is under two microseconds for a full second of 60 Hz
+position updates.
+
+**Commit:** None
+
+### Idea 657: Use static keys for distance indicator labels
+
+**Description:** `DistanceIndicator` creates fixed labels with a key from
+`JSON.stringify([position, rotation])`. Static label keys could avoid
+stringifying the same four label placements for each indicator render.
+
+**Benchmark:** Three rendered distance indicators, 12 labels total.
+
+**Before:** Current JSON-stringified label keys: 0.001000 ms median,
+0.002166 ms p95.
+
+**After:** Simulated static label keys: 0.000084 ms median,
+0.000333 ms p95.
+
+**Change:** 91.6% faster by median, saving 0.000916 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is below one
+microsecond for all visible bed dimension labels.
+
+**Commit:** None
+
+### Idea 658: Cache electronics box button descriptors by kit version
+
+**Description:** `ElectronicsBoxModel` calls `buttons(kitVersion)` during model
+render, allocating a small descriptor array. A static lookup by kit version
+could reuse those descriptor arrays.
+
+**Benchmark:** One v1.7 and one v1.8 electronics button render pass.
+
+**Before:** Current switch returning new descriptor arrays: 0.000208 ms median,
+0.000375 ms p95.
+
+**After:** Simulated cached descriptor lookup: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 39.9% faster by median, saving 0.000083 ms.
+
+**Outcome:** Rejected before code changes. The render-time allocation is
+already far below a microsecond and the component is memoized around the kit
+version.
+
+**Commit:** None
+
+### Idea 659: Replace SVG hole `range().map()` calls with direct loops
+
+**Description:** Beam and column SVG loaders use `range().map()` to push hole
+shapes into the outline. Direct loops could avoid temporary arrays and callback
+dispatch during one-time model shape loading.
+
+**Benchmark:** One beam and one column SVG hole load, eight holes total.
+
+**Before:** Current `range().map()` hole push path: 0.000209 ms median,
+0.001250 ms p95.
+
+**After:** Simulated direct-loop hole push path: 0.000125 ms median,
+0.000958 ms p95.
+
+**Change:** 40.2% faster by median, saving 0.000084 ms.
+
+**Outcome:** Rejected before code changes. The improvement is a fraction of a
+microsecond in a one-time load path.
+
+**Commit:** None
+
+### Idea 660: Build bed support positions with direct loops
+
+**Description:** `Bed` builds support positions with lodash `range()`,
+`slice()`, `flatMap()`, and nested `map()` calls. Direct loops could reduce
+allocation when bed support layout inputs change.
+
+**Benchmark:** One XL bed support layout with four extra X legs and two extra
+Y legs, producing 16 support positions.
+
+**Before:** Current support position construction: 0.000583 ms median,
+0.002333 ms p95.
+
+**After:** Simulated direct-loop support construction: 0.000125 ms median,
+0.001084 ms p95.
+
+**Change:** 78.6% faster by median, saving 0.000458 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is less than
+half a microsecond and only applies when bed layout settings change.
+
+**Commit:** None
+
+## Round 129
+
+New candidate list after Round 128:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 661. Generate promo soil-surface points with a direct loop | Avoid lodash `times().map()` allocation while creating random demo terrain points | One 100-point generated promo soil surface | Rejected |
+| 662. Cache promo crop icons by plant key | Avoid repeated `kebabCase()` and crop metadata lookup while laying out dense promo gardens | One Genesis XL spring promo garden with 316 plants | Rejected |
+| 663. Mutate the promo plant prewarm cache directly | Avoid repeated cache object spreading during module-level promo plant prewarm | One full promo prewarm across five seasons and two bed sizes | Rejected |
+| 664. Build promo plant capacities with direct loops | Avoid callback and object-entry churn while scanning cached seasonal promo plants | One plant-capacity scan across five seasons and two bed sizes | Rejected |
+| 665. Reuse promo season names in `getSeasonTimings()` | Avoid rebuilding the season-name array for season transition scheduling | Two realistic season-timing lookups | Rejected |
+
+### Idea 661: Generate promo soil-surface points with a direct loop
+
+**Description:** `calculatePointPositions()` creates random promo terrain
+points with lodash `times().map()`. A direct pre-sized loop could avoid one
+temporary collection and callback dispatch while generating the same point
+shape and random coordinate fields.
+
+**Benchmark:** One generated promo soil surface with 100 random points, matching
+the current realistic terrain point count.
+
+**Before:** Current `times().map()` generation: 0.015125 ms median,
+0.020667 ms p95.
+
+**After:** Simulated direct pre-sized loop: 0.014333 ms median,
+0.018250 ms p95.
+
+**Change:** 5.2% faster by median, saving 0.000792 ms.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the absolute saving is below one microsecond.
+
+**Commit:** None
+
+### Idea 662: Cache promo crop icons by plant key
+
+**Description:** `calculatePlantPositions()` resolves each repeated promo plant
+icon from its label via `kebabCase()` and `findCropIcon()`. Caching the icon by
+plant key could avoid repeated string conversion and metadata lookup across
+dense rows of the same crop.
+
+**Benchmark:** One Genesis XL spring promo garden with 316 generated plants.
+
+**Before:** Current per-plant icon lookup: 0.017375 ms median,
+0.022667 ms p95.
+
+**After:** Simulated per-key icon cache: 0.008500 ms median,
+0.014500 ms p95.
+
+**Change:** 51.1% faster by median, saving 0.008875 ms.
+
+**Outcome:** Rejected before code changes. The relative result is strong, but
+the absolute saving is still under 0.01 ms for a full dense promo garden
+calculation.
+
+**Commit:** None
+
+### Idea 663: Mutate the promo plant prewarm cache directly
+
+**Description:** Promo startup prewarms cached plant layouts for five seasons
+and two bed sizes. The current helper returns a newly spread cache object for
+each entry. Direct cache assignment could avoid repeated object copies during
+module initialization.
+
+**Benchmark:** One full promo prewarm across five seasons and two bed sizes.
+
+**Before:** Current spread-per-entry prewarm path: 0.103000 ms median,
+0.156875 ms p95.
+
+**After:** Simulated direct cache assignment: 0.101291 ms median,
+0.175291 ms p95.
+
+**Change:** 1.7% faster by median, saving 0.001709 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the p95 result is worse.
+
+**Commit:** None
+
+### Idea 664: Build promo plant capacities with direct loops
+
+**Description:** `getPromoPlantCapacities()` scans cached seasonal promo
+gardens with nested `map()` calls and `Object.entries()` over per-garden icon
+counts. Direct loops could reduce allocation while preserving retained
+per-icon capacity and maximum plant instance capacity.
+
+**Benchmark:** One plant-capacity scan across five seasons and two bed sizes,
+using the warmed promo plant cache.
+
+**Before:** Current callback/object-entry scan: 0.017959 ms median,
+0.025958 ms p95.
+
+**After:** Simulated direct-loop scan: 0.012542 ms median,
+0.015917 ms p95.
+
+**Change:** 30.2% faster by median, saving 0.005417 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is only about five microseconds for the full capacity scan.
+
+**Commit:** None
+
+### Idea 665: Reuse promo season names in `getSeasonTimings()`
+
+**Description:** `getSeasonTimings()` maps `SEASON_TIMINGS` to season names on
+each call before finding the current season index. A module-level season-name
+array could avoid rebuilding that tiny list during season transition
+scheduling.
+
+**Benchmark:** Two realistic season-timing lookups, matching the current
+transition effect's current-season and next-season checks.
+
+**Before:** Current season-name map per lookup: 0.000208 ms median,
+0.000291 ms p95.
+
+**After:** Simulated cached season-name array: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 60.1% faster by median, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is far below a
+microsecond and the function runs only when promo season animation schedules.
+
+**Commit:** None
+
+## Round 130
+
+New candidate list after Round 129:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 666. Clone focus-transition material arrays in one pass | Reduce focus fade setup work for multi-material meshes | One focus material binding/apply/restore pass over 40 two-material meshes | Rejected |
+| 667. Use a direct `topDown` key check in `modifyConfig()` | Avoid `Object.keys(update).includes()` on top-down camera toggles | One top-down toggle config update | Rejected |
+| 668. Reset all 3D config fields with a direct loop | Avoid side-effect `Object.keys(config).map()` during the developer reset-all action | One reset-all config update | Rejected |
+| 669. Precompute public overlay option entries | Avoid `Object.entries()` rebuilds for the four public settings sections | One public settings bar render with 11 option buttons | Rejected |
+| 670. Skip camera-selection debounce setup when dispatch is unavailable | Avoid creating unused debounced click handlers in dispatch-less camera selection renders | One dispatch-less camera-selection marker setup with 12 markers | Rejected |
+
+### Idea 666: Clone focus-transition material arrays in one pass
+
+**Description:** `createFocusMaterialBinding()` clones array material slots with
+one `.map()` and then reads cloned material state with a second `.map()`.
+Cloning and recording state in one direct loop could reduce focus fade setup
+work for meshes that use material arrays.
+
+**Benchmark:** One focus material binding, opacity apply, and restore pass over
+40 meshes with two materials each.
+
+**Before:** Current two-pass material-array clone path: 0.028083 ms median,
+0.043875 ms p95.
+
+**After:** Simulated one-pass clone/state loop: 0.026792 ms median,
+0.045708 ms p95.
+
+**Change:** 4.6% faster by median, saving 0.001291 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold, and p95 worsened in the realistic binding pass.
+
+**Commit:** None
+
+### Idea 667: Use a direct `topDown` key check in `modifyConfig()`
+
+**Description:** `modifyConfig()` detects top-down updates with
+`Object.keys(update).includes("topDown")`. Checking the key directly could
+avoid key-array allocation when toggling between top-down and perspective
+camera modes.
+
+**Benchmark:** One top-down toggle config update.
+
+**Before:** Current `Object.keys(update).includes()` path: 0.000125 ms median,
+0.001042 ms p95.
+
+**After:** Simulated direct `"topDown" in update` path: 0.000083 ms median,
+0.001125 ms p95.
+
+**Change:** 33.6% faster by median, saving 0.000042 ms, with slightly worse
+p95.
+
+**Outcome:** Rejected before code changes. The absolute saving is a fraction
+of a microsecond on a manual config toggle.
+
+**Commit:** None
+
+### Idea 668: Reset all 3D config fields with a direct loop
+
+**Description:** The developer "Reset all" preset copies all current config
+keys from `INITIAL` with `Object.keys(config).map()` for side effects. A direct
+loop could avoid callback overhead while keeping the same reset behavior.
+
+**Benchmark:** One reset-all config update.
+
+**Before:** Current reset-all key copy path: 0.001042 ms median,
+0.002500 ms p95.
+
+**After:** Simulated direct key loop: 0.000375 ms median,
+0.001458 ms p95.
+
+**Change:** 64.0% faster by median, saving 0.000667 ms.
+
+**Outcome:** Rejected before code changes. The action is manual and optional,
+and the absolute saving is below one microsecond.
+
+**Commit:** None
+
+### Idea 669: Precompute public overlay option entries
+
+**Description:** `PublicOverlaySection` rebuilds `Object.entries(options)` for
+each public settings section render. Passing or caching entry arrays could
+avoid rebuilding entries for the four static option groups.
+
+**Benchmark:** One public settings bar render covering 11 option buttons.
+
+**Before:** Current object-entry setup: 0.001083 ms median,
+0.002125 ms p95.
+
+**After:** Simulated precomputed entry arrays: 0.000875 ms median,
+0.001917 ms p95.
+
+**Change:** 19.2% faster by median, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The public overlay render cost is
+already microsecond-scale and this would add indirection for no meaningful
+runtime gain.
+
+**Commit:** None
+
+### Idea 670: Skip camera-selection debounce setup when dispatch is unavailable
+
+**Description:** Each camera-selection marker creates a debounced click handler
+even when `dispatch` is unavailable and the click cannot do anything. Skipping
+that debounce allocation in dispatch-less renders could reduce optional
+camera-selection setup work.
+
+**Benchmark:** One dispatch-less camera-selection marker setup with the 12
+normal shipped markers.
+
+**Before:** Current unused debounce setup: 0.000834 ms median,
+0.002542 ms p95.
+
+**After:** Simulated no-dispatch fast path: 0.000250 ms median,
+0.000334 ms p95.
+
+**Change:** 70.0% faster by median, saving 0.000584 ms.
+
+**Outcome:** Rejected before code changes. The optional dispatch-less
+camera-selection setup saves less than one microsecond, so it is not a
+meaningful responsiveness or load-time improvement.
+
+**Commit:** None
+
+## Round 131
+
+New candidate list after Round 130:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 671. Fill ground color attributes with a typed array directly | Reduce visible ground geometry setup allocation | One detailed ground setup, building the 64-segment high-detail and 16-segment low-detail geometries | Rejected |
+| 672. Initialize triangle-index buckets with a direct loop | Reduce soil-height lookup index setup allocation | One 400-triangle soil index build | Rejected |
+| 673. Reuse the Sun origin vector across renders | Avoid repeated tiny `Vector3` allocation during sun rerenders | 60 Sun render-equivalent origin reads | Rejected |
+| 674. Hoist V17 vertical cable-carrier support base position | Avoid repeated identical position conversion per support instance | One V17 vertical support matrix update with 5 supports | Rejected |
+| 675. Extract camera spring vectors without `Number()` conversions | Reduce smooth-camera transition value extraction overhead | 60 camera transition value extractions | Rejected |
+
+### Idea 671: Fill ground color attributes with a typed array directly
+
+**Description:** `buildGroundGeometry()` pushes vertex color components into a
+temporary number array before creating a `Float32BufferAttribute`. Filling a
+`Float32Array` directly could reduce one-time visible ground geometry setup
+allocation while keeping the same radial fade and vertex colors.
+
+**Benchmark:** One detailed ground setup, building the 64-segment high-detail
+ground geometry and the 16-segment low-detail fallback geometry.
+
+**Before:** Current number-array color fill: 0.006792 ms median,
+0.021292 ms p95.
+
+**After:** Simulated direct `Float32Array` fill: 0.005792 ms median,
+0.011041 ms p95.
+
+**Change:** 14.7% faster by median, saving 0.001000 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+entire detailed-plus-low ground setup only saves about one microsecond and runs
+once per ground mount.
+
+**Commit:** None
+
+### Idea 672: Initialize triangle-index buckets with a direct loop
+
+**Description:** `buildTriangleIndex()` creates its bucket list with
+`Array.from({ length }, () => [])`. A pre-sized array plus direct indexed fill
+could avoid callback allocation during soil-height lookup index setup.
+
+**Benchmark:** One 400-triangle soil index build, matching a rough realistic
+soil surface.
+
+**Before:** Current `Array.from()` bucket initialization path: 0.024041 ms
+median, 0.029834 ms p95.
+
+**After:** Simulated direct bucket fill loop: 0.026000 ms median,
+0.030583 ms p95.
+
+**Change:** 8.1% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The direct loop was slower in the
+realistic full index build.
+
+**Commit:** None
+
+### Idea 673: Reuse the Sun origin vector across renders
+
+**Description:** `SunBase` creates `new Vector3(0, 0, 0)` during render for the
+sun line origin. A module-level origin vector could avoid a tiny allocation on
+sun rerenders while preserving line endpoints.
+
+**Benchmark:** 60 Sun render-equivalent origin reads, matching one second of
+animation-frame-driven rerenders.
+
+**Before:** Current per-render origin allocation: 0.000500 ms median,
+0.000917 ms p95.
+
+**After:** Simulated shared origin vector: 0.000167 ms median,
+0.001917 ms p95.
+
+**Change:** 66.6% faster by median, saving 0.000333 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The median saving is a fraction of a
+microsecond across 60 renders and the p95 worsened.
+
+**Commit:** None
+
+### Idea 674: Hoist V17 vertical cable-carrier support base position
+
+**Description:** The V17 vertical support effect computes the same
+`get3DPosition({ x: x + 20, y: y + 55 })` inside each support-instance loop.
+Hoisting the base position outside the loop could reduce repeated conversion
+work for v1.7 bots without changing support placement.
+
+**Benchmark:** One V17 vertical support matrix update with 5 supports, matching
+a normal v1.7 Z-axis support count.
+
+**Before:** Current per-support base-position lookup: 0.001000 ms median,
+0.003083 ms p95.
+
+**After:** Simulated hoisted base-position lookup: 0.000625 ms median,
+0.001417 ms p95.
+
+**Change:** 37.5% faster by median, saving 0.000375 ms.
+
+**Outcome:** Rejected before code changes. The relative improvement is real,
+but the absolute saving is far below one microsecond for a full support update.
+
+**Commit:** None
+
+### Idea 675: Extract camera spring vectors without `Number()` conversions
+
+**Description:** `cameraTransitionValue()` converts spring vector entries with
+`Number(...)` before returning tuple arrays. Smooth-camera spring values are
+already numeric, so direct tuple extraction could reduce transition value work
+if it preserved behavior.
+
+**Benchmark:** 60 camera transition value extractions, matching one second of
+smooth focus transition frames.
+
+**Before:** Current `Number(...)` conversion path: 0.001750 ms median,
+0.002500 ms p95.
+
+**After:** Simulated direct numeric tuple extraction: 0.001791 ms median,
+0.002375 ms p95.
+
+**Change:** 2.3% slower by median, with slightly better p95.
+
+**Outcome:** Rejected before code changes. The median path was slower and the
+current explicit numeric coercion remains clearer and safer for unknown spring
+values.
+
+**Commit:** None
+
+## Round 132
+
+New candidate list after Round 131:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 676. Build fallback instanced meshes with a direct node loop | Reduce fallback bot-part setup allocation | Generate fallback elements for 108 instanced GLTF nodes | Rejected |
+| 677. Use sets for 3D hover and draw-mode checks | Improve repeated raycast/click mode checks | 1,000 mixed hover/draw mode checks | Rejected |
+| 678. Compare starter-tray positions with a direct loop | Reduce greenhouse tray comparator callback overhead | 90 value-equivalent two-tray position comparisons | Rejected |
+| 679. Build texture variant keys without temporary arrays | Reduce texture variant lookup allocation | Five common texture variant option sets | Rejected |
+| 680. Reuse active watering soil height within render setup | Avoid duplicate cached `getZ(x, y)` call | One active watering-animation render-equivalent setup | Rejected |
+
+### Idea 676: Build fallback instanced meshes with a direct node loop
+
+**Description:** `fallbackInstancedMeshes()` uses
+`Object.entries(...).filter(...).map(...)` when creating fallback bot-part
+instanced meshes. A direct node loop could reduce setup allocation if the
+fallback path is used.
+
+**Benchmark:** Generate fallback elements for 108 instanced GLTF nodes with
+eight instances each, matching the scale used for merged bot-part models.
+
+**Before:** Current entries/filter/map fallback path: 0.047125 ms median,
+0.073583 ms p95.
+
+**After:** Simulated direct node loop: 0.033083 ms median, 0.041417 ms p95.
+
+**Change:** 29.8% faster by median, saving 0.014042 ms.
+
+**Outcome:** Rejected before code changes. The improvement is below a tenth of
+a millisecond and applies only to the fallback renderer; the primary merged
+geometry path is unchanged.
+
+**Commit:** None
+
+### Idea 677: Use sets for 3D hover and draw-mode checks
+
+**Description:** Several raycast and click handlers test modes through
+`HOVER_OBJECT_MODES.includes(...)` and `DRAW_POINT_MODES.includes(...)`. Sets
+could make repeated mode checks cheaper during pointer-heavy interaction if the
+small arrays were a bottleneck.
+
+**Benchmark:** 1,000 mixed hover/draw mode checks, approximating a burst of
+pointer/raycast checks across visible interactive objects.
+
+**Before:** Current array `includes()` checks: 0.007750 ms median,
+0.008000 ms p95.
+
+**After:** Simulated `Set.has()` checks: 0.011417 ms median,
+0.011625 ms p95.
+
+**Change:** 47.3% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The arrays are tiny and faster than
+sets in this realistic check burst.
+
+**Commit:** None
+
+### Idea 678: Compare starter-tray positions with a direct loop
+
+**Description:** `StarterTrays` compares value-equivalent position arrays with
+`every()`. A direct loop could reduce callback overhead during greenhouse scene
+rerenders where tray positions are inline but value-equivalent.
+
+**Benchmark:** 90 value-equivalent two-tray position comparisons, matching a
+greenhouse config-churn rerender batch.
+
+**Before:** Current `every()` comparator: 0.001834 ms median,
+0.003333 ms p95.
+
+**After:** Simulated direct comparator loop: 0.001000 ms median,
+0.002208 ms p95.
+
+**Change:** 45.5% faster by median, saving 0.000834 ms across 90
+comparisons.
+
+**Outcome:** Rejected before code changes. The full 90-comparison batch saves
+less than one microsecond.
+
+**Commit:** None
+
+### Idea 679: Build texture variant keys without temporary arrays
+
+**Description:** `textureVariantKey()` creates an array of option fragments and
+joins it. Direct string construction could reduce tiny allocation during
+texture variant cache lookups while preserving key semantics.
+
+**Benchmark:** Five common texture variant option sets used by ground, wood,
+screen, and atlas-like texture variants.
+
+**Before:** Current array/join key builder: 0.000584 ms median,
+0.001500 ms p95.
+
+**After:** Simulated direct string builder: 0.000542 ms median,
+0.000792 ms p95.
+
+**Change:** 7.2% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the absolute saving is effectively zero.
+
+**Commit:** None
+
+### Idea 680: Reuse active watering soil height within render setup
+
+**Description:** Active watering animation setup calls `getZ(x, y)` for
+`nozzleToSoil`, then calls it again for the water-spot mist position. Reusing
+the first soil height could avoid a duplicate cached lookup during active
+watering renders.
+
+**Benchmark:** One active watering-animation render-equivalent setup with the
+shipped 16 water streams and a cached soil-height lookup.
+
+**Before:** Current duplicate cached `getZ(x, y)` path: 0.003416 ms median,
+0.006167 ms p95.
+
+**After:** Simulated single soil-height lookup reused for both values:
+0.002834 ms median, 0.003750 ms p95.
+
+**Change:** 17.0% faster by median, saving 0.000582 ms.
+
+**Outcome:** Rejected before code changes. The relative gain is real, but it
+saves well under one microsecond in an active watering render setup.
+
+**Commit:** None
+
+## Round 133
+
+New candidate list after Round 132:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 681. Directly compare `ImageTexture` config fields | Reduce image texture memo comparator overhead during soil/render-texture churn | 60 unchanged image-texture config comparisons | Rejected |
+| 682. Directly compare `Bed` config fields | Reduce bed memo comparator overhead during parent churn | 60 unchanged bed config comparisons | Rejected |
+| 683. Directly compare Bot vertical/toolhead config fields | Reduce Bot telemetry comparator overhead | 90 unchanged vertical/toolhead config comparisons | Rejected |
+| 684. Directly compare `Sun` config fields | Reduce sun memo comparator overhead during scene rerender batches | 60 unchanged sun config comparisons | Rejected |
+| 685. Directly compare camera-selection config fields | Reduce camera-selection memo comparator overhead while markers are enabled | 60 unchanged camera-selection config comparisons | Rejected |
+
+### Idea 681: Directly compare `ImageTexture` config fields
+
+**Description:** `imageTextureConfigFieldsEqual()` iterates
+`IMAGE_TEXTURE_CONFIG_FIELDS` with `every()`. Direct field comparisons could
+avoid callback and array iteration overhead during unchanged soil texture
+rerender batches.
+
+**Benchmark:** 60 unchanged image-texture config comparisons, matching a
+settings or parent-rerender batch where `ImageTexture` should be skipped.
+
+**Before:** Current field-array comparator: 0.008166 ms median,
+0.009500 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.005000 ms p95.
+
+**Change:** 99.0% faster by median, saving 0.008083 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is about eight
+microseconds per 60-comparison batch, and replacing the compact field list
+with a long direct expression would reduce maintainability.
+
+**Commit:** None
+
+### Idea 682: Directly compare `Bed` config fields
+
+**Description:** `bedConfigFieldsEqual()` iterates a large field list with
+`every()`. A direct comparison expression could reduce memo comparator CPU
+when unchanged bed props flow through parent rerenders.
+
+**Benchmark:** 60 unchanged bed config comparisons.
+
+**Before:** Current field-array comparator: 0.008083 ms median,
+0.009292 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.007834 ms p95.
+
+**Change:** 99.0% faster by median, saving 0.008000 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch is still
+far below a meaningful runtime threshold, and the direct version would be much
+more verbose.
+
+**Commit:** None
+
+### Idea 683: Directly compare Bot vertical/toolhead config fields
+
+**Description:** The Bot vertical/toolhead memo comparator uses a shared field
+array helper. Direct comparisons could reduce telemetry rerender comparator
+overhead while preserving the same relevant-field behavior.
+
+**Benchmark:** 90 unchanged vertical/toolhead config comparisons, matching a
+Bot telemetry rerender batch.
+
+**Before:** Current field-array comparator: 0.005875 ms median,
+0.006958 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000042 ms median,
+0.005292 ms p95.
+
+**Change:** 99.3% faster by median, saving 0.005833 ms across 90
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute batch saving is under
+six microseconds, so the current readable shared helper stays.
+
+**Commit:** None
+
+### Idea 684: Directly compare `Sun` config fields
+
+**Description:** `sunPropsEqual()` checks `SUN_CONFIG_FIELDS` with `every()`.
+Direct comparisons could reduce memo comparator overhead during scene rerender
+batches.
+
+**Benchmark:** 60 unchanged sun config comparisons.
+
+**Before:** Current field-array comparator: 0.003458 ms median,
+0.004833 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.002750 ms p95.
+
+**Change:** 97.6% faster by median, saving 0.003375 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The saving is only a few
+microseconds per rerender batch and does not justify a less maintainable
+comparator.
+
+**Commit:** None
+
+### Idea 685: Directly compare camera-selection config fields
+
+**Description:** `cameraSelectionUIPropsEqual()` iterates seven config fields
+with `every()`. Direct field comparisons could make enabled camera-selection
+rerenders skip slightly faster.
+
+**Benchmark:** 60 unchanged camera-selection config comparisons.
+
+**Before:** Current field-array comparator: 0.001833 ms median,
+0.002875 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.001333 ms p95.
+
+**Change:** 95.5% faster by median, saving 0.001750 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The realistic saving is less than
+two microseconds for the whole batch.
+
+**Commit:** None
+
+## Round 134
+
+New candidate list after Round 133:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 686. Build default image texture keys without array allocation | Reduce default soil texture key setup when moisture overlays are hidden | 60 no-moisture image texture key builds, matching startup/render churn | Rejected |
+| 687. Pre-filter numeric image overlays before rendering wrappers | Avoid returning sparse `undefined` children for image entries without usable XY metadata | One 24-image render-list build with 20 calibrated and 4 uncalibrated images | Rejected |
+| 688. Share weed instance navigation setup across icon and radius meshes | Reduce duplicate `useNavigateToWeed` closure setup when weed layers are visible | 60 visible weed-instance renders with 50 weeds | Rejected |
+| 689. Build point alpha groups directly instead of via string-keyed object buckets | Reduce point instance grouping allocation for saved/unsaved point layers | 60 point grouping passes with 50 generic points and two saved states | Rejected |
+| 690. Directly compare drawn-point config fields | Reduce drawn-point preview comparator overhead during pointer movement | 60 unchanged drawn-point preview comparisons | Rejected |
+
+### Idea 686: Build default image texture keys without array allocation
+
+**Description:** `getImageTextureKey()` builds an array and joins it even when
+moisture overlays are hidden and the sensor/reading keys collapse to `false`.
+A direct no-moisture string path could reduce default soil texture key setup
+without changing texture invalidation behavior.
+
+**Benchmark:** 60 no-moisture image texture key builds, matching a startup or
+render-churn batch in the default scene.
+
+**Before:** Current array/join key path: 0.005875 ms median, 0.007750 ms p95.
+
+**After:** Simulated direct no-moisture key path: 0.000875 ms median,
+0.002958 ms p95.
+
+**Change:** 85.1% faster by median, saving 0.005000 ms across 60 key builds.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only five microseconds for the whole batch.
+
+**Commit:** None
+
+### Idea 687: Pre-filter numeric image overlays before rendering wrappers
+
+**Description:** `Images` maps all filtered images and returns `undefined` for
+entries without numeric XY metadata. Pre-filtering/pushing only calibrated
+entries could avoid sparse child output and a callback branch in photo-heavy
+texture renders.
+
+**Benchmark:** One 24-image render-list build with 20 calibrated images and
+four uncalibrated images, matching a plausible visible-photo garden.
+
+**Before:** Current `map()` branch path: 0.000209 ms median, 0.000500 ms p95.
+
+**After:** Simulated direct push path: 0.000167 ms median, 0.000625 ms p95.
+
+**Change:** 20.1% faster by median, saving 0.000042 ms for the render-list
+build; p95 was slightly slower.
+
+**Outcome:** Rejected before code changes. The single-call cost is already far
+below one microsecond and the p95 did not improve.
+
+**Commit:** None
+
+### Idea 688: Share weed instance navigation setup across icon and radius meshes
+
+**Description:** Visible weed instances call `useNavigateToWeed()` in both the
+icon mesh and radius mesh components. Creating the navigation closure once in
+the parent and passing it down could remove duplicate closure setup while
+preserving click behavior.
+
+**Benchmark:** 60 visible weed-instance renders with 50 weeds, measuring the
+duplicate navigation closure setup.
+
+**Before:** Current duplicate setup path: 0.000417 ms median, 0.001417 ms p95.
+
+**After:** Simulated shared setup path: 0.000250 ms median, 0.001250 ms p95.
+
+**Change:** 40.0% faster by median, saving 0.000167 ms across 60 renders.
+
+**Outcome:** Rejected before code changes. The whole 60-render batch saves less
+than a fifth of a microsecond, so threading another callback through the weed
+instance components is not justified.
+
+**Commit:** None
+
+### Idea 689: Build point alpha groups directly instead of via string-keyed object buckets
+
+**Description:** `getPointInstanceGroups()` groups saved and unsaved point
+instances through string keys and `Object.values()`. Since point alpha has only
+two possible buckets, direct saved/unsaved arrays could avoid object-key churn.
+
+**Benchmark:** 60 point grouping passes with 50 generic points, two saved
+states, mixed colors, mixed radii, and realistic world-position/getZ work.
+
+**Before:** Current string-keyed bucket path: 0.131541 ms median,
+0.144417 ms p95.
+
+**After:** Simulated direct saved/unsaved bucket path: 0.020209 ms median,
+0.023750 ms p95.
+
+**Change:** 84.6% faster by median, saving 0.111332 ms across 60 grouping
+passes.
+
+**Outcome:** Rejected before code changes. The benchmarked batch exaggerates
+how often grouping runs; a single 50-point grouping saves about 0.0019 ms, and
+`PointInstances` already avoids this work on unrelated parent churn.
+
+**Commit:** None
+
+### Idea 690: Directly compare drawn-point config fields
+
+**Description:** `drawnPointPropsEqual()` checks eight config fields with
+`every()`. Direct field comparisons could reduce pointer-preview comparator
+overhead during active draw workflows.
+
+**Benchmark:** 60 unchanged drawn-point preview comparisons with a populated
+drawn point and equal relevant config fields.
+
+**Before:** Current field-array comparator: 0.002583 ms median,
+0.003125 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000834 ms median,
+0.000917 ms p95.
+
+**Change:** 67.7% faster by median, saving 0.001749 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The full comparator batch saves
+less than two microseconds, so the current compact field-list form stays.
+
+**Commit:** None
+
+## Round 135
+
+New candidate list after Round 134:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 691. Build grid material binding keys without array joins | Reduce visible-grid setup allocation during grid rerenders | 60 visible grid material-key builds with realistic outer/inner positions | Rejected |
+| 692. Build load-progress overlay class names directly | Reduce loading overlay render allocation during staged startup | Eight load-progress overlay renders from first step through complete | Rejected |
+| 693. Defer FPS probe top-count formatting unless console logs are enabled | Reduce perf-enabled diagnostic report work without changing normal `window.__scene_metrics` output | 60 FPS diagnostic reports over a 490-object scene with console logging disabled | Rejected |
+| 694. Replace soil surface-debug array `includes()` checks with direct comparisons | Reduce bed soil-layer render branches in the default non-debug scene | 120 soil surface-debug checks, matching two soil LOD layers across 60 rerenders | Rejected |
+| 695. Build bed support matrices with a pre-sized direct loop | Reduce bed-support setup allocation when bed leg layout changes | One XL bed support matrix build with 16 supports | Rejected |
+
+### Idea 691: Build grid material binding keys without array joins
+
+**Description:** `VisibleGrid` builds `materialBindingKey` with a temporary
+array and `join(":")`. A direct template string could avoid allocation during
+visible-grid rerenders while keeping the same focus-material binding key.
+
+**Benchmark:** 60 visible grid material-key builds using default 3,000 x 1,500
+grid dimensions and realistic outer/inner position counts.
+
+**Before:** Current array/join key path: 0.003292 ms median, 0.004917 ms p95.
+
+**After:** Simulated direct template-string key: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 96.2% faster by median, saving 0.003167 ms across 60 key builds.
+
+**Outcome:** Rejected before code changes. The full rerender batch saves only
+about three microseconds.
+
+**Commit:** None
+
+### Idea 692: Build load-progress overlay class names directly
+
+**Description:** `ThreeDLoadProgressOverlay` builds class names with an array
+join and always formats the progress width through a ternary template string.
+Direct strings could reduce allocation across staged startup overlay renders.
+
+**Benchmark:** Eight load-progress overlay render calculations, matching the
+shipped load steps from first visible step through complete.
+
+**Before:** Current overlay string assembly: 0.000375 ms median,
+0.001209 ms p95.
+
+**After:** Simulated direct class/complete-width strings: 0.000167 ms median,
+0.000791 ms p95.
+
+**Change:** 55.5% faster by median, saving 0.000208 ms across all eight load
+states.
+
+**Outcome:** Rejected before code changes. Startup overlay string assembly is
+already below a microsecond for the whole realistic sequence.
+
+**Commit:** None
+
+### Idea 693: Defer FPS probe top-count formatting unless console logs are enabled
+
+**Description:** When perf reporting is enabled but `FPS_LOGS` is disabled,
+`FPSProbe` still gathers scene type/name counts, sorts top counts, and builds
+the full log string even though only `window.__scene_metrics` and perf samples
+are used. Deferring top-count formatting to the console-log path could reduce
+diagnostic overhead without changing normal user rendering.
+
+**Benchmark:** 60 FPS diagnostic reports over a 490-object scene with console
+logging disabled, matching one minute of perf-enabled reporting.
+
+**Before:** Current full count/format path: 0.289750 ms median,
+0.317167 ms p95.
+
+**After:** Simulated basic scene-metrics path without top-count formatting:
+0.032500 ms median, 0.044542 ms p95.
+
+**Change:** 88.8% faster by median, saving 0.257250 ms across 60 diagnostic
+reports.
+
+**Outcome:** Rejected before code changes. This only affects explicit
+diagnostic/perf mode, and the absolute saving is about a quarter millisecond
+per minute of reporting.
+
+**Commit:** None
+
+### Idea 694: Replace soil surface-debug array `includes()` checks with direct comparisons
+
+**Description:** `Surface` and `DetailedSoilLayer` check surface-debug modes
+with temporary arrays and `includes()`. Direct comparisons could reduce branch
+allocation in default non-debug bed renders.
+
+**Benchmark:** 120 non-debug surface checks, matching two soil LOD layers
+across 60 bed rerenders.
+
+**Before:** Current array `includes()` checks: 0.000417 ms median,
+0.000792 ms p95.
+
+**After:** Simulated direct `normals || height` comparisons: 0.000084 ms
+median, 0.000125 ms p95.
+
+**Change:** 79.9% faster by median, saving 0.000333 ms across 120 checks.
+
+**Outcome:** Rejected before code changes. The measured saving is a third of a
+microsecond for the whole batch.
+
+**Commit:** None
+
+### Idea 695: Build bed support matrices with a pre-sized direct loop
+
+**Description:** `BedSupports` creates leg/caster/wheel matrices with
+`supports.map()`. A pre-sized direct loop could reduce allocation when bed leg
+layout changes, especially on XL beds with extra supports.
+
+**Benchmark:** One XL bed support matrix build with 16 supports, representing
+extra X/Y legs on a large bed.
+
+**Before:** Current `supports.map()` matrix build: 0.003917 ms median,
+0.006625 ms p95.
+
+**After:** Simulated pre-sized direct loop: 0.003875 ms median,
+0.005166 ms p95.
+
+**Change:** 1.1% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the matrix build is already negligible at realistic support counts.
+
+**Commit:** None
+
+## Round 136
+
+New candidate list after Round 135:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 696. Use tuple positions for the electronics box group | Avoid `Vector3` allocation during bot X-position updates | 90 electronics-box position calculations during telemetry-like X movement | Rejected |
+| 697. Set greenhouse wall instance matrices with a direct loop | Reduce instance setup callback overhead for panes and frames | One Greenhouse wall matrix setup across 46 pane/frame instances | Rejected |
+| 698. Compare scene people data with a direct loop | Reduce optional people-layer memo comparator overhead | 90 value-equivalent two-person comparisons | Rejected |
+| 699. Build toolbay slot positions with a reusable tuple helper | Reduce tiny per-tool position array allocation in configured tool renders | One configured 7-slot tool render position calculation batch | Rejected |
+| 700. Reuse potted-plant lathe point data | Reduce optional Greenhouse potted-plant mount setup | One potted-plant geometry setup with the shipped nine lathe points | Rejected |
+
+### Idea 696: Use tuple positions for the electronics box group
+
+**Description:** `ElectronicsBoxBase` allocates a `Vector3` for its group
+position on each X-position update. Passing the same coordinates as a tuple
+could avoid that allocation while preserving placement.
+
+**Benchmark:** 90 electronics-box position calculations during telemetry-like
+Bot X movement.
+
+**Before:** Current `Vector3` position path: 0.000667 ms median,
+0.002208 ms p95.
+
+**After:** Simulated tuple position path: 0.000375 ms median,
+0.001417 ms p95.
+
+**Change:** 43.8% faster by median, saving 0.000292 ms across 90 position
+calculations.
+
+**Outcome:** Rejected before code changes. The whole telemetry-like batch
+saves less than a third of a microsecond.
+
+**Commit:** None
+
+### Idea 697: Set greenhouse wall instance matrices with a direct loop
+
+**Description:** `GreenhouseWallInstances` writes pane and frame matrices with
+`forEach()`. A direct loop could reduce callback overhead during selected
+Greenhouse setup.
+
+**Benchmark:** One Greenhouse wall matrix setup across 46 pane/frame
+instances.
+
+**Before:** Current `forEach()` matrix setup: 0.000125 ms median,
+0.000334 ms p95.
+
+**After:** Simulated direct loop setup: 0.000125 ms median, 0.000375 ms p95.
+
+**Change:** 0.0% median improvement, with slightly worse p95.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the existing setup is already negligible.
+
+**Commit:** None
+
+### Idea 698: Compare scene people data with a direct loop
+
+**Description:** `samePeople()` uses nested `every()` callbacks to compare
+people URLs and offsets. A direct nested loop could reduce optional people-layer
+memo comparator overhead.
+
+**Benchmark:** 90 value-equivalent two-person comparisons, matching repeated
+scene prop comparator checks.
+
+**Before:** Current nested `every()` comparator: 0.002875 ms median,
+0.004834 ms p95.
+
+**After:** Simulated direct nested loop comparator: 0.000791 ms median,
+0.001500 ms p95.
+
+**Change:** 72.5% faster by median, saving 0.002084 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is about two
+microseconds for the whole comparison batch.
+
+**Commit:** None
+
+### Idea 699: Build toolbay slot positions with a reusable tuple helper
+
+**Description:** Each configured tool render builds an intermediate position
+object and then a group-position array. Computing the final tuple directly
+could reduce tiny allocation work while preserving mounted-tool/toolbay
+placement.
+
+**Benchmark:** One configured 7-slot tool render position calculation batch.
+
+**Before:** Current intermediate object plus tuple path: 0.000125 ms median,
+0.000417 ms p95.
+
+**After:** Simulated direct tuple path: 0.000083 ms median, 0.000208 ms p95.
+
+**Change:** 33.6% faster by median, saving 0.000042 ms for the full 7-slot
+batch.
+
+**Outcome:** Rejected before code changes. The saving is far below a meaningful
+runtime threshold.
+
+**Commit:** None
+
+### Idea 700: Reuse potted-plant lathe point data
+
+**Description:** `PottedPlant` builds nine `Vector2` points before constructing
+the lathe geometry. Reusing static point data could reduce optional Greenhouse
+potted-plant mount setup.
+
+**Benchmark:** One potted-plant geometry setup with the shipped nine lathe
+points and 32 radial segments.
+
+**Before:** Current point allocation plus lathe geometry: 0.008583 ms median,
+0.011667 ms p95.
+
+**After:** Simulated reused point data with the same lathe geometry:
+0.007459 ms median, 0.009166 ms p95.
+
+**Change:** 13.1% faster by median, saving 0.001124 ms for one optional
+potted-plant setup.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is about one microsecond and only applies to an optional
+Greenhouse prop.
+
+**Commit:** None
+
+## Round 137
+
+New candidate list after Round 136:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 701. Skip empty dev-camera JSON parsing during camera initialization | Reduce one-time camera setup work when no developer camera override is saved | One default `cameraInit()` call with no saved dev camera | Rejected |
+| 702. Build camera-selection angle lists with direct branches | Reduce optional camera-selection marker setup allocation | One active camera-selection render building top-down and iso angle lists | Rejected |
+| 703. Replace progressive-load dependency `.every()` checks with direct checks | Reduce load-step gating overhead during staged 3D startup | Eight load-step allowed checks, matching one pass over shipped load steps | Rejected |
+| 704. Reuse north-arrow extrude args | Avoid tiny visible north-arrow render allocations | One visible north-arrow render building two `Extrude` arg tuples | Rejected |
+| 705. Precompute repeated packaging descriptor data | Reduce optional packaging scene setup callback allocation | One visible v1.7 packaging render building carton and extrusion-kit repeated descriptors | Rejected |
+
+### Idea 701: Skip empty dev-camera JSON parsing during camera initialization
+
+**Description:** `cameraInit()` always attempts to parse the developer camera
+string. In normal sessions this string is empty, so a fast path could avoid a
+thrown `JSON.parse` before falling back to the default camera position.
+
+**Benchmark:** One default `cameraInit()` call with no saved dev camera.
+Samples were repeated only to stabilize sub-microsecond timing.
+
+**Before:** Current empty-string `JSON.parse` try/catch path: 0.000250 ms
+median, 0.001458 ms p95.
+
+**After:** Simulated empty-string fast path: 0.000042 ms median, 0.000167 ms
+p95.
+
+**Change:** 83.2% faster by median, saving 0.000208 ms for camera
+initialization.
+
+**Outcome:** Rejected before code changes. The optimization only affects a
+one-time setup path and saves about a fifth of a microsecond.
+
+**Commit:** None
+
+### Idea 702: Build camera-selection angle lists with direct branches
+
+**Description:** `CameraSelectionUI` builds top-down and perspective angle
+lists with `includes()` and `concat()`. Direct branches for the shipped angle
+sets could reduce optional camera-selection setup work.
+
+**Benchmark:** One active camera-selection render building top-down and iso
+angle lists.
+
+**Before:** Current `includes()`/`concat()` angle-list path: 0.000084 ms
+median, 0.000209 ms p95.
+
+**After:** Simulated direct-branch angle-list path: 0.000083 ms median,
+0.000167 ms p95.
+
+**Change:** 1.2% faster by median, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the current setup is already negligible.
+
+**Commit:** None
+
+### Idea 703: Replace progressive-load dependency `.every()` checks with direct checks
+
+**Description:** `useThreeDLoadProgress()` checks load-step dependencies with
+small arrays and `.every()`. Direct checks for the fixed shipped dependency
+graph could reduce staged-load bookkeeping while preserving the same step
+order.
+
+**Benchmark:** Eight load-step allowed checks, matching one pass over the
+shipped load steps.
+
+**Before:** Current dependency-array `.every()` checks: 0.000375 ms median,
+0.000709 ms p95.
+
+**After:** Simulated direct dependency checks: 0.000042 ms median,
+0.000125 ms p95.
+
+**Change:** 88.8% faster by median, saving 0.000333 ms across the full
+load-step pass.
+
+**Outcome:** Rejected before code changes. The whole load-step gating pass is
+sub-microsecond, so hardcoding the dependency graph would not produce a
+meaningful startup improvement.
+
+**Commit:** None
+
+### Idea 704: Reuse north-arrow extrude args
+
+**Description:** `NorthArrow` recreates the two `Extrude` argument tuples on
+render even though the arrow and letter shapes are static. Reusing static args
+could avoid small visible north-arrow setup allocations.
+
+**Benchmark:** One visible north-arrow render building two `Extrude` arg
+tuples.
+
+**Before:** Current inline extrude arg allocation: 0.000083 ms median,
+0.000167 ms p95.
+
+**After:** Simulated static arg reuse: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 49.4% faster by median, saving 0.000041 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is far below a
+meaningful load-time or render-time threshold.
+
+**Commit:** None
+
+### Idea 705: Precompute repeated packaging descriptor data
+
+**Description:** The optional packaging scene rebuilds small strap and edge
+protector arrays with `.map()` for the main carton and v1.7 extrusion kit.
+Precomputed static strap positions plus direct edge descriptor construction
+could reduce setup allocation.
+
+**Benchmark:** One visible v1.7 packaging render building carton and
+extrusion-kit repeated descriptors.
+
+**Before:** Current repeated descriptor setup: 0.000750 ms median,
+0.001959 ms p95.
+
+**After:** Simulated static/direct descriptor setup: 0.000292 ms median,
+0.001000 ms p95.
+
+**Change:** 61.1% faster by median, saving 0.000458 ms for the optional
+packaging setup.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is less than half a microsecond and applies only to an
+optional scene layer.
+
+**Commit:** None
+
+## Round 138
+
+New candidate list after Round 137:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 706. Hoist brightness color lookup data | Avoid rebuilding a small color map in repeated bed, soil, and utility renders | 30 brightness color lookups across a small scene-rerender burst | Rejected |
+| 707. Use `URL.searchParams` directly in `setUrlParam()` | Reduce URL-param update allocation on focus enter/exit | One focus URL set and one focus URL clear | Rejected |
+| 708. Fast-path empty focus URL reads | Avoid `URLSearchParams` setup when the 3D garden URL has no query string | One default no-query focus URL read | Rejected |
+| 709. Simplify click drag delta checks | Reduce click responsiveness helper overhead across pointer handlers | 100 click-delta checks in a short interaction burst | Rejected |
+| 710. Use a direct loop for 3D load-completion log prep | Reduce perf-log bookkeeping when 3D load logging is enabled | One eight-step load completion log preparation pass | Rejected |
+
+### Idea 706: Hoist brightness color lookup data
+
+**Description:** `getColorFromBrightness()` rebuilds its 12-entry color map on
+every call. Hoisting that lookup table could reduce allocation across bed,
+soil, ground, and utility renders without changing any color values.
+
+**Benchmark:** 30 brightness color lookups across a small scene-rerender burst.
+
+**Before:** Current per-call color map allocation: 0.002125 ms median,
+0.003708 ms p95.
+
+**After:** Simulated module-level color map lookup: 0.000083 ms median,
+0.000208 ms p95.
+
+**Change:** 96.1% faster by median, saving 0.002042 ms across all 30 lookups.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+realistic batch only saves about two microseconds.
+
+**Commit:** None
+
+### Idea 707: Use `URL.searchParams` directly in `setUrlParam()`
+
+**Description:** `setUrlParam()` creates a `URL`, then creates a separate
+`URLSearchParams` from `url.search`. Mutating `url.searchParams` directly could
+avoid one object allocation during focus enter/exit and config URL updates.
+
+**Benchmark:** One focus URL set and one focus URL clear.
+
+**Before:** Current separate `URLSearchParams` path: 0.001666 ms median,
+0.002625 ms p95.
+
+**After:** Simulated direct `url.searchParams` path: 0.001917 ms median,
+0.003166 ms p95.
+
+**Change:** 15.1% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The direct path was slower in the
+realistic set-and-clear benchmark.
+
+**Commit:** None
+
+### Idea 708: Fast-path empty focus URL reads
+
+**Description:** `getFocusFromUrlParams()` builds `URLSearchParams` even when
+`window.location.search` is empty. A no-query fast path could reduce default
+3D startup URL parsing.
+
+**Benchmark:** One default no-query focus URL read.
+
+**Before:** Current empty-query `URLSearchParams` read: 0.000083 ms median,
+0.000125 ms p95.
+
+**After:** Simulated empty-query return: 0.000041 ms median, 0.000083 ms p95.
+
+**Change:** 50.6% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The default focus URL read is
+already below a tenth of a microsecond.
+
+**Commit:** None
+
+### Idea 709: Simplify click drag delta checks
+
+**Description:** `clickWasDragged()` normalizes `event.delta` with `|| 0`
+before comparing it to the drag threshold. Direct comparison could reduce a
+tiny amount of click helper work across plant, weed, point, and pointer object
+handlers.
+
+**Benchmark:** 100 click-delta checks in a short interaction burst.
+
+**Before:** Current normalized delta check: 0.000292 ms median,
+0.000917 ms p95.
+
+**After:** Simulated direct delta comparison: 0.000291 ms median,
+0.000875 ms p95.
+
+**Change:** 0.3% faster by median, saving 0.000001 ms across 100 checks.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and has no meaningful absolute effect on click responsiveness.
+
+**Commit:** None
+
+### Idea 710: Use a direct loop for 3D load-completion log prep
+
+**Description:** When 3D load logging is enabled, the completion effect formats
+the eight shipped load-step timings with `forEach()`. A direct loop could reduce
+diagnostic bookkeeping before the console writes.
+
+**Benchmark:** One eight-step load completion log preparation pass, excluding
+console I/O.
+
+**Before:** Current `forEach()` log preparation: 0.000209 ms median,
+0.000959 ms p95.
+
+**After:** Simulated direct-loop log preparation: 0.000500 ms median,
+0.000875 ms p95.
+
+**Change:** 139.2% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The direct loop was slower, and this
+path only runs when diagnostic load logging is enabled.
+
+**Commit:** None
+
+## Round 139
+
+New candidate list after Round 138:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 711. Use native rounding for point radius scale setup | Reduce point marker module initialization by avoiding a lodash helper call | One point-radius scale constant calculation | Rejected |
+| 712. Simplify arrow rotation comparison branches | Reduce dimension-arrow memo comparator overhead | 18 arrow rotation comparisons, matching three visible distance indicators | Rejected |
+| 713. Update preset-button press positions directly | Improve preset-button pointer responsiveness by avoiding recursive child traversal | One preset button pointer down/up press cycle | Rejected |
+| 714. Build camera-view frustum points without map/closure helpers | Reduce enabled camera-view setup while the camera mount moves | 20 enabled camera-view point constructions during camera/bot motion | Rejected |
+| 715. Build Lab shelf descriptors without `.map()` | Reduce selected-Lab scene setup allocation | One selected Lab scene shelf descriptor setup | Rejected |
+
+### Idea 711: Use native rounding for point radius scale setup
+
+**Description:** `POINT_CYLINDER_SCALE_FACTOR` uses lodash `round()` for a
+constant module-level point marker value. Native `Math.round()` could avoid a
+helper call during point module initialization while preserving the same value.
+
+**Benchmark:** One point-radius scale constant calculation.
+
+**Before:** Current lodash-like round path: 0.000042 ms median, 0.000084 ms
+p95.
+
+**After:** Simulated `Math.round()` path: 0.000042 ms median, 0.000084 ms p95.
+
+**Change:** 0.0% median improvement.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold,
+and this constant setup is already below a tenth of a microsecond.
+
+**Commit:** None
+
+### Idea 712: Simplify arrow rotation comparison branches
+
+**Description:** `sameRotation()` in `Arrow` handles identical references,
+missing rotations, and value-equivalent rotations in one expression. A more
+direct early-return branch could reduce comparator overhead for dimension
+arrow rerenders.
+
+**Benchmark:** 18 arrow rotation comparisons, matching three visible distance
+indicators.
+
+**Before:** Current rotation comparator: 0.000167 ms median, 0.000209 ms p95.
+
+**After:** Simulated direct-branch comparator: 0.000166 ms median,
+0.000375 ms p95.
+
+**Change:** 0.6% faster by median, saving 0.000001 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and does not improve the p95.
+
+**Commit:** None
+
+### Idea 713: Update preset-button press positions directly
+
+**Description:** `PresetButton` press/release handlers recursively traverse the
+known button child tree to move the button and label. Directly updating the
+known button and text child positions could reduce pointer-down/up work.
+
+**Benchmark:** One preset button pointer down/up press cycle.
+
+**Before:** Current recursive child traversal: 0.000292 ms median,
+0.001375 ms p95.
+
+**After:** Simulated direct child update: 0.000083 ms median, 0.000292 ms p95.
+
+**Change:** 71.6% faster by median, saving 0.000209 ms per press cycle.
+
+**Outcome:** Rejected before code changes. The absolute saving is about a fifth
+of a microsecond, and direct child indexing would be more brittle than the
+current traversal.
+
+**Commit:** None
+
+### Idea 714: Build camera-view frustum points without map/closure helpers
+
+**Description:** Enabled `CameraView` point construction maps top and bottom
+corner tuples through local rotation closures. Directly filling the eight
+points could reduce setup while the camera-view overlay is visible and the bot
+or camera mount moves.
+
+**Benchmark:** 20 enabled camera-view point constructions during camera/bot
+motion.
+
+**Before:** Current map/closure point construction: 0.008792 ms median,
+0.015041 ms p95.
+
+**After:** Simulated direct point construction: 0.004500 ms median,
+0.007875 ms p95.
+
+**Change:** 48.8% faster by median, saving 0.004292 ms across 20 enabled
+camera-view updates.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is only about four microseconds across a 20-update overlay
+motion batch.
+
+**Commit:** None
+
+### Idea 715: Build Lab shelf descriptors without `.map()`
+
+**Description:** The selected Lab scene builds two shelf descriptors from a
+small array and `.map()`. A direct fixed loop could avoid a tiny allocation in
+Lab scene setup.
+
+**Benchmark:** One selected Lab scene shelf descriptor setup.
+
+**Before:** Current shelf descriptor `.map()` path: 0.000084 ms median,
+0.000167 ms p95.
+
+**After:** Simulated direct descriptor setup: 0.000083 ms median, 0.000125 ms
+p95.
+
+**Change:** 1.2% faster by median, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the existing setup cost is negligible.
+
+**Commit:** None
+
+## Round 140
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 716. Memoize `ModelMesh` | Skip stable GLTF mesh subtree work during unchanged parent rerenders | 90 stable `ModelMesh` parent rerenders | Rejected |
+| 717. Memoize the `Mesh` wrapper | Skip stable intrinsic mesh proxy work for repeated static mesh leaves | 40 stable mesh leaves over 60 parent rerenders | Rejected |
+| 718. Memoize the `Group` wrapper | Skip stable intrinsic group proxy work for repeated static group leaves | 40 stable group leaves over 60 parent rerenders | Rejected |
+| 719. Memoize the `MeshPhongMaterial` wrapper | Skip stable material proxy work for repeated static material leaves | 40 stable material leaves over 60 parent rerenders | Rejected |
+| 720. Scan dirty grid-preview points with a direct loop | Reduce active pointer preview comparator callback overhead | One 100-point dirty-grid preview scan | Rejected |
+
+### Idea 716: Memoize `ModelMesh`
+
+**Description:** Wrap the shared GLTF `ModelMesh` helper in `React.memo()` so
+stable model/name props can skip the mesh subtree during unchanged parent
+rerenders. Expected return: faster rotary/tool model rerenders without changing
+geometry, material, refs, or scale.
+
+**Benchmark:** 90 stable `ModelMesh` parent rerenders with the same model and
+name props, matching unchanged tool-model parent churn.
+
+**Before:** Raw `ModelMesh` export shape: 0.822083 ms median for the 90-rerender
+batch.
+
+**After:** Exact production memoized export shape: 0.827083 ms median.
+
+**Change:** 0.61% slower by median.
+
+**Outcome:** Rejected and rolled back. An earlier outer-memo prototype looked
+promising, but the exact production export did not clear the 10% threshold and
+was slightly slower in the realistic benchmark.
+
+**Commit:** None
+
+### Idea 717: Memoize the `Mesh` wrapper
+
+**Description:** Wrap the shared `Mesh` intrinsic proxy in `React.memo()` so
+stable mesh leaves can skip wrapper work during parent rerenders. Expected
+return: faster static bot/scene rerenders without changing rendered meshes or
+materials.
+
+**Benchmark:** 40 stable mesh leaves over 60 parent rerenders, using stable
+position, geometry, and material references.
+
+**Before:** Raw wrapper: 7.294709 ms median.
+
+**After:** Exact memoized wrapper export shape: 11.543166 ms median.
+
+**Change:** 58.24% slower by median.
+
+**Outcome:** Rejected and rolled back. The memo comparison/reconciliation cost
+outweighed the skipped wrapper render in the exact production shape.
+
+**Commit:** None
+
+### Idea 718: Memoize the `Group` wrapper
+
+**Description:** Wrap the shared `Group` intrinsic proxy in `React.memo()` so
+stable group leaves can skip wrapper work during parent rerenders. Expected
+return: faster static scene hierarchy rerenders without changing group
+transforms or children.
+
+**Benchmark:** 40 stable group leaves over 60 parent rerenders.
+
+**Before:** Raw wrapper: 6.224083 ms median.
+
+**After:** Exact memoized wrapper export shape: 7.921375 ms median.
+
+**Change:** 27.27% slower by median.
+
+**Outcome:** Rejected and rolled back. The exact memoized wrapper added cost
+instead of reducing the rerender path.
+
+**Commit:** None
+
+### Idea 719: Memoize the `MeshPhongMaterial` wrapper
+
+**Description:** Wrap the shared `MeshPhongMaterial` intrinsic proxy in
+`React.memo()` so stable material leaves can skip wrapper work during parent
+rerenders. Expected return: faster static material-heavy rerenders without
+changing material props.
+
+**Benchmark:** 40 stable material leaves over 60 parent rerenders.
+
+**Before:** Raw wrapper: 6.147708 ms median.
+
+**After:** Exact memoized wrapper export shape: 6.132000 ms median.
+
+**Change:** 0.26% faster by median, saving 0.015708 ms across the full batch.
+
+**Outcome:** Rejected and rolled back. The change misses the 10% threshold and
+the absolute saving is negligible.
+
+**Commit:** None
+
+### Idea 720: Scan dirty grid-preview points with a direct loop
+
+**Description:** Replace `hasDirtyGridPreview()`'s `.some()` callback with a
+direct loop over map points. Expected return: cheaper active pointer preview
+comparisons when many map points are present.
+
+**Benchmark:** One 100-point dirty-grid preview scan with the dirty grid point
+at the end of the list, sampled repeatedly only to stabilize timing.
+
+**Before:** Current `.some()` scan: 0.000292 ms median.
+
+**After:** Simulated direct loop: 0.000209 ms median.
+
+**Change:** 28.42% faster by median, saving 0.000083 ms per 100-point scan.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is far below a meaningful responsiveness or memory improvement.
+
+**Commit:** None
+
+## Round 141
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 721. Inline the Bounds comparator field checks | Reduce hidden/visible bounds comparator callback overhead during telemetry churn | 90 unchanged Bounds prop comparisons | Rejected |
+| 722. Remove redundant `cableDebug` check work from PowerSupply comparator | Reduce PowerSupply comparator field work while debug cables are off | 90 unchanged PowerSupply prop comparisons | Rejected |
+| 723. Inline the Solenoid comparator field checks | Reduce Solenoid comparator callback overhead during telemetry churn | 90 unchanged Solenoid prop comparisons | Rejected |
+| 724. Inline the Caster comparator field checks | Reduce Caster comparator callback overhead during bed rerender churn | 90 unchanged Caster prop comparisons | Rejected |
+| 725. Combine toolbay pullout rotation switches | Reduce tool-slot rotation helper calls during configured Tools render | Seven configured tool-slot rotation calculations | Rejected |
+
+### Idea 721: Inline the Bounds comparator field checks
+
+**Description:** `Bounds` compares relevant config and position fields through
+two generic `.every()` helper calls. Direct field checks could reduce comparator
+overhead during bot telemetry churn while preserving the same bounds,
+dimension, and distance-indicator invalidation behavior.
+
+**Benchmark:** 90 unchanged Bounds prop comparisons, matching a telemetry-like
+rerender burst.
+
+**Before:** Current generic `.every()` comparator: 0.008375 ms median.
+
+**After:** Simulated direct field checks: 0.000334 ms median.
+
+**Change:** 96.01% faster by median, saving 0.008041 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only about eight microseconds across the full rerender burst
+and does not justify replacing a compact helper with a long manual comparator.
+
+**Commit:** None
+
+### Idea 722: Remove redundant `cableDebug` check work from PowerSupply comparator
+
+**Description:** `PowerSupply` first requires both `cableDebug` values to be
+false and then compares `cableDebug` again inside its field list. Removing that
+redundant field comparison could reduce comparator work while preserving debug
+cable behavior.
+
+**Benchmark:** 90 unchanged PowerSupply prop comparisons with cable debugging
+off, matching normal bot telemetry churn.
+
+**Before:** Current comparator with redundant field check: 0.003666 ms median.
+
+**After:** Simulated comparator without the redundant `cableDebug` field:
+0.000250 ms median.
+
+**Change:** 93.18% faster by median, saving 0.003416 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The logic cleanup is safe in
+principle, but the realistic saving is only a few microseconds across a full
+rerender batch and is not a meaningful performance improvement.
+
+**Commit:** None
+
+### Idea 723: Inline the Solenoid comparator field checks
+
+**Description:** `Solenoid` compares position fields directly and config fields
+through `.every()`. Direct config field checks could reduce comparator callback
+overhead during water-system rerenders while preserving every relevant
+invalidation field.
+
+**Benchmark:** 90 unchanged Solenoid prop comparisons.
+
+**Before:** Current direct-position plus `.every()` config comparator:
+0.003500 ms median.
+
+**After:** Simulated all-direct comparator: 0.000250 ms median.
+
+**Change:** 92.86% faster by median, saving 0.003250 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute improvement is only a
+few microseconds across the whole batch, and the current comparator is easier
+to audit.
+
+**Commit:** None
+
+### Idea 724: Inline the Caster comparator field checks
+
+**Description:** `Caster` compares four relevant config fields through
+`.every()`. Direct checks could reduce a small callback allocation path while
+keeping caster geometry invalidation identical.
+
+**Benchmark:** 90 unchanged Caster prop comparisons.
+
+**Before:** Current `.every()` comparator: 0.002208 ms median.
+
+**After:** Simulated direct field checks: 0.000208 ms median.
+
+**Change:** 90.58% faster by median, saving 0.002000 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch only saves
+two microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 725: Combine toolbay pullout rotation switches
+
+**Description:** `ToolbaySlot` first mirrors the pullout direction and then
+maps the displayed direction to a rotation multiplier. Combining those two
+switches could reduce helper calls during configured tool-slot rendering while
+preserving pullout orientation.
+
+**Benchmark:** Seven configured tool-slot rotation calculations with `mirrorX`
+enabled and `mirrorY` disabled.
+
+**Before:** Current two-helper path: 0.000083 ms median.
+
+**After:** Simulated combined switch: 0.000083 ms median.
+
+**Change:** Effectively unchanged by median.
+
+**Outcome:** Rejected before code changes. The realistic seven-slot path is
+already below measurement significance and does not improve.
+
+**Commit:** None
+
+## Round 142
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 726. Skip FPS detailed scene-count maps when console logging is disabled | Reduce diagnostic report work while preserving `window.__scene_metrics` summary counts | 60 FPS diagnostic scene-count reports over a 490-object scene | Rejected |
+| 727. Use direct undefined checks in moisture point extraction | Reduce lodash helper overhead while extracting recent moisture points | 60 moisture point extraction passes over 120 readings | Rejected |
+| 728. Defer public overlay update-object allocation until click | Reduce public settings-bar render allocation for option buttons | 60 public settings-bar button prep passes covering 11 buttons | Rejected |
+| 729. Inline weed position-config comparator fields | Reduce weed overlay comparator callback overhead during telemetry churn | 60 unchanged weed position-config comparisons | Rejected |
+| 730. Fast-path shared group criteria references | Reduce group-order selection cache checks when criteria objects are stable | 60 selected-group cache checks with 50 point ids | Rejected |
+
+### Idea 726: Skip FPS detailed scene-count maps when console logging is disabled
+
+**Description:** `countSceneObjects()` always builds `typeCounts` and
+`nameCounts`, but the normal perf-summary path only needs total object, mesh,
+and instanced-mesh counts unless console logging is enabled. A summary-only
+path could reduce diagnostic report CPU while preserving the summary metrics.
+
+**Benchmark:** 60 FPS diagnostic scene-count reports over a 490-object scene,
+matching one minute of reporting at the once-per-second FPS probe cadence.
+
+**Before:** Current detailed count maps: 0.428584 ms median for 60 reports.
+
+**After:** Simulated summary-only count path: 0.082709 ms median for 60
+reports.
+
+**Change:** 80.70% faster by median, saving 0.345875 ms across a full minute
+of diagnostic reports.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only about a third of a millisecond per minute and applies
+only while diagnostic reporting is enabled.
+
+**Commit:** None
+
+### Idea 727: Use direct undefined checks in moisture point extraction
+
+**Description:** `filterMoisturePoints()` uses lodash `isUndefined()` for
+reading coordinate guards. Direct `=== undefined` checks could reduce helper
+overhead while preserving the same skipped-reading behavior.
+
+**Benchmark:** 60 moisture point extraction passes over 120 readings, matching
+a moderate moisture-debug dataset.
+
+**Before:** Current lodash guard path: 0.048500 ms median.
+
+**After:** Simulated direct undefined checks: 0.037125 ms median.
+
+**Change:** 23.45% faster by median, saving 0.011375 ms across 60 passes.
+
+**Outcome:** Rejected before code changes. The absolute saving is roughly
+eleven microseconds across the full benchmark and is not meaningful.
+
+**Commit:** None
+
+### Idea 728: Defer public overlay update-object allocation until click
+
+**Description:** `PublicOverlaySection` allocates an update object for each
+option button during render even though it is only needed inside the click
+handler. Moving the allocation into the handler could reduce normal settings
+bar render work.
+
+**Benchmark:** 60 public settings-bar button prep passes covering the shipped
+11 option buttons.
+
+**Before:** Current render-time update object allocation: 0.042625 ms median.
+
+**After:** Simulated click-time update allocation: 0.041708 ms median.
+
+**Change:** 2.15% faster by median, saving 0.000917 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the measured absolute difference is below one microsecond.
+
+**Commit:** None
+
+### Idea 729: Inline weed position-config comparator fields
+
+**Description:** `sameWeedPositionConfigFields()` compares the relevant config
+fields through an `.every()` callback. Direct field checks could reduce
+comparator overhead during weed overlay telemetry churn while preserving the
+same invalidation fields.
+
+**Benchmark:** 60 unchanged weed position-config comparisons.
+
+**Before:** Current `.every()` comparator: 0.002375 ms median.
+
+**After:** Simulated direct field checks: 0.001208 ms median.
+
+**Change:** 49.14% faster by median, saving 0.001167 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The relative win clears 10%, but the
+absolute saving is about one microsecond across the full comparison batch.
+
+**Commit:** None
+
+### Idea 730: Fast-path shared group criteria references
+
+**Description:** `sameGroupSelection()` calls lodash `isEqual()` for group
+criteria after checking ids. Adding a criteria-reference guard could avoid the
+deep comparison when the selected group object changes but criteria are reused.
+
+**Benchmark:** 60 selected-group cache checks with 50 point ids and a shared
+criteria object.
+
+**Before:** Current criteria `isEqual()` path: 0.004375 ms median.
+
+**After:** Simulated criteria-reference guard: 0.004209 ms median.
+
+**Change:** 3.79% faster by median, saving 0.000166 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the realistic cache check is already negligible.
+
+**Commit:** None
+
+## Round 143
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 731. Reuse static LOD distance arrays | Avoid allocating new `Detailed` distance arrays for bed and ground LOD renders | 180 LOD distance reads across bed/ground renders | Rejected |
+| 732. Inline active pointer preview config comparison | Reduce active pointer preview comparator callback overhead during pointer-mode churn | 60 unchanged pointer-preview config comparisons | Rejected |
+| 733. Inline ground config comparison | Reduce ground memo comparator callback overhead during parent churn | 60 unchanged ground config comparisons | Rejected |
+| 734. Inline bed and image setting comparisons | Reduce `getConfigValue` setting-comparator callback overhead in bed/image texture memo checks | 60 unchanged setting comparisons for bed and image texture | Rejected |
+| 735. Cache soil-click mode lookup within the click handler | Reduce route/store mode lookups for click-to-add and draw-point soil clicks | 60 soil-click mode checks in click-to-add and draw-point paths | Rejected |
+
+### Idea 731: Reuse static LOD distance arrays
+
+**Description:** `detailLevels()` returns a freshly allocated distance array for
+each `Detailed` bed and ground render. Reusing static low-detail and
+high-detail arrays could avoid tiny LOD prop allocation while preserving the
+same distances.
+
+**Benchmark:** 180 LOD distance reads across bed/ground renders, matching a
+small parent-render burst where the existing memo boundaries still evaluate
+LOD props.
+
+**Before:** Current fresh-array path: 0.000958 ms median.
+
+**After:** Simulated static-array reuse: 0.000958 ms median.
+
+**Change:** Effectively unchanged by median.
+
+**Outcome:** Rejected before code changes. The benchmark did not improve, and
+the current allocation is already below practical measurement significance.
+
+**Commit:** None
+
+### Idea 732: Inline active pointer preview config comparison
+
+**Description:** `samePreviewConfig()` compares pointer-preview config fields
+through `.every()`. Direct field checks could reduce comparator overhead while
+adding plants or drawing points.
+
+**Benchmark:** 60 unchanged pointer-preview config comparisons.
+
+**Before:** Current `.every()` comparator: 0.003459 ms median.
+
+**After:** Simulated direct field checks: 0.001917 ms median.
+
+**Change:** 44.58% faster by median, saving 0.001542 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is about 1.5 microseconds for the whole batch.
+
+**Commit:** None
+
+### Idea 733: Inline ground config comparison
+
+**Description:** `groundPropsEqual()` compares five ground fields through
+`.every()`. Direct checks could reduce callback overhead during parent churn.
+
+**Benchmark:** 60 unchanged ground config comparisons.
+
+**Before:** Current `.every()` comparator: 0.002250 ms median.
+
+**After:** Simulated direct field checks: 0.001084 ms median.
+
+**Change:** 51.82% faster by median, saving 0.001166 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute win is only about one
+microsecond across the full comparison batch.
+
+**Commit:** None
+
+### Idea 734: Inline bed and image setting comparisons
+
+**Description:** `bedSettingFieldsEqual()` and
+`imageTextureSettingFieldsEqual()` compare three settings through `.every()`.
+Direct checks could reduce memo comparator callback overhead where soil/image
+props churn.
+
+**Benchmark:** 60 unchanged setting comparisons for both bed and image texture
+comparators.
+
+**Before:** Current `.every()` setting checks: 0.003125 ms median.
+
+**After:** Simulated direct setting checks: 0.003958 ms median.
+
+**Change:** 26.66% slower by median.
+
+**Outcome:** Rejected before code changes. The direct version regressed in the
+realistic batch and would be more verbose.
+
+**Commit:** None
+
+### Idea 735: Cache soil-click mode lookup within the click handler
+
+**Description:** `soilClick()` checks the current map mode before click-to-add
+handling and then again before draw-point handling. Reading the mode once per
+click could reduce route/store mode lookup work while preserving mutually
+exclusive click branches.
+
+**Benchmark:** 60 soil-click mode checks across click-to-add and draw-point
+paths.
+
+**Before:** Current repeated mode lookup: 0.001250 ms median.
+
+**After:** Simulated cached mode lookup: 0.001125 ms median.
+
+**Change:** 10.00% faster by median, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The result barely reaches the
+percentage threshold but saves only an eighth of a microsecond across 60 click
+checks.
+
+**Commit:** None
+
+## Round 144
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 736. Reuse distance indicator label text per render | Avoid repeated `toFixed()` calls for the four identical labels on each distance indicator | Three visible distance indicators with 12 labels | Rejected |
+| 737. Reuse static Sky up/scale props | Avoid tiny uniform/scale allocation in Sky renders | 60 Sky prop builds with stable sun position | Rejected |
+| 738. Use static person image position tuples | Avoid `Vector3` allocation in scene person image wrappers | Two visible people image position builds | Rejected |
+| 739. Inline FarmBot axes config comparison | Reduce axes memo comparator callback overhead during bed/config churn | 60 unchanged FarmBot axes config comparisons | Rejected |
+| 740. Inline Lab and Greenhouse scene config comparisons | Reduce non-default scene comparator callback overhead during scene churn | 60 unchanged Lab and Greenhouse config comparisons | Rejected |
+
+### Idea 736: Reuse distance indicator label text per render
+
+**Description:** `DistanceIndicator` formats the same distance text inside each
+of its four label children. Computing the label once per indicator render could
+avoid repeated `toFixed()` work while preserving identical text.
+
+**Benchmark:** Three visible distance indicators with 12 total labels.
+
+**Before:** Current per-label formatting: 0.000750 ms median.
+
+**After:** Simulated per-indicator label reuse: 0.000334 ms median.
+
+**Change:** 55.47% faster by median, saving 0.000416 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is less than half a microsecond for three visible indicators.
+
+**Commit:** None
+
+### Idea 737: Reuse static Sky up/scale props
+
+**Description:** `Sky` passes a fresh up array and scale vector-like value on
+render. Reusing static values could reduce environment prop allocation while
+leaving the same uniforms and scale.
+
+**Benchmark:** 60 Sky prop builds with stable sun position.
+
+**Before:** Current fresh prop values: 0.001334 ms median.
+
+**After:** Simulated static up/scale props: 0.000750 ms median.
+
+**Change:** 43.78% faster by median, saving 0.000584 ms across 60 prop builds.
+
+**Outcome:** Rejected before code changes. The absolute saving is well under a
+microsecond across the whole batch.
+
+**Commit:** None
+
+### Idea 738: Use static person image position tuples
+
+**Description:** `Person` creates a `Vector3` from static scaling data before
+passing it to the image wrapper. Static position tuples could avoid that tiny
+allocation for visible people.
+
+**Benchmark:** Two visible people image position builds.
+
+**Before:** Current object-position path: 0.000375 ms median.
+
+**After:** Simulated static tuple path: 0.000333 ms median.
+
+**Change:** 11.20% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The result clears 10% by percentage
+only; the absolute saving is effectively zero at the shipped two-person scale.
+
+**Commit:** None
+
+### Idea 739: Inline FarmBot axes config comparison
+
+**Description:** `farmbotAxesPropsEqual()` compares the relevant config fields
+with `.every()`. Direct checks could reduce axes comparator overhead during
+bed/config churn.
+
+**Benchmark:** 60 unchanged FarmBot axes config comparisons.
+
+**Before:** Current `.every()` comparator: 0.003584 ms median.
+
+**After:** Simulated direct field checks: 0.001125 ms median.
+
+**Change:** 68.61% faster by median, saving 0.002459 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch saves only
+about 2.5 microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 740: Inline Lab and Greenhouse scene config comparisons
+
+**Description:** `labPropsEqual()` and `greenhousePropsEqual()` compare scene
+config fields through `.every()`. Direct checks could reduce optional scene
+comparator overhead while preserving the same invalidation fields.
+
+**Benchmark:** 60 unchanged Lab and Greenhouse config comparisons.
+
+**Before:** Current `.every()` comparators: 0.007458 ms median.
+
+**After:** Simulated direct field checks: 0.002500 ms median.
+
+**Change:** 66.48% faster by median, saving 0.004958 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is under five
+microseconds across the full batch and does not justify verbose direct
+comparators.
+
+**Commit:** None
+
+## Round 145
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 741. Scan transient plants with a direct loop | Reduce spread-layer visibility memo callback overhead during plant-list churn | 60 transient scans over 100 plants with no transient add plant | Rejected |
+| 742. Inline `ImageWrapper` config comparison | Reduce camera-image wrapper comparator overhead during unrelated config churn | 60 unchanged image-wrapper prop comparisons | Rejected |
+| 743. Build event-debug intersection names without `map()` | Reduce optional pointer debug allocation while event debugging is enabled | One debug pointer event with 30 intersections | Rejected |
+| 744. Round progressive-load timing values with direct undefined handling | Reduce optional load-log helper overhead when timing logs are enabled | One complete eight-step load timing log pass | Rejected |
+| 745. Reuse group-order marker disk rotation constants | Avoid one-time quaternion/vector setup when a group-order overlay mounts | One visible group-order marker disk mount setup | Rejected |
+
+### Idea 741: Scan transient plants with a direct loop
+
+**Description:** `GardenModel` checks whether the plant list contains a transient
+add-plant record with `.some()`. A direct loop could reduce callback overhead
+during plant-list churn while preserving the same spread visibility behavior.
+
+**Benchmark:** 60 transient scans over 100 plants with no transient add plant,
+matching a dense garden render-churn batch where the full list is scanned.
+
+**Before:** Current `.some()` scan: 0.012208 ms median, 0.014666 ms p95.
+
+**After:** Simulated direct loop scan: 0.007667 ms median, 0.007791 ms p95.
+
+**Change:** 37.20% faster by median, saving 0.004541 ms across the 60-scan
+batch.
+
+**Outcome:** Rejected before code changes. The percent win is real, but the
+whole realistic batch saves about 4.5 microseconds.
+
+**Commit:** None
+
+### Idea 742: Inline `ImageWrapper` config comparison
+
+**Description:** `imageWrapperPropsEqual()` compares image-wrapper config fields
+with `.every()`. Direct field checks could reduce comparator overhead while
+preserving the same invalidation fields.
+
+**Benchmark:** 60 unchanged image-wrapper prop comparisons, matching a
+camera-image texture churn batch.
+
+**Before:** Current field-list comparator: 0.003250 ms median, 0.008167 ms p95.
+
+**After:** Simulated direct field comparator: 0.000042 ms median,
+0.005792 ms p95.
+
+**Change:** 98.71% faster by median, saving 0.003208 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is only about
+3.2 microseconds for the full batch and does not justify a verbose comparator.
+
+**Commit:** None
+
+### Idea 743: Build event-debug intersection names without `map()`
+
+**Description:** The optional `eventDebug` pointer handler logs intersection
+names with `.map()`. Filling the name list with a direct loop could avoid one
+callback allocation when the debug toggle is enabled.
+
+**Benchmark:** One debug pointer event with 30 intersections, excluding console
+I/O so the benchmark isolates name-list construction.
+
+**Before:** Current `.map()` name list: 0.000292 ms median, 0.001042 ms p95.
+
+**After:** Simulated direct-fill name list: 0.000209 ms median,
+0.001833 ms p95.
+
+**Change:** 28.42% faster by median, saving 0.000083 ms; p95 was slower.
+
+**Outcome:** Rejected before code changes. The path is debug-only, the absolute
+median saving is far below a microsecond, and p95 worsened.
+
+**Commit:** None
+
+### Idea 744: Round progressive-load timing values with direct undefined handling
+
+**Description:** Progressive-load timing logs round values with
+`Math.round(value || 0)`. A direct undefined branch could avoid truthiness work
+during optional load-log preparation.
+
+**Benchmark:** One complete eight-step load timing log pass, matching a single
+3D load completion when perf or load logs are enabled.
+
+**Before:** Current rounding/log-prep path: 0.000708 ms median,
+0.002042 ms p95.
+
+**After:** Simulated direct undefined branch: 0.000542 ms median,
+0.001583 ms p95.
+
+**Change:** 23.45% faster by median, saving 0.000166 ms for the full log-prep
+pass.
+
+**Outcome:** Rejected before code changes. The optional one-shot path saves
+only 0.166 microseconds.
+
+**Commit:** None
+
+### Idea 745: Reuse group-order marker disk rotation constants
+
+**Description:** `OrderMarkerDisks` creates a marker rotation quaternion from a
+new axis vector when the group-order overlay mounts. A module-level constant
+could avoid that one-time setup.
+
+**Benchmark:** One visible group-order marker disk mount setup.
+
+**Before:** Current quaternion/vector setup: 0.000417 ms median,
+0.000459 ms p95.
+
+**After:** Simulated static rotation constant read: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 80.10% faster by median, saving 0.000334 ms on mount.
+
+**Outcome:** Rejected before code changes. The absolute saving is about a third
+of a microsecond for a route-specific one-time mount.
+
+**Commit:** None
+
+## Round 146
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 746. Inline `Tools` config comparison | Reduce configured-tool memo comparator callback overhead during telemetry churn | 60 unchanged configured-tools prop comparisons | Rejected |
+| 747. Use indexed point marker matrix loops | Reduce visible point-layer mount effects for marker and radius instances | One 50-point marker/radius matrix setup | Rejected |
+| 748. Use an indexed suction-cloud frame loop | Reduce visible vacuum animation per-frame callback overhead | Four suction clouds over 60 frames | Rejected |
+| 749. Render electronics-box LED descriptors without `map()` | Reduce v1.7 electronics-box LED child allocation | One visible v1.7 LED indicator render pass | Rejected |
+| 750. Build focus-visibility DOM class names without array allocation | Reduce smooth-focus overlay DOM render allocation | 60 focus-visibility class-name builds | Rejected |
+
+### Idea 746: Inline `Tools` config comparison
+
+**Description:** `toolsPropsEqual()` compares tool-relevant config fields with
+`.every()`. Direct field checks could reduce comparator overhead while preserving
+the same rerender invalidation fields.
+
+**Benchmark:** 60 unchanged configured-tools prop comparisons, matching a
+telemetry/config churn batch where configured tools should stay memoized.
+
+**Before:** Current field-list comparator: 0.003958 ms median,
+0.010833 ms p95.
+
+**After:** Simulated direct field comparator: 0.002417 ms median,
+0.003125 ms p95.
+
+**Change:** 38.93% faster by median, saving 0.001541 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The whole batch saves about
+1.5 microseconds, so a long direct comparator is not justified.
+
+**Commit:** None
+
+### Idea 747: Use indexed point marker matrix loops
+
+**Description:** `PointBucketInstances` fills marker and radius matrices with
+`forEach()` callbacks. Indexed loops could reduce visible point-layer setup
+overhead without changing marker geometry, colors, opacity, or click targets.
+
+**Benchmark:** One 50-point marker/radius matrix setup, matching a dense
+realistic point layer.
+
+**Before:** Current `forEach()` matrix/color setup: 0.008958 ms median,
+0.027792 ms p95.
+
+**After:** Simulated indexed-loop setup: 0.009250 ms median,
+0.015833 ms p95.
+
+**Change:** 3.26% slower by median, though p95 improved.
+
+**Outcome:** Rejected before code changes. The median did not improve, so the
+existing callback loops stay.
+
+**Commit:** None
+
+### Idea 748: Use an indexed suction-cloud frame loop
+
+**Description:** The consolidated suction animation frame callback iterates four
+cloud refs with `forEach()`. An indexed loop could reduce visible vacuum
+animation frame overhead while keeping the same cloud movement.
+
+**Benchmark:** Four suction clouds over 60 frames, matching one second of a
+visible mounted-seeder vacuum animation.
+
+**Before:** Current `forEach()` frame loop: 0.005625 ms median,
+0.015041 ms p95.
+
+**After:** Simulated indexed frame loop: 0.004917 ms median,
+0.006541 ms p95.
+
+**Change:** 12.59% faster by median, saving 0.000708 ms over 60 frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the bar, but
+one visible second saves less than one microsecond.
+
+**Commit:** None
+
+### Idea 749: Render electronics-box LED descriptors without `map()`
+
+**Description:** The v1.7 electronics box renders four LED indicators with a
+small descriptor `.map()`. Explicit nodes could avoid that allocation when the
+v1.7 model is visible.
+
+**Benchmark:** One visible v1.7 LED indicator render pass.
+
+**Before:** Current `.map()` descriptor pass: 0.000208 ms median,
+0.001041 ms p95.
+
+**After:** Simulated explicit descriptor pass: 0.000375 ms median,
+0.000458 ms p95.
+
+**Change:** 80.29% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed path is slower by
+median and would make the JSX more repetitive.
+
+**Commit:** None
+
+### Idea 750: Build focus-visibility DOM class names without array allocation
+
+**Description:** `FocusVisibilityDiv` builds its class name with an array and
+`join()`. A template string could avoid small array allocation during smooth
+focus overlay renders.
+
+**Benchmark:** 60 focus-visibility class-name builds, matching a one-second
+focus-transition render batch.
+
+**Before:** Current array/join class build: 0.002208 ms median,
+0.004750 ms p95.
+
+**After:** Simulated template-string class build: 0.000208 ms median,
+0.001750 ms p95.
+
+**Change:** 90.58% faster by median, saving 0.002000 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The realistic one-second transition
+batch saves only two microseconds.
+
+**Commit:** None
+
+## Round 147
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 751. Inline 3D text vector comparisons | Reduce text memo comparator helper overhead for labels and buttons | 60 unchanged text prop comparisons | Rejected |
+| 752. Build config-row search text without array spread/join | Reduce private config panel search-row render allocation | 110 config-row search checks with mixed search terms | Rejected |
+| 753. Build public settings-bar class names without array allocation | Reduce public overlay render allocation during load-state changes | 60 public overlay class-name builds | Rejected |
+| 754. Copy non-size config presets with a direct loop | Reduce manual 3D preset application callback overhead | One non-size preset config copy over 74 fields | Rejected |
+| 755. Parse nonempty 3D URL params with direct loops | Reduce URL-param startup parsing callback overhead | One nonempty startup URL parse with kit, x/y/z, sun, and clouds | Rejected |
+
+### Idea 751: Inline 3D text vector comparisons
+
+**Description:** `textPropsEqual()` compares position and rotation through a
+small `sameVector()` helper. Inlining the two vector comparisons could reduce
+memo comparator overhead for labels, group-order text, and preset buttons.
+
+**Benchmark:** 60 unchanged text prop comparisons, matching a short label/text
+rerender batch.
+
+**Before:** Current helper comparisons: 0.000750 ms median, 0.004042 ms p95.
+
+**After:** Simulated inline comparisons: 0.001083 ms median, 0.001375 ms p95.
+
+**Change:** 44.40% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed inline path was slower
+by median, so the clearer helper stays.
+
+**Commit:** None
+
+### Idea 752: Build config-row search text without array spread/join
+
+**Description:** `ConfigRow` builds searchable row text with
+`[label, ...(searchTerms || [])].join(" ")`. Direct string accumulation could
+avoid small array allocation while the private config panel is open.
+
+**Benchmark:** 110 config-row search checks with mixed search terms, matching a
+full private config panel filter pass.
+
+**Before:** Current array/spread/join path: 0.005083 ms median,
+0.011250 ms p95.
+
+**After:** Simulated direct string path: 0.003042 ms median, 0.007458 ms p95.
+
+**Change:** 40.15% faster by median, saving 0.002041 ms across the whole
+filter pass.
+
+**Outcome:** Rejected before code changes. The config panel pass saves about
+two microseconds, which is not meaningful enough to change this UI helper.
+
+**Commit:** None
+
+### Idea 753: Build public settings-bar class names without array allocation
+
+**Description:** `PublicOverlay` builds the settings-bar class with an array and
+`join()`. A direct conditional string could avoid tiny allocation during
+load-state changes.
+
+**Benchmark:** 60 public overlay class-name builds, matching a burst of public
+overlay renders during load-complete state changes.
+
+**Before:** Current array/join class build: 0.001792 ms median,
+0.003750 ms p95.
+
+**After:** Simulated direct string build: 0.000166 ms median,
+0.000250 ms p95.
+
+**Change:** 90.74% faster by median, saving 0.001626 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full render burst saves only
+about 1.6 microseconds.
+
+**Commit:** None
+
+### Idea 754: Copy non-size config presets with a direct loop
+
+**Description:** `modifyConfig()` applies non-size presets with
+`OTHER_CONFIG_KEYS.map()` for side effects. A direct indexed loop could reduce
+manual preset-click overhead.
+
+**Benchmark:** One non-size preset config copy over 74 fields.
+
+**Before:** Current side-effect `.map()` copy: 0.000750 ms median,
+0.001792 ms p95.
+
+**After:** Simulated indexed-loop copy: 0.000542 ms median, 0.001667 ms p95.
+
+**Change:** 27.73% faster by median, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. This is a manual developer/config
+action and the absolute win is about two tenths of a microsecond.
+
+**Commit:** None
+
+### Idea 755: Parse nonempty 3D URL params with direct loops
+
+**Description:** `modifyConfigsFromUrlParams()` walks string, number, and
+boolean URL keys with `.map()` side-effect callbacks. Direct loops could reduce
+startup URL parsing overhead for shared 3D links.
+
+**Benchmark:** One nonempty startup URL parse with `kit`, `x`, `y`, `z`, `sun`,
+and `clouds`.
+
+**Before:** Current side-effect `.map()` parse: 0.000541 ms median,
+0.001958 ms p95.
+
+**After:** Simulated direct-loop parse: 0.000292 ms median, 0.001708 ms p95.
+
+**Change:** 46.03% faster by median, saving 0.000249 ms for the full parse.
+
+**Outcome:** Rejected before code changes. The startup parse saving is below a
+microsecond and not meaningful.
+
+**Commit:** None
+
+## Round 148
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 756. Inline `XAxisWaterTube` config comparison | Reduce water-tube memo comparator callback overhead during config churn | 60 unchanged X-axis water tube comparisons | Rejected |
+| 757. Precompute water-tube child names per render | Reduce string concatenation in visible water-tube render setup | 60 water-tube child-name builds | Rejected |
+| 758. Build beacon-info class names without array allocation | Reduce smooth-focus beacon info DOM render allocation | 60 active beacon-info class-name builds | Rejected |
+| 759. Inline person prop vector comparisons | Reduce optional People/Person memo comparator helper overhead | 60 unchanged person prop comparisons | Rejected |
+| 760. Replace electronics LED presence switch with direct comparison | Reduce electronics-box render helper overhead by checking the single LED kit directly | 60 electronics-box LED presence checks | Rejected |
+
+### Idea 756: Inline `XAxisWaterTube` config comparison
+
+**Description:** `xAxisWaterTubePropsEqual()` compares five config fields with
+`.every()`. Direct field checks could reduce memo comparator overhead during
+parent config churn.
+
+**Benchmark:** 60 unchanged X-axis water tube comparisons.
+
+**Before:** Current field-list comparator: 0.002084 ms median,
+0.006375 ms p95.
+
+**After:** Simulated direct field comparator: 0.000791 ms median,
+0.001000 ms p95.
+
+**Change:** 62.04% faster by median, saving 0.001293 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The realistic batch saves about
+1.3 microseconds and does not justify replacing the compact field list.
+
+**Commit:** None
+
+### Idea 757: Precompute water-tube child names per render
+
+**Description:** `WaterTube` builds child names with `tubeName + "-tube"` and
+`tubeName + "-water-stream"` while rendering. Precomputing these strings per
+render could reduce visible water-tube setup allocation.
+
+**Benchmark:** 60 water-tube child-name builds.
+
+**Before:** Current string concatenation path: 0.000875 ms median,
+0.002458 ms p95.
+
+**After:** Simulated precomputed child names: 0.000208 ms median,
+0.001791 ms p95.
+
+**Change:** 76.23% faster by median, saving 0.000667 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The whole render-helper batch saves
+less than one microsecond.
+
+**Commit:** None
+
+### Idea 758: Build beacon-info class names without array allocation
+
+**Description:** `BeaconInfo` builds its focus-transition class name with an
+array and `join()`. A template string could avoid small allocation while active
+beacon info fades in or out.
+
+**Benchmark:** 60 active beacon-info class-name builds, matching a one-second
+smooth-focus transition.
+
+**Before:** Current array/join class build: 0.002125 ms median,
+0.004417 ms p95.
+
+**After:** Simulated template-string class build: 0.000208 ms median,
+0.002166 ms p95.
+
+**Change:** 90.21% faster by median, saving 0.001917 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full transition batch saves only
+about two microseconds.
+
+**Commit:** None
+
+### Idea 759: Inline person prop vector comparisons
+
+**Description:** `personPropsEqual()` compares optional position and rotation
+tuples through a `sameVector()` helper. Inlining the checks could reduce
+optional People/Person memo comparator overhead.
+
+**Benchmark:** 60 unchanged person prop comparisons.
+
+**Before:** Current helper comparisons: 0.000708 ms median, 0.004583 ms p95.
+
+**After:** Simulated inline comparisons: 0.000625 ms median, 0.001000 ms p95.
+
+**Change:** 11.72% faster by median, saving 0.000083 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The percent barely clears the bar,
+but the absolute saving is far below one microsecond.
+
+**Commit:** None
+
+### Idea 760: Replace electronics LED presence switch with direct comparison
+
+**Description:** `ledsPresent()` uses a switch even though only v1.7 renders
+LEDs. A direct comparison could reduce electronics-box render helper overhead.
+
+**Benchmark:** 60 electronics-box LED presence checks for the default v1.8
+path.
+
+**Before:** Current switch helper: 0.000333 ms median, 0.000459 ms p95.
+
+**After:** Simulated direct comparison: 0.001333 ms median, 0.001417 ms p95.
+
+**Change:** 300.30% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed direct path was slower
+in the benchmark and the existing switch documents the supported versions.
+
+**Commit:** None
+
+## Round 149
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 761. Replace smooth-focus easing `Math.pow()` with multiplication | Reduce per-frame easing math during smooth focus transitions | 60 smooth-focus easing calls | Rejected |
+| 762. Build load-progress overlay class names without array allocation | Reduce progress overlay render allocation during load completion | 60 load-progress class-name builds | Rejected |
+| 763. Build time-travel button class names without array allocation | Reduce time-travel target render allocation in 3D mode | 60 time-travel target class-name builds | Rejected |
+| 764. Inline visible-grid config comparison | Reduce grid memo comparator callback overhead during parent churn | 60 unchanged grid prop comparisons | Rejected |
+| 765. Build plant-spread update keys without array joins | Reduce active spread overlay per-frame key allocation | 60 active plant-spread frame key builds | Rejected |
+
+### Idea 761: Replace smooth-focus easing `Math.pow()` with multiplication
+
+**Description:** `easeInOutCubic()` uses `Math.pow()` for the cubic easing
+curve. Multiplying `t * t * t` could reduce smooth-focus per-frame math without
+changing the curve.
+
+**Benchmark:** 60 smooth-focus easing calls, matching one second of transition
+frames at 60 fps.
+
+**Before:** Current `Math.pow()` easing path: 0.000458 ms median,
+0.003667 ms p95.
+
+**After:** Simulated multiplication easing path: 0.000375 ms median,
+0.002667 ms p95.
+
+**Change:** 18.12% faster by median, saving 0.000083 ms across the full
+60-frame transition.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below one microsecond across the transition.
+
+**Commit:** None
+
+### Idea 762: Build load-progress overlay class names without array allocation
+
+**Description:** `LoadProgress` builds progress overlay class names with an
+array and `join()`. Direct conditional strings could avoid allocation during
+load-progress render bursts.
+
+**Benchmark:** 60 load-progress class-name builds, matching a burst of progress
+renders while 3D assets finish loading.
+
+**Before:** Current array/join class build: 0.001375 ms median,
+0.004000 ms p95.
+
+**After:** Simulated direct conditional string build: 0.000166 ms median,
+0.000208 ms p95.
+
+**Change:** 87.93% faster by median, saving 0.001209 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full render burst saves only
+about 1.2 microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 763: Build time-travel button class names without array allocation
+
+**Description:** `TimeTravelControls` builds target button classes with array
+joining. A template string could reduce allocation while target buttons render
+in 3D mode.
+
+**Benchmark:** 60 time-travel target class-name builds.
+
+**Before:** Current array/join class build: 0.001542 ms median,
+0.003917 ms p95.
+
+**After:** Simulated template-string class build: 0.000792 ms median,
+0.002208 ms p95.
+
+**Change:** 48.64% faster by median, saving 0.000750 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The batch saving is below one
+microsecond, so the existing readable class builder stays.
+
+**Commit:** None
+
+### Idea 764: Inline visible-grid config comparison
+
+**Description:** The visible grid memo comparator checks a field list with
+`.every()`. Direct property comparisons could reduce parent-churn comparator
+overhead.
+
+**Benchmark:** 60 unchanged grid prop comparisons.
+
+**Before:** Current field-list comparator: 0.002875 ms median,
+0.007917 ms p95.
+
+**After:** Simulated direct field comparator: 0.001625 ms median,
+0.002167 ms p95.
+
+**Change:** 43.48% faster by median, saving 0.001250 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The realistic batch saves about
+1.25 microseconds and does not justify replacing the compact comparator.
+
+**Commit:** None
+
+### Idea 765: Build plant-spread update keys without array joins
+
+**Description:** The plant-spread overlay can build per-frame update keys with
+array joining. A direct template string could reduce allocation while the spread
+overlay is active.
+
+**Benchmark:** 60 active plant-spread frame key builds.
+
+**Before:** Current array/join key build: 0.005958 ms median,
+0.011667 ms p95.
+
+**After:** Simulated template-string key build: 0.000292 ms median,
+0.004416 ms p95.
+
+**Change:** 95.10% faster by median, saving 0.005666 ms across 60 active
+frames.
+
+**Outcome:** Rejected before code changes. This was the largest micro-benchmark
+win in the round, but it still saves only about 5.7 microseconds across a
+one-second active frame window.
+
+**Commit:** None
