@@ -16742,3 +16742,129 @@ win in the round, but it still saves only about 5.7 microseconds across a
 one-second active frame window.
 
 **Commit:** None
+
+## Round 150
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 766. Mark empty plant load step ready on mount | Shorten empty-garden load progress by skipping a non-visible plant load-in wait | Empty GardenModel with zero plants | Accepted |
+| 767. Mark hidden or empty weed load step ready on mount | Shorten default load progress when the weed layer has no visible work | Empty/hidden weed layer in GardenModel | Accepted |
+| 768. Mark hidden or empty point load step ready on mount | Shorten default load progress when the point layer has no visible work | Empty/hidden point layer in GardenModel | Accepted |
+| 769. Inline `MoistureSurface` config comparison | Reduce memo comparator overhead during moisture-layer parent churn | 60 unchanged moisture-surface comparisons | Rejected |
+| 770. Inline `MoistureReadings` config comparison | Reduce memo comparator overhead during moisture-reading debug churn | 60 unchanged moisture-reading comparisons | Rejected |
+
+### Idea 766: Mark empty plant load step ready on mount
+
+**Description:** The plants load step waited for the load-in spring `onRest`
+even when an empty garden had no plant labels, icons, or spread spheres to
+reveal. Marking the empty step ready on mount can advance load progress without
+removing any visible plant animation.
+
+**Benchmark:** Empty `GardenModel` with zero plants, zero weeds, zero points,
+and FarmBot hidden. The benchmark counted optional layer steps that were ready
+on mount and optional load-in groups that still had step-marking `onRest`
+handlers.
+
+**Before:** Empty optional layers had 0 immediately ready steps and 3 optional
+load-in rest handlers. The plant step had one non-visible spring-rest wait.
+
+**After:** Empty optional layers had 3 immediately ready steps and 0 optional
+load-in rest handlers. The plant step has no empty-layer spring-rest wait.
+
+**Change:** 100.0% fewer empty plant load-in rest waits, removing 1 non-visible
+load-progress gate.
+
+**Outcome:** Accepted. Empty plant scenes now report the plant step ready as
+soon as the step is allowed, while non-empty plant scenes still wait for the
+same plant load-in animation to finish.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 767: Mark hidden or empty weed load step ready on mount
+
+**Description:** The weeds load step waited for a load-in spring even when the
+weed layer was hidden or contained no weeds. Marking those no-work states ready
+on mount can shorten default load progress without changing visible weed
+rendering.
+
+**Benchmark:** Empty/hidden weed layer in the same empty `GardenModel`
+benchmark used for Idea 766.
+
+**Before:** The weed step had one non-visible spring-rest wait.
+
+**After:** The weed step is ready on mount and has no step-marking load-in rest
+handler.
+
+**Change:** 100.0% fewer hidden/empty weed load-in rest waits, removing
+1 non-visible load-progress gate.
+
+**Outcome:** Accepted. Visible weed layers with weed instances still wait for
+the same weed load-in rest; hidden or empty layers stop delaying progress.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 768: Mark hidden or empty point load step ready on mount
+
+**Description:** The points load step waited for a fall-in spring even when the
+point layer was hidden or there were no point markers. Marking those no-work
+states ready on mount can shorten default load progress without changing
+visible point rendering.
+
+**Benchmark:** Empty/hidden point layer in the same empty `GardenModel`
+benchmark used for Idea 766.
+
+**Before:** The point step had one non-visible spring-rest wait.
+
+**After:** The point step is ready on mount and has no step-marking load-in
+rest handler.
+
+**Change:** 100.0% fewer hidden/empty point load-in rest waits, removing
+1 non-visible load-progress gate.
+
+**Outcome:** Accepted. Visible point layers with point markers still wait for
+the same point fall-in rest; hidden or empty layers stop delaying progress.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 769: Inline `MoistureSurface` config comparison
+
+**Description:** `moistureSurfacePropsEqual()` compares five config fields with
+`.every()`. Direct field checks could reduce comparator overhead during
+moisture-layer parent churn.
+
+**Benchmark:** 60 unchanged moisture-surface comparisons.
+
+**Before:** Current field-list comparator: 0.004291 ms median,
+0.007167 ms p95.
+
+**After:** Simulated direct field comparator: 0.001000 ms median,
+0.003125 ms p95.
+
+**Change:** 76.70% faster by median, saving 0.003291 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The relative win clears the
+threshold, but the full 60-comparison batch saves only about three microseconds.
+
+**Commit:** None
+
+### Idea 770: Inline `MoistureReadings` config comparison
+
+**Description:** `moistureReadingsPropsEqual()` compares six config fields with
+`.every()`. Direct field checks could reduce comparator overhead when moisture
+debug readings rerender with unchanged geometry inputs.
+
+**Benchmark:** 60 unchanged moisture-reading comparisons.
+
+**Before:** Current field-list comparator: 0.004000 ms median,
+0.006166 ms p95.
+
+**After:** Simulated direct field comparator: 0.000708 ms median,
+0.004916 ms p95.
+
+**Change:** 82.30% faster by median, saving 0.003292 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic comparison batch
+saves only about three microseconds, which does not justify replacing the
+maintainable field list.
+
+**Commit:** None

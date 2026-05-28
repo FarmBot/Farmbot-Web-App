@@ -275,6 +275,10 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     shouldMountPlantSpreadInstances, showSpread, plantInstanceCapacity,
     showWeeds, weeds, showPoints,
   } = props;
+  const plantsReadyOnMount =
+    threeDPlants.length == 0 && !plantLabelNodes;
+  const weedsReadyOnMount = !showWeeds || weeds.length == 0;
+  const pointsReadyOnMount = !showPoints || mapPoints.length == 0;
 
   return <>
     <SceneBoundary
@@ -343,12 +347,14 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"plants"}
       loadProgress={loadProgress}
       reveal={plantsReveal}
-      markReadyOnMount={false}
+      markReadyOnMount={plantsReadyOnMount}
       markName={"three_d_core_ready"}>
       <PopInGroup
         name={"plants-load-in"}
         reveal={plantsReveal}
-        onRest={() => loadProgress.markStep("plants")}
+        onRest={plantsReadyOnMount
+          ? undefined
+          : () => loadProgress.markStep("plants")}
         distance={200}>
         <FocusVisibilityGroup
           name={"plant-labels"}
@@ -386,12 +392,14 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"weeds"}
       loadProgress={loadProgress}
       reveal={weedsReveal}
-      markReadyOnMount={false}
+      markReadyOnMount={weedsReadyOnMount}
       markName={"three_d_weeds_ready"}>
       <PopInGroup
         name={"weeds-load-in"}
         reveal={weedsReveal}
-        onRest={() => loadProgress.markStep("weeds")}
+        onRest={weedsReadyOnMount
+          ? undefined
+          : () => loadProgress.markStep("weeds")}
         distance={200}>
         <Group name={"weeds"}
           visible={showWeeds}>
@@ -409,12 +417,14 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"points"}
       loadProgress={loadProgress}
       reveal={pointsReveal}
-      markReadyOnMount={false}
+      markReadyOnMount={pointsReadyOnMount}
       markName={"three_d_points_ready"}>
       <FallInGroup
         name={"points-load-in"}
         reveal={pointsReveal}
-        onRest={() => loadProgress.markStep("points")}
+        onRest={pointsReadyOnMount
+          ? undefined
+          : () => loadProgress.markStep("points")}
         distance={config.columnLength + 1000}>
         <Group name={"points"}
           visible={showPoints}>

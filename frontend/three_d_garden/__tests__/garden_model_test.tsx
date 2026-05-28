@@ -27,6 +27,9 @@ import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
+import {
+  FallInGroup, LoadStepReady, PopInGroup,
+} from "../progressive_load";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -90,9 +93,13 @@ describe("<GardenModel />", () => {
   const bedSupportNames = ["bed-leg-wood", "caster-bracket", "wheel", "axle"];
   const findPlantInstanceNodes =
     (wrapper: ReturnType<typeof createRenderer>) =>
-      wrapper.root.findAll(node =>
-        `${node.type}` == "instancedMesh" &&
-        !bedSupportNames.includes(node.props.name));
+      wrapper.root.findAll(node => {
+        const nodeName = typeof node.props.name == "string"
+          ? node.props.name
+          : "";
+        return `${node.type}` == "instancedMesh" &&
+          !bedSupportNames.includes(nodeName);
+      });
   const plantInstanceCount = (container: HTMLElement) =>
     [...container.querySelectorAll("instancedmesh")]
       .filter(node => !bedSupportNames.includes(node.getAttribute("name") || ""))
@@ -127,6 +134,30 @@ describe("<GardenModel />", () => {
     render(<GardenModel {...p} />);
     await waitFor(() =>
       expect(p.onDetailsRevealStart).toHaveBeenCalled());
+  });
+
+  it("marks empty optional layers ready without load-in rests", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.threeDPlants = [];
+    p.mapPoints = [];
+    p.weeds = [];
+    const wrapper = createWrapper(p);
+    const readySteps = wrapper.root.findAllByType(LoadStepReady)
+      .map(node => node.props.step);
+    expect(readySteps).toContain("plants");
+    expect(readySteps).toContain("weeds");
+    expect(readySteps).toContain("points");
+
+    const optionalLoadInRestHandlers = [
+      ...wrapper.root.findAllByType(PopInGroup),
+      ...wrapper.root.findAllByType(FallInGroup),
+    ].filter(node =>
+      typeof node.props.name == "string" &&
+      ["plants-load-in", "weeds-load-in", "points-load-in"]
+        .includes(node.props.name))
+      .filter(node => typeof node.props.onRest == "function");
+    expect(optionalLoadInRestHandlers).toHaveLength(0);
   });
 
   it("reuses empty bed resource props across position updates", () => {
