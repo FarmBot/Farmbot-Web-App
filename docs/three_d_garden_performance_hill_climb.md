@@ -12781,3 +12781,586 @@ focused state and would change what supporting Greenhouse context remains
 visible during navigation.
 
 **Commit:** None
+
+## Round 117
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 601. Instance group-order marker disks | Reduce draw calls in large group-order route previews without changing labels or disk styling | Fewer draw calls | 50 selected points in the group-order visual | Accepted |
+| 602. Instance electronics box button color cylinders | Reduce default electronics-box draw calls by merging repeated button caps/centers | Fewer draw calls | v1.8 electronics box buttons and v1.7 buttons plus LEDs | Rejected |
+| 603. Instance utilities-post small repeated cylinders | Reduce optional utilities-post draw calls by merging antenna/LED pairs | Fewer draw calls | One visible utilities post | Rejected |
+| 604. Replace gantry light strip spotlights with merged light geometry | Reduce light-strip node count or draw calls | Lower scene/light work | XL beam light strip with 10 spotlights | Rejected |
+| 605. Instance group-order text labels | Reduce draw calls for numeric labels in large group-order route previews | Fewer draw calls | 50 selected points in the group-order visual | Rejected |
+
+### Idea 601: Instance group-order marker disks
+
+**Description:** The group-order visual rendered one black disk cylinder inside
+each numbered point billboard. In large route previews those disks share the
+same geometry, material, opacity, and render order, so they can be drawn as one
+instanced mesh while leaving the labels and route line unchanged.
+
+**Benchmark:** 50 selected points in the group-order visual, matching a large
+but realistic sequence/group preview.
+
+**Before:** 50 marker disk draw calls.
+
+**After:** 1 marker disk draw call.
+
+**Change:** 98.00% fewer marker disk draw calls, saving 49 draw calls. The
+added matrix update for 50 camera-facing disks measured 0.000500 ms median and
+0.000792 ms p95.
+
+**Outcome:** Accepted. The marker disks keep the same cylinder dimensions,
+black transparent material, render order, and camera-facing behavior; labels
+remain per-point text billboards.
+
+**Checks:** `bun test ./frontend/three_d_garden/__tests__/group_order_visual_test.tsx`,
+`bun run typecheck`, focused `bun run eslint`, and `git diff --check` passed.
+
+**Commit:** `Optimize 3D group-order marker draws by 98.0%`
+
+### Idea 602: Instance electronics box button color cylinders
+
+**Description:** The electronics box renders repeated button cap and center
+cylinders, plus v1.7 LED indicator cylinders. Instancing by repeated geometry
+and color could reduce small default Bot draw-call count.
+
+**Benchmark:** v1.8 electronics box buttons and v1.7 buttons plus LEDs.
+
+**Before:** 6 repeated color-cylinder draw calls for v1.8; 18 repeated
+button/LED color-cylinder draw calls for v1.7.
+
+**After:** Best-case 2 draw calls for v1.8 button caps/centers; 5 draw calls
+for v1.7 buttons and LEDs.
+
+**Change:** v1.8 would save 4 draw calls (66.67%); v1.7 would save 13 draw
+calls (72.22%).
+
+**Outcome:** Rejected before code changes. The v1.8 default saving is only four
+tiny cylinders, and the larger v1.7 win applies to a non-default kit version
+with separate LED model housings still visible.
+
+**Commit:** None
+
+### Idea 603: Instance utilities-post small repeated cylinders
+
+**Description:** The optional utilities post has repeated antenna and indicator
+light cylinders that could be merged by geometry and material.
+
+**Benchmark:** One visible utilities post.
+
+**Before:** 6 repeated small-cylinder draw calls in the router/faucet details.
+
+**After:** Best-case 3 draw calls after merging matching pairs.
+
+**Change:** 50.00% fewer repeated small-cylinder draw calls, saving 3 draw
+calls.
+
+**Outcome:** Rejected before code changes. The utilities post is optional and
+the absolute saving is too small for another instancing path.
+
+**Commit:** None
+
+### Idea 604: Replace gantry light strip spotlights with merged light geometry
+
+**Description:** The XL gantry light strip mounts 10 spotlights. Replacing them
+with merged emissive geometry or fewer lights could reduce light setup and
+shadow work.
+
+**Benchmark:** XL beam light strip with 10 spotlights.
+
+**Before:** 10 shadow-casting spotlights.
+
+**After:** No no-degradation path found; preserving the same lighting and
+shadow behavior still requires the same spotlight coverage.
+
+**Change:** 0.00% qualifying reduction under the no-visual-change constraint.
+
+**Outcome:** Rejected before code changes. Reducing light count or replacing
+lights with emissive-only geometry would change illumination or shadows.
+
+**Commit:** None
+
+### Idea 605: Instance group-order text labels
+
+**Description:** The group-order visual also renders one numbered text label
+per selected point. Instancing labels would be attractive for very large groups
+if the same geometry could be reused.
+
+**Benchmark:** 50 selected points in the group-order visual.
+
+**Before:** 50 numeric text labels.
+
+**After:** 50 labels are still required because each marker has distinct text.
+
+**Change:** 0.00% draw-call reduction without changing how labels are rendered.
+
+**Outcome:** Rejected before code changes. The labels are unique numbers and
+must remain readable, so disk instancing was the safe draw-call win for this
+view.
+
+**Commit:** None
+
+## Round 118
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 606. Cache the decorative sun/star point field | Reduce Sun mount setup by generating the 1,000 background points once | Faster Sun setup | One default Sun mount with 1,000 `OtherSuns` points | Rejected |
+| 607. Instance bed cable-carrier supports | Reduce default bed draw calls by merging the two support boxes | Fewer draw calls | One default bed with cable carriers enabled | Rejected |
+| 608. Merge utilities-post hose tubes | Reduce default utilities-post draw calls by merging curved and straight hose tubes | Fewer draw calls | One visible utilities post | Rejected |
+| 609. Precompute People offset vectors | Avoid tiny per-render `Vector3` allocation in optional scene people props | Lower scene render allocation | Two scene people in Lab or Greenhouse | Rejected |
+| 610. Replace group-order position mapping with a direct loop | Reduce route-preview position setup after marker disk instancing | Faster group-order setup | 50 selected points in the group-order visual | Rejected |
+
+### Idea 606: Cache the decorative sun/star point field
+
+**Description:** `OtherSuns` generates 1,000 random background points on mount.
+Moving that point field to a module-level cache could avoid repeat setup when
+the Sun subtree remounts.
+
+**Benchmark:** One default Sun mount with 1,000 `OtherSuns` points.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.0570 ms median, 0.0784 ms p95 to generate the point field.
+
+**After:** Best-case cached lookup would avoid that one-time generation on
+later remounts.
+
+**Change:** Up to 0.0570 ms saved on a repeated Sun remount.
+
+**Outcome:** Rejected before code changes. The setup cost is already far below
+a meaningful load-time threshold and the normal 3D scene mounts the Sun once.
+
+**Commit:** None
+
+### Idea 607: Instance bed cable-carrier supports
+
+**Description:** The bed renders two matching cable-carrier support boxes when
+cable carriers are enabled. Instancing could merge those support boxes.
+
+**Benchmark:** One default bed with cable carriers enabled.
+
+**Before:** 2 support-box draw calls.
+
+**After:** Best-case 1 support-box draw call.
+
+**Change:** 50.00% fewer support-box draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. One saved draw call is not a
+meaningful absolute improvement, and the existing boxes are simple and clear.
+
+**Commit:** None
+
+### Idea 608: Merge utilities-post hose tubes
+
+**Description:** The utilities post draws a curved hose tube and a straight
+hose tube with the same material. Merging them could reduce draw calls when the
+utilities post is visible.
+
+**Benchmark:** One visible utilities post.
+
+**Before:** 2 hose draw calls.
+
+**After:** Best-case 1 hose draw call.
+
+**Change:** 50.00% fewer hose draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. The absolute saving is one draw call
+and would add custom merged-tube geometry management to a small prop.
+
+**Commit:** None
+
+### Idea 609: Precompute People offset vectors
+
+**Description:** Scene people convert each configured offset array into a
+`Vector3` during render. Keeping offsets as numbers could avoid those tiny
+allocations.
+
+**Benchmark:** Two scene people in Lab or Greenhouse.
+
+**Before:** 2 `Vector3` offset allocations per People render.
+
+**After:** 0 offset allocations if the render path used raw offset numbers.
+
+**Change:** 100.00% fewer offset-vector allocations, saving 2 allocations.
+
+**Outcome:** Rejected before code changes. The allocation count is tiny, the
+people layer is optional, and the comparator already prevents unrelated rerender
+churn.
+
+**Commit:** None
+
+### Idea 610: Replace group-order position mapping with a direct loop
+
+**Description:** After marker disk instancing, the group-order visual still
+maps sorted group points into world positions. A pre-sized direct loop could
+avoid callback overhead for large route previews.
+
+**Benchmark:** 50 selected points in the group-order visual. Repetitions were
+used only to stabilize timing.
+
+**Before:** 0.000334 ms median, 0.000709 ms p95.
+
+**After:** Direct-loop simulation: 0.000250 ms median, 0.001458 ms p95.
+
+**Change:** 25.15% faster by median, saving 0.000084 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The absolute win is below a
+microsecond and the p95 worsened, so the clearer map path stays.
+
+**Commit:** None
+
+## Round 119
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 611. Add an internal hidden gate to `CameraSelectionUI` | Avoid camera marker subtree work while camera selection is closed | Lower default scene setup | Default GardenModel with `cameraSelectionView` false | Rejected |
+| 612. Use `find()` instead of `filter()[0]` for group lookup | Reduce group-order route lookup work | Faster group lookup | 50 point groups with the active group near the middle | Rejected |
+| 613. Cache Bounds distance-indicator endpoint calculations | Avoid duplicate `get3DPosition()` calls while dimensions are visible | Faster dimension indicator render | One visible beam-length distance indicator | Rejected |
+| 614. Cache texture variant keys at common call sites | Avoid repeated small option-key string construction | Faster texture variant lookup | Five default texture variant option sets | Rejected |
+| 615. Cache watering stream descriptors | Avoid rebuilding 16 water-stream descriptor objects on active watering animation mount | Faster watering animation setup | One active watering animation with 16 streams | Rejected |
+
+### Idea 611: Add an internal hidden gate to `CameraSelectionUI`
+
+**Description:** `CameraSelectionUI` can render a hidden group when
+`cameraSelectionView` is false. An internal early return could avoid marker
+subtree creation in any direct render.
+
+**Benchmark:** Default GardenModel with `cameraSelectionView` false.
+
+**Before:** 0 camera-selection marker nodes in the real default GardenModel
+path because the parent already gates `<CameraSelectionUI />`.
+
+**After:** 0 camera-selection marker nodes.
+
+**Change:** 0.00% improvement in the realistic default app path.
+
+**Outcome:** Rejected before code changes. The possible standalone component
+cleanup does not change real default 3D work because GardenModel already mounts
+the overlay only while camera selection is open.
+
+**Commit:** None
+
+### Idea 612: Use `find()` instead of `filter()[0]` for group lookup
+
+**Description:** `findGroupFromUrl()` scans all groups with `filter()[0]`.
+Using `find()` could stop once the active group is found.
+
+**Benchmark:** 50 point groups with the active group near the middle.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000166 ms median, 0.000583 ms p95.
+
+**After:** Simulated `find()` lookup: 0.000083 ms median, 0.000209 ms p95.
+
+**Change:** 50.00% faster, saving 0.000083 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below a meaningful route-preview setup cost.
+
+**Commit:** None
+
+### Idea 613: Cache Bounds distance-indicator endpoint calculations
+
+**Description:** Some Bounds distance indicators call `get3DPosition()` twice
+with the same inputs to read `.x` and `.y`. Caching those endpoint objects could
+avoid duplicate helper calls while dimensions are visible.
+
+**Benchmark:** One visible beam-length distance indicator.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000042 ms median, 0.000166 ms p95.
+
+**After:** Cached endpoint objects: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 0.00% median improvement, with a tiny p95 reduction.
+
+**Outcome:** Rejected before code changes. Dimension indicators are optional
+and the measured median did not improve.
+
+**Commit:** None
+
+### Idea 614: Cache texture variant keys at common call sites
+
+**Description:** `useTextureVariant()` builds a string key from option objects.
+Caching keys for common static option sets could avoid repeated string
+construction.
+
+**Benchmark:** Five default texture variant option sets used by ground, desk,
+screen, utilities, and Lab/Greenhouse surfaces.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000333 ms median, 0.001042 ms p95.
+
+**After:** Not implemented; best case would avoid a sub-microsecond key build
+on component renders that are already memoized.
+
+**Change:** Maximum practical saving is below 0.001 ms for five lookups.
+
+**Outcome:** Rejected before code changes. The option-key work is already too
+small, and static key plumbing would add complexity at every texture call site.
+
+**Commit:** None
+
+### Idea 615: Cache watering stream descriptors
+
+**Description:** Active watering animations create 16 stream descriptors before
+rendering the stream components. Caching those descriptors could avoid small
+array/object setup when watering starts.
+
+**Benchmark:** One active watering animation with 16 streams. Repetitions were
+used only to stabilize timing.
+
+**Before:** 0.000125 ms median, 0.000875 ms p95.
+
+**After:** Cached descriptor lookup: 0.000000 ms median, 0.000042 ms p95.
+
+**Change:** 100.00% median improvement, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The percentage is high only because
+the measured work is microscopic, and watering animation setup is dominated by
+the actual visible stream components.
+
+**Commit:** None
+
+## Round 120
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 616. Cache pointer-mode lookup inside each soil pointer frame | Reduce pointer-move route/store lookups while adding plants or points | 60 rendered pointer frames in an active pointer workflow | Rejected |
+| 617. Reuse the active pointer position object | Reduce tiny pointer-frame allocation while moving the add/draw cursor | 60 active pointer-frame position updates | Rejected |
+| 618. Fast-path empty 3D URL config parsing | Reduce default promo startup config parsing when no URL params are present | One default `modifyConfigsFromUrlParams()` startup call | Rejected |
+| 619. Precompute progressive-load reveal checks | Reduce repeated load-step dependency checks during staged render progress | 20 renders, each checking all 8 shipped 3D load steps | Rejected |
+| 620. Avoid per-click navigation mode array construction | Reduce plant-icon click handler setup work before navigation | 30 plant-icon click mode checks | Rejected |
+
+### Idea 616: Cache pointer-mode lookup inside each soil pointer frame
+
+**Description:** `soilPointerMove()` currently calls `getMode()` up to three
+times in one rendered pointer update. Reading the mode once per frame could
+avoid repeated route/store lookup work while preserving add-plant and draw-point
+behavior.
+
+**Benchmark:** 60 rendered pointer frames in an active pointer workflow.
+Repetitions were used only to stabilize timing.
+
+**Before:** Three mode lookups per frame: 0.163875 ms median, 0.220542 ms p95.
+
+**After:** One mode lookup per frame: 0.052709 ms median, 0.063083 ms p95.
+
+**Change:** 67.84% faster, saving 0.111166 ms across 60 rendered pointer
+frames.
+
+**Outcome:** Rejected before code changes. The percentage is strong, but the
+absolute saving is about 0.0019 ms per pointer frame and does not justify
+changing the already simple pointer updater.
+
+**Commit:** None
+
+### Idea 617: Reuse the active pointer position object
+
+**Description:** The pointer updater assigns a fresh `{ x, y }` object to
+`activePositionRef.current` after each rendered pointer update. Mutating the
+existing object after the first update could reduce allocation during
+add/draw-cursor movement.
+
+**Benchmark:** 60 active pointer-frame position updates. Repetitions were used
+only to stabilize timing.
+
+**Before:** Fresh object assignment: 0.000167 ms median, 0.000583 ms p95.
+
+**After:** Mutate existing object after first assignment: 0.000125 ms median,
+0.000250 ms p95.
+
+**Change:** 25.15% faster, saving 0.000042 ms across 60 updates.
+
+**Outcome:** Rejected before code changes. The allocation cleanup is measurable
+only at sub-microsecond scale and would not meaningfully affect pointer
+responsiveness or memory use.
+
+**Commit:** None
+
+### Idea 618: Fast-path empty 3D URL config parsing
+
+**Description:** The promo 3D startup calls `modifyConfigsFromUrlParams()` even
+when `window.location.search` is empty. Returning immediately for an empty
+search string could skip the key scans on ordinary loads.
+
+**Benchmark:** One default startup config parse with an empty URL search string.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current empty-search parse: 0.001583 ms median, 0.004791 ms p95.
+
+**After:** Simulated empty-search fast path: 0.000083 ms median, 0.000250 ms p95.
+
+**Change:** 94.76% faster, saving 0.001500 ms on startup.
+
+**Outcome:** Rejected before code changes. The branch would be safe, but the
+realistic default startup saving is far below a meaningful load-time change.
+
+**Commit:** None
+
+### Idea 619: Precompute progressive-load reveal checks
+
+**Description:** `GardenModel` asks the load-progress object whether each of
+the 8 load steps is allowed on every render. Precomputing the reveal booleans
+inside the load-progress hook could avoid repeated dependency checks.
+
+**Benchmark:** 20 renders, each checking all 8 shipped 3D load steps.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current dependency `.every()` checks: 0.001584 ms median,
+0.006084 ms p95.
+
+**After:** Simulated precomputed reveal booleans: 0.002416 ms median,
+0.005875 ms p95.
+
+**Change:** 52.53% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The current checks are already
+cheaper than the proposed precompute path at realistic load-step counts.
+
+**Commit:** None
+
+### Idea 620: Avoid per-click navigation mode array construction
+
+**Description:** Plant icon navigation checks build
+`[...HOVER_OBJECT_MODES, Mode.cameraSelection]` before testing the current mode.
+A direct `Mode.cameraSelection` check plus the existing hover-mode array could
+avoid one short array allocation per click.
+
+**Benchmark:** 30 plant-icon click mode checks. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current spread-array mode check: 0.014750 ms median,
+0.020083 ms p95.
+
+**After:** Direct camera-selection check plus hover-mode lookup: 0.013959 ms
+median, 0.019292 ms p95.
+
+**Change:** 5.36% faster, saving 0.000791 ms across 30 click checks.
+
+**Outcome:** Rejected before code changes. The click path is already dominated
+by the actual navigation and panel update, and this helper cleanup misses both
+the percentage and meaningful absolute-improvement bars.
+
+**Commit:** None
+
+## Round 121
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 621. Skip inactive `LoadInGroup` spring opacity callbacks | Reduce no-op animation callback work for groups that do not fade in | 5 loaded groups over 60 spring ticks | Rejected |
+| 622. Read interpolation farmware options in one pass | Reduce repeated farmware-env scans before interpolation generation | 12 farmware envs and 3 interpolation option lookups | Rejected |
+| 623. Build interpolation hash grid/options suffix directly | Reduce small JSON stringify work during interpolation cache key creation | 25 sensor readings with Genesis-sized grid/options | Rejected |
+| 624. Precompute nonempty 3D URL numeric key list | Reduce startup URL parsing list allocation when query params are present | One nonempty startup URL parse with kit, x/y/z, sun, and clouds | Rejected |
+| 625. Replace size-preset side-effect `map()` with `for..of` | Reduce config-copy callback overhead on preset selection | One Genesis XL size preset copy | Rejected |
+
+### Idea 621: Skip inactive `LoadInGroup` spring opacity callbacks
+
+**Description:** `LoadInGroup` always wires an `onChange` callback that writes
+group opacity, even when `fadeIn` is false and the group starts fully visible.
+Skipping the callback for non-fading groups could reduce no-op spring work.
+
+**Benchmark:** 5 loaded groups over 60 spring ticks. Repetitions were used only
+to stabilize timing.
+
+**Before:** Current no-op opacity callback path: 0.000334 ms median,
+0.001417 ms p95.
+
+**After:** Simulated no-callback path: 0.000208 ms median, 0.000292 ms p95.
+
+**Change:** 37.72% faster, saving 0.000126 ms across the benchmarked spring
+ticks.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below meaningful frame-time impact and the real
+cost remains the spring/render work.
+
+**Commit:** None
+
+### Idea 622: Read interpolation farmware options in one pass
+
+**Description:** `fetchInterpolationOptions()` scans `farmwareEnvs` separately
+for each interpolation option. A single loop could collect the three option
+values at once.
+
+**Benchmark:** 12 farmware envs and 3 interpolation option lookups.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current `filter()[0]` lookup path: 0.000500 ms median,
+0.001625 ms p95.
+
+**After:** Simulated single-pass lookup path: 0.000333 ms median,
+0.001667 ms p95.
+
+**Change:** 33.40% faster by median, saving 0.000167 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The median saving is microscopic and
+the p95 does not improve, so this is not worth changing interpolation setup.
+
+**Commit:** None
+
+### Idea 623: Build interpolation hash grid/options suffix directly
+
+**Description:** `generateData()` builds the interpolation cache key with three
+stringified parts. Keeping the point hash but writing the small grid/options
+suffix directly could reduce cache-key overhead.
+
+**Benchmark:** 25 sensor readings with Genesis-sized grid/options. Repetitions
+were used only to stabilize timing.
+
+**Before:** Current point/grid/options JSON key: 0.001084 ms median,
+0.003500 ms p95.
+
+**After:** Simulated direct grid/options suffix: 0.000959 ms median,
+0.002791 ms p95.
+
+**Change:** 11.53% faster, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The proposed key format change
+barely clears the percentage threshold and saves only a tenth of a microsecond;
+the meaningful work remains interpolation data generation.
+
+**Commit:** None
+
+### Idea 624: Precompute nonempty 3D URL numeric key list
+
+**Description:** `modifyConfigsFromUrlParams()` concatenates numeric keys with
+`x`, `y`, and `z` during each URL parse. Precomputing that key list could avoid
+one small allocation on startup links with 3D query parameters.
+
+**Benchmark:** One nonempty startup URL parse with `kit`, `x`, `y`, `z`, `sun`,
+and `clouds`. Repetitions were used only to stabilize timing.
+
+**Before:** Current per-call concat path: 0.001292 ms median, 0.002417 ms p95.
+
+**After:** Simulated prebuilt-key path: 0.001208 ms median, 0.002375 ms p95.
+
+**Change:** 6.50% faster, saving 0.000084 ms.
+
+**Outcome:** Rejected before code changes. This misses the 10% threshold and
+the absolute startup saving is not meaningful.
+
+**Commit:** None
+
+### Idea 625: Replace size-preset side-effect `map()` with `for..of`
+
+**Description:** Size preset application uses `.map()` only for side effects
+while copying preset keys into the next config object. A `for..of` loop could
+avoid callback/array-return overhead on preset clicks.
+
+**Benchmark:** One Genesis XL size preset copy. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current side-effect `map()` path: 0.000291 ms median,
+0.001333 ms p95.
+
+**After:** Simulated `for..of` copy path: 0.000250 ms median, 0.001375 ms p95.
+
+**Change:** 14.09% faster by median, saving 0.000041 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The operation happens only on
+manual preset selection and the measured improvement is not meaningful.
+
+**Commit:** None

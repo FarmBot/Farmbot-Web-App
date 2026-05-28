@@ -53,6 +53,17 @@ describe("<GroupOrderVisual />", () => {
     expect(sortGroupBySpy).toHaveBeenCalledWith("random", mockGroupPoints);
   });
 
+  it("uses one instanced marker disk mesh", () => {
+    const p = fakeProps();
+    mockGroup = fakePointGroup();
+    mockGroup.body.sort_type = "random";
+    mockGroupPoints = [fakePlant(), fakeToolSlot(), fakePoint(), fakeWeed()];
+    const { container } = render(<GroupOrderVisual {...p} />);
+    const disks = container.querySelector("[name='group-order-marker-disks']");
+    expect(disks?.tagName.toLowerCase()).toEqual("instancedmesh");
+    expect(disks?.getAttribute("count")).toEqual("4");
+  });
+
   it("renders order visual: sort preview", () => {
     const p = fakeProps();
     mockGroup = fakePointGroup();

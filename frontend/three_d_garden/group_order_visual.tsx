@@ -1,4 +1,5 @@
-import { Billboard, Cylinder, Line } from "@react-three/drei";
+import { Billboard, Line } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import React from "react";
 import { getWorldPositionFunc } from "./helpers";
 import { Config } from "./config";
@@ -7,10 +8,16 @@ import { sortGroupBy } from "../point_groups/point_group_sort";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import { findGroupFromUrl } from "../point_groups/find_group_from_url";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
-import { Group, MeshPhongMaterial } from "./components";
+import { Group, InstancedMesh, MeshPhongMaterial } from "./components";
 import { Text } from "./elements";
 import { RenderOrder } from "./constants";
 import { isEqual } from "lodash";
+import {
+  InstancedMesh as InstancedMeshType,
+  Matrix4,
+  Quaternion,
+  Vector3,
+} from "three";
 
 interface CommonProps {
   config: Config;
@@ -90,6 +97,57 @@ export interface GroupOrderProps extends CommonProps {
   groupPoints: TaggedPoint[];
 }
 
+interface OrderMarkerDisksProps {
+  positions: [number, number, number][];
+}
+
+const OrderMarkerDisks = (props: OrderMarkerDisksProps) => {
+  // eslint-disable-next-line no-null/no-null
+  const ref = React.useRef<InstancedMeshType>(null);
+  const matrix = React.useMemo(() => new Matrix4(), []);
+  const position = React.useMemo(() => new Vector3(), []);
+  const scale = React.useMemo(() => new Vector3(1, 1, 1), []);
+  const markerRotation = React.useMemo(() =>
+    new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2), []);
+  const quaternion = React.useMemo(() => new Quaternion(), []);
+  const lastCameraQuaternion = React.useMemo(() => new Quaternion(), []);
+  const hasCameraQuaternion = React.useRef(false);
+  const matrixNeedsUpdate = React.useRef(true);
+
+  React.useEffect(() => {
+    matrixNeedsUpdate.current = true;
+  }, [props.positions]);
+
+  useFrame(state => {
+    const mesh = ref.current;
+    if (!mesh) { return; }
+    const cameraChanged = !hasCameraQuaternion.current ||
+      !lastCameraQuaternion.equals(state.camera.quaternion);
+    if (!matrixNeedsUpdate.current && !cameraChanged) { return; }
+    quaternion.copy(state.camera.quaternion).multiply(markerRotation);
+    props.positions.forEach((coords, index) => {
+      position.set(coords[0], coords[1], coords[2]);
+      matrix.compose(position, quaternion, scale);
+      mesh.setMatrixAt(index, matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    lastCameraQuaternion.copy(state.camera.quaternion);
+    hasCameraQuaternion.current = true;
+    matrixNeedsUpdate.current = false;
+  });
+
+  return <InstancedMesh
+    name={"group-order-marker-disks"}
+    ref={ref}
+    args={[undefined, undefined, props.positions.length]}
+    count={props.positions.length}
+    renderOrder={RenderOrder.pointerPlant}
+    frustumCulled={false}>
+    <cylinderGeometry args={[35, 35, 5]} />
+    <MeshPhongMaterial color={"black"} transparent={true} opacity={0.25} />
+  </InstancedMesh>;
+};
+
 export const areGroupOrderPropsEqual =
   (prev: GroupOrderProps, next: GroupOrderProps) => {
     if (prev.config.exaggeratedZ != next.config.exaggeratedZ) { return false; }
@@ -135,16 +193,12 @@ const GroupOrder = (props: GroupOrderProps) => {
       gapSize={25}
       linewidth={10}
       points={positions} />
+    <OrderMarkerDisks positions={positions} />
     {positions.map((p, i) =>
       <Billboard
+        key={i}
         follow={true}
         position={p}>
-        <Cylinder
-          args={[35, 35, 5]}
-          rotation={[Math.PI / 2, 0, 0]}
-          renderOrder={RenderOrder.pointerPlant}>
-          <MeshPhongMaterial color={"black"} transparent={true} opacity={0.25} />
-        </Cylinder>
         <Text
           fontSize={25}
           color={"white"}
