@@ -5554,3 +5554,57 @@ value-equivalent inline people arrays while visibility, focus state, bed
 placement fields, URLs, and offsets still update the same billboards.
 
 **Commit:** `Memoize people layer for 81.5% faster rerenders`
+
+## Round 59
+
+### Idea 311: Memoize static `PottedPlant`
+
+**Description:** Memoize the static potted-plant greenhouse prop so parent
+scene rerenders skip its pot mesh, soil disk, billboard, and plant image
+subtree. Expected return: faster greenhouse prop rerenders without changing
+geometry, image, scale, shadows, or billboard behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the static
+potted plant 90 times with no prop changes, matching unchanged greenhouse
+parent rerenders.
+
+**Before:** 4.603 ms per 90-rerender batch.
+
+**After:** 0.835 ms per 90-rerender batch.
+
+**Change:** 81.9% faster, saving 3.768 ms per realistic unchanged prop
+rerender batch.
+
+**Outcome:** Accepted; the static potted plant now skips unchanged parent
+rerenders while preserving the same pot geometry, soil disk, image, shadows,
+and billboard behavior.
+
+**Commit:** `Memoize potted plant for 81.9% faster rerenders`
+
+### Idea 312: Memoize `StarterTrays` value-equivalent positions
+
+**Description:** Add a positions comparator around starter trays so inline
+position arrays from the greenhouse scene do not rebuild tray/seedling
+instanced-mesh React subtrees when the positions are value-equivalent. Expected
+return: faster greenhouse shelf rerenders while changed tray positions still
+update instance matrices and camera-facing seedlings.
+
+### Idea 313: Memoize `PresetButton` rendered controls
+
+**Description:** Memoize preset buttons by preset, hover state, index, start
+position, and callback identity. Expected return: faster 3D preset UI rerenders
+when sibling controls update, without changing hover, press, release, or click
+behavior.
+
+### Idea 314: Memoize `Sky` primitive props
+
+**Description:** Memoize the sky primitive by sun position contents and reuse
+the static scale vector. Expected return: lower background rerender churn
+without changing sky uniforms, scale, turbidity, or sun position behavior.
+
+### Idea 315: Memoize `Person` image transforms
+
+**Description:** Memoize individual person image props by URL, position, and
+rotation contents. Expected return: faster people layer rerenders when parent
+billboards rerender but the person asset and transform are unchanged, without
+changing image scale, opacity, render order, or raycast behavior.
