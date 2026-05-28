@@ -322,7 +322,50 @@ export interface DrawnPointProps {
   imageRef?: ImageRef;
 }
 
-export const DrawnPoint = (props: DrawnPointProps) => {
+interface DrawnPointPreviewProps extends DrawnPointProps {
+  mode: Mode;
+}
+
+type DrawnPointPayload = DesignerState["drawnPoint"];
+
+const DRAWN_POINT_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "mirrorX",
+  "mirrorY",
+  "zGantryOffset",
+];
+
+const sameDrawnPoint = (
+  prev: DrawnPointPayload,
+  next: DrawnPointPayload,
+) =>
+  prev === next ||
+  (!!prev && !!next &&
+    prev.cx === next.cx &&
+    prev.cy === next.cy &&
+    prev.z === next.z &&
+    prev.r === next.r &&
+    prev.color === next.color);
+
+export const drawnPointPropsEqual = (
+  prev: DrawnPointPreviewProps,
+  next: DrawnPointPreviewProps,
+) =>
+  prev.mode === next.mode &&
+  prev.usePosition === next.usePosition &&
+  prev.radiusRef === next.radiusRef &&
+  prev.torusRef === next.torusRef &&
+  prev.billboardRef === next.billboardRef &&
+  prev.imageRef === next.imageRef &&
+  sameDrawnPoint(prev.designer.drawnPoint, next.designer.drawnPoint) &&
+  DRAWN_POINT_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const DrawnPointPreview = (props: DrawnPointPreviewProps) => {
   const { config } = props;
   const { drawnPoint } = props.designer;
   const drawnPointPosition =
@@ -330,7 +373,7 @@ export const DrawnPoint = (props: DrawnPointProps) => {
       ? { x: drawnPoint.cx, y: drawnPoint.cy, z: drawnPoint.z }
       : undefined;
   if (props.usePosition && isUndefined(drawnPointPosition)) { return <></>; }
-  const Base = getMode() == Mode.createWeed ? WeedBase : PointBase;
+  const Base = props.mode == Mode.createWeed ? WeedBase : PointBase;
   return <Base
     pointName={"drawn-point"}
     alpha={0.5}
@@ -343,6 +386,12 @@ export const DrawnPoint = (props: DrawnPointProps) => {
     billboardRef={props.billboardRef}
     imageRef={props.imageRef} />;
 };
+
+const MemoDrawnPointPreview =
+  React.memo(DrawnPointPreview, drawnPointPropsEqual);
+
+export const DrawnPoint = (props: DrawnPointProps) =>
+  <MemoDrawnPointPreview {...props} mode={getMode()} />;
 
 interface PointBaseProps {
   pointName: string;

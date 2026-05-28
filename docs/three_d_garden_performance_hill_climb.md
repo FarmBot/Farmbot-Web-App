@@ -5145,6 +5145,23 @@ selected group or selected points. Expected return: faster details-layer rerende
 when a group is selected, without changing selected-group sorting, labels, line
 positions, or URL-driven group selection.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark with a selected group
+and 75 selected points over 90 unrelated config rerenders.
+
+**Before:** 1.518 ms per 90-rerender batch.
+
+**After:** Not implemented.
+
+**Change:** No accepted change; the previous selected-point cache and inner
+memoized order renderer already reduced this path below a meaningful absolute
+runtime cost.
+
+**Outcome:** Rejected before implementation; even a perfect wrapper would save
+only about 1.5 ms across 90 rerenders while adding another comparator around
+URL-driven group selection.
+
+**Commit:** Not committed
+
 ### Idea 295: Narrow `DrawnPoint` config churn
 
 **Description:** Memoize the active drawn-point preview by mode, drawn point,
@@ -5152,3 +5169,20 @@ position usage, refs, and point-position config fields. Expected return: better
 point/weed creation responsiveness during unrelated settings churn without
 changing preview marker geometry, weed base choice, radius, color, refs, or
 placement.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering an active
+point-creation preview with a drawn point and radius 90 times while only an
+unrelated config field changed.
+
+**Before:** 6.806 ms per 90-rerender batch.
+
+**After:** 1.722 ms per 90-rerender batch.
+
+**Change:** 74.7% faster, saving 5.084 ms per realistic active-preview
+config-churn batch.
+
+**Outcome:** Accepted; the route/mode read remains outside the memo boundary,
+so point-vs-weed preview changes still update, while unchanged drawn-point
+fields, refs, and position config skip preview subtree churn.
+
+**Commit:** `Memoize drawn point churn for 74.7% faster previews`

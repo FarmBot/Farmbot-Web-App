@@ -1,8 +1,8 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
-  DrawnPoint, DrawnPointProps, Point, PointInstances, PointInstancesProps,
-  PointProps,
+  DrawnPoint, drawnPointPropsEqual, DrawnPointProps, Point,
+  PointInstances, PointInstancesProps, PointProps,
 } from "../point";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -14,6 +14,7 @@ import {
   fakeDesignerState, fakeDrawnPoint,
 } from "../../../__test_support__/fake_designer_state";
 import { SpecialStatus } from "farmbot";
+import { Mode } from "../../../farm_designer/map/interfaces";
 import {
   actRenderer,
   createRenderer,
@@ -323,5 +324,33 @@ describe("<DrawnPoint />", () => {
     expect(container).toContainHTML("scale=\"50\"");
     expect(container).toContainHTML("color=\"green\"");
     expect(container).toContainHTML("opacity=\"0.25\"");
+  });
+
+  it("compares drawn-point-relevant fields", () => {
+    const p = fakeProps();
+    const props = { ...p, mode: Mode.createPoint };
+    expect(drawnPointPropsEqual(props, {
+      ...props,
+      config: { ...props.config, sun: props.config.sun + 1 },
+    })).toBeTruthy();
+    expect(drawnPointPropsEqual(props, {
+      ...props,
+      mode: Mode.createWeed,
+    })).toBeFalsy();
+    expect(drawnPointPropsEqual(props, {
+      ...props,
+      config: { ...props.config, bedXOffset: props.config.bedXOffset + 1 },
+    })).toBeFalsy();
+    const changedDrawnPoint = {
+      ...props.designer.drawnPoint!,
+      r: (props.designer.drawnPoint?.r || 0) + 1,
+    };
+    expect(drawnPointPropsEqual(props, {
+      ...props,
+      designer: {
+        ...props.designer,
+        drawnPoint: changedDrawnPoint,
+      },
+    })).toBeFalsy();
   });
 });
