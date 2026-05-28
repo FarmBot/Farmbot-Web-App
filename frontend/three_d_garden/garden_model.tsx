@@ -625,6 +625,7 @@ export const GardenModel = (props: GardenModelProps) => {
     enabled: focusTransitionsEnabled,
     cameraObject: controlsCamera,
     controls,
+    updateStateDuringTransition: !focusTransitionsEnabled,
   });
 
   // eslint-disable-next-line no-null/no-null

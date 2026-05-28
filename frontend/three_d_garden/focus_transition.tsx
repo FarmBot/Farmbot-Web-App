@@ -529,6 +529,7 @@ export interface UseSmoothCameraProps {
   enabled: boolean;
   cameraObject?: SmoothCameraObject | null;
   controls?: SmoothCameraControls | null;
+  updateStateDuringTransition?: boolean;
 }
 
 export const useSmoothCamera = (props: UseSmoothCameraProps) => {
@@ -584,6 +585,8 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
       props.cameraObject,
       props.controls,
     );
+    const updateStateDuringTransition =
+      props.updateStateDuringTransition ?? true;
     const startedAt = performance.now();
     let frame = 0;
     const tick = () => {
@@ -595,13 +598,17 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
         easeInOutCubic(progress),
       );
       displayRef.current = next;
-      setDisplayCamera(next);
+      if (updateStateDuringTransition) {
+        setDisplayCamera(next);
+      }
       applySmoothCameraState(next, props.cameraObject, props.controls);
       if (progress < 1) {
         frame = window.requestAnimationFrame(tick);
       } else {
         displayRef.current = target;
-        setDisplayCamera(target);
+        if (updateStateDuringTransition) {
+          setDisplayCamera(target);
+        }
         applySmoothCameraState(
           target,
           props.cameraObject,
@@ -618,6 +625,7 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
     props.enabled,
     target,
     transition.duration,
+    props.updateStateDuringTransition,
   ]);
 
   return props.enabled ? displayCamera : target;

@@ -14,6 +14,7 @@ import {
   interpolateCameraState,
   readSmoothCameraState,
   shouldUnmountFocusVisibilityGroup,
+  useSmoothCamera,
 } from "../focus_transition";
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
 
@@ -243,5 +244,64 @@ describe("focus transitions", () => {
       target: [10, 11, 12],
       zoom: 2,
     });
+  });
+
+  it("can update the live camera without rendering every animation frame", () => {
+    const nowSpy = jest.spyOn(performance, "now");
+    const originalRequestAnimationFrame = window.requestAnimationFrame;
+    const originalCancelAnimationFrame = window.cancelAnimationFrame;
+    let now = 0;
+    nowSpy.mockImplementation(() => now);
+    const frames: FrameRequestCallback[] = [];
+    window.requestAnimationFrame = jest.fn(callback => {
+      frames.push(callback);
+      return frames.length;
+    });
+    window.cancelAnimationFrame = jest.fn();
+    const cameraObject = {
+      position: { set: jest.fn() },
+      zoom: 1,
+      lookAt: jest.fn(),
+      updateProjectionMatrix: jest.fn(),
+    };
+    const controls = {
+      target: { set: jest.fn() },
+      update: jest.fn(),
+    };
+    let renders = 0;
+    const CameraConsumer = () => {
+      renders++;
+      useSmoothCamera({
+        camera: {
+          position: [10, 20, 30],
+          target: [40, 50, 60],
+        },
+        zoom: 2,
+        enabled: true,
+        cameraObject,
+        controls,
+        updateStateDuringTransition: false,
+      });
+      return <div />;
+    };
+
+    try {
+      render(<FocusTransitionProvider enabled={true} duration={100}>
+        <CameraConsumer />
+      </FocusTransitionProvider>);
+      while (frames.length) {
+        const callback = frames.shift();
+        if (!callback) { break; }
+        now += 20;
+        act(() => callback(now));
+      }
+      expect(renders).toEqual(1);
+      expect(cameraObject.position.set).toHaveBeenCalledWith(10, 20, 30);
+      expect(controls.target.set).toHaveBeenCalledWith(40, 50, 60);
+    } finally {
+      window.requestAnimationFrame = originalRequestAnimationFrame;
+      window.cancelAnimationFrame = originalCancelAnimationFrame;
+      nowSpy.mockRestore();
+    }
   });
 });

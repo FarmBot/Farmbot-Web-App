@@ -13364,3 +13364,369 @@ slightly slower.
 manual preset selection and the measured improvement is not meaningful.
 
 **Commit:** None
+
+## Round 122
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 626. Share config-overlay URL param parsing across rows | Reduce config panel mount work from parsing the same query string for every row | 110 config rows with a realistic 3D query string | Rejected |
+| 627. Skip smooth-camera React state updates during direct Three camera transitions | Reduce render churn during focus camera tweens while preserving every RAF camera update | One 900 ms smooth focus transition at 60 fps | Accepted |
+| 628. Prefer live camera vector fields before `toArray()` | Avoid small array allocation when reading camera and controls vectors at transition start | One smooth focus transition start read | Rejected |
+| 629. Build smooth-camera keys without temporary arrays | Reduce per-render key allocation in focus camera targeting | One target camera key build | Rejected |
+| 630. Reuse a scratch color for animated sun sky color updates | Reduce per-frame `Color` allocation while season animation is enabled | 600 animated-season sky color updates | Rejected |
+
+### Idea 626: Share config-overlay URL param parsing across rows
+
+**Description:** `ConfigRow` checks whether the current URL has a param by
+constructing a fresh `URLSearchParams` for each config row. Sharing one parsed
+query object across the private config overlay could reduce config-panel mount
+work.
+
+**Benchmark:** 110 config rows with a realistic 3D query string containing
+position, scene, cloud, settings, plant, and two config-row params. Repetitions
+were used only to stabilize timing.
+
+**Before:** Current per-row parser path: 0.109459 ms median, 0.128958 ms p95.
+
+**After:** Simulated shared-parser path: 0.002541 ms median, 0.003750 ms p95.
+
+**Change:** 97.68% faster, saving 0.106918 ms across config panel row checks.
+
+**Outcome:** Rejected before code changes. The percentage is strong, but the
+absolute saving is still about a tenth of a millisecond and only applies while
+opening the developer config panel.
+
+**Commit:** None
+
+### Idea 627: Skip smooth-camera React state updates during direct Three camera transitions
+
+**Description:** During smooth focus transitions, `GardenModel` mutates the
+live Three camera and OrbitControls directly. While that mode is active, the
+returned camera state is not fed back into JSX, so per-frame React state updates
+only add render churn.
+
+**Benchmark:** One 900 ms smooth focus transition at 60 fps using the actual
+`useSmoothCamera()` hook with fake RAF timing.
+
+**Before:** Current direct camera transition path: 56 React renders over 55 RAF
+frames.
+
+**After:** Direct-camera path with React state updates disabled: 1 React render
+over the same 55 RAF frames.
+
+**Change:** 98.21% fewer React renders, eliminating 55 renders per smooth focus
+camera transition.
+
+**Outcome:** Accepted. The camera and controls are still updated on every RAF
+tick, while the transition no longer asks React to render every camera frame
+when `GardenModel` is already applying the live camera state imperatively.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/focus_transition_test.tsx`
+
+**Commit:** `Optimize 3D smooth camera renders by 98.2%`
+
+### Idea 628: Prefer live camera vector fields before `toArray()`
+
+**Description:** `readVector()` currently prefers `toArray()` when reading
+Three camera and controls vectors. Reading `x`, `y`, and `z` first could avoid
+temporary arrays at the start of a camera transition.
+
+**Benchmark:** One smooth focus transition start read for camera position and
+controls target. Repetitions were used only to stabilize timing.
+
+**Before:** Current `toArray()`-first read: 0.000084 ms median, 0.000458 ms p95.
+
+**After:** Simulated `x`/`y`/`z`-first read: 0.000208 ms median,
+0.000250 ms p95.
+
+**Change:** 147.62% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The current path is already faster
+for the realistic live vector shape.
+
+**Commit:** None
+
+### Idea 629: Build smooth-camera keys without temporary arrays
+
+**Description:** `cameraKey()` builds a temporary array before joining camera
+position, target, and zoom. A direct template string could avoid the array
+allocation.
+
+**Benchmark:** One target camera key build. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current array-and-join path: 0.000209 ms median, 0.000334 ms p95.
+
+**After:** Simulated template-string path: 0.000208 ms median, 0.000334 ms p95.
+
+**Change:** 0.48% faster, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. This misses the percentage threshold
+and has no meaningful absolute impact.
+
+**Commit:** None
+
+### Idea 630: Reuse a scratch color for animated sun sky color updates
+
+**Description:** Animated seasons call `skyColor()` each frame, which allocates
+a new `Color` while calculating the sky background. Reusing a scratch `Color`
+inside `Sun` could reduce per-frame allocation.
+
+**Benchmark:** 600 animated-season sky color updates, representing 10 seconds
+at 60 fps. Repetitions were used only to stabilize timing.
+
+**Before:** Current allocating color path: 0.023292 ms median, 0.042500 ms p95.
+
+**After:** Simulated scratch-color path: 0.019084 ms median, 0.022958 ms p95.
+
+**Change:** 18.07% faster, saving 0.004208 ms across 600 frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving across 10 seconds of animation is too small to matter.
+
+**Commit:** None
+
+## Round 123
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 631. Memoize watering stream curves across delayed visibility render | Avoid rebuilding the same 16 stream curves when the active watering animation flips visible | Two active watering-animation renders: initial hidden render plus delayed visible render | Rejected |
+| 632. Precompute watering stream trigonometry offsets | Avoid repeated `sin`/`cos` calls while building the 16 nozzle streams | One active watering stream descriptor build | Rejected |
+| 633. Combine focus material clone and state collection for array-material slots | Reduce focus-transition binding setup for meshes with array materials | 40 material slots with every fourth slot holding a two-material array | Rejected |
+| 634. Use constant cable colors when cable debug is off | Avoid debug-color helper calls on default power cable materials | One default power-supply render with two cable color reads | Rejected |
+| 635. Add a relevant-field comparator to Bot bed utility wrapper | Skip utility wrapper rerenders on unrelated config object churn | 60 bot utility wrapper checks with only `sun` changing | Rejected |
+
+### Idea 631: Memoize watering stream curves across delayed visibility render
+
+**Description:** `WateringAnimationsContent` builds 16 `CubicBezierCurve3`
+stream paths on render, then its delayed visibility state update causes a
+second render shortly after mount. Memoizing those stream paths could avoid
+rebuilding identical curves for the visibility flip.
+
+**Benchmark:** Two active watering-animation renders: the initial hidden render
+and the delayed visible render. Repetitions were used only to stabilize timing.
+
+**Before:** Current two-render curve build: 0.002583 ms median,
+0.011583 ms p95.
+
+**After:** Simulated memoized one-render curve build: 0.000750 ms median,
+0.002625 ms p95.
+
+**Change:** 70.96% faster, saving 0.001833 ms during watering animation mount.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute improvement is far below a meaningful interaction or frame
+time change, and watering setup is dominated by the rendered stream/cloud
+objects.
+
+**Commit:** None
+
+### Idea 632: Precompute watering stream trigonometry offsets
+
+**Description:** The 16 watering streams use evenly spaced angles. Precomputing
+the `sin` and `cos` values once could remove repeated trigonometry while
+building stream descriptors.
+
+**Benchmark:** One active watering stream descriptor build with 16 evenly
+spaced streams. Repetitions were used only to stabilize timing.
+
+**Before:** Current per-build trig path: 0.000375 ms median, 0.000916 ms p95.
+
+**After:** Simulated precomputed offset path: 0.000208 ms median,
+0.001125 ms p95.
+
+**Change:** 44.53% faster by median, saving 0.000167 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The measured work is too small, and
+the p95 did not improve.
+
+**Commit:** None
+
+### Idea 633: Combine focus material clone and state collection for array-material slots
+
+**Description:** `cloneSlot()` clones array-material slots with one `.map()`
+and then collects material state with a second `.map()`. Combining those passes
+could reduce setup when focus transitions bind meshes that use material arrays.
+
+**Benchmark:** 40 material slots with every fourth slot holding a two-material
+array, representing a mixed focus subtree. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current separate clone/state passes: 0.020791 ms median,
+0.039541 ms p95.
+
+**After:** Simulated combined loop: 0.014958 ms median, 0.026125 ms p95.
+
+**Change:** 28.06% faster, saving 0.005833 ms during binding setup.
+
+**Outcome:** Rejected before code changes. The improvement is measurable but
+still much smaller than a meaningful focus-transition setup win.
+
+**Commit:** None
+
+### Idea 634: Use constant cable colors when cable debug is off
+
+**Description:** `PowerSupply` calls `cableColor(false)` for the default power
+cable and plug. Returning a constant color at the call sites could avoid helper
+work and the debug hue counter branch.
+
+**Benchmark:** One default power-supply render with two cable color reads and
+debug disabled. Repetitions were used only to stabilize timing.
+
+**Before:** Current helper-call path: 0.000042 ms median, 0.000250 ms p95.
+
+**After:** Simulated constant color path: 0.000041 ms median, 0.000084 ms p95.
+
+**Change:** 2.38% faster, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. This misses the percentage threshold
+and has no meaningful absolute impact.
+
+**Commit:** None
+
+### Idea 635: Add a relevant-field comparator to Bot bed utility wrapper
+
+**Description:** `BotBedUtilitySubassemblies` uses default `React.memo`
+comparison, so it re-enters when the `config` object identity changes even if
+only unrelated fields changed. A relevant-field comparator could skip those
+wrapper renders.
+
+**Benchmark:** 60 bot utility wrapper checks where only `config.sun` changed.
+The simulated comparator checked the fields needed by `PowerSupply` and
+`XAxisWaterTube`.
+
+**Before:** Current shallow-identity wrapper path: 0.001084 ms median,
+0.002917 ms p95.
+
+**After:** Simulated relevant-field comparator path: 0.003708 ms median,
+0.008083 ms p95.
+
+**Change:** 242.07% slower by median.
+
+**Outcome:** Rejected before code changes. The wrapper itself is cheaper than
+the field comparisons, and the child components already have their own
+field-aware memoization.
+
+**Commit:** None
+
+## Round 124
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 636. Inline sun-position vector math | Avoid temporary array allocation during animated-season sun position updates | 600 animated-season frames with three sun-position calculations per frame | Rejected |
+| 637. Return cached season property objects | Avoid cloning season property records for the Sun and Clouds environment render paths | One Sun plus Clouds environment render property lookup pair | Rejected |
+| 638. Reuse the Sun debug origin vector | Avoid allocating a `[0, 0, 0]` `Vector3` during a Sun render | One Sun render with lights-debug origin setup | Rejected |
+| 639. Pass ground properties through detailed ground rendering | Avoid a duplicate scene-property switch during visible ground rendering | One visible Outdoor detailed-ground property setup | Rejected |
+| 640. Use an indexed loop for group-order marker disk matrices | Reduce callback overhead while updating instanced group-order marker disks | One 50-point group-order marker disk matrix update | Rejected |
+
+### Idea 636: Inline sun-position vector math
+
+**Description:** `sunPosition()` converts polar coordinates into a temporary
+array and then spreads that array into a `Vector3`. Inlining the math could
+avoid the temporary array while preserving the same sun, shadow, and debug
+positions.
+
+**Benchmark:** 600 animated-season frames with three sun-position calculations
+per frame, matching 10 seconds of animated seasons at 60 fps.
+
+**Before:** Current `polarToCartesian()` plus spread path: 0.056167 ms median,
+0.071375 ms p95.
+
+**After:** Simulated inline vector construction: 0.021500 ms median,
+0.023959 ms p95.
+
+**Change:** 61.72% faster, saving 0.034667 ms across 600 animated frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute win is only about three hundredths of a millisecond over 10
+seconds of animation, so it is not a meaningful FPS improvement.
+
+**Commit:** None
+
+### Idea 637: Return cached season property objects
+
+**Description:** `getSeasonProperties()` clones the selected season properties
+before `Sun` and `Clouds` read them. Returning the cached property object could
+avoid two tiny object allocations in the environment render path.
+
+**Benchmark:** One Sun plus Clouds environment render property lookup pair.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current cloned property path: 0.000042 ms median, 0.000084 ms p95.
+
+**After:** Simulated cached object return: 0.000042 ms median,
+0.000084 ms p95.
+
+**Change:** 0.00% median change.
+
+**Outcome:** Rejected before code changes. The benchmark showed no measurable
+improvement.
+
+**Commit:** None
+
+### Idea 638: Reuse the Sun debug origin vector
+
+**Description:** `SunBase` allocates a new origin `Vector3` for the lights-debug
+line endpoint on each render. A module-level constant could remove that
+allocation.
+
+**Benchmark:** One Sun render with lights-debug origin setup. Repetitions were
+used only to stabilize timing.
+
+**Before:** Per-render origin allocation: 0.000083 ms median,
+0.000125 ms p95.
+
+**After:** Simulated module constant origin: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 0.00% median change.
+
+**Outcome:** Rejected before code changes. The allocation was too small to
+measure in the realistic render path.
+
+**Commit:** None
+
+### Idea 639: Pass ground properties through detailed ground rendering
+
+**Description:** `VisibleGround` looks up scene ground properties, then
+`GroundMaterial` looks them up again for the same scene. Passing the existing
+properties through could remove the duplicate switch.
+
+**Benchmark:** One visible Outdoor detailed-ground property setup. Repetitions
+were used only to stabilize timing.
+
+**Before:** Duplicate property lookup: 0.000042 ms median, 0.000084 ms p95.
+
+**After:** Simulated passed property object: 0.000000 ms median,
+0.000083 ms p95.
+
+**Change:** 100.00% median improvement, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The saved work is much less than a
+microsecond and the p95 was effectively unchanged.
+
+**Commit:** None
+
+### Idea 640: Use an indexed loop for group-order marker disk matrices
+
+**Description:** `OrderMarkerDisks` updates marker disk instance matrices with
+`forEach()`. An indexed loop could avoid callback overhead when a group-order
+route updates marker disks after a camera change.
+
+**Benchmark:** One 50-point group-order marker disk matrix update, matching a
+large selected point group.
+
+**Before:** Current `forEach()` matrix update: 0.000584 ms median,
+0.000791 ms p95.
+
+**After:** Simulated indexed-loop matrix update: 0.000458 ms median,
+0.001250 ms p95.
+
+**Change:** 21.58% faster by median, saving 0.000126 ms, while p95 was slower
+by 0.000459 ms.
+
+**Outcome:** Rejected before code changes. The median saving is far below a
+meaningful interaction win and the p95 moved in the wrong direction.
+
+**Commit:** None
