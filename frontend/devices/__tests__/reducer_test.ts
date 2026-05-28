@@ -86,6 +86,30 @@ describe("botReducer", () => {
     expect(r.hardware.informational_settings.sync_status).toEqual("synced");
   });
 
+  it("handles a status update without default nested objects", () => {
+    const state = initialState();
+    const payload = defensiveClone(state.hardware);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (payload as any).location_data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (payload as any).informational_settings;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (payload as any).process_info;
+    const action = { type: Actions.STATUS_UPDATE, payload };
+    const r = botReducer(state, action);
+    expect(r.hardware.location_data.position).toEqual({
+      x: undefined,
+      y: undefined,
+      z: undefined,
+    });
+    expect(r.hardware.informational_settings).toEqual(expect.objectContaining({
+      busy: false,
+      locked: false,
+      commit: "---",
+    }));
+    expect(r.hardware.process_info.farmwares).toEqual({});
+  });
+
   it("resets hardware state when transitioning into maintenance mode.", () => {
     const state = initialState();
     const payload = defensiveClone(state.hardware);
