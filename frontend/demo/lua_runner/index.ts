@@ -8,6 +8,18 @@ import { csToLua } from "./util";
 import { error } from "../../toast/toast";
 import { getGroupPoints } from "./stubs";
 
+const sequenceCallKey = (
+  sequenceId: number,
+  bodyVariables: ParameterApplication[] | undefined,
+) =>
+  bodyVariables?.length
+    ? `${sequenceId}:${
+      bodyVariables
+        .map(variable => JSON.stringify(variable.args))
+        .join("|")
+    }`
+    : "" + sequenceId;
+
 export const runDemoLuaCode = (luaCode: string) => {
   const actions = runLua(0, luaCode, []);
   runActions(expandActions(actions, []));
@@ -18,12 +30,18 @@ export const collectDemoSequenceActions = (
   resources: ResourceIndex,
   sequenceId: number,
   bodyVariables: ParameterApplication[] | undefined,
+  sequenceStack: string[] = [],
 ): Action[] => {
-  console.log(`Call depth: ${depth}`);
   if (depth > 100) {
     error("Maximum call depth exceeded.");
     return [];
   }
+  const callKey = sequenceCallKey(sequenceId, bodyVariables);
+  if (sequenceStack.includes(callKey)) {
+    error("Maximum call depth exceeded.");
+    return [];
+  }
+  sequenceStack.push(callKey);
   const sequence = findSequenceById(resources, sequenceId);
   const varData = resources.sequenceMetas[sequence.uuid];
   const sequenceVariables: ParameterApplication[] = Object.values(varData || {})
@@ -55,9 +73,11 @@ export const collectDemoSequenceActions = (
         depth + 1,
         resources,
         sequence.body.id as number,
-        pointVariables);
+        pointVariables,
+        sequenceStack);
       actions.push(...expandActions(loopSeqActions, pointVariables));
     });
+    sequenceStack.pop();
     return actions;
   }
   (sequence.body.body as SequenceBodyItem[]).map(step => {
@@ -66,7 +86,8 @@ export const collectDemoSequenceActions = (
         depth + 1,
         resources,
         step.args.sequence_id,
-        step.body);
+        step.body,
+        sequenceStack);
       actions.push(...seqActions);
     } else {
       const lua = step.kind === "lua" ? step.args.lua : csToLua(step);
@@ -74,6 +95,7 @@ export const collectDemoSequenceActions = (
       actions.push(...stepActions);
     }
   });
+  sequenceStack.pop();
   return actions;
 };
 

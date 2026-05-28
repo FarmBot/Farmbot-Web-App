@@ -124,13 +124,11 @@ describe("<Visualization />", () => {
     const { rerender } = render(<Visualization {...p} />);
     const firstCalls = linePointCalls(lineSpy);
     const firstPoints = firstCalls[firstCalls.length - 1];
-    expect(console.log).toHaveBeenCalledTimes(1);
 
     const churnConfig = clone(p.config);
     churnConfig.bedBrightness = 1;
     churnConfig.clouds = !churnConfig.clouds;
     rerender(<Visualization {...p} config={churnConfig} />);
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(linePointCalls(lineSpy).length).toEqual(firstCalls.length);
     expect(linePointCalls(lineSpy)[firstCalls.length - 1])
       .toBe(firstPoints);
@@ -140,7 +138,6 @@ describe("<Visualization />", () => {
     rerender(<Visualization {...p} config={geometryConfig} />);
     const geometryCalls = linePointCalls(lineSpy);
     const geometryPoints = geometryCalls[geometryCalls.length - 1];
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(geometryCalls.length).toEqual(firstCalls.length + 1);
     expect(geometryPoints).not.toEqual(firstPoints);
 
@@ -151,7 +148,6 @@ describe("<Visualization />", () => {
       configPosition={movedPosition} />);
     const positionCalls = linePointCalls(lineSpy);
     const positionPoints = positionCalls[positionCalls.length - 1];
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(positionCalls.length).toEqual(firstCalls.length + 2);
     expect(positionPoints).not.toEqual(geometryPoints);
 
@@ -167,7 +163,6 @@ describe("<Visualization />", () => {
       config={geometryConfig}
       configPosition={movedPosition} />);
     const sequenceCalls = linePointCalls(lineSpy);
-    expect(console.log).toHaveBeenCalledTimes(2);
     expect(sequenceCalls.length).toEqual(firstCalls.length + 3);
     expect(sequenceCalls[sequenceCalls.length - 1]).not.toEqual(positionPoints);
   });

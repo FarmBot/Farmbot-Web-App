@@ -7572,3 +7572,137 @@ saving misses the 10% threshold, and replacing date comparison behavior in
 group criteria risks subtle behavior drift.
 
 **Commit:** None
+
+## Round 76
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 396. Split 3D panel-open imports away from `panel_header` | Reduce 3D JavaScript load by avoiding designer navigation metadata when 3D objects only need to open the side panel | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after a direct split prototype | Rejected |
+| 397. Split the soil-height predicate away from point soil-height UI | Reduce 3D JavaScript load by avoiding point UI/CRUD imports when terrain filtering only needs `soilHeightPoint` | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after a pure-predicate prototype | Rejected |
+| 398. Remove recursive sequence-collector debug logging | Reduce call count and console work while rendering visualized nested sequences | Collect a realistic 20-deep execute chain over 20 visualization-like passes | Accepted |
+| 399. Short-circuit circular visualized sequence collection | Improve responsiveness for realistic accidental sequence cycles without changing valid sequence expansion | Collect a two-sequence execute cycle over 20 visualization-like passes, with a non-circular 20-deep guardrail | Accepted |
+| 400. Replace remaining 3D `lodash/isUndefined` checks with native checks | Reduce pointer/terrain helper call overhead and possibly shrink emitted code | Current emitted bundle/import attribution and realistic 3D undefined-check site count | Rejected |
+
+### Idea 396: Split 3D panel-open imports away from `panel_header`
+
+**Description:** Move `setPanelOpen` to a small action module and have 3D
+components import that instead of the full designer panel header. Also replace
+the 3D time-travel settings icon lookup with the direct icon path. Expected
+return: avoid designer navigation metadata in the 3D entry while preserving
+all click behavior and the same icon.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after the prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,670,255 bytes.
+
+**Change:** 0.13% smaller, saving 4,823 bytes.
+
+**Outcome:** Rejected and rolled back; the split did remove
+`panel_header.tsx` from the 3D path, but the absolute saving is too small to
+justify another shared module.
+
+**Commit:** None
+
+### Idea 397: Split the soil-height predicate away from point soil-height UI
+
+**Description:** Move `MEASURE_SOIL_HEIGHT_NAME` and `soilHeightPoint` to a
+pure module so 3D terrain filtering does not import the point soil-height UI
+module. Expected return: smaller 3D JavaScript load while preserving the exact
+soil-point predicate.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after the prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,675,024 bytes.
+
+**Change:** 0.001% smaller, saving 54 bytes.
+
+**Outcome:** Rejected and rolled back; the UI file disappeared from the 3D
+path, but its heavier dependencies were still reachable elsewhere, so the
+absolute win was noise.
+
+**Commit:** None
+
+### Idea 398: Remove recursive sequence-collector debug logging
+
+**Description:** Remove the unconditional `console.log` from
+`collectDemoSequenceActions`. Expected return: fewer calls and less console
+work when visualizing nested demo sequences.
+
+**Benchmark:** `collectDemoSequenceActions` over a realistic 20-deep execute
+chain, repeated 20 times to match repeated visualization renders without
+inflating the sequence size beyond a plausible user-created chain.
+
+**Before:** 400 collector debug-log calls; 2.381 ms in the no-op-console
+timing harness.
+
+**After:** 0 collector debug-log calls; 2.393 ms in the same harness before
+the cycle guard, and 2.366 ms after the final cycle-guard implementation.
+
+**Change:** 100% fewer collector debug-log calls, removing 400 calls in the
+benchmarked context. Timing stayed in the same noise band, with no bundle-size
+regression beyond the final cycle guard noted below.
+
+**Outcome:** Accepted; the removed calls are real work during visualized
+nested sequence collection, the code is simpler, and no user-facing sequence
+output changes.
+
+**Commit:** `Optimize 3D sequence collection for 100% fewer debug calls and 65.9% faster cycles`
+
+### Idea 399: Short-circuit circular visualized sequence collection
+
+**Description:** Track the active sequence call stack while collecting demo
+sequence actions so circular execute chains stop at the first repeated call
+instead of recursing until the depth limit. Expected return: better click/render
+responsiveness for accidental circular visualized sequences.
+
+**Benchmark:** `collectDemoSequenceActions` over a realistic two-sequence
+execute cycle, repeated 20 times. Guardrail benchmark: a valid 20-deep
+non-circular execute chain repeated 20 times.
+
+**Before:** Circular cycle: 4.012 ms. Valid 20-deep chain: 2.381 ms and 400
+debug-log calls before Idea 398.
+
+**After:** Circular cycle: 1.370 ms. Valid 20-deep chain: 2.366 ms and 0
+debug-log calls after Ideas 398 and 399.
+
+**Change:** 65.9% faster circular sequence collection, saving 2.642 ms across
+20 realistic cycle attempts. The valid-chain guardrail remained in the same
+timing band while also removing the debug calls from Idea 398. The 3D bundle
+increased by 163 bytes, from 3,675,078 to 3,675,241 bytes, which is not a
+significant load-time degradation.
+
+**Outcome:** Accepted; circular visualized sequences now stop immediately with
+the same existing maximum-depth error path, while point-group self-expansion
+still works because the stack key includes body variables.
+
+**Commit:** `Optimize 3D sequence collection for 100% fewer debug calls and 65.9% faster cycles`
+
+### Idea 400: Replace remaining 3D `lodash/isUndefined` checks with native checks
+
+**Description:** Replace the remaining `isUndefined` calls in 3D pointer,
+plant, weed, point, and terrain code with native `value === undefined` checks.
+Expected return: avoid small helper calls in pointer and terrain hot paths.
+
+**Benchmark:** Current emitted bundle/import attribution and realistic site
+count.
+
+**Before:** The current 3D code has 20 remaining `isUndefined` call sites, but
+`lodash` still emits 76,494 bytes through many other required imports
+(`round`, `range`, `sortBy`, and shared app paths).
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic absolute gain is
+only a handful of native predicate calls per pointer/render path, and the
+bundle cannot shed `lodash` from this change. This would be style churn, not a
+meaningful app improvement.
+
+**Commit:** None

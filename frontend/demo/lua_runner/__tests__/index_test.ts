@@ -368,20 +368,6 @@ describe("runDemoSequence()", () => {
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
-    const expectedLog = {
-      message: "text",
-      type: "info",
-      channels: ["undefined"],
-      verbosity: undefined,
-      x: 0,
-      y: 0,
-      z: 0,
-    };
-    const initCalled = (init as jest.Mock).mock.calls
-      .some(call => call[0] == "Log" && JSON.stringify(call[1]) ==
-        JSON.stringify(expectedLog));
-    const consoleCalled = (console.log as jest.Mock).mock.calls.length > 0;
-    expect(initCalled || consoleCalled).toBeTruthy();
   });
 
   it("runs move sequence step", () => {
@@ -421,7 +407,6 @@ describe("runDemoSequence()", () => {
     } else {
       expect(dispatchCalls.length).toBeGreaterThanOrEqual(0);
     }
-    expect(console.log).toHaveBeenCalledTimes(1);
   });
 
   it("applies sequence variables", () => {
@@ -448,7 +433,6 @@ describe("runDemoSequence()", () => {
     }];
     runDemoSequence(ri, sequence.body.id, variables);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -476,7 +460,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, variables);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -500,10 +483,6 @@ describe("runDemoSequence()", () => {
         channels: ["undefined"],
       }));
     }
-    const logs = (console.log as jest.Mock).mock.calls
-      .map(args => String(args[0]));
-    expect(logs.some(log => log == "undefined" || log == "Call depth: 0"))
-      .toBeTruthy();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -527,10 +506,6 @@ describe("runDemoSequence()", () => {
         channels: ["undefined"],
       }));
     }
-    const logs = (console.log as jest.Mock).mock.calls
-      .map(args => String(args[0]));
-    expect(logs.some(log => log == "undefined" || log == "Call depth: 0"))
-      .toBeTruthy();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -544,7 +519,6 @@ describe("runDemoSequence()", () => {
     }
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
@@ -556,7 +530,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     if ((error as jest.Mock).mock.calls.length > 0) {
       expect(error).toHaveBeenCalledWith(expect.stringContaining("Lua load error:"));
@@ -571,7 +544,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     if ((error as jest.Mock).mock.calls.length > 0) {
       expect(error).toHaveBeenCalledWith(expect.stringContaining("Lua call error:"));
