@@ -160,6 +160,31 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("skips frame model hooks during unrelated config rerenders", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        config={{
+          ...p.config,
+          sun: p.config.sun + 1,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).not.toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.crossSlide);
+    expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
+    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
+    unmountRenderer(wrapper);
+  });
+
   it("updates X/Y-only model hooks when x changes", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();

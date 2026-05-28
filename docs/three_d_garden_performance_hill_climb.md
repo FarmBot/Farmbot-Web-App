@@ -5923,3 +5923,64 @@ config-churn batch.
 **Outcome:** Rejected and rolled back; the selected-point cache and memoized
 inner order renderer already keep this path cheap, so the extra exported
 wrapper comparator was not worth the small absolute saving.
+
+## Round 62
+
+### Idea 326: Memoize Bot frame subassembly by relevant config fields
+
+**Description:** Replace object-identity config comparison on the Bot frame
+subassembly with relevant field comparison for frame dimensions, tracks, cable
+carrier visibility, and XY placement. Expected return: faster full Bot
+rerenders during unrelated config churn while track columns, brackets, X cable
+carrier mount, X carrier, and cross-slide placement still update when their
+inputs change.
+
+**Benchmark:** Full `Bot` render with tracks and cable carriers enabled, then
+90 rerenders where only unrelated `config.sun` changed while bot position and
+frame-relevant dimensions stayed unchanged.
+
+**Before:** 294.096 ms per 90-rerender batch.
+
+**After:** 37.620 ms per 90-rerender batch.
+
+**Change:** 87.2% faster, saving 256.476 ms per realistic full-Bot
+config-churn batch.
+
+**Outcome:** Accepted; the frame subassembly now skips unrelated config churn
+while frame dimensions, tracks, cable-carrier visibility, XY position, and
+cached SVG shape changes still rerender the frame.
+
+**Commit:** `Memoize Bot frame for 87.2% faster rerenders`
+
+### Idea 327: Memoize Bot gantry subassembly by relevant config fields
+
+**Description:** Replace object-identity config comparison on the Bot gantry
+subassembly with relevant field comparison for beam dimensions, carrier
+support, Y carrier, belt, stops, and XY placement. Expected return: faster full
+Bot rerenders during unrelated config churn while gantry geometry and carrier
+layout still update when their inputs change.
+
+### Idea 328: Memoize Bot electronics wrapper by relevant config fields
+
+**Description:** Replace object-identity config comparison on the electronics
+subassembly wrapper with the fields used by electronics box placement and kit
+version. Expected return: faster full Bot rerenders during unrelated config
+churn without changing electronics-box placement, buttons, LEDs, or model
+selection.
+
+### Idea 329: Memoize Bot vertical/toolhead subassembly
+
+**Description:** Extract the Bot Z-axis, toolhead, vacuum, air tube, camera,
+camera view, vertical cable carrier, and toolhead effects into a memoized
+subassembly with relevant field comparison. Expected return: faster full Bot
+rerenders during unrelated config churn while vertical movement, toolhead
+position, camera view, laser, trail, vacuum, water, and cable-carrier changes
+still update.
+
+### Idea 330: Memoize Bot water-flow texture provider subtree
+
+**Description:** Avoid recreating the water-flow texture provider subtree when
+the water-flow flag is unchanged and unrelated config fields churn. Expected
+return: less provider and child reconciliation overhead during normal Bot
+rerenders without changing shared water texture behavior or water-flow
+visibility.

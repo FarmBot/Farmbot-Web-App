@@ -179,17 +179,37 @@ const sameBotXYSubassemblyProps = <P extends BotXYSubassemblyProps>(
     prev.configPosition.y === next.configPosition.y;
 };
 
+const sameConfigFields = (
+  prev: Config,
+  next: Config,
+  fields: (keyof Config)[],
+) => fields.every(field => prev[field] === next[field]);
+
 interface BotFrameSubassembliesProps
   extends BotXYSubassemblyProps {
   trackShape: Shape | undefined;
   columnShape: Shape | undefined;
 }
 
+const BOT_FRAME_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "cableCarriers",
+  "columnLength",
+  "tracks",
+];
+
 const sameBotFrameSubassembliesProps = (
   prev: BotFrameSubassembliesProps,
   next: BotFrameSubassembliesProps,
 ) =>
-  sameBotXYSubassemblyProps(prev, next) &&
+  sameConfigFields(prev.config, next.config, BOT_FRAME_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
   prev.trackShape === next.trackShape &&
   prev.columnShape === next.columnShape;
 
