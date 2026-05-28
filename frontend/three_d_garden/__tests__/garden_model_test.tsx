@@ -31,6 +31,8 @@ import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
 } from "../progressive_load";
 import { AxesHelper } from "../components";
+import { Clouds } from "../garden/clouds";
+import { Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
 
@@ -176,10 +178,14 @@ describe("<GardenModel />", () => {
     p.config.north = false;
     p.config.solar = false;
     p.config.threeAxes = false;
+    p.config.ground = false;
+    p.config.clouds = false;
     const wrapper = createWrapper(p);
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(0);
     expect(wrapper.root.findAllByType(Solar)).toHaveLength(0);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Ground)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Clouds)).toHaveLength(0);
   });
 
   it("mounts enabled default-off helpers", () => {
@@ -188,10 +194,14 @@ describe("<GardenModel />", () => {
     p.config.north = true;
     p.config.solar = true;
     p.config.threeAxes = true;
+    p.config.ground = true;
+    p.config.clouds = true;
     const wrapper = createWrapper(p);
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(1);
     expect(wrapper.root.findAllByType(Solar)).toHaveLength(1);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Ground)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Clouds)).toHaveLength(1);
   });
 
   it("reuses empty bed resource props across position updates", () => {

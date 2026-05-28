@@ -12,6 +12,14 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import {
+  CableCarrierSupportHorizontal,
+  CableCarrierSupportVertical,
+  CableCarrierX,
+  CableCarrierY,
+  CableCarrierZ,
+} from "../components/cable_carriers";
+import { Bounds } from "../components/bounds";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -131,6 +139,40 @@ describe("<Bot />", () => {
     expect(container.querySelectorAll("[name='xCCMount']").length).toEqual(0);
     expect(useGltfMock.mock.calls
       .filter(([url]) => url == ASSETS.models.xAxisCCMount)).toHaveLength(0);
+  });
+
+  it("skips disabled cable carrier and bounds component mounts", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    p.config.bounds = false;
+    p.config.zDimension = false;
+    p.config.distanceIndicator = "";
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(CableCarrierX)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierY)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierZ)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierSupportHorizontal))
+      .toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierSupportVertical))
+      .toHaveLength(0);
+    expect(wrapper.root.findAllByType(Bounds)).toHaveLength(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("mounts enabled cable carrier and bounds components", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = true;
+    p.config.bounds = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(CableCarrierX)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierY)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierZ)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierSupportHorizontal))
+      .toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierSupportVertical))
+      .toHaveLength(1);
+    expect(wrapper.root.findAllByType(Bounds)).toHaveLength(1);
+    unmountRenderer(wrapper);
   });
 
   it("skips X/Y-only model hooks during z-only rerenders", () => {

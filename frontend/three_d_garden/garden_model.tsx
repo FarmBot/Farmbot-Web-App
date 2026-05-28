@@ -300,7 +300,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         skyRef={skyRef}
         startTimeRef={startTimeRef} />
       <AmbientLight intensity={config.ambient / 100} />
-      <Ground config={config} />
+      {config.ground && <Ground config={config} />}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"bed"}
@@ -822,7 +822,7 @@ export const GardenModel = (props: GardenModelProps) => {
           onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
         {config.threeAxes && <AxesHelper args={[5000]} />}
         {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-        <Clouds config={config} />
+        {config.clouds && <Clouds config={config} />}
         {showMoistureMap && props.config.moistureDebug &&
         <MoistureReadings
           color={"green"}

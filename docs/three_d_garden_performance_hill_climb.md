@@ -17075,3 +17075,104 @@ for one default details render path.
 unchanged when `config.threeAxes` is enabled.
 
 **Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+## Round 153
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 781. Skip disabled ground component mount | Avoid calling the `Ground` component when `config.ground=false` because it already returns no visible output | One disabled ground render and default environment helper counts | Accepted |
+| 782. Skip disabled clouds before spring setup | Avoid `Clouds` spring setup when `config.clouds=false` | One disabled clouds render | Accepted |
+| 783. Skip disabled utilities-post component mount | Avoid calling `UtilitiesPost` from `Bed` when `config.utilitiesPost=false` because it already returns no visible output | One default bed utilities-post render | Rejected |
+| 784. Skip disabled cable-carrier component mounts | Avoid calling disabled cable-carrier components from FarmBot subassemblies when `config.cableCarriers=false` | Five disabled cable-carrier component renders | Accepted |
+| 785. Skip inactive bot bounds component mount | Avoid calling `Bounds` from FarmBot when bounds, dimensions, and distance indicators are all disabled | One inactive bounds render | Accepted |
+
+### 781. Skip disabled ground component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `Ground` render: 0.024834 ms median, 0.092875 ms p95.
+`GardenModel` with `config.ground=false` mounted one `Ground` component.
+
+**After:** Parent gate when `config.ground=false`: zero disabled `Ground`
+mounts in `GardenModel`.
+
+**Change:** 100.00% fewer disabled ground component mounts, saving about
+0.024751 ms for one disabled-ground render path.
+
+**Outcome:** Accepted. The `Ground` component already returned no scene content
+when disabled, so gating it at the parent removes hidden render work with no
+visual change. Enabled ground still mounts normally.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 782. Skip disabled clouds before spring setup
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `Clouds` render: 0.019958 ms median, 0.030084 ms p95.
+`GardenModel` with `config.clouds=false` mounted one `Clouds` component.
+
+**After:** Parent gate when `config.clouds=false`: zero disabled `Clouds`
+mounts in `GardenModel`.
+
+**Change:** 100.00% fewer disabled cloud component mounts, saving about
+0.019958 ms and avoiding disabled cloud spring setup.
+
+**Outcome:** Accepted. Disabled clouds had no visible output; enabled cloud
+rendering and animation are unchanged.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 783. Skip disabled utilities-post component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `UtilitiesPost` render: 0.017125 ms median, 0.023083 ms
+p95.
+
+**After:** Simulated parent gate: 0.000000 ms median, 0.000042 ms p95.
+
+**Change:** 100.00% faster by median, saving about 0.017125 ms for one
+disabled utilities-post render.
+
+**Outcome:** Rejected after rollback. The isolated benchmark cleared the
+threshold, but touching the bed parent path made the focused Bed suite fail its
+existing click-to-add validation. I left the Bed path unchanged.
+
+**Commit:** None
+
+### 784. Skip disabled cable-carrier component mounts
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Five disabled cable-carrier component renders: 0.030333 ms median,
+0.038167 ms p95.
+
+**After:** Parent gates when `config.cableCarriers=false`: 0.000041 ms median,
+0.000042 ms p95 for the simulated no-op path.
+
+**Change:** 99.86% faster by median, saving about 0.030292 ms and removing all
+five disabled cable-carrier component mounts from FarmBot subassemblies.
+
+**Outcome:** Accepted. The individual cable-carrier components already returned
+no scene content when disabled; enabled cable-carrier mounts are unchanged.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 785. Skip inactive bot bounds component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Inactive `Bounds` render with bounds, z-dimension, and distance
+indicators disabled: 0.014542 ms median, 0.025917 ms p95.
+
+**After:** Parent gate when all bounds/dimension indicators are inactive: zero
+`Bounds` mounts in the inactive FarmBot path.
+
+**Change:** 100.00% fewer inactive bounds component mounts, saving about
+0.014542 ms for one default inactive bounds render.
+
+**Outcome:** Accepted. The `Bounds` component already returned no scene content
+for this state; enabled bounds and dimension indicators still mount normally.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`

@@ -397,9 +397,10 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
         ...botOuterXY(props.config, x - 32, -12),
         -40,
       ]} />}
+    {props.config.cableCarriers &&
     <CableCarrierX
       config={props.config}
-      configPosition={props.configPosition} />
+      configPosition={props.configPosition} />}
     <CrossSlideModel
       model={crossSlide}
       name={"crossSlide"}
@@ -485,12 +486,14 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       configPosition={props.configPosition}
       aluminumTexture={aluminumTexture}
       beamShape={props.beamShape} />
+    {props.config.cableCarriers &&
     <CableCarrierSupportHorizontal
       config={props.config}
-      configPosition={props.configPosition} />
+      configPosition={props.configPosition} />}
+    {props.config.cableCarriers &&
     <CableCarrierY
       config={props.config}
-      configPosition={props.configPosition} />
+      configPosition={props.configPosition} />}
     <Mesh name={"yStopMin"}
       position={[
         ...botOuterXY(props.config, x - extrusionWidth + 2, bedYOffset - 125),
@@ -744,10 +747,12 @@ const BotVerticalToolheadSubassemblyBase =
           zZero - zDir * z + zAxisLength / 2,
         ]}
         rotation={[Math.PI / 2, 0, 0]} />
+      {config.cableCarriers &&
       <CableCarrierSupportVertical
         config={config}
-        configPosition={props.configPosition} />
-      <CableCarrierZ config={config} configPosition={props.configPosition} />
+        configPosition={props.configPosition} />}
+      {config.cableCarriers &&
+      <CableCarrierZ config={config} configPosition={props.configPosition} />}
       <Mesh name={"zStopMax"}
         position={[
           ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
@@ -973,7 +978,8 @@ export const Bot = (props: FarmbotModelProps) => {
         configPosition={props.configPosition}
         getZ={props.getZ} />}
     <BotBedUtilitySubassemblies config={config} />
-    <Bounds config={config} configPosition={props.configPosition} />
+    {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
+    <Bounds config={config} configPosition={props.configPosition} />}
   </FocusVisibilityGroup>;
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
     {botModel}
