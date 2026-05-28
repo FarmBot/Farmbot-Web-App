@@ -132,6 +132,27 @@ describe("<PlantInstances />", () => {
     expect(mesh?.getAttribute("count")).toEqual("1");
   });
 
+  it("keeps reserved capacities for multiple active icon buckets", () => {
+    const p = fakeProps();
+    p.iconCapacities = {
+      [p.plants[0].icon]: 4,
+      [p.plants[1].icon]: 5,
+      "https://example.com/inactive-icon.avif": 6,
+    };
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(2);
+    expect(meshes.map(mesh => mesh.props.args[2]).sort()).toEqual([4, 5]);
+    expect(meshes.map(mesh => mesh.props.count)).toEqual([1, 1]);
+    expect(meshes.map(mesh => mesh.props.userData.plantIndexes)).toEqual([
+      [0],
+      [1],
+    ]);
+    unmountRenderer(wrapper);
+  });
+
   it("skips reserved icon meshes without active plants", () => {
     const p = fakeProps();
     p.plants = [p.plants[0]];

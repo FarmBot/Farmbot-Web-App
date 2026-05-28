@@ -138,15 +138,18 @@ const useStaticPlantIconInstances = (
   const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   const zBase = React.useMemo(() => zZeroFunc(config), [config]);
   return React.useMemo<StaticPlantIconInstance[]>(() => {
-    return plants.map(plant => {
+    const instances = new Array<StaticPlantIconInstance>(plants.length);
+    for (let index = 0; index < plants.length; index++) {
+      const plant = plants[index];
       const position = get3DPosition({ x: plant.x, y: plant.y });
-      return {
+      instances[index] = {
         x: position.x,
         y: position.y,
         groundZ: zBase + getZ(plant.x, plant.y),
         scale: plant.size,
       };
-    });
+    }
+    return instances;
   }, [get3DPosition, getZ, plants, zBase]);
 };
 
@@ -415,20 +418,22 @@ export const PlantInstances = React.memo(
 const VisiblePlantInstances = (props: PlantInstancesProps) => {
   const { atlas, instances } = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
-    Object.entries(props.iconCapacities || {}).map(([icon, capacity]) => {
-      iconInstances[icon] = {
-        config: props.config,
-        dispatch: props.dispatch,
-        getZ: props.getZ,
-        icon,
-        plants: [],
-        plantIndexes: [],
-        capacity,
-        useAtlas: false,
-        startTimeRef: props.startTimeRef,
-        visible: props.visible,
-      };
-    });
+    if (props.iconCapacities) {
+      for (const icon in props.iconCapacities) {
+        iconInstances[icon] = {
+          config: props.config,
+          dispatch: props.dispatch,
+          getZ: props.getZ,
+          icon,
+          plants: [],
+          plantIndexes: [],
+          capacity: props.iconCapacities[icon],
+          useAtlas: false,
+          startTimeRef: props.startTimeRef,
+          visible: props.visible,
+        };
+      }
+    }
     props.plants.forEach((plant, index) => {
       const instance = iconInstances[plant.icon];
       if (instance) {
@@ -449,19 +454,25 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
         };
       }
     });
-    const visibleInstances = Object.values(iconInstances)
-      .filter(instance => instance.plants.length > 0);
+    const visibleInstances: PlantIconInstancesProps[] = [];
+    for (const icon in iconInstances) {
+      const instance = iconInstances[icon];
+      if (instance.plants.length > 0) { visibleInstances.push(instance); }
+    }
     const useAtlas =
       visibleInstances.length >= PLANT_ICON_ATLAS_MIN_ICON_COUNT;
-    const instances = visibleInstances
-      .map(instance => ({
+    const instances = new Array<PlantIconInstancesProps>(visibleInstances.length);
+    for (let index = 0; index < visibleInstances.length; index++) {
+      const instance = visibleInstances[index];
+      instances[index] = {
         ...instance,
         useAtlas,
         capacity: Math.max(
           instance.plants.length,
           props.iconCapacities?.[instance.icon] || 0,
         ),
-      }));
+      };
+    }
     if (!useAtlas) { return { atlas: undefined, instances }; }
     const atlasPlants: ThreeDGardenPlant[] = [];
     const atlasPlantIndexes: number[] = [];

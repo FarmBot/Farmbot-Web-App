@@ -19016,3 +19016,194 @@ of allocating a `Vector3`: 0.284458 ms median, 0.456458 ms p95.
 **Outcome:** Rejected after rollback. The render was slower.
 
 **Commit:** None
+
+## Round 173
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 881. Build static plant icon instances with indexed loops | Reduce per-plant callback overhead while computing icon positions and scales | `PlantInstances` render with 50 plants across 10 icons | Accepted |
+| 882. Build atlas UV buffers with indexed loops | Reduce callback overhead while assigning atlas UV offsets and repeats | `PlantInstances` atlas render with 50 atlas-backed plants | Rejected |
+| 883. Group plant icon buckets without Object entry/value passes | Avoid `Object.entries().map`, `Object.values().filter`, and extra array maps while preparing icon buckets | `PlantInstances` render with 50 plants and reserved capacities | Accepted |
+| 884. Split atlas and individual plant icon instances with indexed loops | Reduce allocation while separating atlas-backed and standalone icon buckets | `PlantInstances` atlas render with mixed mapped and unmapped icons | Rejected |
+| 885. Cache empty plant icon grouping result | Avoid rebuilding empty grouping objects when plant icon rendering has no plants | Empty visible `PlantInstances` render | Rejected |
+
+### 881. Build static plant icon instances with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` render with 50 plants across 10 icons:
+0.516833 ms median, 1.652209 ms p95.
+
+**After:** Preallocated `StaticPlantIconInstance[]` filled with an indexed
+loop: 0.435208 ms median, 1.348375 ms p95.
+
+**Change:** 15.79% faster by median, saving about 0.081625 ms per 50-plant
+icon render.
+
+**Outcome:** Accepted. The computed icon positions, ground height, and scale
+values are unchanged; only the array construction strategy changed.
+
+**Commit:** This commit (`Build plant icon instances 15.8% faster with indexed loops`)
+
+### 882. Build atlas UV buffers with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` atlas render with 50 atlas-backed plants after
+item 881: 0.241792 ms median, 0.719000 ms p95.
+
+**After:** Indexed loop over plants while assigning atlas UV offsets and
+repeats: 0.379375 ms median, 1.175458 ms p95.
+
+**Change:** 56.90% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 883. Group plant icon buckets without Object entry/value passes
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` render with 50 plants and reserved icon
+capacities after item 881: 0.373291 ms median, 1.218750 ms p95.
+
+**After:** Explicit loops for reserved capacity seeding, visible bucket
+collection, and final capacity assignment: 0.314583 ms median, 0.640916 ms
+p95.
+
+**Change:** 15.73% faster by median, saving about 0.058708 ms per 50-plant
+reserved-capacity render.
+
+**Outcome:** Accepted. The same icon buckets, plant indexes, capacities, and
+atlas decision are produced with fewer intermediate arrays.
+
+**Commit:** This commit (`Build plant icon instances 15.8% faster with indexed loops`)
+
+### 884. Split atlas and individual plant icon instances with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** Mixed atlas and standalone `PlantInstances` render after item 883:
+0.541000 ms median, 0.801709 ms p95.
+
+**After:** Indexed loop for separating atlas-backed icon buckets from
+standalone icon buckets: 0.643459 ms median, 1.214541 ms p95.
+
+**Change:** 18.94% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 885. Cache empty plant icon grouping result
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` render after item 883:
+0.062625 ms median, 0.171834 ms p95.
+
+**After:** Return an empty fragment before mounting `VisiblePlantInstances`
+when `plants.length == 0`: 0.055750 ms median, 0.170042 ms p95.
+
+**Change:** 10.98% faster by median, saving about 0.006875 ms.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold,
+but the absolute win on the empty path was not meaningful in realistic runtime
+context.
+
+**Commit:** None
+
+## Round 174
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 886. Build plant spread static instances with indexed loops | Reduce callback overhead while computing spread positions for dense gardens | `PlantSpreadInstances` render with 50 plants | Rejected |
+| 887. Build plant spread indexes with indexed loops | Avoid a second callback allocation when creating plant index userData | `PlantSpreadInstances` render with 50 plants | Rejected |
+| 888. Update plant spread matrices with indexed loops | Reduce per-frame callback overhead while writing spread instance matrices and colors | First `PlantSpreadInstances` frame update with 50 plants | Rejected |
+| 889. Update weed icon matrices with indexed loops | Reduce camera-facing weed billboard frame update overhead | First `WeedInstances` frame update with 50 weeds | Rejected |
+| 890. Build image texture sensor keys with indexed loops | Reduce image/moisture texture key setup overhead for sensor overlays | `getImageTextureKey` with 20 sensors and 100 readings | Rejected |
+
+### 886. Build plant spread static instances with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** `PlantSpreadInstances` render with 50 plants: 0.130333 ms median,
+0.345459 ms p95.
+
+**After:** Preallocated `StaticPlantSpreadInstance[]` filled with an indexed
+loop: 0.122917 ms median, 0.298792 ms p95.
+
+**Change:** 5.69% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 887. Build plant spread indexes with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** Focused `PlantSpreadInstances` render with 50 plants after item
+886 rollback: 0.116167 ms median, 0.447916 ms p95.
+
+**After:** Preallocated plant index array filled with an indexed loop:
+0.120167 ms median, 0.329042 ms p95.
+
+**Change:** 3.44% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 888. Update plant spread matrices with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** First `PlantSpreadInstances` frame update with 50 plants after
+item 887 rollback: 0.137917 ms median, 0.327791 ms p95.
+
+**After:** Indexed loop over static spread instances while updating matrices
+and colors: 0.149584 ms median, 0.335833 ms p95.
+
+**Change:** 8.46% slower by median.
+
+**Outcome:** Rejected after rollback. The frame update was slower.
+
+**Commit:** None
+
+### 889. Update weed icon matrices with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** First `WeedInstances` frame update with 50 weeds after item 888
+rollback: 0.189625 ms median, 0.525875 ms p95.
+
+**After:** Indexed loop over weed icon instances while writing camera-facing
+matrices: 0.181542 ms median, 0.450416 ms p95.
+
+**Change:** 4.26% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 890. Build image texture sensor keys with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** `getImageTextureKey` with 20 sensors and 100 readings after item
+889 rollback: 0.011791 ms median, 0.018666 ms p95.
+
+**After:** Indexed loops while building sensor and reading keys: 0.011500 ms
+median, 0.054250 ms p95.
+
+**Change:** 2.47% faster by median, saving about 0.000291 ms while p95
+regressed.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold, the absolute improvement was not meaningful, and p95 regressed.
+
+**Commit:** None
