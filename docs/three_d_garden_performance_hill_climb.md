@@ -5022,9 +5022,44 @@ load-callback inputs. Expected return: faster visible Greenhouse detail
 rerenders without changing walls, shelves, starter trays, people, potted plant,
 focus fade, or load-in behavior.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering a visible
+Greenhouse scene 90 times with people and starter trays active while only an
+unrelated config field changed.
+
+**Before:** 30.792 ms per 90-rerender batch.
+
+**After:** 1.173 ms per 90-rerender batch.
+
+**Change:** 96.2% faster, saving 29.619 ms per realistic Greenhouse
+config-churn batch.
+
+**Outcome:** Accepted; Greenhouse now skips unrelated config-object churn while
+scene, bed dimensions, people, focus, reveal, and load callback changes still
+invalidate the scene.
+
+**Commit:** `Memoize Greenhouse scene churn for 96.2% faster rerenders`
+
 ### Idea 290: Reuse `People` scene placement for unchanged props
 
 **Description:** Memoize the People billboard layer and per-person image
 placement by relevant scene config and person data. Expected return: less
 scene-detail churn during focus/config updates with identical person sprites,
 opacity, placement, billboard behavior, and focus visibility.
+
+**Benchmark:** Temporary Bun/Testing Library direct `People` benchmark with
+the normal two-person scene count over 90 unrelated config rerenders, run after
+the accepted Lab and Greenhouse scene comparators.
+
+**Before:** 9.167 ms per 90 direct component rerenders.
+
+**After:** Not implemented.
+
+**Change:** No accepted change; the remaining isolated component cost is small,
+and the realistic app-level unchanged-parent churn was already removed by the
+Lab and Greenhouse comparators.
+
+**Outcome:** Rejected before implementation; adding another memo/deep-compare
+layer for two person sprites is not worth the complexity after the parent
+scenes now skip unrelated churn.
+
+**Commit:** Not committed

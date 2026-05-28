@@ -108,4 +108,23 @@ const GreenhouseBase = (props: GreenhouseProps) => {
   </Group>;
 };
 
-export const Greenhouse = React.memo(GreenhouseBase);
+const GREENHOUSE_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "people",
+  "scene",
+];
+
+export const greenhousePropsEqual = (
+  prev: GreenhouseProps,
+  next: GreenhouseProps,
+) =>
+  prev.activeFocus === next.activeFocus
+  && prev.reveal === next.reveal
+  && prev.onDetailsLoadInRest === next.onDetailsLoadInRest
+  && GREENHOUSE_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const Greenhouse = React.memo(GreenhouseBase, greenhousePropsEqual);
