@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Text, TextProps } from "../text";
+import { Text, textPropsEqual, TextProps } from "../text";
 
 describe("<Text />", () => {
   const fakeProps = (): TextProps => ({
@@ -14,5 +14,30 @@ describe("<Text />", () => {
   it("renders", () => {
     const { container } = render(<Text {...fakeProps()} />);
     expect(container).toContainHTML("text");
+  });
+
+  it("compares rendered text inputs", () => {
+    const p = fakeProps();
+    expect(textPropsEqual(p, {
+      ...p,
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+    })).toBeTruthy();
+    expect(textPropsEqual(p, {
+      ...p,
+      children: "other",
+    })).toBeFalsy();
+    expect(textPropsEqual(p, {
+      ...p,
+      position: [0, 1, 0],
+    })).toBeFalsy();
+    expect(textPropsEqual(p, {
+      ...p,
+      rotation: [0, 0, 1],
+    })).toBeFalsy();
+    expect(textPropsEqual(p, {
+      ...p,
+      visible: false,
+    })).toBeFalsy();
   });
 });

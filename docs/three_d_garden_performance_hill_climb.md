@@ -5291,3 +5291,20 @@ and labels.
 component used by labels and overlays. Expected return: lower label rerender
 work where parent props are stable, without changing font, position, rotation,
 material color, render order, or visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering 40 visible
+plant-style labels 30 times with identical label values but freshly allocated
+position/rotation arrays, matching realistic label overlay churn.
+
+**Before:** 16.672 ms per 40-label, 30-rerender batch.
+
+**After:** 1.286 ms per 40-label, 30-rerender batch.
+
+**Change:** 92.3% faster, saving 15.386 ms per realistic unchanged-label
+rerender batch.
+
+**Outcome:** Accepted; shared 3D text now skips unchanged label rerenders while
+changes to text, position, rotation, size, color, name, visibility, render
+order, or thickness still update the same label.
+
+**Commit:** `Memoize text labels for 92.3% faster rerenders`
