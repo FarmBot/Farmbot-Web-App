@@ -183,6 +183,12 @@ describe("<Bot />", () => {
     expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
     expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
     expect(urls).not.toContain(ASSETS.models.beltClip);
+    expect(urls).not.toContain(ASSETS.models.zStop);
+    expect(urls).not.toContain(ASSETS.models.utm);
+    expect(urls).not.toContain(ASSETS.models.housingVertical);
+    expect(urls).not.toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).not.toContain(ASSETS.models.vacuumPumpCover);
+    expect(urls).not.toContain(ASSETS.models.cameraMountHalf);
     unmountRenderer(wrapper);
   });
 

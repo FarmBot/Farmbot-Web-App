@@ -542,6 +542,316 @@ const BotElectronicsSubassembly = React.memo(
   sameBotXYSubassemblyProps,
 );
 
+interface BotVerticalToolheadSubassemblyProps
+  extends BotXYSubassemblyProps {
+  zAxisShape: Shape | undefined;
+  getZ(x: number, y: number): number;
+  trailReady: boolean;
+}
+
+const BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeZ",
+  "cableCarriers",
+  "cameraView",
+  "columnLength",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "kitVersion",
+  "laser",
+  "lastImageCapture",
+  "negativeZ",
+  "perspective",
+  "trail",
+  "zAxisLength",
+  "zGantryOffset",
+];
+
+const sameBotVerticalToolheadSubassemblyProps = (
+  prev: BotVerticalToolheadSubassemblyProps,
+  next: BotVerticalToolheadSubassemblyProps,
+) =>
+  sameConfigFields(prev.config, next.config, BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  prev.getZ === next.getZ &&
+  prev.trailReady === next.trailReady &&
+  prev.zAxisShape === next.zAxisShape;
+
+const BotVerticalToolheadSubassemblyBase =
+  (props: BotVerticalToolheadSubassemblyProps) => {
+    const config = props.config;
+    const {
+      botSizeZ, trail, laser, columnLength, zAxisLength, zGantryOffset,
+    } = config;
+    const { x, y, z } = props.configPosition;
+    const zZero = zZeroFunc(config);
+    const zDir = zDirFunc(config);
+    const get3DPosition = get3DPositionNoMirrorFunc(config);
+    const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
+      const position = get3DPosition({ x: gardenX, y: gardenY });
+      return [position.x, position.y];
+    };
+    const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
+    const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
+    const housingVertical = useGLTF(
+      ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
+    const zAxisMotorMount = useGLTF(
+      ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
+    const vacuumPumpCover = useGLTF(
+      ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
+    const cameraMountHalf = useGLTF(
+      ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
+    const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+      wrapS: RepeatWrapping,
+      wrapT: RepeatWrapping,
+      repeat: [0.01, 0.0003],
+    });
+    const distanceToSoil = -props.getZ(x, y) - zDir * z;
+    const defaultTrailWidth = config.perspective ? 500 : 0.1;
+    const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [...gardenXY(x + 80, y + 100), zZero - zDir * z + 245];
+        case "v1.8":
+        default:
+          return [...gardenXY(x + 35, y), zZero - zDir * z + 245];
+      }
+    };
+    const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [0, 0, Math.PI / 2];
+        case "v1.8":
+        default:
+          return [0, 0, -Math.PI / 2];
+      }
+    };
+    const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [...gardenXY(x + 12, y + 55), zZero - zDir * z + 490];
+        case "v1.8":
+        default:
+          return [...gardenXY(x + 2, y + 110), zZero + columnLength + 25];
+      }
+    };
+    const cameraMountPosition = new THREE.Vector3(
+      ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
+      zZero - zDir * z - 140 + zGantryOffset + 20,
+    );
+    const utmComponent = <Group name={"UTM"}
+      position={[
+        ...gardenXY(x + 11, y),
+        zZero - zDir * z + utmHeight / 2 - 19,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}
+      scale={1000}>
+      <Mesh
+        geometry={utm.nodes.M5_Barb.geometry}
+        material={utm.materials.PaletteMaterial001}
+        position={[0.015, 0.009, 0.036]}
+        rotation={[0, 0, 2.094]} />
+    </Group>;
+
+    return <>
+      <Extrude name={"z-axis"}
+        castShadow={true}
+        args={[
+          props.zAxisShape,
+          { steps: 1, depth: zAxisLength, bevelEnabled: false },
+        ]}
+        position={[
+          ...gardenXY(x, y + utmRadius),
+          zZero - zDir * z,
+        ]}
+        rotation={[0, 0, 0]}>
+        <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
+      </Extrude>
+      <Group name={"zMotor"}>
+        <Mesh name={"zMotorHousing"}
+          position={[
+            ...gardenXY(x + 4, y + utmRadius - 47),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[0, 0, Math.PI]}
+          scale={1000}
+          geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"zMotor"}
+          position={[
+            ...gardenXY(x + 10, y + utmRadius - 5),
+            zZero - zDir * z + zAxisLength - 140,
+          ]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={1000}
+          geometry={undefined}
+          material={undefined} />
+        <Mesh name={"zMotorMount"}
+          position={[
+            ...gardenXY(x + 5, y + utmRadius - 65),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[0, 0, Math.PI]}
+          scale={1000}
+          geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Cylinder name={"motorShaft"}
+          args={[2.5, 2.5, 40]}
+          position={[
+            ...gardenXY(x + 5, y + utmRadius - 65),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[Math.PI / 2, 0, 0]}>
+          <MeshPhongMaterial color={"#999"} />
+        </Cylinder>
+      </Group>
+      <Mesh name={"shaftCoupler"}
+        position={[
+          ...gardenXY(x + 5, y - 30),
+          zZero - zDir * z + zAxisLength - 120,
+        ]}
+        rotation={[0, 0, 0]}
+        scale={1000}
+        geometry={undefined}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Cylinder name={"shaftCoupler"}
+        args={[10, 10, 25]}
+        position={[
+          ...gardenXY(x + 5, y - 30),
+          zZero - zDir * z + zAxisLength - 120 + 25 / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]}>
+        <MeshPhongMaterial color={"silver"} />
+      </Cylinder>
+      <Cylinder name={"leadscrew"}
+        material-color={"#555"}
+        args={[4, 4, zAxisLength - 200]}
+        position={[
+          ...gardenXY(x + 6, y - 30),
+          zZero - zDir * z + zAxisLength / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]} />
+      <CableCarrierSupportVertical
+        config={config}
+        configPosition={props.configPosition} />
+      <CableCarrierZ config={config} configPosition={props.configPosition} />
+      <Mesh name={"zStopMax"}
+        position={[
+          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          zZero - zDir * z - 30 + zGantryOffset,
+        ]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={zStop.nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Mesh name={"zStopMin"}
+        position={[
+          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
+        ]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={zStop.nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Mesh name={"vacuumPump"}
+        position={[
+          ...gardenXY(x + 28, y),
+          zZero - zDir * z + 40,
+        ]}
+        rotation={[0, 0, Math.PI / 2]}
+        scale={1000}
+        geometry={undefined}
+        material={undefined} />
+      <Tube name={"air-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            ...gardenXY(x + 28, y),
+            zZero - zDir * z + 35,
+          ],
+          [0, 0, 100],
+          [0, 0, -200],
+          airTubeEndPosition(config.kitVersion),
+        ), 20, 5, 8]}>
+        <MeshPhongMaterial
+          color={"white"}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+      <VacuumPumpCoverModel
+        model={vacuumPumpCover}
+        rotation={vacuumPumpCoverRotation(config.kitVersion)}
+        scale={1000}
+        position={vacuumPumpCoverPosition(config.kitVersion)} />
+      <Group name={"camera"}
+        rotation={[Math.PI, 0, 0]}
+        position={cameraMountPosition}>
+        <Mesh name={"cameraMount"}
+          rotation={[0, 0, 0]}
+          position={[0, 0, -40]}
+          scale={1000}
+          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"cameraMount"}
+          rotation={[0, Math.PI, 0]}
+          scale={1000}
+          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+      </Group>
+      <CameraView
+        config={config}
+        configPosition={props.configPosition}
+        cameraMountPosition={cameraMountPosition}
+        distanceToSoil={distanceToSoil} />
+      {props.trailReady && trail
+        ? <Trail
+          width={defaultTrailWidth}
+          attenuation={t => Math.pow(t, 3)}
+          color={"red"}
+          length={100}
+          decay={0.5}
+          local={false}
+          stride={0}
+          interval={1}>
+          {utmComponent}
+        </Trail>
+        : utmComponent}
+      <Cylinder
+        visible={laser}
+        material-color={"red"}
+        args={[5, 5, distanceToSoil]}
+        position={[
+          ...gardenXY(x, y),
+          zZero - zDir * z - distanceToSoil / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]} />
+    </>;
+  };
+
+const BotVerticalToolheadSubassembly = React.memo(
+  BotVerticalToolheadSubassemblyBase,
+  sameBotVerticalToolheadSubassemblyProps,
+);
+
 const BotBedUtilitySubassembliesBase = (props: { config: Config }) =>
   <>
     <PowerSupply config={props.config} />
@@ -553,27 +863,7 @@ const BotBedUtilitySubassemblies =
 
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
-  const { botSizeZ, trail, laser, tracks,
-    columnLength, zAxisLength, zGantryOffset,
-  } = props.config;
-  const { x, y, z } = props.configPosition;
-  const zZero = zZeroFunc(config);
-  const zDir = zDirFunc(config);
-  const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
-    const position = get3DPosition({ x: gardenX, y: gardenY });
-    return [position.x, position.y];
-  };
-  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
-  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
-  const housingVertical = useGLTF(
-    ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
-  const zAxisMotorMount = useGLTF(
-    ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
-  const vacuumPumpCover = useGLTF(
-    ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
-  const cameraMountHalf = useGLTF(
-    ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
+  const { tracks } = props.config;
   const [trackShape, setTrackShape] =
     useState<Shape | undefined>(() => botShapeCache.track);
   const [beamShape, setBeamShape] =
@@ -645,63 +935,7 @@ export const Bot = (props: FarmbotModelProps) => {
         });
     }
   }, [beamShape, columnShape, trackShape, tracks, zAxisShape]);
-  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.01, 0.0003],
-  });
-  const distanceToSoil = -props.getZ(x, y) - zDir * z;
-
-  const defaultTrailWidth = config.perspective ? 500 : 0.1;
   const trailReady = props.trailReady !== false;
-
-  const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [...gardenXY(x + 80, y + 100), zZero - zDir * z + 245];
-      case "v1.8":
-      default:
-        return [...gardenXY(x + 35, y), zZero - zDir * z + 245];
-    }
-  };
-
-  const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [0, 0, Math.PI / 2];
-      case "v1.8":
-      default:
-        return [0, 0, -Math.PI / 2];
-    }
-  };
-
-  const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [...gardenXY(x + 12, y + 55), zZero - zDir * z + 490];
-      case "v1.8":
-      default:
-        return [...gardenXY(x + 2, y + 110), zZero + columnLength + 25];
-    }
-  };
-
-  const cameraMountPosition = new THREE.Vector3(
-    ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
-    zZero - zDir * z - 140 + zGantryOffset + 20,
-  );
-  const utmComponent = <Group name={"UTM"}
-    position={[
-      ...gardenXY(x + 11, y),
-      zZero - zDir * z + utmHeight / 2 - 19,
-    ]}
-    rotation={[0, 0, Math.PI / 2]}
-    scale={1000}>
-    <Mesh
-      geometry={utm.nodes.M5_Barb.geometry}
-      material={utm.materials.PaletteMaterial001}
-      position={[0.015, 0.009, 0.036]}
-      rotation={[0, 0, 2.094]} />
-  </Group>;
 
   const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
     preserveDepthWrite={true}
@@ -711,186 +945,12 @@ export const Bot = (props: FarmbotModelProps) => {
       configPosition={props.configPosition}
       trackShape={trackShape}
       columnShape={columnShape} />
-    <Extrude name={"z-axis"}
-      castShadow={true}
-      args={[
-        zAxisShape,
-        { steps: 1, depth: zAxisLength, bevelEnabled: false },
-      ]}
-      position={[
-        ...gardenXY(x, y + utmRadius),
-        zZero - zDir * z,
-      ]}
-      rotation={[0, 0, 0]}>
-      <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
-    </Extrude>
-    <Group name={"zMotor"}>
-      <Mesh name={"zMotorHousing"}
-        position={[
-          ...gardenXY(x + 4, y + utmRadius - 47),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"zMotor"}
-        position={[
-          ...gardenXY(x + 10, y + utmRadius - 5),
-          zZero - zDir * z + zAxisLength - 140,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={1000}
-        geometry={undefined}
-        material={undefined} />
-      <Mesh name={"zMotorMount"}
-        position={[
-          ...gardenXY(x + 5, y + utmRadius - 65),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
-        <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-      </Mesh>
-      <Cylinder name={"motorShaft"}
-        args={[2.5, 2.5, 40]}
-        position={[
-          ...gardenXY(x + 5, y + utmRadius - 65),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"#999"} />
-      </Cylinder>
-    </Group>
-    <Mesh name={"shaftCoupler"}
-      position={[
-        ...gardenXY(x + 5, y - 30),
-        zZero - zDir * z + zAxisLength - 120,
-      ]}
-      rotation={[0, 0, 0]}
-      scale={1000}
-      geometry={undefined}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Cylinder name={"shaftCoupler"}
-      args={[10, 10, 25]}
-      position={[
-        ...gardenXY(x + 5, y - 30),
-        zZero - zDir * z + zAxisLength - 120 + 25 / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]}>
-      <MeshPhongMaterial color={"silver"} />
-    </Cylinder>
-    <Cylinder name={"leadscrew"}
-      material-color={"#555"}
-      args={[4, 4, zAxisLength - 200]}
-      position={[
-        ...gardenXY(x + 6, y - 30),
-        zZero - zDir * z + zAxisLength / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]} />
-    <CableCarrierSupportVertical
-      config={config}
-      configPosition={props.configPosition} />
-    <CableCarrierZ config={config} configPosition={props.configPosition} />
-    <Mesh name={"zStopMax"}
-      position={[
-        ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
-        zZero - zDir * z - 30 + zGantryOffset,
-      ]}
-      rotation={[0, Math.PI / 2, 0]}
-      scale={1000}
-      geometry={zStop.nodes[PartName.zStop].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"zStopMin"}
-      position={[
-        ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
-        zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
-      ]}
-      rotation={[0, Math.PI / 2, 0]}
-      scale={1000}
-      geometry={zStop.nodes[PartName.zStop].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"vacuumPump"}
-      position={[
-        ...gardenXY(x + 28, y),
-        zZero - zDir * z + 40,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={undefined}
-      material={undefined} />
-    <Tube name={"air-tube"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[easyCubicBezierCurve3(
-        [
-          ...gardenXY(x + 28, y),
-          zZero - zDir * z + 35,
-        ],
-        [0, 0, 100],
-        [0, 0, -200],
-        airTubeEndPosition(config.kitVersion),
-      ), 20, 5, 8]}>
-      <MeshPhongMaterial
-        color={"white"}
-        transparent={true}
-        opacity={0.75}
-      />
-    </Tube>
-    <VacuumPumpCoverModel
-      model={vacuumPumpCover}
-      rotation={vacuumPumpCoverRotation(config.kitVersion)}
-      scale={1000}
-      position={vacuumPumpCoverPosition(config.kitVersion)} />
-    <Group name={"camera"}
-      rotation={[Math.PI, 0, 0]}
-      position={cameraMountPosition}>
-      <Mesh name={"cameraMount"}
-        rotation={[0, 0, 0]}
-        position={[0, 0, -40]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"cameraMount"}
-        rotation={[0, Math.PI, 0]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-    </Group>
-    <CameraView
+    <BotVerticalToolheadSubassembly
       config={config}
       configPosition={props.configPosition}
-      cameraMountPosition={cameraMountPosition}
-      distanceToSoil={distanceToSoil} />
-    {trailReady && trail
-      ? <Trail
-        width={defaultTrailWidth}
-        attenuation={t => Math.pow(t, 3)}
-        color={"red"}
-        length={100}
-        decay={0.5}
-        local={false}
-        stride={0}
-        interval={1}>
-        {utmComponent}
-      </Trail>
-      : utmComponent}
-    <Cylinder
-      visible={laser}
-      material-color={"red"}
-      args={[5, 5, distanceToSoil]}
-      position={[
-        ...gardenXY(x, y),
-        zZero - zDir * z - distanceToSoil / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]} />
+      getZ={props.getZ}
+      trailReady={trailReady}
+      zAxisShape={zAxisShape} />
     <BotGantrySubassemblies
       config={config}
       configPosition={props.configPosition}

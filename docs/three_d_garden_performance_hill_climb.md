@@ -5985,6 +5985,21 @@ version. Expected return: faster full Bot rerenders during unrelated config
 churn without changing electronics-box placement, buttons, LEDs, or model
 selection.
 
+**Benchmark:** Full `Bot` render after the frame and gantry comparator changes,
+with tracks and cable carriers enabled, then 90 rerenders where only unrelated
+`config.sun` changed.
+
+**Before:** 32.625 ms per 90-rerender batch.
+
+**After:** 30.798 ms per 90-rerender batch with the attempted electronics
+wrapper comparator.
+
+**Change:** 5.6% faster, saving 1.827 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Rejected and rolled back; the gain did not meet the required 10%
+threshold.
+
 ### Idea 329: Memoize Bot vertical/toolhead subassembly
 
 **Description:** Extract the Bot Z-axis, toolhead, vacuum, air tube, camera,
@@ -5994,6 +6009,26 @@ rerenders during unrelated config churn while vertical movement, toolhead
 position, camera view, laser, trail, vacuum, water, and cable-carrier changes
 still update.
 
+**Benchmark:** Full `Bot` render after the frame and gantry comparator changes,
+with tracks and cable carriers enabled, then 90 rerenders where only unrelated
+`config.sun` changed while bot position, Z-axis shape, terrain lookup,
+toolhead, camera, trail, laser, and vertical cable-carrier inputs stayed
+unchanged.
+
+**Before:** 32.625 ms per 90-rerender batch.
+
+**After:** 4.848 ms per 90-rerender batch.
+
+**Change:** 85.1% faster, saving 27.777 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Accepted; the vertical/toolhead subtree now skips unrelated config
+churn while Z movement, Z-axis shape, camera fields, terrain lookup, trail,
+laser, kit version, vacuum cover, air tube, UTM, and vertical cable-carrier
+inputs still rerender.
+
+**Commit:** `Memoize Bot toolhead for 85.1% faster rerenders`
+
 ### Idea 330: Memoize Bot water-flow texture provider subtree
 
 **Description:** Avoid recreating the water-flow texture provider subtree when
@@ -6001,3 +6036,234 @@ the water-flow flag is unchanged and unrelated config fields churn. Expected
 return: less provider and child reconciliation overhead during normal Bot
 rerenders without changing shared water texture behavior or water-flow
 visibility.
+
+**Benchmark:** Full `Bot` render after the accepted frame, gantry, and
+vertical/toolhead changes, with tracks and cable carriers enabled, then 90
+rerenders where only unrelated `config.sun` changed.
+
+**Before:** 4.490 ms per 90-rerender batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; after the accepted subassembly
+memoization, the remaining full-Bot config-churn cost was already only 4.490
+ms per 90 rerenders. A provider/root-subtree comparator would need to duplicate
+nearly all Bot config dependencies to be safe, which is not worth the limited
+remaining absolute budget.
+
+## Round 63
+
+### Idea 331: Skip static plant icon brightness work after the icon bucket is current
+
+**Description:** In static-season mode, return from plant icon frame callbacks
+as soon as the matrix and material brightness are already current instead of
+recomputing sun brightness every frame for every icon bucket. Expected return:
+lower steady-state frame CPU in plant-heavy gardens with multiple crop icons,
+without changing icon placement, billboarding, brightness, or seasonal
+animation.
+
+**Benchmark:** Real `PlantInstances` render with 120 plants distributed across
+12 crop-icon buckets, then one warm frame and 60 steady-state frame callbacks
+with a static camera and season animation disabled.
+
+**Before:** 0.838 ms per 60-frame steady-state batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even a perfect removal would save
+less than 1 ms per active second across 12 icon buckets, so adding another
+frame-state branch would optimize below a meaningful runtime budget.
+
+### Idea 332: Hoist grid world-position conversion while building grid line geometry
+
+**Description:** Build the grid coordinate transform once per grid generation
+instead of recreating it for every grid line segment path. Expected return:
+faster initial grid geometry setup for normal Genesis and Genesis XL bed sizes
+with identical line positions and terrain sampling.
+
+**Benchmark:** Ten `gridLinePositions()` builds with the Genesis XL preset,
+matching realistic grid setup and a few bed-size/config refreshes rather than
+an inflated tight loop.
+
+**Before:** 2.456 ms per 10 grid builds.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic cost is about 0.25
+ms per grid generation, so hoisting a helper would not create a meaningful
+startup or interaction improvement.
+
+### Idea 333: Avoid inactive spread-overlay frame work when the spread update key is unchanged
+
+**Description:** In the plant spread instanced mesh, compute the cheap update
+key before per-frame color-buffer checks and quaternion copies, then return
+early when the visible spread overlay is unchanged. Expected return: lower
+steady-state frame CPU when the spread layer is visible but not being dragged,
+without changing spread spheres, overlap coloring, or click behavior.
+
+**Benchmark:** Real `PlantSpreadInstances` render with 1000 plants, the spread
+overlay visible, one warm frame, then 60 steady-state frame callbacks with the
+same camera and active position.
+
+**Before:** 0.672 ms per 60-frame steady-state batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the steady-state visible spread
+overlay already costs far below 1 ms per active second, so moving the early
+return would add code without a user-visible payoff.
+
+### Idea 334: Speed up animated season date lookup
+
+**Description:** Replace the linear sun-animation sample scan with a bounded
+binary search and avoid allocating a current-day `moment` value for named
+seasons. Expected return: lower per-frame CPU when season animation is enabled
+for the sun and plant icons, with the same animation dates and sun positions.
+
+**Benchmark:** 601 `getAnimatedSeasonDate("Summer", elapsed)` calls, matching
+one second of 60 FPS season animation with roughly 10 plant icon buckets plus
+the sun.
+
+**Before:** 3.366 ms per 601 animated-season date lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the current lookup costs about
+0.056 ms per animated frame at the 10-bucket scene scale, so replacing the
+linear scan and date default would not move frame time meaningfully.
+
+### Idea 335: Tighten point bucket setup for realistic point-heavy gardens
+
+**Description:** Replace point bucket string reconstruction and array helpers
+with a direct indexed loop and cached per-point fields while preserving the
+same color/alpha buckets and radius rings. Expected return: faster point-layer
+startup for gardens with hundreds of point markers, without changing marker
+geometry, colors, opacity, radius rings, or clicks.
+
+**Benchmark:** Ten `PointInstances` renders with 500 generic point markers in
+four color buckets, including visible marker/radius bucket setup.
+
+**Before:** 4.522 ms per 10 point-layer renders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic render cost is
+about 0.45 ms for a 500-marker point layer, so rewriting the bucket loop would
+target a small absolute budget and add complexity to already clear code.
+
+## Round 64
+
+### Idea 336: Compute terrain surface bounds without temporary coordinate arrays
+
+**Description:** Replace the `computeSurface()` `points.map()`/spread min/max
+passes with a single direct bounds pass while preserving the same Delaunay
+triangulation, vertex order, UVs, and faces. Expected return: lower soil
+surface setup CPU and memory churn for gardens with hundreds of soil-height
+points.
+
+**Benchmark:** `computeSurface()` with 500 realistic Genesis XL soil-height
+points plus boundary points.
+
+**Before:** 0.024 ms per surface compute.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic terrain bounds and
+Delaunay setup path is already far below a meaningful load-time budget, so
+rewriting the bounds pass would optimize a sub-millisecond path.
+
+### Idea 337: Invert terrain normals through the typed array directly
+
+**Description:** Replace per-component `normal.setX/setY/setZ` calls with a
+direct typed-array sign flip after soil geometry normal computation. Expected
+return: faster soil geometry setup for high-point terrain surfaces with
+identical normals.
+
+**Benchmark:** `getGeometry()` with the vertices and UVs from a 500-point
+Genesis XL soil surface.
+
+**Before:** 0.017 ms per geometry build.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; normal inversion is already
+effectively free at realistic terrain sizes, so direct typed-array mutation
+would not produce a meaningful app improvement.
+
+### Idea 338: Inline triangle precomputation for generated soil faces
+
+**Description:** Move triangle metadata construction into the face loop so
+soil surface setup avoids helper-call and destructuring overhead for each
+triangle while preserving degenerate-triangle filtering and all derived fields.
+Expected return: faster `getZ` index setup inputs for gardens with many
+soil-height points.
+
+**Benchmark:** `precomputeTriangles()` with the generated vertex list and faces
+from a 500-point Genesis XL soil surface.
+
+**Before:** 0.001 ms per triangle precompute.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; triangle metadata construction is
+not a measurable runtime bottleneck under realistic terrain sizes.
+
+### Idea 339: Use a nested numeric cache for terrain `getZ` lookups
+
+**Description:** Replace string-concatenated coordinate cache keys in
+`getZFunc()` with nested numeric maps for repeated plant, point, weed, and grid
+terrain lookups. Expected return: faster terrain sampling in point-heavy
+gardens without changing interpolated Z results or cache invalidation.
+
+**Benchmark:** 500 uncached terrain `getZ` lookups followed by the same 500
+cached lookups against a 500-point Genesis XL soil surface.
+
+**Before:** 0.109 ms per 1000 total lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the current string-key cache and
+spatial index cost about 0.1 ms for a full realistic lookup batch, so nested
+numeric maps would add complexity without meaningful interaction impact.
+
+### Idea 340: Replace moisture interpolation nested `range().map()` setup with direct loops
+
+**Description:** Generate moisture interpolation grid samples with direct
+numeric loops instead of allocating `range()` arrays and using nested `map()`
+for side effects. Expected return: faster 3D moisture-map setup at default and
+XL bed sizes without changing generated samples, colors, or localStorage cache
+keys.
+
+**Benchmark:** `generateData()` for a Genesis XL moisture map with 60 readings
+and the default 50 mm interpolation step, followed by the same `getInterpolationData()`
+read used by 3D moisture rendering.
+
+**Before:** 4.644 ms per generation/read batch.
+
+**After:** 4.321 ms with direct nested loops.
+
+**Change:** 7.0% faster, saving 0.323 ms.
+
+**Outcome:** Rejected and rolled back; the attempted direct-loop rewrite did not
+meet the required 10% improvement threshold, and the absolute saving was below
+a meaningful load-time improvement.
