@@ -29,7 +29,7 @@ import { Xyz } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
-import { setPanelOpen } from "../../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../../panel_actions";
 import { getMode } from "../../../farm_designer/map/util";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { useFrame } from "@react-three/fiber";
@@ -336,7 +336,7 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
     onClick={() => {
       if (props.id && !isUndefined(props.dispatch) &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen(true));
+        props.dispatch(setPanelOpen3D(true));
         navigate(Path.toolSlots(props.id));
       }
     }}>

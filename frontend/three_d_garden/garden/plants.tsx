@@ -24,7 +24,7 @@ import { Text } from "../elements";
 import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { getMode, round } from "../../farm_designer/map/util";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { InstancedMesh, MeshPhongMaterial, SphereGeometry } from "../components";
@@ -33,7 +33,7 @@ import {
 } from "../../farm_designer/map/layers/spread/spread_overlap_helper";
 import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
-import { findCrop } from "../../crops/find";
+import { findCropMetadata } from "../../crops/metadata";
 import { perfMeasure } from "../../performance/perf";
 import { clickWasDragged } from "../click_event";
 
@@ -271,7 +271,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   const currentPlant = findPlantById(plants, plantId);
   const activeDragSpread = editPlantMode
     ? currentPlant?.spread
-    : findCrop(Path.getCropSlug()).spread;
+    : findCropMetadata(Path.getCropSlug()).spread;
   const hasTransientPlant = React.useMemo(() =>
     plants.some(plant => !plant.id), [plants]);
 
@@ -402,7 +402,7 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen(true));
+      dispatch(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }
   };

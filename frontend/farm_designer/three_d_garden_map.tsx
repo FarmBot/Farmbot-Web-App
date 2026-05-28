@@ -15,7 +15,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
-import { findCrop, findIcon } from "../crops/find";
+import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
@@ -411,8 +411,8 @@ const plantDisplayPropsBySlug: Record<string, PlantDisplayProps> = {};
 
 const plantDisplayProps = (slug: string): PlantDisplayProps => {
   plantDisplayPropsBySlug[slug] ||= {
-    icon: findIcon(slug),
-    spread: findCrop(slug).spread,
+    icon: findCropIcon(slug),
+    spread: findCropMetadata(slug).spread,
   };
   return plantDisplayPropsBySlug[slug];
 };

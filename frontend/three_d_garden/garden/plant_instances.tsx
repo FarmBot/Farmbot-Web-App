@@ -16,7 +16,7 @@ import { isUndefined } from "lodash";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Path } from "../../internal_urls";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { getMode } from "../../farm_designer/map/util";
 import { getSizeAtTime } from "../../promo/plants";
 import { get3DPositionFunc, zZero as zZeroFunc } from "../helpers";
@@ -241,7 +241,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen(true));
+      dispatch(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }
   };

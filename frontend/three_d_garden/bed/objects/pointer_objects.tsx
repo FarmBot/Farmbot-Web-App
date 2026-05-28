@@ -3,7 +3,9 @@ import {
   Group, MeshPhongMaterial, Mesh, PlaneGeometry, MeshBasicMaterial,
 } from "../../components";
 import { Billboard, Line, Sphere, useTexture } from "@react-three/drei";
-import { findCrop, findIcon } from "../../../crops/find";
+import {
+  DEFAULT_PLANT_RADIUS, findCropIcon, findCropMetadata,
+} from "../../../crops/metadata";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
 import { isMobile } from "../../../screen_size";
@@ -26,12 +28,11 @@ import {
 import { Config } from "../../config";
 import { SpecialStatus, TaggedGenericPointer } from "farmbot";
 import { AddPlantProps } from "../bed";
-import { DEFAULT_PLANT_RADIUS } from "../../../farm_designer/plant";
 import { isUndefined, round as mathRound } from "lodash";
 import { Mesh as MeshType, Group as GroupType, Color } from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
-import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
+import { dropPlant3D } from "../../plant_actions";
 import { createPoint } from "../../../points/create_point_action";
 import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
@@ -166,7 +167,7 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
-  const icon = findIcon(cropSlug);
+  const icon = findCropIcon(cropSlug);
   const baseTexture = useTexture(getPlantIconTextureUrl(icon, false));
   const plantIconTexture = React.useMemo(
     () => getPlantIconTexture(baseTexture, icon, false),
@@ -234,7 +235,7 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
                     transparent={true} />
                 </Mesh>
               </Billboard>
-              <Sphere args={[findCrop(cropSlug).spread / 2 * 10, 32, 32]}>
+              <Sphere args={[findCropMetadata(cropSlug).spread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
                   color={"white"}
                   transparent={true}
@@ -273,12 +274,11 @@ export const soilClick = (props: SoilClickProps) =>
     if (clickWasDragged(e)) { return; }
     if (addPlantProps) {
       if (getMode() == Mode.clickToAdd) {
-        dropPlant({
+        dropPlant3D({
           gardenCoords: getGardenPosition(e.point),
           gridSize: addPlantProps.gridSize,
           dispatch: addPlantProps.dispatch,
           getConfigValue: addPlantProps.getConfigValue,
-          curves: addPlantProps.curves,
           designer: addPlantProps.designer,
         });
       }

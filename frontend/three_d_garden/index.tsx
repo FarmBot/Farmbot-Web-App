@@ -21,12 +21,11 @@ import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
-import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { isTopDown } from "./helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
-import { getModifiedClassName } from "../settings/default_values";
+import { setPanelOpen3D } from "./panel_actions";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -118,6 +117,7 @@ const ThreeDControlsHelp = (props: ThreeDControlsHelpProps) => {
 
 interface ThreeDLayerToggleProps {
   value: boolean;
+  getConfigValue: GetWebAppConfigValue;
   onClick(): void;
 }
 
@@ -128,7 +128,9 @@ const ThreeDLayerToggle = (props: ThreeDLayerToggleProps) => {
     "fb-toggle-button",
     "fb-layer-toggle",
     props.value ? "green" : "red",
-    getModifiedClassName(BooleanSetting.three_d_garden),
+    props.value && props.getConfigValue(BooleanSetting.highlight_modified_settings)
+      ? "modified"
+      : "",
   ].join(" ");
   return <fieldset>
     <label>
@@ -152,7 +154,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
       <button className={"fb-button gray"}
         title={t("3D Settings")}
         onClick={() => {
-          dispatch(setPanelOpen(true));
+          dispatch(setPanelOpen3D(true));
           navigate(Path.settings("3d_garden"));
         }}>
         <i className={"fa fa-cog"} />
@@ -190,6 +192,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
       </div>
       <ThreeDLayerToggle
         value={threeDGarden}
+        getConfigValue={props.getConfigValue}
         onClick={() => dispatch(setWebAppConfigValue(
           BooleanSetting.three_d_garden, !threeDGarden))} />
     </div>

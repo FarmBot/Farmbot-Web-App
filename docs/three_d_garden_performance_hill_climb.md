@@ -10162,3 +10162,134 @@ bundle.
 to justify the shared-module churn.
 
 **Commit:** None
+
+## Round 97
+
+### Idea 501: Split 3D crop display metadata from full crop JSON
+
+**Description:** Replace the 3D plant display, plant preview, promo garden, and
+3D click-to-add crop lookups with compact crop metadata containing only name,
+spread, icon, and companion slugs. Keep the full crop encyclopedia on the 2D
+crop search/details paths, but avoid loading descriptions, images, row spacing,
+and other unused crop fields for the 3D garden.
+
+**Benchmark:** Minified esbuild bundles for the current 3D entry and
+`frontend/farm_designer/three_d_garden_map.tsx`, plus metafile attribution for
+the realistic 3D crop display path. The target benchmark is the crop display
+payload used when converting real plant resources and rendering click-to-add
+previews, not an artificial lookup loop.
+
+**Before:** The 3D entry bundle measured 2,554,079 bytes and included 210,509
+bytes from `frontend/crops`, including 204,331 bytes from all crop JSON files.
+The 3D map bundle measured 3,633,948 bytes and included 231,230 bytes from
+`frontend/crops`, also including the same 204,331 bytes of crop JSON.
+
+**After:** The 3D entry bundle measured 2,355,180 bytes and the 3D map bundle
+measured 3,423,429 bytes. Both paths now include a 20,717-byte compact crop
+metadata module and no crop JSON inputs.
+
+**Change:** The targeted crop display payload fell from 231,230 bytes to 20,717
+bytes, a 91.0% reduction and 210,513 fewer bytes. The whole 3D entry bundle fell
+198,899 bytes, or 7.8%, and the whole 3D map bundle fell 210,519 bytes, or
+5.8%. The absolute load reduction is meaningful for normal 3D plant rendering
+and click-to-add startup, even though the already-optimized whole-bundle percent
+is below 10%.
+
+**Outcome:** Accepted. The change removes a large, unused data payload from
+normal 3D loading without changing plant icon, spread, companion, custom crop, or
+panel-opening behavior.
+
+**Checks:** Focused crop/3D plant tests, typecheck, and eslint passed.
+
+**Commit:** `Reduce 3D crop metadata payload by 91.0%`
+
+### Idea 502: Split remaining root constants out of the 3D entry
+
+**Description:** Consider replacing the remaining 3D imports from
+`frontend/constants.ts` with tiny local action and label constants, so the 3D
+entry avoids the full shared constants file.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** `frontend/constants.ts` contributed 91,702 bytes to the
+2,355,180-byte 3D entry bundle, about 3.9%.
+
+**After:** Not implemented. Even a perfect removal of the remaining constants
+module would not meet the required improvement threshold and would touch a
+high-fanout shared constants surface.
+
+**Change:** Best-case 3.9% bundle reduction.
+
+**Outcome:** Rejected before code changes. The realistic ceiling is below the
+threshold and the shared-module churn is not justified.
+
+**Commit:** None
+
+### Idea 503: Replace remaining lodash barrel usage from the 3D bundle
+
+**Description:** Consider replacing all remaining lodash barrel imports reachable
+from the 3D entry with native helpers or method-level imports.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** `node_modules/lodash/lodash.js` contributed 76,425 bytes to the
+2,355,180-byte 3D entry bundle, about 3.2%.
+
+**After:** Not implemented. Removing the entire remaining lodash contribution
+would still miss the required threshold.
+
+**Change:** Best-case 3.2% bundle reduction.
+
+**Outcome:** Rejected before code changes. The broad import churn is not worth
+the below-threshold ceiling.
+
+**Commit:** None
+
+### Idea 504: Lazy-load stats overlays
+
+**Description:** Consider lazy-loading the optional `Stats` and `StatsGl`
+debug overlays so default 3D garden loads avoid debug-only stats code until the
+stats setting is enabled.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** Stats-related inputs contributed about 10,184 bytes to the
+2,355,180-byte 3D entry bundle, about 0.4%.
+
+**After:** Not implemented. The optional overlay code is small relative to the
+current bundle.
+
+**Change:** Best-case 0.4% bundle reduction.
+
+**Outcome:** Rejected before code changes. The absolute and relative win is too
+small to justify a lazy boundary for debug UI.
+
+**Commit:** None
+
+### Idea 505: Direct-import the sky implementation
+
+**Description:** Consider replacing the `three-stdlib` barrel import used by the
+3D sky wrapper with a direct Sky object import to avoid any unused stdlib export
+surface.
+
+**Benchmark:** Post-Idea-501 esbuild trial and metafile contribution check.
+
+**Before:** `node_modules/three-stdlib/objects/Sky.js` contributed 6,696 bytes
+to the 2,355,180-byte 3D entry bundle. The full `three-stdlib` contribution was
+126,878 bytes, but most of it comes from required GLTF loading, controls, lines,
+and geometry utilities.
+
+**After:** Trialing `three-stdlib/objects/Sky.js` failed because that subpath is
+not exported by the package. Even if it were available, the direct Sky ceiling
+would be only 0.3% of the 3D entry bundle.
+
+**Change:** No valid implementation with the installed package exports; best
+theoretical direct-Sky savings are about 0.3%.
+
+**Outcome:** Rejected and rolled back. The package export blocks the direct
+import, and the realistic ceiling is far below the acceptance threshold.
+
+**Commit:** None

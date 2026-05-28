@@ -19,7 +19,7 @@ import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined } from "lodash";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { getMode } from "../../farm_designer/map/util";
 import { RadiusRef, BillboardRef, ImageRef } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
@@ -50,7 +50,7 @@ export const Weed = (props: WeedProps) => {
       if (clickWasDragged(event)) { return; }
       if (weed.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen(true));
+        props.dispatch(setPanelOpen3D(true));
         navigate(Path.weeds(weed.body.id));
       }
     }}
@@ -217,7 +217,7 @@ const useNavigateToWeed = (
   return (weed: TaggedWeedPointer | undefined) => {
     if (weed?.body.id && dispatch && visible &&
       !HOVER_OBJECT_MODES.includes(getMode())) {
-      dispatch(setPanelOpen(true));
+      dispatch(setPanelOpen3D(true));
       navigate(Path.weeds(weed.body.id));
     }
   };

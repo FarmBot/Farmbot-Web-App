@@ -24,7 +24,7 @@ import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined, round } from "lodash";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { getMode } from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -111,7 +111,7 @@ export const Point = (props: PointProps) => {
       if (clickWasDragged(event)) { return; }
       if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen(true));
+        props.dispatch(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     }}
@@ -235,7 +235,7 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       const point = instances[instanceId]?.point;
       if (point?.body.id && dispatch && visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        dispatch(setPanelOpen(true));
+        dispatch(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     };

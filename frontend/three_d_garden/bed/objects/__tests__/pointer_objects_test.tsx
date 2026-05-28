@@ -21,7 +21,7 @@ import { clone } from "lodash";
 import { Path } from "../../../../internal_urls";
 import { Vector3 } from "three";
 import { ThreeEvent } from "@react-three/fiber";
-import * as plantActions from "../../../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../../plant_actions";
 import * as screenSize from "../../../../screen_size";
 import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
 import { fakePoint } from "../../../../__test_support__/fake_state/resources";
@@ -34,7 +34,7 @@ type AnimationFrameHandler = Parameters<typeof window.requestAnimationFrame>[0];
 
 beforeEach(() => {
   mockIsMobile = false;
-  dropPlantSpy = jest.spyOn(plantActions, "dropPlant").mockImplementation(jest.fn());
+  dropPlantSpy = jest.spyOn(plantActions, "dropPlant3D").mockImplementation(jest.fn());
   isMobileSpy = jest.spyOn(screenSize, "isMobile")
     .mockImplementation(() => mockIsMobile);
   requestAnimationFrameSpy = jest.spyOn(window, "requestAnimationFrame")
