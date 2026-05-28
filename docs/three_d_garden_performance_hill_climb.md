@@ -5264,9 +5264,26 @@ flash changes still rebuild or animate the same frustum.
 ### Idea 299: Memoize `DistanceIndicator` labels and arrows
 
 **Description:** Memoize distance indicator geometry by start/end/visibility
-and reuse arrow shapes by length/width. Expected return: faster bounds and bed
-dimension overlay rerenders with identical labels, arrows, placement, rotation,
-and visibility.
+so unchanged labels and arrows are skipped. Expected return: faster bounds and
+bed dimension overlay rerenders with identical labels, arrows, placement,
+rotation, and visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering one
+bed-length distance overlay 90 times with fresh but value-equivalent start/end
+coordinate objects, matching parent rerenders that rebuild coordinate literals.
+
+**Before:** 10.687 ms per 90-rerender batch.
+
+**After:** 0.851 ms per 90-rerender batch.
+
+**Change:** 92.0% faster, saving 9.836 ms per realistic unchanged-overlay
+rerender batch.
+
+**Outcome:** Accepted; distance indicators now skip unchanged coordinate churn
+while start, end, and visibility changes still update the same overlay geometry
+and labels.
+
+**Commit:** `Memoize distance indicators for 92.0% faster rerenders`
 
 ### Idea 300: Memoize shared 3D `Text` labels
 
