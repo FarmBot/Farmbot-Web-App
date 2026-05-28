@@ -4672,6 +4672,23 @@ same `lastImageCapture` result and no image/log behavior change.
 
 **Description:** Move cheap-but-repeated 3D layer visibility derivations behind memoized boundaries keyed by their real inputs. Expected return: fewer repeated `getConfigValue`, route/mode checks, and transient-plant scans during Bot telemetry rerenders, without changing layer visibility or progressive-load behavior.
 
+**Benchmark:** Worker-run realistic GardenModel telemetry benchmark with static
+garden layers visible and Bot position updates driving parent rerenders.
+
+**Before:** 100.954 ms per 60 realistic telemetry rerenders, with 1,320 config
+reads, 120 `getMode` calls, and 840 `Path.getSlug` calls.
+
+**After:** 28.613 ms per 60 rerenders, with 0 repeated config reads,
+0 `getMode` calls, and 0 `Path.getSlug` calls.
+
+**Change:** 71.7% faster, saving 72.341 ms per realistic telemetry batch.
+
+**Outcome:** Accepted; environment, bed, grid, plant, weed, and point layers now
+sit behind a static-layer boundary while progressive-load order, route-driven
+spread behavior, and layer visibility settings still update.
+
+**Commit:** `Memoize GardenModel static layers for 71.7% faster telemetry`
+
 ### Idea 274: Add a relevant-field comparator to the visible `Bed` subtree
 
 **Description:** Let `Bed` skip unrelated config-object churn by comparing only the config fields and resource references that affect bed, soil, image, pointer, moisture, and overlay rendering. Expected return: faster settings-panel and telemetry rerenders where bed inputs are visually unchanged, without hiding any bed, soil, image, moisture, pointer, or overlay updates.
@@ -4756,6 +4773,23 @@ gantry-slot, mirroring, rotation, opacity, and navigation behavior.
 
 **Description:** Re-evaluate the current tool opacity wrapper now that tool models are memoized, and skip material traversal/cloning when the slot is already fully opaque if the realistic saved-tool render still shows meaningful cost. Expected return: lower configured-tool startup and mount-change work without changing the faded mounted-tool visual.
 
+**Benchmark:** Worker-run realistic saved-tools mount benchmark with a mounted
+tool plus seven saved slots, measuring material traversal and clone work.
+
+**Before:** 2.304 ms mount path for seven saved tools with one faded mounted
+tool; 8 traversals and 10 material clones.
+
+**After:** 1.583 ms mount path; 1 traversal and 1 material clone. Movement
+rerenders still had 0 opacity traversals.
+
+**Change:** 31.3% faster, saving 0.721 ms on realistic saved-tool mount while
+removing 7 no-op traversals and 9 material clones.
+
+**Outcome:** Accepted; faded mounted-tool visuals and opacity restoration are
+preserved while already-opaque tools skip no-op material work.
+
+**Commit:** `Skip opaque tool opacity work for 31.3% faster mounts`
+
 ### Idea 279: Reduce enabled bounds/dimension helper coordinate transforms
 
 **Description:** Compute each enabled `Bounds` dimension helper's transformed coordinates once per render instead of calling the same position converter repeatedly in JSX. Expected return: faster bounds/dimension overlay interactions with identical labels, edges, positions, and visibility.
@@ -4802,13 +4836,64 @@ visibility behavior remain keyed to their real inputs.
 
 **Description:** Add a relevant-field memo boundary around active cloud rendering so unrelated config object churn does not restart or revisit cloud setup. Expected return: faster scene-detail rerenders with clouds enabled, without changing cloud texture, density, animation, opacity, or disabled-cloud behavior.
 
+**Benchmark:** Worker-run clouds benchmark with 90 realistic unrelated config
+updates while clouds were visible.
+
+**Before:** 3.813 ms wall time, 0.746 ms profiler time.
+
+**After:** 1.056 ms wall time, 0.039 ms profiler time.
+
+**Change:** 72.3% faster, saving 2.757 ms wall time per realistic update
+batch.
+
+**Outcome:** Accepted; clouds now rerender only when cloud enablement,
+animation enablement, or season changes, preserving opacity, texture, density,
+and disabled-cloud behavior.
+
+**Commit:** `Memoize Clouds config churn for 72.3% faster updates`
+
 ### Idea 282: Memoize `ThreeDPlantLabel` for visible all-label gardens
 
 **Description:** Add a relevant-field memo boundary around individual plant labels so all-label mode skips label billboards when unrelated config fields or parent state change. Expected return: faster dense labeled garden rerenders with identical label placement, text, hover behavior, and billboard following.
 
+**Benchmark:** Temporary Bun/Testing Library dense all-label benchmark with
+120 visible plant labels and 40 unrelated config-object rerenders.
+
+**Before:** 223.939 ms median batch; 4,800 `getZ` calls.
+
+**After:** 7.485 ms median batch; 0 `getZ` calls during unchanged churn.
+
+**Change:** 96.7% faster, saving 216.454 ms per dense all-label churn batch.
+
+**Outcome:** Accepted; visible all-label gardens reuse individual label
+billboards without changing hover labels, label text, placement, or billboard
+following.
+
+**Commit:** `Memoize plant labels for 96.7% faster churn`
+
 ### Idea 283: Stabilize active pointer-preview crop and grid-preview setup
 
 **Description:** In active pointer-preview modes, avoid repeated crop/icon lookup and full dirty-grid scans when route/mode, map-point references, and draw state are unchanged. Expected return: better pointer responsiveness in plant/point creation workflows without changing preview texture, crosshair, radius, or out-of-bounds visuals.
+
+**Benchmark:** Temporary Bun/Testing Library active pointer-preview benchmark
+in crop-search mode with 150 map points and 60 unrelated config rerenders,
+covering both active crop preview and active dirty-grid preview paths.
+
+**Before:** Crop-preview churn was 57.236 ms per 60-rerender batch; dirty-grid
+preview churn was 32.378 ms per 60-rerender batch.
+
+**After:** Crop-preview churn was 4.924 ms per 60-rerender batch; dirty-grid
+preview churn was 2.265 ms per 60-rerender batch.
+
+**Change:** Crop-preview churn was 91.4% faster, saving 52.312 ms per
+60-rerender active-preview batch; dirty-grid preview churn was 93.0% faster,
+saving 30.113 ms per 60-rerender batch.
+
+**Outcome:** Accepted; active preview now compares route, mode, relevant
+config, refs, drawn point, crop radius, and dirty-grid presence while
+preserving preview icon, crop spread, crosshairs, radius, and bounds visuals.
+
+**Commit:** `Memoize pointer preview for 91.4% faster churn`
 
 ### Idea 284: Reuse `ImageWrapper` setup for unchanged camera images
 
@@ -4836,3 +4921,20 @@ unmemoized so `forceOnline()` URL substitution is preserved.
 ### Idea 285: Reduce `SceneBoundary` load-step render churn
 
 **Description:** Narrow `SceneBoundary` and load-ready rendering so already-completed load steps stop revisiting readiness markers and perf marks on later GardenModel rerenders. Expected return: lower progressive-load overhead during startup and early telemetry churn without changing load order, reveal animations, or load-complete callbacks.
+
+**Benchmark:** Temporary Bun/Testing Library completed-load marker benchmark
+with all eight 3D load steps mounted and 60 post-completion parent rerenders.
+
+**Before:** 8.975 ms per 60-rerender batch; effects did not repeat
+`markStep`, so the remaining cost was component/comparator overhead only.
+
+**After:** Memoizing `LoadStepReady` regressed to 12.917 ms per 60-rerender
+batch.
+
+**Change:** No qualifying win; the prototype was 43.9% slower and added a
+memo boundary to a path that was already small after earlier GardenModel work.
+
+**Outcome:** Rejected and rolled back; the remaining completed-load churn is
+not worth additional component complexity.
+
+**Commit:** Not committed

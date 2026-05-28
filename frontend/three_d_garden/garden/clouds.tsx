@@ -10,7 +10,12 @@ export interface CloudsProps {
 
 const AnimatedCloud = animated(Cloud);
 
-export const Clouds = (props: CloudsProps) => {
+export const cloudsConfigEquals = (prev: Config, next: Config) =>
+  prev.clouds == next.clouds &&
+  prev.animate == next.animate &&
+  prev.plants == next.plants;
+
+export const CloudsBase = (props: CloudsProps) => {
   const { config } = props;
   const sunParams = getSeasonProperties(config, "Summer");
   const targetOpacity = sunParams.cloudOpacity;
@@ -38,3 +43,6 @@ export const Clouds = (props: CloudsProps) => {
       fade={5000} />
   </DreiClouds>;
 };
+
+export const Clouds = React.memo(CloudsBase,
+  (prev, next) => cloudsConfigEquals(prev.config, next.config));
