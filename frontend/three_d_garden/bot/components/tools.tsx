@@ -472,7 +472,9 @@ const SeederToolModel = React.memo((props: ToolModelProps) => {
       material={seeder.materials.PaletteMaterial001} />
     {!props.inToolbay && props.config.vacuum &&
       <Group position={[20, 0, -30]}>
-        <SuctionAnimations zValues={[-50, -80, -95, -100]} />
+        <React.Suspense fallback={undefined}>
+          <SuctionAnimations zValues={[-50, -80, -95, -100]} />
+        </React.Suspense>
       </Group>}
   </>;
 }, (prev, next) =>
