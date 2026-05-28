@@ -6710,3 +6710,620 @@ remount-like passes.
 **Outcome:** Rejected without implementation; helper reads are already far
 below a meaningful setup budget, so adding another cache would only complicate
 the atlas path.
+
+## Round 69
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 361. Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module | Reduce 3D JavaScript load/parse by avoiding unused Drei web modules such as video/HLS while preserving the same Drei components and hooks | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Rejected |
+| 362. Replace `three/examples/jsm/Addons.js` imports with targeted SVG/helper imports | Reduce 3D JavaScript load/parse by avoiding the example Addons fan-out while preserving SVG parsing and vertex-normal debug helpers | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Accepted |
+| 363. Split the remaining plant icon atlas public object behind lazy helpers | Reduce import-time atlas object allocation after the generated atlas module was compacted | Import and full-atlas lookup timing for the realistic 248-entry atlas | Rejected |
+| 364. Remove runtime root `@react-three/drei` imports from 3D tests only | Reduce local test startup/import work without touching app behavior | Bun test import timing for representative 3D test files | Rejected |
+| 365. Replace remaining 3D lodash `range` imports with a shared local numeric helper | Reduce bundle bytes and setup allocations in small repeated geometry builders | Full 3D bundle bytes plus realistic geometry-builder timing at ordinary bed/bot counts | Rejected |
+
+### Idea 361: Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module
+
+**Description:** Replace runtime `@react-three/drei` barrel imports with a
+3D-local direct-export module. Expected return: lower 3D JavaScript load and
+parse cost by avoiding unused Drei web/video modules while preserving the same
+Drei components and hooks.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,950,345 bytes; root Drei barrel present; 999,135 bytes of
+`hls.js` input present in the metafile.
+
+**After:** 4,934,848 bytes; root Drei barrel removed from the 3D path; 0 bytes
+of `hls.js` input present.
+
+**Change:** 0.3% smaller bundled/minified 3D entry, saving 15,497 bytes.
+
+**Outcome:** Rejected and rolled back; removing the unused HLS path is tidy,
+but the actual emitted 3D bundle saving missed the 10% threshold and is not
+worth introducing a local import shim plus a settings color extraction.
+
+**Commit:** None
+
+### Idea 362: Replace `three/examples/jsm/Addons.js` imports with targeted SVG/helper imports
+
+**Description:** Replace broad `three/examples/jsm/Addons.js` imports with the
+specific SVG loader and vertex-normal helper modules the 3D garden uses.
+Expected return: lower 3D JavaScript load and parse cost by avoiding the
+example Addons fan-out while preserving SVG parsing and debug normal helpers.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,950,345 bytes; 286 `three/examples/jsm` inputs; broad
+`Addons.js` input present.
+
+**After:** 4,216,102 bytes; 6 `three/examples/jsm` inputs; broad `Addons.js`
+input removed.
+
+**Change:** 14.8% smaller bundled/minified 3D entry, saving 734,243 bytes.
+
+**Outcome:** Accepted; the code now imports only the exact Three example
+modules needed by the 3D garden, preserving the same SVG loader and
+vertex-normal helper behavior while removing substantial unused load-time code.
+
+**Commit:** `Import direct Three addons for 14.8% smaller 3D bundle`
+
+### Idea 363: Split the remaining plant icon atlas public object behind lazy helpers
+
+**Description:** Split the remaining plant icon atlas public object behind lazy
+helpers. Expected return: lower import-time allocation after the generated atlas
+module was compacted.
+
+**Benchmark:** Rebuild the realistic generated 248-entry atlas object once per
+sample, matching the import-time work left in `plant_icon_atlas.ts`.
+
+**Before:** 0.036 ms median one-time atlas object build.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the absolute import-time setup is
+already far below a meaningful startup budget, and the exported mutable
+`PLANT_ICON_ATLAS` object would require proxy/lazy machinery that is more
+complex than the cost it could remove.
+
+### Idea 364: Remove runtime root `@react-three/drei` imports from 3D tests only
+
+**Description:** Replace root Drei imports in 3D tests with direct imports.
+Expected return: lower local test startup/import work.
+
+**Benchmark:** Runtime bundle profiling after idea 362, plus scope check of
+remaining root Drei imports.
+
+**Before:** Remaining root Drei imports are test-only and do not affect the
+3D app bundle or user runtime.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; optimizing test-only imports has
+no user-facing load-time, responsiveness, memory, FPS, or call-count impact.
+
+### Idea 365: Replace remaining 3D lodash `range` imports with a shared local numeric helper
+
+**Description:** Replace remaining 3D lodash `range` imports with a shared
+local numeric helper. Expected return: lower bundle bytes and setup allocation
+in small geometry builders.
+
+**Benchmark:** Full 3D bundle metafile after idea 362, plus remaining realistic
+3D range-use scope.
+
+**Before:** The bundle still contains `lodash/lodash.js`, with 194 importers
+through shared app code; remaining 3D `range` use is limited to ordinary counts
+such as 3 holes, 16 water streams, 24 sun-path segments, tray cells, and
+greenhouse wall cells.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; replacing the remaining 3D
+`range` calls would not remove lodash from the emitted bundle, and the realistic
+iteration counts are too small to produce a meaningful runtime win.
+
+## Round 70
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 366. Split electronics-box color constants away from settings pin-binding UI | Reduce 3D JavaScript load/parse by avoiding settings pin-binding UI imports from the 3D electronics box | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and import graph | Rejected |
+| 367. Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module after the Addons cut | Reduce 3D JavaScript load/parse by avoiding unused Drei web/video and three-stdlib modules while preserving the same components and hooks | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Rejected |
+| 368. Use the already-present Drei/three-stdlib SVG loader instead of the direct Three examples SVG loader | Remove duplicate SVG loader code from the 3D bundle while preserving bot SVG parsing | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and bot SVG loader tests | Rejected |
+| 369. Split sequence visualization's Lua action collector out of the default 3D load path | Reduce default 3D JavaScript load/parse when no sequence visualization is active | Default 3D bundle bytes and visualized-sequence first-use UX risk | Rejected |
+| 370. Isolate 3D camera dev-storage reads from general dev settings support | Reduce 3D JavaScript load/parse by avoiding broader settings/dev support imports during camera initialization | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and camera initialization tests | Rejected |
+
+### Idea 366: Split electronics-box color constants away from settings pin-binding UI
+
+**Description:** Move `IColor` out of the settings pin-binding model so the 3D
+electronics box can import only numeric color constants. Expected return: lower
+3D JavaScript load and parse cost by avoiding settings pin-binding UI imports.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import graph.
+
+**Before:** 4,216,102 bytes; `frontend/settings/pin_bindings/model.tsx`
+present; 10 settings pin-binding inputs.
+
+**After:** 4,201,331 bytes; settings pin-binding model removed from the 3D
+graph; 1 settings pin-binding input.
+
+**Change:** 0.4% smaller bundled/minified 3D entry, saving 14,771 bytes.
+
+**Outcome:** Rejected and rolled back; removing the dependency is cleaner, but
+the emitted-byte improvement misses the 10% threshold and is too small to
+justify a shared constants module by itself.
+
+**Commit:** None
+
+### Idea 367: Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module after the Addons cut
+
+**Description:** Replace runtime root `@react-three/drei` imports with a
+3D-local direct-export module. Expected return: lower 3D JavaScript load and
+parse cost by avoiding unused Drei web/video and three-stdlib modules while
+preserving the same components and hooks.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,216,102 bytes; root Drei barrel present; 999,135 bytes of
+`hls.js` input present in the metafile.
+
+**After:** 4,200,607 bytes; root Drei barrel removed from the 3D path; 0 bytes
+of `hls.js` input present.
+
+**Change:** 0.4% smaller bundled/minified 3D entry, saving 15,495 bytes.
+
+**Outcome:** Rejected and rolled back; after tree-shaking and the Round 69
+Addons cleanup, the emitted bundle saving is still only about 15 KB, so the
+local shim and broad import churn are not worth keeping.
+
+**Commit:** None
+
+### Idea 368: Use the already-present Drei/three-stdlib SVG loader instead of the direct Three examples SVG loader
+
+**Description:** Import the bot SVG loader from the already-present
+`three-stdlib` root instead of `three/examples/jsm/loaders/SVGLoader.js`.
+Expected return: remove duplicate SVG loader code while preserving bot SVG
+parsing behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus SVG loader input composition.
+
+**Before:** 4,216,102 bytes; both Three examples SVGLoader and three-stdlib
+SVGLoader inputs present.
+
+**After:** 4,216,051 bytes; Three examples SVGLoader input removed; three-stdlib
+SVGLoader input retained.
+
+**Change:** 0.001% smaller bundled/minified 3D entry, saving 51 bytes.
+
+**Outcome:** Rejected and rolled back; the duplicate input disappears from the
+metafile, but the emitted JavaScript impact is effectively zero.
+
+**Commit:** None
+
+### Idea 369: Split sequence visualization's Lua action collector out of the default 3D load path
+
+**Description:** Lazy-load sequence visualization's Lua action collection path
+when no sequence visualization is active. Expected return: lower default 3D
+load and parse cost.
+
+**Benchmark:** Full 3D bundle metafile and default runtime context where no
+sequence visualization is active.
+
+**Before:** `fengari-web` contributes 211,123 bytes of input through
+`Visualization`, even though `Visualization` only mounts when a sequence is
+actively visualized.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the only clean load-time split
+would make the first visualized-sequence render wait on an async chunk, which
+is a user-visible responsiveness risk under the no-UX-degradation constraint.
+
+**Commit:** None
+
+### Idea 370: Isolate 3D camera dev-storage reads from general dev settings support
+
+**Description:** Read the 3D dev-camera override from a camera-local helper
+instead of importing general `DevSettings`. Expected return: lower 3D
+JavaScript load and parse cost by avoiding broader settings/dev support during
+camera initialization.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus `DevSettings` input presence.
+
+**Before:** 4,216,102 bytes; `frontend/settings/dev/dev_support.ts` present.
+
+**After:** 4,216,217 bytes; `frontend/settings/dev/dev_support.ts` still
+present via other shared app paths.
+
+**Change:** 0.003% larger bundled/minified 3D entry, adding 115 bytes.
+
+**Outcome:** Rejected and rolled back; camera-local storage duplicated existing
+logic while `DevSettings` remained in the bundle through other paths.
+
+**Commit:** None
+
+## Round 71
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 371. Split the pure `ThreeDGarden` canvas component away from the toggle barrel | Reduce 3D map JavaScript load/parse by avoiding toggle-only help/settings imports | Full bundled/minified `frontend/farm_designer/three_d_garden_map.tsx` bytes and emitted-byte attribution | Rejected |
+| 372. Lazy-load sequence visualization's Lua runner module | Reduce default 3D JavaScript load/parse when no sequence visualization is active | Emitted-byte attribution for `fengari-web` and sequence visualization first-use UX risk | Rejected |
+| 373. Inline fixed bot SVG shape sources to remove shape asset requests | Reduce bot startup asset calls by removing four SVG shape fetches | Shape request count, SVG asset bytes, and emitted parser/string tradeoff | Rejected |
+| 374. Replace Drei `Line` with native Three line primitives in simple paths | Reduce 3D JavaScript bytes by removing meshline and wide-line helpers | Emitted-byte attribution for line helper modules and line-width UX requirements | Rejected |
+| 375. Lazy-load the full `ThreeDGardenMap` when the 3D toggle is off | Reduce default Farm Designer load while preserving the 3D feature | Default-route load split benefit versus first-toggle responsiveness risk | Rejected |
+
+### Idea 371: Split the pure `ThreeDGarden` canvas component away from the toggle barrel
+
+**Description:** Move the pure `ThreeDGarden` canvas component out of
+`three_d_garden/index.tsx` and have `ThreeDGardenMap` import it directly.
+Expected return: lower 3D map JavaScript load and parse cost by avoiding
+toggle-only help/settings imports.
+
+**Benchmark:** Full bundled/minified
+`frontend/farm_designer/three_d_garden_map.tsx` with esbuild, plus emitted-byte
+attribution for toggle/UI dependencies.
+
+**Before:** 4,216,150 bytes; `frontend/constants.ts` emitted 91,697 bytes;
+markdown emoji data emitted 52,005 bytes.
+
+**After:** 4,216,191 bytes; the same constants and markdown paths remained via
+other Farm Designer imports.
+
+**Change:** 0.001% larger bundled/minified 3D map entry, adding 41 bytes.
+
+**Outcome:** Rejected and rolled back; the import split did not remove the
+heavy shared UI dependencies because they enter through other map/designer paths.
+
+**Commit:** None
+
+### Idea 372: Lazy-load sequence visualization's Lua runner module
+
+**Description:** Split the Lua-backed sequence visualization code out of the
+default 3D load path. Expected return: lower default 3D JavaScript load and
+parse cost when no sequence visualization is active.
+
+**Benchmark:** Emitted-byte attribution for the current bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `fengari-web` emits 224,262 bytes into the 3D bundle through the
+sequence visualization path.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the byte target is real, but the
+clean split would delay the first visualized-sequence render on an async chunk,
+which risks visible responsiveness degradation for that feature.
+
+**Commit:** None
+
+### Idea 373: Inline fixed bot SVG shape sources to remove shape asset requests
+
+**Description:** Inline the four fixed bot SVG shape sources and parse them
+locally instead of fetching `/3D/shapes/*.svg` at bot mount. Expected return:
+fewer startup asset calls for the bot frame shapes.
+
+**Benchmark:** Current bot shape setup performs up to 4 SVG shape asset requests
+for tracks, beam, column, and z-axis; those source SVGs total 11,715 bytes, and
+the SVG loader emits 23,925 bytes into the 3D bundle.
+
+**Before:** Up to 4 asynchronous SVG shape asset requests after bot mount.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; inlining would trade async asset
+requests for additional blocking JavaScript bytes while still keeping the SVG
+parser, so the net load-time tradeoff is not clearly positive across metrics.
+
+**Commit:** None
+
+### Idea 374: Replace Drei `Line` with native Three line primitives in simple paths
+
+**Description:** Replace some Drei `Line` usages with native Three line
+primitives. Expected return: lower JavaScript bytes by removing meshline and
+wide-line helpers.
+
+**Benchmark:** Emitted-byte attribution for line helper modules in the current
+3D bundle.
+
+**Before:** Line helpers emit about 35 KB total: `meshline` 12,188 bytes,
+three-stdlib `LineMaterial` 11,460 bytes, Three examples `LineMaterial` 9,870
+bytes, and Drei `Line` 1,196 bytes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the 3D scene uses configured
+line widths and billboarded line helpers in several visible overlays, and
+replacing them with native WebGL lines risks visual degradation for a sub-1%
+bundle target.
+
+**Commit:** None
+
+### Idea 375: Lazy-load the full `ThreeDGardenMap` when the 3D toggle is off
+
+**Description:** Dynamically import the full 3D map only when the 3D toggle is
+enabled. Expected return: lower default Farm Designer load when users are in
+the default 2D map.
+
+**Benchmark:** Scope analysis of the static Farm Designer imports: the default
+designer imports `ThreeDGardenMap` even when the 3D toggle is off.
+
+**Before:** The 3D map is statically imported by Farm Designer.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; while the default-load target is
+real, the first 3D toggle could become visibly slower while a large async chunk
+loads, which conflicts with the no-UX-degradation constraint.
+
+**Commit:** None
+
+## Round 72
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 376. Pre-generate bot SVG extrusion shapes to remove runtime SVG parsing | Reduce bot startup calls and JavaScript parser bytes by replacing four SVG fetches and `SVGLoader` parsing | Bot shape request/parse count, source SVG bytes, and emitted SVGLoader bytes | Rejected |
+| 377. Disable `FPSProbe`'s default frame callback unless perf/FPS logging is enabled | Reduce steady-frame callback work in normal user sessions | Default FPSProbe behavior and one-callback per-second work | Rejected |
+| 378. Replace 3D time-travel `moment` usage with native date helpers | Reduce 3D JavaScript load and sun-position calculation cost | Emitted-byte attribution for `moment` and current 3D time usage | Rejected |
+| 379. Split 3D-used app constants from the app-wide `frontend/constants.ts` module | Reduce 3D JavaScript load/parse from the large app constants module | Emitted-byte attribution and import graph for `frontend/constants.ts` | Rejected |
+| 380. Add a promise cache for bot SVG shape loading across simultaneous Bot mounts | Avoid duplicate SVG requests/parses if multiple Bot components mount before the shape cache is populated | Realistic Bot mount count and current parsed-shape cache behavior | Rejected |
+
+### Idea 376: Pre-generate bot SVG extrusion shapes to remove runtime SVG parsing
+
+**Description:** Generate the four fixed bot extrusion shapes as TypeScript data
+instead of fetching `/3D/shapes/*.svg` and parsing them with `SVGLoader` at bot
+mount. Expected return: fewer bot startup asset calls and less runtime SVG
+parser code.
+
+**Benchmark:** Current bot shape setup and emitted-byte attribution.
+
+**Before:** A cold Bot mount can request 4 SVG shape assets and call
+`SVGLoader.createShapes` 15 times. The four SVG assets total 11,715 bytes, and
+`three/examples/jsm/loaders/SVGLoader.js` emits 23,925 bytes into the 3D bundle.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; this could remove a parser and
+four async asset calls, but generating equivalent Three `Shape` data would add
+blocking JavaScript and high-maintenance generated geometry, with visual-drift
+risk in the FarmBot frame extrusions.
+
+**Commit:** None
+
+### Idea 377: Disable `FPSProbe`'s default frame callback unless perf/FPS logging is enabled
+
+**Description:** Mount or register `FPSProbe` only when perf instrumentation or
+explicit FPS logging is enabled. Expected return: one fewer frame callback in
+normal sessions.
+
+**Benchmark:** Current `FPSProbe` behavior in default sessions.
+
+**Before:** `FPSProbe` registers 1 `useFrame` callback. In normal sessions it
+skips scene traversal, logging, and perf samples unless perf or `FPS_LOGS` is
+enabled; it only updates `window.__fps` roughly once per second.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; removing one lightweight
+diagnostic callback would not produce meaningful FPS or CPU improvement, and
+would remove the always-available `window.__fps` diagnostic signal.
+
+**Commit:** None
+
+### Idea 378: Replace 3D time-travel `moment` usage with native date helpers
+
+**Description:** Replace `moment` in `three_d_garden/time_travel.tsx` with
+native date parsing/formatting for 3D sun time calculations. Expected return:
+lower 3D JavaScript load and less time calculation overhead.
+
+**Benchmark:** Emitted-byte attribution for the current bundled/minified
+`frontend/three_d_garden/index.tsx`, plus import graph scope.
+
+**Before:** `moment` emits 62,746 bytes into the 3D bundle, but the same bundle
+also reaches `moment` through shared photo, sensor, farm-event, and app UI
+paths. 3D time travel uses `moment` for current time, `HH:mm` parsing, hour
+offsets, and display formatting.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; changing only the 3D helper would
+not remove `moment` from the emitted bundle, and replacing time formatting risks
+behavior drift for negligible runtime savings.
+
+**Commit:** None
+
+### Idea 379: Split 3D-used app constants from the app-wide `frontend/constants.ts` module
+
+**Description:** Move the small set of 3D-used `Actions`, `Content`, and
+`DeviceSetting` values out of the app-wide constants module. Expected return:
+less 3D JavaScript load and parse cost.
+
+**Benchmark:** Emitted-byte attribution and import graph for
+`frontend/constants.ts`.
+
+**Before:** `frontend/constants.ts` emits 91,697 bytes into the 3D bundle.
+However, the import graph reaches it through many shared app paths including
+resources, designer state, UI, settings, and sequence modules, not only direct
+3D imports.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; splitting the few direct 3D
+constants would not remove the app-wide constants module from the bundle, and a
+partial constants fork would add maintenance risk.
+
+**Commit:** None
+
+### Idea 380: Add a promise cache for bot SVG shape loading across simultaneous Bot mounts
+
+**Description:** Cache in-flight bot SVG shape load promises so simultaneous
+Bot mounts cannot duplicate the same shape requests before `botShapeCache` is
+filled. Expected return: fewer duplicate calls in multi-mount scenarios.
+
+**Benchmark:** Real Bot mounting behavior and existing shape cache.
+
+**Before:** A single cold Bot mount loads each needed SVG shape once and stores
+the parsed `Shape` objects in `botShapeCache`; remounts reuse the parsed shapes
+and do not reparse. The normal 3D garden contains one Bot.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; an in-flight promise cache would
+only help an unrealistic simultaneous multi-Bot mount, while adding async cache
+complexity to a path already cached for normal remounts.
+
+**Commit:** None
+
+## Round 73
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 381. Replace Drei root imports with direct per-component exports | Reduce 3D JavaScript load/parse by avoiding unused Drei inputs while preserving the same Drei components | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and emitted-byte output | Rejected |
+| 382. Use Delaunator accessors and one-pass bounds in soil-surface setup | Reduce default and configured soil-surface setup allocations without changing generated surface detail | Standalone real-Delaunator `computeSurface()` prototype with default-ish 29 points, medium 54 points, and max-slider 204 points | Rejected |
+| 383. Cache the disabled perf query-string check | Avoid repeated `URLSearchParams` allocation in normal non-benchmark 3D sessions | Normal-session disabled perf instrumentation bursts matching 10 seconds of FPS checks and a heavy render burst | Rejected |
+| 384. Replace the 3D entry's `lodash/noop` import with a local no-op | Reduce bundle bytes by removing one direct lodash use from the 3D entry | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and lodash emitted output | Rejected |
+| 385. Convert TypeScript-only 3D `Config` imports to type-only imports | Reduce accidental runtime import graph and bundle bytes in helper/triangle modules | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes before/after type-only prototype | Rejected |
+
+### Idea 381: Replace Drei root imports with direct per-component exports
+
+**Description:** Replace runtime `@react-three/drei` imports with a 3D-local
+module that re-exports only the exact direct Drei component files used by the
+3D garden. Expected return: lower JavaScript parse/load cost while preserving
+all existing Drei behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, comparing emitted output bytes.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 4,216,128 bytes.
+
+**Change:** 0.001% larger, adding 26 bytes.
+
+**Outcome:** Rejected and rolled back; the prototype removed unused Drei input
+traversal but did not reduce emitted runtime code, so the import churn is not
+worth keeping.
+
+**Commit:** None
+
+### Idea 382: Use Delaunator accessors and one-pass bounds in soil-surface setup
+
+**Description:** Replace the projected 2D point array and separate x/y arrays
+in `computeSurface()` with Delaunator accessors and one bounds pass. Expected
+return: less setup allocation during realistic soil-surface rebuilds.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` prototype with
+29, 54, and 204 points, matching default-ish, medium, and max-slider soil
+surface contexts.
+
+**Before:** 29 points: 0.0189 ms; 54 points: 0.0342 ms; 204 points:
+0.0614 ms.
+
+**After:** 29 points: 0.0092 ms; 54 points: 0.0200 ms; 204 points:
+0.0560 ms.
+
+**Change:** 51.5% faster at 29 points, saving 0.0097 ms; 41.7% faster at
+54 points, saving 0.0143 ms; 8.8% faster at 204 points, saving 0.0054 ms.
+
+**Outcome:** Rejected without implementation; the default percentage win is
+real but the absolute saving is far below a meaningful app budget, and the
+largest realistic point count misses the 10% threshold.
+
+**Commit:** None
+
+### Idea 383: Cache the disabled perf query-string check
+
+**Description:** Cache or fast-path the normal-session disabled perf flag so
+`perfEnabled()` does not allocate `URLSearchParams` on repeated 3D render/frame
+instrumentation calls. Expected return: lower allocation churn in sessions
+without `fb_perf=1`.
+
+**Benchmark:** Normal-session disabled instrumentation benchmark with no
+`fb_perf` query and no `FB_PERF_BENCHMARK` localStorage flag: 600
+`perfEnabled()` calls matching 10 seconds of `FPSProbe` checks, plus a 250-call
+mixed `perfCount`/`perfMark`/`perfSample`/`perfMeasure` burst.
+
+**Before:** 600 `perfEnabled()` calls took 0.0348 ms median; the 250-call
+mixed instrumentation burst took 0.0590 ms median.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even deleting all of this
+overhead would save less than 0.06 ms in the measured realistic bursts, so a
+cache invalidation path would add more complexity than user-visible benefit.
+
+**Commit:** None
+
+### Idea 384: Replace the 3D entry's `lodash/noop` import with a local no-op
+
+**Description:** Replace the one `noop` import in `three_d_garden/index.tsx`
+with a local function. Expected return: lower bundle bytes if this direct
+lodash import kept any extra emitted code alive.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus lodash emitted output.
+
+**Before:** 4,216,102 bytes; lodash still emitted 76,607 bytes.
+
+**After:** 4,216,096 bytes; lodash still emitted 76,607 bytes.
+
+**Change:** 0.0001% smaller, saving 6 bytes.
+
+**Outcome:** Rejected and rolled back; lodash remains in the runtime graph
+through many other realistic paths, and a 6-byte saving is not meaningful.
+
+**Commit:** None
+
+### Idea 385: Convert TypeScript-only 3D `Config` imports to type-only imports
+
+**Description:** Convert `Config` imports in helper and triangle modules to
+`import type`. Expected return: lower accidental runtime import graph and
+possibly smaller emitted code in modules that only use the config shape for
+types.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild after converting `helpers.ts` and `triangles.ts` to type-only
+`Config` imports.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 4,216,102 bytes.
+
+**Change:** 0.0%, saving 0 bytes.
+
+**Outcome:** Rejected and rolled back; esbuild already removes those type-only
+uses from the emitted 3D bundle, so the change has no user-facing performance
+effect.
+
+**Commit:** None

@@ -15,7 +15,7 @@ import {
 import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../constants";
-import { SVGLoader } from "three/examples/jsm/Addons.js";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
   CrossSlideFull, CrossSlideModel,
