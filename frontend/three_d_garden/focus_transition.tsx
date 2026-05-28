@@ -308,12 +308,6 @@ const TransitionFocusVisibilityGroup =
 
     React.useEffect(() => restoreMaterialBinding, [restoreMaterialBinding]);
 
-    if (!enabled) {
-      return <Group {...groupProps} visible={visible} ref={forwardedRef}>
-        {children}
-      </Group>;
-    }
-
     if (shouldUnmountFocusVisibilityGroup(rendered, visible, keepMounted)) {
       return undefined;
     }

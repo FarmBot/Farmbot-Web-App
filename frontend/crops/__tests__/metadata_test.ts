@@ -1,5 +1,5 @@
 import {
-  findCropIcon, findCropMetadata, normalizeCropSlug,
+  findCropIcon, findCropMetadata, normalizeCropSlug, verifiedCropSlug,
 } from "../metadata";
 
 describe("findCropMetadata()", () => {
@@ -34,5 +34,19 @@ describe("findCropIcon()", () => {
 describe("normalizeCropSlug()", () => {
   it("normalizes crop slugs", () => {
     expect(normalizeCropSlug("Anaheim Pepper")).toEqual("anaheim-pepper");
+  });
+});
+
+describe("verifiedCropSlug()", () => {
+  it("returns a crop slug for random", () => {
+    const random = jest.spyOn(Math, "random").mockReturnValue(0);
+
+    expect(verifiedCropSlug("random")).not.toEqual("random");
+
+    random.mockRestore();
+  });
+
+  it("returns not-set for empty slugs", () => {
+    expect(verifiedCropSlug(undefined)).toEqual("not-set");
   });
 });

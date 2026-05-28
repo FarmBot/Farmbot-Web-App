@@ -206,23 +206,20 @@ export const runLua =
       const url = rawUrl.replace(/\/$/, "");
       lua.lua_pop(L, 1);
 
-      if (url == "/api/points") {
+      if (url == "/api/points" && method == "GET") {
         const points = allPoints();
-        if (method == "GET") {
-          apiPointsGetCache ||= sortGroupBy("yx_alternating", points)
-            .map(p => p.body).map(clean);
-          jsToLua(L, apiPointsGetCache);
-          return 1;
-        }
-        if (method == "POST") {
-          lua.lua_getfield(L, 1, to_luastring("body"));
-          const body = luaToJs(L, -1) as object;
-          lua.lua_pop(L, 1);
-          const point = JSON.stringify(body);
-          actions.push({ type: "create_point", args: [point] });
-          jsToLua(L, true);
-          return 1;
-        }
+        apiPointsGetCache ||= sortGroupBy("yx_alternating", points)
+          .map(p => p.body).map(clean);
+        jsToLua(L, apiPointsGetCache);
+        return 1;
+      } else if (url == "/api/points" && method == "POST") {
+        lua.lua_getfield(L, 1, to_luastring("body"));
+        const body = luaToJs(L, -1) as object;
+        lua.lua_pop(L, 1);
+        const point = JSON.stringify(body);
+        actions.push({ type: "create_point", args: [point] });
+        jsToLua(L, true);
+        return 1;
       } else if (method == "GET" && url == "/api/tools") {
         const results = allTools()
           .map(p => p.body).map(clean);

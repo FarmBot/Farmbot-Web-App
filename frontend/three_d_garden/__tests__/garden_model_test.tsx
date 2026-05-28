@@ -11,8 +11,11 @@ import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render, waitFor } from "@testing-library/react";
 import {
-  fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
+  fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeSequence, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex,
+} from "../../__test_support__/resource_index_builder";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
@@ -35,6 +38,7 @@ import { Clouds } from "../garden/clouds";
 import { Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
+import { store } from "../../redux/store";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -568,6 +572,22 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("drawn-point");
   });
 
+  it("loads sequence visualization when selected", async () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    const resources = buildResourceIndex([sequence]);
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.visualizedSequence = sequence.uuid;
+
+    jest.spyOn(store, "getState").mockReturnValue({ resources } as never);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("visualization"));
+  });
+
   it("doesn't render bot", () => {
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
@@ -701,6 +721,25 @@ describe("<GardenModel />", () => {
       intersections: [{
         instanceId: 0,
         object: { userData: { plantIndexes: [0] }, name: "0" },
+      }],
+    };
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    actRenderer(() => {
+      plants?.props.onPointerEnter(e);
+    });
+    expect(e.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("sets hover with instance id and no plant index map", () => {
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    const e = {
+      stopPropagation: jest.fn(),
+      intersections: [{
+        instanceId: 0,
+        object: { userData: {}, name: "0" },
       }],
     };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];

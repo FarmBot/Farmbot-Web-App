@@ -86,7 +86,7 @@ import { SpecialStatus } from "farmbot";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
-import * as plantActions from "../../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../plant_actions";
 import * as screenSize from "../../../screen_size";
 import { ASSETS } from "../../constants";
 
@@ -116,7 +116,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
-    jest.spyOn(plantActions, "dropPlant")
+    jest.spyOn(plantActions, "dropPlant3D")
       .mockImplementation(jest.fn());
     jest.spyOn(screenSize, "isMobile")
       .mockImplementation(() => mockIsMobile);
@@ -325,7 +325,7 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.click(soil);
-    expect(plantActions.dropPlant).toHaveBeenCalledWith(expect.objectContaining({
+    expect(plantActions.dropPlant3D).toHaveBeenCalledWith(expect.objectContaining({
       gardenCoords: { x: 1360, y: 660 },
     }));
   });

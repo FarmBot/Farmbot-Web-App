@@ -269,6 +269,25 @@ describe("<Tools />", () => {
     expect(useGltfMock.mock.calls.length).toEqual(initialCalls);
   });
 
+  it("reuses the moving seeder model across position updates", () => {
+    const p = fakeProps();
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    p.toolSlots = [];
+    p.mountedToolName = "seeder";
+    useGltfMock.mockClear();
+    const { rerender } = render(<Tools {...p} />);
+    const initialSeederCalls = useGltfMock.mock.calls
+      .filter(([url]) => url == ASSETS.models.seeder).length;
+
+    rerender(<Tools
+      {...p}
+      configPosition={{ ...p.configPosition, x: p.configPosition.x + 10 }} />);
+
+    expect(useGltfMock.mock.calls
+      .filter(([url]) => url == ASSETS.models.seeder).length)
+      .toEqual(initialSeederCalls);
+  });
+
   it("updates moving tool positions during bot movement", () => {
     const p = fakeProps();
     const staticTool = fakeTool();

@@ -43,6 +43,20 @@ describe("<ThreeDSettings />", () => {
     expect(within(container).getByDisplayValue("40")).toBeDefined();
   });
 
+  it("toggles distance indicator help", () => {
+    const p = fakeProps();
+    const { container } = render(<ThreeDSettings {...p} />);
+    const help = container.querySelector(".help-icon");
+    if (!help) { throw new Error("Missing help icon"); }
+
+    fireEvent.click(help);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: "SET_DISTANCE_INDICATOR",
+      payload: "bedWallThickness",
+    });
+  });
+
   it("creates env", () => {
     const p = fakeProps();
     const { container } = render(<ThreeDSettings {...p} />);

@@ -1,5 +1,8 @@
 import React from "react";
+import * as reactSpring from "@react-spring/three";
+import TestRenderer from "react-test-renderer";
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
   THREE_D_LOAD_PROGRESS_FADE_MS, THREE_D_LOAD_STEPS,
@@ -47,6 +50,38 @@ describe("<FallInGroup />", () => {
 
     expect(container.innerHTML).toContain("bot-load-in");
     expect(screen.getByText("bot")).toBeTruthy();
+  });
+
+  it("applies fade-in opacity during the load-in spring", () => {
+    let springProps: {
+      onChange(result: { value: { opacity?: number } }): void;
+    } | undefined;
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementationOnce(props => {
+        springProps = props as typeof springProps;
+        return {
+          position: [0, 0, 0],
+          scale: 1,
+        } as never;
+      });
+
+    const root = new Object3D();
+    root.add(new Mesh(new BoxGeometry(), new MeshBasicMaterial()));
+    let view: TestRenderer.ReactTestRenderer | undefined;
+
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <FallInGroup name={"bot-load-in"} fadeIn={true}>
+          <span>bot</span>
+        </FallInGroup>,
+        { createNodeMock: node => node.type == "group" ? root : {} },
+      );
+    });
+    TestRenderer.act(() =>
+      springProps?.onChange({ value: { opacity: 0.5 } }));
+
+    expect(useSpringSpy).toHaveBeenCalled();
+    TestRenderer.act(() => view?.unmount());
   });
 });
 

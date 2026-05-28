@@ -13,11 +13,13 @@ import { Actions } from "../../constants";
 import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import * as screenSize from "../../screen_size";
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.spyOn(screenSize, "isMobile").mockImplementation(() => false);
   jest.spyOn(configStorageActions, "getWebAppConfigValue")
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
@@ -27,6 +29,7 @@ beforeEach(() => {
 afterEach(() => {
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.restoreAllMocks();
 });
 
 describe("<ThreeDGarden />", () => {

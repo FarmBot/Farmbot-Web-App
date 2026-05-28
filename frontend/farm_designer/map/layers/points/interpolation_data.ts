@@ -99,14 +99,11 @@ interface PointObject {
 }
 
 const convertToPointObject =
-  (point: TaggedPoint | TaggedSensorReading): PointObject | undefined =>
-    !isUndefined(point.body.x) && !isUndefined(point.body.y)
-      ? ({
-        uuid: point.uuid,
-        x: point.body.x, y: point.body.y,
-        value: point.kind == "SensorReading" ? point.body.value : point.body.z,
-      })
-      : undefined;
+  (point: TaggedPoint | TaggedSensorReading): PointObject | undefined => {
+    if (isUndefined(point.body.x) || isUndefined(point.body.y)) { return; }
+    const value = point.kind == "SensorReading" ? point.body.value : point.body.z;
+    return { uuid: point.uuid, x: point.body.x, y: point.body.y, value };
+  };
 
 const convertToPointObjects =
   (points: (TaggedPoint | TaggedSensorReading)[]): PointObject[] =>

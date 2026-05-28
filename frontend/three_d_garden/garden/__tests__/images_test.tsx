@@ -2,6 +2,7 @@ let mockDemo = false;
 import React from "react";
 import { useTexture } from "@react-three/drei";
 import { render, screen } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import {
   extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
   ImageTexture, ImageTextureProps, splitFilteredImages,
@@ -70,6 +71,38 @@ describe("<ImageTexture />", () => {
     const p = fakeProps();
     p.images = [];
     render(<ImageTexture {...p} />);
+    expect(screen.queryAllByText("image").length).toEqual(0);
+  });
+
+  it("counts soil texture renders", () => {
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(<ImageTexture {...fakeProps()} />);
+    });
+    const soilPlane = view?.root.findAllByProps({ className: "plane" })[0];
+    expect(soilPlane).toBeDefined();
+    soilPlane?.props.onBeforeRender();
+    TestRenderer.act(() => view?.unmount());
+  });
+
+  it("doesn't render images without coordinates", () => {
+    const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
+    const img0 = fakeImage();
+    img0.body.meta.x = undefined;
+    img0.body.meta.y = 1;
+    p.images = [img0];
+    const apProps = fakeAddPlantProps();
+    const config = fakeWebAppConfig();
+    config.body.show_images = true;
+    config.body.photo_filter_begin = "";
+    config.body.photo_filter_end = "";
+    apProps.getConfigValue = x => config.body[x];
+    p.addPlantProps = apProps;
+
+    render(<ImageTexture {...p} />);
+
     expect(screen.queryAllByText("image").length).toEqual(0);
   });
 

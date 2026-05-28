@@ -19,7 +19,7 @@ let allRefs: MockRef[] = [];
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { clone } from "lodash";
+import { clone, range } from "lodash";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import {
@@ -208,7 +208,7 @@ describe("<PlantInstances />", () => {
 
   it("loads the atlas texture when many mapped icons are visible", () => {
     const p = fakeProps();
-    p.plants = Array.from({ length: 32 }, (_, index) => {
+    p.plants = range(32).map(index => {
       const icon = `/crops/icons/round92-${index}.avif`;
       PLANT_ICON_ATLAS[icon] = {
         atlasUrl: "/crops/icons/atlas.avif",
@@ -230,6 +230,71 @@ describe("<PlantInstances />", () => {
 
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
+  });
+
+  it("keeps non-atlas icons individual when atlas rendering is active", () => {
+    const p = fakeProps();
+    p.plants = range(32).map(index => {
+      const icon = index == 31
+        ? "https://example.com/non-atlas.avif"
+        : `/crops/icons/round92-${index}.avif`;
+      if (index != 31) {
+        PLANT_ICON_ATLAS[icon] = {
+          atlasUrl: "/crops/icons/atlas.avif",
+          textureWidth: 256,
+          textureHeight: 256,
+          x: 0,
+          y: 0,
+          width: 64,
+          height: 64,
+        };
+      }
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+
+    const { container } = render(<PlantInstances {...p} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(useTexture).toHaveBeenCalledWith(
+      "https://example.com/non-atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
+  });
+
+  it("injects atlas UV attributes into plant icon shaders", () => {
+    const p = fakeProps();
+    p.plants = range(32).map(index => {
+      const icon = `/crops/icons/round92-${index}.avif`;
+      PLANT_ICON_ATLAS[icon] = {
+        atlasUrl: "/crops/icons/atlas.avif",
+        textureWidth: 256,
+        textureHeight: 256,
+        x: 0,
+        y: 0,
+        width: 64,
+        height: 64,
+      };
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const material = wrapper.root.find(node =>
+      typeof node.props.onBeforeCompile == "function");
+    const shader = {
+      vertexShader: "#include <common>\n#include <uv_vertex>",
+    };
+
+    material.props.onBeforeCompile(shader);
+
+    expect(shader.vertexShader).toContain("instanceUvOffset");
+    expect(shader.vertexShader).toContain("instanceUvRepeat");
+    unmountRenderer(wrapper);
   });
 
   it("clamps plant icon brightness", () => {

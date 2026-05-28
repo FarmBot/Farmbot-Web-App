@@ -611,6 +611,50 @@ describe("collectDemoSequenceActions()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
+  it("stops after the maximum call depth", () => {
+    const actions = collectDemoSequenceActions(
+      101,
+      buildResourceIndex([]).index,
+      1,
+      [],
+    );
+
+    expect(actions).toEqual([]);
+    expect(error).toHaveBeenCalledWith("Maximum call depth exceeded.");
+  });
+
+  it("includes sequence variable declarations by default", () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.body = [{
+      kind: "lua",
+      args: { lua: "toast(variable(\"Variable\"))" },
+    }];
+    sequence.body.args.locals.body = [{
+      kind: "variable_declaration",
+      args: {
+        label: "Variable",
+        data_value: { kind: "text", args: { string: "v" } },
+      },
+    }];
+    const ri = buildResourceIndex([sequence]).index;
+
+    collectDemoSequenceActions(0, ri, 1, undefined);
+
+    expect(runLuaSpy).toHaveBeenCalledWith(0, expect.any(String), [
+      {
+        kind: "parameter_application",
+        args: expect.objectContaining({
+          label: "Variable",
+          data_value: expect.objectContaining({
+            kind: "text",
+            args: { string: "v" },
+          }),
+        }),
+      },
+    ]);
+  });
+
   it("handles circular references", () => {
     const sequence1 = fakeSequence();
     sequence1.body.id = 1;
