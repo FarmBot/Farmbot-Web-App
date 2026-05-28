@@ -975,11 +975,13 @@ const EnabledBot = (props: FarmbotModelProps) => {
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
-      <WateringAnimations
-        waterFlow={config.waterFlow}
-        config={config}
-        configPosition={props.configPosition}
-        getZ={props.getZ} />}
+      <React.Suspense fallback={undefined}>
+        <WateringAnimations
+          waterFlow={config.waterFlow}
+          config={config}
+          configPosition={props.configPosition}
+          getZ={props.getZ} />
+      </React.Suspense>}
     <BotBedUtilitySubassemblies config={config} />
     {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
     <Bounds config={config} configPosition={props.configPosition} />}

@@ -13,9 +13,6 @@ import { render, waitFor } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeSequence, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../__test_support__/resource_index_builder";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
@@ -38,11 +35,13 @@ import { Clouds } from "../garden/clouds";
 import { Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
-import { store } from "../../redux/store";
+import { configureStore, store } from "../../redux/store";
+import { resourceReady } from "../../sync/actions";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 let useStateSpy: jest.SpyInstance;
+let resetStoreAfterTest = false;
 const originalPathname = location.pathname;
 const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
@@ -75,6 +74,10 @@ describe("<GardenModel />", () => {
     useStateSpy.mockRestore();
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
+    if (resetStoreAfterTest) {
+      configureStore();
+      resetStoreAfterTest = false;
+    }
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
     location.pathname = originalPathname;
   });
@@ -575,12 +578,14 @@ describe("<GardenModel />", () => {
   it("loads sequence visualization when selected", async () => {
     const sequence = fakeSequence();
     sequence.body.id = 1;
-    const resources = buildResourceIndex([sequence]);
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
     p.addPlantProps.designer.visualizedSequence = sequence.uuid;
 
-    jest.spyOn(store, "getState").mockReturnValue({ resources } as never);
+    configureStore().dispatch(resourceReady("Sequence", sequence) as never);
+    resetStoreAfterTest = true;
+    expect(store.getState().resources.index.references[sequence.uuid])
+      .toEqual(sequence);
 
     const { container } = render(<GardenModel {...p} />);
 
