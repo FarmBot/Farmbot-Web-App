@@ -4,7 +4,7 @@ import { Config, PositionConfig } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
 import {
-  easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir as zDirFunc,
+  easyCubicBezierCurve3, threeSpace,
 } from "../../helpers";
 import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
@@ -22,7 +22,10 @@ export interface SolenoidProps {
 
 export const Solenoid = (props: SolenoidProps) => {
   const { config } = props;
-  const { bedYOffset, columnLength, zGantryOffset } = config;
+  const {
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, columnLength,
+    negativeZ, zGantryOffset,
+  } = config;
   const { x, y, z } = props.configPosition;
   const {
     lowerTubePath,
@@ -31,14 +34,17 @@ export const Solenoid = (props: SolenoidProps) => {
     yzTubePath,
     utmTubePath,
   } = React.useMemo(() => {
-    const zDir = zDirFunc(config);
-    const get3DPosition = get3DPositionNoMirrorFunc(config);
+    const zDir = negativeZ ? -1 : 1;
+    const get3DPositionNoMirror = (gardenX: number, gardenY: number) => ({
+      x: threeSpace(gardenX + bedXOffset, bedLengthOuter),
+      y: threeSpace(gardenY + bedYOffset, bedWidthOuter),
+    });
     const outerXY = (gardenX: number, outerY: number): [number, number] => {
-      const position = get3DPosition({ x: gardenX, y: outerY - bedYOffset });
+      const position = get3DPositionNoMirror(gardenX, outerY - bedYOffset);
       return [position.x, position.y];
     };
     const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
-      const position = get3DPosition({ x: gardenX, y: gardenY });
+      const position = get3DPositionNoMirror(gardenX, gardenY);
       return [position.x, position.y];
     };
     return {
@@ -95,7 +101,18 @@ export const Solenoid = (props: SolenoidProps) => {
         ],
       ),
     };
-  }, [bedYOffset, columnLength, config, x, y, z, zGantryOffset]);
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    negativeZ,
+    x,
+    y,
+    z,
+    zGantryOffset,
+  ]);
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>
     <WaterTube tubeName={"lower-solenoid-water-tube"}

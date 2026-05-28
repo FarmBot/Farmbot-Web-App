@@ -5186,3 +5186,58 @@ so point-vs-weed preview changes still update, while unchanged drawn-point
 fields, refs, and position config skip preview subtree churn.
 
 **Commit:** `Memoize drawn point churn for 74.7% faster previews`
+
+## Round 56
+
+### Idea 296: Narrow `Solenoid` water-path dependencies
+
+**Description:** Rebuild solenoid water-tube curves only when Bot position,
+water-routing dimensions, Z direction, or bed-position fields change instead
+of depending on the whole config object. Expected return: faster Bot config
+churn with water hardware visible, without changing solenoid placement, tube
+curves, water-flow animation, or model geometry.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow Solenoid 90 times with only an unrelated config field changed.
+
+**Before:** 19.134 ms per 90-rerender batch.
+
+**After:** 15.060 ms per 90-rerender batch.
+
+**Change:** 21.3% faster, saving 4.074 ms per realistic Solenoid config-churn
+batch.
+
+**Outcome:** Accepted; solenoid water-tube curves now depend on the specific
+Bot position and water-routing fields they consume, while unrelated config
+object churn preserves the same paths and rendered water hardware.
+
+**Commit:** `Narrow solenoid water paths for 21.3% faster churn`
+
+### Idea 297: Memoize `WaterTube` unchanged tube props
+
+**Description:** Let water tube groups skip unchanged tube path, dimensions,
+and water-flow props. Expected return: lower rerender work in solenoid and
+X-axis water paths while preserving tube geometry, transparency, shared water
+texture usage, and animation.
+
+### Idea 298: Memoize `CameraView` relevant frustum inputs
+
+**Description:** Add a relevant-field comparator around the camera-view
+frustum so unrelated config churn skips convex hull and material setup while
+camera calibration, mount position, Z, capture flash, and visibility changes
+still update. Expected return: faster camera-view debug rerenders without
+changing frustum shape, flash animation, opacity, or edges.
+
+### Idea 299: Memoize `DistanceIndicator` labels and arrows
+
+**Description:** Memoize distance indicator geometry by start/end/visibility
+and reuse arrow shapes by length/width. Expected return: faster bounds and bed
+dimension overlay rerenders with identical labels, arrows, placement, rotation,
+and visibility.
+
+### Idea 300: Memoize shared 3D `Text` labels
+
+**Description:** Add a relevant-field comparator around the shared `Text`
+component used by labels and overlays. Expected return: lower label rerender
+work where parent props are stable, without changing font, position, rotation,
+material color, render order, or visibility.

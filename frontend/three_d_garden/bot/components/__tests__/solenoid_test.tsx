@@ -30,4 +30,16 @@ describe("<Solenoid />", () => {
       .map(node => node.props.tubePath);
     expect(after).toEqual(before);
   });
+
+  it("reuses water tube paths during unrelated config churn", () => {
+    const p = fakeProps();
+    const wrapper = createRenderer(<Solenoid {...p} />);
+    const before = wrapper.root.findAllByType(WaterTube)
+      .map(node => node.props.tubePath);
+    actRenderer(() => wrapper.update(<Solenoid {...p}
+      config={{ ...p.config, sun: p.config.sun + 1 }} />));
+    const after = wrapper.root.findAllByType(WaterTube)
+      .map(node => node.props.tubePath);
+    expect(after).toEqual(before);
+  });
 });
