@@ -11,9 +11,9 @@ import {
 import { SettingsPanelState, TimeSettings } from "../interfaces";
 import { DeviceSetting } from "../constants";
 import {
-  BooleanConfigKey as WebAppBooleanConfigKey,
-  NumberConfigKey as WebAppNumberConfigKey,
-} from "farmbot/dist/resources/configs/web_app";
+  WebAppBooleanConfigKeyAll as WebAppBooleanConfigKey,
+  WebAppNumberConfigKeyAll as WebAppNumberConfigKey,
+} from "../session_keys";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 
 export interface DesignerSettingsPropsBase {

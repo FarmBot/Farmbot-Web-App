@@ -217,6 +217,7 @@ export const Promo = () => {
               plantIconCapacities={plantCapacities.iconCapacities}
               plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
+              preloadEnvironmentScenes={true}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true} />
           </Canvas>

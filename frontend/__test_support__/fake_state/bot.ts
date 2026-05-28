@@ -38,6 +38,7 @@ export const bot: Everything["bot"] = {
       },
     },
     pins: {},
+    gpio_registry: undefined,
     configuration: {},
     informational_settings: {
       busy: false,

@@ -63,7 +63,7 @@ const PottedPlantBase = (props: PottedPlantProps) => {
           map={lavenderTexture}
           alphaTest={0.1}
           transparent={true}
-          depthWrite={false} />
+          depthWrite={true} />
       </Mesh>
     </Billboard>
   </Group>;

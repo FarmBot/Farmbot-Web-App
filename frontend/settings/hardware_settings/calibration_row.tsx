@@ -29,7 +29,7 @@ export const CalibrationRow = (props: CalibrationRowProps) => {
                 disabled={arduinoBusy || hardwareDisabled || !botOnline}
                 className={lockedClass(locked)}
                 title={t(axisTitle)}
-                onClick={() => action(axis)}>
+                onClick={() => { void action(axis); }}>
                 {`${t(axisTitle)} ${axis}`}
               </LockableButton>
             </div>;

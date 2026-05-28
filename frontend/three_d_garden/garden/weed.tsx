@@ -8,7 +8,6 @@ import {
 import { Image, Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
   BufferGeometry,
-  Color,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Quaternion,
@@ -127,6 +126,11 @@ interface WeedInstance {
   iconSize: number;
 }
 
+interface WeedColorBucket {
+  color: string | undefined;
+  weeds: WeedInstance[];
+}
+
 type WeedPositionConfig = Pick<Config,
   "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
   | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
@@ -179,6 +183,18 @@ const getWeedInstances = (
     };
   }
   return weedInstances;
+};
+
+const getWeedColorBuckets = (weeds: WeedInstance[]) => {
+  const buckets: Record<string, WeedColorBucket> = {};
+  weeds.forEach(weed => {
+    const color = weed.weed.body.meta.color;
+    const key = color || "";
+    let bucket = buckets[key];
+    if (!bucket) { bucket = buckets[key] = { color, weeds: [] }; }
+    bucket.weeds.push(weed);
+  });
+  return Object.values(buckets);
 };
 
 interface WeedIconUpdateState {
@@ -280,11 +296,11 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
 };
 
 interface WeedRadiusInstancesProps extends WeedInstancesProps {
-  weedInstances: WeedInstance[];
+  bucket: WeedColorBucket;
 }
 
 const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
-  const { weedInstances, dispatch, visible } = props;
+  const { bucket, dispatch, visible } = props;
   const navigateToWeed = useNavigateToWeed(dispatch, visible);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
@@ -293,52 +309,47 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
-  const tempColor = React.useMemo(() => new Color(), []);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const mesh = instancedRef.current;
     if (!mesh?.setMatrixAt) { return; }
-    weedInstances.forEach((weed, index) => {
+    bucket.weeds.forEach((weed, index) => {
       const [x, y, z] = weed.position;
       tempPosition.set(x, y, z + weed.iconSize / 2);
       tempScale.set(weed.weedSize, weed.weedSize, weed.weedSize);
       tempMatrix.compose(tempPosition, noRotation, tempScale);
       mesh.setMatrixAt(index, tempMatrix);
-      mesh.setColorAt(index,
-        tempColor.set(weed.weed.body.meta.color || "white"));
     });
     mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
   }, [
+    bucket.weeds,
     noRotation,
-    tempColor,
     tempMatrix,
     tempPosition,
     tempScale,
-    weedInstances,
   ]);
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
     if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
-    navigateToWeed(weedInstances[instanceId]?.weed);
+    navigateToWeed(bucket.weeds[instanceId]?.weed);
   };
 
   return <InstancedMesh
     ref={instancedRef}
     name={"weed-radius"}
-    args={[radiusGeometry, undefined, weedInstances.length]}
+    args={[radiusGeometry, undefined, bucket.weeds.length]}
     // eslint-disable-next-line no-null/no-null
     dispose={null}
     visible={visible}
     onClick={onClick}
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
+      color={bucket.color}
       depthWrite={false}
       transparent={true}
-      opacity={0.5}
-      vertexColors={true} />
+      opacity={0.5} />
   </InstancedMesh>;
 };
 
@@ -389,9 +400,15 @@ const VisibleWeedInstances = (props: WeedInstancesProps) => {
   const weedInstances = React.useMemo(
     () => getWeedInstances(weeds, positionConfig, getZ),
     [weeds, positionConfig, getZ]);
+  const buckets = React.useMemo(
+    () => getWeedColorBuckets(weedInstances),
+    [weedInstances]);
   return <>
     <WeedIconInstances {...props} weedInstances={weedInstances} />
-    {weedInstances.length > 0 &&
-      <WeedRadiusInstances {...props} weedInstances={weedInstances} />}
+    {buckets.map(bucket =>
+      <WeedRadiusInstances
+        key={bucket.color || ""}
+        {...props}
+        bucket={bucket} />)}
   </>;
 };

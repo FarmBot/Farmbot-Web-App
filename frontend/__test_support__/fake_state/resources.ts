@@ -330,7 +330,7 @@ export function fakeFbosConfig(): TaggedFbosConfig {
 }
 
 export function fakeWebAppConfig(): TaggedWebAppConfig {
-  return fakeResource("WebAppConfig", {
+  const body = {
     id: nextFakeId(),
     device_id: nextFakeId(),
     created_at: "2018-01-11T20:20:38.362Z",
@@ -408,7 +408,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     view_celery_script: false,
     top_down_view: false,
     viewpoint_heading: 0,
-  });
+  };
+  return fakeResource("WebAppConfig", body);
 }
 
 export function fakeFirmwareConfig(): TaggedFirmwareConfig {

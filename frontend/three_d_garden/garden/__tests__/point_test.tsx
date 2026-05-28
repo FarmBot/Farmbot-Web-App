@@ -120,17 +120,23 @@ describe("<Point />", () => {
     expect(meshes[0].props.args[2]).toEqual(2);
   });
 
-  it("uses point marker instance colors", () => {
+  it("buckets point markers by color", () => {
     const p = fakeInstanceProps();
+    p.points[0].body.meta.color = "green";
     p.points[1].body.meta.color = "blue";
     const wrapper = createRenderer(<PointInstances {...p} />);
     mountedWrappers.push(wrapper);
     const markers = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh" &&
       node.props.name == "marker");
-    expect(markers.length).toEqual(1);
-    expect(markers[0].findAll(node =>
-      node.props.vertexColors).length).toBeGreaterThan(0);
+    expect(markers.length).toEqual(2);
+    expect(markers.map(marker => marker.props.args[2])).toEqual([1, 1]);
+    const colors = markers.flatMap(marker =>
+      marker.findAll(node => node.props.color)
+        .map(node => node.props.color));
+    expect([...new Set(colors)].sort()).toEqual([
+      "blue", "green",
+    ]);
   });
 
   it("renders mirrored point instance positions", () => {
@@ -168,17 +174,23 @@ describe("<Point />", () => {
     useRefSpy.mockRestore();
   });
 
-  it("uses point radius instance colors", () => {
+  it("buckets point radii by color", () => {
     const p = fakeInstanceProps();
+    p.points[0].body.meta.color = "green";
     p.points[1].body.meta.color = "blue";
     const wrapper = createRenderer(<PointInstances {...p} />);
     mountedWrappers.push(wrapper);
     const rings = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh" &&
       node.props.name == "marker-radius");
-    expect(rings.length).toEqual(1);
-    expect(rings[0].findAll(node =>
-      node.props.vertexColors).length).toBeGreaterThan(0);
+    expect(rings.length).toEqual(2);
+    expect(rings.map(ring => ring.props.args[2])).toEqual([1, 1]);
+    const colors = rings.flatMap(ring =>
+      ring.findAll(node => node.props.color)
+        .map(node => node.props.color));
+    expect([...new Set(colors)].sort()).toEqual([
+      "blue", "green",
+    ]);
   });
 
   it("skips hidden point markers", () => {

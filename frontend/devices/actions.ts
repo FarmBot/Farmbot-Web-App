@@ -80,26 +80,26 @@ const maybeAlertLocked = () =>
     { title: t("Emergency stop active") });
 
 const runDemoLuaCode = (luaCode: string) => {
-  void import("../demo/lua_runner")
+  return import("../demo/lua_runner")
     .then(({ runDemoLuaCode }) => runDemoLuaCode(luaCode));
 };
 
 const runDemoSequence = (
   ...args: Parameters<typeof import("../demo/lua_runner").runDemoSequence>
 ) => {
-  void import("../demo/lua_runner")
+  return import("../demo/lua_runner")
     .then(({ runDemoSequence }) => runDemoSequence(...args));
 };
 
 const runDemoCommand = (
   command: Parameters<typeof import("../demo/lua_runner").csToLua>[0],
 ) => {
-  void import("../demo/lua_runner")
+  return import("../demo/lua_runner")
     .then(({ csToLua, runDemoLuaCode }) => runDemoLuaCode(csToLua(command)));
 };
 
 const demoEStop = () => {
-  void import("../demo/lua_runner/actions")
+  return import("../demo/lua_runner/actions")
     .then(({ eStop }) => eStop());
 };
 
@@ -107,16 +107,15 @@ const demoEStop = () => {
 export function sendRPC(command: RpcRequestBodyItem) {
   if (forceOnline()) {
     if (command.kind == "execute") {
-      runDemoSequence(
+      return runDemoSequence(
         store.getState().resources.index,
         command.args.sequence_id,
         command.body);
     } else if (command.kind == "emergency_lock") {
-      demoEStop();
+      return demoEStop();
     } else {
-      runDemoCommand(command);
+      return runDemoCommand(command);
     }
-    return;
   }
   getDevice()
     .send(rpcRequest([command]))
@@ -196,8 +195,7 @@ export function flashFirmware(firmwareName: FirmwareHardware) {
 export function emergencyLock() {
   const noun = t("Emergency stop");
   if (forceOnline()) {
-    demoEStop();
-    return;
+    return demoEStop();
   }
   getDevice()
     .emergencyLock()
@@ -208,8 +206,7 @@ export function emergencyUnlock(force = false) {
   const noun = t("Emergency unlock");
   if (force || confirm(t("Are you sure you want to unlock the device?"))) {
     if (forceOnline()) {
-      runDemoLuaCode("emergency_unlock()");
-      return;
+      return runDemoLuaCode("emergency_unlock()");
     }
     getDevice()
       .emergencyUnlock()
@@ -247,11 +244,10 @@ export function execSequence(
   const noun = t("Sequence execution");
   if (sequenceId) {
     if (forceOnline()) {
-      runDemoSequence(
+      return runDemoSequence(
         store.getState().resources.index,
         sequenceId,
         bodyVariables);
-      return;
     }
     commandOK(noun)();
     return getDevice()
@@ -270,8 +266,7 @@ export function execSequence(
 
 export function takePhoto() {
   if (forceOnline()) {
-    runDemoLuaCode("take_photo()");
-    return Promise.resolve();
+    return runDemoLuaCode("take_photo()");
   }
   return getDevice().takePhoto()
     .then(commandOK("", Content.PROCESSING_PHOTO))
@@ -388,8 +383,7 @@ export function settingToggle(
 
 export function moveRelative(props: MoveRelProps) {
   if (forceOnline()) {
-    runDemoLuaCode(`move_relative(${props.x}, ${props.y}, ${props.z})`);
-    return;
+    return runDemoLuaCode(`move_relative(${props.x}, ${props.y}, ${props.z})`);
   }
   maybeAlertLocked();
   return getDevice()
@@ -400,8 +394,7 @@ export function moveRelative(props: MoveRelProps) {
 export function moveAbsolute(props: MoveRelProps) {
   const noun = t("Absolute movement");
   if (forceOnline()) {
-    runDemoLuaCode(`move_absolute(${props.x}, ${props.y}, ${props.z})`);
-    return;
+    return runDemoLuaCode(`move_absolute(${props.x}, ${props.y}, ${props.z})`);
   }
   maybeAlertLocked();
   return getDevice()
@@ -446,8 +439,7 @@ export function move(props: MoveProps) {
   ];
   const cmd: Move = { kind: "move", args: {}, body };
   if (forceOnline()) {
-    runDemoCommand(cmd);
-    return;
+    return runDemoCommand(cmd);
   }
   return getDevice()
     .send(rpcRequest([cmd]))
@@ -457,8 +449,7 @@ export function move(props: MoveProps) {
 export function pinToggle(pin_number: number) {
   const noun = t("Toggle pin");
   if (forceOnline()) {
-    runDemoLuaCode(`toggle_pin(${pin_number})`);
-    return;
+    return runDemoLuaCode(`toggle_pin(${pin_number})`);
   }
   maybeAlertLocked();
   return getDevice()
@@ -471,8 +462,7 @@ export function readPin(
 ) {
   const noun = t("Read pin");
   if (forceOnline()) {
-    runDemoLuaCode(`read_pin(${pin_number})`);
-    return;
+    return runDemoLuaCode(`read_pin(${pin_number})`);
   }
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
@@ -492,8 +482,7 @@ export function writePin(
 
 export function moveToHome(axis: Axis) {
   if (forceOnline()) {
-    runDemoLuaCode(`go_to_home("${axis}")`);
-    return;
+    return runDemoLuaCode(`go_to_home("${axis}")`);
   }
   const noun = t("'Move To Home' command");
   maybeAlertLocked();
@@ -505,8 +494,7 @@ export function moveToHome(axis: Axis) {
 export function findHome(axis: Axis) {
   const noun = t("'Find Home' command");
   if (forceOnline()) {
-    runDemoLuaCode(`find_home("${axis}")`);
-    return;
+    return runDemoLuaCode(`find_home("${axis}")`);
   }
   maybeAlertLocked();
   getDevice()
@@ -526,8 +514,7 @@ export function findAxisLength(axis: Axis) {
   const noun = t("'Find Axis Length' command");
   maybeAlertLocked();
   if (forceOnline()) {
-    runDemoLuaCode(`find_axis_length("${axis}")`);
-    return;
+    return runDemoLuaCode(`find_axis_length("${axis}")`);
   }
   getDevice()
     .calibrate({ axis })

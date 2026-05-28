@@ -152,6 +152,7 @@ export interface GardenModelProps {
   plantIconCapacities?: Record<string, number>;
   plantIconAtlas?: PlantIconAtlas;
   plantInstanceCapacity?: number;
+  preloadEnvironmentScenes?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
 }
@@ -444,6 +445,65 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
 };
 
 const StaticGardenLayers = React.memo(StaticGardenLayersBase);
+
+const ENVIRONMENT_SCENES = ["Outdoor", "Lab", "Greenhouse"] as const;
+type EnvironmentScene = typeof ENVIRONMENT_SCENES[number];
+
+const sceneMatches = (configScene: string, scene: EnvironmentScene) =>
+  configScene.toLowerCase() == scene.toLowerCase();
+
+const environmentSceneConfig = (
+  config: Config,
+  scene: EnvironmentScene,
+): Config => {
+  const bedType =
+    scene != "Outdoor" && config.sizePreset != "Genesis XL"
+      ? "Mobile"
+      : "Standard";
+  return {
+    ...config,
+    scene,
+    clouds: scene == "Outdoor",
+    people: scene != "Outdoor",
+    bedType,
+    bedZOffset: bedType == "Mobile" ? 500 : 0,
+    legsFlush: bedType != "Mobile",
+  };
+};
+
+interface EnvironmentScenePreloaderProps {
+  config: Config;
+  enabled: boolean;
+  plantIconAtlas: PlantIconAtlas | undefined;
+}
+
+const EnvironmentScenePreloader = (props: EnvironmentScenePreloaderProps) => {
+  if (!props.enabled) { return undefined; }
+  return <React.Suspense fallback={undefined}>
+    <Group name={"environment-scene-preloader"} visible={false}>
+      {ENVIRONMENT_SCENES
+        .filter(scene => !sceneMatches(props.config.scene, scene))
+        .map(scene => {
+          const config = environmentSceneConfig(props.config, scene);
+          return <React.Fragment key={scene}>
+            <Ground config={config} />
+            {scene == "Outdoor" && <Clouds config={config} />}
+            {scene == "Lab" &&
+              <Lab
+                config={config}
+                activeFocus={""}
+                reveal={false} />}
+            {scene == "Greenhouse" &&
+              <Greenhouse
+                config={config}
+                activeFocus={""}
+                plantIconAtlas={props.plantIconAtlas}
+                reveal={false} />}
+          </React.Fragment>;
+        })}
+    </Group>
+  </React.Suspense>;
+};
 
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
@@ -866,6 +926,10 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           dispatch={dispatch}
           topDownAtStart={topDownAtStart} />}
+        <EnvironmentScenePreloader
+          config={config}
+          enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
+          plantIconAtlas={props.plantIconAtlas} />
         {detailsReveal && !animatedDetailsLoadIn &&
         <LoadStepReady
           step={"details"}

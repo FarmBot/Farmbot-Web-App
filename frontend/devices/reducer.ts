@@ -46,6 +46,7 @@ export const initialState = (): BotState => ({
       },
     },
     pins: {},
+    gpio_registry: undefined,
     configuration: {},
     informational_settings: {
       busy: false,

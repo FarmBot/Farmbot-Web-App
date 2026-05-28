@@ -25,7 +25,6 @@ const panelDepth = 30;
 const cellDepth = 2;
 const cellZ = panelDepth / 2 + cellDepth + 1;
 const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
-const AnimatedLine = animated(Line);
 
 const cell2D = () => {
   const cellSize = 95;
@@ -129,6 +128,10 @@ interface SolarHardwareProps {
   opacity: SolarMaterialProps["opacity"];
 }
 
+interface SolarWiringProps extends Omit<SolarHardwareProps, "opacity"> {
+  visible: boolean;
+}
+
 const SolarArray = React.memo((props: SolarHardwareProps) => {
   const zGround = -props.bedZOffset - props.bedHeight;
   const position: [number, number, number] = React.useMemo(() => [
@@ -149,7 +152,7 @@ const SolarArray = React.memo((props: SolarHardwareProps) => {
   </Group>;
 });
 
-const SolarWiring = React.memo((props: SolarHardwareProps) => {
+const SolarWiring = React.memo((props: SolarWiringProps) => {
   const zGround = -props.bedZOffset - props.bedHeight;
   const points: [number, number, number][] = React.useMemo(() => [
     [
@@ -175,12 +178,12 @@ const SolarWiring = React.memo((props: SolarHardwareProps) => {
     zGround,
   ]);
 
-  return <AnimatedLine name={"solar-wiring"}
+  return <Line name={"solar-wiring"}
     renderOrder={RenderOrder.default}
     points={points}
     color={"yellow"}
     transparent={true}
-    opacity={props.opacity}
+    opacity={props.visible ? 1 : 0}
     lineWidth={5} />;
 });
 
@@ -199,17 +202,20 @@ export const Solar = (props: SolarProps) => {
   const rendered = transition.enabled || visible;
   if (!rendered) { return undefined; }
 
-  const hardwareProps: SolarHardwareProps = {
+  const placementProps: Omit<SolarHardwareProps, "opacity"> = {
     bedHeight: config.bedHeight,
     bedLengthOuter: config.bedLengthOuter,
     bedWidthOuter: config.bedWidthOuter,
     bedZOffset: config.bedZOffset,
     legSize: config.legSize,
+  };
+  const hardwareProps: SolarHardwareProps = {
+    ...placementProps,
     opacity,
   };
 
   return <Group name={"solar"} visible={rendered}>
     <SolarArray {...hardwareProps} />
-    <SolarWiring {...hardwareProps} />
+    <SolarWiring {...placementProps} visible={visible} />
   </Group>;
 };

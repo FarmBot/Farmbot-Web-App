@@ -116,6 +116,7 @@ const GreenhouseWallBase = () => {
         color={"#ccffff"}
         side={DoubleSide}
         transparent={true}
+        depthWrite={false}
         opacity={0.25}
       />
     </GreenhouseWallInstances>

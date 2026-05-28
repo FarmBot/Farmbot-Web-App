@@ -615,7 +615,7 @@ export const PinBinding = (props: PinBindingProps) => {
     ? <button
       title={t("unlock device")}
       className={"fb-button yellow e-stop"}
-      onClick={() => emergencyUnlock()}>
+      onClick={() => { void emergencyUnlock(); }}>
       {t("UNLOCK")}
     </button>
     : <div style={{ width: "99%" }}>

@@ -52,9 +52,11 @@ export const WaterFlowRateInput = (props: WaterFlowRateInputProps) => {
     {!props.hideTooltip && <Help text={ToolTips.WATER_FLOW_RATE}
       enableMarkdown={true} />}
     <button className={"fb-button orange"}
-      onClick={() => deviceActions.sendRPC({
-        kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
-      })}>
+      onClick={() => {
+        void deviceActions.sendRPC({
+          kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
+        });
+      }}>
       {t("run water for 5 seconds")}
     </button>
     <input

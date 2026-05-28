@@ -7,7 +7,6 @@ import {
 import { Cylinder, Sphere, Torus } from "@react-three/drei";
 import {
   BufferGeometry,
-  Color,
   CylinderGeometry,
   DoubleSide,
   InstancedMesh as InstancedMeshType,
@@ -129,6 +128,7 @@ interface PointInstance {
 }
 
 interface PointInstanceGroup {
+  color: string | undefined;
   alpha: number;
   points: PointInstance[];
   ringPoints: PointInstance[];
@@ -145,6 +145,9 @@ export interface PointInstancesProps {
 const pointAlpha = (point: TaggedGenericPointer) =>
   point.specialStatus !== SpecialStatus.SAVED ? 0.5 : 1;
 
+const pointBucketKey = (point: TaggedGenericPointer) =>
+  `${point.body.meta.color || ""}-${pointAlpha(point)}`;
+
 const getPointInstanceGroups = (
   points: TaggedGenericPointer[],
   config: Config,
@@ -154,7 +157,7 @@ const getPointInstanceGroups = (
   const groups: Record<string, PointInstanceGroup> = {};
   points.forEach(point => {
     const alpha = pointAlpha(point);
-    const key = "" + alpha;
+    const key = pointBucketKey(point);
     const instance = {
       point,
       position: getWorldPosition({
@@ -165,6 +168,7 @@ const getPointInstanceGroups = (
       radius: point.body.radius,
     };
     groups[key] ||= {
+      color: point.body.meta.color,
       alpha,
       points: [],
       ringPoints: [],
@@ -193,9 +197,8 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const noScale = React.useMemo(() => new Vector3(1, 1, 1), []);
   const ringScale = React.useMemo(() => new Vector3(), []);
-  const tempColor = React.useMemo(() => new Color(), []);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const markerMesh = markerRef.current;
     if (!markerMesh?.setMatrixAt) { return; }
     group.points.forEach((instance, index) => {
@@ -203,23 +206,17 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       tempPosition.set(x, y, z);
       tempMatrix.compose(tempPosition, noRotation, noScale);
       markerMesh.setMatrixAt(index, tempMatrix);
-      markerMesh.setColorAt(index,
-        tempColor.set(instance.point.body.meta.color || "white"));
     });
     markerMesh.instanceMatrix.needsUpdate = true;
-    if (markerMesh.instanceColor) {
-      markerMesh.instanceColor.needsUpdate = true;
-    }
   }, [
     group.points,
     noRotation,
     noScale,
-    tempColor,
     tempMatrix,
     tempPosition,
   ]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const ringMesh = ringRef.current;
     if (!ringMesh?.setMatrixAt) { return; }
     group.ringPoints.forEach((instance, index) => {
@@ -232,18 +229,12 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       );
       tempMatrix.compose(tempPosition, noRotation, ringScale);
       ringMesh.setMatrixAt(index, tempMatrix);
-      ringMesh.setColorAt(index,
-        tempColor.set(instance.point.body.meta.color || "white"));
     });
     ringMesh.instanceMatrix.needsUpdate = true;
-    if (ringMesh.instanceColor) {
-      ringMesh.instanceColor.needsUpdate = true;
-    }
   }, [
     group.ringPoints,
     noRotation,
     ringScale,
-    tempColor,
     tempMatrix,
     tempPosition,
   ]);
@@ -272,10 +263,10 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       onClick={onClick(group.points)}
       renderOrder={RenderOrder.default}>
       <MeshPhongMaterial
+        color={group.color}
         side={DoubleSide}
         transparent={true}
-        opacity={1 * group.alpha}
-        vertexColors={true} />
+        opacity={1 * group.alpha} />
     </InstancedMesh>
     {group.ringPoints.length > 0 &&
       <InstancedMesh
@@ -288,9 +279,9 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
         onClick={onClick(group.ringPoints)}
         renderOrder={RenderOrder.default}>
         <MeshPhongMaterial
+          color={group.color}
           transparent={true}
-          opacity={0.5 * group.alpha}
-          vertexColors={true} />
+          opacity={0.5 * group.alpha} />
       </InstancedMesh>}
   </>;
 };
@@ -327,7 +318,7 @@ const VisiblePointInstances = (props: PointInstancesProps) => {
   return <>
     {groups.map(group =>
       <PointBucketInstances
-        key={group.alpha}
+        key={`${group.color || ""}-${group.alpha}`}
         {...props}
         group={group} />)}
   </>;
