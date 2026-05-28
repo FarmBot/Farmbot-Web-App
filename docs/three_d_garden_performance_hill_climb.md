@@ -5343,6 +5343,23 @@ unrelated config object churn skips the three-arrow axes subtree. Expected
 return: faster axes-on rerenders while bed size, bed offsets, Z zero inputs,
 and axes visibility changes still update.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering visible
+FarmBot axes 90 times while only an unrelated config field changed, measured
+after Idea 301 so this isolates the remaining axes subtree work.
+
+**Before:** 3.069 ms per 90-rerender batch.
+
+**After:** 0.838 ms per 90-rerender batch.
+
+**Change:** 72.7% faster, saving 2.231 ms per realistic axes-on config-churn
+batch.
+
+**Outcome:** Accepted; axes now skip unrelated config churn while bed size,
+bed offsets, Z-zero fields, and axes visibility inputs still update the same
+axes placement.
+
+**Commit:** `Memoize FarmBot axes for 72.7% faster rerenders`
+
 ### Idea 303: Memoize `Caster` relevant config fields
 
 **Description:** Memoize each bed caster by the config fields that affect its
