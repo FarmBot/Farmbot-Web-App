@@ -17,7 +17,25 @@ export interface UtilitiesPostProps {
   activeFocus: string;
 }
 
-export const UtilitiesPost = (props: UtilitiesPostProps) => {
+const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedBrightness",
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "legSize",
+  "utilitiesPost",
+];
+
+export const utilitiesPostPropsEqual = (
+  prev: UtilitiesPostProps,
+  next: UtilitiesPostProps,
+) =>
+  prev.activeFocus === next.activeFocus &&
+  UTILITIES_POST_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const UtilitiesPostBase = (props: UtilitiesPostProps) => {
   if (!props.config.utilitiesPost) { return <></>; }
 
   return <EnabledUtilitiesPost {...props} />;
@@ -37,17 +55,18 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
   const barbY = -100;
   const barbZ = -130;
 
-  const hosePathCurved = easyCubicBezierCurve3(
-    [faucetX, faucetY, faucetZ],
-    [0, -60, -65],
-    [200, 0, 0],
-    [faucetX - 205, barbY, barbZ],
-  );
-
-  const hosePathStraight = new THREE.LineCurve3(
-    new THREE.Vector3(faucetX - 200, barbY, barbZ),
-    new THREE.Vector3(barbX, barbY, barbZ),
-  );
+  const { hosePathCurved, hosePathStraight } = React.useMemo(() => ({
+    hosePathCurved: easyCubicBezierCurve3(
+      [faucetX, faucetY, faucetZ],
+      [0, -60, -65],
+      [200, 0, 0],
+      [faucetX - 205, barbY, barbZ],
+    ),
+    hosePathStraight: new THREE.LineCurve3(
+      new THREE.Vector3(faucetX - 200, barbY, barbZ),
+      new THREE.Vector3(barbX, barbY, barbZ),
+    ),
+  }), [barbX, barbY, barbZ, faucetX, faucetY, faucetZ]);
 
   const postWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
@@ -178,3 +197,8 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     </Group>
   </FocusVisibilityGroup>;
 };
+
+export const UtilitiesPost = React.memo(
+  UtilitiesPostBase,
+  utilitiesPostPropsEqual,
+);

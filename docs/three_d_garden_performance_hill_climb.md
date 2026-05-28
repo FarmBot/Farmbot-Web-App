@@ -5415,3 +5415,21 @@ state that affect post visibility, placement, color, texture, and hose paths;
 also avoid rebuilding hose curves when those inputs are stable. Expected
 return: faster utilities-on bed rerenders without changing post hardware,
 texture, focus visibility, or hose geometry.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering visible
+utilities post hardware 90 times while only an unrelated config field changed
+and focus state remained stable.
+
+**Before:** 18.218 ms per 90-rerender batch.
+
+**After:** 1.071 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 17.147 ms per realistic utilities-on
+config-churn batch.
+
+**Outcome:** Accepted; utilities post now skips unrelated config churn and
+reuses hose path objects across relevant rerenders, while post visibility,
+focus state, placement, brightness, texture inputs, and hose dimensions still
+update the same hardware subtree.
+
+**Commit:** `Memoize utilities post for 94.1% faster rerenders`
