@@ -12,6 +12,8 @@ let mockGroupPoints = [fakePlant(), fakeToolSlot(), fakePoint(), fakeWeed()];
 
 import React from "react";
 import { render } from "@testing-library/react";
+import { useFrame } from "@react-three/fiber";
+import { Quaternion } from "three";
 import {
   areGroupOrderPropsEqual,
   GroupOrderProps,
@@ -62,6 +64,34 @@ describe("<GroupOrderVisual />", () => {
     const disks = container.querySelector("[name='group-order-marker-disks']");
     expect(disks?.tagName.toLowerCase()).toEqual("instancedmesh");
     expect(disks?.getAttribute("count")).toEqual("4");
+  });
+
+  it("updates order marker disk matrices on frame", () => {
+    const markerRef = {
+      current: {
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      },
+    };
+    const useRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation((initial: unknown) =>
+        // eslint-disable-next-line no-null/no-null
+        initial === null ? markerRef : { current: initial });
+    (useFrame as jest.Mock).mockClear();
+    (useFrame as jest.Mock).mockImplementation(() => undefined);
+    const p = fakeProps();
+    mockGroup = fakePointGroup();
+    mockGroup.body.sort_type = "random";
+    mockGroupPoints = [fakePlant(), fakePoint()];
+    try {
+      render(<GroupOrderVisual {...p} />);
+      const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+      frameFn({ camera: { quaternion: new Quaternion() } });
+      expect(markerRef.current.setMatrixAt).toHaveBeenCalledTimes(2);
+      expect(markerRef.current.instanceMatrix.needsUpdate).toBeTruthy();
+    } finally {
+      useRefSpy.mockRestore();
+    }
   });
 
   it("renders order visual: sort preview", () => {

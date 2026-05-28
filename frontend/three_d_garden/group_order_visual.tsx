@@ -125,11 +125,12 @@ const OrderMarkerDisks = (props: OrderMarkerDisksProps) => {
       !lastCameraQuaternion.equals(state.camera.quaternion);
     if (!matrixNeedsUpdate.current && !cameraChanged) { return; }
     quaternion.copy(state.camera.quaternion).multiply(markerRotation);
-    props.positions.forEach((coords, index) => {
+    for (let index = 0; index < props.positions.length; index++) {
+      const coords = props.positions[index];
       position.set(coords[0], coords[1], coords[2]);
       matrix.compose(position, quaternion, scale);
       mesh.setMatrixAt(index, matrix);
-    });
+    }
     mesh.instanceMatrix.needsUpdate = true;
     lastCameraQuaternion.copy(state.camera.quaternion);
     hasCameraQuaternion.current = true;

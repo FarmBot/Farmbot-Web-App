@@ -19207,3 +19207,96 @@ regressed.
 threshold, the absolute improvement was not meaningful, and p95 regressed.
 
 **Commit:** None
+
+## Round 175
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 891. Build point instance groups with indexed loops | Reduce setup overhead for dense point layers by avoiding callback iteration and `Object.values` allocation | `PointInstances` render with 50 points | Rejected |
+| 892. Update point marker matrices with indexed loops | Reduce effect-time marker matrix and color callback overhead | First `PointInstances` marker effect with 50 points | Rejected |
+| 893. Update point radius matrices with indexed loops | Reduce effect-time radius ring matrix and color callback overhead | First `PointInstances` radius effect with 50 points | Rejected |
+| 894. Build group order positions with indexed loops | Reduce order-preview setup overhead for large groups by avoiding `map` callback allocation | `GroupOrderVisual` render with 50 selected points | Rejected |
+| 895. Update group order disk matrices with indexed loops | Reduce camera-facing disk matrix update overhead in order previews | First `GroupOrderVisual` disk frame with 50 selected points | Accepted |
+
+### 891. Build point instance groups with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** `PointInstances` render with 50 mixed-radius points: 0.127333 ms
+median, 0.154834 ms p95.
+
+**After:** Explicit saved/unsaved point buckets filled with an indexed loop:
+0.260166 ms median, 0.728584 ms p95.
+
+**Change:** 104.32% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 892. Update point marker matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `PointInstances` marker render/effect with 50 points
+after item 891 rollback: 0.155916 ms median, 0.494167 ms p95.
+
+**After:** Indexed loop over point marker instances while writing matrices
+and colors: 0.160708 ms median, 0.336042 ms p95.
+
+**Change:** 3.07% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 893. Update point radius matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `PointInstances` radius render/effect with 50 points
+after item 892 rollback: 0.227750 ms median, 0.523459 ms p95.
+
+**After:** Indexed loop over point radius instances while writing matrices
+and colors: 0.217083 ms median, 0.404917 ms p95.
+
+**Change:** 4.68% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 894. Build group order positions with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `GroupOrderVisual` render with 50 selected points after
+item 893 rollback: 1.104417 ms median, 2.489833 ms p95.
+
+**After:** Preallocated positions array filled with an indexed loop:
+1.149792 ms median, 2.670084 ms p95.
+
+**Change:** 4.11% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 895. Update group order disk matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused first `GroupOrderVisual` disk frame with 50 selected
+points after item 894 rollback: 1.259125 ms median, 2.746417 ms p95.
+
+**After:** Indexed loop over group order marker disk positions while writing
+matrices: 1.106917 ms median, 2.574875 ms p95.
+
+**Change:** 12.09% faster by median, saving about 0.152208 ms on the first
+50-point disk frame.
+
+**Outcome:** Accepted. The disk marker matrices are identical, with less
+callback overhead during the camera-facing frame update.
+
+**Commit:** This commit (`Update group order disks 12.1% faster with indexed loop`)
