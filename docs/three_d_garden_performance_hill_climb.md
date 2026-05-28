@@ -9778,3 +9778,254 @@ bytes, Drei `StatsGl` 762 bytes.
 to justify adding debug-only lazy components and suspense handling.
 
 **Commit:** None
+
+## Round 94
+
+### Idea 486: Instance repeated bed legs and caster parts
+
+**Description:** Replace the repeated raised-bed leg and caster meshes with
+instanced meshes for the identical wood legs, caster brackets, wheels, and
+axles. This preserves the same dimensions, colors, shadows, and positions while
+reducing repeated draw calls.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true` and `FPS_LOGS=true`, comparing the final reported
+scene metrics after the FarmBot/toolbay details load.
+
+**Before:** 190 draw calls, 712,224 triangles, 130 geometries, 27 textures,
+375 objects, 206 meshes, and 5 instanced meshes.
+
+**After:** 156 draw calls, 697,436 triangles, 104 geometries, 27 textures,
+335 objects, 186 meshes, and 9 instanced meshes. The minified 3D entry bundle
+changed from 3,620,399 bytes to 3,622,338 bytes.
+
+**Change:** 17.9% fewer draw calls, 20.0% fewer geometries, 10.7% fewer objects,
+and 9.7% fewer meshes in the loaded demo scene. The bundle increased by 1,939
+bytes.
+
+**Outcome:** Accepted. The absolute render-side improvement is meaningful for
+the normal raised-bed scene, visual fidelity is preserved by using the same
+geometry dimensions and materials, and the bundle increase is small relative to
+the draw-call reduction.
+
+**Commit:** `Optimize 3D bed support draw calls by 17.9%`
+
+### Idea 487: Remove empty placeholder bot meshes
+
+**Description:** Consider deleting bot meshes that pass `geometry={undefined}`
+and `material={undefined}` for placeholder motor, vacuum pump, and shaft-coupler
+nodes.
+
+**Benchmark:** Static count against the post-Idea-486 live demo scene metrics.
+The placeholders have no geometry/material, so their maximum realistic effect is
+object/mesh bookkeeping rather than draw calls.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls, 335 objects, and
+186 meshes.
+
+**After:** Not implemented. Removing all four placeholder meshes would leave
+draw calls unchanged and would at best reduce the scene to 331 objects and 182
+meshes.
+
+**Change:** Best-case 0% draw-call improvement, 1.2% fewer objects, and 2.2%
+fewer meshes.
+
+**Outcome:** Rejected before code changes. The placeholders are visually inert,
+but removing them would not clear the 10% performance bar or produce a meaningful
+absolute improvement.
+
+**Commit:** None
+
+### Idea 488: Instance repeated Toolbay 1 slot meshes
+
+**Description:** Consider replacing per-slot Toolbay 1 bay/logo meshes with
+instanced meshes for the configured tool slots that have a pullout direction.
+
+**Benchmark:** Static upper-bound draw-call calculation against the post-Idea-486
+demo scene. The configured demo toolbay renders four Toolbay 1 models, each with
+two meshes.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls.
+
+**After:** Not implemented. A perfect Toolbay 1 instancing pass would reduce
+eight Toolbay 1 mesh calls to two instanced calls.
+
+**Change:** Best-case 6 draw calls saved, or 3.8% of the loaded demo scene.
+
+**Outcome:** Rejected before code changes. The maximum realistic improvement is
+below the acceptance threshold, and the interaction/click grouping would become
+more complex.
+
+**Commit:** None
+
+### Idea 489: Instance electronics-box buttons and LEDs
+
+**Description:** Consider instancing repeated electronics-box button housings,
+button caps, button centers, LED housings, and LED colors.
+
+**Benchmark:** Static upper-bound draw-call calculation for the normal v1.8 demo
+electronics box and the larger v1.7 electronics box.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls. The v1.8 box has
+three buttons and no LED indicators; v1.7 has five buttons and four LED
+indicators.
+
+**After:** Not implemented. A v1.8-only implementation could save at most six
+draw calls. A v1.7 implementation could save more, but would require per-instance
+colors across multiple button and LED parts for older hardware.
+
+**Change:** Best-case v1.8 improvement is 3.8% of demo draw calls. The larger
+v1.7 case is not the normal demo/runtime baseline and has higher code
+complexity.
+
+**Outcome:** Rejected before code changes. The normal-case improvement is below
+the threshold, and the older-hardware case is not enough to justify a more
+complex instanced-color implementation.
+
+**Commit:** None
+
+### Idea 490: Disable `FPSProbe` frame work outside perf/debug mode
+
+**Description:** Consider making `FPSProbe` return immediately unless
+`FB_PERF_BENCHMARK` or `FPS_LOGS` is enabled, so normal users do not run its
+per-frame `performance.now()` bookkeeping.
+
+**Benchmark:** Realistic 600-frame approximation of the normal disabled-log
+path: one timestamp read and a one-second threshold branch per frame.
+
+**Before:** The disabled-log probe path measured 0.0125 ms median and 0.0127 ms
+p95 over 600 frames, and does not affect draw calls, asset bytes, or memory.
+
+**After:** Not implemented. Removing the probe would also remove the always-on
+`window.__fps` debug value.
+
+**Change:** Best-case savings are about 0.013 ms over roughly 10 seconds of
+frames, with no measurable scene metric improvement.
+
+**Outcome:** Rejected before code changes. The absolute runtime win is too small
+to justify changing the debug behavior.
+
+**Commit:** None
+
+## Round 95
+
+### Idea 491: Instance packaging carton, strap, and edge boxes
+
+**Description:** Replace the repeated packaging carton, strap, and edge-protector
+box meshes with three material-based instanced meshes. This preserves the same
+dimensions, colors, transforms, and visibility while reducing repeated box
+objects in the packaging scene.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true` and `FPS_LOGS=true`, comparing stabilized last-five
+samples after the FarmBot/toolbay details load. This uses the normal loaded demo
+scene rather than an isolated packaging-only scene.
+
+**Before:** 133 draw calls, 506,372 triangles, 116 geometries, 337 objects, 187
+meshes, and 9 instanced meshes.
+
+**After:** Trial implementation measured 133 draw calls, 506,396 triangles, 113
+geometries, 321 objects, 172 meshes, and 12 instanced meshes.
+
+**Change:** 0% draw-call improvement, 2.6% fewer geometries, 4.7% fewer objects,
+and 8.0% fewer meshes. The absolute object/mesh reduction is real, but it does
+not reach the acceptance threshold and did not improve the stabilized draw-call
+metric in the realistic scene.
+
+**Outcome:** Rejected and rolled back. The trial made the packaging code more
+complex without a qualifying scene-level improvement.
+
+**Commit:** None
+
+### Idea 492: Merge distance-indicator and axes arrows
+
+**Description:** Consider replacing paired distance-indicator arrow meshes and
+the three FarmBot axes arrow meshes with fewer merged or instanced arrow meshes.
+
+**Benchmark:** Static upper-bound calculation from the stabilized demo scene
+name counts. The scene has 9 `arrow` meshes: 6 from three distance indicators
+and 3 from the axes helper.
+
+**Before:** The stabilized demo scene had 133 draw calls.
+
+**After:** Not implemented. A perfect implementation could reduce each
+distance-indicator arrow pair from two calls to one and the axes arrows from
+three calls to one.
+
+**Change:** Best-case savings are 5 draw calls, or 3.8% of the stabilized loaded
+demo scene.
+
+**Outcome:** Rejected before code changes. The maximum realistic draw-call win
+is below the threshold, and the implementation would add custom merged geometry
+for a small visual primitive.
+
+**Commit:** None
+
+### Idea 493: Instance bot belt clips and Z stops
+
+**Description:** Consider replacing the six identical belt-clip stop meshes and
+two identical Z-stop meshes with one instanced mesh per GLB part.
+
+**Benchmark:** Static upper-bound calculation against the stabilized loaded demo
+scene. The normal FarmBot scene renders 6 belt clips and 2 Z stops.
+
+**Before:** The stabilized demo scene had 133 draw calls, 337 objects, and 187
+meshes.
+
+**After:** Not implemented. A perfect implementation would reduce 8 stop-part
+mesh calls to 2 instanced calls.
+
+**Change:** Best-case savings are 6 draw calls, or 4.5% of the stabilized loaded
+demo scene. Object and mesh savings would also be under 10%.
+
+**Outcome:** Rejected before code changes. The absolute win is too small to
+justify adding another instancing path across two bot subassemblies.
+
+**Commit:** None
+
+### Idea 494: Defer Lua sequence-runner code from the 3D bundle
+
+**Description:** Consider lazy-loading the demo Lua sequence runner used by 3D
+sequence visualization so normal 3D garden loading avoids parsing the Lua
+runtime until sequence expansion is actually needed.
+
+**Benchmark:** Minified esbuild 3D entry bundle with a metafile contribution
+check for `fengari-web` and `frontend/demo/lua_runner`.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. Lua-related
+inputs contributed 270,916 bytes.
+
+**After:** Not implemented. A perfect deferral of the Lua runner would remove at
+most the Lua-related 270,916 bytes from the initial 3D entry bundle.
+
+**Change:** Best-case initial-bundle reduction is 7.5%.
+
+**Outcome:** Rejected before code changes. The byte savings are meaningful, but
+they do not reach the required 10% improvement threshold, and the lazy boundary
+would add asynchronous sequence-expansion complexity.
+
+**Commit:** None
+
+### Idea 495: Defer markdown parser code from the 3D bundle
+
+**Description:** Consider lazy-loading the markdown parser stack pulled in
+through shared UI code so the 3D garden route avoids loading markdown parsing
+until markdown content is actually rendered.
+
+**Benchmark:** Minified esbuild 3D entry bundle with a metafile contribution
+check for `markdown-it`, `markdown-it-emoji`, `linkify-it`, `mdurl`, and
+`uc.micro`.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. The markdown
+stack contributed 203,084 bytes.
+
+**After:** Not implemented. A perfect deferral would remove at most 203,084
+bytes from the initial 3D entry bundle.
+
+**Change:** Best-case initial-bundle reduction is 5.6%.
+
+**Outcome:** Rejected before code changes. The maximum realistic bundle win is
+below the threshold, and changing shared markdown loading would add cross-route
+complexity outside the 3D garden surface.
+
+**Commit:** None

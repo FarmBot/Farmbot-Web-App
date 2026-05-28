@@ -9,19 +9,27 @@ import {
   RepeatWrapping,
   BufferGeometry,
   Mesh as MeshType,
+  InstancedMesh as ThreeInstancedMesh,
   BackSide,
   FrontSide,
   Color,
   type Side,
+  Matrix4,
+  Vector3,
+  Quaternion,
+  Euler,
+  ExtrudeGeometry,
+  CylinderGeometry,
 } from "three";
 import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
 import { Config, detailLevels, SurfaceDebugOption } from "../config";
 import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
-import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
+import { FarmbotAxes, UtilitiesPost, Packaging } from "./objects";
 import {
-  Group, Mesh, MeshNormalMaterial, MeshPhongMaterial,
+  Group, InstancedMesh, Mesh, MeshNormalMaterial, MeshPhongMaterial,
+  BoxGeometry,
 } from "../components";
 import { AxisNumberProperty } from "../../farm_designer/map/interfaces";
 import {
@@ -178,6 +186,165 @@ export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
 
 type BedFramePropsWithoutChildren = Omit<BedFrameProps, "children">;
 type SoilLayerPropsWithoutChildren = Omit<SoilLayerProps, "children">;
+
+interface BedSupportInstance {
+  x: number;
+  y: number;
+}
+
+interface BedSupportsProps {
+  bedLengthOuter: number;
+  bedWidthOuter: number;
+  bedHeight: number;
+  bedZOffset: number;
+  legsFlush: boolean;
+  legSize: number;
+  bedColor: string;
+  legWoodTexture: ReturnType<typeof useTextureVariant>;
+  supports: BedSupportInstance[];
+}
+
+const noScale = new Vector3(1, 1, 1);
+const noRotation = new Quaternion();
+
+const BedSupports = (props: BedSupportsProps) => {
+  const {
+    bedLengthOuter, bedWidthOuter, bedHeight, bedZOffset, legsFlush, legSize,
+    bedColor, legWoodTexture, supports,
+  } = props;
+  const casterHeight = legSize * 1.375;
+  const legHeight = bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight;
+  const supportMatrices = React.useMemo(() => {
+    const casterRotation =
+      new Quaternion().setFromEuler(new Euler(Math.PI / 2, 0, 0));
+    const wheelRotation =
+      new Matrix4().makeRotationFromEuler(new Euler(Math.PI / 2, 0, 0));
+    return supports.map(support => {
+      const legPosition = new Vector3(
+        threeSpace(support.x, bedLengthOuter),
+        threeSpace(support.y, bedWidthOuter),
+        -bedZOffset / 2
+        - (legsFlush ? bedHeight / 2 : bedHeight)
+        + (casterHeight / 2),
+      );
+      const leg = new Matrix4().compose(legPosition, noRotation, noScale);
+      const caster = new Matrix4().compose(
+        new Vector3(
+          -legSize / 2,
+          legSize / 2,
+          (-bedZOffset - (legsFlush ? bedHeight : 0) + casterHeight) / 2,
+        ),
+        casterRotation,
+        noScale,
+      );
+      const wheel = new Matrix4().makeTranslation(
+        legSize / 2,
+        -legSize * 0.75,
+        legSize / 2,
+      ).multiply(wheelRotation);
+      return {
+        leg,
+        caster: leg.clone().multiply(caster),
+        wheel: leg.clone().multiply(caster).multiply(wheel),
+      };
+    });
+  }, [
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedZOffset,
+    casterHeight,
+    legSize,
+    legsFlush,
+    supports,
+  ]);
+  const bracketGeometry = React.useMemo(() => {
+    const shape = new Shape();
+    shape.moveTo(0, 0);
+    shape.lineTo(legSize, 0);
+    shape.lineTo(legSize / 3 * 2, -legSize);
+    shape.lineTo(legSize / 3, -legSize);
+    shape.lineTo(0, 0);
+    return new ExtrudeGeometry(shape, {
+      steps: 1,
+      depth: legSize,
+      bevelEnabled: false,
+    });
+  }, [legSize]);
+  const wheelGeometry = React.useMemo(() =>
+    new CylinderGeometry(legSize * 0.625, legSize * 0.625, legSize / 3),
+  [legSize]);
+  const axleGeometry = React.useMemo(() =>
+    new CylinderGeometry(legSize / 10, legSize / 10, legSize * 1.1),
+  [legSize]);
+  // eslint-disable-next-line no-null/no-null
+  const legRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const bracketRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const wheelRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const axleRef = React.useRef<ThreeInstancedMesh>(null);
+
+  React.useLayoutEffect(() => {
+    supportMatrices.forEach((matrices, index) => {
+      legRef.current?.setMatrixAt(index, matrices.leg);
+      bracketRef.current?.setMatrixAt(index, matrices.caster);
+      wheelRef.current?.setMatrixAt(index, matrices.wheel);
+      axleRef.current?.setMatrixAt(index, matrices.wheel);
+    });
+    [
+      legRef.current,
+      bracketRef.current,
+      wheelRef.current,
+      axleRef.current,
+    ].forEach(mesh => {
+      if (mesh) { mesh.instanceMatrix.needsUpdate = true; }
+    });
+  }, [supportMatrices]);
+
+  return <Group name={"bed-supports"}>
+    <InstancedMesh
+      ref={legRef}
+      name={"bed-leg-wood"}
+      args={[undefined, undefined, supports.length]}
+      castShadow={true}
+      receiveShadow={true}>
+      <BoxGeometry args={[legSize, legSize, legHeight]} />
+      <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={bracketRef}
+      name={"caster-bracket"}
+      args={[bracketGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"silver"} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={wheelRef}
+      name={"wheel"}
+      args={[wheelGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"#434343"} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={axleRef}
+      name={"axle"}
+      args={[axleGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"#434343"} />
+    </InstancedMesh>
+  </Group>;
+};
 
 interface LowDetailBedFrameProps {
   commonBedFrameProps: BedFramePropsWithoutChildren;
@@ -367,22 +534,32 @@ const BedBase = (props: BedProps) => {
   const bedStartZ = bedHeight;
   const bedColor = getColorFromBrightness(bedBrightness);
   const groundZ = -bedHeight - bedZOffset;
-  const legXPositions = [
-    0 + legSize / 2 + thickness,
-    ...(extraLegsX
-      ? range(0, bedLengthOuter, bedLengthOuter / (extraLegsX + 1)).slice(1)
-      : []),
-    bedLengthOuter - legSize / 2 - thickness,
-  ];
-  const legYPositions = (index: number) =>
-    [
+  const supports = React.useMemo(() => {
+    const xPositions = [
       0 + legSize / 2 + thickness,
-      ...(extraLegsY && (index == 0 || index == (legXPositions.length - 1))
-        ? range(0, bedWidthOuter, bedWidthOuter / (extraLegsY + 1)).slice(1)
+      ...(extraLegsX
+        ? range(0, bedLengthOuter, bedLengthOuter / (extraLegsX + 1)).slice(1)
         : []),
-      bedWidthOuter - legSize / 2 - thickness,
+      bedLengthOuter - legSize / 2 - thickness,
     ];
-  const casterHeight = legSize * 1.375;
+    const yPositions = (index: number) =>
+      [
+        0 + legSize / 2 + thickness,
+        ...(extraLegsY && (index == 0 || index == (xPositions.length - 1))
+          ? range(0, bedWidthOuter, bedWidthOuter / (extraLegsY + 1)).slice(1)
+          : []),
+        bedWidthOuter - legSize / 2 - thickness,
+      ];
+    return xPositions.flatMap((x, index) =>
+      yPositions(index).map(y => ({ x, y })));
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    extraLegsX,
+    extraLegsY,
+    legSize,
+    thickness,
+  ]);
 
   const legWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
@@ -637,30 +814,16 @@ const BedBase = (props: BedProps) => {
           zZero(props.config),
         ]}
       />}
-    {legXPositions.map((x, index) =>
-      <Group key={index}>
-        {legYPositions(index).map(y =>
-          <Group name={"bed-leg"} key={y}
-            position={[
-              threeSpace(x, bedLengthOuter),
-              threeSpace(y, bedWidthOuter),
-              -bedZOffset / 2
-              - (legsFlush ? bedHeight / 2 : bedHeight)
-              + (casterHeight / 2),
-            ]}>
-            <Box name={"bed-leg-wood"}
-              castShadow={true}
-              receiveShadow={true}
-              args={[
-                legSize,
-                legSize,
-                bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
-              ]}>
-              <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
-            </Box>
-            <Caster config={props.config} />
-          </Group>)}
-      </Group>)}
+    <BedSupports
+      bedLengthOuter={bedLengthOuter}
+      bedWidthOuter={bedWidthOuter}
+      bedHeight={bedHeight}
+      bedZOffset={bedZOffset}
+      legsFlush={legsFlush}
+      legSize={legSize}
+      bedColor={bedColor}
+      legWoodTexture={legWoodTexture}
+      supports={supports} />
     <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
     <Packaging config={props.config} />
   </Group>;

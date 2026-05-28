@@ -159,6 +159,22 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("renders bed supports with instanced geometry", () => {
+    const p = fakeProps();
+    const { container } = render(<Bed {...p} />);
+    const supports = container.querySelector("[name='bed-supports']");
+
+    expect(supports).not.toBeNull();
+    expect(container.querySelectorAll("instancedmesh[name='bed-leg-wood']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='caster-bracket']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='wheel']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='axle']").length)
+      .toEqual(1);
+  });
+
   it("memoizes unchanged bed props", () => {
     const p = fakeProps();
     render(<Bed {...p} />);
