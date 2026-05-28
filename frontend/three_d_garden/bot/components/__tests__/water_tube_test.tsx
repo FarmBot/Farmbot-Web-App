@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import { Texture, TextureLoader } from "three";
-import { WaterTube, WaterTubeProps } from "../water_tube";
+import { WaterTube, waterTubePropsEqual, WaterTubeProps } from "../water_tube";
 import { easyCubicBezierCurve3 } from "../../../helpers";
 
 describe("<WaterTube />", () => {
@@ -46,5 +46,18 @@ describe("<WaterTube />", () => {
     expect(container.innerHTML).toContain("mock-tube-water-stream");
     expect(loadTextureSpy).toHaveBeenCalledTimes(1);
     expect(useFrameSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("compares unchanged tube props", () => {
+    const p = fakeProps();
+    expect(waterTubePropsEqual(p, { ...p })).toBeTruthy();
+    expect(waterTubePropsEqual(p, {
+      ...p,
+      waterFlow: !p.waterFlow,
+    })).toBeFalsy();
+    expect(waterTubePropsEqual(p, {
+      ...p,
+      tubePath: fakeProps().tubePath,
+    })).toBeFalsy();
   });
 });

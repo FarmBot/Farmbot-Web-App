@@ -42,7 +42,7 @@ const WaterTubeStream = (props: WaterTubeStreamProps) => {
     waterFlow={true} />;
 };
 
-export const WaterTube = (props: WaterTubeProps) => {
+const WaterTubeBase = (props: WaterTubeProps) => {
   const {
     tubeName, tubePath, tubularSegments, radius, radialSegments, waterFlow,
   } = props;
@@ -66,3 +66,16 @@ export const WaterTube = (props: WaterTubeProps) => {
         waterFlow={waterFlow} />}
   </Group>;
 };
+
+export const waterTubePropsEqual = (
+  prev: WaterTubeProps,
+  next: WaterTubeProps,
+) =>
+  prev.tubeName === next.tubeName &&
+  prev.tubePath === next.tubePath &&
+  prev.tubularSegments === next.tubularSegments &&
+  prev.radius === next.radius &&
+  prev.radialSegments === next.radialSegments &&
+  prev.waterFlow === next.waterFlow;
+
+export const WaterTube = React.memo(WaterTubeBase, waterTubePropsEqual);

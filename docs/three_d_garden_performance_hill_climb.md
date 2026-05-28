@@ -5220,6 +5220,23 @@ and water-flow props. Expected return: lower rerender work in solenoid and
 X-axis water paths while preserving tube geometry, transparency, shared water
 texture usage, and animation.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow Solenoid 90 times with unrelated config churn after Idea 296 made
+the Solenoid tube paths stable.
+
+**Before:** 14.866 ms per 90-rerender batch.
+
+**After:** 5.529 ms per 90-rerender batch.
+
+**Change:** 62.8% faster, saving 9.337 ms per realistic Solenoid water-tube
+churn batch.
+
+**Outcome:** Accepted; water tubes now skip unchanged path/dimension/water-flow
+props while preserving the same tube mesh, transparent material, shared water
+texture fallback, and water stream animation behavior.
+
+**Commit:** `Memoize water tubes for 62.8% faster solenoid churn`
+
 ### Idea 298: Memoize `CameraView` relevant frustum inputs
 
 **Description:** Add a relevant-field comparator around the camera-view
