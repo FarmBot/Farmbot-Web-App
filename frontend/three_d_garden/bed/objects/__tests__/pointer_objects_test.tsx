@@ -114,6 +114,34 @@ describe("<PointerObjects />", () => {
     expect(useTextureMock).not.toHaveBeenCalled();
     expect(gridMetaReads.current).toEqual(0);
   });
+
+  it("keeps the active preview stable across unrelated config churn", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+    const p = fakeProps();
+    const { rerender } = render(<PointerObjects {...p} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(1);
+
+    rerender(<PointerObjects
+      {...p}
+      config={{
+        ...p.config,
+        grid: !p.config.grid,
+        stats: !p.config.stats,
+        lightsDebug: !p.config.lightsDebug,
+      }} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(1);
+
+    rerender(<PointerObjects
+      {...p}
+      config={{
+        ...p.config,
+        bedLengthOuter: p.config.bedLengthOuter + 10,
+      }} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("soilClick()", () => {

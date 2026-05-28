@@ -72,24 +72,101 @@ export interface PointerObjectsProps extends AllRefs {
 export const PointerObjects = (props: PointerObjectsProps) => {
   const mode = getMode();
   if (!HOVER_OBJECT_MODES.includes(mode) || isMobile()) { return <></>; }
-  return <ActivePointerObjects {...props} mode={mode} />;
+  return <ActivePointerObjects
+    {...props}
+    mode={mode}
+    cropSlug={Path.getCropSlug()} />;
 };
 
 interface ActivePointerObjectsProps extends PointerObjectsProps {
   mode: Mode;
+  cropSlug: string;
 }
 
-const ActivePointerObjects = (props: ActivePointerObjectsProps) => {
+const PREVIEW_CONFIG_KEYS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWallThickness",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "botSizeY",
+  "botSizeZ",
+  "columnLength",
+  "mirrorX",
+  "mirrorY",
+  "zGantryOffset",
+];
+
+export const hasDirtyGridPreview = (mapPoints: TaggedGenericPointer[]) =>
+  mapPoints.some(p =>
+    p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId);
+
+const samePreviewConfig = (prev: Config, next: Config) =>
+  PREVIEW_CONFIG_KEYS.every(key => prev[key] === next[key]);
+
+const sameDrawnPoint = (
+  prev: AddPlantProps["designer"]["drawnPoint"],
+  next: AddPlantProps["designer"]["drawnPoint"],
+) =>
+  prev === next ||
+  !!prev && !!next &&
+  prev.cx === next.cx &&
+  prev.cy === next.cy &&
+  prev.z === next.z &&
+  prev.r === next.r &&
+  prev.color === next.color;
+
+const samePreviewRefs = (
+  prev: ActivePointerObjectsProps,
+  next: ActivePointerObjectsProps,
+) =>
+  prev.pointerPlantRef === next.pointerPlantRef &&
+  prev.radiusRef === next.radiusRef &&
+  prev.torusRef === next.torusRef &&
+  prev.billboardRef === next.billboardRef &&
+  prev.imageRef === next.imageRef &&
+  prev.xCrosshairRef === next.xCrosshairRef &&
+  prev.yCrosshairRef === next.yCrosshairRef &&
+  prev.activePositionRef === next.activePositionRef;
+
+const samePreviewDesigner = (
+  prev: AddPlantProps["designer"],
+  next: AddPlantProps["designer"],
+) =>
+  prev.cropRadius == next.cropRadius &&
+  sameDrawnPoint(prev.drawnPoint, next.drawnPoint);
+
+const sameGridPreviewState = (
+  prev: TaggedGenericPointer[],
+  next: TaggedGenericPointer[],
+) =>
+  prev === next || hasDirtyGridPreview(prev) == hasDirtyGridPreview(next);
+
+export const activePointerObjectsPropsEqual = (
+  prev: ActivePointerObjectsProps,
+  next: ActivePointerObjectsProps,
+) =>
+  prev.mode === next.mode &&
+  prev.cropSlug === next.cropSlug &&
+  samePreviewRefs(prev, next) &&
+  samePreviewConfig(prev.config, next.config) &&
+  samePreviewDesigner(
+    prev.addPlantProps.designer,
+    next.addPlantProps.designer) &&
+  sameGridPreviewState(prev.mapPoints, next.mapPoints);
+
+const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const {
     config, mapPoints, addPlantProps,
     pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
     xCrosshairRef, yCrosshairRef,
-    mode,
+    mode, cropSlug,
   } = props;
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
-  const icon = findIcon(Path.getCropSlug());
+  const icon = findIcon(cropSlug);
   const baseTexture = useTexture(getPlantIconTextureUrl(icon));
   const plantIconTexture = React.useMemo(
     () => getPlantIconTexture(baseTexture, icon),
@@ -98,9 +175,7 @@ const ActivePointerObjects = (props: ActivePointerObjectsProps) => {
   const { drawnPoint } = addPlantProps.designer;
   const settingRadius =
     !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
-  const gridPreview = mapPoints
-    .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
-    .length > 0;
+  const gridPreview = hasDirtyGridPreview(mapPoints);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
@@ -159,7 +234,7 @@ const ActivePointerObjects = (props: ActivePointerObjectsProps) => {
                     transparent={true} />
                 </Mesh>
               </Billboard>
-              <Sphere args={[findCrop(Path.getCropSlug()).spread / 2 * 10, 32, 32]}>
+              <Sphere args={[findCrop(cropSlug).spread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
                   color={"white"}
                   transparent={true}
@@ -180,7 +255,7 @@ const ActivePointerObjects = (props: ActivePointerObjectsProps) => {
       </Group>
     </Group>
   );
-};
+}, activePointerObjectsPropsEqual);
 
 export interface SoilClickProps {
   config: Config;
