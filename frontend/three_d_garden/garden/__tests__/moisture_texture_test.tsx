@@ -1,7 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import {
-  getMoistureOpacity, MoistureSurface, MoistureSurfaceProps,
+  getMoistureOpacity, moistureReadingsPropsEqual, MoistureSurface,
+  MoistureSurfaceProps,
 } from "../moisture_texture";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
@@ -75,5 +76,42 @@ describe("<MoistureSurface />", () => {
   it("calculates moisture opacity without parsing color strings", () => {
     [0, 200, 700, 900, 1024].map(value =>
       expect(getMoistureOpacity(value)).toEqual(getMoistureColor(value).a));
+  });
+
+  it("compares only moisture reading inputs that affect rendering", () => {
+    const readings = [fakeSensorReading()];
+    const previous = {
+      readings,
+      config: clone(INITIAL),
+      color: "green",
+      radius: 50,
+      applyOffset: true,
+      readingZOverride: 100,
+    };
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    })).toBeTruthy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      readings: [fakeSensorReading()],
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      color: "blue",
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      radius: 25,
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, bedXOffset: previous.config.bedXOffset + 1 },
+    })).toBeFalsy();
   });
 });

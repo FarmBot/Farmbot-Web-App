@@ -5733,6 +5733,24 @@ display settings, and the config fields used for offset placement. Expected
 return: faster moisture-debug rerenders with readings visible while changed
 reading data, radius, color, Z override, or bed offsets still update.
 
+**Benchmark:** Direct `MoistureReadings` render with 25 visible readings,
+debug-layer offset placement enabled, and 90 rerenders where only unrelated
+`config.sun` changed while readings identity and marker display settings stayed
+unchanged.
+
+**Before:** 5.331 ms per 90-rerender batch.
+
+**After:** 1.082 ms per 90-rerender batch.
+
+**Change:** 79.7% faster, saving 4.249 ms per realistic moisture-readings
+config-churn batch.
+
+**Outcome:** Accepted; moisture reading markers now skip unrelated config churn
+while reading data, marker color/radius, Z override, offset placement, and bed
+offset fields still update.
+
+**Commit:** `Memoize moisture readings for 79.7% faster rerenders`
+
 ### Idea 319: Memoize `MoistureSurface` relevant inputs
 
 **Description:** Add a relevant-field comparator around the full moisture

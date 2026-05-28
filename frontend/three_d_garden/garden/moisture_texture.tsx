@@ -148,7 +148,28 @@ export interface MoistureReadingsProps {
   readingZOverride?: number;
 }
 
-export const MoistureReadings = (props: MoistureReadingsProps) => {
+const MOISTURE_READING_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "zGantryOffset",
+];
+
+export const moistureReadingsPropsEqual = (
+  prev: MoistureReadingsProps,
+  next: MoistureReadingsProps,
+) =>
+  prev.readings === next.readings &&
+  prev.color === next.color &&
+  prev.radius === next.radius &&
+  prev.applyOffset === next.applyOffset &&
+  prev.readingZOverride === next.readingZOverride &&
+  MOISTURE_READING_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const MoistureReadingsBase = (props: MoistureReadingsProps) => {
   const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = props.config;
   const matrices = React.useMemo(() => {
     const result = new Float32Array(props.readings.length * 16);
@@ -181,3 +202,8 @@ export const MoistureReadings = (props: MoistureReadingsProps) => {
     </InstancedMeshComponent>
   </Group>;
 };
+
+export const MoistureReadings = React.memo(
+  MoistureReadingsBase,
+  moistureReadingsPropsEqual,
+);
