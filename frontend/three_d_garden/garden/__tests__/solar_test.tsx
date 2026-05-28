@@ -45,6 +45,26 @@ describe("<Solar />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("reuses solar cell geometry across mounts", () => {
+    const p = fakeProps();
+    p.config.solar = true;
+    const first = createRenderer(<Solar {...p} />);
+    const firstCells = first.root.findAll(node =>
+      (node.type as string) == "instancedMesh"
+      && node.props.renderOrder == RenderOrder.one + 1)[0];
+    const firstGeometry = firstCells.props.args[0];
+    unmountRenderer(first);
+
+    const second = createRenderer(<Solar {...p} />);
+    const secondCells = second.root.findAll(node =>
+      (node.type as string) == "instancedMesh"
+      && node.props.renderOrder == RenderOrder.one + 1)[0];
+
+    expect(secondCells.props.args[0]).toBe(firstGeometry);
+    expect(secondCells.props.dispose).toBeNull();
+    unmountRenderer(second);
+  });
+
   it("renders solar cells above panels and wiring", () => {
     const p = fakeProps();
     p.config.solar = true;

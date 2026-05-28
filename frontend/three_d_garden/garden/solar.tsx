@@ -60,6 +60,17 @@ const cellPositions = () => {
 
 const CELL_POSITIONS = cellPositions();
 
+let solarCellGeometry: ExtrudeGeometry | undefined;
+
+const getSolarCellGeometry = () => {
+  solarCellGeometry ||= new ExtrudeGeometry(cell2D(), {
+    steps: 1,
+    depth: cellDepth,
+    bevelEnabled: false,
+  });
+  return solarCellGeometry;
+};
+
 interface SolarMaterialProps {
   opacity: number | SpringValue<number>;
   color: string;
@@ -75,14 +86,6 @@ const SolarMaterial = (props: SolarMaterialProps) =>
     depthWrite={false} />;
 
 const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
-  const geometry = React.useMemo(
-    () => new ExtrudeGeometry(cell2D(), {
-      steps: 1,
-      depth: cellDepth,
-      bevelEnabled: false,
-    }),
-    [],
-  );
   const setRef = React.useCallback((mesh: ThreeInstancedMesh | null) => {
     if (!mesh || typeof mesh.setMatrixAt != "function") { return; }
     const dummy = new Object3D();
@@ -98,7 +101,9 @@ const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
     ref={setRef}
     renderOrder={RenderOrder.one + 1}
     frustumCulled={false}
-    args={[geometry, undefined, CELL_POSITIONS.length]}>
+    args={[getSolarCellGeometry(), undefined, CELL_POSITIONS.length]}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}>
     <SolarMaterial color={"#131361"} opacity={props.opacity}
       side={DoubleSide} />
   </InstancedMesh>;

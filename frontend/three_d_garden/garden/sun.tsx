@@ -5,10 +5,11 @@ import {
   MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
   Material,
+  BufferAttribute as ThreeBufferAttribute,
+  BufferGeometry as ThreeBufferGeometry,
 } from "three";
 import {
-  BufferAttribute, BufferGeometry, DirectionalLight, Group, MeshBasicMaterial,
-  Points, PointsMaterial,
+  DirectionalLight, Group, MeshBasicMaterial, Points, PointsMaterial,
 } from "../components";
 import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
@@ -414,14 +415,24 @@ const getOtherSunPositions = () => {
   return otherSunPositions;
 };
 
+let otherSunGeometry: ThreeBufferGeometry | undefined;
+
+const getOtherSunGeometry = () => {
+  if (!otherSunGeometry) {
+    otherSunGeometry = new ThreeBufferGeometry();
+    otherSunGeometry.setAttribute(
+      "position",
+      new ThreeBufferAttribute(getOtherSunPositions(), 3),
+    );
+  }
+  return otherSunGeometry;
+};
+
 const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> }) => {
-  const positions = getOtherSunPositions();
-  return <Points>
-    <BufferGeometry>
-      <BufferAttribute
-        attach={"attributes-position"}
-        args={[positions, 3]} />
-    </BufferGeometry>
+  return <Points
+    geometry={getOtherSunGeometry()}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}>
     <PointsMaterial
       ref={starsRef}
       color={"white"}

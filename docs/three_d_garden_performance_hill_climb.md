@@ -18544,3 +18544,99 @@ conversion path, while exact endpoint values reuse the same linear RGB tuples.
 threshold.
 
 **Commit:** None
+
+## Round 168
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 856. Reuse grid position converter while building segments | Avoid rebuilding the same `get3DPosition` closure once per grid line | `gridLinePositions` with default dimensions | Rejected |
+| 857. Pre-size grid line position arrays | Avoid dynamic array growth while building known-size grid segment buffers | `gridLinePositions` with default dimensions | Rejected |
+| 858. Reuse sky static props | Avoid allocating the same sky scale vector and up tuple on every `Sky` render | Default `Sky` render | Rejected |
+| 859. Share star field geometry | Avoid rebuilding `BufferGeometry` and position attributes around the shared star buffer | Static night `Sun` render | Accepted |
+| 860. Share solar cell geometry | Avoid extruding the same solar cell geometry for each solar array mount | Visible `Solar` render | Accepted |
+
+### 856. Reuse grid position converter while building segments
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` with default dimensions: 0.151542 ms median,
+0.175208 ms p95.
+
+**After:** Build the `get3DPosition` converter once in `gridLinePositions` and
+pass it into each segment builder: 0.138500 ms median, 0.167250 ms p95.
+
+**Change:** 8.61% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 857. Pre-size grid line position arrays
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Warmed `gridLinePositions` with default dimensions after item 856
+rollback: 0.101916 ms median, 0.259625 ms p95.
+
+**After:** Pre-sized outer and inner position arrays with indexed writes:
+0.094500 ms median, 0.216583 ms p95.
+
+**Change:** 7.27% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 858. Reuse sky static props
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Default `Sky` render after item 857 rollback: 0.074875 ms median,
+0.212542 ms p95.
+
+**After:** Module-level sky scale vector and up tuple: 0.076000 ms median,
+0.222042 ms p95.
+
+**Change:** 1.50% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slightly slower.
+
+**Commit:** None
+
+### 859. Share star field geometry
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Static night `Sun` render after item 858 rollback: 0.070792 ms
+median, 0.102166 ms p95.
+
+**After:** Lazy shared `BufferGeometry` using the existing shared star
+position buffer: 0.062292 ms median, 0.086750 ms p95.
+
+**Change:** 12.01% faster by median, saving about 0.008500 ms per static night
+sun render.
+
+**Outcome:** Accepted. The same star positions and material are used, while
+the immutable geometry wrapper is reused across mounts.
+
+**Commit:** This commit (`Share 3D garden star and solar geometry for 19.9% faster solar renders`)
+
+### 860. Share solar cell geometry
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Visible `Solar` render after item 859: 0.183959 ms median,
+0.283917 ms p95.
+
+**After:** Lazy shared extruded solar cell geometry with `dispose={null}` on
+the instanced mesh: 0.147416 ms median, 0.168792 ms p95.
+
+**Change:** 19.86% faster by median, saving about 0.036543 ms per visible
+solar render.
+
+**Outcome:** Accepted. Solar cell shape, placement, and material are unchanged;
+only the repeated extruded geometry allocation is avoided.
+
+**Commit:** This commit (`Share 3D garden star and solar geometry for 19.9% faster solar renders`)

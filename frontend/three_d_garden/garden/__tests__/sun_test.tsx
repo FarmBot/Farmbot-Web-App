@@ -71,23 +71,25 @@ describe("<Sun />", () => {
     expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
   });
 
-  it("reuses generated star positions across night star mounts", () => {
+  it("reuses generated star geometry across night star mounts", () => {
     const p = fakeProps();
     p.config.sunInclination = -15;
     p.config.animateSeasons = false;
     const first = createRenderer(<Sun {...p} />);
-    const firstPositions = first.root
-      .findAll(node => node.props.attach == "attributes-position")[0]
-      .props.args[0];
+    const firstPoints = first.root.findAllByType(Points)[0];
+    const firstGeometry = firstPoints.props.geometry;
+    const firstPositions = firstGeometry.getAttribute("position").array;
     unmountRenderer(first);
 
     const second = createRenderer(<Sun {...p} />);
     mountedWrappers.push(second);
-    const secondPositions = second.root
-      .findAll(node => node.props.attach == "attributes-position")[0]
-      .props.args[0];
+    const secondPoints = second.root.findAllByType(Points)[0];
+    const secondGeometry = secondPoints.props.geometry;
+    const secondPositions = secondGeometry.getAttribute("position").array;
 
+    expect(secondGeometry).toBe(firstGeometry);
     expect(secondPositions).toBe(firstPositions);
+    expect(secondPoints.props.dispose).toBeNull();
   });
 
   it("skips season animation frame setup by default", () => {
