@@ -1,6 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { CameraSelectionUI, CameraSelectionUIProps } from "../camera_selection_ui";
+import {
+  CameraSelectionUI, cameraSelectionUIPropsEqual, CameraSelectionUIProps,
+} from "../camera_selection_ui";
 import { clone } from "lodash";
 import * as lodash from "lodash";
 import { INITIAL } from "../config";
@@ -303,5 +305,30 @@ describe("<CameraSelectionUI />", () => {
       NumericSetting.viewpoint_heading, 30);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.top_down_view, false);
+  });
+
+  it("compares camera-selection-relevant inputs", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    expect(cameraSelectionUIPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(cameraSelectionUIPropsEqual(p, {
+      ...p,
+      topDownAtStart: !p.topDownAtStart,
+    })).toBeFalsy();
+    expect(cameraSelectionUIPropsEqual(p, {
+      ...p,
+      dispatch: jest.fn(),
+    })).toBeFalsy();
+    expect(cameraSelectionUIPropsEqual(p, {
+      ...p,
+      config: { ...p.config, viewpointHeading: p.config.viewpointHeading + 1 },
+    })).toBeFalsy();
+    expect(cameraSelectionUIPropsEqual(p, {
+      ...p,
+      config: { ...p.config, lightsDebug: !p.config.lightsDebug },
+    })).toBeFalsy();
   });
 });

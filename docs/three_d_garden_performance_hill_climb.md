@@ -5469,6 +5469,22 @@ state still updates. Expected return: faster camera-selection overlay rerenders
 without changing marker positions, selected state, hover colors, click actions,
 or debug-light markers.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+camera-selection overlay 90 times while only an unrelated config field changed.
+
+**Before:** 3.159 ms per 90-rerender batch.
+
+**After:** 1.046 ms per 90-rerender batch.
+
+**Change:** 66.9% faster, saving 2.113 ms per realistic camera-selection
+config-churn batch.
+
+**Outcome:** Accepted; the camera-selection overlay now skips unrelated config
+churn while visibility, heading, top-down mode, bed dimensions, debug markers,
+dispatch changes, and internal hover state still update normally.
+
+**Commit:** `Memoize camera selection for 66.9% faster rerenders`
+
 ### Idea 308: Memoize `Solar` relevant config fields
 
 **Description:** Memoize the solar hardware entry point by visibility/focus and

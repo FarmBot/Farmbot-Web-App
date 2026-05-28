@@ -27,7 +27,26 @@ const CAMERA_ANGLES = ORTHOGONAL_ANGLES.concat(ISO_ANGLES);
 const angleList = (angles: number[], angle: number) =>
   angles.includes(angle) ? angles : angles.concat(angle);
 
-export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
+const CAMERA_SELECTION_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "cameraSelectionView",
+  "lightsDebug",
+  "viewpointHeading",
+];
+
+export const cameraSelectionUIPropsEqual = (
+  prev: CameraSelectionUIProps,
+  next: CameraSelectionUIProps,
+) =>
+  prev.dispatch === next.dispatch &&
+  prev.topDownAtStart === next.topDownAtStart &&
+  CAMERA_SELECTION_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
   const { config } = props;
   const [hovered, setHovered] = React.useState<Hovered | undefined>(undefined);
   const hoveredRef = React.useRef<Hovered | undefined>(undefined);
@@ -195,3 +214,8 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
       <Line points={[markerPosition.position, [0, 0, 0]]} color={color} />}
   </Group>;
 });
+
+export const CameraSelectionUI = React.memo(
+  CameraSelectionUIBase,
+  cameraSelectionUIPropsEqual,
+);
