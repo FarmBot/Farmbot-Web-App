@@ -12660,3 +12660,124 @@ camera-change frame. Repetitions were used only to stabilize timing.
 threshold, the absolute savings are negligible, and p95 worsened.
 
 **Commit:** None
+
+## Round 116
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 596. Instance greenhouse wall panes and frames | Reduce Greenhouse scene draw calls without changing pane/frame geometry or materials | Fewer draw calls | One Greenhouse wall: 32 panes, 9 vertical frames, and 5 horizontal frames | Accepted |
+| 597. Instance desk legs | Reduce optional desk scene draw calls by merging four identical legs | Fewer draw calls | One visible desk with four matching legs | Rejected |
+| 598. Instance packaging straps and edge protectors | Reduce optional packaging draw calls by merging repeated straps/protectors | Fewer draw calls | v1.8 main carton and v1.7 carton plus extrusion kit | Rejected |
+| 599. Instance Lab wall shelves | Reduce Lab scene draw calls by merging two matching shelves | Fewer draw calls | One Lab scene with two shelf boxes | Rejected |
+| 600. Split Greenhouse shelves/trays behind focus visibility | Reduce Greenhouse scene setup while focused on other objects | Fewer mounted Greenhouse props during focus transitions | One Greenhouse scene with shelf and two starter trays | Rejected |
+
+### Idea 596: Instance greenhouse wall panes and frames
+
+**Description:** Each Greenhouse wall rendered 32 glass pane boxes, 9 vertical
+frame boxes, and 5 horizontal frame boxes. The pane geometry/material is shared
+across all panes, including the three open panels, and each frame direction has
+shared geometry/material. Replace those fixed repeated boxes with three
+instanced meshes while preserving positions, rotations, materials, shadows, and
+render order.
+
+**Benchmark:** One Greenhouse wall: 32 panes, 9 vertical frames, and 5
+horizontal frames. This is the exact static wall used twice in the Greenhouse
+scene.
+
+**Before:** 46 wall draw calls per wall.
+
+**After:** 3 wall draw calls per wall.
+
+**Change:** 93.48% fewer wall draw calls, saving 43 draw calls per wall and
+86 draw calls for the two-wall Greenhouse scene.
+
+**Outcome:** Accepted. The wall still uses the same pane/frame dimensions,
+glass opacity, colors, double-sided materials, open-panel rotations, shadows,
+and pane render order.
+
+**Checks:** `bun test ./frontend/three_d_garden/scenes/props/__tests__/greenhouse_wall_test.tsx`,
+`bun run typecheck`, focused `bun run eslint`, and `git diff --check` passed.
+
+**Commit:** `Optimize 3D greenhouse wall draws by 93.5%`
+
+### Idea 597: Instance desk legs
+
+**Description:** The optional desk renders four matching leg boxes. Instancing
+the legs could reduce desk draw calls without changing geometry or materials.
+
+**Benchmark:** One visible desk with four matching legs.
+
+**Before:** 4 desk-leg draw calls.
+
+**After:** Best-case 1 desk-leg draw call.
+
+**Change:** 75.00% fewer desk-leg draw calls, saving 3 draw calls.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the desk
+is optional and the absolute saving is only three draw calls in an already small
+prop.
+
+**Commit:** None
+
+### Idea 598: Instance packaging straps and edge protectors
+
+**Description:** Packaging repeats strap and edge-protector boxes on the main
+carton and v1.7 extrusion kit. Instancing each repeated group could reduce draw
+calls when packaging is visible.
+
+**Benchmark:** v1.8 main carton and v1.7 carton plus extrusion kit, matching
+the two supported packaging layouts.
+
+**Before:** 7 repeated strap/protector draw calls for v1.8; 16 repeated
+strap/protector draw calls for v1.7 with the extrusion kit.
+
+**After:** Best-case 2 repeated strap/protector draw calls for v1.8; 4 repeated
+strap/protector draw calls for v1.7.
+
+**Change:** v1.8 would save 5 draw calls (71.43%); v1.7 would save 12 draw
+calls (75.00%).
+
+**Outcome:** Rejected before code changes. Packaging is hidden by default and
+the accepted greenhouse wall change saves substantially more visible scene work
+with less conditional layout risk.
+
+**Commit:** None
+
+### Idea 599: Instance Lab wall shelves
+
+**Description:** The Lab wall renders two matching shelf boxes. Instancing
+could merge them into one shelf draw call.
+
+**Benchmark:** One Lab scene with two shelf boxes.
+
+**Before:** 2 shelf draw calls.
+
+**After:** Best-case 1 shelf draw call.
+
+**Change:** 50.00% fewer shelf draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. One saved draw call in an optional
+scene is not a meaningful absolute improvement.
+
+**Commit:** None
+
+### Idea 600: Split Greenhouse shelves/trays behind focus visibility
+
+**Description:** When the Greenhouse scene is active, the right wall also
+mounts one shelf and two starter trays. Hiding those props while a focused
+object is active could reduce scene work during focus transitions.
+
+**Benchmark:** One Greenhouse scene with one shelf mesh and two starter-tray
+instanced meshes.
+
+**Before:** 3 shelf/tray draw calls while the Greenhouse details are mounted.
+
+**After:** Best-case 0 shelf/tray draw calls during focused object views only.
+
+**Change:** Up to 3 draw calls removed in a focused transient state.
+
+**Outcome:** Rejected before code changes. The saving applies only during a
+focused state and would change what supporting Greenhouse context remains
+visible during navigation.
+
+**Commit:** None
