@@ -1,5 +1,5 @@
 import React from "react";
-import { Color } from "../../../ui";
+import { Color } from "../../../ui/colors";
 import { ToolColor } from "./all_tools";
 import { ToolGraphicProps } from "./interfaces";
 import { ToolDimensions } from "./tool";

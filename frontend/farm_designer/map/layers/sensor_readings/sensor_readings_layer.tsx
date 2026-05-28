@@ -4,14 +4,16 @@ import {
 } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { GardenSensorReading } from "./garden_sensor_reading";
-import { last, round } from "lodash";
+import { last } from "lodash";
 import { TimeSettings } from "../../../../interfaces";
 import {
-  fetchInterpolationOptions, generateData, GetColor, InterpolationMap,
+  fetchInterpolationOptions, generateData, InterpolationMap,
 } from "../points/interpolation_map";
 import { filterMoistureReadings } from "./filter_moisture_readings";
+import { getMoistureColor } from "./moisture";
 
 export { filterMoistureReadings };
+export { getMoistureColor };
 
 export interface SensorReadingsLayerProps {
   visible: boolean;
@@ -57,16 +59,3 @@ export function SensorReadingsLayer(props: SensorReadingsLayerProps) {
           sensorLookup={sensorNameByPinLookup} />)}
   </g>;
 }
-
-export const getMoistureColor: GetColor = (value: number) => {
-  const maxValue = 900;
-  if (value > maxValue) { return { rgb: "rgb(0, 0, 0)", a: 0 }; }
-  const r = 0;
-  const g = 0;
-  const b = 255;
-  const a = round((0.75 * value / maxValue) ** 3, 2);
-  return {
-    rgb: `rgb(${r}, ${g}, ${b})`,
-    a: a,
-  };
-};

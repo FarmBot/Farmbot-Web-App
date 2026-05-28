@@ -16,9 +16,7 @@ import { Path } from "../internal_urls";
 import { t } from "../i18next_wrapper";
 import { Actions, Content, DeviceSetting } from "../constants";
 import { isMobile } from "../screen_size";
-import { Help } from "../ui";
 import { BooleanSetting } from "../session_keys";
-import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
@@ -28,6 +26,7 @@ import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { isTopDown } from "./helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
+import { getModifiedClassName } from "../settings/default_values";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -90,6 +89,56 @@ export interface ThreeDGardenToggleProps {
   getConfigValue: GetWebAppConfigValue;
 }
 
+interface ThreeDControlsHelpProps {
+  text: string;
+  ariaLabel: string;
+}
+
+const ThreeDControlsHelp = (props: ThreeDControlsHelpProps) => {
+  const [open, setOpen] = React.useState(false);
+  const lines = props.text.trim().split("\n").map(line => line.trim());
+  const title = lines[0].replace(/\*/g, "");
+  const items = lines.slice(1).map(line => line.replace(/^-\s*/, ""));
+  return <span className={"help three-d-controls-help"}>
+    <i
+      title={title}
+      role={"tooltip"}
+      aria-label={props.ariaLabel}
+      className={"fa fa-question-circle help-icon"}
+      onClick={() => setOpen(!open)} />
+    {open &&
+      <div className={"help-text-content"}>
+        <strong>{title}</strong>
+        <ul>
+          {items.map(item => <li key={item}>{item}</li>)}
+        </ul>
+      </div>}
+  </span>;
+};
+
+interface ThreeDLayerToggleProps {
+  value: boolean;
+  onClick(): void;
+}
+
+const ThreeDLayerToggle = (props: ThreeDLayerToggleProps) => {
+  const label = DeviceSetting.axisHeadingLabels;
+  const classNames = [
+    "fb-button",
+    "fb-toggle-button",
+    "fb-layer-toggle",
+    props.value ? "green" : "red",
+    getModifiedClassName(BooleanSetting.three_d_garden),
+  ].join(" ");
+  return <fieldset>
+    <label>
+      <span>{t(label)}</span>
+    </label>
+    <button className={classNames} onClick={props.onClick}
+      title={`${props.value ? t("hide") : t("show")} ${t(label.replace("?", ""))}`} />
+  </fieldset>;
+};
+
 // eslint-disable-next-line complexity
 export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const { navigate, dispatch, threeDGarden } = props;
@@ -135,15 +184,12 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
       <div className={"row half-gap"}>
         <label>{t(DeviceSetting.show3DMap)}</label>
         {threeDGarden &&
-          <Help
+          <ThreeDControlsHelp
             text={description}
-            enableMarkdown={true}
             ariaLabel={`${t(DeviceSetting.show3DMap)} help`} />}
       </div>
-      <LayerToggle
-        settingName={BooleanSetting.three_d_garden}
+      <ThreeDLayerToggle
         value={threeDGarden}
-        label={DeviceSetting.axisHeadingLabels}
         onClick={() => dispatch(setWebAppConfigValue(
           BooleanSetting.three_d_garden, !threeDGarden))} />
     </div>

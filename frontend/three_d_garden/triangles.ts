@@ -1,7 +1,7 @@
 import Delaunator from "delaunator";
 import { TaggedGenericPointer, TaggedSensor, TaggedSensorReading } from "farmbot";
 import { Config } from "./config";
-import { soilHeightPoint } from "../points/soil_height";
+import { soilHeightPoint } from "../points/soil_height_helpers";
 import { zZero } from "./helpers";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { precomputeTriangles } from "./triangle_functions";

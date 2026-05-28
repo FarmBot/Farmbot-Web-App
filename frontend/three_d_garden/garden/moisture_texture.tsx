@@ -8,10 +8,11 @@ import { TaggedSensor, TaggedSensorReading } from "farmbot";
 import { threeSpace, zZero } from "../helpers";
 import {
   generateData, getInterpolationData, type InterpolationData,
-} from "../../farm_designer/map/layers/points/interpolation_map";
+} from "../../farm_designer/map/layers/points/interpolation_data";
 import {
-  filterMoistureReadings, getMoistureColor,
-} from "../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
+  filterMoistureReadings,
+} from "../../farm_designer/map/layers/sensor_readings/filter_moisture_readings";
+import { getMoistureColor } from "../../farm_designer/map/layers/sensor_readings/moisture";
 import { Matrix4 } from "three";
 import { perfMeasure } from "../../performance/perf";
 

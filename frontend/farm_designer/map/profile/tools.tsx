@@ -14,7 +14,7 @@ import {
   getToolColor, reduceToolName, ToolImplementProfile, ToolName,
 } from "../tool_graphics/all_tools";
 import { TaggedToolSlotPointer } from "farmbot";
-import { CustomToolProfile } from "../../../tools/custom_tool_graphics";
+import { CustomToolProfile } from "../../../tools/custom_tool_graphics_display";
 import { FilePath } from "../../../internal_urls";
 
 export enum UTMDimensions {

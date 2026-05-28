@@ -166,4 +166,12 @@ describe("<ThreeDGardenToggle />", () => {
       BooleanSetting.three_d_garden,
       false);
   });
+
+  it("shows 3D controls help", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    fireEvent.click(screen.getByLabelText("3D Map beta help"));
+    expect(screen.getByText("3D Controls")).toBeInTheDocument();
+    expect(screen.getByText("Scroll to zoom")).toBeInTheDocument();
+  });
 });

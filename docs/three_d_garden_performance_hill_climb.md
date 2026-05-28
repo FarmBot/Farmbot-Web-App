@@ -10029,3 +10029,136 @@ below the threshold, and changing shared markdown loading would add cross-route
 complexity outside the 3D garden surface.
 
 **Commit:** None
+
+## Round 96
+
+### Idea 496: Remove shared UI barrel from the 3D entry
+
+**Description:** Stop the 3D garden entry and 3D-reachable pure helper paths from
+pulling in the shared `frontend/ui` barrel, Blueprint popover stack, markdown
+parser stack, and designer UI wrappers. Add small local 3D controls help and
+layer-toggle components, then split pure soil-height, interpolation, moisture,
+and custom-tool display helpers away from UI-heavy modules.
+
+**Benchmark:** Minified esbuild 3D entry bundle using the same entry-point
+bundle command as prior rounds, plus a live Docker app check on port 3000 for
+stabilized scene metrics after the FarmBot/toolbay details load. The bundle
+benchmark reflects the normal initial 3D garden load rather than an artificial
+iteration loop.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. The 3D entry
+still reached the shared UI barrel, Blueprint, and markdown modules through
+control/help imports and pure helper imports that were colocated with UI
+components.
+
+**After:** The minified 3D entry bundle measured 2,554,079 bytes. The metafile
+showed no remaining `frontend/ui/index`, Blueprint, or markdown parser inputs in
+the 3D entry bundle. The live scene still measured 133 draw calls, 506,396
+triangles, 115 geometries, 27 textures, 337 objects, 187 meshes, and 9 instanced
+meshes.
+
+**Change:** 1,068,264 fewer initial bundle bytes, a 29.5% reduction. Scene draw
+calls, objects, meshes, textures, and interactions remained stable, so the
+improvement is a meaningful load-time win without reducing visual quality or
+removing controls.
+
+**Outcome:** Accepted. The absolute bundle reduction is large enough to matter
+on normal 3D garden loads, and the code is clearer because pure helpers no
+longer depend on UI-heavy modules.
+
+**Checks:** Focused 3D/helper tests, typecheck, and eslint passed.
+
+**Commit:** `Optimize 3D entry bundle by 29.5%`
+
+### Idea 497: Lazy-load sequence visualization content
+
+**Description:** Try moving the sequence visualization content behind a
+`React.lazy` boundary so normal 3D garden loading does not parse sequence
+visualization and Lua runner code until a sequence is selected.
+
+**Benchmark:** Split esbuild 3D entry bundle with metafile analysis for the
+sequence visualization chunk and Lua-related inputs after Idea 496.
+
+**Before:** The post-Idea-496 minified 3D entry bundle measured 2,554,079 bytes.
+Lua-related code still contributed about 270 KB to the loaded bundle graph.
+
+**After:** Trial implementation created a lazy visualization wrapper, but the
+new visualization content chunk was only about 1 KB and Lua-related inputs
+remained in the common bundle because `frontend/devices/actions.ts` imports the
+demo Lua runner eagerly.
+
+**Change:** No meaningful initial-bundle improvement for the targeted Lua path.
+
+**Outcome:** Rejected and rolled back. The lazy boundary added asynchronous
+component complexity without moving the expensive code out of the realistic
+initial 3D load.
+
+**Commit:** None
+
+### Idea 498: Lazy-load demo Lua imports in device actions
+
+**Description:** Consider changing `frontend/devices/actions.ts` to import demo
+Lua command execution asynchronously, so the 3D bundle can avoid eager Lua
+runtime bytes that arrive through normal device action imports.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** Lua-related inputs contributed 270,187 bytes to the 2,554,079-byte
+3D entry bundle, about 10.6% of the remaining bundle.
+
+**After:** Not implemented. Moving the Lua runner behind dynamic imports in
+device actions would affect command-path timing and ordering for demo emergency
+stop/unlock, movement, sequence execution, and other device actions.
+
+**Change:** The byte ceiling technically clears 10%, but the implementation
+would put asynchronous behavior into shared device command paths rather than a
+3D-only load path.
+
+**Outcome:** Rejected before code changes. The realistic bundle win is not worth
+the command responsiveness and behavior risk under the no-UX-degradation rule.
+
+**Commit:** None
+
+### Idea 499: Replace lodash barrel imports
+
+**Description:** Consider replacing remaining lodash barrel usage reachable from
+the 3D entry with narrower imports or local helpers.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** `node_modules/lodash/lodash.js` contributed 76,425 bytes to the
+2,554,079-byte 3D entry bundle, about 3.0%.
+
+**After:** Not implemented. Even a perfect removal of the remaining lodash
+bundle contribution could not meet the required improvement threshold.
+
+**Change:** Best-case bundle reduction is 3.0%, below the 10% acceptance bar.
+
+**Outcome:** Rejected before code changes. The maximum realistic gain is too
+small for another broad import-churn pass.
+
+**Commit:** None
+
+### Idea 500: Split 3D constants from global constants
+
+**Description:** Consider extracting only the constants needed by the 3D garden
+entry and 3D-reachable helpers so the 3D bundle does not include the full shared
+`frontend/constants.ts` module.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** `frontend/constants.ts` contributed 91,702 bytes to the
+2,554,079-byte 3D entry bundle, about 3.6%.
+
+**After:** Not implemented. A perfect split would still land below the required
+10% improvement threshold and would touch a high-fanout shared constants module.
+
+**Change:** Best-case bundle reduction is 3.6%, below the 10% acceptance bar.
+
+**Outcome:** Rejected before code changes. The absolute win is not large enough
+to justify the shared-module churn.
+
+**Commit:** None
