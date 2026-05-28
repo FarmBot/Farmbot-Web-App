@@ -1,6 +1,6 @@
 import React from "react";
 import { Extrude, Cylinder } from "@react-three/drei";
-import { Shape } from "three";
+import { ExtrudeGeometryOptions, Shape } from "three";
 import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
 
@@ -33,7 +33,7 @@ const CasterBase = (props: CasterProps) => {
     return [
       shape,
       { steps: 1, depth: legSize, bevelEnabled: false },
-    ] as const;
+    ] as [Shape, ExtrudeGeometryOptions];
   }, [legSize]);
   return <Group name={"caster"}
     position={[

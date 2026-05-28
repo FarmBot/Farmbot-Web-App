@@ -1,6 +1,6 @@
 import React from "react";
 import { Extrude } from "@react-three/drei";
-import { Shape } from "three";
+import { ExtrudeGeometryOptions, Shape } from "three";
 import { MeshPhongMaterial } from "../components";
 
 export interface ArrowProps {
@@ -42,7 +42,7 @@ const ArrowBase = (props: ArrowProps) => {
   const args = React.useMemo(() => [
     arrow2D(props.length, props.width),
     { steps: 1, depth: 10, bevelEnabled: false },
-  ] as const, [props.length, props.width]);
+  ] as [Shape, ExtrudeGeometryOptions], [props.length, props.width]);
 
   return <Extrude name={"arrow"}
     args={args}
