@@ -534,6 +534,26 @@ const SeedTroughToolModel = React.memo((props: SeedTroughToolModelProps) =>
     ? <SeedTroughWithAssemblyToolModel />
     : <SeedTroughOnlyToolModel />);
 
+interface ActiveRotaryToolSlotProps extends ToolbaySlotProps {
+  rotary: number;
+}
+
+const ActiveRotaryToolSlot = (props: ActiveRotaryToolSlotProps) => {
+  const rotaryToolImplementRef =
+    React.useRef<THREE.Mesh>(undefined as unknown as THREE.Mesh);
+  const { rotary, ...slotProps } = props;
+  useFrame(() => {
+    if (rotaryToolImplementRef.current && rotary) {
+      const time = Date.now();
+      const speed = rotary > 0 ? 0.01 : -0.01;
+      rotaryToolImplementRef.current.rotation.z = time * speed;
+    }
+  });
+  return <ToolbaySlot {...slotProps}>
+    <RotaryToolModel ref={rotaryToolImplementRef} />
+  </ToolbaySlot>;
+};
+
 // eslint-disable-next-line complexity
 const ToolBase = (props: ToolProps) => {
   const {
@@ -558,22 +578,15 @@ const ToolBase = (props: ToolProps) => {
   const common: ToolbaySlotProps = {
     mounted, position, toolPulloutDirection, id, inToolbay, config, dispatch,
   };
-  const rotaryToolImplementRef =
-    React.useRef<THREE.Mesh>(undefined as unknown as THREE.Mesh);
-  useFrame(() => {
-    if (rotaryToolImplementRef.current &&
-      !inToolbay &&
-      props.config.rotary) {
-      const time = Date.now();
-      const speed = props.config.rotary > 0 ? 0.01 : -0.01;
-      rotaryToolImplementRef.current.rotation.z = time * speed;
-    }
-  });
   switch (props.toolName) {
     case ToolName.rotaryTool:
-      return <ToolbaySlot {...common}>
-        <RotaryToolModel ref={rotaryToolImplementRef} />
-      </ToolbaySlot>;
+      return inToolbay
+        ? <ToolbaySlot {...common}>
+          <RotaryToolModel />
+        </ToolbaySlot>
+        : <ActiveRotaryToolSlot
+          {...common}
+          rotary={props.config.rotary} />;
     case ToolName.wateringNozzle:
       return <ToolbaySlot {...common}>
         <WateringNozzleToolModel />

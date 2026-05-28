@@ -205,6 +205,25 @@ describe("<Tools />", () => {
     expect(container).toContainHTML("seedTroughWithAssembly");
   });
 
+  it("skips frame callbacks for non-rotary tools", () => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots(["soil sensor", "weeder", "seeder"]);
+    p.mountedToolName = "weeder";
+    (threeFiber.useFrame as unknown as jest.Mock).mockClear();
+    render(<Tools {...p} />);
+    expect(threeFiber.useFrame).not.toHaveBeenCalled();
+  });
+
+  it("keeps frame callback for active rotary tool", () => {
+    const p = fakeProps();
+    p.config.tool = "rotaryTool";
+    p.config.rotary = 1;
+    p.toolSlots = undefined;
+    (threeFiber.useFrame as unknown as jest.Mock).mockClear();
+    render(<Tools {...p} />);
+    expect(threeFiber.useFrame).toHaveBeenCalledTimes(1);
+  });
+
   it("compares only tools inputs that affect rendering", () => {
     const previous = fakeProps();
     previous.toolSlots = configuredUserTools();

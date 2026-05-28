@@ -355,7 +355,7 @@ const weedInstancesPropsEqual = (
 };
 
 export const WeedInstances = React.memo((props: WeedInstancesProps) => {
-  if (!props.visible) { return <></>; }
+  if (!props.visible || props.weeds.length == 0) { return <></>; }
   return <VisibleWeedInstances {...props} />;
 }, weedInstancesPropsEqual);
 

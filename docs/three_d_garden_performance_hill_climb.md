@@ -17274,3 +17274,105 @@ starter trays still render normally.
 but it did not improve the realistic mount benchmark used for this round.
 
 **Commit:** None
+
+## Round 155
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 791. Register rotary tool frame callbacks only for rotary tools | Avoid per-frame callback registration for every non-rotary tool slot | User tools render with seven saved non-rotary tool slots | Accepted |
+| 792. Replace lodash sort in tool-slot conversion | Reduce saved tool-slot conversion overhead for the common small list | Seven saved tool slots passed through `convertSlotsWithTools` | Rejected |
+| 793. Skip empty visible plant instances | Avoid grouping work for an empty visible plant-instance render | Empty visible `PlantInstances` render | Rejected |
+| 794. Skip empty visible weed instances before texture/frame setup | Avoid weed texture load and frame callback when no weeds are present | Empty visible `WeedInstances` render | Accepted |
+| 795. Skip empty visible point instances | Avoid point grouping work when no points are present | Empty visible `PointInstances` render | Rejected |
+
+### 791. Register rotary tool frame callbacks only for rotary tools
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** User tools render with seven saved non-rotary slots: 0.873833 ms
+median, 2.661875 ms p95. The path registered 560 `useFrame` callbacks across
+70 measured renders, or 8 callbacks per render.
+
+**After:** Non-rotary tool frame callback moved into a rotary-only component:
+0.830083 ms median, 2.404125 ms p95. The same benchmark registered zero
+`useFrame` callbacks for non-rotary tools.
+
+**Change:** 100.00% fewer non-rotary tool frame callback registrations, and
+about 4.7% faster by render-time median. In the realistic saved-tool-slot path
+this removes 8 unnecessary per-frame callbacks after mount.
+
+**Outcome:** Accepted. Rotary tools still register one frame callback when the
+active mounted tool is rotary; non-rotary tools no longer subscribe to every
+frame.
+
+**Commit:** `Skip unnecessary 3D frame work for 100.0% fewer callbacks`
+
+### 792. Replace lodash sort in tool-slot conversion
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** `convertSlotsWithTools` for seven saved tool slots: 0.002750 ms
+median, 0.005833 ms p95.
+
+**After:** Native copy plus numeric sort: 0.001125 ms median, 0.002084 ms p95.
+
+**Change:** 59.09% faster by median, saving about 0.001625 ms per seven-slot
+conversion.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute saving was not meaningful for the realistic slot count.
+
+**Commit:** None
+
+### 793. Skip empty visible plant instances
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` render: 0.046875 ms median,
+0.062875 ms p95.
+
+**After:** Early return for an empty plant array: 0.043334 ms median,
+0.059500 ms p95.
+
+**Change:** 7.56% faster by median, saving about 0.003541 ms.
+
+**Outcome:** Rejected after rollback. The path did not clear the 10% threshold,
+and the main `GardenModel` already avoids mounting empty plant instance work in
+ordinary empty-layer cases.
+
+**Commit:** None
+
+### 794. Skip empty visible weed instances before texture/frame setup
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `WeedInstances` render: 0.082125 ms median,
+0.116458 ms p95.
+
+**After:** Early return for an empty weed array: 0.042750 ms median,
+0.058042 ms p95, with no weed texture lookup or frame callback registration.
+
+**Change:** 47.95% faster by median, saving about 0.039375 ms for an empty
+visible weed-instance render.
+
+**Outcome:** Accepted. Empty weed input has no visible output; non-empty weed
+instances still render unchanged.
+
+**Commit:** `Skip unnecessary 3D frame work for 100.0% fewer callbacks`
+
+### 795. Skip empty visible point instances
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `PointInstances` render: 0.044333 ms median,
+0.114459 ms p95.
+
+**After:** Early return for an empty point array: 0.042375 ms median,
+0.088500 ms p95.
+
+**Change:** 4.42% faster by median, saving about 0.001958 ms.
+
+**Outcome:** Rejected after rollback. The path did not clear the 10% threshold,
+and the main `GardenModel` already avoids mounting empty point layers.
+
+**Commit:** None

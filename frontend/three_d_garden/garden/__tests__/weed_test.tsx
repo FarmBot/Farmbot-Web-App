@@ -10,6 +10,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
 import { Quaternion } from "three";
 import {
   createRenderer,
@@ -24,6 +25,7 @@ describe("<Weed />", () => {
   beforeEach(() => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     (useFrame as jest.Mock).mockClear();
+    (useTexture as unknown as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -137,6 +139,15 @@ describe("<Weed />", () => {
     const { container } = render(<WeedInstances {...p} />);
     expect(container.querySelectorAll("instancedmesh").length).toBe(0);
     expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("skips empty visible weed instances", () => {
+    const p = fakeInstanceProps();
+    p.weeds = [];
+    const { container } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(useTexture).not.toHaveBeenCalled();
+    expect(useFrame).not.toHaveBeenCalled();
   });
 
   it("memoizes weed instances across unrelated config churn", () => {
