@@ -68,7 +68,10 @@ const mockInstancesRef: MockInstancesRef =
 import React from "react";
 import { useHelper, useTexture } from "@react-three/drei";
 import { INITIAL, SurfaceDebugOption } from "../../config";
-import { Bed, BedProps, TexturedBedMaterial } from "../bed";
+import {
+  Bed, BedProps, getAxleGeometry, getBracketGeometry, getWheelGeometry,
+  TexturedBedMaterial,
+} from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
 import { Path } from "../../../internal_urls";
@@ -173,6 +176,15 @@ describe("<Bed />", () => {
       .toEqual(1);
     expect(container.querySelectorAll("instancedmesh[name='axle']").length)
       .toEqual(1);
+  });
+
+  it("reuses bed support caster geometries by leg size", () => {
+    expect(getBracketGeometry(100)).toBe(getBracketGeometry(100));
+    expect(getWheelGeometry(100)).toBe(getWheelGeometry(100));
+    expect(getAxleGeometry(100)).toBe(getAxleGeometry(100));
+    expect(getBracketGeometry(100)).not.toBe(getBracketGeometry(120));
+    expect(getWheelGeometry(100)).not.toBe(getWheelGeometry(120));
+    expect(getAxleGeometry(100)).not.toBe(getAxleGeometry(120));
   });
 
   it("memoizes unchanged bed props", () => {

@@ -206,6 +206,38 @@ interface BedSupportsProps {
 
 const noScale = new Vector3(1, 1, 1);
 const noRotation = new Quaternion();
+const bracketGeometryCache: Record<number, ExtrudeGeometry> = {};
+const wheelGeometryCache: Record<number, CylinderGeometry> = {};
+const axleGeometryCache: Record<number, CylinderGeometry> = {};
+
+export const getBracketGeometry = (legSize: number) => {
+  if (!bracketGeometryCache[legSize]) {
+    const shape = new Shape();
+    shape.moveTo(0, 0);
+    shape.lineTo(legSize, 0);
+    shape.lineTo(legSize / 3 * 2, -legSize);
+    shape.lineTo(legSize / 3, -legSize);
+    shape.lineTo(0, 0);
+    bracketGeometryCache[legSize] = new ExtrudeGeometry(shape, {
+      steps: 1,
+      depth: legSize,
+      bevelEnabled: false,
+    });
+  }
+  return bracketGeometryCache[legSize];
+};
+
+export const getWheelGeometry = (legSize: number) => {
+  wheelGeometryCache[legSize] ||=
+    new CylinderGeometry(legSize * 0.625, legSize * 0.625, legSize / 3);
+  return wheelGeometryCache[legSize];
+};
+
+export const getAxleGeometry = (legSize: number) => {
+  axleGeometryCache[legSize] ||=
+    new CylinderGeometry(legSize / 10, legSize / 10, legSize * 1.1);
+  return axleGeometryCache[legSize];
+};
 
 const BedSupports = (props: BedSupportsProps) => {
   const {
@@ -258,25 +290,9 @@ const BedSupports = (props: BedSupportsProps) => {
     legsFlush,
     supports,
   ]);
-  const bracketGeometry = React.useMemo(() => {
-    const shape = new Shape();
-    shape.moveTo(0, 0);
-    shape.lineTo(legSize, 0);
-    shape.lineTo(legSize / 3 * 2, -legSize);
-    shape.lineTo(legSize / 3, -legSize);
-    shape.lineTo(0, 0);
-    return new ExtrudeGeometry(shape, {
-      steps: 1,
-      depth: legSize,
-      bevelEnabled: false,
-    });
-  }, [legSize]);
-  const wheelGeometry = React.useMemo(() =>
-    new CylinderGeometry(legSize * 0.625, legSize * 0.625, legSize / 3),
-  [legSize]);
-  const axleGeometry = React.useMemo(() =>
-    new CylinderGeometry(legSize / 10, legSize / 10, legSize * 1.1),
-  [legSize]);
+  const bracketGeometry = getBracketGeometry(legSize);
+  const wheelGeometry = getWheelGeometry(legSize);
+  const axleGeometry = getAxleGeometry(legSize);
   // eslint-disable-next-line no-null/no-null
   const legRef = React.useRef<ThreeInstancedMesh>(null);
   // eslint-disable-next-line no-null/no-null

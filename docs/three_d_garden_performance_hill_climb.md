@@ -18640,3 +18640,187 @@ solar render.
 only the repeated extruded geometry allocation is avoided.
 
 **Commit:** This commit (`Share 3D garden star and solar geometry for 19.9% faster solar renders`)
+
+## Round 169
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 861. Share bed-support caster geometries by leg size | Avoid rebuilding identical bracket, wheel, and axle geometries across bed remounts | Default `Bed` render | Accepted |
+| 862. Reuse bed-support caster matrix intermediate | Avoid cloning and multiplying the same leg/caster matrix twice for each support | Default `Bed` render | Rejected |
+| 863. Reuse solar cell placement object | Avoid constructing a new `Object3D` every time solar cell matrices are assigned | Visible `Solar` render | Rejected |
+| 864. Hoist packaging offset arrays | Avoid rebuilding static strap and edge-protector coordinate arrays on packaging mounts | `Packaging` render with `packaging=true`, `kitVersion="v1.7"` | Rejected |
+| 865. Cache power-supply cable colors when debug is off | Avoid repeated color helper calls and global counter checks in the default cable path | Default `PowerSupply` render | Rejected |
+
+### 861. Share bed-support caster geometries by leg size
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render: 0.466000 ms median, 0.732333 ms p95.
+
+**After:** Lazy cached caster bracket, wheel, and axle geometries keyed by
+leg size: 0.358000 ms median, 0.559042 ms p95.
+
+**Change:** 23.18% faster by median, saving about 0.108000 ms per default
+bed render.
+
+**Outcome:** Accepted. The generated geometry dimensions are unchanged, and
+the existing instanced meshes already opt out of disposing shared geometry.
+
+**Commit:** This commit (`Share bed support geometries for 23.2% faster bed renders`)
+
+### 862. Reuse bed-support caster matrix intermediate
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render after item 861: 0.239250 ms median,
+0.284625 ms p95.
+
+**After:** Reuse a `casterMatrix` intermediate before multiplying the wheel
+matrix: 0.248000 ms median, 0.331958 ms p95.
+
+**Change:** 3.66% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 863. Reuse solar cell placement object
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Visible `Solar` render after item 862 rollback: 0.105667 ms
+median, 0.163625 ms p95.
+
+**After:** Module-level `Object3D` for assigning solar cell matrices:
+0.102458 ms median, 0.184792 ms p95.
+
+**Change:** 3.04% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and p95 regressed.
+
+**Commit:** None
+
+### 864. Hoist packaging offset arrays
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** `Packaging` render with `packaging=true`, `kitVersion="v1.7"` after
+item 863 rollback: 0.095708 ms median, 0.135583 ms p95.
+
+**After:** Module-level strap coordinate arrays and edge-protector sign pairs:
+0.099042 ms median, 0.126625 ms p95.
+
+**Change:** 3.48% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 865. Cache power-supply cable colors when debug is off
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `PowerSupply` render after item 864 rollback: 0.035750 ms
+median, 0.043083 ms p95.
+
+**After:** Use precomputed default cable colors and call the debug color helper
+only when cable debug is enabled: 0.036667 ms median, 0.042458 ms p95.
+
+**Change:** 2.56% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+## Round 170
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 866. Share weed icon plane geometry | Avoid rebuilding the same instanced weed icon plane geometry across weed mounts | `WeedInstances` render with 50 weeds | Rejected |
+| 867. Build point instance groups without dynamic object buckets | Avoid object-key grouping overhead for the two known point alpha buckets | `PointInstances` render with 50 saved and unsaved points | Rejected |
+| 868. Share north-arrow extrude geometries | Avoid rebuilding arrow and N extrude geometry on north-arrow remounts | Default `NorthArrow` render | Rejected |
+| 869. Share zoom beacon sphere geometries | Avoid rebuilding identical beacon sphere geometry for each beacon render | `ZoomBeacons` render with animation disabled | Rejected |
+| 870. Share single weed radius geometry | Reuse existing weed radius geometry in the single `WeedBase` sphere path | Single `Weed` render | Rejected |
+
+### 866. Share weed icon plane geometry
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `WeedInstances` render with 50 weeds: 0.127292 ms median,
+0.273500 ms p95.
+
+**After:** Shared instanced weed icon plane geometry passed through mesh args:
+0.117625 ms median, 0.237666 ms p95.
+
+**Change:** 7.59% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 867. Build point instance groups without dynamic object buckets
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `PointInstances` render with 50 saved and unsaved points after item
+866 rollback: 0.132875 ms median, 0.181208 ms p95.
+
+**After:** Two lazy alpha groups built with an indexed loop: 0.124334 ms
+median, 0.170916 ms p95.
+
+**Change:** 6.43% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 868. Share north-arrow extrude geometries
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** Default `NorthArrow` render after item 867 rollback: 0.033458 ms
+median, 0.043625 ms p95.
+
+**After:** Shared `ExtrudeGeometry` instances on regular meshes: 0.043541 ms
+median, 0.078292 ms p95.
+
+**Change:** 30.14% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 869. Share zoom beacon sphere geometries
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `ZoomBeacons` render with animation disabled after item 868
+rollback: 0.239667 ms median, 0.318208 ms p95.
+
+**After:** Cached beacon `SphereGeometry` objects keyed by radius:
+0.242208 ms median, 0.359458 ms p95.
+
+**Change:** 1.06% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower and p95 regressed.
+
+**Commit:** None
+
+### 870. Share single weed radius geometry
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** Single `Weed` render after item 869 rollback: 0.034625 ms median,
+0.043208 ms p95.
+
+**After:** Shared weed radius geometry in the single weed radius mesh:
+0.036292 ms median, 0.045875 ms p95.
+
+**Change:** 4.82% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
