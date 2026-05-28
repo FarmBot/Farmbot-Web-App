@@ -5121,6 +5121,22 @@ comparing only north visibility, heading, bed dimensions, and bed height/offset.
 Expected return: less bed-layer churn without changing arrow placement,
 rotation, geometry, or visibility.
 
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+north arrow 90 times with only an unrelated config field changed.
+
+**Before:** 3.749 ms per 90-rerender batch.
+
+**After:** 1.113 ms per 90-rerender batch.
+
+**Change:** 70.3% faster, saving 2.636 ms per realistic north-arrow
+config-churn batch.
+
+**Outcome:** Accepted; the north arrow now skips unrelated config-object churn
+while north visibility, heading, bed dimensions, and vertical placement changes
+still invalidate the arrow.
+
+**Commit:** `Memoize north arrow churn for 70.3% faster rerenders`
+
 ### Idea 294: Memoize `GroupOrderVisual` wrapper inputs
 
 **Description:** Add a relevant-field memo boundary around the group-order
