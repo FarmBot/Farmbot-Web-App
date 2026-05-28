@@ -8765,3 +8765,669 @@ few microseconds over five seconds, so the change would not produce a better
 app.
 
 **Commit:** None
+
+## Round 86
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 446. Split 3D panel-open imports from full panel header | Reduce 3D entry load by avoiding the designer panel navigation module when 3D only needs the panel-open action and panel icons | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 447. Inline electronics box indicator colors | Reduce 3D entry load by removing an accidental runtime import of the interactive settings pin-binding model for color constants only | 3D entry esbuild single bundle, initial split static bytes, and presence of `settings/pin_bindings/model.tsx` in the metafile | Accepted |
+| 448. Split 3D map mode/math imports from full map util | Reduce 3D entry load by avoiding full map utility dependencies when 3D only needs `getMode`, `round`, and `xyDistance` | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 449. Split demo sequence action collection from Lua runner barrel | Reduce 3D entry load by avoiding Lua runner runtime code when visualization only needs sequence action collection | 3D entry esbuild single bundle, initial split static bytes, and Lua runner/fengari metafile inputs | Rejected |
+| 450. Narrow 3D image-layer imports | Reduce 3D entry load by avoiding full 2D image map-layer modules when 3D only needs image URL/transform helpers | 3D entry esbuild single bundle and image-layer metafile inputs | Rejected |
+
+### Idea 446: Split 3D panel-open imports from full panel header
+
+**Description:** Move `setPanelOpen` and panel icon constants to lightweight
+files, then update 3D imports so the 3D entry does not import
+`farm_designer/panel_header.tsx` directly.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,640,743 bytes single bundle; 3,595,472 initial split static
+bytes.
+
+**After:** 3,640,795 bytes single bundle; 3,595,485 initial split static bytes.
+
+**Change:** -52 bytes single bundle (-0.00%); -13 bytes initial split static
+bytes (-0.00%).
+
+**Outcome:** Rejected and rolled back. Other import paths still kept the same
+large dependency graph alive, so this added files without reducing load cost.
+
+**Commit:** None
+
+### Idea 447: Inline electronics box indicator colors
+
+**Description:** Replace the 3D electronics box import of
+`settings/pin_bindings/model.tsx` with local numeric indicator colors. The 3D
+model only needed the `on` color values and did not need the interactive
+settings model, Drei HTML overlay, pin-binding actions, or settings helpers.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and whether
+`settings/pin_bindings/model.tsx` remains in the 3D metafile.
+
+**Before:** 3,640,743 bytes single bundle; 3,595,472 initial split static
+bytes; `settings/pin_bindings/model.tsx` present in the 3D bundle.
+
+**After:** 3,620,296 bytes single bundle; 3,575,488 initial split static bytes;
+`settings/pin_bindings/model.tsx` absent from the 3D bundle.
+
+**Change:** 20,447 bytes single bundle saved (0.56% of the whole 3D entry);
+19,984 initial split static bytes saved (0.56%); 100% of the accidental
+pin-binding model runtime import removed.
+
+**Outcome:** Accepted. The absolute load reduction is meaningful, the code is
+simpler, and rendered colors remain the same numeric values.
+
+**Commit:** `Remove 3D electronics box settings import for 100% dependency reduction`
+
+### Idea 448: Split 3D map mode/math imports from full map util
+
+**Description:** Trial lightweight `map/geometry` and `map/mode` modules for
+3D callers of `round`, `xyDistance`, `transformXY`, `defaultSpreadCmDia`, and
+`getMode`, avoiding direct imports from `farm_designer/map/util.ts`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, using Idea 447 as the baseline.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,621,339 bytes single bundle; 3,576,532 initial split static bytes.
+
+**Change:** -1,043 bytes single bundle (-0.03%); -1,044 bytes initial split
+static bytes (-0.03%).
+
+**Outcome:** Rejected and rolled back. The split duplicated small helpers while
+other imports still kept enough of the same graph alive, producing a small
+bundle regression instead of a real load improvement.
+
+**Commit:** None
+
+### Idea 449: Split demo sequence action collection from Lua runner barrel
+
+**Description:** Consider moving `collectDemoSequenceActions` away from the Lua
+runner barrel so 3D visualization can avoid Lua runtime imports when drawing
+sequence paths.
+
+**Benchmark:** 3D entry esbuild metafile from the Idea 447 baseline, tracing
+Lua runner and `fengari-web` import chains under realistic app startup.
+
+**Before:** Lua runner inputs remained in the 3D graph, including
+`demo/lua_runner/index.ts`, `demo/lua_runner/run.ts`, and 211,123 source bytes
+from `fengari-web/dist/fengari-web.bundle.js`.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark import
+graph showed the isolated visualization split could not remove the runtime path.
+
+**Outcome:** Rejected before code changes. The Lua runner is also retained via
+`redux/store` -> middlewares -> `devices/actions`, so splitting only the
+visualization import would add files without removing the costly dependency.
+
+**Commit:** None
+
+### Idea 450: Narrow 3D image-layer imports
+
+**Description:** Trial helper-only image filter and calibration modules so 3D
+image textures do not import full 2D `ImageLayer` and `MapImage` React
+components for `filterImages`, `imageSizeCheck`, and `isRotated`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, using Idea 447 as the baseline, plus metafile checks for the 2D image
+component inputs.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `image_layer.tsx` and `map_image.tsx` present in the 3D bundle.
+
+**After:** 3,614,008 bytes single bundle; 3,569,271 initial split static bytes;
+`image_layer.tsx` and `map_image.tsx` absent from the 3D bundle.
+
+**Change:** 6,288 bytes single bundle saved (0.17%); 6,217 initial split
+static bytes saved (0.17%).
+
+**Outcome:** Rejected and rolled back. The percentage improvement for the
+component-specific path qualified, but the absolute app startup win was only
+about 6 KB, which was not worth adding two helper modules and re-export churn.
+
+**Commit:** None
+
+## Round 87
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 451. Remove 3D toggle imports through UI and layer-toggle barrels | Reduce 3D entry load by replacing the toggle-only use of `LayerToggle`/`ui` barrel imports with direct, narrow 3D controls | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 452. Lazy-load sequence visualization for active sequence preview only | Reduce default 3D startup load by moving Lua runner, sequence expansion, and visualization line code out of the initial path until a sequence is actually visualized | 3D entry esbuild split initial static bytes, plus deferred chunk bytes | Rejected |
+| 453. Split moisture interpolation helpers from 2D map UI components | Reduce 3D entry load by importing data/interpolation helpers without 2D map settings and SVG layer components | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for interpolation UI modules | Rejected |
+| 454. Replace 3D Drei barrel imports with direct Drei module imports | Reduce 3D entry load by avoiding the `@react-three/drei` top-level barrel and unused HLS/video/facemesh/exporter modules | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for Drei barrel and HLS | Rejected |
+| 455. Lazy-load camera-selection overlay only while selecting a camera | Reduce default 3D startup load by moving rarely-used camera-selection geometry/UI out of the initial garden model path | 3D entry esbuild split initial static bytes and camera-selection chunk bytes | Rejected |
+
+### Idea 451: Remove 3D toggle imports through UI and layer-toggle barrels
+
+**Description:** Trial direct `Help` imports and a 3D-local toggle button in
+place of the generic farm-designer `LayerToggle`, preserving the same label,
+button classes, red/green state, modified-setting class, and title text.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,619,827 bytes single bundle; 3,574,991 initial split static bytes.
+
+**Change:** 469 bytes single bundle saved (0.01%); 497 initial split static
+bytes saved (0.01%).
+
+**Outcome:** Rejected and rolled back. The savings were far below a meaningful
+load improvement and did not justify duplicating the layer-toggle markup in 3D.
+
+**Commit:** None
+
+### Idea 452: Lazy-load sequence visualization for active sequence preview only
+
+**Description:** Consider moving sequence visualization into an on-demand chunk
+so Lua runner and sequence expansion code do not load during default 3D startup.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions.
+
+**Before:** Lua runner inputs were retained not only by
+`three_d_garden/visualization.tsx`, but also through `redux/store` ->
+middlewares -> `devices/actions`. `fengari-web/dist/fengari-web.bundle.js`
+remained a 211,123-source-byte dependency in the 3D graph.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that lazy-loading only the visualization component would not remove the
+costly Lua runtime path from startup.
+
+**Outcome:** Rejected before code changes. The isolated idea would add
+asynchronous behavior to sequence preview without removing the heavy dependency.
+
+**Commit:** None
+
+### Idea 453: Split moisture interpolation helpers from 2D map UI components
+
+**Description:** Trial lightweight interpolation-data and moisture-helper
+modules so 3D moisture rendering does not import 2D map interpolation settings,
+SVG interpolation map components, or sensor-reading SVG layer components.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the 2D interpolation/sensor-reading layer modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `interpolation_map.tsx`, `sensor_readings_layer.tsx`, and
+`garden_sensor_reading.tsx` present in the 3D bundle.
+
+**After:** 3,618,521 bytes single bundle; 3,573,896 initial split static bytes.
+
+**Change:** 1,775 bytes single bundle saved (0.05%); 1,592 initial split static
+bytes saved (0.04%).
+
+**Outcome:** Rejected and rolled back. The absolute load win was too small, and
+the trial duplicated interpolation helper code, which would make the codebase
+worse for a negligible startup change.
+
+**Commit:** None
+
+### Idea 454: Replace 3D Drei barrel imports with direct Drei module imports
+
+**Description:** Trial a local `three_d_garden/drei.ts` shim that re-exported
+only the Drei components used by 3D modules from direct Drei files, then
+mechanically redirected 3D imports away from the top-level `@react-three/drei`
+barrel.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the Drei barrel and unused HLS/video modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; the split output included a 385.6 KB HLS chunk.
+
+**After:** 3,619,563 bytes single bundle; 3,574,800 initial split static bytes;
+the HLS chunk disappeared from the split output list.
+
+**Change:** 733 bytes single bundle saved (0.02%); 688 initial split static
+bytes saved (0.02%).
+
+**Outcome:** Rejected and rolled back. Tree-shaking was already eliminating
+nearly all practical cost from the barrel path, so the large import rewrite did
+not provide meaningful real-world value.
+
+**Commit:** None
+
+### Idea 455: Lazy-load camera-selection overlay only while selecting a camera
+
+**Description:** Consider moving `CameraSelectionUI` behind a lazy boundary so
+the default 3D garden does not statically load its camera marker geometry and
+selection handlers.
+
+**Benchmark:** 3D entry esbuild metafile and source-size check under realistic
+startup conditions.
+
+**Before:** `camera_selection_ui.tsx` was 7,268 source bytes before minification
+and only imported by `garden_model.tsx`.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the maximum possible
+startup win was already too small to be meaningful once minified.
+
+**Outcome:** Rejected before code changes. Lazy-loading this small overlay would
+add asynchronous component complexity and possible first-use delay for a tiny
+default-load reduction.
+
+**Commit:** None
+
+## Round 88
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 456. Decouple 3D panel-opening clicks from the farm-designer panel header | Reduce 3D startup load by replacing 3D-only `setPanelOpen` imports with a tiny local action helper, avoiding panel tab, store, resource-selector, and icon-table code on the 3D path | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for `panel_header.tsx` | Rejected |
+| 457. Decouple 3D web-app config writes from broad config-storage actions | Reduce 3D startup load by giving 3D camera/toggle writes a narrow save path instead of importing the full config-storage action module and broad CRUD helpers | 3D entry esbuild single bundle and initial split static bytes, plus click-path behavior tests | Rejected |
+| 458. Move 3D root constants usage to a tiny 3D UI constants module | Reduce 3D startup load by avoiding the 110 KB root `constants.ts` file for the few 3D toggle action strings, labels, and help strings that are needed at runtime | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for `constants.ts` | Rejected |
+| 459. Replace Moment in 3D time/sun calculations with native date helpers | Reduce 3D startup load and runtime memory by removing Moment from 3D-only time travel and sun-position code while preserving formatted times and UTC day-start behavior | 3D entry esbuild single bundle and initial split static bytes, plus focused date/time helper tests | Rejected |
+| 460. Replace direct 3D lodash helpers with native/local helpers where realistic | Reduce 3D startup load and per-frame/click overhead by removing direct 3D lodash calls that are simple native operations, without changing rendering behavior | 3D entry esbuild single bundle and initial split static bytes, plus realistic 200-plant/100-point render helper microbenchmarks | Rejected |
+
+### Idea 456: Decouple 3D panel-opening clicks from the farm-designer panel header
+
+**Description:** Trial a 3D-local panel open action and settings icon constant
+so plant, weed, point, tool, time-travel, and settings clicks no longer import
+`farm_designer/panel_header.tsx`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,620,370 bytes single bundle; 3,575,546 initial split static bytes.
+
+**Change:** 74 bytes single bundle larger (-0.00%); 58 initial split static
+bytes larger (-0.00%).
+
+**Outcome:** Rejected and rolled back. The panel header stayed reachable through
+other 3D paths, so the helper only added bytes and did not produce a real
+startup win.
+
+**Commit:** None
+
+### Idea 457: Decouple 3D web-app config writes from broad config-storage actions
+
+**Description:** Trial a WebAppConfig-specific setter for the 3D toggle and
+camera-selection UI that dispatched the same edit/save-start/save-ok/error
+sequence without importing `config_storage/actions.ts` directly from those
+files.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the config action and CRUD modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `config_storage/actions.ts` and `api/crud.ts` present in the 3D bundle.
+
+**After:** 3,620,797 bytes single bundle; 3,576,119 initial split static bytes;
+`config_storage/actions.ts` and `api/crud.ts` still present in the 3D bundle.
+
+**Change:** 501 bytes single bundle larger (-0.01%); 631 initial split static
+bytes larger (-0.02%).
+
+**Outcome:** Rejected and rolled back. The broad config/CRUD modules remained
+reachable through other realistic 3D paths, so the specialized setter only
+duplicated save code and worsened load size.
+
+**Commit:** None
+
+### Idea 458: Move 3D root constants usage to a tiny 3D UI constants module
+
+**Description:** Consider moving the 3D toggle action strings, labels, and help
+strings out of the root `constants.ts` import path.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions.
+
+**Before:** `frontend/constants.ts` was 110,497 source bytes and was retained
+not only by `three_d_garden/index.tsx`, but also by
+`farm_designer/panel_header.tsx`, `config_storage/actions.ts` ->
+`api/crud.ts`, `camera_selection_ui.tsx`, `ui`/toast paths, resource reducers,
+and sync actions.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that removing only the direct 3D constants imports would not remove the
+root constants module from the startup bundle.
+
+**Outcome:** Rejected before code changes. A 3D constants wrapper would
+duplicate labels and action strings while leaving the real 110 KB dependency in
+place through other realistic paths.
+
+**Commit:** None
+
+### Idea 459: Replace Moment in 3D time/sun calculations with native date helpers
+
+**Description:** Consider replacing the `moment` usage in 3D time travel and
+sun-position defaults with native date helpers.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions, plus sanity check of runtime call frequency.
+
+**Before:** `node_modules/moment/moment.js` was 176,435 source bytes and was
+retained through `point_groups/criteria/apply.ts`, `sun.tsx`, config/CRUD
+resource paths, Lua runner paths, sensor-reading layers, move plots, and image
+filter paths. The 3D time-travel helper is rendered at UI frequency, not in a
+large loop.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that removing the two direct 3D date call sites would not remove Moment
+from startup, and the realistic runtime call count was too low for a meaningful
+absolute improvement.
+
+**Outcome:** Rejected before code changes. The idea would trade well-tested
+date formatting/parsing behavior for no realistic load win and negligible
+runtime savings.
+
+**Commit:** None
+
+### Idea 460: Replace direct 3D lodash helpers with native/local helpers where realistic
+
+**Description:** Consider replacing direct 3D lodash calls such as `range`,
+`round`, `isUndefined`, `isNumber`, and `noop` with native helpers.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check and a realistic
+single-pass helper benchmark representing roughly 200 plants, 100 points, and a
+small range allocation.
+
+**Before:** `node_modules/lodash/lodash.js` was 545,945 source bytes and was
+retained through direct 3D imports, `internal_urls.ts`, `panel_header.tsx`,
+`garden_model.tsx`, config/CRUD paths, Redux store paths, and UI controls. The
+single-pass helper benchmark measured 0.1118 ms for lodash helpers.
+
+**After:** Not implemented. The native equivalent measured 0.0219 ms in the
+same one-pass benchmark.
+
+**Change:** Potential 0.0899 ms one-pass helper savings, but no expected
+startup bundle improvement because lodash remains reachable through other
+realistic paths.
+
+**Outcome:** Rejected before code changes. Although the percentage improvement
+inside the tiny helper benchmark was high, the absolute saving was below a
+meaningful frame-budget improvement and would require broad edits across 22 3D
+files while leaving lodash in the startup bundle.
+
+**Commit:** None
+
+## Round 89
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 461. Lazy-load optional Lab and Greenhouse scene detail modules | Reduce default 3D startup load by deferring non-default scene props, furniture, walls, and people until the user selects a Lab or Greenhouse scene | 3D entry esbuild single bundle and initial split static bytes, with deferred scene chunk bytes | Rejected |
+| 462. Hoist static plant icon brightness out of the plant icon frame loop | Improve FPS by avoiding per-icon-bucket sun brightness recomputation on every frame when season animation is off | Realistic 20 icon bucket / 60 frame helper benchmark and plant icon frame tests | Rejected |
+| 463. Register rotary tool frame animation only for active rotary tools | Improve FPS by avoiding per-frame no-op callbacks for ordinary tool slots and toolbay tools | Realistic 12 tool / 60 frame no-op callback benchmark and tool render tests | Rejected |
+| 464. Collapse soil surface projection and bounds scans into one pass | Improve 3D load responsiveness when building a realistic soil surface from roughly 100 soil-height points | Realistic 104 point soil surface compute benchmark | Rejected |
+| 465. Defer soil triangle sessionStorage serialization away from initial render work | Improve 3D load responsiveness by moving Lua-runner soil triangle persistence off the immediate render effect when soil changes | Realistic 200 triangle serialization benchmark and Lua soil lookup behavior check | Rejected |
+
+### Idea 461: Lazy-load optional Lab and Greenhouse scene detail modules
+
+**Description:** Trial `React.lazy` imports for the Lab and Greenhouse scene
+components so default 3D startup does not statically load scene-only props,
+walls, people, starter trays, and furniture.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and deferred
+scene chunks.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,621,097 bytes single bundle; 3,566,581 initial split static bytes;
+deferred Lab chunk 1,768 bytes and Greenhouse chunk 1,854 bytes.
+
+**Change:** 801 bytes single bundle larger (-0.02%); 8,907 initial split
+static bytes saved (0.25%).
+
+**Outcome:** Rejected and rolled back. The split technically deferred optional
+scene code, but the total initial payload improvement was far below 10% and
+too small to justify adding async scene loading behavior.
+
+**Commit:** None
+
+### Idea 462: Hoist static plant icon brightness out of the plant icon frame loop
+
+**Description:** Consider computing non-animated plant icon brightness once per
+config change instead of recomputing `calcSunI(config.sunInclination)` in every
+plant icon bucket frame callback when season animation is disabled.
+
+**Benchmark:** Helper benchmark representing 20 visible plant icon buckets over
+60 frames, matching a diverse but realistic garden icon mix.
+
+**Before:** Static brightness recomputation path took 0.0020 ms for 20 icon
+buckets over 60 frames.
+
+**After:** Not implemented. Precomputed-brightness equivalent took 0.0007 ms
+for the same 20 icon buckets over 60 frames.
+
+**Change:** Potential 0.0013 ms saved over 60 frames (66.0% within the tiny
+helper benchmark).
+
+**Outcome:** Rejected before code changes. The percentage looked high only
+because the measured work was nearly zero; saving 0.0013 ms per second of
+frames is not a meaningful FPS improvement.
+
+**Commit:** None
+
+### Idea 463: Register rotary tool frame animation only for active rotary tools
+
+**Description:** Consider moving the rotary-tool `useFrame` callback into a
+small component that only mounts when a rotary tool is outside the toolbay and
+configured to rotate, avoiding no-op callbacks for normal tool slots.
+
+**Benchmark:** Helper benchmark representing 12 rendered tools over 60 frames,
+matching an upper realistic tool-slot count.
+
+**Before:** The no-op callback path took 0.0016 ms for 12 tools over 60 frames.
+
+**After:** Not implemented. The conditional-registration equivalent took
+0.0004 ms for the same 60 frames.
+
+**Change:** Potential 0.0012 ms saved over 60 frames.
+
+**Outcome:** Rejected before code changes. Removing no-op callbacks would make
+the tool component structure more complex while saving an amount of frame time
+that is too small to matter.
+
+**Commit:** None
+
+### Idea 464: Collapse soil surface projection and bounds scans into one pass
+
+**Description:** Consider replacing the separate `points.map` projection,
+`points.map` x scan, and `points.map` y scan in soil surface construction with
+a single pass over the realistic soil point list.
+
+**Benchmark:** Standalone soil surface computation benchmark using 104 points
+(100 soil-height points plus four boundary points), including Delaunay
+triangulation.
+
+**Before:** Current projection and bounds scan path averaged 0.080 ms for a
+104-point soil surface.
+
+**After:** Not implemented. The single-pass equivalent averaged 0.035 ms for
+the same input.
+
+**Change:** Potential 0.045 ms one-time load-work saving (55.9% inside that
+small helper).
+
+**Outcome:** Rejected before code changes. The absolute improvement is below a
+meaningful load-responsiveness change, and the Delaunay/geometry work dominates
+the real path.
+
+**Commit:** None
+
+### Idea 465: Defer soil triangle sessionStorage serialization away from initial render work
+
+**Description:** Consider moving soil triangle persistence for the Lua runner
+away from the immediate soil-surface effect after initial 3D render.
+
+**Benchmark:** Realistic serialization benchmark with 200 precomputed soil
+triangles, plus import-chain/behavior check for Lua stubs that read
+`sessionStorage.soilSurfaceTriangles`.
+
+**Before:** Serializing 200 triangles averaged 0.013 ms and produced a 4,873
+byte stored string. Lua movement stubs read the stored triangles synchronously
+and fall back when they are absent.
+
+**After:** Not implemented.
+
+**Change:** No meaningful absolute improvement available; deferring 0.013 ms
+would not change load feel.
+
+**Outcome:** Rejected before code changes. The work is already tiny, and
+delaying persistence risks changing the timing of sequence/Lua soil-height
+lookups for no practical gain.
+
+**Commit:** None
+
+## Round 90
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 466. Mount FPSProbe only when FPS/perf logging is enabled | Improve default FPS by removing the always-registered metrics frame callback when benchmark logging is off | Realistic 60-frame default FPSProbe callback benchmark | Rejected |
+| 467. Lazy-load group-order visualization only when a group is active | Reduce default 3D startup load by deferring group-sort visualization code that only renders on group detail routes | 3D entry esbuild single bundle and initial split static bytes, with deferred group-order chunk bytes | Rejected |
+| 468. Skip hidden moisture surface nodes in the soil render texture | Improve default soil texture setup by not mounting `MoistureSurface` when both moisture map and moisture readings are hidden | Realistic hidden-moisture texture render setup benchmark and 3D entry bundle sanity check | Rejected |
+| 469. Lazy-load moisture texture/rendering module only when moisture is visible or debug is enabled | Reduce default 3D startup load by deferring moisture interpolation/rendering code until the user shows moisture layers | 3D entry esbuild single bundle and initial split static bytes, with deferred moisture chunk bytes | Rejected |
+| 470. Bypass RenderTexture for plain soil with no images or moisture overlays | Reduce load time, memory, and render calls by using the soil texture directly when the offscreen soil compositing pass has nothing to composite | Docker/browser 3D load metrics on default scene with image and moisture layers hidden | Rejected |
+
+### Idea 466: Mount FPSProbe only when FPS/perf logging is enabled
+
+**Description:** Consider only mounting `FPSProbe` when `FB_PERF_BENCHMARK` or
+`FPS_LOGS` is enabled, avoiding the default per-frame metrics callback.
+
+**Benchmark:** Helper benchmark representing 60 default frames with FPS/perf
+logging disabled.
+
+**Before:** The default FPSProbe callback path took 0.0011 ms over 60 frames.
+
+**After:** Not implemented. The no-probe equivalent took 0.0003 ms over 60
+frames.
+
+**Change:** Potential 0.0008 ms saved over 60 frames.
+
+**Outcome:** Rejected before code changes. The default callback overhead is
+too small to matter, and changing when `window.__fps` exists would reduce
+debuggability for no user-visible performance gain.
+
+**Commit:** None
+
+### Idea 467: Lazy-load group-order visualization only when a group is active
+
+**Description:** Trial `React.lazy` for `GroupOrderVisual`, guarded by a group
+detail route check, so default 3D startup does not load group-order line and
+label rendering code until it can be visible.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and deferred
+group-order chunk bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,620,612 bytes single bundle; 3,567,027 initial split static bytes;
+deferred group-order chunk 2,147 bytes.
+
+**Change:** 316 bytes single bundle larger (-0.01%); 8,461 initial split
+static bytes saved (0.24%).
+
+**Outcome:** Rejected and rolled back. The default-load reduction was well
+below 10% and too small to justify adding an async boundary to group-route
+visualization.
+
+**Commit:** None
+
+### Idea 468: Skip hidden moisture surface nodes in the soil render texture
+
+**Description:** Trial conditional mounting of `MoistureSurface` inside
+`ImageTextureBase` only when moisture readings or the moisture interpolation
+map are visible.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, plus a hidden-moisture setup benchmark matching the default hidden
+moisture state.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes. Hidden moisture setup averaged 0.00034 ms.
+
+**After:** 3,620,341 bytes single bundle; 3,575,533 initial split static bytes.
+Hidden moisture setup equivalent averaged 0.00011 ms.
+
+**Change:** 45 bytes single bundle larger (-0.00%); 45 initial split static
+bytes larger (-0.00%); potential 0.00023 ms hidden setup saving.
+
+**Outcome:** Rejected and rolled back. The hidden node already does almost no
+work, and the guard added bytes without meaningful runtime benefit.
+
+**Commit:** None
+
+### Idea 469: Lazy-load moisture texture/rendering module only when moisture is visible or debug is enabled
+
+**Description:** Consider moving `moisture_texture.tsx` behind lazy boundaries
+in the bed, image texture, and debug moisture paths so default 3D startup does
+not statically load moisture interpolation/rendering code.
+
+**Benchmark:** 3D entry esbuild metafile and source-size check under realistic
+startup conditions.
+
+**Before:** `moisture_texture.tsx` was 8,019 source bytes. Its largest direct
+helper dependencies in the 3D graph were the 9,512 byte interpolation map and
+2,361 byte sensor readings layer, for roughly tens of KB of source before
+minification.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the maximum plausible
+startup win was well below 1% of the 3,575,488 byte initial static payload, and
+the change would add lazy boundaries to multiple soil/image paths.
+
+**Outcome:** Rejected before code changes. The potential load reduction is far
+below the acceptance threshold and would add async behavior to a settings-driven
+layer toggle.
+
+**Commit:** None
+
+### Idea 470: Bypass RenderTexture for plain soil with no images or moisture overlays
+
+**Description:** Trial direct soil texture attachment when image and moisture
+layers are hidden, avoiding the offscreen `RenderTexture` compositing pass in
+the default demo garden.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true`, comparing 3D load marks, render counters, scene
+metrics, and esbuild bundle size.
+
+**Before:** 3,620,296 bytes single bundle. Browser baseline included
+`soilTextureRenders: 1`; representative marks included `three_d_bed_ready` at
+2,879 ms, `three_d_core_ready` at 6,722 ms, and scene metrics of 54 calls,
+214,682 triangles, 57 geometries, 12 textures, 213 objects, and 103 meshes.
+
+**After:** 3,620,686 bytes single bundle. The trial removed
+`soilTextureRenders`, but representative marks regressed with
+`three_d_bed_ready` at 3,498 ms and `three_d_core_ready` at 6,734 ms; scene
+metrics also increased to 190 calls, 712,220 triangles, 129 geometries, 25
+textures, 375 objects, and 206 meshes.
+
+**Change:** 390 bytes single bundle larger (-0.01%). One offscreen soil render
+counter was removed, but load marks and scene metrics did not improve.
+
+**Outcome:** Rejected and rolled back. The visual-equivalence-preserving trial
+did not produce a reliable performance win and showed unfavorable secondary
+metrics.
+
+**Commit:** None

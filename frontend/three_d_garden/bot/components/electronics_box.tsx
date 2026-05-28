@@ -6,7 +6,6 @@ import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
 import { Group, Mesh } from "../../components";
-import { IColor } from "../../../settings/pin_bindings/model";
 
 type Box = GLTF & {
   nodes: {
@@ -45,22 +44,30 @@ type Farmduino = GLTF & {
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
 
+const BoxButtonColor = {
+  estop: 0xef4037,
+  unlock: 0xf5e909,
+  connect: 0x1073e0,
+  sync: 0x62c020,
+  blank: 0xffffff,
+};
+
 const buttons = (kitVersion: string) => {
   switch (kitVersion) {
     case "v1.7":
       return [
-        { position: -60, color: IColor.estop.on },
-        { position: -30, color: IColor.unlock.on },
-        { position: 0, color: IColor.blank.on },
-        { position: 30, color: IColor.blank.on },
-        { position: 60, color: IColor.blank.on },
+        { position: -60, color: BoxButtonColor.estop },
+        { position: -30, color: BoxButtonColor.unlock },
+        { position: 0, color: BoxButtonColor.blank },
+        { position: 30, color: BoxButtonColor.blank },
+        { position: 60, color: BoxButtonColor.blank },
       ];
     case "v1.8":
     default:
       return [
-        { position: -30, color: IColor.estop.on },
-        { position: 0, color: IColor.unlock.on },
-        { position: 30, color: IColor.blank.on },
+        { position: -30, color: BoxButtonColor.estop },
+        { position: 0, color: BoxButtonColor.unlock },
+        { position: 30, color: BoxButtonColor.blank },
       ];
   }
 };
@@ -75,10 +82,10 @@ const ledsPresent = (kitVersion: string) => {
 };
 
 const LED_INDICATORS = [
-  { position: -45, color: IColor.sync.on },
-  { position: -15, color: IColor.connect.on },
-  { position: 15, color: IColor.blank.on },
-  { position: 45, color: IColor.blank.on },
+  { position: -45, color: BoxButtonColor.sync },
+  { position: -15, color: BoxButtonColor.connect },
+  { position: 15, color: BoxButtonColor.blank },
+  { position: 45, color: BoxButtonColor.blank },
 ];
 
 const LedIndicators = () => {
