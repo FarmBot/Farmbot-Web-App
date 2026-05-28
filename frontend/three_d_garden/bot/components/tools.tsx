@@ -95,6 +95,35 @@ export interface ThreeDTool {
   gantryMounted?: boolean;
 }
 
+const TOOLS_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWallThickness",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "columnLength",
+  "mirrorX",
+  "mirrorY",
+  "negativeZ",
+  "rotary",
+  "sizePreset",
+  "tool",
+  "vacuum",
+  "zGantryOffset",
+];
+
+export const toolsPropsEqual = (prev: ToolsProps, next: ToolsProps) =>
+  prev.toolSlots === next.toolSlots &&
+  prev.mountedToolName === next.mountedToolName &&
+  prev.dispatch === next.dispatch &&
+  prev.getZ === next.getZ &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  TOOLS_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
 export const convertSlotsWithTools =
   (slotsWithTools: SlotWithTool[]): ThreeDTool[] => {
     let troughIndex = 0;
@@ -146,7 +175,7 @@ const PromoToolbay3 = (props: PromoToolbay3Props) => {
   </Group>;
 };
 
-export const Tools = (props: ToolsProps) => {
+const ToolsBase = (props: ToolsProps) => {
   const mirroredBotX = props.config.mirrorX
     ? props.config.botSizeX - props.configPosition.x
     : props.configPosition.x;
@@ -196,6 +225,8 @@ export const Tools = (props: ToolsProps) => {
         inToolbay={true} />)}
   </Group>;
 };
+
+export const Tools = React.memo(ToolsBase, toolsPropsEqual);
 
 interface OpacityFilterProps {
   opacity: number;

@@ -38,7 +38,7 @@ import { useGLTF } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
-import { Tools, ToolsProps } from "../tools";
+import { Tools, ToolsProps, toolsPropsEqual } from "../tools";
 import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
@@ -203,6 +203,37 @@ describe("<Tools />", () => {
     expect(container).toContainHTML("weeder");
     expect(container).toContainHTML("seeder");
     expect(container).toContainHTML("seedTroughWithAssembly");
+  });
+
+  it("compares only tools inputs that affect rendering", () => {
+    const previous = fakeProps();
+    previous.toolSlots = configuredUserTools();
+    previous.mountedToolName = "weeder";
+    previous.dispatch = mockDispatch;
+    const unrelatedConfig = {
+      ...previous,
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    };
+    expect(toolsPropsEqual(previous, unrelatedConfig)).toBeTruthy();
+    expect(toolsPropsEqual(previous, {
+      ...previous,
+      mountedToolName: "seeder",
+    })).toBeFalsy();
+    expect(toolsPropsEqual(previous, {
+      ...previous,
+      configPosition: {
+        ...previous.configPosition,
+        x: previous.configPosition.x + 1,
+      },
+    })).toBeFalsy();
+    expect(toolsPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, mirrorX: !previous.config.mirrorX },
+    })).toBeFalsy();
+    expect(toolsPropsEqual(previous, {
+      ...previous,
+      toolSlots: configuredUserTools(),
+    })).toBeFalsy();
   });
 
   it("reuses static tool models while x position changes", () => {

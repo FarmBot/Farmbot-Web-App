@@ -5838,12 +5838,45 @@ Expected return: faster Bot rerenders with configured tools or promo tools
 when unrelated config fields change, without changing mounted tool rendering,
 toolbay slots, pullout directions, or animations.
 
+**Benchmark:** Direct `Tools` render with six configured tool slots, a mounted
+weeder, stable callbacks, and 90 rerenders where only unrelated `config.sun`
+changed while bot position and tool-slot identity stayed unchanged.
+
+**Before:** 18.412 ms per 90-rerender batch.
+
+**After:** 1.083 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 17.329 ms per realistic configured-tools
+config-churn batch.
+
+**Outcome:** Accepted; the tools subtree now skips unrelated config churn while
+tool-slot identity, mounted tool state, bot position, callbacks, mirror
+settings, tool animation flags, and placement dimensions still rerender.
+
+**Commit:** `Memoize tools for 94.1% faster rerenders`
+
 ### Idea 323: Memoize `ZoomBeacons` relevant inputs
 
 **Description:** Memoize the zoom beacon collection by active focus, callbacks,
 load-in spring handles, bot position, and focus-layout config fields. Expected
 return: faster scene-detail rerenders while hover state, focus transitions,
 debug beacons, animation, and layout changes still update.
+
+**Benchmark:** Direct `ZoomBeacons` render with stable callbacks, no active
+focus, default bot position, and 90 rerenders where only unrelated `config.sun`
+changed.
+
+**Before:** 2.382 ms per 90-rerender batch.
+
+**After:** 1.054 ms per 90-rerender batch with the attempted collection
+comparator.
+
+**Change:** 55.8% faster, saving 1.328 ms per realistic zoom-beacon config
+churn batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was too small for another exported comparator and 13-field
+config list on a scene-detail-only layer.
 
 ### Idea 324: Skip hidden `Bounds` position churn
 
@@ -5852,6 +5885,21 @@ ignored when bounds, Z dimension, and distance indicators are all hidden.
 Expected return: faster default Bot movement rerenders without changing visible
 bounds or distance indicator behavior.
 
+**Benchmark:** Direct hidden `Bounds` render with bounds, Z dimension, and
+distance indicators disabled, then 90 rerenders where only bot Z position
+changed.
+
+**Before:** 1.149 ms per 90-rerender batch.
+
+**After:** 0.899 ms per 90-rerender batch with the attempted hidden-position
+fast path.
+
+**Change:** 21.8% faster, saving 0.250 ms per realistic hidden-bounds movement
+batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was far below a meaningful user-visible threshold.
+
 ### Idea 325: Memoize `GroupOrderVisual` selection wrapper
 
 **Description:** Add a relevant-input comparator around the group-order
@@ -5859,3 +5907,19 @@ selection wrapper so unrelated config churn skips URL group lookup and selected
 point cache checks when group/order inputs are unchanged. Expected return:
 faster group-order visualization rerenders while group selection, point lists,
 sort type, terrain lookup, and exaggerated-Z changes still update.
+
+**Benchmark:** Direct active `GroupOrderVisual` render with a selected group,
+25 visible group points, stable group/point arrays, stable terrain lookup, and
+90 rerenders where only unrelated `config.sun` changed.
+
+**Before:** 1.451 ms per 90-rerender batch.
+
+**After:** 1.060 ms per 90-rerender batch with the attempted selection-wrapper
+comparator.
+
+**Change:** 26.9% faster, saving 0.391 ms per realistic active group-order
+config-churn batch.
+
+**Outcome:** Rejected and rolled back; the selected-point cache and memoized
+inner order renderer already keep this path cheap, so the extra exported
+wrapper comparator was not worth the small absolute saving.
