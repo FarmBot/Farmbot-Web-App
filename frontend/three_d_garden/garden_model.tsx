@@ -45,7 +45,6 @@ import { cameraInit } from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance } from "./constants";
 import { getZFunc, serializeTriangles } from "./triangle_functions";
-import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
@@ -69,6 +68,10 @@ import { Path } from "../internal_urls";
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
   import("./bot").then(module => ({ default: module.Bot })));
+const LazyVisualization = React.lazy(() =>
+  import("./visualization").then(module => ({
+    default: module.Visualization,
+  })));
 export const SMOOTH_XL_CAMERA_BED_SCALE = 1.9;
 export const SMOOTH_XL_CAMERA_HEIGHT_SCALE = 1.45;
 
@@ -795,7 +798,7 @@ export const GardenModel = (props: GardenModelProps) => {
           tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
           getZ={getZ} />
         {props.addPlantProps?.designer.visualizedSequence &&
-        <Visualization
+        <LazyVisualization
           visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
           config={config}
           configPosition={props.configPosition} />}

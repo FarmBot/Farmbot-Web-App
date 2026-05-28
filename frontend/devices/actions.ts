@@ -35,8 +35,6 @@ import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
 import { linkToSetting } from "../settings/maybe_highlight";
-import { runDemoLuaCode, runDemoSequence, csToLua } from "../demo/lua_runner";
-import { eStop } from "../demo/lua_runner/actions";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -81,6 +79,30 @@ const maybeAlertLocked = () =>
   error(t("Command not available while locked."),
     { title: t("Emergency stop active") });
 
+const runDemoLuaCode = (luaCode: string) => {
+  void import("../demo/lua_runner")
+    .then(({ runDemoLuaCode }) => runDemoLuaCode(luaCode));
+};
+
+const runDemoSequence = (
+  ...args: Parameters<typeof import("../demo/lua_runner").runDemoSequence>
+) => {
+  void import("../demo/lua_runner")
+    .then(({ runDemoSequence }) => runDemoSequence(...args));
+};
+
+const runDemoCommand = (
+  command: Parameters<typeof import("../demo/lua_runner").csToLua>[0],
+) => {
+  void import("../demo/lua_runner")
+    .then(({ csToLua, runDemoLuaCode }) => runDemoLuaCode(csToLua(command)));
+};
+
+const demoEStop = () => {
+  void import("../demo/lua_runner/actions")
+    .then(({ eStop }) => eStop());
+};
+
 /** Send RPC. */
 export function sendRPC(command: RpcRequestBodyItem) {
   if (forceOnline()) {
@@ -90,9 +112,9 @@ export function sendRPC(command: RpcRequestBodyItem) {
         command.args.sequence_id,
         command.body);
     } else if (command.kind == "emergency_lock") {
-      eStop();
+      demoEStop();
     } else {
-      runDemoLuaCode(csToLua(command));
+      runDemoCommand(command);
     }
     return;
   }
@@ -174,7 +196,7 @@ export function flashFirmware(firmwareName: FirmwareHardware) {
 export function emergencyLock() {
   const noun = t("Emergency stop");
   if (forceOnline()) {
-    eStop();
+    demoEStop();
     return;
   }
   getDevice()
@@ -225,7 +247,10 @@ export function execSequence(
   const noun = t("Sequence execution");
   if (sequenceId) {
     if (forceOnline()) {
-      runDemoSequence(store.getState().resources.index, sequenceId, bodyVariables);
+      runDemoSequence(
+        store.getState().resources.index,
+        sequenceId,
+        bodyVariables);
       return;
     }
     commandOK(noun)();
@@ -421,7 +446,7 @@ export function move(props: MoveProps) {
   ];
   const cmd: Move = { kind: "move", args: {}, body };
   if (forceOnline()) {
-    runDemoLuaCode(csToLua(cmd));
+    runDemoCommand(cmd);
     return;
   }
   return getDevice()

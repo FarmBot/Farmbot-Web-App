@@ -10293,3 +10293,1991 @@ theoretical direct-Sky savings are about 0.3%.
 import, and the realistic ceiling is far below the acceptance threshold.
 
 **Commit:** None
+
+## Round 98
+
+### Idea 506: Defer optional sequence visualization and demo Lua runtime
+
+**Description:** Move the 3D sequence visualization behind a lazy boundary and
+load demo Lua execution helpers from device actions only when a demo command
+actually needs them. The default 3D garden should not parse Fengari or Lua
+runner code unless a sequence visualization is enabled or a demo command runs.
+
+**Benchmark:** Minified split esbuild bundle for `frontend/three_d_garden/index.tsx`
+with static-import reachability from `index.js`. This matches the realistic
+initial 3D load better than summing optional dynamic chunks that are only loaded
+after bot, sequence visualization, HLS, or vision code is requested.
+
+**Before:** Static initial 3D bytes measured 2,345,228 bytes. The reachable
+initial graph included 222,798 bytes from `fengari-web`, 47,318 bytes from
+`frontend/demo/lua_runner`, and 1,298 bytes from
+`frontend/three_d_garden/visualization.tsx`.
+
+**After:** Static initial 3D bytes measured 2,060,878 bytes. The static initial
+graph no longer includes `fengari-web`, `frontend/demo/lua_runner`, or
+`frontend/three_d_garden/visualization.tsx`; those remain available in async
+chunks for sequence visualization and demo-account command execution.
+
+**Change:** Static initial 3D load fell by 284,350 bytes, a 12.1% reduction.
+The complete split output set also fell from 2,878,480 bytes to 2,865,554 bytes,
+so the initial win did not come from growing the total emitted code.
+
+**Outcome:** Accepted. Default 3D garden loading no longer pays for optional Lua
+sequence visualization or demo Lua command execution, while real-device command
+paths remain unchanged and optional sequence/demo behavior is still loaded when
+used.
+
+**Checks:** `bun test frontend/devices/__tests__/actions_test.ts`,
+`bun test frontend/three_d_garden/__tests__/visualization_test.tsx`,
+`bun run typecheck`, `bun run dev-typecheck`, and `bun run eslint` passed.
+`bun test frontend/three_d_garden/__tests__/garden_model_test.tsx --seed=1`
+still has existing plant instance count failures unrelated to this lazy-loading
+change.
+
+**Commit:** `Defer 3D Lua visualization payload by 12.1%`
+
+### Idea 507: Split 3D image filtering from the SVG image layer
+
+**Description:** Replace the 3D image texture path's import of the 2D SVG image
+layer with a small shared or 3D-local filter helper, so the 3D texture setup does
+not carry unused SVG image layer code and can potentially shed photo filtering
+dependencies from the default 3D bundle.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for the 3D image texture path and photo filtering dependencies.
+
+**Before:** The static initial graph included 7,387 bytes from
+`frontend/farm_designer/map/layers/images`, 726 bytes from
+`frontend/photos/photo_filter_settings/util.ts`, and 61,635 bytes from
+`moment`.
+
+**After:** Not implemented. Even an ideal split removing all of those reachable
+bytes would save about 69,748 bytes from the 2,060,878-byte static initial
+bundle, or 3.4%.
+
+**Change:** Best-case 3.4% static initial reduction.
+
+**Outcome:** Rejected before code changes. The realistic ceiling is below the
+required threshold and the absolute win is not large enough to justify another
+shared 2D/3D image-filter abstraction pass.
+
+**Commit:** None
+
+### Idea 508: Use a 3D-local map mode helper
+
+**Description:** Replace the 3D garden's imports from the store-backed 2D map
+utility module with a 3D-local mode helper that reads the same route and designer
+state already available to the 3D scene. This could reduce Redux/store and
+device-action reachability in the default 3D bundle while preserving hover and
+click mode behavior.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for the 2D map utility, store, and device-action reachability still present
+in the default 3D load.
+
+**Before:** The static initial graph included 1,526 bytes from
+`frontend/farm_designer/map/util.ts`, 318 bytes from `frontend/redux/store.ts`,
+and 268 bytes from `frontend/devices/actions.ts`. The remaining
+`react-router` contribution is also used through direct 3D route reads, so it
+would not be removed by this split alone.
+
+**After:** Not implemented. A behavior-preserving replacement would need to
+thread current designer mode state through many hover and click handlers, but the
+remaining removable bundle ceiling is only about 2 KB.
+
+**Change:** Best-case direct static initial reduction is about 0.1%.
+
+**Outcome:** Rejected before code changes. The remaining store-backed map util
+cost is now too small for the behavior risk and component churn.
+
+**Commit:** None
+
+### Idea 509: Isolate 3D camera dev setting access
+
+**Description:** Replace the 3D camera module's import of the full dev support
+settings helper with a tiny 3D camera setting reader, avoiding any debug-setting
+UI or store-adjacent code in normal camera initialization.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for `frontend/settings/dev/dev_support.ts`.
+
+**Before:** `frontend/settings/dev/dev_support.ts` contributed 2,011 bytes to
+the 2,060,878-byte static initial 3D bundle.
+
+**After:** Not implemented. The full best-case removal is roughly 0.1% of the
+static initial bundle.
+
+**Change:** Best-case 0.1% static initial reduction.
+
+**Outcome:** Rejected before code changes. The absolute win is too small to
+justify duplicating or splitting debug camera setting access.
+
+**Commit:** None
+
+### Idea 510: Lazy-load optional scene detail props
+
+**Description:** Move Lab/Greenhouse detail props and other optional detail-scene
+objects behind the existing details load step so the default FarmBot scene does
+not load decorative scene code that is only used when those scene presets are
+selected.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for `frontend/three_d_garden/scenes`.
+
+**Before:** Optional Lab/Greenhouse scene files contributed 10,558 bytes to the
+2,060,878-byte static initial 3D bundle.
+
+**After:** Not implemented. Even fully deferring all scene prop code would save
+only about 0.5% of static initial bytes.
+
+**Change:** Best-case 0.5% static initial reduction.
+
+**Outcome:** Rejected before code changes. The savings are below the threshold
+and do not justify adding lazy boundaries around small decorative scene modules.
+
+**Commit:** None
+
+## Round 99
+
+### Idea 511: Split the 3D garden component from the toggle barrel
+
+**Description:** Move the `ThreeDGarden` canvas component out of the
+`three_d_garden` barrel that also exports the 3D toggle UI, then import the
+canvas component directly from `frontend/farm_designer/three_d_garden_map.tsx`.
+The 3D map component should not carry toggle-only settings, routing, i18n, or
+API update code.
+
+**Benchmark:** Minified esbuild bundle for the actual
+`frontend/farm_designer/three_d_garden_map.tsx` component entry. This measures
+the realistic 3D map component payload rather than a standalone helper.
+
+**Before:** The 3D map component bundle measured 3,423,635 bytes.
+
+**After:** Trial implementation split `ThreeDGarden` into a direct component
+module and pointed `ThreeDGardenMap` at it. The 3D map component bundle measured
+3,423,592 bytes.
+
+**Change:** 43 bytes, effectively 0.0%.
+
+**Outcome:** Rejected and rolled back. The barrel split itself worked, but the
+toggle-adjacent dependencies were still reachable through other shared 3D map
+paths, so the actual bundle did not improve in a meaningful way.
+
+**Commit:** None
+
+### Idea 512: Remove root constants from the 3D garden component path
+
+**Description:** Replace any remaining 3D component imports from the full
+`frontend/constants.ts` module with local 3D action strings or narrower constant
+modules, but only if the actual 3D map or static 3D load moves enough to matter.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `frontend/constants.ts`, with `frontend/three_d_garden/index.tsx` as the 3D
+entry. Cross-check used the actual `ThreeDGardenMap` component bundle.
+
+**Before:** `frontend/constants.ts` contributed 90,677 bytes to the
+2,060,878-byte static initial 3D entry, or 4.4%. It contributed 91,701 bytes to
+the 3,423,635-byte 3D map component bundle, or 2.7%.
+
+**After:** Not implemented. A perfect removal still misses the acceptance
+threshold, and this module is high-fanout shared application surface.
+
+**Change:** Best-case 4.4% static initial reduction and 2.7% 3D map component
+reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is below threshold and
+the complexity risk is not justified.
+
+**Commit:** None
+
+### Idea 513: Remove lodash barrel from the static 3D load path
+
+**Description:** Replace remaining lodash barrel imports reachable from the
+static 3D load with native helpers or method-level imports, if the realistic
+metafile ceiling is high enough after the current branch changes.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `node_modules/lodash/lodash.js`.
+
+**Before:** The lodash barrel contributed 73,770 bytes to the 2,060,878-byte
+static initial 3D entry, or 3.6%.
+
+**After:** Not implemented. Even removing the remaining lodash barrel entirely
+would not clear the required improvement threshold.
+
+**Change:** Best-case 3.6% static initial reduction.
+
+**Outcome:** Rejected before code changes. The remaining lodash import churn is
+below-threshold and not worth broad shared-code edits.
+
+**Commit:** None
+
+### Idea 514: Remove Moment from the static 3D image path
+
+**Description:** Replace Moment-based photo date filtering reachable from 3D
+image texture setup with native `Date` comparisons, preserving the current
+filter semantics for realistic image counts.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `node_modules/moment/moment.js`.
+
+**Before:** Moment contributed 61,635 bytes to the 2,060,878-byte static initial
+3D entry, or 3.0%.
+
+**After:** Not implemented. A perfect removal of Moment from the static 3D
+entry would still be below the acceptance threshold.
+
+**Change:** Best-case 3.0% static initial reduction.
+
+**Outcome:** Rejected before code changes. The win is real but not large enough
+for the date-parsing behavior risk in shared photo filtering.
+
+**Commit:** None
+
+### Idea 515: Defer camera-selection UI helpers
+
+**Description:** Move camera-selection marker UI behind the existing
+`cameraSelectionView` conditional if it has a meaningful static-load footprint,
+while keeping the camera-selection workflow visually and behaviorally identical
+when enabled.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `frontend/three_d_garden/camera_selection_ui.tsx` and line-rendering helpers
+that would plausibly move with it.
+
+**Before:** `frontend/three_d_garden/camera_selection_ui.tsx` contributed 3,067
+bytes. The shared line-rendering stack contributed 31,854 bytes, but those
+helpers are also used by zoom beacons, group-order visualization, and optional
+sequence visualization, so camera selection cannot claim that full amount.
+
+**After:** Not implemented. The direct camera-selection UI ceiling is 0.1% of
+the static initial bundle, and even an unrealistically perfect line-stack split
+would only be about 1.7%.
+
+**Change:** Best realistic direct reduction is 0.1%.
+
+**Outcome:** Rejected before code changes. The optional UI is too small to
+justify an additional lazy boundary.
+
+**Commit:** None
+
+## Round 100
+
+### Idea 516: Move remaining lazy bot implementation out of the static 3D graph
+
+**Description:** Investigate whether bot-only implementation code still sitting
+in a shared static split chunk can be pushed fully behind the existing
+`LazyBot` boundary, without changing when the FarmBot appears or how it loads.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js`.
+
+**Before:** Bot-related inputs contributed 50,990 bytes to the 2,060,878-byte
+static initial 3D graph, or 2.5%.
+
+**After:** Not implemented. Even a perfect split of all remaining bot-specific
+static code would miss the required threshold.
+
+**Change:** Best-case 2.5% static initial reduction.
+
+**Outcome:** Rejected before code changes. The bot code is a real remaining
+static cost, but the maximum measured win is below threshold and not enough to
+justify more chunk-shaping complexity.
+
+**Commit:** None
+
+### Idea 517: Skip soil surface session storage for normal accounts
+
+**Description:** The 3D garden stores serialized soil surface triangles in
+`sessionStorage` for demo Lua soil-height lookup. Consider skipping that write
+for normal real-device accounts while preserving it for demo accounts.
+
+**Benchmark:** Local Bun runtime benchmark of the existing realistic soil setup
+pipeline with 10, 50, 100, and 200 soil-level points. The benchmark measured
+`filterSoilPoints`, `getSurface`, `serializeTriangles`, and the storage call
+once per scene setup, not repeated artificial loops.
+
+**Before:** With 100 soil points, the median setup time was 0.096 ms, including
+0.019 ms for serialization/storage of 5,711 bytes. With 200 soil points, median
+setup time was 0.199 ms, including 0.062 ms for storage of 13,034 bytes.
+
+**After:** Not implemented. Skipping storage would reduce the 100-point median
+setup from 0.096 ms to 0.072 ms and the 200-point median from 0.199 ms to
+0.134 ms, but the absolute savings are only 0.024 ms and 0.065 ms respectively.
+
+**Change:** 25.0% at 100 points and 32.7% at 200 points, but under 0.1 ms
+absolute savings in realistic contexts.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute improvement is too small to justify adding account-mode branching to
+soil surface setup.
+
+**Commit:** None
+
+### Idea 518: Defer optional HLS and vision task chunks from 3D entry output
+
+**Description:** Check whether camera/vision dependencies emitted with the 3D
+entry can be moved out of the 3D garden's default load path.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, comparing static-import reachability and
+total emitted split outputs.
+
+**Before:** `hls.js` contributed 394,003 bytes and
+`@mediapipe/tasks-vision` contributed 137,578 bytes to the emitted split output
+set, but both contributed 0 bytes to the static initial graph.
+
+**After:** Not implemented. These large libraries are already in async chunks
+and are not part of the default initial 3D load.
+
+**Change:** 0 byte static initial reduction.
+
+**Outcome:** Rejected before code changes. The total emitted output looks large,
+but the realistic initial-load metric already excludes these optional chunks.
+
+**Commit:** None
+
+### Idea 519: Defer group-order visualization helpers
+
+**Description:** Move point-group order visualization behind the route and group
+selection conditions so normal 3D garden loads do not pay for group sorting and
+line-label helpers unless a group ordering view is active.
+
+**Benchmark:** Current static split-bundle contribution check for
+`frontend/three_d_garden/group_order_visual.tsx` and related point-group helper
+modules.
+
+**Before:** Group-order visualization contributed 1,911 bytes and point-group
+helpers contributed 2,391 bytes to the 2,060,878-byte static initial 3D graph.
+
+**After:** Not implemented. A perfect deferral would save about 4,302 bytes,
+or 0.2% of static initial load.
+
+**Change:** Best-case 0.2% static initial reduction.
+
+**Outcome:** Rejected before code changes. The optional group-order code is
+already too small to justify a lazy boundary.
+
+**Commit:** None
+
+### Idea 520: Defer HTML overlay/progressive-load support
+
+**Description:** Consider deferring Drei HTML overlay and progressive-load
+support so normal 3D scene setup avoids overlay code until overlays are visible.
+
+**Benchmark:** Current static split-bundle contribution check for
+`frontend/three_d_garden/progressive_load.tsx` and
+`@react-three/drei/web/Html.js`.
+
+**Before:** Progressive-load code contributed 3,785 bytes and Drei `Html`
+contributed 7,635 bytes to the 2,060,878-byte static initial graph.
+
+**After:** Not implemented. These pieces are part of the normal loading overlay
+and focus/zoom UI, so deferring them risks visible loading behavior while the
+best-case byte savings are only 11,420 bytes, or 0.6%.
+
+**Change:** Best-case 0.6% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is well below threshold
+and the code supports visible loading/focus UI.
+
+**Commit:** None
+
+## Round 101
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 521. Split crop metadata from 3D spread/icon lookup | Reduce 3D startup load by avoiding the full crop metadata table when 3D only needs crop spread/icon lookup for plant previews and promo plants | Smaller static 3D graph | 3D entry esbuild split static bytes and crop metadata metafile contribution | Rejected |
+| 522. Defer cable-carrier SVG shape support | Reduce default 3D startup load by moving SVG loader and cable-carrier shape code out of the static path unless cable carriers are enabled | Smaller static 3D graph | 3D entry esbuild split static bytes and SVG/cable-carrier metafile contribution | Rejected |
+| 523. Defer GLTF loader stack from the default 3D graph | Reduce startup payload by delaying GLTF/DRACO/Meshopt loader code until model-backed FarmBot pieces are needed | Smaller static 3D graph | 3D entry esbuild split static bytes and loader-stack metafile contribution | Rejected |
+| 524. Lazy-load debug stats panels | Reduce default 3D startup load by importing `Stats` and `StatsGl` only when stats display is enabled | Smaller static 3D graph | 3D entry esbuild split static bytes and stats module metafile contribution | Rejected |
+| 525. Remove React Spring from default 3D animations | Reduce startup load by replacing React Spring-backed focus, clouds, zoom, and solar animations with local interpolators | Smaller static 3D graph | 3D entry esbuild split static bytes and React Spring metafile contribution | Rejected |
+
+### Idea 521: Split crop metadata from 3D spread/icon lookup
+
+**Description:** The 3D plant and pointer-preview paths import crop metadata
+for crop spread, icon, and promo plant sizing. Consider splitting the small
+3D-needed fields from the full crop metadata table.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js`. This measures the real default 3D startup graph, not a standalone
+metadata helper.
+
+**Before:** `frontend/crops/metadata.ts` and `frontend/promo/plants.ts`
+contributed 23,888 bytes to the 2,060,878-byte static initial 3D graph, or
+1.16%.
+
+**After:** Not implemented. Even a perfect split of all crop metadata and promo
+plant table bytes out of the static graph would miss the 10% threshold.
+
+**Change:** Best-case 1.16% static initial reduction.
+
+**Outcome:** Rejected before code changes. The absolute ceiling is modest and
+the split would add duplicated crop-data maintenance surface for no meaningful
+real-world 3D load improvement.
+
+**Commit:** None
+
+### Idea 522: Defer cable-carrier SVG shape support
+
+**Description:** Cable carriers are optional, and their path generation reaches
+`SVGLoader` and carrier-specific geometry code. Consider deferring those modules
+unless cable carriers are visible.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `SVGLoader` plus cable-carrier component inputs.
+
+**Before:** `three/examples/jsm/loaders/SVGLoader.js` contributed 22,453 bytes
+and `frontend/three_d_garden/bot/components/cable_carriers.tsx` contributed
+6,298 bytes, for a combined 28,751 bytes, or 1.40% of static initial load.
+
+**After:** Not implemented. The full realistic ceiling is far below the
+acceptance threshold.
+
+**Change:** Best-case 1.40% static initial reduction.
+
+**Outcome:** Rejected before code changes. The user-visible carrier behavior
+would need a new conditional/lazy path, while the maximum measured startup win
+is too small to justify the complexity.
+
+**Commit:** None
+
+### Idea 523: Defer GLTF loader stack from the default 3D graph
+
+**Description:** The default 3D scene uses many GLTF model-backed FarmBot parts.
+Consider whether the loader stack could move behind a later model-rendering
+boundary without changing when FarmBot appears.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing GLTF, DRACO, and Meshopt loader inputs.
+
+**Before:** `GLTFLoader`, `DRACOLoader`, and `MeshoptDecoder` contributed
+69,521 bytes to the 2,060,878-byte static initial 3D graph, or 3.37%.
+
+**After:** Not implemented. The loader stack is real load cost, but it is below
+the 10% requirement and supports default visible FarmBot models.
+
+**Change:** Best-case 3.37% static initial reduction.
+
+**Outcome:** Rejected before code changes. Delaying default model loading would
+risk visible FarmBot load behavior, and the best no-risk byte ceiling still
+does not qualify.
+
+**Commit:** None
+
+### Idea 524: Lazy-load debug stats panels
+
+**Description:** `Stats` and `StatsGl` only render when the stats config is
+enabled. Consider lazy-loading those debug panels so default users do not pay
+their startup payload.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `stats-gl` plus Drei stats wrapper inputs.
+
+**Before:** Stats-related inputs contributed 10,076 bytes to the
+2,060,878-byte static initial 3D graph, or 0.49%.
+
+**After:** Not implemented. A perfect default deferral would be less than half
+a percent of the static graph.
+
+**Change:** Best-case 0.49% static initial reduction.
+
+**Outcome:** Rejected before code changes. The debug-only payload is small
+enough that adding a lazy boundary and fallback behavior would not produce a
+meaningful app improvement.
+
+**Commit:** None
+
+### Idea 525: Remove React Spring from default 3D animations
+
+**Description:** React Spring powers focus transitions, clouds, zoom beacons,
+camera-view, and solar animation behavior. Consider replacing those usages with
+local interpolation to reduce startup load.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing all `@react-spring/*` inputs.
+
+**Before:** React Spring inputs contributed 38,652 bytes to the
+2,060,878-byte static initial 3D graph, or 1.88%.
+
+**After:** Not implemented. Even a complete removal would miss the threshold,
+and replacing the animation library would touch several visible animation
+paths.
+
+**Change:** Best-case 1.88% static initial reduction.
+
+**Outcome:** Rejected before code changes. The realistic byte ceiling is below
+threshold and the implementation would risk degrading visible animations, which
+the prompt explicitly forbids.
+
+**Commit:** None
+
+## Round 102
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 526. Fill moisture reading instance matrices directly | Improve moisture-reading setup by avoiding `Matrix4` object work for identity translation matrices | Faster moisture-reading layer setup | 100, 500, and 1000 reading matrix-buffer setup calls | Rejected |
+| 527. Replace moisture map buffer side-effect `map` with a direct loop | Improve moisture-map setup by avoiding callback/array overhead while building instance buffers | Faster moisture-map buffer setup | 400, 1000, and 2500 interpolation-node buffer builds | Rejected |
+| 528. Collapse photo filtering into one pass for 3D image textures | Improve image-heavy 3D texture setup by avoiding chained array filters in the shared image filter | Faster photo filtering for texture setup | 25, 100, and 250 image filter calls | Rejected |
+| 529. Remove or defer the R3F pointer-events manager | Reduce startup payload and pointer dispatch overhead by avoiding the default canvas event system | Smaller static graph and fewer pointer-event handlers | 3D entry esbuild split static bytes for the R3F events module | Rejected |
+| 530. Remove Axios/API client reachability from the 3D entry | Reduce startup payload by narrowing 3D imports that pull shared API/update modules into the static graph | Smaller static graph | 3D entry esbuild split static bytes for Axios inputs | Rejected |
+
+### Idea 526: Fill moisture reading instance matrices directly
+
+**Description:** `MoistureReadings` renders sensor readings as a native
+instanced mesh. Its matrices are identity matrices with only translation
+changed, so direct `Float32Array` writes could avoid `Matrix4.identity()`,
+`setPosition()`, and `toArray()` work.
+
+**Benchmark:** Local Bun runtime benchmark of one realistic
+moisture-reading matrix-buffer setup call for 100, 500, and 1000 readings.
+Repeated samples were used only to report the per-call median.
+
+**Before:** Current `Matrix4` setup took 0.0052 ms for 100 readings,
+0.0222 ms for 500 readings, and 0.0273 ms for 1000 readings.
+
+**After:** Not implemented. Direct buffer filling measured 0.0026 ms for 100
+readings, 0.0048 ms for 500 readings, and 0.0089 ms for 1000 readings.
+
+**Change:** 49.6% at 100 readings, 78.6% at 500 readings, and 67.5% at 1000
+readings, but the largest realistic absolute saving was only 0.0184 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears the bar, but
+the absolute win is too small to justify replacing the clearer matrix helper
+path with manual buffer offsets.
+
+**Commit:** None
+
+### Idea 527: Replace moisture map buffer side-effect `map` with a direct loop
+
+**Description:** `buildMoistureInstanceBuffers` uses `data.map()` for side
+effects while filling matrices, colors, and opacities. A direct `for` loop
+would avoid the unused returned array.
+
+**Benchmark:** Local Bun runtime benchmark of one realistic moisture-map buffer
+build for 400, 1000, and 2500 interpolation nodes. Repeated samples were used
+only to report the per-call median.
+
+**Before:** Current buffer setup took 0.0085 ms for 400 nodes, 0.0135 ms for
+1000 nodes, and 0.0292 ms for 2500 nodes.
+
+**After:** Not implemented. A direct-loop trial measured 0.0056 ms for 400
+nodes, 0.0112 ms for 1000 nodes, and 0.0255 ms for 2500 nodes.
+
+**Change:** 34.6% at 400 nodes, 17.2% at 1000 nodes, and 12.7% at 2500 nodes,
+but only 0.0023 ms to 0.0037 ms absolute savings in realistic cases.
+
+**Outcome:** Rejected before code changes. This is a measurable micro win, but
+it is not meaningful at real moisture-grid sizes and does not justify another
+style-only loop change.
+
+**Commit:** None
+
+### Idea 528: Collapse photo filtering into one pass for 3D image textures
+
+**Description:** `ImageTexture` uses the shared `filterImages` helper, which
+reverses and chains several filters before mapping to highlighted image data.
+For photo-heavy gardens, a one-pass equivalent could reduce image texture setup
+work.
+
+**Benchmark:** Local runtime benchmark of one realistic photo-filtering call
+for 25, 100, and 250 images with image layers visible. The benchmark preserved
+date filtering, type filtering, hidden/highlight handling, placeholder
+filtering, and camera-z checks.
+
+**Before:** Current chained filtering took 0.098 ms for 25 images, 0.260 ms for
+100 images, and 0.521 ms for 250 images.
+
+**After:** Not implemented. A one-pass equivalent measured 0.070 ms for 25
+images, 0.238 ms for 100 images, and 0.516 ms for 250 images.
+
+**Change:** 28.1% at 25 images, 8.5% at 100 images, and 1.1% at 250 images.
+The largest absolute saving was 0.027 ms.
+
+**Outcome:** Rejected before code changes. The realistic image-heavy cases did
+not clear 10%, and the small-photo percentage saved only a few hundredths of a
+millisecond while touching shared 2D/3D image behavior.
+
+**Commit:** None
+
+### Idea 529: Remove or defer the R3F pointer-events manager
+
+**Description:** The R3F events module is one of the larger remaining static
+contributors. Consider whether the default canvas event manager can be removed,
+deferred, or replaced for the 3D garden.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `@react-three/fiber` event-manager inputs.
+
+**Before:** The R3F events module contributed 150,861 bytes to the
+2,060,878-byte static initial 3D graph, or 7.32%.
+
+**After:** Not implemented. The event manager is required for normal 3D clicks,
+hover, camera controls, plant selection, point selection, and tool interaction,
+and even a perfect removal would still miss 10%.
+
+**Change:** Best-case 7.32% static initial reduction, with unacceptable
+interaction loss.
+
+**Outcome:** Rejected before code changes. This is a large remaining module,
+but removing it would degrade the core user experience and the no-degradation
+ceiling still does not qualify.
+
+**Commit:** None
+
+### Idea 530: Remove Axios/API client reachability from the 3D entry
+
+**Description:** The static 3D graph still reaches Axios through shared
+application action/API modules. Consider narrowing 3D-only imports so startup
+does not include the API client until a user action needs it.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/axios/*` inputs.
+
+**Before:** Axios inputs contributed 44,384 bytes to the 2,060,878-byte static
+initial 3D graph, or 2.15%.
+
+**After:** Not implemented. Prior narrow-action attempts left the API client
+reachable through other shared app paths, and a perfect Axios removal from the
+static graph would still miss the threshold.
+
+**Change:** Best-case 2.15% static initial reduction.
+
+**Outcome:** Rejected before code changes. The static ceiling is below the bar,
+and another round of import surgery across shared action modules would not
+produce a meaningful 3D startup improvement.
+
+**Commit:** None
+
+## Round 103
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 531. Remove i18n and toggle help text from the 3D startup graph | Reduce static startup payload by moving translated 3D toggle/help UI out of the canvas entry path | Smaller static 3D graph | 3D entry esbuild split static bytes for i18next, wrapper, and 3D index inputs | Rejected |
+| 532. Remove router/navigation reachability from 3D click handlers | Reduce static startup payload by replacing in-scene `useNavigate` paths with parent-supplied callbacks | Smaller static 3D graph | 3D entry esbuild split static bytes for react-router and URL helper inputs | Rejected |
+| 533. Convert FarmBot resource imports to type-only 3D imports | Reduce static startup payload by avoiding runtime `farmbot` package reachability from 3D resource types | Smaller static 3D graph | 3D entry esbuild split static bytes for `farmbot/dist/farmbot.js` | Rejected |
+| 534. Cache disabled perf instrumentation checks | Reduce normal render/setup overhead by avoiding repeated URL/localStorage checks when perf benchmarking is off | Faster default setup/render instrumentation calls | 20, 50, and 100 disabled perf-measure/count calls | Rejected |
+| 535. Deduplicate line-rendering helper stacks | Reduce static startup payload by consolidating three-stdlib/examples/meshline line helpers used by beacons, dimensions, and paths | Smaller static 3D graph | 3D entry esbuild split static bytes for line helper modules | Rejected |
+
+### Idea 531: Remove i18n and toggle help text from the 3D startup graph
+
+**Description:** The 3D module still includes translated toggle/help UI
+adjacent to the canvas component. Consider moving toggle-only text and i18n
+usage out of the 3D startup graph if it has a meaningful static cost.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `i18next`, the i18n wrapper, and the 3D index module.
+
+**Before:** i18n/toggle-adjacent inputs contributed 46,533 bytes to the
+2,060,878-byte static initial 3D graph, or 2.26%.
+
+**After:** Not implemented. Even a perfect removal of this whole measured group
+would miss the required 10% threshold.
+
+**Change:** Best-case 2.26% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is below the bar, and
+moving translated UI out of the established 3D toggle path would add
+maintenance complexity without a meaningful startup win.
+
+**Commit:** None
+
+### Idea 532: Remove router/navigation reachability from 3D click handlers
+
+**Description:** Plant, weed, and tool click handlers navigate to detail panels
+from inside the 3D scene. Consider replacing direct router usage with
+parent-supplied callbacks to keep router code out of the 3D static graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `react-router` plus internal URL helper inputs.
+
+**Before:** Router/navigation inputs contributed 38,993 bytes to the
+2,060,878-byte static initial 3D graph, or 1.89%.
+
+**After:** Not implemented. A perfect removal would still be below threshold
+and the click-navigation behavior is core interaction surface.
+
+**Change:** Best-case 1.89% static initial reduction.
+
+**Outcome:** Rejected before code changes. The static win is too small to
+justify pushing navigation plumbing through plant, weed, tool, and pointer
+components.
+
+**Commit:** None
+
+### Idea 533: Convert FarmBot resource imports to type-only 3D imports
+
+**Description:** Several 3D files import FarmBot resource shapes. Consider
+converting any type-only imports to explicit `import type` form if runtime
+FarmBot package code is still reachable through 3D.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/farmbot/dist/farmbot.js`.
+
+**Before:** The FarmBot runtime contributed 7,733 bytes to the 2,060,878-byte
+static initial 3D graph, or 0.38%.
+
+**After:** Not implemented. The measured ceiling is far below 10%, and the
+remaining runtime reachability may come from non-type shared imports outside
+the local 3D resource annotations.
+
+**Change:** Best-case 0.38% static initial reduction.
+
+**Outcome:** Rejected before code changes. The import cleanup would not move a
+meaningful load metric.
+
+**Commit:** None
+
+### Idea 534: Cache disabled perf instrumentation checks
+
+**Description:** In default sessions, `perfMeasure`, `perfCount`, and
+`perfMark` quickly return, but each check still reads query/localStorage state.
+Consider caching the disabled perf flag during normal operation.
+
+**Benchmark:** Local Bun runtime benchmark of 20, 50, and 100 disabled
+instrumentation calls, matching a realistic startup/render burst rather than a
+large artificial loop.
+
+**Before:** Current disabled checks took 0.0050 ms for 20 calls, 0.0080 ms for
+50 calls, and 0.0158 ms for 100 calls.
+
+**After:** Not implemented. A cached-disabled trial took 0.0012 ms for 20
+calls, 0.0007 ms for 50 calls, and 0.0020 ms for 100 calls.
+
+**Change:** 76.7% to 91.2%, but the largest realistic absolute saving was only
+0.0137 ms for 100 calls.
+
+**Outcome:** Rejected before code changes. The percentage is high because the
+baseline is tiny; caching the flag would make perf toggling semantics more
+stateful while saving only hundredths of a millisecond.
+
+**Commit:** None
+
+### Idea 535: Deduplicate line-rendering helper stacks
+
+**Description:** The 3D graph includes line helpers from `meshline`,
+`three-stdlib`, and `three/examples`. Consider standardizing line rendering to
+one stack if the duplicate payload is meaningful.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing line helper modules from those packages.
+
+**Before:** Line helper inputs contributed 46,704 bytes to the 2,060,878-byte
+static initial 3D graph, or 2.27%.
+
+**After:** Not implemented. Even unrealistically removing the entire measured
+line stack would not clear 10%, and these helpers support visible beacons,
+dimensions, solar wiring, and path lines.
+
+**Change:** Best-case 2.27% static initial reduction.
+
+**Outcome:** Rejected before code changes. The no-degradation ceiling is below
+threshold, and rewriting visible line rendering across multiple features would
+be disproportionate to the measured load cost.
+
+**Commit:** None
+
+## Round 104
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 536. Remove or replace the Three.js core/module foundation | Reduce startup payload by avoiding the largest remaining static dependency group | Smaller static 3D graph | 3D entry esbuild split static bytes for `three.core.js` and `three.module.js` | Rejected |
+| 537. Use demand-based rendering for idle scenes | Improve idle FPS/power by not running the render loop unless the scene invalidates | Fewer idle frames and frame callbacks | Default render-loop behavior over a 1-second idle view with visible animation settings considered | Rejected |
+| 538. Remove React DOM client from the 3D entry | Reduce startup payload by avoiding React DOM client code in the 3D canvas entry | Smaller static 3D graph | 3D entry esbuild split static bytes for `react-dom-client.production.js` | Rejected |
+| 539. Lazy-load OrbitControls | Reduce startup payload by deferring camera control code until the camera is ready | Smaller static 3D graph | 3D entry esbuild split static bytes for OrbitControls inputs | Rejected |
+| 540. Defer sky/cloud environment rendering | Reduce startup payload by moving sky and cloud modules behind environment visibility/settings | Smaller static 3D graph | 3D entry esbuild split static bytes for sky/cloud inputs | Rejected |
+
+### Idea 536: Remove or replace the Three.js core/module foundation
+
+**Description:** The largest remaining static cost is Three.js itself. Consider
+whether imports can avoid either `three.core.js` or `three.module.js`, or
+whether a lighter rendering foundation could preserve the current scene.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/three/build/three.core.js` plus
+`node_modules/three/build/three.module.js`.
+
+**Before:** The two Three.js build inputs contributed 729,619 bytes to the
+2,060,878-byte static initial 3D graph, or 35.40%.
+
+**After:** Not implemented. This is the rendering engine and math foundation
+for the whole 3D garden, R3F, Drei helpers, loaders, geometries, materials,
+lights, controls, and visible model rendering.
+
+**Change:** No acceptable no-degradation implementation identified.
+
+**Outcome:** Rejected before code changes. The measured footprint is large, but
+removing or replacing the renderer would be an architectural rewrite with high
+visual and interaction risk, not a hill-climb optimization.
+
+**Commit:** None
+
+### Idea 537: Use demand-based rendering for idle scenes
+
+**Description:** R3F can avoid continuous rendering with a demand-driven frame
+loop. That would reduce idle frame callbacks when the scene is static.
+
+**Benchmark:** Default R3F `Canvas` uses the continuous render loop. In a
+realistic 1-second idle view, that means roughly 60 rendered frames and all
+registered frame callbacks. A demand loop can reduce that toward zero only when
+nothing animates or invalidates.
+
+**Before:** The default scene keeps the normal continuous frame loop, supporting
+OrbitControls damping and visible animation paths such as clouds, zoom beacons,
+load-in transitions, water, rotary tools, suction, and animated seasons.
+
+**After:** Not implemented. The realistic default config has `animate=true`,
+`clouds=true`, and `zoomBeacons=true`, and multiple optional features rely on
+continuous animation behavior.
+
+**Change:** Large theoretical idle-frame reduction only for fully static scenes,
+but no safe default improvement without changing animation behavior.
+
+**Outcome:** Rejected before code changes. Demand rendering could save idle
+work, but adopting it broadly would risk freezing or stuttering existing
+animations and controls, which violates the no-degradation requirement.
+
+**Commit:** None
+
+### Idea 538: Remove React DOM client from the 3D entry
+
+**Description:** React DOM client is one of the largest non-Three static inputs.
+Consider whether the 3D entry can avoid React DOM client code.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `react-dom/cjs/react-dom-client.production.js`.
+
+**Before:** React DOM client contributed 177,037 bytes to the 2,060,878-byte
+static initial 3D graph, or 8.59%.
+
+**After:** Not implemented. React DOM is required by the app runtime and by
+HTML overlays used for the 3D loading/focus UI.
+
+**Change:** Best-case 8.59% static initial reduction, still below the 10%
+threshold and not realistically removable from this React app entry.
+
+**Outcome:** Rejected before code changes. The ceiling misses the threshold and
+the dependency is foundational for the current UI runtime.
+
+**Commit:** None
+
+### Idea 539: Lazy-load OrbitControls
+
+**Description:** Camera controls are mounted after the camera exists. Consider
+lazy-loading OrbitControls so initial 3D startup avoids the controls module.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing Drei OrbitControls plus three-stdlib OrbitControls.
+
+**Before:** OrbitControls inputs contributed 14,698 bytes to the
+2,060,878-byte static initial 3D graph, or 0.71%.
+
+**After:** Not implemented. A perfect deferral would be below 1% and controls
+are needed immediately for normal user navigation.
+
+**Change:** Best-case 0.71% static initial reduction.
+
+**Outcome:** Rejected before code changes. The byte ceiling is tiny, and a lazy
+boundary could delay first camera interaction for no meaningful load win.
+
+**Commit:** None
+
+### Idea 540: Defer sky/cloud environment rendering
+
+**Description:** Sky and clouds are visible environment features. Consider
+deferring their modules behind visibility settings or later load steps.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `Sky`, Drei `Cloud`, and local sky/cloud modules.
+
+**Before:** Sky/cloud inputs contributed 12,156 bytes to the 2,060,878-byte
+static initial 3D graph, or 0.59%.
+
+**After:** Not implemented. These features are visible in the default scene,
+and a perfect split would not materially change startup load.
+
+**Change:** Best-case 0.59% static initial reduction.
+
+**Outcome:** Rejected before code changes. The code supports visible default
+environment quality, and deferring it would add complexity or visible pop-in
+for a sub-1% load ceiling.
+
+**Commit:** None
+
+## Round 105
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 541. Defer image Decal/render-texture support | Reduce startup payload by moving photo overlay projection helpers out of the default graph until image layers are visible | Smaller static 3D graph | 3D entry esbuild split static bytes for image, Decal, and map-image inputs | Rejected |
+| 542. Remove detailed LOD helper use from default ground/soil | Reduce startup payload and scene setup by avoiding Drei `Detailed` LOD wrappers | Smaller static 3D graph and simpler ground/soil setup | 3D entry esbuild split static bytes for Detailed, ground, and config inputs | Rejected |
+| 543. Defer debug normal-helper support | Reduce startup payload by moving `VertexNormalsHelper`/`useHelper` debug-only imports behind surface-debug mode | Smaller static 3D graph | 3D entry esbuild split static bytes for normal-helper and bed inputs | Rejected |
+| 544. Remove reducer/store reachability from the 3D entry | Reduce startup payload by narrowing 3D imports that pull app reducers and Redux into the static graph | Smaller static 3D graph | 3D entry esbuild split static bytes for reducer and Redux inputs | Rejected |
+| 545. Inline 3D wrapper components and texture helper calls | Reduce startup payload by removing tiny wrapper modules around R3F elements and texture variant setup | Smaller static 3D graph | 3D entry esbuild split static bytes for wrapper/helper modules | Rejected |
+
+### Idea 541: Defer image Decal/render-texture support
+
+**Description:** Photo overlays use `RenderTexture`, `Decal`, Drei `Image`,
+and shared 2D image placement helpers. Consider moving those modules out of the
+default static graph until image layers are actually visible.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing image, Decal, and map-image inputs.
+
+**Before:** Image/Decal/render-texture-adjacent inputs contributed 20,338 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.99%.
+
+**After:** Not implemented. A perfect split of the measured stack would still
+be about 1% of static initial load.
+
+**Change:** Best-case 0.99% static initial reduction.
+
+**Outcome:** Rejected before code changes. Photo overlays are real user-facing
+functionality, and a lazy boundary or duplicated image path is not worth a
+sub-1% startup ceiling.
+
+**Commit:** None
+
+### Idea 542: Remove detailed LOD helper use from default ground/soil
+
+**Description:** The ground and soil layers use Drei `Detailed` to switch
+between detail levels. Consider removing that helper or replacing it with a
+local path if it has a meaningful load/setup footprint.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `Detailed`, ground, and config inputs.
+
+**Before:** The measured LOD/ground/config group contributed 6,830 bytes to the
+2,060,878-byte static initial 3D graph, or 0.33%.
+
+**After:** Not implemented. The direct `Detailed` helper itself was only 410
+bytes, and the larger local ground/config modules are needed regardless.
+
+**Change:** Best-case 0.33% static initial reduction.
+
+**Outcome:** Rejected before code changes. Removing LOD behavior could affect
+visual/performance balance at distance, and the byte ceiling is far too small.
+
+**Commit:** None
+
+### Idea 543: Defer debug normal-helper support
+
+**Description:** Surface-debug modes can show vertex normals via
+`VertexNormalsHelper` and Drei helper plumbing. Consider deferring those
+debug-only helpers from normal startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `VertexNormalsHelper`, Drei helper code, and the bed
+module that owns the normal-debug path.
+
+**Before:** The normal-helper/bed group contributed 11,390 bytes to the
+2,060,878-byte static initial 3D graph, or 0.55%. The actual helper libraries
+inside that were only 1,276 bytes.
+
+**After:** Not implemented. The bed module is required for the default scene,
+and splitting just the helper code would save about 0.06%.
+
+**Change:** Best realistic direct reduction is about 0.06%; broad measured
+group ceiling is 0.55%.
+
+**Outcome:** Rejected before code changes. The debug-only import is too small
+to justify another lazy/debug component path.
+
+**Commit:** None
+
+### Idea 544: Remove reducer/store reachability from the 3D entry
+
+**Description:** The static graph still includes app reducer and Redux modules
+through shared state/action imports. Consider narrowing the 3D imports that pull
+this store machinery into startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing resource/device/farm-designer/root reducer inputs plus
+Redux.
+
+**Before:** Reducer/store inputs contributed 24,394 bytes to the
+2,060,878-byte static initial 3D graph, or 1.18%.
+
+**After:** Not implemented. A perfect removal would still miss the threshold,
+and prior action-import narrowing has shown shared app paths remain reachable.
+
+**Change:** Best-case 1.18% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is small and the change
+would require broad shared-state import surgery for no meaningful 3D startup
+gain.
+
+**Commit:** None
+
+### Idea 545: Inline 3D wrapper components and texture helper calls
+
+**Description:** The 3D codebase uses small wrapper modules around R3F element
+names and texture variant setup. Consider inlining those wrappers to reduce one
+layer of code in the static graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/three_d_garden/components.tsx` plus
+`texture_variants.ts`.
+
+**Before:** The wrapper/helper modules contributed 2,120 bytes to the
+2,060,878-byte static initial 3D graph, or 0.10%.
+
+**After:** Not implemented. The measured ceiling is effectively noise-level.
+
+**Change:** Best-case 0.10% static initial reduction.
+
+**Outcome:** Rejected before code changes. Inlining widely-used wrappers would
+increase churn and reduce consistency while saving only about two kilobytes.
+
+**Commit:** None
+
+## Round 106
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 546. Defer water and suction animation modules | Reduce default startup payload by moving water-flow and vacuum animation code behind active water/vacuum states | Smaller static 3D graph | 3D entry esbuild split static bytes for water, suction, and cloud animation inputs | Rejected |
+| 547. Lazy-load camera-view cone overlay | Reduce startup payload by deferring the camera field-of-view overlay and its animation helpers until camera view is enabled | Smaller static 3D graph | 3D entry esbuild split static bytes for camera-view, Edges, and animation inputs | Rejected |
+| 548. Split zoom-beacon constants and animation code | Reduce startup payload by moving zoom-beacon data and animated beacon rendering out of the initial graph | Smaller static 3D graph | 3D entry esbuild split static bytes for zoom-beacon modules and their helper stack | Rejected |
+| 549. Defer solar scene helpers | Reduce startup payload by moving solar-array and wiring helpers behind the solar/focus visibility condition | Smaller static 3D graph | 3D entry esbuild split static bytes for solar inputs | Rejected |
+| 550. Collapse bot part wrapper modules | Reduce startup payload by inlining tiny bot part wrapper components used around GLTF meshes | Smaller static 3D graph | 3D entry esbuild split static bytes for bot part wrapper inputs | Rejected |
+
+### Idea 546: Defer water and suction animation modules
+
+**Description:** Watering and vacuum effects are optional runtime states. Check
+whether the water stream, watering animation, suction animation, and cloud
+helper code is large enough to defer until water flow or vacuum is active.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing water stream, watering animation, suction animation, and
+Drei cloud inputs.
+
+**Before:** The measured water/suction animation stack contributed 7,731 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.38%.
+
+**After:** Not implemented. The bot already gates the heavy watering animation
+mount on `config.waterFlow`, and the remaining code footprint is small.
+
+**Change:** Best-case 0.38% static initial reduction.
+
+**Outcome:** Rejected before code changes. The optional animation code is not a
+meaningful startup bottleneck, and another lazy boundary would add async
+complexity to active watering/vacuum effects.
+
+**Commit:** None
+
+### Idea 547: Lazy-load camera-view cone overlay
+
+**Description:** Camera view is disabled by default. Consider lazy-loading
+`CameraView`, edge helpers, and related animation code until the camera-view
+overlay is enabled.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing camera-view, Drei Edges, and animation-helper inputs.
+
+**Before:** The broad measured camera-view-adjacent group contributed 41,813
+bytes to the 2,060,878-byte static initial 3D graph, or 2.03%. The local
+`camera_view.tsx` file itself contributed 2,502 bytes.
+
+**After:** Not implemented. Most of the broad group is shared animation
+infrastructure already used elsewhere in the default scene.
+
+**Change:** Best realistic direct reduction is 0.12%; broad shared-stack
+ceiling is 2.03%.
+
+**Outcome:** Rejected before code changes. The actual camera-view-only payload
+is tiny, and deferring the shared animation stack is below threshold while
+risking visible focus/camera overlay behavior.
+
+**Commit:** None
+
+### Idea 548: Split zoom-beacon constants and animation code
+
+**Description:** Zoom beacons have a data-heavy constants file and animated
+beacon rendering. Consider splitting their modules from the initial graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing zoom-beacon modules, constants, line helpers, and shared
+animation inputs.
+
+**Before:** The broad zoom-beacon group contributed 51,255 bytes to the
+2,060,878-byte static initial 3D graph, or 2.49%.
+
+**After:** Not implemented. Zoom beacons are enabled in the default config and
+are visible load-in/detail UI, so deferring them would risk visible behavior.
+
+**Change:** Best broad-group ceiling is 2.49%, still below threshold.
+
+**Outcome:** Rejected before code changes. The feature is default-visible and
+the measured no-degradation ceiling is too small for another lazy path.
+
+**Commit:** None
+
+### Idea 549: Defer solar scene helpers
+
+**Description:** Solar is disabled by default except for the related focus
+view. Consider lazy-loading the solar array and wiring helper.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing solar inputs.
+
+**Before:** `frontend/three_d_garden/garden/solar.tsx` contributed 2,741 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.13%.
+
+**After:** Not implemented. The file is too small to matter, and it already
+guards rendering on solar/focus visibility.
+
+**Change:** Best-case 0.13% static initial reduction.
+
+**Outcome:** Rejected before code changes. The byte ceiling is noise-level and
+does not justify splitting a small focused scene helper.
+
+**Commit:** None
+
+### Idea 550: Collapse bot part wrapper modules
+
+**Description:** GLTF-backed FarmBot parts have small wrapper modules for
+merged geometry, seed troughs, vacuum pump cover, gantry wheel plate, soil
+sensor, and shared model mesh rendering. Consider inlining those wrappers to
+reduce static payload.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing bot part wrapper inputs plus `model_mesh.tsx`.
+
+**Before:** Bot part wrapper inputs contributed 3,453 bytes to the
+2,060,878-byte static initial 3D graph, or 0.17%.
+
+**After:** Not implemented. These wrappers keep GLTF mesh rendering localized
+and typeable while contributing only a few kilobytes.
+
+**Change:** Best-case 0.17% static initial reduction.
+
+**Outcome:** Rejected before code changes. Inlining the wrappers would make the
+model code harder to maintain for an insignificant startup saving.
+
+**Commit:** None
+
+## Round 107
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 551. Defer soil triangulation and Z lookup code | Reduce default startup payload by moving soil surface triangulation code out of the initial 3D graph | Smaller static 3D graph | 3D entry esbuild split static bytes for soil triangulation, triangle helpers, Delaunator, and robust predicates | Rejected |
+| 552. Split pointer preview and map utility helpers | Reduce startup payload by moving pointer preview and map helper code behind edit/add interactions | Smaller static 3D graph | 3D entry esbuild split static bytes for pointer preview, plant actions, and farm designer map utility inputs | Rejected |
+| 553. Remove settings and session support from static 3D path | Reduce startup payload by pruning shared settings/session modules reachable from the 3D entry | Smaller static 3D graph | 3D entry esbuild split static bytes for highlight, session key, external URL, and dev support inputs | Rejected |
+| 554. Defer sun calculation and time-of-day code | Reduce default startup payload by moving sun position calculation behind sun rendering | Smaller static 3D graph | 3D entry esbuild split static bytes for sun rendering and SunCalc inputs | Rejected |
+| 555. Prune incidental speech, API, and sequence metadata reachability | Reduce startup payload by separating shared app support modules from the 3D route graph | Smaller static 3D graph | 3D entry esbuild split static bytes for browser speech, API CRUD, tracking, and sequence metadata inputs | Rejected |
+
+### Idea 551: Defer soil triangulation and Z lookup code
+
+**Description:** Soil surface rendering and Z lookup use triangle generation,
+Delaunator, and robust-predicate helpers. Check whether deferring that stack
+from the initial 3D graph would provide a meaningful load-time win without
+changing the default bed surface.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `triangle_functions.ts`, `triangles.ts`, Delaunator, and
+robust-predicate inputs.
+
+**Before:** The measured soil triangulation group contributed 12,678 bytes to
+the 2,060,878-byte static initial 3D graph, or 0.62%.
+
+**After:** Not implemented. The soil surface and Z lookup are part of the
+default bed rendering path.
+
+**Change:** Best-case 0.62% static initial reduction.
+
+**Outcome:** Rejected before code changes. The payload ceiling is far below the
+10% threshold, and deferring this path would add async handling to default
+terrain behavior.
+
+**Commit:** None
+
+### Idea 552: Split pointer preview and map utility helpers
+
+**Description:** Pointer preview objects, plant actions, and map utility code
+are reachable from the 3D entry. Check whether moving them behind add/edit
+interactions would materially improve startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `pointer_objects.tsx`, `plant_actions.ts`, and
+`frontend/farm_designer/map/util.ts`.
+
+**Before:** The measured pointer-preview/map-util group contributed 7,123 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.35%.
+
+**After:** Not implemented. These helpers support normal click, add, and edit
+flows, and the static byte ceiling is small.
+
+**Change:** Best-case 0.35% static initial reduction.
+
+**Outcome:** Rejected before code changes. The possible saving is not
+meaningful enough to justify introducing another interaction-time async path.
+
+**Commit:** None
+
+### Idea 553: Remove settings and session support from static 3D path
+
+**Description:** Shared highlight, session key, external URL, and dev support
+modules appear in the 3D static graph. Check whether pruning or splitting those
+imports would reduce load cost enough to pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `maybe_highlight.tsx`, `session_keys.ts`,
+`external_urls.ts`, and `dev_support.ts`.
+
+**Before:** The measured settings/session support group contributed 14,451
+bytes to the 2,060,878-byte static initial 3D graph, or 0.70%.
+
+**After:** Not implemented. These modules are shared app support code, and the
+measured standalone ceiling is below the acceptance threshold.
+
+**Change:** Best-case 0.70% static initial reduction.
+
+**Outcome:** Rejected before code changes. Untangling shared support modules
+would carry broad churn for less than one percent static startup reduction.
+
+**Commit:** None
+
+### Idea 554: Defer sun calculation and time-of-day code
+
+**Description:** The sun component pulls in SunCalc for time-of-day positioning.
+Check whether moving that calculation out of the default static graph would
+produce a worthwhile load-time improvement without changing visible lighting or
+sky behavior.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `garden/sun.tsx` plus `node_modules/suncalc/suncalc.js`.
+
+**Before:** The measured sun calculation group contributed 8,436 bytes to the
+2,060,878-byte static initial 3D graph, or 0.41%.
+
+**After:** Not implemented. The sun is part of default scene presentation, and
+the measured stack is too small to matter.
+
+**Change:** Best-case 0.41% static initial reduction.
+
+**Outcome:** Rejected before code changes. A lazy boundary would risk visible
+scene timing for a sub-one-percent payload reduction.
+
+**Commit:** None
+
+### Idea 555: Prune incidental speech, API, and sequence metadata reachability
+
+**Description:** Browser speech, API helpers, CRUD tracking, and sequence
+metadata are still reachable from the 3D entry through shared app paths. Check
+whether that incidental support stack is large enough to split from the route.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing browser speech, API, CRUD, tracking, and sequence
+metadata inputs.
+
+**Before:** The measured speech/API/sequence metadata group contributed 11,421
+bytes to the 2,060,878-byte static initial 3D graph, or 0.55%.
+
+**After:** Not implemented. The measured group is shared infrastructure with a
+low static-byte ceiling.
+
+**Change:** Best-case 0.55% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting these shared paths would
+not meet the threshold and would add broad import churn outside the 3D scene.
+
+**Commit:** None
+
+## Round 108
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 556. Optimize animated-season sun date lookup | Improve FPS when season animation is enabled by avoiding per-call day-start work and linear sample scans | Lower per-frame JavaScript time during animated seasons | 1, 8, 32, and 64 `getAnimatedSeasonDate()` calls per frame-sized batch | Rejected |
+| 557. Reduce soil surface array preparation passes | Improve load-time terrain generation by combining point projection, bounds, and vertex preparation work | Lower soil surface generation time | `computeSurface()` with 8, 25, and 100 realistic soil points | Rejected |
+| 558. Split root app constants from the 3D route graph | Reduce startup payload by avoiding the large shared constants module in initial 3D code | Smaller static 3D graph | 3D entry esbuild split static bytes for `frontend/constants.ts` | Rejected |
+| 559. Remove whole lodash from the 3D route graph | Reduce startup payload by replacing route-reachable lodash imports with local helpers or deep imports | Smaller static 3D graph | 3D entry esbuild split static bytes for `node_modules/lodash/lodash.js` | Rejected |
+| 560. Remove whole moment from the 3D route graph | Reduce startup payload by replacing route-reachable moment usage with native date helpers | Smaller static 3D graph | 3D entry esbuild split static bytes for `node_modules/moment/moment.js` | Rejected |
+
+### Idea 556: Optimize animated-season sun date lookup
+
+**Description:** When season animation is enabled, `getAnimatedSeasonDate()` is
+called from the sun animation and from each plant icon bucket. Check whether
+caching the UTC day start and replacing the linear sample scan would provide a
+meaningful per-frame improvement.
+
+**Benchmark:** Current implementation, measured as frame-sized batches of 1,
+8, 32, and 64 `getAnimatedSeasonDate("Spring", elapsed)` calls. The repeated
+batches stabilize timing, but each measured batch represents a realistic single
+frame with a plausible number of animated sun/icon consumers.
+
+**Before:** Median batch times were 0.0037 ms for 1 call, 0.0108 ms for 8
+calls, 0.0352 ms for 32 calls, and 0.0625 ms for 64 calls. The 64-call p95 was
+0.0923 ms.
+
+**After:** Not implemented. Even eliminating most of this work would save less
+than a tenth of a millisecond in an unusually heavy animated-season frame.
+
+**Change:** Best-case per-frame JavaScript reduction is below 0.1 ms.
+
+**Outcome:** Rejected before code changes. The percent improvement could be
+large, but the absolute frame-time cost is not meaningful under realistic
+conditions.
+
+**Commit:** None
+
+### Idea 557: Reduce soil surface array preparation passes
+
+**Description:** `computeSurface()` builds projected points, X/Y bounds,
+vertices, UVs, and faces for Delaunay output. Check whether combining some of
+the array passes would meaningfully reduce load-time soil surface generation.
+
+**Benchmark:** Current implementation, measured with 8 points for the flat
+default/boundary case, 25 points for the default random soil setting, and 100
+points for a heavier but still plausible user soil-height set.
+
+**Before:** Median `computeSurface()` times were 0.0072 ms for 8 points,
+0.0221 ms for 25 points, and 0.0580 ms for 100 points. The 100-point p95 was
+0.1048 ms.
+
+**After:** Not implemented. The realistic surface-generation cost is already
+well below a millisecond.
+
+**Change:** Best-case load-time JavaScript reduction is below 0.1 ms for the
+heavier measured case.
+
+**Outcome:** Rejected before code changes. A one-pass rewrite would not produce
+a meaningful absolute improvement.
+
+**Commit:** None
+
+### Idea 558: Split root app constants from the 3D route graph
+
+**Description:** The initial 3D graph still includes the large shared
+`frontend/constants.ts` module through route actions, labels, and shared app
+support. Check whether splitting 3D-local constants would have enough startup
+ceiling to justify broad import changes.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/constants.ts`.
+
+**Before:** `frontend/constants.ts` contributed 90,677 bytes to the
+2,060,878-byte static initial 3D graph, or 4.40%.
+
+**After:** Not implemented. The module is still reached from multiple shared
+app paths, not just 3D-local imports.
+
+**Change:** Best-case static initial reduction is 4.40%.
+
+**Outcome:** Rejected before code changes. The byte ceiling is below the
+threshold, and removing it would require broad shared action/content constant
+splitting.
+
+**Commit:** None
+
+### Idea 559: Remove whole lodash from the 3D route graph
+
+**Description:** The route imports lodash from many 3D and shared modules.
+Check whether replacing those imports could remove the bundled lodash build
+from the initial 3D graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/lodash/lodash.js`.
+
+**Before:** Lodash contributed 73,770 bytes to the 2,060,878-byte static
+initial 3D graph, or 3.58%.
+
+**After:** Not implemented. The graph has many route-reachable lodash imports
+across 3D, farm designer, resources, settings, API, and utility modules.
+
+**Change:** Best-case static initial reduction is 3.58%.
+
+**Outcome:** Rejected before code changes. A route-wide lodash cleanup would be
+broad and still fall well short of the threshold.
+
+**Commit:** None
+
+### Idea 560: Remove whole moment from the 3D route graph
+
+**Description:** The route reaches moment through sun/time-travel code and
+shared support modules. Check whether replacing moment with native date helpers
+would create a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/moment/moment.js`.
+
+**Before:** Moment contributed 61,635 bytes to the 2,060,878-byte static
+initial 3D graph, or 2.99%.
+
+**After:** Not implemented. Replacing only the local sun/time-travel usage
+would not remove all route-reachable moment imports, and the whole-library
+ceiling is still below threshold.
+
+**Change:** Best-case static initial reduction is 2.99%.
+
+**Outcome:** Rejected before code changes. The measured startup ceiling is too
+small for broad date-helper churn.
+
+**Commit:** None
+
+## Round 109
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 561. Defer image texture and map-image support | Reduce startup payload and soil texture setup work by moving camera-image helpers behind image visibility | Smaller static 3D graph and lower image texture setup time | 3D entry esbuild split static bytes plus 100-image/readings texture-key batches | Rejected |
+| 562. Lazy-load camera selection UI | Reduce startup payload and selection-mode render work by deferring camera marker UI until camera selection is open | Smaller static 3D graph and lower camera-selection setup time | 3D entry esbuild split static bytes plus 24 marker-position calculations | Rejected |
+| 563. Split smooth focus transition and React Spring support | Reduce default startup payload by moving focus-transition animation code behind focus transitions | Smaller static 3D graph | 3D entry esbuild split static bytes for focus transition and React Spring inputs | Rejected |
+| 564. Strip performance probe and stats support from the initial graph | Reduce startup payload by moving FPS probe, stats-gl, and stats.js behind explicit stats/debug modes | Smaller static 3D graph | 3D entry esbuild split static bytes for stats and performance probe inputs | Rejected |
+| 565. Defer moisture texture and interpolation support | Reduce startup payload by moving moisture-map texture/interpolation code behind moisture visibility | Smaller static 3D graph | 3D entry esbuild split static bytes for moisture texture and sensor-reading interpolation inputs | Rejected |
+
+### Idea 561: Defer image texture and map-image support
+
+**Description:** The 3D image texture path imports camera-image filtering,
+map-image calibration checks, and image split helpers even when images are not
+visible. Check whether deferring that path would provide a meaningful startup
+or setup-time win.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing 3D image texture, map-image, image-layer, photo-filter,
+and online-check inputs. Runtime setup was also measured with 10 sensors, 100
+sensor readings, and 100 filtered images.
+
+**Before:** The measured image/map-image group contributed 13,461 bytes to the
+2,060,878-byte static initial 3D graph, or 0.65%. Runtime medians were
+0.0105 ms for `getImageTextureKey()` with 100 readings and 0.0013 ms for
+`splitFilteredImages()` with 100 images.
+
+**After:** Not implemented. Both the startup ceiling and setup-time costs are
+small under realistic inputs.
+
+**Change:** Best-case static initial reduction is 0.65%; best measured setup
+reduction is about 0.012 ms for the tested image texture helpers.
+
+**Outcome:** Rejected before code changes. Deferring image support would add
+async behavior around texture creation for a sub-one-percent payload and
+negligible setup-time savings.
+
+**Commit:** None
+
+### Idea 562: Lazy-load camera selection UI
+
+**Description:** Camera selection is only shown when the user opens the camera
+selection view. Check whether moving the selection markers and camera-position
+helpers behind that mode would materially reduce startup or interaction setup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing camera selection UI, camera helper, and config-storage
+action inputs. Runtime setup was measured as one selection-view batch of 24
+marker-position calculations.
+
+**Before:** The measured camera-selection group contributed 4,089 bytes to the
+2,060,878-byte static initial 3D graph, or 0.20%. Calculating 24 camera marker
+positions took a 0.0030 ms median and 0.0096 ms p95.
+
+**After:** Not implemented. The startup and selection-mode costs are too small
+to matter.
+
+**Change:** Best-case static initial reduction is 0.20%; best measured setup
+reduction is below 0.01 ms.
+
+**Outcome:** Rejected before code changes. Lazy-loading this mode would add
+interaction-time complexity for effectively no measurable user-facing gain.
+
+**Commit:** None
+
+### Idea 563: Split smooth focus transition and React Spring support
+
+**Description:** Smooth focus transitions use React Spring and local focus
+visibility helpers. Check whether splitting that stack from the default route
+would provide enough startup improvement without changing default camera/load-in
+animation behavior.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `focus_transition.tsx` plus React Spring core, shared,
+animated, rafz, and three inputs.
+
+**Before:** The measured focus-transition/spring group contributed 44,130 bytes
+to the 2,060,878-byte static initial 3D graph, or 2.14%.
+
+**After:** Not implemented. This code supports the default smooth camera and
+load-in animation paths.
+
+**Change:** Best-case static initial reduction is 2.14%.
+
+**Outcome:** Rejected before code changes. The byte ceiling is below the
+threshold and removing it would risk visible transition behavior.
+
+**Commit:** None
+
+### Idea 564: Strip performance probe and stats support from the initial graph
+
+**Description:** FPS probes and stats overlays are diagnostic paths. Check
+whether moving stats-gl, stats.js, the FPS probe, and performance helper code
+behind explicit stats/debug configuration would meaningfully reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing stats-gl, stats.js, `fps_probe.tsx`, and
+`performance/perf.ts`.
+
+**Before:** The measured performance-probe/stats group contributed 13,316 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.65%.
+
+**After:** Not implemented. The diagnostic stack is small, and some performance
+helpers are shared by existing measured marks.
+
+**Change:** Best-case static initial reduction is 0.65%.
+
+**Outcome:** Rejected before code changes. The payload ceiling is far below the
+acceptance threshold.
+
+**Commit:** None
+
+### Idea 565: Defer moisture texture and interpolation support
+
+**Description:** Moisture-map rendering is optional. Check whether moving
+moisture texture generation, sensor-reading filtering, and interpolation helper
+code behind moisture visibility would reduce startup enough to pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing moisture texture, interpolation, sensor-reading filter,
+and moisture helper inputs.
+
+**Before:** The measured moisture/interpolation group contributed 5,419 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.26%.
+
+**After:** Not implemented. The optional path has a very small static footprint.
+
+**Change:** Best-case static initial reduction is 0.26%.
+
+**Outcome:** Rejected before code changes. The possible startup saving is
+noise-level and does not justify an additional split point.
+
+**Commit:** None
+
+## Round 110
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 566. Split remaining Drei optional helpers | Reduce startup payload by moving Html, Image, Gizmo, Decal, Trail, Text3D, and font helper code behind the features that need them | Smaller 3D entry split graph | 3D entry esbuild split bytes for remaining Drei optional helper inputs | Rejected |
+| 567. Defer static bed frame and bed object helpers | Reduce startup payload by splitting bed frame, utilities post, packaging, caster, and axes helpers | Smaller 3D entry split graph | 3D entry esbuild split bytes for bed frame and static bed object inputs | Rejected |
+| 568. Lazy-load optional Lab and Greenhouse scene props | Reduce startup payload by moving non-default scene props behind Lab/Greenhouse scene selection | Smaller 3D entry split graph | 3D entry esbuild split bytes for scene and scene-prop inputs | Rejected |
+| 569. Split local FarmBot subassembly code further | Reduce startup payload by moving local bot subassemblies and tool graphics behind FarmBot visibility | Smaller 3D entry split graph | 3D entry esbuild split bytes for bot, power supply, tools, electronics, gantry, solenoid, bounds, and tube inputs | Rejected |
+| 570. Prune resource support modules from the 3D route graph | Reduce startup payload by separating resource reducer/selector support from the 3D route | Smaller 3D entry split graph | 3D entry esbuild split bytes for route-reachable resource support inputs | Rejected |
+
+### Idea 566: Split remaining Drei optional helpers
+
+**Description:** Several Drei helpers are still present in the 3D entry split
+graph for optional or feature-specific rendering paths. Check whether splitting
+Html, Image, Gizmo, Decal, Trail, Text3D, and font helper code would provide a
+meaningful load-time win.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing Drei Html, Image, Gizmo helper/viewcube, Decal, Trail, Text3D, and
+three-stdlib FontLoader inputs.
+
+**Before:** The measured remaining Drei optional-helper group contributed
+21,355 bytes to the 2,060,878-byte 3D entry split graph, or 1.04%.
+
+**After:** Not implemented. The group is split across multiple visible and
+optional helpers, and the total ceiling is small.
+
+**Change:** Best-case 1.04% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Splitting these helper paths would
+add several async boundaries for a low startup ceiling.
+
+**Commit:** None
+
+### Idea 567: Defer static bed frame and bed object helpers
+
+**Description:** Bed frame, utilities post, packaging, caster, and axes helpers
+are route-reachable in the 3D graph. Check whether moving bed object helpers
+behind visibility flags would provide a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing `bed.tsx` plus utilities post, packaging, caster, and FarmBot axes
+inputs.
+
+**Before:** The measured bed frame/static-object group contributed 17,192 bytes
+to the 2,060,878-byte 3D entry split graph, or 0.83%.
+
+**After:** Not implemented. The bed itself is default-visible, and the optional
+object helpers are individually small.
+
+**Change:** Best-case 0.83% split-graph reduction.
+
+**Outcome:** Rejected before code changes. The possible reduction is below one
+percent and would complicate default bed rendering.
+
+**Commit:** None
+
+### Idea 568: Lazy-load optional Lab and Greenhouse scene props
+
+**Description:** Lab and Greenhouse scene props are not part of the default
+outdoor scene. Check whether moving desk, starter tray, people, greenhouse
+wall, potted plant, and scene wrapper code behind scene selection would provide
+a meaningful load-time improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing all `frontend/three_d_garden/scenes` inputs.
+
+**Before:** The measured scene-prop group contributed 10,558 bytes to the
+2,060,878-byte 3D entry split graph, or 0.51%.
+
+**After:** Not implemented. The optional scene code is already too small to
+justify another split point.
+
+**Change:** Best-case 0.51% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Lazy-loading scene props would add
+scene-switch complexity for a sub-one-percent startup ceiling.
+
+**Commit:** None
+
+### Idea 569: Split local FarmBot subassembly code further
+
+**Description:** The FarmBot model is already lazy at the component boundary,
+but shared split chunks still include local subassembly code. Check whether
+further splitting bot, power supply, tools, electronics, gantry, solenoid,
+bounds, and tube helpers would materially reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing local bot subassembly inputs that remain in the route split graph.
+
+**Before:** The measured local FarmBot subassembly group contributed 34,620
+bytes to the 2,060,878-byte 3D entry split graph, or 1.68%.
+
+**After:** Not implemented. FarmBot is default-visible, and the remaining local
+subassembly cost is below threshold even as a broad group.
+
+**Change:** Best-case 1.68% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Further splitting would risk visible
+FarmBot load-in behavior for too small a load-time ceiling.
+
+**Commit:** None
+
+### Idea 570: Prune resource support modules from the 3D route graph
+
+**Description:** Resource reducer, selector, tagged-resource, and sequence
+metadata support modules are still reachable from the 3D route through shared
+app infrastructure. Check whether splitting those modules from the route would
+provide a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing route-reachable `frontend/resources` support inputs.
+
+**Before:** The measured resource-support group contributed 15,340 bytes to
+the 2,060,878-byte 3D entry split graph, or 0.74%.
+
+**After:** Not implemented. The modules are shared infrastructure and the
+measured ceiling is small.
+
+**Change:** Best-case 0.74% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Untangling resource support would
+create broad app churn for less than one percent of the 3D entry graph.
+
+**Commit:** None
+
+## Round 111
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 571. Split navigation and panel action support | Reduce startup payload by moving route helpers and panel action wiring out of the initial 3D graph | Smaller static 3D graph | 3D entry esbuild split bytes for React Router, internal URL helpers, and 3D panel action inputs | Rejected |
+| 572. Trim 3D config parsing and preset code | Reduce startup payload by separating interactive config/preset modification helpers from default render config | Smaller static 3D graph | 3D entry esbuild split bytes for `three_d_garden/config.ts` | Rejected |
+| 573. Split plant metadata and season helper support | Reduce startup payload by moving crop metadata and plant season helpers behind plant/season features | Smaller static 3D graph | 3D entry esbuild split bytes for crop metadata, promo plant helpers, and season constants | Rejected |
+| 574. Convert FarmBot support imports to type-only route edges | Reduce startup payload by removing runtime FarmBot package modules reachable through type/API-resource imports | Smaller static 3D graph | 3D entry esbuild split bytes for route-reachable FarmBot package support inputs | Rejected |
+| 575. Separate Redux store and reducer support from the 3D route | Reduce startup payload by moving app reducer/store infrastructure away from the 3D entry | Smaller static 3D graph | 3D entry esbuild split bytes for Redux, reducers, and store support inputs | Rejected |
+
+### Idea 571: Split navigation and panel action support
+
+**Description:** Navigation helpers and panel actions are used by click
+handlers in the 3D scene. Check whether splitting React Router, internal URL
+helpers, and 3D panel action wiring out of the initial graph would materially
+reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing React Router, `internal_urls.ts`, and
+`three_d_garden/panel_actions.ts` inputs.
+
+**Before:** The measured navigation/panel-action group contributed 39,048
+bytes to the 2,060,878-byte static initial 3D graph, or 1.89%.
+
+**After:** Not implemented. Navigation is needed for normal plant/point/weed
+click flows, and the byte ceiling is below threshold.
+
+**Change:** Best-case 1.89% static initial reduction.
+
+**Outcome:** Rejected before code changes. Deferring navigation support would
+risk click responsiveness for a small startup saving.
+
+**Commit:** None
+
+### Idea 572: Trim 3D config parsing and preset code
+
+**Description:** `three_d_garden/config.ts` includes initial defaults, config
+keys, presets, and modification helpers. Check whether splitting interactive
+config/preset support from default scene config would provide meaningful
+startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/three_d_garden/config.ts`.
+
+**Before:** The measured 3D config module contributed 4,529 bytes to the
+2,060,878-byte static initial 3D graph, or 0.22%.
+
+**After:** Not implemented. The config module is small and central to default
+scene construction.
+
+**Change:** Best-case 0.22% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting config code would add
+indirection around core scene setup for a noise-level payload reduction.
+
+**Commit:** None
+
+### Idea 573: Split plant metadata and season helper support
+
+**Description:** Plant icon/spread behavior and season animation pull crop
+metadata and promo plant helpers into the 3D route. Check whether splitting
+that support behind plant/season-specific paths would reduce startup enough to
+pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/crops/metadata.ts`,
+`frontend/promo/plants.ts`, and `frontend/promo/constants.ts`.
+
+**Before:** The measured plant metadata/season helper group contributed 24,233
+bytes to the 2,060,878-byte static initial 3D graph, or 1.18%.
+
+**After:** Not implemented. The data supports default plant rendering and
+season behavior, while the total ceiling remains small.
+
+**Change:** Best-case 1.18% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting this path would add async
+work around default plant interactions for a low static gain.
+
+**Commit:** None
+
+### Idea 574: Convert FarmBot support imports to type-only route edges
+
+**Description:** Several route-reachable modules import FarmBot package symbols
+for types and API-resource shapes. Check whether eliminating runtime FarmBot
+package reachability would produce a meaningful static-load improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing FarmBot package runtime inputs including `farmbot.js`,
+resource adapters, API resources, constants, config, and corpus helpers.
+
+**Before:** The measured FarmBot package support group contributed 12,634
+bytes to the 2,060,878-byte static initial 3D graph, or 0.61%.
+
+**After:** Not implemented. Even a perfect type-only cleanup would not meet
+the threshold.
+
+**Change:** Best-case 0.61% static initial reduction.
+
+**Outcome:** Rejected before code changes. The broad import cleanup would carry
+more churn than the small payload ceiling justifies.
+
+**Commit:** None
+
+### Idea 575: Separate Redux store and reducer support from the 3D route
+
+**Description:** Redux, root reducers, device/farm designer/resource reducers,
+and store middleware are still reachable from the 3D entry through shared app
+infrastructure. Check whether separating that support from the route would
+provide enough startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing Redux package, root reducer, store/middleware, device,
+farm designer, and resource reducer inputs.
+
+**Before:** The measured Redux/store support group contributed 27,891 bytes to
+the 2,060,878-byte static initial 3D graph, or 1.35%.
+
+**After:** Not implemented. The support is shared app infrastructure, and the
+measured ceiling is below threshold.
+
+**Change:** Best-case 1.35% static initial reduction.
+
+**Outcome:** Rejected before code changes. Isolating this infrastructure would
+be broad app surgery for a small startup ceiling.
+
+**Commit:** None
+
+## Round 112
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 576. Losslessly clean up GLB model assets | Reduce model transfer and parse cost without changing geometry or materials | Smaller model asset bytes | Temporary `gltf-transform dedup` and `prune` pass over current `.glb` models | Rejected |
+| 577. Defer default promo tool model assets | Reduce default model requests by moving promo tool GLBs behind a later visibility point | Fewer startup asset bytes | File sizes for default promo tool GLBs used by the visible default toolbay/tools | Rejected |
+| 578. Defer default FarmBot frame model assets | Reduce default model requests by delaying FarmBot frame GLBs | Fewer startup asset bytes | File sizes for default frame/cross-slide/cable-carrier support GLBs | Rejected |
+| 579. Defer default texture assets | Reduce default texture transfer by delaying grass, wood, soil, aluminum, and cloud textures | Fewer startup asset bytes | File sizes for default visible 3D texture assets | Rejected |
+| 580. Collapse non-rotary tool frame callbacks | Reduce per-frame callback count by registering animation only for the mounted rotary implement | Fewer frame callbacks and lower frame JavaScript time | Default 7-tool batch compared with a single rotary callback | Rejected |
+
+### Idea 576: Losslessly clean up GLB model assets
+
+**Description:** Test whether the existing GLB files contain unused accessors,
+duplicate resources, or other losslessly removable payload. A successful result
+would reduce model transfer and parse cost without changing visible output.
+
+**Benchmark:** Temporary copies of all `public/3D/models/*.glb` were processed
+with `gltf-transform dedup` and `gltf-transform prune`. No source assets were
+modified during the benchmark.
+
+**Before:** The current model set totaled 1,172,072 bytes.
+
+**After:** The temporary processed model set totaled 9,820,972 bytes.
+
+**Change:** Lossless cleanup increased bytes by 8,648,900 bytes, a 737.92%
+increase.
+
+**Outcome:** Rejected before code changes. The lossless transform did not
+improve asset size. More aggressive mesh or texture transforms would need
+visual fidelity validation and are not acceptable as a no-degradation shortcut.
+
+**Commit:** None
+
+### Idea 577: Defer default promo tool model assets
+
+**Description:** The default no-device 3D scene renders promo toolbay contents.
+Check whether deferring those tool GLBs would provide enough load-time savings
+without changing the default visual experience.
+
+**Benchmark:** File sizes for the default promo tool models: rotary tool base
+and implement, seed bin, seed tray, soil sensor, watering nozzle, seed trough
+holder and assembly, and toolbay 3.
+
+**Before:** The default promo tool GLBs totaled 319,976 bytes. Largest files
+were soil sensor at 90,004 bytes, rotary tool base at 81,484 bytes, and
+watering nozzle at 50,972 bytes.
+
+**After:** Not implemented. These models are visible in the default promo tool
+area.
+
+**Change:** Best-case request-byte reduction is 319,976 bytes only if visible
+default tools are delayed or omitted.
+
+**Outcome:** Rejected before code changes. Deferring these assets would change
+the default load-in of visible tools and therefore fails the user-experience
+constraint.
+
+**Commit:** None
+
+### Idea 578: Defer default FarmBot frame model assets
+
+**Description:** The FarmBot frame pulls several GLBs for the cross-slide,
+gantry wheel plate, brackets, belt clips, motor housing, cable-carrier supports,
+and X-axis cable-carrier mount. Check whether delaying those model assets is a
+viable default-load optimization.
+
+**Benchmark:** File sizes for default frame/cross-slide/cable-carrier support
+GLBs used by the visible FarmBot model.
+
+**Before:** The default FarmBot frame GLBs totaled 318,064 bytes. Largest files
+were cross slide at 192,556 bytes and gantry wheel plate at 96,268 bytes.
+
+**After:** Not implemented. These models are part of the default visible
+FarmBot.
+
+**Change:** Best-case request-byte reduction is 318,064 bytes only by delaying
+visible FarmBot frame details.
+
+**Outcome:** Rejected before code changes. The assets are visible default
+geometry, so delaying them would degrade the scene load-in.
+
+**Commit:** None
+
+### Idea 579: Defer default texture assets
+
+**Description:** Default rendering uses grass, wood, soil, aluminum, and cloud
+textures. Check whether those default texture bytes are large enough and
+optional enough to defer without lowering quality or removing visible detail.
+
+**Benchmark:** File sizes for default visible texture assets:
+`grass.avif`, `wood.avif`, `soil.avif`, `aluminum.avif`, and `cloud.avif`.
+
+**Before:** The default visible texture group totaled 253,293 bytes. The
+largest texture was grass at 119,858 bytes.
+
+**After:** Not implemented. These textures contribute to the default ground,
+bed, soil, FarmBot, and cloud visuals.
+
+**Change:** Best-case request-byte reduction is 253,293 bytes only by delaying
+or omitting visible default textures.
+
+**Outcome:** Rejected before code changes. Replacing or delaying these textures
+would visibly reduce the default scene quality or load-in completeness.
+
+**Commit:** None
+
+### Idea 580: Collapse non-rotary tool frame callbacks
+
+**Description:** Each rendered tool registers a frame callback, but only the
+mounted rotary implement needs frame animation. Check whether moving the frame
+callback into the active rotary path provides a meaningful frame-time
+improvement.
+
+**Benchmark:** A frame-sized benchmark compared the default 7-tool callback
+shape against one active rotary callback. The loop count represented one frame
+with the default mounted tool plus six promo tools, repeated only to stabilize
+timing.
+
+**Before:** The 7-tool callback batch took a 0.00004 ms median and 0.00008 ms
+p95.
+
+**After:** Not implemented. The single-callback shape also measured a
+0.00004 ms median and 0.00008 ms p95 in the same benchmark.
+
+**Change:** Callback count could drop from 7 to 1 in the default promo scene,
+but measured median frame time did not improve.
+
+**Outcome:** Rejected before code changes. The call-count cleanup is real, but
+the absolute frame-time cost is below meaningful measurement resolution.
+
+**Commit:** None
