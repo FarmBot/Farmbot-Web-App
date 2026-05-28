@@ -18447,3 +18447,100 @@ opacity was zero: 0.051834 ms median, 0.070459 ms p95.
 and p95 regressed.
 
 **Commit:** None
+
+## Round 167
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 851. Share ground geometries across remounts | Avoid rebuilding identical low- and high-detail `CircleGeometry` objects for repeated ground mounts | Default detailed `Ground` render/remount | Accepted |
+| 852. Share night star positions across remounts | Avoid generating 1000 random star positions every time the star field mounts | Static night `Sun` render | Accepted |
+| 853. Reuse static debug sun origin | Avoid allocating the same `[0, 0, 0]` `Vector3` for every `Sun` render | Debug `Sun` render with `lightsDebug=true` | Rejected |
+| 854. Cache exact sky color endpoint tuples | Avoid `Color` allocation/conversion for fully dark and full-day sky colors | 60 endpoint `skyColor` calls | Accepted |
+| 855. Share plant spread sphere geometry | Avoid constructing identical spread `SphereGeometry` objects for plant spread remounts | `PlantSpreadInstances` render with 50 plants | Rejected |
+
+### 851. Share ground geometries across remounts
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Default detailed `Ground` render/remount: 0.110708 ms median,
+0.218458 ms p95.
+
+**After:** Lazy shared low- and high-detail ground geometries with `dispose={null}`
+on the wrapper mesh: 0.096458 ms median, 0.180208 ms p95.
+
+**Change:** 12.87% faster by median, saving about 0.014250 ms per detailed
+ground remount while avoiding repeated geometry allocation.
+
+**Outcome:** Accepted. The same geometry data is reused for identical ground
+meshes, and shared geometry is not disposed when a mesh unmounts.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 852. Share night star positions across remounts
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Static night `Sun` render after item 851: 0.146042 ms median,
+0.206458 ms p95.
+
+**After:** Lazy shared star position buffer for `OtherSuns`: 0.069625 ms
+median, 0.098500 ms p95.
+
+**Change:** 52.32% faster by median, saving about 0.076417 ms per static night
+sun render.
+
+**Outcome:** Accepted. The star field remains the same size and distribution,
+but repeated mounts reuse the generated position buffer.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 853. Reuse static debug sun origin
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Debug `Sun` render with `lightsDebug=true` after item 852:
+0.354667 ms median, 0.454708 ms p95.
+
+**After:** Module-level origin `Vector3` for the debug line: 0.355959 ms
+median, 0.436542 ms p95.
+
+**Change:** 0.36% slower by median.
+
+**Outcome:** Rejected after rollback. The median did not improve.
+
+**Commit:** None
+
+### 854. Cache exact sky color endpoint tuples
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** 60 endpoint `skyColor` calls after rejected item 853 rollback:
+0.005917 ms median, 0.013042 ms p95.
+
+**After:** Cached exact black and full-day sky color tuples: 0.000625 ms
+median, 0.003458 ms p95.
+
+**Change:** 89.44% faster by median, saving about 0.005292 ms per 60 endpoint
+sky color calls.
+
+**Outcome:** Accepted. Interpolated sky colors still use the existing
+conversion path, while exact endpoint values reuse the same linear RGB tuples.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 855. Share plant spread sphere geometry
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** `PlantSpreadInstances` render with 50 plants after item 854:
+0.053875 ms median, 0.106084 ms p95.
+
+**After:** Shared spread sphere geometry passed through instanced mesh args:
+0.053083 ms median, 0.081291 ms p95.
+
+**Change:** 1.47% faster by median.
+
+**Outcome:** Rejected after rollback. The improvement did not clear the 10%
+threshold.
+
+**Commit:** None

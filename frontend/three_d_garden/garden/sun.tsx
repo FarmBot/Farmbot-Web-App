@@ -159,12 +159,15 @@ const convertColor =
     return [color.r, color.g, color.b];
   };
 
+const BLACK_SKY_COLOR = convertColor(0, 0, 0);
+const DAY_SKY_COLOR = convertColor(89, 216, 255);
+
 export const skyColor = (sunValue: number): [number, number, number] => {
   if (sunValue <= 0) {
-    return convertColor(0, 0, 0);
+    return BLACK_SKY_COLOR;
   }
   if (sunValue >= INITIAL.sun) {
-    return convertColor(89, 216, 255);
+    return DAY_SKY_COLOR;
   }
   const t = sunValue / INITIAL.sun;
   const r = Math.round(89 * t);
@@ -389,20 +392,30 @@ export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
 export const Sun = React.memo(SunBase, sunPropsEqual);
 
 const generateOtherSuns = () => {
-  const points = [];
   const maxPhi = 80;
   const r = BigDistance.sunVisual;
+  const points = new Float32Array(1000 * 3);
   for (let i = 0; i < 1000; i++) {
     const theta = Math.random() * 360;
     const phi = Math.random() * maxPhi;
     const position = polarToCartesian(r, theta, phi);
-    points.push(...position);
+    const offset = i * 3;
+    points[offset] = position[0];
+    points[offset + 1] = position[1];
+    points[offset + 2] = position[2];
   }
-  return new Float32Array(points);
+  return points;
+};
+
+let otherSunPositions: Float32Array | undefined;
+
+const getOtherSunPositions = () => {
+  otherSunPositions ||= generateOtherSuns();
+  return otherSunPositions;
 };
 
 const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> }) => {
-  const positions = React.useMemo(() => generateOtherSuns(), []);
+  const positions = getOtherSunPositions();
   return <Points>
     <BufferGeometry>
       <BufferAttribute

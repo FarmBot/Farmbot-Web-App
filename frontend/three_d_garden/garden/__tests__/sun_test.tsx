@@ -71,6 +71,25 @@ describe("<Sun />", () => {
     expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
   });
 
+  it("reuses generated star positions across night star mounts", () => {
+    const p = fakeProps();
+    p.config.sunInclination = -15;
+    p.config.animateSeasons = false;
+    const first = createRenderer(<Sun {...p} />);
+    const firstPositions = first.root
+      .findAll(node => node.props.attach == "attributes-position")[0]
+      .props.args[0];
+    unmountRenderer(first);
+
+    const second = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(second);
+    const secondPositions = second.root
+      .findAll(node => node.props.attach == "attributes-position")[0]
+      .props.args[0];
+
+    expect(secondPositions).toBe(firstPositions);
+  });
+
   it("skips season animation frame setup by default", () => {
     render(<Sun {...fakeProps()} />);
     expect(threeFiber.useFrame as jest.Mock).not.toHaveBeenCalled();
@@ -233,5 +252,10 @@ describe("skyColor(calcSunI())", () => {
     skyColor(calcSunI(inclination) * 100).forEach((value, i) => {
       expect(value).toBeCloseTo(expected[i], 4);
     });
+  });
+
+  it("reuses exact endpoint color tuples", () => {
+    expect(skyColor(0)).toBe(skyColor(-1));
+    expect(skyColor(INITIAL.sun)).toBe(skyColor(INITIAL.sun + 1));
   });
 });

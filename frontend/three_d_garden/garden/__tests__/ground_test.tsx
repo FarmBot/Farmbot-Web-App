@@ -41,6 +41,22 @@ describe("<Ground />", () => {
     expect(color.itemSize).toEqual(3);
   });
 
+  it("reuses detailed ground geometry across mounts", () => {
+    const first = createRenderer(<Ground {...fakeProps()} />);
+    const firstGround = first.root.findAll(node =>
+      node.props.name == "ground Outdoor")[0];
+    const firstGeometry = firstGround.props.geometry;
+    unmountRenderer(first);
+
+    const second = createRenderer(<Ground {...fakeProps()} />);
+    mountedWrappers.push(second);
+    const secondGround = second.root.findAll(node =>
+      node.props.name == "ground Outdoor")[0];
+
+    expect(secondGround.props.geometry).toBe(firstGeometry);
+    expect(secondGround.props.dispose).toBeNull();
+  });
+
   it("skips hidden ground setup", () => {
     const p = fakeProps();
     p.config.ground = false;

@@ -21,6 +21,8 @@ const GroundWrapper = (props: GroundWrapperProps) =>
   <Mesh name={`ground ${props.sceneName}`}
     receiveShadow={true}
     geometry={props.geometry}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}
     position={[0, 0, -props.groundZ]}>
     {props.children}
   </Mesh>;
@@ -42,6 +44,19 @@ const buildGroundGeometry = (radius: number, segments: number) => {
   }
   geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
   return geometry;
+};
+
+let lowDetailGroundGeometry: CircleGeometry | undefined;
+let highDetailGroundGeometry: CircleGeometry | undefined;
+
+const getLowDetailGroundGeometry = () => {
+  lowDetailGroundGeometry ||= buildGroundGeometry(BigDistance.ground, 16);
+  return lowDetailGroundGeometry;
+};
+
+const getHighDetailGroundGeometry = () => {
+  highDetailGroundGeometry ||= buildGroundGeometry(BigDistance.ground, 64);
+  return highDetailGroundGeometry;
 };
 
 const getGroundProperties = (sceneName: string) => {
@@ -129,14 +144,10 @@ interface LowDetailGroundProps {
 }
 
 const LowDetailGround = (props: LowDetailGroundProps) => {
-  const lowDetailGeometry = React.useMemo(
-    () => buildGroundGeometry(BigDistance.ground, 16),
-    [],
-  );
   return <GroundWrapper
     sceneName={props.sceneName}
     groundZ={props.groundZ}
-    geometry={lowDetailGeometry}>
+    geometry={getLowDetailGroundGeometry()}>
     <MeshPhongMaterial
       color={props.color}
       shininess={0}
@@ -149,10 +160,6 @@ interface DetailedGroundProps extends LowDetailGroundProps {
 }
 
 const DetailedGround = (props: DetailedGroundProps) => {
-  const highDetailGeometry = React.useMemo(
-    () => buildGroundGeometry(BigDistance.ground, 64),
-    [],
-  );
   const common = {
     sceneName: props.sceneName,
     groundZ: props.groundZ,
@@ -160,7 +167,7 @@ const DetailedGround = (props: DetailedGroundProps) => {
 
   return <Detailed distances={detailLevels(props.config)}
     visible={props.config.ground}>
-    <GroundWrapper {...common} geometry={highDetailGeometry}>
+    <GroundWrapper {...common} geometry={getHighDetailGroundGeometry()}>
       <GroundMaterial sceneName={props.config.scene} />
     </GroundWrapper>
     <LowDetailGround {...common} color={props.color} />
