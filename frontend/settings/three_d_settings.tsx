@@ -68,14 +68,27 @@ export const namespace3D = (key: string): string => "3D_" + key;
 
 const find =
   (envs: TaggedFarmwareEnv[], key: string): TaggedFarmwareEnv | undefined =>
-    envs.filter(env => env.body.key == namespace3D(key))[0];
+    envs.find(env => env.body.key == namespace3D(key));
 
-export const get3DConfigValueFunction = (envs: TaggedFarmwareEnv[]) =>
-  (key: keyof Config): number => {
-    const maybe = find(envs, key);
+const index3DConfigs = (envs: TaggedFarmwareEnv[]) => {
+  const configs: Record<string, TaggedFarmwareEnv> = {};
+  envs.forEach(env => {
+    if (env.body.key.startsWith(namespace3D(""))
+      && isUndefined(configs[env.body.key])) {
+      configs[env.body.key] = env;
+    }
+  });
+  return configs;
+};
+
+export const get3DConfigValueFunction = (envs: TaggedFarmwareEnv[]) => {
+  const configs = index3DConfigs(envs);
+  return (key: keyof Config): number => {
+    const maybe = configs[namespace3D(key)];
     const raw = isUndefined(maybe) ? DEFAULTS[key] : maybe.body.value;
     return parseFloat("" + raw);
   };
+};
 
 export const findOrCreate3DConfigFunction =
   (dispatch: Function, envs: TaggedFarmwareEnv[]) =>

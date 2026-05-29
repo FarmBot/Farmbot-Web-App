@@ -4,7 +4,6 @@ import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
-import { clone } from "lodash";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import {
   TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
@@ -16,7 +15,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
-import { findCrop, findIcon } from "../crops/find";
+import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
@@ -24,7 +23,6 @@ import { SCENES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
-import { unpackUUID } from "../util";
 import { isTopDown } from "../three_d_garden/helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 
@@ -56,6 +54,21 @@ export interface ThreeDGardenMapProps {
   farmwareEnvs: TaggedFarmwareEnv[];
   logs: TaggedLog[];
 }
+
+const localIdFromUuid = (uuid: string) => {
+  const index = uuid.lastIndexOf(".");
+  return parseInt(uuid.slice(index + 1), 10);
+};
+
+export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
+  let latest = 0;
+  for (const log of logs) {
+    if (!log.body.id && log.body.message === "Taking photo") {
+      latest = Math.max(latest, localIdFromUuid(log.uuid));
+    }
+  }
+  return latest;
+};
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   usePerfRenderCount("ThreeDGardenMap");
@@ -145,13 +158,9 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     () => fetchInterpolationOptions(props.farmwareEnvs),
     [props.farmwareEnvs]);
 
-  const lastCaptureTime = React.useMemo(() => {
-    const localIds = props.logs
-      .filter(log => !log.body.id // new logs
-        && Object.values(["Taking photo"]).includes(log.body.message))
-      .map(log => unpackUUID(log.uuid).localId);
-    return Math.max(0, ...localIds);
-  }, [props.logs]);
+  const lastCaptureTime = React.useMemo(
+    () => lastImageCaptureTime(props.logs),
+    [props.logs]);
   const sunPositionConfig = valid
     ? calcSunCoordinate(
       get3DTime(props.designer.threeDTime).toDate(),
@@ -167,7 +176,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     [gridSize.x, gridSize.y]);
 
   const config = React.useMemo(() => {
-    const nextConfig = clone(INITIAL);
+    const nextConfig = { ...INITIAL };
     nextConfig.botSizeX = stableGridSize.x;
     nextConfig.botSizeY = stableGridSize.y;
     nextConfig.bedWidthOuter = stableGridSize.y + 160;
@@ -195,7 +204,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.columnLength = configValues.columnLength;
     nextConfig.zAxisLength = configValues.zAxisLength;
     nextConfig.legSize = configValues.legSize;
-    nextConfig.legsFlush = !!configValues.legsFlush;
+    nextConfig.legsFlush = false;
     nextConfig.extraLegsX = configValues.extraLegsX;
     nextConfig.extraLegsY = configValues.extraLegsY;
     nextConfig.bedBrightness = configValues.bedBrightness;
@@ -286,7 +295,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.heading,
     configValues.laser,
     configValues.legSize,
-    configValues.legsFlush,
     configValues.lightsDebug,
     configValues.lowDetail,
     configValues.moistureDebug,
@@ -329,7 +337,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   ]);
 
   const position = React.useMemo(() => {
-    const nextPosition = clone(INITIAL_POSITION);
+    const nextPosition = { ...INITIAL_POSITION };
     nextPosition.x = props.botPosition.x || 0;
     nextPosition.y = props.botPosition.y || 0;
     nextPosition.z = props.botPosition.z || 0;
@@ -378,17 +386,35 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 };
 
 const convertPlantResources = (plants: TaggedPlant[]): ThreeDGardenPlant[] =>
-  plants.map(plant => ({
-    id: plant.body.id,
-    label: plant.body.name,
-    icon: findIcon(plant.body.openfarm_slug),
-    size: plant.body.radius * 2,
-    spread: findCrop(plant.body.openfarm_slug).spread,
-    x: plant.body.x,
-    y: plant.body.y,
-    key: "",
-    seed: 0,
-  }));
+  plants.map(plant => {
+    const crop = plantDisplayProps(plant.body.openfarm_slug);
+    return {
+      id: plant.body.id,
+      label: plant.body.name,
+      icon: crop.icon,
+      size: plant.body.radius * 2,
+      spread: crop.spread,
+      x: plant.body.x,
+      y: plant.body.y,
+      key: "",
+      seed: 0,
+    };
+  });
+
+interface PlantDisplayProps {
+  icon: string;
+  spread: number;
+}
+
+const plantDisplayPropsBySlug: Record<string, PlantDisplayProps> = {};
+
+const plantDisplayProps = (slug: string): PlantDisplayProps => {
+  plantDisplayPropsBySlug[slug] ||= {
+    icon: findCropIcon(slug),
+    spread: findCropMetadata(slug).spread,
+  };
+  return plantDisplayPropsBySlug[slug];
+};
 
 export const convertPlants =
   (_config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>

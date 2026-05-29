@@ -8,7 +8,24 @@ export interface FarmbotAxesProps {
   config: Config;
 }
 
-export const FarmbotAxes = (props: FarmbotAxesProps) => {
+const AXES_CONFIG_FIELDS: (keyof Config)[] = [
+  "axes",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "zGantryOffset",
+];
+
+export const farmbotAxesPropsEqual = (
+  prev: FarmbotAxesProps,
+  next: FarmbotAxesProps,
+) =>
+  AXES_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
+
+const FarmbotAxesBase = (props: FarmbotAxesProps) => {
+  if (!props.config.axes) { return <></>; }
   const {
     bedLengthOuter, bedXOffset, bedWidthOuter, bedYOffset,
   } = props.config;
@@ -23,3 +40,5 @@ export const FarmbotAxes = (props: FarmbotAxesProps) => {
     <Arrow length={length} width={width} rotation={[0, -Math.PI / 2, 0]} />
   </Group>;
 };
+
+export const FarmbotAxes = React.memo(FarmbotAxesBase, farmbotAxesPropsEqual);

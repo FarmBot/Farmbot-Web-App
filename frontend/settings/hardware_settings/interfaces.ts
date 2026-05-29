@@ -46,7 +46,7 @@ export interface CalibrationRowProps {
   arduinoBusy: boolean;
   locked?: boolean;
   botOnline: boolean;
-  action(axis: Axis): void;
+  action(axis: Axis): Promise<void> | void;
   toolTip: string;
   title: DeviceSetting;
   axisTitle: string;

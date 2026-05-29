@@ -6,20 +6,25 @@ import {
 } from "../components";
 import { Cylinder, Sphere, Torus } from "@react-three/drei";
 import {
+  BufferGeometry,
+  CylinderGeometry,
   DoubleSide,
-  Euler,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Mesh as ThreeMesh,
   Quaternion,
+  SphereGeometry,
+  TorusGeometry,
   Vector3,
 } from "three";
+import { mergeGeometries } from
+  "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ThreeEvent } from "@react-three/fiber";
 import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined, round } from "lodash";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { getMode } from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -38,6 +43,49 @@ const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
 export const POINT_CYLINDER_SCALE_FACTOR =
   round(1 / POINT_CYLINDER_TUBE_SIZE ** 2);
 const SEGMENTS = 64;
+
+const makePointMarkerGeometry = () => {
+  const pinGeometry = new CylinderGeometry(
+    POINT_PIN_RADIUS,
+    0,
+    POINT_PIN_HEIGHT,
+    16,
+    2,
+    true,
+  );
+  pinGeometry.rotateX(Math.PI / 2);
+  pinGeometry.translate(0, 0, POINT_PIN_HEIGHT / 2);
+  const sphereGeometry = new SphereGeometry(
+    POINT_PIN_RADIUS,
+    16,
+    16,
+  );
+  sphereGeometry.translate(0, 0, POINT_PIN_HEIGHT);
+  const markerGeometry = mergeGeometries(
+    [pinGeometry, sphereGeometry],
+    false,
+  ) || new BufferGeometry();
+  pinGeometry.dispose();
+  sphereGeometry.dispose();
+  return markerGeometry;
+};
+
+let pointMarkerGeometry: BufferGeometry | undefined = undefined;
+const getPointMarkerGeometry = () => {
+  pointMarkerGeometry ||= makePointMarkerGeometry();
+  return pointMarkerGeometry;
+};
+
+let pointRadiusGeometry: BufferGeometry | undefined = undefined;
+const getPointRadiusGeometry = () => {
+  pointRadiusGeometry ||= new TorusGeometry(
+    1,
+    POINT_CYLINDER_TUBE_SIZE,
+    SEGMENTS,
+    SEGMENTS,
+  );
+  return pointRadiusGeometry;
+};
 
 export interface PointProps {
   point: TaggedGenericPointer;
@@ -63,7 +111,7 @@ export const Point = (props: PointProps) => {
       if (clickWasDragged(event)) { return; }
       if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen(true));
+        props.dispatch(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     }}
@@ -79,7 +127,7 @@ interface PointInstance {
   radius: number;
 }
 
-interface PointInstanceBucket {
+interface PointInstanceGroup {
   color: string | undefined;
   alpha: number;
   points: PointInstance[];
@@ -100,13 +148,13 @@ const pointAlpha = (point: TaggedGenericPointer) =>
 const pointBucketKey = (point: TaggedGenericPointer) =>
   `${point.body.meta.color || ""}-${pointAlpha(point)}`;
 
-const getPointInstanceBuckets = (
+const getPointInstanceGroups = (
   points: TaggedGenericPointer[],
   config: Config,
   getZ: (x: number, y: number) => number,
 ) => {
   const getWorldPosition = getWorldPositionFunc(config);
-  const buckets: Record<string, PointInstanceBucket> = {};
+  const groups: Record<string, PointInstanceGroup> = {};
   points.forEach(point => {
     const alpha = pointAlpha(point);
     const key = pointBucketKey(point);
@@ -119,60 +167,59 @@ const getPointInstanceBuckets = (
       }),
       radius: point.body.radius,
     };
-    buckets[key] ||= {
+    groups[key] ||= {
       color: point.body.meta.color,
       alpha,
       points: [],
       ringPoints: [],
     };
-    buckets[key].points.push(instance);
-    if (point.body.radius > 0) { buckets[key].ringPoints.push(instance); }
+    groups[key].points.push(instance);
+    if (point.body.radius > 0) { groups[key].ringPoints.push(instance); }
   });
-  return Object.values(buckets);
+  return Object.values(groups);
 };
 
 interface PointInstanceBucketProps extends PointInstancesProps {
-  bucket: PointInstanceBucket;
+  group: PointInstanceGroup;
 }
 
 const PointBucketInstances = (props: PointInstanceBucketProps) => {
-  const { bucket, dispatch, visible } = props;
+  const { group, dispatch, visible } = props;
   const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
-  const pinRef = React.useRef<InstancedMeshType>(null);
-  // eslint-disable-next-line no-null/no-null
-  const sphereRef = React.useRef<InstancedMeshType>(null);
+  const markerRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null
   const ringRef = React.useRef<InstancedMeshType>(null);
+  const markerGeometry = getPointMarkerGeometry();
+  const radiusGeometry = getPointRadiusGeometry();
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
-  const pinRotation = React.useMemo(() =>
-    new Quaternion().setFromEuler(new Euler(Math.PI / 2, 0, 0)), []);
   const noRotation = React.useMemo(() => new Quaternion(), []);
   const noScale = React.useMemo(() => new Vector3(1, 1, 1), []);
   const ringScale = React.useMemo(() => new Vector3(), []);
 
-  React.useEffect(() => {
-    const pinMesh = pinRef.current;
-    const sphereMesh = sphereRef.current;
-    if (!pinMesh?.setMatrixAt || !sphereMesh?.setMatrixAt) { return; }
-    bucket.points.forEach((instance, index) => {
+  React.useLayoutEffect(() => {
+    const markerMesh = markerRef.current;
+    if (!markerMesh?.setMatrixAt) { return; }
+    group.points.forEach((instance, index) => {
       const [x, y, z] = instance.position;
-      tempPosition.set(x, y, z + POINT_PIN_HEIGHT / 2);
-      tempMatrix.compose(tempPosition, pinRotation, noScale);
-      pinMesh.setMatrixAt(index, tempMatrix);
-      tempPosition.set(x, y, z + POINT_PIN_HEIGHT);
+      tempPosition.set(x, y, z);
       tempMatrix.compose(tempPosition, noRotation, noScale);
-      sphereMesh.setMatrixAt(index, tempMatrix);
+      markerMesh.setMatrixAt(index, tempMatrix);
     });
-    pinMesh.instanceMatrix.needsUpdate = true;
-    sphereMesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.points, noRotation, noScale, pinRotation, tempMatrix, tempPosition]);
+    markerMesh.instanceMatrix.needsUpdate = true;
+  }, [
+    group.points,
+    noRotation,
+    noScale,
+    tempMatrix,
+    tempPosition,
+  ]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const ringMesh = ringRef.current;
     if (!ringMesh?.setMatrixAt) { return; }
-    bucket.ringPoints.forEach((instance, index) => {
+    group.ringPoints.forEach((instance, index) => {
       const [x, y, z] = instance.position;
       tempPosition.set(x, y, z);
       ringScale.set(
@@ -184,7 +231,13 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       ringMesh.setMatrixAt(index, tempMatrix);
     });
     ringMesh.instanceMatrix.needsUpdate = true;
-  }, [bucket.ringPoints, noRotation, ringScale, tempMatrix, tempPosition]);
+  }, [
+    group.ringPoints,
+    noRotation,
+    ringScale,
+    tempMatrix,
+    tempPosition,
+  ]);
 
   const onClick = (instances: PointInstance[]) =>
     (event: ThreeEvent<MouseEvent>) => {
@@ -194,71 +247,84 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       const point = instances[instanceId]?.point;
       if (point?.body.id && dispatch && visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
-        dispatch(setPanelOpen(true));
+        dispatch(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     };
 
   return <>
     <InstancedMesh
-      ref={pinRef}
+      ref={markerRef}
       name={"marker"}
-      args={[undefined, undefined, bucket.points.length]}
+      args={[markerGeometry, undefined, group.points.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
       visible={visible}
-      onClick={onClick(bucket.points)}
-      renderOrder={RenderOrder.default}>
-      <cylinderGeometry
-        args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 16, 2, true]} />
+      onClick={onClick(group.points)}
+      renderOrder={RenderOrder.points}>
       <MeshPhongMaterial
-        color={bucket.color}
+        color={group.color}
         side={DoubleSide}
-        transparent={true}
-        opacity={1 * bucket.alpha} />
+        transparent={group.alpha < 1}
+        depthWrite={group.alpha == 1}
+        opacity={group.alpha} />
     </InstancedMesh>
-    <InstancedMesh
-      ref={sphereRef}
-      name={"marker"}
-      args={[undefined, undefined, bucket.points.length]}
-      visible={visible}
-      onClick={onClick(bucket.points)}
-      renderOrder={RenderOrder.default}>
-      <sphereGeometry args={[POINT_PIN_RADIUS, 16, 16]} />
-      <MeshPhongMaterial
-        color={bucket.color}
-        side={DoubleSide}
-        transparent={true}
-        opacity={1 * bucket.alpha} />
-    </InstancedMesh>
-    {bucket.ringPoints.length > 0 &&
+    {group.ringPoints.length > 0 &&
       <InstancedMesh
         ref={ringRef}
         name={"marker-radius"}
-        args={[undefined, undefined, bucket.ringPoints.length]}
+        args={[radiusGeometry, undefined, group.ringPoints.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
         visible={visible}
-        onClick={onClick(bucket.ringPoints)}
-        renderOrder={RenderOrder.default}>
-        <torusGeometry
-          args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]} />
+        onClick={onClick(group.ringPoints)}
+        renderOrder={RenderOrder.points}>
         <MeshPhongMaterial
-          color={bucket.color}
+          color={group.color}
           transparent={true}
-          opacity={0.5 * bucket.alpha} />
+          depthWrite={false}
+          opacity={0.5 * group.alpha} />
       </InstancedMesh>}
   </>;
 };
 
+const pointPositionConfigEquals = (a: Config, b: Config) =>
+  a.bedLengthOuter == b.bedLengthOuter &&
+  a.bedWidthOuter == b.bedWidthOuter &&
+  a.bedXOffset == b.bedXOffset &&
+  a.bedYOffset == b.bedYOffset &&
+  a.columnLength == b.columnLength &&
+  a.zGantryOffset == b.zGantryOffset &&
+  a.mirrorX == b.mirrorX &&
+  a.mirrorY == b.mirrorY;
+
+const pointInstancesPropsEqual = (
+  prev: PointInstancesProps,
+  next: PointInstancesProps,
+) =>
+  prev.points == next.points &&
+  prev.visible == next.visible &&
+  prev.getZ == next.getZ &&
+  prev.dispatch == next.dispatch &&
+  pointPositionConfigEquals(prev.config, next.config);
+
 export const PointInstances = React.memo((props: PointInstancesProps) => {
-  const buckets = React.useMemo(
-    () => getPointInstanceBuckets(props.points, props.config, props.getZ),
+  if (!props.visible) { return <></>; }
+  return <VisiblePointInstances {...props} />;
+}, pointInstancesPropsEqual);
+
+const VisiblePointInstances = (props: PointInstancesProps) => {
+  const groups = React.useMemo(
+    () => getPointInstanceGroups(props.points, props.config, props.getZ),
     [props.points, props.config, props.getZ]);
   return <>
-    {buckets.map(bucket =>
+    {groups.map(group =>
       <PointBucketInstances
-        key={`${bucket.color || ""}-${bucket.alpha}`}
+        key={`${group.color || ""}-${group.alpha}`}
         {...props}
-        bucket={bucket} />)}
+        group={group} />)}
   </>;
-});
+};
 
 export interface DrawnPointProps {
   designer: DesignerState;
@@ -270,7 +336,50 @@ export interface DrawnPointProps {
   imageRef?: ImageRef;
 }
 
-export const DrawnPoint = (props: DrawnPointProps) => {
+interface DrawnPointPreviewProps extends DrawnPointProps {
+  mode: Mode;
+}
+
+type DrawnPointPayload = DesignerState["drawnPoint"];
+
+const DRAWN_POINT_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "mirrorX",
+  "mirrorY",
+  "zGantryOffset",
+];
+
+const sameDrawnPoint = (
+  prev: DrawnPointPayload,
+  next: DrawnPointPayload,
+) =>
+  prev === next ||
+  (!!prev && !!next &&
+    prev.cx === next.cx &&
+    prev.cy === next.cy &&
+    prev.z === next.z &&
+    prev.r === next.r &&
+    prev.color === next.color);
+
+export const drawnPointPropsEqual = (
+  prev: DrawnPointPreviewProps,
+  next: DrawnPointPreviewProps,
+) =>
+  prev.mode === next.mode &&
+  prev.usePosition === next.usePosition &&
+  prev.radiusRef === next.radiusRef &&
+  prev.torusRef === next.torusRef &&
+  prev.billboardRef === next.billboardRef &&
+  prev.imageRef === next.imageRef &&
+  sameDrawnPoint(prev.designer.drawnPoint, next.designer.drawnPoint) &&
+  DRAWN_POINT_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const DrawnPointPreview = (props: DrawnPointPreviewProps) => {
   const { config } = props;
   const { drawnPoint } = props.designer;
   const drawnPointPosition =
@@ -278,7 +387,7 @@ export const DrawnPoint = (props: DrawnPointProps) => {
       ? { x: drawnPoint.cx, y: drawnPoint.cy, z: drawnPoint.z }
       : undefined;
   if (props.usePosition && isUndefined(drawnPointPosition)) { return <></>; }
-  const Base = getMode() == Mode.createWeed ? WeedBase : PointBase;
+  const Base = props.mode == Mode.createWeed ? WeedBase : PointBase;
   return <Base
     pointName={"drawn-point"}
     alpha={0.5}
@@ -291,6 +400,12 @@ export const DrawnPoint = (props: DrawnPointProps) => {
     billboardRef={props.billboardRef}
     imageRef={props.imageRef} />;
 };
+
+const MemoDrawnPointPreview =
+  React.memo(DrawnPointPreview, drawnPointPropsEqual);
+
+export const DrawnPoint = (props: DrawnPointProps) =>
+  <MemoDrawnPointPreview {...props} mode={getMode()} />;
 
 interface PointBaseProps {
   pointName: string;
@@ -325,7 +440,8 @@ const PointBase = (props: PointBaseProps) => {
         <MeshPhongMaterial
           color={color}
           side={DoubleSide}
-          transparent={true}
+          transparent={alpha < 1}
+          depthWrite={alpha == 1}
           opacity={1 * alpha} />
       </Cylinder>
       <Sphere
@@ -334,7 +450,8 @@ const PointBase = (props: PointBaseProps) => {
         <MeshPhongMaterial
           color={color}
           side={DoubleSide}
-          transparent={true}
+          transparent={alpha < 1}
+          depthWrite={alpha == 1}
           opacity={1 * alpha} />
       </Sphere>
     </Group>
@@ -379,6 +496,7 @@ const HollowCylinder = (
       <MeshPhongMaterial
         color={color}
         transparent={true}
+        depthWrite={false}
         opacity={alpha} />
     </Torus>
     : <Torus
@@ -388,6 +506,7 @@ const HollowCylinder = (
       <MeshPhongMaterial
         color={color}
         transparent={true}
+        depthWrite={false}
         opacity={alpha} />
     </Torus>;
 };

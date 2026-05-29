@@ -3,12 +3,15 @@ import { range } from "lodash";
 import { Group } from "../../components";
 import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
-import { WaterStream } from "./water_stream";
+import {
+  WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
+} from "./water_stream";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
 } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import { utmHeight } from "../bot";
+import { Texture } from "three";
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
@@ -17,7 +20,54 @@ export interface WateringAnimationsProps {
   getZ(x: number, y: number): number;
 }
 
-export const WateringAnimations = (props: WateringAnimationsProps) => {
+const WATERING_ANIMATION_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "negativeZ",
+  "zGantryOffset",
+];
+
+export const wateringAnimationsPropsEqual = (
+  prev: WateringAnimationsProps,
+  next: WateringAnimationsProps,
+) =>
+  prev.waterFlow === next.waterFlow &&
+  prev.getZ === next.getZ &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  WATERING_ANIMATION_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+interface WateringAnimationsContentProps extends WateringAnimationsProps {
+  waterTexture: Texture | undefined;
+}
+
+const LocalWateringAnimations = (props: WateringAnimationsProps) => {
+  const waterTexture = useWaterFlowTexture(props.waterFlow);
+  return <WateringAnimationsContent
+    {...props}
+    waterTexture={waterTexture} />;
+};
+
+const WateringAnimationsBase = (props: WateringAnimationsProps) => {
+  const sharedWaterTexture = useSharedWaterFlowTexture();
+  return sharedWaterTexture
+    ? <WateringAnimationsContent
+      {...props}
+      waterTexture={sharedWaterTexture} />
+    : <LocalWateringAnimations {...props} />;
+};
+
+export const WateringAnimations = React.memo(
+  WateringAnimationsBase,
+  wateringAnimationsPropsEqual,
+);
+
+const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, getZ, config } = props;
   const { x, y, z } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(config);
@@ -43,6 +93,7 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
       return <WaterStream key={i}
         name={`water-stream-${i}`}
         waterFlow={waterFlow}
+        waterTexture={props.waterTexture}
         position={[0, 0, utmZ]}
         args={[easyCubicBezierCurve3(
           [12.5 * Math.sin(angle), 12.5 * Math.cos(angle), 0],

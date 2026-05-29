@@ -19,7 +19,7 @@ let allRefs: MockRef[] = [];
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { clone } from "lodash";
+import { clone, range } from "lodash";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import {
@@ -83,6 +83,10 @@ describe("<PlantInstances />", () => {
     reactUseRefSpy.mockRestore();
     getModeSpy.mockRestore();
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
+    delete PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"];
+    Object.keys(PLANT_ICON_ATLAS)
+      .filter(key => key.startsWith("/crops/icons/round92-"))
+      .forEach(key => delete PLANT_ICON_ATLAS[key]);
   });
 
   const fakeProps = (): PlantInstancesProps => {
@@ -109,6 +113,15 @@ describe("<PlantInstances />", () => {
     expect(meshes.length).toBe(2);
   });
 
+  it("skips hidden plant icon instances", () => {
+    const p = fakeProps();
+    p.visible = false;
+    const { container } = render(<PlantInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(useTexture).not.toHaveBeenCalled();
+    expect(useFrame).not.toHaveBeenCalled();
+  });
+
   it("uses reserved icon capacity while rendering only active plants", () => {
     const p = fakeProps();
     p.plants = [p.plants[0]];
@@ -119,7 +132,28 @@ describe("<PlantInstances />", () => {
     expect(mesh?.getAttribute("count")).toEqual("1");
   });
 
-  it("keeps reserved icon meshes mounted without active plants", () => {
+  it("keeps reserved capacities for multiple active icon buckets", () => {
+    const p = fakeProps();
+    p.iconCapacities = {
+      [p.plants[0].icon]: 4,
+      [p.plants[1].icon]: 5,
+      "https://example.com/inactive-icon.avif": 6,
+    };
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(2);
+    expect(meshes.map(mesh => mesh.props.args[2]).sort()).toEqual([4, 5]);
+    expect(meshes.map(mesh => mesh.props.count)).toEqual([1, 1]);
+    expect(meshes.map(mesh => mesh.props.userData.plantIndexes)).toEqual([
+      [0],
+      [1],
+    ]);
+    unmountRenderer(wrapper);
+  });
+
+  it("skips reserved icon meshes without active plants", () => {
     const p = fakeProps();
     p.plants = [p.plants[0]];
     p.iconCapacities = {
@@ -128,10 +162,9 @@ describe("<PlantInstances />", () => {
     };
     const { container } = render(<PlantInstances {...p} />);
     const meshes = container.querySelectorAll("instancedmesh");
-    expect(meshes.length).toBe(2);
-    expect(meshes.item(1).getAttribute("args")).toContain("5");
-    expect(meshes.item(1).getAttribute("count")).toEqual("0");
-    expect(useTexture).toHaveBeenCalledWith("https://example.com/inactive-icon.avif");
+    expect(meshes.length).toBe(1);
+    expect(useTexture).not.toHaveBeenCalledWith(
+      "https://example.com/inactive-icon.avif");
   });
 
   it("disables frustum culling for billboarded plant icons", () => {
@@ -139,6 +172,15 @@ describe("<PlantInstances />", () => {
     const mesh = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];
     expect(mesh.props.frustumCulled).toEqual(false);
+    unmountRenderer(wrapper);
+  });
+
+  it("shares plant icon geometry across icon buckets", () => {
+    const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(2);
+    expect(meshes[0].props.args[0]).toBe(meshes[1].props.args[0]);
     unmountRenderer(wrapper);
   });
 
@@ -150,7 +192,7 @@ describe("<PlantInstances />", () => {
   });
 
   it("loads the atlas texture when an icon is mapped", () => {
-    PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
+    PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"] = {
       atlasUrl: "/crops/icons/atlas.avif",
       textureWidth: 256,
       textureHeight: 256,
@@ -159,8 +201,101 @@ describe("<PlantInstances />", () => {
       width: 64,
       height: 64,
     };
-    render(<PlantInstances {...fakeProps()} />);
+    const { container } = render(<PlantInstances {...fakeProps()} />);
+
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
+  });
+
+  it("loads the atlas texture when many mapped icons are visible", () => {
+    const p = fakeProps();
+    p.plants = range(32).map(index => {
+      const icon = `/crops/icons/round92-${index}.avif`;
+      PLANT_ICON_ATLAS[icon] = {
+        atlasUrl: "/crops/icons/atlas.avif",
+        textureWidth: 256,
+        textureHeight: 256,
+        x: 0,
+        y: 0,
+        width: 64,
+        height: 64,
+      };
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+
+    const { container } = render(<PlantInstances {...p} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
+  });
+
+  it("keeps non-atlas icons individual when atlas rendering is active", () => {
+    const p = fakeProps();
+    p.plants = range(32).map(index => {
+      const icon = index == 31
+        ? "https://example.com/non-atlas.avif"
+        : `/crops/icons/round92-${index}.avif`;
+      if (index != 31) {
+        PLANT_ICON_ATLAS[icon] = {
+          atlasUrl: "/crops/icons/atlas.avif",
+          textureWidth: 256,
+          textureHeight: 256,
+          x: 0,
+          y: 0,
+          width: 64,
+          height: 64,
+        };
+      }
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+
+    const { container } = render(<PlantInstances {...p} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+    expect(useTexture).toHaveBeenCalledWith(
+      "https://example.com/non-atlas.avif");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(2);
+  });
+
+  it("injects atlas UV attributes into plant icon shaders", () => {
+    const p = fakeProps();
+    p.plants = range(32).map(index => {
+      const icon = `/crops/icons/round92-${index}.avif`;
+      PLANT_ICON_ATLAS[icon] = {
+        atlasUrl: "/crops/icons/atlas.avif",
+        textureWidth: 256,
+        textureHeight: 256,
+        x: 0,
+        y: 0,
+        width: 64,
+        height: 64,
+      };
+      return {
+        ...p.plants[0],
+        id: index + 1,
+        icon,
+      };
+    });
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const material = wrapper.root.find(node =>
+      typeof node.props.onBeforeCompile == "function");
+    const shader = {
+      vertexShader: "#include <common>\n#include <uv_vertex>",
+    };
+
+    material.props.onBeforeCompile(shader);
+
+    expect(shader.vertexShader).toContain("instanceUvOffset");
+    expect(shader.vertexShader).toContain("instanceUvRepeat");
+    unmountRenderer(wrapper);
   });
 
   it("clamps plant icon brightness", () => {
@@ -296,6 +431,24 @@ describe("<PlantInstances />", () => {
     expect(container).toBeTruthy();
   });
 
+  it("skips time lookup without season animation", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const now = jest.spyOn(performance, "now").mockReturnValue(1000);
+    const p = fakeProps();
+    p.config.animateSeasons = false;
+    render(<PlantInstances {...p} />);
+    now.mockClear();
+    frameFn?.({
+      clock: { getElapsedTime: jest.fn(() => 0) },
+      camera: { quaternion: new Quaternion() },
+    });
+    expect(now).not.toHaveBeenCalled();
+    now.mockRestore();
+  });
+
   it("handles missing ref", () => {
     mockRefImpl = () => ({ current: undefined });
     const p = fakeProps();
@@ -346,6 +499,120 @@ describe("<PlantInstances />", () => {
       camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
     });
     expect(setMatrixAt).toHaveBeenCalled();
+  });
+
+  it("reuses static icon positions when the camera changes", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    getZ.mockClear();
+    frameFn?.({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(getZ).not.toHaveBeenCalled();
+    expect(setMatrixAt).toHaveBeenCalled();
+  });
+
+  it("reuses static icon positions during seasonal animation", () => {
+    let frameFn: Function | undefined;
+    (useFrame as jest.Mock).mockImplementation((fn: Function) => {
+      frameFn = fn;
+    });
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    getZ.mockClear();
+    frameFn?.({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(getZ).not.toHaveBeenCalled();
+    expect(setMatrixAt).toHaveBeenCalled();
+  });
+
+  it.each([
+    ["static seasons", false],
+    ["animated seasons", true],
+  ])("memoizes %s icon setup across unrelated config churn",
+    (_label, animateSeasons) => {
+      const getZ = jest.fn(() => 0);
+      const p = fakeProps();
+      p.config.animateSeasons = animateSeasons;
+      p.startTimeRef = animateSeasons ? { current: 0 } : undefined;
+      p.getZ = getZ;
+      p.plants = [p.plants[0]];
+      const { rerender } = render(<PlantInstances {...p} />);
+      const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+      getZ.mockClear();
+
+      rerender(<PlantInstances {...p} config={{
+        ...p.config,
+        heading: p.config.heading + 45,
+        label: "unrelated config churn",
+        sunAzimuth: p.config.sunAzimuth + 15,
+      }} />);
+
+      expect(getZ).not.toHaveBeenCalled();
+      expect(useFrame).toHaveBeenCalledTimes(frameCalls);
+    });
+
+  it("updates icon setup when position config changes", () => {
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    getZ.mockClear();
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+
+    expect(getZ).toHaveBeenCalledWith(100, 200);
+  });
+
+  it("rerenders icons when brightness config changes", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      sunInclination: p.config.sunInclination - 10,
+    }} />);
+
+    expect(useFrame).toHaveBeenCalledTimes(frameCalls + 1);
+  });
+
+  it("rerenders animated icons when the season changes", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    p.plants = [p.plants[0]];
+    const { rerender } = render(<PlantInstances {...p} />);
+    const frameCalls = (useFrame as jest.Mock).mock.calls.length;
+
+    rerender(<PlantInstances {...p} config={{
+      ...p.config,
+      plants: "Winter",
+    }} />);
+
+    expect(useFrame).toHaveBeenCalledTimes(frameCalls + 1);
   });
 
   it("updates material brightness when changed", () => {

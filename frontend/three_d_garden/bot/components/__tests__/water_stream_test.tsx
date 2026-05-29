@@ -3,7 +3,10 @@ import { render, renderHook } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import { RepeatWrapping, Texture, TextureLoader } from "three";
 import {
-  WaterStream, WaterStreamProps, useWaterFlowTexture,
+  WaterFlowTextureProvider,
+  WaterStream,
+  WaterStreamProps,
+  useWaterFlowTexture,
 } from "../water_stream";
 
 let frameCallback: (state: unknown, delta: number) => void;
@@ -15,6 +18,7 @@ describe("<WaterStream />", () => {
     name: "mock-water-stream",
     args: [],
     waterFlow: true,
+    waterTexture: new Texture(),
   });
 
   beforeEach(() => {
@@ -31,15 +35,15 @@ describe("<WaterStream />", () => {
 
   it("renders when water is flowing", () => {
     expect(() => render(<WaterStream {...fakeProps()} />)).not.toThrow();
-    expect(loadTextureSpy).toHaveBeenCalledTimes(1);
-    expect(useFrameSpy).toHaveBeenCalledTimes(1);
+    expect(loadTextureSpy).not.toHaveBeenCalled();
+    expect(useFrameSpy).not.toHaveBeenCalled();
   });
 
   it("renders when water flow is disabled", () => {
     const props = { ...fakeProps(), waterFlow: false };
     expect(() => render(<WaterStream {...props} />)).not.toThrow();
     expect(loadTextureSpy).not.toHaveBeenCalled();
-    expect(useFrameSpy).toHaveBeenCalledTimes(1);
+    expect(useFrameSpy).not.toHaveBeenCalled();
   });
 });
 
@@ -79,5 +83,35 @@ describe("useWaterFlowTexture", () => {
     const delta = 1;
     frameCallback({}, delta);
     expect(result.current!.offset.x).toBe(initialOffset - delta * 0.05);
+  });
+});
+
+describe("<WaterFlowTextureProvider />", () => {
+  beforeEach(() => {
+    loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
+      .mockImplementation(() => new Texture());
+    useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(() => undefined as never);
+  });
+
+  afterEach(() => {
+    loadTextureSpy.mockRestore();
+    useFrameSpy.mockRestore();
+  });
+
+  it("doesn't animate while water is off", () => {
+    render(<WaterFlowTextureProvider waterFlow={false}>
+      <div />
+    </WaterFlowTextureProvider>);
+    expect(loadTextureSpy).not.toHaveBeenCalled();
+    expect(useFrameSpy).not.toHaveBeenCalled();
+  });
+
+  it("loads one shared animated texture while water is on", () => {
+    render(<WaterFlowTextureProvider waterFlow={true}>
+      <div />
+    </WaterFlowTextureProvider>);
+    expect(loadTextureSpy).toHaveBeenCalledTimes(1);
+    expect(useFrameSpy).toHaveBeenCalledTimes(1);
   });
 });

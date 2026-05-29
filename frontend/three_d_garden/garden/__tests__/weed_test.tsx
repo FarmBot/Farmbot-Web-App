@@ -10,6 +10,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
 import { Quaternion } from "three";
 import {
   createRenderer,
@@ -24,6 +25,7 @@ describe("<Weed />", () => {
   beforeEach(() => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     (useFrame as jest.Mock).mockClear();
+    (useTexture as unknown as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -104,13 +106,78 @@ describe("<Weed />", () => {
   });
 
   it("renders instanced weeds", () => {
-    const wrapper = createRenderer(<WeedInstances {...fakeInstanceProps()} />);
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<WeedInstances {...p} />);
     mountedWrappers.push(wrapper);
     const meshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
-    expect(meshes.length).toEqual(2);
+    expect(meshes.length).toEqual(3);
     expect(meshes[0].props.name).toEqual("weed-icons");
     expect(meshes[1].props.name).toEqual("weed-radius");
+    expect(meshes[2].props.name).toEqual("weed-radius");
+  });
+
+  it("buckets weed radii by color", () => {
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const radiusMeshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh" &&
+      node.props.name == "weed-radius");
+    expect(radiusMeshes.length).toEqual(2);
+    expect(radiusMeshes.map(radius => radius.props.args[2])).toEqual([1, 1]);
+    const colors = radiusMeshes.flatMap(radius =>
+      radius.findAll(node => node.props.color)
+        .map(node => node.props.color));
+    expect([...new Set(colors)].sort()).toEqual([
+      "blue", "red",
+    ]);
+  });
+
+  it("skips hidden weed instances", () => {
+    const p = fakeInstanceProps();
+    p.visible = false;
+    p.getZ = jest.fn();
+    const { container } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("skips empty visible weed instances", () => {
+    const p = fakeInstanceProps();
+    p.weeds = [];
+    const { container } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(0);
+    expect(useTexture).not.toHaveBeenCalled();
+    expect(useFrame).not.toHaveBeenCalled();
+  });
+
+  it("memoizes weed instances across unrelated config churn", () => {
+    const p = fakeInstanceProps();
+    p.weeds[0].body.meta.color = "red";
+    p.weeds[1].body.meta.color = "blue";
+    p.getZ = jest.fn(() => 0);
+    const { container, rerender } = render(<WeedInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(p.getZ).toHaveBeenCalledTimes(2);
+
+    rerender(<WeedInstances {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+    }} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(3);
+    expect(p.getZ).toHaveBeenCalledTimes(2);
+
+    rerender(<WeedInstances {...p} config={{
+      ...p.config,
+      mirrorX: !p.config.mirrorX,
+    }} />);
+    expect(p.getZ).toHaveBeenCalledTimes(4);
   });
 
   it("navigates from a weed instance", () => {
@@ -172,6 +239,7 @@ describe("<Weed />", () => {
     const radiusRef = {
       current: {
         setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
         instanceMatrix: { needsUpdate: false },
       },
     };

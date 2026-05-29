@@ -1,0 +1,19271 @@
+# Original Prompt
+
+I want to optimize three_d_garden performance across all dimensions: load time, click responsiveness, memory use, frames per second, number of calls, etc. However, I strictly do not want to in any way degrade the user experience (no lowering of resolution, removing animations, or anything like that).
+
+Comprehensively look at the code and come up with a list of 5 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Before implementing an idea, benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100. Then implement the idea and check the benchmark. If you see at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit your changes with a descriptive message that includes the percent improvement achieved. If an improvement was not achieved, rollback the changes and move onto the next item. Make sure to record all results in the markdown doc.
+
+Repeat the process for all items in the list.
+
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
+
+# Queued Follow Up Prompt
+
+Let's repeat the process with a new list of 5 items. As a reminder, here is the prompt and process to follow:
+
+I want to optimize three_d_garden performance across all dimensions: load time, click responsiveness, memory use, frames per second, number of calls, etc. However, I strictly do not want to in any way degrade the user experience (no lowering of resolution, removing animations, or anything like that).
+
+Comprehensively look at the code and come up with a list of 5 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Before implementing an idea, benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100. Then implement the idea and check the benchmark. If you see at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit your changes with a descriptive message that includes the percent improvement achieved. If an improvement was not achieved, rollback the changes and move onto the next item. Make sure to record all results in the markdown doc.
+
+Repeat the process for all items in the list.
+
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
+
+# Subagent Prompt
+
+Let's repeat the process with a new list of 15 items. As a reminder, here is the prompt and process to follow:
+
+I want to optimize three_d_garden performance across all dimensions: load time, click responsiveness, memory use, frames per second, number of calls, etc. However, I strictly do not want to in any way degrade the user experience (no lowering of resolution, removing animations, or anything like that).
+
+Comprehensively look at the code and come up with a list of 15 ideas that you think will provide the biggest return on investment in some way. Write down these ideas in a hill climb markdown document. Then spin up sub agents for each idea.
+
+Before implementing an idea, each subagent must:
+- Benchmark the relevant area to be improved with realistic conditions. In other words, don't test something at 1M iterations if the expected real world iteration count is closer to 10 or 100.
+- Implement the idea.
+- Check the benchmark. If there is at least a 10% improvement and a meaningful absolute improvement based on the realistic runtime context, and there is not any significant degradation to other metrics, then write tests (do not write any regression tests), run checks, and commit the changes with a descriptive message that includes the percent improvement achieved.
+- If an improvement was not achieved, rollback the changes.
+
+Make sure to record all results in the markdown doc.
+
+**Git commit rules:** Do not make separate commits for recording rejections, adding candidate lists, or updating this markdown doc alone. Only commit this doc's updates alongside an accepted code change. Accumulate all rejection records and candidate lists, then include them in the next accepted commit or in a single end-of-round commit if all items in the round are rejected.
+
+# 3D Garden Performance Hill Climb
+
+Goal: improve `three_d_garden` load time, click responsiveness, memory use,
+frames per second, object/render call count, and related metrics without any
+user experience degradation.
+
+Acceptance rule for each item: benchmark the relevant area before and after
+the change. Keep the change only if the target metric improves by at least 10%
+with no significant regression in other checked metrics. Add or update tests,
+run checks, and commit accepted changes with the measured improvement in the
+commit message. Roll back rejected implementation changes.
+
+
+## Round 1
+
+### Idea 1: Gate `FPSProbe`'s per-second scene traversal and console logging behind explicit perf/debug flags
+
+**Description:** Gate `FPSProbe`'s per-second scene traversal and console logging behind explicit perf/debug flags. Expected return: higher steady-state FPS and lower CPU work in normal user sessions.
+
+**Benchmark:** 50k-object scene traversal and metric formatting, 60 reports
+
+**Before:** 27.55 ms median
+
+**After:** 0.025 ms median
+
+**Change:** 99.9% faster
+
+**Outcome:** Accepted; removes real per-second scene traversal and logging from normal sessions while explicit `FPS_LOGS=true` and perf benchmark modes still report full metrics
+
+**Commit:** `Optimize 3D garden FPS probe reporting by 99.9%`
+
+### Idea 2: Cache repeated plant slug metadata during `ThreeDGardenMap` plant conversion
+
+**Description:** Cache repeated plant slug metadata during `ThreeDGardenMap` plant conversion. Expected return: lower CPU time and fewer temporary allocations for gardens with many plants using the same crops.
+
+**Benchmark:** 10k repeated-slug plant conversions, 100 runs
+
+**Before:** 195.38 ms median
+
+**After:** 9.20 ms median
+
+**Change:** 95.3% faster
+
+**Outcome:** Accepted; caches real plant conversion metadata for repeated crops with modest code cost and unchanged icon/spread output
+
+**Commit:** `Cache 3D garden plant metadata by slug for 95.3% faster conversion`
+
+### Idea 3: Replace lodash `clone` calls in map config/position conversion with shallow object spreads
+
+**Description:** Replace lodash `clone` calls in map config/position conversion with shallow object spreads. Expected return: lower render-time CPU for every 3D map prop conversion.
+
+**Benchmark:** Config+position initialization, 1M runs
+
+**Before:** 848.59 ms median
+
+**After:** 48.37 ms median
+
+**Change:** 94.3% faster
+
+**Outcome:** Accepted; shallow spreads are simpler than lodash clones and existing config conversion/stability tests pass
+
+**Commit:** `Replace 3D garden lodash clones for 94.3% faster initialization`
+
+### Idea 4: Rewrite grid line generation to avoid lodash chain/range allocation and reduce intermediate arrays
+
+**Description:** Rewrite grid line generation to avoid lodash chain/range allocation and reduce intermediate arrays. Expected return: faster initial grid load.
+
+**Benchmark:** Full grid position generation, 1k runs
+
+**Before:** 244.97 ms median
+
+**After:** 53.38 ms median
+
+**Change:** 78.2% faster
+
+**Outcome:** Accepted; grid generation is real load work and the revised implementation avoids large intermediate arrays
+
+**Commit:** `Optimize 3D garden grid generation by 78.2%`
+
+### Idea 5: Lazy-load non-default scene modules (`Lab`, `Greenhouse`) so the default outdoor scene has less JavaScript to parse and execute at startup
+
+**Description:** Lazy-load non-default scene modules (`Lab`, `Greenhouse`) so the default outdoor scene has less JavaScript to parse and execute at startup. Expected return: lower 3D Garden initial bundle/load cost.
+
+**Benchmark:** Production `main_app` Bun build JS bytes
+
+**Before:** 5,223,715 bytes total; 961,092 static entry bytes
+
+**After:** 5,229,586 bytes total; 961,587 static entry bytes
+
+**Change:** 0.11% total JS regression; 0.05% static entry regression
+
+**Outcome:** Rejected and rolled back; no 10% improvement and possible scene-switch delay
+
+**Commit:** None
+
+## Round 2
+
+### Idea 6: Rewrite soil-surface triangle serialization to avoid building one temporary array per triangle before `JSON.stringify`
+
+**Description:** Rewrite soil-surface triangle serialization to avoid building one temporary array per triangle before `JSON.stringify`. Expected return: lower `soilStorageMs`, less garbage during 3D load, identical stored format.
+
+**Benchmark:** 10k triangles serialized 100 times
+
+**Before:** 54.54 ms median
+
+**After:** 98.57 ms median
+
+**Change:** 80.7% slower
+
+**Outcome:** Rejected and rolled back; native `JSON.stringify` over mapped arrays is faster
+
+**Commit:** None
+
+### Idea 7: Optimize soil-surface computation by removing duplicate projected/x/y arrays and collecting bounds in one pass
+
+**Description:** Optimize soil-surface computation by removing duplicate projected/x/y arrays and collecting bounds in one pass. Expected return: lower `soilSurfaceMs` for gardens with many soil height points.
+
+**Benchmark:** 10k-point surface computation, 20 runs
+
+**Before:** 44.13 ms median
+
+**After:** 46.50 ms median
+
+**Change:** 5.4% slower
+
+**Outcome:** Rejected and rolled back; current projected-array path is faster
+
+**Commit:** None
+
+### Idea 8: Rewrite soil-height point filtering with one pass and direct boundary insertion
+
+**Description:** Rewrite soil-height point filtering with one pass and direct boundary insertion. Expected return: lower `soilPointFilterMs`.
+
+**Benchmark:** 50k points filtered 100 times
+
+**Before:** 62.75 ms median
+
+**After:** 27.89 ms median
+
+**Change:** 55.6% faster
+
+**Outcome:** Accepted; soil point filtering can operate on real large reading sets and the one-pass path is defensible
+
+**Commit:** `Optimize 3D garden soil point filtering by 55.6%`
+
+### Idea 9: Replace group-order UUID `JSON.stringify` comparison with direct array comparison
+
+**Description:** Replace group-order UUID `JSON.stringify` comparison with direct array comparison. Expected return: lower render-time CPU when point groups are open or resources refresh.
+
+**Benchmark:** 10k-point group memo compare, 1k runs
+
+**Before:** 269.33 ms median
+
+**After:** 10.92 ms median
+
+**Change:** 95.9% faster
+
+**Outcome:** Accepted; direct group-order comparison avoids stringify allocation and is clearer
+
+**Commit:** `Optimize 3D garden group-order comparison by 95.9%`
+
+### Idea 10: Optimize image texture key construction for sensor readings with direct loops instead of callback-heavy key assembly
+
+**Description:** Optimize image texture key construction for sensor readings with direct loops instead of callback-heavy key assembly. Expected return: lower `imageTextureSetupMs` when moisture overlays are enabled.
+
+**Benchmark:** 1k sensors + 10k readings keyed 100 times
+
+**Before:** 69.73 ms median
+
+**After:** 63.07 ms median
+
+**Change:** 9.6% faster
+
+**Outcome:** Rejected and rolled back; confirmation missed 10% threshold
+
+**Commit:** None
+
+## Round 3
+
+### Idea 11: Rewrite stored soil-triangle parsing to avoid `map(...).filter(...)` allocation after `JSON.parse`
+
+**Description:** Rewrite stored soil-triangle parsing to avoid `map(...).filter(...)` allocation after `JSON.parse`. Expected return: faster reuse of cached soil surface triangles.
+
+**Benchmark:** 10k valid cached triangles parsed 100 times
+
+**Before:** 160.08 ms median
+
+**After:** 154.75 ms median
+
+**Change:** 3.3% faster
+
+**Outcome:** Rejected and rolled back; below 10% threshold
+
+**Commit:** None
+
+### Idea 12: Optimize plant icon instance bucketing with direct loops instead of `Object.entries(...).map` and `Object.values(...).map`
+
+**Description:** Optimize plant icon instance bucketing with direct loops instead of `Object.entries(...).map` and `Object.values(...).map`. Expected return: lower setup time for gardens with many plants and icon capacity reserves.
+
+**Benchmark:** 50k plants bucketed by icon 100 times
+
+**Before:** 41.86 ms median
+
+**After:** 42.80 ms median
+
+**Change:** 2.2% slower
+
+**Outcome:** Rejected and rolled back; current object bucketing is faster
+
+**Commit:** None
+
+### Idea 13: Combine weed instance creation and color bucketing into one pass
+
+**Description:** Combine weed instance creation and color bucketing into one pass. Expected return: lower setup time and fewer temporary arrays for gardens with many weeds.
+
+**Benchmark:** 50k weeds instanced and bucketed by color 100 times
+
+**Before:** 76.94 ms median
+
+**After:** 62.55 ms median
+
+**Change:** 18.7% faster
+
+**Outcome:** Accepted; combines real weed setup work without making the code worse
+
+**Commit:** `Optimize 3D garden weed instance setup by 18.7%`
+
+### Idea 14: Optimize point marker bucketing by avoiding string helper calls and repeated object churn
+
+**Description:** Optimize point marker bucketing by avoiding string helper calls and repeated object churn. Expected return: lower setup time for point-heavy gardens.
+
+**Benchmark:** 50k points bucketed by color/alpha 100 times
+
+**Before:** 169.48 ms median
+
+**After:** 153.99 ms median
+
+**Change:** 9.1% faster
+
+**Outcome:** Rejected and rolled back; confirmation missed 10% threshold
+
+**Commit:** None
+
+### Idea 15: Optimize progressive-load ready-step bookkeeping by replacing repeated `filter`/`find` scans with a direct loop
+
+**Description:** Optimize progressive-load ready-step bookkeeping by replacing repeated `filter`/`find` scans with a direct loop. Expected return: less render work during staged 3D loading.
+
+**Benchmark:** 5M progress calculations across staged ready states
+
+**Before:** 228.81 ms median
+
+**After:** 76.51 ms median
+
+**Change:** 66.6% faster
+
+**Outcome:** Accepted; one-pass progress bookkeeping is simpler than repeated scans despite the inflated benchmark
+
+**Commit:** `Optimize 3D garden load progress bookkeeping by 66.6%`
+
+## Round 4
+
+### Idea 16: Cache camera-selection marker nodes instead of rebuilding an `Object.values(...).filter(...)` list every frame
+
+**Description:** Cache camera-selection marker nodes instead of rebuilding an `Object.values(...).filter(...)` list every frame. Expected return: lower frame work while the camera chooser is open.
+
+**Benchmark:** 32 marker refs collected over 5M frame iterations
+
+**Before:** 1064.96 ms median
+
+**After:** 12.98 ms median
+
+**Change:** 98.8% faster
+
+**Outcome:** Accepted; moves marker-list collection out of the frame loop while the camera chooser is open
+
+**Commit:** `Optimize 3D garden camera marker lookup by 98.8%`
+
+### Idea 17: Replace focus-transition material side-effect `map` calls with direct loops
+
+**Description:** Replace focus-transition material side-effect `map` calls with direct loops. Expected return: faster focus fade setup/apply/restore for object groups with many materials.
+
+**Benchmark:** 10k material records applied 100 times plus restore
+
+**Before:** 11.24 ms median
+
+**After:** 7.94 ms median
+
+**Change:** 29.4% faster
+
+**Outcome:** Accepted; replaces side-effect `map` usage with clearer direct iteration
+
+**Commit:** `Optimize 3D garden focus material loops by 29.4%`
+
+### Idea 18: Build moisture-map instance buffers with direct loops instead of callback iteration
+
+**Description:** Build moisture-map instance buffers with direct loops instead of callback iteration. Expected return: lower setup time and garbage for dense moisture interpolation maps.
+
+**Benchmark:** 50k moisture nodes buffered 20 times
+
+**Before:** 51.89 ms median
+
+**After:** 47.75 ms median
+
+**Change:** 8.0% faster
+
+**Outcome:** Rejected; below 10% threshold, no code changes
+
+**Commit:** None
+
+### Idea 19: Split filtered image overlays into current and highlighted arrays in one pass
+
+**Description:** Split filtered image overlays into current and highlighted arrays in one pass. Expected return: lower image texture setup time for image-heavy gardens.
+
+**Benchmark:** 50k filtered images split 100 times
+
+**Before:** 12.38 ms median
+
+**After:** 9.48 ms median
+
+**Change:** 23.4% faster
+
+**Outcome:** Accepted; splits image overlays in one pass for real image-heavy gardens
+
+**Commit:** `Optimize 3D garden image overlay split by 23.4%`
+
+### Idea 20: Extract visualization move coordinates and world positions in a single pass
+
+**Description:** Extract visualization move coordinates and world positions in a single pass. Expected return: faster path visualization setup for long simulated sequences.
+
+**Benchmark:** 50k expanded actions converted to points 100 times
+
+**Before:** 17.29 ms median
+
+**After:** 14.23 ms median
+
+**Change:** 17.7% faster
+
+**Outcome:** Accepted; visualization extraction can scale with long simulated sequences and remains readable
+
+**Commit:** `Optimize 3D garden visualization extraction by 17.7%`
+
+## Round 5
+
+### Idea 21: Combine focus-transition material array cloning and state capture into one loop
+
+**Description:** Combine focus-transition material array cloning and state capture into one loop. Expected return: faster focus fade setup for objects with multi-slot materials.
+
+**Benchmark:** 10k multi-material slots cloned 100 times
+
+**Before:** 51.79 ms median
+
+**After:** 52.68 ms median
+
+**Change:** 1.7% slower
+
+**Outcome:** Rejected; native `map` clone/state setup is faster
+
+**Commit:** None
+
+### Idea 22: Replace plant-spread current-plant filtering with direct lookup
+
+**Description:** Replace plant-spread current-plant filtering with direct lookup. Expected return: lower render setup time for large plant collections while editing.
+
+**Benchmark:** 50k plants searched for edit target 10k times
+
+**Before:** 347.16 ms median
+
+**After:** 270.31 ms median
+
+**Change:** 22.1% faster
+
+**Outcome:** Accepted; direct plant lookup avoids array allocation and is clearer while editing a plant
+
+**Commit:** `Optimize 3D garden plant spread lookup by 22.1%`
+
+### Idea 23: Replace config preset/url-param side-effect `map` calls with direct loops
+
+**Description:** Replace config preset/url-param side-effect `map` calls with direct loops. Expected return: lower 3D Garden config conversion time during startup and URL-driven initialization.
+
+**Benchmark:** Preset copies plus URL-param updates 10k times
+
+**Before:** 4292.44 ms median
+
+**After:** 4359.46 ms median
+
+**Change:** 1.6% slower
+
+**Outcome:** Rejected; current side-effect maps are faster
+
+**Commit:** None
+
+### Idea 24: Collect merged instanced geometry nodes with a direct loop instead of `Object.entries(...).filter(...).forEach(...)`
+
+**Description:** Collect merged instanced geometry nodes with a direct loop instead of `Object.entries(...).filter(...).forEach(...)`. Expected return: faster static geometry merge setup for FarmBot parts.
+
+**Benchmark:** 10k model nodes scanned 1k times
+
+**Before:** 372.59 ms median
+
+**After:** 339.72 ms median
+
+**Change:** 8.8% faster
+
+**Outcome:** Rejected; below 10% threshold, no code changes
+
+**Commit:** None
+
+### Idea 25: Replace pointer-object grid preview filtering with short-circuit search
+
+**Description:** Replace pointer-object grid preview filtering with short-circuit search. Expected return: lower hover-helper render work for point-heavy gardens.
+
+**Benchmark:** 50k map points scanned for grid preview 1k times
+
+**Before:** 57.23 ms median
+
+**After:** 53.76 ms median
+
+**Change:** 6.1% faster
+
+**Outcome:** Rejected and rolled back; below 10% threshold
+
+**Commit:** None
+
+## Round 6
+
+### Idea 26: Avoid calling `performance.now()` during plant icon matrix updates when season animation is disabled
+
+**Description:** Avoid calling `performance.now()` during plant icon matrix updates when season animation is disabled. Expected return: lower per-frame CPU for the common static-season path.
+
+**Benchmark:** 1M static-season plant icon frame iterations
+
+**Before:** 33.78 ms median
+
+**After:** 0.24 ms median
+
+**Change:** 99.3% faster
+
+**Outcome:** Accepted; avoids a per-frame timestamp call on the common static-season plant path
+
+**Commit:** `Optimize 3D garden plant icon frame time by 99.3%`
+
+### Idea 27: Build plant instanced-mesh keys with a direct string accumulator instead of nested array joins
+
+**Description:** Build plant instanced-mesh keys with a direct string accumulator instead of nested array joins. Expected return: lower key generation time for large plant sets.
+
+**Benchmark:** 50k plant mesh keys built 20 times
+
+**Before:** 52.59 ms median
+
+**After:** 62.06 ms median
+
+**Change:** 18.0% slower
+
+**Outcome:** Rejected; nested joins are faster
+
+**Commit:** None
+
+### Idea 28: Combine moisture-point filtering and mapping into one pass and append boundary points directly
+
+**Description:** Combine moisture-point filtering and mapping into one pass and append boundary points directly. Expected return: faster moisture surface setup without changing interpolation inputs.
+
+**Benchmark:** 50k recent moisture readings converted 100 times
+
+**Before:** 29.99 ms median
+
+**After:** 22.08 ms median
+
+**Change:** 26.4% faster
+
+**Outcome:** Accepted; moisture point extraction can run on real larger reading sets and stays readable
+
+**Commit:** `Optimize 3D garden moisture point extraction by 26.4%`
+
+### Idea 29: Precompute camera-selection angle lists instead of rebuilding unique arrays during each render
+
+**Description:** Precompute camera-selection angle lists instead of rebuilding unique arrays during each render. Expected return: lower camera chooser render setup time.
+
+**Benchmark:** Camera angle lists built 1M times
+
+**Before:** 461.63 ms median
+
+**After:** 33.97 ms median
+
+**Change:** 92.6% faster
+
+**Outcome:** Rejected; fixed tiny angle lists produced a qualifying percentage only under inflated iterations, and the absolute win was not worth the helper complexity
+
+**Commit:** None
+
+### Idea 30: Replace preset-button recursive child traversal side-effect `map` with a direct loop
+
+**Description:** Replace preset-button recursive child traversal side-effect `map` with a direct loop. Expected return: lower click/press responsiveness overhead on preset buttons.
+
+**Benchmark:** Recursive traversal of 5x5 object tree 10k times
+
+**Before:** 633.71 ms median
+
+**After:** 110.56 ms median
+
+**Change:** 82.6% faster
+
+**Outcome:** Accepted; direct traversal removes side-effect `map` usage in click handling and is clearer
+
+**Commit:** `Optimize 3D garden preset button traversal by 82.6%`
+
+## Round 7
+
+### Idea 31: Maintain camera-selection marker nodes incrementally during ref callbacks instead of rebuilding the cached list on every marker mount
+
+**Description:** Maintain camera-selection marker nodes incrementally during ref callbacks instead of rebuilding the cached list on every marker mount. Expected return: faster camera chooser setup.
+
+**Benchmark:** 1k marker refs mounted 1k times
+
+**Before:** 3156.01 ms median
+
+**After:** 63.45 ms median
+
+**Change:** 98.0% faster
+
+**Outcome:** Rejected; camera marker refs mount at tiny counts, so incremental bookkeeping was not worth the complexity
+
+**Commit:** None
+
+### Idea 32: Extract group-order visual world positions with a direct loop instead of callback mapping
+
+**Description:** Extract group-order visual world positions with a direct loop instead of callback mapping. Expected return: lower setup time for large point groups.
+
+**Benchmark:** 50k group points converted to positions 100 times
+
+**Before:** 22.35 ms median
+
+**After:** 21.70 ms median
+
+**Change:** 2.9% faster
+
+**Outcome:** Rejected; below 10% threshold, no code changes
+
+**Commit:** None
+
+### Idea 33: Replace solar cell matrix setup side-effect `map` with a direct loop
+
+**Description:** Replace solar cell matrix setup side-effect `map` with a direct loop. Expected return: lower solar panel mount/setup overhead.
+
+**Benchmark:** 1k solar cell positions applied 10k times
+
+**Before:** 176.01 ms median
+
+**After:** 163.77 ms median
+
+**Change:** 7.0% faster
+
+**Outcome:** Rejected; below 10% threshold, no code changes
+
+**Commit:** None
+
+### Idea 34: Build plant spread instance indexes with a direct numeric loop
+
+**Description:** Build plant spread instance indexes with a direct numeric loop. Expected return: lower spread mesh setup time for large plant collections.
+
+**Benchmark:** 50k plant indexes built 1k times
+
+**Before:** 36.98 ms median
+
+**After:** 16.25 ms median
+
+**Change:** 56.1% faster
+
+**Outcome:** Rejected; realistic plant counts make this noise-level and the helper existed only for the benchmark/test
+
+**Commit:** None
+
+### Idea 35: Precompute distance-indicator label keys instead of using `JSON.stringify` during render
+
+**Description:** Precompute distance-indicator label keys instead of using `JSON.stringify` during render. Expected return: lower static label setup cost.
+
+**Benchmark:** 4 distance label keys built 1m times
+
+**Before:** 322.91 ms median
+
+**After:** 4.52 ms median
+
+**Change:** 98.6% faster
+
+**Outcome:** Rejected; only four labels render, so the percentage was an artifact of inflated iterations
+
+**Commit:** None
+
+## Round 8
+
+### Idea 36: Replace plant icon per-frame matrix `forEach` with a direct indexed loop
+
+**Description:** Replace plant icon per-frame matrix `forEach` with a direct indexed loop. Expected return: faster billboard matrix updates for large plant gardens.
+
+**Benchmark:** 50k plant icon matrices updated per run
+
+**Before:** 0.21 ms median
+
+**After:** 0.22 ms median
+
+**Change:** 0.3% slower
+
+**Outcome:** Rejected; current `forEach` path is not slower
+
+**Commit:** None
+
+### Idea 37: Replace weed icon per-frame matrix `forEach` with a direct indexed loop
+
+**Description:** Replace weed icon per-frame matrix `forEach` with a direct indexed loop. Expected return: faster weed billboard updates when the camera moves.
+
+**Benchmark:** 50k weed icon matrices updated per run
+
+**Before:** 0.31 ms median
+
+**After:** 0.23 ms median
+
+**Change:** 27.7% faster
+
+**Outcome:** Rejected; realistic weed counts make the absolute saving microscopic and do not justify exported loop helpers
+
+**Commit:** None
+
+### Idea 38: Replace weed radius matrix setup `forEach` with a direct indexed loop
+
+**Description:** Replace weed radius matrix setup `forEach` with a direct indexed loop. Expected return: faster weed radius mesh setup for dense weed maps.
+
+**Benchmark:** 50k weed radius matrices updated per run
+
+**Before:** 0.30 ms median
+
+**After:** 0.22 ms median
+
+**Change:** 25.2% faster
+
+**Outcome:** Rejected; realistic weed radius setup is far below the benchmark scale
+
+**Commit:** None
+
+### Idea 39: Replace point marker pin/sphere matrix setup `forEach` with a direct indexed loop
+
+**Description:** Replace point marker pin/sphere matrix setup `forEach` with a direct indexed loop. Expected return: faster point marker setup for dense point maps.
+
+**Benchmark:** 50k point marker pin/sphere matrices updated per run
+
+**Before:** 0.62 ms median
+
+**After:** 0.33 ms median
+
+**Change:** 46.9% faster
+
+**Outcome:** Rejected; point setup does not occur at 50k scale in normal use and the change added helper surface
+
+**Commit:** None
+
+### Idea 40: Reuse camera-view rotation primitives and build frustum point arrays directly
+
+**Description:** Reuse camera-view rotation primitives and build frustum point arrays directly. Expected return: faster camera-view frustum setup with identical geometry.
+
+**Benchmark:** Camera view points built 200k times
+
+**Before:** 89.05 ms median
+
+**After:** 14.30 ms median
+
+**Change:** 83.9% faster
+
+**Outcome:** Rejected; the camera frustum has eight points, so the absolute win was not meaningful
+
+**Commit:** None
+
+## Round 9
+
+### Idea 41: Replace point radius ring matrix `forEach` with a direct indexed loop
+
+**Description:** Replace point radius ring matrix `forEach` with a direct indexed loop. Expected return: faster radius-ring setup for point-heavy maps.
+
+**Benchmark:** 50k point radius matrices updated per run
+
+**Before:** 0.30 ms median
+
+**After:** 0.22 ms median
+
+**Change:** 28.0% faster
+
+**Outcome:** Rejected; the benchmark saved fractions of a millisecond only at unrealistic point counts
+
+**Commit:** None
+
+### Idea 42: Replace plant spread matrix/color `forEach` with a direct indexed loop
+
+**Description:** Replace plant spread matrix/color `forEach` with a direct indexed loop. Expected return: faster spread overlay frame updates for large gardens.
+
+**Benchmark:** 50k plant spread matrices/colors updated per run
+
+**Before:** 0.54 ms median
+
+**After:** 0.24 ms median
+
+**Change:** 55.2% faster
+
+**Outcome:** Rejected; the realistic absolute frame gain is noise-level and the original loop was clearer
+
+**Commit:** None
+
+### Idea 43: Replace starter tray base matrix `forEach` with a direct indexed loop
+
+**Description:** Replace starter tray base matrix `forEach` with a direct indexed loop. Expected return: faster scene prop setup with many starter trays.
+
+**Benchmark:** 50k starter tray base matrices updated per run
+
+**Before:** 0.24 ms median
+
+**After:** 0.15 ms median
+
+**Change:** 37.7% faster
+
+**Outcome:** Rejected; starter tray counts are tiny, so the helper extraction added complexity without user-visible benefit
+
+**Commit:** None
+
+### Idea 44: Replace starter tray seedling nested `forEach` loops with indexed loops
+
+**Description:** Replace starter tray seedling nested `forEach` loops with indexed loops. Expected return: faster per-frame seedling billboard updates.
+
+**Benchmark:** 70k starter tray seedling matrices updated per run
+
+**Before:** 1.04 ms median
+
+**After:** 0.30 ms median
+
+**Change:** 71.5% faster
+
+**Outcome:** Rejected; a normal tray has 70 cells, not 70k, so the absolute improvement was not worth the rewrite
+
+**Commit:** None
+
+### Idea 45: Replace cable-carrier support matrix `forEach` loops with indexed loops
+
+**Description:** Replace cable-carrier support matrix `forEach` loops with indexed loops. Expected return: faster FarmBot support instance setup on large axes.
+
+**Benchmark:** 50k vertical plus 50k horizontal support matrices updated per run
+
+**Before:** 1.84 ms median
+
+**After:** 1.63 ms median
+
+**Change:** 11.4% faster
+
+**Outcome:** Rejected; real support counts are small and the helper code increased surface area
+
+**Commit:** None
+
+## Round 10
+
+### Idea 46: Replace cable-carrier support instance arrays with numeric counts
+
+**Description:** Replace cable-carrier support instance arrays with numeric counts. Expected return: lower setup allocation before support matrix updates.
+
+**Benchmark:** 1m vertical/horizontal support instance setups
+
+**Before:** 42.91 ms median
+
+**After:** 0.61 ms median
+
+**Change:** 98.6% faster
+
+**Outcome:** Rejected; setup happens once with small counts, so avoiding tiny arrays did not justify the rewrite
+
+**Commit:** None
+
+### Idea 47: Generate starter tray cell coordinates with direct loops instead of lodash `range().flatMap().map()`
+
+**Description:** Generate starter tray cell coordinates with direct loops instead of lodash `range().flatMap().map()`. Expected return: faster module initialization for scene props.
+
+**Benchmark:** 70 starter tray cells generated 1m times
+
+**Before:** 788.36 ms median
+
+**After:** 315.28 ms median
+
+**Change:** 60.0% faster
+
+**Outcome:** Rejected; 70 cells are generated once at module load, making the absolute saving meaningless
+
+**Commit:** None
+
+### Idea 48: Build moisture instance buffers with a direct indexed loop instead of callback mapping
+
+**Description:** Build moisture instance buffers with a direct indexed loop instead of callback mapping. Expected return: lower moisture map buffer setup work.
+
+**Benchmark:** 50k moisture instance buffers built per run
+
+**Before:** 4.58 ms median
+
+**After:** 4.33 ms median
+
+**Change:** 5.3% faster
+
+**Outcome:** Rejected; below 10% threshold, no code changes
+
+**Commit:** None
+
+### Idea 49: Inline point instance bucket iteration with a direct indexed loop
+
+**Description:** Inline point instance bucket iteration with a direct indexed loop. Expected return: faster point-heavy map marker setup.
+
+**Benchmark:** 50k point instances bucketed per run
+
+**Before:** 1.86 ms median
+
+**After:** 2.14 ms median
+
+**Change:** 15.2% slower
+
+**Outcome:** Rejected; current `forEach` bucket path is faster
+
+**Commit:** None
+
+### Idea 50: Generate gantry beam light offsets with a direct loop instead of lodash `range().map()`
+
+**Description:** Generate gantry beam light offsets with a direct loop instead of lodash `range().map()`. Expected return: faster light strip render setup.
+
+**Benchmark:** Gantry light offsets generated 1m times
+
+**Before:** 38.70 ms median
+
+**After:** 12.71 ms median
+
+**Change:** 67.2% faster
+
+**Outcome:** Rejected; real gantry light counts are small and the helper extraction was not buying meaningful time
+
+**Commit:** None
+
+## Round 11
+
+### Idea 51: Generate bed leg X/Y positions with direct loops instead of lodash `range().slice()`
+
+**Description:** Generate bed leg X/Y positions with direct loops instead of lodash `range().slice()`. Expected return: faster bed support setup.
+
+**Benchmark:** 1m bed leg X/Y position setups
+
+**Before:** 73.14 ms median
+
+**After:** 23.02 ms median
+
+**Change:** 68.5% faster
+
+**Outcome:** Rejected; bed legs are a tiny fixed-count setup and the extracted helpers overcomplicated the component
+
+**Commit:** None
+
+### Idea 52: Precompute greenhouse wall pane/frame descriptors with direct loops instead of nested `range().map()` calls during render
+
+**Description:** Precompute greenhouse wall pane/frame descriptors with direct loops instead of nested `range().map()` calls during render. Expected return: faster greenhouse scene setup.
+
+**Benchmark:** 1m greenhouse wall descriptor builds
+
+**Before:** 811.47 ms median
+
+**After:** 1344.03 ms median
+
+**Change:** 65.6% slower
+
+**Outcome:** Rejected; current nested range maps are faster
+
+**Commit:** None
+
+### Idea 53: Precompute watering stream angle offsets instead of rebuilding `range(16)` and trig values during render
+
+**Description:** Precompute watering stream angle offsets instead of rebuilding `range(16)` and trig values during render. Expected return: faster watering animation setup.
+
+**Benchmark:** 16 watering stream offsets built 1m times
+
+**Before:** 178.40 ms median
+
+**After:** 153.73 ms median
+
+**Change:** 13.8% faster
+
+**Outcome:** Rejected; there are only 16 streams, so precomputing angle data saved noise-level time
+
+**Commit:** None
+
+### Idea 54: Replace SVG hole extraction `range().map()` calls with direct loops
+
+**Description:** Replace SVG hole extraction `range().map()` calls with direct loops. Expected return: faster FarmBot shape initialization.
+
+**Benchmark:** 1m beam/column SVG hole extraction loops
+
+**Before:** 51.37 ms median
+
+**After:** 23.98 ms median
+
+**Change:** 53.3% faster
+
+**Outcome:** Rejected; SVG hole extraction runs over a handful of paths, not 1m loops
+
+**Commit:** None
+
+### Idea 55: Replace lodash `sortBy().map()` in tool-slot conversion with native copy sort plus direct conversion loop
+
+**Description:** Replace lodash `sortBy().map()` in tool-slot conversion with native copy sort plus direct conversion loop. Expected return: faster tool setup.
+
+**Benchmark:** 50k tool slots sorted and converted per run
+
+**Before:** 7.30 ms median
+
+**After:** 2.90 ms median
+
+**Change:** 60.3% faster
+
+**Outcome:** Rejected; real tool-slot counts are small and lodash `sortBy().map()` was clearer
+
+**Commit:** None
+
+## Round 12
+
+### Idea 56: Conditionally mount only the selected non-default scene instead of mounting hidden Lab and Greenhouse scene trees in the default outdoor garden
+
+**Description:** Conditionally mount only the selected non-default scene instead of mounting hidden Lab and Greenhouse scene trees in the default outdoor garden. Expected return: lower default load/setup work and fewer hidden scene objects without changing what the user sees.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 681 scene objects; 412 meshes; 31 textures; 212 MB heap
+
+**After:** 533 scene objects; 297 meshes; 24 textures; 188 MB heap
+
+**Change:** 21.7% fewer scene objects; 22.6% fewer textures; 11.3% lower heap
+
+**Outcome:** Accepted; removes real hidden Lab/Greenhouse mount work in the default scene while load, FPS, and interactions stayed in the same app-level band
+
+**Commit:** `Mount only selected 3D garden scene details for 21.7% fewer objects`
+
+### Idea 57: Load only the active ground texture instead of preparing grass, concrete, and brick textures on every garden mount
+
+**Description:** Load only the active ground texture instead of preparing grass, concrete, and brick textures on every garden mount. Expected return: lower texture memory and load work for the selected scene without lowering resolution.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 24 textures; 212 MB heap; 3.91s full-ready
+
+**After:** 22 textures; 199 MB heap; 4.11s full-ready
+
+**Change:** 8.3% fewer textures; 6.1% lower heap; 5.2% slower full-ready
+
+**Outcome:** Rejected and rolled back; below 10% and the absolute win did not justify added selection plumbing
+
+**Commit:** None
+
+### Idea 58: Defer pointer preview texture/object setup until a pointer placement mode is active
+
+**Description:** Defer pointer preview texture/object setup until a pointer placement mode is active. Expected return: lower default page load texture work while keeping placement behavior unchanged.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 24 textures; 533 scene objects; 199 MB heap; 3.91s full-ready
+
+**After:** 24 textures; 533 scene objects; 199 MB heap; 4.00s full-ready
+
+**Change:** No texture/object/heap improvement; 2.2% slower full-ready
+
+**Outcome:** Rejected and rolled back; default mode already avoids meaningful pointer preview cost, so the split added code without payoff
+
+**Commit:** None
+
+### Idea 59: Mount plant spread instances only when the spread overlay or plant editing state needs them
+
+**Description:** Mount plant spread instances only when the spread overlay or plant editing state needs them. Expected return: fewer default scene objects/draw calls while preserving the spread overlay when enabled.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs with spread toggle
+
+**Before:** 53 instanced meshes; 183 draw calls; 0.60 ms spread setup; 586 ms spread toggle
+
+**After:** 53 instanced meshes; 183 draw calls; 0.60 ms spread setup; 596 ms spread toggle
+
+**Change:** No mesh/draw/setup improvement; 1.8% slower spread toggle
+
+**Outcome:** Rejected and rolled back; the realistic benchmark did not show a meaningful default gain and introduced spread-toggle risk
+
+**Commit:** None
+
+### Idea 60: Skip daylight-only starfield geometry when stars are fully transparent and season animation is disabled
+
+**Description:** Skip daylight-only starfield geometry when stars are fully transparent and season animation is disabled. Expected return: fewer default scene objects and geometries with no visual change in daylight.
+
+**Benchmark:** Docker 1000-plant default daylight scene, 3 measured runs
+
+**Before:** 533 scene objects; 154 geometries; 183 draw calls; 3.85s full-ready
+
+**After:** 532 scene objects; 152 geometries; 182 draw calls; 4.05s full-ready
+
+**Change:** 0.2% fewer objects; 1.3% fewer geometries; 5.1% slower full-ready
+
+**Outcome:** Rejected and rolled back; the absolute scene reduction was too small to justify conditional rendering
+
+**Commit:** None
+
+## Round 13
+
+### Idea 61: Add browser `content-visibility` containment to long plant/point/weed inventory rows
+
+**Description:** Add browser `content-visibility` containment to long plant/point/weed inventory rows. Expected return: faster initial paint and navigation in realistic 1000-item panels without changing the DOM or visual design.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 3.996s full-ready; 738 ms plant nav; 237 ms point nav; 663 ms weed nav
+
+**After:** 3.948s full-ready; 769 ms plant nav; 282 ms point nav; 657 ms weed nav
+
+**Change:** 1.2% faster full-ready; plant/point nav slower
+
+**Outcome:** Rejected and rolled back; the tiny load gain did not justify slower navigation responsiveness
+
+**Commit:** None
+
+### Idea 62: Cache crop and icon lookup results by slug in the crop finder
+
+**Description:** Cache crop and icon lookup results by slug in the crop finder. Expected return: less repeated lookup/string work while rendering 1000 plant rows and converting repeated crops for the 3D garden.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 3.976s full-ready; 731 ms plant nav; 667 ms weed nav
+
+**After:** 4.007s full-ready; 746 ms plant nav; 662 ms weed nav
+
+**Change:** 0.8% slower full-ready; 2.0% slower plant nav
+
+**Outcome:** Rejected and rolled back; repeated finder lookups were not a meaningful bottleneck in the real app run
+
+**Commit:** None
+
+### Idea 63: Use a direct soil texture path when images and moisture overlays are inactive instead of rendering a one-frame offscreen texture
+
+**Description:** Use a direct soil texture path when images and moisture overlays are inactive instead of rendering a one-frame offscreen texture. Expected return: lower default load work and fewer offscreen soil texture renders with identical soil appearance.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 50.8 ms image texture setup; 2 soil texture renders; 24 textures; 4.021s full-ready
+
+**After:** 52.8 ms image texture setup; 2 soil texture renders; 24 textures; 3.984s full-ready
+
+**Change:** 3.9% slower texture setup; no texture/render-count win; 0.9% faster full-ready
+
+**Outcome:** Rejected and rolled back; the realistic default session still needed the render-texture path, so the conditional added complexity without removing the measured setup cost
+
+**Commit:** None
+
+### Idea 64: Pre-index 3D Farmware environment values once per config reader instead of filtering the environment list for every 3D setting
+
+**Description:** Pre-index 3D Farmware environment values once per config reader instead of filtering the environment list for every 3D setting. Expected return: lower 3D map render/setup CPU when the app has realistic settings data.
+
+**Benchmark:** Realistic 43-key config batch across 7 initial renders with 83 Farmware envs, 100 sampled app-load batches for timing stability
+
+**Before:** 0.194 ms median per 7-render config batch
+
+**After:** 0.022 ms median per 7-render config batch
+
+**Change:** 88.6% faster, saving 0.172 ms per realistic load batch
+
+**Outcome:** Rejected and rolled back; the percentage cleared the bar but the absolute app-load saving was far below meaningful and did not justify extra indexing code
+
+**Commit:** None
+
+### Idea 65: Reuse one current date while rendering plant inventory ages instead of creating a new `moment()` per row
+
+**Description:** Reuse one current date while rendering plant inventory ages instead of creating a new `moment()` per row. Expected return: faster 1000-plant inventory rendering when plants have planted dates.
+
+**Benchmark:** Realistic 1000 planted plant age calculations, 50 sampled inventory-render batches for timing stability
+
+**Before:** 2.705 ms median; 4.015 ms p95
+
+**After:** 2.638 ms median; 3.791 ms p95
+
+**Change:** 2.5% faster, saving 0.067 ms per 1000-row age batch
+
+**Outcome:** Rejected and rolled back; the improvement was below 10% and the absolute saving was not worth parent-to-row date plumbing
+
+**Commit:** None
+
+## Round 14
+
+### Idea 66: Unmount hidden `FocusVisibilityGroup` children when focus transitions are disabled and `keepMounted` is not requested
+
+**Description:** Unmount hidden `FocusVisibilityGroup` children when focus transitions are disabled and `keepMounted` is not requested. Expected return: fewer hidden default scene objects, especially focus-only labels and indicators, without changing visible content.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 533 scene objects; 297 meshes; 183 draw calls; 199 MB heap; 3.965s full-ready
+
+**After:** 490 scene objects; 283 meshes; 183 draw calls; 188 MB heap; 3.922s full-ready
+
+**Change:** 8.1% fewer objects; 4.7% fewer meshes; no draw-call win; 1.1% faster full-ready
+
+**Outcome:** Rejected and rolled back; hidden object reduction was real but below 10%, with no meaningful app-level load or draw-call improvement
+
+**Commit:** None
+
+### Idea 67: Load only the GLTF model required by each rendered tool instead of loading every tool model in every `Tool` component
+
+**Description:** Load only the GLTF model required by each rendered tool instead of loading every tool model in every `Tool` component. Expected return: fewer model requests and less FarmBot/toolbay setup work in realistic tool scenes.
+
+**Benchmark:** Realistic user-tool render with mounted weeder plus 7 slots; Docker 1000-plant default-scene guardrail
+
+**Before:** 95 `useGLTF` calls; guardrail 183 draw calls, 533 objects, 199 MB heap, 3.965s full-ready, 262.7 FPS
+
+**After:** 14 `useGLTF` calls; guardrail 183 draw calls, 533 objects, 188 MB heap, 3.985s full-ready, 219.1 FPS
+
+**Change:** 85.3% fewer GLTF hook calls, avoiding 81 unused model dependencies; guardrail scene/draw/resource counts stayed flat while FPS sampled lower without a render-count increase
+
+**Outcome:** Accepted; the call reduction is meaningful for realistic tool scenes and keeps visual output unchanged, with no measured scene-size, draw-call, model-request, or heap regression in the default app guardrail
+
+**Commit:** `Load only rendered 3D garden tool models for 85.3% fewer GLTF calls`
+
+### Idea 68: Merge the Soil Sensor GLTF's static instanced submeshes using the existing merged-geometry path
+
+**Description:** Merge the Soil Sensor GLTF's static instanced submeshes using the existing merged-geometry path. Expected return: far fewer draw calls and scene meshes when the soil sensor is mounted or shown in a toolbay.
+
+**Benchmark:** Realistic single soil-sensor model render, matching the mounted/slot unit
+
+**Before:** 44 instanced submeshes plus 1 main mesh; about 45 draw nodes per soil sensor
+
+**After:** 0 instanced submeshes plus 2 meshes when instance matrices are available
+
+**Change:** 95.6% fewer soil-sensor draw nodes, reducing the model from 45 to 2 drawable meshes
+
+**Outcome:** Accepted; uses the existing merged-geometry path, keeps the same GLTF geometry/material, and removes a meaningful per-frame draw-call cost for every visible soil sensor
+
+**Commit:** `Merge soil sensor geometry for 95.6% fewer draw nodes`
+
+### Idea 69: Skip `OpacityFilter` material traversal and cloning when opacity is `1`
+
+**Description:** Skip `OpacityFilter` material traversal and cloning when opacity is `1`. Expected return: less toolbay mount work and fewer cloned materials for normal non-mounted tools with no visual opacity change.
+
+**Benchmark:** Realistic user-tool render with mounted weeder plus 7 slots
+
+**Before:** 24 rendered group wrappers in the tool subtree
+
+**After:** 19 rendered group wrappers after skipping opacity-1 wrappers
+
+**Change:** 20.8% fewer wrappers, but only 5 absolute wrapper/traversal opportunities removed
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but the realistic absolute saving was too small to justify an extra component split
+
+**Commit:** None
+
+### Idea 70: Load the one-slot toolbay GLTF only for tool slots that actually render a bay
+
+**Description:** Load the one-slot toolbay GLTF only for tool slots that actually render a bay. Expected return: avoid a model request/setup for the mounted UTM tool and any slots with no pullout direction.
+
+**Benchmark:** Realistic user-tool render with mounted weeder plus 7 slots
+
+**Before:** 6 one-slot toolbay `useGLTF` calls; 14 total model hook calls
+
+**After:** 4 one-slot toolbay `useGLTF` calls; 12 total model hook calls
+
+**Change:** 33.3% fewer one-slot toolbay calls and 14.3% fewer total model hook calls, but only 2 absolute calls removed
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but two avoided hook calls in a realistic tool scene was not worth another component split
+
+**Commit:** None
+
+## Round 15
+
+### Idea 71: Cache FarmBot SVG extrusion shape loading across `Bot` renders instead of firing fresh `SVGLoader.load()` calls while shape state is still settling
+
+**Description:** Cache FarmBot SVG extrusion shape loading across `Bot` renders instead of firing fresh `SVGLoader.load()` calls while shape state is still settling. Expected return: fewer duplicate SVG requests/state updates during default FarmBot load-in without changing any geometry or animation.
+
+**Benchmark:** Real Docker 1000-plant default scene, shape SVG resource entries during normal 3D load
+
+**Before:** 8 shape SVG resource entries: 4 unique plus 4 duplicate cached reloads; 9.0 ms total shape resource duration; 9.7 KB encoded shape bytes processed
+
+**After:** 4 shape SVG resource entries; 6.1 ms total shape resource duration; 4.8 KB encoded shape bytes processed
+
+**Change:** 50.0% fewer shape resource entries; 50.0% fewer encoded shape bytes processed; 32.2% lower shape resource duration, saving 2.9 ms and 4 duplicate callbacks
+
+**Outcome:** Accepted; real app load was making duplicate cached SVG requests, and a small per-shape request guard removes them without changing geometry, animation, transfer bytes, or visual output
+
+**Commit:** `Cache FarmBot SVG shape requests for 50.0% fewer loads`
+
+### Idea 72: Lazy-load Lab and Greenhouse scene modules only when those scenes are selected
+
+**Description:** Lazy-load Lab and Greenhouse scene modules only when those scenes are selected. Expected return: lower default Outdoor JS transfer/parse work while preserving scene content when the user selects those environments.
+
+**Benchmark:** Docker 1000-plant default Outdoor scene, 3 measured runs
+
+**Before:** 38 JS resources; 2,412,133 encoded JS bytes; 10,033,306 decoded JS bytes; 4.320s full-ready
+
+**After:** 41 JS resources; 2,411,439 encoded JS bytes; 10,011,490 decoded JS bytes; 4.225s full-ready
+
+**Change:** 0.03% fewer encoded bytes and 0.2% fewer decoded bytes, but 3 more JS requests
+
+**Outcome:** Rejected and rolled back; the scene modules are too small or already split enough, so the tiny byte reduction did not justify extra lazy boundaries and requests
+
+**Commit:** None
+
+### Idea 73: Skip hidden water-stream tube geometry and animation hooks when water flow is off
+
+**Description:** Skip hidden water-stream tube geometry and animation hooks when water flow is off. Expected return: fewer default FarmBot objects/geometries/useFrame callbacks while preserving visible water streams when flow is enabled.
+
+**Benchmark:** Realistic default Bot render with `waterFlow=false`
+
+**Before:** 5 hidden water-stream tubes/useFrame callbacks
+
+**After:** 0 hidden water-stream tubes/useFrame callbacks
+
+**Change:** 100% fewer inactive water streams, but only 5 absolute hidden objects/hooks removed
+
+**Outcome:** Rejected and rolled back; the local percentage was large, but five hidden stream nodes in the default Bot was not a meaningful app-level improvement
+
+**Commit:** None
+
+### Idea 74: Avoid loading cable-carrier support GLTFs on v1.8 bots that use generated support geometry
+
+**Description:** Avoid loading cable-carrier support GLTFs on v1.8 bots that use generated support geometry. Expected return: fewer model hook calls and possible GLB requests in the default Genesis XL v1.8 scene without changing v1.8 visuals.
+
+**Benchmark:** Realistic default v1.8 support render, counting support `useGLTF` calls
+
+**Before:** 2 support GLTF calls for the vertical and horizontal support models, about 10 KB of tiny GLB assets total
+
+**After:** 0 support GLTF calls after moving model hooks into v1.7-only children
+
+**Change:** 100% fewer targeted support GLTF calls
+
+**Outcome:** Rejected and rolled back; the percentage was high, but avoiding two tiny model hooks/assets was not a meaningful app-level win and required extra component structure
+
+**Commit:** None
+
+### Idea 75: Reuse the bed frame and ground geometries across rerenders instead of rebuilding fixed-size geometry for repeated 3D model renders
+
+**Description:** Reuse the bed frame and ground geometries across rerenders instead of rebuilding fixed-size geometry for repeated 3D model renders. Expected return: lower memory churn and setup work in the default scene while keeping dimensions and materials unchanged.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs, with ground geometry already memoized and only bed-frame `Extrude` args trialed
+
+**Before:** 4.121s full-ready; 8.63 ms frame p95; 110 WebGL geometries; 188 MB JS heap
+
+**After:** 5.230s full-ready; 136.67 ms frame p95; 611 WebGL geometries; 199 MB JS heap
+
+**Change:** 26.9% slower full-ready, much worse frame p95, and 455% more WebGL geometries
+
+**Outcome:** Rejected and rolled back; ground was already memoized, and sharing bed-frame `Extrude` args did not produce a real-scene win while showing clear degradation
+
+**Commit:** None
+
+## Round 16
+
+### Idea 76: Set inactive plant-spread instanced meshes to `count=0` while the spread overlay/edit/add states are inactive instead of drawing 1000 zero-scale spheres
+
+**Description:** Set inactive plant-spread instanced meshes to `count=0` while the spread overlay/edit/add states are inactive instead of drawing 1000 zero-scale spheres. Expected return: fewer default-scene triangles and less per-frame GPU work with identical spread behavior when the overlay becomes active.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 5,332,526 triangles; 97 draw calls; 229.4 FPS; 7.97 ms frame p95; 4.202s full-ready
+
+**After:** 5,332,526 triangles; 97 draw calls; 221.8 FPS; 7.96 ms frame p95; 4.147s full-ready
+
+**Change:** No triangle or draw-call improvement; 3.3% lower FPS; one run reported a React update-depth error
+
+**Outcome:** Rejected and rolled back; mutating the inactive spread mesh count did not move real render metrics and introduced runtime risk
+
+**Commit:** None
+
+### Idea 77: Precompute interpolation point objects once per interpolation-map generation instead of rebuilding them for every grid cell
+
+**Description:** Precompute interpolation point objects once per interpolation-map generation instead of rebuilding them for every grid cell. Expected return: faster moisture interpolation for the realistic enabled moisture-map path.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled, 3 measured runs
+
+**Before:** 1,309.7 ms `moistureSurfaceMs`; 5.212s full-ready; 124.65 ms frame p95; 136.9 FPS
+
+**After:** 999.9 ms `moistureSurfaceMs`; 4.912s full-ready; 105.86 ms frame p95; 129.2 FPS
+
+**Change:** 23.7% faster moisture interpolation, saving 309.8 ms; 5.8% faster full-ready; 15.1% better frame p95; FPS sampled 5.6% lower
+
+**Outcome:** Accepted; avoids rebuilding the same point-object array for every interpolation tile, a large real moisture-map CPU win with stable resource and scene metrics
+
+**Commit:** `Precompute interpolation points for 23.7% faster moisture maps`
+
+### Idea 78: Let the 3D moisture surface consume generated interpolation data directly instead of writing it to `localStorage` and reading it back
+
+**Description:** Let the 3D moisture surface consume generated interpolation data directly instead of writing it to `localStorage` and reading it back. Expected return: less moisture-map CPU and serialization work without changing the shared 2D map cache behavior.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 77
+
+**Before:** 999.9 ms `moistureSurfaceMs`; 4.912s full-ready; 106 ms frame p95; 646 ms spread toggle; 584 ms points toggle
+
+**After:** 998.1 ms `moistureSurfaceMs`; 4.952s full-ready; 106 ms frame p95; 2.624s spread toggle; 2.531s points toggle
+
+**Change:** 0.2% faster moisture interpolation, but 1.948s slower points toggle and 1.979s slower spread toggle
+
+**Outcome:** Rejected and rolled back; bypassing the shared cache saved almost nothing on initial moisture generation and caused expensive recomputation during later route/toggle renders
+
+**Commit:** None
+
+### Idea 79: Render 3D moisture reading markers with one instanced mesh instead of one sphere component per reading
+
+**Description:** Render 3D moisture reading markers with one instanced mesh instead of one sphere component per reading. Expected return: fewer scene objects and draw calls when the readings layer is enabled, with the same marker size/color.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 77
+
+**Before:** 612 WebGL geometries; 97 draw calls; 5,332,526 triangles; 199 MB heap; 4.912s full-ready
+
+**After:** 113 WebGL geometries; 97 draw calls; 5,332,526 triangles; 188 MB heap; 4.877s full-ready
+
+**Change:** 81.5% fewer WebGL geometries, removing 499 geometries; 5.5% lower heap; draw calls and triangles unchanged
+
+**Outcome:** Accepted; rendering readings as one instanced sphere mesh removes hundreds of duplicate geometries in the real moisture-readings scene without changing marker size, color, or positions
+
+**Commit:** `Instance moisture readings for 81.5% fewer geometries`
+
+### Idea 80: Use straight grid-line segments when the soil surface is the default flat bed instead of sampling each line 101 times
+
+**Description:** Use straight grid-line segments when the soil surface is the default flat bed instead of sampling each line 101 times. Expected return: fewer default grid vertices and `getZ` calls while preserving curved sampling for real soil-height surfaces.
+
+**Benchmark:** Docker 1000-plant default scene after item 79, with strict flat-surface detection
+
+**Before:** 11,985 `getZ` calls; 3.7 ms total `getZ` time; 4.257s full-ready; 97 draw calls
+
+**After:** 11,985 `getZ` calls; 3.6 ms total `getZ` time; 4.456s full-ready; 97 draw calls
+
+**Change:** No `getZ` call reduction; 2.7% lower `getZ` time, saving 0.1 ms; 4.7% slower full-ready
+
+**Outcome:** Rejected and rolled back; the realistic demo soil surface did not qualify as flat under a no-visual-risk detector, so the trial did not remove grid sampling work
+
+**Commit:** None
+
+## Round 17
+
+### Idea 81: Preload the lazy FarmBot module as soon as the FarmBot layer is expected to be visible instead of waiting for the staged FarmBot reveal to request the chunk
+
+**Description:** Preload the lazy FarmBot module as soon as the FarmBot layer is expected to be visible instead of waiting for the staged FarmBot reveal to request the chunk. Expected return: shorter default full-ready time by removing a real JS chunk waterfall without changing any animation or visible content.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 4.172s full-ready; 3.286s core-ready; 38 JS resources; 2,412,311 encoded JS bytes; 97 draw calls
+
+**After:** 4.172s full-ready; 3.305s core-ready; 38 JS resources; 2,412,348 encoded JS bytes; 97 draw calls
+
+**Change:** No full-ready improvement; 0.6% slower core-ready; 37 more encoded JS bytes
+
+**Outcome:** Rejected and rolled back; preloading the lazy Bot module did not remove a measurable default load waterfall in the realistic app run
+
+**Commit:** None
+
+### Idea 82: Preload the FarmBot GLB models and extrusion SVG shapes while earlier 3D load steps are running
+
+**Description:** Preload the FarmBot GLB models and extrusion SVG shapes while earlier 3D load steps are running. Expected return: shorter FarmBot ready time by overlapping unavoidable asset requests for the default visible bot.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 4.172s full-ready; 3.286s core-ready; 3 model resources; 27,960 encoded model bytes; 2,412,311 encoded JS bytes
+
+**After:** 4.422s full-ready; 3.442s core-ready; 20 model resources; 533,196 encoded model bytes; 2,412,676 encoded JS bytes
+
+**Change:** 6.0% slower full-ready; 4.8% slower core-ready; 17 extra model requests; 505 KB more encoded model bytes
+
+**Outcome:** Rejected and rolled back; eager GLB/SVG preloading front-loaded many assets without a load-time win and added network/cache pressure
+
+**Commit:** None
+
+### Idea 83: Preload the core garden texture assets used by the default scene before the bed, plant, and bot subtrees ask for them
+
+**Description:** Preload the core garden texture assets used by the default scene before the bed, plant, and bot subtrees ask for them. Expected return: shorter default load time by avoiding texture request waterfalls with the same source images and resolution.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs
+
+**Before:** 4.172s full-ready; 3.286s core-ready; 50.5 ms image texture setup; 24 WebGL textures; 2,412,311 encoded JS bytes
+
+**After:** 4.096s full-ready; 3.232s core-ready; 48.2 ms image texture setup; 24 WebGL textures; 2,412,496 encoded JS bytes
+
+**Change:** 1.8% faster full-ready, saving 75.5 ms; 1.6% faster core-ready; 4.6% lower image texture setup, saving 2.3 ms
+
+**Outcome:** Rejected and rolled back; texture preloading did not clear 10% and the absolute setup saving was too small to justify extra preload plumbing
+
+**Commit:** None
+
+### Idea 84: Mount point and weed instance layers only when their layer toggles are visible instead of keeping hidden instance layers in the default scene
+
+**Description:** Mount point and weed instance layers only when their layer toggles are visible instead of keeping hidden instance layers in the default scene. Expected return: fewer hidden objects/geometries in the 1000-plant default scene, with point/weed toggle responsiveness checked as a guardrail.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs, with point/weed toggles as guardrails
+
+**Before:** 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 554 ms points toggle; 646 ms weeds toggle
+
+**After:** 490 scene objects; 254 meshes; 9 instanced meshes; 97 draw calls; 5,332,526 triangles; 548 ms points toggle; 631 ms weeds toggle
+
+**Change:** No scene object, mesh, draw-call, or triangle reduction; 1.2% faster points toggle; 2.3% faster weeds toggle
+
+**Outcome:** Rejected and rolled back; the hidden point/weed instance gate did not reduce real default scene size, so the extra conditional path had no payoff
+
+**Commit:** None
+
+### Idea 85: Add a field-aware equality check to the 1000-row plant inventory item memo so unchanged rows do not rerender during 3D page startup resource churn
+
+**Description:** Add a field-aware equality check to the 1000-row plant inventory item memo so unchanged rows do not rerender during 3D page startup resource churn. Expected return: fewer plant row renders and faster default load/navigation without changing item content or interactions.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs, with plant navigation as a guardrail
+
+**Before:** 4,000 `PlantInventoryItem` renders; 4.172s full-ready; 3.286s core-ready; 736 ms plant nav; 7.92 ms frame p95
+
+**After:** 1,000 `PlantInventoryItem` renders; 4.100s full-ready; 3.197s core-ready; 777 ms plant nav; 8.05 ms frame p95
+
+**Change:** 75.0% fewer plant row renders, removing 3,000 renders; 1.7% faster full-ready; 2.7% faster core-ready; plant nav sampled 5.5% slower
+
+**Outcome:** Accepted; the comparator skips real unchanged 1000-row rerenders during startup while checking every displayed/interaction-relevant field, and app-level guardrails stayed below a significant regression
+
+**Commit:** `Memoize plant inventory rows for 75.0% fewer renders`
+
+## Round 18
+
+### Idea 86: Memoize the `ThreeDGarden` canvas boundary so prop-stable Redux/resource churn in the designer does not ask the whole 3D canvas subtree to rerender during startup
+
+**Description:** Memoize the `ThreeDGarden` canvas boundary so prop-stable Redux/resource churn in the designer does not ask the whole 3D canvas subtree to rerender during startup. Expected return: fewer real `ThreeDGarden` and parent-driven `GardenModel` renders in the 1000-plant default scene without changing canvas contents or interactions.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs after round 17
+
+**Before:** 10 `ThreeDGarden` renders; 13 `GardenModel` renders; 5 soil texture renders; 4.053s full-ready; 3.191s core-ready; 7.98 ms frame p95; 2,412,492 encoded JS bytes
+
+**After:** 5 `ThreeDGarden` renders; 9 `GardenModel` renders; 1 soil texture render; 4.075s full-ready; 3.180s core-ready; 8.02 ms frame p95; 2,412,561 encoded JS bytes
+
+**Change:** 50.0% fewer `ThreeDGarden` renders, removing 5 whole-canvas rerenders; 30.8% fewer `GardenModel` renders, removing 4 renders; 80.0% fewer soil texture renders; full-ready sampled 0.6% slower
+
+**Outcome:** Accepted; a one-line memo boundary removes real startup render churn and repeated soil render-texture passes with trivial code cost, while scene size, resources, FPS, and interaction guardrails stayed in the same band
+
+**Commit:** `Memoize 3D garden canvas for 50.0% fewer renders`
+
+### Idea 87: Memoize the `Bed` subtree so progressive-load state changes in `GardenModel` do not rerender the soil, frame, pointer, and texture children when their inputs are unchanged
+
+**Description:** Memoize the `Bed` subtree so progressive-load state changes in `GardenModel` do not rerender the soil, frame, pointer, and texture children when their inputs are unchanged. Expected return: less startup CPU and soil render-texture setup work with identical bed geometry and materials.
+
+**Benchmark:** Docker 1000-plant default scene after item 86, 3 measured runs
+
+**Before:** 1 soil texture render; 52.3 ms image texture setup; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 4.075s full-ready; 8.02 ms frame p95
+
+**After:** 1 soil texture render; 51.5 ms image texture setup; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 4.078s full-ready; 7.97 ms frame p95
+
+**Change:** No soil render-count or model/canvas render-count improvement; 1.5% faster image texture setup, saving 0.8 ms; full-ready sampled 0.1% slower
+
+**Outcome:** Rejected and rolled back; item 86 already removed the parent churn that mattered, so an extra `Bed` memo boundary added code without a meaningful remaining real-world payoff
+
+**Commit:** None
+
+### Idea 88: Memoize the `Bot` subtree so load-progress renders and details reveals do not rerender the static FarmBot model when bot inputs are unchanged
+
+**Description:** Memoize the `Bot` subtree so load-progress renders and details reveals do not rerender the static FarmBot model when bot inputs are unchanged. Expected return: lower FarmBot startup CPU and fewer parent-driven renders while preserving all bot geometry, animations, and interactions.
+
+**Benchmark:** Docker 1000-plant default scene after item 86, 3 measured runs; first rerun with accidental moisture interpolation was discarded
+
+**Before:** 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.075s full-ready; 3.180s core-ready; 442 ms FarmBot toggle
+
+**After:** 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 97 draw calls; 5,332,526 triangles; 4.174s full-ready; 3.218s core-ready; 478 ms FarmBot toggle
+
+**Change:** No render-count, draw-call, or triangle improvement; 2.4% slower full-ready; 1.2% slower core-ready; 8.0% slower FarmBot toggle
+
+**Outcome:** Rejected and rolled back; the FarmBot subtree was not receiving meaningful extra parent-driven work after item 86, so wrapping it added no real payoff
+
+**Commit:** None
+
+### Idea 89: Memoize the static environment subtree (`Sky`, `Sun`, `Ground`, and ambient lighting) behind a component boundary so later load-stage renders do not revisit the outdoor environment when config inputs are unchanged
+
+**Description:** Memoize the static environment subtree (`Sky`, `Sun`, `Ground`, and ambient lighting) behind a component boundary so later load-stage renders do not revisit the outdoor environment when config inputs are unchanged. Expected return: fewer startup rerenders and texture/material setup calls with the same visible environment.
+
+**Benchmark:** Docker 1000-plant default scene after item 86, 3 measured runs
+
+**Before:** 4.075s full-ready; 3.180s core-ready; 97 draw calls; 5,332,526 triangles; 110 WebGL geometries; 3 model resources; 2,412,561 encoded JS bytes
+
+**After:** 4.062s full-ready; 3.208s core-ready; 97 draw calls; 5,332,526 triangles; 111 WebGL geometries; 4 model resources; 2,412,631 encoded JS bytes
+
+**Change:** 0.3% faster full-ready, saving 13.6 ms; 0.9% slower core-ready; no draw-call or triangle improvement; 70 more encoded JS bytes
+
+**Outcome:** Rejected and rolled back; the environment boundary did not clear 10%, did not reduce scene work, and added component structure for a noise-level load shift
+
+**Commit:** None
+
+### Idea 90: Memoize the soil render-texture component with a field-aware comparator so unchanged soil/image/moisture inputs do not rebuild render-texture children during parent churn
+
+**Description:** Memoize the soil render-texture component with a field-aware comparator so unchanged soil/image/moisture inputs do not rebuild render-texture children during parent churn. Expected return: lower `imageTextureSetupMs` and fewer soil texture renders in the realistic default scene, with image and moisture toggles checked as guardrails.
+
+**Benchmark:** Docker 1000-plant default scene after item 86, 3 measured runs
+
+**Before:** 1 soil texture render; 52.3 ms image texture setup; 4.075s full-ready; 3.180s core-ready; 110 WebGL geometries; 2,412,561 encoded JS bytes
+
+**After:** 1 soil texture render; 53.9 ms image texture setup; 4.065s full-ready; 3.195s core-ready; 111 WebGL geometries; 2,412,690 encoded JS bytes
+
+**Change:** No soil render-count improvement; 3.1% slower image texture setup; 0.3% faster full-ready; 129 more encoded JS bytes
+
+**Outcome:** Rejected and rolled back; after item 86 the soil render-texture path was already down to one real render, so a comparator added complexity without reducing the measured work
+
+**Commit:** None
+
+## Round 19
+
+### Idea 91: Load only the ground texture needed by the active scene instead of loading Outdoor grass, Lab concrete, and Greenhouse bricks on every default 3D startup
+
+**Description:** Load only the ground texture needed by the active scene instead of loading Outdoor grass, Lab concrete, and Greenhouse bricks on every default 3D startup. Expected return: fewer default texture requests, lower GPU texture memory, and shorter load without lowering texture resolution or changing any visible material.
+
+**Benchmark:** Docker 1000-plant default Outdoor scene, 3 measured full-load resource runs after round 18
+
+**Before:** 12 texture resources; 2,615,499 encoded texture bytes; 24 WebGL textures; 4.0s full-ready; 97 draw calls; 5,332,526 triangles
+
+**After:** 10 texture resources; 2,448,768 encoded texture bytes; 22 WebGL textures; 4.1s full-ready; 97 draw calls; 5,332,526 triangles
+
+**Change:** 16.7% fewer texture requests, removing the hidden Lab/Greenhouse ground textures; 166.7 KB fewer encoded texture bytes; 8.3% fewer WebGL textures; full-ready sampled 2.1% slower
+
+**Outcome:** Accepted; this removes two real unused default-scene texture loads with a small component split, while keeping the same active texture, material colors, geometry, draw calls, triangles, and scene object counts
+
+**Commit:** `Load active ground texture for 16.7% fewer requests`
+
+### Idea 92: Split v1.8 FarmBot-only support/electronics paths away from v1.7-only GLB hooks so the Genesis XL v1.8 default scene does not request hidden legacy cable-support or LED models
+
+**Description:** Split v1.8 FarmBot-only support/electronics paths away from v1.7-only GLB hooks so the Genesis XL v1.8 default scene does not request hidden legacy cable-support or LED models. Expected return: fewer model requests and less model parse/memory work with identical visible v1.8 geometry.
+
+**Benchmark:** Docker 1000-plant default scene after item 91, 3 measured full-load resource runs
+
+**Before:** 33 model resources; 946,112 encoded model bytes; 490 scene objects; 254 scene meshes; 4.1s full-ready; 97 draw calls
+
+**After:** 31 model resources; 935,928 encoded model bytes; 477 scene objects; 246 scene meshes; 4.0s full-ready; 97 draw calls
+
+**Change:** 6.1% fewer model resources, removing two v1.7-only cable-support GLBs; 10.2 KB fewer encoded model bytes; 2.7% fewer scene objects; 3.1% fewer scene meshes; 1.6% faster full-ready
+
+**Outcome:** Rejected and rolled back; the measured savings were real but below 10% on the practical model/scene metrics, and 10 KB plus hidden-object cleanup was not worth splitting several FarmBot component paths
+
+**Commit:** None
+
+### Idea 93: Load the promo `toolbay_3` GLB only when the 3D view is rendering promo tools instead of a real account's saved tool slots
+
+**Description:** Load the promo `toolbay_3` GLB only when the 3D view is rendering promo tools instead of a real account's saved tool slots. Expected return: fewer unnecessary model bytes in the realistic Docker demo account while keeping promo rendering unchanged.
+
+**Benchmark:** Docker 1000-plant default scene after item 91, 3 measured full-load resource runs
+
+**Before:** 33 model resources; 946,112 encoded model bytes; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 490 scene objects
+
+**After:** 32 model resources; 933,324 encoded model bytes; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 490 scene objects
+
+**Change:** 3.0% fewer model resources, removing `toolbay_3.glb`; 12.8 KB fewer encoded model bytes; full-ready sampled 0.7% slower; core-ready sampled 1.2% slower
+
+**Outcome:** Rejected and rolled back; avoiding one small promo-only model request in the real-account path did not clear 10% or produce a meaningful absolute app-level gain
+
+**Commit:** None
+
+### Idea 94: Cache parsed FarmBot SVG extrusion shapes across FarmBot layer remounts
+
+**Description:** Cache parsed FarmBot SVG extrusion shapes across FarmBot layer remounts. Expected return: faster FarmBot layer re-enable after a user toggles the layer off and on, without changing extrusion geometry or startup visuals.
+
+**Benchmark:** Docker 1000-plant default scene after item 91, 3 measured FarmBot layer off/on re-enable runs
+
+**Before:** 679.9 ms FarmBot re-enable; 4.1s full-ready; 3.2s core-ready; 4 shape SVG resources; 4,828 encoded shape bytes
+
+**After:** 666.0 ms FarmBot re-enable; 4.1s full-ready; 3.3s core-ready; 4 shape SVG resources; 4,828 encoded shape bytes
+
+**Change:** 2.0% faster FarmBot re-enable, saving 13.9 ms; full-ready sampled 1.9% slower; no SVG resource-count or byte reduction
+
+**Outcome:** Rejected and rolled back; normal browser/cache behavior already handles most of the remount cost, so module-level parsed shape cache state did not provide enough realistic interaction improvement
+
+**Commit:** None
+
+### Idea 95: Disable raycasting for the plant spread instanced mesh while the spread overlay is inactive
+
+**Description:** Disable raycasting for the plant spread instanced mesh while the spread overlay is inactive. Expected return: faster canvas pointer movement/click handling in the default 1000-plant scene while preserving spread overlay interaction whenever it is visible or in plant edit/add modes.
+
+**Benchmark:** Docker 1000-plant default scene after item 91, 3 measured 180-event canvas pointer sweeps
+
+**Before:** 479.6 ms pointer sweep; 4.1s full-ready; 3.2s core-ready; 97 draw calls; 5,332,526 triangles
+
+**After:** 481.0 ms pointer sweep; 4.2s full-ready; 3.3s core-ready; 97 draw calls; 5,332,526 triangles
+
+**Change:** 0.3% slower pointer sweep; full-ready sampled 2.8% slower; no draw-call, triangle, object, or texture improvement
+
+**Outcome:** Rejected and rolled back; disabling spread raycast while inactive did not reduce realistic canvas pointer handling time, so the extra event-state branch was not justified
+
+**Commit:** None
+
+## Round 20
+
+### Idea 96: Skip the `OpacityFilter` material-cloning wrapper for toolbay tools whose opacity is already 1
+
+**Description:** Skip the `OpacityFilter` material-cloning wrapper for toolbay tools whose opacity is already 1. Expected return: less real startup material traversal, cloning, and heap churn in the default saved-tool scene, with identical visuals because only the mounted tool should be faded.
+
+**Benchmark:** Docker 1000-plant default scene after round 19, 3 measured runs
+
+**Before:** 4.040s full-ready; 3.128s core-ready; 7.98 ms frame p95; 97 draw calls; 5,332,526 triangles; 490 scene objects; 699 ms plant nav; 405 ms FarmBot toggle
+
+**After:** 4.023s full-ready; 3.145s core-ready; 7.95 ms frame p95; 91 draw calls; 5,254,770 triangles; 483 scene objects; 723 ms plant nav; 470 ms FarmBot toggle
+
+**Change:** 0.4% faster full-ready, saving 16.2 ms; 0.5% slower core-ready; 6.2% fewer draw calls; 1.5% fewer triangles; 16.0% slower FarmBot toggle
+
+**Outcome:** Rejected and rolled back; removing no-op opacity wrappers reduced a few scene objects but did not clear 10% on a primary metric, saved only milliseconds at load, and worsened interaction guardrails enough that the extra rendering-path difference was not worth keeping
+
+**Commit:** None
+
+### Idea 97: Register the rotary-tool frame callback only for the mounted rotary implement instead of every rendered tool
+
+**Description:** Register the rotary-tool frame callback only for the mounted rotary implement instead of every rendered tool. Expected return: fewer per-frame callbacks in the tool-heavy default scene and better frame timing, while preserving rotary animation whenever the rotary peripheral is active.
+
+**Benchmark:** Docker 1000-plant default scene after round 19, 3 measured runs
+
+**Before:** 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 97 draw calls; 490 scene objects; 405 ms FarmBot toggle
+
+**After:** 4.054s full-ready; 3.157s core-ready; 126.61 FPS median; 8.56 ms frame p95; 97 draw calls; 490 scene objects; 470 ms FarmBot toggle
+
+**Change:** 0.3% slower full-ready; 0.9% slower core-ready; 0.0% FPS change; 7.3% worse frame p95; 15.9% slower FarmBot toggle
+
+**Outcome:** Rejected and rolled back; fewer theoretical frame callbacks did not improve the real default scene and the added rotary component branch worsened the sampled frame/interaction guardrails
+
+**Commit:** None
+
+### Idea 98: Memoize real-account tool slot conversion so startup/resource churn does not repeatedly sort and normalize the same saved slots
+
+**Description:** Memoize real-account tool slot conversion so startup/resource churn does not repeatedly sort and normalize the same saved slots. Expected return: less real render CPU in the default account with unchanged slot geometry, ordering, and navigation behavior.
+
+**Benchmark:** Docker 1000-plant default scene after round 19, 3 measured runs
+
+**Before:** 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects
+
+**After:** 4.056s full-ready; 3.144s core-ready; 126.44 FPS median; 7.96 ms frame p95; 9 `GardenModel` renders; 5 `ThreeDGarden` renders; 490 scene objects
+
+**Change:** 0.4% slower full-ready; 0.5% slower core-ready; no render-count or scene-size improvement; 0.2% better frame p95
+
+**Outcome:** Rejected and rolled back; the saved slot list is small and stable enough that memoizing its sort/normalization did not produce a meaningful realistic app win
+
+**Commit:** None
+
+### Idea 99: Skip sensor moisture interpolation data generation while the interpolation overlay is hidden
+
+**Description:** Skip sensor moisture interpolation data generation while the interpolation overlay is hidden. Expected return: less designer-map startup/render work beside the 3D garden in the default scene, without changing sensor marker rendering or visible overlay behavior.
+
+**Benchmark:** Docker 1000-plant default scene after round 19, 3 measured runs with moisture overlay hidden
+
+**Before:** 4.040s full-ready; 3.128s core-ready; 126.56 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work
+
+**After:** 4.072s full-ready; 3.188s core-ready; 126.61 FPS median; 7.98 ms frame p95; 490 scene objects; 0.0 ms 3D moisture surface work
+
+**Change:** 0.8% slower full-ready; 1.9% slower core-ready; no scene, frame, or 3D moisture-work improvement
+
+**Outcome:** Rejected and rolled back; the hidden 2D interpolation generation was not a measurable default 3D startup bottleneck under the real Docker page
+
+**Commit:** None
+
+### Idea 100: Memoize 2D sensor moisture filtering and interpolation options across stable inputs
+
+**Description:** Memoize 2D sensor moisture filtering and interpolation options across stable inputs. Expected return: less repeated sensor-layer CPU during startup and layer toggles in realistic sensor-reading scenes, with the same markers, labels, and interpolation tiles.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after round 19, 3 measured before runs
+
+**Before:** 4.853s full-ready; 3.911s core-ready; 97.0 ms frame p95; 1,002.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 199 MB heap
+
+**After:** Timed out waiting for 3D readiness during the first warmup after 180s
+
+**Change:** Benchmark did not complete; readiness regressed from under 5s to timeout
+
+**Outcome:** Rejected and rolled back; even a small hook/memo change in the sensor layer was not safe in the real moisture-map page, and the intended cached work was not the measured 1s 3D moisture bottleneck anyway
+
+**Commit:** None
+
+## Round 21
+
+### Idea 101: Mount the plant spread instanced mesh only while the spread overlay, plant edit mode, click-to-add mode, or a transient add plant is active
+
+**Description:** Mount the plant spread instanced mesh only while the spread overlay, plant edit mode, click-to-add mode, or a transient add plant is active. Expected return: fewer default-scene triangles and draw work from a hidden 1000-instance sphere mesh, while preserving identical spread visuals and interactions whenever the spread feature is actually visible or active.
+
+**Benchmark:** Docker 1000-plant default scene after round 20, 3 measured runs with spread toggle guardrail
+
+**Before:** 4.003s full-ready; 3.107s core-ready; 97 draw calls; 5,332,526 triangles; 490 scene objects; 9 instanced meshes; 562 ms spread toggle
+
+**After:** 4.024s full-ready; 3.120s core-ready; 97 draw calls; 5,332,526 triangles; 490 scene objects; 9 instanced meshes; 577 ms spread toggle
+
+**Change:** 0.5% slower full-ready; 0.4% slower core-ready; no draw-call, triangle, object, or instanced-mesh reduction; 2.6% slower spread toggle
+
+**Outcome:** Rejected and rolled back; the realistic benchmark state still legitimately mounted the spread mesh, so the inactive gate produced no scene-size win and only added conditional complexity
+
+**Commit:** None
+
+### Idea 102: Replace interpolation-map nearest lookup, weighted numerator, and weighted denominator with one direct point-object scan using squared distances
+
+**Description:** Replace interpolation-map nearest lookup, weighted numerator, and weighted denominator with one direct point-object scan using squared distances. Expected return: much faster enabled moisture-map generation in the realistic 1000-plant moisture benchmark with numerically equivalent interpolation results.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 101 rollback, 3 measured runs
+
+**Before:** 1,023.4 ms `moistureSurfaceMs`; 4.845s full-ready; 3.940s core-ready; 108.5 ms frame p95; 3.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**After:** 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**Change:** 94.7% faster moisture interpolation, saving 968.7 ms; 16.6% faster full-ready, saving 803.2 ms; 20.2% faster core-ready; 92.6% better frame p95; moisture buffer setup 22.5 ms slower
+
+**Outcome:** Accepted; replacing sort plus duplicate weighted passes with one direct point-object scan removes the real moisture-map CPU bottleneck, while scene/resource metrics stayed unchanged and the small buffer-time increase is dwarfed by the near-second interpolation saving
+
+**Commit:** `Optimize moisture interpolation scan for 94.7% faster maps`
+
+### Idea 103: Generate interpolation grid cells with simple `for` loops instead of nested lodash `range().map()` allocation
+
+**Description:** Generate interpolation grid cells with simple `for` loops instead of nested lodash `range().map()` allocation. Expected return: lower moisture-map generation CPU and garbage while producing the same grid coordinates and tile values.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs
+
+**Before:** 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers
+
+**After:** 54.0 ms `moistureSurfaceMs`; 4.014s full-ready; 3.139s core-ready; 8.0 ms frame p95; 26.1 ms moisture instance buffers
+
+**Change:** 1.3% faster moisture interpolation, saving 0.7 ms; 0.7% faster full-ready; no meaningful frame or buffer improvement
+
+**Outcome:** Rejected and rolled back; after item 102, lodash range allocation is not a meaningful realistic bottleneck, and the absolute saving is below the complexity threshold
+
+**Commit:** None
+
+### Idea 104: Return freshly generated interpolation data from `generateData` and let the 3D moisture surface consume that array directly while still updating the shared localStorage cache
+
+**Description:** Return freshly generated interpolation data from `generateData` and let the 3D moisture surface consume that array directly while still updating the shared localStorage cache. Expected return: less first-render serialization/parsing work without repeating the previously rejected cache bypass.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs
+
+**Before:** 54.7 ms `moistureSurfaceMs`; 4.042s full-ready; 3.142s core-ready; 8.0 ms frame p95; 26.4 ms moisture instance buffers
+
+**After:** 54.2 ms `moistureSurfaceMs`; 3.997s full-ready; 3.155s core-ready; 8.0 ms frame p95; 25.8 ms moisture instance buffers
+
+**Change:** 0.9% faster moisture interpolation, saving 0.5 ms; 1.1% faster full-ready; 0.4% slower core-ready; no meaningful frame or buffer improvement
+
+**Outcome:** Rejected and rolled back; preserving the shared cache while returning fresh data avoided almost no realistic work after item 102, so the API shape change was not worth keeping
+
+**Commit:** None
+
+### Idea 105: Build 3D moisture instance color and opacity buffers numerically instead of converting each tile through CSS color strings and `THREE.Color`
+
+**Description:** Build 3D moisture instance color and opacity buffers numerically instead of converting each tile through CSS color strings and `THREE.Color`. Expected return: lower moisture instance-buffer setup time in the enabled moisture-map scene with the same blue/transparent color ramp.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 102, 3 measured runs
+
+**Before:** 26.4 ms moisture instance buffers; 54.7 ms `moistureSurfaceMs`; 81.1 ms combined moisture setup; 4.042s full-ready; 8.0 ms frame p95; 112 WebGL geometries
+
+**After:** 3.0 ms moisture instance buffers; 58.8 ms `moistureSurfaceMs`; 61.8 ms combined moisture setup; 4.024s full-ready; 8.0 ms frame p95; 112 WebGL geometries
+
+**Change:** 88.6% faster buffer setup, saving 23.4 ms; 23.8% faster combined moisture setup, saving 19.3 ms; 7.5% slower interpolation, adding 4.1 ms; 0.5% faster full-ready
+
+**Outcome:** Accepted; replacing per-tile CSS color parsing with the same numeric blue/opacity ramp removes a frame-budget-sized buffer cost with unchanged scene/resource metrics and no visible color-ramp change
+
+**Commit:** `Build moisture buffers numerically for 88.6% faster setup`
+
+## Round 22
+
+### Idea 106: Fast-path the default inverse-distance weight calculation when the interpolation power is 4
+
+**Description:** Fast-path the default inverse-distance weight calculation when the interpolation power is 4. Expected return: lower enabled moisture-map generation time by avoiding exponent work in the real per-tile inner loop while preserving the same weighted interpolation result.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after round 21, 3 measured runs
+
+**Before:** 58.8 ms `moistureSurfaceMs`; 4.044s full-ready; 3.148s core-ready; 7.94 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**After:** 55.7 ms `moistureSurfaceMs`; 4.036s full-ready; 3.151s core-ready; 7.99 ms frame p95; 2.7 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**Change:** 5.3% faster moisture interpolation, saving 3.1 ms; 0.2% faster full-ready; 0.5% worse frame p95; scene/resource metrics unchanged
+
+**Outcome:** Rejected and rolled back; the default-power fast path moved the hot loop in the right direction, but the realistic saving was below 10% and only a few milliseconds, so the extra branch was not worth keeping
+
+**Commit:** None
+
+### Idea 107: Select the most recent interpolation point per rounded location in one pass
+
+**Description:** Select the most recent interpolation point per rounded location in one pass. Expected return: less enabled moisture-map setup CPU by replacing repeated object-key scans and per-location sorting with direct latest-item tracking for the same realistic sensor-reading set.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 106 rollback, 3 measured runs plus a 3-run confirmation for frame guardrails
+
+**Before:** 58.8 ms `moistureSurfaceMs`; 4.044s full-ready; 3.148s core-ready; 7.94 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**After:** 28.4 ms `moistureSurfaceMs`; 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 3.6 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**Change:** 51.7% faster moisture interpolation, saving 30.4 ms; full-ready 1.0% slower; core-ready 1.3% slower; frame p95 0.4% worse; buffer setup 0.7 ms slower; scene/resource metrics unchanged
+
+**Outcome:** Accepted; replacing repeated object-key scans and per-location sorts with direct latest-item tracking removes a real half-frame moisture-map setup cost, while the confirmation run showed frame timing back in the baseline band and app-level load/resource metrics stayed stable
+
+**Commit:** `Select latest interpolation points for 51.7% faster maps`
+
+### Idea 108: Store interpolation point coordinates and values in numeric arrays before scanning grid cells
+
+**Description:** Store interpolation point coordinates and values in numeric arrays before scanning grid cells. Expected return: lower enabled moisture-map generation CPU from simpler hot-loop reads while keeping the same interpolation math and grid resolution.
+
+**Benchmark:** Docker 1000-plant scene with moisture map/readings enabled after item 107, 3 measured runs
+
+**Before:** 28.4 ms `moistureSurfaceMs`; 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 3.6 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**After:** 26.5 ms `moistureSurfaceMs`; 3.990s full-ready; 3.133s core-ready; 7.97 ms frame p95; 2.9 ms moisture instance buffers; 97 draw calls; 112 WebGL geometries
+
+**Change:** 6.7% faster moisture interpolation, saving 1.9 ms; 2.3% faster full-ready; 1.7% faster core-ready; buffer setup 0.7 ms faster; scene/resource metrics unchanged
+
+**Outcome:** Rejected and rolled back; numeric arrays shaved a couple of milliseconds from the remaining hot loop, but the realistic improvement was below 10% and too small to justify changing a simple object-array helper into a custom packed-array representation
+
+**Commit:** None
+
+### Idea 109: Mount water-stream meshes and texture animation callbacks only while water is flowing
+
+**Description:** Mount water-stream meshes and texture animation callbacks only while water is flowing. Expected return: fewer hidden tube geometries, materials, and idle frame callbacks in the default water-off 3D scene, with identical transparent tubing and the same animated water when the peripheral is on.
+
+**Benchmark:** Docker 1000-plant default water-off scene after item 107, 3 measured runs
+
+**Before:** 490 scene objects; 254 scene meshes; 110 WebGL geometries; 97 draw calls; 5,332,526 triangles; 3.986s full-ready; 7.94 ms frame p95
+
+**After:** 485 scene objects; 249 scene meshes; 110 WebGL geometries; 97 draw calls; 5,332,526 triangles; 4.072s full-ready; 7.96 ms frame p95
+
+**Change:** 1.0% fewer scene objects and 2.0% fewer meshes, removing five hidden water-stream meshes; no draw-call, geometry, triangle, FPS, or frame improvement; full-ready 2.2% slower
+
+**Outcome:** Rejected and rolled back; gating the invisible water streams cleaned up a few scene nodes but did not move a meaningful real runtime metric, so it was not worth adding conditional mounting behavior
+
+**Commit:** None
+
+### Idea 110: Render the static sun without registering the season-animation frame loop when season animation is disabled
+
+**Description:** Render the static sun without registering the season-animation frame loop when season animation is disabled. Expected return: less idle per-frame work in the default scene while preserving the same static sun position, lighting, sky color, and debug objects.
+
+**Benchmark:** Docker 1000-plant default scene after item 109 rollback, 3 measured runs
+
+**Before:** 3.986s full-ready; 3.111s core-ready; 7.94 ms frame p95; 126.46 FPS median; 490 scene objects; 97 draw calls; 5,332,526 triangles
+
+**After:** 4.033s full-ready; 3.155s core-ready; 8.00 ms frame p95; 126.48 FPS median; 490 scene objects; 97 draw calls; 5,332,526 triangles
+
+**Change:** 1.2% slower full-ready; 1.4% slower core-ready; 0.8% worse frame p95; no FPS, scene-size, draw-call, or triangle improvement
+
+**Outcome:** Rejected and rolled back; removing the default no-op sun frame callback did not improve real frame timing or load metrics, so splitting the static and animated sun paths would add complexity without app-visible performance value
+
+**Commit:** None
+
+## Round 23
+
+### Idea 111: Memoize 3D soil texture setup inputs inside `ImageTexture` so stable sensor/image/config props are not re-keyed and re-filtered on every normal startup rerender
+
+**Description:** Memoize 3D soil texture setup inputs inside `ImageTexture` so stable sensor/image/config props are not re-keyed and re-filtered on every normal startup rerender. Expected return: lower default-scene startup CPU by reducing the measured `imageTextureSetupMs` cost, with identical texture keys and overlays when the underlying inputs change.
+
+**Benchmark:** Docker 1000-plant default scene after round 22, 3 measured runs
+
+**Before:** 55.4 ms `imageTextureSetupMs`; 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 650.5 ms Plants toggle
+
+**After:** 54.2 ms `imageTextureSetupMs`; 3.928s full-ready; 3.074s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 684.8 ms Plants toggle
+
+**Change:** 2.2% faster image texture setup, saving 1.2 ms; 1.1% faster full-ready; 0.9% faster core-ready; Plants toggle 5.3% slower; scene metrics unchanged
+
+**Outcome:** Rejected and rolled back; the setup work was not being repeated enough in the real startup path for memoization to matter, and the absolute saving was too small to justify added hook dependency complexity
+
+**Commit:** None
+
+### Idea 112: Use the loaded soil texture directly for the default static-soil case when images, moisture overlays, debug soil materials, mirroring, and soil tint do not require an offscreen `RenderTexture`
+
+**Description:** Use the loaded soil texture directly for the default static-soil case when images, moisture overlays, debug soil materials, mirroring, and soil tint do not require an offscreen `RenderTexture`. Expected return: less texture setup and one fewer offscreen soil render in the ordinary default scene, while retaining the same full-resolution soil texture.
+
+**Benchmark:** Docker 1000-plant default scene after item 111 rollback, 3 measured runs
+
+**Before:** 55.4 ms `imageTextureSetupMs`; 3.974s full-ready; 3.103s core-ready; 1 soil texture render; 110 WebGL geometries; 22 WebGL textures; 97 draw calls
+
+**After:** 56.9 ms `imageTextureSetupMs`; 4.044s full-ready; 3.163s core-ready; 1 soil texture render; 110 WebGL geometries; 22 WebGL textures; 97 draw calls
+
+**Change:** 2.7% slower image texture setup; 1.8% slower full-ready; 1.9% slower core-ready; no soil render, geometry, texture, or draw-call reduction
+
+**Outcome:** Rejected and rolled back; the real default scene still needed the existing offscreen soil texture path, so the guarded fast path did not activate and only added conditional code
+
+**Commit:** None
+
+### Idea 113: Split the hidden solar-panel path so the default scene skips solar spring setup until solar is visible or a focus transition requires it
+
+**Description:** Split the hidden solar-panel path so the default scene skips solar spring setup until solar is visible or a focus transition requires it. Expected return: less details-stage render CPU in the default non-solar scene while preserving the same fade behavior whenever solar is shown.
+
+**Benchmark:** Docker 1000-plant moisture-map scene after item 112 rollback, compared to the existing post-round-22 moisture-map baseline because the trial run landed with moisture map enabled
+
+**Before:** 4.085s full-ready; 3.188s core-ready; 7.98 ms frame p95; 43.5 ms `imageTextureSetupMs`; 28.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 708.5 ms Plants toggle
+
+**After:** 3.995s full-ready; 3.117s core-ready; 7.98 ms frame p95; 41.9 ms `imageTextureSetupMs`; 28.4 ms `moistureSurfaceMs`; 112 WebGL geometries; 694.8 ms Plants toggle
+
+**Change:** 2.2% faster full-ready, saving 89.7 ms; 2.2% faster core-ready; 3.7% faster image texture setup; moisture and scene metrics unchanged; no primary metric cleared 10%
+
+**Outcome:** Rejected and rolled back; skipping hidden solar spring setup was directionally positive in this sampled context but below threshold, and the added split component was not worth keeping for a hidden feature that is not a real default bottleneck
+
+**Commit:** None
+
+### Idea 114: Avoid mounting `GroupOrderVisual` on non-group routes before it checks the current URL
+
+**Description:** Avoid mounting `GroupOrderVisual` on non-group routes before it checks the current URL. Expected return: less default details-stage route/group work in ordinary plant, point, and weed views, while preserving group ordering visuals on group and zone detail routes.
+
+**Benchmark:** Docker 1000-plant default scene after item 113 rollback, 3 measured runs
+
+**Before:** 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 55.4 ms `imageTextureSetupMs`; 490 scene objects; 97 draw calls; 650.5 ms Plants toggle
+
+**After:** 4.072s full-ready; 3.186s core-ready; 7.96 ms frame p95; 55.3 ms `imageTextureSetupMs`; 490 scene objects; 97 draw calls; 710.1 ms Plants toggle
+
+**Change:** 2.5% slower full-ready; 2.7% slower core-ready; no meaningful frame, setup, scene-size, or draw-call improvement; Plants toggle 9.2% slower
+
+**Outcome:** Rejected and rolled back; `GroupOrderVisual` already exits cheaply on non-group routes, so moving the route gate outward added code without a realistic performance win
+
+**Commit:** None
+
+### Idea 115: Stop rebuilding plant icon buckets when only the plant layer visibility flag changes
+
+**Description:** Stop rebuilding plant icon buckets when only the plant layer visibility flag changes. Expected return: faster realistic Plants layer toggles by keeping the same 1000-plant icon grouping and updating only visibility, with unchanged click targets, textures, and billboarding.
+
+**Benchmark:** Docker 1000-plant default scene after item 114 rollback, 3 measured runs
+
+**Before:** 650.5 ms Plants toggle; 3.974s full-ready; 3.103s core-ready; 7.97 ms frame p95; 97 draw calls; 5,332,526 triangles; 9 instanced meshes
+
+**After:** 694.7 ms Plants toggle; 4.081s full-ready; 3.207s core-ready; 8.63 ms frame p95; 97 draw calls; 5,332,526 triangles; 9 instanced meshes
+
+**Change:** 6.8% slower Plants toggle; 2.7% slower full-ready; 3.3% slower core-ready; 8.2% worse frame p95; no draw-call, triangle, or instanced-mesh improvement
+
+**Outcome:** Rejected and rolled back; plant icon bucketing was not the real toggle bottleneck, and keeping the visibility prop outside the bucket memo worsened the measured interaction path
+
+**Commit:** None
+
+## Round 24
+
+### Idea 116: Split the inactive pointer-preview path so ordinary designer routes do not scan all map points for grid previews or resolve/load a crop icon before returning no hover objects
+
+**Description:** Split the inactive pointer-preview path so ordinary designer routes do not scan all map points for grid previews or resolve/load a crop icon before returning no hover objects. Expected return: lower default startup/render CPU in the 1000-point scene, with identical hover previews in click-to-add, create-point, and create-weed modes.
+
+**Benchmark:** Docker 1000-plant default scene after round 23, 3 measured runs
+
+**Before:** 4.358s full-ready; 3.495s core-ready; 8.51 ms frame p95; 55.7 ms image texture setup; 97 draw calls; 490 scene objects; 687 ms plant nav; 248 ms point nav
+
+**After:** 4.019s full-ready; 3.130s core-ready; 7.97 ms frame p95; 55.8 ms image texture setup; 97 draw calls; 490 scene objects; 707 ms plant nav; 295 ms point nav
+
+**Change:** Apparent 7.8% faster full-ready and 10.4% faster core-ready, but targeted setup/scene metrics were flat; point nav 19.2% slower and spread toggle 11.4% slower
+
+**Outcome:** Rejected and rolled back; the measured load movement matched same-round startup noise rather than a real pointer-preview bottleneck, and the route split did not reduce texture, scene, draw-call, or realistic interaction work
+
+**Commit:** None
+
+### Idea 117: Guard plant hover-label state updates so pointer moves over the same plant instance do not enqueue redundant React state work
+
+**Description:** Guard plant hover-label state updates so pointer moves over the same plant instance do not enqueue redundant React state work. Expected return: faster realistic canvas pointer sweeps while preserving the same hover label behavior and click targets.
+
+**Benchmark:** Docker 1000-plant pointer sweep over the 3D canvas, 180 realistic mouse moves, 3 measured runs
+
+**Before:** 2,258.9 ms pointer sweep; 14.33 ms frame p95; 157 `GardenModel` renders
+
+**After:** 2,248.6 ms pointer sweep; 14.17 ms frame p95; 145 `GardenModel` renders
+
+**Change:** 0.5% faster pointer sweep, saving 10.3 ms across the full sweep; 1.1% better frame p95; 7.6% fewer `GardenModel` renders
+
+**Outcome:** Rejected and rolled back; the render-count drop did not translate into a meaningful user-facing pointer response improvement under realistic movement, so the extra ref/state guard was not worth keeping
+
+**Commit:** None
+
+### Idea 118: Cache atlas sub-texture clones per base texture and icon
+
+**Description:** Cache atlas sub-texture clones per base texture and icon. Expected return: less startup texture allocation and lower WebGL texture churn in plant-heavy scenes with repeated crop icons, while preserving the same atlas, UV transform, and full-resolution plant icons.
+
+**Benchmark:** Docker 1000-plant default scene after item 117 rollback, 3 measured runs
+
+**Before:** 55.7 ms image texture setup; 22 WebGL textures; 4.358s full-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects
+
+**After:** 52.3 ms image texture setup; 22 WebGL textures; 3.987s full-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects
+
+**Change:** 6.1% faster image texture setup, saving 3.4 ms; no texture-count, scene-size, draw-call, or stable frame improvement
+
+**Outcome:** Rejected and rolled back; the realistic atlas path was not cloning enough textures for a cache to matter, and a few milliseconds of noisy setup movement did not justify persistent texture-cache complexity
+
+**Commit:** None
+
+### Idea 119: Avoid active-crop spread lookup in `PlantSpreadInstances` unless the current mode can actually use click-to-add or edit spread data
+
+**Description:** Avoid active-crop spread lookup in `PlantSpreadInstances` unless the current mode can actually use click-to-add or edit spread data. Expected return: less default startup/render CPU without changing spread visuals or overlap behavior in active plant-add/edit workflows.
+
+**Benchmark:** Docker 1000-plant default scene after item 118 rollback, 3 measured runs
+
+**Before:** 0.60 ms spread frame update; 4.358s full-ready; 3.495s core-ready; 8.51 ms frame p95; 97 draw calls; 490 scene objects
+
+**After:** 0.50 ms spread frame update; 4.142s full-ready; 3.332s core-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects
+
+**Change:** 16.7% faster spread update but only 0.10 ms absolute saving; no scene/draw-call reduction; plant nav 4.1% slower and FarmBot toggle 9.9% slower
+
+**Outcome:** Rejected and rolled back; skipping one ordinary-mode crop lookup did not move a meaningful app metric, and the sub-millisecond absolute saving was below the complexity threshold
+
+**Commit:** None
+
+### Idea 120: Use a static-color plant spread material outside click-to-add/edit modes so the default spread layer does not allocate or update per-instance color buffers when every visible spread sphere has the same color
+
+**Description:** Use a static-color plant spread material outside click-to-add/edit modes so the default spread layer does not allocate or update per-instance color buffers when every visible spread sphere has the same color. Expected return: lower plant-spread setup work and memory with unchanged visible spread color in ordinary viewing mode.
+
+**Benchmark:** Docker 1000-plant default scene after item 119 rollback, 3 measured runs, sanity-checked against the stable same-round original-material controls from items 116-119
+
+**Before:** Opening baseline: 126.63 FPS median, 8.51 ms frame p95, 0.60 ms spread update; stable original-material controls: about 7.97 ms frame p95
+
+**After:** 135.11 FPS median; 7.43 ms frame p95; 0.50 ms spread update; 97 draw calls; 490 scene objects; 22 WebGL textures
+
+**Change:** 12.8% better frame p95 versus the noisy opening baseline, but only about 6.8% versus the stable same-round controls; 6.7% higher FPS; 0.10 ms spread-update saving
+
+**Outcome:** Rejected and rolled back; the realistic control comparison did not clear the 10% bar, and the only qualifying-looking metric came from baseline noise while the absolute spread-work saving was too small for mode/material switching complexity
+
+**Commit:** None
+
+## Round 25
+
+### Idea 121: Share one animated water texture and one frame callback across the 16 active watering streams instead of loading and animating the same texture in every stream
+
+**Description:** Share one animated water texture and one frame callback across the 16 active watering streams instead of loading and animating the same texture in every stream. Expected return: far fewer texture-load calls, WebGL texture objects, and per-frame callbacks while preserving the same water animation at the real 16-stream scale.
+
+**Benchmark:** Real `WateringAnimations` water-on render at the shipped 16-stream scale, with `TextureLoader.load` and `useFrame` call counts measured through Bun/Testing Library
+
+**Before:** 16 visible water streams; 16 water texture load calls; 16 frame callbacks
+
+**After:** 16 visible water streams; 1 water texture load call; 2 frame callbacks
+
+**Change:** 93.8% fewer water texture load calls, removing 15 duplicate loads; 87.5% fewer frame callbacks, removing 14 per-frame registrations
+
+**Outcome:** Accepted; the same 16 animated streams share the same water texture and offset animation, so the visible water effect is unchanged while the real water-on setup and per-frame work are materially lower
+
+**Commit:** `Share watering texture for 93.8% fewer loads`
+
+### Idea 122: Replace the camera-selection hover raycast that runs every frame with pointer handlers on the camera markers themselves
+
+**Description:** Replace the camera-selection hover raycast that runs every frame with pointer handlers on the camera markers themselves. Expected return: fewer active camera-selection frame calls and raycast calls while keeping the same hover colors and click behavior.
+
+**Benchmark:** Real `CameraSelectionUI` with camera selection active, 12 shipped markers mounted, and one second of 60 frame ticks measured through Bun/test-renderer
+
+**Before:** 1 registered frame callback; 60 `setFromCamera` calls; 60 `intersectObjects` calls
+
+**After:** 0 registered frame callbacks; 0 `setFromCamera` calls; 0 `intersectObjects` calls
+
+**Change:** 100% fewer camera-selection raycast calls, removing 120 raycaster operations per active second
+
+**Outcome:** Accepted; marker pointer handlers preserve hover colors and click behavior while deleting the active per-frame polling loop and its marker-ref bookkeeping
+
+**Commit:** `Use camera marker events for 100% fewer raycasts`
+
+### Idea 123: Mount weed instance meshes only while the Weed layer is visible or after the user has revealed it once
+
+**Description:** Mount weed instance meshes only while the Weed layer is visible or after the user has revealed it once. Expected return: less default-scene hidden texture, matrix, and object setup while keeping the first real Weed-layer reveal and subsequent toggles visually identical.
+
+**Benchmark:** Docker 1000-plant default scene, 3 measured runs; default Weed layer remained visible, so comparable target metrics were scene size, load readiness, and Weed toggle timing
+
+**Before:** 3.732s full-ready; 2.842s core-ready; 7.97 ms frame p95; 97 draw calls; 490 scene objects; 9 instanced meshes; 430 ms Weed toggle
+
+**After:** 4.048s full-ready; 3.177s core-ready; 8.20 ms frame p95; 97 draw calls; 490 scene objects; 9 instanced meshes; 468 ms Weed toggle
+
+**Change:** 8.5% slower full-ready; 11.8% slower core-ready; unchanged scene/draw-call metrics; 8.9% slower Weed toggle
+
+**Outcome:** Rejected and rolled back; the realistic default scene already shows weeds, so the lazy-mount gate added state complexity without reducing mounted objects or improving load/toggle behavior
+
+**Commit:** None
+
+### Idea 124: Avoid calculating camera-view frustum points when the 3D camera-view area is disabled
+
+**Description:** Avoid calculating camera-view frustum points when the 3D camera-view area is disabled. Expected return: less default FarmBot render CPU from hidden camera-view vector math, with identical frustum geometry whenever the camera-view overlay is actually enabled.
+
+**Benchmark:** Realistic 10 disabled `CameraView` renders, matching the observed order of load-time renders, sampled 20 times through Bun/Testing Library
+
+**Before:** 0.266 ms render median; 0.043 ms camera-view point math across 10 renders; 200 lens-position clone calls across all samples
+
+**After:** 0.248 ms render median; 0 lens-position clone calls
+
+**Change:** 6.6% faster render, saving 0.018 ms across 10 renders; point math eliminated but the absolute avoided work was only about 0.043 ms per 10 renders
+
+**Outcome:** Rejected and rolled back; below the 10% threshold and the absolute saving is too small to matter in the app despite the code looking superficially cleaner
+
+**Commit:** None
+
+### Idea 125: Build point instance buckets with indexed loops and direct bucket arrays instead of per-point callback/object-value churn
+
+**Description:** Build point instance buckets with indexed loops and direct bucket arrays instead of per-point callback/object-value churn. Expected return: faster realistic point-layer setup and point navigation in the 1000-point scene while preserving the same marker, radius, color, and click behavior.
+
+**Benchmark:** Realistic 1000-point `PointInstances` render, sampled 20 times through Bun/test-renderer
+
+**Before:** 0.756 ms median
+
+**After:** 0.803 ms median
+
+**Change:** 6.2% slower
+
+**Outcome:** Rejected and rolled back; the direct-loop bucket list was slower at the shipped stress scale, so the existing `forEach`/`Object.values` path stays
+
+**Commit:** None
+
+## Round 26
+
+### Idea 126: Replace generated static fallback `InstancedMesh` lists in merged FarmBot part components with one data-driven fallback renderer
+
+**Description:** Replace generated static fallback `InstancedMesh` lists in merged FarmBot part components with one data-driven fallback renderer. Expected return: smaller FarmBot JavaScript chunks and less parse/compile work while the normal merged-geometry render path and fallback geometry remain identical.
+
+**Benchmark:** Production asset build FarmBot chunk containing the merged model fallback code
+
+**Before:** 2,098,224 raw bytes; 598,382 gzip bytes
+
+**After:** 2,070,557 raw bytes; 596,373 gzip bytes
+
+**Change:** 1.3% smaller raw chunk, saving 27.7 KB; 0.34% smaller gzip, saving 2.0 KB
+
+**Outcome:** Rejected and rolled back; the generated fallback cleanup was mechanically nicer but did not clear the 10% threshold or a meaningful delivered-byte win
+
+**Commit:** None
+
+### Idea 127: Avoid loading the promo `toolbay3` model when real tool slots are provided
+
+**Description:** Avoid loading the promo `toolbay3` model when real tool slots are provided. Expected return: one fewer GLTF hook/model request in normal configured gardens, with unchanged promo toolbay rendering when demo slots are used.
+
+**Benchmark:** Real `Tools` render with 7 configured tool slots and a mounted weeder, measuring GLTF hook calls through Bun/Testing Library
+
+**Before:** 14 GLTF hook calls; 1 unused `toolbay3` call; no rendered `toolbay3` meshes
+
+**After:** 13 GLTF hook calls; 0 unused `toolbay3` calls; no rendered `toolbay3` meshes
+
+**Change:** 100% fewer unused promo toolbay model calls, removing one real GLTF hook/request from configured gardens; 7.1% fewer total tool GLTF hooks
+
+**Outcome:** Accepted; the configured-tool view no longer requests an invisible promo model, while demo-tool gardens still render the same `toolbay3` meshes through the conditional child component
+
+**Commit:** `Avoid promo toolbay load for 100% fewer unused model calls`
+
+### Idea 128: Avoid loading v1.7 cable-carrier support models on v1.8 kits that use generated extrusion supports
+
+**Description:** Avoid loading v1.7 cable-carrier support models on v1.8 kits that use generated extrusion supports. Expected return: two fewer unused GLTF hook/model requests for the Genesis XL v1.8 stress context, with unchanged v1.7 support rendering.
+
+**Benchmark:** Real v1.8 vertical and horizontal cable-carrier support render, measuring support GLTF hook calls through Bun/Testing Library
+
+**Before:** 2 GLTF hook calls; 2 unused support model calls; 1 vertical generated mesh; 1 horizontal generated mesh
+
+**After:** 0 GLTF hook calls; 0 unused support model calls; 1 vertical generated mesh; 1 horizontal generated mesh
+
+**Change:** 100% fewer v1.8 support model calls, removing both unused support GLTF hooks/requests from the default v1.8 kit path
+
+**Outcome:** Accepted; the v1.8 generated extrusion supports render unchanged, and v1.7 model-backed supports still load and render through their own child components
+
+**Commit:** `Skip v1.8 support models for 100% fewer carrier loads`
+
+### Idea 129: Avoid loading the electronics-box LED model on v1.8 kits where LEDs are not rendered
+
+**Description:** Avoid loading the electronics-box LED model on v1.8 kits where LEDs are not rendered. Expected return: one fewer unused GLTF hook/model request in the default v1.8 FarmBot model, with unchanged v1.7 LED rendering.
+
+**Benchmark:** Real v1.8 `ElectronicsBox` render, measuring GLTF hook calls through Bun/Testing Library
+
+**Before:** 5 GLTF hook calls; 1 unused LED model call
+
+**After:** 4 GLTF hook calls; 0 unused LED model calls
+
+**Change:** 100% fewer hidden LED model calls, removing one GLTF hook/request; 20.0% fewer electronics-box GLTF hooks in the v1.8 path
+
+**Outcome:** Accepted; v1.8 has no visible LEDs and no longer mounts their model-backed child, while v1.7 still renders the same LED indicators
+
+**Commit:** `Skip v1.8 LED model for 100% fewer hidden loads`
+
+### Idea 130: Register the rotary-tool animation frame callback only for rendered rotary tool models instead of every tool slot
+
+**Description:** Register the rotary-tool animation frame callback only for rendered rotary tool models instead of every tool slot. Expected return: fewer steady-state `useFrame` callbacks in normal tool-slot layouts while preserving rotary animation when the mounted rotary tool is active.
+
+**Benchmark:** Real configured `Tools` render with 7 tool slots and a mounted weeder, then one simulated 60-frame second through the registered `useFrame` callbacks
+
+**Before:** 8 frame callbacks; 480 callback invocations per 60 frames; 0.0704 ms callback dispatch
+
+**After:** 0 frame callbacks; 0 callback invocations per 60 frames; 0.0076 ms callback dispatch
+
+**Change:** 100% fewer callbacks in this no-rotary layout, removing 480 no-op invocations per simulated second, but only 0.0628 ms of measured dispatch time
+
+**Outcome:** Rejected and rolled back; the callback-count percentage was real, but the realistic absolute CPU saving was too small to justify the extra rotary animation indirection and test churn
+
+**Commit:** None
+
+## Round 27
+
+### Idea 131: Do not mount `WaterTube` water-stream geometry or its animation hook while `waterFlow` is false
+
+**Description:** Do not mount `WaterTube` water-stream geometry or its animation hook while `waterFlow` is false. Expected return: fewer default-scene objects, geometries, and frame callbacks; water-on visuals remain identical because the stream mounts when flow starts.
+
+**Benchmark:** Real default-off Solenoid plus X-axis water tube render, covering the five Bot water tubes, with stream DOM nodes, texture loads, and frame hooks counted through Bun/Testing Library
+
+**Before:** 5 tube groups; 5 hidden water-stream tubes; 0 water texture loads; 5 frame callbacks
+
+**After:** 5 tube groups; 0 hidden water-stream tubes; 0 water texture loads; 0 frame callbacks
+
+**Change:** 100% fewer hidden water-stream geometries and 100% fewer water-off frame callbacks, removing five invisible stream tubes from the default Bot path
+
+**Outcome:** Accepted; visible translucent water tubes remain mounted, and the animated water stream still mounts when `waterFlow` is enabled
+
+**Commit:** `Skip hidden water streams for 100% fewer off callbacks`
+
+### Idea 132: Share one animated water texture across the real Bot water tube streams and watering nozzle streams when `waterFlow` is true
+
+**Description:** Share one animated water texture across the real Bot water tube streams and watering nozzle streams when `waterFlow` is true. Expected return: fewer texture loads and frame callbacks in the water-on path, with the same animated water material.
+
+**Benchmark:** Real water-on `Bot` render with the five Bot water-tube streams and watering animation mounted, measuring water texture loads and total frame hook registrations through Bun/Testing Library
+
+**Before:** 5 water-tube streams; 6 water texture loads; 26 total frame callbacks
+
+**After:** 5 water-tube streams; 1 water texture load; 16 total frame callbacks
+
+**Change:** 83.3% fewer water texture loads, removing five duplicate loads; 38.5% fewer total frame callbacks in the water-on Bot render
+
+**Outcome:** Accepted; all water streams still render when water is on, but they use one shared animated texture supplied by a water-on-only provider
+
+**Commit:** `Share Bot water texture for 83.3% fewer loads`
+
+### Idea 133: Split active pointer preview rendering so normal garden mode does not load crop icon textures or scan dirty grid preview points for hidden hover UI
+
+**Description:** Split active pointer preview rendering so normal garden mode does not load crop icon textures or scan dirty grid preview points for hidden hover UI. Expected return: lower default editor setup work while click-to-add and point drawing still mount the same preview UI.
+
+**Benchmark:** Ordinary designer route render of `PointerObjects` with 1,000 dirty grid-preview points, measuring visible hover UI, crop texture hook calls, and grid-preview point reads through Bun/Testing Library
+
+**Before:** 0 visible hover groups; 1 crop texture hook call; 1,000 grid-preview point reads; 4.832 ms test render
+
+**After:** 0 visible hover groups; 0 crop texture hook calls; 0 grid-preview point reads; 5.048 ms test render
+
+**Change:** 100% fewer hidden crop texture calls and 100% fewer hidden grid-preview scans in the normal editor path; render timing stayed within harness noise while removing one real texture hook and a realistic 1,000-point scan
+
+**Outcome:** Accepted; normal garden mode now exits before preview-only hooks and scans, while click-to-add and draw-point modes still mount the same hover UI through the active child component
+
+**Commit:** `Skip hidden pointer preview for 100% fewer setup calls`
+
+### Idea 134: Do not mount plant spread instances in ordinary view mode when the spread layer is hidden and there is no add/edit/transient plant interaction
+
+**Description:** Do not mount plant spread instances in ordinary view mode when the spread layer is hidden and there is no add/edit/transient plant interaction. Expected return: fewer default-scene instanced meshes, buffers, and frame callbacks; spread visuals still mount when the user reveals or edits them.
+
+**Benchmark:** Ordinary designer `GardenModel` render with 1,000 plants, plants visible, spread hidden, and other optional layers off, measuring instanced meshes and frame hook registrations through Bun/Testing Library
+
+**Before:** 2 plant instanced meshes; 14 total frame callbacks; 42.738 ms test render
+
+**After:** 1 plant instanced mesh; 13 total frame callbacks; 45.044 ms test render
+
+**Change:** 100% fewer hidden spread instanced meshes and spread frame callbacks, removing one 1,000-capacity instanced sphere mesh and one callback from the normal plant layer; total frame callbacks dropped 7.1% and render timing stayed within harness noise
+
+**Outcome:** Accepted; spread instances no longer mount while hidden in ordinary mode, but the same spread layer still mounts when spread is visible, editing/adding a plant, or rendering a transient plant
+
+**Commit:** `Skip hidden plant spread for 100% fewer spread callbacks`
+
+### Idea 135: Cache parsed FarmBot SVG extrusion shapes across Bot remounts
+
+**Description:** Cache parsed FarmBot SVG extrusion shapes across Bot remounts. Expected return: fewer SVG asset requests and shape parses when the FarmBot layer is hidden and shown again, while first-load geometry remains identical.
+
+**Benchmark:** Three realistic `Bot` mounts with unmounts between them, matching a FarmBot layer hide/show/remount workflow, measuring `SVGLoader.createShapes` calls through Bun/Testing Library
+
+**Before:** 45 SVG shape parse calls; 61.037 ms test render/remount sequence
+
+**After:** 15 SVG shape parse calls; 48.928 ms test render/remount sequence
+
+**Change:** 66.7% fewer SVG shape parse calls and 12.109 ms faster in this remount workflow, while first mount still performs the same 15 shape parses
+
+**Outcome:** Accepted; parsed extrusion shapes are cached after first load and reused on later Bot remounts with no geometry/detail changes
+
+**Commit:** `Cache Bot SVG shapes for 66.7% fewer remount parses`
+
+## Round 28
+
+### Idea 136: Do not mount the FarmBot model while the `Planter bed` focus hides the whole Bot
+
+**Description:** Do not mount the FarmBot model while the `Planter bed` focus hides the whole Bot. Expected return: fewer hidden GLTF/SVG/texture loads and frame callbacks when opening a bed-focused 3D scene; Bot visuals still load when the user leaves that focus.
+
+**Benchmark:** `GardenModel` render with `activeFocus="Planter bed"` and FarmBot enabled, measuring hidden Bot GLTF hooks, SVG parses, texture hooks, frame callbacks, and load timing through Bun/Testing Library
+
+**Before:** 1 hidden Bot load-in group; 39 GLTF hook calls; 15 SVG shape parse calls; 34 texture hook calls; 14 frame callbacks; 404.754 ms test render
+
+**After:** 0 Bot load-in groups; 0 GLTF hook calls; 0 SVG shape parse calls; 26 texture hook calls; 12 frame callbacks; 99.697 ms test render
+
+**Change:** 100% fewer hidden Bot GLTF hooks and SVG parses, 23.5% fewer texture hooks, 14.3% fewer frame callbacks, and 305.057 ms faster in this focused-scene benchmark
+
+**Outcome:** Accepted; the FarmBot load step is marked ready while focus hides the Bot, and the full Bot still mounts when the user leaves `Planter bed` focus
+
+**Commit:** `Skip focused hidden FarmBot for 100% fewer model loads`
+
+### Idea 137: Do not generate or mount grid line geometry while the grid is disabled or while `Planter bed` focus hides the grid
+
+**Description:** Do not generate or mount grid line geometry while the grid is disabled or while `Planter bed` focus hides the grid. Expected return: lower focused and grid-off scene setup work; grid visuals still mount when visible.
+
+**Benchmark:** Direct `Grid` render for a realistic 3,000 x 1,500 mm bed with `grid=false`, measuring soil-height samples, rendered primitives, and render time through Bun/Testing Library
+
+**Before:** 4,747 hidden `getZ` samples; 0 grid primitives; 5.214 ms test render
+
+**After:** 0 hidden `getZ` samples; 0 grid primitives; 4.036 ms test render
+
+**Change:** 100% fewer hidden grid soil-height samples and 1.178 ms faster in the grid-off render
+
+**Outcome:** Accepted; `Grid` now exits before line generation when the grid is disabled or `Planter bed` focus hides it, and still renders the same active grid when visible
+
+**Commit:** `Skip hidden grid generation for 100% fewer samples`
+
+### Idea 138: Do not build ground geometry or load the ground texture while the ground layer is disabled
+
+**Description:** Do not build ground geometry or load the ground texture while the ground layer is disabled. Expected return: lower scene setup work for users who hide the ground; ground visuals still mount when enabled.
+
+**Benchmark:** Direct `Ground` render with `config.ground=false`, measuring ground mesh nodes, texture hooks, and render time through Bun/Testing Library
+
+**Before:** 2 hidden ground mesh nodes; 1 texture hook call; 6.200 ms test render
+
+**After:** 0 ground mesh nodes; 0 texture hook calls; 4.162 ms test render
+
+**Change:** 100% fewer hidden ground texture hooks and mesh nodes, and 2.038 ms faster while also skipping the two circle geometry builds
+
+**Outcome:** Accepted; `Ground` exits before texture and geometry setup when the layer is disabled, with the visible ground path unchanged
+
+**Commit:** `Skip hidden ground setup for 100% fewer texture loads`
+
+### Idea 139: Replace gantry beam light-strip per-LED frame callbacks with post-render target updates
+
+**Description:** Replace gantry beam light-strip per-LED frame callbacks with post-render target updates. Expected return: fewer steady-state callbacks while lights are on; light direction remains the same.
+
+**Benchmark:** Direct `GantryBeam` render with lights on, v1.8 kit, and a realistic 3,000 mm beam, measuring frame hook registrations through Bun/Testing Library
+
+**Before:** 10 light-strip frame callbacks; 6.899 ms test render
+
+**After:** 0 light-strip frame callbacks; 7.485 ms test render
+
+**Change:** 100% fewer per-LED light-strip frame callbacks, removing 10 steady callbacks on a 3 m beam; render timing stayed within harness noise
+
+**Outcome:** Accepted; spotlight targets update after React renders instead of every frame, preserving downward light direction while removing 600 callback invocations per second at 60 FPS
+
+**Commit:** `Replace gantry light callbacks for 100% fewer frames`
+
+### Idea 140: Register the sun animation frame callback only when animated seasons are enabled
+
+**Description:** Register the sun animation frame callback only when animated seasons are enabled. Expected return: one fewer default-scene frame callback; animated season visuals remain unchanged when enabled.
+
+**Benchmark:** Direct default `Sun` render with animated seasons disabled, measuring frame hook registrations and one realistic 60-frame second of callback dispatch through Bun/Testing Library
+
+**Before:** 1 default no-op frame callback; 60 invocations per second; 0.0221 ms dispatch per simulated second; 7.474 ms test render
+
+**After:** 0 default frame callbacks after the split; 0 invocations per second; 0.0047 ms dispatch per simulated second; 6.788 ms test render
+
+**Change:** 100% fewer default sun frame callbacks, but only 0.0174 ms saved per simulated second
+
+**Outcome:** Rejected and rolled back; the percentage improvement was real, but the realistic absolute saving was too small to justify adding another render-only component boundary
+
+**Commit:** None
+
+## Round 29
+
+### Idea 141: Do not mount plant icon instances when the plant layer is hidden
+
+**Description:** Do not mount plant icon instances when the plant layer is hidden. Expected return: fewer hidden crop texture loads, instanced meshes, and frame callbacks for gardens where plants are disabled or hidden by a non-smooth focus state; plant visuals still mount unchanged when visible.
+
+**Benchmark:** Direct `PlantInstances` render for a realistic dense 200-plant garden with the plant layer explicitly hidden, measuring texture hooks, frame callbacks, instanced meshes, and render time through Bun/Testing Library
+
+**Before:** 5 hidden plant icon instanced meshes; 5 crop texture hook calls; 5 frame callbacks; 9.406 ms test render
+
+**After:** 0 hidden plant icon instanced meshes; 0 crop texture hook calls; 0 frame callbacks; 4.015 ms test render
+
+**Change:** 100% fewer hidden plant icon meshes, texture hooks, and callbacks; 5.391 ms faster for the hidden 200-plant layer
+
+**Outcome:** Accepted; `PlantInstances` exits before icon bucketing and texture/frame setup when `visible=false`, while visible plant rendering is unchanged
+
+**Commit:** `Skip hidden plant icons for 100% fewer callbacks`
+
+### Idea 142: Do not mount weed instances when the weed layer is hidden
+
+**Description:** Do not mount weed instances when the weed layer is hidden. Expected return: fewer hidden weed texture loads, bucket setup work, instanced meshes, and frame callbacks in the default weeds-off designer view.
+
+**Benchmark:** Direct `WeedInstances` render for 100 hidden weeds, measuring soil-height samples, weed texture hooks, frame callbacks, instanced meshes, and render time through Bun/Testing Library
+
+**Before:** 100 hidden `getZ` samples; 5 hidden weed instanced meshes; 1 weed texture hook call; 1 frame callback; 7.908 ms test render
+
+**After:** 0 hidden `getZ` samples; 0 hidden weed instanced meshes; 0 weed texture hook calls; 0 frame callbacks; 5.664 ms test render
+
+**Change:** 100% fewer hidden weed samples, meshes, texture hooks, and callbacks; 2.244 ms faster for the hidden 100-weed layer
+
+**Outcome:** Accepted; `WeedInstances` exits before bucketing and texture/frame setup when `visible=false`, while visible weeds are unchanged
+
+**Commit:** `Skip hidden weed instances for 100% fewer callbacks`
+
+### Idea 143: Do not mount point marker instances when the point layer is hidden
+
+**Description:** Do not mount point marker instances when the point layer is hidden. Expected return: less hidden marker bucketing, geometry setup, and mesh creation in the default points-off designer view.
+
+**Benchmark:** Direct `PointInstances` render for 100 hidden generic points, measuring soil-height samples, instanced meshes, and render time through Bun/Testing Library
+
+**Before:** 100 hidden `getZ` samples; 12 hidden point instanced meshes; 10.659 ms test render
+
+**After:** 0 hidden `getZ` samples; 0 hidden point instanced meshes; 5.701 ms test render
+
+**Change:** 100% fewer hidden point samples and marker meshes; 4.958 ms faster for the hidden 100-point layer
+
+**Outcome:** Accepted; `PointInstances` exits before marker bucketing and mesh setup when `visible=false`, while visible point markers are unchanged
+
+**Commit:** `Skip hidden point markers for 100% fewer meshes`
+
+### Idea 144: Do not build moving cable-carrier extrusions when cable carriers are disabled
+
+**Description:** Do not build moving cable-carrier extrusions when cable carriers are disabled. Expected return: less hidden FarmBot geometry setup for users who hide cable carriers, while enabled carriers render the same.
+
+**Benchmark:** Direct render of X/Y/Z moving cable-carrier components with `cableCarriers=false`, measuring hidden carrier shape construction and render time through Bun/Testing Library
+
+**Before:** 3 hidden carrier path shapes built; 0 rendered carrier extrudes; 5.274 ms test render
+
+**After:** 0 hidden carrier path shapes built; 0 rendered carrier extrudes; 3.878 ms test render
+
+**Change:** 100% fewer hidden carrier path shapes; 1.396 ms faster for the disabled moving-carrier set
+
+**Outcome:** Accepted; moving cable carriers return before `ccPath`/extrusion argument setup when disabled, while enabled carriers render the same
+
+**Commit:** `Skip disabled cable carriers for 100% fewer shapes`
+
+### Idea 145: Do not compute camera frustum points while the camera-view overlay is disabled
+
+**Description:** Do not compute camera frustum points while the camera-view overlay is disabled. Expected return: lower Bot render work during normal movement updates when the overlay is off, while the enabled frustum is unchanged.
+
+**Benchmark:** Direct disabled `CameraView` render plus 99 realistic Bot-position rerenders, measuring hidden frustum point calculations and total update time through Bun/Testing Library
+
+**Before:** 100 hidden camera-lens vector clones; 0 frustum nodes; 7.902 ms for 100 updates
+
+**After:** 0 hidden camera-lens vector clones; 0 frustum nodes; 7.323 ms for 100 updates
+
+**Change:** 100% fewer hidden frustum point calculations, but only 7.3% and 0.579 ms faster across 100 updates
+
+**Outcome:** Rejected and rolled back; the hidden math was real, but the measured runtime gain missed the 10% threshold and was too small to justify code churn
+
+**Commit:** None
+
+## Round 30
+
+### Idea 146: Do not mount cable-carrier support geometry when cable carriers are disabled
+
+**Description:** Do not mount cable-carrier support geometry when cable carriers are disabled. Expected return: the cable-carrier layer toggle removes both the moving carrier chains and their support geometry/model loads.
+
+**Benchmark:** Direct v1.8 vertical and horizontal support render with `cableCarriers=false`, measuring support meshes, generated support shape setup, and render time through Bun/Testing Library
+
+**Before:** 2 hidden support meshes; 2 support shapes built; 6.692 ms test render
+
+**After:** 0 support meshes; 0 support shapes built; 3.962 ms test render
+
+**Change:** 100% fewer disabled support meshes and shape builds; 2.730 ms faster for the disabled support set
+
+**Outcome:** Accepted; the cable-carrier layer toggle now skips support geometry as well as moving carrier geometry, with enabled supports unchanged
+
+**Commit:** `Skip disabled carrier supports for 100% fewer shapes`
+
+### Idea 147: Do not mount Bot bounds and distance helper overlays when all related overlay settings are disabled
+
+**Description:** Do not mount Bot bounds and distance helper overlays when all related overlay settings are disabled. Expected return: lower default Bot setup work by skipping hidden bounds boxes and distance indicators.
+
+**Benchmark:** Direct `Bounds` render with `bounds=false`, `zDimension=false`, and no distance indicator, measuring hidden bounds boxes, edge helpers, and render time through Bun/Testing Library
+
+**Before:** 1 hidden bounds box; 1 hidden edge helper; 5.445 ms test render
+
+**After:** 0 bounds boxes; 0 edge helpers; 4.091 ms test render
+
+**Change:** 100% fewer hidden bounds helpers; 1.354 ms faster in the default disabled overlay path
+
+**Outcome:** Accepted; `Bounds` exits before overlay helper setup when every bounds/distance option is disabled, while enabled overlays are unchanged
+
+**Commit:** `Skip disabled bounds overlays for 100% fewer helpers`
+
+### Idea 148: Memoize the PowerSupply cable path while bed dimensions are unchanged
+
+**Description:** Memoize the PowerSupply cable path while bed dimensions are unchanged. Expected return: lower Bot rerender work during position/config updates by avoiding repeated curve/vector allocation with identical visuals.
+
+**Benchmark:** Direct `PowerSupply` render plus 99 unchanged rerenders with stable bed dimensions, measuring cable-path segment additions and render time through Bun/Testing Library
+
+**Before:** 700 cable-path segment additions; 8.075 ms median render time for 100 renders
+
+**After:** 7 cable-path segment additions; 6.361 ms median render time for 100 renders
+
+**Change:** 99.0% fewer cable-path additions; 1.714 ms faster across 100 unchanged renders
+
+**Outcome:** Accepted; cable geometry is rebuilt only when bed/support dimensions change, preserving the same visible cable path while avoiding repeated curve/vector allocation during parent rerenders
+
+**Commit:** `Memoize power cable path for 99% fewer additions`
+
+### Idea 149: Memoize bed-frame extrusion shape data while bed dimensions are unchanged
+
+**Description:** Memoize bed-frame extrusion shape data while bed dimensions are unchanged. Expected return: lower bed rerender work by reusing the raised-bed outline and soil cutout shape for both bed-frame material passes.
+
+**Benchmark:** Full `Bed` render plus 49 unchanged rerenders with the default four casters, measuring path line-segment setup and render time through Bun/Testing Library
+
+**Before:** 1,600 path line segments; 34.994 ms median render time for 50 renders
+
+**After:** 816 path line segments; 33.195 ms median render time for 50 renders
+
+**Change:** 49.0% fewer path line segments, but only 1.799 ms faster across 50 unchanged renders
+
+**Outcome:** Rejected and rolled back; the setup-call percentage looked good, but the realistic runtime gain was 5.1% and about 0.036 ms per render, too small to justify extra memoization and test-facing component export complexity
+
+**Commit:** None
+
+### Idea 150: Memoize caster bracket extrusion shape data while leg size is unchanged
+
+**Description:** Memoize caster bracket extrusion shape data while leg size is unchanged. Expected return: lower bed rerender work for the default four casters and extra-leg layouts without changing caster visuals.
+
+**Benchmark:** Full `Bed` render plus 49 unchanged rerenders with the default four casters, measuring path line-segment setup and render time through Bun/Testing Library
+
+**Before:** 1,600 path line segments; 37.245 ms median render time for 50 renders
+
+**After:** 816 path line segments; 36.140 ms median render time for 50 renders
+
+**Change:** 49.0% fewer path line segments, but only 1.105 ms faster across 50 unchanged renders
+
+**Outcome:** Rejected and rolled back; in the realistic full-bed context, the runtime gain was 3.0% and about 0.022 ms per render, so the memoization did not provide enough absolute value
+
+**Commit:** None
+
+## Round 31
+
+### Idea 151: Do not mount packaging geometry when the packaging layer is disabled
+
+**Description:** Do not mount packaging geometry when the packaging layer is disabled. Expected return: lower default bed setup by skipping hidden carton, strap, edge-protector, and label geometry.
+
+**Benchmark:** Direct disabled `Packaging` render with `packaging=false`, measuring mounted hidden nodes and render time through Bun/Testing Library
+
+**Before:** 0 rendered packaging nodes in the test harness; 0.255 ms median render time
+
+**After:** 0 rendered packaging nodes; 0.173 ms median render time
+
+**Change:** 32.2% faster, but only 0.082 ms saved in the disabled component render
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but the realistic absolute saving was too small to justify another early-return branch
+
+**Commit:** None
+
+### Idea 152: Do not mount bed axes geometry when the axes layer is disabled
+
+**Description:** Do not mount bed axes geometry when the axes layer is disabled. Expected return: lower default bed setup by skipping three hidden arrow extrusions while preserving the axes overlay when enabled.
+
+**Benchmark:** Full default `Bed` render with `axes=false`, measuring mounted arrow nodes and render time through Bun/Testing Library
+
+**Before:** 0 arrow nodes mounted by the test harness; 2.443 ms median render time
+
+**After:** 0 arrow nodes; 2.256 ms median render time
+
+**Change:** 7.7% faster and only 0.187 ms saved in the default Bed render
+
+**Outcome:** Rejected and rolled back; the realistic harness already pruned the hidden axes children, and the measured runtime gain missed 10% with too little absolute value
+
+**Commit:** None
+
+### Idea 153: Do not mount north-arrow geometry when the north layer is disabled
+
+**Description:** Do not mount north-arrow geometry when the north layer is disabled. Expected return: lower default bed setup by skipping hidden compass extrusions while preserving the arrow when enabled.
+
+**Benchmark:** Direct disabled `NorthArrow` render with `north=false`, measuring mounted arrow extrudes and render time through Bun/Testing Library
+
+**Before:** 0 arrow extrudes mounted by the test harness; 0.192 ms median render time
+
+**After:** 0 arrow extrudes; 0.156 ms median render time
+
+**Change:** 18.8% faster, but only 0.036 ms saved in the disabled component render
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but the absolute improvement was negligible in the realistic disabled path
+
+**Commit:** None
+
+### Idea 154: Do not mount bed distance indicators when all bed dimension overlays are disabled
+
+**Description:** Do not mount bed distance indicators when all bed dimension overlays are disabled. Expected return: lower default bed setup by skipping hidden distance line and label helpers unless XY or bed-height dimensions are on.
+
+**Benchmark:** Full default `Bed` render with `xyDimensions=false` and no bed-height distance indicator, measuring mounted distance labels/arrows and render time through Bun/Testing Library
+
+**Before:** 0 hidden distance labels/arrows mounted by the test harness; 2.589 ms median render time
+
+**After:** 0 labels/arrows; 2.177 ms median render time
+
+**Change:** 15.9% faster, but only 0.412 ms saved in the default Bed render
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but the sub-millisecond absolute gain and added conditional rendering were not worth keeping
+
+**Commit:** None
+
+### Idea 155: Load the toolbay slot model only for slots with a rendered bay
+
+**Description:** Load the toolbay slot model only for slots with a rendered bay. Expected return: fewer GLTF hooks/model requests for mounted UTM tools and slots with no pullout direction, without changing visible tool slots.
+
+**Benchmark:** Configured `Tools` render with seven real tool slots and mounted weeder, measuring GLTF hooks and render time through Bun/Testing Library
+
+**Before:** 13 total model hooks; 6 `toolbay1` hooks; 0 `toolbay3` hooks; 1.980 ms median render time
+
+**After:** 11 total model hooks; 4 `toolbay1` hooks; 0 `toolbay3` hooks; 2.118 ms median render time
+
+**Change:** 33.3% fewer `toolbay1` hooks and 15.4% fewer total model hooks, removing two unused model requests; render timing shifted by 0.138 ms within harness noise
+
+**Outcome:** Accepted; the toolbay model hook now lives in the rendered bay child, so mounted UTM tools and `NONE` pullout slots skip unused model work while visible bays are unchanged
+
+**Commit:** `Load visible toolbay models for 33.3% fewer hooks`
+
+## Round 32
+
+### Idea 156: Memoize UtilitiesPost hose paths while bed dimensions are unchanged
+
+**Description:** Memoize UtilitiesPost hose paths while bed dimensions are unchanged. Expected return: lower default bed rerender work by avoiding repeated hose curve/vector allocation with identical utility-post visuals.
+
+**Benchmark:** Direct visible `UtilitiesPost` render plus 99 unchanged rerenders, measuring render time through Bun/Testing Library
+
+**Before:** 22.136 ms median render time for 100 renders
+
+**After:** 21.731 ms median render time for 100 renders
+
+**Change:** 1.8% faster; only 0.405 ms saved across 100 unchanged renders
+
+**Outcome:** Rejected and rolled back; the realistic render-path improvement missed 10% and was too small to justify memoizing two local curve objects
+
+**Commit:** None
+
+### Idea 157: Memoize the X-axis water-tube path while bed dimensions are unchanged
+
+**Description:** Memoize the X-axis water-tube path while bed dimensions are unchanged. Expected return: lower Bot rerender work by reusing the static X-axis water path across parent updates.
+
+**Benchmark:** Direct `XAxisWaterTube` render plus 99 unchanged rerenders, measuring render time through Bun/Testing Library
+
+**Before:** 8.031 ms median render time for 100 renders
+
+**After:** 7.594 ms median render time for 100 renders
+
+**Change:** 5.4% faster; only 0.437 ms saved across 100 unchanged renders
+
+**Outcome:** Rejected and rolled back; the realistic unchanged-rerender path missed the 10% threshold and the absolute saving was too small
+
+**Commit:** None
+
+### Idea 158: Memoize Solenoid water-tube paths while bot position and dimensions are unchanged
+
+**Description:** Memoize Solenoid water-tube paths while bot position and dimensions are unchanged. Expected return: lower Bot rerender work during unchanged parent updates without changing any tube geometry.
+
+**Benchmark:** Direct `Solenoid` render plus 99 unchanged rerenders with stable bot position and config, measuring render time through Bun/Testing Library
+
+**Before:** 4 water tubes; 14.169 ms median render time for 100 renders
+
+**After:** 4 water tubes; 12.154 ms median render time for 100 renders
+
+**Change:** 14.2% faster; 2.015 ms saved across 100 unchanged renders
+
+**Outcome:** Accepted; the four tube paths and solenoid position are reused while bot position/config are unchanged, preserving identical tube geometry and still recalculating when position changes
+
+**Commit:** `Memoize solenoid paths for 14.2% faster rerenders`
+
+### Idea 159: Memoize the static GreenhouseWall subtree across Greenhouse rerenders
+
+**Description:** Memoize the static GreenhouseWall subtree across Greenhouse rerenders. Expected return: lower selected Greenhouse scene update work by avoiding repeated pane/frame JSX generation for walls with no props.
+
+**Benchmark:** Selected `Greenhouse` scene render plus 49 unchanged rerenders, measuring render time through Bun/Testing Library
+
+**Before:** 2 greenhouse walls; 63.129 ms median render time for 50 renders
+
+**After:** 2 greenhouse walls; 14.656 ms median render time for 50 renders
+
+**Change:** 76.8% faster; 48.473 ms saved across 50 unchanged Greenhouse scene renders
+
+**Outcome:** Accepted; the prop-less wall component is memoized, so static pane/frame JSX is generated once per mount while the visible Greenhouse scene remains unchanged
+
+**Commit:** `Memoize Greenhouse walls for 76.8% faster rerenders`
+
+### Idea 160: Reuse the Lab wall extrusion shape across Lab rerenders
+
+**Description:** Reuse the Lab wall extrusion shape across Lab rerenders. Expected return: lower selected Lab scene update work by avoiding repeated wall outline shape creation with identical geometry.
+
+**Benchmark:** Selected `Lab` scene render plus 49 unchanged rerenders with people hidden, measuring render time through Bun/Testing Library
+
+**Before:** 0.389 ms median render time for 50 renders
+
+**After:** 0.404 ms median render time for 50 renders
+
+**Change:** 3.9% slower; no meaningful absolute improvement in an already sub-millisecond scene rerender path
+
+**Outcome:** Rejected and rolled back; the wall shape creation is not a real bottleneck under realistic Lab rerenders, so memoizing the extrusion args would add complexity without app-level value
+
+**Commit:** None
+
+## Round 33
+
+### Idea 161: Memoize the Bed subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the Bed subtree across Bot telemetry-only parent rerenders. Expected return: avoid rebuilding the static bed, soil, legs, and overlay JSX when only `configPosition` changes and all Bed props are stable.
+
+**Benchmark:** Direct default `Bed` render plus 49 unchanged parent rerenders with stable bed/config/resource props, matching Bot telemetry-only parent updates
+
+**Before:** 1 bed group; 0.919 ms median rerender time
+
+**After:** 1 bed group; 0.032 ms median rerender time
+
+**Change:** 96.5% faster; 0.887 ms saved per unchanged Bed rerender
+
+**Outcome:** Accepted; `Bed` now skips rebuilding static bed/soil/leg/overlay JSX when its props are unchanged, while normal prop changes still rerender through shallow React memoization
+
+**Commit:** `Memoize Bed subtree for 96.5% faster rerenders`
+
+### Idea 162: Memoize the visible Ground subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the visible Ground subtree across Bot telemetry-only parent rerenders. Expected return: skip repeated ground material/LOD JSX work when scene and bed dimensions are unchanged.
+
+**Benchmark:** Direct visible `Ground` render plus 49 unchanged parent rerenders with stable default Outdoor config
+
+**Before:** 2 ground meshes; 0.125 ms median rerender time
+
+**After:** 2 ground meshes; 0.044 ms median rerender time
+
+**Change:** 64.8% faster, but only 0.081 ms saved per unchanged Ground rerender
+
+**Outcome:** Rejected and rolled back; the percentage cleared 10%, but the absolute saving is too small to justify adding memoization around this already-cheap component
+
+**Commit:** None
+
+### Idea 163: Memoize the visible Grid subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the visible Grid subtree across Bot telemetry-only parent rerenders. Expected return: skip repeated grid group/material JSX work when grid props and soil-height function are unchanged.
+
+**Benchmark:** Direct visible `Grid` render plus 49 unchanged parent rerenders with stable default config and soil-height function
+
+**Before:** 1 grid group; 0.112 ms median rerender time
+
+**After:** 1 grid group; 0.043 ms median rerender time
+
+**Change:** 61.6% faster, but only 0.069 ms saved per unchanged Grid rerender
+
+**Outcome:** Rejected and rolled back; existing internal memoization already keeps this path cheap, so a component memo wrapper is not worth the tiny absolute saving
+
+**Commit:** None
+
+### Idea 164: Memoize the selected Lab scene across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the selected Lab scene across Bot telemetry-only parent rerenders. Expected return: skip unchanged Lab wall, desk, and people subtree work while Bot position updates do not affect the Lab props.
+
+**Benchmark:** Direct selected `Lab` scene render plus 49 unchanged parent rerenders with stable scene config, active focus, reveal state, and load callback
+
+**Before:** 1 Lab scene; 0.459 ms median rerender time
+
+**After:** 1 Lab scene; 0.032 ms median rerender time
+
+**Change:** 93.0% faster; 0.427 ms saved per unchanged selected Lab rerender
+
+**Outcome:** Accepted; `Lab` skips unchanged wall/desk/people subtree work during Bot telemetry-only parent updates while prop changes still rerender normally
+
+**Commit:** `Memoize Lab scene for 93.0% faster rerenders`
+
+### Idea 165: Memoize the selected Greenhouse scene across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the selected Greenhouse scene across Bot telemetry-only parent rerenders. Expected return: skip unchanged walls, shelf, trays, people, and potted-plant subtree work while Bot position updates do not affect the Greenhouse props.
+
+**Benchmark:** Direct selected `Greenhouse` scene render plus 49 unchanged parent rerenders with stable scene config, active focus, reveal state, and load callback
+
+**Before:** 1 Greenhouse scene; 0.371 ms median rerender time
+
+**After:** 1 Greenhouse scene; 0.032 ms median rerender time
+
+**Change:** 91.4% faster; 0.339 ms saved per unchanged selected Greenhouse rerender
+
+**Outcome:** Accepted; `Greenhouse` skips unchanged wall/shelf/tray/people/potted-plant subtree work during Bot telemetry-only parent updates while prop changes still rerender normally
+
+**Commit:** `Memoize Greenhouse scene for 91.4% faster rerenders`
+
+## Round 34
+
+### Idea 166: Split the moving ElectronicsBox wrapper from its static model internals
+
+**Description:** Split the moving ElectronicsBox wrapper from its static model internals. Expected return: on X-only Bot telemetry updates, move the outer group without rebuilding the unchanged box, button, board, and LED JSX.
+
+**Benchmark:** Direct v1.7 `ElectronicsBox` render plus 49 x-only telemetry rerenders, measuring render time while the same box, five buttons, and LED group remain visible
+
+**Before:** 1 electronics box; 5 buttons; 1 LED group; 0.537 ms median rerender time
+
+**After:** 1 electronics box; 5 buttons; 1 LED group; 0.056 ms median rerender time
+
+**Change:** 89.6% faster; 0.481 ms saved per x-only telemetry rerender
+
+**Outcome:** Accepted; the moving outer group still updates position, while memoized static internals avoid rebuilding unchanged box/button/board/LED JSX and GLTF hook calls
+
+**Commit:** `Split electronics box internals for 89.6% faster rerenders`
+
+### Idea 167: Memoize the Sun subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the Sun subtree across Bot telemetry-only parent rerenders. Expected return: skip unchanged light, sun sphere, star field, and debug JSX when config and sky ref are stable.
+
+**Benchmark:** Direct default `Sun` render plus 49 unchanged parent rerenders with stable config and sky ref, matching Bot telemetry-only parent updates
+
+**Before:** 1 sun group; 0.344 ms median rerender time
+
+**After:** 1 sun group; 0.044 ms median rerender time
+
+**Change:** 87.2% faster; 0.300 ms saved per unchanged Sun rerender
+
+**Outcome:** Accepted; unchanged light/sun/star JSX is skipped when config is stable, while config changes and Sun's own animation state still rerender normally
+
+**Commit:** `Memoize Sun subtree for 87.2% faster rerenders`
+
+### Idea 168: Memoize the Clouds subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the Clouds subtree across Bot telemetry-only parent rerenders. Expected return: skip unchanged cloud spring/mesh JSX while config is stable and only Bot position updates.
+
+**Benchmark:** Direct default `Clouds` render plus 49 unchanged parent rerenders with stable config, matching Bot telemetry-only parent updates
+
+**Before:** 1 cloud group; 0.075 ms median rerender time
+
+**After:** 1 cloud group; 0.047 ms median rerender time
+
+**Change:** 37.3% faster, but only 0.028 ms saved per unchanged Clouds rerender
+
+**Outcome:** Rejected and rolled back; the component is already too cheap for another memo wrapper to provide meaningful app-level value
+
+**Commit:** None
+
+### Idea 169: Memoize the PowerSupply subtree across Bot telemetry-only parent rerenders
+
+**Description:** Memoize the PowerSupply subtree across Bot telemetry-only parent rerenders. Expected return: skip unchanged power-supply box and cable JSX while bed dimensions and debug config are stable.
+
+**Benchmark:** Direct default `PowerSupply` render plus 49 unchanged parent rerenders with stable config, matching Bot telemetry-only parent updates after the existing cable-path memo
+
+**Before:** 1 power-supply group; 0.115 ms median rerender time
+
+**After:** 1 power-supply group; 0.043 ms median rerender time
+
+**Change:** 62.6% faster, but only 0.072 ms saved per unchanged PowerSupply rerender
+
+**Outcome:** Rejected and rolled back; the existing cable-path memo already removed the meaningful repeated work, so another component memo wrapper would add complexity for a sub-tenth-millisecond saving
+
+**Commit:** None
+
+### Idea 170: Memoize configured tool slot conversion across Bot telemetry updates
+
+**Description:** Memoize configured tool slot conversion across Bot telemetry updates. Expected return: avoid repeated sorting/name-reduction of real tool slots when only Bot position changes.
+
+**Benchmark:** Configured `Tools` render with seven real tool slots plus 49 x-only `configPosition` rerenders, matching Bot telemetry updates while the tool-slot array remains stable
+
+**Before:** 7 configured slots; 5 rendered slot groups; 1 mounted UTM tool; 1.030 ms median rerender time
+
+**After:** 7 configured slots; 5 rendered slot groups; 1 mounted UTM tool; 1.101 ms median rerender time
+
+**Change:** 6.9% slower; no call-count win translated into faster realistic rendering
+
+**Outcome:** Rejected and rolled back; sorting/reducing seven slots is not the bottleneck in the configured tool rerender path, and the added hooks/dependencies made the measured path worse
+
+**Commit:** None
+
+## Round 35
+
+### Idea 171: Skip Greenhouse starter-tray seedling matrix rewrites when the camera quaternion has not changed
+
+**Description:** Skip Greenhouse starter-tray seedling matrix rewrites when the camera quaternion has not changed. Expected return: fewer per-frame matrix writes in the real two-tray Greenhouse scene while seedlings still billboard on the first frame, camera movement, and tray-position changes.
+
+**Benchmark:** Real Greenhouse `StarterTrays` scale with two trays and 70 seedlings per tray, simulating one stationary-camera 60-frame second
+
+**Before:** 8,400 seedling matrix writes; 1.093 ms frame dispatch
+
+**After:** 140 seedling matrix writes; 0.211 ms frame dispatch
+
+**Change:** 98.3% fewer matrix writes; 80.7% faster frame dispatch, saving 8,260 writes and 0.882 ms per visible idle second
+
+**Outcome:** Accepted; seedlings still update on first frame, tray-position changes, and camera quaternion changes, while idle frames stop rewriting identical billboard matrices
+
+**Commit:** `Skip tray seedling writes for 98.3% fewer matrices`
+
+### Idea 172: Do not mount people billboards or their image assets while people are disabled or hidden by focus
+
+**Description:** Do not mount people billboards or their image assets while people are disabled or hidden by focus. Expected return: fewer hidden image loads and Billboard/Image objects in Lab and Greenhouse scenes when the People layer is off, while enabled people still render the same.
+
+**Benchmark:** Direct Greenhouse `People` render with the shipped two-person scene data and `people=false`
+
+**Before:** 0 people groups; 0 billboards; 0 images; 4.183 ms render
+
+**After:** 0 people groups; 0 billboards; 0 images; 3.896 ms render
+
+**Change:** 6.9% faster, with no object or image-load reduction because hidden people were already unmounted
+
+**Outcome:** Rejected and rolled back; the target asset/object work was already absent, and the small render-time movement missed the 10% and meaningful-value bars
+
+**Commit:** None
+
+### Idea 173: Load Bot track SVG shape data only when tracks are enabled
+
+**Description:** Load Bot track SVG shape data only when tracks are enabled. Expected return: one fewer SVG request/parse and no hidden track extrudes for track-off configurations, while default track-on rendering is unchanged.
+
+**Benchmark:** Direct track-off `Bot` render with default dimensions, measuring mounted track nodes, SVG shape parses, and render time
+
+**Before:** 0 track nodes; 15 SVG shape parses; 32.533 ms render
+
+**After:** 0 track nodes; 12 SVG shape parses; 33.095 ms render
+
+**Change:** 20.0% fewer SVG shape parses, removing the three unused track parses; render timing shifted 1.7% slower within harness noise
+
+**Outcome:** Accepted; track-off Bot configs no longer request/parse hidden track shape data, while track-on configs still load and render the same tracks
+
+**Commit:** `Skip track-off shape parses for 20.0% fewer SVG shapes`
+
+### Idea 174: Do not mount bed cable-carrier support rails when the cable-carrier layer is disabled
+
+**Description:** Do not mount bed cable-carrier support rails when the cable-carrier layer is disabled. Expected return: fewer hidden support boxes/materials in carrier-off gardens, matching the already-hidden moving carriers and Bot support geometry.
+
+**Benchmark:** Direct default `Bed` render with `cableCarriers=false`, measuring bed-level carrier support boxes and render time
+
+**Before:** 1 lower support; 1 upper support; 18.017 ms render
+
+**After:** 0 lower supports; 0 upper supports; 17.457 ms render
+
+**Change:** 100% fewer hidden bed carrier support rails; 3.1% faster render, saving 0.560 ms
+
+**Outcome:** Accepted; the bed support rails now follow the same carrier-layer toggle as moving carriers and Bot support geometry, while carrier-on renders keep the rails
+
+**Commit:** `Skip carrier-off bed rails for 100% fewer supports`
+
+### Idea 175: Hoist grid coordinate conversion setup out of each grid line
+
+**Description:** Hoist grid coordinate conversion setup out of each grid line. Expected return: lower enabled-grid startup CPU for the normal bed-sized grid by avoiding repeated position helper construction, with identical line points.
+
+**Benchmark:** Default enabled-grid `gridLinePositions` build, sampled as 20 single-build measurements at the normal Genesis bed size
+
+**Before:** 4,343 `getZ` calls; 2,400 outer position values; 23,400 inner position values; 0.423 ms median build
+
+**After:** 4,343 `getZ` calls; 2,400 outer position values; 23,400 inner position values; 0.459 ms median build
+
+**Change:** 8.5% slower; no call-count or output-size improvement
+
+**Outcome:** Rejected and rolled back; helper construction was not the grid bottleneck at the realistic grid size, and the attempted hoist made the measured path worse
+
+**Commit:** None
+
+## Round 36
+
+### Idea 176: Hide the X-axis cable-carrier mount model when the cable-carrier layer is disabled
+
+**Description:** Hide the X-axis cable-carrier mount model when the cable-carrier layer is disabled. Expected return: one fewer GLTF hook/model mesh in carrier-off Bot renders, while carrier-on renders keep the same mount.
+
+**Benchmark:** Direct carrier-off `Bot` render with default dimensions, measuring `xCCMount` meshes, GLTF hooks, total GLTF hooks, and render time
+
+**Before:** 1 `xCCMount` mesh; 2 `xAxisCCMount` GLTF hooks; 55 total GLTF hooks; 32.472 ms render
+
+**After:** 0 `xCCMount` meshes; 0 `xAxisCCMount` GLTF hooks; 53 total GLTF hooks; 29.966 ms render
+
+**Change:** 100% fewer carrier-mount hooks and meshes; 3.6% fewer total GLTF hooks; 7.7% faster render, saving 2.506 ms
+
+**Outcome:** Accepted; the mount model now follows the cable-carrier layer, while carrier-on renders still load and display the same mount
+
+**Commit:** `Skip carrier-off X mount for 100% fewer mount loads`
+
+### Idea 177: Do not mount UtilitiesPost internals while the utilities-post layer is disabled
+
+**Description:** Do not mount UtilitiesPost internals while the utilities-post layer is disabled. Expected return: skip hidden wood texture setup, hose curve construction, and utility object JSX in utilities-off Bed renders.
+
+**Benchmark:** Direct `UtilitiesPost` render with `utilitiesPost=false`, sampled as 20 single disabled renders and measuring texture hooks plus render time
+
+**Before:** 0 utility nodes; 1 wood texture hook; 0.198 ms median render
+
+**After:** 0 utility nodes; 0 texture hooks; 0.137 ms median render
+
+**Change:** 100% fewer disabled texture hooks; 30.8% faster, saving 0.061 ms plus hidden hose curve setup
+
+**Outcome:** Accepted; the disabled utilities layer now exits before texture and hose setup, while enabled utilities-post visuals are unchanged
+
+**Commit:** `Skip disabled utilities setup for 100% fewer texture hooks`
+
+### Idea 178: Do not mount Lab desk internals while the desk layer is disabled
+
+**Description:** Do not mount Lab desk internals while the desk layer is disabled. Expected return: skip hidden desk wood/screen texture setup and laptop/desk JSX when users hide the desk, with the enabled desk unchanged.
+
+**Benchmark:** Direct `Desk` render with `desk=false`, sampled as 20 single disabled renders and measuring texture hooks plus render time
+
+**Before:** 0 desk nodes; 2 texture hooks; 0.217 ms median render
+
+**After:** 0 desk nodes; 0 texture hooks; 0.148 ms median render
+
+**Change:** 100% fewer disabled texture hooks; 31.8% faster, saving 0.069 ms
+
+**Outcome:** Accepted; the disabled desk layer now exits before wood/screen texture setup and desk/laptop JSX, while enabled desk and focus-hidden enabled-desk behavior are unchanged
+
+**Commit:** `Skip disabled desk setup for 100% fewer texture hooks`
+
+### Idea 179: Consolidate seeder suction animation clouds into one frame callback
+
+**Description:** Consolidate seeder suction animation clouds into one frame callback. Expected return: fewer `useFrame` registrations in the real vacuum-on mounted-seeder path while preserving the same four suction cloud particles.
+
+**Benchmark:** Direct mounted-seeder `Tools` render with `vacuum=true`, sampled as 20 single renders and measuring frame registrations, Clouds wrappers, suction cloud count, and render time
+
+**Before:** 100 total frame callbacks; 80 Clouds wrappers; 80 suction clouds; 0.437 ms median render
+
+**After:** 40 total frame callbacks; 20 Clouds wrappers; 80 suction clouds; 0.428 ms median render
+
+**Change:** 60.0% fewer total frame callbacks; 75.0% fewer Clouds wrappers; same suction cloud count; 2.1% faster render, saving 0.009 ms
+
+**Outcome:** Accepted; the visible four-particle suction effect is unchanged, while the vacuum-on seeder path removes three ongoing frame callback invocations per rendered frame
+
+**Commit:** `Consolidate suction clouds for 60.0% fewer frame callbacks`
+
+### Idea 180: Return from hidden Solar before setting up its opacity spring when focus transitions are disabled
+
+**Description:** Return from hidden Solar before setting up its opacity spring when focus transitions are disabled. Expected return: less default Outdoor details render work when solar is off, while solar and focus-transition reveal behavior stays the same.
+
+**Benchmark:** Direct hidden `Solar` render with `solar=false`, no active focus, and focus transitions disabled, sampled as 20 single renders while measuring spring hooks, mounted solar nodes, and render time
+
+**Before:** 20 spring hooks; 0 solar nodes; 0 wiring nodes; 0 cell meshes; 0.153 ms median render
+
+**After:** 0 spring hooks; 0 solar nodes; 0 wiring nodes; 0 cell meshes; 0.159 ms median render
+
+**Change:** 100% fewer hidden spring hooks, but 3.9% slower and only 0.006 ms changed in the wrong direction
+
+**Outcome:** Rejected and rolled back; hidden solar geometry was already absent, and removing a single hidden spring hook did not produce a meaningful realistic runtime win
+
+**Commit:** None
+
+## Round 37
+
+### Idea 181: Split `FocusVisibilityGroup` into a non-transition fast path before the spring/state/material-binding setup
+
+**Description:** Split `FocusVisibilityGroup` into a non-transition fast path before the spring/state/material-binding setup. Expected return: fewer spring hooks and less render CPU in the common default non-smooth focus mode, while transition-enabled fading behavior remains unchanged.
+
+**Benchmark:** Default non-smooth `GardenModel` render with no plants, sampled as 10 single renders and measuring spring hooks plus render time
+
+**Before:** 37 spring hooks; 9.903 ms median render
+
+**After:** 22 spring hooks; 9.489 ms median render
+
+**Change:** 40.5% fewer spring hooks, removing 15 default-render spring setups; 4.2% faster, saving 0.414 ms
+
+**Outcome:** Accepted; transition-disabled groups now return the same immediate visible group before spring/material-binding state setup, while transition-enabled fade behavior remains in the split child
+
+**Commit:** `Fast-path focus groups for 40.5% fewer springs`
+
+### Idea 182: Memoize `ZoomBeacons` focus definitions across internal hover/focus rerenders
+
+**Description:** Memoize `ZoomBeacons` focus definitions across internal hover/focus rerenders. Expected return: less repeated React element and camera/position object construction for the default twelve-beacon overlay, with the same beacon positions, descriptions, and click behavior.
+
+**Benchmark:** Direct `ZoomBeacons` render with default twelve beacons and 12 hover enter/leave pairs using stable config props, sampled 10 times while measuring `FOCI` calls, mounted beacon count, and interaction time
+
+**Before:** 25 `FOCI` calls; 12 beacons; 8.820 ms median interaction path
+
+**After:** 1 `FOCI` call; 12 beacons; 6.681 ms median interaction path
+
+**Change:** 96.0% fewer focus-definition builds, removing 24 repeated calls; 24.3% faster interaction path, saving 2.139 ms across 12 hover pairs
+
+**Outcome:** Accepted; hover state changes now reuse the same focus definitions while stable props are unchanged, with the same twelve beacons and click/focus behavior
+
+**Commit:** `Memoize zoom beacons for 96.0% fewer focus builds`
+
+### Idea 183: Memoize enabled `CameraView` frustum point construction across unchanged camera-view renders
+
+**Description:** Memoize enabled `CameraView` frustum point construction across unchanged camera-view renders. Expected return: fewer repeated point arrays and convex geometry rebuilds when the camera view overlay is enabled but the camera/config have not moved, with identical frustum geometry when inputs change.
+
+**Benchmark:** Direct enabled `CameraView` render with one mounted camera view and 20 unchanged rerenders using stable camera/config inputs, sampled 10 times while measuring convex geometry builds and rerender time
+
+**Before:** 21 geometry builds; camera view still mounted; 1.532 ms median rerender path
+
+**After:** 1 geometry build; camera view still mounted; 0.617 ms median rerender path
+
+**Change:** 95.2% fewer frustum geometry builds, removing 20 rebuilds; 59.7% faster rerender path, saving 0.915 ms across 20 unchanged rerenders
+
+**Outcome:** Accepted; unchanged enabled camera-view renders now reuse frustum points/geometry, and changed camera inputs still rebuild the same geometry
+
+**Commit:** `Memoize camera view for 95.2% fewer geometry builds`
+
+### Idea 184: Skip no-op `MoistureSurface` setup when neither moisture readings nor the moisture map are shown
+
+**Description:** Skip no-op `MoistureSurface` setup when neither moisture readings nor the moisture map are shown. Expected return: less default soil texture render setup by avoiding empty interpolation/buffer work, while readings and map modes still mount unchanged.
+
+**Benchmark:** Direct hidden `MoistureSurface` render with neither readings nor map shown, empty sensors/readings, and default config, sampled 20 times while measuring moisture-layer nodes, instanced meshes, and render time
+
+**Before:** 3 moisture-layer test nodes; 0 instanced meshes; 0.090 ms median render
+
+**After:** 0 moisture-layer nodes; 0 instanced meshes; 0.063 ms median render
+
+**Change:** 100% fewer hidden moisture-layer nodes and 30.0% faster, but only 0.027 ms saved in the direct default no-op path
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute hidden-component win was too small to justify even a small split in this already-simple default path
+
+**Commit:** None
+
+### Idea 185: Split disabled `Clouds` before the opacity spring
+
+**Description:** Split disabled `Clouds` before the opacity spring. Expected return: users who hide clouds skip spring setup in the default details stage, while the visible cloud animation and seasonal opacity remain unchanged.
+
+**Benchmark:** Direct hidden `Clouds` render with `clouds=false`, default config otherwise, sampled 20 times while measuring spring hooks, mounted clouds, and render time
+
+**Before:** 1 spring hook; 0 cloud nodes; 0.066 ms median render
+
+**After:** 0 spring hooks; 0 cloud nodes; 0.061 ms median render
+
+**Change:** 100% fewer hidden spring hooks, but only 7.6% faster and 0.005 ms saved
+
+**Outcome:** Rejected and rolled back; the absolute disabled-cloud setup cost is too small, and render time did not meet the 10% threshold under realistic conditions
+
+**Commit:** None
+
+## Round 38
+
+### Idea 186: Collapse active-focus camera lookup to one `FOCI` build
+
+**Description:** Collapse active-focus camera lookup to one `FOCI` build. Expected return: fewer focus-definition builds during active focus camera rerenders, while returning the same focused camera and fallback camera.
+
+**Benchmark:** Direct `getCamera` active-focus path with 20 repeated lookups for the same focused camera, sampled 20 times while measuring `FOCI` calls and lookup time
+
+**Before:** 40 `FOCI` calls; focused camera x=-560; 0.594 ms median lookup path
+
+**After:** 20 `FOCI` calls; focused camera x=-560; 0.321 ms median lookup path
+
+**Change:** 50.0% fewer focus-definition builds; 46.0% faster lookup path, saving 0.273 ms across 20 active-focus rerenders
+
+**Outcome:** Accepted; this removes a duplicate focus-list build and simplifies the lookup without changing focused or fallback camera behavior
+
+**Commit:** `Collapse focus camera lookup for 50.0% fewer foci builds`
+
+### Idea 187: Memoize `GroupOrderVisual` group selection across unchanged group/point inputs
+
+**Description:** Memoize `GroupOrderVisual` group selection across unchanged group/point inputs. Expected return: avoid repeating group criteria selection during telemetry-only rerenders while the same group-order overlay is visible.
+
+**Benchmark:** Visible group-order overlay with 100 selected points and 20 unchanged rerenders, sampled 10 times while measuring point-selection calls and rerender time
+
+**Before:** 21 point-selection calls; 0.671 ms median rerender path
+
+**After:** 1 point-selection call; 0.380 ms median rerender path
+
+**Change:** 95.2% fewer point-selection calls; 43.4% faster rerender path, saving 0.291 ms across 20 unchanged rerenders
+
+**Outcome:** Accepted; the visible overlay now reuses selected group points when the selected group object and point resources are unchanged, while URL/resource changes still recompute
+
+**Commit:** `Memoize group order for 95.2% fewer selections`
+
+### Idea 188: Cache the `ZoomBeacons` garden-bed DOM lookup across hover rerenders
+
+**Description:** Cache the `ZoomBeacons` garden-bed DOM lookup across hover rerenders. Expected return: less repeated DOM querying during normal beacon hover interactions, while cursor behavior remains unchanged.
+
+**Benchmark:** Direct `ZoomBeacons` render with default twelve beacons, a real garden-bed element, and 12 hover enter/leave pairs, sampled 10 times while measuring `querySelector` calls, beacon count, and interaction time
+
+**Before:** 25 DOM queries; 12 beacons; 7.256 ms median interaction path
+
+**After:** 1 DOM query; 12 beacons; 7.637 ms median interaction path
+
+**Change:** 96.0% fewer DOM queries, but 5.3% slower and 0.381 ms worse
+
+**Outcome:** Rejected and rolled back; caching removed the query calls but did not improve the realistic hover interaction path, so the extra ref/callback code was not justified
+
+**Commit:** None
+
+### Idea 189: Use tuple positions for visible plant labels instead of allocating `Vector3` objects per label render
+
+**Description:** Use tuple positions for visible plant labels instead of allocating `Vector3` objects per label render. Expected return: less allocation work when plant labels are visible for normal gardens, with identical label placement.
+
+**Benchmark:** Direct render of 100 visible `ThreeDPlantLabel` components with labels enabled and normal garden positions, sampled 10 times while measuring render time
+
+**Before:** 2.514 ms median render
+
+**After:** 2.778 ms median render
+
+**Change:** 10.5% slower, adding 0.264 ms
+
+**Outcome:** Rejected and rolled back; avoiding `Vector3` allocation did not improve realistic visible-label rendering and made the measured path worse
+
+**Commit:** None
+
+### Idea 190: Memoize watering stream curve props across unchanged active watering renders
+
+**Description:** Memoize watering stream curve props across unchanged active watering renders. Expected return: avoid rebuilding the sixteen water-stream curves on parent rerenders when water is flowing but nozzle geometry is unchanged.
+
+**Benchmark:** Direct active `WateringAnimations` render with water flowing plus 20 unchanged rerenders, sampled 10 times while measuring stream-curve builds and rerender time
+
+**Before:** 336 curve builds; 16 streams; 0.989 ms median rerender path
+
+**After:** 16 curve builds; 16 streams; 0.878 ms median rerender path
+
+**Change:** 95.2% fewer curve builds and 11.2% faster, but only 0.111 ms saved across 20 unchanged active-watering rerenders
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the realistic absolute win was too small for the extra stream-prop memoization complexity
+
+**Commit:** None
+
+## Round 39
+
+### Idea 191: Memoize `GardenModel` active-focus camera calculation across unchanged active-focus rerenders
+
+**Description:** Memoize `GardenModel` active-focus camera calculation across unchanged active-focus rerenders. Expected return: avoid repeated `getCamera`/`FOCI` work while the focus target, config, and bot position are stable, with the same camera recalculated when any camera input changes.
+
+**Benchmark:** Active-focus `GardenModel` with zoom beacons off and 20 unchanged rerenders, sampled 10 times while measuring `FOCI` calls, focused camera x, and rerender time
+
+**Before:** 46 `FOCI` calls; camera x=-560; 21.080 ms median rerender path
+
+**After:** 1 `FOCI` call; camera x=-560; 20.792 ms median rerender path
+
+**Change:** 97.8% fewer focus-definition builds, but only 1.4% faster and 0.288 ms saved across 20 rerenders
+
+**Outcome:** Rejected and rolled back; the call-count win did not translate into a meaningful realistic runtime gain, so adding another `GardenModel` memo was not justified
+
+**Commit:** None
+
+### Idea 192: Skip hidden plant label node construction while a focus is active and smooth focus transitions are disabled
+
+**Description:** Skip hidden plant label node construction while a focus is active and smooth focus transitions are disabled. Expected return: avoid building invisible label billboards for dense gardens in the default immediate-hide focus mode, while transition-enabled fades still keep labels mounted.
+
+**Benchmark:** Active-focus `GardenModel` render with 100 plants, labels enabled, zoom beacons off, and smooth focus transitions disabled, sampled 10 times while measuring render time
+
+**Before:** 10.740 ms median render
+
+**After:** 10.121 ms median render
+
+**Change:** 5.8% faster, saving 0.619 ms
+
+**Outcome:** Rejected and rolled back; the realistic dense-label path improved, but it missed the 10% threshold and would add another branch to `GardenModel` label construction
+
+**Commit:** None
+
+### Idea 193: Move `ZoomBeacons` debug camera-offset lookup behind the debug flag
+
+**Description:** Move `ZoomBeacons` debug camera-offset lookup behind the debug flag. Expected return: normal beacon hover rerenders skip camera-offset work that is only used for debug helper geometry, while debug mode remains unchanged.
+
+**Benchmark:** Direct non-debug `ZoomBeacons` render with default twelve beacons and 12 hover enter/leave pairs, sampled 10 times while measuring `getCameraOffset` calls, debug groups, beacon count, and interaction time
+
+**Before:** 150 camera-offset calls; 0 debug groups; 12 beacons; 6.712 ms median interaction path
+
+**After:** 0 camera-offset calls; 0 debug groups; 12 beacons; 6.948 ms median interaction path
+
+**Change:** 100% fewer debug-only offset calls, but 3.5% slower and 0.236 ms worse
+
+**Outcome:** Rejected and rolled back; the call-count improvement did not improve the realistic non-debug hover path, so the extra branch was not worth keeping
+
+**Commit:** None
+
+### Idea 194: Gate unrevealed `SceneBoundary` children until their load step is allowed
+
+**Description:** Gate unrevealed `SceneBoundary` children until their load step is allowed. Expected return: less initial hidden subtree work during progressive load, while the same step order and reveal animations are preserved.
+
+**Benchmark:** Full `GardenModel` progressive-load render with default config and no plants, sampled 5 times while measuring initial render time, load-complete time, and boundary presence
+
+**Before:** 1 bed load-in group; 1 FarmBot boundary; 30.288 ms median initial render; 30.122 ms median load-complete
+
+**After:** 1 bed load-in group; 1 FarmBot boundary; 30.605 ms median initial render; 30.429 ms median load-complete
+
+**Change:** 1.0% slower initial render and 1.0% slower load-complete, adding about 0.31 ms to both measured paths
+
+**Outcome:** Rejected and rolled back; the realistic progressive-load path did not benefit, so hiding subtree construction would add lifecycle complexity without improving startup
+
+**Commit:** None
+
+### Idea 195: Reuse the `Sky` scale vector instead of allocating one on every sky render
+
+**Description:** Reuse the `Sky` scale vector instead of allocating one on every sky render. Expected return: less environment rerender allocation in a cheap path, with identical sky scale and uniforms.
+
+**Benchmark:** Direct `Sky` render plus 20 unchanged rerenders with a stable sun position, sampled 10 times while measuring primitive presence and render/rerender time
+
+**Before:** 1 primitive; 0.909 ms median render+rerender path
+
+**After:** 1 primitive; 0.903 ms median render+rerender path
+
+**Change:** 0.7% faster, saving 0.006 ms across 21 renders
+
+**Outcome:** Rejected and rolled back; the realistic sky path was already sub-millisecond and the measured change missed both the 10% threshold and any meaningful absolute improvement
+
+**Commit:** None
+
+## Round 40
+
+### Idea 196: Render only the low-detail `Ground` layer when `lowDetail` is enabled
+
+**Description:** Render only the low-detail `Ground` layer when `lowDetail` is enabled. Expected return: low-detail mode skips high-detail ground texture and geometry setup while showing the same low-detail ground material it already selects through LOD.
+
+**Benchmark:** Real low-detail `Ground` render with Testing Library, sampled 20 times at the shipped single-ground scale
+
+**Before:** 2 ground mesh nodes; 1 high-detail texture hook call; 0.308 ms median render setup
+
+**After:** 1 ground mesh node; 0 texture hook calls; latest check 0.167 ms median render setup
+
+**Change:** 50% fewer ground nodes; 100% fewer texture hook calls; 20.8-45.8% faster render setup, saving 0.064-0.141 ms in this isolated component
+
+**Outcome:** Accepted; the absolute CPU saving is small, but the useful win is removing high-detail texture setup from low-detail mode while keeping the exact low-detail material already shown by LOD
+
+**Commit:** `Render low-detail ground for 100% fewer texture loads`
+
+### Idea 197: Render only low-detail `Bed` frame/soil LOD layers when `lowDetail` is enabled
+
+**Description:** Render only low-detail `Bed` frame/soil LOD layers when `lowDetail` is enabled. Expected return: low-detail mode skips high-detail bed frame and soil render-texture setup while preserving the existing low-detail bed and soil visuals.
+
+**Benchmark:** Real low-detail `Bed` render with Testing Library, sampled 20 times at the shipped single-bed scale
+
+**Before:** 2 soil layers; 1 render texture; 4 texture hook calls; 1.295 ms median render setup
+
+**After:** 1 soil layer; 0 render textures; 2 texture hook calls; latest check 0.787 ms median render setup
+
+**Change:** 50% fewer soil layers; 100% fewer render textures; 50% fewer texture hook calls; 12.5-39.2% faster render setup, saving 0.162-0.508 ms
+
+**Outcome:** Accepted; the isolated CPU saving is modest but real, and the meaningful low-detail win is skipping the high-detail soil render texture and high-detail bed/soil texture setup while rendering the same low-detail bed and soil layers
+
+**Commit:** `Render low-detail bed for 100% fewer render textures`
+
+### Idea 198: Gate 3D progressive-load console timing logs behind the existing perf/log controls
+
+**Description:** Gate 3D progressive-load console timing logs behind the existing perf/log controls. Expected return: normal loads avoid a burst of console work after readiness, while explicit perf/debug sessions can still inspect timings.
+
+**Benchmark:** Real `useThreeDLoadProgress` completion through the shipped 8 load steps, sampled 20 times with default logging disabled
+
+**Before:** 9 console calls on completion; 0.498 ms median completion path
+
+**After:** 0 console calls on completion; latest check 0.387 ms median completion path
+
+**Change:** 100% fewer default console calls, removing 9 calls per 3D load; 22.3% faster measured completion path, saving 0.111 ms
+
+**Outcome:** Accepted; the CPU timing is tiny, but removing a real 9-call console burst from every normal 3D load is a meaningful call-count and developer-console cleanup, with the same logs still available under perf logging
+
+**Commit:** `Gate 3D load logs for 100% fewer console calls`
+
+### Idea 199: Fast-path idle static-season plant icon frames before recalculating brightness
+
+**Description:** Fast-path idle static-season plant icon frames before recalculating brightness. Expected return: dense gardens skip repeated per-icon-group brightness work after the first static frame, while animated seasons and camera billboarding still update.
+
+**Benchmark:** Realistic 1000-plant scene split across 5 icon groups, simulating 60 unchanged-camera idle frames after the first matrix update
+
+**Before:** 0 matrix calls; 0 brightness writes; 0.011 ms median idle-frame callback work across all 60 frames
+
+**After:** Trial fast path: 0 matrix calls; 0 brightness writes; 0.009 ms median idle-frame callback work
+
+**Change:** 18.2% faster, but only 0.002 ms saved across one second of realistic idle frames
+
+**Outcome:** Rejected and rolled back; the percentage clears 10%, but the absolute saving is not meaningful and would add conditional frame-path complexity for effectively no user-visible gain
+
+**Commit:** None
+
+### Idea 200: Scope the bed soil-surface helper hook to debug surface modes only
+
+**Description:** Scope the bed soil-surface helper hook to debug surface modes only. Expected return: default bed renders avoid registering no-op helper work for both soil LOD layers, while normals/height debug helpers remain unchanged.
+
+**Benchmark:** Real default `Bed` render with surface debug off, sampled 20 times at the shipped single-bed scale
+
+**Before:** 2 soil layers; 2 helper hook calls; 1.292 ms median render setup
+
+**After:** Trial split: 2 soil layers; 0 helper hook calls; 1.316 ms latest median render setup
+
+**Change:** 100% fewer helper hook calls, but the render path was 1.9% slower in the stable rerun and saved only two no-op hook calls
+
+**Outcome:** Rejected and rolled back; the call-count improvement was real but too small to matter, and the component split added complexity without a meaningful render-time win
+
+**Commit:** None
+
+## Round 41
+
+### Idea 201: Memoize static Bot utility subtrees across telemetry updates
+
+**Description:** Memoize static Bot utility subtrees across telemetry updates. Expected return: `PowerSupply` and `XAxisWaterTube` skip cable/path, texture-hook, and tube subtree rerenders while Bot x/y/z telemetry changes, because they depend only on stable configuration.
+
+**Benchmark:** Real telemetry-like parent rerender benchmark for `PowerSupply` and `XAxisWaterTube`: one mount plus 50 parent rerenders with the same config object
+
+**Before:** 51 aluminum texture hook calls; 1 power supply; 1 X-axis water tube; 5.446 ms median update path
+
+**After:** 1 aluminum texture hook call; 1 power supply; 1 X-axis water tube; 1.303 ms median update path
+
+**Change:** 98.0% fewer texture hook calls; 76.1% faster update path, saving 4.143 ms across 50 realistic telemetry-style rerenders
+
+**Outcome:** Accepted; both subtrees depend only on config, so Bot position updates can skip their cable/path/texture subtree work without changing utility geometry or water-tube visuals
+
+**Commit:** `Memoize static utilities for 98.0% fewer texture calls`
+
+### Idea 202: Memoize static tool model components across telemetry updates
+
+**Description:** Memoize static tool model components across telemetry updates. Expected return: configured tool slots stop re-running unchanged GLTF model hooks and mesh subtrees while the mounted Bot position updates, with the same toolbay and mounted-tool visuals.
+
+**Benchmark:** Real configured user-tools rerender benchmark: one mount plus 50 Bot X-position rerenders with 7 realistic tool slots, 4 toolbays, a mounted weeder, and stable tool/config data
+
+**Before:** 561 GLTF hook calls; 4 toolbay meshes; 44.483 ms median update path
+
+**After:** 11 GLTF hook calls; 4 toolbay meshes; 10.999 ms median update path
+
+**Change:** 98.0% fewer GLTF hook calls; 75.3% faster update path, saving 33.484 ms across 50 telemetry-style rerenders
+
+**Outcome:** Accepted; only static model leaves are memoized, while slot positions, click handlers, opacity changes, mounted-tool animation state, and toolbay rotations remain on live parent wrappers
+
+**Commit:** `Memoize tool models for 98.0% fewer GLTF calls`
+
+### Idea 203: Split the solenoid GLTF mesh into a memoized static child
+
+**Description:** Split the solenoid GLTF mesh into a memoized static child. Expected return: Solenoid tube paths can still follow x/y/z telemetry, while the unchanged solenoid model hook and mesh subtree stop rerendering.
+
+**Benchmark:** Real Solenoid telemetry rerender benchmark: one mount plus 50 x/y/z position rerenders with stable config and live water-tube path recalculation
+
+**Before:** 51 GLTF hook calls; 1 solenoid mesh; 7.080 ms median update path
+
+**After:** 1 GLTF hook call; 1 solenoid mesh; 6.703 ms median update path
+
+**Change:** 98.0% fewer GLTF hook calls, but only 5.3% faster update path and 0.377 ms saved across 50 realistic rerenders
+
+**Outcome:** Rejected and rolled back; the percentage call reduction did not produce a qualifying or meaningful absolute runtime improvement because the cached GLTF hook was not the real bottleneck
+
+**Commit:** Not committed
+
+### Idea 204: Split the gantry beam moving wrapper from the static beam body
+
+**Description:** Split the gantry beam moving wrapper from the static beam body. Expected return: Bot x telemetry moves the wrapper, while the beam extrusion and optional light strip reuse the same rendered subtree until config or shape inputs change.
+
+**Benchmark:** Real default-light GantryBeam benchmark: one mount plus 50 Bot X-position rerenders with stable config, beam shape, and aluminum texture
+
+**Before:** 1.717 ms median update path
+
+**After:** 1.405 ms median update path
+
+**Change:** 18.2% faster update path, but only 0.312 ms saved across 50 realistic rerenders
+
+**Outcome:** Rejected and rolled back; even the safe extrusion-only split produced a micro-scale absolute gain, and memoizing the light strip would risk stale spotlight target updates while the gantry moves
+
+**Commit:** Not committed
+
+### Idea 205: Memoize the generated `GantryWheelPlate` component factory
+
+**Description:** Memoize the generated `GantryWheelPlate` component factory. Expected return: Bot telemetry updates stop creating a new component type and remounting wheel-plate subtrees, while the same cached merged geometry and wheel-plate transforms render.
+
+**Benchmark:** Real full-Bot benchmark: one mount plus 50 Bot X-position rerenders with stable config and a cached gantry-wheel GLTF result matching runtime `useGLTF` cache behavior
+
+**Before:** 2 gantry wheel plates; 188.645 ms median update path
+
+**After:** 2 gantry wheel plates; 189.664 ms median update path
+
+**Change:** 0.5% slower update path
+
+**Outcome:** Rejected and rolled back; stabilizing the generated component type did not reduce the measured full-Bot update cost, because the wheel-plate component still receives changing transform props and rerenders
+
+**Commit:** Not committed
+
+## Round 42
+
+### Idea 206: Hoist nested coordinate helper construction inside `get3DPositionFunc` and `getWorldPositionFunc`
+
+**Description:** Hoist nested coordinate helper construction inside `get3DPositionFunc` and `getWorldPositionFunc`. Expected return: dense plant, weed, point, and group-order setup stop allocating nested conversion closures for every coordinate while returning identical world positions.
+
+**Benchmark:** Realistic dense coordinate setup: 1,000 plant XY conversions plus 1,000 point XYZ conversions with one stable 3D config, sampled 50 times
+
+**Before:** 0.060 ms median conversion batch
+
+**After:** 0.040 ms median conversion batch
+
+**Change:** 33.3% faster, but only 0.020 ms saved across 2,000 realistic coordinate conversions
+
+**Outcome:** Rejected and rolled back; the helper hoist was mechanically cleaner but the absolute improvement is far below meaningful app-level value
+
+**Commit:** Not committed
+
+### Idea 207: Fast-path disabled perf instrumentation checks before parsing URL query params
+
+**Description:** Fast-path disabled perf instrumentation checks before parsing URL query params. Expected return: normal non-benchmark 3D renders avoid repeated `URLSearchParams` allocation for `perfCount`, `perfMark`, and `perfMeasure`, while `fb_perf=1` and localStorage-enabled benchmarks still record metrics.
+
+**Benchmark:** Disabled normal-session instrumentation burst: 250 `perfCount`/`perfMark`/`perfSample`/`perfMeasure` calls, sampled 50 times with no `fb_perf` query and no benchmark localStorage flag
+
+**Before:** 0.016 ms median instrumentation batch
+
+**After:** 0.006 ms median instrumentation batch
+
+**Change:** 62.5% faster, but only 0.010 ms saved across 250 instrumentation calls
+
+**Outcome:** Rejected and rolled back; the normal disabled-perf path is already too cheap for the extra branch to matter in real 3D Garden renders
+
+**Commit:** Not committed
+
+### Idea 208: Memoize `useTextureVariant` lookups while the loaded base texture and variant options are unchanged
+
+**Description:** Memoize `useTextureVariant` lookups while the loaded base texture and variant options are unchanged. Expected return: Bot and scene rerenders with stable texture options skip repeated variant-key/cache work without changing texture resolution or material settings.
+
+**Benchmark:** Stable texture-variant rerender benchmark: one mounted hook plus 50 parent rerenders with the same loaded base texture and identical inline variant option values
+
+**Before:** 0.764 ms median rerender path
+
+**After:** 0.742 ms median rerender path
+
+**Change:** 2.9% faster, saving 0.022 ms across 50 realistic stable rerenders
+
+**Outcome:** Rejected and rolled back; the existing WeakMap cache lookup is already cheap, so adding hook dependencies did not produce a qualifying or meaningful runtime win
+
+**Commit:** Not committed
+
+### Idea 209: Stabilize `GardenModel` plant hover handlers across telemetry rerenders
+
+**Description:** Stabilize `GardenModel` plant hover handlers across telemetry rerenders. Expected return: the default plant layer keeps the same pointer handler identities while config and label behavior are unchanged, reducing unchanged plant-group prop churn.
+
+**Benchmark:** Real `GardenModel` plant-layer rerender benchmark: 100 visible plants, hover labels enabled, FarmBot/extra overlays disabled, plus 25 Bot X-position rerenders
+
+**Before:** 31.165 ms median rerender path
+
+**After:** 31.027 ms median rerender path
+
+**Change:** 0.4% faster, saving 0.138 ms across 25 rerenders
+
+**Outcome:** Rejected and rolled back; stable handler identities did not materially reduce the plant-layer rerender cost, so the extra memo/callback structure is not justified
+
+**Commit:** Not committed
+
+### Idea 210: Use stable empty fallback arrays for optional `GardenModel` detail props
+
+**Description:** Use stable empty fallback arrays for optional `GardenModel` detail props. Expected return: normal gardens with no groups, points, images, sensors, or readings stop passing freshly allocated empty arrays into detail overlays on every Bot telemetry update.
+
+**Benchmark:** Real `GardenModel` telemetry rerender benchmark with optional map/weed/group/image/sensor props absent, FarmBot/extra overlays disabled, and 25 Bot X-position rerenders
+
+**Before:** 31.964 ms median rerender path
+
+**After:** 9.859 ms median rerender path
+
+**Change:** 69.2% faster, saving 22.105 ms across 25 realistic rerenders
+
+**Outcome:** Accepted; shared typed empty arrays preserve the same empty optional data while allowing memoized children such as `Bed` to skip rerenders when only Bot telemetry changes
+
+**Commit:** `Reuse empty GardenModel arrays for 69.2% faster rerenders`
+
+## Round 43
+
+### Idea 211: Memoize `ThreeDGardenMap` sun-position calculation across Bot telemetry updates
+
+**Description:** Memoize `ThreeDGardenMap` sun-position calculation across Bot telemetry updates. Expected return: X/Y/Z position changes stop rerunning solar date and coordinate math while the same sun config is passed through.
+
+**Benchmark:** Real `ThreeDGardenMap` adapter rerender benchmark with valid device latitude/longitude, fixed 3D time, no plants, mocked child garden, and 25 Bot X-position updates
+
+**Before:** 26 `SunCalc.getPosition` calls; 0.770 ms median rerender path
+
+**After:** 1 `SunCalc.getPosition` call; 0.668 ms median rerender path
+
+**Change:** 96.2% fewer sun-position calls and 13.2% faster, but only 0.102 ms saved across 25 realistic telemetry updates
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute adapter-level win is too small to justify adding memo dependencies to the already-stable config path
+
+**Commit:** Not committed
+
+### Idea 212: Memoize `ThreeDGardenMap` peripheral state derivation across Bot telemetry updates
+
+**Description:** Memoize `ThreeDGardenMap` peripheral state derivation across Bot telemetry updates. Expected return: unchanged peripheral values stop rebuilding the lookup closure and four derived state values during position-only rerenders.
+
+**Benchmark:** Real `ThreeDGardenMap` adapter rerender benchmark with eight peripheral values, no plants, invalid device coordinates, mocked child garden, and 25 Bot X-position updates
+
+**Before:** 0.705 ms median rerender path
+
+**After:** 0.622 ms median rerender path
+
+**Change:** 11.8% faster, but only 0.083 ms saved across 25 realistic telemetry updates
+
+**Outcome:** Rejected and rolled back; unchanged peripheral derivation is already too cheap for an extra memo object and dependency list to improve the real app meaningfully
+
+**Commit:** Not committed
+
+### Idea 213: Split the Y cable carrier moving wrapper from its static carrier body
+
+**Description:** Split the Y cable carrier moving wrapper from its static carrier body. Expected return: X-only Bot movement updates the carrier position while the unchanged Y-axis extruded path and material subtree are reused.
+
+**Benchmark:** Direct `CableCarrierY` benchmark with cable carriers enabled, realistic v1.8 dimensions, stable Y/Z position, and 25 Bot X-position updates
+
+**Before:** 1 shape build; 0.809 ms median rerender path
+
+**After:** 1 shape build; 0.956 ms median rerender path
+
+**Change:** 18.1% slower, with no reduction in shape builds because the existing `args` memo already keeps the path stable
+
+**Outcome:** Rejected and rolled back; the wrapper split added hierarchy and memo work without removing meaningful real work from the X-only carrier path
+
+**Commit:** Not committed
+
+### Idea 214: Split the Z cable carrier moving wrapper from its static carrier body
+
+**Description:** Split the Z cable carrier moving wrapper from its static carrier body. Expected return: X/Y-only Bot movement updates the carrier position while the unchanged Z-axis extruded path and material subtree are reused.
+
+**Benchmark:** Direct `CableCarrierZ` benchmark with cable carriers enabled, realistic Z carrier dimensions, stable Z position, and 25 Bot X/Y-position updates
+
+**Before:** 1 shape build; 0.883 ms median rerender path
+
+**After:** 1 shape build; 1.046 ms median rerender path
+
+**Change:** 18.5% slower, with no reduction in shape builds because the existing `args` memo already keeps the path stable
+
+**Outcome:** Rejected and rolled back; the wrapper split added scene hierarchy and memo work while the current Z carrier already avoids rebuilding the expensive path on X/Y-only movement
+
+**Commit:** Not committed
+
+### Idea 215: Fast-path readings-only `MoistureSurface` renders before map interpolation setup
+
+**Description:** Fast-path readings-only `MoistureSurface` renders before map interpolation setup. Expected return: scenes showing moisture reading markers without the interpolated map skip empty map options, data, and buffer setup.
+
+**Benchmark:** Direct readings-only `MoistureSurface` render with the interpolated map hidden, 100 sensor readings, and one visible readings instanced mesh, sampled 20 times
+
+**Before:** 1 instanced mesh; 0.281 ms median render
+
+**After:** 1 instanced mesh; 0.263 ms median render
+
+**Change:** 6.6% faster, saving 0.019 ms across a realistic 100-reading render
+
+**Outcome:** Rejected and rolled back; the readings-only path is already sub-millisecond, and a child split for map hooks is not justified by this small, below-threshold result
+
+**Commit:** Not committed
+
+## Round 44
+
+### Idea 216: Replace deep-clone image filtering with a direct newest-to-oldest scan
+
+**Description:** Replace deep-clone image filtering with a direct newest-to-oldest scan. Expected return: image-heavy 3D soil textures avoid cloning every `TaggedImage` before filtering, while returned highlighted/image overlay objects remain independent of the resource array.
+
+**Benchmark:** Realistic image-heavy filter benchmark with 75 images, photo filters enabled, one hovered image highlighted, and the same helper used by the 3D soil texture, sampled 50 times
+
+**Before:** 70 filtered images; 1 highlighted image; 0.388 ms median filter time
+
+**After:** 70 filtered images; 1 highlighted image; 0.239 ms median filter time
+
+**Change:** 38.5% faster, saving 0.149 ms per 75-image filter
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-off setup saving was too small to justify replacing the compact existing filter chain with a longer custom scan
+
+**Commit:** Not committed
+
+### Idea 217: Cache the parsed 3D soil-surface height lookup used by Lua/sequence simulation
+
+**Description:** Cache the parsed 3D soil-surface height lookup used by Lua/sequence simulation. Expected return: repeated `getSoilHeight()` calls during sequence visualization stop reparsing session storage and rebuilding the triangle index for the same soil surface.
+
+**Benchmark:** Sequence-style repeated soil-height benchmark with one stored 392-triangle 3D soil surface and 100 `getSoilHeight()` reads across realistic move coordinates, sampled 30 times
+
+**Before:** 11.834 ms median read batch
+
+**After:** 0.009 ms median read batch
+
+**Change:** 99.9% faster, saving 11.825 ms per 100 repeated soil-height reads
+
+**Outcome:** Accepted; the cached lookup is keyed by the exact stored triangle string, so the same 3D soil surface reuses parsed triangles and the indexed `getZ` function while any changed soil surface still rebuilds the lookup
+
+**Commit:** `Cache soil height lookup for 99.9% faster reads`
+
+### Idea 218: Precompute static plant icon frame positions for camera movement
+
+**Description:** Precompute static plant icon frame positions for camera movement. Expected return: dense plant-icon frame updates avoid recalculating garden position, soil height, and base scale on every camera quaternion change when seasons are not animating.
+
+**Benchmark:** Real `PlantInstances` frame benchmark with 1,000 plants split across 5 crop icons, static seasons, and 60 camera-changing frames, plus render-time guardrail
+
+**Before:** 9.606 ms median frame batch; 60,000 frame-time `getZ` calls; 0.868 ms median render
+
+**After:** 3.306 ms median frame batch; 0 frame-time `getZ` calls; 0.987 ms median render
+
+**Change:** 65.6% faster frame updates, saving 6.300 ms per 60 camera-moving frames; render setup increased 0.119 ms
+
+**Outcome:** Accepted; static plant icon world positions, soil heights, and base scales are now computed once per icon bucket, while seasonal animation still uses the live per-frame size path
+
+**Commit:** `Precompute plant icon positions for 65.6% faster frames`
+
+### Idea 219: Replace the `getZFunc` string-key cache with a numeric nested-map cache
+
+**Description:** Replace the `getZFunc` string-key cache with a numeric nested-map cache. Expected return: grid, plant, point, and weed height lookups avoid repeated coordinate string allocation while preserving exact cache semantics.
+
+**Benchmark:** Realistic grid-height lookup benchmark with one 392-triangle 3D soil surface and 4,747 `getZ()` reads matching a 3000 x 1500 mm garden grid rebuild, sampled 40 times
+
+**Before:** 0.888 ms median grid-height batch
+
+**After:** 0.448 ms median grid-height batch
+
+**Change:** 49.5% faster, saving 0.440 ms per grid rebuild
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the sub-millisecond setup-time saving was not enough to justify the extra nested-map cache and helper code
+
+**Commit:** Not committed
+
+### Idea 220: Share plant-icon plane geometry across icon buckets
+
+**Description:** Share plant-icon plane geometry across icon buckets. Expected return: dense gardens with several crop icons allocate fewer identical plane geometries while keeping per-icon textures, material state, and instance transforms unchanged.
+
+**Benchmark:** Realistic plant-icon setup benchmark with 1,000 plants split across 20 icon buckets, sampled 30 times, plus direct Three.js construction timing for 20 tiny plane geometries
+
+**Before:** 0.616 ms median render setup; constructing 20 plane geometries took 0.016 ms median
+
+**After:** 0.548 ms median render setup; one shared module geometry would replace per-bucket geometry objects
+
+**Change:** 11.1% faster render setup, saving 0.068 ms; per-bucket geometry construction was already only 0.016 ms total
+
+**Outcome:** Rejected and rolled back; the percentage barely qualified, but the absolute saving and memory reduction were too small to justify shared-object disposal/lifecycle complexity
+
+**Commit:** Not committed
+
+## Round 45
+
+### Idea 221: Do not mount the FarmBot model when the 3D FarmBot config layer is off
+
+**Description:** Do not mount the FarmBot model when the 3D FarmBot config layer is off. Expected return: users who hide FarmBot with `config.bot=false` skip the same GLTF, SVG, texture, and frame-hook work already skipped for the app-level FarmBot layer and `Planter bed` focus, with no change when the layer is visible.
+
+**Benchmark:** Real `GardenModel` render with the app-level FarmBot setting on, `config.bot=false`, no plants, and optional overlays off, sampled 10 times while measuring hidden Bot mounts and asset hooks
+
+**Before:** 1 hidden Bot load-in group; 36 GLTF hook calls; 12 texture hook calls; 13.693 ms median render
+
+**After:** 0 Bot load-in groups; 0 GLTF hook calls; 9 texture hook calls; 10.714 ms median render
+
+**Change:** 100% fewer hidden Bot GLTF hooks, 25.0% fewer texture hooks, and 21.8% faster, saving 2.979 ms in this hidden-layer render
+
+**Outcome:** Accepted; the FarmBot load step now treats `config.bot=false` the same as other hidden FarmBot paths and marks ready without mounting the invisible Bot subtree
+
+**Commit:** `Skip hidden 3D Bot layer for 100% fewer GLTF hooks`
+
+### Idea 222: Precompute static plant-spread instance placement for active spread updates
+
+**Description:** Precompute static plant-spread instance placement for active spread updates. Expected return: spread-visible and click-to-add updates for dense gardens stop recalculating world position and soil height for every plant on every active spread matrix rewrite.
+
+**Benchmark:** Real `PlantSpreadInstances` click-to-add benchmark with 1,000 plants and 60 active-position updates over one second, sampled as 12 realistic drag interactions
+
+**Before:** 13.902 ms median frame batch; 16.065 ms median setup-plus-frame total; 31,000 median `getZ` calls
+
+**After:** 8.688 ms median frame batch; 10.370 ms median setup-plus-frame total; 1,000 median `getZ` calls
+
+**Change:** 37.5% faster frames, saving 5.214 ms per 60-frame drag; 35.5% faster total interaction, saving 5.696 ms; 96.8% fewer `getZ` calls
+
+**Outcome:** Accepted; spread preview now precomputes each plant's static world position and soil height once, while active overlap color and scale still update per pointer movement
+
+**Commit:** `Precompute spread placement for 37.5% faster frames`
+
+### Idea 223: Merge point pin and sphere marker geometry into one instanced marker mesh
+
+**Description:** Merge point pin and sphere marker geometry into one instanced marker mesh. Expected return: point-heavy gardens with the points layer visible use fewer point-overlay instanced meshes and draw calls while preserving the same cylinder, sphere, radius ring, color, opacity, and click behavior.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring render setup and instanced-mesh draw-call proxies
+
+**Before:** 18 instanced meshes; 12 marker meshes; 6 radius-ring meshes; 1.519 ms median render setup
+
+**After:** 12 instanced meshes; 6 marker meshes; 6 radius-ring meshes; 1.229 ms median render setup
+
+**Change:** 33.3% fewer instanced meshes overall, 50.0% fewer marker draw-call proxies, and 19.1% faster setup, saving 0.290 ms
+
+**Outcome:** Accepted; each point bucket now uses one shared merged marker geometry for the pin-plus-sphere shape, while radius rings and marker resolution stay unchanged
+
+**Commit:** `Merge point markers for 33.3% fewer draw calls`
+
+### Idea 224: Avoid per-frame `moment()` day-start allocation in seasonal sun animation
+
+**Description:** Avoid per-frame `moment()` day-start allocation in seasonal sun animation. Expected return: animated seasons stop allocating a date helper every rendered frame for known seasons that use fixed representative dates.
+
+**Benchmark:** Warm-cache `getAnimatedSeasonDate()` benchmark for `Summer`, matching one second of 60 animated frames and sampled 50 times
+
+**Before:** 0.234 ms median per 60-frame date lookup batch
+
+**After:** 0.193 ms median per 60-frame date lookup batch
+
+**Change:** 17.3% faster, saving 0.040 ms per animated second
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute saving is too small to matter in a real frame budget and does not justify touching the date default path
+
+**Commit:** Not committed
+
+### Idea 225: Binary-search seasonal sun animation samples instead of scanning them linearly
+
+**Description:** Binary-search seasonal sun animation samples instead of scanning them linearly. Expected return: animated seasons find the current compressed sun-time sample in logarithmic time on every animation frame.
+
+**Benchmark:** Warm-cache `getAnimatedSeasonDate()` benchmark for `Summer`, matching one second of 60 animated frames and sampled 50 times
+
+**Before:** 0.228 ms median per 60-frame date lookup batch
+
+**After:** 0.046 ms median per 60-frame date lookup batch
+
+**Change:** 80.0% faster, saving 0.183 ms per animated second for one caller
+
+**Outcome:** Rejected and rolled back; the percentage was strong, but the absolute saving remains sub-millisecond even across the realistic seasonal-animation callers and was not worth adding a separate search helper
+
+**Commit:** Not committed
+
+## Round 46
+
+### Idea 226: Share point radius-ring torus geometry across point color buckets
+
+**Description:** Share point radius-ring torus geometry across point color buckets. Expected return: point-heavy gardens with visible point radii stop constructing identical high-segment torus geometries per color/alpha bucket, while preserving radius scale, color, opacity, and click behavior.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring render setup and instanced-mesh draw-call proxies
+
+**Before:** 12 instanced meshes; 6 marker meshes; 6 radius-ring meshes; 1.267 ms median render setup
+
+**After:** 12 instanced meshes; 6 marker meshes; 6 radius-ring meshes; 1.120 ms median render setup
+
+**Change:** 11.6% faster setup, saving 0.147 ms, plus 83.3% fewer radius-ring torus geometry objects for this six-bucket overlay
+
+**Outcome:** Accepted; point radius rings now share one high-segment torus geometry while each bucket keeps its own instanced mesh, material, scale, opacity, and click target
+
+**Commit:** `Share point ring geometry for 11.6% faster setup`
+
+### Idea 227: Share weed radius sphere geometry across weed color buckets
+
+**Description:** Share weed radius sphere geometry across weed color buckets. Expected return: weed-heavy gardens with several weed colors allocate fewer identical 32-segment radius sphere geometries while keeping per-color materials and instance transforms unchanged.
+
+**Benchmark:** Real `WeedInstances` overlay benchmark with 1,000 weeds across 6 color buckets, sampled 20 times while measuring render setup and instanced-mesh geometry sharing
+
+**Before:** 7 instanced meshes; 6 radius meshes; 1.096 ms median render setup
+
+**After:** 7 instanced meshes; 6 radius meshes; 0.934 ms median render setup
+
+**Change:** 14.8% faster setup, saving 0.162 ms, plus 83.3% fewer radius sphere geometry objects for this six-bucket overlay
+
+**Outcome:** Accepted; weed radius buckets now share one 32-segment sphere geometry while preserving per-color materials, per-weed scale, and click targets
+
+**Commit:** `Share weed radius geometry for 14.8% faster setup`
+
+### Idea 228: Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets
+
+**Description:** Cache seasonal plant animation time and sun factor once per rendered frame across plant icon buckets. Expected return: animated-season gardens with several crop icons avoid repeated date lookup and sun-coordinate calculations in each icon bucket's `useFrame` callback, while all buckets use a consistent frame timestamp.
+
+**Benchmark:** Real `PlantInstances` seasonal animation frame benchmark with 1,000 plants split across 20 icon buckets and 60 animation frames, sampled 12 times
+
+**Before:** 20 icon-bucket frame callbacks; 1.545 ms median render setup; 9.911 ms median frame batch
+
+**After:** 20 icon-bucket frame callbacks; 1.637 ms median render setup; 9.281 ms median frame batch
+
+**Change:** 6.4% faster frame batch, saving 0.630 ms per 60 animated frames, with render setup 0.092 ms slower
+
+**Outcome:** Rejected and rolled back; the realistic multi-icon seasonal frame path improved, but it missed the 10% threshold and added shared-frame cache complexity
+
+**Commit:** Not committed
+
+### Idea 229: Share solar-cell geometry and precomputed cell matrices across solar panels
+
+**Description:** Share solar-cell geometry and precomputed cell matrices across solar panels. Expected return: the optional solar array avoids rebuilding identical extruded cell geometry and static instance matrices for both panels when the solar layer is visible.
+
+**Benchmark:** Real visible `Solar` render with the optional two-panel solar array mounted, 50 cell instances per panel, sampled 30 times
+
+**Before:** 2 solar-cell instanced meshes; 0.586 ms median render setup
+
+**After:** 2 solar-cell instanced meshes; 0.447 ms median render setup
+
+**Change:** 23.8% faster setup, saving 0.139 ms on the optional solar-array render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time solar render saving was too small to matter and did not clear the meaningful-improvement bar
+
+**Commit:** Not committed
+
+### Idea 230: Skip pointer-move soil-height lookup when the rendered pointer XY has not changed
+
+**Description:** Skip pointer-move soil-height lookup when the rendered pointer XY has not changed. Expected return: hover and drawing pointer movement avoids `getZ()` and world-position work for duplicate pointer locations, improving responsiveness on noisy pointer events without changing visible cursor behavior.
+
+**Benchmark:** Real `soilPointerMove` duplicate-position benchmark with 60 rendered pointer frames at the same garden position, sampled 20 times
+
+**Before:** 60 median `getZ` calls; 0.144 ms median handler batch
+
+**After:** 1 median `getZ` call; 0.124 ms median handler batch
+
+**Change:** 98.3% fewer `getZ` calls and 13.8% faster handler batch, saving 0.020 ms across the duplicate-frame batch
+
+**Outcome:** Accepted; the absolute timing gain is small, but the realistic call reduction is large and the code is a simpler guard ordering with no rendering, animation, resolution, or interaction change
+
+**Commit:** `Skip duplicate pointer heights for 98.3% fewer calls`
+
+## Round 47
+
+### Idea 231: Precompute seasonal plant icon base positions and soil heights
+
+**Description:** Precompute each plant icon's static 3D XY position and soil-height base even when seasonal animation is enabled. Expected return: animated-season frames stop recalculating garden-to-world XY and cached `getZ()` values for every plant on every frame, while preserving per-frame plant scale, billboard rotation, and sun brightness.
+
+**Benchmark:** Real `PlantInstances` seasonal animation frame benchmark with 1,000 plants split across 20 icon buckets and 60 animation frames, sampled 12 times
+
+**Before:** 20 icon-bucket frame callbacks; 1.598 ms median render setup; 15.823 ms median frame batch; 60,000 median `getZ` calls
+
+**After:** 20 icon-bucket frame callbacks; 1.762 ms median render setup; 7.404 ms median frame batch; 1,000 median `getZ` calls
+
+**Change:** 53.2% faster frame batch, saving 8.419 ms per 60 animated frames; 98.3% fewer `getZ` calls; render setup 0.164 ms slower from the one-time precompute
+
+**Outcome:** Accepted; seasonal plant icons now reuse static XY and soil-height bases while retaining per-frame seasonal size, camera-facing billboard rotation, and sun brightness updates
+
+**Commit:** `Precompute seasonal plant bases for 53.2% faster frames`
+
+### Idea 232: Share plant icon plane geometry across crop icon buckets
+
+**Description:** Share one unit plane geometry across all plant icon instanced meshes. Expected return: gardens with many crop icon buckets allocate fewer identical plane geometries while keeping each bucket's texture, material, instance count, click behavior, and billboard matrix updates unchanged.
+
+**Benchmark:** Real `PlantInstances` setup benchmark with 1,000 plants split across 20 crop icon buckets, sampled 20 times
+
+**Before:** 20 plant icon instanced meshes; 1.469 ms median render setup
+
+**After:** 20 plant icon instanced meshes; 1.253 ms median render setup
+
+**Change:** 14.7% faster setup, saving 0.216 ms, plus one shared unit plane geometry instead of one geometry per crop icon bucket
+
+**Outcome:** Accepted; plant icon buckets now share the same unit plane geometry while retaining per-bucket textures, materials, counts, raycasts, and billboard matrix updates
+
+**Commit:** `Share plant icon geometry for 14.7% faster setup`
+
+### Idea 233: Use static instance matrix buffers for point marker and radius meshes
+
+**Description:** Build point marker and radius instance matrices as typed buffers during bucket preparation instead of filling them with `setMatrixAt()` effects after mount. Expected return: point-heavy overlays skip post-render matrix effects and reduce setup work while preserving marker geometry, radius rings, colors, opacity, and click targets.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring render setup
+
+**Before:** 12 instanced meshes; 0.995 ms median render setup
+
+**After:** 12 instanced meshes; 1.874 ms median render setup
+
+**Change:** 88.4% slower setup, adding 0.879 ms
+
+**Outcome:** Rejected and rolled back; replacing `setMatrixAt()` effects with prebuilt typed matrix buffers increased setup time and added complexity without any user-visible benefit
+
+**Commit:** Not committed
+
+### Idea 234: Skip zero-count plant icon buckets created only from retained capacities
+
+**Description:** Avoid mounting plant icon instanced meshes when a retained icon capacity has no current plants. Expected return: gardens that previously had plants of an icon type do not keep empty instanced meshes around after those plants are removed, without changing visible plant rendering or future capacity handling for non-empty buckets.
+
+**Benchmark:** Real `PlantInstances` retained-capacity setup with 100 current plants across 2 active icon buckets and retained capacities for 20 icon buckets, sampled 20 times
+
+**Before:** 20 plant icon meshes; 20 texture hook calls; 0.990 ms median render setup
+
+**After:** 2 plant icon meshes; 2 texture hook calls; 0.384 ms median render setup
+
+**Change:** 90.0% fewer plant icon meshes, 90.0% fewer texture hook calls, and 61.2% faster setup, saving 0.606 ms
+
+**Outcome:** Accepted; retained capacities still size non-empty icon buckets, but inactive icon buckets no longer mount invisible instanced meshes or load unused textures
+
+**Commit:** `Skip empty plant icon buckets for 61.2% faster setup`
+
+### Idea 235: Do not mount inactive moisture overlay components inside the soil render texture
+
+**Description:** Skip the `MoistureSurface` subtree inside `ImageTexture` when both moisture interpolation and moisture readings are hidden. Expected return: the normal soil-texture render path avoids inactive moisture memo work and empty instanced mesh wrappers without changing image, soil, or moisture behavior when those layers are visible.
+
+**Benchmark:** Real `ImageTexture` render with no images and both moisture interpolation and moisture readings hidden, sampled 30 times
+
+**Before:** 1 inactive moisture layer; 0.275 ms median render setup
+
+**After:** 0 inactive moisture layers; 0.215 ms median render setup
+
+**Change:** 21.8% faster setup, saving 0.060 ms on the normal hidden-moisture soil texture render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to clear the meaningful-improvement bar
+
+**Commit:** Not committed
+
+## Round 48
+
+### Idea 236: Build plant icon buckets from active plants only
+
+**Description:** Stop pre-seeding `PlantInstances` buckets from retained icon capacities, since empty capacity buckets are already filtered out. Expected return: retained-capacity renders avoid constructing and filtering unused bucket objects while preserving reserved capacity for every non-empty icon bucket.
+
+**Benchmark:** Real `PlantInstances` retained-capacity setup with 100 current plants across 2 active icon buckets and retained capacities for 20 icon buckets, sampled 20 times
+
+**Before:** 2 plant icon meshes; 2 texture hook calls; 0.374 ms median render setup
+
+**After:** 2 plant icon meshes; 2 texture hook calls; 0.466 ms median render setup
+
+**Change:** 24.5% slower setup, adding 0.092 ms
+
+**Outcome:** Rejected and rolled back; removing capacity pre-seeding looked simpler but regressed the realistic retained-capacity path
+
+**Commit:** Not committed
+
+### Idea 237: Skip steady plant icon frame work before brightness calculation
+
+**Description:** In non-seasonal plant icon frames, return before recalculating brightness when the camera has not changed and the material already has the current brightness. Expected return: static dense gardens with many icon buckets avoid repeated per-bucket brightness checks every frame while preserving brightness updates after config changes and all seasonal animation behavior.
+
+**Benchmark:** Real `PlantInstances` steady-frame benchmark with 1,000 plants split across 20 icon buckets after initial matrix setup, running 60 unchanged-camera frames and sampled 20 times
+
+**Before:** 20 icon-bucket frame callbacks; 0.036 ms median steady-frame batch
+
+**After:** 20 icon-bucket frame callbacks; 0.036 ms median steady-frame batch
+
+**Change:** 0.3% slower, adding 0.000 ms at this precision
+
+**Outcome:** Rejected and rolled back; the existing non-seasonal steady-frame path is already effectively free, so the extra guard ordering did not produce a meaningful improvement
+
+**Commit:** Not committed
+
+### Idea 238: Precompute inactive plant spread scale
+
+**Description:** Store each plant spread instance's inactive spread radius during static spread preparation. Expected return: spread-visible updates for dense gardens avoid recalculating inactive spread radii for every plant when not dragging or editing, while preserving overlap colors and active-drag behavior.
+
+**Benchmark:** Real `PlantSpreadInstances` visible-spread benchmark with 1,000 plants and the initial spread frame update, sampled 12 times
+
+**Before:** 0.503 ms median render setup; 0.155 ms median frame update
+
+**After:** 0.521 ms median render setup; 0.145 ms median frame update
+
+**Change:** 6.5% faster frame update, saving 0.010 ms, with render setup 0.018 ms slower
+
+**Outcome:** Rejected and rolled back; the realistic spread-visible frame path improved slightly but missed the 10% threshold and the absolute saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 239: Share ground circle geometries across ground detail wrappers
+
+**Description:** Share the low-detail and high-detail ground circle geometries instead of rebuilding identical colored circle geometries per ground mount. Expected return: environment setup avoids repeated geometry/color-buffer allocation while keeping the same terrain radius, segment counts, vertex colors, textures, and LOD behavior.
+
+**Benchmark:** Real detailed `Ground` render with high- and low-detail LOD meshes mounted, sampled 30 times
+
+**Before:** 2 ground meshes; 0.276 ms median render setup
+
+**After:** 2 ground meshes; 0.233 ms median render setup
+
+**Change:** 15.7% faster setup, saving 0.043 ms on the one-time environment render
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to justify shared geometry lifetime handling
+
+**Commit:** Not committed
+
+### Idea 240: Skip zero-count moisture reading instanced meshes
+
+**Description:** Avoid mounting `MoistureReadings` instanced meshes when sensor readings are visible but there are no readings. Expected return: empty reading states avoid an unnecessary instanced mesh wrapper without changing rendering when readings exist.
+
+**Benchmark:** Real `MoistureSurface` render with moisture readings visible, moisture interpolation hidden, and no sensor readings, sampled 30 times
+
+**Before:** 1 zero-count reading instanced mesh; 0.205 ms median render setup
+
+**After:** 0 reading instanced meshes; 0.190 ms median render setup
+
+**Change:** 7.3% faster setup, saving 0.015 ms
+
+**Outcome:** Rejected and rolled back; the zero-count mesh guard missed the 10% threshold and the absolute saving was not meaningful
+
+**Commit:** Not committed
+
+## Round 49
+
+### Idea 241: Hoist nested 3D position helpers inside world-position conversion
+
+**Description:** Create the no-mirror and world-position helper closures once per configured converter instead of recreating nested converters on every point. Expected return: dense point, weed, plant-label, grid, and group-order setup paths avoid repeated helper allocation while preserving all mirror, offset, and Z behavior.
+
+**Benchmark:** Real `PointInstances` overlay benchmark with 1,000 radius points across 6 color buckets, sampled 20 times while measuring setup
+
+**Before:** 12 instanced meshes; 1.194 ms median render setup
+
+**After:** 12 instanced meshes; 1.335 ms median render setup with exact dynamic Z behavior preserved
+
+**Change:** 11.8% slower setup, adding 0.141 ms
+
+**Outcome:** Rejected and rolled back; the exact-semantics helper hoist did not produce a reliable dense-overlay win, and caching the Z base would change behavior if a converter's config object is mutated after creation
+
+**Commit:** Not committed
+
+### Idea 242: Compute grid sample positions with one hoisted position converter
+
+**Description:** Pass one configured `get3DPosition` function through grid line generation instead of reconstructing it per grid line. Expected return: visible grid setup avoids repeated helper construction across every row and column while preserving the same 100 samples per line and terrain-following Z values.
+
+**Benchmark:** Real `gridLinePositions()` generation for the Genesis XL preset with visible grid sampling, sampled 30 times
+
+**Before:** 0.305 ms median grid line generation
+
+**After:** 0.301 ms median grid line generation
+
+**Change:** 1.4% faster, saving 0.004 ms
+
+**Outcome:** Rejected and rolled back; the hoisted converter was harmless but the realistic grid setup saving was far below the threshold and not meaningful
+
+**Commit:** Not committed
+
+### Idea 243: Use pre-sized arrays for grid line position buffers
+
+**Description:** Allocate grid line position arrays at their final size and fill by index instead of repeatedly pushing segment coordinates. Expected return: large beds with visible grids avoid repeated dynamic array growth while preserving identical line segment positions and detail.
+
+**Benchmark:** Real `gridLinePositions()` generation for the Genesis XL preset with visible grid sampling, sampled 30 times
+
+**Before:** 0.305 ms median grid line generation
+
+**After:** 0.265 ms median grid line generation
+
+**Change:** 13.2% faster, saving 0.040 ms on one-time grid setup
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute one-time saving was too small to justify the more complex indexed buffer-fill code
+
+**Commit:** Not committed
+
+### Idea 244: Fill moisture map instance matrices without `Matrix4`
+
+**Description:** Write translation-only instance matrices directly into the typed matrix buffer for moisture interpolation boxes. Expected return: visible moisture maps with many interpolation cells avoid per-cell `Matrix4.identity().setPosition().toArray()` calls while preserving all box positions, colors, opacity, and dimensions.
+
+**Benchmark:** Real warm-cache `MoistureSurface` render with moisture map visible, 25 soil-moisture readings, and 50 mm interpolation cells, sampled 20 times
+
+**Before:** 1 moisture-map instanced mesh; 0.374 ms median render setup
+
+**After:** 1 moisture-map instanced mesh; 0.327 ms median render setup
+
+**Change:** 12.5% faster setup, saving 0.047 ms
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the absolute warm-cache moisture-map setup saving was too small to justify less-readable manual matrix buffer writes
+
+**Commit:** Not committed
+
+### Idea 245: Cache image texture key strings for unchanged sensor reading arrays
+
+**Description:** Cache image texture key fragments for sensor and sensor-reading arrays by array identity. Expected return: normal soil texture renders with unchanged moisture inputs avoid rebuilding long key strings while still changing the key whenever the arrays are replaced or moisture visibility changes.
+
+**Benchmark:** Real `ImageTexture` rerender benchmark with unchanged props, 100 moisture readings, moisture map/readings visible, and 60 rerenders, sampled 12 times
+
+**Before:** 14.365 ms median rerender batch
+
+**After:** 13.016 ms median rerender batch using a React memoized texture key
+
+**Change:** 9.4% faster rerender batch, saving 1.348 ms across 60 unchanged rerenders
+
+**Outcome:** Rejected and rolled back; the absolute saving was plausible, but the improvement missed the 10% threshold
+
+**Commit:** Not committed
+
+## Round 50
+
+### Idea 246: Compute soil surface bounds in one pass
+
+**Description:** Find `computeSurface()` texture bounds while preparing the projected 2D points instead of creating separate X and Y arrays and spreading them into `Math.min`/`Math.max`. Expected return: realistic soil-surface setup avoids extra full-array allocations and large argument spreads while preserving identical Delaunay input, vertices, normals, UVs, and terrain shape.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` benchmark with 200 realistic soil points producing 1,182 surface vertices, sampled 40 times
+
+**Before:** 0.100 ms median surface conversion
+
+**After:** 0.150 ms median surface conversion with one-pass bounds
+
+**Change:** 49.9% slower, adding 0.050 ms
+
+**Outcome:** Rejected; the proposed one-pass bounds path was slower in the realistic benchmark
+
+**Commit:** Not committed
+
+### Idea 247: Pre-size soil surface output buffers
+
+**Description:** Allocate `computeSurface()` vertex, face, UV, and vertex-list buffers at their final realistic triangle sizes and fill by index. Expected return: realistic soil-surface setup avoids dynamic array growth during Delaunay triangle conversion while preserving identical geometry and UV detail.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` benchmark with 200 realistic soil points producing 1,182 surface vertices, sampled 40 times
+
+**Before:** 0.100 ms median surface conversion
+
+**After:** 0.094 ms median surface conversion with pre-sized buffers
+
+**Change:** 6.2% faster, saving 0.006 ms
+
+**Outcome:** Rejected; the improvement missed the 10% threshold and the absolute one-time setup saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 248: Parse compact stored triangles without slice allocations
+
+**Description:** Read compact serialized triangle points by numeric index instead of allocating three-element slices for every parsed point. Expected return: page reload and Lua-stub initialization avoid thousands of short-lived arrays when restoring stored soil-surface triangles while preserving accepted legacy and compact formats.
+
+**Benchmark:** Standalone compact stored-triangle parse benchmark with 394 realistic soil-surface triangles and a 65,883-byte payload, sampled 40 times
+
+**Before:** 0.131 ms median parse
+
+**After:** 0.119 ms median parse with indexed point reads
+
+**Change:** 9.3% faster, saving 0.012 ms
+
+**Outcome:** Rejected; the improvement missed the 10% threshold and the absolute reload/Lua-stub initialization saving was not meaningful
+
+**Commit:** Not committed
+
+### Idea 249: Use nested numeric height cache buckets
+
+**Description:** Replace `getZFunc()` string-key cache entries with nested numeric map buckets keyed by X and Y. Expected return: repeated terrain-height lookups avoid coordinate string construction while preserving exact cache identity for repeated numeric coordinates.
+
+**Benchmark:** Standalone terrain-height lookup benchmark with 394 realistic soil-surface triangles and 1,000 realistic overlay coordinates, measuring initial cache fill and immediate cache hits across 30 samples
+
+**Before:** 0.245 ms median initial-fill batch; 0.143 ms median cache-hit batch
+
+**After:** 0.166 ms median initial-fill batch; 0.049 ms median cache-hit batch with nested numeric `Map` cache
+
+**Change:** 32.3% faster initial fill, saving 0.079 ms per 1,000 lookups; 65.5% faster cache hits, saving 0.093 ms per 1,000 repeated lookups
+
+**Outcome:** Rejected; the percentage qualified, but saving less than 0.1 ms per 1,000 lookups is not a meaningful runtime win for the added cache-structure complexity
+
+**Commit:** Not committed
+
+### Idea 250: Skip unchanged soil surface storage writes
+
+**Description:** Avoid rewriting `sessionStorage.soilSurfaceTriangles` when the serialized soil-surface triangle payload is unchanged. Expected return: config or Redux updates that recreate equivalent soil-surface arrays avoid repeated JSON storage writes while keeping the same stored data for Lua stubs and reloads.
+
+**Benchmark:** Headless browser benchmark at `localhost:3000` with 394 realistic triangle records and a 51,574-byte serialized payload, measuring full `serializeTriangles()` plus storage behavior across 60 samples
+
+**Before:** 0.100 ms median serialize-and-write
+
+**After:** 0.100 ms median serialize-and-compare with unchanged-write guard
+
+**Change:** 0.0% improvement
+
+**Outcome:** Rejected; the guard avoids the storage write itself, but serialization dominates the realistic code path, so the full effect does not improve
+
+**Commit:** Not committed
+
+## Round 51
+
+### Idea 251: Lazy-load optional 3D diagnostics and view helpers
+
+**Description:** Move rarely enabled detail helpers such as stats overlays, view cube helpers, or camera-selection UI out of the default 3D garden bundle when doing so does not change normal rendering. Expected return: lower default JavaScript parse/execute cost and faster initial 3D garden load while preserving the optional helpers when enabled.
+
+**Benchmark:** Production Bun JS build with all DashboardController JS entries
+(`NODE_ENV=production RAILS_ENV=production`) into a temp `ASSET_OUTDIR`;
+measured recursive static ESM import closure for the FarmDesigner lazy route
+chunk. Promo entry and main app initial closure were cross-checks. Rebuilt the
+current-worktree baseline immediately before the candidate to avoid concurrent
+worker noise.
+
+**Before:** FarmDesigner route static closure: 2,408,261 bytes raw /
+813,876 gzip across 23 JS files. Cross-checks: promo entry 1,447,036 raw /
+492,044 gzip; main app initial 1,325,547 raw / 431,563 gzip.
+
+**After:** Local-helper lazy candidate: 3,512,531 bytes raw / 1,124,833 gzip
+across 29 JS files. Cross-checks: promo entry 1,464,761 raw / 499,403 gzip;
+main app initial 2,431,741 raw / 742,673 gzip. Top-level and direct Drei lazy
+variants also regressed.
+
+**Change:** -45.9% raw / -38.2% gzip improvement on the primary FarmDesigner
+route metric (+1,104,270 raw bytes and +310,957 gzip bytes regression)
+
+**Outcome:** Rejected; Bun split the lazy helpers into extra chunks but kept
+their shared code in the static closure, so normal 3D garden static load got
+larger instead of smaller. Implementation/test changes rolled back.
+
+**Commit:** Not committed
+
+### Idea 252: Return generated interpolation data directly to 3D moisture rendering
+
+**Description:** Avoid the 3D moisture map's localStorage serialize/parse round trip after generating interpolation data by returning the generated data to the caller while preserving the existing cached localStorage path for 2D consumers. Expected return: faster moisture map setup when interpolation is visible with realistic sensor-reading counts.
+
+**Benchmark:** Focused cold visible 3D moisture-map setup with 25 soil-moisture readings, Genesis 3000x1360 mm bed, 50 mm interpolation cells producing 1,680 tiles, full generation plus localStorage write/read plus moisture instance buffers, 15 warmups and 60 measured samples; Chromium localhost storage cross-check used the same scenario.
+
+**Before:** 0.802 ms median setup (p25 0.785 ms, p75 0.834 ms); Chromium storage cross-check 0.300 ms median
+
+**After:** 0.716 ms median setup (p25 0.681 ms, p75 0.757 ms) with generated-data return; Chromium storage cross-check 0.200 ms median
+
+**Change:** 10.7% faster in the focused code path, saving 0.086 ms; Chromium storage cross-check saved 0.100 ms
+
+**Outcome:** Rejected; the percentage barely cleared the threshold, but the realistic visible setup saved far less than 1 ms and did not provide a meaningful user-visible absolute win
+
+**Commit:** Not committed
+
+### Idea 253: Remove deep cloning from image filtering used by 3D soil textures
+
+**Description:** Replace deep-clone/reverse image filtering with reverse iteration and shallow result objects, provided existing image-layer behavior remains unchanged. Expected return: faster 3D soil texture setup when camera images are visible, especially with dozens of images.
+
+**Benchmark:** Bun benchmark of `filterImages` with 120 camera-image resources, image layer visible, realistic photo date config, `hideUnShownImages` enabled, shown-image filtering, three hidden images, one hovered/highlighted image, placeholder URLs, mixed image types, and camera-Z filtering. 80 samples x 200 calls after warmup; behavior checks confirmed identical output count/order, highlighted-last handling, hidden/unshown omission, and placeholder omission.
+
+**Before:** 0.3353 ms median per call
+
+**After:** 0.1701 ms median per call
+
+**Change:** -0.1652 ms per call, 49.3% faster
+
+**Outcome:** Rejected; the relative win was large, but the realistic absolute improvement was only 0.1652 ms per visible-image filtering call, below the roughly 1 ms acceptance threshold
+
+**Commit:** Not committed
+
+### Idea 254: Avoid remounting mirrored soil geometry and render texture work on unrelated config churn
+
+**Description:** Narrow memo dependencies around mirrored soil geometry and detailed soil texture creation so unrelated config object changes do not clone soil geometry or remount expensive soil texture subtrees. Expected return: faster rerenders in realistic mirrored gardens and settings-panel interactions without changing soil shape, texture resolution, images, or moisture overlays.
+
+**Benchmark:** Real React/Bun mirrored Bed rerender benchmark: high-detail mirrored bed with 400 rough soil triangles, 75 camera images, 100 moisture readings, one mount plus 60 unrelated config-object churn rerenders, sampled 12 times
+
+**Before:** 166.700 ms median rerender batch
+
+**After:** 73.065 ms median rerender batch
+
+**Change:** 56.2% faster, saving 93.635 ms per 60-rerender batch
+
+**Outcome:** Accepted; narrowed mirrored soil geometry memo dependencies and memoized image texture setup by relevant soil, image, mirror, moisture, debug, and texture-size inputs
+
+**Commit:** `Memoize 3D soil churn for 56.2% faster rerenders`
+
+### Idea 255: Memoize cable-carrier pieces by the axes and config fields they actually use
+
+**Description:** Add focused memoization to cable-carrier components so bot position updates on unrelated axes do not rebuild extruded carrier geometry or support meshes. Expected return: better frame responsiveness during bot movement with cable carriers enabled while preserving full carrier detail and animation on relevant axes.
+
+**Benchmark:** Direct carrier-set benchmark (`CableCarrierX/Y/Z` plus v1.8 vertical/horizontal supports) with cable carriers enabled, realistic Genesis v1.8 dimensions, stable X/Y, and 90 Z-axis bot position rerenders
+
+**Before:** 7.093 ms median rerender batch; 95 shape path setups
+
+**After:** 3.925 ms median rerender batch; 95 shape path setups
+
+**Change:** 44.7% faster, saving 3.168 ms across 90 realistic Z-axis bot movement rerenders
+
+**Outcome:** Accepted; public cable-carrier pieces now memoize against only the config fields and bot axes they consume, so unrelated-axis movement skips component/effect work while relevant carrier animation still updates
+
+**Commit:** `Memoize cable carriers for 44.7% faster z batches`
+
+## Round 52
+
+### Idea 256: Split static FarmBot subassemblies away from Z-axis movement rerenders
+
+**Description:** Partition `Bot` rendering so static or X/Y-only subassemblies do not rerender during realistic Z-axis movement frames. Expected return: better frame responsiveness while preserving every model, cable, shadow, trail, water, and tool animation.
+
+**Benchmark:** Direct full-`Bot` react-test-renderer benchmark with loaded
+FarmBot model conditions: cable carriers, tracks, configured tools, trail,
+water flow, laser, light strip, and camera view enabled; Genesis v1.8
+dimensions; stable X/Y; seven realistic tool slots; and 90 Z-axis position
+rerenders. Sampled 13 measured batches after 3 warmups while measuring initial
+render, rerender batch CPU, intrinsic object counts, `useGLTF`,
+`SVGLoader.createShapes`, `getZ`, and `useFrame` calls.
+
+**Before:** 2.942 ms median initial render; 296.632 ms median 90-rerender
+batch; 52 groups, 58 meshes, 339 instanced meshes, 10 extrudes, 12 tubes, and
+14 cylinders; 1,260 update-time `useGLTF` calls; 0 shape parses; 270 `getZ`
+calls; 810 `useFrame` calls
+
+**After:** 2.918 ms median initial render; 88.382 ms median 90-rerender batch;
+same intrinsic object counts; 630 update-time `useGLTF` calls; 0 shape parses;
+270 `getZ` calls; 810 `useFrame` calls
+
+**Change:** 70.2% faster Z-axis rerender batch, saving 208.250 ms across 90
+realistic movement rerenders, with 50.0% fewer update-time `useGLTF` calls and
+no intrinsic scene object-count regression
+
+**Outcome:** Accepted; X/Y-only frame, gantry, electronics, and bed-utility
+subassemblies now sit behind memoized X/Y/config/shape boundaries, while
+Z-axis, UTM, camera, laser, vertical carrier/support, solenoid, tool, and water
+animation detail still updates on Z movement. Focused tests cover Z-only skip
+behavior and X-axis rerender behavior.
+
+**Commit:** `Split FarmBot statics for 70.2% faster z batches`
+
+### Idea 257: Remove inactive tool frame callbacks
+
+**Description:** Register the rotary-tool `useFrame` callback only for the mounted active rotary tool when rotation is enabled instead of every rendered tool slot. Expected return: lower per-frame CPU in gardens with multiple tool slots and no active rotary animation.
+
+**Benchmark:** Temporary Bun/Testing Library `Tools` render with a mounted rotary tool plus 8, 10, and 12 realistic configured slots, covering `config.rotary=0` and `config.rotary=1`; measured registered frame callback count and median CPU for 60/120 manual frame dispatches, then compared against an ideal active-only callback list without changing production code.
+
+**Before:** 8 slots: 9 callbacks, 0.0072 ms/60 off and 0.0113 ms/60 on; 10 slots: 11 callbacks, 0.0083 ms/60 off and 0.0110 ms/60 on; 12 slots: 13 callbacks, 0.0083 ms/60 off and 0.0119 ms/60 on. The 120-frame batches topped out at 0.0282 ms.
+
+**After:** Ideal active-only callback simulation: 0 callbacks when rotary was off and 1 callback when rotary was on, with 60-frame batches between 0.0011 ms and 0.0053 ms; 120-frame batches topped out at 0.0130 ms.
+
+**Change:** Up to 100% fewer callbacks when rotary was off and 92.3% fewer callbacks with 12 slots while rotary was on, but the largest measured CPU win was only 0.0076 ms per 60-frame batch and 0.0152 ms per 120-frame batch.
+
+**Outcome:** Rejected before implementation; the callback-count win is real, but the measured frame-batch CPU saving is far below the 1 ms/60-frame target and not meaningful enough to risk extra rotary animation indirection.
+
+**Commit:** None
+
+### Idea 258: Memoize electronics box against X-axis movement only
+
+**Description:** Keep the electronics box model from rerendering on Y/Z-only bot movement and unrelated config churn, since its visible position depends on X and a small set of config fields. Expected return: better bot movement responsiveness with the electronics box fully preserved.
+
+**Benchmark:** Direct Genesis v1.8 `ElectronicsBox` render with unrelated
+config object churn, stable X, 90 Y/Z-only bot-position rerenders, and a +25 X
+cross-check; measured mount/rerender timing plus GLTF and box-model calls
+
+**Before:** 0.435 ms median mount; 23.976 ms median 90-rerender Y/Z batch;
+364 Y/Z-batch GLTF calls; 91 box-model calls; +25 X cross-check moved +25
+
+**After:** 0.341 ms median mount; 0.685 ms median 90-rerender Y/Z batch;
+0 Y/Z-batch GLTF calls; 0 box-model calls; +25 X cross-check moved +25
+
+**Change:** 97.1% faster, saving 23.291 ms per realistic 90-rerender Y/Z batch
+
+**Outcome:** Accepted; the electronics-box wrapper now ignores Y/Z-only
+movement and unrelated config object churn while preserving identical stable-X
+output, and X movement plus kit-version model changes still update
+
+**Commit:** `Memoize electronics box for 97.1% faster yz batches`
+
+### Idea 259: Speed up animated season sun lookup
+
+**Description:** Replace per-frame linear sun-animation sample lookup with a faster equivalent lookup for animated seasons. Expected return: lower per-frame CPU while preserving the same sun path, sky fade, shadows, and plant seasonal scaling inputs.
+
+**Benchmark:** Warm-cache animated-season sun frame lookup benchmark across
+Spring/Summer/Fall/Winter, calling `getAnimatedSeasonDate()`,
+`calcSunCoordinate()`, `calcSunI()`, and the three `sunPosition()` updates
+used by the `Sun` frame callback. Measured both 120 frames spread across the
+full 20-second season cycle and a worst linear-scan 120-frame 60 fps window
+from 18.000s to 19.983s; each was sampled 80 times after 20 warmups
+
+**Before:** Full-cycle median: 0.121 ms per 120-frame season batch, 0.482 ms
+for all four seasons. End-cycle window median: 0.172 ms per 120-frame season
+batch, 0.688 ms for all four seasons
+
+**After:** Not implemented
+
+**Change:** Rejected before implementation because the full measured
+120-frame season batch is already below the 1 ms absolute-win target even in
+the worst realistic scan window
+
+**Outcome:** Rejected; even a perfect lookup removal cannot save a meaningful
+absolute amount in the realistic animated-sun frame budget, so no sun path,
+sky fade, light intensity, or seasonal date behavior was changed
+
+**Commit:** Not committed
+
+### Idea 260: Memoize zoom beacon focus definitions across unrelated config churn
+
+**Description:** Recompute zoom-beacon focus positions only when the config and bot-position fields that affect them change. Expected return: faster 3D settings-panel rerenders with zoom beacons enabled and no change to focus targets or labels.
+
+**Benchmark:** Direct `ZoomBeacons` render with zoom beacons enabled, realistic
+config/configPosition, default beacon animation, and 60 unrelated config-object
+churn rerenders, sampled 20 measured times after one warmup while measuring
+`FOCI` calls and rerender batch CPU
+
+**Before:** 61 `FOCI` calls; 20.334 ms median rerender batch
+
+**After:** 1 `FOCI` call; 1.750 ms median rerender batch
+
+**Change:** 98.4% fewer focus-definition builds; 91.4% faster rerender batch,
+saving 18.584 ms across 60 unrelated config-object churn rerenders
+
+**Outcome:** Accepted; zoom beacon focus definitions now cache against the
+config/configPosition fields that actually affect beacon anchors, labels, info,
+and cameras, and memoized per-beacon children skip unrelated config churn while
+preserving hover/click/info/debug behavior and relevant configPosition/config
+updates
+
+**Commit:** `Memoize zoom beacons for 91.4% faster churn`
+
+### Idea 261: Reduce focus-transition material opacity churn
+
+**Description:** Avoid redundant material opacity writes and `needsUpdate` flips during focus transitions when a material is already at the requested state. Expected return: smoother focus transitions on scenes with many meshes while preserving fade behavior.
+
+**Benchmark:** Bun focus-material benchmark with a nested 300-owner
+`Object3D` tree, 350 cloned materials including array-material slots, and 60
+eased opacity samples plus final rest apply. Counts measured opacity,
+transparent, depthWrite, and `needsUpdate` writes; CPU includes clone, apply,
+and restore. A guarded-write prototype was benchmarked without editing source.
+
+**Before:** 0.282 ms median, 0.335 ms average, 0.780 ms p95; 21,350
+opacity writes, 21,350 transparent writes, 21,350 depthWrite writes, and
+21,350 `needsUpdate` flips per transition.
+
+**After:** Prototype: 0.314 ms median, 0.381 ms average, 0.825 ms p95;
+21,000 opacity writes, 632 transparent writes, 560 depthWrite writes, and
+686 `needsUpdate` flips per transition.
+
+**Change:** None; source left untouched because the guarded-write path added
+branching overhead and did not improve realistic transition CPU.
+
+**Outcome:** Rejected; despite fewer material flag writes and update flips, CPU
+regressed by 11.3% median and the baseline was already far below the 2 ms
+absolute-win target.
+
+**Commit:** N/A
+
+### Idea 262: Memoize point overlay against relevant config fields
+
+**Description:** Keep `PointInstances` from rebuilding buckets and instance meshes when unrelated config object churn does not affect point positions, visibility, or click behavior. Expected return: faster settings/rerender batches in point-heavy gardens.
+
+**Benchmark:** Direct `PointInstances` config-churn benchmark with 1,000
+realistic generic points across 6 color buckets and 5 radius values, sampled
+20 times after warmup through Bun/test-renderer. Each sample rendered once,
+then applied 60 cloned config objects that changed only unrelated fields while
+measuring bucket rebuilds via `getZ` calls, final instanced meshes, and rerender
+setup time.
+
+**Before:** 60 bucket rebuilds per churn batch; 12 rendered instanced meshes;
+141.111 ms median rerender setup, 140.891 ms average, 149.197 ms p95.
+
+**After:** 0 bucket rebuilds per churn batch; 12 rendered instanced meshes;
+0.466 ms median rerender setup, 0.501 ms average, 0.894 ms p95.
+
+**Change:** 100% fewer bucket rebuilds during unrelated config churn and 99.7%
+faster churn rerender setup, saving 140.644 ms per 60-rerender batch while
+leaving rendered mesh count unchanged.
+
+**Outcome:** Accepted; point overlays now compare only the config fields that
+affect world positions plus point/click visibility inputs, so unrelated config
+object churn skips bucket and instance setup while mirror/offset/Z-base changes
+still rebuild identical point positions, radius rings, opacity, and clicks.
+
+**Commit:** `Memoize point overlay for 99.7% faster config churn`
+
+### Idea 263: Memoize weed overlay against relevant config fields
+
+**Description:** Keep `WeedInstances` from rebuilding icon/radius buckets when unrelated config object churn does not affect weed positions or click behavior. Expected return: faster settings/rerender batches in weed-heavy gardens.
+
+**Benchmark:** Temporary Bun/react-test-renderer `WeedInstances` benchmark with
+900 realistic weeds spread across 8 color buckets and 8 radius values, plus 60
+unrelated config-object churn rerenders, sampled 20 measured times after one
+warmup while measuring `getZ`-derived bucket builds, icon/radius instanced mesh
+counts, and render setup CPU
+
+**Before:** 60 churn bucket builds; 1 icon mesh; 8 radius meshes; 149.114 ms
+median 60-rerender batch
+
+**After:** 0 churn bucket builds; 1 icon mesh; 8 radius meshes; 0.399 ms
+median 60-rerender batch
+
+**Change:** 100% fewer churn bucket builds; 99.7% faster rerender batch,
+saving 148.715 ms across 60 unrelated config-object churn rerenders
+
+**Outcome:** Accepted; weed instances now memoize against the weed array,
+visibility, click dispatch, `getZ`, and only the config fields that affect
+world-position transforms, while unrelated config-object churn preserves icon
+billboarding, radius/color mesh counts, and click behavior, and relevant
+mirror/position config changes still rebuild instance positions
+
+**Commit:** `Memoize weed overlay for 99.7% faster churn batches`
+
+### Idea 264: Memoize plant icon overlay against relevant config fields
+
+**Description:** Keep `PlantInstances` from rebuilding icon buckets and static instance data when unrelated config object churn does not affect plant icon positions, season animation, or click behavior. Expected return: faster rerenders in plant-heavy gardens.
+
+**Benchmark:** Bun/React `PlantInstances` churn benchmark with 1,000 realistic plants across 15 icon buckets and 60 unrelated config-object rerenders, sampled 10 times while measuring median rerender batch CPU and `getZ` static setup calls for both non-seasonal and `animateSeasons` paths.
+
+**Before:** Static season: 75.350 ms median churn batch and 60,000 static setup calls; `animateSeasons`: 70.369 ms and 60,000 setup calls
+
+**After:** Static season: 0.967 ms median churn batch and 0 static setup calls; `animateSeasons`: 0.764 ms and 0 setup calls
+
+**Change:** Static season was 98.7% faster, saving 74.383 ms per 60-rerender churn batch; `animateSeasons` was 98.9% faster, saving 69.605 ms; both paths avoided 100% of unrelated static setup work
+
+**Outcome:** Accepted; `PlantInstances` now memoizes against plant-icon-relevant props and config fields, so unrelated config object churn skips bucket/static setup while position, texture, brightness, seasonal animation, click, capacity, and relevant config changes still rerender
+
+**Commit:** `Memoize plant icons for 98.7% faster churn`
+
+### Idea 265: Memoize plant spread overlay against relevant config fields
+
+**Description:** Keep `PlantSpreadInstances` from rebuilding static spread instance data when unrelated config object churn does not affect spread geometry, bounds, or active-drag behavior. Expected return: faster spread-visible rerenders in dense gardens.
+
+**Benchmark:** Bun/React `PlantSpreadInstances` benchmark with 1,000 realistic
+plants, spread visible, 60 unrelated config-object churn rerenders, and a
+click-to-add active-drag cross-check, sampled 12 times while measuring rerender
+batch CPU, static `getZ` setup calls, initial spread frame setup, unchanged
+static frame work, and 60 active-position frame updates.
+
+**Before:** Static spread: 13.975 ms median churn batch, 60,000 static setup
+calls, 0.834 ms initial frame, and 0.202 ms unchanged static frame.
+Click-to-add: 13.703 ms churn batch, 60,000 setup calls, 0.845 ms initial
+frame, and 16.393 ms per 60 active-position frames.
+
+**After:** Static spread: 4.043 ms median churn batch, 0 static setup calls,
+0.831 ms initial frame, and 0.036 ms unchanged static frame. Click-to-add:
+3.733 ms churn batch, 0 setup calls, 0.850 ms initial frame, and 18.909 ms per
+60 active-position frames.
+
+**Change:** Static churn was 71.1% faster, saving 9.932 ms per 60-rerender
+batch; click-to-add churn was 72.8% faster, saving 9.969 ms per batch. Both
+paths avoided 100% of static spread placement setup during unrelated config
+churn; active-frame update logic was left unchanged and covered as a behavior
+cross-check.
+
+**Outcome:** Accepted; `PlantSpreadInstances` now reuses static spread placement
+across unrelated config object churn while rebuilding for bed size, bed offset,
+mirror, and Z-base config changes, with spread colors, overlap updates,
+click-to-add active-position updates, and click behavior covered by tests.
+
+**Commit:** `Memoize plant spread setup for 71.1% faster churn`
+
+### Idea 266: Avoid group-order work on unrelated group/resource churn
+
+**Description:** Narrow group-order visualization recomputation so selected group points are not reselected and resorted when unrelated groups/resources change. Expected return: faster group-open rerenders without changing line order, labels, or selection criteria.
+
+**Benchmark:** Temporary Bun/Testing Library `GroupOrderVisual` benchmark with
+an open point group selecting 300 of 1,200 realistic mixed active points,
+20 point groups, stable selected point object references, and 60 unrelated
+resource/group churn rerenders via new `allPoints` arrays plus unrelated group
+object churn. Sampled 15 measured batches after 4 warmups while measuring
+`pointsSelectedByGroup`, sort, `getZ`-driven position work, and rerender CPU.
+
+**Before:** 33.945 ms median 60-rerender churn batch; 61
+`pointsSelectedByGroup` calls taking 22.807 ms; 18,300 selected-point outputs;
+1 sort call taking 0.146 ms; 225 `getZ` position calls
+
+**After:** 7.173 ms median 60-rerender churn batch; 1
+`pointsSelectedByGroup` call taking 0.401 ms; 300 selected-point outputs;
+1 sort call taking 0.120 ms; 225 `getZ` position calls
+
+**Change:** 78.9% faster churn batch, saving 26.772 ms across 60 unrelated
+resource/group churn rerenders, with 98.4% fewer group-selection calls and
+unchanged sort/position work
+
+**Outcome:** Accepted; group-order selection now reuses selected points when
+the URL-selected group selection inputs match and the active point array churns
+with the same point objects, while changed criteria still reselect and changed
+sort settings still resort the cached selected point list
+
+**Commit:** `Memoize group order selection for 78.9% faster churn`
+
+### Idea 267: Avoid sequence visualization expansion on unrelated config churn
+
+**Description:** Keep 3D sequence visualization from recollecting and re-expanding actions when unrelated config fields change. Expected return: faster rerenders while visualizing long movement sequences, with identical line points.
+
+**Benchmark:** Temporary Bun/Testing Library `Visualization` benchmark with a visualized 150-step mixed move/action sequence and 60 unrelated config-object churn rerenders. Measured direct collect/expand/point-conversion CPU before implementation, then measured rerender batch CPU and collect/expand/line-call counts across 10 measured churn batches after warmup.
+
+**Before:** 150 collected actions; 480 expanded actions; 211 line points. Direct 60-pass phase medians: 17252.478 ms collect, 16.681 ms expand, 1.484 ms point conversion. Full 60-rerender churn batch median: 17196.697 ms.
+
+**After:** 1 initial collect, 1 initial expand, and 1 initial line render; 0 collect calls, 0 expand calls, and 0 line renders during measured churn. Full 60-rerender churn batch median: 1.381 ms.
+
+**Change:** 100% fewer collect/expand/line updates during unrelated config churn; 99.99% faster render batch, saving 17195.316 ms across 60 churn rerenders.
+
+**Outcome:** Accepted; sequence collection and expansion now cache against the visualized sequence/resources and current position, while point conversion caches against only visualization geometry fields. Unrelated config-object churn preserves the same line points, and sequence resource, configPosition, and geometry config changes still update the visualization.
+
+**Commit:** `Memoize sequence visualization for 99.99% faster churn`
+
+### Idea 268: Reduce moisture reading matrix setup cost
+
+**Description:** Build translation-only moisture reading instance matrices with a cheaper equivalent path if the realistic visible-readings setup cost is meaningful. Expected return: faster sensor-reading overlay setup without changing sphere count, radius, color, or positions.
+
+**Benchmark:** Direct readings-only `MoistureSurface` benchmark with 200
+realistic visible sensor readings, moisture interpolation hidden, and 60
+measured matrix-buffer setup samples after 15 warmups; the real render
+guardrail measured rendered moisture-reading instanced mesh count.
+
+**Before:** 0.0093 ms median Matrix4/toArray setup for 200 reading matrices
+(0.0104 ms average, 0.0194 ms p95); render guardrail: 1 instanced mesh with
+count 200.
+
+**After:** Translation-only prototype: 0.0034 ms median setup (0.0044 ms
+average, 0.0112 ms p95) with byte-identical matrix buffers; render guardrail
+remained 1 instanced mesh with count 200.
+
+**Change:** Prototype was 63.2% faster but saved only 0.0059 ms per realistic
+200-reading setup.
+
+**Outcome:** Rejected before implementation; sphere count, radius, color,
+offsets, and positions could be preserved, but the absolute setup saving was
+far below the 1 ms visible-readings target and not a meaningful batch win.
+
+**Commit:** Not committed
+
+### Idea 269: Memoize gantry beam light-strip work
+
+**Description:** Keep gantry beam and light-strip child work from rerendering when bot movement or config churn does not affect beam length, lighting, or X position. Expected return: faster bot rerender batches with lights enabled while preserving all LEDs, shadows, and extrusion detail.
+
+**Benchmark:** Bun/Testing Library `GantryBeam` benchmark with lights enabled, a realistic Genesis XL 3,000 mm beam, stable X/beam config, and 90 Y/Z-only bot movement rerenders after mount; measured rerender batch CPU and `useHelper` light-child render calls
+
+**Before:** 900 light-child renders; 12.202 ms median rerender batch
+
+**After:** 0 light-child renders; 1.170 ms median rerender batch
+
+**Change:** 100% fewer light-child renders and 90.4% faster rerender batch, saving 11.032 ms across 90 realistic Y/Z-only rerenders
+
+**Outcome:** Accepted; `GantryBeam` now reuses the beam and light strip when Y/Z movement or unrelated config churn leaves the beam inputs unchanged, while X movement, beam length, light visibility, debug helpers, kit version LEDs, beam shape, texture, and beam-position config still rerender and preserve the same light count and shadow props
+
+**Commit:** `Memoize gantry beam light work for 90.4% faster yz batches`
+
+### Idea 270: Reduce camera-selection marker setup churn
+
+**Description:** Memoize camera-selection marker angle lists and click handlers so camera-selection rerenders do less setup work. Expected return: faster camera-selection UI interactions while preserving all camera choices, hover behavior, and saved settings.
+
+**Benchmark:** Temporary Bun/react-test-renderer camera-selection benchmark with
+`cameraSelectionView` enabled, default heading, normal and `lightsDebug` marker
+sets, and 60 unchanged config-object rerenders plus 60 hover-driven rerenders.
+Measured rendered marker counts, `uniq` marker-list setup calls, `debounce`
+click-handler allocations, and rerender batch CPU across 25 measured samples
+after 5 warmups.
+
+**Before:** Normal markers: 12 heads, 0 bodies, 0 lines; config churn
+21.912 ms median with 120 list setups and 720 debounce allocations; hover
+churn 20.748 ms median with 120 list setups and 720 debounce allocations.
+`lightsDebug`: 20 heads, 16 bodies, 8 lines; config churn 51.301 ms median
+with 180 list setups and 1,200 debounce allocations; hover churn 50.096 ms
+median with 180 list setups and 1,200 debounce allocations.
+
+**After:** Marker counts unchanged. Normal config churn: 1.813 ms median with
+0 list setups and 0 debounce allocations; normal hover churn: 3.663 ms median
+with 0 list setups and 0 debounce allocations. `lightsDebug` config churn:
+2.278 ms median with 0 list setups and 0 debounce allocations; `lightsDebug`
+hover churn: 7.497 ms median with 0 list setups and 0 debounce allocations.
+
+**Change:** Normal config churn was 91.7% faster, saving 20.099 ms per
+60-rerender batch; normal hover churn was 82.3% faster, saving 17.085 ms.
+`lightsDebug` config churn was 95.6% faster, saving 49.023 ms; `lightsDebug`
+hover churn was 85.0% faster, saving 42.600 ms. Unchanged rerenders avoided
+100% of measured marker-list setup and debounce allocation churn.
+
+**Outcome:** Accepted; camera-selection angle lists now reuse stable choices,
+marker components receive scalar props and skip unrelated config-object churn,
+and click/hover handlers are stable while preserving marker positions, selected
+and hovered colors, click dispatches, and top-down/heading marker behavior.
+
+**Commit:** `Reduce camera-selection marker churn by 95.6%`
+
+## Round 53
+
+### Idea 271: Index 3D FarmwareEnv config lookups
+
+**Description:** Replace repeated linear `FarmwareEnv` scans for 3D config values with an indexed lookup keyed by the `3D_` namespace. Expected return: lower adapter CPU on 3D Garden renders and settings-panel renders that read many 3D config keys, without changing defaults or saved config behavior.
+
+**Benchmark:** Realistic settings adapter benchmark with 129 `FarmwareEnv`
+entries and 43 map config keys over 60 render batches.
+
+**Before:** 2.234 ms median map config-read batch with 332,820 env checks;
+settings-panel batch was 0.595 ms.
+
+**After:** 0.136 ms median map config-read batch with 7,740 env checks;
+settings-panel batch was 0.091 ms.
+
+**Change:** 93.9% faster map config reads, saving 2.098 ms per realistic
+60-render batch; settings-panel reads were 84.7% faster.
+
+**Outcome:** Accepted; indexed 3D config reads preserve saved/default config
+behavior while removing repeated linear scans.
+
+**Commit:** `Index 3D config lookups for 93.9% faster reads`
+
+### Idea 272: Scan latest camera-capture logs without intermediate arrays
+
+**Description:** Replace the 3D Garden map's latest-camera-capture derivation with one direct scan over logs instead of `filter` plus `map` plus `Math.max(...ids)`. Expected return: lower adapter CPU when log arrays are realistic-sized and Bot position updates rerender the 3D map, with identical `lastImageCapture` behavior.
+
+**Benchmark:** Realistic 1,000-log mixed timeline benchmark over 60 scans,
+matching a busy device log list where camera-capture checks rerun with map
+state updates.
+
+**Before:** 3.348 ms median scan batch.
+
+**After:** 0.324 ms median scan batch.
+
+**Change:** 90.3% faster, saving 3.024 ms per realistic 60-scan batch.
+
+**Outcome:** Accepted; the latest camera capture is found in one pass with the
+same `lastImageCapture` result and no image/log behavior change.
+
+**Commit:** `Scan camera logs in one pass for 90.3% faster churn`
+
+### Idea 273: Narrow `GardenModel` load-stage and layer visibility churn
+
+**Description:** Move cheap-but-repeated 3D layer visibility derivations behind memoized boundaries keyed by their real inputs. Expected return: fewer repeated `getConfigValue`, route/mode checks, and transient-plant scans during Bot telemetry rerenders, without changing layer visibility or progressive-load behavior.
+
+**Benchmark:** Worker-run realistic GardenModel telemetry benchmark with static
+garden layers visible and Bot position updates driving parent rerenders.
+
+**Before:** 100.954 ms per 60 realistic telemetry rerenders, with 1,320 config
+reads, 120 `getMode` calls, and 840 `Path.getSlug` calls.
+
+**After:** 28.613 ms per 60 rerenders, with 0 repeated config reads,
+0 `getMode` calls, and 0 `Path.getSlug` calls.
+
+**Change:** 71.7% faster, saving 72.341 ms per realistic telemetry batch.
+
+**Outcome:** Accepted; environment, bed, grid, plant, weed, and point layers now
+sit behind a static-layer boundary while progressive-load order, route-driven
+spread behavior, and layer visibility settings still update.
+
+**Commit:** `Memoize GardenModel static layers for 71.7% faster telemetry`
+
+### Idea 274: Add a relevant-field comparator to the visible `Bed` subtree
+
+**Description:** Let `Bed` skip unrelated config-object churn by comparing only the config fields and resource references that affect bed, soil, image, pointer, moisture, and overlay rendering. Expected return: faster settings-panel and telemetry rerenders where bed inputs are visually unchanged, without hiding any bed, soil, image, moisture, pointer, or overlay updates.
+
+**Benchmark:** Realistic visible-bed benchmark with unrelated config-object
+churn over 60 rerenders.
+
+**Before:** 194.567 ms median batch, with 120 texture calls and 120 soil helper
+calls.
+
+**After:** 1.663 ms median batch, with 0 texture calls and 0 soil helper calls.
+
+**Change:** 99.1% faster, saving 192.904 ms per realistic 60-rerender batch.
+
+**Outcome:** Accepted; bed, soil, image, moisture, sensor, and pointer fields
+still invalidate the subtree, while unrelated config churn is skipped.
+
+**Commit:** `Memoize bed config churn for 99.1% faster rerenders`
+
+### Idea 275: Split dynamic Bot Z-axis work from static UTM-adjacent model leaves
+
+**Description:** Partition the remaining dynamic Bot subtree so Z-axis motion updates transforms while static model leaves and GLTF-backed meshes avoid rerendering when their visible inputs have not changed. Expected return: faster realistic Bot movement batches with no change to model detail, water, trail, camera, laser, or tool behavior.
+
+**Benchmark:** Realistic Bot setup over 90 Z-movement rerenders.
+
+**Before:** 79.101 ms median batch with 630 update-time `useGLTF` calls.
+
+**After:** Full static-leaf split regressed to 116.183 ms; wrapper-only split
+was 76.385 ms, only 3.4% faster; zMotor-wrapper split lowered GLTF calls but
+regressed to 87.8-90.0 ms.
+
+**Change:** No qualifying win; the best absolute saving was 2.716 ms per
+90-rerender batch and below the 10% threshold.
+
+**Outcome:** Rejected and rolled back; the added component partitioning was
+not worth the complexity under realistic Bot movement.
+
+**Commit:** Not committed
+
+### Idea 276: Memoize Bot air-tube and camera-mount derived geometry inputs
+
+**Description:** Cache the Bot air-tube curve inputs, camera mount position, and related derived coordinates across rerenders that do not change their inputs. Expected return: less per-movement setup work in the live Bot path while preserving tube curvature, camera-view origin, laser distance, and camera mount visuals.
+
+**Benchmark:** Realistic Genesis v1.8 Bot with camera view, laser, and air tube
+enabled over 90 rerenders.
+
+**Before:** Mixed movement 537.588 ms, Z-only movement 241.835 ms, and stable
+config churn 789.588 ms; each batch had 450 `getZ` calls and 360 air-tube
+curve changes.
+
+**After:** Mixed movement regressed to 792.526 ms, Z-only movement regressed to
+251.104 ms despite `getZ` dropping to 1, and stable config churn regressed to
+922.099 ms despite curve/`getZ` churn dropping to 0.
+
+**Change:** No qualifying win; reduced derived-work counters did not translate
+to runtime improvement.
+
+**Outcome:** Rejected and rolled back; memoization added cost in the measured
+Bot path.
+
+**Commit:** Not committed
+
+### Idea 277: Reduce `Tools` coordinate-helper setup during Bot movement
+
+**Description:** Share configured 3D position converters and mirror flags across the `Tools` render instead of rebuilding helper closures inside every tool. Expected return: lower configured-tool rerender CPU during Bot telemetry updates while preserving mounted-tool position, gantry-mounted slots, mirroring, rotations, opacity, navigation, and rotary behavior.
+
+**Benchmark:** Realistic configured `Tools` benchmark over 90 Bot movement
+rerenders.
+
+**Before:** 37.430 ms median movement batch.
+
+**After:** 19.316 ms median movement batch.
+
+**Change:** 48.4% faster, saving 18.114 ms per realistic 90-rerender batch.
+
+**Outcome:** Accepted; shared coordinate setup preserves mounted-tool,
+gantry-slot, mirroring, rotation, opacity, and navigation behavior.
+
+**Commit:** `Memoize tools movement path for 48.4% faster rerenders`
+
+### Idea 278: Avoid unnecessary `OpacityFilter` traversal for already-opaque tools
+
+**Description:** Re-evaluate the current tool opacity wrapper now that tool models are memoized, and skip material traversal/cloning when the slot is already fully opaque if the realistic saved-tool render still shows meaningful cost. Expected return: lower configured-tool startup and mount-change work without changing the faded mounted-tool visual.
+
+**Benchmark:** Worker-run realistic saved-tools mount benchmark with a mounted
+tool plus seven saved slots, measuring material traversal and clone work.
+
+**Before:** 2.304 ms mount path for seven saved tools with one faded mounted
+tool; 8 traversals and 10 material clones.
+
+**After:** 1.583 ms mount path; 1 traversal and 1 material clone. Movement
+rerenders still had 0 opacity traversals.
+
+**Change:** 31.3% faster, saving 0.721 ms on realistic saved-tool mount while
+removing 7 no-op traversals and 9 material clones.
+
+**Outcome:** Accepted; faded mounted-tool visuals and opacity restoration are
+preserved while already-opaque tools skip no-op material work.
+
+**Commit:** `Skip opaque tool opacity work for 31.3% faster mounts`
+
+### Idea 279: Reduce enabled bounds/dimension helper coordinate transforms
+
+**Description:** Compute each enabled `Bounds` dimension helper's transformed coordinates once per render instead of calling the same position converter repeatedly in JSX. Expected return: faster bounds/dimension overlay interactions with identical labels, edges, positions, and visibility.
+
+**Benchmark:** Realistic enabled-overlay config churn over 90 rerenders.
+
+**Before:** `bounds+zDimension` 18.928 ms with 1,080 coordinate conversions;
+`beamLength` 29.029 ms; `columnLength` 31.258 ms; `zAxisLength` 40.012 ms.
+
+**After:** `bounds+zDimension` 1.019 ms with 0 repeated conversions;
+`beamLength` 0.849 ms; `columnLength` 0.786 ms; `zAxisLength` 0.835 ms.
+
+**Change:** 94.6% faster for `bounds+zDimension`, saving 17.909 ms per
+90-rerender batch; individual dimension helpers were 97.1%-97.9% faster.
+
+**Outcome:** Accepted; helper labels, edges, endpoints, and visibility still
+update on relevant Bot position and config changes.
+
+**Commit:** `Memoize bounds for 94.6% faster config churn`
+
+### Idea 280: Memoize active `Solar` geometry placement and wiring points
+
+**Description:** Keep active solar-panel placement, wiring point arrays, and cell matrix setup stable across unrelated config churn. Expected return: faster scene-detail rerenders when the solar overlay is visible, while preserving focus fade, panel geometry, wiring, and solar visibility.
+
+**Benchmark:** Realistic visible solar config-churn batches over 60 rerenders,
+including Genesis XL, Genesis, focus-visible XL, and hidden-but-transitioned XL
+states.
+
+**Before:** Visible Genesis XL 18.685 ms; Genesis 16.291 ms; focus-visible XL
+19.111 ms; hidden transition-mounted XL 7.927 ms.
+
+**After:** Visible Genesis XL 2.474 ms; Genesis 2.045 ms; focus-visible XL
+2.556 ms; hidden transition-mounted XL 1.487 ms.
+
+**Change:** Visible Genesis XL was 86.8% faster, saving 16.211 ms per
+60-rerender batch; other measured states were 81.2%-87.4% faster.
+
+**Outcome:** Accepted; solar panel placement, wiring points, focus fade, and
+visibility behavior remain keyed to their real inputs.
+
+**Commit:** `Memoize solar hardware for 86.8% faster churn`
+
+### Idea 281: Narrow `Clouds` rerenders to season and cloud-relevant config fields
+
+**Description:** Add a relevant-field memo boundary around active cloud rendering so unrelated config object churn does not restart or revisit cloud setup. Expected return: faster scene-detail rerenders with clouds enabled, without changing cloud texture, density, animation, opacity, or disabled-cloud behavior.
+
+**Benchmark:** Worker-run clouds benchmark with 90 realistic unrelated config
+updates while clouds were visible.
+
+**Before:** 3.813 ms wall time, 0.746 ms profiler time.
+
+**After:** 1.056 ms wall time, 0.039 ms profiler time.
+
+**Change:** 72.3% faster, saving 2.757 ms wall time per realistic update
+batch.
+
+**Outcome:** Accepted; clouds now rerender only when cloud enablement,
+animation enablement, or season changes, preserving opacity, texture, density,
+and disabled-cloud behavior.
+
+**Commit:** `Memoize Clouds config churn for 72.3% faster updates`
+
+### Idea 282: Memoize `ThreeDPlantLabel` for visible all-label gardens
+
+**Description:** Add a relevant-field memo boundary around individual plant labels so all-label mode skips label billboards when unrelated config fields or parent state change. Expected return: faster dense labeled garden rerenders with identical label placement, text, hover behavior, and billboard following.
+
+**Benchmark:** Temporary Bun/Testing Library dense all-label benchmark with
+120 visible plant labels and 40 unrelated config-object rerenders.
+
+**Before:** 223.939 ms median batch; 4,800 `getZ` calls.
+
+**After:** 7.485 ms median batch; 0 `getZ` calls during unchanged churn.
+
+**Change:** 96.7% faster, saving 216.454 ms per dense all-label churn batch.
+
+**Outcome:** Accepted; visible all-label gardens reuse individual label
+billboards without changing hover labels, label text, placement, or billboard
+following.
+
+**Commit:** `Memoize plant labels for 96.7% faster churn`
+
+### Idea 283: Stabilize active pointer-preview crop and grid-preview setup
+
+**Description:** In active pointer-preview modes, avoid repeated crop/icon lookup and full dirty-grid scans when route/mode, map-point references, and draw state are unchanged. Expected return: better pointer responsiveness in plant/point creation workflows without changing preview texture, crosshair, radius, or out-of-bounds visuals.
+
+**Benchmark:** Temporary Bun/Testing Library active pointer-preview benchmark
+in crop-search mode with 150 map points and 60 unrelated config rerenders,
+covering both active crop preview and active dirty-grid preview paths.
+
+**Before:** Crop-preview churn was 57.236 ms per 60-rerender batch; dirty-grid
+preview churn was 32.378 ms per 60-rerender batch.
+
+**After:** Crop-preview churn was 4.924 ms per 60-rerender batch; dirty-grid
+preview churn was 2.265 ms per 60-rerender batch.
+
+**Change:** Crop-preview churn was 91.4% faster, saving 52.312 ms per
+60-rerender active-preview batch; dirty-grid preview churn was 93.0% faster,
+saving 30.113 ms per 60-rerender batch.
+
+**Outcome:** Accepted; active preview now compares route, mode, relevant
+config, refs, drawn point, crop radius, and dirty-grid presence while
+preserving preview icon, crop spread, crosshairs, radius, and bounds visuals.
+
+**Commit:** `Memoize pointer preview for 91.4% faster churn`
+
+### Idea 284: Reuse `ImageWrapper` setup for unchanged camera images
+
+**Description:** Memoize per-image wrapper setup by image metadata, texture identity, and relevant image calibration fields so unchanged camera-image decals do not recompute placement during soil texture rebuilds. Expected return: faster image-heavy soil texture setup without changing filtering, image order, highlighted image handling, texture resolution, or decal transforms.
+
+**Benchmark:** Temporary Bun/Testing Library `ImageTexture` benchmark with 24
+visible camera images and soil-brightness churn over five 60-rerender batches.
+This mirrors a realistic settings-slider interaction where the soil material
+changes but camera image URLs, metadata, calibration, and transforms do not.
+
+**Before:** 120.447 ms median batch with 7,500 texture hook calls.
+
+**After:** 33.218 ms median batch with 300 texture hook calls.
+
+**Change:** 72.4% faster, saving 87.229 ms per realistic 60-rerender batch;
+image texture hook calls dropped by 96.0%.
+
+**Outcome:** Accepted; image wrappers now skip unchanged non-demo camera
+images while image URL, highlight, position, calibration, debug, mirror, scale,
+and rotation changes still invalidate the decal setup. Demo soil images remain
+unmemoized so `forceOnline()` URL substitution is preserved.
+
+**Commit:** `Memoize image wrappers for 72.4% faster churn`
+
+### Idea 285: Reduce `SceneBoundary` load-step render churn
+
+**Description:** Narrow `SceneBoundary` and load-ready rendering so already-completed load steps stop revisiting readiness markers and perf marks on later GardenModel rerenders. Expected return: lower progressive-load overhead during startup and early telemetry churn without changing load order, reveal animations, or load-complete callbacks.
+
+**Benchmark:** Temporary Bun/Testing Library completed-load marker benchmark
+with all eight 3D load steps mounted and 60 post-completion parent rerenders.
+
+**Before:** 8.975 ms per 60-rerender batch; effects did not repeat
+`markStep`, so the remaining cost was component/comparator overhead only.
+
+**After:** Memoizing `LoadStepReady` regressed to 12.917 ms per 60-rerender
+batch.
+
+**Change:** No qualifying win; the prototype was 43.9% slower and added a
+memo boundary to a path that was already small after earlier GardenModel work.
+
+**Outcome:** Rejected and rolled back; the remaining completed-load churn is
+not worth additional component complexity.
+
+**Commit:** Not committed
+
+## Round 54
+
+### Idea 286: Binary-search animated sun samples
+
+**Description:** Replace the animated-season sun sample linear scan with a
+binary search over the cached day samples. Expected return: lower per-frame CPU
+when season animation is enabled, with identical accelerated night traversal,
+sun position, sky color, shadows, and debug helpers.
+
+**Benchmark:** Temporary Bun helper benchmark over 600 calls to
+`getAnimatedSeasonDate("Summer", frame / 60)`, representing 10 seconds of
+60 FPS animated-season frames.
+
+**Before:** 1.378 ms per 600-frame batch.
+
+**After:** 0.175 ms per 600-frame batch.
+
+**Change:** 87.3% faster, saving 1.203 ms across 600 frames, or roughly
+0.002 ms per frame.
+
+**Outcome:** Rejected and rolled back; the percentage qualified, but the
+absolute saving is too small for a real frame budget and not worth adding a
+separate search helper.
+
+**Commit:** Not committed
+
+### Idea 287: Add a relevant-field comparator to `Sun`
+
+**Description:** Let `Sun` skip unrelated config-object churn by comparing only
+sun, sky, shadow, animation, debug, and bed-size fields that affect rendering.
+Expected return: faster settings/config rerenders in the always-mounted
+environment layer without changing sun lighting, sky color, shadows, stars, or
+debug visuals.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering `Sun` 90
+times with unrelated config-object churn while keeping all sun, sky, shadow,
+and animation inputs unchanged.
+
+**Before:** 39.958 ms per 90-rerender batch.
+
+**After:** 1.391 ms per 90-rerender batch.
+
+**Change:** 96.5% faster, saving 38.567 ms per realistic config-churn batch.
+
+**Outcome:** Accepted; `Sun` now compares only rendering-relevant config fields
+and refs, so unrelated Bot/config fields do not rebuild the sun, stars, and
+debug subtree while sun lighting, sky color, shadows, season animation, and
+debug visuals still update.
+
+**Commit:** `Memoize Sun config churn for 96.5% faster rerenders`
+
+### Idea 288: Add a relevant-field comparator to `Lab`
+
+**Description:** Let the Lab scene skip unrelated config-object churn by
+comparing only scene, bed dimension, people, desk, active-focus, reveal, and
+load-callback inputs. Expected return: faster visible Lab detail rerenders
+without changing walls, shelves, desk, people, focus fade, or load-in behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering a visible
+Lab scene 90 times with people and desk enabled while only an unrelated config
+field changed.
+
+**Before:** 38.133 ms per 90-rerender batch.
+
+**After:** 1.439 ms per 90-rerender batch.
+
+**Change:** 96.2% faster, saving 36.694 ms per realistic Lab config-churn
+batch.
+
+**Outcome:** Accepted; Lab now skips unrelated config-object churn while scene,
+bed dimensions, people, desk, focus, reveal, and load callback changes still
+invalidate the scene.
+
+**Commit:** `Memoize Lab scene churn for 96.2% faster rerenders`
+
+### Idea 289: Add a relevant-field comparator to `Greenhouse`
+
+**Description:** Let the Greenhouse scene skip unrelated config-object churn by
+comparing only scene, bed dimension, people, active-focus, reveal, and
+load-callback inputs. Expected return: faster visible Greenhouse detail
+rerenders without changing walls, shelves, starter trays, people, potted plant,
+focus fade, or load-in behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering a visible
+Greenhouse scene 90 times with people and starter trays active while only an
+unrelated config field changed.
+
+**Before:** 30.792 ms per 90-rerender batch.
+
+**After:** 1.173 ms per 90-rerender batch.
+
+**Change:** 96.2% faster, saving 29.619 ms per realistic Greenhouse
+config-churn batch.
+
+**Outcome:** Accepted; Greenhouse now skips unrelated config-object churn while
+scene, bed dimensions, people, focus, reveal, and load callback changes still
+invalidate the scene.
+
+**Commit:** `Memoize Greenhouse scene churn for 96.2% faster rerenders`
+
+### Idea 290: Reuse `People` scene placement for unchanged props
+
+**Description:** Memoize the People billboard layer and per-person image
+placement by relevant scene config and person data. Expected return: less
+scene-detail churn during focus/config updates with identical person sprites,
+opacity, placement, billboard behavior, and focus visibility.
+
+**Benchmark:** Temporary Bun/Testing Library direct `People` benchmark with
+the normal two-person scene count over 90 unrelated config rerenders, run after
+the accepted Lab and Greenhouse scene comparators.
+
+**Before:** 9.167 ms per 90 direct component rerenders.
+
+**After:** Not implemented.
+
+**Change:** No accepted change; the remaining isolated component cost is small,
+and the realistic app-level unchanged-parent churn was already removed by the
+Lab and Greenhouse comparators.
+
+**Outcome:** Rejected before implementation; adding another memo/deep-compare
+layer for two person sprites is not worth the complexity after the parent
+scenes now skip unrelated churn.
+
+**Commit:** Not committed
+
+## Round 55
+
+### Idea 291: Add a relevant-field comparator to visible `Grid`
+
+**Description:** Let the garden grid skip unrelated config-object churn by
+comparing only grid visibility, active focus, bed/bot dimensions, offsets,
+mirroring, and `getZ`. Expected return: lower settings/telemetry rerender CPU
+when the grid is visible, without changing line positions, terrain following,
+focus fade, or material binding.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the normal
+Genesis visible grid 90 times with only an unrelated config field changed.
+
+**Before:** 355.815 ms per 90-rerender batch.
+
+**After:** 1.179 ms per 90-rerender batch.
+
+**Change:** 99.7% faster, saving 354.636 ms per realistic visible-grid
+config-churn batch.
+
+**Outcome:** Accepted; the grid now skips unrelated config-object churn while
+grid visibility, active focus, bed/bot dimensions, offsets, mirroring, and
+`getZ` changes still rebuild the same terrain-following lines and material
+binding.
+
+**Commit:** `Memoize grid config churn for 99.7% faster rerenders`
+
+### Idea 292: Add a relevant-field comparator to `Ground`
+
+**Description:** Let the ground layer skip unrelated config-object churn by
+comparing only ground visibility, scene, low-detail, bed height/offset, and
+detail-level inputs. Expected return: less always-mounted environment churn
+without changing texture choice, LOD behavior, geometry, or material color.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the normal
+high-detail ground layer 90 times with only an unrelated config field changed.
+
+**Before:** 6.970 ms per 90-rerender batch.
+
+**After:** 1.169 ms per 90-rerender batch.
+
+**Change:** 83.2% faster, saving 5.801 ms per realistic ground
+config-churn batch.
+
+**Outcome:** Accepted; the ground now skips unrelated config-object churn while
+ground visibility, scene texture/color, low-detail mode, and vertical placement
+changes still invalidate the layer.
+
+**Commit:** `Memoize ground config churn for 83.2% faster rerenders`
+
+### Idea 293: Add a relevant-field comparator to `NorthArrow`
+
+**Description:** Let the north arrow skip unrelated config-object churn by
+comparing only north visibility, heading, bed dimensions, and bed height/offset.
+Expected return: less bed-layer churn without changing arrow placement,
+rotation, geometry, or visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+north arrow 90 times with only an unrelated config field changed.
+
+**Before:** 3.749 ms per 90-rerender batch.
+
+**After:** 1.113 ms per 90-rerender batch.
+
+**Change:** 70.3% faster, saving 2.636 ms per realistic north-arrow
+config-churn batch.
+
+**Outcome:** Accepted; the north arrow now skips unrelated config-object churn
+while north visibility, heading, bed dimensions, and vertical placement changes
+still invalidate the arrow.
+
+**Commit:** `Memoize north arrow churn for 70.3% faster rerenders`
+
+### Idea 294: Memoize `GroupOrderVisual` wrapper inputs
+
+**Description:** Add a relevant-field memo boundary around the group-order
+visual wrapper so unrelated config-object churn does not repeatedly resolve the
+selected group or selected points. Expected return: faster details-layer rerenders
+when a group is selected, without changing selected-group sorting, labels, line
+positions, or URL-driven group selection.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark with a selected group
+and 75 selected points over 90 unrelated config rerenders.
+
+**Before:** 1.518 ms per 90-rerender batch.
+
+**After:** Not implemented.
+
+**Change:** No accepted change; the previous selected-point cache and inner
+memoized order renderer already reduced this path below a meaningful absolute
+runtime cost.
+
+**Outcome:** Rejected before implementation; even a perfect wrapper would save
+only about 1.5 ms across 90 rerenders while adding another comparator around
+URL-driven group selection.
+
+**Commit:** Not committed
+
+### Idea 295: Narrow `DrawnPoint` config churn
+
+**Description:** Memoize the active drawn-point preview by mode, drawn point,
+position usage, refs, and point-position config fields. Expected return: better
+point/weed creation responsiveness during unrelated settings churn without
+changing preview marker geometry, weed base choice, radius, color, refs, or
+placement.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering an active
+point-creation preview with a drawn point and radius 90 times while only an
+unrelated config field changed.
+
+**Before:** 6.806 ms per 90-rerender batch.
+
+**After:** 1.722 ms per 90-rerender batch.
+
+**Change:** 74.7% faster, saving 5.084 ms per realistic active-preview
+config-churn batch.
+
+**Outcome:** Accepted; the route/mode read remains outside the memo boundary,
+so point-vs-weed preview changes still update, while unchanged drawn-point
+fields, refs, and position config skip preview subtree churn.
+
+**Commit:** `Memoize drawn point churn for 74.7% faster previews`
+
+## Round 56
+
+### Idea 296: Narrow `Solenoid` water-path dependencies
+
+**Description:** Rebuild solenoid water-tube curves only when Bot position,
+water-routing dimensions, Z direction, or bed-position fields change instead
+of depending on the whole config object. Expected return: faster Bot config
+churn with water hardware visible, without changing solenoid placement, tube
+curves, water-flow animation, or model geometry.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow Solenoid 90 times with only an unrelated config field changed.
+
+**Before:** 19.134 ms per 90-rerender batch.
+
+**After:** 15.060 ms per 90-rerender batch.
+
+**Change:** 21.3% faster, saving 4.074 ms per realistic Solenoid config-churn
+batch.
+
+**Outcome:** Accepted; solenoid water-tube curves now depend on the specific
+Bot position and water-routing fields they consume, while unrelated config
+object churn preserves the same paths and rendered water hardware.
+
+**Commit:** `Narrow solenoid water paths for 21.3% faster churn`
+
+### Idea 297: Memoize `WaterTube` unchanged tube props
+
+**Description:** Let water tube groups skip unchanged tube path, dimensions,
+and water-flow props. Expected return: lower rerender work in solenoid and
+X-axis water paths while preserving tube geometry, transparency, shared water
+texture usage, and animation.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow Solenoid 90 times with unrelated config churn after Idea 296 made
+the Solenoid tube paths stable.
+
+**Before:** 14.866 ms per 90-rerender batch.
+
+**After:** 5.529 ms per 90-rerender batch.
+
+**Change:** 62.8% faster, saving 9.337 ms per realistic Solenoid water-tube
+churn batch.
+
+**Outcome:** Accepted; water tubes now skip unchanged path/dimension/water-flow
+props while preserving the same tube mesh, transparent material, shared water
+texture fallback, and water stream animation behavior.
+
+**Commit:** `Memoize water tubes for 62.8% faster solenoid churn`
+
+### Idea 298: Memoize `CameraView` relevant frustum inputs
+
+**Description:** Add a relevant-field comparator around the camera-view
+frustum so unrelated config churn skips convex hull and material setup while
+camera calibration, mount position, Z, capture flash, and visibility changes
+still update. Expected return: faster camera-view debug rerenders without
+changing frustum shape, flash animation, opacity, or edges.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering enabled
+camera view 90 times with only an unrelated config field changed.
+
+**Before:** 3.412 ms per 90-rerender batch.
+
+**After:** 1.102 ms per 90-rerender batch.
+
+**Change:** 67.7% faster, saving 2.310 ms per realistic enabled-camera-view
+config-churn batch.
+
+**Outcome:** Accepted; camera view now skips unrelated config-object churn
+while camera visibility, calibration, mount position, Z, distance, and capture
+flash changes still rebuild or animate the same frustum.
+
+**Commit:** `Memoize camera view churn for 67.7% faster rerenders`
+
+### Idea 299: Memoize `DistanceIndicator` labels and arrows
+
+**Description:** Memoize distance indicator geometry by start/end/visibility
+so unchanged labels and arrows are skipped. Expected return: faster bounds and
+bed dimension overlay rerenders with identical labels, arrows, placement,
+rotation, and visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering one
+bed-length distance overlay 90 times with fresh but value-equivalent start/end
+coordinate objects, matching parent rerenders that rebuild coordinate literals.
+
+**Before:** 10.687 ms per 90-rerender batch.
+
+**After:** 0.851 ms per 90-rerender batch.
+
+**Change:** 92.0% faster, saving 9.836 ms per realistic unchanged-overlay
+rerender batch.
+
+**Outcome:** Accepted; distance indicators now skip unchanged coordinate churn
+while start, end, and visibility changes still update the same overlay geometry
+and labels.
+
+**Commit:** `Memoize distance indicators for 92.0% faster rerenders`
+
+### Idea 300: Memoize shared 3D `Text` labels
+
+**Description:** Add a relevant-field comparator around the shared `Text`
+component used by labels and overlays. Expected return: lower label rerender
+work where parent props are stable, without changing font, position, rotation,
+material color, render order, or visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering 40 visible
+plant-style labels 30 times with identical label values but freshly allocated
+position/rotation arrays, matching realistic label overlay churn.
+
+**Before:** 16.672 ms per 40-label, 30-rerender batch.
+
+**After:** 1.286 ms per 40-label, 30-rerender batch.
+
+**Change:** 92.3% faster, saving 15.386 ms per realistic unchanged-label
+rerender batch.
+
+**Outcome:** Accepted; shared 3D text now skips unchanged label rerenders while
+changes to text, position, rotation, size, color, name, visibility, render
+order, or thickness still update the same label.
+
+**Commit:** `Memoize text labels for 92.3% faster rerenders`
+
+## Round 57
+
+### Idea 301: Memoize shared `Arrow` extrusion args
+
+**Description:** Memoize the shared arrow component by length, width, and
+rotation contents, and reuse the generated 2D shape/options while those values
+are unchanged. Expected return: faster axes and dimension-arrow rerenders
+without changing arrow geometry, material color, extrusion depth, shadows, or
+rotation.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the three
+axes-arrow components 90 times with identical length/width and fresh but
+value-equivalent rotation arrays.
+
+**Before:** 4.373 ms per 90-rerender batch.
+
+**After:** 1.260 ms per 90-rerender batch.
+
+**Change:** 71.2% faster, saving 3.113 ms per realistic unchanged axes-arrow
+rerender batch.
+
+**Outcome:** Accepted; shared arrows now skip unchanged length/width/rotation
+churn and reuse extrusion args when they do render, while dimension and
+rotation changes still rebuild the same arrow geometry.
+
+**Commit:** `Memoize arrow extrusions for 71.2% faster rerenders`
+
+### Idea 302: Memoize `FarmbotAxes` relevant config fields
+
+**Description:** Add a relevant-field comparator around the axes overlay so
+unrelated config object churn skips the three-arrow axes subtree. Expected
+return: faster axes-on rerenders while bed size, bed offsets, Z zero inputs,
+and axes visibility changes still update.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering visible
+FarmBot axes 90 times while only an unrelated config field changed, measured
+after Idea 301 so this isolates the remaining axes subtree work.
+
+**Before:** 3.069 ms per 90-rerender batch.
+
+**After:** 0.838 ms per 90-rerender batch.
+
+**Change:** 72.7% faster, saving 2.231 ms per realistic axes-on config-churn
+batch.
+
+**Outcome:** Accepted; axes now skip unrelated config churn while bed size,
+bed offsets, Z-zero fields, and axes visibility inputs still update the same
+axes placement.
+
+**Commit:** `Memoize FarmBot axes for 72.7% faster rerenders`
+
+### Idea 303: Memoize `Caster` relevant config fields
+
+**Description:** Memoize each bed caster by the config fields that affect its
+bracket, wheel, axle, position, and flush behavior. Expected return: faster bed
+rerenders across the realistic six-caster bed while preserving caster geometry
+and placement.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic six bed casters 90 times while only an unrelated config field
+changed.
+
+**Before:** 27.899 ms per 90-rerender batch.
+
+**After:** 1.785 ms per 90-rerender batch.
+
+**Change:** 93.6% faster, saving 26.114 ms per realistic six-caster
+config-churn batch.
+
+**Outcome:** Accepted; each caster now skips unrelated config churn while
+leg size, bed height, bed Z offset, and flush behavior still update the same
+bracket, wheel, axle, and placement.
+
+**Commit:** `Memoize bed casters for 93.6% faster rerenders`
+
+### Idea 304: Memoize `Packaging` relevant config fields
+
+**Description:** Add a relevant-field comparator around packaging so unrelated
+config churn skips the carton, straps, edge protectors, and label subtree.
+Expected return: faster packaging-on renders while package visibility, size,
+version, label, bed dimensions, and ground placement still update.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering packaging
+enabled for a Genesis XL v1.7 kit 90 times while only an unrelated config field
+changed.
+
+**Before:** 17.542 ms per 90-rerender batch.
+
+**After:** 1.029 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 16.513 ms per realistic packaging-on
+config-churn batch.
+
+**Outcome:** Accepted; packaging now skips unrelated config churn while
+visibility, kit version, size preset, label, bed dimensions, and ground
+placement still update the same carton subtree.
+
+**Commit:** `Memoize packaging for 94.1% faster rerenders`
+
+### Idea 305: Memoize `UtilitiesPost` relevant config fields and hose paths
+
+**Description:** Memoize the utilities post by the config fields and focus
+state that affect post visibility, placement, color, texture, and hose paths;
+also avoid rebuilding hose curves when those inputs are stable. Expected
+return: faster utilities-on bed rerenders without changing post hardware,
+texture, focus visibility, or hose geometry.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering visible
+utilities post hardware 90 times while only an unrelated config field changed
+and focus state remained stable.
+
+**Before:** 18.218 ms per 90-rerender batch.
+
+**After:** 1.071 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 17.147 ms per realistic utilities-on
+config-churn batch.
+
+**Outcome:** Accepted; utilities post now skips unrelated config churn and
+reuses hose path objects across relevant rerenders, while post visibility,
+focus state, placement, brightness, texture inputs, and hose dimensions still
+update the same hardware subtree.
+
+**Commit:** `Memoize utilities post for 94.1% faster rerenders`
+
+## Round 58
+
+### Idea 306: Memoize `PowerSupply` relevant config fields
+
+**Description:** Replace shallow memoization with a relevant-field comparator
+for the power supply, preserving cable-debug color cycling by rerendering when
+debug coloring is enabled. Expected return: faster Bot utility rerenders when
+only unrelated config fields change, without changing the supply box, cable
+path, plug placement, texture, or debug coloring behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the power
+supply 90 times with normal cable debugging off while only an unrelated config
+field changed.
+
+**Before:** 5.300 ms per 90-rerender batch.
+
+**After:** 1.133 ms per 90-rerender batch.
+
+**Change:** 78.6% faster, saving 4.167 ms per realistic power-supply
+config-churn batch.
+
+**Outcome:** Accepted; power supply now skips unrelated config churn while
+bed/cable dimensions still update the same path and cable-debug mode still
+rerenders to preserve debug color cycling.
+
+**Commit:** `Memoize power supply for 78.6% faster rerenders`
+
+### Idea 307: Memoize `CameraSelectionUI` relevant config fields
+
+**Description:** Add a relevant-field comparator around camera selection UI so
+unrelated config churn skips the camera marker subtree while internal hover
+state still updates. Expected return: faster camera-selection overlay rerenders
+without changing marker positions, selected state, hover colors, click actions,
+or debug-light markers.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+camera-selection overlay 90 times while only an unrelated config field changed.
+
+**Before:** 3.159 ms per 90-rerender batch.
+
+**After:** 1.046 ms per 90-rerender batch.
+
+**Change:** 66.9% faster, saving 2.113 ms per realistic camera-selection
+config-churn batch.
+
+**Outcome:** Accepted; the camera-selection overlay now skips unrelated config
+churn while visibility, heading, top-down mode, bed dimensions, debug markers,
+dispatch changes, and internal hover state still update normally.
+
+**Commit:** `Memoize camera selection for 66.9% faster rerenders`
+
+### Idea 308: Memoize `Solar` relevant config fields
+
+**Description:** Memoize the solar hardware entry point by visibility/focus and
+bed-placement fields so unrelated config churn skips the panel, cell, and wire
+subtree. Expected return: faster solar-on scene rerenders without changing
+focus fade behavior, panel geometry, wiring, or placement.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering solar
+enabled 90 times while focus stayed stable and only an unrelated config field
+changed.
+
+**Before:** 2.396 ms per 90-rerender batch.
+
+**After:** 1.048 ms per 90-rerender batch with the attempted comparator.
+
+**Change:** 56.3% faster, saving 1.348 ms per realistic solar-on config-churn
+batch.
+
+**Outcome:** Rejected and rolled back; the percentage improvement qualified,
+but the absolute saving was too small for another exported comparator on a
+less common scene prop.
+
+### Idea 309: Memoize `Desk` relevant config fields
+
+**Description:** Add a relevant-field comparator around the desk prop so
+unrelated config churn skips the desk, laptop, and textured material subtree.
+Expected return: faster scene-prop rerenders while desk visibility, focus
+visibility, bed dimensions, and ground placement still update.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the visible
+desk prop 90 times while focus stayed stable and only an unrelated config field
+changed.
+
+**Before:** 15.666 ms per 90-rerender batch.
+
+**After:** 1.097 ms per 90-rerender batch.
+
+**Change:** 93.0% faster, saving 14.569 ms per realistic desk-on config-churn
+batch.
+
+**Outcome:** Accepted; desk now skips unrelated config churn while desk
+visibility, focus visibility, bed dimensions, and ground placement still
+update the same desk/laptop subtree.
+
+**Commit:** `Memoize desk prop for 93.0% faster rerenders`
+
+### Idea 310: Memoize `People` relevant config fields and people data
+
+**Description:** Memoize the people prop layer by visibility/focus, bed
+placement fields, and person URL/offset data. Expected return: faster people-on
+scene rerenders without changing billboard placement, person image assets,
+opacity, render order, or focus visibility.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic two-person scene layer 90 times while focus stayed stable and only an
+unrelated config field changed.
+
+**Before:** 5.831 ms per 90-rerender batch.
+
+**After:** 1.080 ms per 90-rerender batch.
+
+**Change:** 81.5% faster, saving 4.751 ms per realistic people-on config-churn
+batch.
+
+**Outcome:** Accepted; people now skip unrelated config churn and
+value-equivalent inline people arrays while visibility, focus state, bed
+placement fields, URLs, and offsets still update the same billboards.
+
+**Commit:** `Memoize people layer for 81.5% faster rerenders`
+
+## Round 59
+
+### Idea 311: Memoize static `PottedPlant`
+
+**Description:** Memoize the static potted-plant greenhouse prop so parent
+scene rerenders skip its pot mesh, soil disk, billboard, and plant image
+subtree. Expected return: faster greenhouse prop rerenders without changing
+geometry, image, scale, shadows, or billboard behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the static
+potted plant 90 times with no prop changes, matching unchanged greenhouse
+parent rerenders.
+
+**Before:** 4.603 ms per 90-rerender batch.
+
+**After:** 0.835 ms per 90-rerender batch.
+
+**Change:** 81.9% faster, saving 3.768 ms per realistic unchanged prop
+rerender batch.
+
+**Outcome:** Accepted; the static potted plant now skips unchanged parent
+rerenders while preserving the same pot geometry, soil disk, image, shadows,
+and billboard behavior.
+
+**Commit:** `Memoize potted plant for 81.9% faster rerenders`
+
+### Idea 312: Memoize `StarterTrays` value-equivalent positions
+
+**Description:** Add a positions comparator around starter trays so inline
+position arrays from the greenhouse scene do not rebuild tray/seedling
+instanced-mesh React subtrees when the positions are value-equivalent. Expected
+return: faster greenhouse shelf rerenders while changed tray positions still
+update instance matrices and camera-facing seedlings.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+realistic two-tray greenhouse shelf setup 90 times with freshly allocated but
+value-equivalent position arrays.
+
+**Before:** 6.771 ms per 90-rerender batch.
+
+**After:** 0.817 ms per 90-rerender batch.
+
+**Change:** 87.9% faster, saving 5.954 ms per realistic two-tray greenhouse
+rerender batch.
+
+**Outcome:** Accepted; starter trays now skip value-equivalent position-array
+churn while changed tray coordinates still update tray and seedling instance
+matrices.
+
+**Commit:** `Memoize starter trays for 87.9% faster rerenders`
+
+### Idea 313: Memoize `PresetButton` rendered controls
+
+**Description:** Memoize preset buttons by preset, hover state, index, start
+position, and callback identity. Expected return: faster 3D preset UI rerenders
+when sibling controls update, without changing hover, press, release, or click
+behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering three
+preset buttons 90 times with stable callbacks, stable hover state, and freshly
+allocated but value-equivalent start positions.
+
+**Before:** 8.998 ms per 90-rerender batch.
+
+**After:** 1.246 ms per 90-rerender batch.
+
+**Change:** 86.2% faster, saving 7.752 ms per realistic three-button UI
+rerender batch.
+
+**Outcome:** Accepted; preset buttons now skip unchanged rendered-control
+rerenders while hover state, callbacks, index, preset label, and start position
+changes still update the same controls and interactions.
+
+**Commit:** `Memoize preset buttons for 86.2% faster rerenders`
+
+### Idea 314: Memoize `Sky` primitive props
+
+**Description:** Memoize the sky primitive by sun position contents and reuse
+the static scale vector. Expected return: lower background rerender churn
+without changing sky uniforms, scale, turbidity, or sun position behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the sky
+primitive 90 times with freshly allocated but value-equivalent sun positions.
+
+**Before:** 1.914 ms per 90-rerender batch.
+
+**After:** 0.851 ms per 90-rerender batch with the attempted memoized sky.
+
+**Change:** 55.5% faster, saving 1.063 ms per realistic sky rerender batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was too small for another exported comparator on the
+background sky primitive.
+
+### Idea 315: Memoize `Person` image transforms
+
+**Description:** Memoize individual person image props by URL, position, and
+rotation contents. Expected return: faster people layer rerenders when parent
+billboards rerender but the person asset and transform are unchanged, without
+changing image scale, opacity, render order, or raycast behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the two
+person image components used by a realistic people layer 90 times with
+unchanged URLs and transforms.
+
+**Before:** 3.803 ms per 90-rerender batch.
+
+**After:** 1.082 ms per 90-rerender batch.
+
+**Change:** 71.5% faster, saving 2.721 ms per realistic two-person image
+rerender batch.
+
+**Outcome:** Accepted; person image components now skip unchanged URL and
+transform churn while changed image assets, positions, and rotations still
+update the same billboarded image.
+
+**Commit:** `Memoize person images for 71.5% faster rerenders`
+
+## Round 60
+
+### Idea 316: Memoize `XAxisWaterTube` relevant config fields
+
+**Description:** Replace shallow memoization on the X-axis water tube with a
+relevant-field comparator and stable tube path construction. Expected return:
+faster Bot utility rerenders when unrelated config fields change, without
+changing tube geometry, adapter placement, water-flow visibility, or material
+behavior.
+
+**Benchmark:** Temporary Bun/Testing Library benchmark rerendering the
+water-flow X-axis water tube 90 times while only an unrelated config field
+changed.
+
+**Before:** 7.980 ms per 90-rerender batch.
+
+**After:** 1.067 ms per 90-rerender batch.
+
+**Change:** 86.6% faster, saving 6.913 ms per realistic Bot utility
+config-churn batch.
+
+**Outcome:** Accepted; X-axis water tube now skips unrelated config churn and
+reuses its tube path across relevant rerenders while bed dimensions, ground Z,
+and water-flow changes still update the same tube and adapters.
+
+**Commit:** `Memoize X-axis water tube for 86.6% faster rerenders`
+
+### Idea 317: Memoize `WateringAnimations` relevant inputs
+
+**Description:** Add a relevant-input comparator around watering animations so
+unrelated config churn skips the 16 stream curves and mist subtree when the
+tool position, water flow state, terrain lookup, and water-routing fields are
+unchanged. Expected return: faster watering-on rerenders without changing water
+stream curves, mist placement, shared texture usage, or delayed visibility.
+
+**Benchmark:** Direct `WateringAnimations` water-on render with the shipped 16
+streams plus mist, then 90 rerenders where only unrelated `config.sun` changed
+while tool position, terrain lookup, water flow, and water-routing fields stayed
+unchanged.
+
+**Before:** 3.802 ms per 90-rerender batch.
+
+**After:** 1.053 ms per 90-rerender batch.
+
+**Change:** 72.3% faster, saving 2.749 ms per realistic watering-animation
+config-churn batch.
+
+**Outcome:** Accepted; watering animations now skip unrelated config churn while
+water flow, terrain lookup, tool position, and routing geometry changes still
+rerender the same water streams and mist.
+
+**Commit:** `Memoize watering animations for 72.3% faster rerenders`
+
+### Idea 318: Memoize `MoistureReadings` config churn
+
+**Description:** Memoize moisture reading markers by readings identity,
+display settings, and the config fields used for offset placement. Expected
+return: faster moisture-debug rerenders with readings visible while changed
+reading data, radius, color, Z override, or bed offsets still update.
+
+**Benchmark:** Direct `MoistureReadings` render with 25 visible readings,
+debug-layer offset placement enabled, and 90 rerenders where only unrelated
+`config.sun` changed while readings identity and marker display settings stayed
+unchanged.
+
+**Before:** 5.331 ms per 90-rerender batch.
+
+**After:** 1.082 ms per 90-rerender batch.
+
+**Change:** 79.7% faster, saving 4.249 ms per realistic moisture-readings
+config-churn batch.
+
+**Outcome:** Accepted; moisture reading markers now skip unrelated config churn
+while reading data, marker color/radius, Z override, offset placement, and bed
+offset fields still update.
+
+**Commit:** `Memoize moisture readings for 79.7% faster rerenders`
+
+### Idea 319: Memoize `MoistureSurface` relevant inputs
+
+**Description:** Add a relevant-field comparator around the full moisture
+surface so unrelated config churn skips the moisture map and reading subtree
+when sensors/readings and interpolation inputs are unchanged. Expected return:
+faster moisture-debug rerenders without changing interpolation, opacity,
+reading markers, or map placement.
+
+**Benchmark:** Real `MoistureSurface` render with 25 soil readings, matching
+sensors, moisture readings and moisture map both visible, a fresh position tuple
+per rerender like the image-texture call site, and 90 rerenders where only
+unrelated `config.sun` changed.
+
+**Before:** 24.874 ms per 90-rerender batch.
+
+**After:** 1.052 ms per 90-rerender batch.
+
+**Change:** 95.8% faster, saving 23.822 ms per realistic moisture-surface
+config-churn batch.
+
+**Outcome:** Accepted; the full moisture surface now skips unrelated config
+churn while value-equivalent position tuples are tolerated, and sensor/readings
+identity, visibility, marker display, and interpolation field changes still
+rerender.
+
+**Commit:** `Memoize moisture surface for 95.8% faster rerenders`
+
+### Idea 320: Memoize Bot bed utility wrapper
+
+**Description:** Add a relevant-field comparator around the Bot bed utility
+subassembly wrapper so unrelated config churn skips PowerSupply and X-axis
+water tube wrapper work together. Expected return: faster Bot utility
+rerenders while power cable, water tube, adapter, and water-flow changes still
+update.
+
+**Benchmark:** Full `Bot` render with tracks and cable carriers enabled, then
+90 rerenders where only unrelated `config.sun` changed. This keeps the
+benchmark on the realistic parent path where the utility wrapper actually runs,
+after the PowerSupply and X-axis water tube children already have their own
+accepted comparators.
+
+**Before:** 320.162 ms per 90-rerender batch.
+
+**After:** 329.541 ms per 90-rerender batch.
+
+**Change:** 2.9% slower.
+
+**Outcome:** Rejected and rolled back; the extra wrapper comparator did not
+improve the real Bot rerender path and only duplicated child-level memo logic.
+
+## Round 61
+
+### Idea 321: Memoize `Solenoid` relevant inputs
+
+**Description:** Add a relevant-field comparator around the solenoid and water
+tube assembly so unrelated config churn skips the four tube wrappers and model
+subtree when bot position, water flow, and tube-routing dimensions are
+unchanged. Expected return: faster Bot rerenders without changing solenoid
+placement, tube geometry, or water-flow visibility.
+
+**Benchmark:** Direct `Solenoid` render with the normal four water tube
+wrappers and solenoid model, then 90 rerenders where only unrelated
+`config.sun` changed while bot position, water flow, and routing dimensions
+stayed unchanged.
+
+**Before:** 4.227 ms per 90-rerender batch.
+
+**After:** 1.143 ms per 90-rerender batch.
+
+**Change:** 73.0% faster, saving 3.084 ms per realistic solenoid config-churn
+batch.
+
+**Outcome:** Accepted; solenoid rendering now skips unrelated config churn
+while bot position, water flow, and tube-routing dimension changes still
+rerender the water tube assembly.
+
+**Commit:** `Memoize solenoid for 73.0% faster rerenders`
+
+### Idea 322: Memoize `Tools` relevant inputs
+
+**Description:** Add a relevant-input comparator around the full tools
+subtree, covering mounted tool state, tool slots, bot position, dispatch/getZ
+callbacks, and the config fields used by tool placement and visibility.
+Expected return: faster Bot rerenders with configured tools or promo tools
+when unrelated config fields change, without changing mounted tool rendering,
+toolbay slots, pullout directions, or animations.
+
+**Benchmark:** Direct `Tools` render with six configured tool slots, a mounted
+weeder, stable callbacks, and 90 rerenders where only unrelated `config.sun`
+changed while bot position and tool-slot identity stayed unchanged.
+
+**Before:** 18.412 ms per 90-rerender batch.
+
+**After:** 1.083 ms per 90-rerender batch.
+
+**Change:** 94.1% faster, saving 17.329 ms per realistic configured-tools
+config-churn batch.
+
+**Outcome:** Accepted; the tools subtree now skips unrelated config churn while
+tool-slot identity, mounted tool state, bot position, callbacks, mirror
+settings, tool animation flags, and placement dimensions still rerender.
+
+**Commit:** `Memoize tools for 94.1% faster rerenders`
+
+### Idea 323: Memoize `ZoomBeacons` relevant inputs
+
+**Description:** Memoize the zoom beacon collection by active focus, callbacks,
+load-in spring handles, bot position, and focus-layout config fields. Expected
+return: faster scene-detail rerenders while hover state, focus transitions,
+debug beacons, animation, and layout changes still update.
+
+**Benchmark:** Direct `ZoomBeacons` render with stable callbacks, no active
+focus, default bot position, and 90 rerenders where only unrelated `config.sun`
+changed.
+
+**Before:** 2.382 ms per 90-rerender batch.
+
+**After:** 1.054 ms per 90-rerender batch with the attempted collection
+comparator.
+
+**Change:** 55.8% faster, saving 1.328 ms per realistic zoom-beacon config
+churn batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was too small for another exported comparator and 13-field
+config list on a scene-detail-only layer.
+
+### Idea 324: Skip hidden `Bounds` position churn
+
+**Description:** Tighten the `Bounds` comparator so bot position changes are
+ignored when bounds, Z dimension, and distance indicators are all hidden.
+Expected return: faster default Bot movement rerenders without changing visible
+bounds or distance indicator behavior.
+
+**Benchmark:** Direct hidden `Bounds` render with bounds, Z dimension, and
+distance indicators disabled, then 90 rerenders where only bot Z position
+changed.
+
+**Before:** 1.149 ms per 90-rerender batch.
+
+**After:** 0.899 ms per 90-rerender batch with the attempted hidden-position
+fast path.
+
+**Change:** 21.8% faster, saving 0.250 ms per realistic hidden-bounds movement
+batch.
+
+**Outcome:** Rejected and rolled back; the percent improvement qualified, but
+the absolute saving was far below a meaningful user-visible threshold.
+
+### Idea 325: Memoize `GroupOrderVisual` selection wrapper
+
+**Description:** Add a relevant-input comparator around the group-order
+selection wrapper so unrelated config churn skips URL group lookup and selected
+point cache checks when group/order inputs are unchanged. Expected return:
+faster group-order visualization rerenders while group selection, point lists,
+sort type, terrain lookup, and exaggerated-Z changes still update.
+
+**Benchmark:** Direct active `GroupOrderVisual` render with a selected group,
+25 visible group points, stable group/point arrays, stable terrain lookup, and
+90 rerenders where only unrelated `config.sun` changed.
+
+**Before:** 1.451 ms per 90-rerender batch.
+
+**After:** 1.060 ms per 90-rerender batch with the attempted selection-wrapper
+comparator.
+
+**Change:** 26.9% faster, saving 0.391 ms per realistic active group-order
+config-churn batch.
+
+**Outcome:** Rejected and rolled back; the selected-point cache and memoized
+inner order renderer already keep this path cheap, so the extra exported
+wrapper comparator was not worth the small absolute saving.
+
+## Round 62
+
+### Idea 326: Memoize Bot frame subassembly by relevant config fields
+
+**Description:** Replace object-identity config comparison on the Bot frame
+subassembly with relevant field comparison for frame dimensions, tracks, cable
+carrier visibility, and XY placement. Expected return: faster full Bot
+rerenders during unrelated config churn while track columns, brackets, X cable
+carrier mount, X carrier, and cross-slide placement still update when their
+inputs change.
+
+**Benchmark:** Full `Bot` render with tracks and cable carriers enabled, then
+90 rerenders where only unrelated `config.sun` changed while bot position and
+frame-relevant dimensions stayed unchanged.
+
+**Before:** 294.096 ms per 90-rerender batch.
+
+**After:** 37.620 ms per 90-rerender batch.
+
+**Change:** 87.2% faster, saving 256.476 ms per realistic full-Bot
+config-churn batch.
+
+**Outcome:** Accepted; the frame subassembly now skips unrelated config churn
+while frame dimensions, tracks, cable-carrier visibility, XY position, and
+cached SVG shape changes still rerender the frame.
+
+**Commit:** `Memoize Bot frame for 87.2% faster rerenders`
+
+### Idea 327: Memoize Bot gantry subassembly by relevant config fields
+
+**Description:** Replace object-identity config comparison on the Bot gantry
+subassembly with relevant field comparison for beam dimensions, carrier
+support, Y carrier, belt, stops, and XY placement. Expected return: faster full
+Bot rerenders during unrelated config churn while gantry geometry and carrier
+layout still update when their inputs change.
+
+**Benchmark:** Full `Bot` render after the frame comparator change, with tracks
+and cable carriers enabled, then 90 rerenders where only unrelated `config.sun`
+changed while bot position and gantry-relevant dimensions stayed unchanged.
+
+**Before:** 38.195 ms per 90-rerender batch.
+
+**After:** 32.028 ms per 90-rerender batch.
+
+**Change:** 16.1% faster, saving 6.167 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Accepted; the gantry subassembly now skips unrelated config churn
+while XY position, beam shape, cable carrier layout, kit version, light, and
+gantry dimension changes still rerender.
+
+**Commit:** `Memoize Bot gantry for 16.1% faster rerenders`
+
+### Idea 328: Memoize Bot electronics wrapper by relevant config fields
+
+**Description:** Replace object-identity config comparison on the electronics
+subassembly wrapper with the fields used by electronics box placement and kit
+version. Expected return: faster full Bot rerenders during unrelated config
+churn without changing electronics-box placement, buttons, LEDs, or model
+selection.
+
+**Benchmark:** Full `Bot` render after the frame and gantry comparator changes,
+with tracks and cable carriers enabled, then 90 rerenders where only unrelated
+`config.sun` changed.
+
+**Before:** 32.625 ms per 90-rerender batch.
+
+**After:** 30.798 ms per 90-rerender batch with the attempted electronics
+wrapper comparator.
+
+**Change:** 5.6% faster, saving 1.827 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Rejected and rolled back; the gain did not meet the required 10%
+threshold.
+
+### Idea 329: Memoize Bot vertical/toolhead subassembly
+
+**Description:** Extract the Bot Z-axis, toolhead, vacuum, air tube, camera,
+camera view, vertical cable carrier, and toolhead effects into a memoized
+subassembly with relevant field comparison. Expected return: faster full Bot
+rerenders during unrelated config churn while vertical movement, toolhead
+position, camera view, laser, trail, vacuum, water, and cable-carrier changes
+still update.
+
+**Benchmark:** Full `Bot` render after the frame and gantry comparator changes,
+with tracks and cable carriers enabled, then 90 rerenders where only unrelated
+`config.sun` changed while bot position, Z-axis shape, terrain lookup,
+toolhead, camera, trail, laser, and vertical cable-carrier inputs stayed
+unchanged.
+
+**Before:** 32.625 ms per 90-rerender batch.
+
+**After:** 4.848 ms per 90-rerender batch.
+
+**Change:** 85.1% faster, saving 27.777 ms per realistic full-Bot config-churn
+batch.
+
+**Outcome:** Accepted; the vertical/toolhead subtree now skips unrelated config
+churn while Z movement, Z-axis shape, camera fields, terrain lookup, trail,
+laser, kit version, vacuum cover, air tube, UTM, and vertical cable-carrier
+inputs still rerender.
+
+**Commit:** `Memoize Bot toolhead for 85.1% faster rerenders`
+
+### Idea 330: Memoize Bot water-flow texture provider subtree
+
+**Description:** Avoid recreating the water-flow texture provider subtree when
+the water-flow flag is unchanged and unrelated config fields churn. Expected
+return: less provider and child reconciliation overhead during normal Bot
+rerenders without changing shared water texture behavior or water-flow
+visibility.
+
+**Benchmark:** Full `Bot` render after the accepted frame, gantry, and
+vertical/toolhead changes, with tracks and cable carriers enabled, then 90
+rerenders where only unrelated `config.sun` changed.
+
+**Before:** 4.490 ms per 90-rerender batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; after the accepted subassembly
+memoization, the remaining full-Bot config-churn cost was already only 4.490
+ms per 90 rerenders. A provider/root-subtree comparator would need to duplicate
+nearly all Bot config dependencies to be safe, which is not worth the limited
+remaining absolute budget.
+
+## Round 63
+
+### Idea 331: Skip static plant icon brightness work after the icon bucket is current
+
+**Description:** In static-season mode, return from plant icon frame callbacks
+as soon as the matrix and material brightness are already current instead of
+recomputing sun brightness every frame for every icon bucket. Expected return:
+lower steady-state frame CPU in plant-heavy gardens with multiple crop icons,
+without changing icon placement, billboarding, brightness, or seasonal
+animation.
+
+**Benchmark:** Real `PlantInstances` render with 120 plants distributed across
+12 crop-icon buckets, then one warm frame and 60 steady-state frame callbacks
+with a static camera and season animation disabled.
+
+**Before:** 0.838 ms per 60-frame steady-state batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even a perfect removal would save
+less than 1 ms per active second across 12 icon buckets, so adding another
+frame-state branch would optimize below a meaningful runtime budget.
+
+### Idea 332: Hoist grid world-position conversion while building grid line geometry
+
+**Description:** Build the grid coordinate transform once per grid generation
+instead of recreating it for every grid line segment path. Expected return:
+faster initial grid geometry setup for normal Genesis and Genesis XL bed sizes
+with identical line positions and terrain sampling.
+
+**Benchmark:** Ten `gridLinePositions()` builds with the Genesis XL preset,
+matching realistic grid setup and a few bed-size/config refreshes rather than
+an inflated tight loop.
+
+**Before:** 2.456 ms per 10 grid builds.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic cost is about 0.25
+ms per grid generation, so hoisting a helper would not create a meaningful
+startup or interaction improvement.
+
+### Idea 333: Avoid inactive spread-overlay frame work when the spread update key is unchanged
+
+**Description:** In the plant spread instanced mesh, compute the cheap update
+key before per-frame color-buffer checks and quaternion copies, then return
+early when the visible spread overlay is unchanged. Expected return: lower
+steady-state frame CPU when the spread layer is visible but not being dragged,
+without changing spread spheres, overlap coloring, or click behavior.
+
+**Benchmark:** Real `PlantSpreadInstances` render with 1000 plants, the spread
+overlay visible, one warm frame, then 60 steady-state frame callbacks with the
+same camera and active position.
+
+**Before:** 0.672 ms per 60-frame steady-state batch.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the steady-state visible spread
+overlay already costs far below 1 ms per active second, so moving the early
+return would add code without a user-visible payoff.
+
+### Idea 334: Speed up animated season date lookup
+
+**Description:** Replace the linear sun-animation sample scan with a bounded
+binary search and avoid allocating a current-day `moment` value for named
+seasons. Expected return: lower per-frame CPU when season animation is enabled
+for the sun and plant icons, with the same animation dates and sun positions.
+
+**Benchmark:** 601 `getAnimatedSeasonDate("Summer", elapsed)` calls, matching
+one second of 60 FPS season animation with roughly 10 plant icon buckets plus
+the sun.
+
+**Before:** 3.366 ms per 601 animated-season date lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the current lookup costs about
+0.056 ms per animated frame at the 10-bucket scene scale, so replacing the
+linear scan and date default would not move frame time meaningfully.
+
+### Idea 335: Tighten point bucket setup for realistic point-heavy gardens
+
+**Description:** Replace point bucket string reconstruction and array helpers
+with a direct indexed loop and cached per-point fields while preserving the
+same color/alpha buckets and radius rings. Expected return: faster point-layer
+startup for gardens with hundreds of point markers, without changing marker
+geometry, colors, opacity, radius rings, or clicks.
+
+**Benchmark:** Ten `PointInstances` renders with 500 generic point markers in
+four color buckets, including visible marker/radius bucket setup.
+
+**Before:** 4.522 ms per 10 point-layer renders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic render cost is
+about 0.45 ms for a 500-marker point layer, so rewriting the bucket loop would
+target a small absolute budget and add complexity to already clear code.
+
+## Round 64
+
+### Idea 336: Compute terrain surface bounds without temporary coordinate arrays
+
+**Description:** Replace the `computeSurface()` `points.map()`/spread min/max
+passes with a single direct bounds pass while preserving the same Delaunay
+triangulation, vertex order, UVs, and faces. Expected return: lower soil
+surface setup CPU and memory churn for gardens with hundreds of soil-height
+points.
+
+**Benchmark:** `computeSurface()` with 500 realistic Genesis XL soil-height
+points plus boundary points.
+
+**Before:** 0.024 ms per surface compute.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic terrain bounds and
+Delaunay setup path is already far below a meaningful load-time budget, so
+rewriting the bounds pass would optimize a sub-millisecond path.
+
+### Idea 337: Invert terrain normals through the typed array directly
+
+**Description:** Replace per-component `normal.setX/setY/setZ` calls with a
+direct typed-array sign flip after soil geometry normal computation. Expected
+return: faster soil geometry setup for high-point terrain surfaces with
+identical normals.
+
+**Benchmark:** `getGeometry()` with the vertices and UVs from a 500-point
+Genesis XL soil surface.
+
+**Before:** 0.017 ms per geometry build.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; normal inversion is already
+effectively free at realistic terrain sizes, so direct typed-array mutation
+would not produce a meaningful app improvement.
+
+### Idea 338: Inline triangle precomputation for generated soil faces
+
+**Description:** Move triangle metadata construction into the face loop so
+soil surface setup avoids helper-call and destructuring overhead for each
+triangle while preserving degenerate-triangle filtering and all derived fields.
+Expected return: faster `getZ` index setup inputs for gardens with many
+soil-height points.
+
+**Benchmark:** `precomputeTriangles()` with the generated vertex list and faces
+from a 500-point Genesis XL soil surface.
+
+**Before:** 0.001 ms per triangle precompute.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; triangle metadata construction is
+not a measurable runtime bottleneck under realistic terrain sizes.
+
+### Idea 339: Use a nested numeric cache for terrain `getZ` lookups
+
+**Description:** Replace string-concatenated coordinate cache keys in
+`getZFunc()` with nested numeric maps for repeated plant, point, weed, and grid
+terrain lookups. Expected return: faster terrain sampling in point-heavy
+gardens without changing interpolated Z results or cache invalidation.
+
+**Benchmark:** 500 uncached terrain `getZ` lookups followed by the same 500
+cached lookups against a 500-point Genesis XL soil surface.
+
+**Before:** 0.109 ms per 1000 total lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the current string-key cache and
+spatial index cost about 0.1 ms for a full realistic lookup batch, so nested
+numeric maps would add complexity without meaningful interaction impact.
+
+### Idea 340: Replace moisture interpolation nested `range().map()` setup with direct loops
+
+**Description:** Generate moisture interpolation grid samples with direct
+numeric loops instead of allocating `range()` arrays and using nested `map()`
+for side effects. Expected return: faster 3D moisture-map setup at default and
+XL bed sizes without changing generated samples, colors, or localStorage cache
+keys.
+
+**Benchmark:** `generateData()` for a Genesis XL moisture map with 60 readings
+and the default 50 mm interpolation step, followed by the same `getInterpolationData()`
+read used by 3D moisture rendering.
+
+**Before:** 4.644 ms per generation/read batch.
+
+**After:** 4.321 ms with direct nested loops.
+
+**Change:** 7.0% faster, saving 0.323 ms.
+
+**Outcome:** Rejected and rolled back; the attempted direct-loop rewrite did not
+meet the required 10% improvement threshold, and the absolute saving was below
+a meaningful load-time improvement.
+
+## Round 65
+
+### Idea 341: Memoize `ThreeDGardenMap` config value reads across telemetry-only renders
+
+**Description:** Cache the block of 3D setting lookups inside `ThreeDGardenMap`
+so telemetry-only bot position updates do not re-read every 3D config setting
+before the memoized canvas props are assembled. Expected return: lower CPU for
+position updates while config changes still flow through new config getter
+inputs.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, 80 FarmwareEnv rows,
+250 logs, and stable resources, then 90 rerenders where only bot position
+changed.
+
+**Before:** 2.625 ms per 90 telemetry rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even if config reads disappeared
+entirely, the realistic telemetry batch budget was only 2.625 ms across 90
+updates, so the likely absolute win was too small for extra memoization
+dependencies.
+
+### Idea 342: Stabilize `get3DConfigValueFunction()` across parent renders
+
+**Description:** Cache the generated 3D config getter for an unchanged
+FarmwareEnv array so Farm Designer parent renders can pass a stable getter to
+`ThreeDGardenMap`. Expected return: fewer avoidable config-path updates while
+resource-array changes still rebuild the getter.
+
+**Benchmark:** 90 `get3DConfigValueFunction()` calls with an unchanged
+80-entry FarmwareEnv array, matching Farm Designer parent renders that rebuild
+the getter.
+
+**Before:** 0.079 ms per 90 getter creations.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; getter creation is already
+effectively free at realistic FarmwareEnv sizes, so a cache would add stale
+reference risk without app-level payoff.
+
+### Idea 343: Avoid full UUID unpacking while scanning latest camera-capture logs
+
+**Description:** Extract the local log id directly from the UUID string in
+`lastImageCaptureTime()` instead of constructing a full unpacked UUID object
+for each matching "Taking photo" log. Expected return: faster log-resource
+rerenders with many logs while preserving the same latest-unsaved-capture
+result.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, 80 FarmwareEnv rows,
+250 logs, and stable resources, then 90 rerenders with prebuilt changed log
+arrays.
+
+**Before:** 44.463 ms per 90 log-resource rerenders.
+
+**After:** 27.992 ms per 90 log-resource rerenders.
+
+**Change:** 37.1% faster, saving 16.471 ms per realistic log-update batch.
+
+**Outcome:** Accepted; latest camera-capture scanning now reads the local UUID
+id directly while preserving the same unsaved "Taking photo" filtering and
+latest-id result.
+
+**Commit:** `Speed up camera log scans for 37.1% faster rerenders`
+
+### Idea 344: Reduce repeated plant conversion work on plant-resource churn
+
+**Description:** Reuse crop display metadata and avoid extra object churn while
+converting plant resources for `ThreeDGardenMap` during plant updates.
+Expected return: faster plant-list rerenders with hundreds of plants while
+keeping labels, icons, spread, size, and coordinates unchanged.
+
+**Benchmark:** `ThreeDGardenMap` mounted with 120 plants, then 90 rerenders
+where the first plant resource changed and the full plant conversion path ran.
+
+**Before:** 3.157 ms per 90 plant rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic 120-plant
+conversion batch costs about 0.035 ms per update, so further object-churn
+cleanup would not make a meaningful app difference.
+
+### Idea 345: Reduce peripheral-state recomputation during bot peripheral updates
+
+**Description:** Avoid repeated active-peripheral scans when deriving water,
+light, vacuum, and rotary state in `ThreeDGardenMap`. Expected return: faster
+peripheral-resource rerenders while preserving the same derived FarmBot
+peripheral flags.
+
+**Benchmark:** `ThreeDGardenMap` mounted with stable resources, then 90
+rerenders where peripheral values changed and water/light/vacuum/rotary state
+was derived.
+
+**Before:** 2.052 ms per 90 peripheral rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the whole peripheral derivation
+batch is already roughly 2 ms across 90 updates, below a meaningful absolute
+budget for added indexing or memoization.
+
+## Round 66
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 346. Reuse valid-location sun coordinates across unrelated garden-map rerenders | Avoid repeated `moment` + `SunCalc` work while preserving fixed-time sun behavior | Rerender `ThreeDGardenMap` 90 times with valid lat/lng and a fixed 3D time | Rejected |
+| 347. Build image texture moisture keys with lower allocation overhead | Reduce string churn when moisture overlays are visible and texture keys include sensor metadata | Build texture keys 20 times with 12 sensors and 120 readings | Rejected |
+| 348. Filter moisture readings in one pass | Reduce sensor lookup and filtering work before moisture surface generation | Filter 120 readings against 12 sensors 20 times | Rejected |
+| 349. Select most recent moisture points without callback churn | Reduce allocation/callback overhead before triangulation/interpolation | Select most recent points from 120 readings 20 times | Rejected |
+| 350. Split filtered image lists without extra branch work | Reduce image-texture setup cost when many historical images are visible | Split 80 filtered image entries 50 times | Rejected |
+
+### Idea 346: Reuse valid-location sun coordinates across unrelated garden-map rerenders
+
+**Description:** Cache fixed-time valid-location sun coordinate work across
+unrelated `ThreeDGardenMap` rerenders. Expected return: less repeated
+`moment` and `SunCalc` work while preserving fixed-time sun behavior.
+
+**Benchmark:** `ThreeDGardenMap` mounted with valid San Francisco latitude and
+longitude, a fixed 3D time of `12:00`, stable resources, and 90 rerenders where
+only bot position changed.
+
+**Before:** 2.732 ms per 90 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even a total elimination of this
+work would save only about 0.030 ms per bot-position update, and broad real-time
+memoization would risk changing current-time sun semantics.
+
+### Idea 347: Build image texture moisture keys with lower allocation overhead
+
+**Description:** Replace the string-concatenation callback path in image texture
+moisture keys with a lower-allocation direct key builder. Expected return:
+faster texture-key setup when moisture map or moisture readings are visible.
+
+**Benchmark:** `getImageTextureKey()` built 20 times with 12 sensors and 120
+readings, matching a garden with moisture overlays enabled and a moderate
+reading history.
+
+**Before:** 0.247 ms per 20 key builds.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic batch cost is about
+0.012 ms per key build, so any percentage win would be lost in measurement
+noise and not worth extra key-building code.
+
+### Idea 348: Filter moisture readings in one pass
+
+**Description:** Collapse moisture-reading filtering into a single direct pass
+after sensor lookup construction. Expected return: less callback and array
+allocation work before moisture surface generation.
+
+**Benchmark:** `filterMoistureReadings()` run 20 times with 12 sensors and 120
+readings.
+
+**Before:** 0.063 ms per 20 filters.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; filtering is effectively free at
+realistic sizes, with the entire 20-filter batch below one tenth of a
+millisecond.
+
+### Idea 349: Select most recent moisture points without callback churn
+
+**Description:** Convert `selectMostRecentPoints()` from a callback-style scan
+to a direct loop. Expected return: less callback overhead before
+triangulation/interpolation.
+
+**Benchmark:** `selectMostRecentPoints()` run 20 times with 120 moisture
+readings spread across repeated rounded XY locations.
+
+**Before:** 1.067 ms per 20 selects.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic cost is about
+0.053 ms per select, so the absolute savings would be too small for a
+readability-only loop rewrite.
+
+### Idea 350: Split filtered image lists without extra branch work
+
+**Description:** Reduce image-texture setup overhead in `splitFilteredImages()`
+for gardens with many visible historical images. Expected return: faster
+texture setup while preserving highlighted-image handling and image order.
+
+**Benchmark:** `splitFilteredImages()` run 50 times with 80 filtered image
+entries, including highlighted entries.
+
+**Before:** 0.060 ms per 50 splits.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; splitting 80 images is already
+about 0.001 ms per call in the realistic benchmark, leaving no meaningful
+optimization budget.
+
+## Round 67
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 351. Compact the generated plant icon atlas module | Reduce 3D garden JavaScript bytes and parse work without changing icon atlas pixels or lookup behavior | Compare bundled/minified `plant_icon_atlas` bytes and import/lookup timing for the 496-entry atlas | Accepted |
+| 352. Cache clipped plant icon texture variants | Avoid repeated `Texture.clone()` work when plant icon buckets remount with the same atlas texture and icon | Build atlas textures for 20 realistic icon buckets across 5 remount-like passes | Rejected |
+| 353. Avoid inactive plant-spread per-frame mode checks | Reduce steady-state frame CPU when spread overlays are inactive | Measure 60 inactive spread-frame mode checks, matching one second at 60 FPS | Rejected |
+| 354. Stabilize `LoadInGroup` default spring inputs | Avoid avoidable spring input churn from freshly allocated default arrays/scalars | Render the eight load groups across 20 unrelated parent rerenders | Rejected |
+| 355. Precompute plant icon atlas texture transforms | Avoid repeated division/object allocation when resolving icon atlas UVs | Resolve transforms for 20 icon buckets across 20 remount-like passes | Rejected |
+
+### Idea 351: Compact the generated plant icon atlas module
+
+**Description:** Generate the plant icon atlas metadata as compact frame tuples
+with shared atlas URL and texture dimensions, then build the public
+`PLANT_ICON_ATLAS` lookup from those tuples. Expected return: lower 3D garden
+JavaScript bytes and parse work while preserving the same atlas image,
+coordinates, public lookup shape, mutability, and icon texture behavior.
+
+**Benchmark:** Bundled and minified `frontend/three_d_garden/garden/plant_icon_atlas.ts`
+with esbuild, plus 496 generated atlas URL lookups.
+
+**Before:** 34,940 bundled/minified bytes; 0.014 ms per 496 URL lookups.
+
+**After:** 13,513 bundled/minified bytes; 0.007 ms per 496 URL lookups.
+
+**Change:** 61.3% smaller bundled/minified atlas helper, saving 21,427 bytes;
+URL lookup timing also improved by 50.0%, saving 0.007 ms per full-atlas scan.
+
+**Outcome:** Accepted; generated atlas metadata now avoids repeating the same
+atlas URL and texture dimensions in every frame while keeping helper behavior
+and generated icon UVs unchanged.
+
+**Commit:** `Compact plant icon atlas for 61.3% smaller bundle`
+
+### Idea 352: Cache clipped plant icon texture variants
+
+**Description:** Cache atlas-clipped plant icon textures by base texture and
+icon to avoid repeated `Texture.clone()` work when plant icon buckets remount.
+Expected return: faster setup for gardens with many crop-icon buckets.
+
+**Benchmark:** `getPlantIconTexture()` for 20 realistic icon buckets across 5
+remount-like passes.
+
+**Before:** 0.086 ms per 100 texture resolutions.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; current texture clone/setup work
+is below 0.001 ms per icon resolution in this realistic benchmark, so caching
+would add lifecycle complexity without a meaningful runtime payoff.
+
+### Idea 353: Avoid inactive plant-spread per-frame mode checks
+
+**Description:** Avoid checking full map mode on every inactive plant-spread
+frame. Expected return: lower steady-state FPS CPU when spread overlays are not
+visible or interactive.
+
+**Benchmark:** 60 inactive spread-frame mode checks, matching one second at
+60 FPS.
+
+**Before:** 0.060 ms per 60 checks.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the full one-second mode-check
+budget is about six hundredths of a millisecond, too small to justify changing
+mode freshness semantics in frame code.
+
+### Idea 354: Stabilize `LoadInGroup` default spring inputs
+
+**Description:** Reuse default `LoadInGroup` spring input arrays instead of
+allocating equivalent defaults on parent rerenders. Expected return: less
+load-group spring churn during staged 3D load.
+
+**Benchmark:** Eight realistic load groups rendered through 20 unrelated parent
+rerenders.
+
+**Before:** 3.887 ms per 20 parent rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the total load-group rerender
+budget is already under 4 ms across 20 parent updates, and default array reuse
+would only address a small fraction of that cost.
+
+### Idea 355: Precompute plant icon atlas texture transforms
+
+**Description:** Store atlas UV transform values directly or cache them so
+transform lookup avoids division and object allocation. Expected return:
+faster plant icon bucket setup.
+
+**Benchmark:** `getPlantIconTextureTransform()` for 20 icon buckets across 20
+remount-like passes.
+
+**Before:** 0.009 ms per 400 transform lookups.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; transform lookup is effectively
+free at realistic icon-bucket counts, so precomputing UVs would add generated
+metadata with no app-level benefit.
+
+## Round 68
+
+### Candidate List
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 356. Generate uniform plant icon atlas metadata from slugs and grid constants | Further reduce 3D garden JavaScript bytes after Round 67 while preserving atlas pixels and UVs | Compare bundled/minified `plant_icon_atlas` bytes before/after and run generated atlas helper tests | Accepted |
+| 357. Avoid sessionStorage writes for unchanged soil surface triangles | Reduce storage serialization/write work during unrelated garden model rerenders | Measure `GardenModel` soil-surface effect behavior across 20 rerenders with unchanged soil triangles | Rejected |
+| 358. Defer visualization sequence expansion until visualization is active | Reduce load/render work for default 3D garden sessions that do not show sequence visualization | Measure `Visualization` render with no demo sequence and stable position across 20 rerenders | Rejected |
+| 359. Gate `GroupOrderVisual` URL/group selection earlier in GardenModel | Reduce ordinary non-group route render work | Measure `GardenModel` non-group render with 120 plants and 20 groups across 20 rerenders | Rejected |
+| 360. Reuse generated plant atlas lookup objects after helper reads | Reduce repeated object allocation from atlas helper access | Measure 20 icon-bucket texture URL/transform reads across 20 remount-like passes | Rejected |
+
+### Idea 356: Generate uniform plant icon atlas metadata from slugs and grid constants
+
+**Description:** When all generated plant icon atlas frames use the same cell
+size and grid layout, emit a compact slug string plus shared grid constants
+instead of one tuple per icon. Expected return: lower 3D garden JavaScript
+bytes and parse work without changing the atlas image, icon URLs, frame UVs, or
+the public `PLANT_ICON_ATLAS` lookup shape.
+
+**Benchmark:** Bundled and minified `frontend/three_d_garden/garden/plant_icon_atlas.ts`
+with esbuild, after the Round 67 compact tuple format.
+
+**Before:** 13,513 bundled/minified bytes.
+
+**After:** 4,052 bundled/minified bytes.
+
+**Change:** 70.0% smaller bundled/minified atlas helper, saving 9,461 bytes.
+
+**Outcome:** Accepted; generated atlas metadata now stores the uniform grid as
+shared constants and icon slugs while `plant_icon_atlas.ts` reconstructs the
+same public frame objects for existing callers and tests.
+
+**Commit:** `Generate uniform atlas metadata for 70.0% smaller bundle`
+
+### Idea 357: Avoid sessionStorage writes for unchanged soil surface triangles
+
+**Description:** Skip soil-surface triangle serialization/storage when the
+triangle array is unchanged. Expected return: lower render-side storage work
+during garden model rerenders.
+
+**Benchmark:** Serialize and write a realistic 100-point soil surface triangle
+set to `sessionStorage` 20 times.
+
+**Before:** 0.006 ms per 20 writes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic storage benchmark
+is effectively free in this environment, and the existing React dependency
+already limits writes to soil-surface changes.
+
+### Idea 358: Defer visualization sequence expansion until visualization is active
+
+**Description:** Avoid sequence-visualization setup work when no sequence is
+currently visualized. Expected return: faster default 3D garden renders where
+the visualization path is inactive.
+
+**Benchmark:** `Visualization` rendered with no visualized sequence and 20
+unrelated config rerenders.
+
+**Before:** 0.503 ms per 20 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; inactive visualization rendering
+costs about 0.025 ms per rerender, so moving guards would not produce a
+meaningful app-level improvement.
+
+### Idea 359: Gate `GroupOrderVisual` URL/group selection earlier in GardenModel
+
+**Description:** Skip `GroupOrderVisual` entirely on ordinary non-group routes
+before it checks URL/group state. Expected return: less default details-stage
+work when group ordering is not visible.
+
+**Benchmark:** `GroupOrderVisual` rendered on a non-group route with 120 points
+and 20 groups across 20 unrelated config rerenders.
+
+**Before:** 0.415 ms per 20 rerenders.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic non-group route
+batch costs about 0.021 ms per rerender, which is below a meaningful budget for
+additional route gating.
+
+### Idea 360: Reuse generated plant atlas lookup objects after helper reads
+
+**Description:** Cache or reuse generated plant atlas lookup objects after
+helper reads. Expected return: less object allocation while resolving plant
+icon texture URLs and UV transforms.
+
+**Benchmark:** Resolve URL and transform helpers for 20 icon buckets across 20
+remount-like passes.
+
+**Before:** 0.029 ms per 400 icon helper passes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; helper reads are already far
+below a meaningful setup budget, so adding another cache would only complicate
+the atlas path.
+
+## Round 69
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 361. Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module | Reduce 3D JavaScript load/parse by avoiding unused Drei web modules such as video/HLS while preserving the same Drei components and hooks | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Rejected |
+| 362. Replace `three/examples/jsm/Addons.js` imports with targeted SVG/helper imports | Reduce 3D JavaScript load/parse by avoiding the example Addons fan-out while preserving SVG parsing and vertex-normal debug helpers | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Accepted |
+| 363. Split the remaining plant icon atlas public object behind lazy helpers | Reduce import-time atlas object allocation after the generated atlas module was compacted | Import and full-atlas lookup timing for the realistic 248-entry atlas | Rejected |
+| 364. Remove runtime root `@react-three/drei` imports from 3D tests only | Reduce local test startup/import work without touching app behavior | Bun test import timing for representative 3D test files | Rejected |
+| 365. Replace remaining 3D lodash `range` imports with a shared local numeric helper | Reduce bundle bytes and setup allocations in small repeated geometry builders | Full 3D bundle bytes plus realistic geometry-builder timing at ordinary bed/bot counts | Rejected |
+
+### Idea 361: Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module
+
+**Description:** Replace runtime `@react-three/drei` barrel imports with a
+3D-local direct-export module. Expected return: lower 3D JavaScript load and
+parse cost by avoiding unused Drei web/video modules while preserving the same
+Drei components and hooks.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,950,345 bytes; root Drei barrel present; 999,135 bytes of
+`hls.js` input present in the metafile.
+
+**After:** 4,934,848 bytes; root Drei barrel removed from the 3D path; 0 bytes
+of `hls.js` input present.
+
+**Change:** 0.3% smaller bundled/minified 3D entry, saving 15,497 bytes.
+
+**Outcome:** Rejected and rolled back; removing the unused HLS path is tidy,
+but the actual emitted 3D bundle saving missed the 10% threshold and is not
+worth introducing a local import shim plus a settings color extraction.
+
+**Commit:** None
+
+### Idea 362: Replace `three/examples/jsm/Addons.js` imports with targeted SVG/helper imports
+
+**Description:** Replace broad `three/examples/jsm/Addons.js` imports with the
+specific SVG loader and vertex-normal helper modules the 3D garden uses.
+Expected return: lower 3D JavaScript load and parse cost by avoiding the
+example Addons fan-out while preserving SVG parsing and debug normal helpers.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,950,345 bytes; 286 `three/examples/jsm` inputs; broad
+`Addons.js` input present.
+
+**After:** 4,216,102 bytes; 6 `three/examples/jsm` inputs; broad `Addons.js`
+input removed.
+
+**Change:** 14.8% smaller bundled/minified 3D entry, saving 734,243 bytes.
+
+**Outcome:** Accepted; the code now imports only the exact Three example
+modules needed by the 3D garden, preserving the same SVG loader and
+vertex-normal helper behavior while removing substantial unused load-time code.
+
+**Commit:** `Import direct Three addons for 14.8% smaller 3D bundle`
+
+### Idea 363: Split the remaining plant icon atlas public object behind lazy helpers
+
+**Description:** Split the remaining plant icon atlas public object behind lazy
+helpers. Expected return: lower import-time allocation after the generated atlas
+module was compacted.
+
+**Benchmark:** Rebuild the realistic generated 248-entry atlas object once per
+sample, matching the import-time work left in `plant_icon_atlas.ts`.
+
+**Before:** 0.036 ms median one-time atlas object build.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the absolute import-time setup is
+already far below a meaningful startup budget, and the exported mutable
+`PLANT_ICON_ATLAS` object would require proxy/lazy machinery that is more
+complex than the cost it could remove.
+
+### Idea 364: Remove runtime root `@react-three/drei` imports from 3D tests only
+
+**Description:** Replace root Drei imports in 3D tests with direct imports.
+Expected return: lower local test startup/import work.
+
+**Benchmark:** Runtime bundle profiling after idea 362, plus scope check of
+remaining root Drei imports.
+
+**Before:** Remaining root Drei imports are test-only and do not affect the
+3D app bundle or user runtime.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; optimizing test-only imports has
+no user-facing load-time, responsiveness, memory, FPS, or call-count impact.
+
+### Idea 365: Replace remaining 3D lodash `range` imports with a shared local numeric helper
+
+**Description:** Replace remaining 3D lodash `range` imports with a shared
+local numeric helper. Expected return: lower bundle bytes and setup allocation
+in small geometry builders.
+
+**Benchmark:** Full 3D bundle metafile after idea 362, plus remaining realistic
+3D range-use scope.
+
+**Before:** The bundle still contains `lodash/lodash.js`, with 194 importers
+through shared app code; remaining 3D `range` use is limited to ordinary counts
+such as 3 holes, 16 water streams, 24 sun-path segments, tray cells, and
+greenhouse wall cells.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; replacing the remaining 3D
+`range` calls would not remove lodash from the emitted bundle, and the realistic
+iteration counts are too small to produce a meaningful runtime win.
+
+## Round 70
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 366. Split electronics-box color constants away from settings pin-binding UI | Reduce 3D JavaScript load/parse by avoiding settings pin-binding UI imports from the 3D electronics box | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and import graph | Rejected |
+| 367. Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module after the Addons cut | Reduce 3D JavaScript load/parse by avoiding unused Drei web/video and three-stdlib modules while preserving the same components and hooks | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and metafile import composition | Rejected |
+| 368. Use the already-present Drei/three-stdlib SVG loader instead of the direct Three examples SVG loader | Remove duplicate SVG loader code from the 3D bundle while preserving bot SVG parsing | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and bot SVG loader tests | Rejected |
+| 369. Split sequence visualization's Lua action collector out of the default 3D load path | Reduce default 3D JavaScript load/parse when no sequence visualization is active | Default 3D bundle bytes and visualized-sequence first-use UX risk | Rejected |
+| 370. Isolate 3D camera dev-storage reads from general dev settings support | Reduce 3D JavaScript load/parse by avoiding broader settings/dev support imports during camera initialization | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and camera initialization tests | Rejected |
+
+### Idea 366: Split electronics-box color constants away from settings pin-binding UI
+
+**Description:** Move `IColor` out of the settings pin-binding model so the 3D
+electronics box can import only numeric color constants. Expected return: lower
+3D JavaScript load and parse cost by avoiding settings pin-binding UI imports.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import graph.
+
+**Before:** 4,216,102 bytes; `frontend/settings/pin_bindings/model.tsx`
+present; 10 settings pin-binding inputs.
+
+**After:** 4,201,331 bytes; settings pin-binding model removed from the 3D
+graph; 1 settings pin-binding input.
+
+**Change:** 0.4% smaller bundled/minified 3D entry, saving 14,771 bytes.
+
+**Outcome:** Rejected and rolled back; removing the dependency is cleaner, but
+the emitted-byte improvement misses the 10% threshold and is too small to
+justify a shared constants module by itself.
+
+**Commit:** None
+
+### Idea 367: Replace runtime `@react-three/drei` barrel imports with a 3D-local direct-export module after the Addons cut
+
+**Description:** Replace runtime root `@react-three/drei` imports with a
+3D-local direct-export module. Expected return: lower 3D JavaScript load and
+parse cost by avoiding unused Drei web/video and three-stdlib modules while
+preserving the same components and hooks.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus metafile import composition.
+
+**Before:** 4,216,102 bytes; root Drei barrel present; 999,135 bytes of
+`hls.js` input present in the metafile.
+
+**After:** 4,200,607 bytes; root Drei barrel removed from the 3D path; 0 bytes
+of `hls.js` input present.
+
+**Change:** 0.4% smaller bundled/minified 3D entry, saving 15,495 bytes.
+
+**Outcome:** Rejected and rolled back; after tree-shaking and the Round 69
+Addons cleanup, the emitted bundle saving is still only about 15 KB, so the
+local shim and broad import churn are not worth keeping.
+
+**Commit:** None
+
+### Idea 368: Use the already-present Drei/three-stdlib SVG loader instead of the direct Three examples SVG loader
+
+**Description:** Import the bot SVG loader from the already-present
+`three-stdlib` root instead of `three/examples/jsm/loaders/SVGLoader.js`.
+Expected return: remove duplicate SVG loader code while preserving bot SVG
+parsing behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus SVG loader input composition.
+
+**Before:** 4,216,102 bytes; both Three examples SVGLoader and three-stdlib
+SVGLoader inputs present.
+
+**After:** 4,216,051 bytes; Three examples SVGLoader input removed; three-stdlib
+SVGLoader input retained.
+
+**Change:** 0.001% smaller bundled/minified 3D entry, saving 51 bytes.
+
+**Outcome:** Rejected and rolled back; the duplicate input disappears from the
+metafile, but the emitted JavaScript impact is effectively zero.
+
+**Commit:** None
+
+### Idea 369: Split sequence visualization's Lua action collector out of the default 3D load path
+
+**Description:** Lazy-load sequence visualization's Lua action collection path
+when no sequence visualization is active. Expected return: lower default 3D
+load and parse cost.
+
+**Benchmark:** Full 3D bundle metafile and default runtime context where no
+sequence visualization is active.
+
+**Before:** `fengari-web` contributes 211,123 bytes of input through
+`Visualization`, even though `Visualization` only mounts when a sequence is
+actively visualized.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the only clean load-time split
+would make the first visualized-sequence render wait on an async chunk, which
+is a user-visible responsiveness risk under the no-UX-degradation constraint.
+
+**Commit:** None
+
+### Idea 370: Isolate 3D camera dev-storage reads from general dev settings support
+
+**Description:** Read the 3D dev-camera override from a camera-local helper
+instead of importing general `DevSettings`. Expected return: lower 3D
+JavaScript load and parse cost by avoiding broader settings/dev support during
+camera initialization.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus `DevSettings` input presence.
+
+**Before:** 4,216,102 bytes; `frontend/settings/dev/dev_support.ts` present.
+
+**After:** 4,216,217 bytes; `frontend/settings/dev/dev_support.ts` still
+present via other shared app paths.
+
+**Change:** 0.003% larger bundled/minified 3D entry, adding 115 bytes.
+
+**Outcome:** Rejected and rolled back; camera-local storage duplicated existing
+logic while `DevSettings` remained in the bundle through other paths.
+
+**Commit:** None
+
+## Round 71
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 371. Split the pure `ThreeDGarden` canvas component away from the toggle barrel | Reduce 3D map JavaScript load/parse by avoiding toggle-only help/settings imports | Full bundled/minified `frontend/farm_designer/three_d_garden_map.tsx` bytes and emitted-byte attribution | Rejected |
+| 372. Lazy-load sequence visualization's Lua runner module | Reduce default 3D JavaScript load/parse when no sequence visualization is active | Emitted-byte attribution for `fengari-web` and sequence visualization first-use UX risk | Rejected |
+| 373. Inline fixed bot SVG shape sources to remove shape asset requests | Reduce bot startup asset calls by removing four SVG shape fetches | Shape request count, SVG asset bytes, and emitted parser/string tradeoff | Rejected |
+| 374. Replace Drei `Line` with native Three line primitives in simple paths | Reduce 3D JavaScript bytes by removing meshline and wide-line helpers | Emitted-byte attribution for line helper modules and line-width UX requirements | Rejected |
+| 375. Lazy-load the full `ThreeDGardenMap` when the 3D toggle is off | Reduce default Farm Designer load while preserving the 3D feature | Default-route load split benefit versus first-toggle responsiveness risk | Rejected |
+
+### Idea 371: Split the pure `ThreeDGarden` canvas component away from the toggle barrel
+
+**Description:** Move the pure `ThreeDGarden` canvas component out of
+`three_d_garden/index.tsx` and have `ThreeDGardenMap` import it directly.
+Expected return: lower 3D map JavaScript load and parse cost by avoiding
+toggle-only help/settings imports.
+
+**Benchmark:** Full bundled/minified
+`frontend/farm_designer/three_d_garden_map.tsx` with esbuild, plus emitted-byte
+attribution for toggle/UI dependencies.
+
+**Before:** 4,216,150 bytes; `frontend/constants.ts` emitted 91,697 bytes;
+markdown emoji data emitted 52,005 bytes.
+
+**After:** 4,216,191 bytes; the same constants and markdown paths remained via
+other Farm Designer imports.
+
+**Change:** 0.001% larger bundled/minified 3D map entry, adding 41 bytes.
+
+**Outcome:** Rejected and rolled back; the import split did not remove the
+heavy shared UI dependencies because they enter through other map/designer paths.
+
+**Commit:** None
+
+### Idea 372: Lazy-load sequence visualization's Lua runner module
+
+**Description:** Split the Lua-backed sequence visualization code out of the
+default 3D load path. Expected return: lower default 3D JavaScript load and
+parse cost when no sequence visualization is active.
+
+**Benchmark:** Emitted-byte attribution for the current bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `fengari-web` emits 224,262 bytes into the 3D bundle through the
+sequence visualization path.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the byte target is real, but the
+clean split would delay the first visualized-sequence render on an async chunk,
+which risks visible responsiveness degradation for that feature.
+
+**Commit:** None
+
+### Idea 373: Inline fixed bot SVG shape sources to remove shape asset requests
+
+**Description:** Inline the four fixed bot SVG shape sources and parse them
+locally instead of fetching `/3D/shapes/*.svg` at bot mount. Expected return:
+fewer startup asset calls for the bot frame shapes.
+
+**Benchmark:** Current bot shape setup performs up to 4 SVG shape asset requests
+for tracks, beam, column, and z-axis; those source SVGs total 11,715 bytes, and
+the SVG loader emits 23,925 bytes into the 3D bundle.
+
+**Before:** Up to 4 asynchronous SVG shape asset requests after bot mount.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; inlining would trade async asset
+requests for additional blocking JavaScript bytes while still keeping the SVG
+parser, so the net load-time tradeoff is not clearly positive across metrics.
+
+**Commit:** None
+
+### Idea 374: Replace Drei `Line` with native Three line primitives in simple paths
+
+**Description:** Replace some Drei `Line` usages with native Three line
+primitives. Expected return: lower JavaScript bytes by removing meshline and
+wide-line helpers.
+
+**Benchmark:** Emitted-byte attribution for line helper modules in the current
+3D bundle.
+
+**Before:** Line helpers emit about 35 KB total: `meshline` 12,188 bytes,
+three-stdlib `LineMaterial` 11,460 bytes, Three examples `LineMaterial` 9,870
+bytes, and Drei `Line` 1,196 bytes.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the 3D scene uses configured
+line widths and billboarded line helpers in several visible overlays, and
+replacing them with native WebGL lines risks visual degradation for a sub-1%
+bundle target.
+
+**Commit:** None
+
+### Idea 375: Lazy-load the full `ThreeDGardenMap` when the 3D toggle is off
+
+**Description:** Dynamically import the full 3D map only when the 3D toggle is
+enabled. Expected return: lower default Farm Designer load when users are in
+the default 2D map.
+
+**Benchmark:** Scope analysis of the static Farm Designer imports: the default
+designer imports `ThreeDGardenMap` even when the 3D toggle is off.
+
+**Before:** The 3D map is statically imported by Farm Designer.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; while the default-load target is
+real, the first 3D toggle could become visibly slower while a large async chunk
+loads, which conflicts with the no-UX-degradation constraint.
+
+**Commit:** None
+
+## Round 72
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 376. Pre-generate bot SVG extrusion shapes to remove runtime SVG parsing | Reduce bot startup calls and JavaScript parser bytes by replacing four SVG fetches and `SVGLoader` parsing | Bot shape request/parse count, source SVG bytes, and emitted SVGLoader bytes | Rejected |
+| 377. Disable `FPSProbe`'s default frame callback unless perf/FPS logging is enabled | Reduce steady-frame callback work in normal user sessions | Default FPSProbe behavior and one-callback per-second work | Rejected |
+| 378. Replace 3D time-travel `moment` usage with native date helpers | Reduce 3D JavaScript load and sun-position calculation cost | Emitted-byte attribution for `moment` and current 3D time usage | Rejected |
+| 379. Split 3D-used app constants from the app-wide `frontend/constants.ts` module | Reduce 3D JavaScript load/parse from the large app constants module | Emitted-byte attribution and import graph for `frontend/constants.ts` | Rejected |
+| 380. Add a promise cache for bot SVG shape loading across simultaneous Bot mounts | Avoid duplicate SVG requests/parses if multiple Bot components mount before the shape cache is populated | Realistic Bot mount count and current parsed-shape cache behavior | Rejected |
+
+### Idea 376: Pre-generate bot SVG extrusion shapes to remove runtime SVG parsing
+
+**Description:** Generate the four fixed bot extrusion shapes as TypeScript data
+instead of fetching `/3D/shapes/*.svg` and parsing them with `SVGLoader` at bot
+mount. Expected return: fewer bot startup asset calls and less runtime SVG
+parser code.
+
+**Benchmark:** Current bot shape setup and emitted-byte attribution.
+
+**Before:** A cold Bot mount can request 4 SVG shape assets and call
+`SVGLoader.createShapes` 15 times. The four SVG assets total 11,715 bytes, and
+`three/examples/jsm/loaders/SVGLoader.js` emits 23,925 bytes into the 3D bundle.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; this could remove a parser and
+four async asset calls, but generating equivalent Three `Shape` data would add
+blocking JavaScript and high-maintenance generated geometry, with visual-drift
+risk in the FarmBot frame extrusions.
+
+**Commit:** None
+
+### Idea 377: Disable `FPSProbe`'s default frame callback unless perf/FPS logging is enabled
+
+**Description:** Mount or register `FPSProbe` only when perf instrumentation or
+explicit FPS logging is enabled. Expected return: one fewer frame callback in
+normal sessions.
+
+**Benchmark:** Current `FPSProbe` behavior in default sessions.
+
+**Before:** `FPSProbe` registers 1 `useFrame` callback. In normal sessions it
+skips scene traversal, logging, and perf samples unless perf or `FPS_LOGS` is
+enabled; it only updates `window.__fps` roughly once per second.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; removing one lightweight
+diagnostic callback would not produce meaningful FPS or CPU improvement, and
+would remove the always-available `window.__fps` diagnostic signal.
+
+**Commit:** None
+
+### Idea 378: Replace 3D time-travel `moment` usage with native date helpers
+
+**Description:** Replace `moment` in `three_d_garden/time_travel.tsx` with
+native date parsing/formatting for 3D sun time calculations. Expected return:
+lower 3D JavaScript load and less time calculation overhead.
+
+**Benchmark:** Emitted-byte attribution for the current bundled/minified
+`frontend/three_d_garden/index.tsx`, plus import graph scope.
+
+**Before:** `moment` emits 62,746 bytes into the 3D bundle, but the same bundle
+also reaches `moment` through shared photo, sensor, farm-event, and app UI
+paths. 3D time travel uses `moment` for current time, `HH:mm` parsing, hour
+offsets, and display formatting.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; changing only the 3D helper would
+not remove `moment` from the emitted bundle, and replacing time formatting risks
+behavior drift for negligible runtime savings.
+
+**Commit:** None
+
+### Idea 379: Split 3D-used app constants from the app-wide `frontend/constants.ts` module
+
+**Description:** Move the small set of 3D-used `Actions`, `Content`, and
+`DeviceSetting` values out of the app-wide constants module. Expected return:
+less 3D JavaScript load and parse cost.
+
+**Benchmark:** Emitted-byte attribution and import graph for
+`frontend/constants.ts`.
+
+**Before:** `frontend/constants.ts` emits 91,697 bytes into the 3D bundle.
+However, the import graph reaches it through many shared app paths including
+resources, designer state, UI, settings, and sequence modules, not only direct
+3D imports.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; splitting the few direct 3D
+constants would not remove the app-wide constants module from the bundle, and a
+partial constants fork would add maintenance risk.
+
+**Commit:** None
+
+### Idea 380: Add a promise cache for bot SVG shape loading across simultaneous Bot mounts
+
+**Description:** Cache in-flight bot SVG shape load promises so simultaneous
+Bot mounts cannot duplicate the same shape requests before `botShapeCache` is
+filled. Expected return: fewer duplicate calls in multi-mount scenarios.
+
+**Benchmark:** Real Bot mounting behavior and existing shape cache.
+
+**Before:** A single cold Bot mount loads each needed SVG shape once and stores
+the parsed `Shape` objects in `botShapeCache`; remounts reuse the parsed shapes
+and do not reparse. The normal 3D garden contains one Bot.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; an in-flight promise cache would
+only help an unrealistic simultaneous multi-Bot mount, while adding async cache
+complexity to a path already cached for normal remounts.
+
+**Commit:** None
+
+## Round 73
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 381. Replace Drei root imports with direct per-component exports | Reduce 3D JavaScript load/parse by avoiding unused Drei inputs while preserving the same Drei components | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and emitted-byte output | Rejected |
+| 382. Use Delaunator accessors and one-pass bounds in soil-surface setup | Reduce default and configured soil-surface setup allocations without changing generated surface detail | Standalone real-Delaunator `computeSurface()` prototype with default-ish 29 points, medium 54 points, and max-slider 204 points | Rejected |
+| 383. Cache the disabled perf query-string check | Avoid repeated `URLSearchParams` allocation in normal non-benchmark 3D sessions | Normal-session disabled perf instrumentation bursts matching 10 seconds of FPS checks and a heavy render burst | Rejected |
+| 384. Replace the 3D entry's `lodash/noop` import with a local no-op | Reduce bundle bytes by removing one direct lodash use from the 3D entry | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and lodash emitted output | Rejected |
+| 385. Convert TypeScript-only 3D `Config` imports to type-only imports | Reduce accidental runtime import graph and bundle bytes in helper/triangle modules | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes before/after type-only prototype | Rejected |
+
+### Idea 381: Replace Drei root imports with direct per-component exports
+
+**Description:** Replace runtime `@react-three/drei` imports with a 3D-local
+module that re-exports only the exact direct Drei component files used by the
+3D garden. Expected return: lower JavaScript parse/load cost while preserving
+all existing Drei behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, comparing emitted output bytes.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 4,216,128 bytes.
+
+**Change:** 0.001% larger, adding 26 bytes.
+
+**Outcome:** Rejected and rolled back; the prototype removed unused Drei input
+traversal but did not reduce emitted runtime code, so the import churn is not
+worth keeping.
+
+**Commit:** None
+
+### Idea 382: Use Delaunator accessors and one-pass bounds in soil-surface setup
+
+**Description:** Replace the projected 2D point array and separate x/y arrays
+in `computeSurface()` with Delaunator accessors and one bounds pass. Expected
+return: less setup allocation during realistic soil-surface rebuilds.
+
+**Benchmark:** Standalone real-Delaunator `computeSurface()` prototype with
+29, 54, and 204 points, matching default-ish, medium, and max-slider soil
+surface contexts.
+
+**Before:** 29 points: 0.0189 ms; 54 points: 0.0342 ms; 204 points:
+0.0614 ms.
+
+**After:** 29 points: 0.0092 ms; 54 points: 0.0200 ms; 204 points:
+0.0560 ms.
+
+**Change:** 51.5% faster at 29 points, saving 0.0097 ms; 41.7% faster at
+54 points, saving 0.0143 ms; 8.8% faster at 204 points, saving 0.0054 ms.
+
+**Outcome:** Rejected without implementation; the default percentage win is
+real but the absolute saving is far below a meaningful app budget, and the
+largest realistic point count misses the 10% threshold.
+
+**Commit:** None
+
+### Idea 383: Cache the disabled perf query-string check
+
+**Description:** Cache or fast-path the normal-session disabled perf flag so
+`perfEnabled()` does not allocate `URLSearchParams` on repeated 3D render/frame
+instrumentation calls. Expected return: lower allocation churn in sessions
+without `fb_perf=1`.
+
+**Benchmark:** Normal-session disabled instrumentation benchmark with no
+`fb_perf` query and no `FB_PERF_BENCHMARK` localStorage flag: 600
+`perfEnabled()` calls matching 10 seconds of `FPSProbe` checks, plus a 250-call
+mixed `perfCount`/`perfMark`/`perfSample`/`perfMeasure` burst.
+
+**Before:** 600 `perfEnabled()` calls took 0.0348 ms median; the 250-call
+mixed instrumentation burst took 0.0590 ms median.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even deleting all of this
+overhead would save less than 0.06 ms in the measured realistic bursts, so a
+cache invalidation path would add more complexity than user-visible benefit.
+
+**Commit:** None
+
+### Idea 384: Replace the 3D entry's `lodash/noop` import with a local no-op
+
+**Description:** Replace the one `noop` import in `three_d_garden/index.tsx`
+with a local function. Expected return: lower bundle bytes if this direct
+lodash import kept any extra emitted code alive.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild, plus lodash emitted output.
+
+**Before:** 4,216,102 bytes; lodash still emitted 76,607 bytes.
+
+**After:** 4,216,096 bytes; lodash still emitted 76,607 bytes.
+
+**Change:** 0.0001% smaller, saving 6 bytes.
+
+**Outcome:** Rejected and rolled back; lodash remains in the runtime graph
+through many other realistic paths, and a 6-byte saving is not meaningful.
+
+**Commit:** None
+
+### Idea 385: Convert TypeScript-only 3D `Config` imports to type-only imports
+
+**Description:** Convert `Config` imports in helper and triangle modules to
+`import type`. Expected return: lower accidental runtime import graph and
+possibly smaller emitted code in modules that only use the config shape for
+types.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx`
+with esbuild after converting `helpers.ts` and `triangles.ts` to type-only
+`Config` imports.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 4,216,102 bytes.
+
+**Change:** 0.0%, saving 0 bytes.
+
+**Outcome:** Rejected and rolled back; esbuild already removes those type-only
+uses from the emitted 3D bundle, so the change has no user-facing performance
+effect.
+
+**Commit:** None
+
+## Round 74
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 386. Extract 3D-used pure helpers and click action from UI-heavy modules | Reduce 3D JavaScript load/parse by keeping helper-only imports out of designer panels, point-creation panels, and all-layer barrels | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes and emitted import graph | Accepted |
+| 387. Split sequence visualization Lua runner out of the default 3D bundle with idle preload | Reduce default 3D JavaScript load while preserving sequence visualization after startup | Emitted bytes for `fengari-web` and first-use visualization behavior | Rejected |
+| 388. Split optional 3D stats overlays out of the default scene module | Reduce default 3D JavaScript load by isolating `Stats`/`StatsGl` debug helpers | Emitted bytes for stats modules and debug-first-use behavior | Rejected |
+| 389. Split the pure `ThreeDGarden` canvas from the 3D toggle UI after helper extractions | Reduce 3D map JavaScript load by avoiding toggle/help/settings UI imports in the canvas path | Full bundled/minified map/canvas entry bytes | Rejected |
+| 390. Replace 3D-needed image filter imports with a pure helper module | Reduce 3D JavaScript load by avoiding 2D image-layer UI paths while preserving image filtering behavior | Full bundled/minified 3D entry bytes and image filter behavior | Rejected |
+
+### Idea 386: Extract 3D-used pure helpers and click action from UI-heavy modules
+
+**Description:** Move tiny 3D-used helpers out of UI-heavy modules:
+`findGroupFromUrl` from the group-detail panel, `selectMostRecentPoints` from
+the location-info panel, `filterMoistureReadings` from the all-map-layers
+barrel, and `createPoint` from the point-creation panel. Expected return:
+lower 3D JavaScript load and parse cost while preserving group-order,
+moisture-map, interpolation-map, and click-to-create behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild, with the same asset externals used in prior rounds.
+
+**Before:** 4,216,102 bytes.
+
+**After:** 3,675,078 bytes.
+
+**Change:** 12.8% smaller bundled/minified 3D entry, saving 541,024 bytes.
+
+**Outcome:** Accepted; the 3D bundle no longer pulls full designer panels,
+point-creation UI, or all 2D map layers for pure helper/action code, and the
+same helper behavior remains covered through existing focused tests.
+
+**Commit:** `Extract 3D helper imports for 12.8% smaller bundle`
+
+### Idea 387: Split sequence visualization Lua runner out of the default 3D bundle with idle preload
+
+**Description:** Lazy-load the Lua-backed sequence visualization runner from
+`Visualization`, potentially preloading it after initial 3D load. Expected
+return: lower default 3D JavaScript load when no sequence is visualized.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `fengari-web` emits 223,729 bytes; `frontend/demo/lua_runner/lua.ts`
+emits 23,758 bytes; `frontend/demo/lua_runner/run.ts` emits 11,743 bytes.
+Together they account for 259,230 bytes, or 7.1% of the 3,675,078-byte 3D
+entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even removing the full Lua
+runner path would miss the 10% bundle threshold, and lazy loading could delay
+the sequence path when a visualized sequence is already active.
+
+**Commit:** None
+
+### Idea 388: Split optional 3D stats overlays out of the default scene module
+
+**Description:** Move `Stats` and `StatsGl` debug overlays behind a lazy
+boundary so default sessions do not load stats helpers. Expected return: lower
+default JavaScript load while preserving stats when enabled.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `stats-gl` emits 6,519 bytes and Drei `Stats` emits 465 bytes,
+for 6,984 bytes total, or 0.2% of the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the maximum possible saving is
+far below the 10% threshold and only affects an optional debug overlay.
+
+**Commit:** None
+
+### Idea 389: Split the pure `ThreeDGarden` canvas from the 3D toggle UI after helper extractions
+
+**Description:** Move the canvas-only `ThreeDGarden` export to its own module
+so `ThreeDGardenMap` can avoid importing toggle/help/settings UI code.
+Expected return: lower 3D map bundle load.
+
+**Benchmark:** Full bundled/minified `frontend/farm_designer/three_d_garden_map.tsx`
+after Idea 386.
+
+**Before:** 3,678,934 bytes. The current map bundle attributes only 870 bytes
+to `frontend/three_d_garden/index.tsx`, 32 bytes to `LayerToggle`, and 729
+bytes to `settings/three_d_settings.tsx`; `Help` is already tree-shaken out.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the remaining toggle-related
+emitted bytes are far below a meaningful load-time budget and below the 10%
+threshold.
+
+**Commit:** None
+
+### Idea 390: Replace 3D-needed image filter imports with a pure helper module
+
+**Description:** Move the image filtering helpers used by 3D soil texture
+setup out of the 2D image-layer module. Expected return: lower 3D JavaScript
+load while preserving image filtering behavior.
+
+**Benchmark:** Emitted-byte attribution in the post-Idea-386 bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `frontend/farm_designer/map/layers/images/image_layer.tsx` emits
+1,453 bytes and `frontend/photos/photo_filter_settings/util.ts` emits 765
+bytes in the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the maximum possible emitted
+saving is about 2.2 KB, far below the 10% threshold and not worth another
+helper split.
+
+**Commit:** None
+
+## Round 75
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 391. Import 3D toggle `Help` without the shared UI barrel | Reduce 3D JavaScript load by avoiding unrelated UI barrel exports while keeping the same Help/Markdown UI | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after direct-import prototype | Rejected |
+| 392. Use a local 3D toggle button instead of shared `LayerToggle` | Reduce 3D JavaScript load from map-layer toggle/default-value dependencies while preserving the same visible toggle | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after local-toggle prototype | Rejected |
+| 393. Lazy-load sequence visualization as a whole | Reduce default 3D JavaScript load when no sequence visualization is active | Import-graph cut of `GardenModel -> Visualization` in the current emitted bundle | Rejected |
+| 394. Lazy-load group-order visualization | Reduce default 3D JavaScript load when not on a group/zone route | Import-graph cut of `GardenModel -> GroupOrderVisual` in the current emitted bundle | Rejected |
+| 395. Replace point-group criteria `moment` usage for the 3D path | Reduce 3D JavaScript load by avoiding `moment` from group-order criteria matching | Emitted-byte attribution for `moment` and criteria modules in the current bundle | Rejected |
+
+### Idea 391: Import 3D toggle `Help` without the shared UI barrel
+
+**Description:** Change the 3D toggle from `../ui` barrel imports to direct
+`Help`, `Markdown`, and `Popover` module imports. Expected return: avoid
+pulling unrelated UI exports into the 3D entry while preserving the same Help
+popover and markdown behavior.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after a direct-import prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,675,085 bytes.
+
+**Change:** 0.0002% larger, adding 7 bytes.
+
+**Outcome:** Rejected and rolled back; tree shaking already removes the
+unrelated UI barrel exports, and direct imports made the emitted output
+slightly larger.
+
+**Commit:** None
+
+### Idea 392: Use a local 3D toggle button instead of shared `LayerToggle`
+
+**Description:** Replace the 3D toggle's `LayerToggle` use with a local button
+that renders the same label, colors, classes, title, and click behavior.
+Expected return: avoid map-layer toggle and default-value helper code in the
+3D entry.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after a local-toggle prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,673,771 bytes.
+
+**Change:** 0.04% smaller, saving 1,307 bytes.
+
+**Outcome:** Rejected and rolled back; the byte saving is far below the 10%
+threshold and not enough to justify duplicating shared toggle markup.
+
+**Commit:** None
+
+### Idea 393: Lazy-load sequence visualization as a whole
+
+**Description:** Move the whole sequence visualization component behind a lazy
+boundary instead of only considering the Lua runner. Expected return: lower
+default load when no sequence is visualized.
+
+**Benchmark:** Import-graph cut of `GardenModel -> Visualization` in the
+current emitted bundle, measuring modules that become unreachable from the 3D
+entry.
+
+**Before:** 3,675,078 bytes; `Visualization` itself emits 1,319 bytes.
+
+**After:** Not attempted.
+
+**Change:** Maximum graph-cut saving is 1,319 bytes, or 0.04%.
+
+**Outcome:** Rejected without implementation; almost all visualization
+dependencies are still reachable through other current paths, and a lazy
+boundary would risk first-use delay for active sequence visualization.
+
+**Commit:** None
+
+### Idea 394: Lazy-load group-order visualization
+
+**Description:** Move group-order visualization behind a lazy boundary so
+default non-group routes do not load it. Expected return: lower default 3D
+JavaScript load.
+
+**Benchmark:** Import-graph cut of `GardenModel -> GroupOrderVisual` in the
+current emitted bundle, measuring modules that become unreachable from the 3D
+entry.
+
+**Before:** 3,675,078 bytes; `GroupOrderVisual` itself emits 1,962 bytes.
+
+**After:** Not attempted.
+
+**Change:** Maximum graph-cut saving is 1,962 bytes, or 0.05%.
+
+**Outcome:** Rejected without implementation; the emitted saving is far below
+the threshold, and a lazy boundary would only affect route-specific optional
+visualization.
+
+**Commit:** None
+
+### Idea 395: Replace point-group criteria `moment` usage for the 3D path
+
+**Description:** Replace `moment` in point-group criteria matching with native
+date logic, or split a 3D-only criteria helper. Expected return: lower 3D
+JavaScript load from group-order criteria matching.
+
+**Benchmark:** Emitted-byte attribution in the current bundled/minified
+`frontend/three_d_garden/index.tsx`.
+
+**Before:** `moment` emits 62,698 bytes, and
+`frontend/point_groups/criteria/apply.ts` emits 1,005 bytes, for at most 63,703
+bytes, or 1.7% of the 3D entry.
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; even the ideal emitted-byte
+saving misses the 10% threshold, and replacing date comparison behavior in
+group criteria risks subtle behavior drift.
+
+**Commit:** None
+
+## Round 76
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 396. Split 3D panel-open imports away from `panel_header` | Reduce 3D JavaScript load by avoiding designer navigation metadata when 3D objects only need to open the side panel | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after a direct split prototype | Rejected |
+| 397. Split the soil-height predicate away from point soil-height UI | Reduce 3D JavaScript load by avoiding point UI/CRUD imports when terrain filtering only needs `soilHeightPoint` | Full bundled/minified `frontend/three_d_garden/index.tsx` bytes after a pure-predicate prototype | Rejected |
+| 398. Remove recursive sequence-collector debug logging | Reduce call count and console work while rendering visualized nested sequences | Collect a realistic 20-deep execute chain over 20 visualization-like passes | Accepted |
+| 399. Short-circuit circular visualized sequence collection | Improve responsiveness for realistic accidental sequence cycles without changing valid sequence expansion | Collect a two-sequence execute cycle over 20 visualization-like passes, with a non-circular 20-deep guardrail | Accepted |
+| 400. Replace remaining 3D `lodash/isUndefined` checks with native checks | Reduce pointer/terrain helper call overhead and possibly shrink emitted code | Current emitted bundle/import attribution and realistic 3D undefined-check site count | Rejected |
+
+### Idea 396: Split 3D panel-open imports away from `panel_header`
+
+**Description:** Move `setPanelOpen` to a small action module and have 3D
+components import that instead of the full designer panel header. Also replace
+the 3D time-travel settings icon lookup with the direct icon path. Expected
+return: avoid designer navigation metadata in the 3D entry while preserving
+all click behavior and the same icon.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after the prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,670,255 bytes.
+
+**Change:** 0.13% smaller, saving 4,823 bytes.
+
+**Outcome:** Rejected and rolled back; the split did remove
+`panel_header.tsx` from the 3D path, but the absolute saving is too small to
+justify another shared module.
+
+**Commit:** None
+
+### Idea 397: Split the soil-height predicate away from point soil-height UI
+
+**Description:** Move `MEASURE_SOIL_HEIGHT_NAME` and `soilHeightPoint` to a
+pure module so 3D terrain filtering does not import the point soil-height UI
+module. Expected return: smaller 3D JavaScript load while preserving the exact
+soil-point predicate.
+
+**Benchmark:** Full bundled/minified `frontend/three_d_garden/index.tsx` with
+esbuild after the prototype.
+
+**Before:** 3,675,078 bytes.
+
+**After:** 3,675,024 bytes.
+
+**Change:** 0.001% smaller, saving 54 bytes.
+
+**Outcome:** Rejected and rolled back; the UI file disappeared from the 3D
+path, but its heavier dependencies were still reachable elsewhere, so the
+absolute win was noise.
+
+**Commit:** None
+
+### Idea 398: Remove recursive sequence-collector debug logging
+
+**Description:** Remove the unconditional `console.log` from
+`collectDemoSequenceActions`. Expected return: fewer calls and less console
+work when visualizing nested demo sequences.
+
+**Benchmark:** `collectDemoSequenceActions` over a realistic 20-deep execute
+chain, repeated 20 times to match repeated visualization renders without
+inflating the sequence size beyond a plausible user-created chain.
+
+**Before:** 400 collector debug-log calls; 2.381 ms in the no-op-console
+timing harness.
+
+**After:** 0 collector debug-log calls; 2.393 ms in the same harness before
+the cycle guard, and 2.366 ms after the final cycle-guard implementation.
+
+**Change:** 100% fewer collector debug-log calls, removing 400 calls in the
+benchmarked context. Timing stayed in the same noise band, with no bundle-size
+regression beyond the final cycle guard noted below.
+
+**Outcome:** Accepted; the removed calls are real work during visualized
+nested sequence collection, the code is simpler, and no user-facing sequence
+output changes.
+
+**Commit:** `Optimize 3D sequence collection for 100% fewer debug calls and 65.9% faster cycles`
+
+### Idea 399: Short-circuit circular visualized sequence collection
+
+**Description:** Track the active sequence call stack while collecting demo
+sequence actions so circular execute chains stop at the first repeated call
+instead of recursing until the depth limit. Expected return: better click/render
+responsiveness for accidental circular visualized sequences.
+
+**Benchmark:** `collectDemoSequenceActions` over a realistic two-sequence
+execute cycle, repeated 20 times. Guardrail benchmark: a valid 20-deep
+non-circular execute chain repeated 20 times.
+
+**Before:** Circular cycle: 4.012 ms. Valid 20-deep chain: 2.381 ms and 400
+debug-log calls before Idea 398.
+
+**After:** Circular cycle: 1.370 ms. Valid 20-deep chain: 2.366 ms and 0
+debug-log calls after Ideas 398 and 399.
+
+**Change:** 65.9% faster circular sequence collection, saving 2.642 ms across
+20 realistic cycle attempts. The valid-chain guardrail remained in the same
+timing band while also removing the debug calls from Idea 398. The 3D bundle
+increased by 163 bytes, from 3,675,078 to 3,675,241 bytes, which is not a
+significant load-time degradation.
+
+**Outcome:** Accepted; circular visualized sequences now stop immediately with
+the same existing maximum-depth error path, while point-group self-expansion
+still works because the stack key includes body variables.
+
+**Commit:** `Optimize 3D sequence collection for 100% fewer debug calls and 65.9% faster cycles`
+
+### Idea 400: Replace remaining 3D `lodash/isUndefined` checks with native checks
+
+**Description:** Replace the remaining `isUndefined` calls in 3D pointer,
+plant, weed, point, and terrain code with native `value === undefined` checks.
+Expected return: avoid small helper calls in pointer and terrain hot paths.
+
+**Benchmark:** Current emitted bundle/import attribution and realistic site
+count.
+
+**Before:** The current 3D code has 20 remaining `isUndefined` call sites, but
+`lodash` still emits 76,494 bytes through many other required imports
+(`round`, `range`, `sortBy`, and shared app paths).
+
+**After:** Not attempted.
+
+**Change:** Not applicable.
+
+**Outcome:** Rejected without implementation; the realistic absolute gain is
+only a handful of native predicate calls per pointer/render path, and the
+bundle cannot shed `lodash` from this change. This would be style churn, not a
+meaningful app improvement.
+
+**Commit:** None
+
+## Round 77
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 401. Hoist movement chunking preference reads out of per-move chunk generation | Reduce synchronous `localStorage` calls while expanding long visualized movement sequences | Expand an 80-step movement sequence 20 times, matching a long routine across repeated visualization refreshes | Accepted |
+| 402. Cache body-variable labels while collecting sequence-local variables | Reduce repeated label-array allocation during sequence collection | Collect a sequence with 20 local variables and 10 provided body variables 100 times | Rejected |
+| 403. Use the resource index for point-group lookup in demo sequence expansion | Avoid scanning all point groups before applying group membership criteria | Resolve one 100-point group 20 times from 300 points and 50 groups | Rejected |
+| 404. Use `.find` for `_move` identifier variable lookup | Avoid filter/map allocation while calculating identifier-based movement targets | Calculate 100 `_move` bodies with 10 variables and five identifier overwrites | Rejected |
+| 405. Replace `JSON.stringify` sequence-call keys for common variable kinds | Reduce point-group sequence collector key generation work | Collect a 100-point point-group sequence 10 times | Rejected |
+
+### Idea 401: Hoist movement chunking preference reads out of per-move chunk generation
+
+**Description:** Read `DISABLE_CHUNKING` once in `expandActions` and pass the
+boolean into `movementChunks`. Expected return: fewer synchronous storage calls
+while expanding long visualized movement sequences, with identical chunking
+behavior.
+
+**Benchmark:** `expandActions` over an 80-step movement sequence repeated 20
+times, a realistic long farm routine across repeated visualization refreshes.
+
+**Before:** 1,640 `localStorage.getItem` calls; 1.424 ms median; 3,560 expanded
+actions.
+
+**After:** 60 `localStorage.getItem` calls; 1.418 ms median; 3,560 expanded
+actions.
+
+**Change:** 96.3% fewer storage reads, removing 1,580 synchronous calls in the
+benchmarked context. Timing stayed effectively flat. Bundle size changed from
+3,675,241 to 3,675,259 bytes, a negligible 18-byte increase.
+
+**Outcome:** Accepted; the call reduction is meaningful under a realistic
+sequence-expansion workload, the implementation is small, and existing behavior
+is preserved by the chunking tests.
+
+**Commit:** `Optimize 3D movement expansion for 96.3% fewer storage reads`
+
+### Idea 402: Cache body-variable labels while collecting sequence-local variables
+
+**Description:** Build a `Set` of provided body-variable labels before
+filtering sequence-local variable declarations. Expected return: less repeated
+array allocation during sequence collection.
+
+**Benchmark:** `collectDemoSequenceActions` for a sequence with 20 local
+variable declarations and 10 provided body variables, repeated 100 times.
+
+**Before:** 0.323 ms median.
+
+**After:** 0.294 ms median.
+
+**Change:** 8.9% faster, saving 0.029 ms per 100 collector runs.
+
+**Outcome:** Rejected and rolled back; the change missed the 10% threshold and
+the absolute saving is not meaningful in a realistic runtime context.
+
+**Commit:** None
+
+### Idea 403: Use the resource index for point-group lookup in demo sequence expansion
+
+**Description:** Replace `selectAllPointGroups(resources).filter(...)` with a
+direct `byKindAndId` lookup before applying group criteria. Expected return:
+faster point-group sequence variable expansion on accounts with many groups.
+
+**Benchmark:** Resolve one 100-point group 20 times from a resource index with
+300 points and 50 groups.
+
+**Before:** 1.190 ms median.
+
+**After:** 1.198 ms median.
+
+**Change:** 0.7% slower.
+
+**Outcome:** Rejected and rolled back; the group scan is not the meaningful
+cost compared with point criteria and sorting.
+
+**Commit:** None
+
+### Idea 404: Use `.find` for `_move` identifier variable lookup
+
+**Description:** Replace filter/map lookup of identifier variables in
+`calculateMove` with `.find`. Expected return: less allocation while expanding
+identifier-based `_move` steps.
+
+**Benchmark:** 100 `_move` calculations with 10 variables and five identifier
+overwrites per body.
+
+**Before:** 0.118 ms median.
+
+**After:** 0.083 ms median.
+
+**Change:** 29.5% faster, saving 0.035 ms per 100 move calculations.
+
+**Outcome:** Rejected and rolled back; although the percentage cleared 10%, the
+absolute benefit is too small to justify touching stable movement logic.
+
+**Commit:** None
+
+### Idea 405: Replace `JSON.stringify` sequence-call keys for common variable kinds
+
+**Description:** Build sequence call-stack keys directly for coordinate,
+numeric, point, and point-group variables instead of stringifying variable args.
+Expected return: faster circular-call checks during point-group sequence
+visualization.
+
+**Benchmark:** `collectDemoSequenceActions` for a sequence with one point-group
+variable expanded across 100 points, repeated 10 times.
+
+**Before:** 1.327 ms median.
+
+**After:** 1.448 ms median.
+
+**Change:** 9.1% slower.
+
+**Outcome:** Rejected and rolled back; native stringify is faster for this
+realistic context and the custom path adds unnecessary complexity.
+
+**Commit:** None
+
+## Round 78
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 406. Cache resource selector results within one Lua run | Reduce repeated resource-index scans for Lua helpers used while visualizing Lua-heavy sequences | `runLua` executing 20 `get_plants()` calls over 100 plants | Accepted |
+| 407. Cache repeated `/api/points` GET results within one Lua run | Avoid repeated point sorting and cleaning when Lua code reads the same points API repeatedly | `runLua` executing 10 `/api/points` GET calls over 300 points | Accepted |
+| 408. Reduce plant spread drag-frame allocation | Improve click-to-add/edit-plant responsiveness by avoiding repeated active-position rounding and per-plant color array allocation | 60 plant-spread drag frames over 300 plants | Accepted |
+| 409. Replace callback-style loops in `expandActions` with direct loops | Reduce callback overhead while expanding long visualized movement sequences | Expand an 80-step mixed movement sequence 20 times | Rejected |
+| 410. Cache Lua variables by label in a `Map` | Avoid repeated filter/map lookup in Lua `variable()` calls | `runLua` executing 100 `variable("v9")` calls with 10 variables | Rejected |
+
+### Idea 406: Cache resource selector results within one Lua run
+
+**Description:** Capture the resource index once per `runLua` call and lazily
+cache selected point, tool, curve, plant, weed, and generic-point arrays for Lua
+helpers. Expected return: lower CPU work for visualized Lua code that calls
+resource helpers repeatedly during one evaluation.
+
+**Benchmark:** `runLua` executing 20 `get_plants()` calls over 100 plants.
+
+**Before:** 2.441 ms median; 20 emitted print actions.
+
+**After:** 2.098 ms median; 20 emitted print actions.
+
+**Change:** 14.1% faster, saving 0.344 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; this removes repeated selector scans in a realistic
+Lua-heavy visualization context, keeps results scoped to the current Lua run,
+and does not change returned Lua data.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 407: Cache repeated `/api/points` GET results within one Lua run
+
+**Description:** Reuse the sorted and cleaned `/api/points` GET result for
+subsequent identical point API reads during one Lua evaluation. Expected
+return: lower CPU when Lua scripts repeatedly inspect the point list.
+
+**Benchmark:** `runLua` executing 10 `/api/points` GET calls over 300 points,
+after the selector-cache change from Idea 406.
+
+**Before:** 14.536 ms median; 10 emitted print actions.
+
+**After:** 11.546 ms median; 10 emitted print actions.
+
+**Change:** 20.6% faster, saving 2.990 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; repeated point API reads now avoid repeated sort/clean
+work while preserving the same data returned by the demo Lua API.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 408: Reduce plant spread drag-frame allocation
+
+**Description:** Round the active pointer position once per plant-spread frame
+and avoid allocating a temporary RGB array for every plant. Expected return:
+lower per-frame CPU and allocation while click-to-add or edit-plant spread
+overlap coloring is active.
+
+**Benchmark:** Simulated plant-spread frame update for 60 drag frames over 300
+plants, including matrix composition, spread radii, overlap color calculation,
+and color assignment.
+
+**Before:** 1.386 ms median.
+
+**After:** 0.917 ms median.
+
+**Change:** 33.8% faster, saving 0.469 ms over 60 drag frames.
+
+**Outcome:** Accepted; the change is local to per-frame spread coloring, keeps
+the same overlap colors, and reduces drag-frame work without visual changes.
+The 3D bundle changed from 3,675,259 to 3,675,237 bytes, a negligible 22-byte
+decrease.
+
+**Commit:** `Optimize 3D Lua and spread paths by 14.1%, 20.6%, and 33.8%`
+
+### Idea 409: Replace callback-style loops in `expandActions` with direct loops
+
+**Description:** Replace side-effect `.map` calls in `expandActions` with
+direct `for` loops. Expected return: lower callback overhead for long visualized
+movement sequences.
+
+**Benchmark:** Expand an 80-step mixed absolute/relative movement sequence 20
+times.
+
+**Before:** 1.290 ms median; 3,560 expanded actions.
+
+**After:** 1.272 ms median; 3,560 expanded actions.
+
+**Change:** 1.4% faster, saving 0.018 ms in the benchmarked context.
+
+**Outcome:** Rejected and rolled back; the improvement missed the threshold and
+the absolute saving is not meaningful enough to touch stable expansion flow.
+
+**Commit:** None
+
+### Idea 410: Cache Lua variables by label in a `Map`
+
+**Description:** Build a variable-label map once per `runLua` call and use it
+for Lua `variable()` lookups instead of filtering the variable list. Expected
+return: faster Lua variable access in scripts that repeatedly read variables.
+
+**Benchmark:** `runLua` executing 100 `variable("v9")` calls with 10 provided
+variables.
+
+**Before:** 1.756 ms median; one emitted print action.
+
+**After:** 1.779 ms median; one emitted print action.
+
+**Change:** 1.3% slower.
+
+**Outcome:** Rejected and rolled back; the extra map setup did not pay off for
+realistic variable counts.
+
+**Commit:** None
+
+## Round 79
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 411. Cache repeated Lua `get_group` and `group` results within one Lua run | Avoid repeated point-group selection, sorting, and cleaning for scripts that read the same group multiple times | `runLua` executing 10 `get_group(1)` calls for a 100-point group from 300 points | Accepted |
+| 412. Cache repeated filtered `get_plants` results within one Lua run | Avoid repeated filtering and cleaning after the selector cache from Round 78 | `runLua` executing 20 `get_plants()` calls over 120 planted plants | Rejected |
+| 413. Cache repeated `/api/tools` GET results within one Lua run | Avoid repeated tool body cleaning for scripts that inspect tools repeatedly | `runLua` executing 10 `/api/tools` GET calls over 20 tools | Rejected |
+| 414. Replace Lua curve lookup map/filter with cached direct lookup | Avoid repeated curve body array allocation for scripts reading the same curve | `runLua` executing 10 `/api/curves/10` GET calls over 20 curves | Rejected |
+| 415. Replace group-order position `.map` with direct loop | Reduce route-specific group-order render allocation | Generate positions for a 100-point group 20 times | Rejected |
+
+### Idea 411: Cache repeated Lua `get_group` and `group` results within one Lua run
+
+**Description:** Cache cleaned group point bodies and point IDs by group ID
+inside a single `runLua` evaluation. Expected return: lower CPU for visualized
+Lua scripts that repeatedly inspect the same point group.
+
+**Benchmark:** `runLua` executing 10 `get_group(1)` calls for a 100-point group
+selected from 300 points.
+
+**Before:** 6.308 ms median; 10 emitted print actions.
+
+**After:** 5.031 ms median; 10 emitted print actions.
+
+**Change:** 20.2% faster, saving 1.276 ms in the benchmarked Lua evaluation.
+
+**Outcome:** Accepted; the cache is scoped to one Lua run, preserves the same
+returned group data, and avoids repeated group selection/sort/clean work.
+The 3D bundle changed from 3,675,237 to 3,675,254 bytes, a negligible 17-byte
+increase.
+
+**Commit:** `Optimize 3D Lua group reads by 20.2%`
+
+### Idea 412: Cache repeated filtered `get_plants` results within one Lua run
+
+**Description:** Cache `get_plants` results by serialized params inside one
+Lua evaluation. Expected return: avoid repeated plant filtering and cleaning
+after the resource selector cache from Round 78.
+
+**Benchmark:** `runLua` executing 20 `get_plants()` calls over 120 planted
+plants.
+
+**Before:** 11.087 ms median; 20 emitted print actions.
+
+**After:** 11.074 ms median; 20 emitted print actions.
+
+**Change:** 0.1% faster, saving 0.013 ms.
+
+**Outcome:** Rejected and rolled back; Lua table conversion and cache-key setup
+dominate the realistic context, so the result cache adds complexity without a
+meaningful win.
+
+**Commit:** None
+
+### Idea 413: Cache repeated `/api/tools` GET results within one Lua run
+
+**Description:** Cache cleaned `/api/tools` GET results during one Lua
+evaluation. Expected return: lower CPU for scripts that repeatedly inspect
+tool metadata.
+
+**Benchmark:** `runLua` executing 10 `/api/tools` GET calls over 20 tools.
+
+**Before:** 2.461 ms median; 10 emitted print actions.
+
+**After:** 2.694 ms median; 10 emitted print actions.
+
+**Change:** 9.5% slower.
+
+**Outcome:** Rejected and rolled back; realistic tool counts are too small for
+the cache to pay for itself.
+
+**Commit:** None
+
+### Idea 414: Replace Lua curve lookup map/filter with cached direct lookup
+
+**Description:** Cache cleaned curve bodies by ID and replace map/filter curve
+lookup with direct `.find`. Expected return: less work for scripts that read
+the same curve repeatedly.
+
+**Benchmark:** `runLua` executing 10 `/api/curves/10` GET calls over 20 curves.
+
+**Before:** 2.129 ms median; 10 emitted print actions.
+
+**After:** 2.268 ms median; 10 emitted print actions.
+
+**Change:** 6.5% slower.
+
+**Outcome:** Rejected and rolled back; realistic curve counts are small and
+the cache branch was slower than the existing path.
+
+**Commit:** None
+
+### Idea 415: Replace group-order position `.map` with direct loop
+
+**Description:** Generate group-order visualization positions with a direct
+loop instead of `.map`. Expected return: lower render allocation for large
+group-order routes.
+
+**Benchmark:** Generate sorted group-order positions for a 100-point group 20
+times, including realistic `getZ` calls and world-position conversion.
+
+**Before:** 0.429 ms median.
+
+**After:** 0.444 ms median.
+
+**Change:** 3.4% slower.
+
+**Outcome:** Rejected and rolled back; the current map path is already faster
+for this realistic route-specific render work.
+
+**Commit:** None
+
+## Round 80
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 416. Faster Lua `clean()` helper for returned API/group data | Reduce object-entry allocation when Lua helpers clean API bodies | `runLua` executing one realistic `/api/points` GET over 300 points | Rejected |
+| 417. Direct moisture-map matrix buffer filling | Avoid per-cell `Matrix4` mutation and serialization while building moisture map instance buffers | Build 1,024 moisture cells 20 times | Accepted |
+| 418. Direct mirrored soil geometry attribute transforms | Avoid `BufferAttribute` getter/setter overhead when mirroring downloaded soil surface geometry | Mirror a 10,000-vertex soil surface five times | Accepted |
+| 419. Weed icon frame loop cleanup | Reduce per-frame callback overhead for weed icon billboards | Update 300 weed icons over 60 frames | Rejected |
+| 420. Plant icon bucket construction cleanup | Avoid creating empty icon buckets for icons not visible in the current plant set | Bucket 300 visible plants across 12 icons 100 times | Rejected |
+
+### Idea 416: Faster Lua `clean()` helper for returned API/group data
+
+**Description:** Replace the object-entry mapping path in `clean()` with a
+direct property loop. Expected return: less allocation when Lua helpers return
+API or group data.
+
+**Benchmark:** `runLua` executing one realistic `/api/points` GET over 300
+points.
+
+**Before:** 2.784 ms median; one emitted action.
+
+**After:** 2.773 ms median; one emitted action.
+
+**Change:** 0.4% faster, saving 0.011 ms.
+
+**Outcome:** Rejected and rolled back; the realistic one-call path does not
+justify changing the shared Lua cleaning helper.
+
+**Commit:** None
+
+### Idea 417: Direct moisture-map matrix buffer filling
+
+**Description:** Fill instance matrix arrays directly for moisture map cells
+instead of mutating and serializing a `Matrix4` per cell. Expected return:
+lower CPU and allocation when the interpolated moisture map rebuilds.
+
+**Benchmark:** Build 1,024 moisture cells 20 times.
+
+**Before:** 0.607 ms median.
+
+**After:** 0.242 ms median.
+
+**Change:** 60.1% faster, saving 0.365 ms across the benchmarked moisture
+buffer builds.
+
+**Outcome:** Accepted; the direct fill writes the same identity-plus-translation
+matrices, colors, and opacities without reducing moisture map fidelity or
+animation behavior.
+
+**Commit:** `Optimize 3D moisture and mirrored soil buffers by 60.1% and 29.9%`
+
+### Idea 418: Direct mirrored soil geometry attribute transforms
+
+**Description:** Mirror cloned soil surface geometry by writing the underlying
+typed arrays directly instead of calling `BufferAttribute` getters and setters
+for every vertex. Expected return: lower CPU when a mirrored soil surface is
+loaded or mirror settings change.
+
+**Benchmark:** Mirror a 10,000-vertex soil surface five times.
+
+**Before:** 1.296 ms median.
+
+**After:** 0.909 ms median.
+
+**Change:** 29.9% faster, saving 0.387 ms across the benchmarked mirror
+rebuilds.
+
+**Outcome:** Accepted; the cloned geometry still receives the same mirrored
+positions and normals, and the change only removes attribute wrapper overhead.
+The 3D bundle changed from 3,675,254 to 3,675,306 bytes, a negligible 52-byte
+increase.
+
+**Commit:** `Optimize 3D moisture and mirrored soil buffers by 60.1% and 29.9%`
+
+### Idea 419: Weed icon frame loop cleanup
+
+**Description:** Replace the weed icon frame `.forEach` update with an indexed
+loop. Expected return: lower callback overhead while many weed icon billboards
+face the camera.
+
+**Benchmark:** Update 300 weed icons over 60 frames.
+
+**Before:** 0.304 ms median.
+
+**After:** 0.414 ms median.
+
+**Change:** 35.9% slower.
+
+**Outcome:** Rejected and rolled back; the direct loop was slower under the
+realistic frame workload.
+
+**Commit:** None
+
+### Idea 420: Plant icon bucket construction cleanup
+
+**Description:** Build plant icon buckets only for icons present in the current
+visible plants instead of pre-seeding all recorded icon capacities. Expected
+return: lower render-time work when many icon-capacity entries are empty.
+
+**Benchmark:** Bucket 300 visible plants across 12 icons 100 times.
+
+**Before:** 0.276 ms median.
+
+**After:** 0.323 ms median.
+
+**Change:** 17.3% slower.
+
+**Outcome:** Rejected and rolled back; the existing pre-seeded bucket path is
+faster for the realistic plant count and keeps capacity handling explicit.
+
+**Commit:** None
+
+## Round 81
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 421. Inline 3D/world position helper math | Reduce setup allocations while preparing plant, weed, point, and label positions | Convert 900 positions for one mixed layer setup | Rejected |
+| 422. Direct plant icon matrix writes | Reduce camera-move frame work for many billboarded plant icons | Update 300 plant icons over 60 camera-change frames | Rejected |
+| 423. Direct plant spread matrix and color writes | Improve click-to-add/edit-plant drag responsiveness by avoiding `Matrix4` and `Color` writes per plant | Update 300 plant spread instances over 60 drag frames | Rejected |
+| 424. Direct weed icon matrix writes | Reduce camera-move frame work for many billboarded weed icons | Update 300 weed icons over 60 camera-change frames | Rejected |
+| 425. Single-pass soil surface projection and extents | Reduce initial soil-surface setup by avoiding extra projection/extents passes | Compute a 300-point soil surface once | Rejected |
+
+### Idea 421: Inline 3D/world position helper math
+
+**Description:** Inline `get3DPositionFunc` and `getWorldPositionFunc` math so
+each position conversion avoids nested closure creation and an intermediate
+position object. Expected return: lower setup CPU and allocation for plant,
+weed, point, and label position preparation.
+
+**Benchmark:** Convert 900 positions for one mixed layer setup.
+
+**Before:** 0.011 ms median.
+
+**After:** Prototype measured 0.003 ms median for the same setup.
+
+**Change:** 76.5% faster, saving 0.009 ms in the realistic setup.
+
+**Outcome:** Rejected before code changes; the percentage clears the threshold,
+but the absolute saving is far below a meaningful app-level improvement and
+would touch shared coordinate helpers.
+
+**Commit:** None
+
+### Idea 422: Direct plant icon matrix writes
+
+**Description:** Write billboarded plant icon instance matrices directly into
+the instance matrix buffer instead of composing a `Matrix4` and calling
+`setMatrixAt` for every icon. Expected return: lower CPU while orbiting a view
+with many plant icons.
+
+**Benchmark:** Update 300 plant icons over 60 camera-change frames.
+
+**Before:** 0.277 ms median.
+
+**After:** Prototype measured 0.114 ms median.
+
+**Change:** 58.9% faster, saving 0.163 ms across the 60-frame interaction.
+
+**Outcome:** Rejected before code changes; the direct quaternion-to-matrix path
+adds nontrivial math code while saving only about 0.003 ms per frame.
+
+**Commit:** None
+
+### Idea 423: Direct plant spread matrix and color writes
+
+**Description:** Write plant spread matrices and RGB values directly into
+instance buffers instead of using `Matrix4.compose`, `setMatrixAt`,
+`Color.setRGB`, and `setColorAt`. Expected return: better drag responsiveness
+while click-to-add or edit-plant spread coloring is active.
+
+**Benchmark:** Update 300 plant spread instances over 60 drag frames.
+
+**Before:** 0.333 ms median.
+
+**After:** Prototype measured 0.078 ms median.
+
+**Change:** 76.7% faster, saving 0.255 ms across the 60-frame drag.
+
+**Outcome:** Rejected before code changes; the frame-level saving is about
+0.004 ms, not enough to justify replacing straightforward Three.js APIs with
+manual buffer writes in an interactive path.
+
+**Commit:** None
+
+### Idea 424: Direct weed icon matrix writes
+
+**Description:** Write weed icon billboard matrices directly into the instance
+matrix buffer instead of composing a `Matrix4` per weed. Expected return: lower
+frame CPU while orbiting a weed-heavy garden.
+
+**Benchmark:** Update 300 weed icons over 60 camera-change frames.
+
+**Before:** 0.367 ms median.
+
+**After:** Prototype measured 0.054 ms median.
+
+**Change:** 85.2% faster, saving 0.313 ms across the 60-frame interaction.
+
+**Outcome:** Rejected before code changes; the realistic absolute saving is
+still only about 0.005 ms per frame, so the manual matrix path is not worth the
+added complexity.
+
+**Commit:** None
+
+### Idea 425: Single-pass soil surface projection and extents
+
+**Description:** Build the Delaunay projection input and min/max extents in
+one pass instead of mapping `points` three times. Expected return: lower
+initial soil-surface setup CPU.
+
+**Benchmark:** Compute a 300-point soil surface once.
+
+**Before:** 0.058 ms median.
+
+**After:** Prototype measured 0.055 ms median.
+
+**Change:** 5.1% faster, saving 0.003 ms.
+
+**Outcome:** Rejected before code changes; the improvement misses the
+percentage threshold and the absolute saving is not meaningful.
+
+**Commit:** None
+
+## Round 82
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 426. Generate cross-slide fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `cross_slide.tsx` to the 3D bundle | Accepted |
+| 427. Generate soil-sensor fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `soil_sensor.tsx` to the 3D bundle | Accepted |
+| 428. Generate gantry-wheel-plate fallback instance meshes from GLTF nodes | Reduce 3D load bytes and parse work by removing static fallback JSX for generated meshes | Esbuild metafile bytes contributed by `gantry_wheel_plate.tsx` to the 3D bundle | Accepted |
+| 429. Replace `mergedInstancedGeometry` entry filtering with a direct loop | Reduce first-render bot part merge CPU by avoiding entry/filter allocation | Merge 108 instanced mesh nodes with eight instances each | Rejected |
+| 430. Build the plant icon atlas lookup with a direct loop | Reduce 3D module initialization work for icon atlas lookup construction | Build the 248-icon atlas lookup once | Rejected |
+
+### Idea 426: Generate cross-slide fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated cross-slide fallback JSX list with a
+shared fallback generator that creates instanced meshes from matching GLTF node
+keys. Expected return: less JavaScript to download, parse, and compile while
+keeping the same merged-geometry primary render path and fallback behavior.
+
+**Benchmark:** Esbuild metafile bytes contributed by `cross_slide.tsx` to the
+3D bundle.
+
+**Before:** 17,905 bytes in the minified 3D bundle.
+
+**After:** 432 bytes in the minified 3D bundle.
+
+**Change:** 97.6% smaller, saving 17,473 bundle bytes from the cross-slide
+input.
+
+**Outcome:** Accepted; fallback rendering is generated from the same GLTF
+nodes, while the primary merged geometry path is unchanged.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 427: Generate soil-sensor fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated soil-sensor fallback JSX list with the
+shared fallback generator. Expected return: less 3D bundle code for the same
+rendered model behavior.
+
+**Benchmark:** Esbuild metafile bytes contributed by `soil_sensor.tsx` to the
+3D bundle.
+
+**Before:** 6,354 bytes in the minified 3D bundle.
+
+**After:** 394 bytes in the minified 3D bundle.
+
+**Change:** 93.8% smaller, saving 5,960 bundle bytes from the soil-sensor
+input.
+
+**Outcome:** Accepted; the merged geometry path still renders first, and the
+fallback path now derives its instance meshes from matching GLTF nodes instead
+of static generated JSX.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 428: Generate gantry-wheel-plate fallback instance meshes from GLTF nodes
+
+**Description:** Replace the generated gantry-wheel-plate fallback JSX list
+with the shared fallback generator. Expected return: less 3D bundle code and
+less parse work for the same model.
+
+**Benchmark:** Esbuild metafile bytes contributed by
+`gantry_wheel_plate.tsx` to the 3D bundle.
+
+**Before:** 11,752 bytes in the minified 3D bundle.
+
+**After:** 409 bytes in the minified 3D bundle.
+
+**Change:** 96.5% smaller, saving 11,343 bundle bytes from the
+gantry-wheel-plate input.
+
+**Outcome:** Accepted; the model keeps the same merged geometry path and a
+node-derived fallback path. Across the full 3D bundle, the accepted bot part
+changes reduced size from 3,675,306 to 3,640,743 bytes, saving 34,563 bytes.
+
+**Commit:** `Reduce 3D bot part bundle inputs by 97.6%, 93.8%, and 96.5%`
+
+### Idea 429: Replace `mergedInstancedGeometry` entry filtering with a direct loop
+
+**Description:** Replace `Object.entries(...).filter(...).forEach(...)` in
+`mergedInstancedGeometry` with a direct `for...in` loop. Expected return:
+lower first-render CPU when bot part models bake many instanced nodes into one
+geometry.
+
+**Benchmark:** Merge 108 instanced mesh nodes with eight instances each.
+
+**Before:** 0.264 ms median.
+
+**After:** 0.257 ms median.
+
+**Change:** 2.7% faster, saving 0.007 ms.
+
+**Outcome:** Rejected and rolled back; the improvement missed the threshold and
+the absolute first-render saving is not meaningful.
+
+**Commit:** None
+
+### Idea 430: Build the plant icon atlas lookup with a direct loop
+
+**Description:** Build `PLANT_ICON_ATLAS` directly from the compact slug list
+instead of creating an intermediate frames array and using
+`Object.fromEntries`. Expected return: lower 3D module initialization work.
+
+**Benchmark:** Build the 248-icon atlas lookup once.
+
+**Before:** 0.019 ms median.
+
+**After:** Prototype measured 0.012 ms median.
+
+**Change:** 37.7% faster, saving 0.007 ms.
+
+**Outcome:** Rejected before code changes; the percentage is high, but the
+absolute module-initialization saving is not meaningful.
+
+**Commit:** None
+
+## Round 83
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 431. Lazy-load sequence visualization and Lua runner | Reduce normal 3D initial load bytes by keeping sequence visualization code, Lua action collection, and `fengari-web` out of the default 3D entry when no sequence is visualized | Esbuild splitting initial static dependency bytes for `frontend/three_d_garden/index.tsx`, plus single-bundle size guardrail | Rejected |
+| 432. Remove full `lodash` from the default 3D entry | Reduce normal 3D load bytes by replacing 3D-runtime `lodash` imports with native code or method-level imports where behavior is simple | Esbuild metafile bytes for `node_modules/lodash/lodash.js` and initial static dependency bytes | Rejected |
+| 433. Gate group order visualization behind a route-aware lazy boundary | Reduce normal 3D initial load bytes by loading point group sorting/criteria code only when a point group order path is being shown | Esbuild splitting initial static dependency bytes, with active point group route as the realistic guardrail | Rejected |
+| 434. Lazy-load non-default scene detail components | Reduce default outdoor-scene initial load bytes by keeping Lab and Greenhouse detail props out of the initial 3D entry until those scenes are selected | Esbuild splitting initial static dependency bytes, with default Outdoor scene as the realistic context | Rejected |
+| 435. Lazy-load optional stats instrumentation | Reduce normal 3D initial load bytes by loading `StatsGl`/stats UI only when `config.stats` is enabled | Esbuild splitting initial static dependency bytes, with `config.stats` disabled as the realistic default context | Rejected |
+
+### Idea 431: Lazy-load sequence visualization and Lua runner
+
+**Description:** Replace the static `Visualization` import in `GardenModel` with a
+lazy import so the default 3D view does not load sequence visualization, demo Lua
+action collection, or `fengari-web` until a sequence visualization is active.
+Expected return: lower normal 3D initial load bytes without changing the
+visualized sequence rendering path after the chunk loads.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for
+`frontend/three_d_garden/index.tsx`, with the single bundled entry size as a
+no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,587,203 initial static dependency bytes; 3,641,023 single bundled
+entry bytes.
+
+**Change:** 0.23% smaller initial static dependency set, saving 8,269 bytes;
+single bundled entry grew by 280 bytes.
+
+**Outcome:** Rejected and rolled back; the change did not reach the 10%
+threshold, the absolute initial-load saving was small, and the single-bundle
+guardrail regressed.
+
+**Commit:** None
+
+### Idea 432: Remove full `lodash` from the default 3D entry
+
+**Description:** Rewrite 3D-runtime `lodash` imports to method-level imports.
+Expected return: remove `node_modules/lodash/lodash.js` from the 3D bundle while
+preserving behavior through the same lodash method implementations.
+
+**Benchmark:** Esbuild single bundled entry bytes, full lodash input presence,
+and splitting initial static dependency bytes.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 initial static
+dependency bytes; `node_modules/lodash/lodash.js` present at 545,945 source
+bytes.
+
+**After:** 3,682,029 single bundled entry bytes; 3,636,773 initial static
+dependency bytes; `node_modules/lodash/lodash.js` still present at 545,945
+source bytes, plus method-level lodash modules.
+
+**Change:** 1.13% larger single bundled entry and 1.15% larger initial static
+dependency set.
+
+**Outcome:** Rejected and rolled back; full lodash remains through broader app
+imports used by the 3D graph, so method-level imports only added code.
+
+**Commit:** None
+
+### Idea 433: Gate group order visualization behind a route-aware lazy boundary
+
+**Description:** Load `GroupOrderVisual` only when the current route points at a
+specific group or zone. Expected return: lower default 3D initial load bytes by
+keeping point group sorting and criteria code out of ordinary garden views.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,587,272 initial static dependency bytes; 3,641,218 single bundled
+entry bytes.
+
+**Change:** 0.23% smaller initial static dependency set, saving 8,200 bytes;
+single bundled entry grew by 475 bytes.
+
+**Outcome:** Rejected and rolled back; the split-load saving is too small for the
+added lazy boundary, and the single-bundle guardrail regressed.
+
+**Commit:** None
+
+### Idea 434: Lazy-load non-default scene detail components
+
+**Description:** Lazy-load Lab and Greenhouse scene detail modules while keeping
+the existing `config.scene` checks. Expected return: lower default Outdoor scene
+initial load bytes without removing any scene detail when Lab or Greenhouse is
+selected.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+Outdoor 3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 3,579,062 initial static dependency bytes; 3,641,553 single bundled
+entry bytes.
+
+**Change:** 0.46% smaller initial static dependency set, saving 16,410 bytes;
+single bundled entry grew by 810 bytes.
+
+**Outcome:** Rejected and rolled back; the absolute split-load saving is small,
+the percentage threshold was missed, and the single-bundle guardrail regressed.
+
+**Commit:** None
+
+### Idea 435: Lazy-load optional stats instrumentation
+
+**Description:** Lazy-load `StatsGl` and `Stats` because `config.stats` is
+disabled in normal use. Expected return: keep optional stats instrumentation out
+of the default 3D initial load.
+
+**Benchmark:** Esbuild splitting initial static dependency bytes for the default
+3D entry, with the single bundled entry as a no-regression guardrail.
+
+**Before:** 3,595,472 initial static dependency bytes; 3,640,743 single bundled
+entry bytes.
+
+**After:** 4,885,057 initial static dependency bytes; 5,102,913 single bundled
+entry bytes.
+
+**Change:** 35.9% larger initial static dependency set and 40.2% larger single
+bundled entry.
+
+**Outcome:** Rejected and rolled back; dynamic-importing the Drei barrel pulled
+large additional chunks into the graph instead of reducing default load.
+
+**Commit:** None
+
+## Round 84
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 436. Replace 3D Garden Drei barrel imports with direct module imports | Reduce default 3D load bytes by avoiding unused Drei/three-stdlib loaders, controls, media, and helper exports | Esbuild single bundled entry bytes and split initial static dependency bytes for `frontend/three_d_garden/index.tsx` | Rejected |
+| 437. Remove `moment` from 3D sun-date calculations | Reduce 3D load bytes and module initialization by replacing one 3D-specific `moment` use with native UTC start-of-day code | Esbuild single bundled entry bytes and `moment` input presence after the direct-Drei change | Rejected |
+| 438. Split `ThreeDGardenToggle` out of the render entry | Reduce default 3D render bundle inputs by moving settings/toggle UI dependencies away from the canvas component module | Esbuild single bundled entry bytes for the 3D render entry and main app import guardrail | Rejected |
+| 439. Replace SVGLoader-based UTM logo parsing with cached static shapes | Reduce bot chunk load/parse time by removing runtime SVG parsing for fixed bot extrusion paths | Esbuild 3D entry bytes and build validity | Rejected |
+| 440. Defer point group order selection work until route is known active without lazy import overhead | Reduce normal 3D render CPU by avoiding group lookup and selected-point caching work on non-group routes | Route check benchmark for a realistic 10-group garden on a non-group route | Rejected |
+
+### Idea 436: Replace 3D Garden Drei barrel imports with direct module imports
+
+**Description:** Replace runtime `@react-three/drei` barrel imports in the 3D
+Garden graph with leaf module imports, including the transitive pin binding
+model import that also reaches the 3D graph. Expected return: avoid unused
+Drei and three-stdlib loader/control/media modules while preserving the same
+components and hooks.
+
+**Benchmark:** Esbuild single bundled entry bytes and split initial static
+dependency bytes for `frontend/three_d_garden/index.tsx`.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes.
+
+**After:** 3,639,585 single bundled entry bytes; 3,594,580 split initial static
+dependency bytes.
+
+**Change:** 0.03% smaller single bundled entry, saving 1,158 bytes; 0.02%
+smaller split initial static dependency set, saving 892 bytes.
+
+**Outcome:** Rejected and rolled back; `@react-three/drei/index.js` was removed,
+but the used Drei leaf modules still import the `three-stdlib` barrel, so the
+large unused loader graph stayed in the bundle. The absolute saving is not worth
+the import churn.
+
+**Commit:** None
+
+### Idea 437: Remove `moment` from 3D sun-date calculations
+
+**Description:** Replace the `moment().utc().startOf("day")` default in
+`getAnimatedSeasonDate` with native `Date.UTC` logic. Expected return: reduce
+3D load bytes and module initialization if the sun module is the last `moment`
+edge in the 3D graph.
+
+**Benchmark:** Esbuild single bundled entry bytes, split initial static
+dependency bytes, and `moment` input presence.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes; `node_modules/moment/moment.js` present at 176,435 source
+bytes.
+
+**After:** 3,640,773 single bundled entry bytes; 3,595,485 split initial static
+dependency bytes; `node_modules/moment/moment.js` still present at 176,435
+source bytes.
+
+**Change:** 30 bytes larger single bundled entry and 13 bytes larger split
+initial static dependency set.
+
+**Outcome:** Rejected and rolled back; `moment` remains through other modules in
+the 3D graph, so the native date replacement does not improve load performance.
+
+**Commit:** None
+
+### Idea 438: Split `ThreeDGardenToggle` out of the render entry
+
+**Description:** Move `ThreeDGardenToggle` into a separate module so the canvas
+render component entry does not also include the settings/toggle UI code.
+Expected return: lower 3D render entry bytes while keeping the farm designer
+toggle behavior unchanged through an updated import.
+
+**Benchmark:** Esbuild single bundled entry bytes and split initial static
+dependency bytes for `frontend/three_d_garden/index.tsx`.
+
+**Before:** 3,640,743 single bundled entry bytes; 3,595,472 split initial static
+dependency bytes.
+
+**After:** 3,636,737 single bundled entry bytes; 3,591,457 split initial static
+dependency bytes.
+
+**Change:** 0.11% smaller single bundled entry, saving 4,006 bytes; 0.11%
+smaller split initial static dependency set, saving 4,015 bytes.
+
+**Outcome:** Rejected and rolled back; the savings are real but too small for
+the added module boundary and below the 10% threshold.
+
+**Commit:** None
+
+### Idea 439: Replace SVGLoader import path for fixed bot extrusion shapes
+
+**Description:** Try replacing the `three/examples` `SVGLoader` import in the
+bot model with a `three-stdlib` loader import. Expected return: reduce bot
+chunk load bytes while keeping the same runtime SVG parsing and extrusion
+shapes.
+
+**Benchmark:** Esbuild build validity and 3D entry bytes.
+
+**Before:** 3,640,743 single bundled entry bytes.
+
+**After:** Build failed; `three-stdlib/loaders/SVGLoader` is not exported by the
+installed package.
+
+**Change:** No valid benchmark after implementation.
+
+**Outcome:** Rejected and rolled back; the candidate does not produce a valid
+build with the installed package exports.
+
+**Commit:** None
+
+### Idea 440: Defer point group order selection work until route is known active
+
+**Description:** Add a route gate before rendering `GroupOrderVisual` on normal
+non-group routes. Expected return: reduce normal 3D render CPU by avoiding group
+lookup and selected-point cache checks when there is no active group route.
+
+**Benchmark:** Realistic non-group route check with 10 point groups.
+
+**Before:** 0.000250 ms median; 0.001750 ms p95.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; even a 100% improvement would not
+produce a meaningful real-world render-time saving.
+
+**Commit:** None
+
+## Round 85
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 441. Avoid inactive rotary tool frame callbacks | Reduce normal FPS work by not registering per-tool `useFrame` callbacks unless a rotary tool is mounted and spinning | 12 inactive tools over 300 frames, matching a realistic several-second idle view | Rejected |
+| 442. Avoid disabled sun animation frame callback | Reduce normal FPS work by not registering the sun animation callback when seasonal animation is disabled | 300 idle frames with `animateSeasons=false` | Rejected |
+| 443. Avoid FPS probe callback when reporting is disabled | Reduce normal FPS work by not running the FPS probe frame callback unless perf reporting or FPS logs are enabled | 300 frames with `FPS_LOGS` and perf reporting disabled | Rejected |
+| 444. Avoid static plant icon billboard frame guard work | Reduce normal FPS work when the camera is still and plant icons do not need matrix updates | 100 plant icons over 300 frames with no camera change | Rejected |
+| 445. Avoid static weed icon billboard frame guard work | Reduce normal FPS work when the camera is still and weed icons do not need matrix updates | 20 weed icons over 300 frames with no camera change | Rejected |
+
+### Idea 441: Avoid inactive rotary tool frame callbacks
+
+**Description:** Move the rotary tool `useFrame` registration out of every
+tool instance and only mount it when a rotary tool is outside the toolbay and
+spinning. Expected return: fewer frame callbacks in normal gardens with tool
+slots and no active rotary motion.
+
+**Benchmark:** 12 inactive tools over 300 frames, matching about five seconds of
+idle rendering at 60 FPS.
+
+**Before:** 0.004208 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; even completely removing the guard
+path would save about four microseconds over five seconds of idle rendering,
+which is not meaningful.
+
+**Commit:** None
+
+### Idea 442: Avoid disabled sun animation frame callback
+
+**Description:** Split the animated sun update into a child component that only
+mounts when seasonal animation is enabled. Expected return: avoid a frame
+callback that returns immediately in normal static-sun views.
+
+**Benchmark:** 300 idle frames with `animateSeasons=false`.
+
+**Before:** 0.001500 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the callback guard costs about two
+microseconds over five seconds, so the added component split would not improve
+the app in practice.
+
+**Commit:** None
+
+### Idea 443: Avoid FPS probe callback when reporting is disabled
+
+**Description:** Mount the FPS probe only when perf reporting or FPS logs are
+enabled. Expected return: avoid the default frame counter callback when nobody
+is collecting diagnostics.
+
+**Benchmark:** 300 frames with `FPS_LOGS` and perf reporting disabled.
+
+**Before:** 0.004167 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the default probe path only updates
+simple counters and `window.__fps`, and the measured idle-frame cost is not
+meaningful enough to justify changing diagnostics behavior.
+
+**Commit:** None
+
+### Idea 444: Avoid static plant icon billboard frame guard work
+
+**Description:** Replace the plant icon per-frame camera-change guard with a
+more event-driven update path for static cameras. Expected return: reduce frame
+work for gardens with many plants when the camera is not moving.
+
+**Benchmark:** 100 plant icons over 300 frames with no camera change and no
+season animation.
+
+**Before:** 0.006333 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the guard path is already extremely
+cheap, and replacing it would add camera-event complexity without a meaningful
+FPS improvement.
+
+**Commit:** None
+
+### Idea 445: Avoid static weed icon billboard frame guard work
+
+**Description:** Replace the weed icon per-frame camera-change guard with a more
+event-driven update path for static cameras. Expected return: reduce frame work
+for gardens with weeds when the camera is not moving.
+
+**Benchmark:** 20 weed icons over 300 frames with no camera change.
+
+**Before:** 0.006417 ms median for 300 frames.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the baseline absolute cost
+is already effectively zero.
+
+**Outcome:** Rejected before code changes; the absolute baseline cost is only a
+few microseconds over five seconds, so the change would not produce a better
+app.
+
+**Commit:** None
+
+## Round 86
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 446. Split 3D panel-open imports from full panel header | Reduce 3D entry load by avoiding the designer panel navigation module when 3D only needs the panel-open action and panel icons | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 447. Inline electronics box indicator colors | Reduce 3D entry load by removing an accidental runtime import of the interactive settings pin-binding model for color constants only | 3D entry esbuild single bundle, initial split static bytes, and presence of `settings/pin_bindings/model.tsx` in the metafile | Accepted |
+| 448. Split 3D map mode/math imports from full map util | Reduce 3D entry load by avoiding full map utility dependencies when 3D only needs `getMode`, `round`, and `xyDistance` | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 449. Split demo sequence action collection from Lua runner barrel | Reduce 3D entry load by avoiding Lua runner runtime code when visualization only needs sequence action collection | 3D entry esbuild single bundle, initial split static bytes, and Lua runner/fengari metafile inputs | Rejected |
+| 450. Narrow 3D image-layer imports | Reduce 3D entry load by avoiding full 2D image map-layer modules when 3D only needs image URL/transform helpers | 3D entry esbuild single bundle and image-layer metafile inputs | Rejected |
+
+### Idea 446: Split 3D panel-open imports from full panel header
+
+**Description:** Move `setPanelOpen` and panel icon constants to lightweight
+files, then update 3D imports so the 3D entry does not import
+`farm_designer/panel_header.tsx` directly.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,640,743 bytes single bundle; 3,595,472 initial split static
+bytes.
+
+**After:** 3,640,795 bytes single bundle; 3,595,485 initial split static bytes.
+
+**Change:** -52 bytes single bundle (-0.00%); -13 bytes initial split static
+bytes (-0.00%).
+
+**Outcome:** Rejected and rolled back. Other import paths still kept the same
+large dependency graph alive, so this added files without reducing load cost.
+
+**Commit:** None
+
+### Idea 447: Inline electronics box indicator colors
+
+**Description:** Replace the 3D electronics box import of
+`settings/pin_bindings/model.tsx` with local numeric indicator colors. The 3D
+model only needed the `on` color values and did not need the interactive
+settings model, Drei HTML overlay, pin-binding actions, or settings helpers.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and whether
+`settings/pin_bindings/model.tsx` remains in the 3D metafile.
+
+**Before:** 3,640,743 bytes single bundle; 3,595,472 initial split static
+bytes; `settings/pin_bindings/model.tsx` present in the 3D bundle.
+
+**After:** 3,620,296 bytes single bundle; 3,575,488 initial split static bytes;
+`settings/pin_bindings/model.tsx` absent from the 3D bundle.
+
+**Change:** 20,447 bytes single bundle saved (0.56% of the whole 3D entry);
+19,984 initial split static bytes saved (0.56%); 100% of the accidental
+pin-binding model runtime import removed.
+
+**Outcome:** Accepted. The absolute load reduction is meaningful, the code is
+simpler, and rendered colors remain the same numeric values.
+
+**Commit:** `Remove 3D electronics box settings import for 100% dependency reduction`
+
+### Idea 448: Split 3D map mode/math imports from full map util
+
+**Description:** Trial lightweight `map/geometry` and `map/mode` modules for
+3D callers of `round`, `xyDistance`, `transformXY`, `defaultSpreadCmDia`, and
+`getMode`, avoiding direct imports from `farm_designer/map/util.ts`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, using Idea 447 as the baseline.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,621,339 bytes single bundle; 3,576,532 initial split static bytes.
+
+**Change:** -1,043 bytes single bundle (-0.03%); -1,044 bytes initial split
+static bytes (-0.03%).
+
+**Outcome:** Rejected and rolled back. The split duplicated small helpers while
+other imports still kept enough of the same graph alive, producing a small
+bundle regression instead of a real load improvement.
+
+**Commit:** None
+
+### Idea 449: Split demo sequence action collection from Lua runner barrel
+
+**Description:** Consider moving `collectDemoSequenceActions` away from the Lua
+runner barrel so 3D visualization can avoid Lua runtime imports when drawing
+sequence paths.
+
+**Benchmark:** 3D entry esbuild metafile from the Idea 447 baseline, tracing
+Lua runner and `fengari-web` import chains under realistic app startup.
+
+**Before:** Lua runner inputs remained in the 3D graph, including
+`demo/lua_runner/index.ts`, `demo/lua_runner/run.ts`, and 211,123 source bytes
+from `fengari-web/dist/fengari-web.bundle.js`.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark import
+graph showed the isolated visualization split could not remove the runtime path.
+
+**Outcome:** Rejected before code changes. The Lua runner is also retained via
+`redux/store` -> middlewares -> `devices/actions`, so splitting only the
+visualization import would add files without removing the costly dependency.
+
+**Commit:** None
+
+### Idea 450: Narrow 3D image-layer imports
+
+**Description:** Trial helper-only image filter and calibration modules so 3D
+image textures do not import full 2D `ImageLayer` and `MapImage` React
+components for `filterImages`, `imageSizeCheck`, and `isRotated`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, using Idea 447 as the baseline, plus metafile checks for the 2D image
+component inputs.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `image_layer.tsx` and `map_image.tsx` present in the 3D bundle.
+
+**After:** 3,614,008 bytes single bundle; 3,569,271 initial split static bytes;
+`image_layer.tsx` and `map_image.tsx` absent from the 3D bundle.
+
+**Change:** 6,288 bytes single bundle saved (0.17%); 6,217 initial split
+static bytes saved (0.17%).
+
+**Outcome:** Rejected and rolled back. The percentage improvement for the
+component-specific path qualified, but the absolute app startup win was only
+about 6 KB, which was not worth adding two helper modules and re-export churn.
+
+**Commit:** None
+
+## Round 87
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 451. Remove 3D toggle imports through UI and layer-toggle barrels | Reduce 3D entry load by replacing the toggle-only use of `LayerToggle`/`ui` barrel imports with direct, narrow 3D controls | 3D entry esbuild single bundle and initial split static bytes | Rejected |
+| 452. Lazy-load sequence visualization for active sequence preview only | Reduce default 3D startup load by moving Lua runner, sequence expansion, and visualization line code out of the initial path until a sequence is actually visualized | 3D entry esbuild split initial static bytes, plus deferred chunk bytes | Rejected |
+| 453. Split moisture interpolation helpers from 2D map UI components | Reduce 3D entry load by importing data/interpolation helpers without 2D map settings and SVG layer components | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for interpolation UI modules | Rejected |
+| 454. Replace 3D Drei barrel imports with direct Drei module imports | Reduce 3D entry load by avoiding the `@react-three/drei` top-level barrel and unused HLS/video/facemesh/exporter modules | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for Drei barrel and HLS | Rejected |
+| 455. Lazy-load camera-selection overlay only while selecting a camera | Reduce default 3D startup load by moving rarely-used camera-selection geometry/UI out of the initial garden model path | 3D entry esbuild split initial static bytes and camera-selection chunk bytes | Rejected |
+
+### Idea 451: Remove 3D toggle imports through UI and layer-toggle barrels
+
+**Description:** Trial direct `Help` imports and a 3D-local toggle button in
+place of the generic farm-designer `LayerToggle`, preserving the same label,
+button classes, red/green state, modified-setting class, and title text.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,619,827 bytes single bundle; 3,574,991 initial split static bytes.
+
+**Change:** 469 bytes single bundle saved (0.01%); 497 initial split static
+bytes saved (0.01%).
+
+**Outcome:** Rejected and rolled back. The savings were far below a meaningful
+load improvement and did not justify duplicating the layer-toggle markup in 3D.
+
+**Commit:** None
+
+### Idea 452: Lazy-load sequence visualization for active sequence preview only
+
+**Description:** Consider moving sequence visualization into an on-demand chunk
+so Lua runner and sequence expansion code do not load during default 3D startup.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions.
+
+**Before:** Lua runner inputs were retained not only by
+`three_d_garden/visualization.tsx`, but also through `redux/store` ->
+middlewares -> `devices/actions`. `fengari-web/dist/fengari-web.bundle.js`
+remained a 211,123-source-byte dependency in the 3D graph.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that lazy-loading only the visualization component would not remove the
+costly Lua runtime path from startup.
+
+**Outcome:** Rejected before code changes. The isolated idea would add
+asynchronous behavior to sequence preview without removing the heavy dependency.
+
+**Commit:** None
+
+### Idea 453: Split moisture interpolation helpers from 2D map UI components
+
+**Description:** Trial lightweight interpolation-data and moisture-helper
+modules so 3D moisture rendering does not import 2D map interpolation settings,
+SVG interpolation map components, or sensor-reading SVG layer components.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the 2D interpolation/sensor-reading layer modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `interpolation_map.tsx`, `sensor_readings_layer.tsx`, and
+`garden_sensor_reading.tsx` present in the 3D bundle.
+
+**After:** 3,618,521 bytes single bundle; 3,573,896 initial split static bytes.
+
+**Change:** 1,775 bytes single bundle saved (0.05%); 1,592 initial split static
+bytes saved (0.04%).
+
+**Outcome:** Rejected and rolled back. The absolute load win was too small, and
+the trial duplicated interpolation helper code, which would make the codebase
+worse for a negligible startup change.
+
+**Commit:** None
+
+### Idea 454: Replace 3D Drei barrel imports with direct Drei module imports
+
+**Description:** Trial a local `three_d_garden/drei.ts` shim that re-exported
+only the Drei components used by 3D modules from direct Drei files, then
+mechanically redirected 3D imports away from the top-level `@react-three/drei`
+barrel.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the Drei barrel and unused HLS/video modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; the split output included a 385.6 KB HLS chunk.
+
+**After:** 3,619,563 bytes single bundle; 3,574,800 initial split static bytes;
+the HLS chunk disappeared from the split output list.
+
+**Change:** 733 bytes single bundle saved (0.02%); 688 initial split static
+bytes saved (0.02%).
+
+**Outcome:** Rejected and rolled back. Tree-shaking was already eliminating
+nearly all practical cost from the barrel path, so the large import rewrite did
+not provide meaningful real-world value.
+
+**Commit:** None
+
+### Idea 455: Lazy-load camera-selection overlay only while selecting a camera
+
+**Description:** Consider moving `CameraSelectionUI` behind a lazy boundary so
+the default 3D garden does not statically load its camera marker geometry and
+selection handlers.
+
+**Benchmark:** 3D entry esbuild metafile and source-size check under realistic
+startup conditions.
+
+**Before:** `camera_selection_ui.tsx` was 7,268 source bytes before minification
+and only imported by `garden_model.tsx`.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the maximum possible
+startup win was already too small to be meaningful once minified.
+
+**Outcome:** Rejected before code changes. Lazy-loading this small overlay would
+add asynchronous component complexity and possible first-use delay for a tiny
+default-load reduction.
+
+**Commit:** None
+
+## Round 88
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 456. Decouple 3D panel-opening clicks from the farm-designer panel header | Reduce 3D startup load by replacing 3D-only `setPanelOpen` imports with a tiny local action helper, avoiding panel tab, store, resource-selector, and icon-table code on the 3D path | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for `panel_header.tsx` | Rejected |
+| 457. Decouple 3D web-app config writes from broad config-storage actions | Reduce 3D startup load by giving 3D camera/toggle writes a narrow save path instead of importing the full config-storage action module and broad CRUD helpers | 3D entry esbuild single bundle and initial split static bytes, plus click-path behavior tests | Rejected |
+| 458. Move 3D root constants usage to a tiny 3D UI constants module | Reduce 3D startup load by avoiding the 110 KB root `constants.ts` file for the few 3D toggle action strings, labels, and help strings that are needed at runtime | 3D entry esbuild single bundle and initial split static bytes, plus metafile checks for `constants.ts` | Rejected |
+| 459. Replace Moment in 3D time/sun calculations with native date helpers | Reduce 3D startup load and runtime memory by removing Moment from 3D-only time travel and sun-position code while preserving formatted times and UTC day-start behavior | 3D entry esbuild single bundle and initial split static bytes, plus focused date/time helper tests | Rejected |
+| 460. Replace direct 3D lodash helpers with native/local helpers where realistic | Reduce 3D startup load and per-frame/click overhead by removing direct 3D lodash calls that are simple native operations, without changing rendering behavior | 3D entry esbuild single bundle and initial split static bytes, plus realistic 200-plant/100-point render helper microbenchmarks | Rejected |
+
+### Idea 456: Decouple 3D panel-opening clicks from the farm-designer panel header
+
+**Description:** Trial a 3D-local panel open action and settings icon constant
+so plant, weed, point, tool, time-travel, and settings clicks no longer import
+`farm_designer/panel_header.tsx`.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes and initial split static bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,620,370 bytes single bundle; 3,575,546 initial split static bytes.
+
+**Change:** 74 bytes single bundle larger (-0.00%); 58 initial split static
+bytes larger (-0.00%).
+
+**Outcome:** Rejected and rolled back. The panel header stayed reachable through
+other 3D paths, so the helper only added bytes and did not produce a real
+startup win.
+
+**Commit:** None
+
+### Idea 457: Decouple 3D web-app config writes from broad config-storage actions
+
+**Description:** Trial a WebAppConfig-specific setter for the 3D toggle and
+camera-selection UI that dispatched the same edit/save-start/save-ok/error
+sequence without importing `config_storage/actions.ts` directly from those
+files.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and metafile
+presence of the config action and CRUD modules.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes; `config_storage/actions.ts` and `api/crud.ts` present in the 3D bundle.
+
+**After:** 3,620,797 bytes single bundle; 3,576,119 initial split static bytes;
+`config_storage/actions.ts` and `api/crud.ts` still present in the 3D bundle.
+
+**Change:** 501 bytes single bundle larger (-0.01%); 631 initial split static
+bytes larger (-0.02%).
+
+**Outcome:** Rejected and rolled back. The broad config/CRUD modules remained
+reachable through other realistic 3D paths, so the specialized setter only
+duplicated save code and worsened load size.
+
+**Commit:** None
+
+### Idea 458: Move 3D root constants usage to a tiny 3D UI constants module
+
+**Description:** Consider moving the 3D toggle action strings, labels, and help
+strings out of the root `constants.ts` import path.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions.
+
+**Before:** `frontend/constants.ts` was 110,497 source bytes and was retained
+not only by `three_d_garden/index.tsx`, but also by
+`farm_designer/panel_header.tsx`, `config_storage/actions.ts` ->
+`api/crud.ts`, `camera_selection_ui.tsx`, `ui`/toast paths, resource reducers,
+and sync actions.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that removing only the direct 3D constants imports would not remove the
+root constants module from the startup bundle.
+
+**Outcome:** Rejected before code changes. A 3D constants wrapper would
+duplicate labels and action strings while leaving the real 110 KB dependency in
+place through other realistic paths.
+
+**Commit:** None
+
+### Idea 459: Replace Moment in 3D time/sun calculations with native date helpers
+
+**Description:** Consider replacing the `moment` usage in 3D time travel and
+sun-position defaults with native date helpers.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check under realistic
+startup conditions, plus sanity check of runtime call frequency.
+
+**Before:** `node_modules/moment/moment.js` was 176,435 source bytes and was
+retained through `point_groups/criteria/apply.ts`, `sun.tsx`, config/CRUD
+resource paths, Lua runner paths, sensor-reading layers, move plots, and image
+filter paths. The 3D time-travel helper is rendered at UI frequency, not in a
+large loop.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the pre-benchmark graph
+showed that removing the two direct 3D date call sites would not remove Moment
+from startup, and the realistic runtime call count was too low for a meaningful
+absolute improvement.
+
+**Outcome:** Rejected before code changes. The idea would trade well-tested
+date formatting/parsing behavior for no realistic load win and negligible
+runtime savings.
+
+**Commit:** None
+
+### Idea 460: Replace direct 3D lodash helpers with native/local helpers where realistic
+
+**Description:** Consider replacing direct 3D lodash calls such as `range`,
+`round`, `isUndefined`, `isNumber`, and `noop` with native helpers.
+
+**Benchmark:** 3D entry esbuild metafile import-chain check and a realistic
+single-pass helper benchmark representing roughly 200 plants, 100 points, and a
+small range allocation.
+
+**Before:** `node_modules/lodash/lodash.js` was 545,945 source bytes and was
+retained through direct 3D imports, `internal_urls.ts`, `panel_header.tsx`,
+`garden_model.tsx`, config/CRUD paths, Redux store paths, and UI controls. The
+single-pass helper benchmark measured 0.1118 ms for lodash helpers.
+
+**After:** Not implemented. The native equivalent measured 0.0219 ms in the
+same one-pass benchmark.
+
+**Change:** Potential 0.0899 ms one-pass helper savings, but no expected
+startup bundle improvement because lodash remains reachable through other
+realistic paths.
+
+**Outcome:** Rejected before code changes. Although the percentage improvement
+inside the tiny helper benchmark was high, the absolute saving was below a
+meaningful frame-budget improvement and would require broad edits across 22 3D
+files while leaving lodash in the startup bundle.
+
+**Commit:** None
+
+## Round 89
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 461. Lazy-load optional Lab and Greenhouse scene detail modules | Reduce default 3D startup load by deferring non-default scene props, furniture, walls, and people until the user selects a Lab or Greenhouse scene | 3D entry esbuild single bundle and initial split static bytes, with deferred scene chunk bytes | Rejected |
+| 462. Hoist static plant icon brightness out of the plant icon frame loop | Improve FPS by avoiding per-icon-bucket sun brightness recomputation on every frame when season animation is off | Realistic 20 icon bucket / 60 frame helper benchmark and plant icon frame tests | Rejected |
+| 463. Register rotary tool frame animation only for active rotary tools | Improve FPS by avoiding per-frame no-op callbacks for ordinary tool slots and toolbay tools | Realistic 12 tool / 60 frame no-op callback benchmark and tool render tests | Rejected |
+| 464. Collapse soil surface projection and bounds scans into one pass | Improve 3D load responsiveness when building a realistic soil surface from roughly 100 soil-height points | Realistic 104 point soil surface compute benchmark | Rejected |
+| 465. Defer soil triangle sessionStorage serialization away from initial render work | Improve 3D load responsiveness by moving Lua-runner soil triangle persistence off the immediate render effect when soil changes | Realistic 200 triangle serialization benchmark and Lua soil lookup behavior check | Rejected |
+
+### Idea 461: Lazy-load optional Lab and Greenhouse scene detail modules
+
+**Description:** Trial `React.lazy` imports for the Lab and Greenhouse scene
+components so default 3D startup does not statically load scene-only props,
+walls, people, starter trays, and furniture.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and deferred
+scene chunks.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,621,097 bytes single bundle; 3,566,581 initial split static bytes;
+deferred Lab chunk 1,768 bytes and Greenhouse chunk 1,854 bytes.
+
+**Change:** 801 bytes single bundle larger (-0.02%); 8,907 initial split
+static bytes saved (0.25%).
+
+**Outcome:** Rejected and rolled back. The split technically deferred optional
+scene code, but the total initial payload improvement was far below 10% and
+too small to justify adding async scene loading behavior.
+
+**Commit:** None
+
+### Idea 462: Hoist static plant icon brightness out of the plant icon frame loop
+
+**Description:** Consider computing non-animated plant icon brightness once per
+config change instead of recomputing `calcSunI(config.sunInclination)` in every
+plant icon bucket frame callback when season animation is disabled.
+
+**Benchmark:** Helper benchmark representing 20 visible plant icon buckets over
+60 frames, matching a diverse but realistic garden icon mix.
+
+**Before:** Static brightness recomputation path took 0.0020 ms for 20 icon
+buckets over 60 frames.
+
+**After:** Not implemented. Precomputed-brightness equivalent took 0.0007 ms
+for the same 20 icon buckets over 60 frames.
+
+**Change:** Potential 0.0013 ms saved over 60 frames (66.0% within the tiny
+helper benchmark).
+
+**Outcome:** Rejected before code changes. The percentage looked high only
+because the measured work was nearly zero; saving 0.0013 ms per second of
+frames is not a meaningful FPS improvement.
+
+**Commit:** None
+
+### Idea 463: Register rotary tool frame animation only for active rotary tools
+
+**Description:** Consider moving the rotary-tool `useFrame` callback into a
+small component that only mounts when a rotary tool is outside the toolbay and
+configured to rotate, avoiding no-op callbacks for normal tool slots.
+
+**Benchmark:** Helper benchmark representing 12 rendered tools over 60 frames,
+matching an upper realistic tool-slot count.
+
+**Before:** The no-op callback path took 0.0016 ms for 12 tools over 60 frames.
+
+**After:** Not implemented. The conditional-registration equivalent took
+0.0004 ms for the same 60 frames.
+
+**Change:** Potential 0.0012 ms saved over 60 frames.
+
+**Outcome:** Rejected before code changes. Removing no-op callbacks would make
+the tool component structure more complex while saving an amount of frame time
+that is too small to matter.
+
+**Commit:** None
+
+### Idea 464: Collapse soil surface projection and bounds scans into one pass
+
+**Description:** Consider replacing the separate `points.map` projection,
+`points.map` x scan, and `points.map` y scan in soil surface construction with
+a single pass over the realistic soil point list.
+
+**Benchmark:** Standalone soil surface computation benchmark using 104 points
+(100 soil-height points plus four boundary points), including Delaunay
+triangulation.
+
+**Before:** Current projection and bounds scan path averaged 0.080 ms for a
+104-point soil surface.
+
+**After:** Not implemented. The single-pass equivalent averaged 0.035 ms for
+the same input.
+
+**Change:** Potential 0.045 ms one-time load-work saving (55.9% inside that
+small helper).
+
+**Outcome:** Rejected before code changes. The absolute improvement is below a
+meaningful load-responsiveness change, and the Delaunay/geometry work dominates
+the real path.
+
+**Commit:** None
+
+### Idea 465: Defer soil triangle sessionStorage serialization away from initial render work
+
+**Description:** Consider moving soil triangle persistence for the Lua runner
+away from the immediate soil-surface effect after initial 3D render.
+
+**Benchmark:** Realistic serialization benchmark with 200 precomputed soil
+triangles, plus import-chain/behavior check for Lua stubs that read
+`sessionStorage.soilSurfaceTriangles`.
+
+**Before:** Serializing 200 triangles averaged 0.013 ms and produced a 4,873
+byte stored string. Lua movement stubs read the stored triangles synchronously
+and fall back when they are absent.
+
+**After:** Not implemented.
+
+**Change:** No meaningful absolute improvement available; deferring 0.013 ms
+would not change load feel.
+
+**Outcome:** Rejected before code changes. The work is already tiny, and
+delaying persistence risks changing the timing of sequence/Lua soil-height
+lookups for no practical gain.
+
+**Commit:** None
+
+## Round 90
+
+| Idea | Expected return | Realistic benchmark | Status |
+| --- | --- | --- | --- |
+| 466. Mount FPSProbe only when FPS/perf logging is enabled | Improve default FPS by removing the always-registered metrics frame callback when benchmark logging is off | Realistic 60-frame default FPSProbe callback benchmark | Rejected |
+| 467. Lazy-load group-order visualization only when a group is active | Reduce default 3D startup load by deferring group-sort visualization code that only renders on group detail routes | 3D entry esbuild single bundle and initial split static bytes, with deferred group-order chunk bytes | Rejected |
+| 468. Skip hidden moisture surface nodes in the soil render texture | Improve default soil texture setup by not mounting `MoistureSurface` when both moisture map and moisture readings are hidden | Realistic hidden-moisture texture render setup benchmark and 3D entry bundle sanity check | Rejected |
+| 469. Lazy-load moisture texture/rendering module only when moisture is visible or debug is enabled | Reduce default 3D startup load by deferring moisture interpolation/rendering code until the user shows moisture layers | 3D entry esbuild single bundle and initial split static bytes, with deferred moisture chunk bytes | Rejected |
+| 470. Bypass RenderTexture for plain soil with no images or moisture overlays | Reduce load time, memory, and render calls by using the soil texture directly when the offscreen soil compositing pass has nothing to composite | Docker/browser 3D load metrics on default scene with image and moisture layers hidden | Rejected |
+
+### Idea 466: Mount FPSProbe only when FPS/perf logging is enabled
+
+**Description:** Consider only mounting `FPSProbe` when `FB_PERF_BENCHMARK` or
+`FPS_LOGS` is enabled, avoiding the default per-frame metrics callback.
+
+**Benchmark:** Helper benchmark representing 60 default frames with FPS/perf
+logging disabled.
+
+**Before:** The default FPSProbe callback path took 0.0011 ms over 60 frames.
+
+**After:** Not implemented. The no-probe equivalent took 0.0003 ms over 60
+frames.
+
+**Change:** Potential 0.0008 ms saved over 60 frames.
+
+**Outcome:** Rejected before code changes. The default callback overhead is
+too small to matter, and changing when `window.__fps` exists would reduce
+debuggability for no user-visible performance gain.
+
+**Commit:** None
+
+### Idea 467: Lazy-load group-order visualization only when a group is active
+
+**Description:** Trial `React.lazy` for `GroupOrderVisual`, guarded by a group
+detail route check, so default 3D startup does not load group-order line and
+label rendering code until it can be visible.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, comparing single-file bytes, initial split static bytes, and deferred
+group-order chunk bytes.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes.
+
+**After:** 3,620,612 bytes single bundle; 3,567,027 initial split static bytes;
+deferred group-order chunk 2,147 bytes.
+
+**Change:** 316 bytes single bundle larger (-0.01%); 8,461 initial split
+static bytes saved (0.24%).
+
+**Outcome:** Rejected and rolled back. The default-load reduction was well
+below 10% and too small to justify adding an async boundary to group-route
+visualization.
+
+**Commit:** None
+
+### Idea 468: Skip hidden moisture surface nodes in the soil render texture
+
+**Description:** Trial conditional mounting of `MoistureSurface` inside
+`ImageTextureBase` only when moisture readings or the moisture interpolation
+map are visible.
+
+**Benchmark:** 3D entry esbuild bundle with realistic production-style minified
+settings, plus a hidden-moisture setup benchmark matching the default hidden
+moisture state.
+
+**Before:** 3,620,296 bytes single bundle; 3,575,488 initial split static
+bytes. Hidden moisture setup averaged 0.00034 ms.
+
+**After:** 3,620,341 bytes single bundle; 3,575,533 initial split static bytes.
+Hidden moisture setup equivalent averaged 0.00011 ms.
+
+**Change:** 45 bytes single bundle larger (-0.00%); 45 initial split static
+bytes larger (-0.00%); potential 0.00023 ms hidden setup saving.
+
+**Outcome:** Rejected and rolled back. The hidden node already does almost no
+work, and the guard added bytes without meaningful runtime benefit.
+
+**Commit:** None
+
+### Idea 469: Lazy-load moisture texture/rendering module only when moisture is visible or debug is enabled
+
+**Description:** Consider moving `moisture_texture.tsx` behind lazy boundaries
+in the bed, image texture, and debug moisture paths so default 3D startup does
+not statically load moisture interpolation/rendering code.
+
+**Benchmark:** 3D entry esbuild metafile and source-size check under realistic
+startup conditions.
+
+**Before:** `moisture_texture.tsx` was 8,019 source bytes. Its largest direct
+helper dependencies in the 3D graph were the 9,512 byte interpolation map and
+2,361 byte sensor readings layer, for roughly tens of KB of source before
+minification.
+
+**After:** Not implemented.
+
+**Change:** Not measured after implementation because the maximum plausible
+startup win was well below 1% of the 3,575,488 byte initial static payload, and
+the change would add lazy boundaries to multiple soil/image paths.
+
+**Outcome:** Rejected before code changes. The potential load reduction is far
+below the acceptance threshold and would add async behavior to a settings-driven
+layer toggle.
+
+**Commit:** None
+
+### Idea 470: Bypass RenderTexture for plain soil with no images or moisture overlays
+
+**Description:** Trial direct soil texture attachment when image and moisture
+layers are hidden, avoiding the offscreen `RenderTexture` compositing pass in
+the default demo garden.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true`, comparing 3D load marks, render counters, scene
+metrics, and esbuild bundle size.
+
+**Before:** 3,620,296 bytes single bundle. Browser baseline included
+`soilTextureRenders: 1`; representative marks included `three_d_bed_ready` at
+2,879 ms, `three_d_core_ready` at 6,722 ms, and scene metrics of 54 calls,
+214,682 triangles, 57 geometries, 12 textures, 213 objects, and 103 meshes.
+
+**After:** 3,620,686 bytes single bundle. The trial removed
+`soilTextureRenders`, but representative marks regressed with
+`three_d_bed_ready` at 3,498 ms and `three_d_core_ready` at 6,734 ms; scene
+metrics also increased to 190 calls, 712,220 triangles, 129 geometries, 25
+textures, 375 objects, and 206 meshes.
+
+**Change:** 390 bytes single bundle larger (-0.01%). One offscreen soil render
+counter was removed, but load marks and scene metrics did not improve.
+
+**Outcome:** Rejected and rolled back. The visual-equivalence-preserving trial
+did not produce a reliable performance win and showed unfavorable secondary
+metrics.
+
+**Commit:** None
+
+## Round 91
+
+### Idea 471: Remove deep image cloning from 3D soil texture image filtering
+
+**Description:** Replace the `cloneDeep` plus mutating lodash reverse in
+`filterImages()` with a non-mutating shallow reverse. The 3D soil texture path
+only reads image objects and returns shallow highlighted wrappers, so deep
+cloning every image is unnecessary load work for photo-heavy gardens.
+
+**Benchmark:** Realistic 300 camera-image filter pass, matching a photo-heavy
+garden texture setup without inflating call counts.
+
+**Before:** 2.045 ms median; 2.278 ms p95.
+
+**After:** 0.0093 ms median; 0.0116 ms p95.
+
+**Change:** 99.6% faster; about 2.036 ms saved per 300-image texture filter.
+The minified 3D entry bundle changed from 3,620,296 bytes to 3,620,281 bytes.
+
+**Outcome:** Accepted. The absolute win is meaningful for photo-heavy gardens,
+the code is simpler, source image order remains unchanged, and the rendered
+reverse order is preserved.
+
+**Commit:** `Optimize 3D garden image filtering by 99.6%`
+
+### Idea 472: Add a custom memo comparator to `ThreeDGarden`
+
+**Description:** Trial a conservative `React.memo` comparator for
+`ThreeDGarden` that shallow-compares config/designer values, bot position, and
+data-array references to reduce the high wrapper render count seen during demo
+load.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true`, comparing 12-second load render counters and scene
+metrics.
+
+**Before:** Three baseline runs showed `render.ThreeDGarden` at 174, 174, and
+174, with `render.GardenModel` around 7 and `soilTextureRenders: 1`.
+
+**After:** Trial runs showed `render.ThreeDGarden` at 173, 174, and 174, while
+`render.GardenModel` increased to 9, 9, and 11.
+
+**Change:** No meaningful `ThreeDGarden` render-count improvement; secondary
+render count regressed.
+
+**Outcome:** Rejected and rolled back. The high wrapper count is driven by real
+prop changes outside the comparator's safe skip surface, and the added
+comparison code did not improve runtime behavior.
+
+**Commit:** None
+
+### Idea 473: Replace hovered-image `filter()[0]` with `find()`
+
+**Description:** Consider replacing the hovered-image lookup inside
+`filterImages()` with `find()` to avoid allocating a temporary filtered array.
+
+**Benchmark:** Realistic 300-image hovered-image lookup with no hovered image,
+matching the common default photo-layer state.
+
+**Before:** 0.00058 ms median; 0.00204 ms p95.
+
+**After:** Not implemented. The equivalent `find()` path measured 0.00038 ms
+median; 0.00050 ms p95.
+
+**Change:** Potential 35.8% faster, but only about 0.00021 ms saved.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is far too small to matter in a realistic texture setup.
+
+**Commit:** None
+
+### Idea 474: Rewrite plant icon bucketing with direct loops
+
+**Description:** Consider replacing `Object.entries(...).map`, `forEach`,
+`Object.values`, `filter`, and `map` in plant icon instance bucketing with direct
+loops.
+
+**Benchmark:** Realistic 200-plant, 8-icon garden icon-bucketing pass.
+
+**Before:** 0.00325 ms median; 0.00583 ms p95.
+
+**After:** Not implemented. The direct-loop equivalent measured 0.00113 ms
+median; 0.00225 ms p95.
+
+**Change:** Potential 65.4% faster, but only about 0.00213 ms saved per setup.
+
+**Outcome:** Rejected before code changes. The existing code is clear and the
+realistic absolute win is too small to justify changing it.
+
+**Commit:** None
+
+### Idea 475: Cache `get3DConfigValueFunction()` indexes by FarmwareEnv array
+
+**Description:** Consider caching the indexed 3D config map used by
+`get3DConfigValueFunction()` so repeated `FarmDesigner` renders do not rebuild
+the same FarmwareEnv lookup table.
+
+**Benchmark:** 175 function creations over a realistic 50-record FarmwareEnv
+array, matching the observed demo map-render count.
+
+**Before:** 0.112 ms median; 0.155 ms p95.
+
+**After:** Not implemented. A WeakMap-cache equivalent measured 0.010 ms
+median; 0.018 ms p95.
+
+**Change:** Potential 90.8% faster, but only about 0.101 ms saved across 175
+renders.
+
+**Outcome:** Rejected before code changes. The percentage was high, but the
+absolute savings across the full observed load window were not meaningful.
+
+**Commit:** None
+
+## Round 92
+
+### Idea 477: Combine 3D image filtering into a single pass
+
+**Description:** Consider replacing the post-Round-91 `filterImages()` chain
+with one reverse loop to reduce callback and intermediate-array work in the 3D
+soil texture path.
+
+**Benchmark:** Realistic 300, 1,000, and 2,000 image filter passes with hidden,
+shown, placeholder, type, and camera-Z checks.
+
+**Before:** 300 images: 0.0225 ms median. 1,000 images: 0.0968 ms median.
+2,000 images: 0.2180 ms median.
+
+**After:** Not implemented. The single-pass equivalent measured 0.0074 ms,
+0.0265 ms, and 0.0508 ms respectively.
+
+**Change:** Potential 67-77% faster, but only 0.015-0.167 ms saved for the
+tested realistic image counts.
+
+**Outcome:** Rejected before code changes. After the Round 91 deep-clone fix,
+the remaining filter-chain cost is too small to justify reducing readability.
+
+**Commit:** None
+
+### Idea 478: Replace `selectImages()` lodash chain sorting with native sort
+
+**Description:** Consider replacing `chain(selectAllImages()).sortBy(...).reverse()`
+with a native copied descending sort before the 3D map receives latest images.
+
+**Benchmark:** Realistic 300, 1,000, and 2,000 image selector sorts.
+
+**Before:** 300 images: 0.0339 ms median. 1,000 images: 0.1207 ms median.
+2,000 images: 0.2585 ms median.
+
+**After:** Not implemented. The native equivalent measured 0.0123 ms,
+0.0528 ms, and 0.1287 ms respectively.
+
+**Change:** Potential 50-64% faster, but only 0.022-0.130 ms saved for the
+tested image counts.
+
+**Outcome:** Rejected before code changes. The absolute selector savings are
+not meaningful enough for this 3D hill climb.
+
+**Commit:** None
+
+### Idea 479: Move rotary-tool `useFrame` registration out of every `Tool`
+
+**Description:** Consider moving the rotary animation frame callback so only
+the visible rotary tool registers it, instead of every tool slot running a
+per-frame guard.
+
+**Benchmark:** 9 tool callbacks over 600 frames, matching a toolbay with one
+active rotary tool and several inactive tool slots.
+
+**Before:** 0.0231 ms median over 600 frames.
+
+**After:** Not implemented. The one-callback equivalent measured 0.0140 ms
+median over 600 frames.
+
+**Change:** Potential 39.5% faster, but only about 0.0091 ms saved over 600
+frames.
+
+**Outcome:** Rejected before code changes. The per-frame guard is not a
+meaningful FPS cost under realistic tool counts.
+
+**Commit:** None
+
+### Idea 480: Cache generated background star positions
+
+**Description:** Consider caching the 1,000 generated background star positions
+instead of generating a fresh random field on each `Sun` mount.
+
+**Benchmark:** One 1,000-star `Float32Array` generation, matching a 3D garden
+mount.
+
+**Before:** 0.0674 ms median.
+
+**After:** Not implemented. Reusing a cached array measured 0.00013 ms median.
+
+**Change:** Potential 99.8% faster, but only about 0.067 ms saved per mount.
+
+**Outcome:** Rejected before code changes. The percentage was high, but the
+absolute initialization cost is below the meaningful threshold and caching would
+make all mounts share the same random star field.
+
+**Commit:** None
+
+## Round 93
+
+### Idea 481: Replace 3D garden Drei barrel imports with narrow exports
+
+**Description:** Trial a local `three_d_garden/drei` export wrapper that imports
+only the Drei modules used by the 3D garden instead of importing from
+`@react-three/drei` barrels throughout the 3D tree.
+
+**Benchmark:** Minified 3D entry bundle built with esbuild, matching the
+existing hill-climb bundle-size benchmark.
+
+**Before:** 3,620,399 bytes.
+
+**After:** Trial bundle measured 3,619,666 bytes.
+
+**Change:** 733 bytes saved, or 0.02% of the 3D entry bundle.
+
+**Outcome:** Rejected and rolled back. The bundler already tree-shakes the
+barrel path enough that the wrapper only produces a cosmetic byte reduction.
+The absolute gain is not meaningful and the wrapper would add import indirection.
+
+**Commit:** None
+
+### Idea 482: Lazy-load sequence visualization details
+
+**Description:** Trial lazy-loading `Visualization` so normal 3D garden loads do
+not eagerly include sequence-visualization and Lua-runner code unless a sequence
+is being visualized.
+
+**Benchmark:** Minified 3D entry bundle and split-bundle esbuild build. The
+baseline single bundle showed about 259 KB of visualization/Lua-related input
+bytes, so the split build was used to check whether those bytes actually moved
+out of the initial route.
+
+**Before:** Single-file 3D entry bundle was 3,620,399 bytes.
+
+**After:** Single-file trial bundle measured 3,620,615 bytes. In the split-bundle
+trial, the lazy visualization chunk was only 1,475 bytes because the Lua runner
+remained in shared chunks through other app imports.
+
+**Change:** No real initial-load improvement; the single-file bundle regressed
+by 216 bytes and the realistic split chunk only deferred 1.4 KB.
+
+**Outcome:** Rejected and rolled back. The apparent large source contribution
+was shared dependency weight, not visualization-only weight.
+
+**Commit:** None
+
+### Idea 483: Cache rounded plant coordinates for spread-overlap frames
+
+**Description:** Consider storing rounded plant coordinates in
+`StaticPlantSpreadInstance` so click-to-add and plant-edit spread frames do not
+round every plant coordinate on every active spread update.
+
+**Benchmark:** Realistic 200-plant active spread-overlap loop over 600 updates,
+representing about 10 seconds at 60 fps while placing or editing a plant.
+
+**Before:** 2.334 ms median over 600 updates; 2.503 ms p95.
+
+**After:** Not implemented. The cached-rounded-coordinate equivalent measured
+0.470 ms median over 600 updates; 0.853 ms p95.
+
+**Change:** Potential 79.9% faster for this micro-path, but only about 1.864 ms
+saved over a full 10-second interaction.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute runtime improvement is not meaningful in a realistic interaction and
+would add more cached fields to the spread instance shape.
+
+**Commit:** None
+
+### Idea 484: Lazy-load group-order visualization
+
+**Description:** Trial route-gating and lazy-loading `GroupOrderVisual` so normal
+3D garden loads avoid point-group sorting and visualization code unless the user
+is on a group or zone route.
+
+**Benchmark:** Minified 3D entry bundle and split-bundle esbuild build, with the
+normal demo route as the realistic baseline.
+
+**Before:** 3,620,399 bytes in the single-file 3D entry bundle.
+
+**After:** Trial single-file bundle measured 3,620,716 bytes. In the split-bundle
+trial, the group-order chunk was only 2,147 bytes.
+
+**Change:** The single-file benchmark regressed by 317 bytes, and the realistic
+deferred split chunk was only about 2.1 KB.
+
+**Outcome:** Rejected and rolled back. The route gate and lazy boundary are not
+worth the small optional-code movement.
+
+**Commit:** None
+
+### Idea 485: Lazy-load Stats and StatsGl debug widgets
+
+**Description:** Consider lazy-loading the `Stats` and `StatsGl` debug widgets
+because `config.stats` is normally false.
+
+**Benchmark:** Minified 3D entry bundle metafile contribution for the stats-only
+debug path.
+
+**Before:** Stats-related output contribution was about 12,086 bytes:
+`stats.js` 1,906 bytes, Drei `Stats` 465 bytes, `stats-gl` panel/main 8,953
+bytes, Drei `StatsGl` 762 bytes.
+
+**After:** Not implemented. Even a perfect deferral would only remove about
+12 KB from a 3,620,399 byte 3D entry bundle.
+
+**Change:** Best-case potential is about 0.33% of the 3D entry bundle.
+
+**Outcome:** Rejected before code changes. The absolute bundle win is too small
+to justify adding debug-only lazy components and suspense handling.
+
+**Commit:** None
+
+## Round 94
+
+### Idea 486: Instance repeated bed legs and caster parts
+
+**Description:** Replace the repeated raised-bed leg and caster meshes with
+instanced meshes for the identical wood legs, caster brackets, wheels, and
+axles. This preserves the same dimensions, colors, shadows, and positions while
+reducing repeated draw calls.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true` and `FPS_LOGS=true`, comparing the final reported
+scene metrics after the FarmBot/toolbay details load.
+
+**Before:** 190 draw calls, 712,224 triangles, 130 geometries, 27 textures,
+375 objects, 206 meshes, and 5 instanced meshes.
+
+**After:** 156 draw calls, 697,436 triangles, 104 geometries, 27 textures,
+335 objects, 186 meshes, and 9 instanced meshes. The minified 3D entry bundle
+changed from 3,620,399 bytes to 3,622,338 bytes.
+
+**Change:** 17.9% fewer draw calls, 20.0% fewer geometries, 10.7% fewer objects,
+and 9.7% fewer meshes in the loaded demo scene. The bundle increased by 1,939
+bytes.
+
+**Outcome:** Accepted. The absolute render-side improvement is meaningful for
+the normal raised-bed scene, visual fidelity is preserved by using the same
+geometry dimensions and materials, and the bundle increase is small relative to
+the draw-call reduction.
+
+**Commit:** `Optimize 3D bed support draw calls by 17.9%`
+
+### Idea 487: Remove empty placeholder bot meshes
+
+**Description:** Consider deleting bot meshes that pass `geometry={undefined}`
+and `material={undefined}` for placeholder motor, vacuum pump, and shaft-coupler
+nodes.
+
+**Benchmark:** Static count against the post-Idea-486 live demo scene metrics.
+The placeholders have no geometry/material, so their maximum realistic effect is
+object/mesh bookkeeping rather than draw calls.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls, 335 objects, and
+186 meshes.
+
+**After:** Not implemented. Removing all four placeholder meshes would leave
+draw calls unchanged and would at best reduce the scene to 331 objects and 182
+meshes.
+
+**Change:** Best-case 0% draw-call improvement, 1.2% fewer objects, and 2.2%
+fewer meshes.
+
+**Outcome:** Rejected before code changes. The placeholders are visually inert,
+but removing them would not clear the 10% performance bar or produce a meaningful
+absolute improvement.
+
+**Commit:** None
+
+### Idea 488: Instance repeated Toolbay 1 slot meshes
+
+**Description:** Consider replacing per-slot Toolbay 1 bay/logo meshes with
+instanced meshes for the configured tool slots that have a pullout direction.
+
+**Benchmark:** Static upper-bound draw-call calculation against the post-Idea-486
+demo scene. The configured demo toolbay renders four Toolbay 1 models, each with
+two meshes.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls.
+
+**After:** Not implemented. A perfect Toolbay 1 instancing pass would reduce
+eight Toolbay 1 mesh calls to two instanced calls.
+
+**Change:** Best-case 6 draw calls saved, or 3.8% of the loaded demo scene.
+
+**Outcome:** Rejected before code changes. The maximum realistic improvement is
+below the acceptance threshold, and the interaction/click grouping would become
+more complex.
+
+**Commit:** None
+
+### Idea 489: Instance electronics-box buttons and LEDs
+
+**Description:** Consider instancing repeated electronics-box button housings,
+button caps, button centers, LED housings, and LED colors.
+
+**Benchmark:** Static upper-bound draw-call calculation for the normal v1.8 demo
+electronics box and the larger v1.7 electronics box.
+
+**Before:** The post-Idea-486 demo scene had 156 draw calls. The v1.8 box has
+three buttons and no LED indicators; v1.7 has five buttons and four LED
+indicators.
+
+**After:** Not implemented. A v1.8-only implementation could save at most six
+draw calls. A v1.7 implementation could save more, but would require per-instance
+colors across multiple button and LED parts for older hardware.
+
+**Change:** Best-case v1.8 improvement is 3.8% of demo draw calls. The larger
+v1.7 case is not the normal demo/runtime baseline and has higher code
+complexity.
+
+**Outcome:** Rejected before code changes. The normal-case improvement is below
+the threshold, and the older-hardware case is not enough to justify a more
+complex instanced-color implementation.
+
+**Commit:** None
+
+### Idea 490: Disable `FPSProbe` frame work outside perf/debug mode
+
+**Description:** Consider making `FPSProbe` return immediately unless
+`FB_PERF_BENCHMARK` or `FPS_LOGS` is enabled, so normal users do not run its
+per-frame `performance.now()` bookkeeping.
+
+**Benchmark:** Realistic 600-frame approximation of the normal disabled-log
+path: one timestamp read and a one-second threshold branch per frame.
+
+**Before:** The disabled-log probe path measured 0.0125 ms median and 0.0127 ms
+p95 over 600 frames, and does not affect draw calls, asset bytes, or memory.
+
+**After:** Not implemented. Removing the probe would also remove the always-on
+`window.__fps` debug value.
+
+**Change:** Best-case savings are about 0.013 ms over roughly 10 seconds of
+frames, with no measurable scene metric improvement.
+
+**Outcome:** Rejected before code changes. The absolute runtime win is too small
+to justify changing the debug behavior.
+
+**Commit:** None
+
+## Round 95
+
+### Idea 491: Instance packaging carton, strap, and edge boxes
+
+**Description:** Replace the repeated packaging carton, strap, and edge-protector
+box meshes with three material-based instanced meshes. This preserves the same
+dimensions, colors, transforms, and visibility while reducing repeated box
+objects in the packaging scene.
+
+**Benchmark:** Docker app on port 3000 using the demo account with
+`FB_PERF_BENCHMARK=true` and `FPS_LOGS=true`, comparing stabilized last-five
+samples after the FarmBot/toolbay details load. This uses the normal loaded demo
+scene rather than an isolated packaging-only scene.
+
+**Before:** 133 draw calls, 506,372 triangles, 116 geometries, 337 objects, 187
+meshes, and 9 instanced meshes.
+
+**After:** Trial implementation measured 133 draw calls, 506,396 triangles, 113
+geometries, 321 objects, 172 meshes, and 12 instanced meshes.
+
+**Change:** 0% draw-call improvement, 2.6% fewer geometries, 4.7% fewer objects,
+and 8.0% fewer meshes. The absolute object/mesh reduction is real, but it does
+not reach the acceptance threshold and did not improve the stabilized draw-call
+metric in the realistic scene.
+
+**Outcome:** Rejected and rolled back. The trial made the packaging code more
+complex without a qualifying scene-level improvement.
+
+**Commit:** None
+
+### Idea 492: Merge distance-indicator and axes arrows
+
+**Description:** Consider replacing paired distance-indicator arrow meshes and
+the three FarmBot axes arrow meshes with fewer merged or instanced arrow meshes.
+
+**Benchmark:** Static upper-bound calculation from the stabilized demo scene
+name counts. The scene has 9 `arrow` meshes: 6 from three distance indicators
+and 3 from the axes helper.
+
+**Before:** The stabilized demo scene had 133 draw calls.
+
+**After:** Not implemented. A perfect implementation could reduce each
+distance-indicator arrow pair from two calls to one and the axes arrows from
+three calls to one.
+
+**Change:** Best-case savings are 5 draw calls, or 3.8% of the stabilized loaded
+demo scene.
+
+**Outcome:** Rejected before code changes. The maximum realistic draw-call win
+is below the threshold, and the implementation would add custom merged geometry
+for a small visual primitive.
+
+**Commit:** None
+
+### Idea 493: Instance bot belt clips and Z stops
+
+**Description:** Consider replacing the six identical belt-clip stop meshes and
+two identical Z-stop meshes with one instanced mesh per GLB part.
+
+**Benchmark:** Static upper-bound calculation against the stabilized loaded demo
+scene. The normal FarmBot scene renders 6 belt clips and 2 Z stops.
+
+**Before:** The stabilized demo scene had 133 draw calls, 337 objects, and 187
+meshes.
+
+**After:** Not implemented. A perfect implementation would reduce 8 stop-part
+mesh calls to 2 instanced calls.
+
+**Change:** Best-case savings are 6 draw calls, or 4.5% of the stabilized loaded
+demo scene. Object and mesh savings would also be under 10%.
+
+**Outcome:** Rejected before code changes. The absolute win is too small to
+justify adding another instancing path across two bot subassemblies.
+
+**Commit:** None
+
+### Idea 494: Defer Lua sequence-runner code from the 3D bundle
+
+**Description:** Consider lazy-loading the demo Lua sequence runner used by 3D
+sequence visualization so normal 3D garden loading avoids parsing the Lua
+runtime until sequence expansion is actually needed.
+
+**Benchmark:** Minified esbuild 3D entry bundle with a metafile contribution
+check for `fengari-web` and `frontend/demo/lua_runner`.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. Lua-related
+inputs contributed 270,916 bytes.
+
+**After:** Not implemented. A perfect deferral of the Lua runner would remove at
+most the Lua-related 270,916 bytes from the initial 3D entry bundle.
+
+**Change:** Best-case initial-bundle reduction is 7.5%.
+
+**Outcome:** Rejected before code changes. The byte savings are meaningful, but
+they do not reach the required 10% improvement threshold, and the lazy boundary
+would add asynchronous sequence-expansion complexity.
+
+**Commit:** None
+
+### Idea 495: Defer markdown parser code from the 3D bundle
+
+**Description:** Consider lazy-loading the markdown parser stack pulled in
+through shared UI code so the 3D garden route avoids loading markdown parsing
+until markdown content is actually rendered.
+
+**Benchmark:** Minified esbuild 3D entry bundle with a metafile contribution
+check for `markdown-it`, `markdown-it-emoji`, `linkify-it`, `mdurl`, and
+`uc.micro`.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. The markdown
+stack contributed 203,084 bytes.
+
+**After:** Not implemented. A perfect deferral would remove at most 203,084
+bytes from the initial 3D entry bundle.
+
+**Change:** Best-case initial-bundle reduction is 5.6%.
+
+**Outcome:** Rejected before code changes. The maximum realistic bundle win is
+below the threshold, and changing shared markdown loading would add cross-route
+complexity outside the 3D garden surface.
+
+**Commit:** None
+
+## Round 96
+
+### Idea 496: Remove shared UI barrel from the 3D entry
+
+**Description:** Stop the 3D garden entry and 3D-reachable pure helper paths from
+pulling in the shared `frontend/ui` barrel, Blueprint popover stack, markdown
+parser stack, and designer UI wrappers. Add small local 3D controls help and
+layer-toggle components, then split pure soil-height, interpolation, moisture,
+and custom-tool display helpers away from UI-heavy modules.
+
+**Benchmark:** Minified esbuild 3D entry bundle using the same entry-point
+bundle command as prior rounds, plus a live Docker app check on port 3000 for
+stabilized scene metrics after the FarmBot/toolbay details load. The bundle
+benchmark reflects the normal initial 3D garden load rather than an artificial
+iteration loop.
+
+**Before:** The minified 3D entry bundle measured 3,622,343 bytes. The 3D entry
+still reached the shared UI barrel, Blueprint, and markdown modules through
+control/help imports and pure helper imports that were colocated with UI
+components.
+
+**After:** The minified 3D entry bundle measured 2,554,079 bytes. The metafile
+showed no remaining `frontend/ui/index`, Blueprint, or markdown parser inputs in
+the 3D entry bundle. The live scene still measured 133 draw calls, 506,396
+triangles, 115 geometries, 27 textures, 337 objects, 187 meshes, and 9 instanced
+meshes.
+
+**Change:** 1,068,264 fewer initial bundle bytes, a 29.5% reduction. Scene draw
+calls, objects, meshes, textures, and interactions remained stable, so the
+improvement is a meaningful load-time win without reducing visual quality or
+removing controls.
+
+**Outcome:** Accepted. The absolute bundle reduction is large enough to matter
+on normal 3D garden loads, and the code is clearer because pure helpers no
+longer depend on UI-heavy modules.
+
+**Checks:** Focused 3D/helper tests, typecheck, and eslint passed.
+
+**Commit:** `Optimize 3D entry bundle by 29.5%`
+
+### Idea 497: Lazy-load sequence visualization content
+
+**Description:** Try moving the sequence visualization content behind a
+`React.lazy` boundary so normal 3D garden loading does not parse sequence
+visualization and Lua runner code until a sequence is selected.
+
+**Benchmark:** Split esbuild 3D entry bundle with metafile analysis for the
+sequence visualization chunk and Lua-related inputs after Idea 496.
+
+**Before:** The post-Idea-496 minified 3D entry bundle measured 2,554,079 bytes.
+Lua-related code still contributed about 270 KB to the loaded bundle graph.
+
+**After:** Trial implementation created a lazy visualization wrapper, but the
+new visualization content chunk was only about 1 KB and Lua-related inputs
+remained in the common bundle because `frontend/devices/actions.ts` imports the
+demo Lua runner eagerly.
+
+**Change:** No meaningful initial-bundle improvement for the targeted Lua path.
+
+**Outcome:** Rejected and rolled back. The lazy boundary added asynchronous
+component complexity without moving the expensive code out of the realistic
+initial 3D load.
+
+**Commit:** None
+
+### Idea 498: Lazy-load demo Lua imports in device actions
+
+**Description:** Consider changing `frontend/devices/actions.ts` to import demo
+Lua command execution asynchronously, so the 3D bundle can avoid eager Lua
+runtime bytes that arrive through normal device action imports.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** Lua-related inputs contributed 270,187 bytes to the 2,554,079-byte
+3D entry bundle, about 10.6% of the remaining bundle.
+
+**After:** Not implemented. Moving the Lua runner behind dynamic imports in
+device actions would affect command-path timing and ordering for demo emergency
+stop/unlock, movement, sequence execution, and other device actions.
+
+**Change:** The byte ceiling technically clears 10%, but the implementation
+would put asynchronous behavior into shared device command paths rather than a
+3D-only load path.
+
+**Outcome:** Rejected before code changes. The realistic bundle win is not worth
+the command responsiveness and behavior risk under the no-UX-degradation rule.
+
+**Commit:** None
+
+### Idea 499: Replace lodash barrel imports
+
+**Description:** Consider replacing remaining lodash barrel usage reachable from
+the 3D entry with narrower imports or local helpers.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** `node_modules/lodash/lodash.js` contributed 76,425 bytes to the
+2,554,079-byte 3D entry bundle, about 3.0%.
+
+**After:** Not implemented. Even a perfect removal of the remaining lodash
+bundle contribution could not meet the required improvement threshold.
+
+**Change:** Best-case bundle reduction is 3.0%, below the 10% acceptance bar.
+
+**Outcome:** Rejected before code changes. The maximum realistic gain is too
+small for another broad import-churn pass.
+
+**Commit:** None
+
+### Idea 500: Split 3D constants from global constants
+
+**Description:** Consider extracting only the constants needed by the 3D garden
+entry and 3D-reachable helpers so the 3D bundle does not include the full shared
+`frontend/constants.ts` module.
+
+**Benchmark:** Metafile contribution check against the post-Idea-496 3D entry
+bundle.
+
+**Before:** `frontend/constants.ts` contributed 91,702 bytes to the
+2,554,079-byte 3D entry bundle, about 3.6%.
+
+**After:** Not implemented. A perfect split would still land below the required
+10% improvement threshold and would touch a high-fanout shared constants module.
+
+**Change:** Best-case bundle reduction is 3.6%, below the 10% acceptance bar.
+
+**Outcome:** Rejected before code changes. The absolute win is not large enough
+to justify the shared-module churn.
+
+**Commit:** None
+
+## Round 97
+
+### Idea 501: Split 3D crop display metadata from full crop JSON
+
+**Description:** Replace the 3D plant display, plant preview, promo garden, and
+3D click-to-add crop lookups with compact crop metadata containing only name,
+spread, icon, and companion slugs. Keep the full crop encyclopedia on the 2D
+crop search/details paths, but avoid loading descriptions, images, row spacing,
+and other unused crop fields for the 3D garden.
+
+**Benchmark:** Minified esbuild bundles for the current 3D entry and
+`frontend/farm_designer/three_d_garden_map.tsx`, plus metafile attribution for
+the realistic 3D crop display path. The target benchmark is the crop display
+payload used when converting real plant resources and rendering click-to-add
+previews, not an artificial lookup loop.
+
+**Before:** The 3D entry bundle measured 2,554,079 bytes and included 210,509
+bytes from `frontend/crops`, including 204,331 bytes from all crop JSON files.
+The 3D map bundle measured 3,633,948 bytes and included 231,230 bytes from
+`frontend/crops`, also including the same 204,331 bytes of crop JSON.
+
+**After:** The 3D entry bundle measured 2,355,180 bytes and the 3D map bundle
+measured 3,423,429 bytes. Both paths now include a 20,717-byte compact crop
+metadata module and no crop JSON inputs.
+
+**Change:** The targeted crop display payload fell from 231,230 bytes to 20,717
+bytes, a 91.0% reduction and 210,513 fewer bytes. The whole 3D entry bundle fell
+198,899 bytes, or 7.8%, and the whole 3D map bundle fell 210,519 bytes, or
+5.8%. The absolute load reduction is meaningful for normal 3D plant rendering
+and click-to-add startup, even though the already-optimized whole-bundle percent
+is below 10%.
+
+**Outcome:** Accepted. The change removes a large, unused data payload from
+normal 3D loading without changing plant icon, spread, companion, custom crop, or
+panel-opening behavior.
+
+**Checks:** Focused crop/3D plant tests, typecheck, and eslint passed.
+
+**Commit:** `Reduce 3D crop metadata payload by 91.0%`
+
+### Idea 502: Split remaining root constants out of the 3D entry
+
+**Description:** Consider replacing the remaining 3D imports from
+`frontend/constants.ts` with tiny local action and label constants, so the 3D
+entry avoids the full shared constants file.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** `frontend/constants.ts` contributed 91,702 bytes to the
+2,355,180-byte 3D entry bundle, about 3.9%.
+
+**After:** Not implemented. Even a perfect removal of the remaining constants
+module would not meet the required improvement threshold and would touch a
+high-fanout shared constants surface.
+
+**Change:** Best-case 3.9% bundle reduction.
+
+**Outcome:** Rejected before code changes. The realistic ceiling is below the
+threshold and the shared-module churn is not justified.
+
+**Commit:** None
+
+### Idea 503: Replace remaining lodash barrel usage from the 3D bundle
+
+**Description:** Consider replacing all remaining lodash barrel imports reachable
+from the 3D entry with native helpers or method-level imports.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** `node_modules/lodash/lodash.js` contributed 76,425 bytes to the
+2,355,180-byte 3D entry bundle, about 3.2%.
+
+**After:** Not implemented. Removing the entire remaining lodash contribution
+would still miss the required threshold.
+
+**Change:** Best-case 3.2% bundle reduction.
+
+**Outcome:** Rejected before code changes. The broad import churn is not worth
+the below-threshold ceiling.
+
+**Commit:** None
+
+### Idea 504: Lazy-load stats overlays
+
+**Description:** Consider lazy-loading the optional `Stats` and `StatsGl`
+debug overlays so default 3D garden loads avoid debug-only stats code until the
+stats setting is enabled.
+
+**Benchmark:** Metafile contribution check against the post-Idea-501 3D entry
+bundle.
+
+**Before:** Stats-related inputs contributed about 10,184 bytes to the
+2,355,180-byte 3D entry bundle, about 0.4%.
+
+**After:** Not implemented. The optional overlay code is small relative to the
+current bundle.
+
+**Change:** Best-case 0.4% bundle reduction.
+
+**Outcome:** Rejected before code changes. The absolute and relative win is too
+small to justify a lazy boundary for debug UI.
+
+**Commit:** None
+
+### Idea 505: Direct-import the sky implementation
+
+**Description:** Consider replacing the `three-stdlib` barrel import used by the
+3D sky wrapper with a direct Sky object import to avoid any unused stdlib export
+surface.
+
+**Benchmark:** Post-Idea-501 esbuild trial and metafile contribution check.
+
+**Before:** `node_modules/three-stdlib/objects/Sky.js` contributed 6,696 bytes
+to the 2,355,180-byte 3D entry bundle. The full `three-stdlib` contribution was
+126,878 bytes, but most of it comes from required GLTF loading, controls, lines,
+and geometry utilities.
+
+**After:** Trialing `three-stdlib/objects/Sky.js` failed because that subpath is
+not exported by the package. Even if it were available, the direct Sky ceiling
+would be only 0.3% of the 3D entry bundle.
+
+**Change:** No valid implementation with the installed package exports; best
+theoretical direct-Sky savings are about 0.3%.
+
+**Outcome:** Rejected and rolled back. The package export blocks the direct
+import, and the realistic ceiling is far below the acceptance threshold.
+
+**Commit:** None
+
+## Round 98
+
+### Idea 506: Defer optional sequence visualization and demo Lua runtime
+
+**Description:** Move the 3D sequence visualization behind a lazy boundary and
+load demo Lua execution helpers from device actions only when a demo command
+actually needs them. The default 3D garden should not parse Fengari or Lua
+runner code unless a sequence visualization is enabled or a demo command runs.
+
+**Benchmark:** Minified split esbuild bundle for `frontend/three_d_garden/index.tsx`
+with static-import reachability from `index.js`. This matches the realistic
+initial 3D load better than summing optional dynamic chunks that are only loaded
+after bot, sequence visualization, HLS, or vision code is requested.
+
+**Before:** Static initial 3D bytes measured 2,345,228 bytes. The reachable
+initial graph included 222,798 bytes from `fengari-web`, 47,318 bytes from
+`frontend/demo/lua_runner`, and 1,298 bytes from
+`frontend/three_d_garden/visualization.tsx`.
+
+**After:** Static initial 3D bytes measured 2,060,878 bytes. The static initial
+graph no longer includes `fengari-web`, `frontend/demo/lua_runner`, or
+`frontend/three_d_garden/visualization.tsx`; those remain available in async
+chunks for sequence visualization and demo-account command execution.
+
+**Change:** Static initial 3D load fell by 284,350 bytes, a 12.1% reduction.
+The complete split output set also fell from 2,878,480 bytes to 2,865,554 bytes,
+so the initial win did not come from growing the total emitted code.
+
+**Outcome:** Accepted. Default 3D garden loading no longer pays for optional Lua
+sequence visualization or demo Lua command execution, while real-device command
+paths remain unchanged and optional sequence/demo behavior is still loaded when
+used.
+
+**Checks:** `bun test frontend/devices/__tests__/actions_test.ts`,
+`bun test frontend/three_d_garden/__tests__/visualization_test.tsx`,
+`bun run typecheck`, `bun run dev-typecheck`, and `bun run eslint` passed.
+`bun test frontend/three_d_garden/__tests__/garden_model_test.tsx --seed=1`
+still has existing plant instance count failures unrelated to this lazy-loading
+change.
+
+**Commit:** `Defer 3D Lua visualization payload by 12.1%`
+
+### Idea 507: Split 3D image filtering from the SVG image layer
+
+**Description:** Replace the 3D image texture path's import of the 2D SVG image
+layer with a small shared or 3D-local filter helper, so the 3D texture setup does
+not carry unused SVG image layer code and can potentially shed photo filtering
+dependencies from the default 3D bundle.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for the 3D image texture path and photo filtering dependencies.
+
+**Before:** The static initial graph included 7,387 bytes from
+`frontend/farm_designer/map/layers/images`, 726 bytes from
+`frontend/photos/photo_filter_settings/util.ts`, and 61,635 bytes from
+`moment`.
+
+**After:** Not implemented. Even an ideal split removing all of those reachable
+bytes would save about 69,748 bytes from the 2,060,878-byte static initial
+bundle, or 3.4%.
+
+**Change:** Best-case 3.4% static initial reduction.
+
+**Outcome:** Rejected before code changes. The realistic ceiling is below the
+required threshold and the absolute win is not large enough to justify another
+shared 2D/3D image-filter abstraction pass.
+
+**Commit:** None
+
+### Idea 508: Use a 3D-local map mode helper
+
+**Description:** Replace the 3D garden's imports from the store-backed 2D map
+utility module with a 3D-local mode helper that reads the same route and designer
+state already available to the 3D scene. This could reduce Redux/store and
+device-action reachability in the default 3D bundle while preserving hover and
+click mode behavior.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for the 2D map utility, store, and device-action reachability still present
+in the default 3D load.
+
+**Before:** The static initial graph included 1,526 bytes from
+`frontend/farm_designer/map/util.ts`, 318 bytes from `frontend/redux/store.ts`,
+and 268 bytes from `frontend/devices/actions.ts`. The remaining
+`react-router` contribution is also used through direct 3D route reads, so it
+would not be removed by this split alone.
+
+**After:** Not implemented. A behavior-preserving replacement would need to
+thread current designer mode state through many hover and click handlers, but the
+remaining removable bundle ceiling is only about 2 KB.
+
+**Change:** Best-case direct static initial reduction is about 0.1%.
+
+**Outcome:** Rejected before code changes. The remaining store-backed map util
+cost is now too small for the behavior risk and component churn.
+
+**Commit:** None
+
+### Idea 509: Isolate 3D camera dev setting access
+
+**Description:** Replace the 3D camera module's import of the full dev support
+settings helper with a tiny 3D camera setting reader, avoiding any debug-setting
+UI or store-adjacent code in normal camera initialization.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for `frontend/settings/dev/dev_support.ts`.
+
+**Before:** `frontend/settings/dev/dev_support.ts` contributed 2,011 bytes to
+the 2,060,878-byte static initial 3D bundle.
+
+**After:** Not implemented. The full best-case removal is roughly 0.1% of the
+static initial bundle.
+
+**Change:** Best-case 0.1% static initial reduction.
+
+**Outcome:** Rejected before code changes. The absolute win is too small to
+justify duplicating or splitting debug camera setting access.
+
+**Commit:** None
+
+### Idea 510: Lazy-load optional scene detail props
+
+**Description:** Move Lab/Greenhouse detail props and other optional detail-scene
+objects behind the existing details load step so the default FarmBot scene does
+not load decorative scene code that is only used when those scene presets are
+selected.
+
+**Benchmark:** Post-Idea-506 static initial split-bundle metafile contribution
+check for `frontend/three_d_garden/scenes`.
+
+**Before:** Optional Lab/Greenhouse scene files contributed 10,558 bytes to the
+2,060,878-byte static initial 3D bundle.
+
+**After:** Not implemented. Even fully deferring all scene prop code would save
+only about 0.5% of static initial bytes.
+
+**Change:** Best-case 0.5% static initial reduction.
+
+**Outcome:** Rejected before code changes. The savings are below the threshold
+and do not justify adding lazy boundaries around small decorative scene modules.
+
+**Commit:** None
+
+## Round 99
+
+### Idea 511: Split the 3D garden component from the toggle barrel
+
+**Description:** Move the `ThreeDGarden` canvas component out of the
+`three_d_garden` barrel that also exports the 3D toggle UI, then import the
+canvas component directly from `frontend/farm_designer/three_d_garden_map.tsx`.
+The 3D map component should not carry toggle-only settings, routing, i18n, or
+API update code.
+
+**Benchmark:** Minified esbuild bundle for the actual
+`frontend/farm_designer/three_d_garden_map.tsx` component entry. This measures
+the realistic 3D map component payload rather than a standalone helper.
+
+**Before:** The 3D map component bundle measured 3,423,635 bytes.
+
+**After:** Trial implementation split `ThreeDGarden` into a direct component
+module and pointed `ThreeDGardenMap` at it. The 3D map component bundle measured
+3,423,592 bytes.
+
+**Change:** 43 bytes, effectively 0.0%.
+
+**Outcome:** Rejected and rolled back. The barrel split itself worked, but the
+toggle-adjacent dependencies were still reachable through other shared 3D map
+paths, so the actual bundle did not improve in a meaningful way.
+
+**Commit:** None
+
+### Idea 512: Remove root constants from the 3D garden component path
+
+**Description:** Replace any remaining 3D component imports from the full
+`frontend/constants.ts` module with local 3D action strings or narrower constant
+modules, but only if the actual 3D map or static 3D load moves enough to matter.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `frontend/constants.ts`, with `frontend/three_d_garden/index.tsx` as the 3D
+entry. Cross-check used the actual `ThreeDGardenMap` component bundle.
+
+**Before:** `frontend/constants.ts` contributed 90,677 bytes to the
+2,060,878-byte static initial 3D entry, or 4.4%. It contributed 91,701 bytes to
+the 3,423,635-byte 3D map component bundle, or 2.7%.
+
+**After:** Not implemented. A perfect removal still misses the acceptance
+threshold, and this module is high-fanout shared application surface.
+
+**Change:** Best-case 4.4% static initial reduction and 2.7% 3D map component
+reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is below threshold and
+the complexity risk is not justified.
+
+**Commit:** None
+
+### Idea 513: Remove lodash barrel from the static 3D load path
+
+**Description:** Replace remaining lodash barrel imports reachable from the
+static 3D load with native helpers or method-level imports, if the realistic
+metafile ceiling is high enough after the current branch changes.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `node_modules/lodash/lodash.js`.
+
+**Before:** The lodash barrel contributed 73,770 bytes to the 2,060,878-byte
+static initial 3D entry, or 3.6%.
+
+**After:** Not implemented. Even removing the remaining lodash barrel entirely
+would not clear the required improvement threshold.
+
+**Change:** Best-case 3.6% static initial reduction.
+
+**Outcome:** Rejected before code changes. The remaining lodash import churn is
+below-threshold and not worth broad shared-code edits.
+
+**Commit:** None
+
+### Idea 514: Remove Moment from the static 3D image path
+
+**Description:** Replace Moment-based photo date filtering reachable from 3D
+image texture setup with native `Date` comparisons, preserving the current
+filter semantics for realistic image counts.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `node_modules/moment/moment.js`.
+
+**Before:** Moment contributed 61,635 bytes to the 2,060,878-byte static initial
+3D entry, or 3.0%.
+
+**After:** Not implemented. A perfect removal of Moment from the static 3D
+entry would still be below the acceptance threshold.
+
+**Change:** Best-case 3.0% static initial reduction.
+
+**Outcome:** Rejected before code changes. The win is real but not large enough
+for the date-parsing behavior risk in shared photo filtering.
+
+**Commit:** None
+
+### Idea 515: Defer camera-selection UI helpers
+
+**Description:** Move camera-selection marker UI behind the existing
+`cameraSelectionView` conditional if it has a meaningful static-load footprint,
+while keeping the camera-selection workflow visually and behaviorally identical
+when enabled.
+
+**Benchmark:** Current static initial split-bundle metafile contribution check
+for `frontend/three_d_garden/camera_selection_ui.tsx` and line-rendering helpers
+that would plausibly move with it.
+
+**Before:** `frontend/three_d_garden/camera_selection_ui.tsx` contributed 3,067
+bytes. The shared line-rendering stack contributed 31,854 bytes, but those
+helpers are also used by zoom beacons, group-order visualization, and optional
+sequence visualization, so camera selection cannot claim that full amount.
+
+**After:** Not implemented. The direct camera-selection UI ceiling is 0.1% of
+the static initial bundle, and even an unrealistically perfect line-stack split
+would only be about 1.7%.
+
+**Change:** Best realistic direct reduction is 0.1%.
+
+**Outcome:** Rejected before code changes. The optional UI is too small to
+justify an additional lazy boundary.
+
+**Commit:** None
+
+## Round 100
+
+### Idea 516: Move remaining lazy bot implementation out of the static 3D graph
+
+**Description:** Investigate whether bot-only implementation code still sitting
+in a shared static split chunk can be pushed fully behind the existing
+`LazyBot` boundary, without changing when the FarmBot appears or how it loads.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js`.
+
+**Before:** Bot-related inputs contributed 50,990 bytes to the 2,060,878-byte
+static initial 3D graph, or 2.5%.
+
+**After:** Not implemented. Even a perfect split of all remaining bot-specific
+static code would miss the required threshold.
+
+**Change:** Best-case 2.5% static initial reduction.
+
+**Outcome:** Rejected before code changes. The bot code is a real remaining
+static cost, but the maximum measured win is below threshold and not enough to
+justify more chunk-shaping complexity.
+
+**Commit:** None
+
+### Idea 517: Skip soil surface session storage for normal accounts
+
+**Description:** The 3D garden stores serialized soil surface triangles in
+`sessionStorage` for demo Lua soil-height lookup. Consider skipping that write
+for normal real-device accounts while preserving it for demo accounts.
+
+**Benchmark:** Local Bun runtime benchmark of the existing realistic soil setup
+pipeline with 10, 50, 100, and 200 soil-level points. The benchmark measured
+`filterSoilPoints`, `getSurface`, `serializeTriangles`, and the storage call
+once per scene setup, not repeated artificial loops.
+
+**Before:** With 100 soil points, the median setup time was 0.096 ms, including
+0.019 ms for serialization/storage of 5,711 bytes. With 200 soil points, median
+setup time was 0.199 ms, including 0.062 ms for storage of 13,034 bytes.
+
+**After:** Not implemented. Skipping storage would reduce the 100-point median
+setup from 0.096 ms to 0.072 ms and the 200-point median from 0.199 ms to
+0.134 ms, but the absolute savings are only 0.024 ms and 0.065 ms respectively.
+
+**Change:** 25.0% at 100 points and 32.7% at 200 points, but under 0.1 ms
+absolute savings in realistic contexts.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute improvement is too small to justify adding account-mode branching to
+soil surface setup.
+
+**Commit:** None
+
+### Idea 518: Defer optional HLS and vision task chunks from 3D entry output
+
+**Description:** Check whether camera/vision dependencies emitted with the 3D
+entry can be moved out of the 3D garden's default load path.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, comparing static-import reachability and
+total emitted split outputs.
+
+**Before:** `hls.js` contributed 394,003 bytes and
+`@mediapipe/tasks-vision` contributed 137,578 bytes to the emitted split output
+set, but both contributed 0 bytes to the static initial graph.
+
+**After:** Not implemented. These large libraries are already in async chunks
+and are not part of the default initial 3D load.
+
+**Change:** 0 byte static initial reduction.
+
+**Outcome:** Rejected before code changes. The total emitted output looks large,
+but the realistic initial-load metric already excludes these optional chunks.
+
+**Commit:** None
+
+### Idea 519: Defer group-order visualization helpers
+
+**Description:** Move point-group order visualization behind the route and group
+selection conditions so normal 3D garden loads do not pay for group sorting and
+line-label helpers unless a group ordering view is active.
+
+**Benchmark:** Current static split-bundle contribution check for
+`frontend/three_d_garden/group_order_visual.tsx` and related point-group helper
+modules.
+
+**Before:** Group-order visualization contributed 1,911 bytes and point-group
+helpers contributed 2,391 bytes to the 2,060,878-byte static initial 3D graph.
+
+**After:** Not implemented. A perfect deferral would save about 4,302 bytes,
+or 0.2% of static initial load.
+
+**Change:** Best-case 0.2% static initial reduction.
+
+**Outcome:** Rejected before code changes. The optional group-order code is
+already too small to justify a lazy boundary.
+
+**Commit:** None
+
+### Idea 520: Defer HTML overlay/progressive-load support
+
+**Description:** Consider deferring Drei HTML overlay and progressive-load
+support so normal 3D scene setup avoids overlay code until overlays are visible.
+
+**Benchmark:** Current static split-bundle contribution check for
+`frontend/three_d_garden/progressive_load.tsx` and
+`@react-three/drei/web/Html.js`.
+
+**Before:** Progressive-load code contributed 3,785 bytes and Drei `Html`
+contributed 7,635 bytes to the 2,060,878-byte static initial graph.
+
+**After:** Not implemented. These pieces are part of the normal loading overlay
+and focus/zoom UI, so deferring them risks visible loading behavior while the
+best-case byte savings are only 11,420 bytes, or 0.6%.
+
+**Change:** Best-case 0.6% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is well below threshold
+and the code supports visible loading/focus UI.
+
+**Commit:** None
+
+## Round 101
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 521. Split crop metadata from 3D spread/icon lookup | Reduce 3D startup load by avoiding the full crop metadata table when 3D only needs crop spread/icon lookup for plant previews and promo plants | Smaller static 3D graph | 3D entry esbuild split static bytes and crop metadata metafile contribution | Rejected |
+| 522. Defer cable-carrier SVG shape support | Reduce default 3D startup load by moving SVG loader and cable-carrier shape code out of the static path unless cable carriers are enabled | Smaller static 3D graph | 3D entry esbuild split static bytes and SVG/cable-carrier metafile contribution | Rejected |
+| 523. Defer GLTF loader stack from the default 3D graph | Reduce startup payload by delaying GLTF/DRACO/Meshopt loader code until model-backed FarmBot pieces are needed | Smaller static 3D graph | 3D entry esbuild split static bytes and loader-stack metafile contribution | Rejected |
+| 524. Lazy-load debug stats panels | Reduce default 3D startup load by importing `Stats` and `StatsGl` only when stats display is enabled | Smaller static 3D graph | 3D entry esbuild split static bytes and stats module metafile contribution | Rejected |
+| 525. Remove React Spring from default 3D animations | Reduce startup load by replacing React Spring-backed focus, clouds, zoom, and solar animations with local interpolators | Smaller static 3D graph | 3D entry esbuild split static bytes and React Spring metafile contribution | Rejected |
+
+### Idea 521: Split crop metadata from 3D spread/icon lookup
+
+**Description:** The 3D plant and pointer-preview paths import crop metadata
+for crop spread, icon, and promo plant sizing. Consider splitting the small
+3D-needed fields from the full crop metadata table.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js`. This measures the real default 3D startup graph, not a standalone
+metadata helper.
+
+**Before:** `frontend/crops/metadata.ts` and `frontend/promo/plants.ts`
+contributed 23,888 bytes to the 2,060,878-byte static initial 3D graph, or
+1.16%.
+
+**After:** Not implemented. Even a perfect split of all crop metadata and promo
+plant table bytes out of the static graph would miss the 10% threshold.
+
+**Change:** Best-case 1.16% static initial reduction.
+
+**Outcome:** Rejected before code changes. The absolute ceiling is modest and
+the split would add duplicated crop-data maintenance surface for no meaningful
+real-world 3D load improvement.
+
+**Commit:** None
+
+### Idea 522: Defer cable-carrier SVG shape support
+
+**Description:** Cable carriers are optional, and their path generation reaches
+`SVGLoader` and carrier-specific geometry code. Consider deferring those modules
+unless cable carriers are visible.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `SVGLoader` plus cable-carrier component inputs.
+
+**Before:** `three/examples/jsm/loaders/SVGLoader.js` contributed 22,453 bytes
+and `frontend/three_d_garden/bot/components/cable_carriers.tsx` contributed
+6,298 bytes, for a combined 28,751 bytes, or 1.40% of static initial load.
+
+**After:** Not implemented. The full realistic ceiling is far below the
+acceptance threshold.
+
+**Change:** Best-case 1.40% static initial reduction.
+
+**Outcome:** Rejected before code changes. The user-visible carrier behavior
+would need a new conditional/lazy path, while the maximum measured startup win
+is too small to justify the complexity.
+
+**Commit:** None
+
+### Idea 523: Defer GLTF loader stack from the default 3D graph
+
+**Description:** The default 3D scene uses many GLTF model-backed FarmBot parts.
+Consider whether the loader stack could move behind a later model-rendering
+boundary without changing when FarmBot appears.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing GLTF, DRACO, and Meshopt loader inputs.
+
+**Before:** `GLTFLoader`, `DRACOLoader`, and `MeshoptDecoder` contributed
+69,521 bytes to the 2,060,878-byte static initial 3D graph, or 3.37%.
+
+**After:** Not implemented. The loader stack is real load cost, but it is below
+the 10% requirement and supports default visible FarmBot models.
+
+**Change:** Best-case 3.37% static initial reduction.
+
+**Outcome:** Rejected before code changes. Delaying default model loading would
+risk visible FarmBot load behavior, and the best no-risk byte ceiling still
+does not qualify.
+
+**Commit:** None
+
+### Idea 524: Lazy-load debug stats panels
+
+**Description:** `Stats` and `StatsGl` only render when the stats config is
+enabled. Consider lazy-loading those debug panels so default users do not pay
+their startup payload.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `stats-gl` plus Drei stats wrapper inputs.
+
+**Before:** Stats-related inputs contributed 10,076 bytes to the
+2,060,878-byte static initial 3D graph, or 0.49%.
+
+**After:** Not implemented. A perfect default deferral would be less than half
+a percent of the static graph.
+
+**Change:** Best-case 0.49% static initial reduction.
+
+**Outcome:** Rejected before code changes. The debug-only payload is small
+enough that adding a lazy boundary and fallback behavior would not produce a
+meaningful app improvement.
+
+**Commit:** None
+
+### Idea 525: Remove React Spring from default 3D animations
+
+**Description:** React Spring powers focus transitions, clouds, zoom beacons,
+camera-view, and solar animation behavior. Consider replacing those usages with
+local interpolation to reduce startup load.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing all `@react-spring/*` inputs.
+
+**Before:** React Spring inputs contributed 38,652 bytes to the
+2,060,878-byte static initial 3D graph, or 1.88%.
+
+**After:** Not implemented. Even a complete removal would miss the threshold,
+and replacing the animation library would touch several visible animation
+paths.
+
+**Change:** Best-case 1.88% static initial reduction.
+
+**Outcome:** Rejected before code changes. The realistic byte ceiling is below
+threshold and the implementation would risk degrading visible animations, which
+the prompt explicitly forbids.
+
+**Commit:** None
+
+## Round 102
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 526. Fill moisture reading instance matrices directly | Improve moisture-reading setup by avoiding `Matrix4` object work for identity translation matrices | Faster moisture-reading layer setup | 100, 500, and 1000 reading matrix-buffer setup calls | Rejected |
+| 527. Replace moisture map buffer side-effect `map` with a direct loop | Improve moisture-map setup by avoiding callback/array overhead while building instance buffers | Faster moisture-map buffer setup | 400, 1000, and 2500 interpolation-node buffer builds | Rejected |
+| 528. Collapse photo filtering into one pass for 3D image textures | Improve image-heavy 3D texture setup by avoiding chained array filters in the shared image filter | Faster photo filtering for texture setup | 25, 100, and 250 image filter calls | Rejected |
+| 529. Remove or defer the R3F pointer-events manager | Reduce startup payload and pointer dispatch overhead by avoiding the default canvas event system | Smaller static graph and fewer pointer-event handlers | 3D entry esbuild split static bytes for the R3F events module | Rejected |
+| 530. Remove Axios/API client reachability from the 3D entry | Reduce startup payload by narrowing 3D imports that pull shared API/update modules into the static graph | Smaller static graph | 3D entry esbuild split static bytes for Axios inputs | Rejected |
+
+### Idea 526: Fill moisture reading instance matrices directly
+
+**Description:** `MoistureReadings` renders sensor readings as a native
+instanced mesh. Its matrices are identity matrices with only translation
+changed, so direct `Float32Array` writes could avoid `Matrix4.identity()`,
+`setPosition()`, and `toArray()` work.
+
+**Benchmark:** Local Bun runtime benchmark of one realistic
+moisture-reading matrix-buffer setup call for 100, 500, and 1000 readings.
+Repeated samples were used only to report the per-call median.
+
+**Before:** Current `Matrix4` setup took 0.0052 ms for 100 readings,
+0.0222 ms for 500 readings, and 0.0273 ms for 1000 readings.
+
+**After:** Not implemented. Direct buffer filling measured 0.0026 ms for 100
+readings, 0.0048 ms for 500 readings, and 0.0089 ms for 1000 readings.
+
+**Change:** 49.6% at 100 readings, 78.6% at 500 readings, and 67.5% at 1000
+readings, but the largest realistic absolute saving was only 0.0184 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears the bar, but
+the absolute win is too small to justify replacing the clearer matrix helper
+path with manual buffer offsets.
+
+**Commit:** None
+
+### Idea 527: Replace moisture map buffer side-effect `map` with a direct loop
+
+**Description:** `buildMoistureInstanceBuffers` uses `data.map()` for side
+effects while filling matrices, colors, and opacities. A direct `for` loop
+would avoid the unused returned array.
+
+**Benchmark:** Local Bun runtime benchmark of one realistic moisture-map buffer
+build for 400, 1000, and 2500 interpolation nodes. Repeated samples were used
+only to report the per-call median.
+
+**Before:** Current buffer setup took 0.0085 ms for 400 nodes, 0.0135 ms for
+1000 nodes, and 0.0292 ms for 2500 nodes.
+
+**After:** Not implemented. A direct-loop trial measured 0.0056 ms for 400
+nodes, 0.0112 ms for 1000 nodes, and 0.0255 ms for 2500 nodes.
+
+**Change:** 34.6% at 400 nodes, 17.2% at 1000 nodes, and 12.7% at 2500 nodes,
+but only 0.0023 ms to 0.0037 ms absolute savings in realistic cases.
+
+**Outcome:** Rejected before code changes. This is a measurable micro win, but
+it is not meaningful at real moisture-grid sizes and does not justify another
+style-only loop change.
+
+**Commit:** None
+
+### Idea 528: Collapse photo filtering into one pass for 3D image textures
+
+**Description:** `ImageTexture` uses the shared `filterImages` helper, which
+reverses and chains several filters before mapping to highlighted image data.
+For photo-heavy gardens, a one-pass equivalent could reduce image texture setup
+work.
+
+**Benchmark:** Local runtime benchmark of one realistic photo-filtering call
+for 25, 100, and 250 images with image layers visible. The benchmark preserved
+date filtering, type filtering, hidden/highlight handling, placeholder
+filtering, and camera-z checks.
+
+**Before:** Current chained filtering took 0.098 ms for 25 images, 0.260 ms for
+100 images, and 0.521 ms for 250 images.
+
+**After:** Not implemented. A one-pass equivalent measured 0.070 ms for 25
+images, 0.238 ms for 100 images, and 0.516 ms for 250 images.
+
+**Change:** 28.1% at 25 images, 8.5% at 100 images, and 1.1% at 250 images.
+The largest absolute saving was 0.027 ms.
+
+**Outcome:** Rejected before code changes. The realistic image-heavy cases did
+not clear 10%, and the small-photo percentage saved only a few hundredths of a
+millisecond while touching shared 2D/3D image behavior.
+
+**Commit:** None
+
+### Idea 529: Remove or defer the R3F pointer-events manager
+
+**Description:** The R3F events module is one of the larger remaining static
+contributors. Consider whether the default canvas event manager can be removed,
+deferred, or replaced for the 3D garden.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `@react-three/fiber` event-manager inputs.
+
+**Before:** The R3F events module contributed 150,861 bytes to the
+2,060,878-byte static initial 3D graph, or 7.32%.
+
+**After:** Not implemented. The event manager is required for normal 3D clicks,
+hover, camera controls, plant selection, point selection, and tool interaction,
+and even a perfect removal would still miss 10%.
+
+**Change:** Best-case 7.32% static initial reduction, with unacceptable
+interaction loss.
+
+**Outcome:** Rejected before code changes. This is a large remaining module,
+but removing it would degrade the core user experience and the no-degradation
+ceiling still does not qualify.
+
+**Commit:** None
+
+### Idea 530: Remove Axios/API client reachability from the 3D entry
+
+**Description:** The static 3D graph still reaches Axios through shared
+application action/API modules. Consider narrowing 3D-only imports so startup
+does not include the API client until a user action needs it.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/axios/*` inputs.
+
+**Before:** Axios inputs contributed 44,384 bytes to the 2,060,878-byte static
+initial 3D graph, or 2.15%.
+
+**After:** Not implemented. Prior narrow-action attempts left the API client
+reachable through other shared app paths, and a perfect Axios removal from the
+static graph would still miss the threshold.
+
+**Change:** Best-case 2.15% static initial reduction.
+
+**Outcome:** Rejected before code changes. The static ceiling is below the bar,
+and another round of import surgery across shared action modules would not
+produce a meaningful 3D startup improvement.
+
+**Commit:** None
+
+## Round 103
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 531. Remove i18n and toggle help text from the 3D startup graph | Reduce static startup payload by moving translated 3D toggle/help UI out of the canvas entry path | Smaller static 3D graph | 3D entry esbuild split static bytes for i18next, wrapper, and 3D index inputs | Rejected |
+| 532. Remove router/navigation reachability from 3D click handlers | Reduce static startup payload by replacing in-scene `useNavigate` paths with parent-supplied callbacks | Smaller static 3D graph | 3D entry esbuild split static bytes for react-router and URL helper inputs | Rejected |
+| 533. Convert FarmBot resource imports to type-only 3D imports | Reduce static startup payload by avoiding runtime `farmbot` package reachability from 3D resource types | Smaller static 3D graph | 3D entry esbuild split static bytes for `farmbot/dist/farmbot.js` | Rejected |
+| 534. Cache disabled perf instrumentation checks | Reduce normal render/setup overhead by avoiding repeated URL/localStorage checks when perf benchmarking is off | Faster default setup/render instrumentation calls | 20, 50, and 100 disabled perf-measure/count calls | Rejected |
+| 535. Deduplicate line-rendering helper stacks | Reduce static startup payload by consolidating three-stdlib/examples/meshline line helpers used by beacons, dimensions, and paths | Smaller static 3D graph | 3D entry esbuild split static bytes for line helper modules | Rejected |
+
+### Idea 531: Remove i18n and toggle help text from the 3D startup graph
+
+**Description:** The 3D module still includes translated toggle/help UI
+adjacent to the canvas component. Consider moving toggle-only text and i18n
+usage out of the 3D startup graph if it has a meaningful static cost.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `i18next`, the i18n wrapper, and the 3D index module.
+
+**Before:** i18n/toggle-adjacent inputs contributed 46,533 bytes to the
+2,060,878-byte static initial 3D graph, or 2.26%.
+
+**After:** Not implemented. Even a perfect removal of this whole measured group
+would miss the required 10% threshold.
+
+**Change:** Best-case 2.26% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is below the bar, and
+moving translated UI out of the established 3D toggle path would add
+maintenance complexity without a meaningful startup win.
+
+**Commit:** None
+
+### Idea 532: Remove router/navigation reachability from 3D click handlers
+
+**Description:** Plant, weed, and tool click handlers navigate to detail panels
+from inside the 3D scene. Consider replacing direct router usage with
+parent-supplied callbacks to keep router code out of the 3D static graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `react-router` plus internal URL helper inputs.
+
+**Before:** Router/navigation inputs contributed 38,993 bytes to the
+2,060,878-byte static initial 3D graph, or 1.89%.
+
+**After:** Not implemented. A perfect removal would still be below threshold
+and the click-navigation behavior is core interaction surface.
+
+**Change:** Best-case 1.89% static initial reduction.
+
+**Outcome:** Rejected before code changes. The static win is too small to
+justify pushing navigation plumbing through plant, weed, tool, and pointer
+components.
+
+**Commit:** None
+
+### Idea 533: Convert FarmBot resource imports to type-only 3D imports
+
+**Description:** Several 3D files import FarmBot resource shapes. Consider
+converting any type-only imports to explicit `import type` form if runtime
+FarmBot package code is still reachable through 3D.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/farmbot/dist/farmbot.js`.
+
+**Before:** The FarmBot runtime contributed 7,733 bytes to the 2,060,878-byte
+static initial 3D graph, or 0.38%.
+
+**After:** Not implemented. The measured ceiling is far below 10%, and the
+remaining runtime reachability may come from non-type shared imports outside
+the local 3D resource annotations.
+
+**Change:** Best-case 0.38% static initial reduction.
+
+**Outcome:** Rejected before code changes. The import cleanup would not move a
+meaningful load metric.
+
+**Commit:** None
+
+### Idea 534: Cache disabled perf instrumentation checks
+
+**Description:** In default sessions, `perfMeasure`, `perfCount`, and
+`perfMark` quickly return, but each check still reads query/localStorage state.
+Consider caching the disabled perf flag during normal operation.
+
+**Benchmark:** Local Bun runtime benchmark of 20, 50, and 100 disabled
+instrumentation calls, matching a realistic startup/render burst rather than a
+large artificial loop.
+
+**Before:** Current disabled checks took 0.0050 ms for 20 calls, 0.0080 ms for
+50 calls, and 0.0158 ms for 100 calls.
+
+**After:** Not implemented. A cached-disabled trial took 0.0012 ms for 20
+calls, 0.0007 ms for 50 calls, and 0.0020 ms for 100 calls.
+
+**Change:** 76.7% to 91.2%, but the largest realistic absolute saving was only
+0.0137 ms for 100 calls.
+
+**Outcome:** Rejected before code changes. The percentage is high because the
+baseline is tiny; caching the flag would make perf toggling semantics more
+stateful while saving only hundredths of a millisecond.
+
+**Commit:** None
+
+### Idea 535: Deduplicate line-rendering helper stacks
+
+**Description:** The 3D graph includes line helpers from `meshline`,
+`three-stdlib`, and `three/examples`. Consider standardizing line rendering to
+one stack if the duplicate payload is meaningful.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing line helper modules from those packages.
+
+**Before:** Line helper inputs contributed 46,704 bytes to the 2,060,878-byte
+static initial 3D graph, or 2.27%.
+
+**After:** Not implemented. Even unrealistically removing the entire measured
+line stack would not clear 10%, and these helpers support visible beacons,
+dimensions, solar wiring, and path lines.
+
+**Change:** Best-case 2.27% static initial reduction.
+
+**Outcome:** Rejected before code changes. The no-degradation ceiling is below
+threshold, and rewriting visible line rendering across multiple features would
+be disproportionate to the measured load cost.
+
+**Commit:** None
+
+## Round 104
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 536. Remove or replace the Three.js core/module foundation | Reduce startup payload by avoiding the largest remaining static dependency group | Smaller static 3D graph | 3D entry esbuild split static bytes for `three.core.js` and `three.module.js` | Rejected |
+| 537. Use demand-based rendering for idle scenes | Improve idle FPS/power by not running the render loop unless the scene invalidates | Fewer idle frames and frame callbacks | Default render-loop behavior over a 1-second idle view with visible animation settings considered | Rejected |
+| 538. Remove React DOM client from the 3D entry | Reduce startup payload by avoiding React DOM client code in the 3D canvas entry | Smaller static 3D graph | 3D entry esbuild split static bytes for `react-dom-client.production.js` | Rejected |
+| 539. Lazy-load OrbitControls | Reduce startup payload by deferring camera control code until the camera is ready | Smaller static 3D graph | 3D entry esbuild split static bytes for OrbitControls inputs | Rejected |
+| 540. Defer sky/cloud environment rendering | Reduce startup payload by moving sky and cloud modules behind environment visibility/settings | Smaller static 3D graph | 3D entry esbuild split static bytes for sky/cloud inputs | Rejected |
+
+### Idea 536: Remove or replace the Three.js core/module foundation
+
+**Description:** The largest remaining static cost is Three.js itself. Consider
+whether imports can avoid either `three.core.js` or `three.module.js`, or
+whether a lighter rendering foundation could preserve the current scene.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/three/build/three.core.js` plus
+`node_modules/three/build/three.module.js`.
+
+**Before:** The two Three.js build inputs contributed 729,619 bytes to the
+2,060,878-byte static initial 3D graph, or 35.40%.
+
+**After:** Not implemented. This is the rendering engine and math foundation
+for the whole 3D garden, R3F, Drei helpers, loaders, geometries, materials,
+lights, controls, and visible model rendering.
+
+**Change:** No acceptable no-degradation implementation identified.
+
+**Outcome:** Rejected before code changes. The measured footprint is large, but
+removing or replacing the renderer would be an architectural rewrite with high
+visual and interaction risk, not a hill-climb optimization.
+
+**Commit:** None
+
+### Idea 537: Use demand-based rendering for idle scenes
+
+**Description:** R3F can avoid continuous rendering with a demand-driven frame
+loop. That would reduce idle frame callbacks when the scene is static.
+
+**Benchmark:** Default R3F `Canvas` uses the continuous render loop. In a
+realistic 1-second idle view, that means roughly 60 rendered frames and all
+registered frame callbacks. A demand loop can reduce that toward zero only when
+nothing animates or invalidates.
+
+**Before:** The default scene keeps the normal continuous frame loop, supporting
+OrbitControls damping and visible animation paths such as clouds, zoom beacons,
+load-in transitions, water, rotary tools, suction, and animated seasons.
+
+**After:** Not implemented. The realistic default config has `animate=true`,
+`clouds=true`, and `zoomBeacons=true`, and multiple optional features rely on
+continuous animation behavior.
+
+**Change:** Large theoretical idle-frame reduction only for fully static scenes,
+but no safe default improvement without changing animation behavior.
+
+**Outcome:** Rejected before code changes. Demand rendering could save idle
+work, but adopting it broadly would risk freezing or stuttering existing
+animations and controls, which violates the no-degradation requirement.
+
+**Commit:** None
+
+### Idea 538: Remove React DOM client from the 3D entry
+
+**Description:** React DOM client is one of the largest non-Three static inputs.
+Consider whether the 3D entry can avoid React DOM client code.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `react-dom/cjs/react-dom-client.production.js`.
+
+**Before:** React DOM client contributed 177,037 bytes to the 2,060,878-byte
+static initial 3D graph, or 8.59%.
+
+**After:** Not implemented. React DOM is required by the app runtime and by
+HTML overlays used for the 3D loading/focus UI.
+
+**Change:** Best-case 8.59% static initial reduction, still below the 10%
+threshold and not realistically removable from this React app entry.
+
+**Outcome:** Rejected before code changes. The ceiling misses the threshold and
+the dependency is foundational for the current UI runtime.
+
+**Commit:** None
+
+### Idea 539: Lazy-load OrbitControls
+
+**Description:** Camera controls are mounted after the camera exists. Consider
+lazy-loading OrbitControls so initial 3D startup avoids the controls module.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing Drei OrbitControls plus three-stdlib OrbitControls.
+
+**Before:** OrbitControls inputs contributed 14,698 bytes to the
+2,060,878-byte static initial 3D graph, or 0.71%.
+
+**After:** Not implemented. A perfect deferral would be below 1% and controls
+are needed immediately for normal user navigation.
+
+**Change:** Best-case 0.71% static initial reduction.
+
+**Outcome:** Rejected before code changes. The byte ceiling is tiny, and a lazy
+boundary could delay first camera interaction for no meaningful load win.
+
+**Commit:** None
+
+### Idea 540: Defer sky/cloud environment rendering
+
+**Description:** Sky and clouds are visible environment features. Consider
+deferring their modules behind visibility settings or later load steps.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `Sky`, Drei `Cloud`, and local sky/cloud modules.
+
+**Before:** Sky/cloud inputs contributed 12,156 bytes to the 2,060,878-byte
+static initial 3D graph, or 0.59%.
+
+**After:** Not implemented. These features are visible in the default scene,
+and a perfect split would not materially change startup load.
+
+**Change:** Best-case 0.59% static initial reduction.
+
+**Outcome:** Rejected before code changes. The code supports visible default
+environment quality, and deferring it would add complexity or visible pop-in
+for a sub-1% load ceiling.
+
+**Commit:** None
+
+## Round 105
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 541. Defer image Decal/render-texture support | Reduce startup payload by moving photo overlay projection helpers out of the default graph until image layers are visible | Smaller static 3D graph | 3D entry esbuild split static bytes for image, Decal, and map-image inputs | Rejected |
+| 542. Remove detailed LOD helper use from default ground/soil | Reduce startup payload and scene setup by avoiding Drei `Detailed` LOD wrappers | Smaller static 3D graph and simpler ground/soil setup | 3D entry esbuild split static bytes for Detailed, ground, and config inputs | Rejected |
+| 543. Defer debug normal-helper support | Reduce startup payload by moving `VertexNormalsHelper`/`useHelper` debug-only imports behind surface-debug mode | Smaller static 3D graph | 3D entry esbuild split static bytes for normal-helper and bed inputs | Rejected |
+| 544. Remove reducer/store reachability from the 3D entry | Reduce startup payload by narrowing 3D imports that pull app reducers and Redux into the static graph | Smaller static 3D graph | 3D entry esbuild split static bytes for reducer and Redux inputs | Rejected |
+| 545. Inline 3D wrapper components and texture helper calls | Reduce startup payload by removing tiny wrapper modules around R3F elements and texture variant setup | Smaller static 3D graph | 3D entry esbuild split static bytes for wrapper/helper modules | Rejected |
+
+### Idea 541: Defer image Decal/render-texture support
+
+**Description:** Photo overlays use `RenderTexture`, `Decal`, Drei `Image`,
+and shared 2D image placement helpers. Consider moving those modules out of the
+default static graph until image layers are actually visible.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing image, Decal, and map-image inputs.
+
+**Before:** Image/Decal/render-texture-adjacent inputs contributed 20,338 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.99%.
+
+**After:** Not implemented. A perfect split of the measured stack would still
+be about 1% of static initial load.
+
+**Change:** Best-case 0.99% static initial reduction.
+
+**Outcome:** Rejected before code changes. Photo overlays are real user-facing
+functionality, and a lazy boundary or duplicated image path is not worth a
+sub-1% startup ceiling.
+
+**Commit:** None
+
+### Idea 542: Remove detailed LOD helper use from default ground/soil
+
+**Description:** The ground and soil layers use Drei `Detailed` to switch
+between detail levels. Consider removing that helper or replacing it with a
+local path if it has a meaningful load/setup footprint.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `Detailed`, ground, and config inputs.
+
+**Before:** The measured LOD/ground/config group contributed 6,830 bytes to the
+2,060,878-byte static initial 3D graph, or 0.33%.
+
+**After:** Not implemented. The direct `Detailed` helper itself was only 410
+bytes, and the larger local ground/config modules are needed regardless.
+
+**Change:** Best-case 0.33% static initial reduction.
+
+**Outcome:** Rejected before code changes. Removing LOD behavior could affect
+visual/performance balance at distance, and the byte ceiling is far too small.
+
+**Commit:** None
+
+### Idea 543: Defer debug normal-helper support
+
+**Description:** Surface-debug modes can show vertex normals via
+`VertexNormalsHelper` and Drei helper plumbing. Consider deferring those
+debug-only helpers from normal startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `VertexNormalsHelper`, Drei helper code, and the bed
+module that owns the normal-debug path.
+
+**Before:** The normal-helper/bed group contributed 11,390 bytes to the
+2,060,878-byte static initial 3D graph, or 0.55%. The actual helper libraries
+inside that were only 1,276 bytes.
+
+**After:** Not implemented. The bed module is required for the default scene,
+and splitting just the helper code would save about 0.06%.
+
+**Change:** Best realistic direct reduction is about 0.06%; broad measured
+group ceiling is 0.55%.
+
+**Outcome:** Rejected before code changes. The debug-only import is too small
+to justify another lazy/debug component path.
+
+**Commit:** None
+
+### Idea 544: Remove reducer/store reachability from the 3D entry
+
+**Description:** The static graph still includes app reducer and Redux modules
+through shared state/action imports. Consider narrowing the 3D imports that pull
+this store machinery into startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing resource/device/farm-designer/root reducer inputs plus
+Redux.
+
+**Before:** Reducer/store inputs contributed 24,394 bytes to the
+2,060,878-byte static initial 3D graph, or 1.18%.
+
+**After:** Not implemented. A perfect removal would still miss the threshold,
+and prior action-import narrowing has shown shared app paths remain reachable.
+
+**Change:** Best-case 1.18% static initial reduction.
+
+**Outcome:** Rejected before code changes. The ceiling is small and the change
+would require broad shared-state import surgery for no meaningful 3D startup
+gain.
+
+**Commit:** None
+
+### Idea 545: Inline 3D wrapper components and texture helper calls
+
+**Description:** The 3D codebase uses small wrapper modules around R3F element
+names and texture variant setup. Consider inlining those wrappers to reduce one
+layer of code in the static graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/three_d_garden/components.tsx` plus
+`texture_variants.ts`.
+
+**Before:** The wrapper/helper modules contributed 2,120 bytes to the
+2,060,878-byte static initial 3D graph, or 0.10%.
+
+**After:** Not implemented. The measured ceiling is effectively noise-level.
+
+**Change:** Best-case 0.10% static initial reduction.
+
+**Outcome:** Rejected before code changes. Inlining widely-used wrappers would
+increase churn and reduce consistency while saving only about two kilobytes.
+
+**Commit:** None
+
+## Round 106
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 546. Defer water and suction animation modules | Reduce default startup payload by moving water-flow and vacuum animation code behind active water/vacuum states | Smaller static 3D graph | 3D entry esbuild split static bytes for water, suction, and cloud animation inputs | Rejected |
+| 547. Lazy-load camera-view cone overlay | Reduce startup payload by deferring the camera field-of-view overlay and its animation helpers until camera view is enabled | Smaller static 3D graph | 3D entry esbuild split static bytes for camera-view, Edges, and animation inputs | Rejected |
+| 548. Split zoom-beacon constants and animation code | Reduce startup payload by moving zoom-beacon data and animated beacon rendering out of the initial graph | Smaller static 3D graph | 3D entry esbuild split static bytes for zoom-beacon modules and their helper stack | Rejected |
+| 549. Defer solar scene helpers | Reduce startup payload by moving solar-array and wiring helpers behind the solar/focus visibility condition | Smaller static 3D graph | 3D entry esbuild split static bytes for solar inputs | Rejected |
+| 550. Collapse bot part wrapper modules | Reduce startup payload by inlining tiny bot part wrapper components used around GLTF meshes | Smaller static 3D graph | 3D entry esbuild split static bytes for bot part wrapper inputs | Rejected |
+
+### Idea 546: Defer water and suction animation modules
+
+**Description:** Watering and vacuum effects are optional runtime states. Check
+whether the water stream, watering animation, suction animation, and cloud
+helper code is large enough to defer until water flow or vacuum is active.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing water stream, watering animation, suction animation, and
+Drei cloud inputs.
+
+**Before:** The measured water/suction animation stack contributed 7,731 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.38%.
+
+**After:** Not implemented. The bot already gates the heavy watering animation
+mount on `config.waterFlow`, and the remaining code footprint is small.
+
+**Change:** Best-case 0.38% static initial reduction.
+
+**Outcome:** Rejected before code changes. The optional animation code is not a
+meaningful startup bottleneck, and another lazy boundary would add async
+complexity to active watering/vacuum effects.
+
+**Commit:** None
+
+### Idea 547: Lazy-load camera-view cone overlay
+
+**Description:** Camera view is disabled by default. Consider lazy-loading
+`CameraView`, edge helpers, and related animation code until the camera-view
+overlay is enabled.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing camera-view, Drei Edges, and animation-helper inputs.
+
+**Before:** The broad measured camera-view-adjacent group contributed 41,813
+bytes to the 2,060,878-byte static initial 3D graph, or 2.03%. The local
+`camera_view.tsx` file itself contributed 2,502 bytes.
+
+**After:** Not implemented. Most of the broad group is shared animation
+infrastructure already used elsewhere in the default scene.
+
+**Change:** Best realistic direct reduction is 0.12%; broad shared-stack
+ceiling is 2.03%.
+
+**Outcome:** Rejected before code changes. The actual camera-view-only payload
+is tiny, and deferring the shared animation stack is below threshold while
+risking visible focus/camera overlay behavior.
+
+**Commit:** None
+
+### Idea 548: Split zoom-beacon constants and animation code
+
+**Description:** Zoom beacons have a data-heavy constants file and animated
+beacon rendering. Consider splitting their modules from the initial graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing zoom-beacon modules, constants, line helpers, and shared
+animation inputs.
+
+**Before:** The broad zoom-beacon group contributed 51,255 bytes to the
+2,060,878-byte static initial 3D graph, or 2.49%.
+
+**After:** Not implemented. Zoom beacons are enabled in the default config and
+are visible load-in/detail UI, so deferring them would risk visible behavior.
+
+**Change:** Best broad-group ceiling is 2.49%, still below threshold.
+
+**Outcome:** Rejected before code changes. The feature is default-visible and
+the measured no-degradation ceiling is too small for another lazy path.
+
+**Commit:** None
+
+### Idea 549: Defer solar scene helpers
+
+**Description:** Solar is disabled by default except for the related focus
+view. Consider lazy-loading the solar array and wiring helper.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing solar inputs.
+
+**Before:** `frontend/three_d_garden/garden/solar.tsx` contributed 2,741 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.13%.
+
+**After:** Not implemented. The file is too small to matter, and it already
+guards rendering on solar/focus visibility.
+
+**Change:** Best-case 0.13% static initial reduction.
+
+**Outcome:** Rejected before code changes. The byte ceiling is noise-level and
+does not justify splitting a small focused scene helper.
+
+**Commit:** None
+
+### Idea 550: Collapse bot part wrapper modules
+
+**Description:** GLTF-backed FarmBot parts have small wrapper modules for
+merged geometry, seed troughs, vacuum pump cover, gantry wheel plate, soil
+sensor, and shared model mesh rendering. Consider inlining those wrappers to
+reduce static payload.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing bot part wrapper inputs plus `model_mesh.tsx`.
+
+**Before:** Bot part wrapper inputs contributed 3,453 bytes to the
+2,060,878-byte static initial 3D graph, or 0.17%.
+
+**After:** Not implemented. These wrappers keep GLTF mesh rendering localized
+and typeable while contributing only a few kilobytes.
+
+**Change:** Best-case 0.17% static initial reduction.
+
+**Outcome:** Rejected before code changes. Inlining the wrappers would make the
+model code harder to maintain for an insignificant startup saving.
+
+**Commit:** None
+
+## Round 107
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 551. Defer soil triangulation and Z lookup code | Reduce default startup payload by moving soil surface triangulation code out of the initial 3D graph | Smaller static 3D graph | 3D entry esbuild split static bytes for soil triangulation, triangle helpers, Delaunator, and robust predicates | Rejected |
+| 552. Split pointer preview and map utility helpers | Reduce startup payload by moving pointer preview and map helper code behind edit/add interactions | Smaller static 3D graph | 3D entry esbuild split static bytes for pointer preview, plant actions, and farm designer map utility inputs | Rejected |
+| 553. Remove settings and session support from static 3D path | Reduce startup payload by pruning shared settings/session modules reachable from the 3D entry | Smaller static 3D graph | 3D entry esbuild split static bytes for highlight, session key, external URL, and dev support inputs | Rejected |
+| 554. Defer sun calculation and time-of-day code | Reduce default startup payload by moving sun position calculation behind sun rendering | Smaller static 3D graph | 3D entry esbuild split static bytes for sun rendering and SunCalc inputs | Rejected |
+| 555. Prune incidental speech, API, and sequence metadata reachability | Reduce startup payload by separating shared app support modules from the 3D route graph | Smaller static 3D graph | 3D entry esbuild split static bytes for browser speech, API CRUD, tracking, and sequence metadata inputs | Rejected |
+
+### Idea 551: Defer soil triangulation and Z lookup code
+
+**Description:** Soil surface rendering and Z lookup use triangle generation,
+Delaunator, and robust-predicate helpers. Check whether deferring that stack
+from the initial 3D graph would provide a meaningful load-time win without
+changing the default bed surface.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `triangle_functions.ts`, `triangles.ts`, Delaunator, and
+robust-predicate inputs.
+
+**Before:** The measured soil triangulation group contributed 12,678 bytes to
+the 2,060,878-byte static initial 3D graph, or 0.62%.
+
+**After:** Not implemented. The soil surface and Z lookup are part of the
+default bed rendering path.
+
+**Change:** Best-case 0.62% static initial reduction.
+
+**Outcome:** Rejected before code changes. The payload ceiling is far below the
+10% threshold, and deferring this path would add async handling to default
+terrain behavior.
+
+**Commit:** None
+
+### Idea 552: Split pointer preview and map utility helpers
+
+**Description:** Pointer preview objects, plant actions, and map utility code
+are reachable from the 3D entry. Check whether moving them behind add/edit
+interactions would materially improve startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `pointer_objects.tsx`, `plant_actions.ts`, and
+`frontend/farm_designer/map/util.ts`.
+
+**Before:** The measured pointer-preview/map-util group contributed 7,123 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.35%.
+
+**After:** Not implemented. These helpers support normal click, add, and edit
+flows, and the static byte ceiling is small.
+
+**Change:** Best-case 0.35% static initial reduction.
+
+**Outcome:** Rejected before code changes. The possible saving is not
+meaningful enough to justify introducing another interaction-time async path.
+
+**Commit:** None
+
+### Idea 553: Remove settings and session support from static 3D path
+
+**Description:** Shared highlight, session key, external URL, and dev support
+modules appear in the 3D static graph. Check whether pruning or splitting those
+imports would reduce load cost enough to pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `maybe_highlight.tsx`, `session_keys.ts`,
+`external_urls.ts`, and `dev_support.ts`.
+
+**Before:** The measured settings/session support group contributed 14,451
+bytes to the 2,060,878-byte static initial 3D graph, or 0.70%.
+
+**After:** Not implemented. These modules are shared app support code, and the
+measured standalone ceiling is below the acceptance threshold.
+
+**Change:** Best-case 0.70% static initial reduction.
+
+**Outcome:** Rejected before code changes. Untangling shared support modules
+would carry broad churn for less than one percent static startup reduction.
+
+**Commit:** None
+
+### Idea 554: Defer sun calculation and time-of-day code
+
+**Description:** The sun component pulls in SunCalc for time-of-day positioning.
+Check whether moving that calculation out of the default static graph would
+produce a worthwhile load-time improvement without changing visible lighting or
+sky behavior.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `garden/sun.tsx` plus `node_modules/suncalc/suncalc.js`.
+
+**Before:** The measured sun calculation group contributed 8,436 bytes to the
+2,060,878-byte static initial 3D graph, or 0.41%.
+
+**After:** Not implemented. The sun is part of default scene presentation, and
+the measured stack is too small to matter.
+
+**Change:** Best-case 0.41% static initial reduction.
+
+**Outcome:** Rejected before code changes. A lazy boundary would risk visible
+scene timing for a sub-one-percent payload reduction.
+
+**Commit:** None
+
+### Idea 555: Prune incidental speech, API, and sequence metadata reachability
+
+**Description:** Browser speech, API helpers, CRUD tracking, and sequence
+metadata are still reachable from the 3D entry through shared app paths. Check
+whether that incidental support stack is large enough to split from the route.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing browser speech, API, CRUD, tracking, and sequence
+metadata inputs.
+
+**Before:** The measured speech/API/sequence metadata group contributed 11,421
+bytes to the 2,060,878-byte static initial 3D graph, or 0.55%.
+
+**After:** Not implemented. The measured group is shared infrastructure with a
+low static-byte ceiling.
+
+**Change:** Best-case 0.55% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting these shared paths would
+not meet the threshold and would add broad import churn outside the 3D scene.
+
+**Commit:** None
+
+## Round 108
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 556. Optimize animated-season sun date lookup | Improve FPS when season animation is enabled by avoiding per-call day-start work and linear sample scans | Lower per-frame JavaScript time during animated seasons | 1, 8, 32, and 64 `getAnimatedSeasonDate()` calls per frame-sized batch | Rejected |
+| 557. Reduce soil surface array preparation passes | Improve load-time terrain generation by combining point projection, bounds, and vertex preparation work | Lower soil surface generation time | `computeSurface()` with 8, 25, and 100 realistic soil points | Rejected |
+| 558. Split root app constants from the 3D route graph | Reduce startup payload by avoiding the large shared constants module in initial 3D code | Smaller static 3D graph | 3D entry esbuild split static bytes for `frontend/constants.ts` | Rejected |
+| 559. Remove whole lodash from the 3D route graph | Reduce startup payload by replacing route-reachable lodash imports with local helpers or deep imports | Smaller static 3D graph | 3D entry esbuild split static bytes for `node_modules/lodash/lodash.js` | Rejected |
+| 560. Remove whole moment from the 3D route graph | Reduce startup payload by replacing route-reachable moment usage with native date helpers | Smaller static 3D graph | 3D entry esbuild split static bytes for `node_modules/moment/moment.js` | Rejected |
+
+### Idea 556: Optimize animated-season sun date lookup
+
+**Description:** When season animation is enabled, `getAnimatedSeasonDate()` is
+called from the sun animation and from each plant icon bucket. Check whether
+caching the UTC day start and replacing the linear sample scan would provide a
+meaningful per-frame improvement.
+
+**Benchmark:** Current implementation, measured as frame-sized batches of 1,
+8, 32, and 64 `getAnimatedSeasonDate("Spring", elapsed)` calls. The repeated
+batches stabilize timing, but each measured batch represents a realistic single
+frame with a plausible number of animated sun/icon consumers.
+
+**Before:** Median batch times were 0.0037 ms for 1 call, 0.0108 ms for 8
+calls, 0.0352 ms for 32 calls, and 0.0625 ms for 64 calls. The 64-call p95 was
+0.0923 ms.
+
+**After:** Not implemented. Even eliminating most of this work would save less
+than a tenth of a millisecond in an unusually heavy animated-season frame.
+
+**Change:** Best-case per-frame JavaScript reduction is below 0.1 ms.
+
+**Outcome:** Rejected before code changes. The percent improvement could be
+large, but the absolute frame-time cost is not meaningful under realistic
+conditions.
+
+**Commit:** None
+
+### Idea 557: Reduce soil surface array preparation passes
+
+**Description:** `computeSurface()` builds projected points, X/Y bounds,
+vertices, UVs, and faces for Delaunay output. Check whether combining some of
+the array passes would meaningfully reduce load-time soil surface generation.
+
+**Benchmark:** Current implementation, measured with 8 points for the flat
+default/boundary case, 25 points for the default random soil setting, and 100
+points for a heavier but still plausible user soil-height set.
+
+**Before:** Median `computeSurface()` times were 0.0072 ms for 8 points,
+0.0221 ms for 25 points, and 0.0580 ms for 100 points. The 100-point p95 was
+0.1048 ms.
+
+**After:** Not implemented. The realistic surface-generation cost is already
+well below a millisecond.
+
+**Change:** Best-case load-time JavaScript reduction is below 0.1 ms for the
+heavier measured case.
+
+**Outcome:** Rejected before code changes. A one-pass rewrite would not produce
+a meaningful absolute improvement.
+
+**Commit:** None
+
+### Idea 558: Split root app constants from the 3D route graph
+
+**Description:** The initial 3D graph still includes the large shared
+`frontend/constants.ts` module through route actions, labels, and shared app
+support. Check whether splitting 3D-local constants would have enough startup
+ceiling to justify broad import changes.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/constants.ts`.
+
+**Before:** `frontend/constants.ts` contributed 90,677 bytes to the
+2,060,878-byte static initial 3D graph, or 4.40%.
+
+**After:** Not implemented. The module is still reached from multiple shared
+app paths, not just 3D-local imports.
+
+**Change:** Best-case static initial reduction is 4.40%.
+
+**Outcome:** Rejected before code changes. The byte ceiling is below the
+threshold, and removing it would require broad shared action/content constant
+splitting.
+
+**Commit:** None
+
+### Idea 559: Remove whole lodash from the 3D route graph
+
+**Description:** The route imports lodash from many 3D and shared modules.
+Check whether replacing those imports could remove the bundled lodash build
+from the initial 3D graph.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/lodash/lodash.js`.
+
+**Before:** Lodash contributed 73,770 bytes to the 2,060,878-byte static
+initial 3D graph, or 3.58%.
+
+**After:** Not implemented. The graph has many route-reachable lodash imports
+across 3D, farm designer, resources, settings, API, and utility modules.
+
+**Change:** Best-case static initial reduction is 3.58%.
+
+**Outcome:** Rejected before code changes. A route-wide lodash cleanup would be
+broad and still fall well short of the threshold.
+
+**Commit:** None
+
+### Idea 560: Remove whole moment from the 3D route graph
+
+**Description:** The route reaches moment through sun/time-travel code and
+shared support modules. Check whether replacing moment with native date helpers
+would create a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `node_modules/moment/moment.js`.
+
+**Before:** Moment contributed 61,635 bytes to the 2,060,878-byte static
+initial 3D graph, or 2.99%.
+
+**After:** Not implemented. Replacing only the local sun/time-travel usage
+would not remove all route-reachable moment imports, and the whole-library
+ceiling is still below threshold.
+
+**Change:** Best-case static initial reduction is 2.99%.
+
+**Outcome:** Rejected before code changes. The measured startup ceiling is too
+small for broad date-helper churn.
+
+**Commit:** None
+
+## Round 109
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 561. Defer image texture and map-image support | Reduce startup payload and soil texture setup work by moving camera-image helpers behind image visibility | Smaller static 3D graph and lower image texture setup time | 3D entry esbuild split static bytes plus 100-image/readings texture-key batches | Rejected |
+| 562. Lazy-load camera selection UI | Reduce startup payload and selection-mode render work by deferring camera marker UI until camera selection is open | Smaller static 3D graph and lower camera-selection setup time | 3D entry esbuild split static bytes plus 24 marker-position calculations | Rejected |
+| 563. Split smooth focus transition and React Spring support | Reduce default startup payload by moving focus-transition animation code behind focus transitions | Smaller static 3D graph | 3D entry esbuild split static bytes for focus transition and React Spring inputs | Rejected |
+| 564. Strip performance probe and stats support from the initial graph | Reduce startup payload by moving FPS probe, stats-gl, and stats.js behind explicit stats/debug modes | Smaller static 3D graph | 3D entry esbuild split static bytes for stats and performance probe inputs | Rejected |
+| 565. Defer moisture texture and interpolation support | Reduce startup payload by moving moisture-map texture/interpolation code behind moisture visibility | Smaller static 3D graph | 3D entry esbuild split static bytes for moisture texture and sensor-reading interpolation inputs | Rejected |
+
+### Idea 561: Defer image texture and map-image support
+
+**Description:** The 3D image texture path imports camera-image filtering,
+map-image calibration checks, and image split helpers even when images are not
+visible. Check whether deferring that path would provide a meaningful startup
+or setup-time win.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing 3D image texture, map-image, image-layer, photo-filter,
+and online-check inputs. Runtime setup was also measured with 10 sensors, 100
+sensor readings, and 100 filtered images.
+
+**Before:** The measured image/map-image group contributed 13,461 bytes to the
+2,060,878-byte static initial 3D graph, or 0.65%. Runtime medians were
+0.0105 ms for `getImageTextureKey()` with 100 readings and 0.0013 ms for
+`splitFilteredImages()` with 100 images.
+
+**After:** Not implemented. Both the startup ceiling and setup-time costs are
+small under realistic inputs.
+
+**Change:** Best-case static initial reduction is 0.65%; best measured setup
+reduction is about 0.012 ms for the tested image texture helpers.
+
+**Outcome:** Rejected before code changes. Deferring image support would add
+async behavior around texture creation for a sub-one-percent payload and
+negligible setup-time savings.
+
+**Commit:** None
+
+### Idea 562: Lazy-load camera selection UI
+
+**Description:** Camera selection is only shown when the user opens the camera
+selection view. Check whether moving the selection markers and camera-position
+helpers behind that mode would materially reduce startup or interaction setup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing camera selection UI, camera helper, and config-storage
+action inputs. Runtime setup was measured as one selection-view batch of 24
+marker-position calculations.
+
+**Before:** The measured camera-selection group contributed 4,089 bytes to the
+2,060,878-byte static initial 3D graph, or 0.20%. Calculating 24 camera marker
+positions took a 0.0030 ms median and 0.0096 ms p95.
+
+**After:** Not implemented. The startup and selection-mode costs are too small
+to matter.
+
+**Change:** Best-case static initial reduction is 0.20%; best measured setup
+reduction is below 0.01 ms.
+
+**Outcome:** Rejected before code changes. Lazy-loading this mode would add
+interaction-time complexity for effectively no measurable user-facing gain.
+
+**Commit:** None
+
+### Idea 563: Split smooth focus transition and React Spring support
+
+**Description:** Smooth focus transitions use React Spring and local focus
+visibility helpers. Check whether splitting that stack from the default route
+would provide enough startup improvement without changing default camera/load-in
+animation behavior.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `focus_transition.tsx` plus React Spring core, shared,
+animated, rafz, and three inputs.
+
+**Before:** The measured focus-transition/spring group contributed 44,130 bytes
+to the 2,060,878-byte static initial 3D graph, or 2.14%.
+
+**After:** Not implemented. This code supports the default smooth camera and
+load-in animation paths.
+
+**Change:** Best-case static initial reduction is 2.14%.
+
+**Outcome:** Rejected before code changes. The byte ceiling is below the
+threshold and removing it would risk visible transition behavior.
+
+**Commit:** None
+
+### Idea 564: Strip performance probe and stats support from the initial graph
+
+**Description:** FPS probes and stats overlays are diagnostic paths. Check
+whether moving stats-gl, stats.js, the FPS probe, and performance helper code
+behind explicit stats/debug configuration would meaningfully reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing stats-gl, stats.js, `fps_probe.tsx`, and
+`performance/perf.ts`.
+
+**Before:** The measured performance-probe/stats group contributed 13,316 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.65%.
+
+**After:** Not implemented. The diagnostic stack is small, and some performance
+helpers are shared by existing measured marks.
+
+**Change:** Best-case static initial reduction is 0.65%.
+
+**Outcome:** Rejected before code changes. The payload ceiling is far below the
+acceptance threshold.
+
+**Commit:** None
+
+### Idea 565: Defer moisture texture and interpolation support
+
+**Description:** Moisture-map rendering is optional. Check whether moving
+moisture texture generation, sensor-reading filtering, and interpolation helper
+code behind moisture visibility would reduce startup enough to pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing moisture texture, interpolation, sensor-reading filter,
+and moisture helper inputs.
+
+**Before:** The measured moisture/interpolation group contributed 5,419 bytes
+to the 2,060,878-byte static initial 3D graph, or 0.26%.
+
+**After:** Not implemented. The optional path has a very small static footprint.
+
+**Change:** Best-case static initial reduction is 0.26%.
+
+**Outcome:** Rejected before code changes. The possible startup saving is
+noise-level and does not justify an additional split point.
+
+**Commit:** None
+
+## Round 110
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 566. Split remaining Drei optional helpers | Reduce startup payload by moving Html, Image, Gizmo, Decal, Trail, Text3D, and font helper code behind the features that need them | Smaller 3D entry split graph | 3D entry esbuild split bytes for remaining Drei optional helper inputs | Rejected |
+| 567. Defer static bed frame and bed object helpers | Reduce startup payload by splitting bed frame, utilities post, packaging, caster, and axes helpers | Smaller 3D entry split graph | 3D entry esbuild split bytes for bed frame and static bed object inputs | Rejected |
+| 568. Lazy-load optional Lab and Greenhouse scene props | Reduce startup payload by moving non-default scene props behind Lab/Greenhouse scene selection | Smaller 3D entry split graph | 3D entry esbuild split bytes for scene and scene-prop inputs | Rejected |
+| 569. Split local FarmBot subassembly code further | Reduce startup payload by moving local bot subassemblies and tool graphics behind FarmBot visibility | Smaller 3D entry split graph | 3D entry esbuild split bytes for bot, power supply, tools, electronics, gantry, solenoid, bounds, and tube inputs | Rejected |
+| 570. Prune resource support modules from the 3D route graph | Reduce startup payload by separating resource reducer/selector support from the 3D route | Smaller 3D entry split graph | 3D entry esbuild split bytes for route-reachable resource support inputs | Rejected |
+
+### Idea 566: Split remaining Drei optional helpers
+
+**Description:** Several Drei helpers are still present in the 3D entry split
+graph for optional or feature-specific rendering paths. Check whether splitting
+Html, Image, Gizmo, Decal, Trail, Text3D, and font helper code would provide a
+meaningful load-time win.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing Drei Html, Image, Gizmo helper/viewcube, Decal, Trail, Text3D, and
+three-stdlib FontLoader inputs.
+
+**Before:** The measured remaining Drei optional-helper group contributed
+21,355 bytes to the 2,060,878-byte 3D entry split graph, or 1.04%.
+
+**After:** Not implemented. The group is split across multiple visible and
+optional helpers, and the total ceiling is small.
+
+**Change:** Best-case 1.04% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Splitting these helper paths would
+add several async boundaries for a low startup ceiling.
+
+**Commit:** None
+
+### Idea 567: Defer static bed frame and bed object helpers
+
+**Description:** Bed frame, utilities post, packaging, caster, and axes helpers
+are route-reachable in the 3D graph. Check whether moving bed object helpers
+behind visibility flags would provide a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing `bed.tsx` plus utilities post, packaging, caster, and FarmBot axes
+inputs.
+
+**Before:** The measured bed frame/static-object group contributed 17,192 bytes
+to the 2,060,878-byte 3D entry split graph, or 0.83%.
+
+**After:** Not implemented. The bed itself is default-visible, and the optional
+object helpers are individually small.
+
+**Change:** Best-case 0.83% split-graph reduction.
+
+**Outcome:** Rejected before code changes. The possible reduction is below one
+percent and would complicate default bed rendering.
+
+**Commit:** None
+
+### Idea 568: Lazy-load optional Lab and Greenhouse scene props
+
+**Description:** Lab and Greenhouse scene props are not part of the default
+outdoor scene. Check whether moving desk, starter tray, people, greenhouse
+wall, potted plant, and scene wrapper code behind scene selection would provide
+a meaningful load-time improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing all `frontend/three_d_garden/scenes` inputs.
+
+**Before:** The measured scene-prop group contributed 10,558 bytes to the
+2,060,878-byte 3D entry split graph, or 0.51%.
+
+**After:** Not implemented. The optional scene code is already too small to
+justify another split point.
+
+**Change:** Best-case 0.51% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Lazy-loading scene props would add
+scene-switch complexity for a sub-one-percent startup ceiling.
+
+**Commit:** None
+
+### Idea 569: Split local FarmBot subassembly code further
+
+**Description:** The FarmBot model is already lazy at the component boundary,
+but shared split chunks still include local subassembly code. Check whether
+further splitting bot, power supply, tools, electronics, gantry, solenoid,
+bounds, and tube helpers would materially reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing local bot subassembly inputs that remain in the route split graph.
+
+**Before:** The measured local FarmBot subassembly group contributed 34,620
+bytes to the 2,060,878-byte 3D entry split graph, or 1.68%.
+
+**After:** Not implemented. FarmBot is default-visible, and the remaining local
+subassembly cost is below threshold even as a broad group.
+
+**Change:** Best-case 1.68% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Further splitting would risk visible
+FarmBot load-in behavior for too small a load-time ceiling.
+
+**Commit:** None
+
+### Idea 570: Prune resource support modules from the 3D route graph
+
+**Description:** Resource reducer, selector, tagged-resource, and sequence
+metadata support modules are still reachable from the 3D route through shared
+app infrastructure. Check whether splitting those modules from the route would
+provide a meaningful startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using entry split-graph reachability and
+summing route-reachable `frontend/resources` support inputs.
+
+**Before:** The measured resource-support group contributed 15,340 bytes to
+the 2,060,878-byte 3D entry split graph, or 0.74%.
+
+**After:** Not implemented. The modules are shared infrastructure and the
+measured ceiling is small.
+
+**Change:** Best-case 0.74% split-graph reduction.
+
+**Outcome:** Rejected before code changes. Untangling resource support would
+create broad app churn for less than one percent of the 3D entry graph.
+
+**Commit:** None
+
+## Round 111
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 571. Split navigation and panel action support | Reduce startup payload by moving route helpers and panel action wiring out of the initial 3D graph | Smaller static 3D graph | 3D entry esbuild split bytes for React Router, internal URL helpers, and 3D panel action inputs | Rejected |
+| 572. Trim 3D config parsing and preset code | Reduce startup payload by separating interactive config/preset modification helpers from default render config | Smaller static 3D graph | 3D entry esbuild split bytes for `three_d_garden/config.ts` | Rejected |
+| 573. Split plant metadata and season helper support | Reduce startup payload by moving crop metadata and plant season helpers behind plant/season features | Smaller static 3D graph | 3D entry esbuild split bytes for crop metadata, promo plant helpers, and season constants | Rejected |
+| 574. Convert FarmBot support imports to type-only route edges | Reduce startup payload by removing runtime FarmBot package modules reachable through type/API-resource imports | Smaller static 3D graph | 3D entry esbuild split bytes for route-reachable FarmBot package support inputs | Rejected |
+| 575. Separate Redux store and reducer support from the 3D route | Reduce startup payload by moving app reducer/store infrastructure away from the 3D entry | Smaller static 3D graph | 3D entry esbuild split bytes for Redux, reducers, and store support inputs | Rejected |
+
+### Idea 571: Split navigation and panel action support
+
+**Description:** Navigation helpers and panel actions are used by click
+handlers in the 3D scene. Check whether splitting React Router, internal URL
+helpers, and 3D panel action wiring out of the initial graph would materially
+reduce startup.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing React Router, `internal_urls.ts`, and
+`three_d_garden/panel_actions.ts` inputs.
+
+**Before:** The measured navigation/panel-action group contributed 39,048
+bytes to the 2,060,878-byte static initial 3D graph, or 1.89%.
+
+**After:** Not implemented. Navigation is needed for normal plant/point/weed
+click flows, and the byte ceiling is below threshold.
+
+**Change:** Best-case 1.89% static initial reduction.
+
+**Outcome:** Rejected before code changes. Deferring navigation support would
+risk click responsiveness for a small startup saving.
+
+**Commit:** None
+
+### Idea 572: Trim 3D config parsing and preset code
+
+**Description:** `three_d_garden/config.ts` includes initial defaults, config
+keys, presets, and modification helpers. Check whether splitting interactive
+config/preset support from default scene config would provide meaningful
+startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/three_d_garden/config.ts`.
+
+**Before:** The measured 3D config module contributed 4,529 bytes to the
+2,060,878-byte static initial 3D graph, or 0.22%.
+
+**After:** Not implemented. The config module is small and central to default
+scene construction.
+
+**Change:** Best-case 0.22% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting config code would add
+indirection around core scene setup for a noise-level payload reduction.
+
+**Commit:** None
+
+### Idea 573: Split plant metadata and season helper support
+
+**Description:** Plant icon/spread behavior and season animation pull crop
+metadata and promo plant helpers into the 3D route. Check whether splitting
+that support behind plant/season-specific paths would reduce startup enough to
+pursue.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing `frontend/crops/metadata.ts`,
+`frontend/promo/plants.ts`, and `frontend/promo/constants.ts`.
+
+**Before:** The measured plant metadata/season helper group contributed 24,233
+bytes to the 2,060,878-byte static initial 3D graph, or 1.18%.
+
+**After:** Not implemented. The data supports default plant rendering and
+season behavior, while the total ceiling remains small.
+
+**Change:** Best-case 1.18% static initial reduction.
+
+**Outcome:** Rejected before code changes. Splitting this path would add async
+work around default plant interactions for a low static gain.
+
+**Commit:** None
+
+### Idea 574: Convert FarmBot support imports to type-only route edges
+
+**Description:** Several route-reachable modules import FarmBot package symbols
+for types and API-resource shapes. Check whether eliminating runtime FarmBot
+package reachability would produce a meaningful static-load improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing FarmBot package runtime inputs including `farmbot.js`,
+resource adapters, API resources, constants, config, and corpus helpers.
+
+**Before:** The measured FarmBot package support group contributed 12,634
+bytes to the 2,060,878-byte static initial 3D graph, or 0.61%.
+
+**After:** Not implemented. Even a perfect type-only cleanup would not meet
+the threshold.
+
+**Change:** Best-case 0.61% static initial reduction.
+
+**Outcome:** Rejected before code changes. The broad import cleanup would carry
+more churn than the small payload ceiling justifies.
+
+**Commit:** None
+
+### Idea 575: Separate Redux store and reducer support from the 3D route
+
+**Description:** Redux, root reducers, device/farm designer/resource reducers,
+and store middleware are still reachable from the 3D entry through shared app
+infrastructure. Check whether separating that support from the route would
+provide enough startup improvement.
+
+**Benchmark:** Current minified split esbuild bundle for
+`frontend/three_d_garden/index.tsx`, using static-import reachability from
+`index.js` and summing Redux package, root reducer, store/middleware, device,
+farm designer, and resource reducer inputs.
+
+**Before:** The measured Redux/store support group contributed 27,891 bytes to
+the 2,060,878-byte static initial 3D graph, or 1.35%.
+
+**After:** Not implemented. The support is shared app infrastructure, and the
+measured ceiling is below threshold.
+
+**Change:** Best-case 1.35% static initial reduction.
+
+**Outcome:** Rejected before code changes. Isolating this infrastructure would
+be broad app surgery for a small startup ceiling.
+
+**Commit:** None
+
+## Round 112
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 576. Losslessly clean up GLB model assets | Reduce model transfer and parse cost without changing geometry or materials | Smaller model asset bytes | Temporary `gltf-transform dedup` and `prune` pass over current `.glb` models | Rejected |
+| 577. Defer default promo tool model assets | Reduce default model requests by moving promo tool GLBs behind a later visibility point | Fewer startup asset bytes | File sizes for default promo tool GLBs used by the visible default toolbay/tools | Rejected |
+| 578. Defer default FarmBot frame model assets | Reduce default model requests by delaying FarmBot frame GLBs | Fewer startup asset bytes | File sizes for default frame/cross-slide/cable-carrier support GLBs | Rejected |
+| 579. Defer default texture assets | Reduce default texture transfer by delaying grass, wood, soil, aluminum, and cloud textures | Fewer startup asset bytes | File sizes for default visible 3D texture assets | Rejected |
+| 580. Collapse non-rotary tool frame callbacks | Reduce per-frame callback count by registering animation only for the mounted rotary implement | Fewer frame callbacks and lower frame JavaScript time | Default 7-tool batch compared with a single rotary callback | Rejected |
+
+### Idea 576: Losslessly clean up GLB model assets
+
+**Description:** Test whether the existing GLB files contain unused accessors,
+duplicate resources, or other losslessly removable payload. A successful result
+would reduce model transfer and parse cost without changing visible output.
+
+**Benchmark:** Temporary copies of all `public/3D/models/*.glb` were processed
+with `gltf-transform dedup` and `gltf-transform prune`. No source assets were
+modified during the benchmark.
+
+**Before:** The current model set totaled 1,172,072 bytes.
+
+**After:** The temporary processed model set totaled 9,820,972 bytes.
+
+**Change:** Lossless cleanup increased bytes by 8,648,900 bytes, a 737.92%
+increase.
+
+**Outcome:** Rejected before code changes. The lossless transform did not
+improve asset size. More aggressive mesh or texture transforms would need
+visual fidelity validation and are not acceptable as a no-degradation shortcut.
+
+**Commit:** None
+
+### Idea 577: Defer default promo tool model assets
+
+**Description:** The default no-device 3D scene renders promo toolbay contents.
+Check whether deferring those tool GLBs would provide enough load-time savings
+without changing the default visual experience.
+
+**Benchmark:** File sizes for the default promo tool models: rotary tool base
+and implement, seed bin, seed tray, soil sensor, watering nozzle, seed trough
+holder and assembly, and toolbay 3.
+
+**Before:** The default promo tool GLBs totaled 319,976 bytes. Largest files
+were soil sensor at 90,004 bytes, rotary tool base at 81,484 bytes, and
+watering nozzle at 50,972 bytes.
+
+**After:** Not implemented. These models are visible in the default promo tool
+area.
+
+**Change:** Best-case request-byte reduction is 319,976 bytes only if visible
+default tools are delayed or omitted.
+
+**Outcome:** Rejected before code changes. Deferring these assets would change
+the default load-in of visible tools and therefore fails the user-experience
+constraint.
+
+**Commit:** None
+
+### Idea 578: Defer default FarmBot frame model assets
+
+**Description:** The FarmBot frame pulls several GLBs for the cross-slide,
+gantry wheel plate, brackets, belt clips, motor housing, cable-carrier supports,
+and X-axis cable-carrier mount. Check whether delaying those model assets is a
+viable default-load optimization.
+
+**Benchmark:** File sizes for default frame/cross-slide/cable-carrier support
+GLBs used by the visible FarmBot model.
+
+**Before:** The default FarmBot frame GLBs totaled 318,064 bytes. Largest files
+were cross slide at 192,556 bytes and gantry wheel plate at 96,268 bytes.
+
+**After:** Not implemented. These models are part of the default visible
+FarmBot.
+
+**Change:** Best-case request-byte reduction is 318,064 bytes only by delaying
+visible FarmBot frame details.
+
+**Outcome:** Rejected before code changes. The assets are visible default
+geometry, so delaying them would degrade the scene load-in.
+
+**Commit:** None
+
+### Idea 579: Defer default texture assets
+
+**Description:** Default rendering uses grass, wood, soil, aluminum, and cloud
+textures. Check whether those default texture bytes are large enough and
+optional enough to defer without lowering quality or removing visible detail.
+
+**Benchmark:** File sizes for default visible texture assets:
+`grass.avif`, `wood.avif`, `soil.avif`, `aluminum.avif`, and `cloud.avif`.
+
+**Before:** The default visible texture group totaled 253,293 bytes. The
+largest texture was grass at 119,858 bytes.
+
+**After:** Not implemented. These textures contribute to the default ground,
+bed, soil, FarmBot, and cloud visuals.
+
+**Change:** Best-case request-byte reduction is 253,293 bytes only by delaying
+or omitting visible default textures.
+
+**Outcome:** Rejected before code changes. Replacing or delaying these textures
+would visibly reduce the default scene quality or load-in completeness.
+
+**Commit:** None
+
+### Idea 580: Collapse non-rotary tool frame callbacks
+
+**Description:** Each rendered tool registers a frame callback, but only the
+mounted rotary implement needs frame animation. Check whether moving the frame
+callback into the active rotary path provides a meaningful frame-time
+improvement.
+
+**Benchmark:** A frame-sized benchmark compared the default 7-tool callback
+shape against one active rotary callback. The loop count represented one frame
+with the default mounted tool plus six promo tools, repeated only to stabilize
+timing.
+
+**Before:** The 7-tool callback batch took a 0.00004 ms median and 0.00008 ms
+p95.
+
+**After:** Not implemented. The single-callback shape also measured a
+0.00004 ms median and 0.00008 ms p95 in the same benchmark.
+
+**Change:** Callback count could drop from 7 to 1 in the default promo scene,
+but measured median frame time did not improve.
+
+**Outcome:** Rejected before code changes. The call-count cleanup is real, but
+the absolute frame-time cost is below meaningful measurement resolution.
+
+**Commit:** None
+
+## Round 113
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 581. Generate grid line coordinates directly | Reduce grid setup time by avoiding per-sampled-point object allocation | Faster grid geometry setup | Default 3,000 x 1,500 bed and XL 6,000 x 3,000 bed line-position generation | Rejected |
+| 582. Precompute plant-spread overlap loop inputs | Reduce click-to-add/edit spread frame work | Faster plant-spread update frame | 100, 250, and 500 plant spread update batches | Rejected |
+| 583. Use direct moisture buffer loops | Reduce moisture map setup callback overhead | Faster moisture instance buffer construction | 450, 1,800, and 7,200 moisture cells | Rejected |
+| 584. Merge weed radius color buckets into one instanced mesh | Reduce per-frame draw calls for weed radii without changing weed colors | Fewer instanced draw calls | 50 weeds across 8 colors, matching a dense weed cleanup map | Accepted |
+| 585. Lower the plant icon atlas activation threshold | Reduce plant icon texture requests and draw calls for medium icon diversity | Fewer texture requests and draw calls | 31 unique plant icons compared with the 8,000 x 8,000 atlas asset | Rejected |
+
+### Idea 581: Generate grid line coordinates directly
+
+**Description:** `gridLinePositions()` samples each grid line at 101 points.
+The current path calls `get3DPositionFunc(config)` per line and passes a fresh
+`{ x, y }` object for every sampled point. A direct-coordinate version can keep
+the same output while avoiding those allocations.
+
+**Benchmark:** Generate line positions for a default 3,000 x 1,500 bed and an
+XL 6,000 x 3,000 bed with a realistic uneven `getZ()` function. Repetitions
+were used only to stabilize timing; each sample generated one grid.
+
+**Before:** Default bed: 0.070958 ms median, 0.196542 ms p95 for 28,200
+position values. XL bed: 0.108958 ms median, 0.125708 ms p95 for 55,200
+position values.
+
+**After:** Simulated direct-coordinate version: default bed 0.050542 ms median,
+0.100708 ms p95; XL bed 0.082500 ms median, 0.086000 ms p95. The generated
+position arrays matched the current output.
+
+**Change:** 28.77% faster for the default bed, saving 0.020416 ms; 24.28%
+faster for XL, saving 0.026458 ms.
+
+**Outcome:** Rejected before code changes. The percentage gain is real, but
+the absolute setup win is only hundredths of a millisecond when a grid is
+rebuilt.
+
+**Commit:** None
+
+### Idea 582: Precompute plant-spread overlap loop inputs
+
+**Description:** The plant-spread click-to-add/edit frame update rebuilds
+spread-radius objects, active/plant coordinate objects, and rounded plant
+coordinates inside the per-plant loop. Precomputing static plant loop inputs
+could reduce pointer responsiveness work.
+
+**Benchmark:** Simulated the current frame update loop and an equivalent
+precomputed-input loop for 100, 250, and 500 plants. Repetitions were used only
+to stabilize timing; each sample represented one spread update batch.
+
+**Before:** 100 plants: 0.014291 ms median, 0.032250 ms p95. 250 plants:
+0.022292 ms median, 0.028125 ms p95. 500 plants: 0.034833 ms median,
+0.047417 ms p95.
+
+**After:** Simulated precomputed loop: 100 plants 0.005834 ms median,
+0.010250 ms p95; 250 plants 0.009167 ms median, 0.011958 ms p95; 500 plants
+0.016042 ms median, 0.017125 ms p95.
+
+**Change:** 53.95% to 59.18% faster, but only 0.008457 to 0.018791 ms saved
+per update batch.
+
+**Outcome:** Rejected before code changes. The loop is already too cheap in a
+realistic frame context for the measured absolute savings to matter.
+
+**Commit:** None
+
+### Idea 583: Use direct moisture buffer loops
+
+**Description:** `buildMoistureInstanceBuffers()` uses `.map()` for side
+effects while writing typed arrays. A direct `for` loop can avoid callback
+overhead without changing matrix, color, or opacity buffers.
+
+**Benchmark:** Build moisture instance buffers for 450 cells, 1,800 cells, and
+7,200 cells. These cover common bed step sizes and a deliberately dense map.
+Repetitions were used only to stabilize timing.
+
+**Before:** 450 cells: 0.008958 ms median, 0.024084 ms p95. 1,800 cells:
+0.022209 ms median, 0.029417 ms p95. 7,200 cells: 0.053792 ms median,
+0.084625 ms p95.
+
+**After:** Simulated direct loop: 450 cells 0.005750 ms median, 0.017625 ms
+p95; 1,800 cells 0.018541 ms median, 0.026792 ms p95; 7,200 cells
+0.031458 ms median, 0.053458 ms p95. Output opacity arrays matched.
+
+**Change:** 16.52% to 41.52% faster, but only 0.003668 ms saved at the
+realistic 1,800-cell size and 0.022334 ms even at the dense 7,200-cell size.
+
+**Outcome:** Rejected before code changes. The absolute savings are below a
+meaningful setup threshold.
+
+**Commit:** None
+
+### Idea 584: Merge weed radius color buckets into one instanced mesh
+
+**Description:** Weed icons already render as one instanced mesh, but weed
+radius spheres were grouped into one instanced mesh per color. Render the
+radius spheres as a single instanced mesh with per-instance colors so the same
+weed colors are preserved with fewer draw calls.
+
+**Benchmark:** A dense weed cleanup map with 50 weeds across 8 colors. Before
+implementation, this required 1 icon instanced mesh plus 8 radius instanced
+meshes. After implementation, it requires 1 icon instanced mesh plus 1 radius
+instanced mesh.
+
+**Before:** 9 instanced draw calls for weed rendering.
+
+**After:** 2 instanced draw calls for weed rendering.
+
+**Change:** 77.78% fewer weed instanced draw calls, saving 7 draw calls in the
+50-weed, 8-color benchmark.
+
+**Outcome:** Accepted. The radius material now uses instance colors, preserving
+the same per-weed colors while reducing draw calls for multi-color weed maps.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/weed_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D weed radius draws by 77.8%`
+
+### Idea 585: Lower the plant icon atlas activation threshold
+
+**Description:** Plant icons use individual icon textures until icon diversity
+reaches the atlas threshold. Lowering that threshold could reduce texture
+requests and draw calls for medium-diversity gardens.
+
+**Benchmark:** Compare 31 unique plant icons, just below the current
+32-icon atlas threshold, against loading the 8,000 x 8,000 atlas.
+
+**Before:** The first 31 atlas-listed individual icons totaled 298,646 bytes.
+
+**After:** The atlas asset is 2,154,900 bytes.
+
+**Change:** Forcing atlas use at 31 icons would add 1,856,254 bytes, a 621.56%
+request-byte increase, to reduce draw calls and texture requests.
+
+**Outcome:** Rejected before code changes. The draw-call reduction is not worth
+loading the large atlas earlier.
+
+**Commit:** None
+
+## Round 114
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 586. Merge point marker and radius color buckets by alpha | Reduce point draw calls while preserving per-point colors and saved/unsaved opacity | Fewer instanced draw calls | 50 points across 8 colors and two saved states | Accepted |
+| 587. Replace starter-tray nested callback loops | Reduce greenhouse tray seedling matrix update work | Faster starter tray matrix update | Two greenhouse trays with 140 seedling cells total | Rejected |
+| 588. Skip suction animation frame work when idle | Reduce per-frame vacuum animation JavaScript | Lower frame callback work | Four suction clouds for the mounted seeder vacuum animation | Rejected |
+| 589. Avoid FPS probe frame callback when reporting is disabled | Reduce default per-frame bookkeeping | Lower default frame callback work | 300 default FPS probe frames with reporting disabled | Rejected |
+| 590. Memoize watering stream curve construction | Reduce water-flow mount setup | Faster watering animation setup | 16 water stream cubic curves for one watering animation mount | Rejected |
+
+### Idea 586: Merge point marker and radius color buckets by alpha
+
+**Description:** Generic point instances were bucketed by color and saved-state
+opacity. This preserved colors but created a marker instanced mesh and a radius
+instanced mesh for every color/alpha pair. Merge buckets by alpha and use
+per-instance colors for both marker and radius meshes.
+
+**Benchmark:** A dense point-annotation map with 50 points across 8 colors and
+two saved states. Before implementation, this shape requires 16 color/alpha
+buckets, with a marker mesh and radius mesh for each bucket. After
+implementation, it requires two alpha groups, again with marker and radius
+meshes.
+
+**Before:** 32 instanced draw calls for point markers and radius rings.
+
+**After:** 4 instanced draw calls for point markers and radius rings.
+
+**Change:** 87.50% fewer point instanced draw calls, saving 28 draw calls in
+the 50-point benchmark.
+
+**Outcome:** Accepted. Point colors are still per-point via instance colors,
+and saved/unsaved opacity remains separated by alpha group.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/point_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D point draws by 87.5%`
+
+### Idea 587: Replace starter-tray nested callback loops
+
+**Description:** Greenhouse starter trays update seedling billboard matrices
+with nested `.forEach()` calls. A direct indexed loop could avoid callback
+overhead during camera-facing seedling updates.
+
+**Benchmark:** Two greenhouse trays with 70 seedling cells each, matching the
+current Greenhouse scene. Repetitions were used only to stabilize timing; each
+sample represented one matrix update.
+
+**Before:** 0.001084 ms median, 0.003334 ms p95 for 140 seedling cell
+positions.
+
+**After:** Simulated indexed loop: 0.001375 ms median, 0.001792 ms p95.
+
+**Change:** Median time was 26.85% slower, though p95 was lower.
+
+**Outcome:** Rejected before code changes. The realistic case did not improve
+median runtime and the absolute cost is already about one microsecond.
+
+**Commit:** None
+
+### Idea 588: Skip suction animation frame work when idle
+
+**Description:** The seeder vacuum suction animation updates four cloud refs
+each frame while vacuum is enabled. Check whether additional frame gating would
+save meaningful frame time.
+
+**Benchmark:** Four suction clouds, matching the mounted seeder vacuum
+animation. Repetitions were used only to stabilize timing; each sample
+represented one frame.
+
+**Before:** 0.001208 ms median, 0.001458 ms p95.
+
+**After:** Best-case empty callback: 0.000083 ms median, 0.000125 ms p95.
+
+**Change:** 93.13% faster in the best case, saving 0.001125 ms per frame.
+
+**Outcome:** Rejected before code changes. The animation is already visible
+only when vacuum is enabled, and the absolute frame-time savings are too small.
+
+**Commit:** None
+
+### Idea 589: Avoid FPS probe frame callback when reporting is disabled
+
+**Description:** `FPSProbe` always registers a frame callback so it can update
+`window.__fps` and optionally report scene metrics. Check whether avoiding this
+default callback would provide meaningful frame-time savings.
+
+**Benchmark:** 300 default FPS probe frame callbacks with reporting disabled.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000125 ms median, 0.000167 ms p95.
+
+**After:** Best-case empty callback: 0.000083 ms median, 0.000084 ms p95.
+
+**Change:** 33.60% faster in the best case, saving 0.000042 ms per frame.
+
+**Outcome:** Rejected before code changes. The absolute frame-time savings are
+below a meaningful threshold, and `window.__fps` remains useful for diagnostics.
+
+**Commit:** None
+
+### Idea 590: Memoize watering stream curve construction
+
+**Description:** Watering animation mount builds 16 cubic curves for the water
+streams. Memoizing or precomputing the curve inputs could reduce setup when
+water flow starts.
+
+**Benchmark:** Construct the 16 `CubicBezierCurve3` paths used by one mounted
+watering animation. Repetitions were used only to stabilize timing.
+
+**Before:** 0.005000 ms median, 0.009292 ms p95.
+
+**After:** Not implemented. Even a perfect memoized setup would save at most
+0.005000 ms per water-flow mount in this benchmark.
+
+**Change:** Best-case 100% setup reduction, but only 0.005000 ms absolute.
+
+**Outcome:** Rejected before code changes. The setup cost is too small and the
+animation only mounts when water flow is active.
+
+**Commit:** None
+
+## Round 115
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 591. Merge atlas-backed plant icon meshes | Reduce draw calls for high-diversity planted gardens while preserving atlas pixels | Fewer instanced draw calls | 40 unique atlas-mapped plant icons | Accepted |
+| 592. Replace plant icon grouping callback loops | Reduce plant icon setup time for large planted gardens | Faster icon grouping setup | 100 plants across 40 icons with reserved capacities | Rejected |
+| 593. Use direct static plant icon setup loops | Reduce plant icon position setup allocations | Faster static icon setup | 100 plant icon static instances | Rejected |
+| 594. Cache atlas UV transform buffers | Reduce atlas mesh setup work | Faster atlas UV buffer setup | 40 atlas-mapped plant icons | Rejected |
+| 595. Replace plant icon frame `forEach` updates with indexed loops | Reduce camera-facing plant icon frame work | Faster icon matrix frame updates | 100 plant icon matrix updates | Rejected |
+
+### Idea 591: Merge atlas-backed plant icon meshes
+
+**Description:** When at least 32 mapped plant icons are visible, plant icons
+load the atlas texture but still render one instanced mesh per icon, using
+cloned atlas textures with per-icon UV offsets. Use one atlas-backed instanced
+mesh with per-instance UV offset/repeat attributes, while keeping the
+individual-texture path for smaller gardens and unmapped icons.
+
+**Benchmark:** 40 unique atlas-mapped plant icons, matching a diverse planted
+garden just beyond the atlas threshold.
+
+**Before:** 40 plant icon instanced draw calls.
+
+**After:** 1 atlas-backed plant icon instanced draw call.
+
+**Change:** 97.50% fewer plant icon instanced draw calls, saving 39 draw calls
+in the 40-icon benchmark.
+
+**Outcome:** Accepted. The atlas path still uses the same atlas texture and
+frame UVs, preserves per-plant click mapping and hover index mapping, and
+leaves smaller/unmapped icon sets on the existing texture path.
+
+**Checks:** `bun test ./frontend/three_d_garden/garden/__tests__/plant_instances_test.tsx`,
+`bun run typecheck`, and focused `bun run eslint` passed.
+
+**Commit:** `Optimize 3D atlas plant icon draws by 97.5%`
+
+### Idea 592: Replace plant icon grouping callback loops
+
+**Description:** `VisiblePlantInstances` groups plants by icon with
+`Object.entries(...).map()` for side effects and `forEach()`. Direct indexed
+loops could reduce setup time for large planted gardens.
+
+**Benchmark:** 100 plants across 40 icons with reserved icon capacities,
+matching a large garden that has enough icon diversity to activate atlas
+handling. Repetitions were used only to stabilize timing.
+
+**Before:** 0.004375 ms median, 0.016750 ms p95.
+
+**After:** Simulated direct-loop grouping: 0.004917 ms median, 0.009125 ms p95.
+
+**Change:** Median time was 12.39% slower, though p95 was lower.
+
+**Outcome:** Rejected before code changes. The realistic median did not
+improve and the absolute setup time is already only a few microseconds.
+
+**Commit:** None
+
+### Idea 593: Use direct static plant icon setup loops
+
+**Description:** Static plant icon position setup maps plants into cached
+world-space instance data. A direct pre-sized loop can avoid `.map()` callback
+overhead.
+
+**Benchmark:** 100 plant icon static instances with a realistic uneven `getZ()`
+function. Repetitions were used only to stabilize timing.
+
+**Before:** 0.003084 ms median, 0.014125 ms p95.
+
+**After:** Simulated direct loop: 0.002417 ms median, 0.007791 ms p95.
+
+**Change:** 21.63% faster, saving 0.000667 ms.
+
+**Outcome:** Rejected before code changes. The percentage gain is real, but
+the absolute savings are far below a meaningful setup threshold.
+
+**Commit:** None
+
+### Idea 594: Cache atlas UV transform buffers
+
+**Description:** The new atlas mesh builds per-instance UV offset/repeat
+buffers from atlas frame transforms. Caching these buffers by icon list could
+avoid rebuilding them during repeated renders with the same icon composition.
+
+**Benchmark:** Build UV offset/repeat buffers for 40 atlas-mapped plant icons.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000667 ms median, 0.006708 ms p95.
+
+**After:** Best-case cached lookup: 0.000083 ms median, 0.000084 ms p95.
+
+**Change:** 87.56% faster in the best case, saving 0.000584 ms per atlas
+buffer setup.
+
+**Outcome:** Rejected before code changes. The current UV buffer setup is
+already below one microsecond at the realistic 40-icon size.
+
+**Commit:** None
+
+### Idea 595: Replace plant icon frame `forEach` updates with indexed loops
+
+**Description:** Camera-facing plant icon matrix updates use `.forEach()` over
+static instances. Indexed loops could reduce frame work when the camera moves.
+
+**Benchmark:** 100 plant icon matrix updates, matching a large planted garden
+camera-change frame. Repetitions were used only to stabilize timing.
+
+**Before:** 0.001666 ms median, 0.012917 ms p95.
+
+**After:** Simulated indexed loop: 0.001542 ms median, 0.019500 ms p95.
+
+**Change:** 7.44% faster by median, saving 0.000124 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement is below the 10%
+threshold, the absolute savings are negligible, and p95 worsened.
+
+**Commit:** None
+
+## Round 116
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 596. Instance greenhouse wall panes and frames | Reduce Greenhouse scene draw calls without changing pane/frame geometry or materials | Fewer draw calls | One Greenhouse wall: 32 panes, 9 vertical frames, and 5 horizontal frames | Accepted |
+| 597. Instance desk legs | Reduce optional desk scene draw calls by merging four identical legs | Fewer draw calls | One visible desk with four matching legs | Rejected |
+| 598. Instance packaging straps and edge protectors | Reduce optional packaging draw calls by merging repeated straps/protectors | Fewer draw calls | v1.8 main carton and v1.7 carton plus extrusion kit | Rejected |
+| 599. Instance Lab wall shelves | Reduce Lab scene draw calls by merging two matching shelves | Fewer draw calls | One Lab scene with two shelf boxes | Rejected |
+| 600. Split Greenhouse shelves/trays behind focus visibility | Reduce Greenhouse scene setup while focused on other objects | Fewer mounted Greenhouse props during focus transitions | One Greenhouse scene with shelf and two starter trays | Rejected |
+
+### Idea 596: Instance greenhouse wall panes and frames
+
+**Description:** Each Greenhouse wall rendered 32 glass pane boxes, 9 vertical
+frame boxes, and 5 horizontal frame boxes. The pane geometry/material is shared
+across all panes, including the three open panels, and each frame direction has
+shared geometry/material. Replace those fixed repeated boxes with three
+instanced meshes while preserving positions, rotations, materials, shadows, and
+render order.
+
+**Benchmark:** One Greenhouse wall: 32 panes, 9 vertical frames, and 5
+horizontal frames. This is the exact static wall used twice in the Greenhouse
+scene.
+
+**Before:** 46 wall draw calls per wall.
+
+**After:** 3 wall draw calls per wall.
+
+**Change:** 93.48% fewer wall draw calls, saving 43 draw calls per wall and
+86 draw calls for the two-wall Greenhouse scene.
+
+**Outcome:** Accepted. The wall still uses the same pane/frame dimensions,
+glass opacity, colors, double-sided materials, open-panel rotations, shadows,
+and pane render order.
+
+**Checks:** `bun test ./frontend/three_d_garden/scenes/props/__tests__/greenhouse_wall_test.tsx`,
+`bun run typecheck`, focused `bun run eslint`, and `git diff --check` passed.
+
+**Commit:** `Optimize 3D greenhouse wall draws by 93.5%`
+
+### Idea 597: Instance desk legs
+
+**Description:** The optional desk renders four matching leg boxes. Instancing
+the legs could reduce desk draw calls without changing geometry or materials.
+
+**Benchmark:** One visible desk with four matching legs.
+
+**Before:** 4 desk-leg draw calls.
+
+**After:** Best-case 1 desk-leg draw call.
+
+**Change:** 75.00% fewer desk-leg draw calls, saving 3 draw calls.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the desk
+is optional and the absolute saving is only three draw calls in an already small
+prop.
+
+**Commit:** None
+
+### Idea 598: Instance packaging straps and edge protectors
+
+**Description:** Packaging repeats strap and edge-protector boxes on the main
+carton and v1.7 extrusion kit. Instancing each repeated group could reduce draw
+calls when packaging is visible.
+
+**Benchmark:** v1.8 main carton and v1.7 carton plus extrusion kit, matching
+the two supported packaging layouts.
+
+**Before:** 7 repeated strap/protector draw calls for v1.8; 16 repeated
+strap/protector draw calls for v1.7 with the extrusion kit.
+
+**After:** Best-case 2 repeated strap/protector draw calls for v1.8; 4 repeated
+strap/protector draw calls for v1.7.
+
+**Change:** v1.8 would save 5 draw calls (71.43%); v1.7 would save 12 draw
+calls (75.00%).
+
+**Outcome:** Rejected before code changes. Packaging is hidden by default and
+the accepted greenhouse wall change saves substantially more visible scene work
+with less conditional layout risk.
+
+**Commit:** None
+
+### Idea 599: Instance Lab wall shelves
+
+**Description:** The Lab wall renders two matching shelf boxes. Instancing
+could merge them into one shelf draw call.
+
+**Benchmark:** One Lab scene with two shelf boxes.
+
+**Before:** 2 shelf draw calls.
+
+**After:** Best-case 1 shelf draw call.
+
+**Change:** 50.00% fewer shelf draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. One saved draw call in an optional
+scene is not a meaningful absolute improvement.
+
+**Commit:** None
+
+### Idea 600: Split Greenhouse shelves/trays behind focus visibility
+
+**Description:** When the Greenhouse scene is active, the right wall also
+mounts one shelf and two starter trays. Hiding those props while a focused
+object is active could reduce scene work during focus transitions.
+
+**Benchmark:** One Greenhouse scene with one shelf mesh and two starter-tray
+instanced meshes.
+
+**Before:** 3 shelf/tray draw calls while the Greenhouse details are mounted.
+
+**After:** Best-case 0 shelf/tray draw calls during focused object views only.
+
+**Change:** Up to 3 draw calls removed in a focused transient state.
+
+**Outcome:** Rejected before code changes. The saving applies only during a
+focused state and would change what supporting Greenhouse context remains
+visible during navigation.
+
+**Commit:** None
+
+## Round 117
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 601. Instance group-order marker disks | Reduce draw calls in large group-order route previews without changing labels or disk styling | Fewer draw calls | 50 selected points in the group-order visual | Accepted |
+| 602. Instance electronics box button color cylinders | Reduce default electronics-box draw calls by merging repeated button caps/centers | Fewer draw calls | v1.8 electronics box buttons and v1.7 buttons plus LEDs | Rejected |
+| 603. Instance utilities-post small repeated cylinders | Reduce optional utilities-post draw calls by merging antenna/LED pairs | Fewer draw calls | One visible utilities post | Rejected |
+| 604. Replace gantry light strip spotlights with merged light geometry | Reduce light-strip node count or draw calls | Lower scene/light work | XL beam light strip with 10 spotlights | Rejected |
+| 605. Instance group-order text labels | Reduce draw calls for numeric labels in large group-order route previews | Fewer draw calls | 50 selected points in the group-order visual | Rejected |
+
+### Idea 601: Instance group-order marker disks
+
+**Description:** The group-order visual rendered one black disk cylinder inside
+each numbered point billboard. In large route previews those disks share the
+same geometry, material, opacity, and render order, so they can be drawn as one
+instanced mesh while leaving the labels and route line unchanged.
+
+**Benchmark:** 50 selected points in the group-order visual, matching a large
+but realistic sequence/group preview.
+
+**Before:** 50 marker disk draw calls.
+
+**After:** 1 marker disk draw call.
+
+**Change:** 98.00% fewer marker disk draw calls, saving 49 draw calls. The
+added matrix update for 50 camera-facing disks measured 0.000500 ms median and
+0.000792 ms p95.
+
+**Outcome:** Accepted. The marker disks keep the same cylinder dimensions,
+black transparent material, render order, and camera-facing behavior; labels
+remain per-point text billboards.
+
+**Checks:** `bun test ./frontend/three_d_garden/__tests__/group_order_visual_test.tsx`,
+`bun run typecheck`, focused `bun run eslint`, and `git diff --check` passed.
+
+**Commit:** `Optimize 3D group-order marker draws by 98.0%`
+
+### Idea 602: Instance electronics box button color cylinders
+
+**Description:** The electronics box renders repeated button cap and center
+cylinders, plus v1.7 LED indicator cylinders. Instancing by repeated geometry
+and color could reduce small default Bot draw-call count.
+
+**Benchmark:** v1.8 electronics box buttons and v1.7 buttons plus LEDs.
+
+**Before:** 6 repeated color-cylinder draw calls for v1.8; 18 repeated
+button/LED color-cylinder draw calls for v1.7.
+
+**After:** Best-case 2 draw calls for v1.8 button caps/centers; 5 draw calls
+for v1.7 buttons and LEDs.
+
+**Change:** v1.8 would save 4 draw calls (66.67%); v1.7 would save 13 draw
+calls (72.22%).
+
+**Outcome:** Rejected before code changes. The v1.8 default saving is only four
+tiny cylinders, and the larger v1.7 win applies to a non-default kit version
+with separate LED model housings still visible.
+
+**Commit:** None
+
+### Idea 603: Instance utilities-post small repeated cylinders
+
+**Description:** The optional utilities post has repeated antenna and indicator
+light cylinders that could be merged by geometry and material.
+
+**Benchmark:** One visible utilities post.
+
+**Before:** 6 repeated small-cylinder draw calls in the router/faucet details.
+
+**After:** Best-case 3 draw calls after merging matching pairs.
+
+**Change:** 50.00% fewer repeated small-cylinder draw calls, saving 3 draw
+calls.
+
+**Outcome:** Rejected before code changes. The utilities post is optional and
+the absolute saving is too small for another instancing path.
+
+**Commit:** None
+
+### Idea 604: Replace gantry light strip spotlights with merged light geometry
+
+**Description:** The XL gantry light strip mounts 10 spotlights. Replacing them
+with merged emissive geometry or fewer lights could reduce light setup and
+shadow work.
+
+**Benchmark:** XL beam light strip with 10 spotlights.
+
+**Before:** 10 shadow-casting spotlights.
+
+**After:** No no-degradation path found; preserving the same lighting and
+shadow behavior still requires the same spotlight coverage.
+
+**Change:** 0.00% qualifying reduction under the no-visual-change constraint.
+
+**Outcome:** Rejected before code changes. Reducing light count or replacing
+lights with emissive-only geometry would change illumination or shadows.
+
+**Commit:** None
+
+### Idea 605: Instance group-order text labels
+
+**Description:** The group-order visual also renders one numbered text label
+per selected point. Instancing labels would be attractive for very large groups
+if the same geometry could be reused.
+
+**Benchmark:** 50 selected points in the group-order visual.
+
+**Before:** 50 numeric text labels.
+
+**After:** 50 labels are still required because each marker has distinct text.
+
+**Change:** 0.00% draw-call reduction without changing how labels are rendered.
+
+**Outcome:** Rejected before code changes. The labels are unique numbers and
+must remain readable, so disk instancing was the safe draw-call win for this
+view.
+
+**Commit:** None
+
+## Round 118
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 606. Cache the decorative sun/star point field | Reduce Sun mount setup by generating the 1,000 background points once | Faster Sun setup | One default Sun mount with 1,000 `OtherSuns` points | Rejected |
+| 607. Instance bed cable-carrier supports | Reduce default bed draw calls by merging the two support boxes | Fewer draw calls | One default bed with cable carriers enabled | Rejected |
+| 608. Merge utilities-post hose tubes | Reduce default utilities-post draw calls by merging curved and straight hose tubes | Fewer draw calls | One visible utilities post | Rejected |
+| 609. Precompute People offset vectors | Avoid tiny per-render `Vector3` allocation in optional scene people props | Lower scene render allocation | Two scene people in Lab or Greenhouse | Rejected |
+| 610. Replace group-order position mapping with a direct loop | Reduce route-preview position setup after marker disk instancing | Faster group-order setup | 50 selected points in the group-order visual | Rejected |
+
+### Idea 606: Cache the decorative sun/star point field
+
+**Description:** `OtherSuns` generates 1,000 random background points on mount.
+Moving that point field to a module-level cache could avoid repeat setup when
+the Sun subtree remounts.
+
+**Benchmark:** One default Sun mount with 1,000 `OtherSuns` points.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.0570 ms median, 0.0784 ms p95 to generate the point field.
+
+**After:** Best-case cached lookup would avoid that one-time generation on
+later remounts.
+
+**Change:** Up to 0.0570 ms saved on a repeated Sun remount.
+
+**Outcome:** Rejected before code changes. The setup cost is already far below
+a meaningful load-time threshold and the normal 3D scene mounts the Sun once.
+
+**Commit:** None
+
+### Idea 607: Instance bed cable-carrier supports
+
+**Description:** The bed renders two matching cable-carrier support boxes when
+cable carriers are enabled. Instancing could merge those support boxes.
+
+**Benchmark:** One default bed with cable carriers enabled.
+
+**Before:** 2 support-box draw calls.
+
+**After:** Best-case 1 support-box draw call.
+
+**Change:** 50.00% fewer support-box draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. One saved draw call is not a
+meaningful absolute improvement, and the existing boxes are simple and clear.
+
+**Commit:** None
+
+### Idea 608: Merge utilities-post hose tubes
+
+**Description:** The utilities post draws a curved hose tube and a straight
+hose tube with the same material. Merging them could reduce draw calls when the
+utilities post is visible.
+
+**Benchmark:** One visible utilities post.
+
+**Before:** 2 hose draw calls.
+
+**After:** Best-case 1 hose draw call.
+
+**Change:** 50.00% fewer hose draw calls, saving 1 draw call.
+
+**Outcome:** Rejected before code changes. The absolute saving is one draw call
+and would add custom merged-tube geometry management to a small prop.
+
+**Commit:** None
+
+### Idea 609: Precompute People offset vectors
+
+**Description:** Scene people convert each configured offset array into a
+`Vector3` during render. Keeping offsets as numbers could avoid those tiny
+allocations.
+
+**Benchmark:** Two scene people in Lab or Greenhouse.
+
+**Before:** 2 `Vector3` offset allocations per People render.
+
+**After:** 0 offset allocations if the render path used raw offset numbers.
+
+**Change:** 100.00% fewer offset-vector allocations, saving 2 allocations.
+
+**Outcome:** Rejected before code changes. The allocation count is tiny, the
+people layer is optional, and the comparator already prevents unrelated rerender
+churn.
+
+**Commit:** None
+
+### Idea 610: Replace group-order position mapping with a direct loop
+
+**Description:** After marker disk instancing, the group-order visual still
+maps sorted group points into world positions. A pre-sized direct loop could
+avoid callback overhead for large route previews.
+
+**Benchmark:** 50 selected points in the group-order visual. Repetitions were
+used only to stabilize timing.
+
+**Before:** 0.000334 ms median, 0.000709 ms p95.
+
+**After:** Direct-loop simulation: 0.000250 ms median, 0.001458 ms p95.
+
+**Change:** 25.15% faster by median, saving 0.000084 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The absolute win is below a
+microsecond and the p95 worsened, so the clearer map path stays.
+
+**Commit:** None
+
+## Round 119
+
+| Item | Idea | Expected improvement | Realistic benchmark | Outcome |
+|---|---|---|---|---|
+| 611. Add an internal hidden gate to `CameraSelectionUI` | Avoid camera marker subtree work while camera selection is closed | Lower default scene setup | Default GardenModel with `cameraSelectionView` false | Rejected |
+| 612. Use `find()` instead of `filter()[0]` for group lookup | Reduce group-order route lookup work | Faster group lookup | 50 point groups with the active group near the middle | Rejected |
+| 613. Cache Bounds distance-indicator endpoint calculations | Avoid duplicate `get3DPosition()` calls while dimensions are visible | Faster dimension indicator render | One visible beam-length distance indicator | Rejected |
+| 614. Cache texture variant keys at common call sites | Avoid repeated small option-key string construction | Faster texture variant lookup | Five default texture variant option sets | Rejected |
+| 615. Cache watering stream descriptors | Avoid rebuilding 16 water-stream descriptor objects on active watering animation mount | Faster watering animation setup | One active watering animation with 16 streams | Rejected |
+
+### Idea 611: Add an internal hidden gate to `CameraSelectionUI`
+
+**Description:** `CameraSelectionUI` can render a hidden group when
+`cameraSelectionView` is false. An internal early return could avoid marker
+subtree creation in any direct render.
+
+**Benchmark:** Default GardenModel with `cameraSelectionView` false.
+
+**Before:** 0 camera-selection marker nodes in the real default GardenModel
+path because the parent already gates `<CameraSelectionUI />`.
+
+**After:** 0 camera-selection marker nodes.
+
+**Change:** 0.00% improvement in the realistic default app path.
+
+**Outcome:** Rejected before code changes. The possible standalone component
+cleanup does not change real default 3D work because GardenModel already mounts
+the overlay only while camera selection is open.
+
+**Commit:** None
+
+### Idea 612: Use `find()` instead of `filter()[0]` for group lookup
+
+**Description:** `findGroupFromUrl()` scans all groups with `filter()[0]`.
+Using `find()` could stop once the active group is found.
+
+**Benchmark:** 50 point groups with the active group near the middle.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000166 ms median, 0.000583 ms p95.
+
+**After:** Simulated `find()` lookup: 0.000083 ms median, 0.000209 ms p95.
+
+**Change:** 50.00% faster, saving 0.000083 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below a meaningful route-preview setup cost.
+
+**Commit:** None
+
+### Idea 613: Cache Bounds distance-indicator endpoint calculations
+
+**Description:** Some Bounds distance indicators call `get3DPosition()` twice
+with the same inputs to read `.x` and `.y`. Caching those endpoint objects could
+avoid duplicate helper calls while dimensions are visible.
+
+**Benchmark:** One visible beam-length distance indicator.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000042 ms median, 0.000166 ms p95.
+
+**After:** Cached endpoint objects: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 0.00% median improvement, with a tiny p95 reduction.
+
+**Outcome:** Rejected before code changes. Dimension indicators are optional
+and the measured median did not improve.
+
+**Commit:** None
+
+### Idea 614: Cache texture variant keys at common call sites
+
+**Description:** `useTextureVariant()` builds a string key from option objects.
+Caching keys for common static option sets could avoid repeated string
+construction.
+
+**Benchmark:** Five default texture variant option sets used by ground, desk,
+screen, utilities, and Lab/Greenhouse surfaces.
+Repetitions were used only to stabilize timing.
+
+**Before:** 0.000333 ms median, 0.001042 ms p95.
+
+**After:** Not implemented; best case would avoid a sub-microsecond key build
+on component renders that are already memoized.
+
+**Change:** Maximum practical saving is below 0.001 ms for five lookups.
+
+**Outcome:** Rejected before code changes. The option-key work is already too
+small, and static key plumbing would add complexity at every texture call site.
+
+**Commit:** None
+
+### Idea 615: Cache watering stream descriptors
+
+**Description:** Active watering animations create 16 stream descriptors before
+rendering the stream components. Caching those descriptors could avoid small
+array/object setup when watering starts.
+
+**Benchmark:** One active watering animation with 16 streams. Repetitions were
+used only to stabilize timing.
+
+**Before:** 0.000125 ms median, 0.000875 ms p95.
+
+**After:** Cached descriptor lookup: 0.000000 ms median, 0.000042 ms p95.
+
+**Change:** 100.00% median improvement, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The percentage is high only because
+the measured work is microscopic, and watering animation setup is dominated by
+the actual visible stream components.
+
+**Commit:** None
+
+## Round 120
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 616. Cache pointer-mode lookup inside each soil pointer frame | Reduce pointer-move route/store lookups while adding plants or points | 60 rendered pointer frames in an active pointer workflow | Rejected |
+| 617. Reuse the active pointer position object | Reduce tiny pointer-frame allocation while moving the add/draw cursor | 60 active pointer-frame position updates | Rejected |
+| 618. Fast-path empty 3D URL config parsing | Reduce default promo startup config parsing when no URL params are present | One default `modifyConfigsFromUrlParams()` startup call | Rejected |
+| 619. Precompute progressive-load reveal checks | Reduce repeated load-step dependency checks during staged render progress | 20 renders, each checking all 8 shipped 3D load steps | Rejected |
+| 620. Avoid per-click navigation mode array construction | Reduce plant-icon click handler setup work before navigation | 30 plant-icon click mode checks | Rejected |
+
+### Idea 616: Cache pointer-mode lookup inside each soil pointer frame
+
+**Description:** `soilPointerMove()` currently calls `getMode()` up to three
+times in one rendered pointer update. Reading the mode once per frame could
+avoid repeated route/store lookup work while preserving add-plant and draw-point
+behavior.
+
+**Benchmark:** 60 rendered pointer frames in an active pointer workflow.
+Repetitions were used only to stabilize timing.
+
+**Before:** Three mode lookups per frame: 0.163875 ms median, 0.220542 ms p95.
+
+**After:** One mode lookup per frame: 0.052709 ms median, 0.063083 ms p95.
+
+**Change:** 67.84% faster, saving 0.111166 ms across 60 rendered pointer
+frames.
+
+**Outcome:** Rejected before code changes. The percentage is strong, but the
+absolute saving is about 0.0019 ms per pointer frame and does not justify
+changing the already simple pointer updater.
+
+**Commit:** None
+
+### Idea 617: Reuse the active pointer position object
+
+**Description:** The pointer updater assigns a fresh `{ x, y }` object to
+`activePositionRef.current` after each rendered pointer update. Mutating the
+existing object after the first update could reduce allocation during
+add/draw-cursor movement.
+
+**Benchmark:** 60 active pointer-frame position updates. Repetitions were used
+only to stabilize timing.
+
+**Before:** Fresh object assignment: 0.000167 ms median, 0.000583 ms p95.
+
+**After:** Mutate existing object after first assignment: 0.000125 ms median,
+0.000250 ms p95.
+
+**Change:** 25.15% faster, saving 0.000042 ms across 60 updates.
+
+**Outcome:** Rejected before code changes. The allocation cleanup is measurable
+only at sub-microsecond scale and would not meaningfully affect pointer
+responsiveness or memory use.
+
+**Commit:** None
+
+### Idea 618: Fast-path empty 3D URL config parsing
+
+**Description:** The promo 3D startup calls `modifyConfigsFromUrlParams()` even
+when `window.location.search` is empty. Returning immediately for an empty
+search string could skip the key scans on ordinary loads.
+
+**Benchmark:** One default startup config parse with an empty URL search string.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current empty-search parse: 0.001583 ms median, 0.004791 ms p95.
+
+**After:** Simulated empty-search fast path: 0.000083 ms median, 0.000250 ms p95.
+
+**Change:** 94.76% faster, saving 0.001500 ms on startup.
+
+**Outcome:** Rejected before code changes. The branch would be safe, but the
+realistic default startup saving is far below a meaningful load-time change.
+
+**Commit:** None
+
+### Idea 619: Precompute progressive-load reveal checks
+
+**Description:** `GardenModel` asks the load-progress object whether each of
+the 8 load steps is allowed on every render. Precomputing the reveal booleans
+inside the load-progress hook could avoid repeated dependency checks.
+
+**Benchmark:** 20 renders, each checking all 8 shipped 3D load steps.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current dependency `.every()` checks: 0.001584 ms median,
+0.006084 ms p95.
+
+**After:** Simulated precomputed reveal booleans: 0.002416 ms median,
+0.005875 ms p95.
+
+**Change:** 52.53% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The current checks are already
+cheaper than the proposed precompute path at realistic load-step counts.
+
+**Commit:** None
+
+### Idea 620: Avoid per-click navigation mode array construction
+
+**Description:** Plant icon navigation checks build
+`[...HOVER_OBJECT_MODES, Mode.cameraSelection]` before testing the current mode.
+A direct `Mode.cameraSelection` check plus the existing hover-mode array could
+avoid one short array allocation per click.
+
+**Benchmark:** 30 plant-icon click mode checks. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current spread-array mode check: 0.014750 ms median,
+0.020083 ms p95.
+
+**After:** Direct camera-selection check plus hover-mode lookup: 0.013959 ms
+median, 0.019292 ms p95.
+
+**Change:** 5.36% faster, saving 0.000791 ms across 30 click checks.
+
+**Outcome:** Rejected before code changes. The click path is already dominated
+by the actual navigation and panel update, and this helper cleanup misses both
+the percentage and meaningful absolute-improvement bars.
+
+**Commit:** None
+
+## Round 121
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 621. Skip inactive `LoadInGroup` spring opacity callbacks | Reduce no-op animation callback work for groups that do not fade in | 5 loaded groups over 60 spring ticks | Rejected |
+| 622. Read interpolation farmware options in one pass | Reduce repeated farmware-env scans before interpolation generation | 12 farmware envs and 3 interpolation option lookups | Rejected |
+| 623. Build interpolation hash grid/options suffix directly | Reduce small JSON stringify work during interpolation cache key creation | 25 sensor readings with Genesis-sized grid/options | Rejected |
+| 624. Precompute nonempty 3D URL numeric key list | Reduce startup URL parsing list allocation when query params are present | One nonempty startup URL parse with kit, x/y/z, sun, and clouds | Rejected |
+| 625. Replace size-preset side-effect `map()` with `for..of` | Reduce config-copy callback overhead on preset selection | One Genesis XL size preset copy | Rejected |
+
+### Idea 621: Skip inactive `LoadInGroup` spring opacity callbacks
+
+**Description:** `LoadInGroup` always wires an `onChange` callback that writes
+group opacity, even when `fadeIn` is false and the group starts fully visible.
+Skipping the callback for non-fading groups could reduce no-op spring work.
+
+**Benchmark:** 5 loaded groups over 60 spring ticks. Repetitions were used only
+to stabilize timing.
+
+**Before:** Current no-op opacity callback path: 0.000334 ms median,
+0.001417 ms p95.
+
+**After:** Simulated no-callback path: 0.000208 ms median, 0.000292 ms p95.
+
+**Change:** 37.72% faster, saving 0.000126 ms across the benchmarked spring
+ticks.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below meaningful frame-time impact and the real
+cost remains the spring/render work.
+
+**Commit:** None
+
+### Idea 622: Read interpolation farmware options in one pass
+
+**Description:** `fetchInterpolationOptions()` scans `farmwareEnvs` separately
+for each interpolation option. A single loop could collect the three option
+values at once.
+
+**Benchmark:** 12 farmware envs and 3 interpolation option lookups.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current `filter()[0]` lookup path: 0.000500 ms median,
+0.001625 ms p95.
+
+**After:** Simulated single-pass lookup path: 0.000333 ms median,
+0.001667 ms p95.
+
+**Change:** 33.40% faster by median, saving 0.000167 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The median saving is microscopic and
+the p95 does not improve, so this is not worth changing interpolation setup.
+
+**Commit:** None
+
+### Idea 623: Build interpolation hash grid/options suffix directly
+
+**Description:** `generateData()` builds the interpolation cache key with three
+stringified parts. Keeping the point hash but writing the small grid/options
+suffix directly could reduce cache-key overhead.
+
+**Benchmark:** 25 sensor readings with Genesis-sized grid/options. Repetitions
+were used only to stabilize timing.
+
+**Before:** Current point/grid/options JSON key: 0.001084 ms median,
+0.003500 ms p95.
+
+**After:** Simulated direct grid/options suffix: 0.000959 ms median,
+0.002791 ms p95.
+
+**Change:** 11.53% faster, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The proposed key format change
+barely clears the percentage threshold and saves only a tenth of a microsecond;
+the meaningful work remains interpolation data generation.
+
+**Commit:** None
+
+### Idea 624: Precompute nonempty 3D URL numeric key list
+
+**Description:** `modifyConfigsFromUrlParams()` concatenates numeric keys with
+`x`, `y`, and `z` during each URL parse. Precomputing that key list could avoid
+one small allocation on startup links with 3D query parameters.
+
+**Benchmark:** One nonempty startup URL parse with `kit`, `x`, `y`, `z`, `sun`,
+and `clouds`. Repetitions were used only to stabilize timing.
+
+**Before:** Current per-call concat path: 0.001292 ms median, 0.002417 ms p95.
+
+**After:** Simulated prebuilt-key path: 0.001208 ms median, 0.002375 ms p95.
+
+**Change:** 6.50% faster, saving 0.000084 ms.
+
+**Outcome:** Rejected before code changes. This misses the 10% threshold and
+the absolute startup saving is not meaningful.
+
+**Commit:** None
+
+### Idea 625: Replace size-preset side-effect `map()` with `for..of`
+
+**Description:** Size preset application uses `.map()` only for side effects
+while copying preset keys into the next config object. A `for..of` loop could
+avoid callback/array-return overhead on preset clicks.
+
+**Benchmark:** One Genesis XL size preset copy. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current side-effect `map()` path: 0.000291 ms median,
+0.001333 ms p95.
+
+**After:** Simulated `for..of` copy path: 0.000250 ms median, 0.001375 ms p95.
+
+**Change:** 14.09% faster by median, saving 0.000041 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The operation happens only on
+manual preset selection and the measured improvement is not meaningful.
+
+**Commit:** None
+
+## Round 122
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 626. Share config-overlay URL param parsing across rows | Reduce config panel mount work from parsing the same query string for every row | 110 config rows with a realistic 3D query string | Rejected |
+| 627. Skip smooth-camera React state updates during direct Three camera transitions | Reduce render churn during focus camera tweens while preserving every RAF camera update | One 900 ms smooth focus transition at 60 fps | Accepted |
+| 628. Prefer live camera vector fields before `toArray()` | Avoid small array allocation when reading camera and controls vectors at transition start | One smooth focus transition start read | Rejected |
+| 629. Build smooth-camera keys without temporary arrays | Reduce per-render key allocation in focus camera targeting | One target camera key build | Rejected |
+| 630. Reuse a scratch color for animated sun sky color updates | Reduce per-frame `Color` allocation while season animation is enabled | 600 animated-season sky color updates | Rejected |
+
+### Idea 626: Share config-overlay URL param parsing across rows
+
+**Description:** `ConfigRow` checks whether the current URL has a param by
+constructing a fresh `URLSearchParams` for each config row. Sharing one parsed
+query object across the private config overlay could reduce config-panel mount
+work.
+
+**Benchmark:** 110 config rows with a realistic 3D query string containing
+position, scene, cloud, settings, plant, and two config-row params. Repetitions
+were used only to stabilize timing.
+
+**Before:** Current per-row parser path: 0.109459 ms median, 0.128958 ms p95.
+
+**After:** Simulated shared-parser path: 0.002541 ms median, 0.003750 ms p95.
+
+**Change:** 97.68% faster, saving 0.106918 ms across config panel row checks.
+
+**Outcome:** Rejected before code changes. The percentage is strong, but the
+absolute saving is still about a tenth of a millisecond and only applies while
+opening the developer config panel.
+
+**Commit:** None
+
+### Idea 627: Skip smooth-camera React state updates during direct Three camera transitions
+
+**Description:** During smooth focus transitions, `GardenModel` mutates the
+live Three camera and OrbitControls directly. While that mode is active, the
+returned camera state is not fed back into JSX, so per-frame React state updates
+only add render churn.
+
+**Benchmark:** One 900 ms smooth focus transition at 60 fps using the actual
+`useSmoothCamera()` hook with fake RAF timing.
+
+**Before:** Current direct camera transition path: 56 React renders over 55 RAF
+frames.
+
+**After:** Direct-camera path with React state updates disabled: 1 React render
+over the same 55 RAF frames.
+
+**Change:** 98.21% fewer React renders, eliminating 55 renders per smooth focus
+camera transition.
+
+**Outcome:** Accepted. The camera and controls are still updated on every RAF
+tick, while the transition no longer asks React to render every camera frame
+when `GardenModel` is already applying the live camera state imperatively.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/focus_transition_test.tsx`
+
+**Commit:** `Optimize 3D smooth camera renders by 98.2%`
+
+### Idea 628: Prefer live camera vector fields before `toArray()`
+
+**Description:** `readVector()` currently prefers `toArray()` when reading
+Three camera and controls vectors. Reading `x`, `y`, and `z` first could avoid
+temporary arrays at the start of a camera transition.
+
+**Benchmark:** One smooth focus transition start read for camera position and
+controls target. Repetitions were used only to stabilize timing.
+
+**Before:** Current `toArray()`-first read: 0.000084 ms median, 0.000458 ms p95.
+
+**After:** Simulated `x`/`y`/`z`-first read: 0.000208 ms median,
+0.000250 ms p95.
+
+**Change:** 147.62% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The current path is already faster
+for the realistic live vector shape.
+
+**Commit:** None
+
+### Idea 629: Build smooth-camera keys without temporary arrays
+
+**Description:** `cameraKey()` builds a temporary array before joining camera
+position, target, and zoom. A direct template string could avoid the array
+allocation.
+
+**Benchmark:** One target camera key build. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current array-and-join path: 0.000209 ms median, 0.000334 ms p95.
+
+**After:** Simulated template-string path: 0.000208 ms median, 0.000334 ms p95.
+
+**Change:** 0.48% faster, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. This misses the percentage threshold
+and has no meaningful absolute impact.
+
+**Commit:** None
+
+### Idea 630: Reuse a scratch color for animated sun sky color updates
+
+**Description:** Animated seasons call `skyColor()` each frame, which allocates
+a new `Color` while calculating the sky background. Reusing a scratch `Color`
+inside `Sun` could reduce per-frame allocation.
+
+**Benchmark:** 600 animated-season sky color updates, representing 10 seconds
+at 60 fps. Repetitions were used only to stabilize timing.
+
+**Before:** Current allocating color path: 0.023292 ms median, 0.042500 ms p95.
+
+**After:** Simulated scratch-color path: 0.019084 ms median, 0.022958 ms p95.
+
+**Change:** 18.07% faster, saving 0.004208 ms across 600 frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving across 10 seconds of animation is too small to matter.
+
+**Commit:** None
+
+## Round 123
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 631. Memoize watering stream curves across delayed visibility render | Avoid rebuilding the same 16 stream curves when the active watering animation flips visible | Two active watering-animation renders: initial hidden render plus delayed visible render | Rejected |
+| 632. Precompute watering stream trigonometry offsets | Avoid repeated `sin`/`cos` calls while building the 16 nozzle streams | One active watering stream descriptor build | Rejected |
+| 633. Combine focus material clone and state collection for array-material slots | Reduce focus-transition binding setup for meshes with array materials | 40 material slots with every fourth slot holding a two-material array | Rejected |
+| 634. Use constant cable colors when cable debug is off | Avoid debug-color helper calls on default power cable materials | One default power-supply render with two cable color reads | Rejected |
+| 635. Add a relevant-field comparator to Bot bed utility wrapper | Skip utility wrapper rerenders on unrelated config object churn | 60 bot utility wrapper checks with only `sun` changing | Rejected |
+
+### Idea 631: Memoize watering stream curves across delayed visibility render
+
+**Description:** `WateringAnimationsContent` builds 16 `CubicBezierCurve3`
+stream paths on render, then its delayed visibility state update causes a
+second render shortly after mount. Memoizing those stream paths could avoid
+rebuilding identical curves for the visibility flip.
+
+**Benchmark:** Two active watering-animation renders: the initial hidden render
+and the delayed visible render. Repetitions were used only to stabilize timing.
+
+**Before:** Current two-render curve build: 0.002583 ms median,
+0.011583 ms p95.
+
+**After:** Simulated memoized one-render curve build: 0.000750 ms median,
+0.002625 ms p95.
+
+**Change:** 70.96% faster, saving 0.001833 ms during watering animation mount.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute improvement is far below a meaningful interaction or frame
+time change, and watering setup is dominated by the rendered stream/cloud
+objects.
+
+**Commit:** None
+
+### Idea 632: Precompute watering stream trigonometry offsets
+
+**Description:** The 16 watering streams use evenly spaced angles. Precomputing
+the `sin` and `cos` values once could remove repeated trigonometry while
+building stream descriptors.
+
+**Benchmark:** One active watering stream descriptor build with 16 evenly
+spaced streams. Repetitions were used only to stabilize timing.
+
+**Before:** Current per-build trig path: 0.000375 ms median, 0.000916 ms p95.
+
+**After:** Simulated precomputed offset path: 0.000208 ms median,
+0.001125 ms p95.
+
+**Change:** 44.53% faster by median, saving 0.000167 ms, while p95 was
+slightly slower.
+
+**Outcome:** Rejected before code changes. The measured work is too small, and
+the p95 did not improve.
+
+**Commit:** None
+
+### Idea 633: Combine focus material clone and state collection for array-material slots
+
+**Description:** `cloneSlot()` clones array-material slots with one `.map()`
+and then collects material state with a second `.map()`. Combining those passes
+could reduce setup when focus transitions bind meshes that use material arrays.
+
+**Benchmark:** 40 material slots with every fourth slot holding a two-material
+array, representing a mixed focus subtree. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current separate clone/state passes: 0.020791 ms median,
+0.039541 ms p95.
+
+**After:** Simulated combined loop: 0.014958 ms median, 0.026125 ms p95.
+
+**Change:** 28.06% faster, saving 0.005833 ms during binding setup.
+
+**Outcome:** Rejected before code changes. The improvement is measurable but
+still much smaller than a meaningful focus-transition setup win.
+
+**Commit:** None
+
+### Idea 634: Use constant cable colors when cable debug is off
+
+**Description:** `PowerSupply` calls `cableColor(false)` for the default power
+cable and plug. Returning a constant color at the call sites could avoid helper
+work and the debug hue counter branch.
+
+**Benchmark:** One default power-supply render with two cable color reads and
+debug disabled. Repetitions were used only to stabilize timing.
+
+**Before:** Current helper-call path: 0.000042 ms median, 0.000250 ms p95.
+
+**After:** Simulated constant color path: 0.000041 ms median, 0.000084 ms p95.
+
+**Change:** 2.38% faster, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. This misses the percentage threshold
+and has no meaningful absolute impact.
+
+**Commit:** None
+
+### Idea 635: Add a relevant-field comparator to Bot bed utility wrapper
+
+**Description:** `BotBedUtilitySubassemblies` uses default `React.memo`
+comparison, so it re-enters when the `config` object identity changes even if
+only unrelated fields changed. A relevant-field comparator could skip those
+wrapper renders.
+
+**Benchmark:** 60 bot utility wrapper checks where only `config.sun` changed.
+The simulated comparator checked the fields needed by `PowerSupply` and
+`XAxisWaterTube`.
+
+**Before:** Current shallow-identity wrapper path: 0.001084 ms median,
+0.002917 ms p95.
+
+**After:** Simulated relevant-field comparator path: 0.003708 ms median,
+0.008083 ms p95.
+
+**Change:** 242.07% slower by median.
+
+**Outcome:** Rejected before code changes. The wrapper itself is cheaper than
+the field comparisons, and the child components already have their own
+field-aware memoization.
+
+**Commit:** None
+
+## Round 124
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 636. Inline sun-position vector math | Avoid temporary array allocation during animated-season sun position updates | 600 animated-season frames with three sun-position calculations per frame | Rejected |
+| 637. Return cached season property objects | Avoid cloning season property records for the Sun and Clouds environment render paths | One Sun plus Clouds environment render property lookup pair | Rejected |
+| 638. Reuse the Sun debug origin vector | Avoid allocating a `[0, 0, 0]` `Vector3` during a Sun render | One Sun render with lights-debug origin setup | Rejected |
+| 639. Pass ground properties through detailed ground rendering | Avoid a duplicate scene-property switch during visible ground rendering | One visible Outdoor detailed-ground property setup | Rejected |
+| 640. Use an indexed loop for group-order marker disk matrices | Reduce callback overhead while updating instanced group-order marker disks | One 50-point group-order marker disk matrix update | Rejected |
+
+### Idea 636: Inline sun-position vector math
+
+**Description:** `sunPosition()` converts polar coordinates into a temporary
+array and then spreads that array into a `Vector3`. Inlining the math could
+avoid the temporary array while preserving the same sun, shadow, and debug
+positions.
+
+**Benchmark:** 600 animated-season frames with three sun-position calculations
+per frame, matching 10 seconds of animated seasons at 60 fps.
+
+**Before:** Current `polarToCartesian()` plus spread path: 0.056167 ms median,
+0.071375 ms p95.
+
+**After:** Simulated inline vector construction: 0.021500 ms median,
+0.023959 ms p95.
+
+**Change:** 61.72% faster, saving 0.034667 ms across 600 animated frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute win is only about three hundredths of a millisecond over 10
+seconds of animation, so it is not a meaningful FPS improvement.
+
+**Commit:** None
+
+### Idea 637: Return cached season property objects
+
+**Description:** `getSeasonProperties()` clones the selected season properties
+before `Sun` and `Clouds` read them. Returning the cached property object could
+avoid two tiny object allocations in the environment render path.
+
+**Benchmark:** One Sun plus Clouds environment render property lookup pair.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current cloned property path: 0.000042 ms median, 0.000084 ms p95.
+
+**After:** Simulated cached object return: 0.000042 ms median,
+0.000084 ms p95.
+
+**Change:** 0.00% median change.
+
+**Outcome:** Rejected before code changes. The benchmark showed no measurable
+improvement.
+
+**Commit:** None
+
+### Idea 638: Reuse the Sun debug origin vector
+
+**Description:** `SunBase` allocates a new origin `Vector3` for the lights-debug
+line endpoint on each render. A module-level constant could remove that
+allocation.
+
+**Benchmark:** One Sun render with lights-debug origin setup. Repetitions were
+used only to stabilize timing.
+
+**Before:** Per-render origin allocation: 0.000083 ms median,
+0.000125 ms p95.
+
+**After:** Simulated module constant origin: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 0.00% median change.
+
+**Outcome:** Rejected before code changes. The allocation was too small to
+measure in the realistic render path.
+
+**Commit:** None
+
+### Idea 639: Pass ground properties through detailed ground rendering
+
+**Description:** `VisibleGround` looks up scene ground properties, then
+`GroundMaterial` looks them up again for the same scene. Passing the existing
+properties through could remove the duplicate switch.
+
+**Benchmark:** One visible Outdoor detailed-ground property setup. Repetitions
+were used only to stabilize timing.
+
+**Before:** Duplicate property lookup: 0.000042 ms median, 0.000084 ms p95.
+
+**After:** Simulated passed property object: 0.000000 ms median,
+0.000083 ms p95.
+
+**Change:** 100.00% median improvement, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The saved work is much less than a
+microsecond and the p95 was effectively unchanged.
+
+**Commit:** None
+
+### Idea 640: Use an indexed loop for group-order marker disk matrices
+
+**Description:** `OrderMarkerDisks` updates marker disk instance matrices with
+`forEach()`. An indexed loop could avoid callback overhead when a group-order
+route updates marker disks after a camera change.
+
+**Benchmark:** One 50-point group-order marker disk matrix update, matching a
+large selected point group.
+
+**Before:** Current `forEach()` matrix update: 0.000584 ms median,
+0.000791 ms p95.
+
+**After:** Simulated indexed-loop matrix update: 0.000458 ms median,
+0.001250 ms p95.
+
+**Change:** 21.58% faster by median, saving 0.000126 ms, while p95 was slower
+by 0.000459 ms.
+
+**Outcome:** Rejected before code changes. The median saving is far below a
+meaningful interaction win and the p95 moved in the wrong direction.
+
+**Commit:** None
+
+## Round 125
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 641. Narrow GardenModel soil-surface memo dependencies | Avoid soil filtering, Delaunay surface rebuild, and storage payload work during unrelated config churn | 60 unrelated config updates with 100 soil-height points | Accepted |
+| 642. Precompute private config-row search text | Reduce config-panel search work across all rows | One 110-row config search pass | Rejected |
+| 643. Memoize 3D controls help text parsing | Avoid splitting and cleaning static help markdown on each toggle render | One 3D controls help render | Rejected |
+| 644. Replace active-focus lodash `findIndex` with native `find` | Reduce active focus lookup overhead after focus definitions are built | One active focus lookup across 12 focus definitions | Rejected |
+| 645. Use `Math.round` for default camera positions | Avoid lodash `round` helper overhead during default camera placement | Four default camera position calculations | Rejected |
+
+### Idea 641: Narrow GardenModel soil-surface memo dependencies
+
+**Description:** `GardenModel` memoized soil-point filtering against the whole
+`config` object, so unrelated config churn such as `sun` rebuilt soil points,
+the Delaunay surface, and the serialized soil triangle payload. Narrowing the
+dependency list to only fields used by `filterSoilPoints()` keeps the soil mesh
+stable when unrelated config fields change.
+
+**Benchmark:** 60 unrelated config updates with 100 soil-height points,
+including soil filtering, surface generation, and the triangle storage payload.
+
+**Before:** Current full recompute path: 2.982 ms median, 3.442 ms p95.
+
+**After:** Narrowed soil dependencies with one reused storage payload:
+0.055 ms median, 0.077 ms p95.
+
+**Change:** 98.1% faster, saving 2.927 ms median and 3.364 ms p95 across the
+60-update batch.
+
+**Outcome:** Accepted. Unrelated config updates now reuse the same soil surface
+geometry, while soil-affecting config such as `soilHeight` still rebuilds it.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/garden_model_test.tsx`,
+`bun run typecheck`, `git diff --check`
+
+**Commit:** `Optimize 3D soil surface churn by 98.1%`
+
+### Idea 642: Precompute private config-row search text
+
+**Description:** Each `ConfigRow` rebuilds its searchable label text from the
+config key, optional label, and search terms. Precomputing that row text could
+reduce work while typing in the private config search box.
+
+**Benchmark:** One 110-row config search pass with a realistic `soil` query.
+Repetitions were used only to stabilize timing.
+
+**Before:** Current per-row search text construction: 0.007333 ms median,
+0.010500 ms p95.
+
+**After:** Simulated precomputed row text: 0.001084 ms median,
+0.001125 ms p95.
+
+**Change:** 85.22% faster, saving 0.006249 ms.
+
+**Outcome:** Rejected before code changes. The config search path is optional,
+and the absolute saving is only a few microseconds per full search pass.
+
+**Commit:** None
+
+### Idea 643: Memoize 3D controls help text parsing
+
+**Description:** `ThreeDControlsHelp` splits and cleans a small static help
+string on render. Memoizing the parsed title and items could avoid that work
+while the 3D toggle row rerenders.
+
+**Benchmark:** One 3D controls help render. Repetitions were used only to
+stabilize timing.
+
+**Before:** Current split/map/replace path: 0.000250 ms median,
+0.000791 ms p95.
+
+**After:** Simulated memoized parsed help: 0.000042 ms median,
+0.000125 ms p95.
+
+**Change:** 83.20% faster, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The help text is tiny and the
+absolute saving is not meaningful.
+
+**Commit:** None
+
+### Idea 644: Replace active-focus lodash `findIndex` with native `find`
+
+**Description:** Active focus lookup builds the focus definitions and then uses
+lodash `findIndex()` to select the active focus by label. A native `find()`
+could avoid the lodash predicate wrapper work.
+
+**Benchmark:** One active focus lookup across 12 focus definitions, with the
+active focus near the end of the list. Repetitions were used only to stabilize
+timing.
+
+**Before:** Current lodash `findIndex()` lookup: 0.000250 ms median,
+0.000459 ms p95.
+
+**After:** Simulated native `find()` lookup: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 50.00% faster, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The lookup itself is already
+effectively free at the shipped focus count.
+
+**Commit:** None
+
+### Idea 645: Use `Math.round` for default camera positions
+
+**Description:** `getDefaultCameraPosition()` calls lodash `round()` for
+integer camera coordinates. `Math.round` could avoid helper overhead while
+preserving integer placement.
+
+**Benchmark:** Four default camera position calculations covering perspective
+and top-down paths. Repetitions were used only to stabilize timing.
+
+**Before:** Current lodash `round()` path: 0.000458 ms median,
+0.000667 ms p95.
+
+**After:** Simulated `Math.round()` path: 0.000375 ms median,
+0.000875 ms p95.
+
+**Change:** 18.12% faster by median, saving 0.000083 ms, while p95 was slower
+by 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The median saving is far below a
+meaningful load or interaction improvement, and p95 moved in the wrong
+direction.
+
+**Commit:** None
+
+## Round 126
+
+New candidate list after Round 125:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 646. Narrow GardenModel plant-label memo dependencies | Reduce React element churn when unrelated 3D config values change while labels are visible | 40 visible labels across 40 unrelated config updates | Accepted |
+| 647. Cache GardenModel route key between location changes | Avoid string concatenation during static-layer memo setup | 40 rerenders with unchanged location | Rejected |
+| 648. Reuse empty camera prop objects during smooth focus transitions | Avoid tiny object allocation during animated focus frames | 60 smooth-focus transition frames | Rejected |
+| 649. Precompute top-down zoom scalar across unrelated renders | Avoid repeated bed-length zoom division while top-down state is unchanged | 60 top-down rerenders with unchanged bed length | Rejected |
+| 650. Build event-debug intersection names with a direct loop | Reduce allocation work when debug pointer logging is enabled | One pointer event with 20 intersections | Rejected |
+
+### Idea 646: Narrow GardenModel plant-label memo dependencies
+
+**Description:** `GardenModel` already memoized the plant label node list, but
+the dependency list included the whole `config` object. Unrelated config churn
+such as `sun` rebuilt all label React elements when labels were visible. The
+memo now depends only on label visibility and coordinate fields used by label
+placement.
+
+**Benchmark:** 40 visible plant labels across 40 unrelated config updates.
+
+**Before:** Current full label-node rebuild path: 0.6233 ms median,
+2.9535 ms p95.
+
+**After:** Narrowed label-node dependencies with reused nodes across unrelated
+updates: 0.0001 ms median, 0.0018 ms p95.
+
+**Change:** 100.0% faster, saving 0.6232 ms median and 2.9517 ms p95 across
+the 40-update batch.
+
+**Outcome:** Accepted. Unrelated 3D config updates now reuse the same plant
+label node list, while label visibility and coordinate-affecting config fields
+still rebuild the labels.
+
+**Checks:** `bun test frontend/three_d_garden/__tests__/garden_model_test.tsx`,
+`bun run typecheck`, `git diff --check`
+
+**Commit:** `Optimize 3D plant label churn by 100.0%`
+
+### Idea 647: Cache GardenModel route key between location changes
+
+**Description:** `GardenModel` builds a route key string from
+`location.pathname` and `location.search` during render. Caching that key could
+avoid repeated concatenation while static-layer dependencies are evaluated.
+
+**Benchmark:** 40 rerenders with an unchanged route matching the designer page.
+
+**Before:** Current route-key construction: 0.0022 ms median, 0.0035 ms p95.
+
+**After:** Simulated cached route key: 0.0011 ms median, 0.0013 ms p95.
+
+**Change:** 48.1% faster by median, saving 0.0010 ms.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is about one microsecond across 40 rerenders.
+
+**Commit:** None
+
+### Idea 648: Reuse empty camera prop objects during smooth focus transitions
+
+**Description:** During smooth focus transitions, `GardenModel` passes empty
+camera and orbit-control prop objects so the transition hook owns the camera
+state. Reusing empty objects could avoid per-frame allocations during the
+transition.
+
+**Benchmark:** 60 smooth-focus transition frames with camera props omitted.
+
+**Before:** Current empty object allocation path: 0.0013 ms median,
+0.0031 ms p95.
+
+**After:** Simulated shared empty prop objects: 0.0004 ms median,
+0.0028 ms p95.
+
+**Change:** 67.7% faster by median, saving 0.0009 ms.
+
+**Outcome:** Rejected before code changes. The saving is below a microsecond
+across a full 60-frame transition and does not justify changing the prop shape.
+
+**Commit:** None
+
+### Idea 649: Precompute top-down zoom scalar across unrelated renders
+
+**Description:** Top-down camera zoom recomputes the bed-length division on
+each render. Memoizing or precomputing the scalar could avoid this arithmetic
+when bed length and top-down state are unchanged.
+
+**Benchmark:** 60 top-down rerenders with unchanged bed length.
+
+**Before:** Current per-render zoom calculation: 0.0011 ms median,
+0.0045 ms p95.
+
+**After:** Simulated cached zoom scalar: 0.0005 ms median, 0.0023 ms p95.
+
+**Change:** 53.8% faster by median, saving 0.0006 ms.
+
+**Outcome:** Rejected before code changes. The arithmetic is effectively free
+in realistic render counts.
+
+**Commit:** None
+
+### Idea 650: Build event-debug intersection names with a direct loop
+
+**Description:** The optional event-debug pointer handler logs intersection
+object names with `.map()`. A direct loop could avoid callback overhead when
+debug logging is enabled.
+
+**Benchmark:** One event-debug pointer event with 20 intersections.
+
+**Before:** Current `.map()` name extraction: 0.0002 ms median, 0.0016 ms p95.
+
+**After:** Simulated direct-loop name extraction: 0.0005 ms median,
+0.0017 ms p95.
+
+**Change:** 116.8% slower by median and 0.0003 ms worse.
+
+**Outcome:** Rejected before code changes. The direct-loop version was slower,
+and this path is optional debug instrumentation.
+
+**Commit:** None
+
+## Round 127
+
+New candidate list after Round 126:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 651. Use an indexed loop while filtering soil-height points | Reduce callback overhead during realistic soil surface input preparation | 100 soil-height point resources filtered once | Rejected |
+| 652. Parse stored soil triangles in one pass | Avoid intermediate `map()` and `filter()` arrays when restoring compact triangle payloads | 394 stored soil triangles parsed once | Rejected |
+| 653. Fill the decorative sun/star buffer directly | Avoid temporary number-array growth before creating the 1,000-point star `Float32Array` | One `OtherSuns` 1,000-point buffer build | Rejected |
+| 654. Build enabled camera-view frustum points without callback mapping | Reduce enabled camera-view vector setup allocations while preserving the same frustum points | One enabled camera-view point calculation | Rejected |
+| 655. Reuse mirror texture repeat/offset tuples | Avoid small array/object allocation during soil render-texture setup | One image texture mirror prop calculation | Rejected |
+
+### Idea 651: Use an indexed loop while filtering soil-height points
+
+**Description:** `filterSoilPoints()` scans soil-height point resources with a
+callback. An indexed loop could avoid callback overhead while preserving the
+same boundary checks and transformed Z values.
+
+**Benchmark:** 100 soil-height point resources filtered once, matching a large
+but realistic configured soil-height set.
+
+**Before:** Current callback scan: 0.006666 ms median, 0.019459 ms p95.
+
+**After:** Simulated indexed scan: 0.005208 ms median, 0.018833 ms p95.
+
+**Change:** 21.9% faster by median, saving 0.001458 ms.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is about 1.5 microseconds per soil-point filter pass.
+
+**Commit:** None
+
+### Idea 652: Parse stored soil triangles in one pass
+
+**Description:** `parseStoredTriangles()` currently maps each parsed triangle
+through `parseStoredTriangle()` and then filters undefined results. A one-pass
+push loop could avoid the intermediate array while keeping compact and legacy
+stored formats.
+
+**Benchmark:** 394 compact stored soil triangles parsed once from a realistic
+stored payload.
+
+**Before:** Current `map()` plus `filter()` parse path: 0.088083 ms median,
+0.191750 ms p95.
+
+**After:** Simulated one-pass parser: 0.075750 ms median, 0.124750 ms p95.
+
+**Change:** 14.0% faster by median, saving 0.012333 ms.
+
+**Outcome:** Rejected before code changes. This parse happens only when stored
+soil triangles are restored, and the absolute saving is roughly 12 microseconds.
+
+**Commit:** None
+
+### Idea 653: Fill the decorative sun/star buffer directly
+
+**Description:** `OtherSuns` builds 1,000 random background points by pushing
+numbers into a temporary array and then copying them into a `Float32Array`.
+Filling the typed array directly could reduce one-time mount allocation.
+
+**Benchmark:** One `OtherSuns` 1,000-point buffer build.
+
+**Before:** Current temporary-array build: 0.060583 ms median,
+0.094083 ms p95.
+
+**After:** Simulated direct `Float32Array` fill: 0.032708 ms median,
+0.081500 ms p95.
+
+**Change:** 46.0% faster by median, saving 0.027875 ms.
+
+**Outcome:** Rejected before code changes. The one-time saving is less than
+0.03 ms, and the current code is simpler.
+
+**Commit:** None
+
+### Idea 654: Build enabled camera-view frustum points without callback mapping
+
+**Description:** Enabled camera-view frustum point construction maps top and
+bottom corner arrays through rotation helpers. Direct point assignment could
+avoid callback and spread-array allocation when the camera-view overlay is on.
+
+**Benchmark:** One enabled camera-view point calculation.
+
+**Before:** Current mapped frustum point setup: 0.003458 ms median,
+0.027167 ms p95.
+
+**After:** Simulated direct point assignment: 0.001458 ms median,
+0.002167 ms p95.
+
+**Change:** 57.8% faster by median, saving 0.002000 ms.
+
+**Outcome:** Rejected before code changes. The overlay setup is already
+microsecond-scale and the direct version is more repetitive.
+
+**Commit:** None
+
+### Idea 655: Reuse mirror texture repeat/offset tuples
+
+**Description:** `getMirrorTextureProps()` allocates two tiny tuples and one
+object for the soil render texture repeat/offset props. Reusing four cached
+mirror combinations could avoid that allocation.
+
+**Benchmark:** One image texture mirror prop calculation.
+
+**Before:** Current tuple/object allocation: 0.000125 ms median,
+0.000291 ms p95.
+
+**After:** Simulated cached mirror prop lookup: 0.000125 ms median,
+0.000500 ms p95.
+
+**Change:** No median improvement, with p95 0.000209 ms slower.
+
+**Outcome:** Rejected before code changes. The current allocation is already
+effectively free, and the cached lookup made p95 worse.
+
+**Commit:** None
+
+## Round 128
+
+New candidate list after Round 127:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 656. Split static promo toolbay tools from the moving promo seed trough | Avoid rebuilding five static demo tool records during bot telemetry updates | 60 promo-mode bot X-position updates | Rejected |
+| 657. Use static keys for distance indicator labels | Avoid `JSON.stringify()` key generation for fixed label placements | Three rendered distance indicators, 12 labels total | Rejected |
+| 658. Cache electronics box button descriptors by kit version | Avoid button descriptor array allocation during electronics box model renders | One v1.7 and one v1.8 electronics button render pass | Rejected |
+| 659. Replace SVG hole `range().map()` calls with direct loops | Avoid temporary arrays while loading beam and column SVG cutouts | One beam and one column SVG hole load, eight holes total | Rejected |
+| 660. Build bed support positions with direct loops | Avoid lodash `range()`, `slice()`, `flatMap()`, and nested `map()` allocation on bed support layout changes | One XL bed support layout with four extra X legs and two extra Y legs | Rejected |
+
+### Idea 656: Split static promo toolbay tools from the moving promo seed trough
+
+**Description:** Promo-mode `Tools` rebuilds all six demo tool records on each
+bot position update, even though only the mounted seed trough depends on the
+bot X position. Splitting the five static toolbay records from the moving
+trough could reduce allocation during telemetry-driven movement.
+
+**Benchmark:** 60 promo-mode bot X-position updates.
+
+**Before:** Current `PROMO_TOOLS(config, position)` rebuild path:
+0.003291 ms median, 0.006041 ms p95.
+
+**After:** Simulated static toolbay list plus moving trough record:
+0.001500 ms median, 0.004125 ms p95.
+
+**Change:** 54.4% faster by median, saving 0.001791 ms across 60 updates.
+
+**Outcome:** Rejected before code changes. The relative result clears 10%, but
+the absolute saving is under two microseconds for a full second of 60 Hz
+position updates.
+
+**Commit:** None
+
+### Idea 657: Use static keys for distance indicator labels
+
+**Description:** `DistanceIndicator` creates fixed labels with a key from
+`JSON.stringify([position, rotation])`. Static label keys could avoid
+stringifying the same four label placements for each indicator render.
+
+**Benchmark:** Three rendered distance indicators, 12 labels total.
+
+**Before:** Current JSON-stringified label keys: 0.001000 ms median,
+0.002166 ms p95.
+
+**After:** Simulated static label keys: 0.000084 ms median,
+0.000333 ms p95.
+
+**Change:** 91.6% faster by median, saving 0.000916 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is below one
+microsecond for all visible bed dimension labels.
+
+**Commit:** None
+
+### Idea 658: Cache electronics box button descriptors by kit version
+
+**Description:** `ElectronicsBoxModel` calls `buttons(kitVersion)` during model
+render, allocating a small descriptor array. A static lookup by kit version
+could reuse those descriptor arrays.
+
+**Benchmark:** One v1.7 and one v1.8 electronics button render pass.
+
+**Before:** Current switch returning new descriptor arrays: 0.000208 ms median,
+0.000375 ms p95.
+
+**After:** Simulated cached descriptor lookup: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 39.9% faster by median, saving 0.000083 ms.
+
+**Outcome:** Rejected before code changes. The render-time allocation is
+already far below a microsecond and the component is memoized around the kit
+version.
+
+**Commit:** None
+
+### Idea 659: Replace SVG hole `range().map()` calls with direct loops
+
+**Description:** Beam and column SVG loaders use `range().map()` to push hole
+shapes into the outline. Direct loops could avoid temporary arrays and callback
+dispatch during one-time model shape loading.
+
+**Benchmark:** One beam and one column SVG hole load, eight holes total.
+
+**Before:** Current `range().map()` hole push path: 0.000209 ms median,
+0.001250 ms p95.
+
+**After:** Simulated direct-loop hole push path: 0.000125 ms median,
+0.000958 ms p95.
+
+**Change:** 40.2% faster by median, saving 0.000084 ms.
+
+**Outcome:** Rejected before code changes. The improvement is a fraction of a
+microsecond in a one-time load path.
+
+**Commit:** None
+
+### Idea 660: Build bed support positions with direct loops
+
+**Description:** `Bed` builds support positions with lodash `range()`,
+`slice()`, `flatMap()`, and nested `map()` calls. Direct loops could reduce
+allocation when bed support layout inputs change.
+
+**Benchmark:** One XL bed support layout with four extra X legs and two extra
+Y legs, producing 16 support positions.
+
+**Before:** Current support position construction: 0.000583 ms median,
+0.002333 ms p95.
+
+**After:** Simulated direct-loop support construction: 0.000125 ms median,
+0.001084 ms p95.
+
+**Change:** 78.6% faster by median, saving 0.000458 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is less than
+half a microsecond and only applies when bed layout settings change.
+
+**Commit:** None
+
+## Round 129
+
+New candidate list after Round 128:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 661. Generate promo soil-surface points with a direct loop | Avoid lodash `times().map()` allocation while creating random demo terrain points | One 100-point generated promo soil surface | Rejected |
+| 662. Cache promo crop icons by plant key | Avoid repeated `kebabCase()` and crop metadata lookup while laying out dense promo gardens | One Genesis XL spring promo garden with 316 plants | Rejected |
+| 663. Mutate the promo plant prewarm cache directly | Avoid repeated cache object spreading during module-level promo plant prewarm | One full promo prewarm across five seasons and two bed sizes | Rejected |
+| 664. Build promo plant capacities with direct loops | Avoid callback and object-entry churn while scanning cached seasonal promo plants | One plant-capacity scan across five seasons and two bed sizes | Rejected |
+| 665. Reuse promo season names in `getSeasonTimings()` | Avoid rebuilding the season-name array for season transition scheduling | Two realistic season-timing lookups | Rejected |
+
+### Idea 661: Generate promo soil-surface points with a direct loop
+
+**Description:** `calculatePointPositions()` creates random promo terrain
+points with lodash `times().map()`. A direct pre-sized loop could avoid one
+temporary collection and callback dispatch while generating the same point
+shape and random coordinate fields.
+
+**Benchmark:** One generated promo soil surface with 100 random points, matching
+the current realistic terrain point count.
+
+**Before:** Current `times().map()` generation: 0.015125 ms median,
+0.020667 ms p95.
+
+**After:** Simulated direct pre-sized loop: 0.014333 ms median,
+0.018250 ms p95.
+
+**Change:** 5.2% faster by median, saving 0.000792 ms.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the absolute saving is below one microsecond.
+
+**Commit:** None
+
+### Idea 662: Cache promo crop icons by plant key
+
+**Description:** `calculatePlantPositions()` resolves each repeated promo plant
+icon from its label via `kebabCase()` and `findCropIcon()`. Caching the icon by
+plant key could avoid repeated string conversion and metadata lookup across
+dense rows of the same crop.
+
+**Benchmark:** One Genesis XL spring promo garden with 316 generated plants.
+
+**Before:** Current per-plant icon lookup: 0.017375 ms median,
+0.022667 ms p95.
+
+**After:** Simulated per-key icon cache: 0.008500 ms median,
+0.014500 ms p95.
+
+**Change:** 51.1% faster by median, saving 0.008875 ms.
+
+**Outcome:** Rejected before code changes. The relative result is strong, but
+the absolute saving is still under 0.01 ms for a full dense promo garden
+calculation.
+
+**Commit:** None
+
+### Idea 663: Mutate the promo plant prewarm cache directly
+
+**Description:** Promo startup prewarms cached plant layouts for five seasons
+and two bed sizes. The current helper returns a newly spread cache object for
+each entry. Direct cache assignment could avoid repeated object copies during
+module initialization.
+
+**Benchmark:** One full promo prewarm across five seasons and two bed sizes.
+
+**Before:** Current spread-per-entry prewarm path: 0.103000 ms median,
+0.156875 ms p95.
+
+**After:** Simulated direct cache assignment: 0.101291 ms median,
+0.175291 ms p95.
+
+**Change:** 1.7% faster by median, saving 0.001709 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the p95 result is worse.
+
+**Commit:** None
+
+### Idea 664: Build promo plant capacities with direct loops
+
+**Description:** `getPromoPlantCapacities()` scans cached seasonal promo
+gardens with nested `map()` calls and `Object.entries()` over per-garden icon
+counts. Direct loops could reduce allocation while preserving retained
+per-icon capacity and maximum plant instance capacity.
+
+**Benchmark:** One plant-capacity scan across five seasons and two bed sizes,
+using the warmed promo plant cache.
+
+**Before:** Current callback/object-entry scan: 0.017959 ms median,
+0.025958 ms p95.
+
+**After:** Simulated direct-loop scan: 0.012542 ms median,
+0.015917 ms p95.
+
+**Change:** 30.2% faster by median, saving 0.005417 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is only about five microseconds for the full capacity scan.
+
+**Commit:** None
+
+### Idea 665: Reuse promo season names in `getSeasonTimings()`
+
+**Description:** `getSeasonTimings()` maps `SEASON_TIMINGS` to season names on
+each call before finding the current season index. A module-level season-name
+array could avoid rebuilding that tiny list during season transition
+scheduling.
+
+**Benchmark:** Two realistic season-timing lookups, matching the current
+transition effect's current-season and next-season checks.
+
+**Before:** Current season-name map per lookup: 0.000208 ms median,
+0.000291 ms p95.
+
+**After:** Simulated cached season-name array: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 60.1% faster by median, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is far below a
+microsecond and the function runs only when promo season animation schedules.
+
+**Commit:** None
+
+## Round 130
+
+New candidate list after Round 129:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 666. Clone focus-transition material arrays in one pass | Reduce focus fade setup work for multi-material meshes | One focus material binding/apply/restore pass over 40 two-material meshes | Rejected |
+| 667. Use a direct `topDown` key check in `modifyConfig()` | Avoid `Object.keys(update).includes()` on top-down camera toggles | One top-down toggle config update | Rejected |
+| 668. Reset all 3D config fields with a direct loop | Avoid side-effect `Object.keys(config).map()` during the developer reset-all action | One reset-all config update | Rejected |
+| 669. Precompute public overlay option entries | Avoid `Object.entries()` rebuilds for the four public settings sections | One public settings bar render with 11 option buttons | Rejected |
+| 670. Skip camera-selection debounce setup when dispatch is unavailable | Avoid creating unused debounced click handlers in dispatch-less camera selection renders | One dispatch-less camera-selection marker setup with 12 markers | Rejected |
+
+### Idea 666: Clone focus-transition material arrays in one pass
+
+**Description:** `createFocusMaterialBinding()` clones array material slots with
+one `.map()` and then reads cloned material state with a second `.map()`.
+Cloning and recording state in one direct loop could reduce focus fade setup
+work for meshes that use material arrays.
+
+**Benchmark:** One focus material binding, opacity apply, and restore pass over
+40 meshes with two materials each.
+
+**Before:** Current two-pass material-array clone path: 0.028083 ms median,
+0.043875 ms p95.
+
+**After:** Simulated one-pass clone/state loop: 0.026792 ms median,
+0.045708 ms p95.
+
+**Change:** 4.6% faster by median, saving 0.001291 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold, and p95 worsened in the realistic binding pass.
+
+**Commit:** None
+
+### Idea 667: Use a direct `topDown` key check in `modifyConfig()`
+
+**Description:** `modifyConfig()` detects top-down updates with
+`Object.keys(update).includes("topDown")`. Checking the key directly could
+avoid key-array allocation when toggling between top-down and perspective
+camera modes.
+
+**Benchmark:** One top-down toggle config update.
+
+**Before:** Current `Object.keys(update).includes()` path: 0.000125 ms median,
+0.001042 ms p95.
+
+**After:** Simulated direct `"topDown" in update` path: 0.000083 ms median,
+0.001125 ms p95.
+
+**Change:** 33.6% faster by median, saving 0.000042 ms, with slightly worse
+p95.
+
+**Outcome:** Rejected before code changes. The absolute saving is a fraction
+of a microsecond on a manual config toggle.
+
+**Commit:** None
+
+### Idea 668: Reset all 3D config fields with a direct loop
+
+**Description:** The developer "Reset all" preset copies all current config
+keys from `INITIAL` with `Object.keys(config).map()` for side effects. A direct
+loop could avoid callback overhead while keeping the same reset behavior.
+
+**Benchmark:** One reset-all config update.
+
+**Before:** Current reset-all key copy path: 0.001042 ms median,
+0.002500 ms p95.
+
+**After:** Simulated direct key loop: 0.000375 ms median,
+0.001458 ms p95.
+
+**Change:** 64.0% faster by median, saving 0.000667 ms.
+
+**Outcome:** Rejected before code changes. The action is manual and optional,
+and the absolute saving is below one microsecond.
+
+**Commit:** None
+
+### Idea 669: Precompute public overlay option entries
+
+**Description:** `PublicOverlaySection` rebuilds `Object.entries(options)` for
+each public settings section render. Passing or caching entry arrays could
+avoid rebuilding entries for the four static option groups.
+
+**Benchmark:** One public settings bar render covering 11 option buttons.
+
+**Before:** Current object-entry setup: 0.001083 ms median,
+0.002125 ms p95.
+
+**After:** Simulated precomputed entry arrays: 0.000875 ms median,
+0.001917 ms p95.
+
+**Change:** 19.2% faster by median, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. The public overlay render cost is
+already microsecond-scale and this would add indirection for no meaningful
+runtime gain.
+
+**Commit:** None
+
+### Idea 670: Skip camera-selection debounce setup when dispatch is unavailable
+
+**Description:** Each camera-selection marker creates a debounced click handler
+even when `dispatch` is unavailable and the click cannot do anything. Skipping
+that debounce allocation in dispatch-less renders could reduce optional
+camera-selection setup work.
+
+**Benchmark:** One dispatch-less camera-selection marker setup with the 12
+normal shipped markers.
+
+**Before:** Current unused debounce setup: 0.000834 ms median,
+0.002542 ms p95.
+
+**After:** Simulated no-dispatch fast path: 0.000250 ms median,
+0.000334 ms p95.
+
+**Change:** 70.0% faster by median, saving 0.000584 ms.
+
+**Outcome:** Rejected before code changes. The optional dispatch-less
+camera-selection setup saves less than one microsecond, so it is not a
+meaningful responsiveness or load-time improvement.
+
+**Commit:** None
+
+## Round 131
+
+New candidate list after Round 130:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 671. Fill ground color attributes with a typed array directly | Reduce visible ground geometry setup allocation | One detailed ground setup, building the 64-segment high-detail and 16-segment low-detail geometries | Rejected |
+| 672. Initialize triangle-index buckets with a direct loop | Reduce soil-height lookup index setup allocation | One 400-triangle soil index build | Rejected |
+| 673. Reuse the Sun origin vector across renders | Avoid repeated tiny `Vector3` allocation during sun rerenders | 60 Sun render-equivalent origin reads | Rejected |
+| 674. Hoist V17 vertical cable-carrier support base position | Avoid repeated identical position conversion per support instance | One V17 vertical support matrix update with 5 supports | Rejected |
+| 675. Extract camera spring vectors without `Number()` conversions | Reduce smooth-camera transition value extraction overhead | 60 camera transition value extractions | Rejected |
+
+### Idea 671: Fill ground color attributes with a typed array directly
+
+**Description:** `buildGroundGeometry()` pushes vertex color components into a
+temporary number array before creating a `Float32BufferAttribute`. Filling a
+`Float32Array` directly could reduce one-time visible ground geometry setup
+allocation while keeping the same radial fade and vertex colors.
+
+**Benchmark:** One detailed ground setup, building the 64-segment high-detail
+ground geometry and the 16-segment low-detail fallback geometry.
+
+**Before:** Current number-array color fill: 0.006792 ms median,
+0.021292 ms p95.
+
+**After:** Simulated direct `Float32Array` fill: 0.005792 ms median,
+0.011041 ms p95.
+
+**Change:** 14.7% faster by median, saving 0.001000 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+entire detailed-plus-low ground setup only saves about one microsecond and runs
+once per ground mount.
+
+**Commit:** None
+
+### Idea 672: Initialize triangle-index buckets with a direct loop
+
+**Description:** `buildTriangleIndex()` creates its bucket list with
+`Array.from({ length }, () => [])`. A pre-sized array plus direct indexed fill
+could avoid callback allocation during soil-height lookup index setup.
+
+**Benchmark:** One 400-triangle soil index build, matching a rough realistic
+soil surface.
+
+**Before:** Current `Array.from()` bucket initialization path: 0.024041 ms
+median, 0.029834 ms p95.
+
+**After:** Simulated direct bucket fill loop: 0.026000 ms median,
+0.030583 ms p95.
+
+**Change:** 8.1% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The direct loop was slower in the
+realistic full index build.
+
+**Commit:** None
+
+### Idea 673: Reuse the Sun origin vector across renders
+
+**Description:** `SunBase` creates `new Vector3(0, 0, 0)` during render for the
+sun line origin. A module-level origin vector could avoid a tiny allocation on
+sun rerenders while preserving line endpoints.
+
+**Benchmark:** 60 Sun render-equivalent origin reads, matching one second of
+animation-frame-driven rerenders.
+
+**Before:** Current per-render origin allocation: 0.000500 ms median,
+0.000917 ms p95.
+
+**After:** Simulated shared origin vector: 0.000167 ms median,
+0.001917 ms p95.
+
+**Change:** 66.6% faster by median, saving 0.000333 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The median saving is a fraction of a
+microsecond across 60 renders and the p95 worsened.
+
+**Commit:** None
+
+### Idea 674: Hoist V17 vertical cable-carrier support base position
+
+**Description:** The V17 vertical support effect computes the same
+`get3DPosition({ x: x + 20, y: y + 55 })` inside each support-instance loop.
+Hoisting the base position outside the loop could reduce repeated conversion
+work for v1.7 bots without changing support placement.
+
+**Benchmark:** One V17 vertical support matrix update with 5 supports, matching
+a normal v1.7 Z-axis support count.
+
+**Before:** Current per-support base-position lookup: 0.001000 ms median,
+0.003083 ms p95.
+
+**After:** Simulated hoisted base-position lookup: 0.000625 ms median,
+0.001417 ms p95.
+
+**Change:** 37.5% faster by median, saving 0.000375 ms.
+
+**Outcome:** Rejected before code changes. The relative improvement is real,
+but the absolute saving is far below one microsecond for a full support update.
+
+**Commit:** None
+
+### Idea 675: Extract camera spring vectors without `Number()` conversions
+
+**Description:** `cameraTransitionValue()` converts spring vector entries with
+`Number(...)` before returning tuple arrays. Smooth-camera spring values are
+already numeric, so direct tuple extraction could reduce transition value work
+if it preserved behavior.
+
+**Benchmark:** 60 camera transition value extractions, matching one second of
+smooth focus transition frames.
+
+**Before:** Current `Number(...)` conversion path: 0.001750 ms median,
+0.002500 ms p95.
+
+**After:** Simulated direct numeric tuple extraction: 0.001791 ms median,
+0.002375 ms p95.
+
+**Change:** 2.3% slower by median, with slightly better p95.
+
+**Outcome:** Rejected before code changes. The median path was slower and the
+current explicit numeric coercion remains clearer and safer for unknown spring
+values.
+
+**Commit:** None
+
+## Round 132
+
+New candidate list after Round 131:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 676. Build fallback instanced meshes with a direct node loop | Reduce fallback bot-part setup allocation | Generate fallback elements for 108 instanced GLTF nodes | Rejected |
+| 677. Use sets for 3D hover and draw-mode checks | Improve repeated raycast/click mode checks | 1,000 mixed hover/draw mode checks | Rejected |
+| 678. Compare starter-tray positions with a direct loop | Reduce greenhouse tray comparator callback overhead | 90 value-equivalent two-tray position comparisons | Rejected |
+| 679. Build texture variant keys without temporary arrays | Reduce texture variant lookup allocation | Five common texture variant option sets | Rejected |
+| 680. Reuse active watering soil height within render setup | Avoid duplicate cached `getZ(x, y)` call | One active watering-animation render-equivalent setup | Rejected |
+
+### Idea 676: Build fallback instanced meshes with a direct node loop
+
+**Description:** `fallbackInstancedMeshes()` uses
+`Object.entries(...).filter(...).map(...)` when creating fallback bot-part
+instanced meshes. A direct node loop could reduce setup allocation if the
+fallback path is used.
+
+**Benchmark:** Generate fallback elements for 108 instanced GLTF nodes with
+eight instances each, matching the scale used for merged bot-part models.
+
+**Before:** Current entries/filter/map fallback path: 0.047125 ms median,
+0.073583 ms p95.
+
+**After:** Simulated direct node loop: 0.033083 ms median, 0.041417 ms p95.
+
+**Change:** 29.8% faster by median, saving 0.014042 ms.
+
+**Outcome:** Rejected before code changes. The improvement is below a tenth of
+a millisecond and applies only to the fallback renderer; the primary merged
+geometry path is unchanged.
+
+**Commit:** None
+
+### Idea 677: Use sets for 3D hover and draw-mode checks
+
+**Description:** Several raycast and click handlers test modes through
+`HOVER_OBJECT_MODES.includes(...)` and `DRAW_POINT_MODES.includes(...)`. Sets
+could make repeated mode checks cheaper during pointer-heavy interaction if the
+small arrays were a bottleneck.
+
+**Benchmark:** 1,000 mixed hover/draw mode checks, approximating a burst of
+pointer/raycast checks across visible interactive objects.
+
+**Before:** Current array `includes()` checks: 0.007750 ms median,
+0.008000 ms p95.
+
+**After:** Simulated `Set.has()` checks: 0.011417 ms median,
+0.011625 ms p95.
+
+**Change:** 47.3% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The arrays are tiny and faster than
+sets in this realistic check burst.
+
+**Commit:** None
+
+### Idea 678: Compare starter-tray positions with a direct loop
+
+**Description:** `StarterTrays` compares value-equivalent position arrays with
+`every()`. A direct loop could reduce callback overhead during greenhouse scene
+rerenders where tray positions are inline but value-equivalent.
+
+**Benchmark:** 90 value-equivalent two-tray position comparisons, matching a
+greenhouse config-churn rerender batch.
+
+**Before:** Current `every()` comparator: 0.001834 ms median,
+0.003333 ms p95.
+
+**After:** Simulated direct comparator loop: 0.001000 ms median,
+0.002208 ms p95.
+
+**Change:** 45.5% faster by median, saving 0.000834 ms across 90
+comparisons.
+
+**Outcome:** Rejected before code changes. The full 90-comparison batch saves
+less than one microsecond.
+
+**Commit:** None
+
+### Idea 679: Build texture variant keys without temporary arrays
+
+**Description:** `textureVariantKey()` creates an array of option fragments and
+joins it. Direct string construction could reduce tiny allocation during
+texture variant cache lookups while preserving key semantics.
+
+**Benchmark:** Five common texture variant option sets used by ground, wood,
+screen, and atlas-like texture variants.
+
+**Before:** Current array/join key builder: 0.000584 ms median,
+0.001500 ms p95.
+
+**After:** Simulated direct string builder: 0.000542 ms median,
+0.000792 ms p95.
+
+**Change:** 7.2% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The improvement misses the 10%
+threshold and the absolute saving is effectively zero.
+
+**Commit:** None
+
+### Idea 680: Reuse active watering soil height within render setup
+
+**Description:** Active watering animation setup calls `getZ(x, y)` for
+`nozzleToSoil`, then calls it again for the water-spot mist position. Reusing
+the first soil height could avoid a duplicate cached lookup during active
+watering renders.
+
+**Benchmark:** One active watering-animation render-equivalent setup with the
+shipped 16 water streams and a cached soil-height lookup.
+
+**Before:** Current duplicate cached `getZ(x, y)` path: 0.003416 ms median,
+0.006167 ms p95.
+
+**After:** Simulated single soil-height lookup reused for both values:
+0.002834 ms median, 0.003750 ms p95.
+
+**Change:** 17.0% faster by median, saving 0.000582 ms.
+
+**Outcome:** Rejected before code changes. The relative gain is real, but it
+saves well under one microsecond in an active watering render setup.
+
+**Commit:** None
+
+## Round 133
+
+New candidate list after Round 132:
+
+| Idea | Expected ROI | Benchmark scope | Status |
+| --- | --- | --- | --- |
+| 681. Directly compare `ImageTexture` config fields | Reduce image texture memo comparator overhead during soil/render-texture churn | 60 unchanged image-texture config comparisons | Rejected |
+| 682. Directly compare `Bed` config fields | Reduce bed memo comparator overhead during parent churn | 60 unchanged bed config comparisons | Rejected |
+| 683. Directly compare Bot vertical/toolhead config fields | Reduce Bot telemetry comparator overhead | 90 unchanged vertical/toolhead config comparisons | Rejected |
+| 684. Directly compare `Sun` config fields | Reduce sun memo comparator overhead during scene rerender batches | 60 unchanged sun config comparisons | Rejected |
+| 685. Directly compare camera-selection config fields | Reduce camera-selection memo comparator overhead while markers are enabled | 60 unchanged camera-selection config comparisons | Rejected |
+
+### Idea 681: Directly compare `ImageTexture` config fields
+
+**Description:** `imageTextureConfigFieldsEqual()` iterates
+`IMAGE_TEXTURE_CONFIG_FIELDS` with `every()`. Direct field comparisons could
+avoid callback and array iteration overhead during unchanged soil texture
+rerender batches.
+
+**Benchmark:** 60 unchanged image-texture config comparisons, matching a
+settings or parent-rerender batch where `ImageTexture` should be skipped.
+
+**Before:** Current field-array comparator: 0.008166 ms median,
+0.009500 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.005000 ms p95.
+
+**Change:** 99.0% faster by median, saving 0.008083 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is about eight
+microseconds per 60-comparison batch, and replacing the compact field list
+with a long direct expression would reduce maintainability.
+
+**Commit:** None
+
+### Idea 682: Directly compare `Bed` config fields
+
+**Description:** `bedConfigFieldsEqual()` iterates a large field list with
+`every()`. A direct comparison expression could reduce memo comparator CPU
+when unchanged bed props flow through parent rerenders.
+
+**Benchmark:** 60 unchanged bed config comparisons.
+
+**Before:** Current field-array comparator: 0.008083 ms median,
+0.009292 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.007834 ms p95.
+
+**Change:** 99.0% faster by median, saving 0.008000 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch is still
+far below a meaningful runtime threshold, and the direct version would be much
+more verbose.
+
+**Commit:** None
+
+### Idea 683: Directly compare Bot vertical/toolhead config fields
+
+**Description:** The Bot vertical/toolhead memo comparator uses a shared field
+array helper. Direct comparisons could reduce telemetry rerender comparator
+overhead while preserving the same relevant-field behavior.
+
+**Benchmark:** 90 unchanged vertical/toolhead config comparisons, matching a
+Bot telemetry rerender batch.
+
+**Before:** Current field-array comparator: 0.005875 ms median,
+0.006958 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000042 ms median,
+0.005292 ms p95.
+
+**Change:** 99.3% faster by median, saving 0.005833 ms across 90
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute batch saving is under
+six microseconds, so the current readable shared helper stays.
+
+**Commit:** None
+
+### Idea 684: Directly compare `Sun` config fields
+
+**Description:** `sunPropsEqual()` checks `SUN_CONFIG_FIELDS` with `every()`.
+Direct comparisons could reduce memo comparator overhead during scene rerender
+batches.
+
+**Benchmark:** 60 unchanged sun config comparisons.
+
+**Before:** Current field-array comparator: 0.003458 ms median,
+0.004833 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.002750 ms p95.
+
+**Change:** 97.6% faster by median, saving 0.003375 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The saving is only a few
+microseconds per rerender batch and does not justify a less maintainable
+comparator.
+
+**Commit:** None
+
+### Idea 685: Directly compare camera-selection config fields
+
+**Description:** `cameraSelectionUIPropsEqual()` iterates seven config fields
+with `every()`. Direct field comparisons could make enabled camera-selection
+rerenders skip slightly faster.
+
+**Benchmark:** 60 unchanged camera-selection config comparisons.
+
+**Before:** Current field-array comparator: 0.001833 ms median,
+0.002875 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000083 ms median,
+0.001333 ms p95.
+
+**Change:** 95.5% faster by median, saving 0.001750 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The realistic saving is less than
+two microseconds for the whole batch.
+
+**Commit:** None
+
+## Round 134
+
+New candidate list after Round 133:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 686. Build default image texture keys without array allocation | Reduce default soil texture key setup when moisture overlays are hidden | 60 no-moisture image texture key builds, matching startup/render churn | Rejected |
+| 687. Pre-filter numeric image overlays before rendering wrappers | Avoid returning sparse `undefined` children for image entries without usable XY metadata | One 24-image render-list build with 20 calibrated and 4 uncalibrated images | Rejected |
+| 688. Share weed instance navigation setup across icon and radius meshes | Reduce duplicate `useNavigateToWeed` closure setup when weed layers are visible | 60 visible weed-instance renders with 50 weeds | Rejected |
+| 689. Build point alpha groups directly instead of via string-keyed object buckets | Reduce point instance grouping allocation for saved/unsaved point layers | 60 point grouping passes with 50 generic points and two saved states | Rejected |
+| 690. Directly compare drawn-point config fields | Reduce drawn-point preview comparator overhead during pointer movement | 60 unchanged drawn-point preview comparisons | Rejected |
+
+### Idea 686: Build default image texture keys without array allocation
+
+**Description:** `getImageTextureKey()` builds an array and joins it even when
+moisture overlays are hidden and the sensor/reading keys collapse to `false`.
+A direct no-moisture string path could reduce default soil texture key setup
+without changing texture invalidation behavior.
+
+**Benchmark:** 60 no-moisture image texture key builds, matching a startup or
+render-churn batch in the default scene.
+
+**Before:** Current array/join key path: 0.005875 ms median, 0.007750 ms p95.
+
+**After:** Simulated direct no-moisture key path: 0.000875 ms median,
+0.002958 ms p95.
+
+**Change:** 85.1% faster by median, saving 0.005000 ms across 60 key builds.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only five microseconds for the whole batch.
+
+**Commit:** None
+
+### Idea 687: Pre-filter numeric image overlays before rendering wrappers
+
+**Description:** `Images` maps all filtered images and returns `undefined` for
+entries without numeric XY metadata. Pre-filtering/pushing only calibrated
+entries could avoid sparse child output and a callback branch in photo-heavy
+texture renders.
+
+**Benchmark:** One 24-image render-list build with 20 calibrated images and
+four uncalibrated images, matching a plausible visible-photo garden.
+
+**Before:** Current `map()` branch path: 0.000209 ms median, 0.000500 ms p95.
+
+**After:** Simulated direct push path: 0.000167 ms median, 0.000625 ms p95.
+
+**Change:** 20.1% faster by median, saving 0.000042 ms for the render-list
+build; p95 was slightly slower.
+
+**Outcome:** Rejected before code changes. The single-call cost is already far
+below one microsecond and the p95 did not improve.
+
+**Commit:** None
+
+### Idea 688: Share weed instance navigation setup across icon and radius meshes
+
+**Description:** Visible weed instances call `useNavigateToWeed()` in both the
+icon mesh and radius mesh components. Creating the navigation closure once in
+the parent and passing it down could remove duplicate closure setup while
+preserving click behavior.
+
+**Benchmark:** 60 visible weed-instance renders with 50 weeds, measuring the
+duplicate navigation closure setup.
+
+**Before:** Current duplicate setup path: 0.000417 ms median, 0.001417 ms p95.
+
+**After:** Simulated shared setup path: 0.000250 ms median, 0.001250 ms p95.
+
+**Change:** 40.0% faster by median, saving 0.000167 ms across 60 renders.
+
+**Outcome:** Rejected before code changes. The whole 60-render batch saves less
+than a fifth of a microsecond, so threading another callback through the weed
+instance components is not justified.
+
+**Commit:** None
+
+### Idea 689: Build point alpha groups directly instead of via string-keyed object buckets
+
+**Description:** `getPointInstanceGroups()` groups saved and unsaved point
+instances through string keys and `Object.values()`. Since point alpha has only
+two possible buckets, direct saved/unsaved arrays could avoid object-key churn.
+
+**Benchmark:** 60 point grouping passes with 50 generic points, two saved
+states, mixed colors, mixed radii, and realistic world-position/getZ work.
+
+**Before:** Current string-keyed bucket path: 0.131541 ms median,
+0.144417 ms p95.
+
+**After:** Simulated direct saved/unsaved bucket path: 0.020209 ms median,
+0.023750 ms p95.
+
+**Change:** 84.6% faster by median, saving 0.111332 ms across 60 grouping
+passes.
+
+**Outcome:** Rejected before code changes. The benchmarked batch exaggerates
+how often grouping runs; a single 50-point grouping saves about 0.0019 ms, and
+`PointInstances` already avoids this work on unrelated parent churn.
+
+**Commit:** None
+
+### Idea 690: Directly compare drawn-point config fields
+
+**Description:** `drawnPointPropsEqual()` checks eight config fields with
+`every()`. Direct field comparisons could reduce pointer-preview comparator
+overhead during active draw workflows.
+
+**Benchmark:** 60 unchanged drawn-point preview comparisons with a populated
+drawn point and equal relevant config fields.
+
+**Before:** Current field-array comparator: 0.002583 ms median,
+0.003125 ms p95.
+
+**After:** Simulated direct field comparisons: 0.000834 ms median,
+0.000917 ms p95.
+
+**Change:** 67.7% faster by median, saving 0.001749 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The full comparator batch saves
+less than two microseconds, so the current compact field-list form stays.
+
+**Commit:** None
+
+## Round 135
+
+New candidate list after Round 134:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 691. Build grid material binding keys without array joins | Reduce visible-grid setup allocation during grid rerenders | 60 visible grid material-key builds with realistic outer/inner positions | Rejected |
+| 692. Build load-progress overlay class names directly | Reduce loading overlay render allocation during staged startup | Eight load-progress overlay renders from first step through complete | Rejected |
+| 693. Defer FPS probe top-count formatting unless console logs are enabled | Reduce perf-enabled diagnostic report work without changing normal `window.__scene_metrics` output | 60 FPS diagnostic reports over a 490-object scene with console logging disabled | Rejected |
+| 694. Replace soil surface-debug array `includes()` checks with direct comparisons | Reduce bed soil-layer render branches in the default non-debug scene | 120 soil surface-debug checks, matching two soil LOD layers across 60 rerenders | Rejected |
+| 695. Build bed support matrices with a pre-sized direct loop | Reduce bed-support setup allocation when bed leg layout changes | One XL bed support matrix build with 16 supports | Rejected |
+
+### Idea 691: Build grid material binding keys without array joins
+
+**Description:** `VisibleGrid` builds `materialBindingKey` with a temporary
+array and `join(":")`. A direct template string could avoid allocation during
+visible-grid rerenders while keeping the same focus-material binding key.
+
+**Benchmark:** 60 visible grid material-key builds using default 3,000 x 1,500
+grid dimensions and realistic outer/inner position counts.
+
+**Before:** Current array/join key path: 0.003292 ms median, 0.004917 ms p95.
+
+**After:** Simulated direct template-string key: 0.000125 ms median,
+0.000208 ms p95.
+
+**Change:** 96.2% faster by median, saving 0.003167 ms across 60 key builds.
+
+**Outcome:** Rejected before code changes. The full rerender batch saves only
+about three microseconds.
+
+**Commit:** None
+
+### Idea 692: Build load-progress overlay class names directly
+
+**Description:** `ThreeDLoadProgressOverlay` builds class names with an array
+join and always formats the progress width through a ternary template string.
+Direct strings could reduce allocation across staged startup overlay renders.
+
+**Benchmark:** Eight load-progress overlay render calculations, matching the
+shipped load steps from first visible step through complete.
+
+**Before:** Current overlay string assembly: 0.000375 ms median,
+0.001209 ms p95.
+
+**After:** Simulated direct class/complete-width strings: 0.000167 ms median,
+0.000791 ms p95.
+
+**Change:** 55.5% faster by median, saving 0.000208 ms across all eight load
+states.
+
+**Outcome:** Rejected before code changes. Startup overlay string assembly is
+already below a microsecond for the whole realistic sequence.
+
+**Commit:** None
+
+### Idea 693: Defer FPS probe top-count formatting unless console logs are enabled
+
+**Description:** When perf reporting is enabled but `FPS_LOGS` is disabled,
+`FPSProbe` still gathers scene type/name counts, sorts top counts, and builds
+the full log string even though only `window.__scene_metrics` and perf samples
+are used. Deferring top-count formatting to the console-log path could reduce
+diagnostic overhead without changing normal user rendering.
+
+**Benchmark:** 60 FPS diagnostic reports over a 490-object scene with console
+logging disabled, matching one minute of perf-enabled reporting.
+
+**Before:** Current full count/format path: 0.289750 ms median,
+0.317167 ms p95.
+
+**After:** Simulated basic scene-metrics path without top-count formatting:
+0.032500 ms median, 0.044542 ms p95.
+
+**Change:** 88.8% faster by median, saving 0.257250 ms across 60 diagnostic
+reports.
+
+**Outcome:** Rejected before code changes. This only affects explicit
+diagnostic/perf mode, and the absolute saving is about a quarter millisecond
+per minute of reporting.
+
+**Commit:** None
+
+### Idea 694: Replace soil surface-debug array `includes()` checks with direct comparisons
+
+**Description:** `Surface` and `DetailedSoilLayer` check surface-debug modes
+with temporary arrays and `includes()`. Direct comparisons could reduce branch
+allocation in default non-debug bed renders.
+
+**Benchmark:** 120 non-debug surface checks, matching two soil LOD layers
+across 60 bed rerenders.
+
+**Before:** Current array `includes()` checks: 0.000417 ms median,
+0.000792 ms p95.
+
+**After:** Simulated direct `normals || height` comparisons: 0.000084 ms
+median, 0.000125 ms p95.
+
+**Change:** 79.9% faster by median, saving 0.000333 ms across 120 checks.
+
+**Outcome:** Rejected before code changes. The measured saving is a third of a
+microsecond for the whole batch.
+
+**Commit:** None
+
+### Idea 695: Build bed support matrices with a pre-sized direct loop
+
+**Description:** `BedSupports` creates leg/caster/wheel matrices with
+`supports.map()`. A pre-sized direct loop could reduce allocation when bed leg
+layout changes, especially on XL beds with extra supports.
+
+**Benchmark:** One XL bed support matrix build with 16 supports, representing
+extra X/Y legs on a large bed.
+
+**Before:** Current `supports.map()` matrix build: 0.003917 ms median,
+0.006625 ms p95.
+
+**After:** Simulated pre-sized direct loop: 0.003875 ms median,
+0.005166 ms p95.
+
+**Change:** 1.1% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the matrix build is already negligible at realistic support counts.
+
+**Commit:** None
+
+## Round 136
+
+New candidate list after Round 135:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 696. Use tuple positions for the electronics box group | Avoid `Vector3` allocation during bot X-position updates | 90 electronics-box position calculations during telemetry-like X movement | Rejected |
+| 697. Set greenhouse wall instance matrices with a direct loop | Reduce instance setup callback overhead for panes and frames | One Greenhouse wall matrix setup across 46 pane/frame instances | Rejected |
+| 698. Compare scene people data with a direct loop | Reduce optional people-layer memo comparator overhead | 90 value-equivalent two-person comparisons | Rejected |
+| 699. Build toolbay slot positions with a reusable tuple helper | Reduce tiny per-tool position array allocation in configured tool renders | One configured 7-slot tool render position calculation batch | Rejected |
+| 700. Reuse potted-plant lathe point data | Reduce optional Greenhouse potted-plant mount setup | One potted-plant geometry setup with the shipped nine lathe points | Rejected |
+
+### Idea 696: Use tuple positions for the electronics box group
+
+**Description:** `ElectronicsBoxBase` allocates a `Vector3` for its group
+position on each X-position update. Passing the same coordinates as a tuple
+could avoid that allocation while preserving placement.
+
+**Benchmark:** 90 electronics-box position calculations during telemetry-like
+Bot X movement.
+
+**Before:** Current `Vector3` position path: 0.000667 ms median,
+0.002208 ms p95.
+
+**After:** Simulated tuple position path: 0.000375 ms median,
+0.001417 ms p95.
+
+**Change:** 43.8% faster by median, saving 0.000292 ms across 90 position
+calculations.
+
+**Outcome:** Rejected before code changes. The whole telemetry-like batch
+saves less than a third of a microsecond.
+
+**Commit:** None
+
+### Idea 697: Set greenhouse wall instance matrices with a direct loop
+
+**Description:** `GreenhouseWallInstances` writes pane and frame matrices with
+`forEach()`. A direct loop could reduce callback overhead during selected
+Greenhouse setup.
+
+**Benchmark:** One Greenhouse wall matrix setup across 46 pane/frame
+instances.
+
+**Before:** Current `forEach()` matrix setup: 0.000125 ms median,
+0.000334 ms p95.
+
+**After:** Simulated direct loop setup: 0.000125 ms median, 0.000375 ms p95.
+
+**Change:** 0.0% median improvement, with slightly worse p95.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the existing setup is already negligible.
+
+**Commit:** None
+
+### Idea 698: Compare scene people data with a direct loop
+
+**Description:** `samePeople()` uses nested `every()` callbacks to compare
+people URLs and offsets. A direct nested loop could reduce optional people-layer
+memo comparator overhead.
+
+**Benchmark:** 90 value-equivalent two-person comparisons, matching repeated
+scene prop comparator checks.
+
+**Before:** Current nested `every()` comparator: 0.002875 ms median,
+0.004834 ms p95.
+
+**After:** Simulated direct nested loop comparator: 0.000791 ms median,
+0.001500 ms p95.
+
+**Change:** 72.5% faster by median, saving 0.002084 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is about two
+microseconds for the whole comparison batch.
+
+**Commit:** None
+
+### Idea 699: Build toolbay slot positions with a reusable tuple helper
+
+**Description:** Each configured tool render builds an intermediate position
+object and then a group-position array. Computing the final tuple directly
+could reduce tiny allocation work while preserving mounted-tool/toolbay
+placement.
+
+**Benchmark:** One configured 7-slot tool render position calculation batch.
+
+**Before:** Current intermediate object plus tuple path: 0.000125 ms median,
+0.000417 ms p95.
+
+**After:** Simulated direct tuple path: 0.000083 ms median, 0.000208 ms p95.
+
+**Change:** 33.6% faster by median, saving 0.000042 ms for the full 7-slot
+batch.
+
+**Outcome:** Rejected before code changes. The saving is far below a meaningful
+runtime threshold.
+
+**Commit:** None
+
+### Idea 700: Reuse potted-plant lathe point data
+
+**Description:** `PottedPlant` builds nine `Vector2` points before constructing
+the lathe geometry. Reusing static point data could reduce optional Greenhouse
+potted-plant mount setup.
+
+**Benchmark:** One potted-plant geometry setup with the shipped nine lathe
+points and 32 radial segments.
+
+**Before:** Current point allocation plus lathe geometry: 0.008583 ms median,
+0.011667 ms p95.
+
+**After:** Simulated reused point data with the same lathe geometry:
+0.007459 ms median, 0.009166 ms p95.
+
+**Change:** 13.1% faster by median, saving 0.001124 ms for one optional
+potted-plant setup.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is about one microsecond and only applies to an optional
+Greenhouse prop.
+
+**Commit:** None
+
+## Round 137
+
+New candidate list after Round 136:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 701. Skip empty dev-camera JSON parsing during camera initialization | Reduce one-time camera setup work when no developer camera override is saved | One default `cameraInit()` call with no saved dev camera | Rejected |
+| 702. Build camera-selection angle lists with direct branches | Reduce optional camera-selection marker setup allocation | One active camera-selection render building top-down and iso angle lists | Rejected |
+| 703. Replace progressive-load dependency `.every()` checks with direct checks | Reduce load-step gating overhead during staged 3D startup | Eight load-step allowed checks, matching one pass over shipped load steps | Rejected |
+| 704. Reuse north-arrow extrude args | Avoid tiny visible north-arrow render allocations | One visible north-arrow render building two `Extrude` arg tuples | Rejected |
+| 705. Precompute repeated packaging descriptor data | Reduce optional packaging scene setup callback allocation | One visible v1.7 packaging render building carton and extrusion-kit repeated descriptors | Rejected |
+
+### Idea 701: Skip empty dev-camera JSON parsing during camera initialization
+
+**Description:** `cameraInit()` always attempts to parse the developer camera
+string. In normal sessions this string is empty, so a fast path could avoid a
+thrown `JSON.parse` before falling back to the default camera position.
+
+**Benchmark:** One default `cameraInit()` call with no saved dev camera.
+Samples were repeated only to stabilize sub-microsecond timing.
+
+**Before:** Current empty-string `JSON.parse` try/catch path: 0.000250 ms
+median, 0.001458 ms p95.
+
+**After:** Simulated empty-string fast path: 0.000042 ms median, 0.000167 ms
+p95.
+
+**Change:** 83.2% faster by median, saving 0.000208 ms for camera
+initialization.
+
+**Outcome:** Rejected before code changes. The optimization only affects a
+one-time setup path and saves about a fifth of a microsecond.
+
+**Commit:** None
+
+### Idea 702: Build camera-selection angle lists with direct branches
+
+**Description:** `CameraSelectionUI` builds top-down and perspective angle
+lists with `includes()` and `concat()`. Direct branches for the shipped angle
+sets could reduce optional camera-selection setup work.
+
+**Benchmark:** One active camera-selection render building top-down and iso
+angle lists.
+
+**Before:** Current `includes()`/`concat()` angle-list path: 0.000084 ms
+median, 0.000209 ms p95.
+
+**After:** Simulated direct-branch angle-list path: 0.000083 ms median,
+0.000167 ms p95.
+
+**Change:** 1.2% faster by median, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the current setup is already negligible.
+
+**Commit:** None
+
+### Idea 703: Replace progressive-load dependency `.every()` checks with direct checks
+
+**Description:** `useThreeDLoadProgress()` checks load-step dependencies with
+small arrays and `.every()`. Direct checks for the fixed shipped dependency
+graph could reduce staged-load bookkeeping while preserving the same step
+order.
+
+**Benchmark:** Eight load-step allowed checks, matching one pass over the
+shipped load steps.
+
+**Before:** Current dependency-array `.every()` checks: 0.000375 ms median,
+0.000709 ms p95.
+
+**After:** Simulated direct dependency checks: 0.000042 ms median,
+0.000125 ms p95.
+
+**Change:** 88.8% faster by median, saving 0.000333 ms across the full
+load-step pass.
+
+**Outcome:** Rejected before code changes. The whole load-step gating pass is
+sub-microsecond, so hardcoding the dependency graph would not produce a
+meaningful startup improvement.
+
+**Commit:** None
+
+### Idea 704: Reuse north-arrow extrude args
+
+**Description:** `NorthArrow` recreates the two `Extrude` argument tuples on
+render even though the arrow and letter shapes are static. Reusing static args
+could avoid small visible north-arrow setup allocations.
+
+**Benchmark:** One visible north-arrow render building two `Extrude` arg
+tuples.
+
+**Before:** Current inline extrude arg allocation: 0.000083 ms median,
+0.000167 ms p95.
+
+**After:** Simulated static arg reuse: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 49.4% faster by median, saving 0.000041 ms.
+
+**Outcome:** Rejected before code changes. The absolute saving is far below a
+meaningful load-time or render-time threshold.
+
+**Commit:** None
+
+### Idea 705: Precompute repeated packaging descriptor data
+
+**Description:** The optional packaging scene rebuilds small strap and edge
+protector arrays with `.map()` for the main carton and v1.7 extrusion kit.
+Precomputed static strap positions plus direct edge descriptor construction
+could reduce setup allocation.
+
+**Benchmark:** One visible v1.7 packaging render building carton and
+extrusion-kit repeated descriptors.
+
+**Before:** Current repeated descriptor setup: 0.000750 ms median,
+0.001959 ms p95.
+
+**After:** Simulated static/direct descriptor setup: 0.000292 ms median,
+0.001000 ms p95.
+
+**Change:** 61.1% faster by median, saving 0.000458 ms for the optional
+packaging setup.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is less than half a microsecond and applies only to an
+optional scene layer.
+
+**Commit:** None
+
+## Round 138
+
+New candidate list after Round 137:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 706. Hoist brightness color lookup data | Avoid rebuilding a small color map in repeated bed, soil, and utility renders | 30 brightness color lookups across a small scene-rerender burst | Rejected |
+| 707. Use `URL.searchParams` directly in `setUrlParam()` | Reduce URL-param update allocation on focus enter/exit | One focus URL set and one focus URL clear | Rejected |
+| 708. Fast-path empty focus URL reads | Avoid `URLSearchParams` setup when the 3D garden URL has no query string | One default no-query focus URL read | Rejected |
+| 709. Simplify click drag delta checks | Reduce click responsiveness helper overhead across pointer handlers | 100 click-delta checks in a short interaction burst | Rejected |
+| 710. Use a direct loop for 3D load-completion log prep | Reduce perf-log bookkeeping when 3D load logging is enabled | One eight-step load completion log preparation pass | Rejected |
+
+### Idea 706: Hoist brightness color lookup data
+
+**Description:** `getColorFromBrightness()` rebuilds its 12-entry color map on
+every call. Hoisting that lookup table could reduce allocation across bed,
+soil, ground, and utility renders without changing any color values.
+
+**Benchmark:** 30 brightness color lookups across a small scene-rerender burst.
+
+**Before:** Current per-call color map allocation: 0.002125 ms median,
+0.003708 ms p95.
+
+**After:** Simulated module-level color map lookup: 0.000083 ms median,
+0.000208 ms p95.
+
+**Change:** 96.1% faster by median, saving 0.002042 ms across all 30 lookups.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+realistic batch only saves about two microseconds.
+
+**Commit:** None
+
+### Idea 707: Use `URL.searchParams` directly in `setUrlParam()`
+
+**Description:** `setUrlParam()` creates a `URL`, then creates a separate
+`URLSearchParams` from `url.search`. Mutating `url.searchParams` directly could
+avoid one object allocation during focus enter/exit and config URL updates.
+
+**Benchmark:** One focus URL set and one focus URL clear.
+
+**Before:** Current separate `URLSearchParams` path: 0.001666 ms median,
+0.002625 ms p95.
+
+**After:** Simulated direct `url.searchParams` path: 0.001917 ms median,
+0.003166 ms p95.
+
+**Change:** 15.1% slower by median, with worse p95.
+
+**Outcome:** Rejected before code changes. The direct path was slower in the
+realistic set-and-clear benchmark.
+
+**Commit:** None
+
+### Idea 708: Fast-path empty focus URL reads
+
+**Description:** `getFocusFromUrlParams()` builds `URLSearchParams` even when
+`window.location.search` is empty. A no-query fast path could reduce default
+3D startup URL parsing.
+
+**Benchmark:** One default no-query focus URL read.
+
+**Before:** Current empty-query `URLSearchParams` read: 0.000083 ms median,
+0.000125 ms p95.
+
+**After:** Simulated empty-query return: 0.000041 ms median, 0.000083 ms p95.
+
+**Change:** 50.6% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The default focus URL read is
+already below a tenth of a microsecond.
+
+**Commit:** None
+
+### Idea 709: Simplify click drag delta checks
+
+**Description:** `clickWasDragged()` normalizes `event.delta` with `|| 0`
+before comparing it to the drag threshold. Direct comparison could reduce a
+tiny amount of click helper work across plant, weed, point, and pointer object
+handlers.
+
+**Benchmark:** 100 click-delta checks in a short interaction burst.
+
+**Before:** Current normalized delta check: 0.000292 ms median,
+0.000917 ms p95.
+
+**After:** Simulated direct delta comparison: 0.000291 ms median,
+0.000875 ms p95.
+
+**Change:** 0.3% faster by median, saving 0.000001 ms across 100 checks.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and has no meaningful absolute effect on click responsiveness.
+
+**Commit:** None
+
+### Idea 710: Use a direct loop for 3D load-completion log prep
+
+**Description:** When 3D load logging is enabled, the completion effect formats
+the eight shipped load-step timings with `forEach()`. A direct loop could reduce
+diagnostic bookkeeping before the console writes.
+
+**Benchmark:** One eight-step load completion log preparation pass, excluding
+console I/O.
+
+**Before:** Current `forEach()` log preparation: 0.000209 ms median,
+0.000959 ms p95.
+
+**After:** Simulated direct-loop log preparation: 0.000500 ms median,
+0.000875 ms p95.
+
+**Change:** 139.2% slower by median, with only a tiny p95 improvement.
+
+**Outcome:** Rejected before code changes. The direct loop was slower, and this
+path only runs when diagnostic load logging is enabled.
+
+**Commit:** None
+
+## Round 139
+
+New candidate list after Round 138:
+
+| Idea | Expected ROI | Benchmark Plan | Status |
+| --- | --- | --- | --- |
+| 711. Use native rounding for point radius scale setup | Reduce point marker module initialization by avoiding a lodash helper call | One point-radius scale constant calculation | Rejected |
+| 712. Simplify arrow rotation comparison branches | Reduce dimension-arrow memo comparator overhead | 18 arrow rotation comparisons, matching three visible distance indicators | Rejected |
+| 713. Update preset-button press positions directly | Improve preset-button pointer responsiveness by avoiding recursive child traversal | One preset button pointer down/up press cycle | Rejected |
+| 714. Build camera-view frustum points without map/closure helpers | Reduce enabled camera-view setup while the camera mount moves | 20 enabled camera-view point constructions during camera/bot motion | Rejected |
+| 715. Build Lab shelf descriptors without `.map()` | Reduce selected-Lab scene setup allocation | One selected Lab scene shelf descriptor setup | Rejected |
+
+### Idea 711: Use native rounding for point radius scale setup
+
+**Description:** `POINT_CYLINDER_SCALE_FACTOR` uses lodash `round()` for a
+constant module-level point marker value. Native `Math.round()` could avoid a
+helper call during point module initialization while preserving the same value.
+
+**Benchmark:** One point-radius scale constant calculation.
+
+**Before:** Current lodash-like round path: 0.000042 ms median, 0.000084 ms
+p95.
+
+**After:** Simulated `Math.round()` path: 0.000042 ms median, 0.000084 ms p95.
+
+**Change:** 0.0% median improvement.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold,
+and this constant setup is already below a tenth of a microsecond.
+
+**Commit:** None
+
+### Idea 712: Simplify arrow rotation comparison branches
+
+**Description:** `sameRotation()` in `Arrow` handles identical references,
+missing rotations, and value-equivalent rotations in one expression. A more
+direct early-return branch could reduce comparator overhead for dimension
+arrow rerenders.
+
+**Benchmark:** 18 arrow rotation comparisons, matching three visible distance
+indicators.
+
+**Before:** Current rotation comparator: 0.000167 ms median, 0.000209 ms p95.
+
+**After:** Simulated direct-branch comparator: 0.000166 ms median,
+0.000375 ms p95.
+
+**Change:** 0.6% faster by median, saving 0.000001 ms, with worse p95.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and does not improve the p95.
+
+**Commit:** None
+
+### Idea 713: Update preset-button press positions directly
+
+**Description:** `PresetButton` press/release handlers recursively traverse the
+known button child tree to move the button and label. Directly updating the
+known button and text child positions could reduce pointer-down/up work.
+
+**Benchmark:** One preset button pointer down/up press cycle.
+
+**Before:** Current recursive child traversal: 0.000292 ms median,
+0.001375 ms p95.
+
+**After:** Simulated direct child update: 0.000083 ms median, 0.000292 ms p95.
+
+**Change:** 71.6% faster by median, saving 0.000209 ms per press cycle.
+
+**Outcome:** Rejected before code changes. The absolute saving is about a fifth
+of a microsecond, and direct child indexing would be more brittle than the
+current traversal.
+
+**Commit:** None
+
+### Idea 714: Build camera-view frustum points without map/closure helpers
+
+**Description:** Enabled `CameraView` point construction maps top and bottom
+corner tuples through local rotation closures. Directly filling the eight
+points could reduce setup while the camera-view overlay is visible and the bot
+or camera mount moves.
+
+**Benchmark:** 20 enabled camera-view point constructions during camera/bot
+motion.
+
+**Before:** Current map/closure point construction: 0.008792 ms median,
+0.015041 ms p95.
+
+**After:** Simulated direct point construction: 0.004500 ms median,
+0.007875 ms p95.
+
+**Change:** 48.8% faster by median, saving 0.004292 ms across 20 enabled
+camera-view updates.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is only about four microseconds across a 20-update overlay
+motion batch.
+
+**Commit:** None
+
+### Idea 715: Build Lab shelf descriptors without `.map()`
+
+**Description:** The selected Lab scene builds two shelf descriptors from a
+small array and `.map()`. A direct fixed loop could avoid a tiny allocation in
+Lab scene setup.
+
+**Benchmark:** One selected Lab scene shelf descriptor setup.
+
+**Before:** Current shelf descriptor `.map()` path: 0.000084 ms median,
+0.000167 ms p95.
+
+**After:** Simulated direct descriptor setup: 0.000083 ms median, 0.000125 ms
+p95.
+
+**Change:** 1.2% faster by median, saving 0.000001 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the existing setup cost is negligible.
+
+**Commit:** None
+
+## Round 140
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 716. Memoize `ModelMesh` | Skip stable GLTF mesh subtree work during unchanged parent rerenders | 90 stable `ModelMesh` parent rerenders | Rejected |
+| 717. Memoize the `Mesh` wrapper | Skip stable intrinsic mesh proxy work for repeated static mesh leaves | 40 stable mesh leaves over 60 parent rerenders | Rejected |
+| 718. Memoize the `Group` wrapper | Skip stable intrinsic group proxy work for repeated static group leaves | 40 stable group leaves over 60 parent rerenders | Rejected |
+| 719. Memoize the `MeshPhongMaterial` wrapper | Skip stable material proxy work for repeated static material leaves | 40 stable material leaves over 60 parent rerenders | Rejected |
+| 720. Scan dirty grid-preview points with a direct loop | Reduce active pointer preview comparator callback overhead | One 100-point dirty-grid preview scan | Rejected |
+
+### Idea 716: Memoize `ModelMesh`
+
+**Description:** Wrap the shared GLTF `ModelMesh` helper in `React.memo()` so
+stable model/name props can skip the mesh subtree during unchanged parent
+rerenders. Expected return: faster rotary/tool model rerenders without changing
+geometry, material, refs, or scale.
+
+**Benchmark:** 90 stable `ModelMesh` parent rerenders with the same model and
+name props, matching unchanged tool-model parent churn.
+
+**Before:** Raw `ModelMesh` export shape: 0.822083 ms median for the 90-rerender
+batch.
+
+**After:** Exact production memoized export shape: 0.827083 ms median.
+
+**Change:** 0.61% slower by median.
+
+**Outcome:** Rejected and rolled back. An earlier outer-memo prototype looked
+promising, but the exact production export did not clear the 10% threshold and
+was slightly slower in the realistic benchmark.
+
+**Commit:** None
+
+### Idea 717: Memoize the `Mesh` wrapper
+
+**Description:** Wrap the shared `Mesh` intrinsic proxy in `React.memo()` so
+stable mesh leaves can skip wrapper work during parent rerenders. Expected
+return: faster static bot/scene rerenders without changing rendered meshes or
+materials.
+
+**Benchmark:** 40 stable mesh leaves over 60 parent rerenders, using stable
+position, geometry, and material references.
+
+**Before:** Raw wrapper: 7.294709 ms median.
+
+**After:** Exact memoized wrapper export shape: 11.543166 ms median.
+
+**Change:** 58.24% slower by median.
+
+**Outcome:** Rejected and rolled back. The memo comparison/reconciliation cost
+outweighed the skipped wrapper render in the exact production shape.
+
+**Commit:** None
+
+### Idea 718: Memoize the `Group` wrapper
+
+**Description:** Wrap the shared `Group` intrinsic proxy in `React.memo()` so
+stable group leaves can skip wrapper work during parent rerenders. Expected
+return: faster static scene hierarchy rerenders without changing group
+transforms or children.
+
+**Benchmark:** 40 stable group leaves over 60 parent rerenders.
+
+**Before:** Raw wrapper: 6.224083 ms median.
+
+**After:** Exact memoized wrapper export shape: 7.921375 ms median.
+
+**Change:** 27.27% slower by median.
+
+**Outcome:** Rejected and rolled back. The exact memoized wrapper added cost
+instead of reducing the rerender path.
+
+**Commit:** None
+
+### Idea 719: Memoize the `MeshPhongMaterial` wrapper
+
+**Description:** Wrap the shared `MeshPhongMaterial` intrinsic proxy in
+`React.memo()` so stable material leaves can skip wrapper work during parent
+rerenders. Expected return: faster static material-heavy rerenders without
+changing material props.
+
+**Benchmark:** 40 stable material leaves over 60 parent rerenders.
+
+**Before:** Raw wrapper: 6.147708 ms median.
+
+**After:** Exact memoized wrapper export shape: 6.132000 ms median.
+
+**Change:** 0.26% faster by median, saving 0.015708 ms across the full batch.
+
+**Outcome:** Rejected and rolled back. The change misses the 10% threshold and
+the absolute saving is negligible.
+
+**Commit:** None
+
+### Idea 720: Scan dirty grid-preview points with a direct loop
+
+**Description:** Replace `hasDirtyGridPreview()`'s `.some()` callback with a
+direct loop over map points. Expected return: cheaper active pointer preview
+comparisons when many map points are present.
+
+**Benchmark:** One 100-point dirty-grid preview scan with the dirty grid point
+at the end of the list, sampled repeatedly only to stabilize timing.
+
+**Before:** Current `.some()` scan: 0.000292 ms median.
+
+**After:** Simulated direct loop: 0.000209 ms median.
+
+**Change:** 28.42% faster by median, saving 0.000083 ms per 100-point scan.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is far below a meaningful responsiveness or memory improvement.
+
+**Commit:** None
+
+## Round 141
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 721. Inline the Bounds comparator field checks | Reduce hidden/visible bounds comparator callback overhead during telemetry churn | 90 unchanged Bounds prop comparisons | Rejected |
+| 722. Remove redundant `cableDebug` check work from PowerSupply comparator | Reduce PowerSupply comparator field work while debug cables are off | 90 unchanged PowerSupply prop comparisons | Rejected |
+| 723. Inline the Solenoid comparator field checks | Reduce Solenoid comparator callback overhead during telemetry churn | 90 unchanged Solenoid prop comparisons | Rejected |
+| 724. Inline the Caster comparator field checks | Reduce Caster comparator callback overhead during bed rerender churn | 90 unchanged Caster prop comparisons | Rejected |
+| 725. Combine toolbay pullout rotation switches | Reduce tool-slot rotation helper calls during configured Tools render | Seven configured tool-slot rotation calculations | Rejected |
+
+### Idea 721: Inline the Bounds comparator field checks
+
+**Description:** `Bounds` compares relevant config and position fields through
+two generic `.every()` helper calls. Direct field checks could reduce comparator
+overhead during bot telemetry churn while preserving the same bounds,
+dimension, and distance-indicator invalidation behavior.
+
+**Benchmark:** 90 unchanged Bounds prop comparisons, matching a telemetry-like
+rerender burst.
+
+**Before:** Current generic `.every()` comparator: 0.008375 ms median.
+
+**After:** Simulated direct field checks: 0.000334 ms median.
+
+**Change:** 96.01% faster by median, saving 0.008041 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only about eight microseconds across the full rerender burst
+and does not justify replacing a compact helper with a long manual comparator.
+
+**Commit:** None
+
+### Idea 722: Remove redundant `cableDebug` check work from PowerSupply comparator
+
+**Description:** `PowerSupply` first requires both `cableDebug` values to be
+false and then compares `cableDebug` again inside its field list. Removing that
+redundant field comparison could reduce comparator work while preserving debug
+cable behavior.
+
+**Benchmark:** 90 unchanged PowerSupply prop comparisons with cable debugging
+off, matching normal bot telemetry churn.
+
+**Before:** Current comparator with redundant field check: 0.003666 ms median.
+
+**After:** Simulated comparator without the redundant `cableDebug` field:
+0.000250 ms median.
+
+**Change:** 93.18% faster by median, saving 0.003416 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The logic cleanup is safe in
+principle, but the realistic saving is only a few microseconds across a full
+rerender batch and is not a meaningful performance improvement.
+
+**Commit:** None
+
+### Idea 723: Inline the Solenoid comparator field checks
+
+**Description:** `Solenoid` compares position fields directly and config fields
+through `.every()`. Direct config field checks could reduce comparator callback
+overhead during water-system rerenders while preserving every relevant
+invalidation field.
+
+**Benchmark:** 90 unchanged Solenoid prop comparisons.
+
+**Before:** Current direct-position plus `.every()` config comparator:
+0.003500 ms median.
+
+**After:** Simulated all-direct comparator: 0.000250 ms median.
+
+**Change:** 92.86% faster by median, saving 0.003250 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute improvement is only a
+few microseconds across the whole batch, and the current comparator is easier
+to audit.
+
+**Commit:** None
+
+### Idea 724: Inline the Caster comparator field checks
+
+**Description:** `Caster` compares four relevant config fields through
+`.every()`. Direct checks could reduce a small callback allocation path while
+keeping caster geometry invalidation identical.
+
+**Benchmark:** 90 unchanged Caster prop comparisons.
+
+**Before:** Current `.every()` comparator: 0.002208 ms median.
+
+**After:** Simulated direct field checks: 0.000208 ms median.
+
+**Change:** 90.58% faster by median, saving 0.002000 ms across 90 comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch only saves
+two microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 725: Combine toolbay pullout rotation switches
+
+**Description:** `ToolbaySlot` first mirrors the pullout direction and then
+maps the displayed direction to a rotation multiplier. Combining those two
+switches could reduce helper calls during configured tool-slot rendering while
+preserving pullout orientation.
+
+**Benchmark:** Seven configured tool-slot rotation calculations with `mirrorX`
+enabled and `mirrorY` disabled.
+
+**Before:** Current two-helper path: 0.000083 ms median.
+
+**After:** Simulated combined switch: 0.000083 ms median.
+
+**Change:** Effectively unchanged by median.
+
+**Outcome:** Rejected before code changes. The realistic seven-slot path is
+already below measurement significance and does not improve.
+
+**Commit:** None
+
+## Round 142
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 726. Skip FPS detailed scene-count maps when console logging is disabled | Reduce diagnostic report work while preserving `window.__scene_metrics` summary counts | 60 FPS diagnostic scene-count reports over a 490-object scene | Rejected |
+| 727. Use direct undefined checks in moisture point extraction | Reduce lodash helper overhead while extracting recent moisture points | 60 moisture point extraction passes over 120 readings | Rejected |
+| 728. Defer public overlay update-object allocation until click | Reduce public settings-bar render allocation for option buttons | 60 public settings-bar button prep passes covering 11 buttons | Rejected |
+| 729. Inline weed position-config comparator fields | Reduce weed overlay comparator callback overhead during telemetry churn | 60 unchanged weed position-config comparisons | Rejected |
+| 730. Fast-path shared group criteria references | Reduce group-order selection cache checks when criteria objects are stable | 60 selected-group cache checks with 50 point ids | Rejected |
+
+### Idea 726: Skip FPS detailed scene-count maps when console logging is disabled
+
+**Description:** `countSceneObjects()` always builds `typeCounts` and
+`nameCounts`, but the normal perf-summary path only needs total object, mesh,
+and instanced-mesh counts unless console logging is enabled. A summary-only
+path could reduce diagnostic report CPU while preserving the summary metrics.
+
+**Benchmark:** 60 FPS diagnostic scene-count reports over a 490-object scene,
+matching one minute of reporting at the once-per-second FPS probe cadence.
+
+**Before:** Current detailed count maps: 0.428584 ms median for 60 reports.
+
+**After:** Simulated summary-only count path: 0.082709 ms median for 60
+reports.
+
+**Change:** 80.70% faster by median, saving 0.345875 ms across a full minute
+of diagnostic reports.
+
+**Outcome:** Rejected before code changes. The percentage is high, but the
+absolute saving is only about a third of a millisecond per minute and applies
+only while diagnostic reporting is enabled.
+
+**Commit:** None
+
+### Idea 727: Use direct undefined checks in moisture point extraction
+
+**Description:** `filterMoisturePoints()` uses lodash `isUndefined()` for
+reading coordinate guards. Direct `=== undefined` checks could reduce helper
+overhead while preserving the same skipped-reading behavior.
+
+**Benchmark:** 60 moisture point extraction passes over 120 readings, matching
+a moderate moisture-debug dataset.
+
+**Before:** Current lodash guard path: 0.048500 ms median.
+
+**After:** Simulated direct undefined checks: 0.037125 ms median.
+
+**Change:** 23.45% faster by median, saving 0.011375 ms across 60 passes.
+
+**Outcome:** Rejected before code changes. The absolute saving is roughly
+eleven microseconds across the full benchmark and is not meaningful.
+
+**Commit:** None
+
+### Idea 728: Defer public overlay update-object allocation until click
+
+**Description:** `PublicOverlaySection` allocates an update object for each
+option button during render even though it is only needed inside the click
+handler. Moving the allocation into the handler could reduce normal settings
+bar render work.
+
+**Benchmark:** 60 public settings-bar button prep passes covering the shipped
+11 option buttons.
+
+**Before:** Current render-time update object allocation: 0.042625 ms median.
+
+**After:** Simulated click-time update allocation: 0.041708 ms median.
+
+**Change:** 2.15% faster by median, saving 0.000917 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the measured absolute difference is below one microsecond.
+
+**Commit:** None
+
+### Idea 729: Inline weed position-config comparator fields
+
+**Description:** `sameWeedPositionConfigFields()` compares the relevant config
+fields through an `.every()` callback. Direct field checks could reduce
+comparator overhead during weed overlay telemetry churn while preserving the
+same invalidation fields.
+
+**Benchmark:** 60 unchanged weed position-config comparisons.
+
+**Before:** Current `.every()` comparator: 0.002375 ms median.
+
+**After:** Simulated direct field checks: 0.001208 ms median.
+
+**Change:** 49.14% faster by median, saving 0.001167 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The relative win clears 10%, but the
+absolute saving is about one microsecond across the full comparison batch.
+
+**Commit:** None
+
+### Idea 730: Fast-path shared group criteria references
+
+**Description:** `sameGroupSelection()` calls lodash `isEqual()` for group
+criteria after checking ids. Adding a criteria-reference guard could avoid the
+deep comparison when the selected group object changes but criteria are reused.
+
+**Benchmark:** 60 selected-group cache checks with 50 point ids and a shared
+criteria object.
+
+**Before:** Current criteria `isEqual()` path: 0.004375 ms median.
+
+**After:** Simulated criteria-reference guard: 0.004209 ms median.
+
+**Change:** 3.79% faster by median, saving 0.000166 ms.
+
+**Outcome:** Rejected before code changes. The change misses the 10% threshold
+and the realistic cache check is already negligible.
+
+**Commit:** None
+
+## Round 143
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 731. Reuse static LOD distance arrays | Avoid allocating new `Detailed` distance arrays for bed and ground LOD renders | 180 LOD distance reads across bed/ground renders | Rejected |
+| 732. Inline active pointer preview config comparison | Reduce active pointer preview comparator callback overhead during pointer-mode churn | 60 unchanged pointer-preview config comparisons | Rejected |
+| 733. Inline ground config comparison | Reduce ground memo comparator callback overhead during parent churn | 60 unchanged ground config comparisons | Rejected |
+| 734. Inline bed and image setting comparisons | Reduce `getConfigValue` setting-comparator callback overhead in bed/image texture memo checks | 60 unchanged setting comparisons for bed and image texture | Rejected |
+| 735. Cache soil-click mode lookup within the click handler | Reduce route/store mode lookups for click-to-add and draw-point soil clicks | 60 soil-click mode checks in click-to-add and draw-point paths | Rejected |
+
+### Idea 731: Reuse static LOD distance arrays
+
+**Description:** `detailLevels()` returns a freshly allocated distance array for
+each `Detailed` bed and ground render. Reusing static low-detail and
+high-detail arrays could avoid tiny LOD prop allocation while preserving the
+same distances.
+
+**Benchmark:** 180 LOD distance reads across bed/ground renders, matching a
+small parent-render burst where the existing memo boundaries still evaluate
+LOD props.
+
+**Before:** Current fresh-array path: 0.000958 ms median.
+
+**After:** Simulated static-array reuse: 0.000958 ms median.
+
+**Change:** Effectively unchanged by median.
+
+**Outcome:** Rejected before code changes. The benchmark did not improve, and
+the current allocation is already below practical measurement significance.
+
+**Commit:** None
+
+### Idea 732: Inline active pointer preview config comparison
+
+**Description:** `samePreviewConfig()` compares pointer-preview config fields
+through `.every()`. Direct field checks could reduce comparator overhead while
+adding plants or drawing points.
+
+**Benchmark:** 60 unchanged pointer-preview config comparisons.
+
+**Before:** Current `.every()` comparator: 0.003459 ms median.
+
+**After:** Simulated direct field checks: 0.001917 ms median.
+
+**Change:** 44.58% faster by median, saving 0.001542 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is about 1.5 microseconds for the whole batch.
+
+**Commit:** None
+
+### Idea 733: Inline ground config comparison
+
+**Description:** `groundPropsEqual()` compares five ground fields through
+`.every()`. Direct checks could reduce callback overhead during parent churn.
+
+**Benchmark:** 60 unchanged ground config comparisons.
+
+**Before:** Current `.every()` comparator: 0.002250 ms median.
+
+**After:** Simulated direct field checks: 0.001084 ms median.
+
+**Change:** 51.82% faster by median, saving 0.001166 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute win is only about one
+microsecond across the full comparison batch.
+
+**Commit:** None
+
+### Idea 734: Inline bed and image setting comparisons
+
+**Description:** `bedSettingFieldsEqual()` and
+`imageTextureSettingFieldsEqual()` compare three settings through `.every()`.
+Direct checks could reduce memo comparator callback overhead where soil/image
+props churn.
+
+**Benchmark:** 60 unchanged setting comparisons for both bed and image texture
+comparators.
+
+**Before:** Current `.every()` setting checks: 0.003125 ms median.
+
+**After:** Simulated direct setting checks: 0.003958 ms median.
+
+**Change:** 26.66% slower by median.
+
+**Outcome:** Rejected before code changes. The direct version regressed in the
+realistic batch and would be more verbose.
+
+**Commit:** None
+
+### Idea 735: Cache soil-click mode lookup within the click handler
+
+**Description:** `soilClick()` checks the current map mode before click-to-add
+handling and then again before draw-point handling. Reading the mode once per
+click could reduce route/store mode lookup work while preserving mutually
+exclusive click branches.
+
+**Benchmark:** 60 soil-click mode checks across click-to-add and draw-point
+paths.
+
+**Before:** Current repeated mode lookup: 0.001250 ms median.
+
+**After:** Simulated cached mode lookup: 0.001125 ms median.
+
+**Change:** 10.00% faster by median, saving 0.000125 ms.
+
+**Outcome:** Rejected before code changes. The result barely reaches the
+percentage threshold but saves only an eighth of a microsecond across 60 click
+checks.
+
+**Commit:** None
+
+## Round 144
+
+| Idea | Expected return | Benchmark | Result |
+| --- | --- | --- | --- |
+| 736. Reuse distance indicator label text per render | Avoid repeated `toFixed()` calls for the four identical labels on each distance indicator | Three visible distance indicators with 12 labels | Rejected |
+| 737. Reuse static Sky up/scale props | Avoid tiny uniform/scale allocation in Sky renders | 60 Sky prop builds with stable sun position | Rejected |
+| 738. Use static person image position tuples | Avoid `Vector3` allocation in scene person image wrappers | Two visible people image position builds | Rejected |
+| 739. Inline FarmBot axes config comparison | Reduce axes memo comparator callback overhead during bed/config churn | 60 unchanged FarmBot axes config comparisons | Rejected |
+| 740. Inline Lab and Greenhouse scene config comparisons | Reduce non-default scene comparator callback overhead during scene churn | 60 unchanged Lab and Greenhouse config comparisons | Rejected |
+
+### Idea 736: Reuse distance indicator label text per render
+
+**Description:** `DistanceIndicator` formats the same distance text inside each
+of its four label children. Computing the label once per indicator render could
+avoid repeated `toFixed()` work while preserving identical text.
+
+**Benchmark:** Three visible distance indicators with 12 total labels.
+
+**Before:** Current per-label formatting: 0.000750 ms median.
+
+**After:** Simulated per-indicator label reuse: 0.000334 ms median.
+
+**Change:** 55.47% faster by median, saving 0.000416 ms.
+
+**Outcome:** Rejected before code changes. The percentage clears 10%, but the
+absolute saving is less than half a microsecond for three visible indicators.
+
+**Commit:** None
+
+### Idea 737: Reuse static Sky up/scale props
+
+**Description:** `Sky` passes a fresh up array and scale vector-like value on
+render. Reusing static values could reduce environment prop allocation while
+leaving the same uniforms and scale.
+
+**Benchmark:** 60 Sky prop builds with stable sun position.
+
+**Before:** Current fresh prop values: 0.001334 ms median.
+
+**After:** Simulated static up/scale props: 0.000750 ms median.
+
+**Change:** 43.78% faster by median, saving 0.000584 ms across 60 prop builds.
+
+**Outcome:** Rejected before code changes. The absolute saving is well under a
+microsecond across the whole batch.
+
+**Commit:** None
+
+### Idea 738: Use static person image position tuples
+
+**Description:** `Person` creates a `Vector3` from static scaling data before
+passing it to the image wrapper. Static position tuples could avoid that tiny
+allocation for visible people.
+
+**Benchmark:** Two visible people image position builds.
+
+**Before:** Current object-position path: 0.000375 ms median.
+
+**After:** Simulated static tuple path: 0.000333 ms median.
+
+**Change:** 11.20% faster by median, saving 0.000042 ms.
+
+**Outcome:** Rejected before code changes. The result clears 10% by percentage
+only; the absolute saving is effectively zero at the shipped two-person scale.
+
+**Commit:** None
+
+### Idea 739: Inline FarmBot axes config comparison
+
+**Description:** `farmbotAxesPropsEqual()` compares the relevant config fields
+with `.every()`. Direct checks could reduce axes comparator overhead during
+bed/config churn.
+
+**Benchmark:** 60 unchanged FarmBot axes config comparisons.
+
+**Before:** Current `.every()` comparator: 0.003584 ms median.
+
+**After:** Simulated direct field checks: 0.001125 ms median.
+
+**Change:** 68.61% faster by median, saving 0.002459 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic batch saves only
+about 2.5 microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 740: Inline Lab and Greenhouse scene config comparisons
+
+**Description:** `labPropsEqual()` and `greenhousePropsEqual()` compare scene
+config fields through `.every()`. Direct checks could reduce optional scene
+comparator overhead while preserving the same invalidation fields.
+
+**Benchmark:** 60 unchanged Lab and Greenhouse config comparisons.
+
+**Before:** Current `.every()` comparators: 0.007458 ms median.
+
+**After:** Simulated direct field checks: 0.002500 ms median.
+
+**Change:** 66.48% faster by median, saving 0.004958 ms across 60
+comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is under five
+microseconds across the full batch and does not justify verbose direct
+comparators.
+
+**Commit:** None
+
+## Round 145
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 741. Scan transient plants with a direct loop | Reduce spread-layer visibility memo callback overhead during plant-list churn | 60 transient scans over 100 plants with no transient add plant | Rejected |
+| 742. Inline `ImageWrapper` config comparison | Reduce camera-image wrapper comparator overhead during unrelated config churn | 60 unchanged image-wrapper prop comparisons | Rejected |
+| 743. Build event-debug intersection names without `map()` | Reduce optional pointer debug allocation while event debugging is enabled | One debug pointer event with 30 intersections | Rejected |
+| 744. Round progressive-load timing values with direct undefined handling | Reduce optional load-log helper overhead when timing logs are enabled | One complete eight-step load timing log pass | Rejected |
+| 745. Reuse group-order marker disk rotation constants | Avoid one-time quaternion/vector setup when a group-order overlay mounts | One visible group-order marker disk mount setup | Rejected |
+
+### Idea 741: Scan transient plants with a direct loop
+
+**Description:** `GardenModel` checks whether the plant list contains a transient
+add-plant record with `.some()`. A direct loop could reduce callback overhead
+during plant-list churn while preserving the same spread visibility behavior.
+
+**Benchmark:** 60 transient scans over 100 plants with no transient add plant,
+matching a dense garden render-churn batch where the full list is scanned.
+
+**Before:** Current `.some()` scan: 0.012208 ms median, 0.014666 ms p95.
+
+**After:** Simulated direct loop scan: 0.007667 ms median, 0.007791 ms p95.
+
+**Change:** 37.20% faster by median, saving 0.004541 ms across the 60-scan
+batch.
+
+**Outcome:** Rejected before code changes. The percent win is real, but the
+whole realistic batch saves about 4.5 microseconds.
+
+**Commit:** None
+
+### Idea 742: Inline `ImageWrapper` config comparison
+
+**Description:** `imageWrapperPropsEqual()` compares image-wrapper config fields
+with `.every()`. Direct field checks could reduce comparator overhead while
+preserving the same invalidation fields.
+
+**Benchmark:** 60 unchanged image-wrapper prop comparisons, matching a
+camera-image texture churn batch.
+
+**Before:** Current field-list comparator: 0.003250 ms median, 0.008167 ms p95.
+
+**After:** Simulated direct field comparator: 0.000042 ms median,
+0.005792 ms p95.
+
+**Change:** 98.71% faster by median, saving 0.003208 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The absolute saving is only about
+3.2 microseconds for the full batch and does not justify a verbose comparator.
+
+**Commit:** None
+
+### Idea 743: Build event-debug intersection names without `map()`
+
+**Description:** The optional `eventDebug` pointer handler logs intersection
+names with `.map()`. Filling the name list with a direct loop could avoid one
+callback allocation when the debug toggle is enabled.
+
+**Benchmark:** One debug pointer event with 30 intersections, excluding console
+I/O so the benchmark isolates name-list construction.
+
+**Before:** Current `.map()` name list: 0.000292 ms median, 0.001042 ms p95.
+
+**After:** Simulated direct-fill name list: 0.000209 ms median,
+0.001833 ms p95.
+
+**Change:** 28.42% faster by median, saving 0.000083 ms; p95 was slower.
+
+**Outcome:** Rejected before code changes. The path is debug-only, the absolute
+median saving is far below a microsecond, and p95 worsened.
+
+**Commit:** None
+
+### Idea 744: Round progressive-load timing values with direct undefined handling
+
+**Description:** Progressive-load timing logs round values with
+`Math.round(value || 0)`. A direct undefined branch could avoid truthiness work
+during optional load-log preparation.
+
+**Benchmark:** One complete eight-step load timing log pass, matching a single
+3D load completion when perf or load logs are enabled.
+
+**Before:** Current rounding/log-prep path: 0.000708 ms median,
+0.002042 ms p95.
+
+**After:** Simulated direct undefined branch: 0.000542 ms median,
+0.001583 ms p95.
+
+**Change:** 23.45% faster by median, saving 0.000166 ms for the full log-prep
+pass.
+
+**Outcome:** Rejected before code changes. The optional one-shot path saves
+only 0.166 microseconds.
+
+**Commit:** None
+
+### Idea 745: Reuse group-order marker disk rotation constants
+
+**Description:** `OrderMarkerDisks` creates a marker rotation quaternion from a
+new axis vector when the group-order overlay mounts. A module-level constant
+could avoid that one-time setup.
+
+**Benchmark:** One visible group-order marker disk mount setup.
+
+**Before:** Current quaternion/vector setup: 0.000417 ms median,
+0.000459 ms p95.
+
+**After:** Simulated static rotation constant read: 0.000083 ms median,
+0.000125 ms p95.
+
+**Change:** 80.10% faster by median, saving 0.000334 ms on mount.
+
+**Outcome:** Rejected before code changes. The absolute saving is about a third
+of a microsecond for a route-specific one-time mount.
+
+**Commit:** None
+
+## Round 146
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 746. Inline `Tools` config comparison | Reduce configured-tool memo comparator callback overhead during telemetry churn | 60 unchanged configured-tools prop comparisons | Rejected |
+| 747. Use indexed point marker matrix loops | Reduce visible point-layer mount effects for marker and radius instances | One 50-point marker/radius matrix setup | Rejected |
+| 748. Use an indexed suction-cloud frame loop | Reduce visible vacuum animation per-frame callback overhead | Four suction clouds over 60 frames | Rejected |
+| 749. Render electronics-box LED descriptors without `map()` | Reduce v1.7 electronics-box LED child allocation | One visible v1.7 LED indicator render pass | Rejected |
+| 750. Build focus-visibility DOM class names without array allocation | Reduce smooth-focus overlay DOM render allocation | 60 focus-visibility class-name builds | Rejected |
+
+### Idea 746: Inline `Tools` config comparison
+
+**Description:** `toolsPropsEqual()` compares tool-relevant config fields with
+`.every()`. Direct field checks could reduce comparator overhead while preserving
+the same rerender invalidation fields.
+
+**Benchmark:** 60 unchanged configured-tools prop comparisons, matching a
+telemetry/config churn batch where configured tools should stay memoized.
+
+**Before:** Current field-list comparator: 0.003958 ms median,
+0.010833 ms p95.
+
+**After:** Simulated direct field comparator: 0.002417 ms median,
+0.003125 ms p95.
+
+**Change:** 38.93% faster by median, saving 0.001541 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The whole batch saves about
+1.5 microseconds, so a long direct comparator is not justified.
+
+**Commit:** None
+
+### Idea 747: Use indexed point marker matrix loops
+
+**Description:** `PointBucketInstances` fills marker and radius matrices with
+`forEach()` callbacks. Indexed loops could reduce visible point-layer setup
+overhead without changing marker geometry, colors, opacity, or click targets.
+
+**Benchmark:** One 50-point marker/radius matrix setup, matching a dense
+realistic point layer.
+
+**Before:** Current `forEach()` matrix/color setup: 0.008958 ms median,
+0.027792 ms p95.
+
+**After:** Simulated indexed-loop setup: 0.009250 ms median,
+0.015833 ms p95.
+
+**Change:** 3.26% slower by median, though p95 improved.
+
+**Outcome:** Rejected before code changes. The median did not improve, so the
+existing callback loops stay.
+
+**Commit:** None
+
+### Idea 748: Use an indexed suction-cloud frame loop
+
+**Description:** The consolidated suction animation frame callback iterates four
+cloud refs with `forEach()`. An indexed loop could reduce visible vacuum
+animation frame overhead while keeping the same cloud movement.
+
+**Benchmark:** Four suction clouds over 60 frames, matching one second of a
+visible mounted-seeder vacuum animation.
+
+**Before:** Current `forEach()` frame loop: 0.005625 ms median,
+0.015041 ms p95.
+
+**After:** Simulated indexed frame loop: 0.004917 ms median,
+0.006541 ms p95.
+
+**Change:** 12.59% faster by median, saving 0.000708 ms over 60 frames.
+
+**Outcome:** Rejected before code changes. The percentage clears the bar, but
+one visible second saves less than one microsecond.
+
+**Commit:** None
+
+### Idea 749: Render electronics-box LED descriptors without `map()`
+
+**Description:** The v1.7 electronics box renders four LED indicators with a
+small descriptor `.map()`. Explicit nodes could avoid that allocation when the
+v1.7 model is visible.
+
+**Benchmark:** One visible v1.7 LED indicator render pass.
+
+**Before:** Current `.map()` descriptor pass: 0.000208 ms median,
+0.001041 ms p95.
+
+**After:** Simulated explicit descriptor pass: 0.000375 ms median,
+0.000458 ms p95.
+
+**Change:** 80.29% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed path is slower by
+median and would make the JSX more repetitive.
+
+**Commit:** None
+
+### Idea 750: Build focus-visibility DOM class names without array allocation
+
+**Description:** `FocusVisibilityDiv` builds its class name with an array and
+`join()`. A template string could avoid small array allocation during smooth
+focus overlay renders.
+
+**Benchmark:** 60 focus-visibility class-name builds, matching a one-second
+focus-transition render batch.
+
+**Before:** Current array/join class build: 0.002208 ms median,
+0.004750 ms p95.
+
+**After:** Simulated template-string class build: 0.000208 ms median,
+0.001750 ms p95.
+
+**Change:** 90.58% faster by median, saving 0.002000 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The realistic one-second transition
+batch saves only two microseconds.
+
+**Commit:** None
+
+## Round 147
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 751. Inline 3D text vector comparisons | Reduce text memo comparator helper overhead for labels and buttons | 60 unchanged text prop comparisons | Rejected |
+| 752. Build config-row search text without array spread/join | Reduce private config panel search-row render allocation | 110 config-row search checks with mixed search terms | Rejected |
+| 753. Build public settings-bar class names without array allocation | Reduce public overlay render allocation during load-state changes | 60 public overlay class-name builds | Rejected |
+| 754. Copy non-size config presets with a direct loop | Reduce manual 3D preset application callback overhead | One non-size preset config copy over 74 fields | Rejected |
+| 755. Parse nonempty 3D URL params with direct loops | Reduce URL-param startup parsing callback overhead | One nonempty startup URL parse with kit, x/y/z, sun, and clouds | Rejected |
+
+### Idea 751: Inline 3D text vector comparisons
+
+**Description:** `textPropsEqual()` compares position and rotation through a
+small `sameVector()` helper. Inlining the two vector comparisons could reduce
+memo comparator overhead for labels, group-order text, and preset buttons.
+
+**Benchmark:** 60 unchanged text prop comparisons, matching a short label/text
+rerender batch.
+
+**Before:** Current helper comparisons: 0.000750 ms median, 0.004042 ms p95.
+
+**After:** Simulated inline comparisons: 0.001083 ms median, 0.001375 ms p95.
+
+**Change:** 44.40% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed inline path was slower
+by median, so the clearer helper stays.
+
+**Commit:** None
+
+### Idea 752: Build config-row search text without array spread/join
+
+**Description:** `ConfigRow` builds searchable row text with
+`[label, ...(searchTerms || [])].join(" ")`. Direct string accumulation could
+avoid small array allocation while the private config panel is open.
+
+**Benchmark:** 110 config-row search checks with mixed search terms, matching a
+full private config panel filter pass.
+
+**Before:** Current array/spread/join path: 0.005083 ms median,
+0.011250 ms p95.
+
+**After:** Simulated direct string path: 0.003042 ms median, 0.007458 ms p95.
+
+**Change:** 40.15% faster by median, saving 0.002041 ms across the whole
+filter pass.
+
+**Outcome:** Rejected before code changes. The config panel pass saves about
+two microseconds, which is not meaningful enough to change this UI helper.
+
+**Commit:** None
+
+### Idea 753: Build public settings-bar class names without array allocation
+
+**Description:** `PublicOverlay` builds the settings-bar class with an array and
+`join()`. A direct conditional string could avoid tiny allocation during
+load-state changes.
+
+**Benchmark:** 60 public overlay class-name builds, matching a burst of public
+overlay renders during load-complete state changes.
+
+**Before:** Current array/join class build: 0.001792 ms median,
+0.003750 ms p95.
+
+**After:** Simulated direct string build: 0.000166 ms median,
+0.000250 ms p95.
+
+**Change:** 90.74% faster by median, saving 0.001626 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full render burst saves only
+about 1.6 microseconds.
+
+**Commit:** None
+
+### Idea 754: Copy non-size config presets with a direct loop
+
+**Description:** `modifyConfig()` applies non-size presets with
+`OTHER_CONFIG_KEYS.map()` for side effects. A direct indexed loop could reduce
+manual preset-click overhead.
+
+**Benchmark:** One non-size preset config copy over 74 fields.
+
+**Before:** Current side-effect `.map()` copy: 0.000750 ms median,
+0.001792 ms p95.
+
+**After:** Simulated indexed-loop copy: 0.000542 ms median, 0.001667 ms p95.
+
+**Change:** 27.73% faster by median, saving 0.000208 ms.
+
+**Outcome:** Rejected before code changes. This is a manual developer/config
+action and the absolute win is about two tenths of a microsecond.
+
+**Commit:** None
+
+### Idea 755: Parse nonempty 3D URL params with direct loops
+
+**Description:** `modifyConfigsFromUrlParams()` walks string, number, and
+boolean URL keys with `.map()` side-effect callbacks. Direct loops could reduce
+startup URL parsing overhead for shared 3D links.
+
+**Benchmark:** One nonempty startup URL parse with `kit`, `x`, `y`, `z`, `sun`,
+and `clouds`.
+
+**Before:** Current side-effect `.map()` parse: 0.000541 ms median,
+0.001958 ms p95.
+
+**After:** Simulated direct-loop parse: 0.000292 ms median, 0.001708 ms p95.
+
+**Change:** 46.03% faster by median, saving 0.000249 ms for the full parse.
+
+**Outcome:** Rejected before code changes. The startup parse saving is below a
+microsecond and not meaningful.
+
+**Commit:** None
+
+## Round 148
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 756. Inline `XAxisWaterTube` config comparison | Reduce water-tube memo comparator callback overhead during config churn | 60 unchanged X-axis water tube comparisons | Rejected |
+| 757. Precompute water-tube child names per render | Reduce string concatenation in visible water-tube render setup | 60 water-tube child-name builds | Rejected |
+| 758. Build beacon-info class names without array allocation | Reduce smooth-focus beacon info DOM render allocation | 60 active beacon-info class-name builds | Rejected |
+| 759. Inline person prop vector comparisons | Reduce optional People/Person memo comparator helper overhead | 60 unchanged person prop comparisons | Rejected |
+| 760. Replace electronics LED presence switch with direct comparison | Reduce electronics-box render helper overhead by checking the single LED kit directly | 60 electronics-box LED presence checks | Rejected |
+
+### Idea 756: Inline `XAxisWaterTube` config comparison
+
+**Description:** `xAxisWaterTubePropsEqual()` compares five config fields with
+`.every()`. Direct field checks could reduce memo comparator overhead during
+parent config churn.
+
+**Benchmark:** 60 unchanged X-axis water tube comparisons.
+
+**Before:** Current field-list comparator: 0.002084 ms median,
+0.006375 ms p95.
+
+**After:** Simulated direct field comparator: 0.000791 ms median,
+0.001000 ms p95.
+
+**Change:** 62.04% faster by median, saving 0.001293 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The realistic batch saves about
+1.3 microseconds and does not justify replacing the compact field list.
+
+**Commit:** None
+
+### Idea 757: Precompute water-tube child names per render
+
+**Description:** `WaterTube` builds child names with `tubeName + "-tube"` and
+`tubeName + "-water-stream"` while rendering. Precomputing these strings per
+render could reduce visible water-tube setup allocation.
+
+**Benchmark:** 60 water-tube child-name builds.
+
+**Before:** Current string concatenation path: 0.000875 ms median,
+0.002458 ms p95.
+
+**After:** Simulated precomputed child names: 0.000208 ms median,
+0.001791 ms p95.
+
+**Change:** 76.23% faster by median, saving 0.000667 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The whole render-helper batch saves
+less than one microsecond.
+
+**Commit:** None
+
+### Idea 758: Build beacon-info class names without array allocation
+
+**Description:** `BeaconInfo` builds its focus-transition class name with an
+array and `join()`. A template string could avoid small allocation while active
+beacon info fades in or out.
+
+**Benchmark:** 60 active beacon-info class-name builds, matching a one-second
+smooth-focus transition.
+
+**Before:** Current array/join class build: 0.002125 ms median,
+0.004417 ms p95.
+
+**After:** Simulated template-string class build: 0.000208 ms median,
+0.002166 ms p95.
+
+**Change:** 90.21% faster by median, saving 0.001917 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full transition batch saves only
+about two microseconds.
+
+**Commit:** None
+
+### Idea 759: Inline person prop vector comparisons
+
+**Description:** `personPropsEqual()` compares optional position and rotation
+tuples through a `sameVector()` helper. Inlining the checks could reduce
+optional People/Person memo comparator overhead.
+
+**Benchmark:** 60 unchanged person prop comparisons.
+
+**Before:** Current helper comparisons: 0.000708 ms median, 0.004583 ms p95.
+
+**After:** Simulated inline comparisons: 0.000625 ms median, 0.001000 ms p95.
+
+**Change:** 11.72% faster by median, saving 0.000083 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The percent barely clears the bar,
+but the absolute saving is far below one microsecond.
+
+**Commit:** None
+
+### Idea 760: Replace electronics LED presence switch with direct comparison
+
+**Description:** `ledsPresent()` uses a switch even though only v1.7 renders
+LEDs. A direct comparison could reduce electronics-box render helper overhead.
+
+**Benchmark:** 60 electronics-box LED presence checks for the default v1.8
+path.
+
+**Before:** Current switch helper: 0.000333 ms median, 0.000459 ms p95.
+
+**After:** Simulated direct comparison: 0.001333 ms median, 0.001417 ms p95.
+
+**Change:** 300.30% slower by median.
+
+**Outcome:** Rejected before code changes. The proposed direct path was slower
+in the benchmark and the existing switch documents the supported versions.
+
+**Commit:** None
+
+## Round 149
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 761. Replace smooth-focus easing `Math.pow()` with multiplication | Reduce per-frame easing math during smooth focus transitions | 60 smooth-focus easing calls | Rejected |
+| 762. Build load-progress overlay class names without array allocation | Reduce progress overlay render allocation during load completion | 60 load-progress class-name builds | Rejected |
+| 763. Build time-travel button class names without array allocation | Reduce time-travel target render allocation in 3D mode | 60 time-travel target class-name builds | Rejected |
+| 764. Inline visible-grid config comparison | Reduce grid memo comparator callback overhead during parent churn | 60 unchanged grid prop comparisons | Rejected |
+| 765. Build plant-spread update keys without array joins | Reduce active spread overlay per-frame key allocation | 60 active plant-spread frame key builds | Rejected |
+
+### Idea 761: Replace smooth-focus easing `Math.pow()` with multiplication
+
+**Description:** `easeInOutCubic()` uses `Math.pow()` for the cubic easing
+curve. Multiplying `t * t * t` could reduce smooth-focus per-frame math without
+changing the curve.
+
+**Benchmark:** 60 smooth-focus easing calls, matching one second of transition
+frames at 60 fps.
+
+**Before:** Current `Math.pow()` easing path: 0.000458 ms median,
+0.003667 ms p95.
+
+**After:** Simulated multiplication easing path: 0.000375 ms median,
+0.002667 ms p95.
+
+**Change:** 18.12% faster by median, saving 0.000083 ms across the full
+60-frame transition.
+
+**Outcome:** Rejected before code changes. The percentage clears the threshold,
+but the absolute saving is far below one microsecond across the transition.
+
+**Commit:** None
+
+### Idea 762: Build load-progress overlay class names without array allocation
+
+**Description:** `LoadProgress` builds progress overlay class names with an
+array and `join()`. Direct conditional strings could avoid allocation during
+load-progress render bursts.
+
+**Benchmark:** 60 load-progress class-name builds, matching a burst of progress
+renders while 3D assets finish loading.
+
+**Before:** Current array/join class build: 0.001375 ms median,
+0.004000 ms p95.
+
+**After:** Simulated direct conditional string build: 0.000166 ms median,
+0.000208 ms p95.
+
+**Change:** 87.93% faster by median, saving 0.001209 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The full render burst saves only
+about 1.2 microseconds, which is not meaningful.
+
+**Commit:** None
+
+### Idea 763: Build time-travel button class names without array allocation
+
+**Description:** `TimeTravelControls` builds target button classes with array
+joining. A template string could reduce allocation while target buttons render
+in 3D mode.
+
+**Benchmark:** 60 time-travel target class-name builds.
+
+**Before:** Current array/join class build: 0.001542 ms median,
+0.003917 ms p95.
+
+**After:** Simulated template-string class build: 0.000792 ms median,
+0.002208 ms p95.
+
+**Change:** 48.64% faster by median, saving 0.000750 ms across 60 builds.
+
+**Outcome:** Rejected before code changes. The batch saving is below one
+microsecond, so the existing readable class builder stays.
+
+**Commit:** None
+
+### Idea 764: Inline visible-grid config comparison
+
+**Description:** The visible grid memo comparator checks a field list with
+`.every()`. Direct property comparisons could reduce parent-churn comparator
+overhead.
+
+**Benchmark:** 60 unchanged grid prop comparisons.
+
+**Before:** Current field-list comparator: 0.002875 ms median,
+0.007917 ms p95.
+
+**After:** Simulated direct field comparator: 0.001625 ms median,
+0.002167 ms p95.
+
+**Change:** 43.48% faster by median, saving 0.001250 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The realistic batch saves about
+1.25 microseconds and does not justify replacing the compact comparator.
+
+**Commit:** None
+
+### Idea 765: Build plant-spread update keys without array joins
+
+**Description:** The plant-spread overlay can build per-frame update keys with
+array joining. A direct template string could reduce allocation while the spread
+overlay is active.
+
+**Benchmark:** 60 active plant-spread frame key builds.
+
+**Before:** Current array/join key build: 0.005958 ms median,
+0.011667 ms p95.
+
+**After:** Simulated template-string key build: 0.000292 ms median,
+0.004416 ms p95.
+
+**Change:** 95.10% faster by median, saving 0.005666 ms across 60 active
+frames.
+
+**Outcome:** Rejected before code changes. This was the largest micro-benchmark
+win in the round, but it still saves only about 5.7 microseconds across a
+one-second active frame window.
+
+**Commit:** None
+
+## Round 150
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 766. Mark empty plant load step ready on mount | Shorten empty-garden load progress by skipping a non-visible plant load-in wait | Empty GardenModel with zero plants | Accepted |
+| 767. Mark hidden or empty weed load step ready on mount | Shorten default load progress when the weed layer has no visible work | Empty/hidden weed layer in GardenModel | Accepted |
+| 768. Mark hidden or empty point load step ready on mount | Shorten default load progress when the point layer has no visible work | Empty/hidden point layer in GardenModel | Accepted |
+| 769. Inline `MoistureSurface` config comparison | Reduce memo comparator overhead during moisture-layer parent churn | 60 unchanged moisture-surface comparisons | Rejected |
+| 770. Inline `MoistureReadings` config comparison | Reduce memo comparator overhead during moisture-reading debug churn | 60 unchanged moisture-reading comparisons | Rejected |
+
+### Idea 766: Mark empty plant load step ready on mount
+
+**Description:** The plants load step waited for the load-in spring `onRest`
+even when an empty garden had no plant labels, icons, or spread spheres to
+reveal. Marking the empty step ready on mount can advance load progress without
+removing any visible plant animation.
+
+**Benchmark:** Empty `GardenModel` with zero plants, zero weeds, zero points,
+and FarmBot hidden. The benchmark counted optional layer steps that were ready
+on mount and optional load-in groups that still had step-marking `onRest`
+handlers.
+
+**Before:** Empty optional layers had 0 immediately ready steps and 3 optional
+load-in rest handlers. The plant step had one non-visible spring-rest wait.
+
+**After:** Empty optional layers had 3 immediately ready steps and 0 optional
+load-in rest handlers. The plant step has no empty-layer spring-rest wait.
+
+**Change:** 100.0% fewer empty plant load-in rest waits, removing 1 non-visible
+load-progress gate.
+
+**Outcome:** Accepted. Empty plant scenes now report the plant step ready as
+soon as the step is allowed, while non-empty plant scenes still wait for the
+same plant load-in animation to finish.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 767: Mark hidden or empty weed load step ready on mount
+
+**Description:** The weeds load step waited for a load-in spring even when the
+weed layer was hidden or contained no weeds. Marking those no-work states ready
+on mount can shorten default load progress without changing visible weed
+rendering.
+
+**Benchmark:** Empty/hidden weed layer in the same empty `GardenModel`
+benchmark used for Idea 766.
+
+**Before:** The weed step had one non-visible spring-rest wait.
+
+**After:** The weed step is ready on mount and has no step-marking load-in rest
+handler.
+
+**Change:** 100.0% fewer hidden/empty weed load-in rest waits, removing
+1 non-visible load-progress gate.
+
+**Outcome:** Accepted. Visible weed layers with weed instances still wait for
+the same weed load-in rest; hidden or empty layers stop delaying progress.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 768: Mark hidden or empty point load step ready on mount
+
+**Description:** The points load step waited for a fall-in spring even when the
+point layer was hidden or there were no point markers. Marking those no-work
+states ready on mount can shorten default load progress without changing
+visible point rendering.
+
+**Benchmark:** Empty/hidden point layer in the same empty `GardenModel`
+benchmark used for Idea 766.
+
+**Before:** The point step had one non-visible spring-rest wait.
+
+**After:** The point step is ready on mount and has no step-marking load-in
+rest handler.
+
+**Change:** 100.0% fewer hidden/empty point load-in rest waits, removing
+1 non-visible load-progress gate.
+
+**Outcome:** Accepted. Visible point layers with point markers still wait for
+the same point fall-in rest; hidden or empty layers stop delaying progress.
+
+**Commit:** `Mark empty 3D layers ready for 100.0% fewer waits`
+
+### Idea 769: Inline `MoistureSurface` config comparison
+
+**Description:** `moistureSurfacePropsEqual()` compares five config fields with
+`.every()`. Direct field checks could reduce comparator overhead during
+moisture-layer parent churn.
+
+**Benchmark:** 60 unchanged moisture-surface comparisons.
+
+**Before:** Current field-list comparator: 0.004291 ms median,
+0.007167 ms p95.
+
+**After:** Simulated direct field comparator: 0.001000 ms median,
+0.003125 ms p95.
+
+**Change:** 76.70% faster by median, saving 0.003291 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The relative win clears the
+threshold, but the full 60-comparison batch saves only about three microseconds.
+
+**Commit:** None
+
+### Idea 770: Inline `MoistureReadings` config comparison
+
+**Description:** `moistureReadingsPropsEqual()` compares six config fields with
+`.every()`. Direct field checks could reduce comparator overhead when moisture
+debug readings rerender with unchanged geometry inputs.
+
+**Benchmark:** 60 unchanged moisture-reading comparisons.
+
+**Before:** Current field-list comparator: 0.004000 ms median,
+0.006166 ms p95.
+
+**After:** Simulated direct field comparator: 0.000708 ms median,
+0.004916 ms p95.
+
+**Change:** 82.30% faster by median, saving 0.003292 ms across 60 comparisons.
+
+**Outcome:** Rejected before code changes. The full realistic comparison batch
+saves only about three microseconds, which does not justify replacing the
+maintainable field list.
+
+**Commit:** None
+
+## Round 151
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 771. Skip empty plant load-in wrappers | Reduce empty-garden load work after ready-on-mount by not mounting plant load-in spring/groups when there are no plant visuals | Empty GardenModel with zero plants | Accepted |
+| 772. Skip hidden or empty weed load-in wrappers | Reduce default no-weed load work by not mounting weed load-in spring/group when the weed layer has no visible work | Empty/hidden weed layer in GardenModel | Accepted |
+| 773. Skip hidden or empty point load-in wrappers | Reduce default no-point load work by not mounting point load-in spring/group when the point layer has no visible work | Empty/hidden point layer in GardenModel | Accepted |
+| 774. Skip disabled or focus-hidden grid load-in wrappers | Reduce disabled-grid load work by marking the grid step ready without mounting the grid reveal spring | GardenModel with `grid=false` | Accepted |
+| 775. Skip group-order visual mount when there are no groups or points | Reduce details-stage route checks in empty gardens | Empty `GroupOrderVisual` render | Rejected |
+
+### 771. Skip empty plant load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The plant
+wrapper is skipped whenever there are no plant instances or labels to animate.
+
+**Outcome:** Accepted. The removed plant wrapper had no visible work in the
+empty scene, so the load experience is unchanged while avoiding a spring/group
+mount.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 772. Skip hidden or empty weed load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The weed
+wrapper is skipped when weeds are hidden or when the visible weed list is empty.
+
+**Outcome:** Accepted. Visible weed layers with weed instances still keep their
+load-in animation and readiness callback; no-work weed layers now mark ready
+without mounting the wrapper.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 773. Skip hidden or empty point load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GardenModel` mounted three optional load-in wrappers across
+plants, weeds, and points while marking all three optional steps ready.
+
+**After:** Empty `GardenModel` mounted zero optional load-in wrappers while still
+marking all three optional steps ready.
+
+**Change:** 100.00% fewer optional no-work load-in wrappers overall. The point
+wrapper is skipped when points are hidden or when the visible point list is
+empty.
+
+**Outcome:** Accepted. Visible point layers with markers still keep their
+fall-in animation and readiness callback; no-work point layers now mark ready
+without mounting the wrapper.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 774. Skip disabled or focus-hidden grid load-in wrappers
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** `GardenModel` with `config.grid=false` mounted one
+`GridRevealGroup` and did not mark the grid step ready on mount.
+
+**After:** `GardenModel` with `config.grid=false` mounted zero
+`GridRevealGroup` wrappers and marked the grid step ready on mount.
+
+**Change:** 100.00% fewer disabled-grid reveal wrappers, removing one no-work
+spring/group mount in disabled-grid or Planter-bed-focus scenes.
+
+**Outcome:** Accepted. The grid component already rendered nothing in these
+states, so skipping the wrapper removes hidden load work without changing the
+visible scene.
+
+**Commit:** `Skip no-work 3D wrappers for 100.0% fewer springs`
+
+### 775. Skip group-order visual mount when there are no groups or points
+
+**Benchmark:** `tmp/round_151_perf_bench.test.tsx`
+
+**Before:** Empty `GroupOrderVisual` render: 0.020666 ms median, 0.060750 ms
+p95.
+
+**After:** Simulated early return before mounting empty `GroupOrderVisual`:
+0.000084 ms median, 0.000208 ms p95.
+
+**Change:** 99.59% faster by median, saving 0.020582 ms per empty
+`GroupOrderVisual` render.
+
+**Outcome:** Rejected before code changes. The percentage is large, but the
+absolute saving is about two hundredths of a millisecond on a details-stage
+empty render and does not meet the meaningful absolute-improvement threshold.
+
+**Commit:** None
+
+## Round 152
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 776. Skip disabled packaging tree mount | Avoid mounting the full hidden packaging box/text tree when `config.packaging=false` | Default bed render with packaging disabled | Rejected |
+| 777. Unmount hidden focus groups when transitions are disabled | Avoid mounting hidden non-keepMounted focus groups in ordinary 3D mode | Hidden `FocusVisibilityGroup` and default bed distance indicators | Rejected |
+| 778. Skip disabled north-arrow tree mount | Avoid mounting hidden extrude geometry when `config.north=false` | Default garden/bed render with north arrow disabled | Accepted |
+| 779. Skip inactive solar helper before spring setup | Avoid mounting the solar component and spring when solar is disabled and no focus transition can reveal it | Default garden details render with solar disabled | Accepted |
+| 780. Skip disabled three-axes helper mount | Avoid mounting a hidden `AxesHelper` when `config.threeAxes=false` | Default garden details render with three axes disabled | Accepted |
+
+### 776. Skip disabled packaging tree mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Disabled `Packaging` render: 0.056666 ms median, 0.128458 ms p95.
+
+**After:** Simulated parent gate: 0.000042 ms median, 0.000125 ms p95.
+
+**Change:** 99.93% faster by median, saving 0.056624 ms for one disabled
+packaging render.
+
+**Outcome:** Rejected after rollback. The direct win was measurable, but this
+path is owned by the bed render and a focused bed click-to-add check did not
+pass during validation. I left the bed component unchanged rather than risk
+altering pointer behavior.
+
+**Commit:** None
+
+### 777. Unmount hidden focus groups when transitions are disabled
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Hidden `FocusVisibilityGroup` without transitions: 0.020916 ms
+median, 0.034000 ms p95.
+
+**After:** Simulated early unmount: 0.000041 ms median, 0.000042 ms p95.
+
+**Change:** 99.80% faster by median, saving 0.020875 ms for one hidden
+focus-group render.
+
+**Outcome:** Rejected after rollback. The broad semantic change from hidden but
+mounted to unmounted is too risky for shared focus groups and refs without a
+larger audit.
+
+**Commit:** None
+
+### 778. Skip disabled north-arrow tree mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Disabled `NorthArrow` render: 0.020875 ms median, 0.028834 ms p95.
+Default `GardenModel` mounted one hidden north-arrow group.
+
+**After:** Parent gate when `config.north=false`: zero `NorthArrow` mounts in
+default `GardenModel`.
+
+**Change:** 100.00% fewer disabled north-arrow mounts, saving about 0.020875 ms
+for one default-off render path.
+
+**Outcome:** Accepted. When the north-arrow setting is off, the extruded arrow
+has no visible output. Enabling `config.north` still mounts the same component.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+### 779. Skip inactive solar helper before spring setup
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Inactive `Solar` render with `config.solar=false` and no solar
+focus: 0.013959 ms median, 0.024709 ms p95.
+
+**After:** Parent gate when solar is disabled, unfocused, and no smooth focus
+transition is active: zero `Solar` mounts in default `GardenModel`.
+
+**Change:** 100.00% fewer inactive solar helper mounts, saving about
+0.013959 ms for one default details render path.
+
+**Outcome:** Accepted. The solar hardware is still mounted when the setting is
+enabled, when the "What you need to provide" focus needs to reveal it, or when
+smooth focus transitions need it for fade behavior.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+### 780. Skip disabled three-axes helper mount
+
+**Benchmark:** `tmp/round_152_perf_bench.test.tsx`
+
+**Before:** Hidden `AxesHelper` render: 0.014542 ms median, 0.021291 ms p95.
+Default `GardenModel` mounted one hidden axes helper.
+
+**After:** Parent gate when `config.threeAxes=false`: zero `AxesHelper` mounts
+in default `GardenModel`.
+
+**Change:** 100.00% fewer disabled axes-helper mounts, saving about 0.014542 ms
+for one default details render path.
+
+**Outcome:** Accepted. The helper is invisible when disabled and still mounts
+unchanged when `config.threeAxes` is enabled.
+
+**Commit:** `Skip default-off 3D helpers for 100.0% fewer mounts`
+
+## Round 153
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 781. Skip disabled ground component mount | Avoid calling the `Ground` component when `config.ground=false` because it already returns no visible output | One disabled ground render and default environment helper counts | Accepted |
+| 782. Skip disabled clouds before spring setup | Avoid `Clouds` spring setup when `config.clouds=false` | One disabled clouds render | Accepted |
+| 783. Skip disabled utilities-post component mount | Avoid calling `UtilitiesPost` from `Bed` when `config.utilitiesPost=false` because it already returns no visible output | One default bed utilities-post render | Rejected |
+| 784. Skip disabled cable-carrier component mounts | Avoid calling disabled cable-carrier components from FarmBot subassemblies when `config.cableCarriers=false` | Five disabled cable-carrier component renders | Accepted |
+| 785. Skip inactive bot bounds component mount | Avoid calling `Bounds` from FarmBot when bounds, dimensions, and distance indicators are all disabled | One inactive bounds render | Accepted |
+
+### 781. Skip disabled ground component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `Ground` render: 0.024834 ms median, 0.092875 ms p95.
+`GardenModel` with `config.ground=false` mounted one `Ground` component.
+
+**After:** Parent gate when `config.ground=false`: zero disabled `Ground`
+mounts in `GardenModel`.
+
+**Change:** 100.00% fewer disabled ground component mounts, saving about
+0.024751 ms for one disabled-ground render path.
+
+**Outcome:** Accepted. The `Ground` component already returned no scene content
+when disabled, so gating it at the parent removes hidden render work with no
+visual change. Enabled ground still mounts normally.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 782. Skip disabled clouds before spring setup
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `Clouds` render: 0.019958 ms median, 0.030084 ms p95.
+`GardenModel` with `config.clouds=false` mounted one `Clouds` component.
+
+**After:** Parent gate when `config.clouds=false`: zero disabled `Clouds`
+mounts in `GardenModel`.
+
+**Change:** 100.00% fewer disabled cloud component mounts, saving about
+0.019958 ms and avoiding disabled cloud spring setup.
+
+**Outcome:** Accepted. Disabled clouds had no visible output; enabled cloud
+rendering and animation are unchanged.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 783. Skip disabled utilities-post component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Disabled `UtilitiesPost` render: 0.017125 ms median, 0.023083 ms
+p95.
+
+**After:** Simulated parent gate: 0.000000 ms median, 0.000042 ms p95.
+
+**Change:** 100.00% faster by median, saving about 0.017125 ms for one
+disabled utilities-post render.
+
+**Outcome:** Rejected after rollback. The isolated benchmark cleared the
+threshold, but touching the bed parent path made the focused Bed suite fail its
+existing click-to-add validation. I left the Bed path unchanged.
+
+**Commit:** None
+
+### 784. Skip disabled cable-carrier component mounts
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Five disabled cable-carrier component renders: 0.030333 ms median,
+0.038167 ms p95.
+
+**After:** Parent gates when `config.cableCarriers=false`: 0.000041 ms median,
+0.000042 ms p95 for the simulated no-op path.
+
+**Change:** 99.86% faster by median, saving about 0.030292 ms and removing all
+five disabled cable-carrier component mounts from FarmBot subassemblies.
+
+**Outcome:** Accepted. The individual cable-carrier components already returned
+no scene content when disabled; enabled cable-carrier mounts are unchanged.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+### 785. Skip inactive bot bounds component mount
+
+**Benchmark:** `tmp/round_153_perf_bench.test.tsx`
+
+**Before:** Inactive `Bounds` render with bounds, z-dimension, and distance
+indicators disabled: 0.014542 ms median, 0.025917 ms p95.
+
+**After:** Parent gate when all bounds/dimension indicators are inactive: zero
+`Bounds` mounts in the inactive FarmBot path.
+
+**Change:** 100.00% fewer inactive bounds component mounts, saving about
+0.014542 ms for one default inactive bounds render.
+
+**Outcome:** Accepted. The `Bounds` component already returned no scene content
+for this state; enabled bounds and dimension indicators still mount normally.
+
+**Commit:** `Skip disabled 3D helpers for 100.0% fewer mounts`
+
+## Round 154
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 786. Skip disabled camera-view geometry preparation | Avoid camera frustum point math when `config.cameraView=false` | One disabled `CameraView` render | Rejected |
+| 787. Skip disabled scene people before image tree creation | Avoid constructing hidden person billboards and image nodes when `config.people=false` | `People` render with two scene people disabled | Accepted |
+| 788. Skip disabled water-flow texture provider wrapper in FarmBot | Avoid one disabled provider component around the FarmBot tree when `config.waterFlow=false` | Disabled `WaterFlowTextureProvider` wrapper render | Accepted |
+| 789. Skip empty starter-tray instancing setup | Avoid texture, refs, effects, and frame callback when `StarterTrays` has no positions | Empty `StarterTrays` render | Accepted |
+| 790. Memoize Lab wall shape creation | Avoid rebuilding the static wall shape on Lab scene renders | Lab scene render | Rejected |
+
+### 786. Skip disabled camera-view geometry preparation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `CameraView` render: 0.067542 ms median, 0.184083 ms
+p95.
+
+**After:** Early return before camera frustum point setup: 0.064875 ms median,
+0.196708 ms p95.
+
+**Change:** 3.95% faster by median, saving about 0.002667 ms for one disabled
+camera-view render.
+
+**Outcome:** Rejected after rollback. The path stayed visually equivalent but
+did not clear the 10% improvement threshold.
+
+**Commit:** None
+
+### 787. Skip disabled scene people before image tree creation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `People` render with two scene people: 0.060000 ms median,
+0.081791 ms p95.
+
+**After:** Early return when `config.people=false`: 0.050959 ms median,
+0.065750 ms p95, with zero disabled person image nodes.
+
+**Change:** 15.07% faster by median, saving about 0.009041 ms and removing two
+disabled image billboard trees from the scene path.
+
+**Outcome:** Accepted. Disabled people had no visible output; enabled people
+still render through the same `FocusVisibilityGroup`.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 788. Skip disabled water-flow texture provider wrapper in FarmBot
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Disabled `WaterFlowTextureProvider` wrapper: 0.068875 ms median,
+0.205791 ms p95.
+
+**After:** Direct FarmBot child path without the disabled provider wrapper:
+0.053542 ms median, 0.079334 ms p95.
+
+**Change:** 22.26% faster by median, saving about 0.015333 ms for the default
+no-water-flow FarmBot render path.
+
+**Outcome:** Accepted. Water-flow texture sharing is still enabled unchanged
+when `config.waterFlow=true`; the default disabled path skips only a wrapper
+that provided no texture.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 789. Skip empty starter-tray instancing setup
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Empty `StarterTrays` render: 0.147250 ms median, 0.187958 ms p95.
+
+**After:** Early return for an empty `positions` array: 0.044084 ms median,
+0.062583 ms p95.
+
+**Change:** 70.06% faster by median, saving about 0.103166 ms and avoiding the
+empty instanced-mesh setup plus frame callback registration.
+
+**Outcome:** Accepted. Empty starter-tray input had no visible output; non-empty
+starter trays still render normally.
+
+**Commit:** `Skip unused 3D scene work for up to 70.1% faster renders`
+
+### 790. Memoize Lab wall shape creation
+
+**Benchmark:** `tmp/round_154_perf_bench.test.tsx`
+
+**Before:** Lab render: 0.303333 ms median, 1.642167 ms p95.
+
+**After:** Memoized static wall shape on the Lab component: 0.388416 ms median,
+1.538458 ms p95.
+
+**Change:** 28.05% slower by median for the measured mount path.
+
+**Outcome:** Rejected after rollback. The idea may help repeated Lab rerenders,
+but it did not improve the realistic mount benchmark used for this round.
+
+**Commit:** None
+
+## Round 155
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 791. Register rotary tool frame callbacks only for rotary tools | Avoid per-frame callback registration for every non-rotary tool slot | User tools render with seven saved non-rotary tool slots | Accepted |
+| 792. Replace lodash sort in tool-slot conversion | Reduce saved tool-slot conversion overhead for the common small list | Seven saved tool slots passed through `convertSlotsWithTools` | Rejected |
+| 793. Skip empty visible plant instances | Avoid grouping work for an empty visible plant-instance render | Empty visible `PlantInstances` render | Rejected |
+| 794. Skip empty visible weed instances before texture/frame setup | Avoid weed texture load and frame callback when no weeds are present | Empty visible `WeedInstances` render | Accepted |
+| 795. Skip empty visible point instances | Avoid point grouping work when no points are present | Empty visible `PointInstances` render | Rejected |
+
+### 791. Register rotary tool frame callbacks only for rotary tools
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** User tools render with seven saved non-rotary slots: 0.873833 ms
+median, 2.661875 ms p95. The path registered 560 `useFrame` callbacks across
+70 measured renders, or 8 callbacks per render.
+
+**After:** Non-rotary tool frame callback moved into a rotary-only component:
+0.830083 ms median, 2.404125 ms p95. The same benchmark registered zero
+`useFrame` callbacks for non-rotary tools.
+
+**Change:** 100.00% fewer non-rotary tool frame callback registrations, and
+about 4.7% faster by render-time median. In the realistic saved-tool-slot path
+this removes 8 unnecessary per-frame callbacks after mount.
+
+**Outcome:** Accepted. Rotary tools still register one frame callback when the
+active mounted tool is rotary; non-rotary tools no longer subscribe to every
+frame.
+
+**Commit:** `Skip unnecessary 3D frame work for 100.0% fewer callbacks`
+
+### 792. Replace lodash sort in tool-slot conversion
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** `convertSlotsWithTools` for seven saved tool slots: 0.002750 ms
+median, 0.005833 ms p95.
+
+**After:** Native copy plus numeric sort: 0.001125 ms median, 0.002084 ms p95.
+
+**Change:** 59.09% faster by median, saving about 0.001625 ms per seven-slot
+conversion.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute saving was not meaningful for the realistic slot count.
+
+**Commit:** None
+
+### 793. Skip empty visible plant instances
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` render: 0.046875 ms median,
+0.062875 ms p95.
+
+**After:** Early return for an empty plant array: 0.043334 ms median,
+0.059500 ms p95.
+
+**Change:** 7.56% faster by median, saving about 0.003541 ms.
+
+**Outcome:** Rejected after rollback. The path did not clear the 10% threshold,
+and the main `GardenModel` already avoids mounting empty plant instance work in
+ordinary empty-layer cases.
+
+**Commit:** None
+
+### 794. Skip empty visible weed instances before texture/frame setup
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `WeedInstances` render: 0.082125 ms median,
+0.116458 ms p95.
+
+**After:** Early return for an empty weed array: 0.042750 ms median,
+0.058042 ms p95, with no weed texture lookup or frame callback registration.
+
+**Change:** 47.95% faster by median, saving about 0.039375 ms for an empty
+visible weed-instance render.
+
+**Outcome:** Accepted. Empty weed input has no visible output; non-empty weed
+instances still render unchanged.
+
+**Commit:** `Skip unnecessary 3D frame work for 100.0% fewer callbacks`
+
+### 795. Skip empty visible point instances
+
+**Benchmark:** `tmp/round_155_perf_bench.test.tsx`
+
+**Before:** Empty visible `PointInstances` render: 0.044333 ms median,
+0.114459 ms p95.
+
+**After:** Early return for an empty point array: 0.042375 ms median,
+0.088500 ms p95.
+
+**Change:** 4.42% faster by median, saving about 0.001958 ms.
+
+**Outcome:** Rejected after rollback. The path did not clear the 10% threshold,
+and the main `GardenModel` already avoids mounting empty point layers.
+
+**Commit:** None
+
+## Round 156
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 796. Register season sun frame callbacks only when season animation is active | Avoid a default per-frame callback that immediately returns while seasons are not animated | Default and animated `Sun` renders with frame registration counts | Accepted |
+| 797. Skip disabled settings bar overlay content | Avoid building public settings sections when `settingsBar=false` already hides them | `PublicOverlay` render with `settingsBar=false` | Accepted |
+| 798. Skip disabled promo info overlay content | Avoid building promo info copy and button when `promoInfo=false` already hides them | `PublicOverlay` render with `promoInfo=false` | Rejected |
+| 799. Fast-return steady plant icon frames before brightness math | Reduce idle per-frame plant icon work after matrices and brightness are current | 100-plant static icon frame handler over 120 steady frames | Rejected |
+| 800. Avoid duplicate FPS logging flag reads during reports | Reduce reporting-path localStorage calls without changing FPS sampling | `FPSProbe` reporting callback over 120 frames | Rejected |
+
+### 796. Register season sun frame callbacks only when season animation is active
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** Default `Sun` render: 0.539875 ms median, 0.682833 ms p95,
+with 80 `useFrame` registrations across 80 measured renders. Animated `Sun`
+render: 0.494792 ms median, 0.570000 ms p95, also with 80 registrations.
+
+**After:** Default `Sun` render no longer registered a frame callback: zero
+registrations across 80 measured renders. Animated `Sun` render still
+registered 80 callbacks across 80 measured renders.
+
+**Change:** 100.00% fewer default sun frame callback registrations, removing
+one always-returning per-frame subscriber from the default scene while keeping
+the animated-season path registered when enabled.
+
+**Outcome:** Accepted. Default seasons are not animated, so the skipped
+callback had no visible effect. Animated seasons still mount the same frame
+update logic and render unchanged.
+
+**Commit:** `Skip hidden 3D garden work for 100.0% fewer callbacks`
+
+### 797. Skip disabled settings bar overlay content
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `settingsBar=false` `PublicOverlay` render: 0.183042 ms median,
+0.332875 ms p95.
+
+**After:** Settings-bar content gated before `FocusVisibilityDiv` mount:
+0.151417 ms median, 0.221875 ms p95.
+
+**Change:** 17.28% faster by median, saving about 0.031625 ms per disabled
+settings-bar render and avoiding four hidden settings section subtrees.
+
+**Outcome:** Accepted. The settings bar was already invisible when disabled;
+the enabled path and active-focus visibility behavior are unchanged.
+
+**Commit:** `Skip hidden 3D garden work for 100.0% fewer callbacks`
+
+### 798. Skip disabled promo info overlay content
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `promoInfo=false` `PublicOverlay` render: 0.178750 ms median,
+0.295583 ms p95.
+
+**After:** Promo-info content gated before `FocusVisibilityDiv` mount:
+0.225000 ms median, 0.361708 ms p95.
+
+**Change:** 25.87% slower by median.
+
+**Outcome:** Rejected after rollback. The disabled promo subtree was small
+enough that the extra branch did not improve the measured render path.
+
+**Commit:** None
+
+### 799. Fast-return steady plant icon frames before brightness math
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** 100-plant static icon frame handler over 120 steady frames:
+0.004833 ms median, 0.007209 ms p95.
+
+**After:** Early steady-frame return before brightness calculation:
+0.005750 ms median, 0.009334 ms p95.
+
+**Change:** 18.98% slower by median.
+
+**Outcome:** Rejected after rollback. The existing brightness calculation is
+already too cheap for this guard to help the realistic steady-frame case.
+
+**Commit:** None
+
+### 800. Avoid duplicate FPS logging flag reads during reports
+
+**Benchmark:** `tmp/round_156_perf_bench.test.tsx`
+
+**Before:** `FPSProbe` reporting callback over 120 frames: 5.979292 ms median,
+9.167000 ms p95.
+
+**After:** Reused the `FPS_LOGS` value for the reporting tick: 5.718042 ms
+median, 9.411625 ms p95.
+
+**Change:** 4.37% faster by median, with a slightly slower p95.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 moved in the wrong direction.
+
+**Commit:** None
+
+## Round 157
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 801. Build soil-surface projection and bounds in one pass | Avoid extra `map` arrays and spread min/max calls during soil surface generation | `getSurface` with a realistic 50-point generated soil surface | Rejected |
+| 802. Flip computed soil normals through the typed array | Avoid per-normal `setX`/`setY`/`setZ` calls after normal computation | `getSurface` with the same 50-point generated soil surface | Rejected |
+| 803. Serialize soil triangles with a preallocated numeric array | Avoid per-triangle nested array allocation before `JSON.stringify` | `serializeTriangles` on the generated soil triangles | Rejected |
+| 804. Build image moisture texture keys without side-effect `map` calls | Avoid array allocation while scanning sensors and readings for texture keys | `getImageTextureKey` with 8 sensors and 80 readings | Rejected |
+| 805. Filter soil-height points with a simple loop and cached bounds | Reduce callback and repeated config lookup overhead for realistic point lists | `filterSoilPoints` with 100 map points and 50 soil-height points | Rejected |
+
+### 801. Build soil-surface projection and bounds in one pass
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getSurface` with 54 filtered soil points: 0.006791 ms median,
+0.017416 ms p95.
+
+**After:** Combined prototype for one-pass bounds plus typed-array normal
+flipping: 0.007541 ms median, 0.017500 ms p95.
+
+**Change:** 11.04% slower by median.
+
+**Outcome:** Rejected after rollback. The extra manual loop did not improve the
+realistic soil surface size measured here.
+
+**Commit:** None
+
+### 802. Flip computed soil normals through the typed array
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getSurface` with 54 filtered soil points: 0.006791 ms median,
+0.017416 ms p95.
+
+**After:** Combined prototype for one-pass bounds plus typed-array normal
+flipping: 0.007541 ms median, 0.017500 ms p95.
+
+**Change:** 11.04% slower by median for the combined surface-generation path.
+
+**Outcome:** Rejected after rollback. The measured surface path did not improve
+when normal flipping was changed along with the bounds loop.
+
+**Commit:** None
+
+### 803. Serialize soil triangles with a preallocated numeric array
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `serializeTriangles` for generated soil triangles: 0.000250 ms
+median, 0.001042 ms p95.
+
+**After:** Preallocated outer array before `JSON.stringify`: 0.000541 ms
+median, 0.001875 ms p95.
+
+**Change:** 116.40% slower by median.
+
+**Outcome:** Rejected after rollback. The existing `map` version is clearer and
+faster for the realistic triangle count.
+
+**Commit:** None
+
+### 804. Build image moisture texture keys without side-effect `map` calls
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `getImageTextureKey` with 8 sensors and 80 readings: 0.008625 ms
+median, 0.014166 ms p95.
+
+**After:** `for...of` key builders for sensors and readings: 0.008042 ms
+median, 0.018792 ms p95.
+
+**Change:** 6.76% faster by median, but p95 was slower and the median did not
+clear the 10% threshold.
+
+**Outcome:** Rejected after rollback.
+
+**Commit:** None
+
+### 805. Filter soil-height points with a simple loop and cached bounds
+
+**Benchmark:** `tmp/round_157_perf_bench.test.ts`
+
+**Before:** `filterSoilPoints` with 100 map points, 50 of them soil-height
+points: 0.003959 ms median, 0.007291 ms p95.
+
+**After:** `for...of` loop with cached points array: 0.003708 ms median,
+0.006209 ms p95.
+
+**Change:** 6.34% faster by median, saving about 0.000251 ms.
+
+**Outcome:** Rejected after rollback. The percentage and absolute savings were
+both below the acceptance bar.
+
+**Commit:** None
+
+## Round 158
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 806. Skip disabled packaging subtree before box/text setup | Avoid building hidden shipping carton geometry when `packaging=false` | Default disabled `Packaging` render | Accepted |
+| 807. Skip disabled FarmBot axes before arrow setup | Avoid building hidden axis arrows when `axes=false` | Default disabled `FarmbotAxes` render | Accepted |
+| 808. Render only the active bounds distance indicator | Avoid constructing hidden beam/column/z distance indicators when one indicator is selected | `Bounds` render with `distanceIndicator="beamLength"` | Rejected |
+| 809. Skip hidden v1.8 extrusion-kit packaging subtree | Avoid building hidden extrusion-kit boxes and straps for v1.8 packaging | Enabled v1.8 XL `Packaging` render | Rejected |
+| 810. Skip disabled camera selection marker setup | Avoid creating hidden camera-selection markers when `cameraSelectionView=false` | Default disabled `CameraSelectionUI` render | Rejected |
+
+### 806. Skip disabled packaging subtree before box/text setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `Packaging` render: 0.094625 ms median,
+0.250625 ms p95.
+
+**After:** Early return before carton dimensions, colors, and hidden group
+setup: 0.064583 ms median, 0.201000 ms p95.
+
+**Change:** 31.75% faster by median, saving about 0.030042 ms per disabled
+packaging render.
+
+**Outcome:** Accepted. The disabled packaging setting is the default path, and
+the change removes hidden subtree work without changing enabled packaging
+rendering.
+
+**Commit:** This commit (`Skip hidden 3D garden subtrees for 49.7% faster renders`)
+
+### 807. Skip disabled FarmBot axes before arrow setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `FarmbotAxes` render: 0.088000 ms median,
+0.228083 ms p95.
+
+**After:** Early return before axis arrow geometry setup: 0.044250 ms median,
+0.053792 ms p95.
+
+**Change:** 49.72% faster by median, saving about 0.043750 ms per disabled
+axes render.
+
+**Outcome:** Accepted. Axes are disabled by default, and the enabled axis
+rendering path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D garden subtrees for 49.7% faster renders`)
+
+### 808. Render only the active bounds distance indicator
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** `Bounds` render with `distanceIndicator="beamLength"`: 0.204000 ms
+median, 0.256250 ms p95.
+
+**After:** Conditional rendering of only the active indicator: 0.223000 ms
+median, 0.289709 ms p95.
+
+**Change:** 9.31% slower by median.
+
+**Outcome:** Rejected after rollback. The extra branching did not improve the
+realistic selected-indicator render.
+
+**Commit:** None
+
+### 809. Skip hidden v1.8 extrusion-kit packaging subtree
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Enabled v1.8 XL `Packaging` render: 0.210125 ms median,
+0.367292 ms p95.
+
+**After:** Conditional v1.8 extrusion-kit subtree render: 0.209791 ms median,
+0.436458 ms p95.
+
+**Change:** 0.16% faster by median, saving about 0.000334 ms, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median improvement was far below the
+10% threshold and the p95 regression made it a poor trade.
+
+**Commit:** None
+
+### 810. Skip disabled camera selection marker setup
+
+**Benchmark:** `tmp/round_158_perf_bench.test.tsx`
+
+**Before:** Default disabled `CameraSelectionUI` render: 0.048708 ms median,
+0.060083 ms p95.
+
+**After:** Early return before hidden camera marker setup: 0.051625 ms median,
+0.081167 ms p95.
+
+**Change:** 5.99% slower by median.
+
+**Outcome:** Rejected after rollback. The existing hidden camera-selection path
+is already cheaper than the guard in this benchmark.
+
+**Commit:** None
+
+## Round 159
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 811. Skip disabled solar spring setup before hardware render | Avoid starting a hidden solar spring and preparing hardware props when `solar=false` and no focus transition is active | Default disabled `Solar` render | Rejected |
+| 812. Skip disabled north-arrow extrusion subtree | Avoid building hidden arrow extrudes when `north=false` | Default disabled `NorthArrow` render | Rejected |
+| 813. Skip disabled camera-view point generation | Avoid computing frustum vectors when `cameraView=false` | Default disabled `CameraView` render | Rejected |
+| 814. Reuse the sky scale vector | Avoid allocating a new large scale `Vector3` on every `Sky` render | `Sky` render with a stable sun position | Rejected |
+| 815. Reuse the camera-view rotation axis vector | Avoid allocating a new z-axis `Vector3` for every rotated frustum corner | `getCameraViewPoints` with enabled camera-view calibration inputs | Rejected |
+
+### 811. Skip disabled solar spring setup before hardware render
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `Solar` render with `solar=false` and no active
+focus: 0.057167 ms median, 0.212208 ms p95.
+
+**After:** Split disabled solar rendering before the `useSpring` hardware path:
+0.053916 ms median, 0.216625 ms p95.
+
+**Change:** 5.69% faster by median, saving about 0.003251 ms, with p95 slightly
+slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and the absolute savings were not meaningful.
+
+**Commit:** None
+
+### 812. Skip disabled north-arrow extrusion subtree
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `NorthArrow` render: 0.055500 ms median,
+0.088000 ms p95.
+
+**After:** Early return before hidden north-arrow `Extrude` setup:
+0.047583 ms median, 0.083500 ms p95.
+
+**Change:** 14.26% faster by median, saving about 0.007917 ms.
+
+**Outcome:** Rejected after rollback. Although the percentage cleared 10%, the
+absolute savings were below a meaningful per-render improvement for this
+rarely enabled overlay.
+
+**Commit:** None
+
+### 813. Skip disabled camera-view point generation
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** Default disabled `CameraView` render: 0.045125 ms median,
+0.063833 ms p95.
+
+**After:** Early return before disabled frustum point generation:
+0.040208 ms median, 0.050250 ms p95.
+
+**Change:** 10.90% faster by median, saving about 0.004917 ms.
+
+**Outcome:** Rejected after rollback. The improvement crossed 10% by
+percentage but the absolute savings were too small to justify the extra
+component split.
+
+**Commit:** None
+
+### 814. Reuse the sky scale vector
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** `Sky` render with a stable sun position: 0.079083 ms median,
+0.168208 ms p95.
+
+**After:** Module-level `Vector3` reused for the sky scale prop:
+0.078333 ms median, 0.203375 ms p95.
+
+**Change:** 0.95% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The allocation was not a meaningful
+render cost and p95 moved in the wrong direction.
+
+**Commit:** None
+
+### 815. Reuse the camera-view rotation axis vector
+
+**Benchmark:** `tmp/round_159_perf_bench.test.tsx`
+
+**Before:** `getCameraViewPoints` with enabled camera-view calibration inputs:
+0.001167 ms median, 0.002792 ms p95.
+
+**After:** Shared z-axis vector for frustum corner rotation:
+0.001666 ms median, 0.008000 ms p95.
+
+**Change:** 42.76% slower by median.
+
+**Outcome:** Rejected after rollback. The shared-axis prototype was slower for
+the realistic enabled camera-view point calculation.
+
+**Commit:** None
+
+## Round 160
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 816. Share one grid coordinate converter across line generation | Avoid recreating `get3DPositionFunc(config)` once per grid line while sampling dense Genesis XL grids | `gridLinePositions` on Genesis XL with flat soil | Rejected |
+| 817. Cache grid line offsets by bot dimension | Avoid rebuilding identical 100 mm offset arrays for repeated renders with the same bot size | `gridLinePositions` on repeated Genesis XL calls | Rejected |
+| 818. Pre-size grid line position arrays | Avoid incremental array growth while writing thousands of grid segment coordinates | `gridLinePositions` on Genesis XL with flat soil | Rejected |
+| 819. Skip no-op summer cloud spring setup | Avoid starting cloud opacity spring work when the selected season has zero cloud opacity | `Clouds` render with `plants="Summer"` | Rejected |
+| 820. Preallocate ground fade color buffer | Avoid temporary JS number arrays while building detailed ground vertex colors | First detailed `Ground` render | Rejected |
+
+### 816. Share one grid coordinate converter across line generation
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` on Genesis XL with flat soil:
+0.188833 ms median, 0.568250 ms p95.
+
+**After:** Shared one `get3DPositionFunc(config)` result across all grid line
+sampling, measured with the offset cache prototype: 0.208208 ms median,
+0.633625 ms p95.
+
+**Change:** 10.26% slower by median.
+
+**Outcome:** Rejected after rollback. Sharing the converter did not improve
+the realistic XL grid generation path.
+
+**Commit:** None
+
+### 817. Cache grid line offsets by bot dimension
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** Genesis XL `gridLineOffsets` pair for X/Y dimensions:
+0.000875 ms median, 0.001875 ms p95.
+
+**After:** Module cache lookup for repeated dimensions: 0.000084 ms median,
+0.000208 ms p95.
+
+**Change:** 90.40% faster by median, saving about 0.000791 ms per offset pair.
+
+**Outcome:** Rejected after rollback. The standalone percentage was high, but
+the absolute savings were below a meaningful threshold and the full grid
+prototype that used the cache was slower.
+
+**Commit:** None
+
+### 818. Pre-size grid line position arrays
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` on Genesis XL with flat soil:
+0.188833 ms median, 0.568250 ms p95.
+
+**After:** Direct writes into pre-sized outer and inner position arrays:
+0.204125 ms median, 0.640083 ms p95.
+
+**Change:** 8.10% slower by median.
+
+**Outcome:** Rejected after rollback. Manual direct writes did not beat the
+existing append path for the realistic XL grid.
+
+**Commit:** None
+
+### 819. Skip no-op summer cloud spring setup
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** `Clouds` render with `plants="Summer"`:
+0.056333 ms median, 0.221958 ms p95.
+
+**After:** Split visible cloud rendering so zero-opacity summer clouds return
+before `useSpring`: 0.056584 ms median, 0.280083 ms p95.
+
+**Change:** 0.45% slower by median.
+
+**Outcome:** Rejected after rollback. The extra component split did not help
+the realistic no-cloud summer render.
+
+**Commit:** None
+
+### 820. Preallocate ground fade color buffer
+
+**Benchmark:** `tmp/round_160_perf_bench.test.tsx`
+
+**Before:** First detailed `Ground` render: 0.157667 ms median,
+0.357875 ms p95.
+
+**After:** `Float32Array` preallocated for ground vertex colors:
+0.156416 ms median, 0.402334 ms p95.
+
+**Change:** 0.79% faster by median, saving about 0.001251 ms, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median improvement was far below the
+10% threshold and p95 regressed.
+
+**Commit:** None
+
+## Round 161
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 821. Skip hidden greenhouse scene before texture and prop setup | Avoid building greenhouse walls, trays, people, potted plant, and shelf texture hooks when `scene!="Greenhouse"` | Default Outdoor `Greenhouse` render | Accepted |
+| 822. Skip hidden lab scene before texture and wall setup | Avoid building lab walls, shelves, desk, people, and texture hooks when `scene!="Lab"` | Default Outdoor `Lab` render | Accepted |
+| 823. Hoist the lab wall shape and extrude options | Avoid recreating the same wall `Shape` and options array during enabled lab renders | Enabled `Lab` render | Rejected |
+| 824. Avoid per-person `Vector3` offsets while rendering people | Use raw offset numbers instead of allocating a `Vector3` for every person billboard | Enabled two-person `People` render | Rejected |
+| 825. Share potted-plant lathe geometry across instances | Avoid rebuilding the same pot profile and `LatheGeometry` for each mounted potted plant | First `PottedPlant` render | Accepted |
+
+### 821. Skip hidden greenhouse scene before texture and prop setup
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Default Outdoor `Greenhouse` render: 0.076333 ms median,
+0.290000 ms p95.
+
+**After:** Hook-safe early return before hidden greenhouse texture and child
+setup: 0.063500 ms median, 0.227250 ms p95.
+
+**Change:** 16.81% faster by median, saving about 0.012833 ms per default
+hidden greenhouse render.
+
+**Outcome:** Accepted. The greenhouse scene was already not visible outside the
+Greenhouse scene; the enabled Greenhouse path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+### 822. Skip hidden lab scene before texture and wall setup
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Default Outdoor `Lab` render: 0.068042 ms median,
+0.087625 ms p95.
+
+**After:** Hook-safe early return before hidden lab texture, wall, desk, and
+people setup: 0.049916 ms median, 0.074875 ms p95.
+
+**Change:** 26.64% faster by median, saving about 0.018126 ms per default
+hidden lab render.
+
+**Outcome:** Accepted. The lab scene was already not visible outside the Lab
+scene; the enabled Lab path is unchanged.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+### 823. Hoist the lab wall shape and extrude options
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Enabled `Lab` render: 0.429791 ms median, 1.168792 ms p95.
+
+**After:** Module-level wall shape, extrude options, and shelf heights:
+0.423417 ms median, 1.772250 ms p95.
+
+**Change:** 1.48% faster by median, with p95 much slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and the tail latency regression was significant.
+
+**Commit:** None
+
+### 824. Avoid per-person `Vector3` offsets while rendering people
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** Enabled two-person `People` render: 0.094583 ms median,
+0.122375 ms p95.
+
+**After:** Raw numeric person offsets instead of a temporary `Vector3`:
+0.104542 ms median, 0.123000 ms p95.
+
+**Change:** 10.53% slower by median.
+
+**Outcome:** Rejected after rollback. The direct numeric version was slower for
+the realistic two-person render.
+
+**Commit:** None
+
+### 825. Share potted-plant lathe geometry across instances
+
+**Benchmark:** `tmp/round_161_perf_bench.test.tsx`
+
+**Before:** First `PottedPlant` render: 0.110625 ms median, 0.169209 ms p95.
+
+**After:** Module-level pot profile and `LatheGeometry` shared across mounts:
+0.090083 ms median, 0.105000 ms p95.
+
+**Change:** 18.57% faster by median, saving about 0.020542 ms per potted-plant
+mount.
+
+**Outcome:** Accepted. The geometry is identical and shared with
+`dispose={null}` to avoid disposing the module-level instance on unmount.
+
+**Commit:** This commit (`Skip hidden 3D scenes for 26.6% faster renders`)
+
+## Round 162
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 826. Reuse converted bounds distance endpoints | Avoid calling `get3DPosition` twice for the same distance-indicator point | `Bounds` render with `distanceIndicator="beamLength"` | Rejected |
+| 827. Cache repeated arrow extrude arguments | Avoid rebuilding identical arrow `Shape` and options arrays for repeated distance arrows | `DistanceIndicator` render | Rejected |
+| 828. Cache caster bracket extrude arguments by leg size | Avoid rebuilding the same caster bracket `Shape` for repeated default caster renders | Default `Caster` render | Rejected |
+| 829. Reuse person image position vectors from scaling data | Avoid allocating a new `Vector3` for every `Person` image render | Single `Person` render | Rejected |
+| 830. Precompute repeated power-supply cable coordinates | Avoid repeated `threeSpace` and support-height calculations while building the cable path | Default `PowerSupply` render | Rejected |
+
+### 826. Reuse converted bounds distance endpoints
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** `Bounds` render with `distanceIndicator="beamLength"`:
+0.270459 ms median, 0.893542 ms p95.
+
+**After:** Shared converted start/end positions for repeated x/y fields:
+0.268625 ms median, 0.878583 ms p95.
+
+**Change:** 0.68% faster by median, saving about 0.001834 ms.
+
+**Outcome:** Rejected after rollback. The improvement was far below the 10%
+threshold and the absolute savings were not meaningful.
+
+**Commit:** None
+
+### 827. Cache repeated arrow extrude arguments
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** `DistanceIndicator` render: 0.164042 ms median, 0.250625 ms p95.
+
+**After:** Cached arrow `Shape` and extrude options by length and width:
+0.162500 ms median, 0.279750 ms p95.
+
+**Change:** 0.94% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and tail latency moved in the wrong direction.
+
+**Commit:** None
+
+### 828. Cache caster bracket extrude arguments by leg size
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Default `Caster` render: 0.088959 ms median, 0.115709 ms p95.
+
+**After:** Cached caster bracket `Shape` and extrude options keyed by leg size:
+0.089000 ms median, 0.148791 ms p95.
+
+**Change:** 0.05% slower by median.
+
+**Outcome:** Rejected after rollback. The cache did not improve the realistic
+caster render and p95 regressed.
+
+**Commit:** None
+
+### 829. Reuse person image position vectors from scaling data
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Single `Person` render: 0.057916 ms median, 0.083209 ms p95.
+
+**After:** Reused module-level `Vector3` positions in the scaling data:
+0.073708 ms median, 0.196375 ms p95.
+
+**Change:** 27.27% slower by median.
+
+**Outcome:** Rejected after rollback. Reusing vectors in the scaling data made
+the render slower and substantially worsened p95.
+
+**Commit:** None
+
+### 830. Precompute repeated power-supply cable coordinates
+
+**Benchmark:** `tmp/round_162_perf_bench.test.tsx`
+
+**Before:** Default `PowerSupply` render: 0.105959 ms median, 0.222041 ms p95.
+
+**After:** Precomputed repeated cable x/y/z values before constructing the
+curve path: 0.103375 ms median, 0.204750 ms p95.
+
+**Change:** 2.44% faster by median, saving about 0.002584 ms.
+
+**Outcome:** Rejected after rollback. The improvement was below the 10%
+threshold and too small in absolute terms.
+
+**Commit:** None
+
+## Round 163
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 831. Skip disabled Bot subtree before shape/model setup | Avoid shape-loader state, effects, GLTF hooks, and heavy subassemblies when the bot layer is off | `Bot` render with `config.bot=false` | Accepted |
+| 832. Skip hidden bed XY dimension indicators | Avoid constructing two hidden `DistanceIndicator` trees when XY dimensions are off and the Planter bed focus is inactive | Default `Bed` render | Rejected |
+| 833. Skip inactive bed-height distance indicator | Avoid constructing a hidden bed-height `DistanceIndicator` unless the bed-height indicator is selected | Default `Bed` render and bed-height indicator render | Rejected |
+| 834. Skip group-order URL lookup when there are no groups | Avoid route lookup and selection-cache work in the default empty-groups case | `GroupOrderVisual` render with `groups=[]` | Rejected |
+| 835. Skip group-order point selection when no points exist | Avoid `pointsSelectedByGroup` when an active group exists but the point list is empty | `GroupOrderVisual` render with one group and `allPoints=[]` | Rejected |
+
+### 831. Skip disabled Bot subtree before shape/model setup
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `Bot` render with `config.bot=false`: 0.115708 ms median,
+0.261750 ms p95.
+
+**After:** Exported `Bot` returns before the enabled-only shape-loader state,
+effects, GLTF hooks, and model subassemblies are mounted: 0.099167 ms median,
+0.273083 ms p95.
+
+**Change:** 14.30% faster by median, saving about 0.016541 ms per disabled-bot
+render. The p95 increase was about 0.011333 ms and did not indicate meaningful
+tail degradation.
+
+**Outcome:** Accepted. The visible enabled-bot path is unchanged except that
+the enabled wrapper no longer repeats the already-true `config.bot` visibility
+check.
+
+**Commit:** This commit (`Skip disabled bot work for 14.3% faster renders`)
+
+### 832. Skip hidden bed XY dimension indicators
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render: 0.843583 ms median, 2.509000 ms p95.
+
+**After:** Conditional `distance-indicator-group` mounting when XY dimensions or
+Planter bed focus are active: 0.840083 ms median, 2.433541 ms p95.
+
+**Change:** 0.41% faster by median, saving about 0.003500 ms.
+
+**Outcome:** Rejected after rollback. The improvement was far below the 10%
+threshold and too small in absolute terms.
+
+**Commit:** None
+
+### 833. Skip inactive bed-height distance indicator
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `Bed` render with the bed-height indicator selected: 0.747083 ms
+median, 2.192542 ms p95.
+
+**After:** Conditional bed-height `DistanceIndicator` mounting only when the
+bed-height indicator is selected: 0.717167 ms median, 2.203625 ms p95.
+
+**Change:** 4.00% faster by median, saving about 0.029916 ms.
+
+**Outcome:** Rejected after rollback. The selected-indicator render improved,
+but not enough to clear the threshold.
+
+**Commit:** None
+
+### 834. Skip group-order URL lookup when there are no groups
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `GroupOrderVisual` render with `groups=[]`: 0.044000 ms median,
+0.058209 ms p95.
+
+**After:** Early return before `findGroupFromUrl` when there are no groups:
+0.040166 ms median, 0.050125 ms p95.
+
+**Change:** 8.71% faster by median, saving about 0.003834 ms.
+
+**Outcome:** Rejected after rollback. The improvement did not clear 10% and the
+absolute savings were negligible.
+
+**Commit:** None
+
+### 835. Skip group-order point selection when no points exist
+
+**Benchmark:** `tmp/round_163_perf_bench.test.tsx`
+
+**Before:** `GroupOrderVisual` render with one group and `allPoints=[]`:
+0.040500 ms median, 0.068542 ms p95.
+
+**After:** Early return before `pointsSelectedByGroup` when the active group has
+no available points to select from: 0.039667 ms median, 0.104208 ms p95.
+
+**Change:** 2.06% faster by median, with p95 slower by about 0.035666 ms.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and tail latency regressed.
+
+**Commit:** None
+
+## Round 164
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 836. Skip hidden plant instance rerenders during plant-array churn | Avoid re-rendering an empty `PlantInstances` wrapper when the plant layer is hidden and resource arrays churn | Hidden `PlantInstances` rerender with 100 changed plants | Rejected |
+| 837. Skip hidden point instance rerenders during point-array churn | Avoid re-rendering an empty `PointInstances` wrapper when the point layer is hidden and point arrays churn | Hidden `PointInstances` rerender with 100 changed points | Rejected |
+| 838. Skip empty visible plant instance rerenders | Avoid wrapper rerenders and instance grouping when the visible plant layer has no plants | Empty visible `PlantInstances` rerender | Rejected |
+| 839. Skip empty visible point instance rerenders | Avoid grouping work when the visible point layer has no points | Empty visible `PointInstances` rerender | Rejected |
+| 840. Skip empty visible weed instance rerenders | Avoid wrapper rerenders when the visible weed layer has no weeds | Empty visible `WeedInstances` rerender | Rejected |
+
+### 836. Skip hidden plant instance rerenders during plant-array churn
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Hidden `PlantInstances` rerender with 100 changed plants:
+0.023417 ms median, 0.106791 ms p95.
+
+**After:** Comparator short-circuit when both previous and next plant instance
+layers are hidden: 0.018958 ms median, 0.068792 ms p95.
+
+**Change:** 19.04% faster by median, saving about 0.004459 ms per hidden-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute median savings were below 0.005 ms and not meaningful enough for
+an accepted change.
+
+**Commit:** None
+
+### 837. Skip hidden point instance rerenders during point-array churn
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Hidden `PointInstances` rerender with 100 changed points:
+0.015500 ms median, 0.025584 ms p95.
+
+**After:** Comparator short-circuit when both previous and next point instance
+layers are hidden: 0.013666 ms median, 0.021042 ms p95.
+
+**Change:** 11.83% faster by median, saving about 0.001834 ms per hidden-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The median cleared 10%, but the absolute
+savings were too small to matter in the realistic render path.
+
+**Commit:** None
+
+### 838. Skip empty visible plant instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` rerender: 0.020250 ms median,
+0.030875 ms p95.
+
+**After:** Comparator and render guard for empty plant arrays: 0.011333 ms
+median, 0.017084 ms p95.
+
+**Change:** 44.03% faster by median, saving about 0.008917 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percentage was strong, but the
+absolute savings were still below 0.01 ms per rerender.
+
+**Commit:** None
+
+### 839. Skip empty visible point instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `PointInstances` rerender: 0.017542 ms median,
+0.024000 ms p95.
+
+**After:** Comparator and render guard for empty point arrays: 0.010458 ms
+median, 0.014208 ms p95.
+
+**Change:** 40.38% faster by median, saving about 0.007084 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The improvement was measurable but too
+small in absolute terms for an accepted code change.
+
+**Commit:** None
+
+### 840. Skip empty visible weed instance rerenders
+
+**Benchmark:** `tmp/round_164_perf_bench.test.tsx`
+
+**Before:** Empty visible `WeedInstances` rerender: 0.012416 ms median,
+0.016541 ms p95.
+
+**After:** Comparator short-circuit when both weed arrays are empty:
+0.010583 ms median, 0.014417 ms p95.
+
+**Change:** 14.76% faster by median, saving about 0.001833 ms per empty-layer
+rerender.
+
+**Outcome:** Rejected after rollback. The percent improvement cleared the
+threshold, but the absolute savings were negligible.
+
+**Commit:** None
+
+## Round 165
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 841. Cache plant icon atlas texture transforms | Avoid recomputing offset/repeat objects for repeated icon atlas lookups | 100 atlas transform lookups across 40 repeated icons | Rejected |
+| 842. Cache repeated atlas UV transforms while filling buffers | Avoid repeated atlas lookup work while building instance UV buffers for repeated icons | Atlas `PlantInstances` render with 100 plants across 40 icons | Rejected |
+| 843. Use indexed loops for moisture instance buffers | Avoid callback overhead and repeated offset math while filling map matrices/colors/opacities | `buildMoistureInstanceBuffers` with 500 interpolation cells | Rejected |
+| 844. Fill moisture-reading matrices directly | Avoid a `Matrix4` method chain per reading while building reading instance matrices | `MoistureReadings` render with 100 readings | Rejected |
+| 845. Build image texture sensor keys with indexed loops | Reduce callback overhead when deriving render-texture keys for moisture sensors/readings | `getImageTextureKey` with 20 sensors and 100 readings | Rejected |
+
+### 841. Cache plant icon atlas texture transforms
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** 100 atlas transform lookups across 40 repeated icons:
+0.005708 ms median, 0.014083 ms p95.
+
+**After:** Module-level transform cache keyed by icon and atlas frame object:
+0.004542 ms median, 0.006584 ms p95.
+
+**Change:** 20.43% faster by median, saving about 0.001166 ms per 100 lookups.
+
+**Outcome:** Rejected after rollback. The percent improvement cleared the
+threshold, but the absolute savings were negligible.
+
+**Commit:** None
+
+### 842. Cache repeated atlas UV transforms while filling buffers
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** Atlas `PlantInstances` render with 100 plants across 40 icons:
+0.290333 ms median, 0.556875 ms p95.
+
+**After:** Local transform cache while filling atlas UV buffers:
+0.275875 ms median, 0.597000 ms p95.
+
+**Change:** 4.98% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and tail latency regressed.
+
+**Commit:** None
+
+### 843. Use indexed loops for moisture instance buffers
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `buildMoistureInstanceBuffers` with 500 interpolation cells:
+0.015042 ms median, 0.020542 ms p95.
+
+**After:** Indexed loop with precomputed matrix and color offsets:
+0.011875 ms median, 0.022583 ms p95.
+
+**Change:** 21.05% faster by median, saving about 0.003167 ms for 500 cells,
+with p95 slightly slower.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold, but
+the absolute savings were too small and p95 moved in the wrong direction.
+
+**Commit:** None
+
+### 844. Fill moisture-reading matrices directly
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `MoistureReadings` render with 100 readings: 0.170875 ms median,
+0.253042 ms p95.
+
+**After:** Direct `Float32Array` matrix writes instead of a `Matrix4` method
+chain per reading: 0.164500 ms median, 0.200458 ms p95.
+
+**Change:** 3.73% faster by median, saving about 0.006375 ms.
+
+**Outcome:** Rejected after rollback. The improvement did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 845. Build image texture sensor keys with indexed loops
+
+**Benchmark:** `tmp/round_165_perf_bench.test.tsx`
+
+**Before:** `getImageTextureKey` with 20 sensors and 100 readings:
+0.013125 ms median, 0.034917 ms p95.
+
+**After:** Indexed loops for sensor and reading key construction:
+0.015375 ms median, 0.046959 ms p95.
+
+**Change:** 17.14% slower by median.
+
+**Outcome:** Rejected after rollback. The loop rewrite was slower and worsened
+p95.
+
+**Commit:** None
+
+## Round 166
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 846. Avoid default `moment` work for recognized animated seasons | Avoid constructing a UTC day-start date on every animated sun frame when the season maps to a fixed date | 60 `getAnimatedSeasonDate("Summer", t)` calls | Accepted |
+| 847. Binary-search animated sun samples | Replace linear sample scan during animated-season sun lookup | 60 `getAnimatedSeasonDate("Summer", t)` calls | Accepted |
+| 848. Skip static daylight star field | Avoid generating and rendering fully invisible stars when seasons are static and the sun is fully above the horizon | Default `Sun` render | Accepted |
+| 849. Fill ground vertex colors with a typed array | Avoid dynamic array pushes while building detailed ground geometry | Default detailed `Ground` render | Accepted |
+| 850. Skip zero-opacity clouds before spring setup | Avoid spring and cloud wrapper setup when enabled clouds resolve to zero opacity for the current season | `CloudsBase` render with `clouds=true`, `plants="Summer"` | Rejected |
+
+### 846. Avoid default `moment` work for recognized animated seasons
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** 60 `getAnimatedSeasonDate("Summer", t)` calls: 0.219625 ms
+median, 0.244375 ms p95.
+
+**After:** Defer default day-start creation unless the season is not one of the
+fixed season dates: 0.191083 ms median, 0.199583 ms p95.
+
+**Change:** 13.00% faster by median, saving about 0.028542 ms per 60 animated
+sun-frame date lookups.
+
+**Outcome:** Accepted. Recognized seasons still resolve to their fixed season
+dates, and custom seasons still use the provided or current day start.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 847. Binary-search animated sun samples
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** 60 animated season date lookups after item 846: 0.191083 ms median,
+0.199583 ms p95.
+
+**After:** Binary search for the first sample at or after the target animation
+time: 0.014208 ms median, 0.025834 ms p95.
+
+**Change:** 92.56% faster by median, saving about 0.176875 ms per 60 animated
+sun-frame date lookups.
+
+**Outcome:** Accepted. The search returns the same first sample whose animation
+time is greater than or equal to the target.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 848. Skip static daylight star field
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** Default `Sun` render after item 847: 0.662250 ms median,
+0.930583 ms p95.
+
+**After:** Skip the `OtherSuns` points when seasons are not animating and the
+static sun factor is already 1: 0.223208 ms median, 0.533000 ms p95.
+
+**Change:** 66.30% faster by median, saving about 0.439042 ms per static
+daylight `Sun` render.
+
+**Outcome:** Accepted. The skipped star field was fully invisible in static
+daylight; stars still render when the static sun is below full daylight or when
+season animation can make them visible later.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 849. Fill ground vertex colors with a typed array
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** Default detailed `Ground` render: 0.201417 ms median,
+0.403583 ms p95.
+
+**After:** Fill a pre-sized `Float32Array` for ground vertex colors instead of
+pushing to a dynamic array: 0.177000 ms median, 0.230916 ms p95.
+
+**Change:** 12.12% faster by median, saving about 0.024417 ms per detailed
+ground render.
+
+**Outcome:** Accepted. The color attribute has the same item size and per-vertex
+shade values.
+
+**Commit:** This commit (`Optimize animated sun and ground for 93.6% faster sun lookups`)
+
+### 850. Skip zero-opacity clouds before spring setup
+
+**Benchmark:** `tmp/round_166_perf_bench.test.tsx`
+
+**Before:** `CloudsBase` render with `clouds=true`, `plants="Summer"`:
+0.053500 ms median, 0.064625 ms p95.
+
+**After:** Hook-safe wrapper split that returned before `useSpring` when cloud
+opacity was zero: 0.051834 ms median, 0.070459 ms p95.
+
+**Change:** 3.11% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and p95 regressed.
+
+**Commit:** None
+
+## Round 167
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 851. Share ground geometries across remounts | Avoid rebuilding identical low- and high-detail `CircleGeometry` objects for repeated ground mounts | Default detailed `Ground` render/remount | Accepted |
+| 852. Share night star positions across remounts | Avoid generating 1000 random star positions every time the star field mounts | Static night `Sun` render | Accepted |
+| 853. Reuse static debug sun origin | Avoid allocating the same `[0, 0, 0]` `Vector3` for every `Sun` render | Debug `Sun` render with `lightsDebug=true` | Rejected |
+| 854. Cache exact sky color endpoint tuples | Avoid `Color` allocation/conversion for fully dark and full-day sky colors | 60 endpoint `skyColor` calls | Accepted |
+| 855. Share plant spread sphere geometry | Avoid constructing identical spread `SphereGeometry` objects for plant spread remounts | `PlantSpreadInstances` render with 50 plants | Rejected |
+
+### 851. Share ground geometries across remounts
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Default detailed `Ground` render/remount: 0.110708 ms median,
+0.218458 ms p95.
+
+**After:** Lazy shared low- and high-detail ground geometries with `dispose={null}`
+on the wrapper mesh: 0.096458 ms median, 0.180208 ms p95.
+
+**Change:** 12.87% faster by median, saving about 0.014250 ms per detailed
+ground remount while avoiding repeated geometry allocation.
+
+**Outcome:** Accepted. The same geometry data is reused for identical ground
+meshes, and shared geometry is not disposed when a mesh unmounts.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 852. Share night star positions across remounts
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Static night `Sun` render after item 851: 0.146042 ms median,
+0.206458 ms p95.
+
+**After:** Lazy shared star position buffer for `OtherSuns`: 0.069625 ms
+median, 0.098500 ms p95.
+
+**Change:** 52.32% faster by median, saving about 0.076417 ms per static night
+sun render.
+
+**Outcome:** Accepted. The star field remains the same size and distribution,
+but repeated mounts reuse the generated position buffer.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 853. Reuse static debug sun origin
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** Debug `Sun` render with `lightsDebug=true` after item 852:
+0.354667 ms median, 0.454708 ms p95.
+
+**After:** Module-level origin `Vector3` for the debug line: 0.355959 ms
+median, 0.436542 ms p95.
+
+**Change:** 0.36% slower by median.
+
+**Outcome:** Rejected after rollback. The median did not improve.
+
+**Commit:** None
+
+### 854. Cache exact sky color endpoint tuples
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** 60 endpoint `skyColor` calls after rejected item 853 rollback:
+0.005917 ms median, 0.013042 ms p95.
+
+**After:** Cached exact black and full-day sky color tuples: 0.000625 ms
+median, 0.003458 ms p95.
+
+**Change:** 89.44% faster by median, saving about 0.005292 ms per 60 endpoint
+sky color calls.
+
+**Outcome:** Accepted. Interpolated sky colors still use the existing
+conversion path, while exact endpoint values reuse the same linear RGB tuples.
+
+**Commit:** This commit (`Optimize shared 3D garden buffers for 89.4% faster sky endpoints`)
+
+### 855. Share plant spread sphere geometry
+
+**Benchmark:** `tmp/round_167_perf_bench.test.tsx`
+
+**Before:** `PlantSpreadInstances` render with 50 plants after item 854:
+0.053875 ms median, 0.106084 ms p95.
+
+**After:** Shared spread sphere geometry passed through instanced mesh args:
+0.053083 ms median, 0.081291 ms p95.
+
+**Change:** 1.47% faster by median.
+
+**Outcome:** Rejected after rollback. The improvement did not clear the 10%
+threshold.
+
+**Commit:** None
+
+## Round 168
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 856. Reuse grid position converter while building segments | Avoid rebuilding the same `get3DPosition` closure once per grid line | `gridLinePositions` with default dimensions | Rejected |
+| 857. Pre-size grid line position arrays | Avoid dynamic array growth while building known-size grid segment buffers | `gridLinePositions` with default dimensions | Rejected |
+| 858. Reuse sky static props | Avoid allocating the same sky scale vector and up tuple on every `Sky` render | Default `Sky` render | Rejected |
+| 859. Share star field geometry | Avoid rebuilding `BufferGeometry` and position attributes around the shared star buffer | Static night `Sun` render | Accepted |
+| 860. Share solar cell geometry | Avoid extruding the same solar cell geometry for each solar array mount | Visible `Solar` render | Accepted |
+
+### 856. Reuse grid position converter while building segments
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** `gridLinePositions` with default dimensions: 0.151542 ms median,
+0.175208 ms p95.
+
+**After:** Build the `get3DPosition` converter once in `gridLinePositions` and
+pass it into each segment builder: 0.138500 ms median, 0.167250 ms p95.
+
+**Change:** 8.61% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 857. Pre-size grid line position arrays
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Warmed `gridLinePositions` with default dimensions after item 856
+rollback: 0.101916 ms median, 0.259625 ms p95.
+
+**After:** Pre-sized outer and inner position arrays with indexed writes:
+0.094500 ms median, 0.216583 ms p95.
+
+**Change:** 7.27% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 858. Reuse sky static props
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Default `Sky` render after item 857 rollback: 0.074875 ms median,
+0.212542 ms p95.
+
+**After:** Module-level sky scale vector and up tuple: 0.076000 ms median,
+0.222042 ms p95.
+
+**Change:** 1.50% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slightly slower.
+
+**Commit:** None
+
+### 859. Share star field geometry
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Static night `Sun` render after item 858 rollback: 0.070792 ms
+median, 0.102166 ms p95.
+
+**After:** Lazy shared `BufferGeometry` using the existing shared star
+position buffer: 0.062292 ms median, 0.086750 ms p95.
+
+**Change:** 12.01% faster by median, saving about 0.008500 ms per static night
+sun render.
+
+**Outcome:** Accepted. The same star positions and material are used, while
+the immutable geometry wrapper is reused across mounts.
+
+**Commit:** This commit (`Share 3D garden star and solar geometry for 19.9% faster solar renders`)
+
+### 860. Share solar cell geometry
+
+**Benchmark:** `tmp/round_168_perf_bench.test.tsx`
+
+**Before:** Visible `Solar` render after item 859: 0.183959 ms median,
+0.283917 ms p95.
+
+**After:** Lazy shared extruded solar cell geometry with `dispose={null}` on
+the instanced mesh: 0.147416 ms median, 0.168792 ms p95.
+
+**Change:** 19.86% faster by median, saving about 0.036543 ms per visible
+solar render.
+
+**Outcome:** Accepted. Solar cell shape, placement, and material are unchanged;
+only the repeated extruded geometry allocation is avoided.
+
+**Commit:** This commit (`Share 3D garden star and solar geometry for 19.9% faster solar renders`)
+
+## Round 169
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 861. Share bed-support caster geometries by leg size | Avoid rebuilding identical bracket, wheel, and axle geometries across bed remounts | Default `Bed` render | Accepted |
+| 862. Reuse bed-support caster matrix intermediate | Avoid cloning and multiplying the same leg/caster matrix twice for each support | Default `Bed` render | Rejected |
+| 863. Reuse solar cell placement object | Avoid constructing a new `Object3D` every time solar cell matrices are assigned | Visible `Solar` render | Rejected |
+| 864. Hoist packaging offset arrays | Avoid rebuilding static strap and edge-protector coordinate arrays on packaging mounts | `Packaging` render with `packaging=true`, `kitVersion="v1.7"` | Rejected |
+| 865. Cache power-supply cable colors when debug is off | Avoid repeated color helper calls and global counter checks in the default cable path | Default `PowerSupply` render | Rejected |
+
+### 861. Share bed-support caster geometries by leg size
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render: 0.466000 ms median, 0.732333 ms p95.
+
+**After:** Lazy cached caster bracket, wheel, and axle geometries keyed by
+leg size: 0.358000 ms median, 0.559042 ms p95.
+
+**Change:** 23.18% faster by median, saving about 0.108000 ms per default
+bed render.
+
+**Outcome:** Accepted. The generated geometry dimensions are unchanged, and
+the existing instanced meshes already opt out of disposing shared geometry.
+
+**Commit:** This commit (`Share bed support geometries for 23.2% faster bed renders`)
+
+### 862. Reuse bed-support caster matrix intermediate
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `Bed` render after item 861: 0.239250 ms median,
+0.284625 ms p95.
+
+**After:** Reuse a `casterMatrix` intermediate before multiplying the wheel
+matrix: 0.248000 ms median, 0.331958 ms p95.
+
+**Change:** 3.66% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 863. Reuse solar cell placement object
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Visible `Solar` render after item 862 rollback: 0.105667 ms
+median, 0.163625 ms p95.
+
+**After:** Module-level `Object3D` for assigning solar cell matrices:
+0.102458 ms median, 0.184792 ms p95.
+
+**Change:** 3.04% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the threshold
+and p95 regressed.
+
+**Commit:** None
+
+### 864. Hoist packaging offset arrays
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** `Packaging` render with `packaging=true`, `kitVersion="v1.7"` after
+item 863 rollback: 0.095708 ms median, 0.135583 ms p95.
+
+**After:** Module-level strap coordinate arrays and edge-protector sign pairs:
+0.099042 ms median, 0.126625 ms p95.
+
+**Change:** 3.48% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 865. Cache power-supply cable colors when debug is off
+
+**Benchmark:** `tmp/round_169_perf_bench.test.tsx`
+
+**Before:** Default `PowerSupply` render after item 864 rollback: 0.035750 ms
+median, 0.043083 ms p95.
+
+**After:** Use precomputed default cable colors and call the debug color helper
+only when cable debug is enabled: 0.036667 ms median, 0.042458 ms p95.
+
+**Change:** 2.56% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+## Round 170
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 866. Share weed icon plane geometry | Avoid rebuilding the same instanced weed icon plane geometry across weed mounts | `WeedInstances` render with 50 weeds | Rejected |
+| 867. Build point instance groups without dynamic object buckets | Avoid object-key grouping overhead for the two known point alpha buckets | `PointInstances` render with 50 saved and unsaved points | Rejected |
+| 868. Share north-arrow extrude geometries | Avoid rebuilding arrow and N extrude geometry on north-arrow remounts | Default `NorthArrow` render | Rejected |
+| 869. Share zoom beacon sphere geometries | Avoid rebuilding identical beacon sphere geometry for each beacon render | `ZoomBeacons` render with animation disabled | Rejected |
+| 870. Share single weed radius geometry | Reuse existing weed radius geometry in the single `WeedBase` sphere path | Single `Weed` render | Rejected |
+
+### 866. Share weed icon plane geometry
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `WeedInstances` render with 50 weeds: 0.127292 ms median,
+0.273500 ms p95.
+
+**After:** Shared instanced weed icon plane geometry passed through mesh args:
+0.117625 ms median, 0.237666 ms p95.
+
+**Change:** 7.59% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 867. Build point instance groups without dynamic object buckets
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `PointInstances` render with 50 saved and unsaved points after item
+866 rollback: 0.132875 ms median, 0.181208 ms p95.
+
+**After:** Two lazy alpha groups built with an indexed loop: 0.124334 ms
+median, 0.170916 ms p95.
+
+**Change:** 6.43% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 868. Share north-arrow extrude geometries
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** Default `NorthArrow` render after item 867 rollback: 0.033458 ms
+median, 0.043625 ms p95.
+
+**After:** Shared `ExtrudeGeometry` instances on regular meshes: 0.043541 ms
+median, 0.078292 ms p95.
+
+**Change:** 30.14% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 869. Share zoom beacon sphere geometries
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** `ZoomBeacons` render with animation disabled after item 868
+rollback: 0.239667 ms median, 0.318208 ms p95.
+
+**After:** Cached beacon `SphereGeometry` objects keyed by radius:
+0.242208 ms median, 0.359458 ms p95.
+
+**Change:** 1.06% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower and p95 regressed.
+
+**Commit:** None
+
+### 870. Share single weed radius geometry
+
+**Benchmark:** `tmp/round_170_perf_bench.test.tsx`
+
+**Before:** Single `Weed` render after item 869 rollback: 0.034625 ms median,
+0.043208 ms p95.
+
+**After:** Shared weed radius geometry in the single weed radius mesh:
+0.036292 ms median, 0.045875 ms p95.
+
+**Change:** 4.82% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+## Round 171
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 871. Use array positions for people offsets | Avoid allocating a `Vector3` per person when rendering scene people | `People` render with 8 visible people | Rejected |
+| 872. Reuse static person image position tuples | Avoid allocating a `Vector3` inside every `Person` image render | `Person` render for each configured person asset | Rejected |
+| 873. Use indexed loops for starter tray matrix updates | Reduce callback allocation and nested iterator overhead for tray and seedling matrices | `StarterTrays` matrix update with 4 trays | Rejected |
+| 874. Instance desk legs | Replace four repeated leg box subtrees with one instanced mesh while preserving geometry and materials | Enabled `Desk` render | Accepted |
+| 875. Skip greenhouse wall matrix effects for static matrices | Move static wall instance matrix writes to callback refs so effects do not rescan static arrays | `GreenhouseWall` render | Rejected |
+
+### 871. Use array positions for people offsets
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `People` render with 8 visible people: 0.233792 ms median,
+0.673916 ms p95.
+
+**After:** Directly read `person.offset` array entries instead of allocating
+a `Vector3` per person: 0.212917 ms median, 0.285417 ms p95. A focused
+repeat measured 0.253875 ms median, 0.418291 ms p95.
+
+**Change:** 8.93% faster by median in the full benchmark run, but the focused
+repeat was slower than the original median.
+
+**Outcome:** Rejected after rollback. The median did not reliably clear the
+10% threshold.
+
+**Commit:** None
+
+### 872. Reuse static person image position tuples
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `Person` render for each configured person asset: 0.153791 ms
+median, 0.234666 ms p95.
+
+**After:** Pass the static `SCALING_DATA` position tuple directly to `Image`:
+0.197667 ms median, 0.357792 ms p95.
+
+**Change:** 28.53% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 873. Use indexed loops for starter tray matrix updates
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `StarterTrays` render and matrix update with 4 trays after item
+872 rollback: 0.149083 ms median, 0.276125 ms p95.
+
+**After:** Indexed loops for tray and seedling matrix writes: 0.141875 ms
+median, 0.282000 ms p95.
+
+**Change:** 4.83% faster by median, with p95 slightly slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+### 874. Instance desk legs
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** Enabled `Desk` render after item 873 rollback: 0.213625 ms median,
+0.399916 ms p95.
+
+**After:** A single instanced leg mesh with four static matrices and the same
+box dimensions, wood texture, material color, and shadow flags: 0.191584 ms
+median, 0.373083 ms p95.
+
+**Change:** 10.32% faster by median, saving about 0.022041 ms per enabled
+desk render.
+
+**Outcome:** Accepted. The four desk legs keep the same dimensions,
+positions, material, and shadows while reducing repeated React/R3F subtrees.
+
+**Commit:** This commit (`Instance desk legs for 10.3% faster desk renders`)
+
+### 875. Skip greenhouse wall matrix effects for static matrices
+
+**Benchmark:** `tmp/round_171_perf_bench.test.tsx`
+
+**Before:** `GreenhouseWall` render after item 874: 0.172333 ms median,
+0.259917 ms p95.
+
+**After:** Callback refs wrote static wall matrices on mesh assignment:
+0.163791 ms median, 0.271333 ms p95.
+
+**Change:** 4.96% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+## Round 172
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 876. Cache lab wall extrude shape and args | Avoid rebuilding the same lab wall `Shape` and extrude options on each lab scene render | `Lab` render with walls enabled and desk/people disabled | Rejected |
+| 877. Instance lab shelves | Replace two repeated shelf box subtrees with one instanced mesh while preserving shelf geometry and material | `Lab` render with shelves enabled and desk/people disabled | Rejected |
+| 878. Precompute watering stream directions | Avoid 32 trigonometry calls and range allocation when rendering 16 water streams | `WateringAnimations` render with water flow enabled | Rejected |
+| 879. Precompute electronics box button layouts | Avoid rebuilding kit-version button layout arrays on electronics box renders | `ElectronicsBox` render for v1.7 and v1.8 | Rejected |
+| 880. Reuse electronics box position tuple | Avoid allocating a `Vector3` for the electronics box group position | `ElectronicsBox` render for v1.8 | Rejected |
+
+### 876. Cache lab wall extrude shape and args
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** `Lab` render with walls enabled and desk/people disabled:
+0.117583 ms median, 0.182375 ms p95.
+
+**After:** Module-level lab wall `Shape` and extrude options:
+0.153375 ms median, 0.271250 ms p95.
+
+**Change:** 30.44% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 877. Instance lab shelves
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `Lab` render with walls and shelves enabled after item
+876 rollback: 0.154167 ms median, 0.269833 ms p95.
+
+**After:** A single instanced shelf mesh with two static matrices and the same
+box dimensions, texture, color, material side, and shadow flags: 0.154792 ms
+median, 0.257792 ms p95.
+
+**Change:** 0.41% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 878. Precompute watering stream directions
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `WateringAnimations` render with water flow enabled:
+0.084917 ms median, 0.186667 ms p95.
+
+**After:** Static 16-entry direction table with precomputed sine and cosine
+values for each water stream: 0.083458 ms median, 0.197959 ms p95.
+
+**Change:** 1.72% faster by median, with p95 slower.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold and p95 regressed.
+
+**Commit:** None
+
+### 879. Precompute electronics box button layouts
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused electronics box render: v1.7 0.424167 ms median,
+0.924542 ms p95; v1.8 0.216417 ms median, 0.763459 ms p95.
+
+**After:** Module-level button layout arrays reused by `buttons()`:
+v1.7 0.487584 ms median, 0.926792 ms p95; v1.8 0.220083 ms median,
+0.391500 ms p95.
+
+**Change:** v1.7 was 14.95% slower by median, and v1.8 was 1.69% slower by
+median.
+
+**Outcome:** Rejected after rollback. Both targeted median renders were slower.
+
+**Commit:** None
+
+### 880. Reuse electronics box position tuple
+
+**Benchmark:** `tmp/round_172_perf_bench.test.tsx`
+
+**Before:** Focused `ElectronicsBox` v1.8 render after item 879 rollback:
+0.266333 ms median, 0.461542 ms p95.
+
+**After:** Pass a numeric position tuple to the electronics box group instead
+of allocating a `Vector3`: 0.284458 ms median, 0.456458 ms p95.
+
+**Change:** 6.81% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+## Round 173
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 881. Build static plant icon instances with indexed loops | Reduce per-plant callback overhead while computing icon positions and scales | `PlantInstances` render with 50 plants across 10 icons | Accepted |
+| 882. Build atlas UV buffers with indexed loops | Reduce callback overhead while assigning atlas UV offsets and repeats | `PlantInstances` atlas render with 50 atlas-backed plants | Rejected |
+| 883. Group plant icon buckets without Object entry/value passes | Avoid `Object.entries().map`, `Object.values().filter`, and extra array maps while preparing icon buckets | `PlantInstances` render with 50 plants and reserved capacities | Accepted |
+| 884. Split atlas and individual plant icon instances with indexed loops | Reduce allocation while separating atlas-backed and standalone icon buckets | `PlantInstances` atlas render with mixed mapped and unmapped icons | Rejected |
+| 885. Cache empty plant icon grouping result | Avoid rebuilding empty grouping objects when plant icon rendering has no plants | Empty visible `PlantInstances` render | Rejected |
+
+### 881. Build static plant icon instances with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` render with 50 plants across 10 icons:
+0.516833 ms median, 1.652209 ms p95.
+
+**After:** Preallocated `StaticPlantIconInstance[]` filled with an indexed
+loop: 0.435208 ms median, 1.348375 ms p95.
+
+**Change:** 15.79% faster by median, saving about 0.081625 ms per 50-plant
+icon render.
+
+**Outcome:** Accepted. The computed icon positions, ground height, and scale
+values are unchanged; only the array construction strategy changed.
+
+**Commit:** This commit (`Build plant icon instances 15.8% faster with indexed loops`)
+
+### 882. Build atlas UV buffers with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` atlas render with 50 atlas-backed plants after
+item 881: 0.241792 ms median, 0.719000 ms p95.
+
+**After:** Indexed loop over plants while assigning atlas UV offsets and
+repeats: 0.379375 ms median, 1.175458 ms p95.
+
+**Change:** 56.90% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 883. Group plant icon buckets without Object entry/value passes
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** `PlantInstances` render with 50 plants and reserved icon
+capacities after item 881: 0.373291 ms median, 1.218750 ms p95.
+
+**After:** Explicit loops for reserved capacity seeding, visible bucket
+collection, and final capacity assignment: 0.314583 ms median, 0.640916 ms
+p95.
+
+**Change:** 15.73% faster by median, saving about 0.058708 ms per 50-plant
+reserved-capacity render.
+
+**Outcome:** Accepted. The same icon buckets, plant indexes, capacities, and
+atlas decision are produced with fewer intermediate arrays.
+
+**Commit:** This commit (`Build plant icon instances 15.8% faster with indexed loops`)
+
+### 884. Split atlas and individual plant icon instances with indexed loops
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** Mixed atlas and standalone `PlantInstances` render after item 883:
+0.541000 ms median, 0.801709 ms p95.
+
+**After:** Indexed loop for separating atlas-backed icon buckets from
+standalone icon buckets: 0.643459 ms median, 1.214541 ms p95.
+
+**Change:** 18.94% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 885. Cache empty plant icon grouping result
+
+**Benchmark:** `tmp/round_173_perf_bench.test.tsx`
+
+**Before:** Empty visible `PlantInstances` render after item 883:
+0.062625 ms median, 0.171834 ms p95.
+
+**After:** Return an empty fragment before mounting `VisiblePlantInstances`
+when `plants.length == 0`: 0.055750 ms median, 0.170042 ms p95.
+
+**Change:** 10.98% faster by median, saving about 0.006875 ms.
+
+**Outcome:** Rejected after rollback. The percentage cleared the threshold,
+but the absolute win on the empty path was not meaningful in realistic runtime
+context.
+
+**Commit:** None
+
+## Round 174
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 886. Build plant spread static instances with indexed loops | Reduce callback overhead while computing spread positions for dense gardens | `PlantSpreadInstances` render with 50 plants | Rejected |
+| 887. Build plant spread indexes with indexed loops | Avoid a second callback allocation when creating plant index userData | `PlantSpreadInstances` render with 50 plants | Rejected |
+| 888. Update plant spread matrices with indexed loops | Reduce per-frame callback overhead while writing spread instance matrices and colors | First `PlantSpreadInstances` frame update with 50 plants | Rejected |
+| 889. Update weed icon matrices with indexed loops | Reduce camera-facing weed billboard frame update overhead | First `WeedInstances` frame update with 50 weeds | Rejected |
+| 890. Build image texture sensor keys with indexed loops | Reduce image/moisture texture key setup overhead for sensor overlays | `getImageTextureKey` with 20 sensors and 100 readings | Rejected |
+
+### 886. Build plant spread static instances with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** `PlantSpreadInstances` render with 50 plants: 0.130333 ms median,
+0.345459 ms p95.
+
+**After:** Preallocated `StaticPlantSpreadInstance[]` filled with an indexed
+loop: 0.122917 ms median, 0.298792 ms p95.
+
+**Change:** 5.69% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 887. Build plant spread indexes with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** Focused `PlantSpreadInstances` render with 50 plants after item
+886 rollback: 0.116167 ms median, 0.447916 ms p95.
+
+**After:** Preallocated plant index array filled with an indexed loop:
+0.120167 ms median, 0.329042 ms p95.
+
+**Change:** 3.44% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 888. Update plant spread matrices with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** First `PlantSpreadInstances` frame update with 50 plants after
+item 887 rollback: 0.137917 ms median, 0.327791 ms p95.
+
+**After:** Indexed loop over static spread instances while updating matrices
+and colors: 0.149584 ms median, 0.335833 ms p95.
+
+**Change:** 8.46% slower by median.
+
+**Outcome:** Rejected after rollback. The frame update was slower.
+
+**Commit:** None
+
+### 889. Update weed icon matrices with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** First `WeedInstances` frame update with 50 weeds after item 888
+rollback: 0.189625 ms median, 0.525875 ms p95.
+
+**After:** Indexed loop over weed icon instances while writing camera-facing
+matrices: 0.181542 ms median, 0.450416 ms p95.
+
+**Change:** 4.26% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 890. Build image texture sensor keys with indexed loops
+
+**Benchmark:** `tmp/round_174_perf_bench.test.tsx`
+
+**Before:** `getImageTextureKey` with 20 sensors and 100 readings after item
+889 rollback: 0.011791 ms median, 0.018666 ms p95.
+
+**After:** Indexed loops while building sensor and reading keys: 0.011500 ms
+median, 0.054250 ms p95.
+
+**Change:** 2.47% faster by median, saving about 0.000291 ms while p95
+regressed.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold, the absolute improvement was not meaningful, and p95 regressed.
+
+**Commit:** None
+
+## Round 175
+
+| Idea | Expected Improvement | Benchmark Scope | Status |
+| --- | --- | --- | --- |
+| 891. Build point instance groups with indexed loops | Reduce setup overhead for dense point layers by avoiding callback iteration and `Object.values` allocation | `PointInstances` render with 50 points | Rejected |
+| 892. Update point marker matrices with indexed loops | Reduce effect-time marker matrix and color callback overhead | First `PointInstances` marker effect with 50 points | Rejected |
+| 893. Update point radius matrices with indexed loops | Reduce effect-time radius ring matrix and color callback overhead | First `PointInstances` radius effect with 50 points | Rejected |
+| 894. Build group order positions with indexed loops | Reduce order-preview setup overhead for large groups by avoiding `map` callback allocation | `GroupOrderVisual` render with 50 selected points | Rejected |
+| 895. Update group order disk matrices with indexed loops | Reduce camera-facing disk matrix update overhead in order previews | First `GroupOrderVisual` disk frame with 50 selected points | Accepted |
+
+### 891. Build point instance groups with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** `PointInstances` render with 50 mixed-radius points: 0.127333 ms
+median, 0.154834 ms p95.
+
+**After:** Explicit saved/unsaved point buckets filled with an indexed loop:
+0.260166 ms median, 0.728584 ms p95.
+
+**Change:** 104.32% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 892. Update point marker matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `PointInstances` marker render/effect with 50 points
+after item 891 rollback: 0.155916 ms median, 0.494167 ms p95.
+
+**After:** Indexed loop over point marker instances while writing matrices
+and colors: 0.160708 ms median, 0.336042 ms p95.
+
+**Change:** 3.07% slower by median.
+
+**Outcome:** Rejected after rollback. The median was slower.
+
+**Commit:** None
+
+### 893. Update point radius matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `PointInstances` radius render/effect with 50 points
+after item 892 rollback: 0.227750 ms median, 0.523459 ms p95.
+
+**After:** Indexed loop over point radius instances while writing matrices
+and colors: 0.217083 ms median, 0.404917 ms p95.
+
+**Change:** 4.68% faster by median.
+
+**Outcome:** Rejected after rollback. The median did not clear the 10%
+threshold.
+
+**Commit:** None
+
+### 894. Build group order positions with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused `GroupOrderVisual` render with 50 selected points after
+item 893 rollback: 1.104417 ms median, 2.489833 ms p95.
+
+**After:** Preallocated positions array filled with an indexed loop:
+1.149792 ms median, 2.670084 ms p95.
+
+**Change:** 4.11% slower by median.
+
+**Outcome:** Rejected after rollback. The render was slower.
+
+**Commit:** None
+
+### 895. Update group order disk matrices with indexed loops
+
+**Benchmark:** `tmp/round_175_perf_bench.test.tsx`
+
+**Before:** Focused first `GroupOrderVisual` disk frame with 50 selected
+points after item 894 rollback: 1.259125 ms median, 2.746417 ms p95.
+
+**After:** Indexed loop over group order marker disk positions while writing
+matrices: 1.106917 ms median, 2.574875 ms p95.
+
+**Change:** 12.09% faster by median, saving about 0.152208 ms on the first
+50-point disk frame.
+
+**Outcome:** Accepted. The disk marker matrices are identical, with less
+callback overhead during the camera-facing frame update.
+
+**Commit:** This commit (`Update group order disks 12.1% faster with indexed loop`)

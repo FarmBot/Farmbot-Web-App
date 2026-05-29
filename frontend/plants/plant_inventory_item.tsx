@@ -20,6 +20,29 @@ export interface PlantInventoryItemProps {
   distance?: number;
 }
 
+const plantBodyValue = (plant: TaggedPlant, key: string) =>
+  (plant.body as unknown as Record<string, unknown>)[key];
+
+export const arePlantInventoryItemPropsEqual = (
+  prev: PlantInventoryItemProps,
+  next: PlantInventoryItemProps,
+) =>
+  prev.dispatch === next.dispatch &&
+  prev.hovered === next.hovered &&
+  prev.distance === next.distance &&
+  prev.plant.kind === next.plant.kind &&
+  prev.plant.uuid === next.plant.uuid &&
+  prev.plant.body.id === next.plant.body.id &&
+  prev.plant.body.name === next.plant.body.name &&
+  prev.plant.body.openfarm_slug === next.plant.body.openfarm_slug &&
+  prev.plant.body.x === next.plant.body.x &&
+  prev.plant.body.y === next.plant.body.y &&
+  prev.plant.body.created_at === next.plant.body.created_at &&
+  plantBodyValue(prev.plant, "planted_at") ==
+    plantBodyValue(next.plant, "planted_at") &&
+  plantBodyValue(prev.plant, "plant_stage") ==
+    plantBodyValue(next.plant, "plant_stage");
+
 // The individual plants that show up in the farm designer sub nav.
 export const PlantInventoryItem = React.memo((props: PlantInventoryItemProps) => {
   usePerfRenderCount("PlantInventoryItem");
@@ -73,7 +96,7 @@ export const PlantInventoryItem = React.memo((props: PlantInventoryItemProps) =>
         : daysOldText(plantAgeAndStage(plant))}
     </i>
   </div>;
-});
+}, arePlantInventoryItemPropsEqual);
 
 PlantInventoryItem.displayName = "PlantInventoryItem";
 

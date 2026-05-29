@@ -37,7 +37,12 @@ const wallStructure2D = () => {
   return shape;
 };
 
-export const Lab = (props: LabProps) => {
+const LabBase = (props: LabProps) => {
+  if (props.config.scene != "Lab") { return <></>; }
+  return <EnabledLab {...props} />;
+};
+
+const EnabledLab = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
@@ -106,3 +111,22 @@ export const Lab = (props: LabProps) => {
     </PopInGroup>
   </Group>;
 };
+
+const LAB_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "desk",
+  "people",
+  "scene",
+];
+
+export const labPropsEqual = (prev: LabProps, next: LabProps) =>
+  prev.activeFocus === next.activeFocus
+  && prev.reveal === next.reveal
+  && prev.onDetailsLoadInRest === next.onDetailsLoadInRest
+  && LAB_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const Lab = React.memo(LabBase, labPropsEqual);

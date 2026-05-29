@@ -1,15 +1,35 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Bot, FarmbotModelProps } from "../bot";
+import { useGLTF } from "@react-three/drei";
+import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
-import { SVGLoader } from "three/examples/jsm/Addons.js";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
+import { Texture, TextureLoader } from "three";
+import { ASSETS } from "../../constants";
 import {
+  actRenderer,
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import {
+  CableCarrierSupportHorizontal,
+  CableCarrierSupportVertical,
+  CableCarrierX,
+  CableCarrierY,
+  CableCarrierZ,
+} from "../components/cable_carriers";
+import { Bounds } from "../components/bounds";
+import { WaterFlowTextureProvider } from "../components/water_stream";
 
 describe("<Bot />", () => {
+  const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
+
+  beforeEach(() => {
+    clearBotShapeCache();
+    createShapesMock.mockClear();
+  });
+
   afterEach(() => {
     jest.useRealTimers();
   });
@@ -78,6 +98,18 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("skips disabled FarmBot model work", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.bot = false;
+    const { container } = render(<Bot {...p} />);
+
+    expect(container.querySelector("[name='bot']")).toBeNull();
+    expect(createShapesMock).not.toHaveBeenCalled();
+    expect(useGltfMock).not.toHaveBeenCalled();
+  });
+
   it("renders watering animation", () => {
     const p = fakeProps();
     p.config.waterFlow = true;
@@ -88,9 +120,179 @@ describe("<Bot />", () => {
     expect(container).toContainHTML("watering-animations");
   });
 
+  it("shares water texture across Bot water effects", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
+      .mockImplementation(() => new Texture());
+    render(<Bot {...p} />);
+    expect(loadTextureSpy).toHaveBeenCalledTimes(1);
+    loadTextureSpy.mockRestore();
+  });
+
+  it("skips disabled water texture provider", () => {
+    const p = fakeProps();
+    p.config.waterFlow = false;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("mounts enabled water texture provider", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(1);
+    unmountRenderer(wrapper);
+  });
+
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);
-    expect(SVGLoader.createShapes).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(15);
+  });
+
+  it("skips track shape loading when tracks are disabled", () => {
+    const p = fakeProps();
+    p.config.tracks = false;
+    render(<Bot {...p} />);
+    expect(createShapesMock).toHaveBeenCalledTimes(12);
+  });
+
+  it("skips X-axis carrier mount model when carriers are disabled", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const { container } = render(<Bot {...p} />);
+    expect(container.querySelectorAll("[name='xCCMount']").length).toEqual(0);
+    expect(useGltfMock.mock.calls
+      .filter(([url]) => url == ASSETS.models.xAxisCCMount)).toHaveLength(0);
+  });
+
+  it("skips disabled cable carrier and bounds component mounts", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    p.config.bounds = false;
+    p.config.zDimension = false;
+    p.config.distanceIndicator = "";
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(CableCarrierX)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierY)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierZ)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierSupportHorizontal))
+      .toHaveLength(0);
+    expect(wrapper.root.findAllByType(CableCarrierSupportVertical))
+      .toHaveLength(0);
+    expect(wrapper.root.findAllByType(Bounds)).toHaveLength(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("mounts enabled cable carrier and bounds components", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = true;
+    p.config.bounds = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findAllByType(CableCarrierX)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierY)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierZ)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierSupportHorizontal))
+      .toHaveLength(1);
+    expect(wrapper.root.findAllByType(CableCarrierSupportVertical))
+      .toHaveLength(1);
+    expect(wrapper.root.findAllByType(Bounds)).toHaveLength(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("skips X/Y-only model hooks during z-only rerenders", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        configPosition={{
+          ...p.configPosition,
+          z: p.configPosition.z + 10,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).not.toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.crossSlide);
+    expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
+    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).not.toContain(ASSETS.models.beltClip);
+    expect(urls).toContain(ASSETS.models.zStop);
+    unmountRenderer(wrapper);
+  });
+
+  it("skips frame and gantry model hooks during unrelated config rerenders", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        config={{
+          ...p.config,
+          sun: p.config.sun + 1,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).not.toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.crossSlide);
+    expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
+    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).not.toContain(ASSETS.models.beltClip);
+    expect(urls).not.toContain(ASSETS.models.zStop);
+    expect(urls).not.toContain(ASSETS.models.utm);
+    expect(urls).not.toContain(ASSETS.models.housingVertical);
+    expect(urls).not.toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).not.toContain(ASSETS.models.vacuumPumpCover);
+    expect(urls).not.toContain(ASSETS.models.cameraMountHalf);
+    unmountRenderer(wrapper);
+  });
+
+  it("updates X/Y-only model hooks when x changes", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    const p = fakeProps();
+    const wrapper = createRenderer(<Bot {...p} />);
+    useGltfMock.mockClear();
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        configPosition={{
+          ...p.configPosition,
+          x: p.configPosition.x + 10,
+        }} />);
+    });
+
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+    expect(urls).toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).toContain(ASSETS.models.crossSlide);
+    expect(urls).toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).toContain(ASSETS.models.beltClip);
+    unmountRenderer(wrapper);
+  });
+
+  it("reuses parsed shapes across remounts", () => {
+    const p = fakeProps();
+    const first = render(<Bot {...p} />);
+    first.unmount();
+    const second = render(<Bot {...p} />);
+    second.unmount();
+
+    expect(createShapesMock).toHaveBeenCalledTimes(15);
   });
 });

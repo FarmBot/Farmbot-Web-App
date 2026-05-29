@@ -1,5 +1,8 @@
 import * as THREE from "three";
-import { mergedInstancedGeometry } from "../merged_instanced_geometry";
+import {
+  fallbackInstancedMeshes,
+  mergedInstancedGeometry,
+} from "../merged_instanced_geometry";
 
 describe("mergedInstancedGeometry", () => {
   it("bakes instanced matrices into one geometry", () => {
@@ -41,5 +44,27 @@ describe("mergedInstancedGeometry", () => {
     };
 
     expect(mergedInstancedGeometry(model, /^mesh/)).toBeUndefined();
+  });
+
+  it("builds fallback instance meshes from matching nodes", () => {
+    const geometry = new THREE.BufferGeometry();
+    const matrices = new Float32Array(32);
+    const material = new THREE.MeshStandardMaterial();
+    const instanceMatrix = new THREE.InstancedBufferAttribute(matrices, 16);
+    const model = {
+      nodes: {
+        mesh0_mesh: {
+          geometry,
+          instanceMatrix,
+        } as THREE.Mesh & { instanceMatrix: THREE.InstancedBufferAttribute },
+        other: { geometry } as THREE.Mesh,
+      },
+    };
+
+    const fallback = fallbackInstancedMeshes(model, /^mesh/, material);
+
+    expect(fallback).toHaveLength(1);
+    expect(fallback[0].props.args).toEqual([geometry, material, 2]);
+    expect(fallback[0].props.instanceMatrix).toBe(instanceMatrix);
   });
 });

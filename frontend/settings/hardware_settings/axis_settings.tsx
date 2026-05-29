@@ -140,8 +140,11 @@ export const AxisSettings = (props: AxisSettingsProps) => {
         title={DeviceSetting.setAxisLength}
         axisTitle={t("SET LENGTH")}
         toolTip={ToolTips.SET_AXIS_LENGTH}
-        action={axis => axis != "all"
-          && setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })()}
+        action={axis => {
+          if (axis != "all") {
+            setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })();
+          }
+        }}
         mcuParams={
           { encoder_enabled_x: 1, encoder_enabled_y: 1, encoder_enabled_z: 1 }}
         arduinoBusy={false}

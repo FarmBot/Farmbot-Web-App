@@ -15,7 +15,7 @@ import {
 import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../constants";
-import { SVGLoader } from "three/examples/jsm/Addons.js";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
   CrossSlideFull, CrossSlideModel,
@@ -38,6 +38,7 @@ import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
+import { WaterFlowTextureProvider } from "./components/water_stream";
 
 export const extrusionWidth = 20;
 const utmRadius = 35;
@@ -95,6 +96,22 @@ type XAxisCCMount = GLTF & {
   materials: never;
 }
 
+interface XAxisCCMountModelProps {
+  position: [number, number, number];
+}
+
+const XAxisCCMountModel = (props: XAxisCCMountModelProps) => {
+  const xAxisCCMount =
+    useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
+  return <Mesh name={"xCCMount"}
+    position={props.position}
+    rotation={[0, 0, Math.PI / 2]}
+    scale={1000}
+    geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
+    <MeshPhongMaterial color={"silver"} />
+  </Mesh>;
+};
+
 export interface FarmbotModelProps {
   config: Config;
   configPosition: PositionConfig;
@@ -106,22 +123,106 @@ export interface FarmbotModelProps {
   dispatch?: Function;
 }
 
-export const Bot = (props: FarmbotModelProps) => {
-  const config = props.config;
-  const { botSizeX, botSizeY, botSizeZ, trail, laser,
-    bedYOffset, bedWidthOuter, tracks,
-    columnLength, zAxisLength, zGantryOffset,
+interface RequestedShapes {
+  track: boolean;
+  beam: boolean;
+  column: boolean;
+  zAxis: boolean;
+}
+
+interface BotShapeCache {
+  track?: Shape;
+  beam?: Shape;
+  column?: Shape;
+  zAxis?: Shape;
+}
+
+const botShapeCache: BotShapeCache = {};
+
+export const clearBotShapeCache = () => {
+  botShapeCache.track = undefined;
+  botShapeCache.beam = undefined;
+  botShapeCache.column = undefined;
+  botShapeCache.zAxis = undefined;
+};
+
+const botGardenXY = (
+  config: Config,
+  gardenX: number,
+  gardenY: number,
+): [number, number] => {
+  const position = get3DPositionNoMirrorFunc(config)({
+    x: gardenX,
+    y: gardenY,
+  });
+  return [position.x, position.y];
+};
+
+const botOuterXY = (
+  config: Config,
+  gardenX: number,
+  outerY: number,
+): [number, number] =>
+  botGardenXY(config, gardenX, outerY - config.bedYOffset);
+
+interface BotXYSubassemblyProps {
+  config: Config;
+  configPosition: PositionConfig;
+}
+
+const sameBotXYSubassemblyProps = <P extends BotXYSubassemblyProps>(
+  prev: P,
+  next: P,
+) => {
+  return prev.config === next.config &&
+    prev.configPosition.x === next.configPosition.x &&
+    prev.configPosition.y === next.configPosition.y;
+};
+
+const sameConfigFields = (
+  prev: Config,
+  next: Config,
+  fields: (keyof Config)[],
+) => fields.every(field => prev[field] === next[field]);
+
+interface BotFrameSubassembliesProps
+  extends BotXYSubassemblyProps {
+  trackShape: Shape | undefined;
+  columnShape: Shape | undefined;
+}
+
+const BOT_FRAME_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "cableCarriers",
+  "columnLength",
+  "tracks",
+];
+
+const sameBotFrameSubassembliesProps = (
+  prev: BotFrameSubassembliesProps,
+  next: BotFrameSubassembliesProps,
+) =>
+  sameConfigFields(prev.config, next.config, BOT_FRAME_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.trackShape === next.trackShape &&
+  prev.columnShape === next.columnShape;
+
+const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
+  const {
+    bedWidthOuter, tracks, columnLength, botSizeX,
   } = props.config;
-  const { x, y, z } = props.configPosition;
-  const zZero = zZeroFunc(config);
-  const zDir = zDirFunc(config);
-  const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
-    const position = get3DPosition({ x: gardenX, y: gardenY });
-    return [position.x, position.y];
-  };
-  const outerXY = (gardenX: number, outerY: number): [number, number] =>
-    gardenXY(gardenX, outerY - bedYOffset);
+  const { x, y } = props.configPosition;
+  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.01, 0.0003],
+  });
   const gantryWheelPlate =
     useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
@@ -129,68 +230,231 @@ export const Bot = (props: FarmbotModelProps) => {
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
   const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
-  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
-  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
-  const housingVertical = useGLTF(
-    ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
   const horizontalMotorHousing = useGLTF(
     ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
-  const zAxisMotorMount = useGLTF(
-    ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
-  const vacuumPumpCover = useGLTF(
-    ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
-  const cameraMountHalf = useGLTF(
-    ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
-  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
-  const [trackShape, setTrackShape] = useState<Shape>();
-  const [beamShape, setBeamShape] = useState<Shape>();
-  const [columnShape, setColumnShape] = useState<Shape>();
-  const [zAxisShape, setZAxisShape] = useState<Shape>();
-  useEffect(() => {
-    if (!(trackShape && beamShape && columnShape && zAxisShape)) {
-      const loader = new SVGLoader();
-      loader.load(ASSETS.shapes.track,
-        svg => {
-          const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
-          const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[2])[0];
-          outline.holes.push(smallCutout);
-          outline.holes.push(largeCutout);
-          setTrackShape(outline);
-        });
-      loader.load(ASSETS.shapes.beam,
-        svg => {
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          range(1, 6).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
-          });
-          setBeamShape(outline);
-        });
-      loader.load(ASSETS.shapes.column,
-        svg => {
-          const outline = SVGLoader.createShapes(svg.paths[3])[0];
-          range(3).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
-          });
-          setColumnShape(outline);
-        });
-      loader.load(ASSETS.shapes.zAxis,
-        svg => {
-          const hole = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          outline.holes.push(hole);
-          setZAxisShape(outline);
-        });
-    }
-  });
+  return <>
+    {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
+      const bedColumnYOffset =
+        (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
+      return <Group key={outerY}>
+        <Extrude name={"columns"}
+          castShadow={true}
+          args={[
+            props.columnShape,
+            { steps: 1, depth: columnLength, bevelEnabled: false },
+          ]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - extrusionWidth - 12,
+              outerY + bedColumnYOffset,
+            ),
+            30,
+          ]}
+          rotation={[0, 0, Math.PI / 2]}>
+          <MeshPhongMaterial
+            color={"white"}
+            map={aluminumTexture}
+            side={DoubleSide} />
+        </Extrude>
+        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - extrusionWidth - 12,
+              outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
+            ),
+            columnLength - 30,
+          ]}
+          rotation={[Math.PI / 2, Math.PI / 2, 0]}
+          scale={1000}
+          geometry={index == 0
+            ? leftBracket.nodes[PartName.leftBracket].geometry
+            : rightBracket.nodes[PartName.rightBracket].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - (index == 0 ? 47 : 77),
+              outerY - (index == 0 ? 0 : -20) + bedColumnYOffset,
+            ),
+            columnLength + 70,
+          ]}
+          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
+          scale={1000}
+          geometry={undefined}
+          material={undefined} />
+        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 68,
+              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
+            ),
+            columnLength + 80,
+          ]}
+          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
+          scale={1000}
+          geometry={
+            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Cylinder name={"motorPulley"}
+          args={[8, 8, 40]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 63,
+              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
+            ),
+            columnLength + 55,
+          ]}
+          rotation={[0, 0, 0]}>
+          <MeshPhongMaterial color={"#999"} />
+        </Cylinder>
+        {tracks && <Extrude name={"tracks"}
+          castShadow={true}
+          args={[
+            props.trackShape,
+            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
+          ]}
+          position={[
+            ...botOuterXY(
+              props.config,
+              index == 0
+                ? botSizeX + xTrackPadding / 2
+                : -xTrackPadding / 2,
+              outerY + (index == 0 ? 2.5 : 17.5),
+            ),
+            2,
+          ]}
+          rotation={[
+            index == 0 ? -Math.PI / 2 : -Math.PI / 2,
+            index == 0 ? -Math.PI / 2 : Math.PI / 2,
+            0,
+          ]}>
+          <MeshPhongMaterial
+            color={"white"}
+            map={aluminumTexture}
+            side={DoubleSide} />
+        </Extrude>}
+        <Mesh name={"xStopMin"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              -132,
+              outerY + 10 + bedColumnYOffset,
+            ),
+            2 + (index == 0 ? 0 : 5),
+          ]}
+          rotation={[
+            0,
+            index == 0 ? 0 : Math.PI,
+            (index == 0 ? 1 : -1) * Math.PI / 2,
+          ]}
+          scale={1000}
+          geometry={beltClip.nodes[PartName.beltClip].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"xStopMax"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              botSizeX - 5 + xTrackPadding / 2,
+              outerY + 10 + bedColumnYOffset,
+            ),
+            2 + (index == 0 ? 5 : 0),
+          ]}
+          rotation={[
+            0,
+            index == 0 ? Math.PI : 0,
+            (index == 0 ? 1 : -1) * Math.PI / 2,
+          ]}
+          scale={1000}
+          geometry={beltClip.nodes[PartName.beltClip].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <GantryWheelPlateComponent name={"gantryWheelPlate"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              x - 42,
+              outerY + (index == 0 ? 0 : extrusionWidth + 5)
+              - 2 - (index == 0 ? 1 : 0)
+              + bedColumnYOffset,
+            ),
+            -30,
+          ]}
+          rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
+          scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
+      </Group>;
+    })}
+    {props.config.cableCarriers &&
+    <XAxisCCMountModel
+      position={[
+        ...botOuterXY(props.config, x - 32, -12),
+        -40,
+      ]} />}
+    {props.config.cableCarriers &&
+    <CableCarrierX
+      config={props.config}
+      configPosition={props.configPosition} />}
+    <CrossSlideModel
+      model={crossSlide}
+      name={"crossSlide"}
+      position={[
+        ...botGardenXY(props.config, x - 1.5, y + 5),
+        columnLength + 105,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}
+      scale={1000} />
+  </>;
+};
+
+const BotFrameSubassemblies = React.memo(
+  BotFrameSubassembliesBase,
+  sameBotFrameSubassembliesProps,
+);
+
+interface BotGantrySubassembliesProps
+  extends BotXYSubassemblyProps {
+  beamShape: Shape | undefined;
+}
+
+const BOT_GANTRY_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeY",
+  "cableCarriers",
+  "columnLength",
+  "kitVersion",
+  "light",
+];
+
+const sameBotGantrySubassembliesProps = (
+  prev: BotGantrySubassembliesProps,
+  next: BotGantrySubassembliesProps,
+) =>
+  sameConfigFields(prev.config, next.config, BOT_GANTRY_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.beamShape === next.beamShape;
+
+const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
+  const {
+    botSizeY, bedYOffset, columnLength,
+  } = props.config;
+  const { x, y } = props.configPosition;
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
     repeat: [0.01, 0.0003],
   });
-
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
   const yBeltPath = React.useCallback(() => {
     const radius = 12;
     const path = new Shape();
@@ -216,409 +480,23 @@ export const Bot = (props: FarmbotModelProps) => {
     yBeltPath(),
     { steps: 1, depth: 6, bevelEnabled: false },
   ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
-  const distanceToSoil = -props.getZ(x, y) - zDir * z;
-
-  const defaultTrailWidth = config.perspective ? 500 : 0.1;
-  const trailReady = props.trailReady !== false;
-
-  const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [...gardenXY(x + 80, y + 100), zZero - zDir * z + 245];
-      case "v1.8":
-      default:
-        return [...gardenXY(x + 35, y), zZero - zDir * z + 245];
-    }
-  };
-
-  const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [0, 0, Math.PI / 2];
-      case "v1.8":
-      default:
-        return [0, 0, -Math.PI / 2];
-    }
-  };
-
-  const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [...gardenXY(x + 12, y + 55), zZero - zDir * z + 490];
-      case "v1.8":
-      default:
-        return [...gardenXY(x + 2, y + 110), zZero + columnLength + 25];
-    }
-  };
-
-  const cameraMountPosition = new THREE.Vector3(
-    ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
-    zZero - zDir * z - 140 + zGantryOffset + 20,
-  );
-  const utmComponent = <Group name={"UTM"}
-    position={[
-      ...gardenXY(x + 11, y),
-      zZero - zDir * z + utmHeight / 2 - 19,
-    ]}
-    rotation={[0, 0, Math.PI / 2]}
-    scale={1000}>
-    <Mesh
-      geometry={utm.nodes.M5_Barb.geometry}
-      material={utm.materials.PaletteMaterial001}
-      position={[0.015, 0.009, 0.036]}
-      rotation={[0, 0, 2.094]} />
-  </Group>;
-
-  return <FocusVisibilityGroup name={"bot"} keepMounted={true}
-    preserveDepthWrite={true}
-    visible={props.config.bot && props.activeFocus != "Planter bed"}>
-    {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
-      const bedColumnYOffset =
-        (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
-      return <Group key={y}>
-        <Extrude name={"columns"}
-          castShadow={true}
-          args={[
-            columnShape,
-            { steps: 1, depth: columnLength, bevelEnabled: false },
-          ]}
-          position={[
-            ...outerXY(x - extrusionWidth - 12, y + bedColumnYOffset),
-            30,
-          ]}
-          rotation={[0, 0, Math.PI / 2]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>
-        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
-          position={[
-            ...outerXY(
-              x - extrusionWidth - 12,
-              y - (index == 0 ? 0 : 170) + bedColumnYOffset),
-            columnLength - 30,
-          ]}
-          rotation={[Math.PI / 2, Math.PI / 2, 0]}
-          scale={1000}
-          geometry={index == 0
-            ? leftBracket.nodes[PartName.leftBracket].geometry
-            : rightBracket.nodes[PartName.rightBracket].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...outerXY(
-              x - (index == 0 ? 47 : 77),
-              y - (index == 0 ? 0 : -20) + bedColumnYOffset),
-            columnLength + 70,
-          ]}
-          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
-          scale={1000}
-          geometry={undefined}
-          material={undefined} />
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...outerXY(
-              x - 68,
-              y - (index == 0 ? 5 : -25) + bedColumnYOffset),
-            columnLength + 80,
-          ]}
-          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
-          scale={1000}
-          geometry={
-            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Cylinder name={"motorPulley"}
-          args={[8, 8, 40]}
-          position={[
-            ...outerXY(
-              x - 63,
-              y - (index == 0 ? 5 : -25) + bedColumnYOffset),
-            columnLength + 55,
-          ]}
-          rotation={[0, 0, 0]}>
-          <MeshPhongMaterial color={"#999"} />
-        </Cylinder>
-        <Extrude name={"tracks"} visible={tracks}
-          castShadow={true}
-          args={[
-            trackShape,
-            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
-          ]}
-          position={[
-            ...outerXY(
-              index == 0
-                ? botSizeX + xTrackPadding / 2
-                : -xTrackPadding / 2,
-              y + (index == 0 ? 2.5 : 17.5)),
-            2,
-          ]}
-          rotation={[
-            index == 0 ? -Math.PI / 2 : -Math.PI / 2,
-            index == 0 ? -Math.PI / 2 : Math.PI / 2,
-            0,
-          ]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>
-        <Mesh name={"xStopMin"}
-          position={[
-            ...outerXY(-132, y + 10 + bedColumnYOffset),
-            2 + (index == 0 ? 0 : 5),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? 0 : Math.PI,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"xStopMax"}
-          position={[
-            ...outerXY(botSizeX - 5 + xTrackPadding / 2,
-              y + 10 + bedColumnYOffset),
-            2 + (index == 0 ? 5 : 0),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? Math.PI : 0,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <GantryWheelPlateComponent name={"gantryWheelPlate"}
-          position={[
-            ...outerXY(
-              x - 42,
-              y + (index == 0 ? 0 : extrusionWidth + 5)
-              - 2 - (index == 0 ? 1 : 0)
-              + bedColumnYOffset),
-            -30,
-          ]}
-          rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
-          scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
-      </Group>;
-    })}
-    <Mesh name={"xCCMount"}
-      position={[
-        ...outerXY(x - 32, -12),
-        -40,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <CableCarrierX config={config} configPosition={props.configPosition} />
-    <CrossSlideModel
-      model={crossSlide}
-      name={"crossSlide"}
-      position={[
-        ...gardenXY(x - 1.5, y + 5),
-        columnLength + 105,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
-    <Extrude name={"z-axis"}
-      castShadow={true}
-      args={[
-        zAxisShape,
-        { steps: 1, depth: zAxisLength, bevelEnabled: false },
-      ]}
-      position={[
-        ...gardenXY(x, y + utmRadius),
-        zZero - zDir * z,
-      ]}
-      rotation={[0, 0, 0]}>
-      <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
-    </Extrude>
-    <Group name={"zMotor"}>
-      <Mesh name={"zMotorHousing"}
-        position={[
-          ...gardenXY(x + 4, y + utmRadius - 47),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"zMotor"}
-        position={[
-          ...gardenXY(x + 10, y + utmRadius - 5),
-          zZero - zDir * z + zAxisLength - 140,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={1000}
-        geometry={undefined}
-        material={undefined} />
-      <Mesh name={"zMotorMount"}
-        position={[
-          ...gardenXY(x + 5, y + utmRadius - 65),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
-        <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-      </Mesh>
-      <Cylinder name={"motorShaft"}
-        args={[2.5, 2.5, 40]}
-        position={[
-          ...gardenXY(x + 5, y + utmRadius - 65),
-          zZero - zDir * z + zAxisLength - 80,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"#999"} />
-      </Cylinder>
-    </Group>
-    <Mesh name={"shaftCoupler"}
-      position={[
-        ...gardenXY(x + 5, y - 30),
-        zZero - zDir * z + zAxisLength - 120,
-      ]}
-      rotation={[0, 0, 0]}
-      scale={1000}
-      geometry={undefined}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Cylinder name={"shaftCoupler"}
-      args={[10, 10, 25]}
-      position={[
-        ...gardenXY(x + 5, y - 30),
-        zZero - zDir * z + zAxisLength - 120 + 25 / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]}>
-      <MeshPhongMaterial color={"silver"} />
-    </Cylinder>
-    <Cylinder name={"leadscrew"}
-      material-color={"#555"}
-      args={[4, 4, zAxisLength - 200]}
-      position={[
-        ...gardenXY(x + 6, y - 30),
-        zZero - zDir * z + zAxisLength / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]} />
-    <CableCarrierSupportVertical
-      config={config}
-      configPosition={props.configPosition} />
-    <CableCarrierZ config={config} configPosition={props.configPosition} />
-    <Mesh name={"zStopMax"}
-      position={[
-        ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
-        zZero - zDir * z - 30 + zGantryOffset,
-      ]}
-      rotation={[0, Math.PI / 2, 0]}
-      scale={1000}
-      geometry={zStop.nodes[PartName.zStop].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"zStopMin"}
-      position={[
-        ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
-        zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
-      ]}
-      rotation={[0, Math.PI / 2, 0]}
-      scale={1000}
-      geometry={zStop.nodes[PartName.zStop].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"vacuumPump"}
-      position={[
-        ...gardenXY(x + 28, y),
-        zZero - zDir * z + 40,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={undefined}
-      material={undefined} />
-    <Tube name={"air-tube"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[easyCubicBezierCurve3(
-        [
-          ...gardenXY(x + 28, y),
-          zZero - zDir * z + 35,
-        ],
-        [0, 0, 100],
-        [0, 0, -200],
-        airTubeEndPosition(config.kitVersion),
-      ), 20, 5, 8]}>
-      <MeshPhongMaterial
-        color={"white"}
-        transparent={true}
-        opacity={0.75}
-      />
-    </Tube>
-    <VacuumPumpCoverModel
-      model={vacuumPumpCover}
-      rotation={vacuumPumpCoverRotation(config.kitVersion)}
-      scale={1000}
-      position={vacuumPumpCoverPosition(config.kitVersion)} />
-    <Group name={"camera"}
-      rotation={[Math.PI, 0, 0]}
-      position={cameraMountPosition}>
-      <Mesh name={"cameraMount"}
-        rotation={[0, 0, 0]}
-        position={[0, 0, -40]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"cameraMount"}
-        rotation={[0, Math.PI, 0]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-    </Group>
-    <CameraView
-      config={config}
-      configPosition={props.configPosition}
-      cameraMountPosition={cameraMountPosition}
-      distanceToSoil={distanceToSoil} />
-    {trailReady && trail
-      ? <Trail
-        width={defaultTrailWidth}
-        attenuation={t => Math.pow(t, 3)}
-        color={"red"}
-        length={100}
-        decay={0.5}
-        local={false}
-        stride={0}
-        interval={1}>
-        {utmComponent}
-      </Trail>
-      : utmComponent}
-    <Cylinder
-      visible={laser}
-      material-color={"red"}
-      args={[5, 5, distanceToSoil]}
-      position={[
-        ...gardenXY(x, y),
-        zZero - zDir * z - distanceToSoil / 2,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]} />
+  return <>
     <GantryBeam
-      config={config}
+      config={props.config}
       configPosition={props.configPosition}
       aluminumTexture={aluminumTexture}
-      beamShape={beamShape} />
+      beamShape={props.beamShape} />
+    {props.config.cableCarriers &&
     <CableCarrierSupportHorizontal
-      config={config}
-      configPosition={props.configPosition} />
-    <CableCarrierY config={config} configPosition={props.configPosition} />
+      config={props.config}
+      configPosition={props.configPosition} />}
+    {props.config.cableCarriers &&
+    <CableCarrierY
+      config={props.config}
+      configPosition={props.configPosition} />}
     <Mesh name={"yStopMin"}
       position={[
-        ...outerXY(x - extrusionWidth + 2, bedYOffset - 125),
+        ...botOuterXY(props.config, x - extrusionWidth + 2, bedYOffset - 125),
         columnLength + 40 + extrusionWidth * 3,
       ]}
       rotation={[0, 0, Math.PI]}
@@ -629,7 +507,7 @@ export const Bot = (props: FarmbotModelProps) => {
     <Extrude name={"yBelt"}
       args={yBeltArgs}
       position={[
-        ...gardenXY(x - 14.5, -100),
+        ...botGardenXY(props.config, x - 14.5, -100),
         columnLength + 100,
       ]}
       rotation={[0, -Math.PI / 2, 0]}>
@@ -637,7 +515,11 @@ export const Bot = (props: FarmbotModelProps) => {
     </Extrude>
     <Mesh name={"yStopMax"}
       position={[
-        ...outerXY(x - extrusionWidth + 2, botSizeY + bedYOffset + 135),
+        ...botOuterXY(
+          props.config,
+          x - extrusionWidth + 2,
+          botSizeY + bedYOffset + 135,
+        ),
         columnLength + 40 + extrusionWidth * 3 + 5,
       ]}
       rotation={[0, Math.PI, 0]}
@@ -645,8 +527,446 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
+  </>;
+};
+
+const BotGantrySubassemblies = React.memo(
+  BotGantrySubassembliesBase,
+  sameBotGantrySubassembliesProps,
+);
+
+const BotElectronicsSubassemblyBase = (props: BotXYSubassemblyProps) =>
+  <ElectronicsBox
+    config={props.config}
+    configPosition={props.configPosition} />;
+
+const BotElectronicsSubassembly = React.memo(
+  BotElectronicsSubassemblyBase,
+  sameBotXYSubassemblyProps,
+);
+
+interface BotVerticalToolheadSubassemblyProps
+  extends BotXYSubassemblyProps {
+  zAxisShape: Shape | undefined;
+  getZ(x: number, y: number): number;
+  trailReady: boolean;
+}
+
+const BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeZ",
+  "cableCarriers",
+  "cameraView",
+  "columnLength",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "kitVersion",
+  "laser",
+  "lastImageCapture",
+  "negativeZ",
+  "perspective",
+  "trail",
+  "zAxisLength",
+  "zGantryOffset",
+];
+
+const sameBotVerticalToolheadSubassemblyProps = (
+  prev: BotVerticalToolheadSubassemblyProps,
+  next: BotVerticalToolheadSubassemblyProps,
+) =>
+  sameConfigFields(prev.config, next.config, BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS) &&
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  prev.getZ === next.getZ &&
+  prev.trailReady === next.trailReady &&
+  prev.zAxisShape === next.zAxisShape;
+
+const BotVerticalToolheadSubassemblyBase =
+  (props: BotVerticalToolheadSubassemblyProps) => {
+    const config = props.config;
+    const {
+      botSizeZ, trail, laser, columnLength, zAxisLength, zGantryOffset,
+    } = config;
+    const { x, y, z } = props.configPosition;
+    const zZero = zZeroFunc(config);
+    const zDir = zDirFunc(config);
+    const get3DPosition = get3DPositionNoMirrorFunc(config);
+    const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
+      const position = get3DPosition({ x: gardenX, y: gardenY });
+      return [position.x, position.y];
+    };
+    const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
+    const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
+    const housingVertical = useGLTF(
+      ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
+    const zAxisMotorMount = useGLTF(
+      ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
+    const vacuumPumpCover = useGLTF(
+      ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
+    const cameraMountHalf = useGLTF(
+      ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
+    const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
+      wrapS: RepeatWrapping,
+      wrapT: RepeatWrapping,
+      repeat: [0.01, 0.0003],
+    });
+    const distanceToSoil = -props.getZ(x, y) - zDir * z;
+    const defaultTrailWidth = config.perspective ? 500 : 0.1;
+    const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [...gardenXY(x + 80, y + 100), zZero - zDir * z + 245];
+        case "v1.8":
+        default:
+          return [...gardenXY(x + 35, y), zZero - zDir * z + 245];
+      }
+    };
+    const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [0, 0, Math.PI / 2];
+        case "v1.8":
+        default:
+          return [0, 0, -Math.PI / 2];
+      }
+    };
+    const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
+      switch (kitVersion) {
+        case "v1.7":
+          return [...gardenXY(x + 12, y + 55), zZero - zDir * z + 490];
+        case "v1.8":
+        default:
+          return [...gardenXY(x + 2, y + 110), zZero + columnLength + 25];
+      }
+    };
+    const cameraMountPosition = new THREE.Vector3(
+      ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
+      zZero - zDir * z - 140 + zGantryOffset + 20,
+    );
+    const utmComponent = <Group name={"UTM"}
+      position={[
+        ...gardenXY(x + 11, y),
+        zZero - zDir * z + utmHeight / 2 - 19,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}
+      scale={1000}>
+      <Mesh
+        geometry={utm.nodes.M5_Barb.geometry}
+        material={utm.materials.PaletteMaterial001}
+        position={[0.015, 0.009, 0.036]}
+        rotation={[0, 0, 2.094]} />
+    </Group>;
+
+    return <>
+      <Extrude name={"z-axis"}
+        castShadow={true}
+        args={[
+          props.zAxisShape,
+          { steps: 1, depth: zAxisLength, bevelEnabled: false },
+        ]}
+        position={[
+          ...gardenXY(x, y + utmRadius),
+          zZero - zDir * z,
+        ]}
+        rotation={[0, 0, 0]}>
+        <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
+      </Extrude>
+      <Group name={"zMotor"}>
+        <Mesh name={"zMotorHousing"}
+          position={[
+            ...gardenXY(x + 4, y + utmRadius - 47),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[0, 0, Math.PI]}
+          scale={1000}
+          geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"zMotor"}
+          position={[
+            ...gardenXY(x + 10, y + utmRadius - 5),
+            zZero - zDir * z + zAxisLength - 140,
+          ]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={1000}
+          geometry={undefined}
+          material={undefined} />
+        <Mesh name={"zMotorMount"}
+          position={[
+            ...gardenXY(x + 5, y + utmRadius - 65),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[0, 0, Math.PI]}
+          scale={1000}
+          geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>
+        <Cylinder name={"motorShaft"}
+          args={[2.5, 2.5, 40]}
+          position={[
+            ...gardenXY(x + 5, y + utmRadius - 65),
+            zZero - zDir * z + zAxisLength - 80,
+          ]}
+          rotation={[Math.PI / 2, 0, 0]}>
+          <MeshPhongMaterial color={"#999"} />
+        </Cylinder>
+      </Group>
+      <Mesh name={"shaftCoupler"}
+        position={[
+          ...gardenXY(x + 5, y - 30),
+          zZero - zDir * z + zAxisLength - 120,
+        ]}
+        rotation={[0, 0, 0]}
+        scale={1000}
+        geometry={undefined}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Cylinder name={"shaftCoupler"}
+        args={[10, 10, 25]}
+        position={[
+          ...gardenXY(x + 5, y - 30),
+          zZero - zDir * z + zAxisLength - 120 + 25 / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]}>
+        <MeshPhongMaterial color={"silver"} />
+      </Cylinder>
+      <Cylinder name={"leadscrew"}
+        material-color={"#555"}
+        args={[4, 4, zAxisLength - 200]}
+        position={[
+          ...gardenXY(x + 6, y - 30),
+          zZero - zDir * z + zAxisLength / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]} />
+      {config.cableCarriers &&
+      <CableCarrierSupportVertical
+        config={config}
+        configPosition={props.configPosition} />}
+      {config.cableCarriers &&
+      <CableCarrierZ config={config} configPosition={props.configPosition} />}
+      <Mesh name={"zStopMax"}
+        position={[
+          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          zZero - zDir * z - 30 + zGantryOffset,
+        ]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={zStop.nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Mesh name={"zStopMin"}
+        position={[
+          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
+        ]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={zStop.nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Mesh name={"vacuumPump"}
+        position={[
+          ...gardenXY(x + 28, y),
+          zZero - zDir * z + 40,
+        ]}
+        rotation={[0, 0, Math.PI / 2]}
+        scale={1000}
+        geometry={undefined}
+        material={undefined} />
+      <Tube name={"air-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            ...gardenXY(x + 28, y),
+            zZero - zDir * z + 35,
+          ],
+          [0, 0, 100],
+          [0, 0, -200],
+          airTubeEndPosition(config.kitVersion),
+        ), 20, 5, 8]}>
+        <MeshPhongMaterial
+          color={"white"}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+      <VacuumPumpCoverModel
+        model={vacuumPumpCover}
+        rotation={vacuumPumpCoverRotation(config.kitVersion)}
+        scale={1000}
+        position={vacuumPumpCoverPosition(config.kitVersion)} />
+      <Group name={"camera"}
+        rotation={[Math.PI, 0, 0]}
+        position={cameraMountPosition}>
+        <Mesh name={"cameraMount"}
+          rotation={[0, 0, 0]}
+          position={[0, 0, -40]}
+          scale={1000}
+          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+        <Mesh name={"cameraMount"}
+          rotation={[0, Math.PI, 0]}
+          scale={1000}
+          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+          <MeshPhongMaterial color={"silver"} />
+        </Mesh>
+      </Group>
+      <CameraView
+        config={config}
+        configPosition={props.configPosition}
+        cameraMountPosition={cameraMountPosition}
+        distanceToSoil={distanceToSoil} />
+      {props.trailReady && trail
+        ? <Trail
+          width={defaultTrailWidth}
+          attenuation={t => Math.pow(t, 3)}
+          color={"red"}
+          length={100}
+          decay={0.5}
+          local={false}
+          stride={0}
+          interval={1}>
+          {utmComponent}
+        </Trail>
+        : utmComponent}
+      <Cylinder
+        visible={laser}
+        material-color={"red"}
+        args={[5, 5, distanceToSoil]}
+        position={[
+          ...gardenXY(x, y),
+          zZero - zDir * z - distanceToSoil / 2,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]} />
+    </>;
+  };
+
+const BotVerticalToolheadSubassembly = React.memo(
+  BotVerticalToolheadSubassemblyBase,
+  sameBotVerticalToolheadSubassemblyProps,
+);
+
+const BotBedUtilitySubassembliesBase = (props: { config: Config }) =>
+  <>
+    <PowerSupply config={props.config} />
+    <XAxisWaterTube config={props.config} />
+  </>;
+
+const BotBedUtilitySubassemblies =
+  React.memo(BotBedUtilitySubassembliesBase);
+
+export const Bot = (props: FarmbotModelProps) =>
+  props.config.bot ? <EnabledBot {...props} /> : undefined;
+
+const EnabledBot = (props: FarmbotModelProps) => {
+  const config = props.config;
+  const { tracks } = props.config;
+  const [trackShape, setTrackShape] =
+    useState<Shape | undefined>(() => botShapeCache.track);
+  const [beamShape, setBeamShape] =
+    useState<Shape | undefined>(() => botShapeCache.beam);
+  const [columnShape, setColumnShape] =
+    useState<Shape | undefined>(() => botShapeCache.column);
+  const [zAxisShape, setZAxisShape] =
+    useState<Shape | undefined>(() => botShapeCache.zAxis);
+  const requestedShapes = React.useRef<RequestedShapes>({
+    track: false,
+    beam: false,
+    column: false,
+    zAxis: false,
+  });
+  useEffect(() => {
+    let loader: SVGLoader | undefined;
+    const getLoader = () => {
+      loader ||= new SVGLoader();
+      return loader;
+    };
+    if (tracks && !trackShape && !requestedShapes.current.track) {
+      requestedShapes.current.track = true;
+      getLoader().load(ASSETS.shapes.track,
+        svg => {
+          const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
+          const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
+          const outline = SVGLoader.createShapes(svg.paths[2])[0];
+          outline.holes.push(smallCutout);
+          outline.holes.push(largeCutout);
+          botShapeCache.track = outline;
+          setTrackShape(outline);
+        });
+    }
+    if (!beamShape && !requestedShapes.current.beam) {
+      requestedShapes.current.beam = true;
+      getLoader().load(ASSETS.shapes.beam,
+        svg => {
+          const outline = SVGLoader.createShapes(svg.paths[0])[0];
+          range(1, 6).map(i => {
+            const hole = SVGLoader.createShapes(svg.paths[i])[0];
+            outline.holes.push(hole);
+          });
+          botShapeCache.beam = outline;
+          setBeamShape(outline);
+        });
+    }
+    if (!columnShape && !requestedShapes.current.column) {
+      requestedShapes.current.column = true;
+      getLoader().load(ASSETS.shapes.column,
+        svg => {
+          const outline = SVGLoader.createShapes(svg.paths[3])[0];
+          range(3).map(i => {
+            const hole = SVGLoader.createShapes(svg.paths[i])[0];
+            outline.holes.push(hole);
+          });
+          botShapeCache.column = outline;
+          setColumnShape(outline);
+        });
+    }
+    if (!zAxisShape && !requestedShapes.current.zAxis) {
+      requestedShapes.current.zAxis = true;
+      getLoader().load(ASSETS.shapes.zAxis,
+        svg => {
+          const hole = SVGLoader.createShapes(svg.paths[1])[0];
+          const outline = SVGLoader.createShapes(svg.paths[0])[0];
+          outline.holes.push(hole);
+          botShapeCache.zAxis = outline;
+          setZAxisShape(outline);
+        });
+    }
+  }, [beamShape, columnShape, trackShape, tracks, zAxisShape]);
+  const trailReady = props.trailReady !== false;
+
+  const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
+    preserveDepthWrite={true}
+    visible={props.activeFocus != "Planter bed"}>
+    <BotFrameSubassemblies
+      config={config}
+      configPosition={props.configPosition}
+      trackShape={trackShape}
+      columnShape={columnShape} />
+    <BotVerticalToolheadSubassembly
+      config={config}
+      configPosition={props.configPosition}
+      getZ={props.getZ}
+      trailReady={trailReady}
+      zAxisShape={zAxisShape} />
+    <BotGantrySubassemblies
+      config={config}
+      configPosition={props.configPosition}
+      beamShape={beamShape} />
     <Solenoid config={config} configPosition={props.configPosition} />
-    <ElectronicsBox config={config} configPosition={props.configPosition} />
+    <BotElectronicsSubassembly
+      config={config}
+      configPosition={props.configPosition} />
     <Tools
       dispatch={props.dispatch}
       config={config}
@@ -662,8 +982,13 @@ export const Bot = (props: FarmbotModelProps) => {
           configPosition={props.configPosition}
           getZ={props.getZ} />
       </React.Suspense>}
-    <PowerSupply config={config} />
-    <XAxisWaterTube config={config} />
-    <Bounds config={config} configPosition={props.configPosition} />
+    <BotBedUtilitySubassemblies config={config} />
+    {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
+    <Bounds config={config} configPosition={props.configPosition} />}
   </FocusVisibilityGroup>;
+  return config.waterFlow
+    ? <WaterFlowTextureProvider waterFlow={config.waterFlow}>
+      {botModel}
+    </WaterFlowTextureProvider>
+    : botModel;
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { useSpring } from "@react-spring/three";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard } from "@react-three/drei";
@@ -24,7 +25,7 @@ import { Text } from "../elements";
 import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
-import { setPanelOpen } from "../../farm_designer/panel_header";
+import { setPanelOpen3D } from "../panel_actions";
 import { getMode, round } from "../../farm_designer/map/util";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { InstancedMesh, MeshPhongMaterial, SphereGeometry } from "../components";
@@ -33,9 +34,14 @@ import {
 } from "../../farm_designer/map/layers/spread/spread_overlap_helper";
 import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
-import { findCrop } from "../../crops/find";
+import { findCropMetadata } from "../../crops/metadata";
 import { perfMeasure } from "../../performance/perf";
 import { clickWasDragged } from "../click_event";
+
+const spreadLayerSpringConfig = {
+  tension: 240,
+  friction: 30,
+};
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -49,15 +55,60 @@ export interface ThreeDGardenPlant {
   seed: number;
 }
 
-export interface ThreeDPlantLabelProps {
+export type PlantLabelConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "columnLength" | "labels" | "labelsOnHover" | "mirrorX" | "mirrorY"
+  | "zGantryOffset">;
+
+export interface ThreeDPlantLabelProps<
+  TConfig extends PlantLabelConfig = Config,
+> {
   plant: ThreeDGardenPlant;
   i: number;
-  config: Config;
+  config: TConfig;
   hoveredPlant: number | undefined;
   getZ(x: number, y: number): number;
 }
 
-export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
+type PlantLabelProps = ThreeDPlantLabelProps<PlantLabelConfig | Config>;
+
+const plantLabelVisible = (props: PlantLabelProps) =>
+  (props.config.labels && !props.config.labelsOnHover)
+  || props.i === props.hoveredPlant;
+
+const plantLabelConfigEqual = (
+  prev: PlantLabelConfig,
+  next: PlantLabelConfig,
+) =>
+  prev.bedLengthOuter == next.bedLengthOuter
+  && prev.bedWidthOuter == next.bedWidthOuter
+  && prev.bedXOffset == next.bedXOffset
+  && prev.bedYOffset == next.bedYOffset
+  && prev.columnLength == next.columnLength
+  && prev.zGantryOffset == next.zGantryOffset
+  && prev.mirrorX == next.mirrorX
+  && prev.mirrorY == next.mirrorY;
+
+const plantLabelPlantEqual = (
+  prev: ThreeDGardenPlant,
+  next: ThreeDGardenPlant,
+) =>
+  prev.label == next.label
+  && prev.size == next.size
+  && prev.x == next.x
+  && prev.y == next.y;
+
+const plantLabelPropsEqual = (
+  prev: PlantLabelProps,
+  next: PlantLabelProps,
+) =>
+  prev.i == next.i
+  && prev.getZ == next.getZ
+  && plantLabelVisible(prev) == plantLabelVisible(next)
+  && plantLabelConfigEqual(prev.config, next.config)
+  && plantLabelPlantEqual(prev.plant, next.plant);
+
+const ThreeDPlantLabelBase = (props: PlantLabelProps) => {
   const { i, plant, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   // eslint-disable-next-line no-null/no-null
@@ -81,6 +132,9 @@ export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
       plant={plant} />
   </Billboard>;
 };
+
+export const ThreeDPlantLabel =
+  React.memo(ThreeDPlantLabelBase, plantLabelPropsEqual);
 
 interface LabelPartProps {
   visible: boolean;
@@ -106,6 +160,7 @@ export interface PlantSpreadInstancesProps {
   activePositionRef: ActivePositionRef;
   spreadVisible: boolean;
   instanceCapacity?: number;
+  routeKey?: string;
 }
 
 interface PlantSpreadUpdateState {
@@ -122,12 +177,38 @@ const plantSpreadRaycast = function (
   ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
 };
 
+interface StaticPlantSpreadInstance {
+  id?: number;
+  x: number;
+  y: number;
+  z: number;
+  positionX: number;
+  positionY: number;
+  size: number;
+  spread: number;
+}
+
 const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
   needsInstanceUpdate: true,
   lastUpdateKey: "",
 });
 
-export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps) => {
+type PlantSpreadPositionConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
+
+export const findPlantById = (
+  plants: ThreeDGardenPlant[],
+  plantId: number,
+) => {
+  for (let index = 0; index < plants.length; index++) {
+    const plant = plants[index];
+    if (plant.id == plantId) { return plant; }
+  }
+  return undefined;
+};
+
+const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
   } = props;
@@ -151,27 +232,77 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     }
     return updateStateRef.current;
   };
-  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
+  const {
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
+    columnLength, zGantryOffset, mirrorX, mirrorY,
+  } = config;
+  const positionConfig = React.useMemo(
+    (): PlantSpreadPositionConfig => ({
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    }),
+    [
+      bedLengthOuter,
+      bedWidthOuter,
+      bedXOffset,
+      bedYOffset,
+      columnLength,
+      zGantryOffset,
+      mirrorX,
+      mirrorY,
+    ]);
+  const get3DPosition = React.useMemo(() =>
+    get3DPositionFunc(positionConfig as Config), [positionConfig]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
   const plantIndexes = React.useMemo(() =>
     plants.map((_, index) => index), [plants]);
-  const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
-    zZeroFunc(config)
-    + getZ(plant.x, plant.y)
-    + size / 2, [config, getZ]);
+  const zBase = React.useMemo(() =>
+    zZeroFunc(positionConfig as Config), [positionConfig]);
+  const staticInstances = React.useMemo<StaticPlantSpreadInstance[]>(() =>
+    plants.map(plant => {
+      const position = get3DPosition({ x: plant.x, y: plant.y });
+      return {
+        id: plant.id,
+        x: plant.x,
+        y: plant.y,
+        z: zBase + getZ(plant.x, plant.y) + plant.size / 2,
+        positionX: position.x,
+        positionY: position.y,
+        size: plant.size,
+        spread: plant.spread,
+      };
+    }), [get3DPosition, getZ, plants, zBase]);
   const editPlantMode =
     Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
   const plantId = parseInt(Path.getSlug(Path.plants()));
-  const currentPlant =
-    plants.filter(p => p.id == plantId)[0] as ThreeDGardenPlant | undefined;
+  const currentPlant = findPlantById(plants, plantId);
   const activeDragSpread = editPlantMode
     ? currentPlant?.spread
-    : findCrop(Path.getCropSlug()).spread;
+    : findCropMetadata(Path.getCropSlug()).spread;
   const hasTransientPlant = React.useMemo(() =>
     plants.some(plant => !plant.id), [plants]);
+  const [spreadRendered, setSpreadRendered] = React.useState(spreadVisible);
+  const spreadScaleRef = React.useRef(spreadVisible ? 1 : 0);
+  const spreadVisibleRef = React.useRef(spreadVisible);
+  const [, spreadApi] = useSpring(() => ({
+    scale: spreadVisible ? 1 : 0,
+    config: spreadLayerSpringConfig,
+  }));
+  const spreadInstancesVisible =
+    spreadVisible
+    || spreadRendered
+    || editPlantMode
+    || getMode() == Mode.clickToAdd
+    || hasTransientPlant;
 
   const ensureInstanceColor = React.useCallback((mesh: ThreeInstancedMesh) => {
     const needsResize = !mesh.instanceColor
@@ -202,7 +333,32 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
   React.useEffect(() => {
     const updateState = getUpdateState();
     updateState.needsInstanceUpdate = true;
-  }, [activeDragSpread, config, getZ, plants]);
+  }, [activeDragSpread, staticInstances]);
+
+  React.useEffect(() => {
+    spreadVisibleRef.current = spreadVisible;
+    if (spreadVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSpreadRendered(true);
+    }
+    spreadApi.start({
+      scale: spreadVisible ? 1 : 0,
+      config: spreadLayerSpringConfig,
+      onChange: result => {
+        const value = result.value as { scale?: number };
+        spreadScaleRef.current = value.scale ?? (spreadVisible ? 1 : 0);
+        getUpdateState().needsInstanceUpdate = true;
+      },
+      onRest: () => {
+        const targetVisible = spreadVisibleRef.current;
+        spreadScaleRef.current = targetVisible ? 1 : 0;
+        getUpdateState().needsInstanceUpdate = true;
+        if (!targetVisible) {
+          setSpreadRendered(false);
+        }
+      },
+    });
+  }, [spreadApi, spreadVisible]);
 
   // eslint-disable-next-line complexity
   useFrame(state => {
@@ -210,11 +366,14 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     if (!mesh || visible === false) { return; }
     const updateState = getUpdateState();
     const clickToAddMode = getMode() == Mode.clickToAdd;
-    const spreadActive =
-      spreadVisible || editPlantMode || clickToAddMode || hasTransientPlant;
+    const spreadActive = spreadInstancesVisible
+      || editPlantMode
+      || clickToAddMode
+      || hasTransientPlant;
     if (!spreadActive && !updateState.needsInstanceUpdate) { return; }
     ensureInstanceColor(mesh);
     tempQuaternion.copy(state.camera.quaternion);
+    const spreadScale = spreadScaleRef.current;
     const active = editPlantMode
       ? {
         x: currentPlant?.x || -10000,
@@ -227,6 +386,8 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
       : "";
     const updateKey = [
       spreadVisible,
+      spreadRendered,
+      Math.round(spreadScale * 1000),
       editPlantMode,
       clickToAddMode,
       hasTransientPlant,
@@ -237,32 +398,37 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     if (!updateState.needsInstanceUpdate &&
       updateState.lastUpdateKey == updateKey) { return; }
     perfMeasure("spreadFrameUpdateMs", () => {
-      plants.forEach((plant, index) => {
+      const roundedActiveX = round(active.x);
+      const roundedActiveY = round(active.y);
+      staticInstances.forEach((plant, index) => {
         const spreadRadii = getSpreadRadii({
           activeDragSpread,
           inactiveSpread: plant.spread,
           radius: plant.size / 2,
         });
-        const scale = (spreadVisible || !plant.id || editPlantMode)
+        const spreadLayerScale = spreadRadii.inactive * spreadScale;
+        const forcedScale = (!plant.id || editPlantMode)
           ? spreadRadii.inactive
           : 0;
-        const position = get3DPosition({ x: plant.x, y: plant.y });
+        const scale = Math.max(spreadLayerScale, forcedScale);
         tempPosition.set(
-          position.x,
-          position.y,
-          getPlantZ(plant.size, plant),
+          plant.positionX,
+          plant.positionY,
+          plant.z,
         );
         tempScale.set(scale, scale, scale);
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
         mesh.setMatrixAt(index, tempMatrix);
         if (mesh.setColorAt) {
-          let insideColor = [0, 1, 0];
+          let r = 0;
+          let g = 1;
+          let b = 0;
           if (clickToAddMode || editPlantMode) {
             const overlap = getSpreadOverlap({
               spreadRadii,
               activeDragXY: {
-                x: round(active.x),
-                y: round(active.y),
+                x: roundedActiveX,
+                y: roundedActiveY,
                 z: 0,
               },
               plantXY: {
@@ -271,11 +437,15 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
                 z: 0,
               },
             });
-            insideColor = (plant.id && (plantId != plant.id))
-              ? overlap.color.rgb
-              : [1, 1, 1];
+            if (plant.id && plantId != plant.id) {
+              [r, g, b] = overlap.color.rgb;
+            } else {
+              r = 1;
+              g = 1;
+              b = 1;
+            }
           }
-          tempColor.setRGB(insideColor[0], insideColor[1], insideColor[2]);
+          tempColor.setRGB(r, g, b);
           mesh.setColorAt(index, tempColor);
         }
       });
@@ -293,10 +463,12 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen(true));
+      dispatch(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }
   };
+
+  if (!spreadInstancesVisible) { return <></>; }
 
   return <InstancedMesh
     key={`plant-spread-${instanceCapacity}`}
@@ -323,7 +495,9 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
       }}
       depthWrite={false} />
   </InstancedMesh>;
-});
+};
+
+export const PlantSpreadInstances = React.memo(PlantSpreadInstancesBase);
 
 
 export const getBoundsCenter = (config: Config) => () =>

@@ -1,19 +1,19 @@
 import React from "react";
 import { Config } from "../config";
-import { Sphere } from "@react-three/drei";
 import {
   BoxGeometry, Group, InstancedMesh as InstancedMeshComponent,
-  MeshBasicMaterial,
+  MeshBasicMaterial, SphereGeometry,
 } from "../components";
 import { TaggedSensor, TaggedSensorReading } from "farmbot";
 import { threeSpace, zZero } from "../helpers";
 import {
-  generateData, getInterpolationData,
-} from "../../farm_designer/map/layers/points/interpolation_map";
+  generateData, getInterpolationData, type InterpolationData,
+} from "../../farm_designer/map/layers/points/interpolation_data";
 import {
-  filterMoistureReadings, getMoistureColor,
-} from "../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
-import { Color, Matrix4 } from "three";
+  filterMoistureReadings,
+} from "../../farm_designer/map/layers/sensor_readings/filter_moisture_readings";
+import { getMoistureColor } from "../../farm_designer/map/layers/sensor_readings/moisture";
+import { Matrix4 } from "three";
 import { perfMeasure } from "../../performance/perf";
 
 export interface MoistureSurfaceProps {
@@ -34,7 +34,57 @@ interface MoistureInstanceBuffers {
   opacities: Float32Array;
 }
 
-export const MoistureSurface = (props: MoistureSurfaceProps) => {
+export const getMoistureOpacity = (value: number) =>
+  value > 900
+    ? 0
+    : Math.round((0.75 * value / 900) ** 3 * 100) / 100;
+
+export const buildMoistureInstanceBuffers =
+  (data: InterpolationData): MoistureInstanceBuffers => {
+    const matrices = new Float32Array(data.length * 16);
+    const colors = new Float32Array(data.length * 3);
+    const opacities = new Float32Array(data.length);
+    data.map((d, i) => {
+      const matrixOffset = i * 16;
+      matrices[matrixOffset] = 1;
+      matrices[matrixOffset + 5] = 1;
+      matrices[matrixOffset + 10] = 1;
+      matrices[matrixOffset + 12] = d.x;
+      matrices[matrixOffset + 13] = d.y;
+      matrices[matrixOffset + 14] = d.z / 2;
+      matrices[matrixOffset + 15] = 1;
+      if (d.z <= 900) { colors[i * 3 + 2] = 1; }
+      opacities[i] = getMoistureOpacity(d.z);
+    });
+    return { matrices, colors, opacities };
+  };
+
+const MOISTURE_SURFACE_CONFIG_FIELDS: (keyof Config)[] = [
+  "interpolationStepSize",
+  "interpolationUseNearest",
+  "interpolationPower",
+  "bedLengthOuter",
+  "bedWidthOuter",
+];
+
+export const moistureSurfacePropsEqual = (
+  prev: MoistureSurfaceProps,
+  next: MoistureSurfaceProps,
+) =>
+  prev.position[0] === next.position[0] &&
+  prev.position[1] === next.position[1] &&
+  prev.position[2] === next.position[2] &&
+  prev.sensors === next.sensors &&
+  prev.sensorReadings === next.sensorReadings &&
+  prev.color === next.color &&
+  prev.radius === next.radius &&
+  prev.readingZOverride === next.readingZOverride &&
+  prev.showMoistureReadings === next.showMoistureReadings &&
+  prev.showMoistureMap === next.showMoistureMap &&
+  MOISTURE_SURFACE_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const MoistureSurfaceBase = (props: MoistureSurfaceProps) => {
   const {
     interpolationStepSize,
     interpolationUseNearest,
@@ -75,21 +125,8 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
     props.showMoistureMap,
   ]);
   const buffers = React.useMemo<MoistureInstanceBuffers>(() =>
-    perfMeasure("moistureInstanceNodesMs", () => {
-      const matrices = new Float32Array(data.length * 16);
-      const colors = new Float32Array(data.length * 3);
-      const opacities = new Float32Array(data.length);
-      const matrix = new Matrix4();
-      const instanceColor = new Color();
-      data.map((d, i) => {
-        const color = getMoistureColor(d.z);
-        matrix.identity().setPosition(d.x, d.y, d.z / 2);
-        matrix.toArray(matrices, i * 16);
-        instanceColor.set(color.rgb).toArray(colors, i * 3);
-        opacities[i] = color.a;
-      });
-      return { matrices, colors, opacities };
-    }), [data]);
+    perfMeasure("moistureInstanceNodesMs", () =>
+      buildMoistureInstanceBuffers(data)), [data]);
   return <Group position={props.position} name={"moisture-layer"}>
     {props.showMoistureReadings &&
       <MoistureReadings
@@ -137,6 +174,11 @@ export const MoistureSurface = (props: MoistureSurfaceProps) => {
   </Group>;
 };
 
+export const MoistureSurface = React.memo(
+  MoistureSurfaceBase,
+  moistureSurfacePropsEqual,
+);
+
 export interface MoistureReadingsProps {
   readings: TaggedSensorReading[];
   config: Config;
@@ -146,8 +188,42 @@ export interface MoistureReadingsProps {
   readingZOverride?: number;
 }
 
-export const MoistureReadings = (props: MoistureReadingsProps) => {
+const MOISTURE_READING_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "zGantryOffset",
+];
+
+export const moistureReadingsPropsEqual = (
+  prev: MoistureReadingsProps,
+  next: MoistureReadingsProps,
+) =>
+  prev.readings === next.readings &&
+  prev.color === next.color &&
+  prev.radius === next.radius &&
+  prev.applyOffset === next.applyOffset &&
+  prev.readingZOverride === next.readingZOverride &&
+  MOISTURE_READING_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const MoistureReadingsBase = (props: MoistureReadingsProps) => {
   const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = props.config;
+  const matrices = React.useMemo(() => {
+    const result = new Float32Array(props.readings.length * 16);
+    const matrix = new Matrix4();
+    props.readings.forEach((reading, index) => {
+      matrix.identity().setPosition(
+        reading.body.x || 0,
+        reading.body.y || 0,
+        props.readingZOverride ?? (reading.body.z || 0),
+      );
+      matrix.toArray(result, index * 16);
+    });
+    return result;
+  }, [props.readingZOverride, props.readings]);
   return <Group position={props.applyOffset
     ? [
       threeSpace(0, bedLengthOuter) + bedXOffset,
@@ -155,16 +231,19 @@ export const MoistureReadings = (props: MoistureReadingsProps) => {
       zZero(props.config),
     ]
     : [0, 0, 0]}>
-    {props.readings.map(reading =>
-      <Sphere
-        key={reading.uuid}
-        args={[props.radius, 16, 16]}
-        position={[
-          reading.body.x || 0,
-          reading.body.y || 0,
-          props.readingZOverride ?? (reading.body.z || 0),
-        ]}>
-        <MeshBasicMaterial color={props.color} />
-      </Sphere>)}
+    <InstancedMeshComponent
+      args={[undefined, undefined, props.readings.length]}
+      count={props.readings.length}>
+      <instancedBufferAttribute
+        attach={"instanceMatrix"}
+        args={[matrices, 16]} />
+      <SphereGeometry args={[props.radius, 16, 16]} />
+      <MeshBasicMaterial color={props.color} />
+    </InstancedMeshComponent>
   </Group>;
 };
+
+export const MoistureReadings = React.memo(
+  MoistureReadingsBase,
+  moistureReadingsPropsEqual,
+);

@@ -25,7 +25,6 @@ const panelDepth = 30;
 const cellDepth = 2;
 const cellZ = panelDepth / 2 + cellDepth + 1;
 const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
-const AnimatedLine = animated(Line);
 
 const cell2D = () => {
   const cellSize = 95;
@@ -60,6 +59,17 @@ const cellPositions = () => {
 
 const CELL_POSITIONS = cellPositions();
 
+let solarCellGeometry: ExtrudeGeometry | undefined;
+
+const getSolarCellGeometry = () => {
+  solarCellGeometry ||= new ExtrudeGeometry(cell2D(), {
+    steps: 1,
+    depth: cellDepth,
+    bevelEnabled: false,
+  });
+  return solarCellGeometry;
+};
+
 interface SolarMaterialProps {
   opacity: number | SpringValue<number>;
   color: string;
@@ -75,14 +85,6 @@ const SolarMaterial = (props: SolarMaterialProps) =>
     depthWrite={false} />;
 
 const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
-  const geometry = React.useMemo(
-    () => new ExtrudeGeometry(cell2D(), {
-      steps: 1,
-      depth: cellDepth,
-      bevelEnabled: false,
-    }),
-    [],
-  );
   const setRef = React.useCallback((mesh: ThreeInstancedMesh | null) => {
     if (!mesh || typeof mesh.setMatrixAt != "function") { return; }
     const dummy = new Object3D();
@@ -98,25 +100,95 @@ const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
     ref={setRef}
     renderOrder={RenderOrder.one + 1}
     frustumCulled={false}
-    args={[geometry, undefined, CELL_POSITIONS.length]}>
+    args={[getSolarCellGeometry(), undefined, CELL_POSITIONS.length]}
+    // eslint-disable-next-line no-null/no-null
+    dispose={null}>
     <SolarMaterial color={"#131361"} opacity={props.opacity}
       side={DoubleSide} />
   </InstancedMesh>;
 };
 
-const SolarPanel = (props: { opacity: SolarMaterialProps["opacity"] }) => {
-  return <Group rotation={[0, Math.PI / 6, 0]}>
-    <Mesh renderOrder={RenderOrder.one}>
-      <BoxGeometry args={[panelWidth, panelLength, panelDepth]} />
-      <SolarMaterial color={"silver"} opacity={props.opacity} />
-    </Mesh>
-    <SolarCells opacity={props.opacity} />
+const SolarPanel = React.memo(
+  (props: { opacity: SolarMaterialProps["opacity"] }) => {
+    return <Group rotation={[0, Math.PI / 6, 0]}>
+      <Mesh renderOrder={RenderOrder.one}>
+        <BoxGeometry args={[panelWidth, panelLength, panelDepth]} />
+        <SolarMaterial color={"silver"} opacity={props.opacity} />
+      </Mesh>
+      <SolarCells opacity={props.opacity} />
+    </Group>;
+  });
+
+interface SolarHardwareProps {
+  bedHeight: number;
+  bedLengthOuter: number;
+  bedWidthOuter: number;
+  bedZOffset: number;
+  legSize: number;
+  opacity: SolarMaterialProps["opacity"];
+}
+
+interface SolarWiringProps extends Omit<SolarHardwareProps, "opacity"> {
+  visible: boolean;
+}
+
+const SolarArray = React.memo((props: SolarHardwareProps) => {
+  const zGround = -props.bedZOffset - props.bedHeight;
+  const position: [number, number, number] = React.useMemo(() => [
+    threeSpace(props.bedLengthOuter + 2000, props.bedLengthOuter),
+    threeSpace(750, props.bedWidthOuter),
+    zGround + 150,
+  ], [props.bedLengthOuter, props.bedWidthOuter, zGround]);
+
+  return <Group name={"solar-array"}
+    position={position}
+    rotation={[0, 0, Math.PI]}>
+    <Group position={[0, -525, 0]}>
+      <SolarPanel opacity={props.opacity} />
+    </Group>
+    <Group position={[0, 525, 0]}>
+      <SolarPanel opacity={props.opacity} />
+    </Group>
   </Group>;
-};
+});
+
+const SolarWiring = React.memo((props: SolarWiringProps) => {
+  const zGround = -props.bedZOffset - props.bedHeight;
+  const points: [number, number, number][] = React.useMemo(() => [
+    [
+      threeSpace(props.bedLengthOuter + 587.5 - props.legSize / 2,
+        props.bedLengthOuter),
+      threeSpace(props.legSize / 2, props.bedWidthOuter),
+      zGround + 20,
+    ],
+    [
+      threeSpace(props.bedLengthOuter + 600, props.bedLengthOuter),
+      threeSpace(750, props.bedWidthOuter),
+      zGround + 20,
+    ],
+    [
+      threeSpace(props.bedLengthOuter + 2500, props.bedLengthOuter),
+      threeSpace(750, props.bedWidthOuter),
+      zGround + 20,
+    ],
+  ], [
+    props.bedLengthOuter,
+    props.bedWidthOuter,
+    props.legSize,
+    zGround,
+  ]);
+
+  return <Line name={"solar-wiring"}
+    renderOrder={RenderOrder.default}
+    points={points}
+    color={"yellow"}
+    transparent={true}
+    opacity={props.visible ? 1 : 0}
+    lineWidth={5} />;
+});
 
 export const Solar = (props: SolarProps) => {
   const { config } = props;
-  const zGround = -config.bedZOffset - config.bedHeight;
   const transition = useFocusTransition();
   const visible = config.solar || props.activeFocus == "What you need to provide";
   const { opacity } = useSpring({
@@ -130,43 +202,20 @@ export const Solar = (props: SolarProps) => {
   const rendered = transition.enabled || visible;
   if (!rendered) { return undefined; }
 
+  const placementProps: Omit<SolarHardwareProps, "opacity"> = {
+    bedHeight: config.bedHeight,
+    bedLengthOuter: config.bedLengthOuter,
+    bedWidthOuter: config.bedWidthOuter,
+    bedZOffset: config.bedZOffset,
+    legSize: config.legSize,
+  };
+  const hardwareProps: SolarHardwareProps = {
+    ...placementProps,
+    opacity,
+  };
+
   return <Group name={"solar"} visible={rendered}>
-    <Group name={"solar-array"}
-      position={[
-        threeSpace(config.bedLengthOuter + 2000, config.bedLengthOuter),
-        threeSpace(750, config.bedWidthOuter),
-        zGround + 150,
-      ]}
-      rotation={[0, 0, Math.PI]}>
-      <Group position={[0, -525, 0]}>
-        <SolarPanel opacity={opacity} />
-      </Group>
-      <Group position={[0, 525, 0]}>
-        <SolarPanel opacity={opacity} />
-      </Group>
-    </Group>
-    <AnimatedLine name={"solar-wiring"}
-      renderOrder={RenderOrder.default}
-      points={[
-        [
-          threeSpace(config.bedLengthOuter + 587.5 - config.legSize / 2,
-            config.bedLengthOuter),
-          threeSpace(config.legSize / 2, config.bedWidthOuter),
-          zGround + 20,
-        ],
-        [
-          threeSpace(config.bedLengthOuter + 600, config.bedLengthOuter),
-          threeSpace(750, config.bedWidthOuter),
-          zGround + 20,
-        ],
-        [
-          threeSpace(config.bedLengthOuter + 2500, config.bedLengthOuter),
-          threeSpace(750, config.bedWidthOuter),
-          zGround + 20,
-        ]]}
-      color={"yellow"}
-      transparent={true}
-      opacity={opacity}
-      lineWidth={5} />
+    <SolarArray {...hardwareProps} />
+    <SolarWiring {...placementProps} visible={visible} />
   </Group>;
 };

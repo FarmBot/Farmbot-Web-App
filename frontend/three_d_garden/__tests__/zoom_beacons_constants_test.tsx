@@ -1,5 +1,6 @@
 let mockIsDesktop = false;
 
+import * as zoomConstants from "../zoom_beacons_constants";
 import {
   Camera,
   FOCI,
@@ -46,6 +47,19 @@ describe("getFocus()", () => {
     const configPosition = clone(INITIAL_POSITION);
     expect(getFocus(config, configPosition, "What you can grow").label)
       .toEqual("What you can grow");
+  });
+
+  it("builds foci once per lookup", () => {
+    const fociSpy = jest.spyOn(zoomConstants, "FOCI");
+    const config = clone(INITIAL);
+    const configPosition = clone(INITIAL_POSITION);
+    expect(zoomConstants.getFocus(
+      config,
+      configPosition,
+      "What you can grow",
+    ).label).toEqual("What you can grow");
+    expect(fociSpy).toHaveBeenCalledTimes(1);
+    fociSpy.mockRestore();
   });
 });
 

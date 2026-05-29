@@ -1,5 +1,5 @@
 import React from "react";
-import { ImageLayer, ImageLayerProps } from "../image_layer";
+import { filterImages, ImageLayer, ImageLayerProps } from "../image_layer";
 import { render } from "@testing-library/react";
 import {
   fakeImage, fakeWebAppConfig,
@@ -109,5 +109,27 @@ describe("<ImageLayer/>", () => {
     const layer = container.querySelector("#image-layer");
     if (!layer) { throw new Error("Missing image layer"); }
     expect(layer.getAttribute("clip-path")).toEqual("url(#map-grid-clip-path)");
+  });
+
+  it("filters images in reverse order without mutating source order", () => {
+    const p = fakeProps();
+    const image1 = fakeImage();
+    const image2 = fakeImage();
+    image1.body.id = 1;
+    image2.body.id = 2;
+    image1.body.attachment_url = "https://example.com/1.jpg";
+    image2.body.attachment_url = "https://example.com/2.jpg";
+    p.images = [image1, image2];
+
+    const filtered = filterImages({
+      visible: true,
+      images: p.images,
+      designer: p.designer,
+      getConfigValue: p.getConfigValue,
+      calibrationZ: "0",
+    });
+
+    expect(filtered.map(image => image.body.id)).toEqual([2, 1]);
+    expect(p.images.map(image => image.body.id)).toEqual([1, 2]);
   });
 });

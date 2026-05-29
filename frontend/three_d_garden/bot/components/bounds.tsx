@@ -16,7 +16,31 @@ export interface BoundsProps {
   configPosition: PositionConfig;
 }
 
-export const Bounds = (props: BoundsProps) => {
+const CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter", "bedWidthOuter", "zAxisLength", "columnLength",
+  "beamLength", "bounds", "zDimension", "distanceIndicator", "bedXOffset",
+  "bedYOffset", "botSizeX", "botSizeY", "botSizeZ", "negativeZ",
+  "zGantryOffset",
+];
+
+const POSITION_FIELDS: (keyof PositionConfig)[] = ["x", "y", "z"];
+
+const sameFields = <T, K extends keyof T>(
+  prev: T,
+  next: T,
+  fields: K[],
+) => fields.every(field => prev[field] === next[field]);
+
+const areBoundsPropsEqual = (prev: BoundsProps, next: BoundsProps) =>
+  sameFields(prev.config, next.config, CONFIG_FIELDS) &&
+  sameFields(prev.configPosition, next.configPosition, POSITION_FIELDS);
+
+const BoundsComponent = (props: BoundsProps) => {
+  if (!props.config.bounds &&
+    !props.config.zDimension &&
+    !props.config.distanceIndicator) {
+    return <></>;
+  }
   const {
     bedLengthOuter, bedWidthOuter,
     zAxisLength, columnLength, beamLength, bounds,
@@ -111,3 +135,5 @@ export const Bounds = (props: BoundsProps) => {
     </Group>
   </Group>;
 };
+
+export const Bounds = React.memo(BoundsComponent, areBoundsPropsEqual);

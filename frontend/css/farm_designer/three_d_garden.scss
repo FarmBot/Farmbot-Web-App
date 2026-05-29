@@ -2,6 +2,25 @@
 @use "sass:color";
 @use "../global/fonts" as *;
 
+// sass-lint:disable space-around-operator no-misspelled-properties
+@property --season-progress {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+// sass-lint:enable space-around-operator no-misspelled-properties
+
+@keyframes season-progress {
+  from {
+    --season-progress: 0%;
+  }
+
+  to {
+    --season-progress: 100%;
+  }
+}
+
 .promo {
   &.three-d-garden {
     .garden-bed-3d-model {
@@ -188,9 +207,13 @@
         }
       }
 
-      button {
+      button,
+      .season-animation-control {
+        display: flex;
         position: relative;
         z-index: 1;
+        align-items: center;
+        justify-content: center;
         padding: 0 0.85rem;
         border-radius: 2.5rem;
         font-weight: bold;
@@ -198,6 +221,12 @@
         background: none;
         white-space: nowrap;
         color: $off_black;
+
+        &.season-animation-control {
+          width: 2.5rem;
+          height: 2.5rem;
+          padding: 0;
+        }
 
         &.active {
           background: rgba(255, 255, 255, 0.6);
@@ -225,6 +254,37 @@
         &.fall.active {
           background: linear-gradient(15deg, #502402, #c69075);
           color: $off_white;
+        }
+
+        &.winter.active.season-progress {
+          --season-background: linear-gradient(-15deg, #152e40, #3e8dc2);
+        }
+
+        &.spring.active.season-progress {
+          --season-background: linear-gradient(15deg, #055b08, #49cc78);
+        }
+
+        &.summer.active.season-progress {
+          --season-background: linear-gradient(-15deg, #d87f09, #f5e40a);
+        }
+
+        &.fall.active.season-progress {
+          --season-background: linear-gradient(15deg, #502402, #c69075);
+        }
+
+        &.active.season-progress {
+          background-image:
+          linear-gradient(
+            90deg,
+            #0000001f var(--season-progress),
+            transparent 0%),
+          var(--season-background);
+          animation: season-progress var(--season-duration) linear forwards;
+          animation-delay: var(--season-animation-delay);
+        }
+
+        &.active.season-progress-paused {
+          animation: none;
         }
 
         &:hover {

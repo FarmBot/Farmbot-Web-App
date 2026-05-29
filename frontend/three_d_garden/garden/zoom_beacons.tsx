@@ -1,7 +1,7 @@
 import { Sphere, Html, Line } from "@react-three/drei";
 import React from "react";
 import { Config, PositionConfig } from "../config";
-import { FOCI, getCameraOffset, setUrlParam } from "../zoom_beacons_constants";
+import { FOCI, setUrlParam } from "../zoom_beacons_constants";
 import { animated, useSpring } from "@react-spring/three";
 import { SpringValue, to } from "@react-spring/core";
 import { Group, MeshPhongMaterial, Mesh } from "../components";
@@ -62,14 +62,15 @@ const BeaconPulse = (props: BeaconPulseProps) => {
 
 interface BeaconVisualProps {
   activeFocus: string;
+  animate: boolean;
   beaconSize: number;
   hovered: boolean;
   onClick(): void;
   onPointerEnter(): void;
   onPointerLeave(): void;
-  config: Config;
   loadInOpacity?: SpringValue<number>;
   loadInScale?: SpringValue<number> | number;
+  xlSize: boolean;
 }
 
 const BeaconVisual = (props: BeaconVisualProps) => {
@@ -114,9 +115,7 @@ const BeaconVisual = (props: BeaconVisualProps) => {
       args={[
         props.beaconSize
         * (props.hovered ? 1.5 : 1)
-        * ((!props.activeFocus && props.config.sizePreset == "Genesis XL")
-          ? 1.5
-          : 1),
+        * ((!props.activeFocus && props.xlSize) ? 1.5 : 1),
         12,
         12,
       ]}>
@@ -128,7 +127,7 @@ const BeaconVisual = (props: BeaconVisualProps) => {
     </Sphere>
     <BeaconPulse
       beaconSize={props.beaconSize}
-      animate={props.config.animate}
+      animate={props.animate}
       parentOpacity={beaconOpacity as SpringValue<number>} />
   </AnimatedGroup>;
 };
@@ -168,67 +167,173 @@ const BeaconInfo = (props: BeaconInfoProps) => {
   </Html>;
 };
 
+interface ZoomBeaconProps {
+  activeFocus: string;
+  animate: boolean;
+  beaconSize: number;
+  desktop: boolean;
+  focus: Focus;
+  hovered: boolean;
+  loadInOpacity?: SpringValue<number>;
+  loadInScale?: SpringValue<number> | number;
+  setActiveFocus(focus: string): void;
+  setGardenCursor(cursor: string): void;
+  setHoveredFocus(focus: string): void;
+  xlSize: boolean;
+  zoomBeaconDebug: boolean;
+}
+
+const ZoomBeaconView = (props: ZoomBeaconProps) => {
+  const {
+    activeFocus,
+    animate,
+    beaconSize,
+    desktop,
+    focus,
+    hovered,
+    loadInOpacity,
+    loadInScale,
+    setActiveFocus,
+    setGardenCursor,
+    setHoveredFocus,
+    xlSize,
+    zoomBeaconDebug,
+  } = props;
+  const camera = desktop ? focus.camera.wide : focus.camera.narrow;
+  const exitFocus = () => {
+    setActiveFocus("");
+    setUrlParam("focus", "");
+  };
+  const enterFocus = () => {
+    if (activeFocus) { return; }
+    setActiveFocus(focus.label);
+    setUrlParam("focus", focus.label);
+    setHoveredFocus("");
+    setGardenCursor("");
+  };
+  return <Group name={"zoom-beacon"} position={focus.position}>
+    {zoomBeaconDebug &&
+      <Group name={"debug-group"}>
+        <Sphere args={[30]} position={camera.position}
+          material-color={"cyan"} />
+        <Line points={[camera.position, camera.target]}
+          color={"yellow"} lineWidth={2} />
+        <Sphere args={[30]} position={camera.target}
+          material-color={"orange"} />
+      </Group>}
+    <BeaconVisual
+      activeFocus={activeFocus}
+      animate={animate}
+      beaconSize={beaconSize}
+      hovered={hovered}
+      loadInOpacity={loadInOpacity}
+      loadInScale={loadInScale}
+      onClick={enterFocus}
+      onPointerEnter={() => {
+        if (activeFocus) { return; }
+        setHoveredFocus(focus.label);
+        setGardenCursor("zoom-in");
+      }}
+      onPointerLeave={() => {
+        setHoveredFocus("");
+        setGardenCursor("");
+      }}
+      xlSize={xlSize} />
+    <BeaconInfo
+      focus={focus}
+      active={activeFocus == focus.label}
+      onExit={exitFocus} />
+  </Group>;
+};
+
+const ZoomBeacon = React.memo(ZoomBeaconView, (prev, next) =>
+  prev.activeFocus == next.activeFocus &&
+  prev.animate == next.animate &&
+  prev.beaconSize == next.beaconSize &&
+  prev.desktop == next.desktop &&
+  prev.focus == next.focus &&
+  prev.hovered == next.hovered &&
+  prev.loadInOpacity == next.loadInOpacity &&
+  prev.loadInScale == next.loadInScale &&
+  prev.setActiveFocus == next.setActiveFocus &&
+  prev.setGardenCursor == next.setGardenCursor &&
+  prev.setHoveredFocus == next.setHoveredFocus &&
+  prev.xlSize == next.xlSize &&
+  prev.zoomBeaconDebug == next.zoomBeaconDebug);
+
 export const ZoomBeacons = (props: ZoomBeaconsProps) => {
   const [hoveredFocus, setHoveredFocus] = React.useState("");
   const { activeFocus, setActiveFocus } = props;
-  const gardenBedDiv =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
+  const {
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    bedZOffset,
+    columnLength,
+    legSize,
+    negativeZ,
+    sizePreset,
+    zGantryOffset,
+  } = props.config;
+  const { x, y, z } = props.configPosition;
+  const foci = React.useMemo(() => FOCI({
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    bedZOffset,
+    columnLength,
+    legSize,
+    negativeZ,
+    sizePreset,
+    zGantryOffset,
+  } as Config, { x, y, z }), [
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    bedZOffset,
+    columnLength,
+    legSize,
+    negativeZ,
+    sizePreset,
+    x,
+    y,
+    z,
+    zGantryOffset,
+  ]);
+  const setGardenCursor = React.useCallback((cursor: string) => {
+    const gardenBedDiv =
+      document.querySelector<HTMLElement>(".garden-bed-3d-model");
+    if (gardenBedDiv) {
+      gardenBedDiv.style.cursor = cursor;
+    }
+  }, []);
 
-  const beaconSize = isDesktop() ? 60 : 80;
+  const desktop = isDesktop();
+  const beaconSize = desktop ? 60 : 80;
+  const { animate, zoomBeaconDebug } = props.config;
+  const xlSize = props.config.sizePreset == "Genesis XL";
   return <Group name={"zoom-beacons"}>
-    {FOCI(props.config, props.configPosition).map(focus => {
-      const camera = getCameraOffset(focus);
-      const exitFocus = () => {
-        setActiveFocus("");
-        setUrlParam("focus", "");
-      };
-      const enterFocus = () => {
-        if (activeFocus) { return; }
-        setActiveFocus(focus.label);
-        setUrlParam("focus", focus.label);
-        setHoveredFocus("");
-        if (gardenBedDiv) {
-          gardenBedDiv.style.cursor = "";
-        }
-      };
-      return <Group name={"zoom-beacon"} key={focus.label}
-        position={focus.position}>
-        {props.config.zoomBeaconDebug &&
-          <Group name={"debug-group"}>
-            <Sphere args={[30]} position={camera.position}
-              material-color={"cyan"} />
-            <Line points={[camera.position, camera.target]}
-              color={"yellow"} lineWidth={2} />
-            <Sphere args={[30]} position={camera.target}
-              material-color={"orange"} />
-          </Group>}
-        <BeaconVisual
-          activeFocus={activeFocus}
-          beaconSize={beaconSize}
-          config={props.config}
-          hovered={hoveredFocus == focus.label}
-          loadInOpacity={props.loadInOpacity}
-          loadInScale={props.loadInScale}
-          onClick={enterFocus}
-          onPointerEnter={() => {
-            if (activeFocus) { return; }
-            setHoveredFocus(focus.label);
-            if (gardenBedDiv) {
-              gardenBedDiv.style.cursor = "zoom-in";
-            }
-          }}
-          onPointerLeave={() => {
-            setHoveredFocus("");
-            if (gardenBedDiv) {
-              gardenBedDiv.style.cursor = "";
-            }
-          }} />
-        <BeaconInfo
-          focus={focus}
-          active={activeFocus == focus.label}
-          onExit={exitFocus} />
-      </Group>;
-    })}
+    {foci.map(focus =>
+      <ZoomBeacon
+        key={focus.label}
+        activeFocus={activeFocus}
+        animate={animate}
+        beaconSize={beaconSize}
+        desktop={desktop}
+        focus={focus}
+        hovered={hoveredFocus == focus.label}
+        loadInOpacity={props.loadInOpacity}
+        loadInScale={props.loadInScale}
+        setActiveFocus={setActiveFocus}
+        setGardenCursor={setGardenCursor}
+        setHoveredFocus={setHoveredFocus}
+        xlSize={xlSize}
+        zoomBeaconDebug={zoomBeaconDebug} />)}
   </Group>;
 };

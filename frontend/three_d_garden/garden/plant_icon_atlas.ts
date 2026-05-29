@@ -1,6 +1,23 @@
 import {
-  PLANT_ICON_ATLAS as GENERATED_PLANT_ICON_ATLAS,
+  PLANT_ICON_ATLAS_CELL_HEIGHT,
+  PLANT_ICON_ATLAS_CELL_WIDTH,
+  PLANT_ICON_ATLAS_COLUMNS,
+  PLANT_ICON_ATLAS_FRAMES,
+  PLANT_ICON_ATLAS_ICON_SLUGS,
+  PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  PLANT_ICON_ATLAS_URL,
 } from "./generated_plant_icon_atlas";
+import {
+  PROMO_PLANT_ICON_ATLAS_CELL_HEIGHT,
+  PROMO_PLANT_ICON_ATLAS_CELL_WIDTH,
+  PROMO_PLANT_ICON_ATLAS_COLUMNS,
+  PROMO_PLANT_ICON_ATLAS_FRAMES,
+  PROMO_PLANT_ICON_ATLAS_ICON_SLUGS,
+  PROMO_PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  PROMO_PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  PROMO_PLANT_ICON_ATLAS_URL,
+} from "./generated_promo_plant_icon_atlas";
 import { Texture } from "three";
 
 export interface PlantIconAtlasFrame {
@@ -18,15 +35,96 @@ export interface PlantIconTextureTransform {
   repeat: [number, number];
 }
 
-export const PLANT_ICON_ATLAS =
-  GENERATED_PLANT_ICON_ATLAS as Record<string, PlantIconAtlasFrame>;
+export type PlantIconAtlas = Record<string, PlantIconAtlasFrame>;
 
-export const getPlantIconTextureUrl = (icon: string): string =>
-  PLANT_ICON_ATLAS[icon]?.atlasUrl || icon;
+interface GeneratedPlantIconAtlas {
+  atlasUrl: string;
+  textureWidth: number;
+  textureHeight: number;
+  cellWidth: number;
+  cellHeight: number;
+  columns: number;
+  iconSlugs: string;
+  frames: readonly (readonly [string, number, number, number, number])[];
+}
+
+export const GENERIC_PLANT_ICON = "/crops/icons/generic-plant.avif";
+export const GENERIC_WEED_ICON = "/crops/icons/generic-weed.avif";
+
+const fullPlantIconAtlas: GeneratedPlantIconAtlas = {
+  atlasUrl: PLANT_ICON_ATLAS_URL,
+  textureWidth: PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  textureHeight: PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  cellWidth: PLANT_ICON_ATLAS_CELL_WIDTH,
+  cellHeight: PLANT_ICON_ATLAS_CELL_HEIGHT,
+  columns: PLANT_ICON_ATLAS_COLUMNS,
+  iconSlugs: PLANT_ICON_ATLAS_ICON_SLUGS,
+  frames: PLANT_ICON_ATLAS_FRAMES,
+};
+
+const promoPlantIconAtlas: GeneratedPlantIconAtlas = {
+  atlasUrl: PROMO_PLANT_ICON_ATLAS_URL,
+  textureWidth: PROMO_PLANT_ICON_ATLAS_TEXTURE_WIDTH,
+  textureHeight: PROMO_PLANT_ICON_ATLAS_TEXTURE_HEIGHT,
+  cellWidth: PROMO_PLANT_ICON_ATLAS_CELL_WIDTH,
+  cellHeight: PROMO_PLANT_ICON_ATLAS_CELL_HEIGHT,
+  columns: PROMO_PLANT_ICON_ATLAS_COLUMNS,
+  iconSlugs: PROMO_PLANT_ICON_ATLAS_ICON_SLUGS,
+  frames: PROMO_PLANT_ICON_ATLAS_FRAMES,
+};
+
+const compactAtlasFrames = (atlas: GeneratedPlantIconAtlas) =>
+  atlas.iconSlugs.split(",").map((slug, index) => [
+    `/crops/icons/${slug}.avif`,
+    (index % atlas.columns) * atlas.cellWidth,
+    Math.floor(index / atlas.columns) * atlas.cellHeight,
+    atlas.cellWidth,
+    atlas.cellHeight,
+  ] as const);
+
+const plantIconAtlasFrames = (atlas: GeneratedPlantIconAtlas) =>
+  atlas.iconSlugs
+    ? compactAtlasFrames(atlas)
+    : atlas.frames;
+
+const buildPlantIconAtlas = (
+  atlas: GeneratedPlantIconAtlas,
+): PlantIconAtlas => {
+  const frames = plantIconAtlasFrames(atlas);
+  const atlasUrl = `${atlas.atlasUrl}?v=${frames.length}`;
+  return Object.fromEntries(
+    frames.map(([icon, x, y, width, height]) => [
+      icon,
+      {
+        atlasUrl,
+        textureWidth: atlas.textureWidth,
+        textureHeight: atlas.textureHeight,
+        x,
+        y,
+        width,
+        height,
+      },
+    ]),
+  );
+};
+
+export const PLANT_ICON_ATLAS = buildPlantIconAtlas(fullPlantIconAtlas);
+
+export const PROMO_PLANT_ICON_ATLAS =
+  buildPlantIconAtlas(promoPlantIconAtlas);
+
+export const getPlantIconTextureUrl = (
+  icon: string,
+  atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
+): string =>
+  atlas[icon]?.atlasUrl || icon;
 
 export const getPlantIconTextureTransform =
-  (icon: string): PlantIconTextureTransform | undefined => {
-    const frame = PLANT_ICON_ATLAS[icon];
+  (
+    icon: string,
+    atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
+  ): PlantIconTextureTransform | undefined => {
+    const frame = atlas[icon];
     if (!frame) { return undefined; }
     return {
       offset: [
@@ -40,8 +138,12 @@ export const getPlantIconTextureTransform =
     };
   };
 
-export const getPlantIconTexture = (baseTexture: Texture, icon: string) => {
-  const transform = getPlantIconTextureTransform(icon);
+export const getPlantIconTexture = (
+  baseTexture: Texture,
+  icon: string,
+  atlas: PlantIconAtlas = PLANT_ICON_ATLAS,
+) => {
+  const transform = getPlantIconTextureTransform(icon, atlas);
   if (!transform) { return baseTexture; }
 
   const atlasTexture = baseTexture.clone();

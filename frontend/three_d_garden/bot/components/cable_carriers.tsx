@@ -26,6 +26,129 @@ type CCSupportVertical = GLTF & {
   materials: never;
 }
 
+interface CableCarrierBaseProps {
+  config: Config;
+  configPosition: PositionConfig;
+}
+
+type ConfigField = keyof Config;
+type PositionField = keyof PositionConfig;
+
+const positionTransformConfigFields: ConfigField[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+];
+
+const cableCarrierXConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "bedHeight",
+  "botSizeX",
+  "tracks",
+  ...positionTransformConfigFields,
+];
+
+const cableCarrierYConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "columnLength",
+  "botSizeY",
+  "kitVersion",
+  ...positionTransformConfigFields,
+];
+
+const cableCarrierZConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "botSizeZ",
+  "zGantryOffset",
+  "columnLength",
+  "negativeZ",
+  ...positionTransformConfigFields,
+];
+
+const supportVerticalConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "kitVersion",
+  "zAxisLength",
+  "columnLength",
+  "zGantryOffset",
+  "negativeZ",
+  ...positionTransformConfigFields,
+];
+
+const supportHorizontalConfigFields: ConfigField[] = [
+  "cableCarriers",
+  "kitVersion",
+  "botSizeY",
+  "columnLength",
+  ...positionTransformConfigFields,
+];
+
+const supportHorizontalV18ConfigFields: ConfigField[] = [
+  ...supportHorizontalConfigFields,
+  "light",
+];
+
+const sameFields = <T extends object, K extends keyof T>(
+  prev: T,
+  next: T,
+  fields: K[],
+) => fields.every(field => prev[field] === next[field]);
+
+const sameCableCarrierProps = (
+  prev: CableCarrierBaseProps,
+  next: CableCarrierBaseProps,
+  configFields: ConfigField[],
+  positionFields: PositionField[],
+) => {
+  if (!prev.config.cableCarriers && !next.config.cableCarriers) {
+    return true;
+  }
+  return sameFields(prev.config, next.config, configFields) &&
+    sameFields(prev.configPosition, next.configPosition, positionFields);
+};
+
+const sameCableCarrierXProps = (
+  prev: CableCarrierXProps,
+  next: CableCarrierXProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierXConfigFields, ["x"],
+);
+
+const sameCableCarrierYProps = (
+  prev: CableCarrierYProps,
+  next: CableCarrierYProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierYConfigFields, ["x", "y"],
+);
+
+const sameCableCarrierZProps = (
+  prev: CableCarrierZProps,
+  next: CableCarrierZProps,
+) => sameCableCarrierProps(
+  prev, next, cableCarrierZConfigFields, ["x", "y", "z"],
+);
+
+const sameCableCarrierSupportVerticalProps = (
+  prev: CableCarrierSupportVerticalProps,
+  next: CableCarrierSupportVerticalProps,
+) => sameCableCarrierProps(
+  prev, next, supportVerticalConfigFields, ["x", "y", "z"],
+);
+
+const sameCableCarrierSupportHorizontalProps = (
+  prev: CableCarrierSupportHorizontalProps,
+  next: CableCarrierSupportHorizontalProps,
+) => {
+  const configFields = prev.config.kitVersion == "v1.8" ||
+    next.config.kitVersion == "v1.8"
+    ? supportHorizontalV18ConfigFields
+    : supportHorizontalConfigFields;
+  return sameCableCarrierProps(
+    prev, next, configFields, ["x"],
+  );
+};
+
 const ccPath =
   (axisLength: number, y: number, curveDia: number, isX?: boolean) => {
     const lowerLength = (y + axisLength + 180) / 2;
@@ -55,14 +178,16 @@ const ccPath =
     return path;
   };
 
-interface CableCarrierXProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierXProps extends CableCarrierBaseProps { }
 
-export const CableCarrierX = (props: CableCarrierXProps) => {
+export const CableCarrierX = React.memo((props: CableCarrierXProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierX {...props} />;
+}, sameCableCarrierXProps);
+
+const VisibleCableCarrierX = (props: CableCarrierXProps) => {
   const {
-    bedHeight, cableCarriers, botSizeX, tracks, bedYOffset,
+    bedHeight, botSizeX, tracks, bedYOffset,
   } = props.config;
   const { x } = props.configPosition;
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
@@ -78,7 +203,7 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
       true),
     { steps: 1, depth: 22, bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [bedCCSupportHeight, botSizeX, x]);
-  return <Extrude name={"xCC"} visible={cableCarriers}
+  return <Extrude name={"xCC"}
     castShadow={true}
     args={args}
     position={[
@@ -91,14 +216,16 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
   </Extrude>;
 };
 
-interface CableCarrierYProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierYProps extends CableCarrierBaseProps { }
 
-export const CableCarrierY = (props: CableCarrierYProps) => {
+export const CableCarrierY = React.memo((props: CableCarrierYProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierY {...props} />;
+}, sameCableCarrierYProps);
+
+const VisibleCableCarrierY = (props: CableCarrierYProps) => {
   const {
-    columnLength, cableCarriers, botSizeY, kitVersion,
+    columnLength, botSizeY, kitVersion,
   } = props.config;
   const { x, y } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -119,7 +246,7 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
     ccPath(botSizeY, y + 40, 70),
     { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeY, kitVersion, y]);
-  return <Extrude name={"yCC"} visible={cableCarriers}
+  return <Extrude name={"yCC"}
     castShadow={true}
     args={args}
     position={getPosition()}
@@ -128,14 +255,16 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
   </Extrude>;
 };
 
-interface CableCarrierZProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+interface CableCarrierZProps extends CableCarrierBaseProps { }
 
-export const CableCarrierZ = (props: CableCarrierZProps) => {
+export const CableCarrierZ = React.memo((props: CableCarrierZProps) => {
+  if (!props.config.cableCarriers) { return <></>; }
+  return <VisibleCableCarrierZ {...props} />;
+}, sameCableCarrierZProps);
+
+const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const {
-    cableCarriers, botSizeZ, zGantryOffset,
+    botSizeZ, zGantryOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(props.config);
@@ -146,7 +275,7 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
     ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
     { steps: 1, depth: 60, bevelEnabled: false },
   ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeZ, z, zDir, zGantryOffset]);
-  return <Extrude name={"zCC"} visible={cableCarriers}
+  return <Extrude name={"zCC"}
     castShadow={true}
     args={args}
     position={[
@@ -159,15 +288,24 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
   </Extrude>;
 };
 
-export interface CableCarrierSupportVerticalProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+export interface CableCarrierSupportVerticalProps
+  extends CableCarrierBaseProps { }
 
 export const CableCarrierSupportVertical =
+  React.memo((props: CableCarrierSupportVerticalProps) => {
+    if (!props.config.cableCarriers) { return <></>; }
+    switch (props.config.kitVersion) {
+      case "v1.7":
+        return <CableCarrierSupportVerticalV17 {...props} />;
+      case "v1.8":
+        return <CableCarrierSupportVerticalV18 {...props} />;
+    }
+  }, sameCableCarrierSupportVerticalProps);
+
+const CableCarrierSupportVerticalV17 =
   (props: CableCarrierSupportVerticalProps) => {
     const {
-      zAxisLength, kitVersion,
+      zAxisLength,
     } = props.config;
     const { x, y, z } = props.configPosition;
     const zZero = zZeroFunc(props.config);
@@ -177,25 +315,6 @@ export const CableCarrierSupportVertical =
       useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as unknown as CCSupportVertical;
     const verticalInstances = React.useMemo(() => range((zAxisLength - 350) / 200), [zAxisLength]);
     const verticalRef = React.useRef<THREE.InstancedMesh | undefined>(undefined);
-    const verticalGeometry = React.useMemo(() => {
-      const shape = new THREE.Shape();
-      shape.moveTo(0, 0);
-      shape.lineTo(0, 20);
-      shape.lineTo(15, 20);
-      shape.lineTo(20, 1.5);
-      shape.lineTo(28.5, 1.5);
-      shape.lineTo(28.5, -61);
-      shape.lineTo(24, -63);
-      shape.lineTo(24, -61.5);
-      shape.lineTo(27, -60);
-      shape.lineTo(27, 0);
-      shape.lineTo(0, 0);
-      return new THREE.ExtrudeGeometry(shape, {
-        depth: zAxisLength - 350,
-        bevelEnabled: false,
-      });
-    }, [zAxisLength]);
-    React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
     React.useEffect(() => {
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
@@ -221,47 +340,82 @@ export const CableCarrierSupportVertical =
       zDir,
       zZero,
     ]);
-    switch (kitVersion) {
-      case "v1.7":
-        return <Group name={"ccSupportVertical"}>
-          {verticalInstances.length > 0 &&
-            <InstancedMesh
-              ref={verticalRef}
-              args={[
-                ccSupportVertical.nodes[PartName.ccSupportVertical].geometry,
-                undefined,
-                verticalInstances.length,
-              ]}>
-              <MeshPhongMaterial color={"silver"} />
-            </InstancedMesh>}
-        </Group>;
-      case "v1.8":
-        const getPosition = (): [number, number, number] => {
-          const position = get3DPosition({ x: x + 20, y: y + 35 });
-          return [position.x, position.y, zZero - zDir * z + 125];
-        };
-        return <Group name={"ccSupportVertical"}>
-          <Mesh
-            position={getPosition()}
-            rotation={[0, 0, 0]}
-            geometry={verticalGeometry}>
-            <MeshPhongMaterial color={"white"}
-              opacity={0.8}
-              transparent={true} />
-          </Mesh>
-        </Group>;
-    }
+    return <Group name={"ccSupportVertical"}>
+      {verticalInstances.length > 0 &&
+        <InstancedMesh
+          ref={verticalRef}
+          args={[
+            ccSupportVertical.nodes[PartName.ccSupportVertical].geometry,
+            undefined,
+            verticalInstances.length,
+          ]}>
+          <MeshPhongMaterial color={"silver"} />
+        </InstancedMesh>}
+    </Group>;
   };
 
-export interface CableCarrierSupportHorizontalProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
+const CableCarrierSupportVerticalV18 =
+  (props: CableCarrierSupportVerticalProps) => {
+    const {
+      zAxisLength,
+    } = props.config;
+    const { x, y, z } = props.configPosition;
+    const zZero = zZeroFunc(props.config);
+    const zDir = zDirFunc(props.config);
+    const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+    const verticalGeometry = React.useMemo(() => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.lineTo(0, 20);
+      shape.lineTo(15, 20);
+      shape.lineTo(20, 1.5);
+      shape.lineTo(28.5, 1.5);
+      shape.lineTo(28.5, -61);
+      shape.lineTo(24, -63);
+      shape.lineTo(24, -61.5);
+      shape.lineTo(27, -60);
+      shape.lineTo(27, 0);
+      shape.lineTo(0, 0);
+      return new THREE.ExtrudeGeometry(shape, {
+        depth: zAxisLength - 350,
+        bevelEnabled: false,
+      });
+    }, [zAxisLength]);
+    React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
+    const getPosition = (): [number, number, number] => {
+      const position = get3DPosition({ x: x + 20, y: y + 35 });
+      return [position.x, position.y, zZero - zDir * z + 125];
+    };
+    return <Group name={"ccSupportVertical"}>
+      <Mesh
+        position={getPosition()}
+        rotation={[0, 0, 0]}
+        geometry={verticalGeometry}>
+        <MeshPhongMaterial color={"white"}
+          opacity={0.8}
+          transparent={true} />
+      </Mesh>
+    </Group>;
+  };
+
+export interface CableCarrierSupportHorizontalProps
+  extends CableCarrierBaseProps { }
 
 export const CableCarrierSupportHorizontal =
+  React.memo((props: CableCarrierSupportHorizontalProps) => {
+    if (!props.config.cableCarriers) { return <></>; }
+    switch (props.config.kitVersion) {
+      case "v1.7":
+        return <CableCarrierSupportHorizontalV17 {...props} />;
+      case "v1.8":
+        return <CableCarrierSupportHorizontalV18 {...props} />;
+    }
+  }, sameCableCarrierSupportHorizontalProps);
+
+const CableCarrierSupportHorizontalV17 =
   (props: CableCarrierSupportHorizontalProps) => {
     const {
-      botSizeY, columnLength, kitVersion,
+      botSizeY, columnLength,
     } = props.config;
     const { x } = props.configPosition;
     const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -270,23 +424,6 @@ export const CableCarrierSupportHorizontal =
     const horizontalInstances = React.useMemo(() => range((botSizeY - 10) / 300), [botSizeY]);
     const horizontalRef =
       React.useRef<THREE.InstancedMesh | undefined>(undefined);
-    const horizontalGeometry = React.useMemo(() => {
-      const shape = new THREE.Shape();
-      shape.moveTo(0, 0);
-      shape.lineTo(0, 20);
-      shape.lineTo(-40, 20);
-      shape.lineTo(-41, 22.5);
-      shape.lineTo(-42.5, 22.5);
-      shape.lineTo(-41.5, 18.5);
-      shape.lineTo(-30, 18.5);
-      shape.lineTo(-25, 0);
-      shape.lineTo(0, 0);
-      return new THREE.ExtrudeGeometry(shape, {
-        depth: botSizeY - 30,
-        bevelEnabled: false,
-      });
-    }, [botSizeY]);
-    React.useEffect(() => () => horizontalGeometry.dispose(), [horizontalGeometry]);
     React.useEffect(() => {
       if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
@@ -309,35 +446,58 @@ export const CableCarrierSupportHorizontal =
       x,
       get3DPosition,
     ]);
-    switch (kitVersion) {
-      case "v1.7":
-        return <Group name={"ccSupportHorizontal"}>
-          {horizontalInstances.length > 0 &&
-            <InstancedMesh
-              ref={horizontalRef}
-              args={[
-                ccSupportHorizontal.nodes[PartName.ccSupportHorizontal].geometry,
-                undefined,
-                horizontalInstances.length,
-              ]}>
-              <MeshPhongMaterial color={"silver"} />
-            </InstancedMesh>}
-        </Group>;
-      case "v1.8":
-        return <Group name={"ccSupportHorizontal"}>
-          <Mesh
-            position={[
-              get3DPosition({ x: x - 28, y: 20 }).x,
-              -get3DPosition({ x: x - 28, y: 20 }).y,
-              columnLength + 60,
-            ]}
-            rotation={[Math.PI / 2, 0, 0]}
-            geometry={horizontalGeometry}>
-            <MeshPhongMaterial color={"white"}
-              opacity={0.8}
-              {...(props.config.light ? EMISSIVE_PROPS : {})}
-              transparent={true} />
-          </Mesh>
-        </Group>;
-    }
+    return <Group name={"ccSupportHorizontal"}>
+      {horizontalInstances.length > 0 &&
+        <InstancedMesh
+          ref={horizontalRef}
+          args={[
+            ccSupportHorizontal.nodes[PartName.ccSupportHorizontal].geometry,
+            undefined,
+            horizontalInstances.length,
+          ]}>
+          <MeshPhongMaterial color={"silver"} />
+        </InstancedMesh>}
+    </Group>;
+  };
+
+const CableCarrierSupportHorizontalV18 =
+  (props: CableCarrierSupportHorizontalProps) => {
+    const {
+      botSizeY, columnLength,
+    } = props.config;
+    const { x } = props.configPosition;
+    const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+    const horizontalGeometry = React.useMemo(() => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.lineTo(0, 20);
+      shape.lineTo(-40, 20);
+      shape.lineTo(-41, 22.5);
+      shape.lineTo(-42.5, 22.5);
+      shape.lineTo(-41.5, 18.5);
+      shape.lineTo(-30, 18.5);
+      shape.lineTo(-25, 0);
+      shape.lineTo(0, 0);
+      return new THREE.ExtrudeGeometry(shape, {
+        depth: botSizeY - 30,
+        bevelEnabled: false,
+      });
+    }, [botSizeY]);
+    React.useEffect(() => () => horizontalGeometry.dispose(), [horizontalGeometry]);
+    const position = get3DPosition({ x: x - 28, y: 20 });
+    return <Group name={"ccSupportHorizontal"}>
+      <Mesh
+        position={[
+          position.x,
+          -position.y,
+          columnLength + 60,
+        ]}
+        rotation={[Math.PI / 2, 0, 0]}
+        geometry={horizontalGeometry}>
+        <MeshPhongMaterial color={"white"}
+          opacity={0.8}
+          {...(props.config.light ? EMISSIVE_PROPS : {})}
+          transparent={true} />
+      </Mesh>
+    </Group>;
   };

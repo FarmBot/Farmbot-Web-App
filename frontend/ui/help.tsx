@@ -3,7 +3,8 @@ import {
   PopoverInteractionKind, PopoverPosition, Position,
 } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
-import { Markdown, Popover } from "../ui";
+import { Markdown } from "./markdown";
+import { Popover } from "./popover";
 
 export interface HelpProps {
   text: string;

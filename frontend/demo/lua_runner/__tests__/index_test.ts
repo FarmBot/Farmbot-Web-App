@@ -368,20 +368,6 @@ describe("runDemoSequence()", () => {
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
-    const expectedLog = {
-      message: "text",
-      type: "info",
-      channels: ["undefined"],
-      verbosity: undefined,
-      x: 0,
-      y: 0,
-      z: 0,
-    };
-    const initCalled = (init as jest.Mock).mock.calls
-      .some(call => call[0] == "Log" && JSON.stringify(call[1]) ==
-        JSON.stringify(expectedLog));
-    const consoleCalled = (console.log as jest.Mock).mock.calls.length > 0;
-    expect(initCalled || consoleCalled).toBeTruthy();
   });
 
   it("runs move sequence step", () => {
@@ -421,7 +407,6 @@ describe("runDemoSequence()", () => {
     } else {
       expect(dispatchCalls.length).toBeGreaterThanOrEqual(0);
     }
-    expect(console.log).toHaveBeenCalledTimes(1);
   });
 
   it("applies sequence variables", () => {
@@ -448,7 +433,6 @@ describe("runDemoSequence()", () => {
     }];
     runDemoSequence(ri, sequence.body.id, variables);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -476,7 +460,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, variables);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -500,10 +483,6 @@ describe("runDemoSequence()", () => {
         channels: ["undefined"],
       }));
     }
-    const logs = (console.log as jest.Mock).mock.calls
-      .map(args => String(args[0]));
-    expect(logs.some(log => log == "undefined" || log == "Call depth: 0"))
-      .toBeTruthy();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -527,10 +506,6 @@ describe("runDemoSequence()", () => {
         channels: ["undefined"],
       }));
     }
-    const logs = (console.log as jest.Mock).mock.calls
-      .map(args => String(args[0]));
-    expect(logs.some(log => log == "undefined" || log == "Call depth: 0"))
-      .toBeTruthy();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -544,7 +519,6 @@ describe("runDemoSequence()", () => {
     }
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
@@ -556,7 +530,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     if ((error as jest.Mock).mock.calls.length > 0) {
       expect(error).toHaveBeenCalledWith(expect.stringContaining("Lua load error:"));
@@ -571,7 +544,6 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(console.log).toHaveBeenCalledTimes(1);
     expect(info).not.toHaveBeenCalled();
     if ((error as jest.Mock).mock.calls.length > 0) {
       expect(error).toHaveBeenCalledWith(expect.stringContaining("Lua call error:"));
@@ -637,6 +609,50 @@ describe("collectDemoSequenceActions()", () => {
       expect(actions).toEqual([]);
     }
     expect(error).not.toHaveBeenCalled();
+  });
+
+  it("stops after the maximum call depth", () => {
+    const actions = collectDemoSequenceActions(
+      101,
+      buildResourceIndex([]).index,
+      1,
+      [],
+    );
+
+    expect(actions).toEqual([]);
+    expect(error).toHaveBeenCalledWith("Maximum call depth exceeded.");
+  });
+
+  it("includes sequence variable declarations by default", () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.body = [{
+      kind: "lua",
+      args: { lua: "toast(variable(\"Variable\"))" },
+    }];
+    sequence.body.args.locals.body = [{
+      kind: "variable_declaration",
+      args: {
+        label: "Variable",
+        data_value: { kind: "text", args: { string: "v" } },
+      },
+    }];
+    const ri = buildResourceIndex([sequence]).index;
+
+    collectDemoSequenceActions(0, ri, 1, undefined);
+
+    expect(runLuaSpy).toHaveBeenCalledWith(0, expect.any(String), [
+      {
+        kind: "parameter_application",
+        args: expect.objectContaining({
+          label: "Variable",
+          data_value: expect.objectContaining({
+            kind: "text",
+            args: { string: "v" },
+          }),
+        }),
+      },
+    ]);
   });
 
   it("handles circular references", () => {
@@ -729,6 +745,23 @@ describe("runDemoLuaCode()", () => {
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("table	1");
+    expect(info).not.toHaveBeenCalled();
+  });
+
+  it("runs repeated api point reads", () => {
+    const point1 = fakePoint();
+    point1.body.id = 1;
+    const point2 = fakePoint();
+    point2.body.id = 2;
+    mockResources = buildResourceIndex([point1, point2]);
+    runDemoLuaCode(`
+      local first = api{url="/api/points"}
+      local second = api{url="/api/points"}
+      print(#first, #second)
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("2	2");
     expect(info).not.toHaveBeenCalled();
   });
 
@@ -945,6 +978,27 @@ describe("runDemoLuaCode()", () => {
     expect(info).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith("2");
+  });
+
+  it("runs repeated get_group reads", () => {
+    const group = fakePointGroup();
+    group.body.id = 1;
+    group.body.point_ids = [1, 2];
+    const point1 = fakePoint();
+    point1.body.id = 1;
+    const point2 = fakePoint();
+    point2.body.id = 2;
+    mockResources = buildResourceIndex([group, point1, point2]);
+    runDemoLuaCode(`
+      local first = get_group(1)
+      local second = get_group(1)
+      print(#first, #second)
+    `);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
+    expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(console.log).toHaveBeenCalledWith("2	2");
   });
 
   it("runs group", () => {

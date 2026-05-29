@@ -1,5 +1,5 @@
 import React from "react";
-import { Config, getSeasonProperties } from "../config";
+import { Config, getSeasonProperties, seasonSpringConfig } from "../config";
 import { Cloud, Clouds as DreiClouds } from "@react-three/drei";
 import { ASSETS, RenderOrder } from "../constants";
 import { animated, useSpring } from "@react-spring/three";
@@ -10,17 +10,29 @@ export interface CloudsProps {
 
 const AnimatedCloud = animated(Cloud);
 
-export const Clouds = (props: CloudsProps) => {
+export const cloudsConfigEquals = (prev: Config, next: Config) =>
+  prev.clouds == next.clouds &&
+  prev.animate == next.animate &&
+  prev.plants == next.plants;
+
+export const CloudsBase = (props: CloudsProps) => {
   const { config } = props;
   const sunParams = getSeasonProperties(config, "Summer");
   const targetOpacity = sunParams.cloudOpacity;
+  const [renderedOpacity, setRenderedOpacity] =
+    React.useState(targetOpacity);
   const { opacity } = useSpring({
     from: { opacity: 0 },
     to: { opacity: targetOpacity },
     immediate: !config.animate,
-    config: { duration: 600 },
+    onChange: result => {
+      const value = result.value as { opacity?: number };
+      typeof value.opacity == "number" && setRenderedOpacity(value.opacity);
+    },
+    onRest: () => setRenderedOpacity(targetOpacity),
+    config: seasonSpringConfig,
   });
-  if (!config.clouds || targetOpacity <= 0) { return undefined; }
+  if (!config.clouds || renderedOpacity <= 0) { return undefined; }
   return <DreiClouds name={"clouds"} visible={config.clouds}
     renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>
@@ -38,3 +50,6 @@ export const Clouds = (props: CloudsProps) => {
       fade={5000} />
   </DreiClouds>;
 };
+
+export const Clouds = React.memo(CloudsBase,
+  (prev, next) => cloudsConfigEquals(prev.config, next.config));

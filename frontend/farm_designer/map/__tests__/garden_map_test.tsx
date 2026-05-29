@@ -21,7 +21,7 @@ import {
   fakeDesignerState,
 } from "../../../__test_support__/fake_designer_state";
 import {
-  fakePlant, fakePointGroup, fakePoint, fakeSensorReading,
+  fakeImage, fakePlant, fakePointGroup, fakePoint, fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { TaggedPointGroup } from "farmbot";
@@ -39,7 +39,7 @@ import { keyboardEvent } from "../../../__test_support__/fake_html_events";
 import * as lodash from "lodash";
 import { Path } from "../../../internal_urls";
 import * as profile from "../profile";
-import * as groupDetail from "../../../point_groups/group_detail";
+import * as groupDetail from "../../../point_groups/find_group_from_url";
 import { NavigationContext } from "../../../routes_helpers";
 
 const ActualGardenMap = (jest.requireActual("../garden_map")).GardenMap;
@@ -461,6 +461,17 @@ describe("<GardenMap/>", () => {
     document.onkeyup?.(e as never);
     expect(plantActions.savePoints).not.toHaveBeenCalled();
     expect(e.preventDefault).not.toHaveBeenCalled();
+  });
+
+  it("passes hovered images to target coordinates", () => {
+    const image = fakeImage();
+    const p = fakeProps();
+    p.latestImages = [image];
+    p.designer.hoveredImage = image.uuid;
+    const wrapper = renderMap(<GardenMap {...p} />);
+
+    expect(wrapper.instance().TargetCoordinate().props.hoveredImage)
+      .toBe(image);
   });
 
   it("doesn't animate", () => {

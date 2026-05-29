@@ -1,6 +1,9 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { MoistureSurface, MoistureSurfaceProps } from "../moisture_texture";
+import {
+  buildMoistureInstanceBuffers, getMoistureOpacity, moistureReadingsPropsEqual,
+  moistureSurfacePropsEqual, MoistureSurface, MoistureSurfaceProps,
+} from "../moisture_texture";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
 import {
@@ -8,6 +11,8 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import * as interpolationMap from
   "../../../farm_designer/map/layers/points/interpolation_map";
+import { getMoistureColor } from
+  "../../../farm_designer/map/layers/sensor_readings/sensor_readings_layer";
 
 describe("<MoistureSurface />", () => {
   const fakeProps = (): MoistureSurfaceProps => ({
@@ -43,11 +48,42 @@ describe("<MoistureSurface />", () => {
     expect(container).toContainHTML("moisture-layer");
   });
 
+  it("renders readings with a native instanced mesh", () => {
+    const p = fakeProps();
+    p.showMoistureMap = false;
+    p.sensorReadings = [fakeSensorReading(), fakeSensorReading()];
+    const { container } = render(<MoistureSurface {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    expect(mesh).toBeTruthy();
+    expect(mesh?.getAttribute("count")).toEqual("2");
+  });
+
   it("renders the moisture map with a native instanced mesh", () => {
     const { container } = render(<MoistureSurface {...fakeProps()} />);
     expect(container.querySelector("instancedmesh")).toBeTruthy();
     expect(container.querySelector(".instances")).toBeFalsy();
     expect(container.querySelector(".instance")).toBeFalsy();
+  });
+
+  it("builds moisture map instance buffers", () => {
+    const buffers = buildMoistureInstanceBuffers([
+      { x: 10, y: 20, z: 800 },
+      { x: 30, y: 40, z: 950 },
+    ]);
+
+    expect(Array.from(buffers.matrices)).toEqual([
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      10, 20, 400, 1,
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      30, 40, 475, 1,
+    ]);
+    expect(Array.from(buffers.colors)).toEqual([0, 0, 1, 0, 0, 0]);
+    expect(buffers.opacities[0]).toBeCloseTo(getMoistureOpacity(800));
+    expect(buffers.opacities[1]).toBeCloseTo(getMoistureOpacity(950));
   });
 
   it("skips interpolation when the moisture map is hidden", () => {
@@ -56,5 +92,84 @@ describe("<MoistureSurface />", () => {
     p.showMoistureMap = false;
     render(<MoistureSurface {...p} />);
     expect(generateData).not.toHaveBeenCalled();
+  });
+
+  it("calculates moisture opacity without parsing color strings", () => {
+    [0, 200, 700, 900, 1024].map(value =>
+      expect(getMoistureOpacity(value)).toEqual(getMoistureColor(value).a));
+  });
+
+  it("compares only moisture reading inputs that affect rendering", () => {
+    const readings = [fakeSensorReading()];
+    const previous = {
+      readings,
+      config: clone(INITIAL),
+      color: "green",
+      radius: 50,
+      applyOffset: true,
+      readingZOverride: 100,
+    };
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    })).toBeTruthy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      readings: [fakeSensorReading()],
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      color: "blue",
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      radius: 25,
+    })).toBeFalsy();
+
+    expect(moistureReadingsPropsEqual(previous, {
+      ...previous,
+      config: { ...previous.config, bedXOffset: previous.config.bedXOffset + 1 },
+    })).toBeFalsy();
+  });
+
+  it("compares only moisture surface inputs that affect rendering", () => {
+    const previous = fakeProps();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      position: [...previous.position],
+      config: { ...previous.config, sun: previous.config.sun + 1 },
+    })).toBeTruthy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      position: [
+        previous.position[0] + 1,
+        previous.position[1],
+        previous.position[2],
+      ],
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      sensorReadings: [fakeSensorReading()],
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      showMoistureMap: false,
+    })).toBeFalsy();
+
+    expect(moistureSurfacePropsEqual(previous, {
+      ...previous,
+      config: {
+        ...previous.config,
+        interpolationStepSize: previous.config.interpolationStepSize + 1,
+      },
+    })).toBeFalsy();
   });
 });

@@ -43,6 +43,14 @@ describe("<PublicOverlay />", () => {
     expect(container.querySelector(".settings-bar-content")).toBeTruthy();
   });
 
+  it("skips disabled settings bar content", () => {
+    const p = fakeProps();
+    p.config.settingsBar = false;
+    const { container } = render(<PublicOverlay {...p} />);
+    expect(container.querySelector(".settings-bar")).toBeFalsy();
+    expect(container.querySelector(".settings-bar-content")).toBeFalsy();
+  });
+
   it("changes preset", () => {
     const p = fakeProps();
     const { container } = render(<PublicOverlay {...p} />);

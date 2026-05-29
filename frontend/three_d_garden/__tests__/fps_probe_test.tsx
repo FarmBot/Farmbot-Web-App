@@ -1,13 +1,16 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
-import { countSceneObjects, FPSProbe, REPORT_EVERY_N } from "../fps_probe";
+import {
+  countSceneObjects, FPSProbe, fpsProbeReportingEnabled, REPORT_EVERY_N,
+} from "../fps_probe";
 
 describe("FPSProbe", () => {
   let useFrameSpy: jest.SpyInstance;
   let useThreeSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    localStorage.clear();
     console.log = jest.fn();
     window.logStore = undefined as unknown as LogStore;
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
@@ -25,6 +28,7 @@ describe("FPSProbe", () => {
   });
 
   afterEach(() => {
+    localStorage.clear();
     useFrameSpy.mockRestore();
     useThreeSpy.mockRestore();
   });
@@ -41,6 +45,7 @@ describe("FPSProbe", () => {
   });
 
   it("logs render and memory counts", () => {
+    localStorage.setItem("FPS_LOGS", "true");
     let t = 0;
     const nowSpy = jest.spyOn(performance, "now").mockImplementation(() => {
       t += 2000;
@@ -95,6 +100,7 @@ describe("FPSProbe", () => {
   });
 
   it("logs an fps report every nth probe", () => {
+    localStorage.setItem("FPS_LOGS", "true");
     let t = 0;
     const nowSpy = jest.spyOn(performance, "now").mockImplementation(() => {
       t += 2000;
@@ -113,6 +119,37 @@ describe("FPSProbe", () => {
       "info",
     );
     nowSpy.mockRestore();
+  });
+
+  it("skips scene reporting by default", () => {
+    let t = 0;
+    const nowSpy = jest.spyOn(performance, "now").mockImplementation(() => {
+      t += 2000;
+      return t;
+    });
+    const traverse = jest.fn();
+    useThreeSpy.mockReturnValue({
+      gl: {
+        info: {
+          render: { calls: 5, triangles: 8, points: 13, lines: 21 },
+          memory: { geometries: 3, textures: 7 },
+        },
+      },
+      scene: { traverse },
+    });
+    render(<FPSProbe />);
+    const frameHandler = useFrameSpy.mock.calls[0][0] as () => void;
+    frameHandler();
+    frameHandler();
+    expect(window.__fps).toEqual(0.5);
+    expect(traverse).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    nowSpy.mockRestore();
+  });
+
+  it("reports when benchmarking is enabled", () => {
+    localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    expect(fpsProbeReportingEnabled()).toBeTruthy();
   });
 
   it("counts scene objects", () => {

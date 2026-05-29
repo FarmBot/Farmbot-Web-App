@@ -9,18 +9,27 @@ import {
   RepeatWrapping,
   BufferGeometry,
   Mesh as MeshType,
+  InstancedMesh as ThreeInstancedMesh,
   BackSide,
   FrontSide,
   Color,
+  type Side,
+  Matrix4,
+  Vector3,
+  Quaternion,
+  Euler,
+  ExtrudeGeometry,
+  CylinderGeometry,
 } from "three";
 import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
 import { Config, detailLevels, SurfaceDebugOption } from "../config";
 import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
-import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
+import { FarmbotAxes, UtilitiesPost, Packaging } from "./objects";
 import {
-  Group, Mesh, MeshNormalMaterial, MeshPhongMaterial,
+  Group, InstancedMesh, Mesh, MeshNormalMaterial, MeshPhongMaterial,
+  BoxGeometry,
 } from "../components";
 import { AxisNumberProperty } from "../../farm_designer/map/interfaces";
 import {
@@ -29,6 +38,7 @@ import {
   TaggedSensorReading,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting, StringSetting } from "../../session_keys";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
 import {
@@ -42,10 +52,11 @@ import {
 } from "./objects/pointer_objects";
 import { ThreeElements } from "@react-three/fiber";
 import { ImageTexture } from "../garden";
-import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
+import {
+  VertexNormalsHelper,
+} from "three/examples/jsm/helpers/VertexNormalsHelper.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
-import { soilSurfaceExtents } from "../triangles";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
 
@@ -156,6 +167,280 @@ const SurfaceHeightMaterial = (props: { children: React.ReactNode }) =>
     lowColor={new Color(0.5, 0.5, 0.5)}
     highColor={new Color(0.5, 0, 0)} />;
 
+interface TexturedBedMaterialProps {
+  bedColor: string;
+}
+
+export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
+  const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+    wrapS: RepeatWrapping,
+    wrapT: RepeatWrapping,
+    repeat: [0.0003, 0.003],
+  });
+
+  return <MeshPhongMaterial
+    map={bedWoodTexture}
+    color={props.bedColor}
+    side={DoubleSide} />;
+};
+
+type BedFramePropsWithoutChildren = Omit<BedFrameProps, "children">;
+type SoilLayerPropsWithoutChildren = Omit<SoilLayerProps, "children">;
+
+interface BedSupportInstance {
+  x: number;
+  y: number;
+}
+
+interface BedSupportsProps {
+  bedLengthOuter: number;
+  bedWidthOuter: number;
+  bedHeight: number;
+  bedZOffset: number;
+  legsFlush: boolean;
+  legSize: number;
+  bedColor: string;
+  legWoodTexture: ReturnType<typeof useTextureVariant>;
+  supports: BedSupportInstance[];
+}
+
+const noScale = new Vector3(1, 1, 1);
+const noRotation = new Quaternion();
+const minBedLegHeight = 0.1;
+const bracketGeometryCache: Record<number, ExtrudeGeometry> = {};
+const wheelGeometryCache: Record<number, CylinderGeometry> = {};
+const axleGeometryCache: Record<number, CylinderGeometry> = {};
+
+export const getBracketGeometry = (legSize: number) => {
+  if (!bracketGeometryCache[legSize]) {
+    const shape = new Shape();
+    shape.moveTo(0, 0);
+    shape.lineTo(legSize, 0);
+    shape.lineTo(legSize / 3 * 2, -legSize);
+    shape.lineTo(legSize / 3, -legSize);
+    shape.lineTo(0, 0);
+    bracketGeometryCache[legSize] = new ExtrudeGeometry(shape, {
+      steps: 1,
+      depth: legSize,
+      bevelEnabled: false,
+    });
+  }
+  return bracketGeometryCache[legSize];
+};
+
+export const getWheelGeometry = (legSize: number) => {
+  wheelGeometryCache[legSize] ||=
+    new CylinderGeometry(legSize * 0.625, legSize * 0.625, legSize / 3);
+  return wheelGeometryCache[legSize];
+};
+
+export const getAxleGeometry = (legSize: number) => {
+  axleGeometryCache[legSize] ||=
+    new CylinderGeometry(legSize / 10, legSize / 10, legSize * 1.1);
+  return axleGeometryCache[legSize];
+};
+
+const BedSupports = (props: BedSupportsProps) => {
+  const {
+    bedLengthOuter, bedWidthOuter, bedHeight, bedZOffset, legsFlush, legSize,
+    bedColor, legWoodTexture, supports,
+  } = props;
+  const casterHeight = legSize * 1.375;
+  const legHeight = Math.max(
+    minBedLegHeight,
+    bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
+  );
+  const supportMatrices = React.useMemo(() => {
+    const casterRotation =
+      new Quaternion().setFromEuler(new Euler(Math.PI / 2, 0, 0));
+    const wheelRotation =
+      new Matrix4().makeRotationFromEuler(new Euler(Math.PI / 2, 0, 0));
+    return supports.map(support => {
+      const legPosition = new Vector3(
+        threeSpace(support.x, bedLengthOuter),
+        threeSpace(support.y, bedWidthOuter),
+        -bedZOffset / 2
+        - (legsFlush ? bedHeight / 2 : bedHeight)
+        + (casterHeight / 2),
+      );
+      const leg = new Matrix4().compose(legPosition, noRotation, noScale);
+      const caster = new Matrix4().compose(
+        new Vector3(
+          -legSize / 2,
+          legSize / 2,
+          (-bedZOffset - (legsFlush ? bedHeight : 0) + casterHeight) / 2,
+        ),
+        casterRotation,
+        noScale,
+      );
+      const wheel = new Matrix4().makeTranslation(
+        legSize / 2,
+        -legSize * 0.75,
+        legSize / 2,
+      ).multiply(wheelRotation);
+      return {
+        leg,
+        caster: leg.clone().multiply(caster),
+        wheel: leg.clone().multiply(caster).multiply(wheel),
+      };
+    });
+  }, [
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedZOffset,
+    casterHeight,
+    legSize,
+    legsFlush,
+    supports,
+  ]);
+  const bracketGeometry = getBracketGeometry(legSize);
+  const wheelGeometry = getWheelGeometry(legSize);
+  const axleGeometry = getAxleGeometry(legSize);
+  // eslint-disable-next-line no-null/no-null
+  const legRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const bracketRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const wheelRef = React.useRef<ThreeInstancedMesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const axleRef = React.useRef<ThreeInstancedMesh>(null);
+
+  React.useLayoutEffect(() => {
+    supportMatrices.forEach((matrices, index) => {
+      legRef.current?.setMatrixAt(index, matrices.leg);
+      bracketRef.current?.setMatrixAt(index, matrices.caster);
+      wheelRef.current?.setMatrixAt(index, matrices.wheel);
+      axleRef.current?.setMatrixAt(index, matrices.wheel);
+    });
+    [
+      legRef.current,
+      bracketRef.current,
+      wheelRef.current,
+      axleRef.current,
+    ].forEach(mesh => {
+      if (mesh) { mesh.instanceMatrix.needsUpdate = true; }
+    });
+  }, [supportMatrices]);
+
+  return <Group name={"bed-supports"}>
+    <InstancedMesh
+      ref={legRef}
+      name={"bed-leg-wood"}
+      args={[undefined, undefined, supports.length]}
+      castShadow={true}
+      receiveShadow={true}>
+      <BoxGeometry args={[legSize, legSize, legHeight]} />
+      <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={bracketRef}
+      name={"caster-bracket"}
+      args={[bracketGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"silver"} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={wheelRef}
+      name={"wheel"}
+      args={[wheelGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"#434343"} />
+    </InstancedMesh>
+    <InstancedMesh
+      ref={axleRef}
+      name={"axle"}
+      args={[axleGeometry, undefined, supports.length]}
+      // eslint-disable-next-line no-null/no-null
+      dispose={null}
+      castShadow={true}
+      receiveShadow={true}>
+      <MeshPhongMaterial color={"#434343"} />
+    </InstancedMesh>
+  </Group>;
+};
+
+interface LowDetailBedFrameProps {
+  commonBedFrameProps: BedFramePropsWithoutChildren;
+}
+
+const LowDetailBedFrame = (props: LowDetailBedFrameProps) =>
+  <BedFrame {...props.commonBedFrameProps}>
+    <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+  </BedFrame>;
+
+interface LowDetailSoilLayerProps {
+  layerProps: SoilLayerPropsWithoutChildren;
+}
+
+const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
+  <SoilLayer {...props.layerProps}>
+    <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
+  </SoilLayer>;
+
+interface DetailedSoilLayerProps {
+  bedProps: BedProps;
+  layerProps: SoilLayerPropsWithoutChildren;
+  soilSurfaceSide: Side;
+}
+
+const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
+  const { bedProps } = props;
+  const soilTexture = React.useMemo(
+    () => <ImageTexture
+      images={bedProps.images}
+      config={bedProps.config}
+      addPlantProps={bedProps.addPlantProps}
+      sensors={bedProps.sensors}
+      sensorReadings={bedProps.sensorReadings}
+      showMoistureReadings={bedProps.showMoistureReadings}
+      showMoistureMap={bedProps.showMoistureMap}
+      xOffset={bedProps.config.bedXOffset
+        - bedProps.config.bedLengthOuter / 2}
+      yOffset={bedProps.config.bedYOffset
+        - bedProps.config.bedWidthOuter / 2}
+      z={0} />,
+    [
+      bedProps.images,
+      bedProps.config,
+      bedProps.addPlantProps,
+      bedProps.sensors,
+      bedProps.sensorReadings,
+      bedProps.showMoistureReadings,
+      bedProps.showMoistureMap,
+    ]);
+
+  return <SoilLayer {...props.layerProps}>
+    <>
+      {bedProps.config.surfaceDebug == SurfaceDebugOption.normals &&
+        <MeshNormalMaterial
+          flatShading={true}
+          side={props.soilSurfaceSide}>
+          {soilTexture}
+        </MeshNormalMaterial>}
+      {bedProps.config.surfaceDebug == SurfaceDebugOption.height &&
+        <SurfaceHeightMaterial>
+          {soilTexture}
+        </SurfaceHeightMaterial>}
+      {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
+        .includes(bedProps.config.surfaceDebug) &&
+        <MeshPhongMaterial
+          flatShading={true}
+          side={props.soilSurfaceSide}
+          shininess={0}
+          color={getColorFromBrightness(bedProps.config.soilBrightness)}>
+          {soilTexture}
+        </MeshPhongMaterial>}
+    </>
+  </SoilLayer>;
+};
+
 export interface AddPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
@@ -179,39 +464,123 @@ export interface BedProps {
   activePositionRef: ActivePositionRef;
 }
 
-export const Bed = (props: BedProps) => {
+const BED_CONFIG_FIELDS: (keyof Config)[] = [
+  "axes",
+  "bedBrightness",
+  "bedHeight",
+  "bedLengthOuter",
+  "bedType",
+  "bedWallThickness",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "bedZOffset",
+  "botSizeX",
+  "botSizeY",
+  "botSizeZ",
+  "cableCarriers",
+  "ccSupportSize",
+  "columnLength",
+  "distanceIndicator",
+  "extraLegsX",
+  "extraLegsY",
+  "imgCalZ",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "interpolationPower",
+  "interpolationStepSize",
+  "interpolationUseNearest",
+  "kitVersion",
+  "label",
+  "legSize",
+  "legsFlush",
+  "lightsDebug",
+  "lowDetail",
+  "mirrorX",
+  "mirrorY",
+  "moistureDebug",
+  "packaging",
+  "sizePreset",
+  "soilBrightness",
+  "surfaceDebug",
+  "utilitiesPost",
+  "xyDimensions",
+  "zGantryOffset",
+];
+
+const BED_SETTING_FIELDS = [
+  BooleanSetting.show_images,
+  StringSetting.photo_filter_begin,
+  StringSetting.photo_filter_end,
+] as const;
+
+const bedConfigFieldsEqual = (prev: Config, next: Config) =>
+  BED_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
+const bedSettingFieldsEqual = (prev: BedProps, next: BedProps) =>
+  BED_SETTING_FIELDS.every(field =>
+    prev.addPlantProps?.getConfigValue(field)
+    === next.addPlantProps?.getConfigValue(field));
+
+const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
+  prev.activeFocus === next.activeFocus
+  && prev.mapPoints === next.mapPoints
+  && prev.addPlantProps === next.addPlantProps
+  && prev.getZ === next.getZ
+  && prev.images === next.images
+  && prev.soilSurfaceGeometry === next.soilSurfaceGeometry
+  && prev.showMoistureMap === next.showMoistureMap
+  && prev.showMoistureReadings === next.showMoistureReadings
+  && prev.sensors === next.sensors
+  && prev.sensorReadings === next.sensorReadings
+  && prev.activePositionRef === next.activePositionRef
+  && bedConfigFieldsEqual(prev.config, next.config)
+  && bedSettingFieldsEqual(prev, next);
+
+const BedBase = (props: BedProps) => {
   const {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness,
     ccSupportSize, axes, xyDimensions, bedXOffset, bedYOffset,
+    bedWallThickness, mirrorX, mirrorY,
   } = props.config;
-  const thickness = props.config.bedWallThickness;
+  const thickness = bedWallThickness;
   const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness };
   const bedStartZ = bedHeight;
   const bedColor = getColorFromBrightness(bedBrightness);
   const groundZ = -bedHeight - bedZOffset;
-  const legXPositions = [
-    0 + legSize / 2 + thickness,
-    ...(extraLegsX
-      ? range(0, bedLengthOuter, bedLengthOuter / (extraLegsX + 1)).slice(1)
-      : []),
-    bedLengthOuter - legSize / 2 - thickness,
-  ];
-  const legYPositions = (index: number) =>
-    [
+  const supports = React.useMemo(() => {
+    const xPositions = [
       0 + legSize / 2 + thickness,
-      ...(extraLegsY && (index == 0 || index == (legXPositions.length - 1))
-        ? range(0, bedWidthOuter, bedWidthOuter / (extraLegsY + 1)).slice(1)
+      ...(extraLegsX
+        ? range(0, bedLengthOuter, bedLengthOuter / (extraLegsX + 1)).slice(1)
         : []),
-      bedWidthOuter - legSize / 2 - thickness,
+      bedLengthOuter - legSize / 2 - thickness,
     ];
-  const casterHeight = legSize * 1.375;
+    const yPositions = (index: number) =>
+      [
+        0 + legSize / 2 + thickness,
+        ...(extraLegsY && (index == 0 || index == (xPositions.length - 1))
+          ? range(0, bedWidthOuter, bedWidthOuter / (extraLegsY + 1)).slice(1)
+          : []),
+        bedWidthOuter - legSize / 2 - thickness,
+      ];
+    return xPositions.flatMap((x, index) =>
+      yPositions(index).map(y => ({ x, y })));
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    extraLegsX,
+    extraLegsY,
+    legSize,
+    thickness,
+  ]);
 
-  const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.0003, 0.003],
-  });
   const legWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -241,61 +610,32 @@ export const Bed = (props: BedProps) => {
 
   const navigate = useNavigate();
 
-  const commonSoil = {
-    side: DoubleSide,
-    shininess: 0,
-  };
-
-  const soilTexture = React.useMemo(
-    () => <ImageTexture
-      images={props.images}
-      config={props.config}
-      addPlantProps={props.addPlantProps}
-      sensors={props.sensors}
-      sensorReadings={props.sensorReadings}
-      showMoistureReadings={props.showMoistureReadings}
-      showMoistureMap={props.showMoistureMap}
-      xOffset={props.config.bedXOffset - props.config.bedLengthOuter / 2}
-      yOffset={props.config.bedYOffset - props.config.bedWidthOuter / 2}
-      z={0} />,
-    [
-      props.images,
-      props.config,
-      props.addPlantProps,
-      props.sensors,
-      props.sensorReadings,
-      props.showMoistureReadings,
-      props.showMoistureMap,
-    ]);
-
-  const surfaceTexture = soilTexture;
-  const mirroredAxesCount =
-    Number(props.config.mirrorX) + Number(props.config.mirrorY);
+  const mirroredAxesCount = Number(mirrorX) + Number(mirrorY);
   const soilSurfaceSide = mirroredAxesCount % 2 == 1 ? FrontSide : BackSide;
   const renderSoilSurfaceGeometry = React.useMemo(() => {
-    if (!props.config.mirrorX && !props.config.mirrorY) {
+    if (!mirrorX && !mirrorY) {
       return props.soilSurfaceGeometry;
     }
     const geometry = props.soilSurfaceGeometry.clone();
     const position = geometry.getAttribute("position");
     const normal = geometry.getAttribute("normal");
-    const extents = soilSurfaceExtents(props.config);
-    const xMid = (extents.x.min + extents.x.max) / 2;
-    const yMid = (extents.y.min + extents.y.max) / 2;
+    const xMid = bedLengthOuter / 2 - bedXOffset;
+    const yMid = bedWidthOuter / 2 - bedYOffset;
+    const positionArray = position.array;
+    const normalArray = normal?.array;
     for (let i = 0; i < position.count; i++) {
-      if (props.config.mirrorX) {
-        position.setX(i, 2 * xMid - position.getX(i));
+      const offset = i * 3;
+      if (mirrorX) {
+        positionArray[offset] = 2 * xMid - positionArray[offset];
       }
-      if (props.config.mirrorY) {
-        position.setY(i, 2 * yMid - position.getY(i));
+      if (mirrorY) {
+        positionArray[offset + 1] = 2 * yMid - positionArray[offset + 1];
       }
-      if (normal) {
-        if (props.config.mirrorX) {
-          normal.setX(i, -normal.getX(i));
-        }
-        if (props.config.mirrorY) {
-          normal.setY(i, -normal.getY(i));
-        }
+      if (normalArray && mirrorX) {
+        normalArray[offset] = -normalArray[offset];
+      }
+      if (normalArray && mirrorY) {
+        normalArray[offset + 1] = -normalArray[offset + 1];
       }
     }
     position.needsUpdate = true;
@@ -303,7 +643,15 @@ export const Bed = (props: BedProps) => {
     geometry.computeBoundingBox();
     geometry.computeBoundingSphere();
     return geometry;
-  }, [props.soilSurfaceGeometry, props.config]);
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    mirrorX,
+    mirrorY,
+    props.soilSurfaceGeometry,
+  ]);
   const soilPosition: [number, number, number] = [
     threeSpace(0, bedLengthOuter) + bedXOffset,
     threeSpace(0, bedWidthOuter) + bedYOffset,
@@ -359,15 +707,14 @@ export const Bed = (props: BedProps) => {
   };
 
   return <Group name={"bed-group"}>
-    <Detailed distances={detailLevels(props.config)}>
-      <BedFrame {...commonBedFrameProps}>
-        <MeshPhongMaterial
-          map={bedWoodTexture} color={bedColor} side={DoubleSide} />
-      </BedFrame>
-      <BedFrame {...commonBedFrameProps}>
-        <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
-      </BedFrame>
-    </Detailed>
+    {props.config.lowDetail
+      ? <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
+      : <Detailed distances={detailLevels(props.config)}>
+        <BedFrame {...commonBedFrameProps}>
+          <TexturedBedMaterial bedColor={bedColor} />
+        </BedFrame>
+        <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
+      </Detailed>}
     <Plane name={"bed-underside"}
       args={[bedLengthOuter, bedWidthOuter]}
       castShadow={true}
@@ -420,28 +767,33 @@ export const Bed = (props: BedProps) => {
     <Group name={"axes-group"} visible={axes}>
       <FarmbotAxes config={props.config} />
     </Group>
-    <Box name={"lower-cc-support"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
-      position={[
-        threeSpace(bedLengthOuter / 4, bedLengthOuter),
-        threeSpace(-ccSupportSize / 2, bedWidthOuter),
-        -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
-      ]}>
-      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
-    </Box>
-    <Box name={"upper-cc-support"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
-      position={[
-        threeSpace(bedLengthOuter * 3 / 4, bedLengthOuter),
-        threeSpace(-ccSupportSize / 2, bedWidthOuter),
-        -50 - ccSupportSize / 2,
-      ]}>
-      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
-    </Box>
+    {props.config.cableCarriers &&
+      <>
+        <Box name={"lower-cc-support"}
+          castShadow={true}
+          receiveShadow={true}
+          args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
+          position={[
+            threeSpace(bedLengthOuter / 4, bedLengthOuter),
+            threeSpace(-ccSupportSize / 2, bedWidthOuter),
+            -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
+          ]}>
+          <MeshPhongMaterial map={legWoodTexture} color={bedColor}
+            side={DoubleSide} />
+        </Box>
+        <Box name={"upper-cc-support"}
+          castShadow={true}
+          receiveShadow={true}
+          args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
+          position={[
+            threeSpace(bedLengthOuter * 3 / 4, bedLengthOuter),
+            threeSpace(-ccSupportSize / 2, bedWidthOuter),
+            -50 - ccSupportSize / 2,
+          ]}>
+          <MeshPhongMaterial map={legWoodTexture} color={bedColor}
+            side={DoubleSide} />
+        </Box>
+      </>}
     {props.addPlantProps &&
       <PointerObjects
         pointerPlantRef={pointerPlantRef}
@@ -456,34 +808,15 @@ export const Bed = (props: BedProps) => {
         addPlantProps={props.addPlantProps}
         mapPoints={props.mapPoints} />}
     <React.Suspense>
-      <Detailed distances={detailLevels(props.config)}>
-        <SoilLayer {...commonSoilLayerProps}>
-          <>
-            {props.config.surfaceDebug == SurfaceDebugOption.normals &&
-              <MeshNormalMaterial
-                flatShading={true}
-                side={soilSurfaceSide}>
-                {surfaceTexture}
-              </MeshNormalMaterial>}
-            {props.config.surfaceDebug == SurfaceDebugOption.height &&
-              <SurfaceHeightMaterial>
-                {surfaceTexture}
-              </SurfaceHeightMaterial>}
-            {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
-              .includes(props.config.surfaceDebug) &&
-              <MeshPhongMaterial
-                flatShading={true}
-                side={soilSurfaceSide}
-                shininess={0}
-                color={getColorFromBrightness(props.config.soilBrightness)}>
-                {surfaceTexture}
-              </MeshPhongMaterial>}
-          </>
-        </SoilLayer>
-        <SoilLayer {...commonSoilLayerProps}>
-          <MeshPhongMaterial {...commonSoil} color={"#29231e"} />
-        </SoilLayer>
-      </Detailed>
+      {props.config.lowDetail
+        ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+        : <Detailed distances={detailLevels(props.config)}>
+          <DetailedSoilLayer
+            bedProps={props}
+            layerProps={commonSoilLayerProps}
+            soilSurfaceSide={soilSurfaceSide} />
+          <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+        </Detailed>}
     </React.Suspense>
     {props.config.moistureDebug &&
       <MoistureSurface
@@ -501,31 +834,19 @@ export const Bed = (props: BedProps) => {
           zZero(props.config),
         ]}
       />}
-    {legXPositions.map((x, index) =>
-      <Group key={index}>
-        {legYPositions(index).map(y =>
-          <Group name={"bed-leg"} key={y}
-            position={[
-              threeSpace(x, bedLengthOuter),
-              threeSpace(y, bedWidthOuter),
-              -bedZOffset / 2
-              - (legsFlush ? bedHeight / 2 : bedHeight)
-              + (casterHeight / 2),
-            ]}>
-            <Box name={"bed-leg-wood"}
-              castShadow={true}
-              receiveShadow={true}
-              args={[
-                legSize,
-                legSize,
-                bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
-              ]}>
-              <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
-            </Box>
-            <Caster config={props.config} />
-          </Group>)}
-      </Group>)}
+    <BedSupports
+      bedLengthOuter={bedLengthOuter}
+      bedWidthOuter={bedWidthOuter}
+      bedHeight={bedHeight}
+      bedZOffset={bedZOffset}
+      legsFlush={legsFlush}
+      legSize={legSize}
+      bedColor={bedColor}
+      legWoodTexture={legWoodTexture}
+      supports={supports} />
     <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
     <Packaging config={props.config} />
   </Group>;
 };
+
+export const Bed = React.memo(BedBase, bedPropsEqual);

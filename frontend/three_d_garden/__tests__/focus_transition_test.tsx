@@ -1,20 +1,34 @@
 import React from "react";
+import * as reactSpring from "@react-spring/three";
+import TestRenderer from "react-test-renderer";
 import { act, render, screen } from "@testing-library/react";
 import {
   applyFocusMaterialOpacity,
   applySmoothCameraState,
   cameraTransitionValue,
   createFocusMaterialBinding,
+  easeInOutCubic,
   FOCUS_TRANSITION_MS,
   FocusTransitionProvider,
   FocusVisibilityDiv,
+  FocusVisibilityGroup,
   interpolateCameraState,
   readSmoothCameraState,
   shouldUnmountFocusVisibilityGroup,
+  useSmoothCamera,
 } from "../focus_transition";
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
 
+const originalUseSpring = reactSpring.useSpring;
+
 describe("focus transitions", () => {
+  it("eases opacity symmetrically", () => {
+    expect(easeInOutCubic(0)).toEqual(0);
+    expect(easeInOutCubic(0.25)).toEqual(0.0625);
+    expect(easeInOutCubic(0.75)).toEqual(0.9375);
+    expect(easeInOutCubic(1)).toEqual(1);
+  });
+
   it("keeps exiting DOM content mounted until the fade completes", () => {
     jest.useFakeTimers();
     const { rerender } = render(
@@ -43,6 +57,45 @@ describe("focus transitions", () => {
     jest.useRealTimers();
   });
 
+  it("updates DOM visibility classes across animation frames", () => {
+    const originalRequestAnimationFrame = window.requestAnimationFrame;
+    const originalCancelAnimationFrame = window.cancelAnimationFrame;
+    const frames: FrameRequestCallback[] = [];
+    window.requestAnimationFrame = jest.fn(callback => {
+      frames.push(callback);
+      return frames.length;
+    });
+    window.cancelAnimationFrame = jest.fn();
+
+    try {
+      const { rerender } = render(
+        <FocusTransitionProvider enabled={true}>
+          <FocusVisibilityDiv visible={true} className={"panel"}>
+            panel
+          </FocusVisibilityDiv>
+        </FocusTransitionProvider>,
+      );
+      act(() => frames.shift()?.(1));
+      act(() => frames.shift()?.(2));
+      expect(screen.getByText("panel").className)
+        .toContain("focus-transition-visible");
+
+      rerender(
+        <FocusTransitionProvider enabled={true}>
+          <FocusVisibilityDiv visible={false} className={"panel"}>
+            panel
+          </FocusVisibilityDiv>
+        </FocusTransitionProvider>,
+      );
+      act(() => frames.shift()?.(3));
+      expect(screen.getByText("panel").className)
+        .toContain("focus-transition-hidden");
+    } finally {
+      window.requestAnimationFrame = originalRequestAnimationFrame;
+      window.cancelAnimationFrame = originalCancelAnimationFrame;
+    }
+  });
+
   it("keeps expensive groups mounted when requested", () => {
     expect(shouldUnmountFocusVisibilityGroup(false, false, true))
       .toEqual(false);
@@ -52,6 +105,119 @@ describe("focus transitions", () => {
       .toEqual(false);
     expect(shouldUnmountFocusVisibilityGroup(true, false, false))
       .toEqual(false);
+  });
+
+  it("skips group spring setup when transitions are disabled", () => {
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring");
+    render(<FocusVisibilityGroup visible={false}>
+      <div>hidden</div>
+    </FocusVisibilityGroup>);
+    expect(useSpringSpy).not.toHaveBeenCalled();
+  });
+
+  it("uses group spring setup when transitions are enabled", () => {
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring");
+    const { container } = render(
+      <FocusTransitionProvider enabled={true}>
+        <FocusVisibilityGroup visible={true}>
+          <div>shown</div>
+        </FocusVisibilityGroup>
+      </FocusTransitionProvider>,
+    );
+    expect(container.innerHTML).toContain("shown");
+    expect(useSpringSpy).toHaveBeenCalled();
+  });
+
+  it("unmounts initially hidden groups when transitions are enabled", () => {
+    const { container } = render(
+      <FocusTransitionProvider enabled={true}>
+        <FocusVisibilityGroup visible={false}>
+          <div>hidden</div>
+        </FocusVisibilityGroup>
+      </FocusTransitionProvider>,
+    );
+    expect(container.innerHTML).not.toContain("hidden");
+  });
+
+  it("runs transitioned group spring callbacks", () => {
+    let springProps: {
+      onChange(result: { value: { opacity?: number } }): void;
+      onRest(): void;
+    } | undefined;
+    const callbackRef = jest.fn();
+    const objectRef = React.createRef<Object3D>();
+    const material = new MeshBasicMaterial({ opacity: 0.5 });
+    const root = new Object3D();
+    root.add(new Mesh(new BoxGeometry(), material));
+    const springImpl = (props: unknown) => {
+      springProps = props as typeof springProps;
+      return {} as never;
+    };
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(springImpl);
+    let view: TestRenderer.ReactTestRenderer | undefined;
+
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <FocusTransitionProvider enabled={true}>
+          <FocusVisibilityGroup
+            visible={true}
+            materialBindingKey={"a"}
+            ref={callbackRef}>
+            <div>shown</div>
+          </FocusVisibilityGroup>
+          <FocusVisibilityGroup visible={true} ref={objectRef}>
+            <div>also shown</div>
+          </FocusVisibilityGroup>
+        </FocusTransitionProvider>,
+        { createNodeMock: node => node.type == "group" ? root : {} },
+      );
+    });
+    TestRenderer.act(() =>
+      springProps?.onChange({ value: { opacity: 0.5 } }));
+    TestRenderer.act(() => {
+      view?.update(
+        <FocusTransitionProvider enabled={true}>
+          <FocusVisibilityGroup
+            visible={false}
+            materialBindingKey={"b"}
+            ref={callbackRef}>
+            <div>shown</div>
+          </FocusVisibilityGroup>
+          <FocusVisibilityGroup visible={true} ref={objectRef}>
+            <div>also shown</div>
+          </FocusVisibilityGroup>
+        </FocusTransitionProvider>,
+      );
+    });
+    TestRenderer.act(() => springProps?.onRest());
+
+    expect(useSpringSpy).toHaveBeenCalled();
+    expect(callbackRef).toHaveBeenCalledWith(root);
+    expect(objectRef.current).toBe(root);
+    TestRenderer.act(() => view?.unmount());
+    useSpringSpy.mockImplementation(originalUseSpring as never);
+  });
+
+  it("keeps hidden transitioned groups mounted when requested", () => {
+    let springProps: { onRest(): void } | undefined;
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(props => {
+        springProps = props as typeof springProps;
+        return {} as never;
+      });
+    render(
+      <FocusTransitionProvider enabled={true}>
+        <FocusVisibilityGroup visible={false} keepMounted={true}>
+          <div>hidden</div>
+        </FocusVisibilityGroup>
+      </FocusTransitionProvider>,
+    );
+
+    act(() => springProps?.onRest());
+
+    expect(useSpringSpy).toHaveBeenCalled();
+    useSpringSpy.mockImplementation(originalUseSpring as never);
   });
 
   it("isolates material opacity changes and restores originals", () => {
@@ -80,6 +246,26 @@ describe("focus transitions", () => {
 
     binding.restore();
     expect(mesh.material).toBe(material);
+  });
+
+  it("isolates array material opacity changes", () => {
+    const root = new Object3D();
+    const firstMaterial = new MeshBasicMaterial({ opacity: 0.4 });
+    const secondMaterial = new MeshBasicMaterial({ opacity: 0.8 });
+    const mesh = new Mesh(new BoxGeometry(), [firstMaterial, secondMaterial]);
+    root.add(mesh);
+
+    const binding = createFocusMaterialBinding(root);
+    const [firstClone, secondClone] = mesh.material;
+    expect(firstClone).not.toBe(firstMaterial);
+    expect(secondClone).not.toBe(secondMaterial);
+
+    binding.apply(0.5);
+    expect(firstClone.opacity).toEqual(0.2);
+    expect(secondClone.opacity).toEqual(0.4);
+
+    binding.restore();
+    expect(mesh.material).toEqual([firstMaterial, secondMaterial]);
   });
 
   it("applies material opacity without destroying original material state", () => {
@@ -192,5 +378,142 @@ describe("focus transitions", () => {
       target: [10, 11, 12],
       zoom: 2,
     });
+  });
+
+  it("reads vector arrays and falls back for missing zoom", () => {
+    const fallback = {
+      position: [1, 2, 3] as [number, number, number],
+      target: [4, 5, 6] as [number, number, number],
+      zoom: 1,
+    };
+    const camera = {
+      position: { set: jest.fn(), toArray: () => [7, 8, 9] },
+      zoom: undefined as unknown as number,
+    };
+    const controls = {
+      target: { set: jest.fn(), toArray: () => [10, 11, 12] },
+    };
+    expect(readSmoothCameraState(fallback, camera, controls)).toEqual({
+      position: [7, 8, 9],
+      target: [10, 11, 12],
+      zoom: 1,
+    });
+  });
+
+  it("can update the live camera without rendering every animation frame", () => {
+    const nowSpy = jest.spyOn(performance, "now");
+    const originalRequestAnimationFrame = window.requestAnimationFrame;
+    const originalCancelAnimationFrame = window.cancelAnimationFrame;
+    let now = 0;
+    nowSpy.mockImplementation(() => now);
+    const frames: FrameRequestCallback[] = [];
+    window.requestAnimationFrame = jest.fn(callback => {
+      frames.push(callback);
+      return frames.length;
+    });
+    window.cancelAnimationFrame = jest.fn();
+    const cameraObject = {
+      position: { set: jest.fn() },
+      zoom: 1,
+      lookAt: jest.fn(),
+      updateProjectionMatrix: jest.fn(),
+    };
+    const controls = {
+      target: { set: jest.fn() },
+      update: jest.fn(),
+    };
+    let renders = 0;
+    const CameraConsumer = () => {
+      renders++;
+      useSmoothCamera({
+        camera: {
+          position: [10, 20, 30],
+          target: [40, 50, 60],
+        },
+        zoom: 2,
+        enabled: true,
+        cameraObject,
+        controls,
+        updateStateDuringTransition: false,
+      });
+      return <div />;
+    };
+
+    try {
+      render(<FocusTransitionProvider enabled={true} duration={100}>
+        <CameraConsumer />
+      </FocusTransitionProvider>);
+      while (frames.length) {
+        const callback = frames.shift();
+        if (!callback) { break; }
+        now += 20;
+        act(() => callback(now));
+      }
+      expect(renders).toEqual(1);
+      expect(cameraObject.position.set).toHaveBeenCalledWith(10, 20, 30);
+      expect(controls.target.set).toHaveBeenCalledWith(40, 50, 60);
+    } finally {
+      window.requestAnimationFrame = originalRequestAnimationFrame;
+      window.cancelAnimationFrame = originalCancelAnimationFrame;
+      nowSpy.mockRestore();
+    }
+  });
+
+  it("updates React camera state during smooth camera transitions", () => {
+    const nowSpy = jest.spyOn(performance, "now");
+    const originalRequestAnimationFrame = window.requestAnimationFrame;
+    const originalCancelAnimationFrame = window.cancelAnimationFrame;
+    let now = 0;
+    nowSpy.mockImplementation(() => now);
+    const frames: FrameRequestCallback[] = [];
+    window.requestAnimationFrame = jest.fn(callback => {
+      frames.push(callback);
+      return frames.length;
+    });
+    window.cancelAnimationFrame = jest.fn();
+    const cameraObject = {
+      position: { set: jest.fn() },
+      zoom: 1,
+      lookAt: jest.fn(),
+      updateProjectionMatrix: jest.fn(),
+    };
+    const controls = {
+      target: { set: jest.fn() },
+      update: jest.fn(),
+    };
+    let renders = 0;
+    const CameraConsumer = () => {
+      renders++;
+      useSmoothCamera({
+        camera: {
+          position: [10, 20, 30],
+          target: [40, 50, 60],
+        },
+        zoom: 2,
+        enabled: true,
+        cameraObject,
+        controls,
+      });
+      return <div />;
+    };
+
+    try {
+      render(<FocusTransitionProvider enabled={true} duration={100}>
+        <CameraConsumer />
+      </FocusTransitionProvider>);
+      while (frames.length) {
+        const callback = frames.shift();
+        if (!callback) { break; }
+        now += 50;
+        act(() => callback(now));
+      }
+      expect(renders).toBeGreaterThan(1);
+      expect(cameraObject.position.set).toHaveBeenCalledWith(10, 20, 30);
+      expect(controls.target.set).toHaveBeenCalledWith(40, 50, 60);
+    } finally {
+      window.requestAnimationFrame = originalRequestAnimationFrame;
+      window.cancelAnimationFrame = originalCancelAnimationFrame;
+      nowSpy.mockRestore();
+    }
   });
 });

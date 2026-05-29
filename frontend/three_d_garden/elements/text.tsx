@@ -15,7 +15,26 @@ export interface TextProps {
   thickness?: number;
 }
 
-export const Text = (props: TextProps) => {
+const sameVector = (
+  prev: [number, number, number],
+  next: [number, number, number],
+) =>
+  prev[0] === next[0] &&
+  prev[1] === next[1] &&
+  prev[2] === next[2];
+
+export const textPropsEqual = (prev: TextProps, next: TextProps) =>
+  prev.children === next.children &&
+  prev.fontSize === next.fontSize &&
+  prev.color === next.color &&
+  prev.name === next.name &&
+  prev.visible === next.visible &&
+  prev.renderOrder === next.renderOrder &&
+  prev.thickness === next.thickness &&
+  sameVector(prev.position, next.position) &&
+  sameVector(prev.rotation, next.rotation);
+
+const TextBase = (props: TextProps) => {
   return <Center
     name={props.name}
     visible={props.visible}
@@ -31,3 +50,5 @@ export const Text = (props: TextProps) => {
     </Text3D>
   </Center>;
 };
+
+export const Text = React.memo(TextBase, textPropsEqual);

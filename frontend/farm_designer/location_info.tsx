@@ -47,6 +47,7 @@ import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
 import { DrawnPointPayl } from "./interfaces";
 import { getFbosConfig } from "../resources/getters";
+import { selectMostRecentPoints } from "./recent_points";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -237,12 +238,6 @@ function groupItemsByLocation<T extends Item>(
     }
   });
   return byLocation;
-}
-
-export function selectMostRecentPoints
-  <T extends (TaggedGenericPointer | TaggedSensorReading)>(points: T[]) {
-  return Object.values(groupItemsByLocation(points, undefined))
-    .map(data => sortBy(data.items, "body.updated_at").reverse()[0]);
 }
 
 interface ItemListWrapperProps {

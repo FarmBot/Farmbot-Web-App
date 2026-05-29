@@ -440,6 +440,31 @@ describe("calculateMove()", () => {
       .toEqual({ moves: [{ x: 0, y: 0, z: 3 }], warnings: [] });
   });
 
+  it("reuses soil height lookup for repeated z axis overwrites", () => {
+    const getZFuncMock = triangleFunctions.getZFunc as jest.Mock;
+    getZFuncMock.mockClear();
+    sessionStorage.setItem("soilSurfaceTriangles",
+      "[[0,0,0,100,0,0,0,100,0]]");
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "z",
+            axis_operand: { kind: "special_value", args: { label: "soil_height" } },
+          },
+        },
+      ],
+    };
+    expect(calculateMove(command.body, { x: 0, y: 0, z: 0 }, []))
+      .toEqual({ moves: [{ x: 0, y: 0, z: 3 }], warnings: [] });
+    expect(calculateMove(command.body, { x: 1, y: 1, z: 0 }, []))
+      .toEqual({ moves: [{ x: 1, y: 1, z: 3 }], warnings: [] });
+    expect(getZFuncMock).toHaveBeenCalledTimes(1);
+  });
+
   it("handles safe height z axis overwrite", () => {
     const firmwareConfig = fakeFirmwareConfig();
     firmwareConfig.body.movement_home_up_z = 0;

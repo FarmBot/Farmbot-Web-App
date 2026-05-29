@@ -31,7 +31,23 @@ export interface DistanceIndicatorProps {
   visible?: boolean;
 }
 
-export const DistanceIndicator = (props: DistanceIndicatorProps) => {
+const samePoint = (
+  prev: DistanceIndicatorProps["start"],
+  next: DistanceIndicatorProps["start"],
+) =>
+  prev.x === next.x &&
+  prev.y === next.y &&
+  prev.z === next.z;
+
+export const distanceIndicatorPropsEqual = (
+  prev: DistanceIndicatorProps,
+  next: DistanceIndicatorProps,
+) =>
+  prev.visible === next.visible &&
+  samePoint(prev.start, next.start) &&
+  samePoint(prev.end, next.end);
+
+const DistanceIndicatorBase = (props: DistanceIndicatorProps) => {
   const { start, end } = props;
   const dx = end.x - start.x;
   const dy = end.y - start.y;
@@ -64,3 +80,8 @@ export const DistanceIndicator = (props: DistanceIndicatorProps) => {
     </Group>
   </Group>;
 };
+
+export const DistanceIndicator = React.memo(
+  DistanceIndicatorBase,
+  distanceIndicatorPropsEqual,
+);

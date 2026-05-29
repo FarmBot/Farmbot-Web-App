@@ -23,6 +23,10 @@ import {
   getZFunc, parseStoredTriangles,
 } from "../../three_d_garden/triangle_functions";
 
+let cachedSoilSurfaceTriangles: string | null | undefined;
+let cachedSoilSurfaceGetZ: ReturnType<typeof getZFunc> | undefined;
+let cachedSoilSurfaceGetZFunc: typeof getZFunc | undefined;
+
 export const getFirmwareSettings = (): FirmwareConfig => {
   const fwConfig = getters.getFirmwareConfig(store.getState().resources.index);
   const firmwareSettings = (fwConfig as TaggedFirmwareConfig).body;
@@ -58,10 +62,22 @@ export const getSafeZ = (): number => {
 };
 
 export const getSoilHeight = (x: number, y: number): number => {
-  const triangles = parseStoredTriangles(
-    sessionStorage.getItem("soilSurfaceTriangles"));
-  const getZ = getZFunc(triangles, -500);
-  return getZ(x, y);
+  const storedTriangles = sessionStorage.getItem("soilSurfaceTriangles");
+  if (typeof storedTriangles != "string") {
+    return getZFunc([], -500)(x, y);
+  }
+  if (
+    storedTriangles !== cachedSoilSurfaceTriangles ||
+    cachedSoilSurfaceGetZFunc !== getZFunc
+  ) {
+    cachedSoilSurfaceTriangles = storedTriangles;
+    cachedSoilSurfaceGetZFunc = getZFunc;
+    cachedSoilSurfaceGetZ = getZFunc(
+      parseStoredTriangles(storedTriangles),
+      -500,
+    );
+  }
+  return (cachedSoilSurfaceGetZ || getZFunc([], -500))(x, y);
 };
 
 export const getGroupPoints = (resources: ResourceIndex, groupId: number) => {

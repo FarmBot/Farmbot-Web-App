@@ -14,7 +14,7 @@ import {
   filterImages, TaggedImagePlus,
 } from "../../farm_designer/map/layers/images/image_layer";
 import { AddPlantProps } from "../bed";
-import { BooleanSetting } from "../../session_keys";
+import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
   imageSizeCheck, isRotated,
 } from "../../farm_designer/map/layers/images/map_image";
@@ -89,6 +89,67 @@ export interface ImageTextureProps extends BaseProps {
   showMoistureMap: boolean;
 }
 
+const IMAGE_TEXTURE_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedWallThickness",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "botSizeY",
+  "columnLength",
+  "imgCalZ",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "interpolationPower",
+  "interpolationStepSize",
+  "interpolationUseNearest",
+  "lightsDebug",
+  "mirrorX",
+  "mirrorY",
+  "soilBrightness",
+  "surfaceDebug",
+  "zGantryOffset",
+];
+
+const IMAGE_TEXTURE_SETTING_FIELDS = [
+  BooleanSetting.show_images,
+  StringSetting.photo_filter_begin,
+  StringSetting.photo_filter_end,
+] as const;
+
+const imageTextureConfigFieldsEqual = (prev: Config, next: Config) =>
+  IMAGE_TEXTURE_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
+const imageTextureSettingFieldsEqual = (
+  prev: ImageTextureProps,
+  next: ImageTextureProps,
+) =>
+  IMAGE_TEXTURE_SETTING_FIELDS.every(field =>
+    prev.addPlantProps?.getConfigValue(field)
+    === next.addPlantProps?.getConfigValue(field));
+
+const imageTexturePropsEqual = (
+  prev: Readonly<ImageTextureProps>,
+  next: Readonly<ImageTextureProps>,
+) =>
+  prev.images === next.images
+  && prev.addPlantProps === next.addPlantProps
+  && prev.sensors === next.sensors
+  && prev.sensorReadings === next.sensorReadings
+  && prev.showMoistureReadings === next.showMoistureReadings
+  && prev.showMoistureMap === next.showMoistureMap
+  && prev.xOffset === next.xOffset
+  && prev.yOffset === next.yOffset
+  && prev.z === next.z
+  && imageTextureConfigFieldsEqual(prev.config, next.config)
+  && imageTextureSettingFieldsEqual(prev, next);
+
 const getSensorKey = (sensors: TaggedSensor[]) => {
   let key = "";
   sensors.map(sensor => {
@@ -121,7 +182,20 @@ export const getImageTextureKey = (props: ImageTextureProps) => {
   ].join(":");
 };
 
-export const ImageTexture = (props: ImageTextureProps) => {
+export const splitFilteredImages = (filteredImages: TaggedImagePlus[]) => {
+  const imageArray: TaggedImagePlus[] = [];
+  const lastImageArray: TaggedImagePlus[] = [];
+  for (const image of filteredImages) {
+    if (image.highlighted) {
+      lastImageArray.push(image);
+    } else {
+      imageArray.push(image);
+    }
+  }
+  return { imageArray, lastImageArray };
+};
+
+const ImageTextureBase = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
   const height = extents.y.max - extents.y.min;
@@ -150,10 +224,7 @@ export const ImageTexture = (props: ImageTextureProps) => {
         getConfigValue,
         calibrationZ: "" + props.config.imgCalZ,
       });
-      return {
-        imageArray: filteredImages.filter(img => !img.highlighted),
-        lastImageArray: filteredImages.filter(img => img.highlighted),
-      };
+      return splitFilteredImages(filteredImages);
     });
   const highlightActive = lastImageArray[0]?.highlighted;
   const commonProps = { width, height, bedWallThickness };
@@ -208,6 +279,8 @@ export const ImageTexture = (props: ImageTextureProps) => {
   </RenderTexture>;
 };
 
+export const ImageTexture = React.memo(ImageTextureBase, imageTexturePropsEqual);
+
 interface ImagesProps extends BaseProps {
   images: TaggedImagePlus[];
 }
@@ -242,7 +315,51 @@ interface ImageWrapperProps {
   yOffset: number;
 }
 
-const ImageWrapper = (props: ImageWrapperProps) => {
+const IMAGE_WRAPPER_CONFIG_FIELDS: (keyof Config)[] = [
+  "botSizeX",
+  "botSizeY",
+  "imgCenterX",
+  "imgCenterY",
+  "imgOffsetX",
+  "imgOffsetY",
+  "imgOrigin",
+  "imgRotation",
+  "imgScale",
+  "lightsDebug",
+  "mirrorX",
+  "mirrorY",
+];
+
+const imageWrapperConfigFieldsEqual = (prev: Config, next: Config) =>
+  IMAGE_WRAPPER_CONFIG_FIELDS.every(field => prev[field] === next[field]);
+
+const imageWrapperImagesEqual = (
+  prev: TaggedImagePlus,
+  next: TaggedImagePlus,
+) =>
+  prev.uuid === next.uuid
+  && prev.highlighted === next.highlighted
+  && prev.body.attachment_url === next.body.attachment_url
+  && prev.body.meta.name === next.body.meta.name;
+
+const usesDemoSoilTexture = (image: TaggedImagePlus) =>
+  image.body.attachment_url.endsWith("/soil.png");
+
+const imageWrapperPropsEqual = (
+  prev: Readonly<ImageWrapperProps>,
+  next: Readonly<ImageWrapperProps>,
+) =>
+  !usesDemoSoilTexture(prev.image)
+  && !usesDemoSoilTexture(next.image)
+  && prev.x === next.x
+  && prev.y === next.y
+  && prev.z === next.z
+  && prev.xOffset === next.xOffset
+  && prev.yOffset === next.yOffset
+  && imageWrapperImagesEqual(prev.image, next.image)
+  && imageWrapperConfigFieldsEqual(prev.config, next.config);
+
+const ImageWrapperBase = (props: ImageWrapperProps) => {
   const { config } = props;
   const rawUrl = props.image.body.attachment_url;
   const url = (forceOnline() && rawUrl.endsWith("/soil.png"))
@@ -276,7 +393,9 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   });
 };
 
-export const extraRotation = (config: Config) => {
+const ImageWrapper = React.memo(ImageWrapperBase, imageWrapperPropsEqual);
+
+export const extraRotation = (config: Pick<Config, "imgOrigin">) => {
   switch (config.imgOrigin) {
     case "BOTTOM_LEFT":
       return 0;
