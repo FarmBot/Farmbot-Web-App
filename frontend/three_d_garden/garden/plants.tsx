@@ -1,4 +1,5 @@
 import React from "react";
+import { useSpring } from "@react-spring/three";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard } from "@react-three/drei";
@@ -36,6 +37,11 @@ import { Mode } from "../../farm_designer/map/interfaces";
 import { findCropMetadata } from "../../crops/metadata";
 import { perfMeasure } from "../../performance/perf";
 import { clickWasDragged } from "../click_event";
+
+const spreadLayerSpringConfig = {
+  tension: 240,
+  friction: 30,
+};
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -154,6 +160,7 @@ export interface PlantSpreadInstancesProps {
   activePositionRef: ActivePositionRef;
   spreadVisible: boolean;
   instanceCapacity?: number;
+  routeKey?: string;
 }
 
 interface PlantSpreadUpdateState {
@@ -283,6 +290,19 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     : findCropMetadata(Path.getCropSlug()).spread;
   const hasTransientPlant = React.useMemo(() =>
     plants.some(plant => !plant.id), [plants]);
+  const [spreadRendered, setSpreadRendered] = React.useState(spreadVisible);
+  const spreadScaleRef = React.useRef(spreadVisible ? 1 : 0);
+  const spreadVisibleRef = React.useRef(spreadVisible);
+  const [, spreadApi] = useSpring(() => ({
+    scale: spreadVisible ? 1 : 0,
+    config: spreadLayerSpringConfig,
+  }));
+  const spreadInstancesVisible =
+    spreadVisible
+    || spreadRendered
+    || editPlantMode
+    || getMode() == Mode.clickToAdd
+    || hasTransientPlant;
 
   const ensureInstanceColor = React.useCallback((mesh: ThreeInstancedMesh) => {
     const needsResize = !mesh.instanceColor
@@ -315,17 +335,45 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     updateState.needsInstanceUpdate = true;
   }, [activeDragSpread, staticInstances]);
 
+  React.useEffect(() => {
+    spreadVisibleRef.current = spreadVisible;
+    if (spreadVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSpreadRendered(true);
+    }
+    spreadApi.start({
+      scale: spreadVisible ? 1 : 0,
+      config: spreadLayerSpringConfig,
+      onChange: result => {
+        const value = result.value as { scale?: number };
+        spreadScaleRef.current = value.scale ?? (spreadVisible ? 1 : 0);
+        getUpdateState().needsInstanceUpdate = true;
+      },
+      onRest: () => {
+        const targetVisible = spreadVisibleRef.current;
+        spreadScaleRef.current = targetVisible ? 1 : 0;
+        getUpdateState().needsInstanceUpdate = true;
+        if (!targetVisible) {
+          setSpreadRendered(false);
+        }
+      },
+    });
+  }, [spreadApi, spreadVisible]);
+
   // eslint-disable-next-line complexity
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh || visible === false) { return; }
     const updateState = getUpdateState();
     const clickToAddMode = getMode() == Mode.clickToAdd;
-    const spreadActive =
-      spreadVisible || editPlantMode || clickToAddMode || hasTransientPlant;
+    const spreadActive = spreadInstancesVisible
+      || editPlantMode
+      || clickToAddMode
+      || hasTransientPlant;
     if (!spreadActive && !updateState.needsInstanceUpdate) { return; }
     ensureInstanceColor(mesh);
     tempQuaternion.copy(state.camera.quaternion);
+    const spreadScale = spreadScaleRef.current;
     const active = editPlantMode
       ? {
         x: currentPlant?.x || -10000,
@@ -338,6 +386,8 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
       : "";
     const updateKey = [
       spreadVisible,
+      spreadRendered,
+      Math.round(spreadScale * 1000),
       editPlantMode,
       clickToAddMode,
       hasTransientPlant,
@@ -356,9 +406,11 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
           inactiveSpread: plant.spread,
           radius: plant.size / 2,
         });
-        const scale = (spreadVisible || !plant.id || editPlantMode)
+        const spreadLayerScale = spreadRadii.inactive * spreadScale;
+        const forcedScale = (!plant.id || editPlantMode)
           ? spreadRadii.inactive
           : 0;
+        const scale = Math.max(spreadLayerScale, forcedScale);
         tempPosition.set(
           plant.positionX,
           plant.positionY,
@@ -415,6 +467,8 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
       navigate(Path.plants(plant.id));
     }
   };
+
+  if (!spreadInstancesVisible) { return <></>; }
 
   return <InstancedMesh
     key={`plant-spread-${instanceCapacity}`}

@@ -62,9 +62,6 @@ import {
   FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
   useSmoothCamera,
 } from "./focus_transition";
-import { getMode } from "../farm_designer/map/util";
-import { Mode } from "../farm_designer/map/interfaces";
-import { Path } from "../internal_urls";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 
 const AnimatedGroup = animated(Group);
@@ -244,7 +241,6 @@ interface GardenLayerVisibility {
   showPoints: boolean;
   showWeeds: boolean;
   showSpread: boolean;
-  shouldMountPlantSpreadInstances: boolean;
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
   topDownAtStart: boolean;
@@ -255,8 +251,6 @@ interface GardenLayerVisibilityParams {
   activeFocus: string;
   botVisibleInConfig: boolean;
   showSoilPoints: boolean;
-  spreadHasTransientPlant: boolean;
-  routeKey: string;
 }
 
 // eslint-disable-next-line complexity
@@ -283,10 +277,6 @@ function getGardenLayerVisibility(
     BooleanSetting.show_sensor_readings);
   const topDownAtStart = !!getConfigValue?.(
     BooleanSetting.top_down_view);
-  const shouldMountPlantSpreadInstances = showSpread
-    || getMode() == Mode.clickToAdd
-    || (Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum())
-    || params.spreadHasTransientPlant;
   return {
     showPlants,
     plantsVisible,
@@ -294,7 +284,6 @@ function getGardenLayerVisibility(
     showPoints,
     showWeeds,
     showSpread,
-    shouldMountPlantSpreadInstances,
     showMoistureMap,
     showMoistureReadings,
     topDownAtStart,
@@ -331,9 +320,9 @@ interface StaticGardenLayersProps {
   plantIconCapacities: Record<string, number> | undefined;
   startTimeRef: React.RefObject<number> | undefined;
   dispatch: Function | undefined;
-  shouldMountPlantSpreadInstances: boolean;
   showSpread: boolean;
   plantInstanceCapacity: number | undefined;
+  routeKey: string;
   seasonResetKey: number | undefined;
   showWeeds: boolean;
   weeds: TaggedWeedPointer[];
@@ -349,8 +338,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     showMoistureMap, showMoistureReadings, sensors, sensorReadings,
     addPlantProps, plantLabelNodes, plantsVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
-    dispatch, shouldMountPlantSpreadInstances, showSpread,
-    plantInstanceCapacity, seasonResetKey, showWeeds, weeds, showPoints,
+    dispatch, showSpread,
+    plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
+    showPoints,
   } = props;
   const seasonLayerKey = `${config.plants}-${seasonResetKey || 0}`;
   const gridVisible = config.grid && activeFocus != "Planter bed";
@@ -462,7 +452,6 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             plantIconAtlas={plantIconAtlas}
             startTimeRef={startTimeRef}
             dispatch={dispatch} />
-          {shouldMountPlantSpreadInstances &&
           <PlantSpreadInstances
             plants={threeDPlants}
             visible={true}
@@ -470,8 +459,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             config={config}
             instanceCapacity={plantInstanceCapacity}
             activePositionRef={activePositionRef}
+            routeKey={routeKey}
             getZ={getZ}
-            dispatch={dispatch} />}
+            dispatch={dispatch} />
         </FocusVisibilityGroup>
       </PopInGroup>}
     </SceneBoundary>
@@ -872,29 +862,23 @@ export const GardenModel = (props: GardenModelProps) => {
     onLoadComplete?.();
   }, [loadProgress.complete, onLoadComplete]);
 
-  const spreadHasTransientPlant = React.useMemo(() =>
-    threeDPlants.some(plant => !plant.id), [threeDPlants]);
-  const routeKey = `${location.pathname}?${location.search}`;
   const layerVisibility = React.useMemo(() => getGardenLayerVisibility({
     addPlantProps,
     activeFocus: props.activeFocus,
     botVisibleInConfig: config.bot,
     showSoilPoints: config.showSoilPoints,
-    spreadHasTransientPlant,
-    routeKey,
   }), [
     addPlantProps,
     config.bot,
     config.showSoilPoints,
     props.activeFocus,
-    routeKey,
-    spreadHasTransientPlant,
   ]);
   const {
     plantsVisible, farmbotVisible, showPoints, showWeeds,
-    showSpread, shouldMountPlantSpreadInstances, showMoistureMap,
+    showSpread, showMoistureMap,
     showMoistureReadings, topDownAtStart,
   } = layerVisibility;
+  const routeKey = `${location.pathname}?${location.search}`;
 
   const soilPointConfig = React.useMemo(() => ({
     bedHeight: config.bedHeight,
@@ -1090,9 +1074,9 @@ export const GardenModel = (props: GardenModelProps) => {
         plantIconCapacities={props.plantIconCapacities}
         startTimeRef={props.startTimeRef}
         dispatch={dispatch}
-        shouldMountPlantSpreadInstances={shouldMountPlantSpreadInstances}
         showSpread={showSpread}
         plantInstanceCapacity={props.plantInstanceCapacity}
+        routeKey={routeKey}
         seasonResetKey={props.seasonResetKey}
         showWeeds={showWeeds}
         weeds={weeds}
