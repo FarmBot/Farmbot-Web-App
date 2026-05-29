@@ -4,7 +4,7 @@ import { Material, Object3D } from "three";
 import { Group } from "./components";
 import { Camera, VectorXyz } from "./zoom_beacons_constants";
 
-export const FOCUS_TRANSITION_MS = 900;
+export const FOCUS_TRANSITION_MS = 750;
 
 export const easeInOutCubic = (t: number) =>
   t < 0.5
@@ -618,8 +618,8 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
     props.controls,
     props.enabled,
     target,
-    transition.duration,
     props.updateStateDuringTransition,
+    transition.duration,
   ]);
 
   return props.enabled ? displayCamera : target;

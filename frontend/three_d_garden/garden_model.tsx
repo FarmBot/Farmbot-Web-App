@@ -149,13 +149,13 @@ export interface GardenModelProps {
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
   smoothFocusTransitions?: boolean;
+  smoothConfigTransitions?: boolean;
   plantIconCapacities?: Record<string, number>;
   plantIconAtlas?: PlantIconAtlas;
   plantInstanceCapacity?: number;
   preloadEnvironmentScenes?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
-  smoothBedZOffsetTransitions?: boolean;
 }
 
 const EMPTY_GENERIC_POINTERS: TaggedGenericPointer[] = [];
@@ -166,51 +166,72 @@ const EMPTY_IMAGES: TaggedImage[] = [];
 const EMPTY_SENSORS: TaggedSensor[] = [];
 const EMPTY_SENSOR_READINGS: TaggedSensorReading[] = [];
 
-const bedZOffsetSpringConfig = {
-  tension: 180,
+const smoothConfigSpringConfig = {
+  tension: 160,
   friction: 24,
 };
 
-const useSmoothBedZOffsetConfig = (
+const SMOOTH_CONFIG_FIELDS = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "botSizeX",
+  "botSizeY",
+  "beamLength",
+] as const;
+
+type SmoothConfigField = typeof SMOOTH_CONFIG_FIELDS[number];
+type SmoothConfigValues = Record<SmoothConfigField, number>;
+
+const getSmoothConfigValues = (config: Config): SmoothConfigValues =>
+  SMOOTH_CONFIG_FIELDS.reduce((values, field) => ({
+    ...values,
+    [field]: config[field],
+  }), {} as SmoothConfigValues);
+
+const useSmoothConfig = (
   config: Config,
   enabled: boolean | undefined,
 ): Config => {
-  const [bedZOffset, setBedZOffset] = React.useState(config.bedZOffset);
-  const bedZOffsetRef = React.useRef(config.bedZOffset);
-  const [, api] = useSpring(() => ({ bedZOffset: config.bedZOffset }));
-  const setCurrentBedZOffset = React.useCallback((next: number) => {
-    bedZOffsetRef.current = next;
-    setBedZOffset(next);
+  const initialValues = React.useMemo(() => getSmoothConfigValues(config), [
+    config,
+  ]);
+  const [values, setValues] = React.useState(initialValues);
+  const valuesRef = React.useRef(initialValues);
+  const [, api] = useSpring(() => initialValues);
+  const setCurrentValues = React.useCallback((next: SmoothConfigValues) => {
+    valuesRef.current = next;
+    setValues(next);
   }, []);
 
   React.useEffect(() => {
     if (!enabled) {
-      bedZOffsetRef.current = config.bedZOffset;
+      valuesRef.current = initialValues;
       return;
     }
     api.start({
-      from: { bedZOffset: bedZOffsetRef.current },
-      to: { bedZOffset: config.bedZOffset },
+      from: valuesRef.current,
+      to: initialValues,
       immediate: !config.animate,
       onChange: result => {
-        const value = result.value as { bedZOffset?: number };
-        setCurrentBedZOffset(value.bedZOffset ?? config.bedZOffset);
+        const value = result.value as Partial<SmoothConfigValues>;
+        setCurrentValues({ ...valuesRef.current, ...value });
       },
-      onRest: () => setCurrentBedZOffset(config.bedZOffset),
-      config: bedZOffsetSpringConfig,
+      onRest: () => setCurrentValues(initialValues),
+      config: smoothConfigSpringConfig,
     });
   }, [
     api,
     config.animate,
-    config.bedZOffset,
     enabled,
-    setCurrentBedZOffset,
+    initialValues,
+    setCurrentValues,
   ]);
 
   return React.useMemo(() => {
     if (!enabled) { return config; }
-    return { ...config, bedZOffset };
-  }, [bedZOffset, config, enabled]);
+    return { ...config, ...values };
+  }, [config, enabled, values]);
 };
 
 interface GardenLayerVisibility {
@@ -560,10 +581,13 @@ export const GardenModel = (props: GardenModelProps) => {
     config: baseConfig, addPlantProps, onDetailsRevealStart, onLoadComplete,
     threeDPlants,
   } = props;
-  const config = useSmoothBedZOffsetConfig(
+  const config = useSmoothConfig(
     baseConfig,
-    props.smoothBedZOffsetTransitions,
+    props.smoothConfigTransitions,
   );
+  const cameraConfig = props.smoothConfigTransitions
+    ? baseConfig
+    : config;
   const dispatch = addPlantProps?.dispatch;
   const mapPoints = props.mapPoints || EMPTY_GENERIC_POINTERS;
   const weeds = props.weeds || EMPTY_WEEDS;
@@ -601,7 +625,7 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined;
   }, [config.labelsOnHover, getI]);
 
-  const isXL = config.sizePreset == "Genesis XL";
+  const isXL = cameraConfig.sizePreset == "Genesis XL";
   let modelScale = 1;
   if (!props.smoothFocusTransitions && isXL) {
     modelScale = 1.75;
@@ -616,26 +640,26 @@ export const GardenModel = (props: GardenModelProps) => {
   });
 
   const baseAngle = 0;
-  const heading = Math.ceil(config.viewpointHeading / 90) * 90;
-  const topDownCameraAngle = config.topDown
+  const heading = Math.ceil(cameraConfig.viewpointHeading / 90) * 90;
+  const topDownCameraAngle = cameraConfig.topDown
     ? baseAngle + heading * Math.PI / 180
     : undefined;
   const cameraBedScale = props.smoothFocusTransitions && isXL
     ? SMOOTH_XL_CAMERA_BED_SCALE
     : 1;
   const cameraBedSize = React.useMemo(() => ({
-    x: config.bedLengthOuter * cameraBedScale,
-    y: config.bedWidthOuter * cameraBedScale,
+    x: cameraConfig.bedLengthOuter * cameraBedScale,
+    y: cameraConfig.bedWidthOuter * cameraBedScale,
   }), [
-    config.bedLengthOuter,
-    config.bedWidthOuter,
+    cameraConfig.bedLengthOuter,
+    cameraConfig.bedWidthOuter,
     cameraBedScale,
   ]);
   const defaultCamera = React.useMemo(
     () => {
       const nextCamera = cameraInit({
-        topDown: config.topDown,
-        viewpointHeading: config.viewpointHeading,
+        topDown: cameraConfig.topDown,
+        viewpointHeading: cameraConfig.viewpointHeading,
         bedSize: cameraBedSize,
       });
       return props.smoothFocusTransitions && isXL
@@ -650,13 +674,18 @@ export const GardenModel = (props: GardenModelProps) => {
         : nextCamera;
     }, [
       cameraBedSize,
-      config.topDown,
-      config.viewpointHeading,
+      cameraConfig.topDown,
+      cameraConfig.viewpointHeading,
       isXL,
       props.smoothFocusTransitions,
     ]);
   const camera = props.activeFocus
-    ? getCamera(config, props.configPosition, props.activeFocus, defaultCamera)
+    ? getCamera(
+      cameraConfig,
+      props.configPosition,
+      props.activeFocus,
+      defaultCamera,
+    )
     : defaultCamera;
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
@@ -765,8 +794,8 @@ export const GardenModel = (props: GardenModelProps) => {
     config.scene == "Lab" || config.scene == "Greenhouse";
   const animatedDetailsLoadIn = sceneDetailsLoadIn || config.zoomBeacons;
 
-  const topDownZoomLevel = 0.25 * 3000 / config.bedLengthOuter;
-  const targetZoom = config.topDown ? topDownZoomLevel : 1;
+  const topDownZoomLevel = 0.25 * 3000 / cameraConfig.bedLengthOuter;
+  const targetZoom = cameraConfig.topDown ? topDownZoomLevel : 1;
   const focusTransitionsEnabled =
     !!props.smoothFocusTransitions && config.animate;
   const solarVisible =

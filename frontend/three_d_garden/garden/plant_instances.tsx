@@ -70,6 +70,7 @@ interface StaticPlantIconInstance {
   y: number;
   groundZ: number;
   scale: number;
+  visible: boolean;
 }
 
 const newPlantIconUpdateState = (): PlantIconUpdateState => ({
@@ -92,6 +93,8 @@ const PLANT_ICON_CONFIG_KEYS: (keyof Config)[] = [
   "bedWidthOuter",
   "bedXOffset",
   "bedYOffset",
+  "botSizeX",
+  "botSizeY",
   "columnLength",
   "zGantryOffset",
   "mirrorX",
@@ -147,10 +150,13 @@ const useStaticPlantIconInstances = (
         y: position.y,
         groundZ: zBase + getZ(plant.x, plant.y),
         scale: plant.size,
+        visible: plant.x >= 0 && plant.y >= 0
+          && plant.x <= config.botSizeX
+          && plant.y <= config.botSizeY,
       };
     }
     return instances;
-  }, [get3DPosition, getZ, plants, zBase]);
+  }, [config.botSizeX, config.botSizeY, get3DPosition, getZ, plants, zBase]);
 };
 
 interface UsePlantIconFrameProps {
@@ -221,21 +227,23 @@ const usePlantIconFrame = (props: UsePlantIconFrameProps) => {
     tempQuaternion.copy(state.camera.quaternion);
     if (!seasonAnimating) {
       staticInstances.forEach((instance, index) => {
+        const scale = instance.visible ? instance.scale : 0;
         tempPosition.set(
           instance.x,
           instance.y,
-          instance.groundZ + instance.scale / 2,
+          instance.groundZ + scale / 2,
         );
-        tempScale.set(instance.scale, instance.scale, instance.scale);
+        tempScale.set(scale, scale, scale);
         tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
         mesh.setMatrixAt(index, tempMatrix);
       });
     } else {
       plants.forEach((plant, index) => {
         const instance = staticInstances[index];
-        const scale = (config.animateSeasons && startTimeRef)
+        const seasonScale = (config.animateSeasons && startTimeRef)
           ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
           : plant.size;
+        const scale = instance.visible ? seasonScale : 0;
         tempPosition.set(
           instance.x,
           instance.y,

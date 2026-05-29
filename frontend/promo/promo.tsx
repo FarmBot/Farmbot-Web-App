@@ -220,7 +220,7 @@ export const Promo = () => {
               preloadEnvironmentScenes={true}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true}
-              smoothBedZOffsetTransitions={true} />
+              smoothConfigTransitions={true} />
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
