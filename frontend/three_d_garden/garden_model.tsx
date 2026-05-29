@@ -54,7 +54,8 @@ import {
 } from "../performance/perf";
 import {
   botLoadInConfig, FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
-  ThreeDLoadProgress, ThreeDLoadProgressOverlay, ThreeDLoadStepId,
+  ThreeDLoadProgress, ThreeDLoadProgressOverlay, THREE_D_LOAD_STEPS,
+  ThreeDLoadStepId,
   useThreeDLoadProgress,
 } from "./progressive_load";
 import {
@@ -112,7 +113,7 @@ interface SceneBoundaryProps {
   loadStep?: ThreeDLoadStepId;
   reveal?: boolean;
   markReadyOnMount?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const SceneBoundary = (props: SceneBoundaryProps) => {
@@ -155,6 +156,7 @@ export interface GardenModelProps {
   plantInstanceCapacity?: number;
   seasonResetKey?: number;
   preloadEnvironmentScenes?: boolean;
+  showFarmbotLayerLoadProgress?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
 }
@@ -322,7 +324,6 @@ interface StaticGardenLayersProps {
   addPlantProps: AddPlantProps | undefined;
   plantLabelNodes: React.ReactNode;
   plantsVisible: boolean;
-  plantInstancesVisible: boolean;
   plantIconAtlas: PlantIconAtlas | undefined;
   setHover(active: boolean):
     ((e: ThreeEvent<PointerEvent>) => void) | undefined;
@@ -339,13 +340,14 @@ interface StaticGardenLayersProps {
   showPoints: boolean;
 }
 
+// eslint-disable-next-line complexity
 const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
   const {
     config, loadProgress, environmentReveal, bedReveal, gridReveal,
     plantsReveal, weedsReveal, pointsReveal, skyRef, activePositionRef,
     soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
     showMoistureMap, showMoistureReadings, sensors, sensorReadings,
-    addPlantProps, plantLabelNodes, plantsVisible, plantInstancesVisible,
+    addPlantProps, plantLabelNodes, plantsVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
     dispatch, shouldMountPlantSpreadInstances, showSpread,
     plantInstanceCapacity, seasonResetKey, showWeeds, weeds, showPoints,
@@ -355,8 +357,11 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
   const plantLayerHasWork =
     threeDPlants.length > 0
     || React.Children.count(plantLabelNodes) > 0;
-  const weedLayerHasWork = showWeeds && weeds.length > 0;
-  const pointLayerHasWork = showPoints && mapPoints.length > 0;
+  const weedLayerHasWork = weeds.length > 0;
+  const pointLayerHasWork = mapPoints.length > 0;
+  const plantsLayerReveal = plantsReveal && plantsVisible;
+  const weedsLayerReveal = weedsReveal && showWeeds;
+  const pointsLayerReveal = pointsReveal && showPoints;
 
   return <>
     <SceneBoundary
@@ -426,22 +431,24 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"plants"}
       loadProgress={loadProgress}
       reveal={plantsReveal}
-      markReadyOnMount={!plantLayerHasWork}
+      markReadyOnMount={!plantLayerHasWork || !plantsVisible}
       markName={"three_d_core_ready"}>
       {plantLayerHasWork &&
       <PopInGroup
         key={seasonLayerKey}
         name={"plants-load-in"}
-        reveal={plantsReveal}
+        reveal={plantsLayerReveal}
         onRest={() => loadProgress.markStep("plants")}
-        distance={200}>
+        distance={200}
+        animateExit={true}
+        hideAfterExit={true}>
         <FocusVisibilityGroup
           name={"plant-labels"}
-          visible={!activeFocus && plantsVisible}>
+          visible={!activeFocus}>
           {plantLabelNodes}
         </FocusVisibilityGroup>
         <FocusVisibilityGroup name={"plants"}
-          visible={plantsVisible}
+          visible={true}
           keepMounted={true}
           onPointerEnter={setHover(true)}
           onPointerMove={setHover(true)}
@@ -450,7 +457,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             plants={threeDPlants}
             config={config}
             getZ={getZ}
-            visible={plantInstancesVisible}
+            visible={true}
             iconCapacities={plantIconCapacities}
             plantIconAtlas={plantIconAtlas}
             startTimeRef={startTimeRef}
@@ -458,7 +465,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           {shouldMountPlantSpreadInstances &&
           <PlantSpreadInstances
             plants={threeDPlants}
-            visible={plantInstancesVisible}
+            visible={true}
             spreadVisible={showSpread}
             config={config}
             instanceCapacity={plantInstanceCapacity}
@@ -472,19 +479,21 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"weeds"}
       loadProgress={loadProgress}
       reveal={weedsReveal}
-      markReadyOnMount={!weedLayerHasWork}
+      markReadyOnMount={!weedLayerHasWork || !showWeeds}
       markName={"three_d_weeds_ready"}>
       {weedLayerHasWork &&
       <PopInGroup
         name={"weeds-load-in"}
-        reveal={weedsReveal}
+        reveal={weedsLayerReveal}
         onRest={() => loadProgress.markStep("weeds")}
-        distance={200}>
+        distance={200}
+        animateExit={true}
+        hideAfterExit={true}>
         <Group name={"weeds"}
-          visible={showWeeds}>
+          visible={true}>
           <WeedInstances
             weeds={weeds}
-            visible={showWeeds}
+            visible={true}
             config={config}
             getZ={getZ}
             dispatch={dispatch} />
@@ -495,24 +504,26 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"points"}
       loadProgress={loadProgress}
       reveal={pointsReveal}
-      markReadyOnMount={!pointLayerHasWork}
+      markReadyOnMount={!pointLayerHasWork || !showPoints}
       markName={"three_d_points_ready"}>
       {pointLayerHasWork &&
-      <FallInGroup
+      <PopInGroup
         name={"points-load-in"}
-        reveal={pointsReveal}
+        reveal={pointsLayerReveal}
         onRest={() => loadProgress.markStep("points")}
-        distance={config.columnLength + 1000}>
+        distance={200}
+        animateExit={true}
+        hideAfterExit={true}>
         <Group name={"points"}
-          visible={showPoints}>
+          visible={true}>
           <PointInstances
             points={mapPoints}
-            visible={showPoints}
+            visible={true}
             config={config}
             getZ={getZ}
             dispatch={dispatch} />
         </Group>
-      </FallInGroup>}
+      </PopInGroup>}
     </SceneBoundary>
   </>;
 };
@@ -576,6 +587,138 @@ const EnvironmentScenePreloader = (props: EnvironmentScenePreloaderProps) => {
         })}
     </Group>
   </React.Suspense>;
+};
+
+const ignoredLoadStep = (_step: ThreeDLoadStepId) => undefined;
+
+const farmbotLayerLoadProgress: ThreeDLoadProgress = {
+  readyStepTimes: {},
+  currentStep: { id: "farmbot", label: "Loading FarmBot" },
+  progress: 6 / THREE_D_LOAD_STEPS.length * 100,
+  complete: false,
+  markStep: ignoredLoadStep,
+  isStepAllowed: () => true,
+};
+
+interface FarmbotLoadInProps {
+  activeFocus: string;
+  config: Config;
+  configPosition: PositionConfig;
+  detailsReveal: boolean;
+  dispatch: Function | undefined;
+  getZ(x: number, y: number): number;
+  loadInComplete: boolean;
+  mountedToolName: string | undefined;
+  onExitRest?(): void;
+  onLoadInComplete(): void;
+  reveal: boolean;
+  toolSlots: SlotWithTool[] | undefined;
+}
+
+const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
+  <FallInGroup
+    name={"bot-load-in"}
+    reveal={props.reveal}
+    onRest={props.onLoadInComplete}
+    onExitRest={props.onExitRest}
+    config={botLoadInConfig}
+    distance={props.config.columnLength + 1500}
+    fadeIn={true}
+    animateExit={true}
+    hideAfterExit={true}
+    preserveDepthWrite={true}>
+    <LazyBot
+      dispatch={props.dispatch}
+      config={props.config}
+      configPosition={props.configPosition}
+      getZ={props.getZ}
+      trailReady={props.reveal && props.detailsReveal && props.loadInComplete}
+      activeFocus={props.activeFocus}
+      mountedToolName={props.mountedToolName}
+      toolSlots={props.toolSlots} />
+  </FallInGroup>;
+
+interface FarmbotLayerProps
+  extends Omit<FarmbotLoadInProps,
+    "loadInComplete" | "onLoadInComplete"> {
+  layerVisible: boolean;
+  loadProgress: ThreeDLoadProgress;
+  markStep: ThreeDLoadProgress["markStep"];
+  showLoadProgress: boolean;
+}
+
+const FarmbotLayer = (props: FarmbotLayerProps) => {
+  const { markStep, onExitRest } = props;
+  const [loadInComplete, setLoadInComplete] = React.useState(false);
+  const markFarmbotLoaded = React.useCallback(() => {
+    setLoadInComplete(true);
+    markStep("farmbot");
+  }, [markStep]);
+  const markFarmbotHidden = React.useCallback(() => {
+    onExitRest?.();
+  }, [onExitRest]);
+  const layerReveal = props.reveal && props.layerVisible;
+
+  return <>
+    {props.showLoadProgress && props.detailsReveal && props.layerVisible &&
+    <ThreeDLoadProgressOverlay
+      progress={farmbotLayerLoadProgress}
+      complete={loadInComplete} />}
+    <SceneBoundary
+      loadStep={"farmbot"}
+      loadProgress={props.loadProgress}
+      reveal={props.reveal}
+      markReadyOnMount={false}
+      markName={"three_d_bot_ready"}>
+      <FarmbotLoadIn
+        activeFocus={props.activeFocus}
+        config={props.config}
+        configPosition={props.configPosition}
+        detailsReveal={props.detailsReveal}
+        dispatch={props.dispatch}
+        getZ={props.getZ}
+        loadInComplete={loadInComplete}
+        mountedToolName={props.mountedToolName}
+        onExitRest={markFarmbotHidden}
+        onLoadInComplete={markFarmbotLoaded}
+        reveal={layerReveal}
+        toolSlots={props.toolSlots} />
+    </SceneBoundary>
+  </>;
+};
+
+interface OptionalFarmbotLayerProps
+  extends Omit<FarmbotLayerProps, "layerVisible"> {
+  visible: boolean;
+}
+
+const OptionalFarmbotLayer = (props: OptionalFarmbotLayerProps) => {
+  const { visible, ...layerProps } = props;
+  const [mounted, setMounted] = React.useState(visible);
+
+  React.useEffect(() => {
+    if (!visible) { return; }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, [visible]);
+
+  const handleExitRest = React.useCallback(() => {
+    setMounted(false);
+  }, []);
+
+  if (!mounted) {
+    return <SceneBoundary
+      loadStep={"farmbot"}
+      loadProgress={props.loadProgress}
+      reveal={props.reveal}
+      markReadyOnMount={true}
+      markName={"three_d_bot_ready"} />;
+  }
+
+  return <FarmbotLayer
+    {...layerProps}
+    layerVisible={visible}
+    onExitRest={handleExitRest} />;
 };
 
 // eslint-disable-next-line complexity
@@ -748,7 +891,7 @@ export const GardenModel = (props: GardenModelProps) => {
     spreadHasTransientPlant,
   ]);
   const {
-    showPlants, plantsVisible, farmbotVisible, showPoints, showWeeds,
+    plantsVisible, farmbotVisible, showPoints, showWeeds,
     showSpread, shouldMountPlantSpreadInstances, showMoistureMap,
     showMoistureReadings, topDownAtStart,
   } = layerVisibility;
@@ -871,9 +1014,6 @@ export const GardenModel = (props: GardenModelProps) => {
       plantLabelConfig,
     ]);
 
-  const plantInstancesVisible = props.smoothFocusTransitions
-    ? showPlants
-    : plantsVisible;
   let cameraScale: number | typeof scale = scale;
   if (props.smoothFocusTransitions || props.activeFocus) {
     cameraScale = 1;
@@ -944,7 +1084,6 @@ export const GardenModel = (props: GardenModelProps) => {
         addPlantProps={addPlantProps}
         plantLabelNodes={plantLabelNodes}
         plantsVisible={plantsVisible}
-        plantInstancesVisible={plantInstancesVisible}
         plantIconAtlas={props.plantIconAtlas}
         setHover={setHover}
         threeDPlants={threeDPlants}
@@ -958,32 +1097,20 @@ export const GardenModel = (props: GardenModelProps) => {
         showWeeds={showWeeds}
         weeds={weeds}
         showPoints={showPoints} />
-      <SceneBoundary
-        loadStep={"farmbot"}
+      <OptionalFarmbotLayer
+        activeFocus={props.activeFocus}
+        config={config}
+        configPosition={props.configPosition}
+        detailsReveal={detailsReveal}
+        dispatch={dispatch}
+        getZ={getZ}
         loadProgress={loadProgress}
+        markStep={markLoadStep}
+        mountedToolName={props.mountedToolName}
         reveal={farmbotReveal}
-        markReadyOnMount={!farmbotVisible}
-        markName={"three_d_bot_ready"}>
-        {farmbotVisible &&
-        <FallInGroup
-          name={"bot-load-in"}
-          reveal={farmbotReveal}
-          onRest={() => loadProgress.markStep("farmbot")}
-          config={botLoadInConfig}
-          distance={config.columnLength + 1500}
-          fadeIn={true}
-          preserveDepthWrite={true}>
-          <LazyBot
-            dispatch={dispatch}
-            config={config}
-            configPosition={props.configPosition}
-            getZ={getZ}
-            trailReady={detailsReveal}
-            activeFocus={props.activeFocus}
-            mountedToolName={props.mountedToolName}
-            toolSlots={props.toolSlots} />
-        </FallInGroup>}
-      </SceneBoundary>
+        showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
+        toolSlots={props.toolSlots}
+        visible={farmbotVisible} />
       <SceneBoundary
         loadStep={"details"}
         loadProgress={loadProgress}

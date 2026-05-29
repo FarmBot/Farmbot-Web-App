@@ -236,6 +236,7 @@ export const Promo = () => {
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
               seasonResetKey={seasonResetKey}
               preloadEnvironmentScenes={true}
+              showFarmbotLayerLoadProgress={false}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true}
               smoothConfigTransitions={true} />

@@ -1,4 +1,5 @@
 import React from "react";
+import { animated, useSpring } from "@react-spring/three";
 import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
 import { RepeatWrapping } from "three";
 import { ASSETS } from "../../constants";
@@ -9,13 +10,67 @@ import {
 import { outletDepth } from "../../bot";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial } from "../../components";
-import { FocusVisibilityGroup } from "../../focus_transition";
+import { useFocusTransition } from "../../focus_transition";
 import { useTextureVariant } from "../../texture_variants";
+
+const AnimatedGroup = animated(Group);
+const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
+const utilitiesPostFocusSpringConfig = {
+  tension: 240,
+  friction: 30,
+};
 
 export interface UtilitiesPostProps {
   config: Config;
   activeFocus: string;
 }
+
+type Vector3 = [number, number, number];
+
+interface UtilitiesPostFocusGroupProps
+  extends Omit<React.ComponentProps<typeof Group>, "position" | "visible"> {
+  hiddenPosition: Vector3;
+  shownPosition: Vector3;
+  visible: boolean;
+}
+
+const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
+  const {
+    hiddenPosition, shownPosition, visible, children, ...groupProps
+  } = props;
+  const transition = useFocusTransition();
+  const [groupVisible, setGroupVisible] = React.useState(visible);
+  const [{ position }, api] = useSpring(() => ({
+    position: visible ? shownPosition : hiddenPosition,
+    immediate: !transition.enabled,
+    config: utilitiesPostFocusSpringConfig,
+  }));
+
+  React.useEffect(() => {
+    api.start({
+      position: visible ? shownPosition : hiddenPosition,
+      immediate: !transition.enabled,
+      config: utilitiesPostFocusSpringConfig,
+      onRest: () => {
+        if (transition.enabled) {
+          setGroupVisible(visible);
+        }
+      },
+    });
+  }, [api, hiddenPosition, shownPosition, transition.enabled, visible]);
+
+  React.useEffect(() => {
+    if (!transition.enabled || !visible) { return; }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGroupVisible(true);
+  }, [transition.enabled, visible]);
+
+  return <AnimatedGroup {...groupProps}
+    visible={transition.enabled ? visible || groupVisible : visible}
+    position={position}>
+    {children}
+  </AnimatedGroup>;
+};
 
 const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
   "bedBrightness",
@@ -73,15 +128,22 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     wrapT: RepeatWrapping,
     repeat: [0.02, 0.05],
   });
+  const shownPosition = React.useMemo<Vector3>(() => [
+    threeSpace(bedLengthOuter + 600, bedLengthOuter),
+    threeSpace(legSize / 2, bedWidthOuter),
+    groundZ + 150,
+  ], [bedLengthOuter, bedWidthOuter, groundZ, legSize]);
+  const hiddenPosition = React.useMemo<Vector3>(() => [
+    shownPosition[0],
+    shownPosition[1],
+    shownPosition[2]
+      - (bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE,
+  ], [bedHeight, bedZOffset, shownPosition]);
 
-  return <FocusVisibilityGroup name={"utilities"}
+  return <UtilitiesPostFocusGroup name={"utilities"}
     visible={props.activeFocus != "Planter bed"}
-    keepMounted={true}
-    position={[
-      threeSpace(bedLengthOuter + 600, bedLengthOuter),
-      threeSpace(legSize / 2, bedWidthOuter),
-      groundZ + 150,
-    ]}>
+    shownPosition={shownPosition}
+    hiddenPosition={hiddenPosition}>
     <Box name={"utilities-post"}
       castShadow={true}
       args={[legSize, legSize, 300]}>
@@ -195,7 +257,7 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
         <MeshPhongMaterial color="darkgreen" />
       </Tube>
     </Group>
-  </FocusVisibilityGroup>;
+  </UtilitiesPostFocusGroup>;
 };
 
 export const UtilitiesPost = React.memo(
