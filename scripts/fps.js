@@ -154,6 +154,7 @@ async function main() {
         console.log(`STATE=${state}`);
     }
     const context = await browser.newContext(contextOptions);
+    await context.addInitScript(() => localStorage.setItem('FPS_LOGS', 'true'));
     const page = await context.newPage();
     page.setDefaultTimeout(60_000);
     try {
