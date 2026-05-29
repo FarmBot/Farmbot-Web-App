@@ -15,7 +15,6 @@
     "frontend/**/__tests__/**/*.tsx",
     "frontend/__test_support__/**/*.ts",
     "frontend/__test_support__/**/*.tsx",
-    "frontend/farmbot_web_app_config.d.ts",
     "frontend/hacks.d.ts"
   ],
   "exclude": []

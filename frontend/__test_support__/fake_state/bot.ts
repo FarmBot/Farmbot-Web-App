@@ -1,7 +1,5 @@
 import { Everything } from "../../interfaces";
 
-const legacyGpioRegistry = { gpio_registry: undefined };
-
 export const bot: Everything["bot"] = {
   consistent: true,
   stepSize: 100,
@@ -40,7 +38,6 @@ export const bot: Everything["bot"] = {
       },
     },
     pins: {},
-    ...legacyGpioRegistry,
     configuration: {},
     informational_settings: {
       busy: false,

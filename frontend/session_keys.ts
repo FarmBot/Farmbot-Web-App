@@ -4,15 +4,15 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-export type WebAppBooleanConfigKeyAll =
-  WebAppBooleanConfigKey
-  | "top_down_view";
-export type WebAppNumberConfigKeyAll =
-  WebAppNumberConfigKey
-  | "viewpoint_heading";
-export type WebAppStringConfigKeyAll = WebAppStringConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
+type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
-export const BooleanSetting = {
+type BooleanSettings = Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKey>;
+type NumericSettings = Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKey>;
+type StringSettings = Record<WebAppStringConfigKeyAll, WebAppStringConfigKey>;
+
+export const BooleanSetting: BooleanSettings = {
   /** Move settings */
   show_advanced_settings: "show_advanced_settings",
   x_axis_inverted: "x_axis_inverted",
@@ -78,10 +78,9 @@ export const BooleanSetting = {
 
   /** Other */
   stub_config: "stub_config",
-} as const satisfies
-  Record<WebAppBooleanConfigKeyAll, WebAppBooleanConfigKeyAll>;
+};
 
-export const NumericSetting = {
+export const NumericSetting: NumericSettings = {
   /** Logs settings */
   assertion_log: "assertion_log",
   success_log: "success_log",
@@ -106,10 +105,9 @@ export const NumericSetting = {
   /** Other */
   id: "id",
   device_id: "device_id",
-} as const satisfies
-  Record<WebAppNumberConfigKeyAll, WebAppNumberConfigKeyAll>;
+};
 
-export const StringSetting = {
+export const StringSetting: StringSettings = {
   /** Designer settings */
   photo_filter_begin: "photo_filter_begin",
   photo_filter_end: "photo_filter_end",
@@ -121,5 +119,4 @@ export const StringSetting = {
   /** Other */
   created_at: "created_at",
   updated_at: "updated_at",
-} as const satisfies
-  Record<WebAppStringConfigKeyAll, WebAppStringConfigKeyAll>;
+};

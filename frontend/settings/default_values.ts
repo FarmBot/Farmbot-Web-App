@@ -1,6 +1,9 @@
 import {
-  getWebAppConfigValue, type WebAppConfigKey,
-} from "../config_storage/actions";
+  BooleanConfigKey as BooleanWebAppConfigKey,
+  StringConfigKey as StringWebAppConfigKey,
+  NumberConfigKey as NumberWebAppConfigKey,
+} from "farmbot/dist/resources/configs/web_app";
+import { getWebAppConfigValue } from "../config_storage/actions";
 import { store } from "../redux/store";
 import { BooleanSetting } from "../session_keys";
 import { FirmwareHardware } from "farmbot";
@@ -8,7 +11,7 @@ import { cloneDeep } from "lodash";
 import { getFbosConfig } from "../resources/getters";
 import { getFwHardwareValue } from "./firmware/firmware_hardware_support";
 
-type Key = WebAppConfigKey;
+type Key = BooleanWebAppConfigKey | StringWebAppConfigKey | NumberWebAppConfigKey;
 type Value = string | number | boolean | undefined;
 const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   id: 0,
