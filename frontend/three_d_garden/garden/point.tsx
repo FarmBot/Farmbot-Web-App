@@ -261,12 +261,13 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       dispose={null}
       visible={visible}
       onClick={onClick(group.points)}
-      renderOrder={RenderOrder.default}>
+      renderOrder={RenderOrder.points}>
       <MeshPhongMaterial
         color={group.color}
         side={DoubleSide}
-        transparent={true}
-        opacity={1 * group.alpha} />
+        transparent={group.alpha < 1}
+        depthWrite={group.alpha == 1}
+        opacity={group.alpha} />
     </InstancedMesh>
     {group.ringPoints.length > 0 &&
       <InstancedMesh
@@ -277,10 +278,11 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
         dispose={null}
         visible={visible}
         onClick={onClick(group.ringPoints)}
-        renderOrder={RenderOrder.default}>
+        renderOrder={RenderOrder.points}>
         <MeshPhongMaterial
           color={group.color}
           transparent={true}
+          depthWrite={false}
           opacity={0.5 * group.alpha} />
       </InstancedMesh>}
   </>;
@@ -438,7 +440,8 @@ const PointBase = (props: PointBaseProps) => {
         <MeshPhongMaterial
           color={color}
           side={DoubleSide}
-          transparent={true}
+          transparent={alpha < 1}
+          depthWrite={alpha == 1}
           opacity={1 * alpha} />
       </Cylinder>
       <Sphere
@@ -447,7 +450,8 @@ const PointBase = (props: PointBaseProps) => {
         <MeshPhongMaterial
           color={color}
           side={DoubleSide}
-          transparent={true}
+          transparent={alpha < 1}
+          depthWrite={alpha == 1}
           opacity={1 * alpha} />
       </Sphere>
     </Group>
@@ -492,6 +496,7 @@ const HollowCylinder = (
       <MeshPhongMaterial
         color={color}
         transparent={true}
+        depthWrite={false}
         opacity={alpha} />
     </Torus>
     : <Torus
@@ -501,6 +506,7 @@ const HollowCylinder = (
       <MeshPhongMaterial
         color={color}
         transparent={true}
+        depthWrite={false}
         opacity={alpha} />
     </Torus>;
 };

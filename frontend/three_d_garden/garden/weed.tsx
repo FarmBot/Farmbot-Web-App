@@ -290,8 +290,10 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
     <PlaneGeometry args={[1, 1]} />
     <MeshBasicMaterial
       map={texture}
+      alphaTest={0.1}
       transparent={true}
-      opacity={1} />
+      opacity={1}
+      depthWrite={true} />
   </InstancedMesh>;
 };
 
