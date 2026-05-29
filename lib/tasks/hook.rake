@@ -83,7 +83,7 @@ end
 
 def commit_blocks(environment)
   outputs = []
-  block_data[:commits].reverse.each_slice(50) do |commits|
+  block_data[:commits].reverse.each_slice(25) do |commits|
     output = ""
     commits.map do |commit|
       output += "\n + #{commit[0]} | ##{commit[1][0..5]}"
