@@ -1,3 +1,5 @@
 *
 !*.csv
 !*.png
+!build/
+!build/**
