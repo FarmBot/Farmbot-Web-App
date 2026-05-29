@@ -830,32 +830,34 @@ describe("<GardenModel />", () => {
       expect(container.innerHTML).toContain(expectedClass);
     });
 
-  it("mounts only the selected scene details", () => {
+  it("mounts only the selected scene details", async () => {
     const countSceneNodes = (
-      wrapper: ReturnType<typeof createRenderer>,
+      container: HTMLElement,
       name: string,
     ) =>
-      wrapper.root.findAll(node =>
-        `${node.type}` == "group" && node.props.name == name).length;
+      container.querySelectorAll(`group[name="${name}"]`).length;
 
     const outdoorProps = fakeProps();
     outdoorProps.config.scene = "Outdoor";
-    const outdoorWrapper = createWrapper(outdoorProps);
-    expect(countSceneNodes(outdoorWrapper, "lab-environment")).toEqual(0);
-    expect(countSceneNodes(outdoorWrapper, "greenhouse-environment")).toEqual(0);
+    const outdoor = render(<GardenModel {...outdoorProps} />);
+    expect(countSceneNodes(outdoor.container, "lab-environment")).toEqual(0);
+    expect(countSceneNodes(outdoor.container, "greenhouse-environment"))
+      .toEqual(0);
 
     const labProps = fakeProps();
     labProps.config.scene = "Lab";
-    const labWrapper = createWrapper(labProps);
-    expect(countSceneNodes(labWrapper, "lab-environment")).toEqual(1);
-    expect(countSceneNodes(labWrapper, "greenhouse-environment")).toEqual(0);
+    const lab = render(<GardenModel {...labProps} />);
+    await waitFor(() =>
+      expect(countSceneNodes(lab.container, "lab-environment")).toEqual(1));
+    expect(countSceneNodes(lab.container, "greenhouse-environment")).toEqual(0);
 
     const greenhouseProps = fakeProps();
     greenhouseProps.config.scene = "Greenhouse";
-    const greenhouseWrapper = createWrapper(greenhouseProps);
-    expect(countSceneNodes(greenhouseWrapper, "lab-environment")).toEqual(0);
-    expect(countSceneNodes(greenhouseWrapper,
-      "greenhouse-environment")).toEqual(1);
+    const greenhouse = render(<GardenModel {...greenhouseProps} />);
+    expect(countSceneNodes(greenhouse.container, "lab-environment")).toEqual(0);
+    await waitFor(() =>
+      expect(countSceneNodes(greenhouse.container, "greenhouse-environment"))
+        .toEqual(1));
   });
 
   it("shows night sky", () => {

@@ -42,12 +42,13 @@ interface MockRef {
     material?: { needsUpdate: boolean } | { needsUpdate: boolean }[];
   } | undefined;
 }
-let mockRefImpl = (): MockRef => ({ current: undefined });
 let refQueue: MockRef[] = [];
 let allRefs: MockRef[] = [];
 let allowImperativeHandle = true;
 let reactUseRefSpy: jest.SpyInstance;
 let reactUseImperativeHandleSpy: jest.SpyInstance;
+const actualUseRef = jest.requireActual("react")
+  .useRef as typeof React.useRef;
 
 let getModeSpy: jest.SpyInstance;
 
@@ -67,20 +68,24 @@ const getMeshRef = () =>
   allRefs.find(ref => !!ref.current?.setMatrixAt);
 
 const queueMeshRef = (override?: Partial<MockRef["current"]>) => {
-  refQueue = Array.from({ length: 10 }, () => ({
+  refQueue = [{
     current: {
       ...buildMeshRef(),
       ...override,
     },
-  }));
+  }];
 };
 
 describe("<ThreeDPlantLabel />", () => {
   beforeEach(() => {
     reactUseRefSpy = jest.spyOn(React, "useRef")
-      .mockImplementation(() => {
-        const nextRef = refQueue.shift() || mockRefImpl();
-        allRefs.push(nextRef);
+      .mockImplementation((initialValue?: unknown) => {
+        const nextRef = actualUseRef(initialValue);
+        const queuedRef = refQueue.shift();
+        if (queuedRef) {
+          (nextRef as MockRef).current = queuedRef.current;
+        }
+        allRefs.push(nextRef as MockRef);
         return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
@@ -93,7 +98,6 @@ describe("<ThreeDPlantLabel />", () => {
     location.pathname = Path.mock(Path.designer());
     refQueue = [{ current: undefined }];
     allRefs = [];
-    mockRefImpl = () => ({ current: undefined });
   });
 
   afterEach(() => {
@@ -177,9 +181,13 @@ describe("<ThreeDPlantLabel />", () => {
 describe("<ThreeDPlantSpread />", () => {
   beforeEach(() => {
     reactUseRefSpy = jest.spyOn(React, "useRef")
-      .mockImplementation(() => {
-        const nextRef = refQueue.shift() || mockRefImpl();
-        allRefs.push(nextRef);
+      .mockImplementation((initialValue?: unknown) => {
+        const nextRef = actualUseRef(initialValue);
+        const queuedRef = refQueue.shift();
+        if (queuedRef) {
+          (nextRef as MockRef).current = queuedRef.current;
+        }
+        allRefs.push(nextRef as MockRef);
         return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
@@ -197,7 +205,6 @@ describe("<ThreeDPlantSpread />", () => {
     refQueue = [];
     allRefs = [];
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
-    mockRefImpl = () => ({ current: undefined });
   });
 
   afterEach(() => {
@@ -238,6 +245,7 @@ describe("<ThreeDPlantSpread />", () => {
   it("uses reserved spread capacity while rendering active plants", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     queueMeshRef();
+    getModeSpy.mockReturnValue(Mode.clickToAdd);
     const p = fakeProps();
     p.instanceCapacity = 10;
     const { container } = render(<PlantSpreadInstances {...p} />);
@@ -282,6 +290,7 @@ describe("<ThreeDPlantSpread />", () => {
     setMockInstanceId(0);
     queueMeshRef();
     const p = fakeProps();
+    p.spreadVisible = true;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<PlantSpreadInstances {...p} />);
@@ -296,6 +305,7 @@ describe("<ThreeDPlantSpread />", () => {
   it("doesn't navigate after orbiting over a spread sphere", () => {
     queueMeshRef();
     const p = fakeProps();
+    p.spreadVisible = true;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
@@ -323,6 +333,7 @@ describe("<ThreeDPlantSpread />", () => {
 
   const spreadRaycast = (p = fakeProps()) => {
     queueMeshRef();
+    p.spreadVisible = true;
     const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
     const mesh = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];

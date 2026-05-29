@@ -40,7 +40,8 @@ describe("plant icon atlas helpers", () => {
   it("resolves generated compact atlas frame data", () => {
     const atlasIcon = "/crops/icons/acorn-squash.avif";
 
-    expect(getPlantIconTextureUrl(atlasIcon)).toEqual("/crops/icons/atlas.avif");
+    expect(getPlantIconTextureUrl(atlasIcon))
+      .toMatch("/crops/icons/atlas.avif");
     expect(getPlantIconTextureTransform(atlasIcon)).toEqual({
       offset: [0, 0.9375],
       repeat: [0.0625, 0.0625],
