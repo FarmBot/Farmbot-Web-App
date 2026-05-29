@@ -363,6 +363,7 @@ export class RawSelectPlants
 
   render() {
     const { dispatch } = this.props;
+    const is3D = this.props.getConfigValue(BooleanSetting.three_d_garden);
     return <DesignerPanel panelName={"plant-selection"}
       panelColor={PanelColor.gray}>
       <DesignerPanelHeader
@@ -373,7 +374,7 @@ export class RawSelectPlants
           { length: this.selected.length, name: this.itemName })}
         backTo={Path.plants()}
         onBack={unselectPlant(dispatch)}
-        description={Content.BOX_SELECT_DESCRIPTION} />
+        description={is3D ? undefined : Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
 
       <DesignerPanelContent panelName={"plant-selection"}>

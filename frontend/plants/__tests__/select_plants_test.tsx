@@ -33,6 +33,7 @@ import * as mapActions from "../../farm_designer/map/actions";
 import * as ui from "../../ui";
 import { FBSelectProps } from "../../ui/new_fb_select";
 import { DropDownItem } from "../../ui/fb_select";
+import { BooleanSetting } from "../../session_keys";
 
 let fbSelectSpy: jest.SpyInstance;
 
@@ -123,6 +124,22 @@ describe("<SelectPlants />", () => {
   it("displays selected plant", () => {
     render(<SelectPlants {...fakeProps()} />);
     expect(screen.getByText("Strawberry")).toBeInTheDocument();
+  });
+
+  it("displays selection description in 2D", () => {
+    const p = fakeProps();
+    p.getConfigValue = setting => setting !== BooleanSetting.three_d_garden;
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText(Content.BOX_SELECT_DESCRIPTION))
+      .toBeInTheDocument();
+  });
+
+  it("hides selection description in 3D", () => {
+    const p = fakeProps();
+    p.getConfigValue = setting => setting === BooleanSetting.three_d_garden;
+    render(<SelectPlants {...p} />);
+    expect(screen.queryByText(Content.BOX_SELECT_DESCRIPTION))
+      .not.toBeInTheDocument();
   });
 
   it("displays selected point", () => {

@@ -78,8 +78,18 @@ describe("<GardenMapLegend />", () => {
       expect((container.textContent || "").toLowerCase()).toContain(string));
     expect(container.innerHTML).toContain("filter");
     expect(container.innerHTML).toContain("extras");
+    expect(container.querySelector("button[title='zoom in']"))
+      .toBeInTheDocument();
     expect(container.innerHTML).not.toContain("-100");
     expect((container.textContent || "").toLowerCase()).not.toContain("3d map");
+  });
+
+  it("hides zoom controls in 3D", () => {
+    const p = fakeProps();
+    p.getConfigValue = setting => setting === BooleanSetting.three_d_garden;
+    const { container } = render(<GardenMapLegend {...p} />);
+    expect(container.querySelector("button[title='zoom in']"))
+      .not.toBeInTheDocument();
   });
 
   it("renders with readings", () => {
