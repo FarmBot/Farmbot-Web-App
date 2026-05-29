@@ -3,6 +3,7 @@ import { ConfigWithPosition, modifyConfig } from "./config";
 import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
 import { FocusVisibilityDiv } from "./focus_transition";
+import { SEASON_TIMINGS } from "../promo/constants";
 
 export interface ToolTip {
   timeoutId: number;
@@ -18,6 +19,9 @@ export interface OverlayProps {
   setActiveFocus(focus: string): void;
   loadComplete?: boolean;
   startTimeRef?: React.RefObject<number>;
+  seasonAnimationPaused?: boolean;
+  setSeasonAnimationPaused?(paused: boolean): void;
+  onSeasonSelect?(): void;
 }
 
 interface SectionProps {
@@ -29,12 +33,103 @@ interface SectionProps {
   toolTip: ToolTip;
   setToolTip(tooltip: ToolTip): void;
   startTimeRef?: React.RefObject<number>;
+  seasonAnimationPaused?: boolean;
+  setSeasonAnimationPaused?(paused: boolean): void;
+  onSeasonSelect?(): void;
+  showAnimationControl?: boolean;
 }
+
+interface SeasonProgressStyle extends React.CSSProperties {
+  "--season-duration"?: string;
+  "--season-animation-delay"?: string;
+  "--season-progress"?: string;
+}
+
+const seasonTiming = (season: string) =>
+  SEASON_TIMINGS.find(timing => timing.season == season);
+
+const seasonProgressStyle = (
+  season: string,
+  startedAt: number,
+): SeasonProgressStyle | undefined => {
+  const timing = seasonTiming(season);
+  if (!timing) { return undefined; }
+  const totalSeconds = timing.duration + timing.pause;
+  const elapsedSeconds = Math.min(
+    Math.max(performance.now() / 1000 - startedAt, 0),
+    totalSeconds,
+  );
+  const progress = elapsedSeconds / totalSeconds * 100;
+  return {
+    "--season-duration": `${totalSeconds}s`,
+    "--season-animation-delay": `${-elapsedSeconds}s`,
+    "--season-progress": `${progress}%`,
+  };
+};
 
 const PublicOverlaySection = (props: SectionProps) => {
   const {
-    title, configKey, options, config, setConfig, toolTip, setToolTip, startTimeRef,
+    title, configKey, options, config, setConfig, toolTip, setToolTip,
+    startTimeRef, seasonAnimationPaused, setSeasonAnimationPaused,
+    onSeasonSelect, showAnimationControl,
   } = props;
+  const [seasonAnimationStartedAt, setSeasonAnimationStartedAt] =
+    React.useState(() => performance.now() / 1000);
+  const clearToolTip = React.useCallback(() => {
+    clearTimeout(toolTip.timeoutId);
+    setToolTip({ timeoutId: 0, text: "" });
+  }, [setToolTip, toolTip.timeoutId]);
+  const handleSeasonAnimationToggle = React.useCallback(() => {
+    const now = performance.now() / 1000;
+    if (startTimeRef) {
+      if (config.animateSeasons) {
+        const elapsedSeconds = Math.max(now - startTimeRef.current, 0);
+        startTimeRef.current = -elapsedSeconds;
+        setSeasonAnimationStartedAt(now - elapsedSeconds);
+        setSeasonAnimationPaused?.(true);
+      } else {
+        const startedAt = startTimeRef.current < 0
+          ? now + startTimeRef.current
+          : now;
+        startTimeRef.current = startedAt;
+        setSeasonAnimationStartedAt(startedAt);
+        setSeasonAnimationPaused?.(false);
+      }
+    }
+    clearToolTip();
+    setConfig(modifyConfig(config, {
+      animateSeasons: !config.animateSeasons,
+    }));
+  }, [
+    clearToolTip,
+    config,
+    setConfig,
+    setSeasonAnimationPaused,
+    startTimeRef,
+  ]);
+  const handleSeasonAnimationKeyDown =
+    (e: React.KeyboardEvent<HTMLSpanElement>) => {
+      if (e.key != "Enter" && e.key != " ") { return; }
+      e.preventDefault();
+      handleSeasonAnimationToggle();
+    };
+
+  React.useEffect(() => {
+    if (!showAnimationControl) { return; }
+    const now = performance.now() / 1000;
+    if (seasonAnimationPaused && startTimeRef && startTimeRef.current < 0) {
+      setSeasonAnimationStartedAt(now + startTimeRef.current);
+    } else if (config.animateSeasons) {
+      setSeasonAnimationStartedAt(startTimeRef?.current || now);
+    }
+  }, [
+    config.animateSeasons,
+    config.plants,
+    seasonAnimationPaused,
+    showAnimationControl,
+    startTimeRef,
+  ]);
+
   return <div className={"setting-section"}>
     <div className="setting-title">{title}</div>
     <div className={"row"}>
@@ -42,13 +137,24 @@ const PublicOverlaySection = (props: SectionProps) => {
         const active = label == config[configKey];
         const disabled = label == "Mobile"
           && config.sizePreset == "Genesis XL";
+        const showSeasonProgress =
+          !!(showAnimationControl
+            && (config.animateSeasons || seasonAnimationPaused)
+            && active);
         const className = [
           preset,
           active ? "active" : "",
           disabled ? "disabled" : "",
+          showSeasonProgress ? "season-progress" : "",
+          seasonAnimationPaused ? "season-progress-paused" : "",
         ].join(" ");
-        const update = { [configKey]: label };
+        const update = configKey == "plants"
+          ? { [configKey]: label, animateSeasons: false }
+          : { [configKey]: label };
         return <button key={preset} className={className}
+          style={showSeasonProgress
+            ? seasonProgressStyle(label, seasonAnimationStartedAt)
+            : undefined}
           onClick={() => {
             if (startTimeRef && configKey == "plants") {
               startTimeRef.current = performance.now() / 1000;
@@ -64,18 +170,47 @@ const PublicOverlaySection = (props: SectionProps) => {
             } else {
               setToolTip({ timeoutId: 0, text: "" });
             }
+            if (configKey == "plants") {
+              setSeasonAnimationPaused?.(false);
+              label != config[configKey] && onSeasonSelect?.();
+            }
             setConfig(modifyConfig(config, update));
           }}>
           {label}
         </button>;
       })}
+      {showAnimationControl &&
+        <span
+          className={[
+            "season-animation-control",
+            config.animateSeasons ? "active" : "",
+          ].join(" ")}
+          role={"button"}
+          tabIndex={0}
+          title={"animateSeasons"}
+          aria-label={config.animateSeasons ? "Pause seasons" : "Play seasons"}
+          onClick={handleSeasonAnimationToggle}
+          onKeyDown={handleSeasonAnimationKeyDown}>
+          <i className={`fa fa-${config.animateSeasons ? "pause" : "play"}`} />
+        </span>}
     </div>
   </div>;
 };
 
 export const PublicOverlay = (props: OverlayProps) => {
-  const { config, setConfig, toolTip, setToolTip } = props;
-  const commonSectionProps = { config, setConfig, toolTip, setToolTip };
+  const {
+    config, setConfig, toolTip, setToolTip,
+    seasonAnimationPaused, setSeasonAnimationPaused,
+  } = props;
+  const commonSectionProps = {
+    config,
+    setConfig,
+    toolTip,
+    setToolTip,
+    seasonAnimationPaused,
+    setSeasonAnimationPaused,
+    onSeasonSelect: props.onSeasonSelect,
+  };
   const settingsBarClassName = [
     "settings-bar",
     props.loadComplete ? "settings-bar-loaded" : "",
@@ -100,11 +235,12 @@ export const PublicOverlay = (props: OverlayProps) => {
           title={"Season"}
           configKey={"plants"}
           startTimeRef={props.startTimeRef}
+          showAnimationControl={true}
           options={{
-            "winter": "Winter",
             "spring": "Spring",
             "summer": "Summer",
             "fall": "Fall",
+            "winter": "Winter",
           }} />
         <PublicOverlaySection
           {...commonSectionProps}

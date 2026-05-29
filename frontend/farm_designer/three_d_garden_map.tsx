@@ -204,7 +204,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.columnLength = configValues.columnLength;
     nextConfig.zAxisLength = configValues.zAxisLength;
     nextConfig.legSize = configValues.legSize;
-    nextConfig.legsFlush = !!configValues.legsFlush;
+    nextConfig.legsFlush = false;
     nextConfig.extraLegsX = configValues.extraLegsX;
     nextConfig.extraLegsY = configValues.extraLegsY;
     nextConfig.bedBrightness = configValues.bedBrightness;
@@ -295,7 +295,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.heading,
     configValues.laser,
     configValues.legSize,
-    configValues.legsFlush,
     configValues.lightsDebug,
     configValues.lowDetail,
     configValues.moistureDebug,

@@ -153,6 +153,7 @@ export interface GardenModelProps {
   plantIconCapacities?: Record<string, number>;
   plantIconAtlas?: PlantIconAtlas;
   plantInstanceCapacity?: number;
+  seasonResetKey?: number;
   preloadEnvironmentScenes?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
@@ -332,6 +333,7 @@ interface StaticGardenLayersProps {
   shouldMountPlantSpreadInstances: boolean;
   showSpread: boolean;
   plantInstanceCapacity: number | undefined;
+  seasonResetKey: number | undefined;
   showWeeds: boolean;
   weeds: TaggedWeedPointer[];
   showPoints: boolean;
@@ -346,8 +348,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     addPlantProps, plantLabelNodes, plantsVisible, plantInstancesVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
     dispatch, shouldMountPlantSpreadInstances, showSpread,
-    plantInstanceCapacity, showWeeds, weeds, showPoints,
+    plantInstanceCapacity, seasonResetKey, showWeeds, weeds, showPoints,
   } = props;
+  const seasonLayerKey = `${config.plants}-${seasonResetKey || 0}`;
   const gridVisible = config.grid && activeFocus != "Planter bed";
   const plantLayerHasWork =
     threeDPlants.length > 0
@@ -427,6 +430,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markName={"three_d_core_ready"}>
       {plantLayerHasWork &&
       <PopInGroup
+        key={seasonLayerKey}
         name={"plants-load-in"}
         reveal={plantsReveal}
         onRest={() => loadProgress.markStep("plants")}
@@ -950,6 +954,7 @@ export const GardenModel = (props: GardenModelProps) => {
         shouldMountPlantSpreadInstances={shouldMountPlantSpreadInstances}
         showSpread={showSpread}
         plantInstanceCapacity={props.plantInstanceCapacity}
+        seasonResetKey={props.seasonResetKey}
         showWeeds={showWeeds}
         weeds={weeds}
         showPoints={showPoints} />

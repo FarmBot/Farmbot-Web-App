@@ -1,5 +1,5 @@
 import React from "react";
-import { Config, getSeasonProperties } from "../config";
+import { Config, getSeasonProperties, seasonSpringConfig } from "../config";
 import { Cloud, Clouds as DreiClouds } from "@react-three/drei";
 import { ASSETS, RenderOrder } from "../constants";
 import { animated, useSpring } from "@react-spring/three";
@@ -19,13 +19,20 @@ export const CloudsBase = (props: CloudsProps) => {
   const { config } = props;
   const sunParams = getSeasonProperties(config, "Summer");
   const targetOpacity = sunParams.cloudOpacity;
+  const [renderedOpacity, setRenderedOpacity] =
+    React.useState(targetOpacity);
   const { opacity } = useSpring({
     from: { opacity: 0 },
     to: { opacity: targetOpacity },
     immediate: !config.animate,
-    config: { duration: 600 },
+    onChange: result => {
+      const value = result.value as { opacity?: number };
+      typeof value.opacity == "number" && setRenderedOpacity(value.opacity);
+    },
+    onRest: () => setRenderedOpacity(targetOpacity),
+    config: seasonSpringConfig,
   });
-  if (!config.clouds || targetOpacity <= 0) { return undefined; }
+  if (!config.clouds || renderedOpacity <= 0) { return undefined; }
   return <DreiClouds name={"clouds"} visible={config.clouds}
     renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>

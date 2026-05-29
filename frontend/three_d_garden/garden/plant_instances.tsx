@@ -31,6 +31,7 @@ import {
 import { Mode } from "../../farm_designer/map/interfaces";
 import {
   calcSunCoordinate, calcSunI, getAnimatedSeasonDate,
+  getSeasonAnimationElapsed,
 } from "./sun";
 import { clickWasDragged } from "../click_event";
 
@@ -189,7 +190,7 @@ const usePlantIconFrame = (props: UsePlantIconFrameProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
-  const seasonAnimationEnabled = !!(config.animateSeasons && startTimeRef);
+  const seasonAnimationEnabled = !!startTimeRef;
 
   React.useEffect(() => {
     const updateState = getUpdateState();
@@ -203,14 +204,14 @@ const usePlantIconFrame = (props: UsePlantIconFrameProps) => {
     if (!mesh || visible === false) { return; }
     if (plants.length == 0) { return; }
     const updateState = getUpdateState();
-    const seasonAnimating = seasonAnimationEnabled;
+    const seasonT = seasonAnimationEnabled
+      ? getSeasonAnimationElapsed(config.animateSeasons, startTimeRef)
+      : undefined;
+    const seasonAnimating = seasonT != undefined;
     const cameraChanged = !updateState.hasCameraQuaternion
       || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
-    let seasonT = 0;
     if (seasonAnimating) {
-      const currentTime = performance.now() / 1000;
-      seasonT = currentTime - (startTimeRef.current || 0);
       const date = getAnimatedSeasonDate(config.plants, seasonT);
       sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
     }
@@ -240,7 +241,7 @@ const usePlantIconFrame = (props: UsePlantIconFrameProps) => {
     } else {
       plants.forEach((plant, index) => {
         const instance = staticInstances[index];
-        const seasonScale = (config.animateSeasons && startTimeRef)
+        const seasonScale = seasonT != undefined
           ? plant.size * getSizeAtTime(plant, config.plants, seasonT)
           : plant.size;
         const scale = instance.visible ? seasonScale : 0;

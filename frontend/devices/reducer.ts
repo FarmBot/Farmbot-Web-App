@@ -15,6 +15,8 @@ import { versionOK } from "../util";
 import { updateMotorHistoryArray } from "../controls/move/motor_position_plot";
 import { PercentageProgress, Xyz } from "farmbot";
 
+const legacyGpioRegistry = { gpio_registry: undefined };
+
 const afterEach = (state: BotState, a: ReduxAction<unknown>) => {
   const connectivity = connectivityReducer(state.connectivity, a);
   return connectivity === state.connectivity
@@ -46,7 +48,7 @@ export const initialState = (): BotState => ({
       },
     },
     pins: {},
-    gpio_registry: undefined,
+    ...legacyGpioRegistry,
     configuration: {},
     informational_settings: {
       busy: false,

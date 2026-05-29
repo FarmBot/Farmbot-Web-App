@@ -128,8 +128,13 @@ export const Promo = () => {
   const [activeFocus, setActiveFocus] = React.useState(() =>
     getFocusFromUrlParams());
   const [threeDLoaded, setThreeDLoaded] = React.useState(false);
+  const [seasonAnimationPaused, setSeasonAnimationPaused] =
+    React.useState(false);
+  const [seasonResetKey, setSeasonResetKey] = React.useState(0);
   const handleThreeDLoadComplete = React.useCallback(() =>
     setThreeDLoaded(true), []);
+  const handleSeasonSelect = React.useCallback(() =>
+    setSeasonResetKey(key => key + 1), []);
   const common = {
     config, setConfig,
     toolTip, setToolTip,
@@ -147,8 +152,19 @@ export const Promo = () => {
   const startTimeRef = React.useRef<number>(0);
 
   React.useEffect(() => {
+    startTimeRef.current = performance.now() / 1000;
+  }, []);
+
+  React.useEffect(() => {
     if (!config.animateSeasons) { return; }
     const currentSeasonTimings = getSeasonTimings(config.plants);
+    const totalSeconds =
+      currentSeasonTimings.duration + currentSeasonTimings.pause;
+    const elapsedSeconds = Math.min(
+      Math.max(performance.now() / 1000 - startTimeRef.current, 0),
+      totalSeconds,
+    );
+    const remainingSeconds = totalSeconds - elapsedSeconds;
     const timeout = setTimeout(() => {
       startTimeRef.current = performance.now() / 1000;
       setConfig(prevConfig => {
@@ -158,13 +174,9 @@ export const Promo = () => {
           plants: nextSeasonTimings.season,
         };
       });
-    }, (currentSeasonTimings.duration + currentSeasonTimings.pause) * 1000);
+    }, remainingSeconds * 1000);
     return () => clearTimeout(timeout);
   }, [config.plants, config.animateSeasons]);
-
-  React.useEffect(() => {
-    startTimeRef.current = performance.now() / 1000;
-  }, []);
 
   const clearActiveFocus = React.useCallback(() => {
     setActiveFocus("");
@@ -198,6 +210,10 @@ export const Promo = () => {
   }), [config.bedLengthOuter, config.bedWidthOuter]);
   const plantCapacities = React.useMemo(() =>
     getPromoPlantCapacities(plantCapacityConfig), [plantCapacityConfig]);
+  const gardenConfig = React.useMemo(() =>
+    seasonAnimationPaused
+      ? { ...config, animateSeasons: true }
+      : config, [config, seasonAnimationPaused]);
 
   return <div className={"three-d-garden promo"}
     onKeyDown={e => activeFocus && e.key == "Escape" && clearActiveFocus()}>
@@ -210,6 +226,7 @@ export const Promo = () => {
               gl.localClippingEnabled = true;
             }}>
             <GardenModel {...common}
+              config={gardenConfig}
               configPosition={{ x: config.x, y: config.y, z: config.z }}
               startTimeRef={startTimeRef}
               threeDPlants={threeDPlants}
@@ -217,6 +234,7 @@ export const Promo = () => {
               plantIconCapacities={plantCapacities.iconCapacities}
               plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
+              seasonResetKey={seasonResetKey}
               preloadEnvironmentScenes={true}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true}
@@ -225,12 +243,19 @@ export const Promo = () => {
         </MemoryRouter>
         <PublicOverlay {...common}
           loadComplete={threeDLoaded}
-          startTimeRef={startTimeRef} />
+          startTimeRef={startTimeRef}
+          seasonAnimationPaused={seasonAnimationPaused}
+          setSeasonAnimationPaused={setSeasonAnimationPaused}
+          onSeasonSelect={handleSeasonSelect} />
         {!config.config &&
           <img className={"gear"} src={ASSETS.other.gear} title={"config"}
             onClick={() => setConfig({ ...config, config: true })} />}
         {config.config &&
-          <PrivateOverlay {...common} startTimeRef={startTimeRef} />}
+          <PrivateOverlay {...common}
+            startTimeRef={startTimeRef}
+            seasonAnimationPaused={seasonAnimationPaused}
+            setSeasonAnimationPaused={setSeasonAnimationPaused}
+            onSeasonSelect={handleSeasonSelect} />}
         <span className={"tool-tip"} hidden={!toolTip.text}>
           {toolTip.text}
         </span>

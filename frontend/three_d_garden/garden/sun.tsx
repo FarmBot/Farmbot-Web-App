@@ -1,5 +1,7 @@
 import React from "react";
-import { Config, getSeasonProperties, INITIAL } from "../config";
+import {
+  Config, getSeasonProperties, INITIAL, seasonSpringConfig,
+} from "../config";
 import {
   Vector3, DirectionalLight as ThreeDirectionalLight, Mesh,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
@@ -13,6 +15,7 @@ import {
 } from "../components";
 import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { useSpring } from "@react-spring/three";
 import SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
@@ -39,6 +42,21 @@ const SEASON_SUN_DATES: Record<string, [number, number]> = {
 
 export const getCycleLength = (season: string) =>
   SEASON_DURATIONS[season] || 20;
+
+export const getSeasonAnimationElapsed = (
+  animateSeasons: boolean,
+  startTimeRef?: React.RefObject<number>,
+) => {
+  const startedAt = startTimeRef?.current;
+  if (startedAt == undefined) { return undefined; }
+  if (startedAt < 0) {
+    return -startedAt;
+  }
+  if (animateSeasons) {
+    return performance.now() / 1000 - startedAt;
+  }
+  return undefined;
+};
 
 interface SunAnimationSample {
   animationSeconds: number;
@@ -203,23 +221,35 @@ interface AnimatedSunFrameProps extends SunProps {
   sunRef: React.RefObject<Mesh | null>;
   sunFlatRef: React.RefObject<Mesh | null>;
   lineRef: React.RefObject<Line2 | null>;
+  animatedSunRef: React.MutableRefObject<SunSpringValues>;
   sunIntensity: number;
   setPoint: React.Dispatch<React.SetStateAction<Vector3>>;
   setSunSky(sunFactor: number, sunValue: number): void;
 }
 
+interface SunSpringValues {
+  color: string;
+  intensity: number;
+  inclination: number;
+  azimuth: number;
+}
+
 const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
   const {
     config, startTimeRef, lightRef, debugSunRef, sunRef, sunFlatRef, lineRef,
-    sunIntensity, setPoint, setSunSky,
+    animatedSunRef, sunIntensity, setPoint, setSunSky,
   } = props;
-  useFrame(() => {
-    if (!startTimeRef) { return; }
+  const updateSunPosition = () => {
+    const t = getSeasonAnimationElapsed(config.animateSeasons, startTimeRef);
+    if (t == undefined) { return; }
 
-    const currentTime = performance.now() / 1000;
-    const t = currentTime - startTimeRef.current;
     const date = getAnimatedSeasonDate(config.plants, t);
     const { azimuth, inclination } = calcSunCoordinate(date, 0, 35, 0);
+    animatedSunRef.current = {
+      ...animatedSunRef.current,
+      azimuth,
+      inclination,
+    };
     const sunFactor = calcSunI(inclination);
     const position = sunPosition(inclination, azimuth, BigDistance.sunActual);
 
@@ -241,7 +271,10 @@ const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
     if (lineRef.current) {
       setPoint(position);
     }
-  });
+  };
+
+  React.useLayoutEffect(updateSunPosition);
+  useFrame(updateSunPosition);
 
   return undefined;
 };
@@ -250,11 +283,23 @@ const SunBase = (props: SunProps) => {
   const { config } = props;
 
   const sunParams = getSeasonProperties(config, "Summer");
-  const { sunIntensity, sunColor } = sunParams;
+  const { sunIntensity, sunColor, sunInclination: seasonSunInclination } =
+    sunParams;
+  const targetSunInclination = config.sunInclination == INITIAL.sunInclination
+    ? seasonSunInclination
+    : config.sunInclination;
+  const targetSunAzimuth = config.sunAzimuth;
+  const [initialSunColor] = React.useState(sunColor);
+  const [renderedSunIntensity, setRenderedSunIntensity] =
+    React.useState(sunIntensity);
+  const [renderedSunInclination, setRenderedSunInclination] =
+    React.useState(targetSunInclination);
+  const [renderedSunAzimuth, setRenderedSunAzimuth] =
+    React.useState(targetSunAzimuth);
 
   const sunPos = sunPosition(
-    config.sunInclination,
-    config.sunAzimuth,
+    renderedSunInclination,
+    renderedSunAzimuth,
     BigDistance.sunActual);
 
   // eslint-disable-next-line no-null/no-null
@@ -271,9 +316,9 @@ const SunBase = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
-  const renderedSunFactor = calcSunI(config.sunInclination);
+  const renderedSunFactor = calcSunI(renderedSunInclination);
   const showOtherSuns =
-    renderedSunFactor < 1 || !!(config.animateSeasons && props.startTimeRef);
+    renderedSunFactor < 1 || !!props.startTimeRef;
   const shadowBounds = React.useMemo(() => {
     const bedXBounds = Math.max(
       Math.abs(config.bedXOffset),
@@ -302,13 +347,77 @@ const SunBase = (props: SunProps) => {
       (starsRef.current.opacity = (1 - sunFactor));
   };
 
+  const sunSpringTargets = React.useMemo(() => ({
+    color: sunColor,
+    intensity: sunIntensity,
+    inclination: targetSunInclination,
+    azimuth: targetSunAzimuth,
+  }), [sunColor, sunIntensity, targetSunAzimuth, targetSunInclination]);
+  const animatedSunRef = React.useRef<SunSpringValues>(sunSpringTargets);
+  const lastSeasonAnimationActive = React.useRef(false);
+  const setSunSpringValues = React.useCallback((
+    value: Partial<SunSpringValues>,
+  ) => {
+    value.color && lightRef.current?.color?.set(value.color);
+    typeof value.intensity == "number" &&
+      setRenderedSunIntensity(value.intensity);
+    typeof value.inclination == "number" &&
+      setRenderedSunInclination(value.inclination);
+    typeof value.azimuth == "number" &&
+      setRenderedSunAzimuth(value.azimuth);
+  }, []);
+  const [, sunSpringApi] = useSpring(() => sunSpringTargets);
+
+  React.useLayoutEffect(() => {
+    const seasonAnimationActive =
+      getSeasonAnimationElapsed(config.animateSeasons, props.startTimeRef)
+      != undefined;
+    const fromAnimatedSun =
+      lastSeasonAnimationActive.current && !seasonAnimationActive
+        ? animatedSunRef.current
+        : undefined;
+    lastSeasonAnimationActive.current = seasonAnimationActive;
+    fromAnimatedSun && setSunSpringValues(fromAnimatedSun);
+    sunSpringApi.start({
+      from: fromAnimatedSun,
+      to: sunSpringTargets,
+      immediate: !config.animate,
+      onChange: result => {
+        const value = result.value as Partial<SunSpringValues>;
+        setSunSpringValues(value);
+      },
+      onRest: () => {
+        lightRef.current?.color?.set(sunColor);
+        setRenderedSunIntensity(sunIntensity);
+        setRenderedSunInclination(targetSunInclination);
+        setRenderedSunAzimuth(targetSunAzimuth);
+      },
+      config: seasonSpringConfig,
+    });
+  }, [
+    config.animate,
+    config.animateSeasons,
+    props.startTimeRef,
+    setSunSpringValues,
+    sunColor,
+    sunIntensity,
+    sunSpringApi,
+    sunSpringTargets,
+    targetSunAzimuth,
+    targetSunInclination,
+  ]);
+
   React.useEffect(() => {
+    if (getSeasonAnimationElapsed(config.animateSeasons, props.startTimeRef)
+      != undefined) {
+      return;
+    }
     setSunSky(renderedSunFactor, config.sun);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.sunInclination, config.sun]);
+  }, [config.animateSeasons, config.sun, props.startTimeRef, renderedSunFactor]);
 
   return <Group name={"sun"}>
-    {config.animateSeasons && props.startTimeRef &&
+    {props.startTimeRef &&
       <AnimatedSunFrame
         {...props}
         lightRef={lightRef}
@@ -316,13 +425,14 @@ const SunBase = (props: SunProps) => {
         sunRef={sunRef}
         sunFlatRef={sunFlatRef}
         lineRef={lineRef}
-        sunIntensity={sunIntensity}
+        animatedSunRef={animatedSunRef}
+        sunIntensity={renderedSunIntensity}
         setPoint={setPoint}
         setSunSky={setSunSky} />}
     <DirectionalLight
       ref={lightRef}
-      intensity={sunIntensity * config.sun / 100 * renderedSunFactor}
-      color={sunColor}
+      intensity={renderedSunIntensity * config.sun / 100 * renderedSunFactor}
+      color={initialSunColor}
       castShadow={!config.lowDetail}
       shadow-bias={shadowBias}
       shadow-radius={shadowRadius}
@@ -352,8 +462,8 @@ const SunBase = (props: SunProps) => {
       ref={sunRef}
       args={[1000, 32, 32]}
       position={sunPosition(
-        config.sunInclination,
-        config.sunAzimuth,
+        renderedSunInclination,
+        renderedSunAzimuth,
         BigDistance.sunVisual)}>
       <MeshBasicMaterial color={SUN_COLOR} />
     </Sphere>
@@ -362,7 +472,7 @@ const SunBase = (props: SunProps) => {
     {config.lightsDebug && <Sphere
       ref={sunFlatRef}
       args={[500, 8, 8]}
-      position={sunPosition(0, config.sunAzimuth, BigDistance.ground)}>
+      position={sunPosition(0, renderedSunAzimuth, BigDistance.ground)}>
       <MeshBasicMaterial color={SUN_COLOR} />
     </Sphere>}
   </Group>;
