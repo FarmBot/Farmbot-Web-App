@@ -38,7 +38,15 @@ export const filterMoisturePoints = (props: FilterMoisturePointsProps) => {
   return moisturePoints;
 };
 
-export const soilSurfaceExtents = (config: Config) => ({
+type SoilBoundaryConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedWallThickness"
+  | "bedXOffset" | "bedYOffset">;
+
+type SoilPointConfig = SoilBoundaryConfig & Pick<Config,
+  "bedHeight" | "columnLength" | "exaggeratedZ" | "perspective"
+  | "soilHeight" | "zGantryOffset">;
+
+export const soilSurfaceExtents = (config: SoilBoundaryConfig) => ({
   x: {
     min: config.bedWallThickness - config.bedXOffset,
     max: config.bedLengthOuter - config.bedWallThickness - config.bedXOffset,
@@ -49,7 +57,7 @@ export const soilSurfaceExtents = (config: Config) => ({
   },
 });
 
-export const boundaryPoints = (config: Config) => {
+export const boundaryPoints = (config: SoilBoundaryConfig) => {
   const outerBoundaryParams = soilSurfaceExtents(config);
   return {
     outer: outerBoundaryParams,
@@ -67,7 +75,7 @@ export const boundaryPoints = (config: Config) => {
 };
 
 export interface FilterSoilPointsProps {
-  config: Config;
+  config: SoilPointConfig;
   points: TaggedGenericPointer[] | undefined;
 }
 

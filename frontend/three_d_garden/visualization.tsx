@@ -3,7 +3,7 @@ import { Line } from "@react-three/drei";
 import { collectDemoSequenceActions } from "../demo/lua_runner";
 import { store } from "../redux/store";
 import { findSequence } from "../resources/selectors_by_kind";
-import { expandActions } from "../demo/lua_runner/actions";
+import { expandActionsFromPosition } from "../demo/lua_runner/actions";
 import { Config, PositionConfig } from "./config";
 
 export interface VisualizationProps {
@@ -12,12 +12,15 @@ export interface VisualizationProps {
   configPosition: PositionConfig;
 }
 
-type ExpandedAction = ReturnType<typeof expandActions>[number];
+type ExpandedAction =
+  ReturnType<typeof expandActionsFromPosition>["actions"][number];
 type SequenceAction = ReturnType<typeof collectDemoSequenceActions>[number];
 type VisualizationPoint = [number, number, number];
 type VisualizationConfig = Pick<Config,
   "bedXOffset" | "bedYOffset" | "bedLengthOuter" | "bedWidthOuter"
   | "columnLength" | "zGantryOffset" | "mirrorX" | "mirrorY">;
+type VisualizationPositionConfig = Pick<Config,
+  "botSizeX" | "botSizeY" | "mirrorX" | "mirrorY">;
 
 const EMPTY_SEQUENCE_ACTIONS: SequenceAction[] = [];
 const EMPTY_EXPANDED_ACTIONS: ExpandedAction[] = [];
@@ -36,18 +39,22 @@ const getVisualizationWorldPositionFunc = (config: VisualizationConfig) =>
     ];
   };
 
+const getVisualizationBotPosition = (
+  config: VisualizationPositionConfig,
+  position: PositionConfig,
+): PositionConfig => ({
+  x: config.mirrorX ? config.botSizeX - position.x : position.x,
+  y: config.mirrorY ? config.botSizeY - position.y : position.y,
+  z: position.z,
+});
+
 export const getVisualizationPoints = (
   config: VisualizationConfig,
   stashedPos: PositionConfig,
   actions: ExpandedAction[],
 ) => {
   const getWorldPosition = getVisualizationWorldPositionFunc(config);
-  const { x, y, z } = stashedPos;
-  const points = [getWorldPosition({
-    x: x + config.bedXOffset - config.bedLengthOuter / 2,
-    y: y + config.bedYOffset - config.bedWidthOuter / 2,
-    z: z + config.columnLength + 40 - config.zGantryOffset,
-  })];
+  const points = [getWorldPosition(stashedPos)];
   for (const action of actions) {
     if (action.type != "expanded_move_absolute") { continue; }
     const coordinate = action.args as [number, number, number];
@@ -64,34 +71,44 @@ interface VisualizationLineProps {
   points: VisualizationPoint[];
 }
 
+interface ActiveVisualizationProps extends VisualizationProps {
+  visualizedSequenceUUID: string;
+}
+
 const VisualizationLine = React.memo((props: VisualizationLineProps) =>
   <Line name={"visualization"}
     color={"orange"}
     linewidth={2}
     points={props.points} />);
 
-export const Visualization = (props: VisualizationProps) => {
+const ActiveVisualization = (props: ActiveVisualizationProps) => {
   const { visualizedSequenceUUID, config } = props;
-  const { x, y, z } = props.configPosition;
   const resources = store.getState().resources.index;
-  const sequence = visualizedSequenceUUID
-    ? findSequence(resources, visualizedSequenceUUID)
-    : undefined;
+  const sequence = findSequence(resources, visualizedSequenceUUID);
   const sequenceId = sequence?.body.id;
-  const stashedPos = React.useMemo(() => ({ x, y, z }), [x, y, z]);
+  const { x, y, z } = props.configPosition;
+  const currentBotPosition = React.useMemo(() => getVisualizationBotPosition(
+    {
+      botSizeX: config.botSizeX,
+      botSizeY: config.botSizeY,
+      mirrorX: config.mirrorX,
+      mirrorY: config.mirrorY,
+    },
+    { x, y, z },
+  ), [config.botSizeX, config.botSizeY, config.mirrorX, config.mirrorY, x, y, z]);
+  const [stashedPos] =
+    React.useState<PositionConfig>(() => currentBotPosition);
   const sequenceActions = React.useMemo(() => {
-    if (!visualizedSequenceUUID || !sequenceId) {
-      return EMPTY_SEQUENCE_ACTIONS;
-    }
-    return collectDemoSequenceActions(0, resources, sequenceId, []);
-  }, [visualizedSequenceUUID, resources, sequenceId]);
+    if (!sequenceId) { return EMPTY_SEQUENCE_ACTIONS; }
+    return collectDemoSequenceActions(0, resources, sequenceId, [], [], stashedPos);
+  }, [resources, sequenceId, stashedPos]);
   const expandedActions = React.useMemo(() => {
     if (!sequenceId) { return EMPTY_EXPANDED_ACTIONS; }
-    return expandActions(sequenceActions, [], stashedPos);
+    return expandActionsFromPosition(sequenceActions, [], stashedPos).actions;
   }, [sequenceId, sequenceActions, stashedPos]);
   const {
-    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter,
-    columnLength, zGantryOffset, mirrorX, mirrorY,
+    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, columnLength,
+    zGantryOffset, mirrorX, mirrorY,
   } = config;
   const visualizationConfig = React.useMemo(() => ({
     bedXOffset,
@@ -116,4 +133,13 @@ export const Visualization = (props: VisualizationProps) => {
   }, [sequenceId, visualizationConfig, stashedPos, expandedActions]);
   return visualizationPoints.length > 0 &&
     <VisualizationLine points={visualizationPoints} />;
+};
+
+export const Visualization = (props: VisualizationProps) => {
+  const { visualizedSequenceUUID } = props;
+  return visualizedSequenceUUID
+    ? <ActiveVisualization key={visualizedSequenceUUID}
+      {...props}
+      visualizedSequenceUUID={visualizedSequenceUUID} />
+    : false;
 };

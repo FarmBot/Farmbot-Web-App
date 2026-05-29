@@ -667,23 +667,35 @@ export const GardenModel = (props: GardenModelProps) => {
     showMoistureReadings, topDownAtStart,
   } = layerVisibility;
 
+  const soilPointConfig = React.useMemo(() => ({
+    bedHeight: config.bedHeight,
+    bedLengthOuter: config.bedLengthOuter,
+    bedWallThickness: config.bedWallThickness,
+    bedWidthOuter: config.bedWidthOuter,
+    bedXOffset: config.bedXOffset,
+    bedYOffset: config.bedYOffset,
+    columnLength: config.columnLength,
+    exaggeratedZ: config.exaggeratedZ,
+    perspective: config.perspective,
+    soilHeight: config.soilHeight,
+    zGantryOffset: config.zGantryOffset,
+  }), [
+    config.bedHeight,
+    config.bedLengthOuter,
+    config.bedWallThickness,
+    config.bedWidthOuter,
+    config.bedXOffset,
+    config.bedYOffset,
+    config.columnLength,
+    config.exaggeratedZ,
+    config.perspective,
+    config.soilHeight,
+    config.zGantryOffset,
+  ]);
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
-      filterSoilPoints({ points: mapPoints, config })),
-    [
-      mapPoints,
-      config.bedHeight,
-      config.bedLengthOuter,
-      config.bedWallThickness,
-      config.bedWidthOuter,
-      config.bedXOffset,
-      config.bedYOffset,
-      config.columnLength,
-      config.exaggeratedZ,
-      config.perspective,
-      config.soilHeight,
-      config.zGantryOffset,
-    ]);
+      filterSoilPoints({ points: mapPoints, config: soilPointConfig })),
+    [mapPoints, soilPointConfig]);
   const soilSurface = React.useMemo(() =>
     perfMeasure("soilSurfaceMs", () => getSurface(soilPoints)), [soilPoints]);
   React.useEffect(() => {
@@ -721,40 +733,56 @@ export const GardenModel = (props: GardenModelProps) => {
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
+  const plantLabelConfig = React.useMemo(() => ({
+    bedLengthOuter: config.bedLengthOuter,
+    bedWidthOuter: config.bedWidthOuter,
+    bedXOffset: config.bedXOffset,
+    bedYOffset: config.bedYOffset,
+    columnLength: config.columnLength,
+    labels: config.labels,
+    labelsOnHover: config.labelsOnHover,
+    mirrorX: config.mirrorX,
+    mirrorY: config.mirrorY,
+    zGantryOffset: config.zGantryOffset,
+  }), [
+    config.bedLengthOuter,
+    config.bedWidthOuter,
+    config.bedXOffset,
+    config.bedYOffset,
+    config.columnLength,
+    config.labels,
+    config.labelsOnHover,
+    config.mirrorX,
+    config.mirrorY,
+    config.zGantryOffset,
+  ]);
   const plantLabelNodes = React.useMemo(
     () => {
-      if (!config.labels && !config.labelsOnHover) { return undefined; }
-      if (config.labelsOnHover) {
+      if (!plantLabelConfig.labels && !plantLabelConfig.labelsOnHover) {
+        return undefined;
+      }
+      if (plantLabelConfig.labelsOnHover) {
         if (hoveredPlant === undefined) { return undefined; }
         const plant = threeDPlants[hoveredPlant];
         return plant &&
           <ThreeDPlantLabel key={hoveredPlant} i={hoveredPlant}
             plant={plant}
-            config={config}
+            config={plantLabelConfig}
             getZ={getZ}
             hoveredPlant={hoveredPlant} />;
       }
       return threeDPlants.map((plant, i) =>
         <ThreeDPlantLabel key={i} i={i}
           plant={plant}
-          config={config}
+          config={plantLabelConfig}
           getZ={getZ}
           hoveredPlant={hoveredPlant} />);
     },
     [
       threeDPlants,
-      config.bedLengthOuter,
-      config.bedWidthOuter,
-      config.bedXOffset,
-      config.bedYOffset,
-      config.columnLength,
-      config.labels,
-      config.labelsOnHover,
-      config.mirrorX,
-      config.mirrorY,
-      config.zGantryOffset,
       getZ,
       hoveredPlant,
+      plantLabelConfig,
     ]);
 
   const plantInstancesVisible = props.smoothFocusTransitions

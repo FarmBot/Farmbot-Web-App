@@ -147,9 +147,8 @@ describe("<Visualization />", () => {
       config={geometryConfig}
       configPosition={movedPosition} />);
     const positionCalls = linePointCalls(lineSpy);
-    const positionPoints = positionCalls[positionCalls.length - 1];
-    expect(positionCalls.length).toEqual(firstCalls.length + 2);
-    expect(positionPoints).not.toEqual(geometryPoints);
+    expect(positionCalls.length).toEqual(firstCalls.length + 1);
+    expect(positionCalls[positionCalls.length - 1]).toBe(geometryPoints);
 
     const changedSequence = clone(sequence);
     changedSequence.body.body = [moveAbsoluteStep(200, 100, 0)] as never;
@@ -163,8 +162,8 @@ describe("<Visualization />", () => {
       config={geometryConfig}
       configPosition={movedPosition} />);
     const sequenceCalls = linePointCalls(lineSpy);
-    expect(sequenceCalls.length).toEqual(firstCalls.length + 3);
-    expect(sequenceCalls[sequenceCalls.length - 1]).not.toEqual(positionPoints);
+    expect(sequenceCalls.length).toEqual(firstCalls.length + 2);
+    expect(sequenceCalls[sequenceCalls.length - 1]).not.toEqual(geometryPoints);
   });
 
   it("extracts visualization points from move actions", () => {
@@ -180,7 +179,7 @@ describe("<Visualization />", () => {
     ]);
 
     expect(points).toEqual([
-      [-2710, -1300, 830],
+      [-1350, -640, 430],
       [-1260, -460, 700],
     ]);
   });

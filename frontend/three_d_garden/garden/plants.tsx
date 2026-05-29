@@ -49,21 +49,30 @@ export interface ThreeDGardenPlant {
   seed: number;
 }
 
-export interface ThreeDPlantLabelProps {
+export type PlantLabelConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "columnLength" | "labels" | "labelsOnHover" | "mirrorX" | "mirrorY"
+  | "zGantryOffset">;
+
+export interface ThreeDPlantLabelProps<
+  TConfig extends PlantLabelConfig = Config,
+> {
   plant: ThreeDGardenPlant;
   i: number;
-  config: Config;
+  config: TConfig;
   hoveredPlant: number | undefined;
   getZ(x: number, y: number): number;
 }
 
-const plantLabelVisible = (props: ThreeDPlantLabelProps) =>
+type PlantLabelProps = ThreeDPlantLabelProps<PlantLabelConfig | Config>;
+
+const plantLabelVisible = (props: PlantLabelProps) =>
   (props.config.labels && !props.config.labelsOnHover)
   || props.i === props.hoveredPlant;
 
 const plantLabelConfigEqual = (
-  prev: Config,
-  next: Config,
+  prev: PlantLabelConfig,
+  next: PlantLabelConfig,
 ) =>
   prev.bedLengthOuter == next.bedLengthOuter
   && prev.bedWidthOuter == next.bedWidthOuter
@@ -84,8 +93,8 @@ const plantLabelPlantEqual = (
   && prev.y == next.y;
 
 const plantLabelPropsEqual = (
-  prev: ThreeDPlantLabelProps,
-  next: ThreeDPlantLabelProps,
+  prev: PlantLabelProps,
+  next: PlantLabelProps,
 ) =>
   prev.i == next.i
   && prev.getZ == next.getZ
@@ -93,7 +102,7 @@ const plantLabelPropsEqual = (
   && plantLabelConfigEqual(prev.config, next.config)
   && plantLabelPlantEqual(prev.plant, next.plant);
 
-const ThreeDPlantLabelBase = (props: ThreeDPlantLabelProps) => {
+const ThreeDPlantLabelBase = (props: PlantLabelProps) => {
   const { i, plant, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   // eslint-disable-next-line no-null/no-null
@@ -192,7 +201,7 @@ export const findPlantById = (
   return undefined;
 };
 
-export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps) => {
+const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
   } = props;
@@ -432,7 +441,9 @@ export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps
       }}
       depthWrite={false} />
   </InstancedMesh>;
-});
+};
+
+export const PlantSpreadInstances = React.memo(PlantSpreadInstancesBase);
 
 
 export const getBoundsCenter = (config: Config) => () =>

@@ -2,8 +2,11 @@ import { findSequenceById } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterApplication, Point, SequenceBodyItem } from "farmbot";
 import { runLua } from "./run";
-import { expandActions, runActions } from "./actions";
-import { Action } from "./interfaces";
+import {
+  expandActions, expandActionsFromPosition, runActions,
+  syncCurrentFromBotPosition,
+} from "./actions";
+import { Action, XyzNumber } from "./interfaces";
 import { csToLua } from "./util";
 import { error } from "../../toast/toast";
 import { getGroupPoints } from "./stubs";
@@ -21,6 +24,7 @@ const sequenceCallKey = (
     : "" + sequenceId;
 
 export const runDemoLuaCode = (luaCode: string) => {
+  syncCurrentFromBotPosition();
   const actions = runLua(0, luaCode, []);
   runActions(expandActions(actions, []));
 };
@@ -31,6 +35,7 @@ export const collectDemoSequenceActions = (
   sequenceId: number,
   bodyVariables: ParameterApplication[] | undefined,
   sequenceStack: string[] = [],
+  currentPosition?: XyzNumber,
 ): Action[] => {
   if (depth > 100) {
     error("Maximum call depth exceeded.");
@@ -58,6 +63,7 @@ export const collectDemoSequenceActions = (
   if (firstVarArgs?.data_value.kind == "point_group") {
     const variableLabel = firstVarArgs.label;
     const groupId = firstVarArgs.data_value.args.point_group_id;
+    let loopCurrent = currentPosition && { ...currentPosition };
     getGroupPoints(resources, groupId).map(p => {
       const pointValue: Point = {
         kind: "point", args: {
@@ -74,8 +80,19 @@ export const collectDemoSequenceActions = (
         resources,
         sequence.body.id as number,
         pointVariables,
-        sequenceStack);
-      actions.push(...expandActions(loopSeqActions, pointVariables));
+        sequenceStack,
+        loopCurrent);
+      if (loopCurrent) {
+        const expanded = expandActionsFromPosition(
+          loopSeqActions,
+          pointVariables,
+          loopCurrent,
+        );
+        actions.push(...expanded.actions);
+        loopCurrent = expanded.current;
+      } else {
+        actions.push(...expandActions(loopSeqActions, pointVariables));
+      }
     });
     sequenceStack.pop();
     return actions;
@@ -91,7 +108,9 @@ export const collectDemoSequenceActions = (
       actions.push(...seqActions);
     } else {
       const lua = step.kind === "lua" ? step.args.lua : csToLua(step);
-      const stepActions = runLua(depth, lua, variables);
+      const stepActions = currentPosition
+        ? runLua(depth, lua, variables, currentPosition)
+        : runLua(depth, lua, variables);
       actions.push(...stepActions);
     }
   });
@@ -104,6 +123,7 @@ export const runDemoSequence = (
   sequenceId: number,
   variables: ParameterApplication[] | undefined,
 ) => {
+  syncCurrentFromBotPosition();
   const actions = collectDemoSequenceActions(0, resources, sequenceId, variables);
   runActions(expandActions(actions, variables));
 };

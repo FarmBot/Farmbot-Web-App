@@ -32,7 +32,12 @@ import { get, last } from "lodash";
 import { XYZ } from "../../devices/constants";
 
 export const runLua =
-  (depth: number, luaCode: string, variables: ParameterApplication[]): Action[] => {
+  (
+    depth: number,
+    luaCode: string,
+    variables: ParameterApplication[],
+    currentPosition?: XyzNumber,
+  ): Action[] => {
     const actions: Action[] = [];
     const L = lauxlib.luaL_newstate(); // stack: []
     const resources = store.getState().resources.index;
@@ -325,11 +330,16 @@ export const runLua =
       if (cmd.kind == "execute") {
         const sequenceId = cmd.args.sequence_id;
         const seqVariables = cmd.body;
-        const seqActions = collectDemoSequenceActions(
-          depth + 1, resources, sequenceId, seqVariables);
+        const seqActions = currentPosition
+          ? collectDemoSequenceActions(
+            depth + 1, resources, sequenceId, seqVariables, [], currentPosition)
+          : collectDemoSequenceActions(
+            depth + 1, resources, sequenceId, seqVariables);
         actions.push(...seqActions);
       } else {
-        const luaActions = runLua(depth, csToLua(cmd), variables);
+        const luaActions = currentPosition
+          ? runLua(depth, csToLua(cmd), variables, currentPosition)
+          : runLua(depth, csToLua(cmd), variables);
         actions.push(...luaActions);
       }
       return 0;
