@@ -23,6 +23,13 @@ import { setPanelOpen3D } from "../panel_actions";
 import { getMode } from "../../farm_designer/map/util";
 import { RadiusRef, BillboardRef, ImageRef } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
+import {
+  GENERIC_WEED_ICON,
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+  PLANT_ICON_ATLAS,
+  type PlantIconAtlas,
+} from "./plant_icon_atlas";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
 
@@ -158,6 +165,7 @@ export interface WeedInstancesProps {
   dispatch?: Function;
   visible: boolean;
   getZ(x: number, y: number): number;
+  plantIconAtlas?: PlantIconAtlas;
 }
 
 const getWeedInstances = (
@@ -229,7 +237,13 @@ interface WeedIconInstancesProps extends WeedInstancesProps {
 
 const WeedIconInstances = (props: WeedIconInstancesProps) => {
   const { weedInstances, dispatch, visible } = props;
-  const texture = useTexture(ASSETS.other.weed);
+  const plantIconAtlas = props.plantIconAtlas || PLANT_ICON_ATLAS;
+  const baseTexture = useTexture(
+    getPlantIconTextureUrl(GENERIC_WEED_ICON, plantIconAtlas));
+  const texture = React.useMemo(
+    () => getPlantIconTexture(baseTexture, GENERIC_WEED_ICON, plantIconAtlas),
+    [baseTexture, plantIconAtlas],
+  );
   const navigateToWeed = useNavigateToWeed(dispatch, visible);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
@@ -364,6 +378,7 @@ const weedInstancesPropsEqual = (
     && prev.getZ === next.getZ
     && prev.dispatch === next.dispatch
     && prev.visible === next.visible
+    && prev.plantIconAtlas === next.plantIconAtlas
     && sameWeedPositionConfigFields(prev.config, next.config);
 };
 

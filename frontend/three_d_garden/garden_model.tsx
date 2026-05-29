@@ -486,6 +486,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             visible={true}
             config={config}
             getZ={getZ}
+            plantIconAtlas={plantIconAtlas}
             dispatch={dispatch} />
         </Group>
       </PopInGroup>}

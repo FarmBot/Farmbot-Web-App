@@ -49,7 +49,7 @@ interface GeneratedPlantIconAtlas {
 }
 
 export const GENERIC_PLANT_ICON = "/crops/icons/generic-plant.avif";
-export const LAVENDER_ICON = "/crops/icons/lavender.avif";
+export const GENERIC_WEED_ICON = "/crops/icons/generic-weed.avif";
 
 const fullPlantIconAtlas: GeneratedPlantIconAtlas = {
   atlasUrl: PLANT_ICON_ATLAS_URL,
@@ -89,22 +89,24 @@ const plantIconAtlasFrames = (atlas: GeneratedPlantIconAtlas) =>
 
 const buildPlantIconAtlas = (
   atlas: GeneratedPlantIconAtlas,
-): PlantIconAtlas =>
-  Object.fromEntries(
-    plantIconAtlasFrames(atlas)
-      .map(([icon, x, y, width, height]) => [
-        icon,
-        {
-          atlasUrl: atlas.atlasUrl,
-          textureWidth: atlas.textureWidth,
-          textureHeight: atlas.textureHeight,
-          x,
-          y,
-          width,
-          height,
-        },
-      ]),
+): PlantIconAtlas => {
+  const frames = plantIconAtlasFrames(atlas);
+  const atlasUrl = `${atlas.atlasUrl}?v=${frames.length}`;
+  return Object.fromEntries(
+    frames.map(([icon, x, y, width, height]) => [
+      icon,
+      {
+        atlasUrl,
+        textureWidth: atlas.textureWidth,
+        textureHeight: atlas.textureHeight,
+        x,
+        y,
+        width,
+        height,
+      },
+    ]),
   );
+};
 
 export const PLANT_ICON_ATLAS = buildPlantIconAtlas(fullPlantIconAtlas);
 

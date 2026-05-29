@@ -9,10 +9,10 @@ import { RenderOrder } from "../../constants";
 import {
   getPlantIconTexture,
   getPlantIconTextureUrl,
-  LAVENDER_ICON,
   type PlantIconAtlas,
 } from "../../garden/plant_icon_atlas";
 
+const pottedPlantIcon = "/crops/icons/lavender.avif";
 const potHeight = 400;
 const plantHeight = 500;
 const potPoints = [
@@ -33,13 +33,13 @@ export interface PottedPlantProps {
 }
 
 const PottedPlantBase = (props: PottedPlantProps) => {
-  const lavenderTextureUrl = getPlantIconTextureUrl(
-    LAVENDER_ICON, props.plantIconAtlas);
-  const lavenderBaseTexture = useTexture(lavenderTextureUrl);
-  const lavenderTexture = React.useMemo(() =>
-    getPlantIconTexture(lavenderBaseTexture, LAVENDER_ICON,
+  const plantTextureUrl = getPlantIconTextureUrl(
+    pottedPlantIcon, props.plantIconAtlas);
+  const basePlantTexture = useTexture(plantTextureUrl);
+  const plantTexture = React.useMemo(() =>
+    getPlantIconTexture(basePlantTexture, pottedPlantIcon,
       props.plantIconAtlas), [
-    lavenderBaseTexture, props.plantIconAtlas,
+    basePlantTexture, props.plantIconAtlas,
   ]);
 
   return <Group name="pot-with-plant">
@@ -60,7 +60,7 @@ const PottedPlantBase = (props: PottedPlantProps) => {
         position={[0, plantHeight / 2, 0]}>
         <PlaneGeometry args={[plantHeight, plantHeight]} />
         <MeshBasicMaterial
-          map={lavenderTexture}
+          map={plantTexture}
           alphaTest={0.1}
           transparent={true}
           depthWrite={true} />
