@@ -20,7 +20,39 @@ attempts="${ATTEMPTS:-2}"
 : "${SCENE_METRICS_HEADER:?SCENE_METRICS_HEADER is required}"
 GITHUB_ENV="${GITHUB_ENV:-/tmp/render-github-env}"
 URLS_JSON="${URLS_JSON:-scripts/ci/render-urls.json}"
+commit_sha="${GITHUB_SHA:-$(git rev-parse HEAD)}"
+commit_sha="${commit_sha:0:10}"
 chosen_seen=false
+
+ensure_scene_metrics_header() {
+  local path="$1"
+
+  if [ ! -f "$path" ]; then
+    printf '%s\n' "$SCENE_METRICS_HEADER" > "$path"
+    return
+  fi
+
+  local header
+  header=$(head -n 1 "$path")
+  local needs_commit_sha=false
+  [ "$header" = "$SCENE_METRICS_HEADER" ] || needs_commit_sha=true
+
+  {
+    printf '%s\n' "$SCENE_METRICS_HEADER"
+    if [ "$needs_commit_sha" = "true" ]; then
+      tail -n +2 "$path" | awk 'NF && $0 != "undefined" && $0 != "null" {print $0 ", "}'
+    else
+      tail -n +2 "$path" | awk 'NF && $0 != "undefined" && $0 != "null" {print}'
+    fi
+  } > "${path}.tmp"
+  mv "${path}.tmp" "$path"
+}
+
+valid_scene_metrics() {
+  local row="$1"
+
+  [ -n "$row" ] && [ "$row" != "undefined" ] && [ "$row" != "null" ]
+}
 
 while IFS=$'\034' read -r -u 3 name mode url click state; do
   screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
@@ -64,9 +96,12 @@ while IFS=$'\034' read -r -u 3 name mode url click state; do
 
     fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
     scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
-    if [ ! -f "$scene_metrics_path" ]; then
-      printf '%s\n' "$SCENE_METRICS_HEADER" > "$scene_metrics_path"
+    if ! valid_scene_metrics "$scene_metrics"; then
+      echo "Missing scene metrics for ${url}"
+      continue
     fi
+    scene_metrics="${scene_metrics}, ${commit_sha}"
+    ensure_scene_metrics_header "$scene_metrics_path"
     printf '%s\n' "$scene_metrics" >> "$scene_metrics_path"
     echo "SCENE_METRICS=${scene_metrics_path}"
 

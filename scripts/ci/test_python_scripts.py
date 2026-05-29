@@ -169,6 +169,7 @@ class CiPythonScriptTest(unittest.TestCase):
                 "FE_COVERAGE_NAME": coverage_name,
                 "FALLBACK_FE_COVERAGE_VALUE": "75",
                 "FE_LCOV_PATH": lcov_path,
+                "GITHUB_SHA": "0123456789abcdef",
                 "PATH": os.environ["PATH"],
             })
         finally:
@@ -180,7 +181,37 @@ class CiPythonScriptTest(unittest.TestCase):
             "Covered lines: 12, Total lines: 15, Coverage: 80.00%", stdout)
         self.assertIn("80.00% (6.67% change)", stdout)
         self.assertIn(
-            "percent,covered lines,total lines,percent change\n80.00,12,15,6.67\n", stdout)
+            "percent,covered lines,total lines,percent change,commit sha\n"
+            "80.00,12,15,6.67,0123456789\n", stdout)
+        self.assertEqual(stderr, "")
+
+    def test_track_fe_coverage_migrates_csv_header(self):
+        coverage_name = f"fe_coverage_existing_test_{os.getpid()}"
+        csv_path = Path("/tmp") / f"{coverage_name}.csv"
+        csv_path.write_text(
+            "percent,covered lines,total lines,percent change\n"
+            "75.00,3,4,n/a\n")
+        with tempfile.NamedTemporaryFile("w", delete=False) as lcov:
+            lcov.write("LF:10\nLH:8\n")
+            lcov_path = lcov.name
+
+        try:
+            code, stdout, stderr = run_script("track-fe-coverage", env={
+                "FE_COVERAGE_NAME": coverage_name,
+                "FALLBACK_FE_COVERAGE_VALUE": "70",
+                "FE_LCOV_PATH": lcov_path,
+                "GITHUB_SHA": "abcdef0123456789",
+                "PATH": os.environ["PATH"],
+            })
+        finally:
+            Path(lcov_path).unlink(missing_ok=True)
+            csv_path.unlink(missing_ok=True)
+
+        self.assertEqual(code, 0)
+        self.assertIn(
+            "percent,covered lines,total lines,percent change,commit sha\n"
+            "75.00,3,4,n/a,\n"
+            "80.00,8,10,6.67,abcdef0123\n", stdout)
         self.assertEqual(stderr, "")
 
 

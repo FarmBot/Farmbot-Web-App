@@ -8,6 +8,20 @@ fe_coverage_name = os.environ["FE_COVERAGE_NAME"]
 fallback = os.environ["FALLBACK_FE_COVERAGE_VALUE"]
 lcov_path = Path(os.environ.get("FE_LCOV_PATH", "coverage_fe/lcov.info"))
 csv_path = Path("/tmp") / f"{fe_coverage_name}.csv"
+csv_header = [
+    "percent",
+    "covered lines",
+    "total lines",
+    "percent change",
+    "commit sha",
+]
+commit_sha = os.environ.get("GITHUB_SHA")
+if not commit_sha:
+    commit_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"],
+        text=True,
+    ).strip()
+commit_sha = commit_sha[:10]
 
 covered = 0
 total = 0
@@ -41,10 +55,20 @@ print(f"Covered lines: {covered}, Total lines: {total}, Coverage: {value}%")
 print(f"{value}% ({percent_change}% change)")
 
 if not csv_path.exists():
-    csv_path.write_text("percent,covered lines,total lines,percent change\n")
+    csv_path.write_text(",".join(csv_header) + "\n")
+else:
+    with csv_path.open(newline="") as csv_file:
+        rows = list(csv.reader(csv_file))
+    if rows and rows[0] != csv_header:
+        rows[0] = csv_header
+        for row in rows[1:]:
+            while len(row) < len(csv_header):
+                row.append("")
+        with csv_path.open("w", newline="") as csv_file:
+            csv.writer(csv_file).writerows(rows)
 
 with csv_path.open("a", newline="") as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow([value, covered, total, percent_change])
+    writer.writerow([value, covered, total, percent_change, commit_sha])
 
 print(csv_path.read_text(), end="")

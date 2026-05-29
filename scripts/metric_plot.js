@@ -347,6 +347,20 @@ const parseCsv = content => {
     return { headers, rows };
 };
 
+const latestCommitShaFor = (rows, valueHeaders) => [...rows]
+    .reverse()
+    .find(row => row['commit sha'] && valueHeaders.some(header =>
+        Number.isFinite(Number(row[header]))))?.['commit sha'];
+
+const addLatestCommitSha = (svg, latestCommitSha) => {
+    if (!latestCommitSha) { return svg; }
+    const label = escapeSvgText(latestCommitSha);
+    return svg.replace(
+        /(\s*<\/svg>)/,
+        `\n    <text x="616" y="312" text-anchor="end" fill="#57606a" font-family="Arial, sans-serif" font-size="12">${label}</text>$1`,
+    );
+};
+
 const title = (basename, prefix) => {
     const name = basename.replace(/\.csv$/, '').replace(/_/g, ' ');
     const suffix = name.replace(prefix.toLowerCase(), '').trim();
@@ -359,7 +373,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const firstHeader = headers[0];
     const xHeader = headers.find(header =>
         ['elapsed seconds', 'elapsedSeconds'].includes(header));
-    const sceneMetricExcludedHeaders = ['epoch', 'Points', 'Lines'];
+    const sceneMetricExcludedHeaders = ['epoch', 'Points', 'Lines', 'commit sha'];
     const sceneMetricValueFor = (row, header) => {
         const value = Number(row[header]);
         if (header === 'FPS') { return value ? 1000 / value : NaN; }
@@ -388,6 +402,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             yTickInterval: 0.1,
             decimalValues: true,
             samples: rows.map((row, index) => sampleFor(row, index, 'percent')),
+            latestCommitSha: latestCommitShaFor(rows, ['percent']),
         };
     }
     if (headers.includes('FPS')) {
@@ -410,6 +425,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
                         value: sceneMetricValueFor(row, header),
                     })),
                 })),
+                latestCommitSha: latestCommitShaFor(rows, plottableHeaders),
             };
         }
         return {
@@ -419,6 +435,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             yMaxBaseline: 200,
             yTickInterval: 100,
             samples: rows.map((row, index) => sampleFor(row, index, 'FPS')),
+            latestCommitSha: latestCommitShaFor(rows, ['FPS']),
         };
     }
     if (headers.includes('fps')) {
@@ -441,6 +458,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             summaryStatsAfterLoaded: true,
             ...(Number.isFinite(averageValue) ? { averageValue } : {}),
             ...(highlightIndex >= 0 ? { highlightIndex } : {}),
+            latestCommitSha: latestCommitShaFor(rows, ['fps']),
         };
     }
     throw new Error(`No plottable metric found in ${basename || firstHeader || 'CSV'}`);
@@ -448,16 +466,27 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
 
 const buildCsvPlotSvg = (content, options = {}) => {
     const inferred = inferCsvPlot(parseCsv(content), options.filename);
-    return buildMetricPlotSvg(inferred.samples, { ...inferred, ...options });
+    const { latestCommitSha, ...plotOptions } = inferred;
+    const svg = buildMetricPlotSvg(inferred.samples, { ...plotOptions, ...options });
+    return addLatestCommitSha(svg, latestCommitSha);
 };
 
 async function saveCsvPlot(browser, csvPath, destination, options = {}) {
     const content = fs.readFileSync(csvPath, 'utf8');
-    const inferred = inferCsvPlot(parseCsv(content), csvPath);
-    return saveMetricPlot(browser, inferred.samples, destination, {
-        ...inferred,
-        ...options,
-    });
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    const plotPage = await browser.newPage({ viewport: { width: 640, height: 320 } });
+    try {
+        await plotPage.setContent(buildCsvPlotSvg(content, {
+            filename: csvPath,
+            ...options,
+        }), { waitUntil: 'load' });
+        await plotPage.locator('svg').screenshot({
+            path: destination,
+            timeout: 60_000,
+        });
+    } finally {
+        await plotPage.close();
+    }
 }
 
 function printUsage() {
