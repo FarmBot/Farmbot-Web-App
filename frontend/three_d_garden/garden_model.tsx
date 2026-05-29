@@ -155,6 +155,7 @@ export interface GardenModelProps {
   preloadEnvironmentScenes?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
+  smoothBedZOffsetTransitions?: boolean;
 }
 
 const EMPTY_GENERIC_POINTERS: TaggedGenericPointer[] = [];
@@ -164,6 +165,53 @@ const EMPTY_POINT_GROUPS: TaggedPointGroup[] = [];
 const EMPTY_IMAGES: TaggedImage[] = [];
 const EMPTY_SENSORS: TaggedSensor[] = [];
 const EMPTY_SENSOR_READINGS: TaggedSensorReading[] = [];
+
+const bedZOffsetSpringConfig = {
+  tension: 180,
+  friction: 24,
+};
+
+const useSmoothBedZOffsetConfig = (
+  config: Config,
+  enabled: boolean | undefined,
+): Config => {
+  const [bedZOffset, setBedZOffset] = React.useState(config.bedZOffset);
+  const bedZOffsetRef = React.useRef(config.bedZOffset);
+  const [, api] = useSpring(() => ({ bedZOffset: config.bedZOffset }));
+  const setCurrentBedZOffset = React.useCallback((next: number) => {
+    bedZOffsetRef.current = next;
+    setBedZOffset(next);
+  }, []);
+
+  React.useEffect(() => {
+    if (!enabled) {
+      bedZOffsetRef.current = config.bedZOffset;
+      return;
+    }
+    api.start({
+      from: { bedZOffset: bedZOffsetRef.current },
+      to: { bedZOffset: config.bedZOffset },
+      immediate: !config.animate,
+      onChange: result => {
+        const value = result.value as { bedZOffset?: number };
+        setCurrentBedZOffset(value.bedZOffset ?? config.bedZOffset);
+      },
+      onRest: () => setCurrentBedZOffset(config.bedZOffset),
+      config: bedZOffsetSpringConfig,
+    });
+  }, [
+    api,
+    config.animate,
+    config.bedZOffset,
+    enabled,
+    setCurrentBedZOffset,
+  ]);
+
+  return React.useMemo(() => {
+    if (!enabled) { return config; }
+    return { ...config, bedZOffset };
+  }, [bedZOffset, config, enabled]);
+};
 
 interface GardenLayerVisibility {
   showPlants: boolean;
@@ -467,7 +515,7 @@ const environmentSceneConfig = (
     people: scene != "Outdoor",
     bedType,
     bedZOffset: bedType == "Mobile" ? 500 : 0,
-    legsFlush: bedType != "Mobile",
+    legsFlush: false,
   };
 };
 
@@ -509,8 +557,13 @@ const EnvironmentScenePreloader = (props: EnvironmentScenePreloaderProps) => {
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
   const {
-    config, addPlantProps, onDetailsRevealStart, onLoadComplete, threeDPlants,
+    config: baseConfig, addPlantProps, onDetailsRevealStart, onLoadComplete,
+    threeDPlants,
   } = props;
+  const config = useSmoothBedZOffsetConfig(
+    baseConfig,
+    props.smoothBedZOffsetTransitions,
+  );
   const dispatch = addPlantProps?.dispatch;
   const mapPoints = props.mapPoints || EMPTY_GENERIC_POINTERS;
   const weeds = props.weeds || EMPTY_WEEDS;
@@ -916,7 +969,7 @@ export const GardenModel = (props: GardenModelProps) => {
         {config.threeAxes && <AxesHelper args={[5000]} />}
         {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
         {config.clouds && <Clouds config={config} />}
-        {showMoistureMap && props.config.moistureDebug &&
+        {showMoistureMap && config.moistureDebug &&
         <MoistureReadings
           color={"green"}
           radius={50}

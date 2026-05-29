@@ -146,7 +146,7 @@ export const INITIAL: ConfigWithPosition = {
   bedWidthOuter: 1360,
   bedLengthOuter: 3000,
   legSize: 100,
-  legsFlush: true,
+  legsFlush: false,
   extraLegsX: 1,
   extraLegsY: 0,
   bedBrightness: 8,
@@ -512,7 +512,7 @@ export const modifyConfig =
     }
     if (update.bedType || (newConfig.bedType != config.bedType)) {
       newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
-      newConfig.legsFlush = newConfig.bedType != "Mobile";
+      newConfig.legsFlush = false;
     }
     if (Object.keys(update).includes("topDown")) {
       newConfig.perspective = !update.topDown;

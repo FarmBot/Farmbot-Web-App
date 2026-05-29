@@ -206,6 +206,7 @@ interface BedSupportsProps {
 
 const noScale = new Vector3(1, 1, 1);
 const noRotation = new Quaternion();
+const minBedLegHeight = 0.1;
 const bracketGeometryCache: Record<number, ExtrudeGeometry> = {};
 const wheelGeometryCache: Record<number, CylinderGeometry> = {};
 const axleGeometryCache: Record<number, CylinderGeometry> = {};
@@ -245,7 +246,10 @@ const BedSupports = (props: BedSupportsProps) => {
     bedColor, legWoodTexture, supports,
   } = props;
   const casterHeight = legSize * 1.375;
-  const legHeight = bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight;
+  const legHeight = Math.max(
+    minBedLegHeight,
+    bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
+  );
   const supportMatrices = React.useMemo(() => {
     const casterRotation =
       new Quaternion().setFromEuler(new Euler(Math.PI / 2, 0, 0));

@@ -219,7 +219,8 @@ export const Promo = () => {
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
               preloadEnvironmentScenes={true}
               onDetailsRevealStart={handleThreeDLoadComplete}
-              smoothFocusTransitions={true} />
+              smoothFocusTransitions={true}
+              smoothBedZOffsetTransitions={true} />
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
