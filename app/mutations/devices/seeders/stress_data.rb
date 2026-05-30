@@ -41,7 +41,20 @@ module Devices
           attach_images(result.rows.flatten)
         end
         SensorReading.insert_all!(sensor_reading_rows)
-        update_demo_settings
+      end
+
+      def update_demo_settings
+        device.update!(max_images_count: count)
+        device.web_app_config.update!(
+          show_images: true,
+          show_points: true,
+          show_plants: true,
+          show_sensor_readings: true,
+          show_moisture_interpolation_map: true,
+          show_weeds: true,
+          show_spread: true,
+          three_d_garden: true,
+        )
       end
 
       private
@@ -118,7 +131,7 @@ module Devices
             updated_at: timestamp,
             device_id: device.id,
             attachment_processed_at: timestamp,
-            meta: { x: x, y: y, z: 0, name: "Stress Image #{i + 1}" }.to_yaml,
+            meta: { x: x, y: y, z: 0, name: "Stress Image #{i + 1}" },
           }
         end
       end
@@ -160,20 +173,6 @@ module Devices
           }
         end
         ActiveStorage::Attachment.insert_all!(rows)
-      end
-
-      def update_demo_settings
-        device.update!(max_images_count: count)
-        device.web_app_config.update!(
-          show_images: true,
-          show_points: true,
-          show_plants: true,
-          show_sensor_readings: true,
-          show_moisture_interpolation_map: true,
-          show_weeds: true,
-          show_spread: true,
-          three_d_garden: true,
-        )
       end
 
       def coordinate(index, x_offset: 0, y_offset: 0)

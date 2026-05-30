@@ -61,7 +61,7 @@ module Devices
 
     def run_seeds!
       if demo
-        Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder
+        Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder(product_line)
       end
 
       seeder.class::COMMAND_ORDER.map do |cmd|
