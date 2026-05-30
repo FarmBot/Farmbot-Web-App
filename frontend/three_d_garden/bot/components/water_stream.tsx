@@ -40,21 +40,13 @@ interface WaterFlowTextureProviderProps {
   children: React.ReactNode;
 }
 
-const ActiveWaterFlowTextureProvider =
-  (props: Pick<WaterFlowTextureProviderProps, "children">) => {
-    const waterTexture = useWaterFlowTexture(true);
+export const WaterFlowTextureProvider =
+  (props: WaterFlowTextureProviderProps) => {
+    const waterTexture = useWaterFlowTexture(props.waterFlow);
     return <WaterFlowTextureContext.Provider value={waterTexture}>
       {props.children}
     </WaterFlowTextureContext.Provider>;
   };
-
-export const WaterFlowTextureProvider =
-  (props: WaterFlowTextureProviderProps) =>
-    props.waterFlow
-      ? <ActiveWaterFlowTextureProvider>
-        {props.children}
-      </ActiveWaterFlowTextureProvider>
-      : <>{props.children}</>;
 
 export const useSharedWaterFlowTexture = () =>
   React.useContext(WaterFlowTextureContext);

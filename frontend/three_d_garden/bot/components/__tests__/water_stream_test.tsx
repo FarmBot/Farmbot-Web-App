@@ -99,12 +99,12 @@ describe("<WaterFlowTextureProvider />", () => {
     useFrameSpy.mockRestore();
   });
 
-  it("doesn't animate while water is off", () => {
+  it("doesn't load a texture while water is off", () => {
     render(<WaterFlowTextureProvider waterFlow={false}>
       <div />
     </WaterFlowTextureProvider>);
     expect(loadTextureSpy).not.toHaveBeenCalled();
-    expect(useFrameSpy).not.toHaveBeenCalled();
+    expect(useFrameSpy).toHaveBeenCalledTimes(1);
   });
 
   it("loads one shared animated texture while water is on", () => {

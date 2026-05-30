@@ -130,11 +130,12 @@ describe("<Bot />", () => {
     loadTextureSpy.mockRestore();
   });
 
-  it("skips disabled water texture provider", () => {
+  it("keeps water texture provider mounted when water is disabled", () => {
     const p = fakeProps();
     p.config.waterFlow = false;
     const wrapper = createRenderer(<Bot {...p} />);
-    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider))
+      .toHaveLength(1);
     unmountRenderer(wrapper);
   });
 
@@ -142,7 +143,25 @@ describe("<Bot />", () => {
     const p = fakeProps();
     p.config.waterFlow = true;
     const wrapper = createRenderer(<Bot {...p} />);
-    expect(wrapper.root.findAllByType(WaterFlowTextureProvider)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(WaterFlowTextureProvider))
+      .toHaveLength(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("keeps trail mounted while toggling watering animation", () => {
+    const p = fakeProps();
+    p.config.trail = true;
+    p.config.waterFlow = false;
+    const wrapper = createRenderer(<Bot {...p} />);
+
+    actRenderer(() => {
+      wrapper.update(<Bot
+        {...p}
+        config={{ ...p.config, waterFlow: true }} />);
+    });
+
+    expect(wrapper.root.findAll(node => node.props.className == "trail"))
+      .toHaveLength(1);
     unmountRenderer(wrapper);
   });
 

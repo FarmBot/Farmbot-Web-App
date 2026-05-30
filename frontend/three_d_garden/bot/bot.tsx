@@ -986,9 +986,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
     {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
     <Bounds config={config} configPosition={props.configPosition} />}
   </FocusVisibilityGroup>;
-  return config.waterFlow
-    ? <WaterFlowTextureProvider waterFlow={config.waterFlow}>
-      {botModel}
-    </WaterFlowTextureProvider>
-    : botModel;
+  return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
+    {botModel}
+  </WaterFlowTextureProvider>;
 };
