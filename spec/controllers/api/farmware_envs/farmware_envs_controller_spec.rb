@@ -16,14 +16,13 @@ describe Api::FarmwareEnvsController do
     input.keys.map { |key| expect(json[key]).to eq(input[key]) }
   end
 
-  it 'stores compound data types' do
+  it 'does not store compound data types' do
     sign_in user
     b4 = FarmwareEnv.count
     input = { key: "compound_data", value: {x: "y", z: 300} }
     post :create, body: input.to_json, params: { format: :json }
-    expect(response.status).to eq(200)
-    expect(FarmwareEnv.count).to be > b4
-    input.keys.map { |key| expect(json[key]).to eq(input[key]) }
+    expect(response.status).to eq(422)
+    expect(FarmwareEnv.count).to eq(b4)
   end
 
   it 'does not create too many' do

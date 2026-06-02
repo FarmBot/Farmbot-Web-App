@@ -221,9 +221,9 @@ describe("emergencyLock() / emergencyUnlock", () => {
     expect(mockDevice.current.emergencyLock).toHaveBeenCalled();
   });
 
-  it("calls emergencyLock on demo account", () => {
+  it("calls emergencyLock on demo account", async () => {
     localStorage.setItem("myBotIs", "online");
-    deviceActions().emergencyLock();
+    await deviceActions().emergencyLock();
     expect(mockDevice.current.emergencyLock).not.toHaveBeenCalled();
     expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
     expect(demoLuaRunnerActions.eStop).toHaveBeenCalled();
@@ -235,10 +235,10 @@ describe("emergencyLock() / emergencyUnlock", () => {
     expect(mockDevice.current.emergencyUnlock).toHaveBeenCalled();
   });
 
-  it("calls emergencyUnlock on demo account", () => {
+  it("calls emergencyUnlock on demo account", async () => {
     window.confirm = () => true;
     localStorage.setItem("myBotIs", "online");
-    deviceActions().emergencyUnlock();
+    await deviceActions().emergencyUnlock();
     expect(mockDevice.current.emergencyUnlock).not.toHaveBeenCalled();
     expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("emergency_unlock()");
   });
@@ -636,9 +636,9 @@ describe("pinToggle()", () => {
     expect(success).not.toHaveBeenCalled();
   });
 
-  it("toggles demo account pin", () => {
+  it("toggles demo account pin", async () => {
     localStorage.setItem("myBotIs", "online");
-    deviceActions().pinToggle(5);
+    await deviceActions().pinToggle(5);
     expect(mockDevice.current.togglePin).not.toHaveBeenCalled();
     expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("toggle_pin(5)");
   });

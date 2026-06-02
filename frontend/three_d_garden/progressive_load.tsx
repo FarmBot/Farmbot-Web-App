@@ -4,6 +4,7 @@ import { Html } from "@react-three/drei";
 import { Group } from "./components";
 import { Object3D } from "three";
 import { createFocusMaterialBinding } from "./focus_transition";
+import { perfEnabled } from "../performance/perf";
 
 const AnimatedGroup = animated(Group);
 
@@ -60,6 +61,13 @@ export interface ThreeDLoadProgress {
 
 const rounded = (value: number | undefined) => Math.round(value || 0);
 
+const hasLocalStorage = () => typeof localStorage !== "undefined";
+
+export const threeDLoadLogEnabled = () =>
+  perfEnabled()
+  || (hasLocalStorage()
+    && localStorage.getItem("THREE_D_LOAD_LOGS") == "true");
+
 export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
   const startTimeRef = React.useRef(now());
   const loggedRef = React.useRef(false);
@@ -75,16 +83,20 @@ export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
       .every(stepId => readyStepTimes[stepId] !== undefined);
   }, [readyStepTimes]);
 
-  const readyStepCount =
-    THREE_D_LOAD_STEPS.filter(step => readyStepTimes[step.id] !== undefined)
-      .length;
-  const currentStep =
-    THREE_D_LOAD_STEPS.find(step => readyStepTimes[step.id] === undefined);
+  let readyStepCount = 0;
+  let currentStep: typeof THREE_D_LOAD_STEPS[number] | undefined;
+  for (const step of THREE_D_LOAD_STEPS) {
+    if (readyStepTimes[step.id] !== undefined) {
+      readyStepCount++;
+    } else if (currentStep === undefined) {
+      currentStep = step;
+    }
+  }
   const complete = readyStepCount == THREE_D_LOAD_STEPS.length;
   const progress = readyStepCount / THREE_D_LOAD_STEPS.length * 100;
 
   React.useEffect(() => {
-    if (!complete || loggedRef.current) { return; }
+    if (!complete || loggedRef.current || !threeDLoadLogEnabled()) { return; }
     loggedRef.current = true;
     let totalElapsed = 0;
     THREE_D_LOAD_STEPS.forEach(step => {
@@ -188,12 +200,15 @@ interface LoadInGroupProps {
   children: React.ReactNode;
   reveal?: boolean;
   onRest?: () => void;
+  onExitRest?: () => void;
   config?: LoadInSpringConfig;
   fromPosition?: [number, number, number];
   toPosition?: [number, number, number];
   fromScale?: number | [number, number, number];
   toScale?: number | [number, number, number];
   fadeIn?: boolean;
+  animateExit?: boolean;
+  hideAfterExit?: boolean;
   preserveDepthWrite?: boolean;
 }
 
@@ -204,6 +219,9 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
   const fromScale = props.fromScale || 1;
   const toScale = props.toScale || 1;
   const fromOpacity = props.fadeIn ? 0 : 1;
+  const [groupVisible, setGroupVisible] = React.useState(
+    reveal || !props.hideAfterExit,
+  );
   const groupRef = React.useRef<Object3D | undefined>(undefined);
   const opacityRef = React.useRef(fromOpacity);
   const materialBinding = React.useRef<ReturnType<
@@ -225,6 +243,12 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
     materialBinding.current = undefined;
   }, []);
 
+  React.useEffect(() => {
+    if (!reveal) { return; }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGroupVisible(true);
+  }, [reveal]);
+
   const { position, scale } = useSpring({
     from: {
       position: fromPosition,
@@ -236,16 +260,24 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
       scale: reveal ? toScale : fromScale,
       opacity: reveal ? 1 : fromOpacity,
     },
-    immediate: !reveal,
+    immediate: !reveal && !props.animateExit,
     onChange: result => {
       const value = result.value as { opacity?: number };
       applyOpacity(value.opacity ?? 1);
     },
     onRest: () => {
-      if (!reveal) { return; }
-      applyOpacity(1);
-      restoreMaterialBinding();
-      props.onRest?.();
+      applyOpacity(reveal ? 1 : fromOpacity);
+      if (reveal) {
+        restoreMaterialBinding();
+        props.onRest?.();
+      } else {
+        props.onExitRest?.();
+        if (props.hideAfterExit) {
+          setGroupVisible(false);
+        } else {
+          restoreMaterialBinding();
+        }
+      }
     },
     config: props.config || loadInConfig,
   });
@@ -260,6 +292,7 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
   return <AnimatedGroup
     ref={setRef}
     name={props.name}
+    visible={groupVisible}
     position={position}
     scale={scale}>
     {props.children}
@@ -271,7 +304,10 @@ interface PopInGroupProps {
   children: React.ReactNode;
   reveal?: boolean;
   onRest?: () => void;
+  onExitRest?: () => void;
   distance?: number;
+  animateExit?: boolean;
+  hideAfterExit?: boolean;
 }
 
 export const PopInGroup = (props: PopInGroupProps) =>
@@ -279,8 +315,11 @@ export const PopInGroup = (props: PopInGroupProps) =>
     name={props.name}
     reveal={props.reveal}
     onRest={props.onRest}
+    onExitRest={props.onExitRest}
     fromPosition={[0, 0, -(props.distance || 300)]}
     fromScale={[0.96, 0.96, 0.05]}
+    animateExit={props.animateExit}
+    hideAfterExit={props.hideAfterExit}
     toScale={[1, 1, 1]}>
     {props.children}
   </LoadInGroup>;
@@ -290,9 +329,12 @@ interface FallInGroupProps {
   children: React.ReactNode;
   reveal?: boolean;
   onRest?: () => void;
+  onExitRest?: () => void;
   config?: LoadInSpringConfig;
   distance?: number;
   fadeIn?: boolean;
+  animateExit?: boolean;
+  hideAfterExit?: boolean;
   preserveDepthWrite?: boolean;
 }
 
@@ -301,11 +343,14 @@ export const FallInGroup = (props: FallInGroupProps) =>
     name={props.name}
     reveal={props.reveal}
     onRest={props.onRest}
+    onExitRest={props.onExitRest}
     config={props.config}
     fromPosition={[0, 0, props.distance || 3000]}
     fromScale={1.02}
     toScale={1}
     fadeIn={props.fadeIn}
+    animateExit={props.animateExit}
+    hideAfterExit={props.hideAfterExit}
     preserveDepthWrite={props.preserveDepthWrite}>
     {props.children}
   </LoadInGroup>;

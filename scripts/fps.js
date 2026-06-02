@@ -1,6 +1,7 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 const { prepareStressResources } = require('./fps_stress_resources');
 
 function parseArgs(argv) {
@@ -56,6 +57,11 @@ const screenshotOnly = options.screenshotOnly;
 const click = options.click;
 const state = options.state ? path.join('/tmp', `${options.state}.json`) : undefined;
 const saveState = path.join('/tmp', `${name}.json`);
+const commitSha = () => {
+    const sha = process.env.GITHUB_SHA
+        || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    return sha.slice(0, 10);
+};
 const chromiumArgs = [
     '--no-sandbox',
     '--disable-setuid-sandbox',
@@ -119,13 +125,15 @@ const csvField = value => {
 
 function saveFpsSamplesCsv(samples, destination) {
     fs.mkdirSync(path.dirname(destination), { recursive: true });
+    const sha = commitSha();
     const rows = [
-        ['elapsed seconds', 'fps', 'loading', 'averaged'],
+        ['elapsed seconds', 'fps', 'loading', 'averaged', 'commit sha'],
         ...samples.map(sample => [
             Number(sample.elapsedSeconds).toFixed(3),
             Number(sample.fps).toFixed(2),
             sample.loading ? 'true' : 'false',
             sample.averaged ? 'true' : 'false',
+            sha,
         ]),
     ];
     fs.writeFileSync(destination, `${rows
@@ -154,6 +162,7 @@ async function main() {
         console.log(`STATE=${state}`);
     }
     const context = await browser.newContext(contextOptions);
+    await context.addInitScript(() => localStorage.setItem('FPS_LOGS', 'true'));
     const page = await context.newPage();
     page.setDefaultTimeout(60_000);
     try {
@@ -236,6 +245,9 @@ async function main() {
         }
         console.log(`FPS_VALUE=${averagePostLoadSample.toFixed(2)}`);
         const data = await page.evaluate(() => window.__scene_metrics);
+        if (!data || data === 'undefined') {
+            throw new Error('window.__scene_metrics was not available');
+        }
         console.log(`SCENE_METRICS=${data}`);
         fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
         await page.screenshot({

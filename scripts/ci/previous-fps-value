@@ -3,6 +3,7 @@ import csv
 import os
 import sys
 
+
 def required_env(name):
     value = os.environ.get(name)
     if value is None:
@@ -10,13 +11,19 @@ def required_env(name):
         raise SystemExit(1)
     return value
 
+
 chosen_metrics = required_env("CHOSEN_METRICS")
 fallback = required_env("FALLBACK_FPS_VALUE")
 path = f"/tmp/{chosen_metrics}.csv"
 
 try:
     with open(path, newline="") as f:
-        rows = list(csv.DictReader(f))
+        reader = csv.DictReader(f)
+        reader.fieldnames = [
+            field.strip() if field else field
+            for field in (reader.fieldnames or [])
+        ]
+        rows = list(reader)
 except FileNotFoundError:
     rows = []
 

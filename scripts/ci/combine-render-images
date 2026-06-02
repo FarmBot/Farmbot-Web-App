@@ -17,6 +17,11 @@ const screenshotName = requiredEnv('SCREENSHOT_NAME');
 const fpsSamplesName = requiredEnv('FPS_SAMPLES_NAME');
 const sceneMetricsName = requiredEnv('SCENE_METRICS_NAME');
 const feCoverageName = requiredEnv('FE_COVERAGE_NAME');
+const renderImageScale = Number(process.env.COMBINED_RENDER_IMAGE_SCALE || 2);
+if (!Number.isFinite(renderImageScale) || renderImageScale <= 0) {
+    console.error('COMBINED_RENDER_IMAGE_SCALE must be a positive number');
+    process.exit(1);
+}
 const imagePath = name => `/tmp/${name}.png`;
 const imageData = filePath => {
     const data = fs.readFileSync(filePath).toString('base64');
@@ -136,7 +141,10 @@ async function main() {
         ],
     });
     try {
-        const page = await browser.newPage({ viewport: { width: 1800, height: 1200 } });
+        const page = await browser.newPage({
+            viewport: { width: 1800, height: 1200 },
+            deviceScaleFactor: renderImageScale,
+        });
         await page.setContent(html, { waitUntil: 'load' });
         await page.screenshot({ path: output, fullPage: true });
         console.log(`COMBINED_RENDER_IMAGE=${output}`);

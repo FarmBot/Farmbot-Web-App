@@ -4,7 +4,7 @@ import { Material, Object3D } from "three";
 import { Group } from "./components";
 import { Camera, VectorXyz } from "./zoom_beacons_constants";
 
-export const FOCUS_TRANSITION_MS = 900;
+export const FOCUS_TRANSITION_MS = 750;
 
 export const easeInOutCubic = (t: number) =>
   t < 0.5
@@ -95,7 +95,9 @@ const cloneSlot = (slot: MaterialSlot): {
 const forEachMaterial =
   (slot: MaterialSlot, callback: (material: Material, index: number) => void) => {
     if (Array.isArray(slot)) {
-      slot.map(callback);
+      for (let index = 0; index < slot.length; index++) {
+        callback(slot[index], index);
+      }
     } else if (isMaterial(slot)) {
       callback(slot, 0);
     }
@@ -140,20 +142,21 @@ export const createFocusMaterialBinding = (
 
   return {
     apply: (opacity: number) => {
-      records.map(record =>
+      for (const record of records) {
         forEachMaterial(record.clones, (material, index) =>
           applyFocusMaterialOpacity(
             material,
             record.states[index],
             opacity,
             !!options.preserveDepthWrite,
-          )));
+          ));
+      }
     },
     restore: () => {
-      records.map(record => {
+      for (const record of records) {
         record.owner.material = record.original;
         forEachMaterial(record.clones, material => material.dispose());
-      });
+      }
     },
   };
 };
@@ -185,10 +188,35 @@ export const shouldUnmountFocusVisibilityGroup = (
 export const FocusVisibilityGroup =
   React.forwardRef<Object3D, FocusVisibilityGroupProps>((props, forwardedRef) => {
     const {
-      visible, keepMounted, materialBindingKey, preserveDepthWrite, children,
-      ...groupProps
+      visible, keepMounted: _keepMounted, materialBindingKey: _materialBindingKey,
+      preserveDepthWrite: _preserveDepthWrite, children, ...groupProps
     } = props;
     const transition = useFocusTransition();
+    if (!transition.enabled) {
+      return <Group {...groupProps} visible={visible} ref={forwardedRef}>
+        {children}
+      </Group>;
+    }
+
+    return <TransitionFocusVisibilityGroup
+      {...props}
+      ref={forwardedRef}
+      transition={transition} />;
+  });
+
+interface TransitionFocusVisibilityGroupProps extends FocusVisibilityGroupProps {
+  transition: FocusTransitionContextValue;
+}
+
+const TransitionFocusVisibilityGroup =
+  React.forwardRef<Object3D, TransitionFocusVisibilityGroupProps>((
+    props,
+    forwardedRef,
+  ) => {
+    const {
+      visible, keepMounted, materialBindingKey, preserveDepthWrite, children,
+      transition, ...groupProps
+    } = props;
     const enabled = transition.enabled;
     const [rendered, setRendered] = React.useState(visible || !!keepMounted);
     const [groupVisible, setGroupVisible] = React.useState(visible);
@@ -279,12 +307,6 @@ export const FocusVisibilityGroup =
     });
 
     React.useEffect(() => restoreMaterialBinding, [restoreMaterialBinding]);
-
-    if (!enabled) {
-      return <Group {...groupProps} visible={visible} ref={forwardedRef}>
-        {children}
-      </Group>;
-    }
 
     if (shouldUnmountFocusVisibilityGroup(rendered, visible, keepMounted)) {
       return undefined;
@@ -501,6 +523,7 @@ export interface UseSmoothCameraProps {
   enabled: boolean;
   cameraObject?: SmoothCameraObject | null;
   controls?: SmoothCameraControls | null;
+  updateStateDuringTransition?: boolean;
 }
 
 export const useSmoothCamera = (props: UseSmoothCameraProps) => {
@@ -556,6 +579,8 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
       props.cameraObject,
       props.controls,
     );
+    const updateStateDuringTransition =
+      props.updateStateDuringTransition ?? true;
     const startedAt = performance.now();
     let frame = 0;
     const tick = () => {
@@ -567,13 +592,17 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
         easeInOutCubic(progress),
       );
       displayRef.current = next;
-      setDisplayCamera(next);
+      if (updateStateDuringTransition) {
+        setDisplayCamera(next);
+      }
       applySmoothCameraState(next, props.cameraObject, props.controls);
       if (progress < 1) {
         frame = window.requestAnimationFrame(tick);
       } else {
         displayRef.current = target;
-        setDisplayCamera(target);
+        if (updateStateDuringTransition) {
+          setDisplayCamera(target);
+        }
         applySmoothCameraState(
           target,
           props.cameraObject,
@@ -589,6 +618,7 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
     props.controls,
     props.enabled,
     target,
+    props.updateStateDuringTransition,
     transition.duration,
   ]);
 

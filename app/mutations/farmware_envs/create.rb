@@ -5,7 +5,7 @@ module FarmwareEnvs
     required do
       model :device, class: Device
       string :key
-      duck :value, methods: [:to_json]
+      string :value
     end
 
     def validate

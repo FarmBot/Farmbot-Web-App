@@ -27,6 +27,7 @@ import { ResourceTitle } from "../sequences/panel/editor";
 import { Popover } from "../ui";
 import { pointsSelectedByGroup } from "./criteria/apply";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
+import { findGroupFromUrl } from "./find_group_from_url";
 
 export interface GroupDetailProps {
   dispatch: Function;
@@ -41,14 +42,6 @@ export interface GroupDetailProps {
   toolTransformProps: ToolTransformProps;
   tryGroupSortType: PointGroupSortType | undefined;
 }
-
-/** Find a group from a URL-provided ID. */
-export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
-  if (!Path.startsWith(Path.groups()) &&
-    !Path.startsWith(Path.zones())) { return; }
-  const groupId = parseInt(Path.getLastChunk());
-  return groups.filter(group => group.body.id === groupId)[0];
-};
 
 export function mapStateToProps(props: Everything): GroupDetailProps {
   const {

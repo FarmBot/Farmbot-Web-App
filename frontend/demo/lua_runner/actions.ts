@@ -21,6 +21,8 @@ import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
 import { isMessageType } from "../../sequences/interfaces";
 
+const DEFAULT_TIME_STEP_MS = 33.33;
+
 const almostEqual = (a: XyzNumber, b: XyzNumber) => {
   const epsilon = 0.01;
   return Math.abs(a.x - b.x) < epsilon &&
@@ -32,6 +34,7 @@ const movementChunks = (
   current: XyzNumber,
   target: XyzNumber,
   mmPerTimeStep: number,
+  disableChunking: boolean,
 ): XyzNumber[] => {
   const dx = target.x - current.x;
   const dy = target.y - current.y;
@@ -44,7 +47,7 @@ const movementChunks = (
     y: dy / length,
     z: dz / length,
   };
-  const steps = localStorage.getItem("DISABLE_CHUNKING") === "true"
+  const steps = disableChunking
     ? 0
     : Math.floor(length / mmPerTimeStep);
   const chunks: XyzNumber[] = [];
@@ -87,14 +90,29 @@ export const setCurrent = (position: XyzNumber) => {
   current.z = position.z;
 };
 
-export const expandActions = (
+export interface ExpandedActionsResult {
+  actions: Action[];
+  current: XyzNumber;
+}
+
+export const expandActionsFromPosition = (
   actions: Action[],
   variables: ParameterApplication[] | undefined,
-  stashedCurrentPosition?: XyzNumber,
-): Action[] => {
+  startPosition: XyzNumber,
+): ExpandedActionsResult => {
   const expanded: Action[] = [];
-  const timeStepMs = parseInt(localStorage.getItem("timeStepMs") || "250");
+  const expansionCurrent = { ...startPosition };
+  const setExpansionCurrent = (position: XyzNumber) => {
+    expansionCurrent.x = position.x;
+    expansionCurrent.y = position.y;
+    expansionCurrent.z = position.z;
+  };
+  const storedTimeStepMs = localStorage.getItem("timeStepMs");
+  const timeStepMs = storedTimeStepMs
+    ? parseFloat(storedTimeStepMs)
+    : DEFAULT_TIME_STEP_MS;
   const mmPerSecond = parseInt(localStorage.getItem("mmPerSecond") || "500");
+  const disableChunking = localStorage.getItem("DISABLE_CHUNKING") === "true";
   const mmPerTimeStep = (mmPerSecond * timeStepMs) / 1000;
   const addPosition = (position: XyzNumber) => {
     expanded.push({
@@ -115,39 +133,47 @@ export const expandActions = (
           y: action.args[1] as number,
           z: action.args[2] as number,
         });
-        movementChunks(current, moveAbsoluteTarget, mmPerTimeStep).map(addPosition);
-        setCurrent(moveAbsoluteTarget);
+        movementChunks(
+          expansionCurrent, moveAbsoluteTarget, mmPerTimeStep, disableChunking)
+          .map(addPosition);
+        setExpansionCurrent(moveAbsoluteTarget);
         break;
       case "move_relative":
         const moveRelativeTarget = clampTarget({
-          x: current.x + (action.args[0] as number),
-          y: current.y + (action.args[1] as number),
-          z: current.z + (action.args[2] as number),
+          x: expansionCurrent.x + (action.args[0] as number),
+          y: expansionCurrent.y + (action.args[1] as number),
+          z: expansionCurrent.z + (action.args[2] as number),
         });
-        movementChunks(current, moveRelativeTarget, mmPerTimeStep).map(addPosition);
-        setCurrent(moveRelativeTarget);
+        movementChunks(
+          expansionCurrent, moveRelativeTarget, mmPerTimeStep, disableChunking)
+          .map(addPosition);
+        setExpansionCurrent(moveRelativeTarget);
         break;
       case "_move":
         const moveItems = JSON.parse("" + action.args[0]) as MoveBodyItem[];
-        const { moves, warnings } = calculateMove(moveItems, current, variables);
+        const { moves, warnings } =
+          calculateMove(moveItems, expansionCurrent, variables);
         warnings.length > 0 && expanded.push({
           type: "send_message",
           args: [
             "warn",
             `not yet supported: ${warnings.join(", ")}`,
             "",
-            JSON.stringify(current),
+            JSON.stringify(expansionCurrent),
           ],
         });
         const actualMoveTargets = moves.map(clampTarget);
         actualMoveTargets.map(actualMoveTarget => {
-          movementChunks(current, actualMoveTarget, mmPerTimeStep).map(addPosition);
-          setCurrent(actualMoveTarget);
+          movementChunks(
+            expansionCurrent, actualMoveTarget, mmPerTimeStep, disableChunking)
+            .map(addPosition);
+          setExpansionCurrent(actualMoveTarget);
         });
         break;
       case "send_message":
-        action.args[3] = JSON.stringify(current);
-        expanded.push({ type: "send_message", args: action.args });
+        const sendMessageArgs = [...action.args];
+        sendMessageArgs[3] = JSON.stringify(expansionCurrent);
+        expanded.push({ type: "send_message", args: sendMessageArgs });
         break;
       case "take_photo":
       case "calibrate_camera":
@@ -171,7 +197,7 @@ export const expandActions = (
             "info",
             MSGS[action.type],
             "",
-            JSON.stringify(current),
+            JSON.stringify(expansionCurrent),
             3,
           ],
         });
@@ -181,7 +207,11 @@ export const expandActions = (
         });
         expanded.push({
           type: "take_photo",
-          args: [current.x, current.y, current.z],
+          args: [
+            expansionCurrent.x,
+            expansionCurrent.y,
+            expansionCurrent.z,
+          ],
         });
         expanded.push({
           type: "send_message",
@@ -189,7 +219,7 @@ export const expandActions = (
             "info",
             "Uploaded image:",
             "",
-            JSON.stringify(current),
+            JSON.stringify(expansionCurrent),
             3,
           ],
         });
@@ -197,8 +227,8 @@ export const expandActions = (
           const body: Point = {
             name: "Soil Height",
             pointer_type: "GenericPointer",
-            x: current.x,
-            y: current.y,
+            x: expansionCurrent.x,
+            y: expansionCurrent.y,
             z: -500 + random(-10, 10),
             meta: { at_soil_level: "true" },
             radius: 0,
@@ -210,8 +240,8 @@ export const expandActions = (
           const body: Point = {
             name: "Weed",
             pointer_type: "Weed",
-            x: current.x,
-            y: current.y,
+            x: expansionCurrent.x,
+            y: expansionCurrent.y,
             z: -500,
             meta: { color: "red", created_by: "plant-detection" },
             radius: 50,
@@ -227,12 +257,14 @@ export const expandActions = (
         const axes = axisInput == "all" ? ["z", "y", "x"] : [axisInput];
         axes.map(axis => {
           const homeTarget = {
-            x: axis == "x" ? 0 : current.x,
-            y: axis == "y" ? 0 : current.y,
-            z: axis == "z" ? 0 : current.z,
+            x: axis == "x" ? 0 : expansionCurrent.x,
+            y: axis == "y" ? 0 : expansionCurrent.y,
+            z: axis == "z" ? 0 : expansionCurrent.z,
           };
-          movementChunks(current, homeTarget, mmPerTimeStep).map(addPosition);
-          setCurrent(homeTarget);
+          movementChunks(
+            expansionCurrent, homeTarget, mmPerTimeStep, disableChunking)
+            .map(addPosition);
+          setExpansionCurrent(homeTarget);
         });
         break;
       case "read_pin":
@@ -241,21 +273,48 @@ export const expandActions = (
           type: "sensor_reading",
           args: [
             pin,
-            current.x,
-            current.y,
-            current.z,
+            expansionCurrent.x,
+            expansionCurrent.y,
+            expansionCurrent.z,
           ],
         });
         break;
+      case "expanded_move_absolute":
+        const expandedMoveTarget = {
+          x: action.args[0] as number,
+          y: action.args[1] as number,
+          z: action.args[2] as number,
+        };
+        expanded.push({
+          type: "expanded_move_absolute",
+          args: [
+            expandedMoveTarget.x,
+            expandedMoveTarget.y,
+            expandedMoveTarget.z,
+          ],
+        });
+        setExpansionCurrent(expandedMoveTarget);
+        break;
       default:
-        expanded.push(action);
+        expanded.push({ type: action.type, args: [...action.args] });
         break;
     }
   });
-  if (stashedCurrentPosition) {
-    setCurrent(stashedCurrentPosition);
-  }
-  return expanded;
+  return {
+    actions: expanded,
+    current: { ...expansionCurrent },
+  };
+};
+
+export const expandActions = (
+  actions: Action[],
+  variables: ParameterApplication[] | undefined,
+  stashedCurrentPosition?: XyzNumber,
+): Action[] => {
+  const startPosition = stashedCurrentPosition || current;
+  const result = expandActionsFromPosition(actions, variables, startPosition);
+  if (!stashedCurrentPosition) { setCurrent(result.current); }
+  return result.actions;
 };
 
 interface Scheduled {
@@ -265,6 +324,15 @@ interface Scheduled {
 const pending: Scheduled[] = [];
 let latestActionMs = Date.now();
 let currentTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+
+export const syncCurrentFromBotPosition = () => {
+  if (pending.length > 0) { return; }
+  const position = store.getState().bot.hardware.location_data?.position;
+  if (typeof position?.x != "number" ||
+    typeof position.y != "number" ||
+    typeof position.z != "number") { return; }
+  setCurrent({ x: position.x, y: position.y, z: position.z });
+};
 
 export const eStop = () => {
   latestActionMs = 0;
@@ -424,7 +492,8 @@ export const runActions = (
           const point = JSON.parse("" + action.args[0]) as Point;
           point.meta = point.meta || {};
           return () => {
-            store.dispatch(crud.initSave("Point", point) as unknown as UnknownAction);
+            store.dispatch(
+              crud.initSave("Point", point) as unknown as UnknownAction);
           };
         case "update_device":
           return () => {

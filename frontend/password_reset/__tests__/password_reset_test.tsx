@@ -1,10 +1,12 @@
 let mockPut = Promise.resolve();
 
+import React from "react";
 import { API } from "../../api";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { PasswordReset } from "../password_reset";
 import axios from "axios";
+import { render } from "@testing-library/react";
 
 describe("<PasswordReset/>", () => {
   API.setBaseUrl("");
@@ -96,5 +98,23 @@ describe("<PasswordReset/>", () => {
     i.setState = jest.fn(i.setState);
     i.set(field)(inputEvent(value));
     expect(i.setState).toHaveBeenCalledWith({ [field]: value });
+  });
+
+  it("renders the password reset form", () => {
+    const { container } = render(<PasswordReset />);
+    const helpText = "Password must be 8 or more characters.";
+
+    expect(container.querySelector(".static-page")).toBeTruthy();
+    expect(container.querySelector("h1")?.textContent)
+      .toContain("Reset your password");
+    expect(container.querySelector(`[aria-label='${helpText}']`)).toBeTruthy();
+    expect(container.textContent).toContain("New Password");
+    expect(container.textContent).toContain("Confirm New Password");
+    expect(container.querySelectorAll("input[type='password']").length)
+      .toEqual(2);
+    expect(container.querySelector("button")?.getAttribute("title"))
+      .toEqual("Reset password");
+    expect(container.querySelector("button")?.textContent).toContain("Reset");
+    expect(container.querySelector(".toast-container")).toBeTruthy();
   });
 });

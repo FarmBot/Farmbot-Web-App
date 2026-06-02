@@ -9,7 +9,7 @@ export interface NorthArrowProps {
   config: Config;
 }
 
-export const NorthArrow = (props: NorthArrowProps) => {
+const NorthArrowBase = (props: NorthArrowProps) => {
   const {
     bedWidthOuter, bedLengthOuter, bedHeight, bedZOffset, heading,
   } = props.config;
@@ -39,6 +39,24 @@ export const NorthArrow = (props: NorthArrowProps) => {
     </Extrude>
   </Group>;
 };
+
+const NORTH_ARROW_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "heading",
+  "north",
+];
+
+export const northArrowPropsEqual = (
+  prev: NorthArrowProps,
+  next: NorthArrowProps,
+) =>
+  NORTH_ARROW_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+export const NorthArrow = React.memo(NorthArrowBase, northArrowPropsEqual);
 
 const northArrowShape = new Shape();
 

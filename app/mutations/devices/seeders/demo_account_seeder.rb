@@ -170,13 +170,14 @@ module Devices
       #    tester FBOS version `1000.0.0`.
       READ_COMMENT_ABOVE = "100.0.0"
 
-      def before_product_line_seeder
+      def before_product_line_seeder(product_line)
         device
           .web_app_config
           .update!(
             discard_unsaved: true,
             three_d_garden: true,
           )
+        stress_data(product_line)&.update_demo_settings
         device
           .fbos_config
           .update!(
@@ -187,9 +188,8 @@ module Devices
 
       def after_product_line_seeder(product_line)
         create_webcam_feed(product_line)
-        stress_count = Devices::Seeders::StressData.count_for(product_line)
-        if stress_count
-          Devices::Seeders::StressData.new(device, stress_count).seed!
+        if (data = stress_data(product_line))
+          data.seed!
         else
           add_plants(product_line)
           add_soil_height_points(product_line)
@@ -209,6 +209,11 @@ module Devices
           .map { |p| Logs::Create.run!(p) }
         device
           .update!(fbos_version: READ_COMMENT_ABOVE)
+      end
+
+      def stress_data(product_line)
+        stress_count = Devices::Seeders::StressData.count_for(product_line)
+        Devices::Seeders::StressData.new(device, stress_count) if stress_count
       end
     end
   end

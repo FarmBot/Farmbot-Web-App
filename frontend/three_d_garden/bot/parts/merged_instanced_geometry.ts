@@ -1,5 +1,7 @@
 import * as THREE from "three";
+import React from "react";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { InstancedMesh } from "../../components";
 
 type InstancedNode = THREE.Mesh & {
   instanceMatrix?: THREE.InstancedBufferAttribute;
@@ -38,3 +40,21 @@ export const mergedInstancedGeometry = (
   geometryCache.set(model, merged);
   return merged;
 };
+
+export const fallbackInstancedMeshes = (
+  model: InstancedModel,
+  keyPattern: RegExp,
+  material: THREE.Material,
+) =>
+  Object.entries(model.nodes)
+    .filter(([key]) => keyPattern.test(key))
+    .map(([key, node]) =>
+      React.createElement(InstancedMesh, {
+        key,
+        args: [
+          node.geometry,
+          material,
+          node.instanceMatrix?.count || 1,
+        ],
+        instanceMatrix: node.instanceMatrix,
+      }));

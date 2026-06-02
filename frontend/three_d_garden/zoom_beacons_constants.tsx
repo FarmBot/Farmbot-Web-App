@@ -395,9 +395,10 @@ export const getFocus = (
   config: Config,
   configPosition: PositionConfig,
   activeFocus: string,
-) =>
-  FOCI(config, configPosition)[findIndex(FOCI(config, configPosition),
-    ["label", activeFocus])];
+) => {
+  const foci = FOCI(config, configPosition);
+  return foci[findIndex(foci, ["label", activeFocus])];
+};
 
 export const getCameraOffset = (focus: Focus) =>
   isDesktop()

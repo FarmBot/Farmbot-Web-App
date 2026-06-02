@@ -96,6 +96,24 @@ describe("runActions()", () => {
 });
 
 describe("expandActions()", () => {
+  const defaultTimeStepMs = 33.33;
+  const defaultMmPerStep = 500 * defaultTimeStepMs / 1000;
+  const defaultWait = () => ({ type: "wait_ms", args: [defaultTimeStepMs] });
+  const defaultMove = (x: number) => ({
+    type: "expanded_move_absolute",
+    args: [x, 0, 0],
+  });
+  const defaultXAxisMovement = (target: number) => {
+    const steps = Math.floor(target / defaultMmPerStep);
+    const chunks = Array.from({ length: steps }, (_value, index) =>
+      defaultMmPerStep * (index + 1));
+    const last = chunks[chunks.length - 1];
+    if (!last || Math.abs(last - target) >= 0.01) {
+      chunks.push(target);
+    }
+    return chunks.flatMap(x => [defaultWait(), defaultMove(x)]);
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
@@ -103,6 +121,7 @@ describe("expandActions()", () => {
     setCurrent({ x: 0, y: 0, z: 0 });
     localStorage.removeItem("timeStepMs");
     localStorage.removeItem("mmPerSecond");
+    localStorage.removeItem("DISABLE_CHUNKING");
     console.log = jest.fn();
     mockResources = buildResourceIndex([
       fakeFirmwareConfig(),
@@ -121,23 +140,13 @@ describe("expandActions()", () => {
   it("chunks movements: default", () => {
     expect(expandActions([
       { type: "move_absolute", args: [300, 0, 0] },
-    ], [])).toEqual([
-      { type: "wait_ms", args: [250] },
-      { type: "expanded_move_absolute", args: [125, 0, 0] },
-      { type: "wait_ms", args: [250] },
-      { type: "expanded_move_absolute", args: [250, 0, 0] },
-      { type: "wait_ms", args: [250] },
-      { type: "expanded_move_absolute", args: [300, 0, 0] },
-    ]);
+    ], [])).toEqual(defaultXAxisMovement(300));
   });
 
   it("chunks movements: lands on target", () => {
     expect(expandActions([
       { type: "move_absolute", args: [125, 0, 0] },
-    ], [])).toEqual([
-      { type: "wait_ms", args: [250] },
-      { type: "expanded_move_absolute", args: [125, 0, 0] },
-    ]);
+    ], [])).toEqual(defaultXAxisMovement(125));
   });
 
   it("chunks movements: custom", () => {
@@ -156,9 +165,21 @@ describe("expandActions()", () => {
     expect(expandActions([
       { type: "move_absolute", args: [2000, 0, 0] },
     ], [])).toEqual([
-      { type: "wait_ms", args: [250] },
+      defaultWait(),
       { type: "expanded_move_absolute", args: [2000, 0, 0] },
     ]);
+  });
+
+  it("reads chunking preference once per expansion", () => {
+    const getItem = jest.spyOn(localStorage, "getItem");
+    expect(expandActions([
+      { type: "move_absolute", args: [300, 0, 0] },
+      { type: "move_relative", args: [0, 300, 0] },
+      { type: "find_home", args: ["all"] },
+    ], []).length).toBeGreaterThan(0);
+    expect(getItem.mock.calls
+      .filter(([key]) => key === "DISABLE_CHUNKING")).toHaveLength(1);
+    getItem.mockRestore();
   });
 
   it("chunks movements: warns", () => {
@@ -174,7 +195,7 @@ describe("expandActions()", () => {
           "{\"x\":0,\"y\":0,\"z\":0}",
         ],
       },
-      { type: "wait_ms", args: [250] },
+      defaultWait(),
       { type: "expanded_move_absolute", args: [0, 0, 0] },
     ]);
   });

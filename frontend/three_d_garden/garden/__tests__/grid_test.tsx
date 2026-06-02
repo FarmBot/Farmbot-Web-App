@@ -1,6 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { Grid, gridLineOffsets, GridProps } from "../grid";
+import {
+  Grid, gridLineOffsets, gridLinePositions, gridPropsEqual, GridProps,
+} from "../grid";
 import { INITIAL, PRESETS } from "../../config";
 import { clone } from "lodash";
 import {
@@ -17,6 +19,17 @@ describe("gridLineOffsets()", () => {
   });
 });
 
+describe("gridLinePositions()", () => {
+  it("builds outer and inner positions", () => {
+    const config = clone(INITIAL);
+    config.botSizeX = 200;
+    config.botSizeY = 100;
+    const positions = gridLinePositions(config, () => 0);
+    expect(positions.outerPositions.length).toEqual(2400);
+    expect(positions.innerPositions.length).toEqual(600);
+  });
+});
+
 describe("<Grid />", () => {
   const fakeProps = (): GridProps => ({
     config: clone(INITIAL),
@@ -29,6 +42,42 @@ describe("<Grid />", () => {
     p.config.grid = true;
     const { container } = render(<Grid {...p} />);
     expect(container).toContainHTML("grid");
+  });
+
+  it("skips hidden grid generation", () => {
+    const p = fakeProps();
+    p.config.grid = false;
+    p.getZ = jest.fn(() => 0);
+    const { container } = render(<Grid {...p} />);
+    expect(container).not.toContainHTML("grid");
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("skips grid generation in Planter bed focus", () => {
+    const p = fakeProps();
+    p.config.grid = true;
+    p.activeFocus = "Planter bed";
+    p.getZ = jest.fn(() => 0);
+    const { container } = render(<Grid {...p} />);
+    expect(container).not.toContainHTML("grid");
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
+  it("compares grid-relevant config fields", () => {
+    const p = fakeProps();
+    p.config.grid = true;
+    expect(gridPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(gridPropsEqual(p, {
+      ...p,
+      config: { ...p.config, botSizeX: p.config.botSizeX + 1 },
+    })).toBeFalsy();
+    expect(gridPropsEqual(p, {
+      ...p,
+      activeFocus: "Planter bed",
+    })).toBeFalsy();
   });
 
   it("refreshes focus material binding when grid dimensions change", () => {

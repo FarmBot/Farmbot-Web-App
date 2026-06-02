@@ -139,6 +139,11 @@ jobs:
             bun scripts/metric_plot.js "$csv"
           done
 
+      - name: Combine plots
+        if: always()
+        run: |
+          bun scripts/ci/combine-render-images
+
       - name: Save FPS metrics
         uses: actions/cache/save@v5
         with:
@@ -163,7 +168,6 @@ jobs:
           name: images
           path: |
             /tmp/*.png
-            /tmp/${{ env.FE_COVERAGE_NAME }}.png
           if-no-files-found: warn
 
       - name: Upload csv artifacts

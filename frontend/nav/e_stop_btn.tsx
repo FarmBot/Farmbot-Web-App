@@ -11,9 +11,13 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {
     const i = this.props.bot.hardware.informational_settings;
     const isLocked = !!i.locked;
-    const toggleEmergencyLock = isLocked
-      ? () => emergencyUnlock(this.props.forceUnlock)
-      : emergencyLock;
+    const toggleEmergencyLock = () => {
+      if (isLocked) {
+        void emergencyUnlock(this.props.forceUnlock);
+      } else {
+        void emergencyLock();
+      }
+    };
     const color = isLocked ? "yellow" : "red";
     const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : GRAY;
     const stop = isMobile()

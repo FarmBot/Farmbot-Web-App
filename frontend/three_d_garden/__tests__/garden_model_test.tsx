@@ -2,7 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { OrbitControls, useTexture } from "@react-three/drei";
+import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
 import {
   GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
   SMOOTH_XL_CAMERA_HEIGHT_SCALE,
@@ -11,7 +11,7 @@ import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render, waitFor } from "@testing-library/react";
 import {
-  fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
+  fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeSequence, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { Path } from "../../internal_urls";
@@ -26,10 +26,22 @@ import {
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
+import { BooleanSetting } from "../../session_keys";
+import {
+  FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
+} from "../progressive_load";
+import { AxesHelper } from "../components";
+import { Clouds } from "../garden/clouds";
+import { Ground } from "../garden/ground";
+import { NorthArrow } from "../garden/north_arrow";
+import { Solar } from "../garden/solar";
+import { configureStore, store } from "../../redux/store";
+import { resourceReady } from "../../sync/actions";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 let useStateSpy: jest.SpyInstance;
+let resetStoreAfterTest = false;
 const originalPathname = location.pathname;
 const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
@@ -62,6 +74,10 @@ describe("<GardenModel />", () => {
     useStateSpy.mockRestore();
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
+    if (resetStoreAfterTest) {
+      configureStore();
+      resetStoreAfterTest = false;
+    }
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
     location.pathname = originalPathname;
   });
@@ -81,6 +97,26 @@ describe("<GardenModel />", () => {
     return wrapper;
   };
 
+  const defaultLayerSetting = (setting: string) =>
+    setting == BooleanSetting.show_plants
+    || setting == BooleanSetting.show_points
+    || setting == BooleanSetting.show_weeds
+    || setting == BooleanSetting.show_farmbot;
+  const bedSupportNames = ["bed-leg-wood", "caster-bracket", "wheel", "axle"];
+  const findPlantInstanceNodes =
+    (wrapper: ReturnType<typeof createRenderer>) =>
+      wrapper.root.findAll(node => {
+        const nodeName = typeof node.props.name == "string"
+          ? node.props.name
+          : "";
+        return `${node.type}` == "instancedMesh" &&
+          !bedSupportNames.includes(nodeName);
+      });
+  const plantInstanceCount = (container: HTMLElement) =>
+    [...container.querySelectorAll("instancedmesh")]
+      .filter(node => !bedSupportNames.includes(node.getAttribute("name") || ""))
+      .length;
+
   it("renders", async () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
     await waitFor(() =>
@@ -89,9 +125,6 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
     expect(container.innerHTML).toContain("grid-load-in");
-    expect(container.innerHTML).toContain("plants-load-in");
-    expect(container.innerHTML).toContain("points-load-in");
-    expect(container.innerHTML).toContain("weeds-load-in");
     expect(container.innerHTML).toContain("zoom-beacons-load-in");
     expect(container.innerHTML).toContain("farmbot-scene-boundary");
     expect(container.innerHTML).toContain("details-scene-boundary");
@@ -110,6 +143,185 @@ describe("<GardenModel />", () => {
     render(<GardenModel {...p} />);
     await waitFor(() =>
       expect(p.onDetailsRevealStart).toHaveBeenCalled());
+  });
+
+  it("marks empty optional layers ready without load-in wrappers", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.config.labels = true;
+    p.threeDPlants = [];
+    p.mapPoints = [];
+    p.weeds = [];
+    const wrapper = createWrapper(p);
+    const readySteps = wrapper.root.findAllByType(LoadStepReady)
+      .map(node => node.props.step);
+    expect(readySteps).toContain("plants");
+    expect(readySteps).toContain("weeds");
+    expect(readySteps).toContain("points");
+
+    const optionalLoadIns = [
+      ...wrapper.root.findAllByType(PopInGroup),
+      ...wrapper.root.findAllByType(FallInGroup),
+    ].filter(node =>
+      typeof node.props.name == "string" &&
+      ["plants-load-in", "weeds-load-in", "points-load-in"]
+        .includes(node.props.name));
+    expect(optionalLoadIns).toHaveLength(0);
+  });
+
+  it("marks hidden grids ready without a load-in wrapper", () => {
+    const p = fakeProps();
+    p.config.grid = false;
+    const wrapper = createWrapper(p);
+    const readySteps = wrapper.root.findAllByType(LoadStepReady)
+      .map(node => node.props.step);
+    expect(readySteps).toContain("grid");
+    expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(0);
+  });
+
+  it("skips disabled default-off helper mounts", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.config.north = false;
+    p.config.solar = false;
+    p.config.threeAxes = false;
+    p.config.ground = false;
+    p.config.clouds = false;
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Solar)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Ground)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Clouds)).toHaveLength(0);
+  });
+
+  it("mounts enabled default-off helpers", () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.config.north = true;
+    p.config.solar = true;
+    p.config.threeAxes = true;
+    p.config.ground = true;
+    p.config.clouds = true;
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Solar)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Ground)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Clouds)).toHaveLength(1);
+  });
+
+  it("reuses empty bed resource props across position updates", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const findBedProps = () => wrapper.root.find(node =>
+      node.props.soilSurfaceGeometry && node.props.activePositionRef).props;
+    const before = findBedProps();
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      configPosition={{ ...p.configPosition, x: p.configPosition.x + 1 }} />));
+    const after = findBedProps();
+    expect(after.images).toBe(before.images);
+    expect(after.mapPoints).toBe(before.mapPoints);
+    expect(after.sensors).toBe(before.sensors);
+    expect(after.sensorReadings).toBe(before.sensorReadings);
+  });
+
+  it("reuses soil surface geometry across unrelated config updates", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const findBedProps = () => wrapper.root.find(node =>
+      node.props.soilSurfaceGeometry && node.props.activePositionRef).props;
+    const before = findBedProps().soilSurfaceGeometry;
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, sun: p.config.sun + 1 }} />));
+    expect(findBedProps().soilSurfaceGeometry).toBe(before);
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, soilHeight: p.config.soilHeight + 1 }} />));
+    expect(findBedProps().soilSurfaceGeometry).not.toBe(before);
+  });
+
+  it("reuses plant label nodes across unrelated config updates", () => {
+    const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    const findLabels = () => wrapper.root.find(node =>
+      node.props.name == "plant-labels").props.children;
+    const before = findLabels();
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, sun: p.config.sun + 1 }} />));
+    expect(findLabels()).toBe(before);
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, bedLengthOuter: p.config.bedLengthOuter + 1 }} />));
+    expect(findLabels()).not.toBe(before);
+  });
+
+  it("reuses static layers across telemetry position updates", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    (p.addPlantProps.getConfigValue as jest.Mock).mockClear();
+
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      configPosition={{
+        ...p.configPosition,
+        x: p.configPosition.x + 10,
+        y: p.configPosition.y + 20,
+      }} />));
+
+    expect(p.addPlantProps.getConfigValue).not.toHaveBeenCalled();
+  });
+
+  it("updates static layers when layer settings change", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const wrapper = createWrapper(p);
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(1);
+
+    const nextAddPlantProps = fakeAddPlantProps();
+    nextAddPlantProps.getConfigValue = jest.fn(setting =>
+      defaultLayerSetting(setting)
+      || setting == BooleanSetting.show_spread);
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      addPlantProps={nextAddPlantProps} />));
+
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
+  });
+
+  it("updates static layers when the route changes", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(defaultLayerSetting);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const wrapper = createWrapper(p);
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(1);
+
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
   });
 
   it("renders top down view", () => {
@@ -228,6 +440,49 @@ describe("<GardenModel />", () => {
     expect(plantLabels.length).toEqual(1);
   });
 
+  it("doesn't mount hidden plant spread instances in ordinary mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(plantInstanceCount(container)).toEqual(1);
+  });
+
+  it("mounts plant spread instances when spread is visible", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants
+      || setting == BooleanSetting.show_spread);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(plantInstanceCount(container)).toEqual(2);
+  });
+
+  it("mounts plant spread instances while adding a plant", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_plants);
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    expect(plantInstanceCount(container)).toEqual(2);
+  });
+
   it("doesn't build plant label nodes when labels are disabled", () => {
     const p = fakeProps();
     const plant = fakePlant();
@@ -253,6 +508,7 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "Beet";
+    plant.body.openfarm_slug = "beet";
     p.threeDPlants = convertPlants(p.config, [plant]);
 
     render(<GardenModel {...p} />);
@@ -319,6 +575,24 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("drawn-point");
   });
 
+  it("loads sequence visualization when selected", async () => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.visualizedSequence = sequence.uuid;
+
+    configureStore().dispatch(resourceReady("Sequence", sequence) as never);
+    resetStoreAfterTest = true;
+    expect(store.getState().resources.index.references[sequence.uuid])
+      .toEqual(sequence);
+
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("visualization"));
+  });
+
   it("doesn't render bot", () => {
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
@@ -334,6 +608,40 @@ describe("<GardenModel />", () => {
     p.onLoadComplete = jest.fn();
     render(<GardenModel {...p} />);
     await waitFor(() => expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("doesn't mount FarmBot while Planter bed focus hides it", async () => {
+    const p = fakeProps();
+    p.activeFocus = "Planter bed";
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_farmbot);
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("farmbot-scene-boundary"));
+
+    expect(container.innerHTML).not.toContain("bot-load-in");
+    expect(useGltfMock).not.toHaveBeenCalled();
+  });
+
+  it("doesn't mount FarmBot while the 3D Bot layer is hidden", async () => {
+    const p = fakeProps();
+    p.config.bot = false;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_farmbot);
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const { container } = render(<GardenModel {...p} />);
+
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("farmbot-scene-boundary"));
+
+    expect(container.innerHTML).not.toContain("bot-load-in");
+    expect(useGltfMock).not.toHaveBeenCalled();
   });
 
   it("renders other options", async () => {
@@ -395,6 +703,7 @@ describe("<GardenModel />", () => {
   it("sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -410,6 +719,7 @@ describe("<GardenModel />", () => {
   it("sets hover with instance id", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -425,9 +735,29 @@ describe("<GardenModel />", () => {
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
+  it("sets hover with instance id and no plant index map", () => {
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    const e = {
+      stopPropagation: jest.fn(),
+      intersections: [{
+        instanceId: 0,
+        object: { userData: {}, name: "0" },
+      }],
+    };
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    actRenderer(() => {
+      plants?.props.onPointerEnter(e);
+    });
+    expect(e.stopPropagation).toHaveBeenCalled();
+  });
+
   it("sets hover: buttons", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -443,6 +773,7 @@ describe("<GardenModel />", () => {
   it("un-sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
@@ -498,6 +829,36 @@ describe("<GardenModel />", () => {
       const { container } = render(<GardenModel {...p} />);
       expect(container.innerHTML).toContain(expectedClass);
     });
+
+  it("mounts only the selected scene details", async () => {
+    const countSceneNodes = (
+      container: HTMLElement,
+      name: string,
+    ) =>
+      container.querySelectorAll(`group[name="${name}"]`).length;
+
+    const outdoorProps = fakeProps();
+    outdoorProps.config.scene = "Outdoor";
+    const outdoor = render(<GardenModel {...outdoorProps} />);
+    expect(countSceneNodes(outdoor.container, "lab-environment")).toEqual(0);
+    expect(countSceneNodes(outdoor.container, "greenhouse-environment"))
+      .toEqual(0);
+
+    const labProps = fakeProps();
+    labProps.config.scene = "Lab";
+    const lab = render(<GardenModel {...labProps} />);
+    await waitFor(() =>
+      expect(countSceneNodes(lab.container, "lab-environment")).toEqual(1));
+    expect(countSceneNodes(lab.container, "greenhouse-environment")).toEqual(0);
+
+    const greenhouseProps = fakeProps();
+    greenhouseProps.config.scene = "Greenhouse";
+    const greenhouse = render(<GardenModel {...greenhouseProps} />);
+    expect(countSceneNodes(greenhouse.container, "lab-environment")).toEqual(0);
+    await waitFor(() =>
+      expect(countSceneNodes(greenhouse.container, "greenhouse-environment"))
+        .toEqual(1));
+  });
 
   it("shows night sky", () => {
     const p = fakeProps();

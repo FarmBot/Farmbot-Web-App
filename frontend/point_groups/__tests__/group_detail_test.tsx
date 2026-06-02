@@ -1,9 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import {
-  RawGroupDetail as GroupDetail, findGroupFromUrl, mapStateToProps,
+  RawGroupDetail as GroupDetail, mapStateToProps,
   GroupDetailProps,
 } from "../group_detail";
+import { findGroupFromUrl } from "../find_group_from_url";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,

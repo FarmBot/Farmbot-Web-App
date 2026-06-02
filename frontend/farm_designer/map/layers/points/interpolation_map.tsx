@@ -5,9 +5,8 @@ import {
 } from "farmbot";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
-import { isUndefined, range, round, sum } from "lodash";
-import { distance, findNearest } from "../../../../point_groups/other_sort_methods";
-import { selectMostRecentPoints } from "../../../location_info";
+import { isUndefined, range, round } from "lodash";
+import { selectMostRecentPoints } from "../../../recent_points";
 import { betterCompact } from "../../../../util";
 import { t } from "../../../../i18next_wrapper";
 import { BlurableInput, ToggleButton } from "../../../../ui";
@@ -104,6 +103,10 @@ const convertToPointObject =
       })
       : undefined;
 
+const convertToPointObjects =
+  (points: (TaggedPoint | TaggedSensorReading)[]): PointObject[] =>
+    betterCompact(points.map(convertToPointObject));
+
 const getInterpolationPointHash =
   (point: TaggedGenericPointer | TaggedSensorReading) => [
     point.uuid,
@@ -126,9 +129,11 @@ export const generateData = (props: GenerateInterpolationMapDataProps) => {
     : InterpolationKey;
   if (localStorage.getItem(Key.hash) == hash) { return; }
   const data: InterpolationData = [];
+  const pointObjects = convertToPointObjects(points);
   range(0, gridSize.x, stepSize).map(x =>
     range(0, gridSize.y, stepSize).map(y => {
-      const z = interpolatedZ({ x, y }, points, props.options);
+      const z = interpolatedZWithPointObjects(
+        { x, y }, pointObjects, props.options);
       if (!isUndefined(z)) { data.push({ x, y, z }); }
     }));
   localStorage.setItem(Key.data, JSON.stringify(data));
@@ -139,32 +144,40 @@ export const interpolatedZ = (
   position: { x: number, y: number },
   points: (TaggedPoint | TaggedSensorReading)[],
   options: InterpolationOptions,
+) =>
+  interpolatedZWithPointObjects(
+    position, convertToPointObjects(points), options);
+
+const interpolatedZWithPointObjects = (
+  position: { x: number, y: number },
+  pointObjects: PointObject[],
+  options: InterpolationOptions,
 ) => {
   const { useNearest, power } = options;
-  const nearest = findNearest(position, points);
-  if (!nearest || isUndefined(nearest.body.x) || isUndefined(nearest.body.y)) {
-    return undefined;
+  let nearest: PointObject | undefined;
+  let nearestDistanceSquared = Infinity;
+  let weightedValueSum = 0;
+  let weightSum = 0;
+  const weightPower = power / 2;
+  for (const point of pointObjects) {
+    const xDistance = position.x - point.x;
+    const yDistance = position.y - point.y;
+    const distanceSquared = xDistance * xDistance + yDistance * yDistance;
+    if (distanceSquared < nearestDistanceSquared) {
+      nearest = point;
+      nearestDistanceSquared = distanceSquared;
+    }
+    if (distanceSquared == 0) { return point.value; }
+    if (!useNearest) {
+      const weight = 1 / distanceSquared ** weightPower;
+      weightedValueSum += weight * point.value;
+      weightSum += weight;
+    }
   }
-  if (distance(position, { x: nearest.body.x, y: nearest.body.y }) == 0
-    || useNearest) {
-    return nearest.kind == "SensorReading" ? nearest.body.value : nearest.body.z;
-  }
-  const pointObjects = betterCompact(points.map(convertToPointObject));
-  return round(
-    weightedSum(position, pointObjects, power, true)
-    / weightedSum(position, pointObjects, power),
-    2);
+  if (!nearest) { return undefined; }
+  if (useNearest) { return nearest.value; }
+  return round(weightedValueSum / weightSum, 2);
 };
-
-const weightedSum = (
-  position: { x: number, y: number },
-  points: PointObject[],
-  power: number,
-  withZ = false,
-) =>
-  sum(points.map(point =>
-    (1 / distance(position, point) ** power)
-    * (withZ ? point.value : 1)));
 
 interface InterpolationMapProps {
   kind: "Point" | "SensorReading";

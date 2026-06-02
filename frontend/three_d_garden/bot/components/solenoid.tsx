@@ -4,7 +4,7 @@ import { Config, PositionConfig } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
 import {
-  easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir as zDirFunc,
+  easyCubicBezierCurve3, threeSpace,
 } from "../../helpers";
 import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
@@ -20,25 +20,56 @@ export interface SolenoidProps {
   configPosition: PositionConfig;
 }
 
-export const Solenoid = (props: SolenoidProps) => {
+const SOLENOID_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "columnLength",
+  "negativeZ",
+  "waterFlow",
+  "zGantryOffset",
+];
+
+export const solenoidPropsEqual = (
+  prev: SolenoidProps,
+  next: SolenoidProps,
+) =>
+  prev.configPosition.x === next.configPosition.x &&
+  prev.configPosition.y === next.configPosition.y &&
+  prev.configPosition.z === next.configPosition.z &&
+  SOLENOID_CONFIG_FIELDS.every(field =>
+    prev.config[field] === next.config[field]);
+
+const SolenoidBase = (props: SolenoidProps) => {
   const { config } = props;
-  const { bedYOffset, columnLength, zGantryOffset } = config;
+  const {
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, columnLength,
+    negativeZ, zGantryOffset,
+  } = config;
   const { x, y, z } = props.configPosition;
-  const zDir = zDirFunc(config);
-  const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const outerXY = (gardenX: number, outerY: number): [number, number] => {
-    const position = get3DPosition({ x: gardenX, y: outerY - bedYOffset });
-    return [position.x, position.y];
-  };
-  const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
-    const position = get3DPosition({ x: gardenX, y: gardenY });
-    return [position.x, position.y];
-  };
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
-  return <Group>
-    <WaterTube tubeName={"lower-solenoid-water-tube"}
-      waterFlow={config.waterFlow}
-      tubePath={easyCubicBezierCurve3(
+  const {
+    lowerTubePath,
+    solenoidPosition,
+    upperTubePath,
+    yzTubePath,
+    utmTubePath,
+  } = React.useMemo(() => {
+    const zDir = negativeZ ? -1 : 1;
+    const get3DPositionNoMirror = (gardenX: number, gardenY: number) => ({
+      x: threeSpace(gardenX + bedXOffset, bedLengthOuter),
+      y: threeSpace(gardenY + bedYOffset, bedWidthOuter),
+    });
+    const outerXY = (gardenX: number, outerY: number): [number, number] => {
+      const position = get3DPositionNoMirror(gardenX, outerY - bedYOffset);
+      return [position.x, position.y];
+    };
+    const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
+      const position = get3DPositionNoMirror(gardenX, gardenY);
+      return [position.x, position.y];
+    };
+    return {
+      lowerTubePath: easyCubicBezierCurve3(
         [
           ...outerXY(x - 45, -25),
           -49,
@@ -49,22 +80,12 @@ export const Solenoid = (props: SolenoidProps) => {
           ...outerXY(x - 104.75, 20),
           columnLength - 217,
         ],
-      )}
-      tubularSegments={40}
-      radius={5}
-      radialSegments={8} />
-    <Mesh name={"solenoid"}
-      position={[
+      ),
+      solenoidPosition: [
         ...outerXY(x - 104, 20),
         columnLength - 200,
-      ]}
-      rotation={[0, 0, -Math.PI / 2]}
-      scale={1000}
-      geometry={solenoid.nodes[PartName.solenoid].geometry}
-      material={solenoid.materials.PaletteMaterial001} />
-    <WaterTube tubeName={"upper-solenoid-water-tube"}
-      waterFlow={config.waterFlow}
-      tubePath={easyCubicBezierCurve3(
+      ] as [number, number, number],
+      upperTubePath: easyCubicBezierCurve3(
         [
           ...outerXY(x - 104.25, 20),
           columnLength - 98,
@@ -75,13 +96,8 @@ export const Solenoid = (props: SolenoidProps) => {
           ...gardenXY(x - 70, 35),
           columnLength + 90,
         ],
-      )}
-      tubularSegments={20}
-      radius={5}
-      radialSegments={8} />
-    <WaterTube tubeName={"y-z-water-tube"}
-      waterFlow={config.waterFlow}
-      tubePath={easyCubicBezierCurve3(
+      ),
+      yzTubePath: easyCubicBezierCurve3(
         [
           ...gardenXY(x - 70, y + 80),
           columnLength + 140,
@@ -92,13 +108,8 @@ export const Solenoid = (props: SolenoidProps) => {
           ...gardenXY(x - 32.5, y - 10),
           columnLength + 180,
         ],
-      )}
-      tubularSegments={20}
-      radius={5}
-      radialSegments={8} />
-    <WaterTube tubeName={"utm-water-tube"}
-      waterFlow={config.waterFlow}
-      tubePath={easyCubicBezierCurve3(
+      ),
+      utmTubePath: easyCubicBezierCurve3(
         [
           ...gardenXY(x + 32.5, y - 10),
           columnLength - zDir * z - zGantryOffset + 200,
@@ -109,9 +120,53 @@ export const Solenoid = (props: SolenoidProps) => {
           ...gardenXY(x + 2, y + 15),
           columnLength - zDir * z - zGantryOffset + 75,
         ],
-      )}
+      ),
+    };
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    negativeZ,
+    x,
+    y,
+    z,
+    zGantryOffset,
+  ]);
+  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
+  return <Group>
+    <WaterTube tubeName={"lower-solenoid-water-tube"}
+      waterFlow={config.waterFlow}
+      tubePath={lowerTubePath}
+      tubularSegments={40}
+      radius={5}
+      radialSegments={8} />
+    <Mesh name={"solenoid"}
+      position={solenoidPosition}
+      rotation={[0, 0, -Math.PI / 2]}
+      scale={1000}
+      geometry={solenoid.nodes[PartName.solenoid].geometry}
+      material={solenoid.materials.PaletteMaterial001} />
+    <WaterTube tubeName={"upper-solenoid-water-tube"}
+      waterFlow={config.waterFlow}
+      tubePath={upperTubePath}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8} />
+    <WaterTube tubeName={"y-z-water-tube"}
+      waterFlow={config.waterFlow}
+      tubePath={yzTubePath}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8} />
+    <WaterTube tubeName={"utm-water-tube"}
+      waterFlow={config.waterFlow}
+      tubePath={utmTubePath}
       tubularSegments={20}
       radius={5}
       radialSegments={8} />
   </Group>;
 };
+
+export const Solenoid = React.memo(SolenoidBase, solenoidPropsEqual);

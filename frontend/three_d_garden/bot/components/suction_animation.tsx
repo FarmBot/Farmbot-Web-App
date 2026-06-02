@@ -8,15 +8,26 @@ export interface SuctionAnimationProps {
   z: number;
 }
 
-export const SuctionAnimation = (props: SuctionAnimationProps) => {
-  // eslint-disable-next-line no-null/no-null
-  const airRef = React.useRef<THREE.Group>(null);
+export interface SuctionAnimationsProps {
+  zValues: number[];
+}
+
+export const SuctionAnimations = (props: SuctionAnimationsProps) => {
+  const airRefs = React.useRef<(THREE.Group | undefined)[]>([]);
   const target = React.useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const direction = React.useMemo(() => new THREE.Vector3(), []);
 
+  const setAirRef = React.useCallback((
+    index: number,
+    air: THREE.Group | null,
+  ) => {
+    airRefs.current[index] = air || undefined;
+  }, []);
+
   useFrame(() => {
-    if (airRef.current) {
-      const { position } = airRef.current;
+    airRefs.current.forEach(air => {
+      if (!air) { return; }
+      const { position } = air;
       direction.copy(target).sub(position);
       const distance = direction.length();
       const normalizedDist = distance / 100;
@@ -29,21 +40,26 @@ export const SuctionAnimation = (props: SuctionAnimationProps) => {
       }
 
       const scale = 2 * normalizedDist;
-      airRef.current.scale.set(scale, scale, scale);
-    }
+      air.scale.set(scale, scale, scale);
+    });
   });
 
   return <Clouds name={"waterfall-mist"}
     texture={ASSETS.textures.cloud}>
-    <Cloud name={"suction-cloud"}
-      ref={airRef}
-      position={[0, 0, props.z]}
-      bounds={[10, 10, 10]}
-      segments={1}
-      volume={25}
-      color={"white"}
-      speed={0}
-      scale={0}
-      opacity={0.25} />
+    {props.zValues.map((z, index) =>
+      <Cloud name={"suction-cloud"}
+        key={z}
+        ref={air => setAirRef(index, air)}
+        position={[0, 0, z]}
+        bounds={[10, 10, 10]}
+        segments={1}
+        volume={25}
+        color={"white"}
+        speed={0}
+        scale={0}
+        opacity={0.25} />)}
   </Clouds>;
 };
+
+export const SuctionAnimation = (props: SuctionAnimationProps) =>
+  <SuctionAnimations zValues={[props.z]} />;

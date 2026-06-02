@@ -39,7 +39,7 @@ import { chooseLocation } from "../move_to";
 import { GroupOrder } from "./group_order_visual";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
-import { findGroupFromUrl } from "../../point_groups/group_detail";
+import { findGroupFromUrl } from "../../point_groups/find_group_from_url";
 import { pointsSelectedByGroup } from "../../point_groups/criteria";
 import { DrawnWeed } from "./drawn_point/drawn_weed";
 import { UUID } from "../../resources/interfaces";

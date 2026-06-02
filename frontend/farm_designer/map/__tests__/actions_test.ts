@@ -18,7 +18,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import * as pointGroupActions from "../../../point_groups/actions";
-import * as groupDetail from "../../../point_groups/group_detail";
+import * as groupDetail from "../../../point_groups/find_group_from_url";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { Path } from "../../../internal_urls";
 

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  arePlantInventoryItemPropsEqual,
   daysOldText,
   PlantInventoryItem,
   PlantInventoryItemProps,
@@ -86,6 +87,31 @@ describe("<PlantInventoryItem />", () => {
     const { rerender } = render(<PlantInventoryItem {...p} />);
     rerender(<PlantInventoryItem {...p} />);
     expect(window.__fbPerf?.counts["render.PlantInventoryItem"]).toEqual(1);
+  });
+
+  it("skips equivalent plant row props", () => {
+    const p = fakeProps();
+    const next = fakeProps();
+    next.plant = {
+      ...p.plant,
+      body: { ...p.plant.body },
+    } as typeof p.plant;
+    next.dispatch = p.dispatch;
+    expect(arePlantInventoryItemPropsEqual(p, next)).toBeTruthy();
+  });
+
+  it("updates changed plant row props", () => {
+    const p = fakeProps();
+    const next = fakeProps();
+    next.plant = {
+      ...p.plant,
+      body: { ...p.plant.body, name: "changed" },
+    } as typeof p.plant;
+    expect(arePlantInventoryItemPropsEqual(p, next)).toBeFalsy();
+    expect(arePlantInventoryItemPropsEqual(p, { ...p, hovered: true }))
+      .toBeFalsy();
+    expect(arePlantInventoryItemPropsEqual(p, { ...p, distance: 100 }))
+      .toBeFalsy();
   });
 
   it("hover begin", () => {

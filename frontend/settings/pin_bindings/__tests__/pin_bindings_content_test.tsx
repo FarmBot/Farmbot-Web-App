@@ -1,7 +1,6 @@
 import React from "react";
 import { PinBindingsContent } from "../pin_bindings_content";
 import { render } from "@testing-library/react";
-import { bot } from "../../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -14,19 +13,8 @@ import {
   PinBindingType,
   PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
-import { cloneDeep } from "lodash";
 
 describe("<PinBindingsContent/>", () => {
-  let gpioRegistry: typeof bot.hardware.gpio_registry;
-
-  beforeEach(() => {
-    gpioRegistry = cloneDeep(bot.hardware.gpio_registry);
-  });
-
-  afterEach(() => {
-    bot.hardware.gpio_registry = gpioRegistry;
-  });
-
   function fakeProps(): PinBindingsContentProps {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
@@ -49,11 +37,6 @@ describe("<PinBindingsContent/>", () => {
     const resources = buildResourceIndex([
       fakeSequence1, fakeSequence2, fakePinBinding1, fakePinBinding2,
     ]).index;
-
-    bot.hardware.gpio_registry = {
-      10: "1",
-      11: "2"
-    };
     return {
       dispatch: jest.fn(),
       resources: resources,

@@ -6,7 +6,6 @@ import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
 import { Group, Mesh } from "../../components";
-import { IColor } from "../../../settings/pin_bindings/model";
 
 type Box = GLTF & {
   nodes: {
@@ -45,22 +44,30 @@ type Farmduino = GLTF & {
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
 
+const BoxButtonColor = {
+  estop: 0xef4037,
+  unlock: 0xf5e909,
+  connect: 0x1073e0,
+  sync: 0x62c020,
+  blank: 0xffffff,
+};
+
 const buttons = (kitVersion: string) => {
   switch (kitVersion) {
     case "v1.7":
       return [
-        { position: -60, color: IColor.estop.on },
-        { position: -30, color: IColor.unlock.on },
-        { position: 0, color: IColor.blank.on },
-        { position: 30, color: IColor.blank.on },
-        { position: 60, color: IColor.blank.on },
+        { position: -60, color: BoxButtonColor.estop },
+        { position: -30, color: BoxButtonColor.unlock },
+        { position: 0, color: BoxButtonColor.blank },
+        { position: 30, color: BoxButtonColor.blank },
+        { position: 60, color: BoxButtonColor.blank },
       ];
     case "v1.8":
     default:
       return [
-        { position: -30, color: IColor.estop.on },
-        { position: 0, color: IColor.unlock.on },
-        { position: 30, color: IColor.blank.on },
+        { position: -30, color: BoxButtonColor.estop },
+        { position: 0, color: BoxButtonColor.unlock },
+        { position: 30, color: BoxButtonColor.blank },
       ];
   }
 };
@@ -74,12 +81,53 @@ const ledsPresent = (kitVersion: string) => {
   }
 };
 
+const LED_INDICATORS = [
+  { position: -45, color: BoxButtonColor.sync },
+  { position: -15, color: BoxButtonColor.connect },
+  { position: 15, color: BoxButtonColor.blank },
+  { position: 45, color: BoxButtonColor.blank },
+];
+
+const LedIndicators = () => {
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
+  return <Group name={"leds"} position={[0, 0, 130]}>
+    {LED_INDICATORS.map(ledIndicator => {
+      const { position, color } = ledIndicator;
+      return <Group key={position}>
+        <Mesh name={"led-housing"}
+          geometry={led.nodes.LED.geometry}
+          material={led.materials[ElectronicsBoxMaterial.led]}
+          position={[-50, position, 0]}
+          material-color={0xcccccc}
+          scale={1000} />
+        <Cylinder name={"led-color"}
+          material-color={color}
+          args={[6.75, 6.75, 3]}
+          position={[-50, position, 0]}
+          rotation={[Math.PI / 2, 0, 0]} />
+      </Group>;
+    })}
+  </Group>;
+};
+
 export interface ElectronicsBoxProps {
   config: Config;
   configPosition: PositionConfig;
 }
 
-export const ElectronicsBox = (props: ElectronicsBoxProps) => {
+const electronicsBoxPropsEqual = (
+  prevProps: ElectronicsBoxProps,
+  nextProps: ElectronicsBoxProps,
+) =>
+  prevProps.configPosition.x == nextProps.configPosition.x &&
+  prevProps.config.bedXOffset == nextProps.config.bedXOffset &&
+  prevProps.config.bedYOffset == nextProps.config.bedYOffset &&
+  prevProps.config.bedLengthOuter == nextProps.config.bedLengthOuter &&
+  prevProps.config.bedWidthOuter == nextProps.config.bedWidthOuter &&
+  prevProps.config.columnLength == nextProps.config.columnLength &&
+  prevProps.config.kitVersion == nextProps.config.kitVersion;
+
+const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
   const { bedYOffset, columnLength } = props.config;
   const { x } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -88,18 +136,30 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
     y: -20 - bedYOffset,
   });
 
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
-  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
-  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
-
   return <Group name={"electronics-box"}
     position={new THREE.Vector3(
       position.x,
       position.y,
       columnLength - 190,
     )}>
+    <ElectronicsBoxModel kitVersion={props.config.kitVersion} />
+  </Group>;
+};
+
+export const ElectronicsBox = React.memo(
+  ElectronicsBoxBase, electronicsBoxPropsEqual);
+
+interface ElectronicsBoxModelProps {
+  kitVersion: string;
+}
+
+const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
+  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
+  const farmduino =
+    useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
+  return <>
     <Group name={"box"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh name={"electronicsBox"}
@@ -119,7 +179,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
         scale={1000} />
       <Group name={"buttons"}
         position={[0, 0, 130]}>
-        {buttons(props.config.kitVersion).map(button => {
+        {buttons(props.kitVersion).map(button => {
           const { position, color } = button;
           const btnPosition = position;
           return <Group key={btnPosition} name={"button-group"}>
@@ -143,31 +203,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
           </Group>;
         })}
       </Group>
-      <Group name={"leds"}
-        position={[0, 0, 130]}
-        visible={ledsPresent(props.config.kitVersion)}>
-        {[
-          { position: -45, color: IColor.sync.on },
-          { position: -15, color: IColor.connect.on },
-          { position: 15, color: IColor.blank.on },
-          { position: 45, color: IColor.blank.on },
-        ].map(ledIndicator => {
-          const { position, color } = ledIndicator;
-          return <Group key={position}>
-            <Mesh name={"led-housing"}
-              geometry={led.nodes.LED.geometry}
-              material={led.materials[ElectronicsBoxMaterial.led]}
-              position={[-50, position, 0]}
-              material-color={0xcccccc}
-              scale={1000} />
-            <Cylinder name={"led-color"}
-              material-color={color}
-              args={[6.75, 6.75, 3]}
-              position={[-50, position, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-          </Group>;
-        })}
-      </Group>
+      {ledsPresent(props.kitVersion) && <LedIndicators />}
     </Group>
     <Mesh name={"farmduino"}
       position={[-60, -10, -110]}
@@ -181,5 +217,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
       scale={1000}
       geometry={pi.nodes[PartName.pi].geometry}
       material={pi.materials.PaletteMaterial001} />
-  </Group>;
+  </>;
 };
+
+const ElectronicsBoxModel = React.memo(ElectronicsBoxModelBase);

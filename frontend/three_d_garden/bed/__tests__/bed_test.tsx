@@ -66,8 +66,12 @@ const mockInstancesRef: MockInstancesRef =
   { current: { geometry: { setAttribute: jest.fn() } } };
 
 import React from "react";
-import { INITIAL } from "../../config";
-import { Bed, BedProps } from "../bed";
+import { useHelper, useTexture } from "@react-three/drei";
+import { INITIAL, SurfaceDebugOption } from "../../config";
+import {
+  Bed, BedProps, getAxleGeometry, getBracketGeometry, getWheelGeometry,
+  TexturedBedMaterial,
+} from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
 import { Path } from "../../../internal_urls";
@@ -75,13 +79,16 @@ import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import { Actions } from "../../../constants";
 import { fakeDrawnPoint } from "../../../__test_support__/fake_designer_state";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeImage, fakePoint, fakeSensorReading,
+} from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
-import * as plantActions from "../../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../plant_actions";
 import * as screenSize from "../../../screen_size";
+import { ASSETS } from "../../constants";
 
 describe("<Bed />", () => {
   const originalPathname = location.pathname;
@@ -109,7 +116,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
-    jest.spyOn(plantActions, "dropPlant")
+    jest.spyOn(plantActions, "dropPlant3D")
       .mockImplementation(jest.fn());
     jest.spyOn(screenSize, "isMobile")
       .mockImplementation(() => mockIsMobile);
@@ -155,6 +162,89 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("renders bed supports with instanced geometry", () => {
+    const p = fakeProps();
+    const { container } = render(<Bed {...p} />);
+    const supports = container.querySelector("[name='bed-supports']");
+
+    expect(supports).not.toBeNull();
+    expect(container.querySelectorAll("instancedmesh[name='bed-leg-wood']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='caster-bracket']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='wheel']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='axle']").length)
+      .toEqual(1);
+  });
+
+  it("reuses bed support caster geometries by leg size", () => {
+    expect(getBracketGeometry(100)).toBe(getBracketGeometry(100));
+    expect(getWheelGeometry(100)).toBe(getWheelGeometry(100));
+    expect(getAxleGeometry(100)).toBe(getAxleGeometry(100));
+    expect(getBracketGeometry(100)).not.toBe(getBracketGeometry(120));
+    expect(getWheelGeometry(100)).not.toBe(getWheelGeometry(120));
+    expect(getAxleGeometry(100)).not.toBe(getAxleGeometry(120));
+  });
+
+  it("memoizes unchanged bed props", () => {
+    const p = fakeProps();
+    render(<Bed {...p} />);
+    const memoized = Bed as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
+  it("skips visible bed rerenders on unrelated config churn", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.axes = true;
+    p.config.xyDimensions = true;
+    p.config.moistureDebug = true;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const { rerender } = render(<Bed {...p} />);
+    const textureCalls = (useTexture as unknown as jest.Mock).mock.calls.length;
+    const helperCalls = (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    rerender(<Bed {...p} config={{
+      ...p.config,
+      clouds: !p.config.clouds,
+      heading: p.config.heading + 45,
+      perspective: !p.config.perspective,
+      viewpointHeading: p.config.viewpointHeading + 90,
+    }} />);
+
+    expect(useTexture).toHaveBeenCalledTimes(textureCalls);
+    expect(useHelper).toHaveBeenCalledTimes(helperCalls);
+  });
+
+  it("rerenders when visible bed config or resources change", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.moistureDebug = true;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const { rerender } = render(<Bed {...p} />);
+    const initialHelperCalls =
+      (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    const changedConfig = {
+      ...p.config,
+      bedBrightness: p.config.bedBrightness + 1,
+    };
+    rerender(<Bed {...p} config={changedConfig} />);
+    const configHelperCalls =
+      (useHelper as unknown as jest.Mock).mock.calls.length;
+
+    rerender(<Bed {...p}
+      config={changedConfig}
+      images={[fakeImage()]}
+      sensorReadings={[fakeSensorReading()]} />);
+
+    expect(configHelperCalls).toBeGreaterThan(initialHelperCalls);
+    expect(useHelper).toHaveBeenCalledTimes(configHelperCalls + 2);
+  });
+
   it("renders bed with extra legs", () => {
     const p = fakeProps();
     p.config.extraLegsX = 2;
@@ -162,6 +252,41 @@ describe("<Bed />", () => {
     p.config.legsFlush = false;
     const { container } = render(<Bed {...p} />);
     expect(container).toContainHTML("bed-group");
+  });
+
+  it("renders low-detail bed without high-detail soil texture", () => {
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelectorAll("[name='soil']").length).toEqual(1);
+    expect(container.querySelector(".render-texture")).toBeNull();
+    const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
+      .map(([url]) => url);
+    expect(loadedTextures).not.toContain(ASSETS.textures.soil + "?=soilT");
+  });
+
+  it("renders textured bed material", () => {
+    render(<TexturedBedMaterial bedColor={"#abcdef"} />);
+
+    expect(useTexture).toHaveBeenCalledWith(ASSETS.textures.wood);
+  });
+
+  it("renders height debug soil material", () => {
+    const p = fakeProps();
+    p.config.surfaceDebug = SurfaceDebugOption.height;
+    const { container } = render(<Bed {...p} />);
+
+    expect(container.querySelector("[name='soil']")).not.toBeNull();
+  });
+
+  it("hides cable carrier support rails with the carrier layer", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = false;
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelectorAll("[name='lower-cc-support']").length)
+      .toEqual(0);
+    expect(container.querySelectorAll("[name='upper-cc-support']").length)
+      .toEqual(0);
   });
 
   it.each<[string, SpecialStatus]>([
@@ -200,7 +325,7 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.click(soil);
-    expect(plantActions.dropPlant).toHaveBeenCalledWith(expect.objectContaining({
+    expect(plantActions.dropPlant3D).toHaveBeenCalledWith(expect.objectContaining({
       gardenCoords: { x: 1360, y: 660 },
     }));
   });
@@ -479,5 +604,38 @@ describe("<Bed />", () => {
     expect(normal.getX(1)).toEqual(-4);
     expect(normal.getY(1)).toEqual(-5);
     expect(normal.getZ(1)).toEqual(6);
+  });
+
+  it("reuses mirrored soil geometry on unrelated config churn", () => {
+    (React.useRef as unknown as jest.Mock).mockRestore();
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = false;
+    p.config.bedLengthOuter = 1000;
+    p.config.bedWidthOuter = 800;
+    p.config.bedXOffset = 50;
+    p.config.bedYOffset = 25;
+    const geometry = new BufferGeometry();
+    geometry.setAttribute("position", new Float32BufferAttribute([
+      150, 200, 10,
+      300, 400, 20,
+    ], 3));
+    geometry.setAttribute("normal", new Float32BufferAttribute([
+      1, 2, 3,
+      4, 5, 6,
+    ], 3));
+    p.soilSurfaceGeometry = geometry;
+    const cloneSpy = jest.spyOn(geometry, "clone");
+
+    const { rerender } = render(<Bed {...p} />);
+    rerender(<Bed {...p} config={{
+      ...p.config,
+      heading: p.config.heading + 10,
+      label: "unrelated config churn",
+    }} />);
+    expect(cloneSpy).toHaveBeenCalledTimes(1);
+    rerender(<Bed {...p} config={{ ...p.config, mirrorY: true }} />);
+
+    expect(cloneSpy).toHaveBeenCalledTimes(2);
   });
 });

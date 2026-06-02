@@ -134,4 +134,19 @@ describe("filterMoisturePoints()", () => {
     p.readings = [reading0, reading1, reading2];
     expect(filterMoisturePoints(p).length).toEqual(9);
   });
+
+  it("adds boundary points in order", () => {
+    const p = fakeProps();
+    const points = filterMoisturePoints(p);
+    expect(points).toEqual([
+      [-100, 20, 0],
+      [-100, 1300, 0],
+      [2820, 20, 0],
+      [2820, 1300, 0],
+      [-99.99, 20.01, 0],
+      [-99.99, 1299.99, 0],
+      [2819.99, 20.01, 0],
+      [2819.99, 1299.99, 0],
+    ]);
+  });
 });

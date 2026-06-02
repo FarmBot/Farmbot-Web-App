@@ -8,7 +8,10 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export const threeSpace = (position: number, max: number): number =>
   position - max / 2;
-export const zZero = (config: Config): number =>
+
+type ZZeroConfig = Pick<Config, "columnLength" | "zGantryOffset">;
+
+export const zZero = (config: ZZeroConfig): number =>
   config.columnLength + 40 - config.zGantryOffset;
 export const getColorFromBrightness = (value: number) => {
   const colorMap: { [key: number]: string } = {
@@ -77,7 +80,11 @@ export const getGardenPositionFunc = (config: Config, snap = true) =>
       : { x: position.x, y: position.y };
   };
 
-export const get3DPositionFunc = (config: Config) =>
+type ThreeDPositionConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "mirrorX" | "mirrorY">;
+
+export const get3DPositionFunc = (config: ThreeDPositionConfig) =>
   (gardenPosition: XY): XY => {
     const position = get3DPositionNoMirrorFunc(config)(gardenPosition);
     return {
@@ -86,7 +93,7 @@ export const get3DPositionFunc = (config: Config) =>
     };
   };
 
-export const get3DPositionNoMirrorFunc = (config: Config) =>
+export const get3DPositionNoMirrorFunc = (config: ThreeDPositionConfig) =>
   (gardenPosition: XY): XY => {
     const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
     return {

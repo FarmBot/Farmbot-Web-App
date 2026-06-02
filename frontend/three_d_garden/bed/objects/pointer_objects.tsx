@@ -3,7 +3,9 @@ import {
   Group, MeshPhongMaterial, Mesh, PlaneGeometry, MeshBasicMaterial,
 } from "../../components";
 import { Billboard, Line, Sphere, useTexture } from "@react-three/drei";
-import { findCrop, findIcon } from "../../../crops/find";
+import {
+  DEFAULT_PLANT_RADIUS, findCropIcon, findCropMetadata,
+} from "../../../crops/metadata";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
 import { isMobile } from "../../../screen_size";
@@ -26,13 +28,12 @@ import {
 import { Config } from "../../config";
 import { SpecialStatus, TaggedGenericPointer } from "farmbot";
 import { AddPlantProps } from "../bed";
-import { DEFAULT_PLANT_RADIUS } from "../../../farm_designer/plant";
 import { isUndefined, round as mathRound } from "lodash";
 import { Mesh as MeshType, Group as GroupType, Color } from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
-import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
-import { createPoint } from "../../../points/create_points";
+import { dropPlant3D } from "../../plant_actions";
+import { createPoint } from "../../../points/create_point_action";
 import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
@@ -70,15 +71,103 @@ export interface PointerObjectsProps extends AllRefs {
 }
 
 export const PointerObjects = (props: PointerObjectsProps) => {
+  const mode = getMode();
+  if (!HOVER_OBJECT_MODES.includes(mode) || isMobile()) { return <></>; }
+  return <ActivePointerObjects
+    {...props}
+    mode={mode}
+    cropSlug={Path.getCropSlug()} />;
+};
+
+interface ActivePointerObjectsProps extends PointerObjectsProps {
+  mode: Mode;
+  cropSlug: string;
+}
+
+const PREVIEW_CONFIG_KEYS: (keyof Config)[] = [
+  "bedLengthOuter",
+  "bedWallThickness",
+  "bedWidthOuter",
+  "bedXOffset",
+  "bedYOffset",
+  "botSizeX",
+  "botSizeY",
+  "botSizeZ",
+  "columnLength",
+  "mirrorX",
+  "mirrorY",
+  "zGantryOffset",
+];
+
+export const hasDirtyGridPreview = (mapPoints: TaggedGenericPointer[]) =>
+  mapPoints.some(p =>
+    p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId);
+
+const samePreviewConfig = (prev: Config, next: Config) =>
+  PREVIEW_CONFIG_KEYS.every(key => prev[key] === next[key]);
+
+const sameDrawnPoint = (
+  prev: AddPlantProps["designer"]["drawnPoint"],
+  next: AddPlantProps["designer"]["drawnPoint"],
+) =>
+  prev === next ||
+  !!prev && !!next &&
+  prev.cx === next.cx &&
+  prev.cy === next.cy &&
+  prev.z === next.z &&
+  prev.r === next.r &&
+  prev.color === next.color;
+
+const samePreviewRefs = (
+  prev: ActivePointerObjectsProps,
+  next: ActivePointerObjectsProps,
+) =>
+  prev.pointerPlantRef === next.pointerPlantRef &&
+  prev.radiusRef === next.radiusRef &&
+  prev.torusRef === next.torusRef &&
+  prev.billboardRef === next.billboardRef &&
+  prev.imageRef === next.imageRef &&
+  prev.xCrosshairRef === next.xCrosshairRef &&
+  prev.yCrosshairRef === next.yCrosshairRef &&
+  prev.activePositionRef === next.activePositionRef;
+
+const samePreviewDesigner = (
+  prev: AddPlantProps["designer"],
+  next: AddPlantProps["designer"],
+) =>
+  prev.cropRadius == next.cropRadius &&
+  sameDrawnPoint(prev.drawnPoint, next.drawnPoint);
+
+const sameGridPreviewState = (
+  prev: TaggedGenericPointer[],
+  next: TaggedGenericPointer[],
+) =>
+  prev === next || hasDirtyGridPreview(prev) == hasDirtyGridPreview(next);
+
+export const activePointerObjectsPropsEqual = (
+  prev: ActivePointerObjectsProps,
+  next: ActivePointerObjectsProps,
+) =>
+  prev.mode === next.mode &&
+  prev.cropSlug === next.cropSlug &&
+  samePreviewRefs(prev, next) &&
+  samePreviewConfig(prev.config, next.config) &&
+  samePreviewDesigner(
+    prev.addPlantProps.designer,
+    next.addPlantProps.designer) &&
+  sameGridPreviewState(prev.mapPoints, next.mapPoints);
+
+const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const {
     config, mapPoints, addPlantProps,
     pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
     xCrosshairRef, yCrosshairRef,
+    mode, cropSlug,
   } = props;
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
-  const icon = findIcon(Path.getCropSlug());
+  const icon = findCropIcon(cropSlug);
   const baseTexture = useTexture(getPlantIconTextureUrl(icon));
   const plantIconTexture = React.useMemo(
     () => getPlantIconTexture(baseTexture, icon),
@@ -87,15 +176,12 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const { drawnPoint } = addPlantProps.designer;
   const settingRadius =
     !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
-  const gridPreview = mapPoints
-    .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
-    .length > 0;
+  const gridPreview = hasDirtyGridPreview(mapPoints);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
-  return HOVER_OBJECT_MODES.includes(getMode()) &&
-    !isMobile() &&
+  return (
     <Group name={"hover-elements"}>
       {!settingRadius &&
         !gridPreview &&
@@ -125,7 +211,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
         </Group>}
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
         <Group position={[0, 0, 0]}>
-          {DRAW_POINT_MODES.includes(getMode()) &&
+          {DRAW_POINT_MODES.includes(mode) &&
             !gridPreview &&
             drawnPoint &&
             <DrawnPoint
@@ -136,7 +222,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
               config={config}
               designer={addPlantProps.designer}
               usePosition={settingRadius} />}
-          {getMode() == Mode.clickToAdd &&
+          {mode == Mode.clickToAdd &&
             <Group>
               <Billboard follow={true} position={[0, 0, iconSize / 2]}>
                 <Mesh
@@ -149,7 +235,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
                     transparent={true} />
                 </Mesh>
               </Billboard>
-              <Sphere args={[findCrop(Path.getCropSlug()).spread / 2 * 10, 32, 32]}>
+              <Sphere args={[findCropMetadata(cropSlug).spread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
                   color={"white"}
                   transparent={true}
@@ -168,8 +254,9 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             </Group>}
         </Group>
       </Group>
-    </Group>;
-};
+    </Group>
+  );
+}, activePointerObjectsPropsEqual);
 
 export interface SoilClickProps {
   config: Config;
@@ -187,12 +274,11 @@ export const soilClick = (props: SoilClickProps) =>
     if (clickWasDragged(e)) { return; }
     if (addPlantProps) {
       if (getMode() == Mode.clickToAdd) {
-        dropPlant({
+        dropPlant3D({
           gardenCoords: getGardenPosition(e.point),
           gridSize: addPlantProps.gridSize,
           dispatch: addPlantProps.dispatch,
           getConfigValue: addPlantProps.getConfigValue,
-          curves: addPlantProps.curves,
           designer: addPlantProps.designer,
         });
       }
@@ -266,13 +352,13 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
         || isMobile()
         || !pointerPlantRef.current) { return; }
       const { x, y } = get3DPosition(gardenPosition);
+      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
+        return;
+      }
       const [, , z] = getWorldPosition({
         ...gardenPosition,
         z: props.getZ(gardenPosition.x, gardenPosition.y),
       });
-      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
-        return;
-      }
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };

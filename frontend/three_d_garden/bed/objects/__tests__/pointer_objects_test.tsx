@@ -21,9 +21,11 @@ import { clone } from "lodash";
 import { Path } from "../../../../internal_urls";
 import { Vector3 } from "three";
 import { ThreeEvent } from "@react-three/fiber";
-import * as plantActions from "../../../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../../plant_actions";
 import * as screenSize from "../../../../screen_size";
 import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
+import { fakePoint } from "../../../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "farmbot";
 
 let dropPlantSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -32,7 +34,7 @@ type AnimationFrameHandler = Parameters<typeof window.requestAnimationFrame>[0];
 
 beforeEach(() => {
   mockIsMobile = false;
-  dropPlantSpy = jest.spyOn(plantActions, "dropPlant").mockImplementation(jest.fn());
+  dropPlantSpy = jest.spyOn(plantActions, "dropPlant3D").mockImplementation(jest.fn());
   isMobileSpy = jest.spyOn(screenSize, "isMobile")
     .mockImplementation(() => mockIsMobile);
   requestAnimationFrameSpy = jest.spyOn(window, "requestAnimationFrame")
@@ -87,6 +89,58 @@ describe("<PointerObjects />", () => {
     render(<PointerObjects {...fakeProps()} />);
 
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+  });
+
+  it("skips hidden preview work in ordinary designer mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    mockIsMobile = false;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+    const gridMetaReads = { current: 0 };
+    const point = fakePoint();
+    point.specialStatus = SpecialStatus.DIRTY;
+    Object.defineProperty(point.body, "meta", {
+      get: () => {
+        gridMetaReads.current += 1;
+        return { gridId: 1 };
+      },
+    });
+    const p = fakeProps();
+    p.mapPoints = [point];
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("hover-elements");
+    expect(useTextureMock).not.toHaveBeenCalled();
+    expect(gridMetaReads.current).toEqual(0);
+  });
+
+  it("keeps the active preview stable across unrelated config churn", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockClear();
+    const p = fakeProps();
+    const { rerender } = render(<PointerObjects {...p} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(1);
+
+    rerender(<PointerObjects
+      {...p}
+      config={{
+        ...p.config,
+        grid: !p.config.grid,
+        stats: !p.config.stats,
+        lightsDebug: !p.config.lightsDebug,
+      }} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(1);
+
+    rerender(<PointerObjects
+      {...p}
+      config={{
+        ...p.config,
+        bedLengthOuter: p.config.bedLengthOuter + 10,
+      }} />);
+    expect(useTextureMock).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -261,6 +315,8 @@ describe("soilPointerMove()", () => {
       return 1;
     });
     const p = fakeProps();
+    const getZ = jest.fn(() => 0);
+    p.getZ = getZ;
     p.config.columnLength = 100;
     const handler = soilPointerMove(p);
     const event = {
@@ -277,5 +333,6 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.yCrosshairRef.current?.position.set)
       .toHaveBeenCalledTimes(1);
+    expect(getZ).toHaveBeenCalledTimes(1);
   });
 });

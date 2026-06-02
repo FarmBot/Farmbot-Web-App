@@ -13,10 +13,19 @@ const mockMaterialRef: MockMaterialRef = {
 
 import React from "react";
 import { render } from "@testing-library/react";
-import { calcSunI, getCycleLength, skyColor, Sun, SunProps } from "../sun";
+import * as threeFiber from "@react-three/fiber";
+import {
+  calcSunI, getAnimatedSeasonDate, getCycleLength, skyColor, Sun,
+  sunPropsEqual, SunProps,
+} from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { MeshBasicMaterial, Vector3 } from "three";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
+import { Points } from "../../components";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -24,6 +33,13 @@ beforeEach(() => {
 
 
 describe("<Sun />", () => {
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
+
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      unmountRenderer(wrapper));
+  });
+
   const fakeProps = (): SunProps => ({
     config: clone(INITIAL),
     skyRef: {
@@ -35,6 +51,80 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("skips fully invisible static daylight stars", () => {
+    const p = fakeProps();
+    p.config.sunInclination = 45;
+    p.config.animateSeasons = false;
+    const wrapper = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(wrapper);
+    expect(wrapper.root.findAllByType(Points)).toHaveLength(0);
+  });
+
+  it("renders stars outside full static daylight", () => {
+    const p = fakeProps();
+    p.config.sunInclination = -15;
+    p.config.animateSeasons = false;
+    const wrapper = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(wrapper);
+    expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
+  });
+
+  it("reuses generated star geometry across night star mounts", () => {
+    const p = fakeProps();
+    p.config.sunInclination = -15;
+    p.config.animateSeasons = false;
+    const first = createRenderer(<Sun {...p} />);
+    const firstPoints = first.root.findAllByType(Points)[0];
+    const firstGeometry = firstPoints.props.geometry;
+    const firstPositions = firstGeometry.getAttribute("position").array;
+    unmountRenderer(first);
+
+    const second = createRenderer(<Sun {...p} />);
+    mountedWrappers.push(second);
+    const secondPoints = second.root.findAllByType(Points)[0];
+    const secondGeometry = secondPoints.props.geometry;
+    const secondPositions = secondGeometry.getAttribute("position").array;
+
+    expect(secondGeometry).toBe(firstGeometry);
+    expect(secondPositions).toBe(firstPositions);
+    expect(secondPoints.props.dispose).toBeNull();
+  });
+
+  it("skips season animation frame setup by default", () => {
+    render(<Sun {...fakeProps()} />);
+    expect(threeFiber.useFrame as jest.Mock).not.toHaveBeenCalled();
+  });
+
+  it("registers season animation frame setup when seasons animate", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    render(<Sun {...p} />);
+    expect(threeFiber.useFrame as jest.Mock).toHaveBeenCalledTimes(1);
+  });
+
+  it("memoizes unchanged sun props", () => {
+    render(<Sun {...fakeProps()} />);
+    const memoized = Sun as unknown as { $$typeof: symbol };
+    expect(memoized.$$typeof.toString()).toContain("react.memo");
+  });
+
+  it("compares sun-relevant config fields", () => {
+    const p = fakeProps();
+    expect(sunPropsEqual(p, {
+      ...p,
+      config: { ...p.config, botSizeZ: p.config.botSizeZ + 1 },
+    })).toBeTruthy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      startTimeRef: { current: 0 },
+    })).toBeFalsy();
   });
 
   it("doesn't render animated", () => {
@@ -125,6 +215,22 @@ describe("getCycleLength()", () => {
   });
 });
 
+describe("getAnimatedSeasonDate()", () => {
+  it("uses fixed dates for recognized seasons", () => {
+    const date = getAnimatedSeasonDate("Summer", 0);
+    expect(date.getUTCMonth()).toEqual(5);
+    expect(date.getUTCDate()).toEqual(21);
+  });
+
+  it("uses the provided day start for unknown seasons", () => {
+    const dayStart = new Date(Date.UTC(2026, 0, 2));
+    const date = getAnimatedSeasonDate("Custom", 0, dayStart);
+    expect(date.getUTCFullYear()).toEqual(2026);
+    expect(date.getUTCMonth()).toEqual(0);
+    expect(date.getUTCDate()).toEqual(2);
+  });
+});
+
 describe("skyColor(calcSunI())", () => {
   const DARK_BLUE = [
     0.04373502925049377,
@@ -148,5 +254,10 @@ describe("skyColor(calcSunI())", () => {
     skyColor(calcSunI(inclination) * 100).forEach((value, i) => {
       expect(value).toBeCloseTo(expected[i], 4);
     });
+  });
+
+  it("reuses exact endpoint color tuples", () => {
+    expect(skyColor(0)).toBe(skyColor(-1));
+    expect(skyColor(INITIAL.sun)).toBe(skyColor(INITIAL.sun + 1));
   });
 });

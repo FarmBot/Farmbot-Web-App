@@ -1,5 +1,5 @@
 import { kebabCase, sampleSize } from "lodash";
-import { findIcon } from "../crops/find";
+import { findCropIcon } from "../crops/metadata";
 import { Config } from "../three_d_garden/config";
 import { ThreeDGardenPlant } from "../three_d_garden/garden";
 import { Season, SEASON_DURATIONS } from "./constants";
@@ -15,7 +15,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
     const plantKey = gardenPlants[index];
     const plant = PLANTS[plantKey];
     if (!plant) { return []; }
-    const icon = findIcon(kebabCase(plant.label));
+    const icon = findCropIcon(kebabCase(plant.label));
     const spreadMm = plant.spread * 10;
     positions.push({
       ...plant,

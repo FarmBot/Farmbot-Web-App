@@ -265,6 +265,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
   const { getConfigValue } = props;
   const menuClass = props.legendMenuOpen ? "active" : "";
   const [zDisplayOpen, setZDisplayOpen] = React.useState(false);
+  const is3D = props.getConfigValue(BooleanSetting.three_d_garden);
   return <div className={`garden-map-legend ${menuClass} ${props.className}`}>
     <div className={"menu-pullout " + menuClass}
       onClick={props.toggle(BooleanSetting.legend_menu_open)}>
@@ -275,7 +276,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     </div>
     <div className="content">
       <div className="menu-content">
-        <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />
+        {!is3D && <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />}
         <LayerToggles {...props} />
         <MoveModeLink dispatch={props.dispatch} />
         <MapSettings

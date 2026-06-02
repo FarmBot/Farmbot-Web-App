@@ -4,7 +4,6 @@ export const bot: Everything["bot"] = {
   consistent: true,
   stepSize: 100,
   hardware: {
-    gpio_registry: {},
     mcu_params: {
       encoder_enabled_x: 1,
       encoder_enabled_y: 1,

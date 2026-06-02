@@ -14,7 +14,26 @@ export interface PresetButtonProps {
   index: number;
 }
 
-export const PresetButton = (props: PresetButtonProps) => {
+const samePosition = (
+  prev: PresetButtonProps["startPosition"],
+  next: PresetButtonProps["startPosition"],
+) =>
+  prev.x === next.x &&
+  prev.y === next.y &&
+  prev.z === next.z;
+
+export const presetButtonPropsEqual = (
+  prev: PresetButtonProps,
+  next: PresetButtonProps,
+) =>
+  prev.preset === next.preset &&
+  prev.choosePreset === next.choosePreset &&
+  prev.hovered === next.hovered &&
+  prev.setHovered === next.setHovered &&
+  prev.index === next.index &&
+  samePosition(prev.startPosition, next.startPosition);
+
+const PresetButtonBase = (props: PresetButtonProps) => {
   const { preset, choosePreset, hovered, setHovered, startPosition, index } = props;
   const btnHeight = 50;
   const btnZ = 0;
@@ -69,15 +88,20 @@ export const PresetButton = (props: PresetButtonProps) => {
   </Group>;
 };
 
+export const PresetButton = React.memo(
+  PresetButtonBase,
+  presetButtonPropsEqual,
+);
+
 const changeItemsInGroup = (
   meshObject: MeshObject,
   cb: (x: MeshObject) => void,
 ) => {
-  meshObject.children.map(child => {
+  for (const child of meshObject.children) {
     const object = child as MeshObject;
     cb(object);
     changeItemsInGroup(object, cb);
-  });
+  }
 };
 
 type MeshObject = THREE.Mesh<BufferGeometry, THREE.MeshStandardMaterial>;

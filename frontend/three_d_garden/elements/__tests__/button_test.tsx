@@ -1,6 +1,8 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { PresetButton, PresetButtonProps } from "../button";
+import {
+  PresetButton, presetButtonPropsEqual, PresetButtonProps,
+} from "../button";
 import {
   actRenderer,
   createRenderer,
@@ -42,7 +44,13 @@ describe("<PresetButton />", () => {
         parent: {
           children: [
             { name: "btn", position: { z: 0 }, children: [] },
-            { name: "not-btn", position: { z: 0 }, children: [] },
+            {
+              name: "not-btn",
+              position: { z: 0 },
+              children: [
+                { name: "btn", position: { z: 0 }, children: [] },
+              ],
+            },
           ]
         }
       }
@@ -53,6 +61,7 @@ describe("<PresetButton />", () => {
     });
     expect(e.object.parent.children[0].position.z).toEqual(-10);
     expect(e.object.parent.children[1].position.z).toEqual(16);
+    expect(e.object.parent.children[1].children[0].position.z).toEqual(-10);
     unmountRenderer(wrapper);
   });
 
@@ -102,5 +111,29 @@ describe("<PresetButton />", () => {
     expect(e.object.parent.children[0].position.z).toEqual(0);
     expect(e.object.parent.children[1].position.z).toEqual(26);
     unmountRenderer(wrapper);
+  });
+
+  it("compares preset-button-rendered inputs", () => {
+    const p = fakeProps();
+    expect(presetButtonPropsEqual(p, {
+      ...p,
+      startPosition: { x: 0, y: 0, z: 0 },
+    })).toBeTruthy();
+    expect(presetButtonPropsEqual(p, {
+      ...p,
+      hovered: p.preset,
+    })).toBeFalsy();
+    expect(presetButtonPropsEqual(p, {
+      ...p,
+      choosePreset: jest.fn(),
+    })).toBeFalsy();
+    expect(presetButtonPropsEqual(p, {
+      ...p,
+      index: p.index + 1,
+    })).toBeFalsy();
+    expect(presetButtonPropsEqual(p, {
+      ...p,
+      startPosition: { x: 1, y: 0, z: 0 },
+    })).toBeFalsy();
   });
 });

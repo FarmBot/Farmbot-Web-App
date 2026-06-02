@@ -155,6 +155,18 @@ jest.mock("three/examples/jsm/Addons.js", () => ({
     constructor(_mesh: unknown, _size?: number, _color?: number) { }
   },
 }));
+jest.mock("three/examples/jsm/loaders/SVGLoader.js", () => ({
+  SVGLoader: class {
+    static createShapes: unknown = jest.fn(() => [{ holes: { push: jest.fn() } }]);
+    load = jest.fn((_, fn) => fn({ paths: [[0], [1], [2], [3], [4]] }));
+  },
+}));
+jest.mock("three/examples/jsm/helpers/VertexNormalsHelper.js", () => ({
+  VertexNormalsHelper: class {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(_mesh: unknown, _size?: number, _color?: number) { }
+  },
+}));
 
 jest.mock("three/examples/jsm/lines/LineSegments2.js", () => ({
   LineSegments2: class {

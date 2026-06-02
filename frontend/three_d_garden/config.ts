@@ -146,7 +146,7 @@ export const INITIAL: ConfigWithPosition = {
   bedWidthOuter: 1360,
   bedLengthOuter: 3000,
   legSize: 100,
-  legsFlush: true,
+  legsFlush: false,
   extraLegsX: 1,
   extraLegsY: 0,
   bedBrightness: 8,
@@ -512,7 +512,7 @@ export const modifyConfig =
     }
     if (update.bedType || (newConfig.bedType != config.bedType)) {
       newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
-      newConfig.legsFlush = newConfig.bedType != "Mobile";
+      newConfig.legsFlush = false;
     }
     if (Object.keys(update).includes("topDown")) {
       newConfig.perspective = !update.topDown;
@@ -575,13 +575,40 @@ export const modifyConfigsFromUrlParams = (config: ConfigWithPosition) => {
 type SeasonProperties = {
   sunIntensity: number;
   sunColor: string;
+  sunInclination: number;
   cloudOpacity: number;
 };
+
+export const seasonSpringConfig = {
+  tension: 180,
+  friction: 24,
+};
+
 const SEASON_PROPERTIES: Record<string, SeasonProperties> = {
-  Winter: { sunIntensity: 4, sunColor: "#A0C4FF", cloudOpacity: 0.75 },
-  Spring: { sunIntensity: 7, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
-  Summer: { sunIntensity: 9, sunColor: "#FFFFFF", cloudOpacity: 0 },
-  Fall: { sunIntensity: 5.5, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
+  Winter: {
+    sunIntensity: 5.5,
+    sunColor: "#A0C4FF",
+    sunInclination: 35,
+    cloudOpacity: 0.75,
+  },
+  Spring: {
+    sunIntensity: 8,
+    sunColor: "#BDE0FE",
+    sunInclination: 145,
+    cloudOpacity: 0.2,
+  },
+  Summer: {
+    sunIntensity: 8.5,
+    sunColor: "#FFFFFF",
+    sunInclination: 120,
+    cloudOpacity: 0,
+  },
+  Fall: {
+    sunIntensity: 6,
+    sunColor: "#FFD6BC",
+    sunInclination: 50,
+    cloudOpacity: 0.3,
+  },
 };
 export const getSeasonProperties = (
   config: Config,
@@ -591,6 +618,7 @@ export const getSeasonProperties = (
   return {
     sunIntensity: params.sunIntensity,
     sunColor: params.sunColor,
+    sunInclination: params.sunInclination,
     cloudOpacity: params.cloudOpacity,
   };
 };

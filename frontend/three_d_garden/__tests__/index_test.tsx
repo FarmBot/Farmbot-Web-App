@@ -13,11 +13,13 @@ import { Actions } from "../../constants";
 import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import * as screenSize from "../../screen_size";
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.spyOn(screenSize, "isMobile").mockImplementation(() => false);
   jest.spyOn(configStorageActions, "getWebAppConfigValue")
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
@@ -27,6 +29,7 @@ beforeEach(() => {
 afterEach(() => {
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.restoreAllMocks();
 });
 
 describe("<ThreeDGarden />", () => {
@@ -60,6 +63,14 @@ describe("<ThreeDGarden />", () => {
     render(<ThreeDGarden {...fakeProps()} />);
     expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
     expect(window.__fbPerf?.marks.three_d_garden_mounted.length).toEqual(1);
+  });
+
+  it("skips rerenders when canvas props are unchanged", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    const { rerender } = render(<ThreeDGarden {...p} />);
+    rerender(<ThreeDGarden {...p} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
   });
 });
 
@@ -157,5 +168,13 @@ describe("<ThreeDGardenToggle />", () => {
     expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.three_d_garden,
       false);
+  });
+
+  it("shows 3D controls help", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    fireEvent.click(screen.getByLabelText("3D Map beta help"));
+    expect(screen.getByText("3D Controls")).toBeInTheDocument();
+    expect(screen.getByText("Scroll to zoom")).toBeInTheDocument();
   });
 });

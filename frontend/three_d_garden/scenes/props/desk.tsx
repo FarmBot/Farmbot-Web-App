@@ -20,7 +20,25 @@ const deskOffset = 800;
 const deskLegWidth = 50;
 const deskWoodDarkness = "#666";
 
-export const Desk = (props: DeskProps) => {
+const DESK_CONFIG_FIELDS: (keyof Config)[] = [
+  "bedHeight",
+  "bedLengthOuter",
+  "bedWidthOuter",
+  "bedZOffset",
+  "desk",
+];
+
+export const deskPropsEqual = (prev: DeskProps, next: DeskProps) =>
+  prev.activeFocus === next.activeFocus &&
+  DESK_CONFIG_FIELDS.every(field => prev.config[field] === next.config[field]);
+
+const DeskBase = (props: DeskProps) => {
+  if (!props.config.desk) { return <></>; }
+
+  return <EnabledDesk {...props} />;
+};
+
+const EnabledDesk = (props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
   const deskWoodTexture = useTextureVariant(ASSETS.textures.wood, {
@@ -33,7 +51,7 @@ export const Desk = (props: DeskProps) => {
     rotation: Math.PI / 2,
   });
   return <FocusVisibilityGroup name={"desk"}
-    visible={props.config.desk && props.activeFocus == ""}
+    visible={props.activeFocus == ""}
     position={[
       threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
       threeSpace(config.bedWidthOuter / 2, config.bedWidthOuter),
@@ -111,3 +129,5 @@ export const Desk = (props: DeskProps) => {
     </Group>
   </FocusVisibilityGroup>;
 };
+
+export const Desk = React.memo(DeskBase, deskPropsEqual);

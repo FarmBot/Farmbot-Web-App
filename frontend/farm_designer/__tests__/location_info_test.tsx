@@ -4,6 +4,7 @@ import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
   ImageListItem, ImageListItemProps,
 } from "../location_info";
+import { selectMostRecentPoints } from "../recent_points";
 import { fakeState } from "../../__test_support__/fake_state";
 import { BooleanSetting } from "../../session_keys";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
@@ -202,6 +203,35 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([]);
     const props = mapStateToProps(state);
     expect(props.getConfigValue(BooleanSetting.xy_swap)).toEqual(undefined);
+  });
+});
+
+describe("selectMostRecentPoints()", () => {
+  it("selects the most recent point per rounded location", () => {
+    const oldPoint = fakePoint();
+    oldPoint.uuid = "Point.old";
+    oldPoint.body.x = 101;
+    oldPoint.body.y = 205;
+    oldPoint.body.updated_at = "2026-01-01T00:00:00.000Z";
+    const newPoint = fakePoint();
+    newPoint.uuid = "Point.new";
+    newPoint.body.x = 104;
+    newPoint.body.y = 206;
+    newPoint.body.updated_at = "2026-01-02T00:00:00.000Z";
+    const otherPoint = fakePoint();
+    otherPoint.uuid = "Point.other";
+    otherPoint.body.x = 240;
+    otherPoint.body.y = 300;
+    otherPoint.body.updated_at = "2026-01-01T00:00:00.000Z";
+
+    expect(selectMostRecentPoints([oldPoint, newPoint, otherPoint])
+      .map(point => point.uuid)).toEqual(["Point.new", "Point.other"]);
+  });
+
+  it("skips points without coordinates", () => {
+    const reading = fakeSensorReading();
+    reading.body.x = undefined;
+    expect(selectMostRecentPoints([reading])).toEqual([]);
   });
 });
 

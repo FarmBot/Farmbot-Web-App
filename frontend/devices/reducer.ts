@@ -26,7 +26,6 @@ export const initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   hardware: {
-    gpio_registry: {},
     mcu_params: {},
     jobs: {},
     location_data: {
@@ -55,7 +54,6 @@ export const initialState = (): BotState => ({
       target: "---",
       env: "---",
       node_name: "---",
-      firmware_version: "---",
       firmware_commit: "---",
     },
     user_env: {},
@@ -214,9 +212,25 @@ const unstash = (s: BotState) =>
 function statusHandler(state: BotState,
   action: ReduxAction<HardwareState>): BotState {
   const { payload } = action;
-  state.hardware = payload;
+  const emptyHardware = initialState().hardware;
+  state.hardware = {
+    ...emptyHardware,
+    ...payload,
+    location_data: {
+      ...emptyHardware.location_data,
+      ...payload.location_data,
+    },
+    informational_settings: {
+      ...emptyHardware.informational_settings,
+      ...payload.informational_settings,
+    },
+    process_info: {
+      ...emptyHardware.process_info,
+      ...payload.process_info,
+    },
+  };
 
-  updateMotorHistoryArray(payload.location_data);
+  updateMotorHistoryArray(state.hardware.location_data);
 
   const { informational_settings } = state.hardware;
   const syncStatus = informational_settings.sync_status;

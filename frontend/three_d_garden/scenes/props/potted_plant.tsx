@@ -1,30 +1,50 @@
-import React, { useMemo } from "react";
-import { Billboard, Circle, Image } from "@react-three/drei";
+/* eslint-disable no-null/no-null */
+import React from "react";
+import { Billboard, Circle, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { Group, MeshPhongMaterial, Mesh } from "../../components";
+import {
+  Group, MeshBasicMaterial, MeshPhongMaterial, Mesh, PlaneGeometry,
+} from "../../components";
 import { RenderOrder } from "../../constants";
+import {
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+  type PlantIconAtlas,
+} from "../../garden/plant_icon_atlas";
 
+const pottedPlantIcon = "/crops/icons/lavender.avif";
 const potHeight = 400;
 const plantHeight = 500;
+const potPoints = [
+  new THREE.Vector2(0, 0),
+  new THREE.Vector2(0.3, 0),
+  new THREE.Vector2(0.35, 0.1),
+  new THREE.Vector2(0.25, 0.6),
+  new THREE.Vector2(0.3, 0.8),
+  new THREE.Vector2(0.4, 1),
+  new THREE.Vector2(0.35, 1),
+  new THREE.Vector2(0.2, 0.6),
+  new THREE.Vector2(0, 0.6),
+];
+const potGeometry = new THREE.LatheGeometry(potPoints, 32, 0, Math.PI * 2);
 
-export const PottedPlant = () => {
-  const points = useMemo(() => [
-    new THREE.Vector2(0, 0),
-    new THREE.Vector2(0.3, 0),
-    new THREE.Vector2(0.35, 0.1),
-    new THREE.Vector2(0.25, 0.6),
-    new THREE.Vector2(0.3, 0.8),
-    new THREE.Vector2(0.4, 1),
-    new THREE.Vector2(0.35, 1),
-    new THREE.Vector2(0.2, 0.6),
-    new THREE.Vector2(0, 0.6),
-  ], []);
+export interface PottedPlantProps {
+  plantIconAtlas?: PlantIconAtlas;
+}
 
-  const geometry = useMemo(() =>
-    new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points]);
+const PottedPlantBase = (props: PottedPlantProps) => {
+  const plantTextureUrl = getPlantIconTextureUrl(
+    pottedPlantIcon, props.plantIconAtlas);
+  const basePlantTexture = useTexture(plantTextureUrl);
+  const plantTexture = React.useMemo(() =>
+    getPlantIconTexture(basePlantTexture, pottedPlantIcon,
+      props.plantIconAtlas), [
+    basePlantTexture, props.plantIconAtlas,
+  ]);
 
   return <Group name="pot-with-plant">
-    <Mesh geometry={geometry}
+    <Mesh geometry={potGeometry}
+      dispose={null}
       scale={[potHeight, potHeight, potHeight]}
       rotation={[Math.PI / 2, 0, 0]}
       receiveShadow={true}>
@@ -35,13 +55,18 @@ export const PottedPlant = () => {
       <MeshPhongMaterial color="#3A1502" />
     </Circle>
     <Billboard follow={true} position={[0, 0, potHeight - plantHeight / 8]}>
-      <Image
-        url={"/crops/icons/lavender.avif"}
-        scale={plantHeight}
-        transparent={true}
+      <Mesh
         renderOrder={RenderOrder.one}
-        position={[0, plantHeight / 2, 0]}
-      />
+        position={[0, plantHeight / 2, 0]}>
+        <PlaneGeometry args={[plantHeight, plantHeight]} />
+        <MeshBasicMaterial
+          map={plantTexture}
+          alphaTest={0.1}
+          transparent={true}
+          depthWrite={true} />
+      </Mesh>
     </Billboard>
   </Group>;
 };
+
+export const PottedPlant = React.memo(PottedPlantBase);

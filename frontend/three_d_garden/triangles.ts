@@ -1,12 +1,14 @@
 import Delaunator from "delaunator";
 import { TaggedGenericPointer, TaggedSensor, TaggedSensorReading } from "farmbot";
 import { Config } from "./config";
-import { soilHeightPoint } from "../points/soil_height";
+import { soilHeightPoint } from "../points/soil_height_helpers";
 import { zZero } from "./helpers";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { precomputeTriangles } from "./triangle_functions";
-import { filterMoistureReadings } from "../farm_designer/map/layers";
-import { selectMostRecentPoints } from "../farm_designer/location_info";
+import {
+  filterMoistureReadings,
+} from "../farm_designer/map/layers/sensor_readings/filter_moisture_readings";
+import { selectMostRecentPoints } from "../farm_designer/recent_points";
 import { isUndefined } from "lodash";
 
 export interface FilterMoisturePointsProps {
@@ -19,31 +21,32 @@ export const filterMoisturePoints = (props: FilterMoisturePointsProps) => {
   const { readings: moistureReadings } =
     filterMoistureReadings(props.readings, props.sensors);
   const recentReadings = selectMostRecentPoints(moistureReadings);
-  const moisturePoints = recentReadings
-    .filter(p =>
-      !isUndefined(p.body.x) &&
-      !isUndefined(p.body.y))
-    .map(p => [p.body.x, p.body.y, p.body.value]);
+  const moisturePoints = [];
+  for (const point of recentReadings) {
+    if (isUndefined(point.body.x) || isUndefined(point.body.y)) { continue; }
+    moisturePoints.push([point.body.x, point.body.y, point.body.value]);
+  }
   const params = boundaryPoints(props.config);
-  const outerPoints = [
-    { x: params.outer.x.min, y: params.outer.y.min },
-    { x: params.outer.x.min, y: params.outer.y.max },
-    { x: params.outer.x.max, y: params.outer.y.min },
-    { x: params.outer.x.max, y: params.outer.y.max },
-  ];
-  const innerPoints = [
-    { x: params.inner.x.min, y: params.inner.y.min },
-    { x: params.inner.x.min, y: params.inner.y.max },
-    { x: params.inner.x.max, y: params.inner.y.min },
-    { x: params.inner.x.max, y: params.inner.y.max },
-  ];
-  [...outerPoints, ...innerPoints].map(p => {
-    moisturePoints.push([p.x, p.y, 0]);
-  });
+  moisturePoints.push([params.outer.x.min, params.outer.y.min, 0]);
+  moisturePoints.push([params.outer.x.min, params.outer.y.max, 0]);
+  moisturePoints.push([params.outer.x.max, params.outer.y.min, 0]);
+  moisturePoints.push([params.outer.x.max, params.outer.y.max, 0]);
+  moisturePoints.push([params.inner.x.min, params.inner.y.min, 0]);
+  moisturePoints.push([params.inner.x.min, params.inner.y.max, 0]);
+  moisturePoints.push([params.inner.x.max, params.inner.y.min, 0]);
+  moisturePoints.push([params.inner.x.max, params.inner.y.max, 0]);
   return moisturePoints;
 };
 
-export const soilSurfaceExtents = (config: Config) => ({
+type SoilBoundaryConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedWallThickness"
+  | "bedXOffset" | "bedYOffset">;
+
+type SoilPointConfig = SoilBoundaryConfig & Pick<Config,
+  "bedHeight" | "columnLength" | "exaggeratedZ" | "perspective"
+  | "soilHeight" | "zGantryOffset">;
+
+export const soilSurfaceExtents = (config: SoilBoundaryConfig) => ({
   x: {
     min: config.bedWallThickness - config.bedXOffset,
     max: config.bedLengthOuter - config.bedWallThickness - config.bedXOffset,
@@ -54,7 +57,7 @@ export const soilSurfaceExtents = (config: Config) => ({
   },
 });
 
-export const boundaryPoints = (config: Config) => {
+export const boundaryPoints = (config: SoilBoundaryConfig) => {
   const outerBoundaryParams = soilSurfaceExtents(config);
   return {
     outer: outerBoundaryParams,
@@ -72,7 +75,7 @@ export const boundaryPoints = (config: Config) => {
 };
 
 export interface FilterSoilPointsProps {
-  config: Config;
+  config: SoilPointConfig;
   points: TaggedGenericPointer[] | undefined;
 }
 
@@ -80,19 +83,21 @@ export const filterSoilPoints = (props: FilterSoilPointsProps) => {
   const { config } = props;
   const boundaryParams = boundaryPoints(config);
 
-  const soilHeightPoints: [number, number, number][] = (props.points || [])
-    .filter(p => soilHeightPoint(p) &&
-      p.body.x > boundaryParams.outer.x.min &&
-      p.body.x < boundaryParams.outer.x.max &&
-      p.body.y > boundaryParams.outer.y.min &&
-      p.body.y < boundaryParams.outer.y.max)
-    .map(p => ([
-      p.body.x,
-      p.body.y,
+  const soilHeightPoints: [number, number, number][] = [];
+  const { outer } = boundaryParams;
+  (props.points || []).forEach(p => {
+    const { x, y, z } = p.body;
+    if (!soilHeightPoint(p)) { return; }
+    if (x <= outer.x.min || x >= outer.x.max) { return; }
+    if (y <= outer.y.min || y >= outer.y.max) { return; }
+    soilHeightPoints.push([
+      x,
+      y,
       (config.exaggeratedZ && config.perspective)
-        ? (-config.soilHeight + (p.body.z + config.soilHeight) * 10)
-        : p.body.z,
-    ]));
+        ? (-config.soilHeight + (z + config.soilHeight) * 10)
+        : z,
+    ]);
+  });
 
   const hasPoints = soilHeightPoints.length > 0;
 
@@ -108,23 +113,22 @@ export const filterSoilPoints = (props: FilterSoilPointsProps) => {
     return soilHeightZ;
   };
 
-  Object.entries(boundaryParams).map(([key, params]) => {
-    // with soil points: gradually slope to the outer boundary
-    if (key == "inner" && hasPoints) { return; }
-    [
-      { x: params.x.min, y: params.y.min },
-      { x: params.x.min, y: params.y.max },
-      { x: params.x.max, y: params.y.min },
-      { x: params.x.max, y: params.y.max },
-    ].map(p => {
-      soilHeightPoints.push([
-        p.x,
-        p.y,
-        // no soil points: flat soil with vertical slope to outer boundary
-        key == "inner" ? soilHeightZ : boundaryZ(),
-      ]);
-    });
-  });
+  const addBoundary = (
+    params: typeof boundaryParams.outer,
+    z: number,
+  ) => {
+    soilHeightPoints.push(
+      [params.x.min, params.y.min, z],
+      [params.x.min, params.y.max, z],
+      [params.x.max, params.y.min, z],
+      [params.x.max, params.y.max, z],
+    );
+  };
+  addBoundary(boundaryParams.outer, boundaryZ());
+  if (!hasPoints) {
+    // no soil points: flat soil with vertical slope to outer boundary
+    addBoundary(boundaryParams.inner, soilHeightZ);
+  }
 
   return soilHeightPoints;
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { perfSample } from "../performance/perf";
+import { perfEnabled, perfSample } from "../performance/perf";
 
 type SceneObject = {
   isMesh?: boolean;
@@ -58,6 +58,9 @@ const formatTopCounts = (
 
 export const REPORT_EVERY_N = 60;
 
+export const fpsProbeReportingEnabled = () =>
+  perfEnabled() || localStorage.getItem("FPS_LOGS") == "true";
+
 export const FPSProbe = () => {
   const frameCount = React.useRef(0);
   const lastTime = React.useRef<number | undefined>(undefined);
@@ -82,11 +85,16 @@ export const FPSProbe = () => {
     if (now - lastTime.current >= 1000) {
       const elapsed = (now - lastTime.current) / 1000;
       const fps = frameCount.current / elapsed;
+      window.__fps = fps;
+      if (!fpsProbeReportingEnabled()) {
+        frameCount.current = 0;
+        lastTime.current = now;
+        return;
+      }
       samples.current.push(fps);
       const { calls, triangles, points, lines } = gl.info.render;
       const { geometries, textures } = gl.info.memory;
       const sceneCounts = countSceneObjects(scene);
-      window.__fps = fps;
       perfSample("fps", fps);
       perfSample("frame_ms", 1000 / fps);
       const linesToLogObj: Record<string, number | string> = {
@@ -110,7 +118,7 @@ export const FPSProbe = () => {
       const linesToLog = Object.entries(linesToLogObj)
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n");
-      const doLog = (localStorage.getItem("FPS_LOGS") ?? "true") == "true";
+      const doLog = localStorage.getItem("FPS_LOGS") == "true";
       doLog && console.log(linesToLog);
       reportCount.current += 1;
       const doReport = !(reportCount.current % REPORT_EVERY_N);
