@@ -17,11 +17,15 @@ const POINT_TYPE_BY_SELECTION_KIND:
     slot: "ToolSlot",
   };
 
+export const pointTypeForSelectionKind = (
+  kind: ThreeDObjectSelection["kind"],
+) => POINT_TYPE_BY_SELECTION_KIND[kind];
+
 export const selectionKindAllowed = (
   kind: ThreeDObjectSelection["kind"],
   selectionPointType: PointType[] | undefined,
 ) => {
-  const pointType = POINT_TYPE_BY_SELECTION_KIND[kind];
+  const pointType = pointTypeForSelectionKind(kind);
   return !!pointType && (selectionPointType || ["Plant"]).includes(pointType);
 };
 

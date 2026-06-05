@@ -112,19 +112,26 @@ const GroupOrder = (props: GroupOrderProps) => {
   const positions: [number, number, number][] = sortedPoints
     .map(p => {
       if (p.body.pointer_type == "ToolSlot") {
-        return getWorldPosition({ x: p.body.x, y: p.body.y, z: p.body.z + 25 });
+        return getWorldPosition({ x: p.body.x, y: p.body.y, z: p.body.z + 35 });
       }
       if (p.body.pointer_type == "GenericPointer") {
         return getWorldPosition({
           x: p.body.x,
           y: p.body.y,
-          z: getZ(p.body.x, p.body.y) + 75,
+          z: getZ(p.body.x, p.body.y) + 100,
+        });
+      }
+      if (p.body.pointer_type == "Weed") {
+        return getWorldPosition({
+          x: p.body.x,
+          y: p.body.y,
+          z: getZ(p.body.x, p.body.y) + p.body.radius + 25,
         });
       }
       return getWorldPosition({
         x: p.body.x,
         y: p.body.y,
-        z: getZ(p.body.x, p.body.y) + p.body.radius + 10,
+        z: getZ(p.body.x, p.body.y) + 2 * p.body.radius + 25,
       });
     });
   return <Group name={"group-order"}>
@@ -144,7 +151,6 @@ const GroupOrder = (props: GroupOrderProps) => {
         <Text
           fontSize={25}
           color={"white"}
-          thickness={10}
           renderOrder={RenderOrder.plantLabels}
           rotation={[0, 0, 0]}
           position={[0, 0, 0]}>

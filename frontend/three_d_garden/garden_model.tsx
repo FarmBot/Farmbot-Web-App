@@ -8,6 +8,7 @@ import {
   Line,
   Sphere,
   StatsGl,
+  Billboard,
 } from "@react-three/drei";
 import {
   BackSide,
@@ -30,6 +31,8 @@ import {
   skyColor,
   ThreeDPlantLabel,
   ZoomBeaconsProps,
+  POINT_PIN_HEIGHT,
+  POINT_PIN_RADIUS,
 } from "./garden";
 import { Config, PositionConfig } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -38,9 +41,9 @@ import { getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, Mesh, MeshBasicMaterial,
 } from "./components";
-import { isUndefined, round } from "lodash";
+import { isUndefined, round, uniq } from "lodash";
 import {
-  TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
+  PointType, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
   TaggedSensorReading,
   TaggedDevice,
@@ -50,10 +53,11 @@ import {
   TaggedWeedPointer,
 } from "farmbot";
 import { BooleanSetting } from "../session_keys";
+import { Actions } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
-import { BigDistance, HOVER_OBJECT_MODES } from "./constants";
+import { BigDistance, HOVER_OBJECT_MODES, RenderOrder } from "./constants";
 import { getZFunc, serializeTriangles } from "./triangle_functions";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
@@ -80,6 +84,7 @@ import { MovementState, TimeSettings } from "../interfaces";
 import { Path } from "../internal_urls";
 import {
   createSelectionLookup, hoverSelectionFromDesigner, pathForThreeDSelection,
+  pointTypeForSelectionKind,
   routeLocationSelectionFromPath, routeSelectionFromPath,
   selectionForUuid, selectionKindAllowed,
   ThreeDObjectSelectionLayer,
@@ -91,12 +96,17 @@ import {
 } from "./selection_types";
 import { setPanelOpen3D } from "./panel_actions";
 import {
-  get3DPositionFunc, getGardenPositionFunc, threeSpace,
+  get3DPositionFunc, getGardenPositionFunc, getWorldPositionFunc, threeSpace,
   zero as zeroFunc, zZero as zZeroFunc,
 } from "./helpers";
 import { clickWasDragged } from "./click_event";
-import { clickMapPlant } from "../farm_designer/map/actions";
+import { clickMapPlant, selectPoint } from "../farm_designer/map/actions";
+import { POINTER_TYPES } from "../point_groups/criteria/interfaces";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
+import { Text } from "./elements";
+import {
+  getToolSlotRenderPosition,
+} from "./bot/components/tool_slot_position";
 
 const AnimatedGroup = animated(Group);
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
@@ -108,6 +118,43 @@ const GRID_SELECTION_BLOCKED_MODES = [
 ];
 const gridSelectionAllowed = () =>
   !GRID_SELECTION_BLOCKED_MODES.includes(getMode());
+const PROMO_POPUP_DISABLED_KINDS = ["camera", "utm", "electronics"];
+const promoPopupDisabled = (
+  promo: boolean | undefined,
+  selection: ThreeDObjectSelection,
+) => !!promo && PROMO_POPUP_DISABLED_KINDS.includes(selection.kind);
+const HOVER_LABEL_FONT_SIZE = 50;
+const HOVER_LABEL_PADDING = 40;
+const TOOL_LABEL_Z_OFFSET = 35;
+const TOOL_LABEL_TEXT_OFFSET = 80;
+const useMultiSelectModifier = () => {
+  const modifierRef = React.useRef(false);
+  React.useEffect(() => {
+    const updateModifier = (event: KeyboardEvent) => {
+      modifierRef.current = event.ctrlKey || event.metaKey;
+    };
+    const clearModifier = () => { modifierRef.current = false; };
+    window.addEventListener("keydown", updateModifier);
+    window.addEventListener("keyup", updateModifier);
+    window.addEventListener("blur", clearModifier);
+    return () => {
+      window.removeEventListener("keydown", updateModifier);
+      window.removeEventListener("keyup", updateModifier);
+      window.removeEventListener("blur", clearModifier);
+    };
+  }, []);
+  return modifierRef;
+};
+
+const selectionPointTypeFor = (
+  selection: ThreeDObjectSelection | undefined,
+) => selection && pointTypeForSelectionKind(selection.kind);
+
+const selectionPointTypesFor = (
+  currentType: PointType,
+  selectionType: PointType,
+) => currentType == selectionType ? [currentType] : [...POINTER_TYPES];
+
 const LazyBot = React.lazy(() =>
   import("./bot").then(module => ({ default: module.Bot })));
 const LazyVisualization = React.lazy(() =>
@@ -116,6 +163,84 @@ const LazyVisualization = React.lazy(() =>
   })));
 export const SMOOTH_XL_CAMERA_BED_SCALE = 1.9;
 export const SMOOTH_XL_CAMERA_HEIGHT_SCALE = 1.45;
+
+interface ObjectHoverLabelProps {
+  label: string;
+  position: [number, number, number];
+  textOffset: number;
+}
+
+const ObjectHoverLabel = (props: ObjectHoverLabelProps) =>
+  <Billboard follow={true} position={props.position}>
+    <Text
+      renderOrder={RenderOrder.plantLabels}
+      fontSize={HOVER_LABEL_FONT_SIZE}
+      color={"white"}
+      position={[0, props.textOffset, 0]}
+      rotation={[0, 0, 0]}>
+      {props.label}
+    </Text>
+  </Billboard>;
+
+interface ObjectHoverLabelLookupProps {
+  selection: ThreeDObjectSelection;
+  config: Config;
+  configPosition: PositionConfig;
+  getZ(x: number, y: number): number;
+  mapPoints: TaggedGenericPointer[];
+  toolSlots: SlotWithTool[];
+  weeds: TaggedWeedPointer[];
+}
+
+const weedHoverLabel = (props: ObjectHoverLabelLookupProps) => {
+  const weed = props.weeds.find(resource =>
+    resource.body.id == props.selection.id);
+  if (!weed) { return undefined; }
+  const radius = weed.body.radius == 0 ? 50 : weed.body.radius;
+  return <ObjectHoverLabel
+    label={weed.body.name || "" + weed.body.id}
+    position={getWorldPositionFunc(props.config)({
+      x: weed.body.x,
+      y: weed.body.y,
+      z: props.getZ(weed.body.x, weed.body.y),
+    })}
+    textOffset={radius + HOVER_LABEL_PADDING} />;
+};
+
+const pointHoverLabel = (props: ObjectHoverLabelLookupProps) => {
+  const point = props.mapPoints.find(resource =>
+    resource.body.id == props.selection.id);
+  if (!point) { return undefined; }
+  return <ObjectHoverLabel
+    label={point.body.name || "" + point.body.id}
+    position={getWorldPositionFunc(props.config)({
+      x: point.body.x,
+      y: point.body.y,
+      z: props.getZ(point.body.x, point.body.y) + POINT_PIN_HEIGHT,
+    })}
+    textOffset={POINT_PIN_RADIUS + HOVER_LABEL_PADDING} />;
+};
+
+const slotHoverLabel = (props: ObjectHoverLabelLookupProps) => {
+  const slot = props.toolSlots.find(resource =>
+    resource.toolSlot.body.id == props.selection.id);
+  if (!slot) { return undefined; }
+  const position =
+    getToolSlotRenderPosition(props.config, props.configPosition, slot);
+  return <ObjectHoverLabel
+    label={slot.tool?.body.name || "Empty slot"}
+    position={[position.x, position.y, position.z + TOOL_LABEL_Z_OFFSET]}
+    textOffset={TOOL_LABEL_TEXT_OFFSET} />;
+};
+
+const objectHoverLabel = (props: ObjectHoverLabelLookupProps) => {
+  switch (props.selection.kind) {
+    case "weed": return weedHoverLabel(props);
+    case "point": return pointHoverLabel(props);
+    case "slot": return slotHoverLabel(props);
+    default: return undefined;
+  }
+};
 
 interface ZoomBeaconsLoadInProps extends ZoomBeaconsProps {
   reveal?: boolean;
@@ -213,6 +338,7 @@ export interface GardenModelProps {
   seasonResetKey?: number;
   preloadEnvironmentScenes?: boolean;
   showFarmbotLayerLoadProgress?: boolean;
+  promo?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
 }
@@ -402,6 +528,7 @@ interface StaticGardenLayersProps {
   weedsSelectable: boolean;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?(selection: ThreeDObjectSelection | undefined): void;
   onPlantHoverChange(hovered: boolean): void;
 }
 
@@ -417,7 +544,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     dispatch, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
-    onSelectObject, onHoverObject, onPlantHoverChange,
+    onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
   } = props;
   const seasonLayerKey = `${config.plants}-${seasonResetKey || 0}`;
   const gridVisible = config.grid && activeFocus != "Planter bed";
@@ -582,6 +709,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             plantIconAtlas={plantIconAtlas}
             onSelectObject={weedsSelectable ? onSelectObject : undefined}
             onHoverObject={weedsSelectable ? onHoverObject : undefined}
+            onHoverLabel={weedsSelectable ? onHoverLabel : undefined}
             dispatch={weedsSelectable ? dispatch : undefined} />
         </Group>
       </PopInGroup>}
@@ -609,6 +737,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             getZ={getZ}
             onSelectObject={pointsSelectable ? onSelectObject : undefined}
             onHoverObject={pointsSelectable ? onHoverObject : undefined}
+            onHoverLabel={pointsSelectable ? onHoverLabel : undefined}
             dispatch={pointsSelectable ? dispatch : undefined} />
         </Group>
       </PopInGroup>}
@@ -622,6 +751,7 @@ const isStaticGardenLayerIgnoredProp = (
   key == "markStep"
   || key == "onSelectObject"
   || key == "onHoverObject"
+  || key == "onHoverLabel"
   || key == "onPlantHoverChange";
 
 const staticGardenLayersPropsEqual = (
@@ -722,6 +852,7 @@ interface FarmbotLoadInProps {
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?(selection: ThreeDObjectSelection | undefined): void;
 }
 
 const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
@@ -747,6 +878,7 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
       onToolSlotHoverObject={props.onToolSlotHoverObject}
+      onHoverLabel={props.onHoverLabel}
       toolSlots={props.toolSlots} />
   </FallInGroup>;
 
@@ -796,6 +928,7 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
         onHoverObject={props.onHoverObject}
         onToolSlotHoverObject={props.onToolSlotHoverObject}
         onSelectObject={props.onSelectObject}
+        onHoverLabel={props.onHoverLabel}
         reveal={layerReveal}
         toolSlots={props.toolSlots} />
     </SceneBoundary>
@@ -1039,6 +1172,7 @@ export const GardenModel = (props: GardenModelProps) => {
     baseConfig,
     props.smoothConfigTransitions,
   );
+  const configPosition = props.configPosition;
   const cameraConfig = props.smoothConfigTransitions
     ? baseConfig
     : config;
@@ -1079,9 +1213,12 @@ export const GardenModel = (props: GardenModelProps) => {
     toolSlots,
     weeds,
   ]);
+  const multiSelectModifier = useMultiSelectModifier();
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
+  const [hoveredObjectLabel, setHoveredObjectLabel] =
+    React.useState<ThreeDObjectSelection | undefined>(undefined);
   const [selectableObjectHoverCount, setSelectableObjectHoverCount] =
     React.useState(0);
   const [plantIntersected, setPlantIntersected] = React.useState(false);
@@ -1093,8 +1230,13 @@ export const GardenModel = (props: GardenModelProps) => {
     (hovered: boolean) => setSelectableObjectHoverCount(count =>
       hovered ? count + 1 : Math.max(0, count - 1)),
     []);
+  const setObjectHoverLabel = React.useCallback(
+    (selection: ThreeDObjectSelection | undefined) =>
+      setHoveredObjectLabel(selection),
+    []);
   const handleCameraDragStart = React.useCallback(() => {
     setSelectableObjectHoverCount(0);
+    setHoveredObjectLabel(undefined);
     setCameraDragging(true);
   }, []);
   const handleCameraDragEnd = React.useCallback(() => {
@@ -1103,6 +1245,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const handleScenePointerLeave = React.useCallback(() => {
     setSelectableObjectHoverCount(0);
     setPlantIntersected(false);
+    setHoveredObjectLabel(undefined);
     setGridHoverPosition(undefined);
   }, []);
   const handleScenePointerMove = React.useCallback((event: ThreeEvent<PointerEvent>) => {
@@ -1227,9 +1370,55 @@ export const GardenModel = (props: GardenModelProps) => {
     React.useState<ThreeDObjectSelection | undefined>(undefined);
   const [locationSelection, setLocationSelection] =
     React.useState<ThreeDLocationSelection | undefined>(undefined);
+  const routeSelection = React.useMemo(
+    () => routeSelectionFromPath(routeLocation.pathname),
+    [routeLocation.pathname]);
+  const activePopupSelection = objectSelectionMode ? undefined : popupSelection;
+  const activeLocationSelection =
+    objectSelectionMode ? undefined : locationSelection;
+  const closePopup = React.useCallback(() => {
+    setPopupSelection(undefined);
+    setLocationSelection(undefined);
+  }, []);
+  const openMultiSelectPanel = React.useCallback((
+    selection: ThreeDObjectSelection,
+  ) => {
+    if (!dispatch) { return false; }
+    const currentSelection = activePopupSelection || routeSelection;
+    const currentType = selectionPointTypeFor(currentSelection);
+    const selectionType = selectionPointTypeFor(selection);
+    const currentUuid = currentSelection &&
+      uuidForSelection(selectionLookup, currentSelection);
+    const selectionUuid = uuidForSelection(selectionLookup, selection);
+    if (!currentUuid || !selectionUuid || currentUuid == selectionUuid) {
+      return false;
+    }
+    if (!currentType || !selectionType) { return false; }
+    dispatch({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: selectionPointTypesFor(currentType, selectionType),
+    });
+    dispatch(selectPoint(uniq([currentUuid, selectionUuid])));
+    dispatch(setPanelOpen3D(true));
+    navigate(Path.plants("select"));
+    closePopup();
+    return true;
+  }, [
+    activePopupSelection,
+    closePopup,
+    dispatch,
+    navigate,
+    routeSelection,
+    selectionLookup,
+  ]);
   const onSelectObject = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
+    if (promoPopupDisabled(props.promo, selection)) {
+      setLocationSelection(undefined);
+      setPopupSelection(undefined);
+      return true;
+    }
     if (objectSelectionMode) {
       const uuid = uuidForSelection(selectionLookup, selection);
       if (uuid && selectionKindAllowed(selection.kind, selectionPointType)) {
@@ -1240,12 +1429,18 @@ export const GardenModel = (props: GardenModelProps) => {
       }
       return false;
     }
+    if (multiSelectModifier.current && openMultiSelectPanel(selection)) {
+      return true;
+    }
     setLocationSelection(undefined);
     setPopupSelection(selection);
     return true;
   }, [
     dispatch,
+    multiSelectModifier,
     objectSelectionMode,
+    openMultiSelectPanel,
+    props.promo,
     selectionLookup,
     selectionPointType,
   ]);
@@ -1260,13 +1455,6 @@ export const GardenModel = (props: GardenModelProps) => {
   ) => {
     setLocationSelection(selection);
   }, []);
-  const closePopup = React.useCallback(() => {
-    setPopupSelection(undefined);
-    setLocationSelection(undefined);
-  }, []);
-  const activePopupSelection = objectSelectionMode ? undefined : popupSelection;
-  const activeLocationSelection =
-    objectSelectionMode ? undefined : locationSelection;
   const openSelectedObjectPanel = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
@@ -1351,9 +1539,6 @@ export const GardenModel = (props: GardenModelProps) => {
     selectionLookup,
     selectionPanelOpen,
   ]);
-  const routeSelection = React.useMemo(
-    () => routeSelectionFromPath(routeLocation.pathname),
-    [routeLocation.pathname]);
   const selectedLocation = React.useMemo(
     () => routeLocationSelectionFromPath(
       routeLocation.pathname,
@@ -1376,7 +1561,10 @@ export const GardenModel = (props: GardenModelProps) => {
   const visualSelection =
     activePopupSelection || hoverSelection || routeSelection;
   const gridHoverEnabled =
-    config.grid && props.activeFocus != "Planter bed" && gridSelectionAllowed();
+    !props.promo
+    && config.grid
+    && props.activeFocus != "Planter bed"
+    && gridSelectionAllowed();
   const activeGridHoverPosition = gridHoverEnabled
     ? gridHoverPosition
     : undefined;
@@ -1513,6 +1701,26 @@ export const GardenModel = (props: GardenModelProps) => {
       hoveredPlant,
       plantLabelConfig,
     ]);
+  const objectHoverLabelNode = React.useMemo(() => {
+    if (!config.labelsOnHover || !hoveredObjectLabel) { return undefined; }
+    return objectHoverLabel({
+      selection: hoveredObjectLabel,
+      config,
+      configPosition,
+      getZ,
+      mapPoints,
+      toolSlots,
+      weeds,
+    });
+  }, [
+    config,
+    configPosition,
+    getZ,
+    hoveredObjectLabel,
+    mapPoints,
+    toolSlots,
+    weeds,
+  ]);
 
   let cameraScale: number | typeof scale = scale;
   if (props.smoothFocusTransitions || props.activeFocus) {
@@ -1604,8 +1812,10 @@ export const GardenModel = (props: GardenModelProps) => {
         weedsSelectable={weedsSelectable}
         onSelectObject={onSelectObject}
         onHoverObject={setSelectableObjectHover}
+        onHoverLabel={config.labelsOnHover ? setObjectHoverLabel : undefined}
         onPlantHoverChange={setPlantIntersected}
         showPoints={showPoints} />
+      {objectHoverLabelNode}
       {gridHoverEnabled &&
         <GridHoverTarget
           config={config}
@@ -1636,6 +1846,9 @@ export const GardenModel = (props: GardenModelProps) => {
         onHoverObject={objectSelectionMode ? undefined : setSelectableObjectHover}
         onToolSlotHoverObject={objectSelectionMode && slotsSelectable
           ? setSelectableObjectHover
+          : undefined}
+        onHoverLabel={config.labelsOnHover && slotsSelectable
+          ? setObjectHoverLabel
           : undefined}
         visible={farmbotVisible} />
       <ThreeDObjectSelectionLayer

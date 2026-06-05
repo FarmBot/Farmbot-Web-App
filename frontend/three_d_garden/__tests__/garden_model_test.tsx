@@ -13,7 +13,8 @@ import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render, waitFor } from "@testing-library/react";
 import {
-  fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeSequence, fakeWeed,
+  fakePlant, fakePoint, fakePointGroup, fakeSensor, fakeSensorReading,
+  fakeSequence, fakeTool, fakeToolSlot, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { Path } from "../../internal_urls";
@@ -661,6 +662,19 @@ describe("<GardenModel />", () => {
     expect(botLoadIn).toBeTruthy();
   });
 
+  it("handles FarmBot layer progress callbacks", () => {
+    const wrapper = createWrapper(fakeProps());
+    const progressNodes = wrapper.root.findAll(node =>
+      node.props.progress?.markStep && node.props.progress?.isStepAllowed);
+    actRenderer(() => {
+      progressNodes.forEach(node => {
+        node.props.progress.markStep("farmbot");
+        node.props.progress.isStepAllowed("farmbot");
+      });
+    });
+    expect(progressNodes.length).toBeGreaterThan(0);
+  });
+
   it("renders other options", async () => {
     mockIsDesktop = false;
     const p = fakeProps();
@@ -924,7 +938,109 @@ describe("<GardenModel />", () => {
     expect(mockNavigate).toHaveBeenCalled();
   });
 
+  it("updates object selections in selection modes", () => {
+    const getModeSpy = jest.spyOn(mapUtil, "getMode")
+      .mockReturnValue(Mode.boxSelect);
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.id = 1;
+    p.mapPoints = [point];
+    p.allPoints = [point];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.selectedPoints = [point.uuid];
+    p.addPlantProps.designer.selectionPointType = ["GenericPointer"];
+    p.addPlantProps.dispatch = jest.fn();
+    const wrapper = createWrapper(p);
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onSelectObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const selectionLayer = wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    expect(selectionLayer.props.selectedObjects)
+      .toEqual([{ kind: "point", id: 1 }]);
+    expect(staticLayers.props.onSelectObject({ kind: "point", id: 1 }))
+      .toBeTruthy();
+    expect(staticLayers.props.onSelectObject({ kind: "weed", id: 999 }))
+      .toBeFalsy();
+    expect(p.addPlantProps.dispatch).toHaveBeenCalled();
+
+    const group = fakePointGroup();
+    group.body.id = 2;
+    group.body.point_ids = [point.body.id];
+    location.pathname = Path.mock(Path.groups(2));
+    getModeSpy.mockReturnValue(Mode.editGroup);
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      groups={[group]}
+      addPlantProps={fakeAddPlantProps()} />));
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toEqual([{ kind: "point", id: 1 }]);
+    getModeSpy.mockRestore();
+  });
+
+  it("suppresses promo popups for FarmBot hardware", () => {
+    const p = fakeProps();
+    p.promo = true;
+    const wrapper = createWrapper(p);
+    const selectObject = wrapper.root.findAll(node =>
+      typeof node.props.onSelectObject == "function")[0].props.onSelectObject;
+    expect(selectObject({ kind: "camera", id: 0 })).toBeTruthy();
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.popupSelection).toBeUndefined();
+  });
+
+  it("renders object hover labels", () => {
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    const weed = fakeWeed();
+    weed.body.id = 1;
+    weed.body.name = "Weed label";
+    const point = fakePoint();
+    point.body.id = 2;
+    point.body.name = "Point label";
+    const tool = fakeTool();
+    tool.body.name = "Tool label";
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 3;
+    toolSlot.body.tool_id = tool.body.id;
+    p.weeds = [weed];
+    p.mapPoints = [point];
+    p.toolSlots = [{ toolSlot, tool }];
+    const wrapper = createWrapper(p);
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onHoverObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const garden = wrapper.root.findAll(node =>
+      typeof node.props.onPointerMove == "function"
+      && typeof node.props.onPointerLeave == "function")[0];
+    const setHoverLabel = wrapper.root.findAll(node =>
+      typeof node.props.onHoverLabel == "function")[0].props.onHoverLabel;
+    const hasText = (text: string) => wrapper.root.findAll(node =>
+      node.children.includes(text)).length > 0;
+
+    actRenderer(() => {
+      staticLayers.props.onHoverObject(true);
+      staticLayers.props.onHoverObject(false);
+      garden.props.onPointerMove({ intersections: [] });
+    });
+    actRenderer(() => setHoverLabel({ kind: "weed", id: 1 }));
+    expect(hasText("Weed label")).toBeTruthy();
+    actRenderer(() => setHoverLabel({ kind: "point", id: 2 }));
+    expect(hasText("Point label")).toBeTruthy();
+    actRenderer(() => setHoverLabel({ kind: "slot", id: 3 }));
+    expect(hasText("Tool label")).toBeTruthy();
+    actRenderer(() => setHoverLabel({ kind: "weed", id: 999 }));
+    expect(hasText("Weed label")).toBeFalsy();
+    actRenderer(() => setHoverLabel({ kind: "camera", id: 0 }));
+    expect(hasText("Point label")).toBeFalsy();
+  });
+
   it("closes selections on Escape", () => {
+    location.pathname = Path.mock(Path.designer());
     useStateSpy.mockRestore();
     const actualUseState = jest.requireActual("react")
       .useState as typeof React.useState;

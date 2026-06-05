@@ -540,11 +540,16 @@ describe("<Tools />", () => {
   it("hovers selectable tools", () => {
     const p = fakeProps();
     p.onHoverObject = jest.fn();
+    p.onHoverLabel = jest.fn();
     p.toolSlots = configuredUserTools();
+    p.toolSlots.forEach((slot, index) => {
+      slot.toolSlot.body.id = index + 1;
+    });
     const { container } = render(<Tools {...p} />);
-    const slot = container.querySelector("[name='slot']");
-    slot && fireEvent.pointerOver(slot);
-    slot && fireEvent.pointerOut(slot);
+    container.querySelectorAll("[name='slot']").forEach(slot => {
+      fireEvent.pointerOver(slot);
+      fireEvent.pointerOut(slot);
+    });
     const utm = container.querySelector("[name='utm-tool']");
     utm && fireEvent.pointerOver(utm);
     utm && fireEvent.pointerOut(utm);
@@ -554,6 +559,10 @@ describe("<Tools />", () => {
     });
     expect(p.onHoverObject).toHaveBeenCalledWith(true);
     expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onHoverLabel).toHaveBeenCalledWith(expect.objectContaining({
+      kind: "slot",
+    }));
+    expect(p.onHoverLabel).toHaveBeenCalledWith(undefined);
   });
 
   it("navigates to tools from the mounted UTM tool", () => {

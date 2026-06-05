@@ -35,12 +35,13 @@ import {
 } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelection,
+  ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
+  ThreeDObjectSelection,
   ThreeDObjectSelectionHandler,
 } from "../selection_types";
 
-const POINT_PIN_RADIUS = 12.5;
-const POINT_PIN_HEIGHT = 50;
+export const POINT_PIN_RADIUS = 12.5;
+export const POINT_PIN_HEIGHT = 50;
 const POINT_CYLINDER_HEIGHT = 25;
 const POINT_CYLINDER_INNER_R_FRACTION = 0.95;
 const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
@@ -106,12 +107,14 @@ export interface PointProps {
   getZ(x: number, y: number): number;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 export const Point = (props: PointProps) => {
   const { point, config } = props;
   const navigate = useNavigate();
   const unsaved = point.specialStatus !== SpecialStatus.SAVED;
+  const pointId = point.body.id;
   return <PointBase
     pointName={"" + point.body.id}
     alpha={unsaved ? 0.5 : 1}
@@ -140,6 +143,11 @@ export const Point = (props: PointProps) => {
     color={point.body.meta.color}
     radius={point.body.radius}
     onHoverObject={props.onHoverObject}
+    onHoverLabel={pointId
+      ? hovered => props.onHoverLabel?.(hovered
+        ? { kind: "point", id: pointId }
+        : undefined)
+      : undefined}
   />;
 };
 
@@ -164,6 +172,7 @@ export interface PointInstancesProps {
   getZ(x: number, y: number): number;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 const pointAlpha = (point: TaggedGenericPointer) =>
@@ -282,6 +291,17 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
         navigate(Path.points(point.body.id));
       }
     };
+  const onHover = (instances: PointInstance[], hovered: boolean) =>
+    (event?: ThreeEvent<PointerEvent>) => {
+      props.onHoverObject?.(hovered);
+      const instanceId = event?.instanceId;
+      if (!hovered || isUndefined(instanceId)) {
+        props.onHoverLabel?.(undefined);
+        return;
+      }
+      const id = instances[instanceId]?.point.body.id;
+      props.onHoverLabel?.(id ? { kind: "point", id } : undefined);
+    };
 
   return <>
     <InstancedMesh
@@ -292,8 +312,8 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       dispose={null}
       visible={visible}
       onClick={onClick(group.points)}
-      onPointerOver={() => props.onHoverObject?.(true)}
-      onPointerOut={() => props.onHoverObject?.(false)}
+      onPointerOver={onHover(group.points, true)}
+      onPointerOut={onHover(group.points, false)}
       renderOrder={RenderOrder.points}>
       <MeshPhongMaterial
         color={group.color}
@@ -311,8 +331,8 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
         dispose={null}
         visible={visible}
         onClick={onClick(group.ringPoints)}
-        onPointerOver={() => props.onHoverObject?.(true)}
-        onPointerOut={() => props.onHoverObject?.(false)}
+        onPointerOver={onHover(group.ringPoints, true)}
+        onPointerOut={onHover(group.ringPoints, false)}
         renderOrder={RenderOrder.points}>
         <MeshPhongMaterial
           color={group.color}
@@ -343,6 +363,7 @@ const pointInstancesPropsEqual = (
   prev.dispatch == next.dispatch &&
   prev.onSelectObject == next.onSelectObject &&
   prev.onHoverObject == next.onHoverObject &&
+  prev.onHoverLabel == next.onHoverLabel &&
   pointPositionConfigEquals(prev.config, next.config);
 
 export const PointInstances = React.memo((props: PointInstancesProps) => {
@@ -456,6 +477,7 @@ interface PointBaseProps {
   torusRef?: TorusRef;
   billboardRef?: BillboardRef;
   imageRef?: ImageRef;
+  onHoverLabel?(hovered: boolean): void;
 }
 
 const PointBase = (props: PointBaseProps) => {
@@ -470,8 +492,14 @@ const PointBase = (props: PointBaseProps) => {
     position={position
       ? getWorldPosition(position)
       : [0, 0, 0]}
-    onPointerOver={() => props.onHoverObject?.(true)}
-    onPointerOut={() => props.onHoverObject?.(false)}>
+    onPointerOver={() => {
+      props.onHoverObject?.(true);
+      props.onHoverLabel?.(true);
+    }}
+    onPointerOut={() => {
+      props.onHoverObject?.(false);
+      props.onHoverLabel?.(false);
+    }}>
     <Group name={"marker"}
       onClick={onClick}>
       <Cylinder

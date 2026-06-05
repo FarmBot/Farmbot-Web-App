@@ -33,7 +33,8 @@ import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
 import { SuctionAnimations } from "./suction_animation";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelection,
+  ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
+  ThreeDObjectSelection,
   ThreeDObjectSelectionHandler,
 } from "../../selection_types";
 import {
@@ -90,6 +91,7 @@ export interface ToolsProps {
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 export interface ThreeDTool {
@@ -129,6 +131,7 @@ export const toolsPropsEqual = (prev: ToolsProps, next: ToolsProps) =>
   prev.onSelectObject === next.onSelectObject &&
   prev.onHoverObject === next.onHoverObject &&
   prev.onToolSlotHoverObject === next.onToolSlotHoverObject &&
+  prev.onHoverLabel === next.onHoverLabel &&
   prev.configPosition.x === next.configPosition.x &&
   prev.configPosition.y === next.configPosition.y &&
   prev.configPosition.z === next.configPosition.z &&
@@ -219,6 +222,7 @@ const ToolsBase = (props: ToolsProps) => {
       z={props.configPosition.z + (isUndefined(props.toolSlots) ? 1 : -2)}
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
+      onHoverLabel={props.onHoverLabel}
       inToolbay={false} />
     {isUndefined(props.toolSlots) && <PromoToolbay3 config={props.config} />}
     {tools.map((tool, i) =>
@@ -228,6 +232,7 @@ const ToolsBase = (props: ToolsProps) => {
         onSelectObject={props.onSelectObject}
         onHoverObject={props.onHoverObject}
         onToolSlotHoverObject={props.onToolSlotHoverObject}
+        onHoverLabel={props.onHoverLabel}
         positionHelpers={positionHelpers}
         mountedToolName={mountedToolName}
         {...tool}
@@ -332,6 +337,7 @@ interface ToolbaySlotProps {
   config: Config;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 const stopPropagationForSelectedSlot = (
@@ -394,6 +400,10 @@ const SlotHitTarget = (props: SlotHitTargetProps) =>
 const ToolbaySlot = (props: ToolbaySlotProps) => {
   const { position, children, toolPulloutDirection, mounted } = props;
   const selectable = !!props.id || !props.inToolbay;
+  let selection: ThreeDObjectSelection | undefined = undefined;
+  if (props.id) {
+    selection = { kind: "slot", id: props.id };
+  }
   const rotationMultiplier =
     rotationFactor(displayedPulloutDirection(
       toolPulloutDirection,
@@ -407,8 +417,16 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
       position.z + TOOLBAY_SLOT_Z_OFFSET,
     ]}
     onClick={onClick}
-    onPointerOver={() => selectable && props.onHoverObject?.(true)}
-    onPointerOut={() => selectable && props.onHoverObject?.(false)}>
+    onPointerOver={() => {
+      if (!selectable) { return; }
+      props.onHoverObject?.(true);
+      props.onHoverLabel?.(selection);
+    }}
+    onPointerOut={() => {
+      if (!selectable) { return; }
+      props.onHoverObject?.(false);
+      props.onHoverLabel?.(undefined);
+    }}>
     {selectable && props.inToolbay &&
       <SlotHitTarget groupZOffset={TOOLBAY_SLOT_Z_OFFSET} />}
     {rotationMultiplier &&
@@ -430,6 +448,7 @@ interface ToolProps extends ThreeDTool {
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
   positionHelpers: ToolPositionHelpers;
 }
 
@@ -610,6 +629,9 @@ interface SeedTroughToolSlotProps extends ToolbaySlotProps {
 const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
   const onClick = useToolSlotClick(props);
   const selectable = !!props.id;
+  const selection: ThreeDObjectSelection | undefined = props.id
+    ? { kind: "slot", id: props.id }
+    : undefined;
   return <Group
     position={[
       props.position.x - 30,
@@ -618,8 +640,16 @@ const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
     ]}
     rotation={[0, 0, Math.PI / 2]}
     onClick={onClick}
-    onPointerOver={() => selectable && props.onHoverObject?.(true)}
-    onPointerOut={() => selectable && props.onHoverObject?.(false)}>
+    onPointerOver={() => {
+      if (!selectable) { return; }
+      props.onHoverObject?.(true);
+      props.onHoverLabel?.(selection);
+    }}
+    onPointerOut={() => {
+      if (!selectable) { return; }
+      props.onHoverObject?.(false);
+      props.onHoverLabel?.(undefined);
+    }}>
     {selectable &&
       <SlotHitTarget groupZOffset={SEED_TROUGH_SLOT_Z_OFFSET} />}
     <SeedTroughToolModel firstTrough={props.firstTrough} />
@@ -661,6 +691,7 @@ const ToolBase = (props: ToolProps) => {
     mounted, position, toolPulloutDirection, id, inToolbay, config, dispatch,
     onSelectObject: props.onSelectObject,
     onHoverObject,
+    onHoverLabel: props.onHoverLabel,
   };
   switch (props.toolName) {
     case ToolName.rotaryTool:

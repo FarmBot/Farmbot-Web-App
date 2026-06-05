@@ -41,7 +41,8 @@ import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
 import { WaterFlowTextureProvider } from "./components/water_stream";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+  ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
+  ThreeDObjectSelectionHandler,
 } from "../selection_types";
 import { clickWasDragged } from "../click_event";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -122,6 +123,7 @@ export interface FarmbotModelProps {
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 interface RequestedShapes {
@@ -1026,6 +1028,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
       onToolSlotHoverObject={props.onToolSlotHoverObject}
+      onHoverLabel={props.onHoverLabel}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
       <React.Suspense fallback={undefined}>

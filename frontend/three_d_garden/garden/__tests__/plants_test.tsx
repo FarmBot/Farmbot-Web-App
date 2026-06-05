@@ -13,17 +13,13 @@ import {
   outOfBoundsShaderModification,
 } from "../plants";
 import { Path } from "../../../internal_urls";
-import { Actions } from "../../../constants";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
-  InstancedMesh as ThreeInstancedMesh,
   Quaternion,
   WebGLProgramParametersWithUniforms,
-  type Intersection,
-  type Raycaster,
 } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
@@ -287,48 +283,20 @@ describe("<ThreeDPlantSpread />", () => {
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
-  it("handles click on spread part", () => {
-    setMockInstanceId(0);
-    queueMeshRef();
-    const p = fakeProps();
-    p.spreadVisible = true;
-    const dispatch = jest.fn();
-    p.dispatch = mockDispatch(dispatch);
-    const { container } = render(<PlantSpreadInstances {...p} />);
-    const mesh = container.querySelector("instancedmesh");
-    mesh && fireEvent.click(mesh, { instanceId: 0 });
-    expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_PANEL_OPEN, payload: true,
-    });
-    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
-  });
-
-  it("selects a spread plant instead of navigating when handler is present", () => {
-    setMockInstanceId(0);
+  it("keeps spread spheres inert", () => {
     queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = true;
     p.dispatch = mockDispatch(jest.fn());
     p.onSelectObject = jest.fn();
-    const { container } = render(<PlantSpreadInstances {...p} />);
-    const mesh = container.querySelector("instancedmesh");
-    mesh && fireEvent.click(mesh, { instanceId: 0 });
-    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "plant", id: 1 });
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it("hovers spread plants", () => {
-    queueMeshRef();
-    const p = fakeProps();
-    p.spreadVisible = true;
     p.onHoverObject = jest.fn();
     const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
     const mesh = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];
-    mesh.props.onPointerOver();
-    mesh.props.onPointerOut();
-    expect(p.onHoverObject).toHaveBeenCalledWith(true);
-    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(mesh.props.raycast()).toBeUndefined();
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    expect(p.onHoverObject).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     unmountRenderer(wrapper);
   });
 
@@ -341,7 +309,7 @@ describe("<ThreeDPlantSpread />", () => {
     const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
     const mesh = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];
-    mesh.props.onClick({ instanceId: 0, delta: 3 });
+    expect(mesh.props.raycast()).toBeUndefined();
     unmountRenderer(wrapper);
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -359,52 +327,6 @@ describe("<ThreeDPlantSpread />", () => {
     mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  const spreadRaycast = (p = fakeProps()) => {
-    queueMeshRef();
-    p.spreadVisible = true;
-    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
-    const mesh = wrapper.root.findAll(node =>
-      (node.type as string) == "instancedMesh")[0];
-    const raycast = mesh.props.raycast as (
-      this: ThreeInstancedMesh,
-      raycaster: Raycaster,
-      intersects: Intersection[],
-    ) => void;
-    unmountRenderer(wrapper);
-    return raycast;
-  };
-
-  it.each([
-    Mode.clickToAdd,
-    Mode.createPoint,
-    Mode.createWeed,
-  ])("allows %s raycasts through spread spheres", mode => {
-    getModeSpy.mockReturnValue(mode);
-    const defaultRaycast = jest.spyOn(
-      ThreeInstancedMesh.prototype,
-      "raycast",
-    );
-    const intersects: Intersection[] = [];
-    const raycaster = {} as Raycaster;
-    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
-    expect(defaultRaycast).not.toHaveBeenCalled();
-    expect(intersects).toEqual([]);
-    defaultRaycast.mockRestore();
-  });
-
-  it("keeps spread sphere raycasts outside placement modes", () => {
-    getModeSpy.mockReturnValue(Mode.none);
-    const defaultRaycast = jest.spyOn(
-      ThreeInstancedMesh.prototype,
-      "raycast",
-    ).mockImplementation(() => undefined);
-    const intersects: Intersection[] = [];
-    const raycaster = {} as Raycaster;
-    spreadRaycast().call({} as ThreeInstancedMesh, raycaster, intersects);
-    expect(defaultRaycast).toHaveBeenCalledWith(raycaster, intersects);
-    defaultRaycast.mockRestore();
   });
 
   it("updates instance colors on frame", () => {

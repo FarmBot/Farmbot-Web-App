@@ -20,3 +20,7 @@ export interface ThreeDObjectSelectionHandler {
 export interface ThreeDObjectHoverHandler {
   (hovered: boolean): void;
 }
+
+export interface ThreeDObjectHoverLabelHandler {
+  (selection: ThreeDObjectSelection | undefined): void;
+}

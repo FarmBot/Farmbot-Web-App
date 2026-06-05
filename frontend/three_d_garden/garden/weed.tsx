@@ -33,10 +33,12 @@ import {
   type PlantIconAtlas,
 } from "./plant_icon_atlas";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+  ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
+  ThreeDObjectSelectionHandler,
 } from "../selection_types";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
+const noRaycast = () => undefined;
 
 const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
   const baseTexture = useTexture(
@@ -61,10 +63,12 @@ export interface WeedProps {
   getZ(x: number, y: number): number;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 export const Weed = (props: WeedProps) => {
   const { weed, config } = props;
+  const weedId = weed.body.id;
   const navigate = useNavigate();
   return <WeedBase
     pointName={"" + weed.body.id}
@@ -92,6 +96,11 @@ export const Weed = (props: WeedProps) => {
     config={config}
     color={weed.body.meta.color}
     radius={weed.body.radius}
+    onHoverLabel={weedId
+      ? hovered => props.onHoverLabel?.(hovered
+        ? { kind: "weed", id: weedId }
+        : undefined)
+      : undefined}
     onHoverObject={props.onHoverObject} />;
 };
 
@@ -107,6 +116,7 @@ interface WeedBaseProps {
   billboardRef?: BillboardRef;
   imageRef?: ImageRef;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?(hovered: boolean): void;
 }
 
 export const WeedBase = (props: WeedBaseProps) => {
@@ -124,8 +134,14 @@ export const WeedBase = (props: WeedBaseProps) => {
       ? getWorldPosition(position)
       : [0, 0, 0]}
     onClick={onClick}
-    onPointerOver={() => props.onHoverObject?.(true)}
-    onPointerOut={() => props.onHoverObject?.(false)}>
+    onPointerOver={() => {
+      props.onHoverObject?.(true);
+      props.onHoverLabel?.(true);
+    }}
+    onPointerOut={() => {
+      props.onHoverObject?.(false);
+      props.onHoverLabel?.(false);
+    }}>
     <Billboard
       ref={billboardRef}
       follow={true}
@@ -150,6 +166,7 @@ export const WeedBase = (props: WeedBaseProps) => {
       scale={weedSize}
       renderOrder={RenderOrder.weedSpheres}
       args={[1, 32, 32]}
+      raycast={noRaycast}
       position={[0, 0, iconSize / 2]}>
       <MeshPhongMaterial
         color={color}
@@ -202,6 +219,7 @@ export interface WeedInstancesProps {
   plantIconAtlas?: PlantIconAtlas;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 const getWeedInstances = (
@@ -333,6 +351,19 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
       event.stopPropagation?.();
     }
   };
+  const onHover = (hovered: boolean) =>
+    (event?: ThreeEvent<PointerEvent>) => {
+      props.onHoverObject?.(hovered);
+      if (!hovered) {
+        props.onHoverLabel?.(undefined);
+        return;
+      }
+      const instanceId = event?.instanceId;
+      const id = isUndefined(instanceId)
+        ? undefined
+        : weedInstances[instanceId]?.weed.body.id;
+      props.onHoverLabel?.(id ? { kind: "weed", id } : undefined);
+    };
 
   return <InstancedMesh
     ref={instancedRef}
@@ -340,8 +371,8 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
     args={[undefined, undefined, weedInstances.length]}
     visible={visible}
     onClick={onClick}
-    onPointerOver={() => props.onHoverObject?.(true)}
-    onPointerOut={() => props.onHoverObject?.(false)}
+    onPointerOver={onHover(true)}
+    onPointerOut={onHover(false)}
     renderOrder={RenderOrder.weedImages}>
     <PlaneGeometry args={[1, 1]} />
     <MeshBasicMaterial
@@ -358,9 +389,7 @@ interface WeedRadiusInstancesProps extends WeedInstancesProps {
 }
 
 const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
-  const { bucket, dispatch, visible } = props;
-  const navigateToWeed =
-    useNavigateToWeed(dispatch, visible, props.onSelectObject);
+  const { bucket, visible } = props;
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
   const radiusGeometry = getWeedRadiusGeometry();
@@ -388,15 +417,6 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     tempScale,
   ]);
 
-  const onClick = (event: ThreeEvent<MouseEvent>) => {
-    if (clickWasDragged(event)) { return; }
-    const instanceId = event.instanceId;
-    if (isUndefined(instanceId)) { return; }
-    if (navigateToWeed(bucket.weeds[instanceId]?.weed)) {
-      event.stopPropagation?.();
-    }
-  };
-
   return <InstancedMesh
     ref={instancedRef}
     name={"weed-radius"}
@@ -404,9 +424,7 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     // eslint-disable-next-line no-null/no-null
     dispose={null}
     visible={visible}
-    onClick={onClick}
-    onPointerOver={() => props.onHoverObject?.(true)}
-    onPointerOut={() => props.onHoverObject?.(false)}
+    raycast={noRaycast}
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
       color={bucket.color}
@@ -428,6 +446,7 @@ const weedInstancesPropsEqual = (
     && prev.plantIconAtlas === next.plantIconAtlas
     && prev.onSelectObject === next.onSelectObject
     && prev.onHoverObject === next.onHoverObject
+    && prev.onHoverLabel === next.onHoverLabel
     && sameWeedPositionConfigFields(prev.config, next.config);
 };
 

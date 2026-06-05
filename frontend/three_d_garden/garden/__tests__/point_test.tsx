@@ -95,6 +95,7 @@ describe("<Point />", () => {
   it("hovers a point", () => {
     const p = fakeProps();
     p.onHoverObject = jest.fn();
+    p.onHoverLabel = jest.fn();
     p.point.body.id = 1;
     const { container } = render(<Point {...p} />);
     const point = container.querySelector("[name='point-1']");
@@ -102,6 +103,8 @@ describe("<Point />", () => {
     point && fireEvent.pointerOut(point);
     expect(p.onHoverObject).toHaveBeenCalledWith(true);
     expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onHoverLabel).toHaveBeenCalledWith({ kind: "point", id: 1 });
+    expect(p.onHoverLabel).toHaveBeenCalledWith(undefined);
   });
 
   it("doesn't navigate after orbiting over a point", () => {
@@ -303,6 +306,8 @@ describe("<Point />", () => {
   it("hovers point instances", () => {
     const p = fakeInstanceProps();
     p.onHoverObject = jest.fn();
+    p.onHoverLabel = jest.fn();
+    p.points[0].body.id = 1;
     const wrapper = createRenderer(<PointInstances {...p} />);
     mountedWrappers.push(wrapper);
     const meshes = wrapper.root.findAll(node => {
@@ -311,11 +316,13 @@ describe("<Point />", () => {
         && ["marker", "marker-radius"].includes(name);
     });
     meshes.forEach(mesh => {
-      mesh.props.onPointerOver();
+      mesh.props.onPointerOver({ instanceId: 0 });
       mesh.props.onPointerOut();
     });
     expect(p.onHoverObject).toHaveBeenCalledWith(true);
     expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onHoverLabel).toHaveBeenCalledWith({ kind: "point", id: 1 });
+    expect(p.onHoverLabel).toHaveBeenCalledWith(undefined);
   });
 
   it("doesn't navigate after orbiting over a point instance", () => {
