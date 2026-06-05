@@ -29,7 +29,6 @@ import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
-import { ThreeDGardenToggle } from "../three_d_garden";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -324,14 +323,6 @@ export class RawFarmDesigner
           farmwareEnvs={this.props.farmwareEnvs}
           mapTransformProps={this.mapTransformProps}
           allPoints={this.props.allPoints} />}
-
-      <ThreeDGardenToggle
-        navigate={this.navigate}
-        dispatch={this.props.dispatch}
-        device={this.props.device}
-        designer={this.props.designer}
-        getConfigValue={this.props.getConfigValue}
-        threeDGarden={threeDGarden} />
     </div>;
   }
 }

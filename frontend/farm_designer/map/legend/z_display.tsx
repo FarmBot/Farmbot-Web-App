@@ -3,7 +3,7 @@ import { t } from "../../../i18next_wrapper";
 import { ConfigurationName, McuParams, TaggedPoint } from "farmbot";
 import { BotLocationData, SourceFbosConfig } from "../../../devices/interfaces";
 import { BotSize } from "../interfaces";
-import { MarkedSlider, ToggleButton } from "../../../ui";
+import { MarkedSlider } from "../../../ui";
 import { ceil, round } from "lodash";
 import { soilHeightPoint } from "../../../points/soil_height";
 
@@ -13,15 +13,20 @@ export interface ZDisplayToggleProps {
 }
 
 export const ZDisplayToggle = (props: ZDisplayToggleProps) =>
-  <div className={"z-display-toggle"}>
-    <fieldset>
-      <label>{t("z")}</label>
-      <ToggleButton toggleValue={props.open}
-        title={props.open ? t("hide z display") : t("show z display")}
-        customText={{ textTrue: "", textFalse: "" }}
-        toggleAction={() => props.setOpen(!props.open)} />
-    </fieldset>
-  </div>;
+  <fieldset>
+    <label>
+      <span>{t("Z info")}</span>
+    </label>
+    <button
+      className={[
+        "fb-button",
+        "fb-toggle-button",
+        "fb-layer-toggle",
+        props.open ? "green" : "red",
+      ].join(" ")}
+      title={`${props.open ? t("hide") : t("show")} ${t("Z info")}`}
+      onClick={() => props.setOpen(!props.open)} />
+  </fieldset>;
 
 export interface ZDisplayProps {
   allPoints: TaggedPoint[];

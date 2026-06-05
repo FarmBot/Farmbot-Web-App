@@ -13,7 +13,7 @@ import {
 import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { SelectModeLink } from "../../../plants/select_plants";
-import { DeviceSetting, Content } from "../../../constants";
+import { Actions, DeviceSetting, Content } from "../../../constants";
 import { Help, Popover, ToggleButton } from "../../../ui";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
@@ -27,6 +27,8 @@ import {
 } from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
+import { isTopDown } from "../../../three_d_garden/helpers";
+import { isMobile } from "../../../screen_size";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -128,13 +130,50 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
       disabled={!props.getConfigValue(BooleanSetting.display_trail)} />
   </div>;
 
-interface LayerTogglesProps extends GardenMapLegendProps { }
+interface LayerTogglesProps extends GardenMapLegendProps {
+  zDisplayOpen: boolean;
+  setZDisplayOpen(open: boolean): void;
+}
+
+interface GardenMapLegendToggleProps {
+  label: string;
+  value: boolean;
+  onClick(): void;
+  settingName?: WebAppBooleanConfigKey;
+  labelClassName?: string;
+  children?: React.ReactNode;
+}
+
+const GardenMapLegendToggle = (props: GardenMapLegendToggleProps) => {
+  const classNames = [
+    "fb-button",
+    "fb-toggle-button",
+    "fb-layer-toggle",
+    props.value ? "green" : "red",
+    props.settingName ? getModifiedClassName(props.settingName) : "",
+  ].join(" ");
+  return <fieldset>
+    <label>
+      <span className={props.labelClassName}>
+        {t(props.label)}{props.children}
+      </span>
+    </label>
+    <button className={classNames} onClick={props.onClick}
+      title={`${props.value ? t("hide") : t("show")} ${t(props.label)}`} />
+  </fieldset>;
+};
 
 const LayerToggles = (props: LayerTogglesProps) => {
   const { toggle, getConfigValue, dispatch, firmwareConfig, designer } = props;
   const subMenuProps = { dispatch, getConfigValue, firmwareConfig, designer };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
+  const topDown = isTopDown(designer, getConfigValue);
+  const exaggeratedZ = designer.threeDExaggeratedZ;
+  const description = (isMobile()
+    ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
+    : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP)
+    .trim().replace(/\n\s+/g, "\n");
   return <div className="toggle-buttons">
     <LayerToggle
       settingName={BooleanSetting.show_plants}
@@ -216,6 +255,41 @@ const LayerToggles = (props: LayerTogglesProps) => {
       value={props.showMoistureInterpolationMap}
       label={DeviceSetting.showMoisture}
       onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />
+    <GardenMapLegendToggle
+      settingName={BooleanSetting.three_d_garden}
+      value={!!is3D}
+      label={DeviceSetting.show3DMap}
+      labelClassName={"row half-gap grid-exp-2"}
+      onClick={() => dispatch(setWebAppConfigValue(
+        BooleanSetting.three_d_garden, !is3D))}>
+      {is3D &&
+        <Help
+          text={description}
+          enableMarkdown={true}
+          position={Position.BOTTOM_RIGHT}
+          customClass={"three-d-controls-help"}
+          title={t("3D Controls")}
+          ariaLabel={`${t(DeviceSetting.show3DMap)} help`} />}
+    </GardenMapLegendToggle>
+    {is3D &&
+      <GardenMapLegendToggle
+        value={topDown}
+        label={"Top down"}
+        onClick={() => dispatch({
+          type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+          payload: !topDown,
+        })} />}
+    {is3D &&
+      <GardenMapLegendToggle
+        value={exaggeratedZ}
+        label={"Amplify Z"}
+        onClick={() => dispatch({
+          type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+          payload: !exaggeratedZ,
+        })} />}
+    <ZDisplayToggle
+      open={props.zDisplayOpen}
+      setOpen={props.setZDisplayOpen} />
   </div>;
 };
 
@@ -277,7 +351,10 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     <div className="content">
       <div className="menu-content">
         {!is3D && <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />}
-        <LayerToggles {...props} />
+        <LayerToggles
+          {...props}
+          zDisplayOpen={zDisplayOpen}
+          setZDisplayOpen={setZDisplayOpen} />
         <MoveModeLink dispatch={props.dispatch} />
         <MapSettings
           getConfigValue={getConfigValue}
@@ -286,7 +363,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />
-        <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />
       </div>
       {zDisplayOpen &&
         <ZDisplay

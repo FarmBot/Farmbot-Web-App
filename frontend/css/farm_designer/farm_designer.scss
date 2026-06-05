@@ -617,8 +617,7 @@
       }
     }
   }
-  .toggle-buttons,
-  .z-display-toggle {
+  .toggle-buttons {
     fieldset {
       display: flex;
       align-items: center;
@@ -630,6 +629,9 @@
     }
     button {
       margin: 0;
+    }
+    .fb-layer-toggle {
+      width: 4rem;
     }
   }
   .move-to-mode {
@@ -805,30 +807,5 @@
   }
   100% {
     transform: translateX(-22.5rem);
-  }
-}
-
-.three-d-map-toggle-menu {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 1rem;
-  button {
-    height: 3.5rem;
-    width: 3.5rem;
-    i {
-      font-size: 1.5rem;
-    }
-    &.active {
-      background-color: $blue !important;
-    }
-  }
-  .three-d-map-toggle {
-    padding: 0 1.5rem;
-    background-color: var(--main-bg);
-    backdrop-filter: var(--blur);
-    border-radius: 0.5rem;
-    box-shadow: var(--box-shadow);
-    height: 3.5rem;
   }
 }

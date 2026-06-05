@@ -1,29 +1,15 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import {
-  ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
-} from "../index";
+import { render } from "@testing-library/react";
+import { ThreeDGardenProps, ThreeDGarden } from "../index";
 import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
-import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
-import { Path } from "../../internal_urls";
-import { Actions } from "../../constants";
-import * as configStorageActions from "../../config_storage/actions";
-import { BooleanSetting } from "../../session_keys";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
-import * as screenSize from "../../screen_size";
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
-  jest.spyOn(screenSize, "isMobile").mockImplementation(() => false);
-  jest.spyOn(configStorageActions, "getWebAppConfigValue")
-    .mockImplementation(() => () => false);
-  jest.spyOn(configStorageActions, "setWebAppConfigValue")
-    .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
@@ -71,110 +57,5 @@ describe("<ThreeDGarden />", () => {
     const { rerender } = render(<ThreeDGarden {...p} />);
     rerender(<ThreeDGarden {...p} />);
     expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
-  });
-});
-
-describe("<ThreeDGardenToggle />", () => {
-  const fakeProps = (): ThreeDGardenToggleProps => ({
-    navigate: jest.fn(),
-    dispatch: jest.fn(),
-    device: fakeDevice().body,
-    designer: fakeDesignerState(),
-    threeDGarden: true,
-    getConfigValue: jest.fn(),
-  });
-
-  it("renders off", () => {
-    const p = fakeProps();
-    p.threeDGarden = false;
-    render(<ThreeDGardenToggle {...p} />);
-    const settingsButton = screen.queryByTitle("3D Settings");
-    const toggle = screen.queryByTitle("show");
-    expect(settingsButton).not.toBeInTheDocument();
-    expect(toggle).toBeInTheDocument();
-  });
-
-  it("navigates to settings", () => {
-    const p = fakeProps();
-    render(<ThreeDGardenToggle {...p} />);
-    const settingsButton = screen.getByTitle("3D Settings");
-    fireEvent.click(settingsButton);
-    expect(p.navigate).toHaveBeenCalledWith(Path.settings("3d_garden"));
-  });
-
-  it("disables top down view", () => {
-    const p = fakeProps();
-    p.designer.threeDTopDownView = true;
-    render(<ThreeDGardenToggle {...p} />);
-    const isoViewButton = screen.getByTitle("3D View");
-    fireEvent.click(isoViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: false,
-    });
-  });
-
-  it("uses saved top down setting", () => {
-    const p = fakeProps();
-    p.getConfigValue = () => true;
-    render(<ThreeDGardenToggle {...p} />);
-    const isoViewButton = screen.getByTitle("3D View");
-    fireEvent.click(isoViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: false,
-    });
-  });
-
-  it("enables top down view", () => {
-    const p = fakeProps();
-    render(<ThreeDGardenToggle {...p} />);
-    const topDownViewButton = screen.getByTitle("Top down View");
-    fireEvent.click(topDownViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: true,
-    });
-  });
-
-  it("disables exaggerated z", () => {
-    const p = fakeProps();
-    p.designer.threeDExaggeratedZ = true;
-    render(<ThreeDGardenToggle {...p} />);
-    const isoViewButton = screen.getByTitle("normal z");
-    fireEvent.click(isoViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
-      payload: false,
-    });
-  });
-
-  it("enables exaggerated z", () => {
-    const p = fakeProps();
-    render(<ThreeDGardenToggle {...p} />);
-    const topDownViewButton = screen.getByTitle("exaggerated z");
-    fireEvent.click(topDownViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
-      payload: true,
-    });
-  });
-
-  it("toggles 3D view", () => {
-    const p = fakeProps();
-    render(<ThreeDGardenToggle {...p} />);
-    const toggle = screen.getByTitle("hide");
-    fireEvent.click(toggle);
-    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
-      BooleanSetting.three_d_garden,
-      false);
-  });
-
-  it("shows 3D controls help", () => {
-    const p = fakeProps();
-    render(<ThreeDGardenToggle {...p} />);
-    fireEvent.click(screen.getByLabelText("3D Map beta help"));
-    expect(screen.getByText("3D Controls")).toBeInTheDocument();
-    expect(screen.getByText("Scroll to zoom")).toBeInTheDocument();
   });
 });

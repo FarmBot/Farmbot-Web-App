@@ -2,7 +2,7 @@ let mockAtMax = false;
 let mockAtMin = false;
 
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
   PlantsSubMenu, MapSettingsContent, SettingsSubMenuProps,
@@ -103,7 +103,7 @@ describe("<GardenMapLegend />", () => {
     const beforeHasZDisplay =
       !!container.querySelector(".z-display") || container.innerHTML.includes("-100");
     expect(beforeHasZDisplay).toBeFalsy();
-    const toggle = container.querySelector("button[title='show z display']");
+    const toggle = container.querySelector("button[title='show Z info']");
     if (!toggle) {
       expect(container.querySelectorAll("button").length > 0).toBeTruthy();
       return;
@@ -113,6 +113,99 @@ describe("<GardenMapLegend />", () => {
       !!container.querySelector(".z-display") || container.innerHTML.includes("-100");
     const mockToggleOnly = !!container.querySelector(".mock-toggle-button");
     expect(afterHasZDisplay || mockToggleOnly).toBeTruthy();
+  });
+
+  it("renders 3D controls off", () => {
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
+    expect(container.textContent).toContain("3D beta");
+    expect(container.textContent).not.toContain("Top down");
+    expect(container.textContent).not.toContain("Amplify Z");
+  });
+
+  it("toggles 3D view", () => {
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
+    const toggle = container.querySelector("button[title='show 3D beta']");
+    if (!toggle) { throw new Error("Missing 3D beta toggle"); }
+    fireEvent.click(toggle);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      BooleanSetting.three_d_garden, true);
+  });
+
+  it("disables top down view", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    p.designer.threeDTopDownView = true;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='hide Top down']");
+    if (!toggle) { throw new Error("Missing top down toggle"); }
+    fireEvent.click(toggle);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      payload: false,
+    });
+  });
+
+  it("uses saved top down setting", () => {
+    const p = fakeProps();
+    p.getConfigValue = key =>
+      key == BooleanSetting.three_d_garden || key == BooleanSetting.top_down_view;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='hide Top down']");
+    if (!toggle) { throw new Error("Missing top down toggle"); }
+    fireEvent.click(toggle);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      payload: false,
+    });
+  });
+
+  it("enables top down view", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='show Top down']");
+    if (!toggle) { throw new Error("Missing top down toggle"); }
+    fireEvent.click(toggle);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      payload: true,
+    });
+  });
+
+  it("disables exaggerated z", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    p.designer.threeDExaggeratedZ = true;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='hide Amplify Z']");
+    if (!toggle) { throw new Error("Missing amplify z toggle"); }
+    fireEvent.click(toggle);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+      payload: false,
+    });
+  });
+
+  it("enables exaggerated z", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='show Amplify Z']");
+    if (!toggle) { throw new Error("Missing amplify z toggle"); }
+    fireEvent.click(toggle);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+      payload: true,
+    });
+  });
+
+  it("shows 3D controls help", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    render(<GardenMapLegend {...p} />);
+    fireEvent.click(screen.getByLabelText("3D beta help"));
+    expect(screen.getByText("3D Controls")).toBeInTheDocument();
+    expect(screen.getByText("Scroll to zoom")).toBeInTheDocument();
   });
 });
 
