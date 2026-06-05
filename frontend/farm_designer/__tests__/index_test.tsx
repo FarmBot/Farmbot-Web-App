@@ -26,6 +26,7 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
+import { NavigationContext } from "../../routes_helpers";
 import * as mapLegend from "../map/legend/garden_map_legend";
 import * as gardenMap from "../map/garden_map";
 import { GardenMapLegendProps } from "../map/interfaces";
@@ -95,6 +96,7 @@ describe("<FarmDesigner />", () => {
     logs: [],
     deviceTarget: "",
     sourceFbosConfig: () => ({ value: 1, consistent: true }),
+    env: {},
     farmwareEnvs: [],
     curves: [],
   });
@@ -214,6 +216,16 @@ describe("<FarmDesigner />", () => {
     p.designer.threeDTime = "12:00";
     const { container } = render(<FarmDesigner {...p} />);
     expect(container.innerHTML).toContain("three-d-garden");
+  });
+
+  it("navigates from context", () => {
+    const navigate = jest.fn();
+    const ref = React.createRef<FarmDesigner>();
+    render(<NavigationContext.Provider value={navigate}>
+      <FarmDesigner {...fakeProps()} ref={ref} />
+    </NavigationContext.Provider>);
+    ref.current?.navigate(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 });
 

@@ -1,11 +1,14 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
 import type { Vector3 } from "three";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import { ElectronicsBox, ElectronicsBoxProps } from "../electronics_box";
+import { getElectronicsBoxPosition } from "../../positioning";
 import { ASSETS } from "../../../constants";
+import * as mapUtil from "../../../../farm_designer/map/util";
+import { Mode } from "../../../../farm_designer/map/interfaces";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
 
@@ -43,6 +46,41 @@ describe("<ElectronicsBox />", () => {
   it("renders box", () => {
     const { container } = render(<ElectronicsBox {...fakeProps()} />);
     expect(container).toContainHTML("electronics-box");
+  });
+
+  it("selects and hovers the electronics box", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    p.onHoverObject = jest.fn();
+    const { container } = render(<ElectronicsBox {...p} />);
+    const box = container.querySelector("group[name='box']");
+    box && fireEvent.pointerOver(box);
+    box && fireEvent.pointerOut(box);
+    box && fireEvent.click(box);
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "electronics",
+      id: 0,
+    });
+  });
+
+  it("doesn't select the electronics box in camera selection mode", () => {
+    const getModeSpy = jest.spyOn(mapUtil, "getMode")
+      .mockReturnValue(Mode.cameraSelection);
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    const { container } = render(<ElectronicsBox {...p} />);
+    const box = container.querySelector("group[name='box']");
+    box && fireEvent.click(box);
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    getModeSpy.mockRestore();
+  });
+
+  it("calculates the electronics box position", () => {
+    const p = fakeProps();
+    const position = getElectronicsBoxPosition(p.config, p.configPosition);
+    expect(position.z).toEqual(p.config.columnLength - 190);
   });
 
   it("reuses static model internals while x position changes", () => {

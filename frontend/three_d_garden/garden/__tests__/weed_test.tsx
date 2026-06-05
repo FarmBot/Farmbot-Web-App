@@ -74,6 +74,30 @@ describe("<Weed />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
   });
 
+  it("selects a weed object instead of navigating when handler is present", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    p.weed.body.id = 1;
+    const { container } = render(<Weed {...p} />);
+    const weed = container.querySelector("[name='weed-1']");
+    weed && fireEvent.click(weed);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "weed", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers a weed", () => {
+    const p = fakeProps();
+    p.onHoverObject = jest.fn();
+    p.weed.body.id = 1;
+    const { container } = render(<Weed {...p} />);
+    const weed = container.querySelector("[name='weed-1']");
+    weed && fireEvent.pointerOver(weed);
+    weed && fireEvent.pointerOut(weed);
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+  });
+
   it("doesn't navigate after orbiting over a weed", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
@@ -189,11 +213,40 @@ describe("<Weed />", () => {
     mountedWrappers.push(wrapper);
     const weedIcons = wrapper.root
       .findAll(node => node.props.name == "weed-icons")[0];
-    weedIcons.props.onClick({ instanceId: 0 });
+    const event = { instanceId: 0, stopPropagation: jest.fn() };
+    weedIcons.props.onClick(event);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
+    expect(event.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("selects a weed icon instead of navigating when handler is present", () => {
+    const p = fakeInstanceProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    p.weeds[0].body.id = 1;
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const weedIcons = wrapper.root
+      .findAll(node => node.props.name == "weed-icons")[0];
+    weedIcons.props.onClick({ instanceId: 0 });
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "weed", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("doesn't navigate from a missing weed instance", () => {
+    const p = fakeInstanceProps();
+    p.dispatch = mockDispatch(jest.fn());
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const weedIcons = wrapper.root
+      .findAll(node => node.props.name == "weed-icons")[0];
+    const event = { instanceId: 99, stopPropagation: jest.fn() };
+    weedIcons.props.onClick(event);
+    expect(event.stopPropagation).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("navigates from a weed radius instance", () => {
@@ -210,6 +263,38 @@ describe("<Weed />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("1"));
+  });
+
+  it("selects a weed radius instead of navigating when handler is present", () => {
+    const p = fakeInstanceProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    p.weeds[0].body.id = 1;
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const weedRadius = wrapper.root
+      .findAll(node => node.props.name == "weed-radius")[0];
+    weedRadius.props.onClick({ instanceId: 0 });
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "weed", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers weed instances", () => {
+    const p = fakeInstanceProps();
+    p.onHoverObject = jest.fn();
+    const wrapper = createRenderer(<WeedInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const meshes = wrapper.root.findAll(node => {
+      const name: unknown = node.props.name;
+      return typeof name == "string"
+        && ["weed-icons", "weed-radius"].includes(name);
+    });
+    meshes.forEach(mesh => {
+      mesh.props.onPointerOver();
+      mesh.props.onPointerOut();
+    });
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
   });
 
   it("doesn't navigate after orbiting over weed instances", () => {

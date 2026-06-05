@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
 import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
@@ -7,6 +7,9 @@ import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { Texture, TextureLoader } from "three";
 import { ASSETS } from "../../constants";
+import { Path } from "../../../internal_urls";
+import * as mapUtil from "../../../farm_designer/map/util";
+import { Mode } from "../../../farm_designer/map/interfaces";
 import {
   actRenderer,
   createRenderer,
@@ -59,7 +62,7 @@ describe("<Bot />", () => {
     const slots = container.querySelectorAll("[name='slot']");
     const lastSlot = slots[slots.length - 1];
     expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1345,200,51");
+      .toContain("-1350,200,51");
   });
 
   it("renders: Jr", () => {
@@ -72,7 +75,7 @@ describe("<Bot />", () => {
     const slots = container.querySelectorAll("[name='slot']");
     const lastSlot = slots[slots.length - 1];
     expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1345,100,51");
+      .toContain("-1350,100,51");
   });
 
   it("renders: v1.7", () => {
@@ -87,6 +90,51 @@ describe("<Bot />", () => {
     p.config.kitVersion = "v1.8";
     const { container } = render(<Bot {...p} />);
     expect(container.querySelectorAll("[name='button-group']").length).toEqual(3);
+  });
+
+  it("selects the UTM", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    p.onHoverObject = jest.fn();
+    const { container } = render(<Bot {...p} />);
+    const utm = container.querySelector("group[name='UTM'] mesh");
+    utm && fireEvent.pointerOver(utm);
+    utm && fireEvent.pointerOut(utm);
+    utm && fireEvent.click(utm);
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "utm", id: 0 });
+  });
+
+  it("selects the camera", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    p.onHoverObject = jest.fn();
+    const { container } = render(<Bot {...p} />);
+    const camera = container.querySelector("group[name='camera']");
+    camera && fireEvent.pointerOver(camera);
+    camera && fireEvent.pointerOut(camera);
+    camera && fireEvent.click(camera);
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "camera", id: 0 });
+  });
+
+  it("doesn't select the UTM in camera selection mode", () => {
+    const getModeSpy = jest.spyOn(mapUtil, "getMode")
+      .mockReturnValue(Mode.cameraSelection);
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    const { container } = render(<Bot {...p} />);
+    const utm = container.querySelector("group[name='UTM'] mesh");
+    const camera = container.querySelector("group[name='camera']");
+    utm && fireEvent.click(utm);
+    camera && fireEvent.click(camera);
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    getModeSpy.mockRestore();
   });
 
   it("hides FarmBot in Planter bed focus", () => {

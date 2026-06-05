@@ -3,6 +3,8 @@ let mockIsMobile = false;
 
 import React from "react";
 import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
+import * as threeFiber from "@react-three/fiber";
+import * as reactSpring from "@react-spring/three";
 import {
   GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
   SMOOTH_XL_CAMERA_HEIGHT_SCALE,
@@ -27,6 +29,8 @@ import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
+import { Mode } from "../../farm_designer/map/interfaces";
+import * as mapUtil from "../../farm_designer/map/util";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
 } from "../progressive_load";
@@ -37,6 +41,8 @@ import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
+import { get3DPositionFunc } from "../helpers";
+import { ThreeDObjectSelectionLayer } from "../selection/layer";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -644,6 +650,17 @@ describe("<GardenModel />", () => {
     expect(useGltfMock).not.toHaveBeenCalled();
   });
 
+  it("unmounts FarmBot after hide animation exits", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const botLoadIn = wrapper.root.findAllByType(FallInGroup)
+      .find(node => node.props.name == "bot-load-in");
+    actRenderer(() => {
+      botLoadIn?.props.onExitRest();
+    });
+    expect(botLoadIn).toBeTruthy();
+  });
+
   it("renders other options", async () => {
     mockIsDesktop = false;
     const p = fakeProps();
@@ -735,6 +752,22 @@ describe("<GardenModel />", () => {
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
+  it("sets hover on plant pointer move", () => {
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+    const e = {
+      stopPropagation: jest.fn(),
+      intersections: [{ object: { name: "0" } }],
+    };
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    actRenderer(() => {
+      plants?.props.onPointerMove(e);
+    });
+    expect(e.stopPropagation).toHaveBeenCalled();
+  });
+
   it("sets hover with instance id and no plant index map", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
@@ -816,6 +849,285 @@ describe("<GardenModel />", () => {
     });
     expect(consoleLogSpy).toHaveBeenCalledWith(["1", "2"]);
     consoleLogSpy.mockRestore();
+  });
+
+  it("handles scene leave and camera drag callbacks", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const root = wrapper.root.findAll(node => !!node.props.onPointerLeave)[0];
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    actRenderer(() => {
+      root.props.onPointerLeave();
+      orbitControls.props.onStart();
+      orbitControls.props.onEnd();
+    });
+    expect(root).toBeTruthy();
+  });
+
+  it("handles grid hover and location selection", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({ name: "grid-hover-target" });
+    const point = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    const event = {
+      point,
+      stopPropagation: jest.fn(),
+    };
+    actRenderer(() => {
+      hoverTarget.props.onPointerOver(event);
+      hoverTarget.props.onPointerMove(event);
+      hoverTarget.props.onPointerOut();
+      hoverTarget.props.onClick(event);
+      hoverTarget.props.onClick({ ...event, delta: 3 });
+      hoverTarget.props.onPointerMove({ point: { x: 100000, y: 100000 } });
+    });
+    expect(event.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("clears grid hover when grid selection becomes blocked", () => {
+    const getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({ name: "grid-hover-target" });
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
+    const point = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    actRenderer(() => {
+      hoverTarget.props.onPointerMove({ point });
+    });
+    expect(hoverTarget).toBeTruthy();
+    getModeSpy.mockRestore();
+  });
+
+  it("updates selection callbacks from the model", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    const dispatch = jest.fn();
+    p.addPlantProps.dispatch = dispatch;
+    const wrapper = createWrapper(p);
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onSelectObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const selectionLayer = wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    const location = { kind: "location" as const, x: 1, y: 2, z: 3 };
+    actRenderer(() => {
+      staticLayers.props.onSelectObject({ kind: "plant", id: 1 });
+      selectionLayer.props.onUpdateLocationSelection(location);
+      selectionLayer.props.onOpenPanel({ kind: "plant", id: 1 });
+      selectionLayer.props.onOpenLocationPanel(location);
+      selectionLayer.props.onClosePopup();
+      staticLayers.props.onHoverObject(true);
+      staticLayers.props.onHoverObject(false);
+    });
+    expect(dispatch).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalled();
+  });
+
+  it("closes selections on Escape", () => {
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    const addEventSpy = jest.spyOn(window, "addEventListener");
+    const wrapper = createWrapper(fakeProps());
+    const selectionLayer = wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    actRenderer(() => {
+      selectionLayer.props.onUpdateLocationSelection({
+        kind: "location",
+        x: 1,
+        y: 2,
+        z: 3,
+      });
+    });
+    const keydownHandler = addEventSpy.mock.calls
+      .find(call => call[0] == "keydown")?.[1] as
+      ((event: KeyboardEvent) => void) | undefined;
+    expect(keydownHandler).toBeDefined();
+    actRenderer(() => {
+      keydownHandler?.(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
+    addEventSpy.mockRestore();
+  });
+
+  it("applies scene cursor styles", () => {
+    const canvas = document.createElement("canvas");
+    const connected = document.createElement("div");
+    const model = document.createElement("div");
+    model.className = "garden-bed-3d-model";
+    model.appendChild(canvas);
+    const state = {
+      gl: {
+        domElement: canvas,
+        info: {
+          render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+          memory: { geometries: 0, textures: 0 },
+        },
+      },
+      events: { connected },
+      scene: { traverse: jest.fn() },
+      pointer: { x: 0, y: 0 },
+      camera: {},
+      raycaster: {
+        setFromCamera: jest.fn(),
+        intersectObjects: jest.fn(() => []),
+      },
+      size: { width: 800, height: 600 },
+    };
+    jest.spyOn(threeFiber, "useThree")
+      .mockImplementation(() => state);
+    const wrapper = createWrapper(fakeProps());
+    expect(canvas.style.cursor).toEqual("grab");
+    unmountRenderer(wrapper);
+    mountedWrappers.pop();
+    expect(canvas.style.cursor).toEqual("");
+  });
+
+  const mockSceneCursorTarget = () => {
+    const canvas = document.createElement("canvas");
+    const connected = document.createElement("div");
+    const model = document.createElement("div");
+    model.className = "garden-bed-3d-model";
+    model.appendChild(canvas);
+    const state = {
+      gl: {
+        domElement: canvas,
+        info: {
+          render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+          memory: { geometries: 0, textures: 0 },
+        },
+      },
+      events: { connected },
+      scene: { traverse: jest.fn() },
+      pointer: { x: 0, y: 0 },
+      camera: {},
+      raycaster: {
+        setFromCamera: jest.fn(),
+        intersectObjects: jest.fn(() => []),
+      },
+      size: { width: 800, height: 600 },
+    };
+    const useThreeSpy = jest.spyOn(threeFiber, "useThree")
+      .mockImplementation(() => state);
+    return { canvas, useThreeSpy };
+  };
+
+  it("applies pointer cursor while hovering selectable objects", () => {
+    useStateSpy.mockRestore();
+    useStateSpy = jest.spyOn(React, "useState")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
+          return [{}, jest.fn()];
+        }
+        const value = typeof initialState == "function"
+          ? (initialState as () => S)()
+          : initialState;
+        const setter = jest.fn((next: S | ((value: S) => S)) => {
+          if (typeof next == "function") {
+            (next as (value: S | undefined) => S)(value);
+          }
+        });
+        if (initialState === 0) {
+          return [1, setter];
+        }
+        return [value, setter];
+      });
+    const { canvas, useThreeSpy } = mockSceneCursorTarget();
+    const wrapper = createWrapper(fakeProps());
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onHoverObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const root = wrapper.root.findAll(node => !!node.props.onPointerMove)[0];
+    actRenderer(() => {
+      staticLayers.props.onHoverObject(true);
+      root.props.onPointerMove({
+        intersections: [{
+          object: { userData: { plantIndexes: [0] }, name: "plant" },
+        }],
+      });
+    });
+    expect(canvas.style.cursor).toEqual("pointer");
+    useThreeSpy.mockRestore();
+  });
+
+  it("applies grabbing cursor while dragging the camera", () => {
+    useStateSpy.mockRestore();
+    useStateSpy = jest.spyOn(React, "useState")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
+          return [{}, jest.fn()];
+        }
+        const value = typeof initialState == "function"
+          ? (initialState as () => S)()
+          : initialState;
+        if (initialState === false) {
+          return [true, jest.fn()];
+        }
+        return [value, jest.fn()];
+      });
+    const { canvas, useThreeSpy } = mockSceneCursorTarget();
+    createWrapper(fakeProps());
+    expect(canvas.style.cursor).toEqual("grabbing");
+    useThreeSpy.mockRestore();
+  });
+
+  it("renders grid hover crosshairs with real state", () => {
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({ name: "grid-hover-target" });
+    const point = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    actRenderer(() => {
+      hoverTarget.props.onPointerMove({ point });
+    });
+    expect(wrapper.root.findAllByProps({ name: "grid-hover-crosshairs" }).length)
+      .toBeGreaterThan(0);
+  });
+
+  it("smooths config changes", () => {
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation((props: Parameters<typeof reactSpring.useSpring>[0]) => {
+        const resolved = typeof props == "function" ? props() : props;
+        const api = {
+          start: jest.fn((update: {
+            onChange?: (result: { value: Record<string, number> }) => void;
+            onRest?: () => void;
+          }) => {
+            update.onChange?.({ value: { bedLengthOuter: 1400 } });
+            update.onRest?.();
+            return Promise.resolve();
+          }),
+        };
+        return [resolved, api] as unknown as ReturnType<typeof reactSpring.useSpring>;
+      });
+    const p = fakeProps();
+    p.smoothConfigTransitions = true;
+    const wrapper = createWrapper(p);
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      config={{ ...p.config, bedLengthOuter: p.config.bedLengthOuter + 1 }} />));
+    expect(springSpy).toHaveBeenCalled();
+  });
+
+  it("preloads inactive environment scenes", async () => {
+    const p = fakeProps();
+    p.preloadEnvironmentScenes = true;
+    p.config.bot = false;
+    p.config.zoomBeacons = false;
+    p.onLoadComplete = jest.fn();
+    render(<GardenModel {...p} />);
+    await waitFor(() =>
+      expect(p.onLoadComplete).toHaveBeenCalled());
   });
 
   it.each<[string, string]>([

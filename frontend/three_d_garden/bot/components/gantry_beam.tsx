@@ -6,7 +6,7 @@ import { Config, PositionConfig } from "../../config";
 import {
   DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
-import { extrusionWidth } from "../bot";
+import { extrusionWidth } from "../positioning";
 import { range } from "lodash";
 
 export interface GantryBeamProps {

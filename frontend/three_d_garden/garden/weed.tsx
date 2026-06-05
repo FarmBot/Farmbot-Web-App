@@ -21,6 +21,7 @@ import { Path } from "../../internal_urls";
 import { isUndefined } from "lodash";
 import { setPanelOpen3D } from "../panel_actions";
 import { getMode } from "../../farm_designer/map/util";
+import { Mode } from "../../farm_designer/map/interfaces";
 import { RadiusRef, BillboardRef, ImageRef } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
 import {
@@ -30,6 +31,9 @@ import {
   PLANT_ICON_ATLAS,
   type PlantIconAtlas,
 } from "./plant_icon_atlas";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
 
@@ -45,6 +49,8 @@ export interface WeedProps {
   dispatch?: Function;
   visible: boolean;
   getZ(x: number, y: number): number;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 export const Weed = (props: WeedProps) => {
@@ -55,9 +61,15 @@ export const Weed = (props: WeedProps) => {
     alpha={1}
     onClick={(event) => {
       if (clickWasDragged(event)) { return; }
-      if (weed.body.id && !isUndefined(props.dispatch) && props.visible &&
-        !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen3D(true));
+      if (weed.body.id && (props.dispatch || props.onSelectObject) &&
+        props.visible &&
+        ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        event.stopPropagation?.();
+        if (props.onSelectObject) {
+          props.onSelectObject({ kind: "weed", id: weed.body.id });
+          return;
+        }
+        props.dispatch?.(setPanelOpen3D(true));
         navigate(Path.weeds(weed.body.id));
       }
     }}
@@ -68,7 +80,8 @@ export const Weed = (props: WeedProps) => {
     }}
     config={config}
     color={weed.body.meta.color}
-    radius={weed.body.radius} />;
+    radius={weed.body.radius}
+    onHoverObject={props.onHoverObject} />;
 };
 
 interface WeedBaseProps {
@@ -82,6 +95,7 @@ interface WeedBaseProps {
   radiusRef?: RadiusRef;
   billboardRef?: BillboardRef;
   imageRef?: ImageRef;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 export const WeedBase = (props: WeedBaseProps) => {
@@ -97,7 +111,9 @@ export const WeedBase = (props: WeedBaseProps) => {
     position={position
       ? getWorldPosition(position)
       : [0, 0, 0]}
-    onClick={onClick}>
+    onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}>
     <Billboard
       ref={billboardRef}
       follow={true}
@@ -166,6 +182,8 @@ export interface WeedInstancesProps {
   visible: boolean;
   getZ(x: number, y: number): number;
   plantIconAtlas?: PlantIconAtlas;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const getWeedInstances = (
@@ -220,14 +238,22 @@ const newWeedIconUpdateState = (): WeedIconUpdateState => ({
 const useNavigateToWeed = (
   dispatch: Function | undefined,
   visible: boolean,
+  onSelectObject: ThreeDObjectSelectionHandler | undefined,
 ) => {
   const navigate = useNavigate();
   return (weed: TaggedWeedPointer | undefined) => {
-    if (weed?.body.id && dispatch && visible &&
-      !HOVER_OBJECT_MODES.includes(getMode())) {
-      dispatch(setPanelOpen3D(true));
-      navigate(Path.weeds(weed.body.id));
+    if (!weed?.body.id || !(dispatch || onSelectObject) || !visible ||
+      [...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+      return false;
     }
+    if (onSelectObject) {
+      onSelectObject({ kind: "weed", id: weed.body.id });
+      return true;
+    }
+    const dispatchPanelOpen = dispatch as Function;
+    dispatchPanelOpen(setPanelOpen3D(true));
+    navigate(Path.weeds(weed.body.id));
+    return true;
   };
 };
 
@@ -244,7 +270,8 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
     () => getPlantIconTexture(baseTexture, GENERIC_WEED_ICON, plantIconAtlas),
     [baseTexture, plantIconAtlas],
   );
-  const navigateToWeed = useNavigateToWeed(dispatch, visible);
+  const navigateToWeed =
+    useNavigateToWeed(dispatch, visible, props.onSelectObject);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
   const updateStateRef =
@@ -291,7 +318,9 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
     if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
-    navigateToWeed(weedInstances[instanceId]?.weed);
+    if (navigateToWeed(weedInstances[instanceId]?.weed)) {
+      event.stopPropagation?.();
+    }
   };
 
   return <InstancedMesh
@@ -300,6 +329,8 @@ const WeedIconInstances = (props: WeedIconInstancesProps) => {
     args={[undefined, undefined, weedInstances.length]}
     visible={visible}
     onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}
     renderOrder={RenderOrder.weedImages}>
     <PlaneGeometry args={[1, 1]} />
     <MeshBasicMaterial
@@ -317,7 +348,8 @@ interface WeedRadiusInstancesProps extends WeedInstancesProps {
 
 const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
   const { bucket, dispatch, visible } = props;
-  const navigateToWeed = useNavigateToWeed(dispatch, visible);
+  const navigateToWeed =
+    useNavigateToWeed(dispatch, visible, props.onSelectObject);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
   const radiusGeometry = getWeedRadiusGeometry();
@@ -349,7 +381,9 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     if (clickWasDragged(event)) { return; }
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
-    navigateToWeed(bucket.weeds[instanceId]?.weed);
+    if (navigateToWeed(bucket.weeds[instanceId]?.weed)) {
+      event.stopPropagation?.();
+    }
   };
 
   return <InstancedMesh
@@ -360,6 +394,8 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     dispose={null}
     visible={visible}
     onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
       color={bucket.color}
@@ -379,6 +415,8 @@ const weedInstancesPropsEqual = (
     && prev.dispatch === next.dispatch
     && prev.visible === next.visible
     && prev.plantIconAtlas === next.plantIconAtlas
+    && prev.onSelectObject === next.onSelectObject
+    && prev.onHoverObject === next.onHoverObject
     && sameWeedPositionConfigFields(prev.config, next.config);
 };
 

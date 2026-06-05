@@ -34,6 +34,9 @@ import {
   getSeasonAnimationElapsed,
 } from "./sun";
 import { clickWasDragged } from "../click_event";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -44,6 +47,8 @@ export interface PlantInstancesProps {
   dispatch?: Function;
   iconCapacities?: Record<string, number>;
   plantIconAtlas?: PlantIconAtlas;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
@@ -105,14 +110,14 @@ const PLANT_ICON_CONFIG_KEYS: (keyof Config)[] = [
   "plants",
 ];
 
-const plantIconConfigEquals = (prev: Config, next: Config) => {
+export const plantIconConfigEquals = (prev: Config, next: Config) => {
   for (const key of PLANT_ICON_CONFIG_KEYS) {
     if (prev[key] !== next[key]) { return false; }
   }
   return true;
 };
 
-const plantInstancesPropsEqual = (
+export const plantInstancesPropsEqual = (
   prev: PlantInstancesProps,
   next: PlantInstancesProps,
 ) =>
@@ -121,6 +126,8 @@ const plantInstancesPropsEqual = (
   prev.visible === next.visible &&
   prev.startTimeRef === next.startTimeRef &&
   prev.dispatch === next.dispatch &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject &&
   prev.iconCapacities === next.iconCapacities &&
   prev.plantIconAtlas === next.plantIconAtlas &&
   plantIconConfigEquals(prev.config, next.config);
@@ -266,6 +273,7 @@ const usePlantIconClick = (
   plants: ThreeDGardenPlant[],
   dispatch: Function | undefined,
   visible: boolean | undefined,
+  onSelectObject: ThreeDObjectSelectionHandler | undefined,
 ) => {
   const navigate = useNavigate();
   return (event: ThreeEvent<MouseEvent>) => {
@@ -273,9 +281,14 @@ const usePlantIconClick = (
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
-    if (plant?.id && dispatch && visible &&
+    if (plant?.id && (dispatch || onSelectObject) && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen3D(true));
+      event.stopPropagation?.();
+      if (onSelectObject) {
+        onSelectObject({ kind: "plant", id: plant.id });
+        return;
+      }
+      dispatch?.(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }
   };
@@ -346,7 +359,8 @@ const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
     instancedRef,
     materialRef,
   });
-  const onClick = usePlantIconClick(plants, dispatch, visible);
+  const onClick =
+    usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
     ref={instancedRef}
@@ -359,6 +373,8 @@ const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
     visible={visible}
     raycast={plantIconRaycast}
     onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}
     renderOrder={RenderOrder.plants}>
     <instancedBufferAttribute
       attach={"geometry-attributes-instanceUvOffset"}
@@ -394,7 +410,8 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     instancedRef,
     materialRef,
   });
-  const onClick = usePlantIconClick(plants, dispatch, visible);
+  const onClick =
+    usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
     ref={instancedRef}
@@ -407,6 +424,8 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     visible={visible}
     raycast={plantIconRaycast}
     onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}
     renderOrder={RenderOrder.plants}>
     <MeshBasicMaterial
       ref={materialRef}
@@ -440,6 +459,8 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           capacity: props.iconCapacities[icon],
           startTimeRef: props.startTimeRef,
           visible: props.visible,
+          onSelectObject: props.onSelectObject,
+          onHoverObject: props.onHoverObject,
         };
       }
     }
@@ -459,6 +480,8 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           capacity: 0,
           startTimeRef: props.startTimeRef,
           visible: props.visible,
+          onSelectObject: props.onSelectObject,
+          onHoverObject: props.onHoverObject,
         };
       }
     });
@@ -509,6 +532,8 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
     props.dispatch,
     props.getZ,
     props.iconCapacities,
+    props.onHoverObject,
+    props.onSelectObject,
     props.plants,
     props.startTimeRef,
     props.visible,

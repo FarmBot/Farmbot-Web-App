@@ -34,6 +34,9 @@ import {
   BillboardRef, ImageRef, RadiusRef, TorusRef,
 } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
 
 const POINT_PIN_RADIUS = 12.5;
 const POINT_PIN_HEIGHT = 50;
@@ -93,6 +96,8 @@ export interface PointProps {
   dispatch?: Function;
   visible: boolean;
   getZ(x: number, y: number): number;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 export const Point = (props: PointProps) => {
@@ -109,15 +114,22 @@ export const Point = (props: PointProps) => {
     }}
     onClick={(event) => {
       if (clickWasDragged(event)) { return; }
-      if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
-        !HOVER_OBJECT_MODES.includes(getMode())) {
-        props.dispatch(setPanelOpen3D(true));
+      if (point.body.id && (props.dispatch || props.onSelectObject) &&
+        props.visible &&
+        ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        event.stopPropagation?.();
+        if (props.onSelectObject) {
+          props.onSelectObject({ kind: "point", id: point.body.id });
+          return;
+        }
+        props.dispatch?.(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     }}
     config={config}
     color={point.body.meta.color}
     radius={point.body.radius}
+    onHoverObject={props.onHoverObject}
   />;
 };
 
@@ -140,6 +152,8 @@ export interface PointInstancesProps {
   dispatch?: Function;
   visible: boolean;
   getZ(x: number, y: number): number;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const pointAlpha = (point: TaggedGenericPointer) =>
@@ -245,9 +259,14 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       const instanceId = event.instanceId;
       if (isUndefined(instanceId)) { return; }
       const point = instances[instanceId]?.point;
-      if (point?.body.id && dispatch && visible &&
-        !HOVER_OBJECT_MODES.includes(getMode())) {
-        dispatch(setPanelOpen3D(true));
+      if (point?.body.id && (dispatch || props.onSelectObject) && visible &&
+        ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        event.stopPropagation?.();
+        if (props.onSelectObject) {
+          props.onSelectObject({ kind: "point", id: point.body.id });
+          return;
+        }
+        dispatch?.(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
     };
@@ -261,6 +280,8 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       dispose={null}
       visible={visible}
       onClick={onClick(group.points)}
+      onPointerOver={() => props.onHoverObject?.(true)}
+      onPointerOut={() => props.onHoverObject?.(false)}
       renderOrder={RenderOrder.points}>
       <MeshPhongMaterial
         color={group.color}
@@ -278,6 +299,8 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
         dispose={null}
         visible={visible}
         onClick={onClick(group.ringPoints)}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
         renderOrder={RenderOrder.points}>
         <MeshPhongMaterial
           color={group.color}
@@ -306,6 +329,8 @@ const pointInstancesPropsEqual = (
   prev.visible == next.visible &&
   prev.getZ == next.getZ &&
   prev.dispatch == next.dispatch &&
+  prev.onSelectObject == next.onSelectObject &&
+  prev.onHoverObject == next.onHoverObject &&
   pointPositionConfigEquals(prev.config, next.config);
 
 export const PointInstances = React.memo((props: PointInstancesProps) => {
@@ -411,6 +436,7 @@ interface PointBaseProps {
   pointName: string;
   position?: Record<Xyz, number>;
   onClick?: (event: ThreeEvent<MouseEvent>) => void;
+  onHoverObject?: ThreeDObjectHoverHandler;
   color: string | undefined;
   radius: number;
   alpha: number;
@@ -431,7 +457,9 @@ const PointBase = (props: PointBaseProps) => {
     rotation={[Math.PI / 2, 0, 0]}
     position={position
       ? getWorldPosition(position)
-      : [0, 0, 0]}>
+      : [0, 0, 0]}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}>
     <Group name={"marker"}
       onClick={onClick}>
       <Cylinder

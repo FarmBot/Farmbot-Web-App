@@ -8,6 +8,10 @@ import {
   TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
   TaggedSensorReading,
+  TaggedDevice,
+  TaggedFbosConfig,
+  TaggedSequence,
+  TaggedTool,
   TaggedWeedPointer,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
@@ -21,26 +25,43 @@ import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
+import { TaggedPlant } from "../farm_designer/map/interfaces";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { isTopDown } from "./helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { setPanelOpen3D } from "./panel_actions";
+import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
+import { MovementState, TimeSettings } from "../interfaces";
 
 export interface ThreeDGardenProps {
   config: Config;
   configPosition: PositionConfig;
   threeDPlants: ThreeDGardenPlant[];
+  plants?: TaggedPlant[];
   addPlantProps: AddPlantProps;
   mapPoints: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   toolSlots?: SlotWithTool[];
+  tools?: TaggedTool[];
+  sequences?: TaggedSequence[];
+  fbosConfig?: TaggedFbosConfig;
+  timeSettings?: TimeSettings;
+  botOnline?: boolean;
+  arduinoBusy?: boolean;
+  currentBotLocation?: BotPosition;
+  movementState?: MovementState;
+  defaultAxes?: string;
+  noUTM?: boolean;
+  deviceAccount?: TaggedDevice;
+  bot?: BotState;
   mountedToolName?: string;
   allPoints?: TaggedPoint[];
   groups?: TaggedPointGroup[];
   images?: TaggedImage[];
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
+  env?: UserEnv;
 }
 
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
@@ -60,17 +81,31 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           config={props.config}
           configPosition={props.configPosition}
           threeDPlants={props.threeDPlants}
+          plants={props.plants}
           activeFocus={""}
           setActiveFocus={noop}
           mapPoints={props.mapPoints}
           weeds={props.weeds}
           toolSlots={props.toolSlots}
+          tools={props.tools}
+          sequences={props.sequences}
+          fbosConfig={props.fbosConfig}
+          timeSettings={props.timeSettings}
+          botOnline={props.botOnline}
+          arduinoBusy={props.arduinoBusy}
+          currentBotLocation={props.currentBotLocation}
+          movementState={props.movementState}
+          defaultAxes={props.defaultAxes}
+          noUTM={props.noUTM}
+          deviceAccount={props.deviceAccount}
+          bot={props.bot}
           mountedToolName={props.mountedToolName}
           allPoints={props.allPoints}
           groups={props.groups}
           images={props.images}
           sensorReadings={props.sensorReadings}
           sensors={props.sensors}
+          env={props.env}
           addPlantProps={props.addPlantProps} />
       </Canvas>
     </div>

@@ -37,6 +37,9 @@ import { Mode } from "../../farm_designer/map/interfaces";
 import { findCropMetadata } from "../../crops/metadata";
 import { perfMeasure } from "../../performance/perf";
 import { clickWasDragged } from "../click_event";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
 
 const spreadLayerSpringConfig = {
   tension: 240,
@@ -161,6 +164,8 @@ export interface PlantSpreadInstancesProps {
   spreadVisible: boolean;
   instanceCapacity?: number;
   routeKey?: string;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 interface PlantSpreadUpdateState {
@@ -461,9 +466,14 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     const instanceId = event.instanceId;
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
-    if (plant?.id && dispatch && visible &&
+    if (plant?.id && (dispatch || props.onSelectObject) && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen3D(true));
+      event.stopPropagation?.();
+      if (props.onSelectObject) {
+        props.onSelectObject({ kind: "plant", id: plant.id });
+        return;
+      }
+      dispatch?.(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }
   };
@@ -478,7 +488,9 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     userData={{ plantIndexes }}
     visible={visible}
     raycast={plantSpreadRaycast}
-    onClick={onClick}>
+    onClick={onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}>
     <SphereGeometry args={[1, 32, 32]} />
     <MeshPhongMaterial
       color={"white"}

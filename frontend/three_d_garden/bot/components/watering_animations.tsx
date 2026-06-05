@@ -10,7 +10,7 @@ import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
 } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
-import { utmHeight } from "../bot";
+import { utmHeight } from "../positioning";
 import { Texture } from "three";
 
 export interface WateringAnimationsProps {

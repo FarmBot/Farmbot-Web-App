@@ -218,6 +218,8 @@ export class RawFarmDesigner
         ? <ThreeDGardenMap
           designer={this.props.designer}
           device={this.props.device}
+          deviceAccount={this.props.deviceAccount}
+          bot={this.props.bot}
           plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}
@@ -229,6 +231,16 @@ export class RawFarmDesigner
           curves={this.props.curves}
           mapPoints={this.props.genericPoints}
           weeds={this.props.weeds}
+          tools={this.props.tools}
+          sequences={this.props.sequences}
+          fbosConfig={this.props.fbosConfig}
+          timeSettings={this.props.timeSettings}
+          botOnline={this.props.botOnline}
+          arduinoBusy={this.props.arduinoBusy}
+          currentBotLocation={this.props.currentBotLocation}
+          movementState={this.props.movementState}
+          defaultAxes={this.props.defaultAxes}
+          noUTM={this.props.mountedToolInfo.noUTM}
           toolSlots={this.props.toolSlots}
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
@@ -238,6 +250,7 @@ export class RawFarmDesigner
           images={this.props.latestImages}
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
+          env={this.props.env}
           farmwareEnvs={this.props.farmwareEnvs}
           logs={this.props.logs}
           cameraCalibrationData={this.props.cameraCalibrationData}

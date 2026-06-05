@@ -14,7 +14,7 @@ import { range } from "lodash";
 import {
   Group, Mesh, MeshPhongMaterial, InstancedMesh,
 } from "../../components";
-import { distinguishableBlack, extrusionWidth } from "../bot";
+import { distinguishableBlack, extrusionWidth } from "../positioning";
 import { EMISSIVE_PROPS } from "./gantry_beam";
 
 type CCSupportHorizontal = GLTF & {

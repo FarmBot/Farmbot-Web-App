@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
+import { ThreeEvent } from "@react-three/fiber";
 import {
   Cylinder, Extrude, Trail, Tube, useGLTF,
 } from "@react-three/drei";
@@ -14,7 +15,7 @@ import {
 } from "../helpers";
 import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
-import { ASSETS, LIB_DIR, PartName } from "../constants";
+import { ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
@@ -39,21 +40,18 @@ import { WateringAnimations } from "./components/watering_animations";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
 import { WaterFlowTextureProvider } from "./components/water_stream";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
+import { clickWasDragged } from "../click_event";
+import { Mode } from "../../farm_designer/map/interfaces";
+import { getMode } from "../../farm_designer/map/util";
+import {
+  cameraMountOffset, distinguishableBlack, extrusionWidth, utmHeight,
+  utmRadius,
+} from "./positioning";
 
-export const extrusionWidth = 20;
-const utmRadius = 35;
-export const utmHeight = 35;
-export const cameraMountOffset = {
-  x: extrusionWidth + 3,
-  y: utmRadius,
-};
-export const cameraMountToLensOffset = new THREE.Vector3(
-  0,
-  extrusionWidth + 9,
-  0,
-);
 const xTrackPadding = 280;
-export const distinguishableBlack = "#333";
 
 type LeftBracket = GLTF & {
   nodes: { [PartName.leftBracket]: THREE.Mesh };
@@ -121,6 +119,8 @@ export interface FarmbotModelProps {
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 interface RequestedShapes {
@@ -535,14 +535,29 @@ const BotGantrySubassemblies = React.memo(
   sameBotGantrySubassembliesProps,
 );
 
-const BotElectronicsSubassemblyBase = (props: BotXYSubassemblyProps) =>
+interface BotElectronicsSubassemblyProps extends BotXYSubassemblyProps {
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
+}
+
+const botElectronicsSubassemblyPropsEqual = (
+  prev: BotElectronicsSubassemblyProps,
+  next: BotElectronicsSubassemblyProps,
+) =>
+  sameBotXYSubassemblyProps(prev, next) &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject;
+
+const BotElectronicsSubassemblyBase = (props: BotElectronicsSubassemblyProps) =>
   <ElectronicsBox
     config={props.config}
-    configPosition={props.configPosition} />;
+    configPosition={props.configPosition}
+    onSelectObject={props.onSelectObject}
+    onHoverObject={props.onHoverObject} />;
 
 const BotElectronicsSubassembly = React.memo(
   BotElectronicsSubassemblyBase,
-  sameBotXYSubassemblyProps,
+  botElectronicsSubassemblyPropsEqual,
 );
 
 interface BotVerticalToolheadSubassemblyProps
@@ -550,6 +565,8 @@ interface BotVerticalToolheadSubassemblyProps
   zAxisShape: Shape | undefined;
   getZ(x: number, y: number): number;
   trailReady: boolean;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS: (keyof Config)[] = [
@@ -587,6 +604,8 @@ const sameBotVerticalToolheadSubassemblyProps = (
   prev.configPosition.y === next.configPosition.y &&
   prev.configPosition.z === next.configPosition.z &&
   prev.getZ === next.getZ &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject &&
   prev.trailReady === next.trailReady &&
   prev.zAxisShape === next.zAxisShape;
 
@@ -652,6 +671,26 @@ const BotVerticalToolheadSubassemblyBase =
       ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
       zZero - zDir * z - 140 + zGantryOffset + 20,
     );
+    const selectUtm = (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event)) { return; }
+      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        return;
+      }
+      if (props.onSelectObject) {
+        event.stopPropagation?.();
+        props.onSelectObject({ kind: "utm", id: 0 });
+      }
+    };
+    const selectCamera = (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event)) { return; }
+      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        return;
+      }
+      if (props.onSelectObject) {
+        event.stopPropagation?.();
+        props.onSelectObject({ kind: "camera", id: 0 });
+      }
+    };
     const utmComponent = <Group name={"UTM"}
       position={[
         ...gardenXY(x + 11, y),
@@ -663,6 +702,9 @@ const BotVerticalToolheadSubassemblyBase =
         geometry={utm.nodes.M5_Barb.geometry}
         material={utm.materials.PaletteMaterial001}
         position={[0.015, 0.009, 0.036]}
+        onClick={selectUtm}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[0, 0, 2.094]} />
     </Group>;
 
@@ -806,6 +848,9 @@ const BotVerticalToolheadSubassemblyBase =
         scale={1000}
         position={vacuumPumpCoverPosition(config.kitVersion)} />
       <Group name={"camera"}
+        onClick={selectCamera}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[Math.PI, 0, 0]}
         position={cameraMountPosition}>
         <Mesh name={"cameraMount"}
@@ -957,6 +1002,8 @@ const EnabledBot = (props: FarmbotModelProps) => {
       config={config}
       configPosition={props.configPosition}
       getZ={props.getZ}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject}
       trailReady={trailReady}
       zAxisShape={zAxisShape} />
     <BotGantrySubassemblies
@@ -966,13 +1013,17 @@ const EnabledBot = (props: FarmbotModelProps) => {
     <Solenoid config={config} configPosition={props.configPosition} />
     <BotElectronicsSubassembly
       config={config}
-      configPosition={props.configPosition} />
+      configPosition={props.configPosition}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject} />
     <Tools
       dispatch={props.dispatch}
       config={config}
       configPosition={props.configPosition}
       getZ={props.getZ}
       toolSlots={props.toolSlots}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
       <React.Suspense fallback={undefined}>

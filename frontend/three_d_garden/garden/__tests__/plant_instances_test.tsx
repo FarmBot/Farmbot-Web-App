@@ -33,6 +33,8 @@ import { INITIAL } from "../../config";
 import {
   PlantInstances,
   PlantInstancesProps,
+  plantIconConfigEquals,
+  plantInstancesPropsEqual,
   plantIconBrightness,
 } from "../plant_instances";
 import { Path } from "../../../internal_urls";
@@ -130,6 +132,20 @@ describe("<PlantInstances />", () => {
     const mesh = container.querySelector("instancedmesh");
     expect(mesh?.getAttribute("args")).toContain("10");
     expect(mesh?.getAttribute("count")).toEqual("1");
+  });
+
+  it("compares plant instance props", () => {
+    const p = fakeProps();
+    expect(plantIconConfigEquals(p.config, { ...p.config })).toBeTruthy();
+    expect(plantIconConfigEquals(p.config, {
+      ...p.config,
+      bedLengthOuter: p.config.bedLengthOuter + 1,
+    })).toBeFalsy();
+    expect(plantInstancesPropsEqual(p, { ...p })).toBeTruthy();
+    expect(plantInstancesPropsEqual(p, {
+      ...p,
+      config: { ...p.config, mirrorX: !p.config.mirrorX },
+    })).toBeFalsy();
   });
 
   it("keeps reserved capacities for multiple active icon buckets", () => {
@@ -318,6 +334,43 @@ describe("<PlantInstances />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
+  });
+
+  it("selects a plant object instead of navigating when handler is present", () => {
+    setMockInstanceId(0);
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    const { container } = render(<PlantInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "plant", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers plant icon instances", () => {
+    PLANT_ICON_ATLAS["/crops/icons/strawberry.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    const p = fakeProps();
+    p.onHoverObject = jest.fn();
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    expect(meshes.length).toEqual(2);
+    meshes.forEach(mesh => {
+      mesh.props.onPointerOver();
+      mesh.props.onPointerOut();
+    });
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    unmountRenderer(wrapper);
   });
 
   it("doesn't navigate after orbiting over a plant icon", () => {
@@ -613,6 +666,18 @@ describe("<PlantInstances />", () => {
     }} />);
 
     expect(useFrame).toHaveBeenCalledTimes(frameCalls + 1);
+  });
+
+  it("updates animated season icon matrices on frame", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    expect(instancedRef?.current?.setMatrixAt).toHaveBeenCalled();
   });
 
   it("updates material brightness when changed", () => {

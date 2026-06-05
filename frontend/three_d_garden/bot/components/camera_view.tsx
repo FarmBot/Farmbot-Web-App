@@ -4,7 +4,7 @@ import { Config, PositionConfig } from "../../config";
 import { Mesh, MeshStandardMaterial } from "../../components";
 import { Edges } from "@react-three/drei";
 import { ConvexGeometry } from "three-stdlib";
-import { cameraMountOffset, cameraMountToLensOffset } from "../bot";
+import { cameraMountOffset, cameraMountToLensOffset } from "../positioning";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
 

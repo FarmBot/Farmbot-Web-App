@@ -80,6 +80,30 @@ describe("<Point />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
   });
 
+  it("selects a point object instead of navigating when handler is present", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    p.point.body.id = 1;
+    const { container } = render(<Point {...p} />);
+    const point = container.querySelector("[name='marker']");
+    point && fireEvent.click(point);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "point", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers a point", () => {
+    const p = fakeProps();
+    p.onHoverObject = jest.fn();
+    p.point.body.id = 1;
+    const { container } = render(<Point {...p} />);
+    const point = container.querySelector("[name='point-1']");
+    point && fireEvent.pointerOver(point);
+    point && fireEvent.pointerOut(point);
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+  });
+
   it("doesn't navigate after orbiting over a point", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
@@ -260,6 +284,38 @@ describe("<Point />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("1"));
+  });
+
+  it("selects a point instance instead of navigating when handler is present", () => {
+    const p = fakeInstanceProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    p.points[0].body.id = 1;
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const marker = wrapper.root
+      .findAll(node => node.props.name == "marker")[0];
+    marker.props.onClick({ instanceId: 0 });
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "point", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers point instances", () => {
+    const p = fakeInstanceProps();
+    p.onHoverObject = jest.fn();
+    const wrapper = createRenderer(<PointInstances {...p} />);
+    mountedWrappers.push(wrapper);
+    const meshes = wrapper.root.findAll(node => {
+      const name: unknown = node.props.name;
+      return typeof name == "string"
+        && ["marker", "marker-radius"].includes(name);
+    });
+    meshes.forEach(mesh => {
+      mesh.props.onPointerOver();
+      mesh.props.onPointerOut();
+    });
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
   });
 
   it("doesn't navigate after orbiting over a point instance", () => {
