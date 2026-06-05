@@ -1468,6 +1468,7 @@ export const GardenModel = (props: GardenModelProps) => {
         maxAzimuthAngle={topDownCameraAngle}
         enableRotate={config.rotate}
         enableZoom={config.zoom}
+        zoomToCursor={true}
         enablePan={config.pan}
         dampingFactor={0.2}
         {...orbitControlProps}
