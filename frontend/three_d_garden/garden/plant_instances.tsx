@@ -6,6 +6,7 @@ import {
   Quaternion,
   Vector3,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
+  type Object3D,
   type Intersection,
   type Raycaster,
 } from "three";
@@ -137,8 +138,18 @@ const plantIconRaycast = function (
   raycaster: Raycaster,
   intersects: Intersection[],
 ) {
+  if (!objectVisible(this)) { return; }
   if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
   ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
+
+const objectVisible = (object: Object3D) => {
+  let current: Object3D | undefined = object;
+  while (current) {
+    if (current.visible === false) { return false; }
+    current = current.parent || undefined;
+  }
+  return true;
 };
 
 const useStaticPlantIconInstances = (

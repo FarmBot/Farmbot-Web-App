@@ -12,6 +12,7 @@ import {
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
+  type Object3D,
   type Raycaster,
   type Intersection,
 } from "three";
@@ -178,8 +179,18 @@ const plantSpreadRaycast = function (
   raycaster: Raycaster,
   intersects: Intersection[],
 ) {
+  if (!objectVisible(this)) { return; }
   if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
   ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
+};
+
+const objectVisible = (object: Object3D) => {
+  let current: Object3D | undefined = object;
+  while (current) {
+    if (current.visible === false) { return false; }
+    current = current.parent || undefined;
+  }
+  return true;
 };
 
 interface StaticPlantSpreadInstance {
