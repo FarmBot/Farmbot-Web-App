@@ -297,6 +297,16 @@ const UtmPopupControls = (props: PopupControlProps) => {
         title={`${t("toggle")} ${t(DeviceSetting.trail)}`}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
+    {props.set3DConfigValue &&
+      <div className={"object-popup-laser-row row grid-exp-1"}>
+        <label>{t("LASER")}</label>
+        <ToggleButton
+          toggleValue={props.config.laser}
+          toggleAction={() => props.set3DConfigValue?.(
+            "laser", props.config.laser ? "0" : "1")}
+          title={`${t("toggle")} ${t("LASER")}`}
+          customText={{ textFalse: t("off"), textTrue: t("on") }} />
+      </div>}
   </>;
 };
 

@@ -29,6 +29,7 @@ import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
 import { isTopDown } from "../../../three_d_garden/helpers";
 import { isMobile } from "../../../screen_size";
+import type { Config } from "../../../three_d_garden/config";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -93,6 +94,8 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
 export interface SettingsSubMenuProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
+  get3DConfigValue?(key: keyof Config): number;
+  set3DConfigValue?(key: keyof Config, value: string): void;
   firmwareConfig: McuParams;
   designer: DesignerState;
 }
@@ -117,18 +120,31 @@ export const PlantsSubMenu = (props: SettingsSubMenuProps) =>
       helpText={Content.CONFIRM_PLANT_DELETION} />
   </div>;
 
-export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
-  <div className="grid">
+export const FarmbotSubMenu = (props: SettingsSubMenuProps) => {
+  const laser = !!props.get3DConfigValue?.("laser");
+  const is3D = props.getConfigValue(BooleanSetting.three_d_garden);
+  const laserAvailable = !!(props.get3DConfigValue && props.set3DConfigValue);
+  return <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.display_trail}
       label={DeviceSetting.trail}
       helpText={Content.VIRTUAL_TRAIL} />
+    {is3D && laserAvailable &&
+      <NonLayerToggle {...props}
+        label={"LASER"}>
+        <ToggleButton
+          title={t("LASER")}
+          toggleValue={laser}
+          toggleAction={() => props.set3DConfigValue?.(
+            "laser", laser ? "0" : "1")} />
+      </NonLayerToggle>}
     <NonLayerToggle {...props}
       setting={BooleanSetting.display_map_missed_steps}
       label={DeviceSetting.mapMissedSteps}
       helpText={Content.MAP_MISSED_STEPS}
       disabled={!props.getConfigValue(BooleanSetting.display_trail)} />
   </div>;
+};
 
 interface LayerTogglesProps extends GardenMapLegendProps {
   zDisplayOpen: boolean;
@@ -165,7 +181,14 @@ const GardenMapLegendToggle = (props: GardenMapLegendToggleProps) => {
 
 const LayerToggles = (props: LayerTogglesProps) => {
   const { toggle, getConfigValue, dispatch, firmwareConfig, designer } = props;
-  const subMenuProps = { dispatch, getConfigValue, firmwareConfig, designer };
+  const subMenuProps = {
+    dispatch,
+    getConfigValue,
+    get3DConfigValue: props.get3DConfigValue,
+    set3DConfigValue: props.set3DConfigValue,
+    firmwareConfig,
+    designer,
+  };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
   const topDown = isTopDown(designer, getConfigValue);

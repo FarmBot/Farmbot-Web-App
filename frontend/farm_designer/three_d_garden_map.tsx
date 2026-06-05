@@ -34,7 +34,8 @@ export interface ThreeDGardenMapProps {
   botSize: BotSize;
   mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
-  get3DConfigValue(key: string): number;
+  get3DConfigValue(key: keyof Config): number;
+  set3DConfigValue?(key: keyof Config, value: string): void;
   sourceFbosConfig: SourceFbosConfig;
   negativeZ: boolean;
   designer: DesignerState;
@@ -413,6 +414,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     sensorReadings={props.sensorReadings}
     sensors={props.sensors}
     env={props.env}
+    set3DConfigValue={props.set3DConfigValue}
     addPlantProps={addPlantProps} />;
 };
 

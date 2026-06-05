@@ -41,6 +41,7 @@ export interface ThreeDObjectSelectionLayerProps {
   deviceAccount: TaggedDevice | undefined;
   bot: BotState | undefined;
   env: UserEnv;
+  set3DConfigValue?(key: keyof Config, value: string): void;
   dispatch: Function | undefined;
   gridLoaded: boolean;
   getZ(x: number, y: number): number;

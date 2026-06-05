@@ -26,7 +26,9 @@ import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
 import { NavigateFunction, Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
-import { get3DConfigValueFunction } from "../settings/three_d_settings";
+import {
+  findOrCreate3DConfigFunction, get3DConfigValueFunction,
+} from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
 
@@ -169,6 +171,9 @@ export class RawFarmDesigner
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
     const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const get3DConfigValue = get3DConfigValueFunction(this.props.farmwareEnvs);
+    const set3DConfigValue = findOrCreate3DConfigFunction(
+      this.props.dispatch, this.props.farmwareEnvs);
 
     return <div className="farm-designer">
 
@@ -191,6 +196,8 @@ export class RawFarmDesigner
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
+        get3DConfigValue={get3DConfigValue}
+        set3DConfigValue={set3DConfigValue}
         allPoints={this.props.allPoints}
         sourceFbosConfig={this.props.sourceFbosConfig}
         firmwareConfig={this.props.botMcuParams}
@@ -220,7 +227,8 @@ export class RawFarmDesigner
           deviceAccount={this.props.deviceAccount}
           bot={this.props.bot}
           plants={this.props.plants}
-          get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
+          get3DConfigValue={get3DConfigValue}
+          set3DConfigValue={set3DConfigValue}
           sourceFbosConfig={this.props.sourceFbosConfig}
           negativeZ={!!this.props.botMcuParams.movement_home_up_z}
           gridOffset={gridOffset}

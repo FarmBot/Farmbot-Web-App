@@ -330,6 +330,7 @@ export interface GardenModelProps {
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
   env?: UserEnv;
+  set3DConfigValue?(key: keyof Config, value: string): void;
   smoothFocusTransitions?: boolean;
   smoothConfigTransitions?: boolean;
   plantIconCapacities?: Record<string, number>;
@@ -1881,6 +1882,7 @@ export const GardenModel = (props: GardenModelProps) => {
         deviceAccount={props.deviceAccount}
         bot={props.bot}
         env={props.env || EMPTY_ENV}
+        set3DConfigValue={props.set3DConfigValue}
         dispatch={dispatch}
         gridLoaded={gridLoaded}
         getZ={getZ} />

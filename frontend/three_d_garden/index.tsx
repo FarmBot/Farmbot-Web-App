@@ -49,6 +49,7 @@ export interface ThreeDGardenProps {
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
   env?: UserEnv;
+  set3DConfigValue?(key: keyof Config, value: string): void;
 }
 
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
@@ -93,6 +94,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           sensorReadings={props.sensorReadings}
           sensors={props.sensors}
           env={props.env}
+          set3DConfigValue={props.set3DConfigValue}
           addPlantProps={props.addPlantProps} />
       </Canvas>
     </div>
