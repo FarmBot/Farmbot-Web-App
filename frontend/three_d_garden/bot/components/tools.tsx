@@ -33,7 +33,8 @@ import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
 import { SuctionAnimations } from "./suction_animation";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+  ThreeDObjectHoverHandler, ThreeDObjectSelection,
+  ThreeDObjectSelectionHandler,
 } from "../../selection_types";
 import {
   getToolPositionHelpers, getToolRenderPosition, ToolPositionHelpers,
@@ -88,6 +89,7 @@ export interface ToolsProps {
   getZ(x: number, y: number): number;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onToolSlotHoverObject?: ThreeDObjectHoverHandler;
 }
 
 export interface ThreeDTool {
@@ -126,6 +128,7 @@ export const toolsPropsEqual = (prev: ToolsProps, next: ToolsProps) =>
   prev.getZ === next.getZ &&
   prev.onSelectObject === next.onSelectObject &&
   prev.onHoverObject === next.onHoverObject &&
+  prev.onToolSlotHoverObject === next.onToolSlotHoverObject &&
   prev.configPosition.x === next.configPosition.x &&
   prev.configPosition.y === next.configPosition.y &&
   prev.configPosition.z === next.configPosition.z &&
@@ -208,6 +211,7 @@ const ToolsBase = (props: ToolsProps) => {
       dispatch={props.dispatch}
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
+      onToolSlotHoverObject={props.onToolSlotHoverObject}
       positionHelpers={positionHelpers}
       mountedToolName={mountedToolName}
       x={props.configPosition.x}
@@ -223,6 +227,7 @@ const ToolsBase = (props: ToolsProps) => {
         dispatch={props.dispatch}
         onSelectObject={props.onSelectObject}
         onHoverObject={props.onHoverObject}
+        onToolSlotHoverObject={props.onToolSlotHoverObject}
         positionHelpers={positionHelpers}
         mountedToolName={mountedToolName}
         {...tool}
@@ -329,6 +334,13 @@ interface ToolbaySlotProps {
   onHoverObject?: ThreeDObjectHoverHandler;
 }
 
+const stopPropagationForSelectedSlot = (
+  event: ThreeEvent<MouseEvent>,
+  onSelectObject: ThreeDObjectSelectionHandler,
+  selection: ThreeDObjectSelection,
+) =>
+  onSelectObject(selection) !== false && event.stopPropagation?.();
+
 const useToolSlotClick = (props: ToolbaySlotProps) => {
   const navigate = useNavigate();
   return (event: ThreeEvent<MouseEvent>) => {
@@ -336,13 +348,14 @@ const useToolSlotClick = (props: ToolbaySlotProps) => {
     const utmSelection = !props.inToolbay;
     if ((props.id || utmSelection) && (props.dispatch || props.onSelectObject) &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      event.stopPropagation?.();
       if (props.onSelectObject) {
-        props.onSelectObject(props.id
+        const selection: ThreeDObjectSelection = props.id
           ? { kind: "slot", id: props.id }
-          : { kind: "utm", id: 0 });
+          : { kind: "utm", id: 0 };
+        stopPropagationForSelectedSlot(event, props.onSelectObject, selection);
         return;
       }
+      event.stopPropagation?.();
       if (props.id) {
         props.dispatch?.(setPanelOpen3D(true));
         navigate(Path.toolSlots(props.id));
@@ -416,6 +429,7 @@ interface ToolProps extends ThreeDTool {
   dispatch?: Function;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onToolSlotHoverObject?: ThreeDObjectHoverHandler;
   positionHelpers: ToolPositionHelpers;
 }
 
@@ -640,10 +654,13 @@ const ToolBase = (props: ToolProps) => {
   const mounted = inToolbay && props.toolName == mountedToolName;
   const position =
     getToolRenderPosition(config, props, inToolbay, props.positionHelpers);
+  const onHoverObject = inToolbay
+    ? props.onToolSlotHoverObject || props.onHoverObject
+    : props.onHoverObject;
   const common: ToolbaySlotProps = {
     mounted, position, toolPulloutDirection, id, inToolbay, config, dispatch,
     onSelectObject: props.onSelectObject,
-    onHoverObject: props.onHoverObject,
+    onHoverObject,
   };
   switch (props.toolName) {
     case ToolName.rotaryTool:

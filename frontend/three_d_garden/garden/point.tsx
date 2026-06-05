@@ -35,7 +35,8 @@ import {
 } from "../bed/objects/pointer_objects";
 import { clickWasDragged } from "../click_event";
 import {
-  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+  ThreeDObjectHoverHandler, ThreeDObjectSelection,
+  ThreeDObjectSelectionHandler,
 } from "../selection_types";
 
 const POINT_PIN_RADIUS = 12.5;
@@ -46,6 +47,13 @@ const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
 export const POINT_CYLINDER_SCALE_FACTOR =
   round(1 / POINT_CYLINDER_TUBE_SIZE ** 2);
 const SEGMENTS = 64;
+
+const stopPropagationForSelectedPoint = (
+  event: ThreeEvent<MouseEvent>,
+  onSelectObject: ThreeDObjectSelectionHandler,
+  selection: ThreeDObjectSelection,
+) =>
+  onSelectObject(selection) !== false && event.stopPropagation?.();
 
 const makePointMarkerGeometry = () => {
   const pinGeometry = new CylinderGeometry(
@@ -117,11 +125,13 @@ export const Point = (props: PointProps) => {
       if (point.body.id && (props.dispatch || props.onSelectObject) &&
         props.visible &&
         ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-        event.stopPropagation?.();
         if (props.onSelectObject) {
-          props.onSelectObject({ kind: "point", id: point.body.id });
+          stopPropagationForSelectedPoint(event, props.onSelectObject, {
+            kind: "point", id: point.body.id,
+          });
           return;
         }
+        event.stopPropagation?.();
         props.dispatch?.(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }
@@ -261,11 +271,13 @@ const PointBucketInstances = (props: PointInstanceBucketProps) => {
       const point = instances[instanceId]?.point;
       if (point?.body.id && (dispatch || props.onSelectObject) && visible &&
         ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-        event.stopPropagation?.();
         if (props.onSelectObject) {
-          props.onSelectObject({ kind: "point", id: point.body.id });
+          stopPropagationForSelectedPoint(event, props.onSelectObject, {
+            kind: "point", id: point.body.id,
+          });
           return;
         }
+        event.stopPropagation?.();
         dispatch?.(setPanelOpen3D(true));
         navigate(Path.points(point.body.id));
       }

@@ -479,11 +479,12 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     const plant = plants[instanceId];
     if (plant?.id && (dispatch || props.onSelectObject) && visible &&
       ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      event.stopPropagation?.();
       if (props.onSelectObject) {
-        props.onSelectObject({ kind: "plant", id: plant.id });
+        props.onSelectObject({ kind: "plant", id: plant.id }) !== false &&
+          event.stopPropagation?.();
         return;
       }
+      event.stopPropagation?.();
       dispatch?.(setPanelOpen3D(true));
       navigate(Path.plants(plant.id));
     }

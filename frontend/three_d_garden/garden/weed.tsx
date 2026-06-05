@@ -64,11 +64,12 @@ export const Weed = (props: WeedProps) => {
       if (weed.body.id && (props.dispatch || props.onSelectObject) &&
         props.visible &&
         ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-        event.stopPropagation?.();
         if (props.onSelectObject) {
-          props.onSelectObject({ kind: "weed", id: weed.body.id });
+          props.onSelectObject({ kind: "weed", id: weed.body.id }) !== false &&
+            event.stopPropagation?.();
           return;
         }
+        event.stopPropagation?.();
         props.dispatch?.(setPanelOpen3D(true));
         navigate(Path.weeds(weed.body.id));
       }
@@ -247,8 +248,7 @@ const useNavigateToWeed = (
       return false;
     }
     if (onSelectObject) {
-      onSelectObject({ kind: "weed", id: weed.body.id });
-      return true;
+      return onSelectObject({ kind: "weed", id: weed.body.id }) !== false;
     }
     const dispatchPanelOpen = dispatch as Function;
     dispatchPanelOpen(setPanelOpen3D(true));

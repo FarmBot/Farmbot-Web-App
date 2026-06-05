@@ -121,6 +121,7 @@ export interface FarmbotModelProps {
   dispatch?: Function;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onToolSlotHoverObject?: ThreeDObjectHoverHandler;
 }
 
 interface RequestedShapes {
@@ -677,8 +678,8 @@ const BotVerticalToolheadSubassemblyBase =
         return;
       }
       if (props.onSelectObject) {
-        event.stopPropagation?.();
-        props.onSelectObject({ kind: "utm", id: 0 });
+        props.onSelectObject({ kind: "utm", id: 0 }) !== false &&
+          event.stopPropagation?.();
       }
     };
     const selectCamera = (event: ThreeEvent<MouseEvent>) => {
@@ -687,8 +688,8 @@ const BotVerticalToolheadSubassemblyBase =
         return;
       }
       if (props.onSelectObject) {
-        event.stopPropagation?.();
-        props.onSelectObject({ kind: "camera", id: 0 });
+        props.onSelectObject({ kind: "camera", id: 0 }) !== false &&
+          event.stopPropagation?.();
       }
     };
     const utmComponent = <Group name={"UTM"}
@@ -1024,6 +1025,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
       toolSlots={props.toolSlots}
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
+      onToolSlotHoverObject={props.onToolSlotHoverObject}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
       <React.Suspense fallback={undefined}>

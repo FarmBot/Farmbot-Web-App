@@ -4,7 +4,7 @@ import {
   objectHasSelectionOverlay, ResolveSelectedObjectProps,
   ResolvedPopupObject, resolveLocationObject, resolveSelectedObject,
 } from "./resolve";
-import { SelectedObjectOverlay } from "./overlay";
+import { SelectedObjectOverlay, SelectedObjectRings } from "./overlay";
 import { LocationPopup, ObjectPopup } from "./popups";
 import { ThreeDObjectSelection } from "../selection_types";
 
@@ -19,6 +19,15 @@ const popupKey = (object: ResolvedPopupObject | undefined) => {
     ? object.kind
     : selectionKey(object.selection);
 };
+
+interface SelectedObjectRingBatchProps {
+  objects: React.ComponentProps<typeof SelectedObjectRings>["objects"];
+}
+
+const SelectedObjectRingBatch = (props: SelectedObjectRingBatchProps) =>
+  props.objects.length > 0
+    ? <SelectedObjectRings objects={props.objects} />
+    : <></>;
 
 export const clearPendingSelectionLayerAnimation = (
   timeouts: number[],
@@ -55,6 +64,16 @@ export const ThreeDObjectSelectionLayer = (
   const selectedObject = React.useMemo(
     () => resolveSelectedObject(resolverProps, props.selection),
     [props.selection, resolverProps]);
+  const selectedOverlayObjects = React.useMemo(() => {
+    const objects = [] as NonNullable<typeof selectedObject>[];
+    props.selectedObjects?.forEach(selection => {
+      const object = resolveSelectedObject(resolverProps, selection);
+      if (object && objectHasSelectionOverlay(object)) {
+        objects.push(object);
+      }
+    });
+    return objects;
+  }, [props.selectedObjects, resolverProps]);
   const popupObject = React.useMemo(
     () => resolveSelectedObject(resolverProps, props.popupSelection),
     [props.popupSelection, resolverProps]);
@@ -70,6 +89,13 @@ export const ThreeDObjectSelectionLayer = (
   const overlayObject = objectHasSelectionOverlay(selectedOverlayObject)
     ? selectedOverlayObject
     : undefined;
+  const overlayObjectKey = overlayObject && overlayObject.kind != "location"
+    ? selectionKey(overlayObject.selection)
+    : "";
+  const selectedRings = React.useMemo(() =>
+    selectedOverlayObjects.filter(object =>
+      selectionKey(object.selection) != overlayObjectKey),
+  [overlayObjectKey, selectedOverlayObjects]);
   const [renderedPopupObject, setRenderedPopupObject] =
     React.useState<ResolvedPopupObject | undefined>(activePopupObject);
   const [popupVisible, setPopupVisible] = React.useState(false);
@@ -120,6 +146,7 @@ export const ThreeDObjectSelectionLayer = (
   ]);
 
   return <>
+    <SelectedObjectRingBatch objects={selectedRings} />
     {overlayObject &&
       <SelectedObjectOverlay
         object={overlayObject}

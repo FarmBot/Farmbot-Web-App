@@ -151,8 +151,8 @@ const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
       return;
     }
     if (onSelectObject) {
-      event.stopPropagation?.();
-      onSelectObject({ kind: "electronics", id: 0 });
+      onSelectObject({ kind: "electronics", id: 0 }) !== false &&
+        event.stopPropagation?.();
     }
   }, [onSelectObject]);
   const hoverElectronics = React.useCallback((

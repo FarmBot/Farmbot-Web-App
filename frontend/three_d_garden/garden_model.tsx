@@ -79,9 +79,11 @@ import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
 import { Path } from "../internal_urls";
 import {
-  hoverSelectionFromDesigner, pathForThreeDSelection,
+  createSelectionLookup, hoverSelectionFromDesigner, pathForThreeDSelection,
   routeLocationSelectionFromPath, routeSelectionFromPath,
+  selectionForUuid, selectionKindAllowed,
   ThreeDObjectSelectionLayer,
+  uuidForSelection,
 } from "./selection";
 import {
   ThreeDLocationSelection, ThreeDObjectHoverHandler, ThreeDObjectSelection,
@@ -93,11 +95,13 @@ import {
   zero as zeroFunc, zZero as zZeroFunc,
 } from "./helpers";
 import { clickWasDragged } from "./click_event";
+import { clickMapPlant } from "../farm_designer/map/actions";
 
 const AnimatedGroup = animated(Group);
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
 const GRID_SELECTION_BLOCKED_MODES = [
   ...HOVER_OBJECT_MODES,
+  Mode.boxSelect,
   Mode.cameraSelection,
 ];
 const gridSelectionAllowed = () =>
@@ -391,6 +395,9 @@ interface StaticGardenLayersProps {
   showWeeds: boolean;
   weeds: TaggedWeedPointer[];
   showPoints: boolean;
+  plantsSelectable: boolean;
+  pointsSelectable: boolean;
+  weedsSelectable: boolean;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onPlantHoverChange(hovered: boolean): void;
@@ -407,7 +414,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
     dispatch, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
-    showPoints, onSelectObject, onHoverObject, onPlantHoverChange,
+    showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
+    onSelectObject, onHoverObject, onPlantHoverChange,
   } = props;
   const seasonLayerKey = `${config.plants}-${seasonResetKey || 0}`;
   const gridVisible = config.grid && activeFocus != "Planter bed";
@@ -519,9 +527,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         <FocusVisibilityGroup name={"plants"}
           visible={true}
           keepMounted={true}
-          onPointerEnter={handlePlantPointerEnter}
-          onPointerMove={handlePlantPointerMove}
-          onPointerLeave={handlePlantPointerLeave}>
+          onPointerEnter={plantsSelectable ? handlePlantPointerEnter : undefined}
+          onPointerMove={plantsSelectable ? handlePlantPointerMove : undefined}
+          onPointerLeave={plantsSelectable ? handlePlantPointerLeave : undefined}>
           <PlantInstances
             plants={threeDPlants}
             config={config}
@@ -530,9 +538,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             iconCapacities={plantIconCapacities}
             plantIconAtlas={plantIconAtlas}
             startTimeRef={startTimeRef}
-            onSelectObject={onSelectObject}
-            onHoverObject={onPlantHoverChange}
-            dispatch={dispatch} />
+            onSelectObject={plantsSelectable ? onSelectObject : undefined}
+            onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
+            dispatch={plantsSelectable ? dispatch : undefined} />
           <PlantSpreadInstances
             plants={threeDPlants}
             visible={true}
@@ -542,9 +550,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             activePositionRef={activePositionRef}
             routeKey={routeKey}
             getZ={getZ}
-            onSelectObject={onSelectObject}
-            onHoverObject={onPlantHoverChange}
-            dispatch={dispatch} />
+            onSelectObject={plantsSelectable ? onSelectObject : undefined}
+            onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
+            dispatch={plantsSelectable ? dispatch : undefined} />
         </FocusVisibilityGroup>
       </PopInGroup>}
     </SceneBoundary>
@@ -570,9 +578,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             config={config}
             getZ={getZ}
             plantIconAtlas={plantIconAtlas}
-            onSelectObject={onSelectObject}
-            onHoverObject={onHoverObject}
-            dispatch={dispatch} />
+            onSelectObject={weedsSelectable ? onSelectObject : undefined}
+            onHoverObject={weedsSelectable ? onHoverObject : undefined}
+            dispatch={weedsSelectable ? dispatch : undefined} />
         </Group>
       </PopInGroup>}
     </SceneBoundary>
@@ -597,9 +605,9 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             visible={true}
             config={config}
             getZ={getZ}
-            onSelectObject={onSelectObject}
-            onHoverObject={onHoverObject}
-            dispatch={dispatch} />
+            onSelectObject={pointsSelectable ? onSelectObject : undefined}
+            onHoverObject={pointsSelectable ? onHoverObject : undefined}
+            dispatch={pointsSelectable ? dispatch : undefined} />
         </Group>
       </PopInGroup>}
     </SceneBoundary>
@@ -711,6 +719,7 @@ interface FarmbotLoadInProps {
   toolSlots: SlotWithTool[] | undefined;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  onToolSlotHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
@@ -735,6 +744,7 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
       mountedToolName={props.mountedToolName}
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
+      onToolSlotHoverObject={props.onToolSlotHoverObject}
       toolSlots={props.toolSlots} />
   </FallInGroup>;
 
@@ -782,6 +792,7 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
         onExitRest={markFarmbotHidden}
         onLoadInComplete={markFarmbotLoaded}
         onHoverObject={props.onHoverObject}
+        onToolSlotHoverObject={props.onToolSlotHoverObject}
         onSelectObject={props.onSelectObject}
         reveal={layerReveal}
         toolSlots={props.toolSlots} />
@@ -1044,6 +1055,25 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
+  const selectionPanelOpen = getMode() == Mode.boxSelect;
+  const selectionPointType = addPlantProps?.designer.selectionPointType;
+  const kindSelectable = (kind: ThreeDObjectSelection["kind"]) =>
+    !selectionPanelOpen || selectionKindAllowed(kind, selectionPointType);
+  const plantsSelectable = kindSelectable("plant");
+  const pointsSelectable = kindSelectable("point");
+  const weedsSelectable = kindSelectable("weed");
+  const slotsSelectable = kindSelectable("slot");
+  const selectionLookup = React.useMemo(() => createSelectionLookup({
+    plants,
+    points: mapPoints,
+    weeds,
+    toolSlots,
+  }), [
+    mapPoints,
+    plants,
+    toolSlots,
+    weeds,
+  ]);
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -1074,10 +1104,11 @@ export const GardenModel = (props: GardenModelProps) => {
     if (config.eventDebug) {
       console.log(event.intersections.map(x => x.object.name));
     }
-    const nextPlantIntersected = hasPlantIntersection(event);
+    const nextPlantIntersected =
+      plantsSelectable && hasPlantIntersection(event);
     setPlantIntersected(current =>
       current == nextPlantIntersected ? current : nextPlantIntersected);
-  }, [config.eventDebug]);
+  }, [config.eventDebug, plantsSelectable]);
 
   const getI = React.useCallback((e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
@@ -1194,9 +1225,25 @@ export const GardenModel = (props: GardenModelProps) => {
   const onSelectObject = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
+    if (selectionPanelOpen) {
+      const uuid = uuidForSelection(selectionLookup, selection);
+      if (uuid && selectionKindAllowed(selection.kind, selectionPointType)) {
+        dispatch?.(clickMapPlant(uuid));
+        setLocationSelection(undefined);
+        setPopupSelection(undefined);
+        return true;
+      }
+      return false;
+    }
     setLocationSelection(undefined);
     setPopupSelection(selection);
-  }, []);
+    return true;
+  }, [
+    dispatch,
+    selectionLookup,
+    selectionPanelOpen,
+    selectionPointType,
+  ]);
   const onSelectLocation = React.useCallback((
     selection: ThreeDLocationSelection,
   ) => {
@@ -1268,6 +1315,20 @@ export const GardenModel = (props: GardenModelProps) => {
     showSpread, showMoistureMap,
     showMoistureReadings, topDownAtStart,
   } = layerVisibility;
+  const selectedObjectSelections = React.useMemo(() => {
+    const selectedPoints = addPlantProps?.designer.selectedPoints;
+    if (!selectionPanelOpen || !selectedPoints) { return undefined; }
+    const selections: ThreeDObjectSelection[] = [];
+    selectedPoints.forEach(uuid => {
+      const selection = selectionForUuid(selectionLookup, uuid);
+      if (selection) { selections.push(selection); }
+    });
+    return selections;
+  }, [
+    addPlantProps?.designer.selectedPoints,
+    selectionLookup,
+    selectionPanelOpen,
+  ]);
   const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
   const routeSelection = React.useMemo(
     () => routeSelectionFromPath(routeLocation.pathname),
@@ -1516,6 +1577,9 @@ export const GardenModel = (props: GardenModelProps) => {
         seasonResetKey={props.seasonResetKey}
         showWeeds={showWeeds}
         weeds={weeds}
+        plantsSelectable={plantsSelectable}
+        pointsSelectable={pointsSelectable}
+        weedsSelectable={weedsSelectable}
         onSelectObject={onSelectObject}
         onHoverObject={setSelectableObjectHover}
         onPlantHoverChange={setPlantIntersected}
@@ -1538,7 +1602,7 @@ export const GardenModel = (props: GardenModelProps) => {
         config={config}
         configPosition={props.configPosition}
         detailsReveal={detailsReveal}
-        dispatch={dispatch}
+        dispatch={selectionPanelOpen ? undefined : dispatch}
         getZ={getZ}
         loadProgress={loadProgress}
         markStep={markLoadStep}
@@ -1546,13 +1610,17 @@ export const GardenModel = (props: GardenModelProps) => {
         reveal={farmbotReveal}
         showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
         toolSlots={props.toolSlots}
-        onSelectObject={onSelectObject}
-        onHoverObject={setSelectableObjectHover}
+        onSelectObject={slotsSelectable ? onSelectObject : undefined}
+        onHoverObject={selectionPanelOpen ? undefined : setSelectableObjectHover}
+        onToolSlotHoverObject={selectionPanelOpen && slotsSelectable
+          ? setSelectableObjectHover
+          : undefined}
         visible={farmbotVisible} />
       <ThreeDObjectSelectionLayer
         config={config}
         configPosition={props.configPosition}
         selection={visualSelection}
+        selectedObjects={selectedObjectSelections}
         popupSelection={popupSelection}
         locationSelection={locationSelection}
         selectedLocation={selectedLocation}

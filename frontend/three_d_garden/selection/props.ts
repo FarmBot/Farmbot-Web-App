@@ -15,6 +15,7 @@ export interface ThreeDObjectSelectionLayerProps {
   config: Config;
   configPosition: PositionConfig;
   selection: ThreeDObjectSelection | undefined;
+  selectedObjects?: ThreeDObjectSelection[];
   popupSelection: ThreeDObjectSelection | undefined;
   locationSelection: ThreeDLocationSelection | undefined;
   selectedLocation: ThreeDLocationSelection | undefined;

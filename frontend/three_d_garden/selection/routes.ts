@@ -1,5 +1,5 @@
 import {
-  TaggedGenericPointer, TaggedWeedPointer,
+  PointType, TaggedGenericPointer, TaggedWeedPointer,
 } from "farmbot";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
@@ -8,6 +8,74 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
+
+const POINT_TYPE_BY_SELECTION_KIND:
+  Partial<Record<ThreeDObjectSelection["kind"], PointType>> = {
+    plant: "Plant",
+    point: "GenericPointer",
+    weed: "Weed",
+    slot: "ToolSlot",
+  };
+
+export const selectionKindAllowed = (
+  kind: ThreeDObjectSelection["kind"],
+  selectionPointType: PointType[] | undefined,
+) => {
+  const pointType = POINT_TYPE_BY_SELECTION_KIND[kind];
+  return !!pointType && (selectionPointType || ["Plant"]).includes(pointType);
+};
+
+interface SelectionLookupProps {
+  plants: TaggedPlant[];
+  points: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
+  toolSlots: SlotWithTool[];
+}
+
+export interface ThreeDObjectSelectionLookup {
+  bySelection: Map<string, string>;
+  byUuid: Map<string, ThreeDObjectSelection>;
+}
+
+const selectionLookupKey = (selection: ThreeDObjectSelection) =>
+  `${selection.kind}-${selection.id}`;
+
+const addLookupSelection = (
+  lookup: ThreeDObjectSelectionLookup,
+  uuid: string,
+  selection: ThreeDObjectSelection,
+) => {
+  lookup.bySelection.set(selectionLookupKey(selection), uuid);
+  lookup.byUuid.set(uuid, selection);
+};
+
+export const createSelectionLookup = (props: SelectionLookupProps) => {
+  const lookup: ThreeDObjectSelectionLookup = {
+    bySelection: new Map(),
+    byUuid: new Map(),
+  };
+  props.plants.forEach(plant => plant.body.id && addLookupSelection(
+    lookup, plant.uuid, { kind: "plant", id: plant.body.id }));
+  props.points.forEach(point => point.body.id && addLookupSelection(
+    lookup, point.uuid, { kind: "point", id: point.body.id }));
+  props.weeds.forEach(weed => weed.body.id && addLookupSelection(
+    lookup, weed.uuid, { kind: "weed", id: weed.body.id }));
+  props.toolSlots.forEach(slot => slot.toolSlot.body.id && addLookupSelection(
+    lookup, slot.toolSlot.uuid, {
+      kind: "slot", id: slot.toolSlot.body.id,
+    }));
+  return lookup;
+};
+
+export const uuidForSelection = (
+  lookup: ThreeDObjectSelectionLookup,
+  selection: ThreeDObjectSelection,
+) => lookup.bySelection.get(selectionLookupKey(selection));
+
+export const selectionForUuid = (
+  lookup: ThreeDObjectSelectionLookup,
+  uuid: string,
+) => lookup.byUuid.get(uuid);
 
 export const routeSelectionFromPath = (
   pathname: string,

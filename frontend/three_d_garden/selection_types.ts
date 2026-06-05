@@ -14,7 +14,7 @@ export interface ThreeDLocationSelection {
 }
 
 export interface ThreeDObjectSelectionHandler {
-  (selection: ThreeDObjectSelection): void;
+  (selection: ThreeDObjectSelection): boolean | void;
 }
 
 export interface ThreeDObjectHoverHandler {
