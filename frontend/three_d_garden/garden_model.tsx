@@ -1377,6 +1377,14 @@ export const GardenModel = (props: GardenModelProps) => {
   const activePopupSelection = objectSelectionMode ? undefined : popupSelection;
   const activeLocationSelection =
     objectSelectionMode ? undefined : locationSelection;
+  const activePopupSelectionRef =
+    React.useRef<ThreeDObjectSelection | undefined>(activePopupSelection);
+  const activeLocationSelectionRef =
+    React.useRef<ThreeDLocationSelection | undefined>(activeLocationSelection);
+  React.useLayoutEffect(() => {
+    activePopupSelectionRef.current = activePopupSelection;
+    activeLocationSelectionRef.current = activeLocationSelection;
+  }, [activeLocationSelection, activePopupSelection]);
   const closePopup = React.useCallback(() => {
     setPopupSelection(undefined);
     setLocationSelection(undefined);
@@ -1433,10 +1441,17 @@ export const GardenModel = (props: GardenModelProps) => {
     if (multiSelectModifier.current && openMultiSelectPanel(selection)) {
       return true;
     }
+    const activeSelection = activePopupSelectionRef.current;
+    if (activeSelection?.kind == selection.kind &&
+      activeSelection.id == selection.id) {
+      closePopup();
+      return true;
+    }
     setLocationSelection(undefined);
     setPopupSelection(selection);
     return true;
   }, [
+    closePopup,
     dispatch,
     multiSelectModifier,
     objectSelectionMode,
@@ -1448,9 +1463,16 @@ export const GardenModel = (props: GardenModelProps) => {
   const onSelectLocation = React.useCallback((
     selection: ThreeDLocationSelection,
   ) => {
+    const activeSelection = activeLocationSelectionRef.current;
+    if (activeSelection?.x == selection.x &&
+      activeSelection.y == selection.y &&
+      activeSelection.z == selection.z) {
+      closePopup();
+      return;
+    }
     setPopupSelection(undefined);
     setLocationSelection(selection);
-  }, []);
+  }, [closePopup]);
   const updateLocationSelection = React.useCallback((
     selection: ThreeDLocationSelection,
   ) => {

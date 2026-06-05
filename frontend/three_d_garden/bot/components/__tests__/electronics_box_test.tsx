@@ -11,6 +11,7 @@ import * as mapUtil from "../../../../farm_designer/map/util";
 import { Mode } from "../../../../farm_designer/map/interfaces";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
+let getModeSpy: jest.SpyInstance;
 
 interface ReactPropsElement extends Element {
   [key: string]: unknown;
@@ -35,6 +36,11 @@ const electronicsBoxPosition = (container: HTMLElement) => {
 
 beforeEach(() => {
   useGltfMock.mockClear();
+  getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+});
+
+afterEach(() => {
+  getModeSpy.mockRestore();
 });
 
 describe("<ElectronicsBox />", () => {
@@ -66,15 +72,13 @@ describe("<ElectronicsBox />", () => {
   });
 
   it("doesn't select the electronics box in camera selection mode", () => {
-    const getModeSpy = jest.spyOn(mapUtil, "getMode")
-      .mockReturnValue(Mode.cameraSelection);
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
     const p = fakeProps();
     p.onSelectObject = jest.fn();
     const { container } = render(<ElectronicsBox {...p} />);
     const box = container.querySelector("group[name='box']");
     box && fireEvent.click(box);
     expect(p.onSelectObject).not.toHaveBeenCalled();
-    getModeSpy.mockRestore();
   });
 
   it("calculates the electronics box position", () => {

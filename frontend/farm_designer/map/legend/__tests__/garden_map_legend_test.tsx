@@ -23,11 +23,13 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { fakeDesignerState } from "../../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../../constants";
+import * as screenSize from "../../../../screen_size";
 
 let atMaxZoomSpy: jest.SpyInstance;
 let atMinZoomSpy: jest.SpyInstance;
 let getWebAppConfigValueSpy: jest.SpyInstance;
 let setWebAppConfigValueSpy: jest.SpyInstance;
+let isMobileSpy: jest.SpyInstance;
 
 beforeEach(() => {
   atMaxZoomSpy = jest.spyOn(zoom, "atMaxZoom").mockImplementation(() => mockAtMax);
@@ -36,6 +38,7 @@ beforeEach(() => {
     .mockImplementation(() => () => false);
   setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(jest.fn());
+  isMobileSpy = jest.spyOn(screenSize, "isMobile").mockReturnValue(false);
 });
 
 afterEach(() => {
@@ -43,6 +46,7 @@ afterEach(() => {
   atMinZoomSpy.mockRestore();
   getWebAppConfigValueSpy.mockRestore();
   setWebAppConfigValueSpy.mockRestore();
+  isMobileSpy.mockRestore();
 });
 
 describe("<GardenMapLegend />", () => {

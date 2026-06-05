@@ -899,6 +899,41 @@ describe("<GardenModel />", () => {
     expect(event.stopPropagation).toHaveBeenCalled();
   });
 
+  it("deselects active objects and grid locations on second click", () => {
+    location.pathname = Path.mock(Path.designer());
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onSelectObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const selectObject = staticLayers.props.onSelectObject;
+    const getSelectionLayer = () =>
+      wrapper.root.findByType(ThreeDObjectSelectionLayer).props;
+
+    actRenderer(() => selectObject({ kind: "plant", id: 1 }));
+    expect(getSelectionLayer().popupSelection)
+      .toEqual({ kind: "plant", id: 1 });
+    actRenderer(() => selectObject({ kind: "plant", id: 1 }));
+    expect(getSelectionLayer().popupSelection).toBeUndefined();
+
+    const hoverTarget = wrapper.root.findByProps({ name: "grid-hover-target" });
+    const point = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    const event = {
+      point,
+      stopPropagation: jest.fn(),
+    };
+    const locationSelection = { kind: "location", x: 100, y: 100, z: -500 };
+    actRenderer(() => hoverTarget.props.onClick(event));
+    expect(getSelectionLayer().locationSelection).toEqual(locationSelection);
+    actRenderer(() => hoverTarget.props.onClick(event));
+    expect(getSelectionLayer().locationSelection).toBeUndefined();
+  });
+
   it("clears grid hover when grid selection becomes blocked", () => {
     const getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     location.pathname = Path.mock(Path.designer());
@@ -975,6 +1010,54 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
       .props.selectedObjects).toEqual([{ kind: "point", id: 1 }]);
     getModeSpy.mockRestore();
+  });
+
+  it("opens multi-select from route selection", () => {
+    location.pathname = Path.mock(Path.plants(1));
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    const plant = fakePlant();
+    plant.body.id = 1;
+    const point = fakePoint();
+    point.body.id = 2;
+    const p = fakeProps();
+    p.plants = [plant];
+    p.mapPoints = [point];
+    const addPlantProps = fakeAddPlantProps();
+    addPlantProps.dispatch = jest.fn();
+    p.addPlantProps = addPlantProps;
+    const addEventSpy = jest.spyOn(window, "addEventListener");
+    const wrapper = createWrapper(p);
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onSelectObject == "function"
+      && typeof node.props.onPlantHoverChange == "function")[0];
+    const selectObject = staticLayers.props.onSelectObject;
+    const keydownHandler = addEventSpy.mock.calls
+      .find(call => call[0] == "keydown")?.[1] as
+      ((event: KeyboardEvent) => void) | undefined;
+    const keyupHandler = addEventSpy.mock.calls
+      .find(call => call[0] == "keyup")?.[1] as
+      ((event: KeyboardEvent) => void) | undefined;
+    const blurHandler = addEventSpy.mock.calls
+      .find(call => call[0] == "blur")?.[1] as
+      (() => void) | undefined;
+
+    actRenderer(() => {
+      keydownHandler?.(new KeyboardEvent("keydown", { ctrlKey: true }));
+      selectObject({ kind: "plant", id: 1 });
+      selectObject({ kind: "point", id: 2 });
+      keyupHandler?.(new KeyboardEvent("keyup"));
+      blurHandler?.();
+    });
+
+    addEventSpy.mockRestore();
+    expect(addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: "SET_SELECTION_POINT_TYPE",
+      payload: ["Plant", "GenericPointer", "Weed", "ToolSlot"],
+    });
   });
 
   it("suppresses promo popups for FarmBot hardware", () => {
@@ -1057,14 +1140,20 @@ describe("<GardenModel />", () => {
         z: 3,
       });
     });
-    const keydownHandler = addEventSpy.mock.calls
-      .find(call => call[0] == "keydown")?.[1] as
+    const keydownHandlers = addEventSpy.mock.calls
+      .filter(call => call[0] == "keydown")
+      .map(call => call[1]);
+    const keydownHandler = keydownHandlers[keydownHandlers.length - 1] as
       ((event: KeyboardEvent) => void) | undefined;
     expect(keydownHandler).toBeDefined();
     actRenderer(() => {
       keydownHandler?.(new KeyboardEvent("keydown", { key: "Escape" }));
     });
     addEventSpy.mockRestore();
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.locationSelection).toBeUndefined();
+    unmountRenderer(wrapper);
+    mountedWrappers.splice(mountedWrappers.indexOf(wrapper), 1);
   });
 
   it("applies scene cursor styles", () => {
