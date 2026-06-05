@@ -13,7 +13,7 @@ import {
   SeedTroughHolderFull, SeedTroughHolderModel,
 } from "../parts";
 import {
-  BoxGeometry, Group, Mesh, MeshBasicMaterial, MeshPhongMaterial,
+  Group, Mesh, MeshPhongMaterial,
 } from "../../components";
 import { distinguishableBlack } from "../positioning";
 import { SlotWithTool } from "../../../resources/interfaces";
@@ -373,29 +373,8 @@ const useToolSlotClick = (props: ToolbaySlotProps) => {
   };
 };
 
-const SLOT_HITBOX_SIZE: [number, number, number] = [120, 120, 30];
-const SLOT_HITBOX_TOP_ABOVE_POSITION = 10;
 const TOOLBAY_SLOT_Z_OFFSET = -9;
 const SEED_TROUGH_SLOT_Z_OFFSET = -40;
-
-interface SlotHitTargetProps {
-  groupZOffset: number;
-}
-
-const SlotHitTarget = (props: SlotHitTargetProps) =>
-  <Mesh name={"slot-hit-target"} position={[
-    10,
-    0,
-    SLOT_HITBOX_TOP_ABOVE_POSITION
-    - props.groupZOffset
-    - SLOT_HITBOX_SIZE[2] / 2,
-  ]}>
-    <BoxGeometry args={SLOT_HITBOX_SIZE} />
-    <MeshBasicMaterial
-      transparent={true}
-      opacity={0}
-      depthWrite={false} />
-  </Mesh>;
 
 const ToolbaySlot = (props: ToolbaySlotProps) => {
   const { position, children, toolPulloutDirection, mounted } = props;
@@ -427,8 +406,6 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
       props.onHoverObject?.(false);
       props.onHoverLabel?.(undefined);
     }}>
-    {selectable && props.inToolbay &&
-      <SlotHitTarget groupZOffset={TOOLBAY_SLOT_Z_OFFSET} />}
     {rotationMultiplier &&
       <Group name={"bay"}
         rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
@@ -650,8 +627,6 @@ const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
       props.onHoverObject?.(false);
       props.onHoverLabel?.(undefined);
     }}>
-    {selectable &&
-      <SlotHitTarget groupZOffset={SEED_TROUGH_SLOT_Z_OFFSET} />}
     <SeedTroughToolModel firstTrough={props.firstTrough} />
   </Group>;
 };
