@@ -19,8 +19,8 @@ interface ObjectPopupProps extends ThreeDObjectSelectionLayerProps {
   visible: boolean;
 }
 
-export const ObjectPopup = (props: ObjectPopupProps) =>
-  <Html
+export const ObjectPopup = (props: ObjectPopupProps) => {
+  return <Html
     name={"selected-object-popup"}
     wrapperClass={"three-d-object-popup-wrapper"}
     center={true}
@@ -60,6 +60,7 @@ export const ObjectPopup = (props: ObjectPopupProps) =>
       </div>
     </div>
   </Html>;
+};
 
 interface LocationPopupProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedLocationObject;

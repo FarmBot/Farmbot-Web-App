@@ -76,6 +76,7 @@ const GoButton = (props: GoButtonProps) =>
       arduinoBusy={props.arduinoBusy}
       currentBotLocation={props.currentBotLocation}
       movementState={props.movementState}
+      noOptions={true}
       defaultAxes={props.defaultAxes} />;
 
 const PopupLocationRow = (props: PopupLocationRowProps) =>

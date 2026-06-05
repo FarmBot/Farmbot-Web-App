@@ -166,6 +166,7 @@ export interface GoToThisLocationButtonProps {
   dispatch: Function;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+  noOptions?: boolean;
 }
 
 interface GoToThisLocationButtonState {
@@ -259,10 +260,11 @@ export class GoToThisLocationButton
                 onChange={this.toggle("setAsDefault")}
                 checked={this.state.setAsDefault} />
             </div>
-            <Link to={Path.location(target)}>
-              {t("More options")}
-              <i className={"fa fa-external-link"} />
-            </Link>
+            {!this.props.noOptions &&
+              <Link to={Path.location(target)}>
+                {t("More options")}
+                <i className={"fa fa-external-link"} />
+              </Link>}
           </div>} />
     </div>;
   }
