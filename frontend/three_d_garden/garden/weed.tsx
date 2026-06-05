@@ -1,11 +1,12 @@
 import React from "react";
 import { TaggedWeedPointer, Xyz } from "farmbot";
 import { Config } from "../config";
-import { ASSETS, HOVER_OBJECT_MODES, RenderOrder } from "../constants";
+import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import {
-  Group, InstancedMesh, MeshBasicMaterial, MeshPhongMaterial, PlaneGeometry,
+  Group, InstancedMesh, Mesh, MeshBasicMaterial, MeshPhongMaterial,
+  PlaneGeometry,
 } from "../components";
-import { Image, Billboard, Sphere, useTexture } from "@react-three/drei";
+import { Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
   BufferGeometry,
   InstancedMesh as InstancedMeshType,
@@ -36,6 +37,15 @@ import {
 } from "../selection_types";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
+
+const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
+  const baseTexture = useTexture(
+    getPlantIconTextureUrl(GENERIC_WEED_ICON, plantIconAtlas));
+  return React.useMemo(
+    () => getPlantIconTexture(baseTexture, GENERIC_WEED_ICON, plantIconAtlas),
+    [baseTexture, plantIconAtlas],
+  );
+};
 
 let weedRadiusGeometry: BufferGeometry | undefined = undefined;
 const getWeedRadiusGeometry = () => {
@@ -107,6 +117,7 @@ export const WeedBase = (props: WeedBaseProps) => {
   const getWorldPosition = getWorldPositionFunc(config);
   const weedSize = radius == 0 ? 50 : radius;
   const iconSize = weedSize * WEED_IMG_SIZE_FRACTION;
+  const texture = useWeedIconTexture();
   return <Group
     name={"weed-" + pointName}
     position={position
@@ -119,14 +130,20 @@ export const WeedBase = (props: WeedBaseProps) => {
       ref={billboardRef}
       follow={true}
       position={[0, 0, iconSize / 2]}>
-      <Image
+      <Mesh
         ref={imageRef}
+        name={"weed-icon"}
         renderOrder={RenderOrder.weedImages}
-        url={ASSETS.other.weed}
         scale={iconSize}
-        transparent={true}
-        opacity={1 * alpha}
-        position={[0, 0, 0]} />
+        position={[0, 0, 0]}>
+        <PlaneGeometry args={[1, 1]} />
+        <MeshBasicMaterial
+          map={texture}
+          alphaTest={0.1}
+          transparent={true}
+          opacity={1 * alpha}
+          depthWrite={true} />
+      </Mesh>
     </Billboard>
     <Sphere
       ref={radiusRef}
@@ -263,13 +280,7 @@ interface WeedIconInstancesProps extends WeedInstancesProps {
 
 const WeedIconInstances = (props: WeedIconInstancesProps) => {
   const { weedInstances, dispatch, visible } = props;
-  const plantIconAtlas = props.plantIconAtlas || PLANT_ICON_ATLAS;
-  const baseTexture = useTexture(
-    getPlantIconTextureUrl(GENERIC_WEED_ICON, plantIconAtlas));
-  const texture = React.useMemo(
-    () => getPlantIconTexture(baseTexture, GENERIC_WEED_ICON, plantIconAtlas),
-    [baseTexture, plantIconAtlas],
-  );
+  const texture = useWeedIconTexture(props.plantIconAtlas || PLANT_ICON_ATLAS);
   const navigateToWeed =
     useNavigateToWeed(dispatch, visible, props.onSelectObject);
   // eslint-disable-next-line no-null/no-null

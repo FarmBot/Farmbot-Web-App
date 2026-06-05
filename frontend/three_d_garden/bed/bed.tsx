@@ -817,19 +817,21 @@ const BedBase = (props: BedProps) => {
             side={DoubleSide} />
         </Box>
       </>}
-    {props.addPlantProps &&
-      <PointerObjects
-        pointerPlantRef={pointerPlantRef}
-        radiusRef={radiusRef}
-        torusRef={torusRef}
-        billboardRef={billboardRef}
-        imageRef={imageRef}
-        xCrosshairRef={xCrosshairRef}
-        yCrosshairRef={yCrosshairRef}
-        activePositionRef={props.activePositionRef}
-        config={props.config}
-        addPlantProps={props.addPlantProps}
-        mapPoints={props.mapPoints} />}
+    <React.Suspense fallback={undefined}>
+      {props.addPlantProps &&
+        <PointerObjects
+          pointerPlantRef={pointerPlantRef}
+          radiusRef={radiusRef}
+          torusRef={torusRef}
+          billboardRef={billboardRef}
+          imageRef={imageRef}
+          xCrosshairRef={xCrosshairRef}
+          yCrosshairRef={yCrosshairRef}
+          activePositionRef={props.activePositionRef}
+          config={props.config}
+          addPlantProps={props.addPlantProps}
+          mapPoints={props.mapPoints} />}
+    </React.Suspense>
     <React.Suspense>
       {props.config.lowDetail
         ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />

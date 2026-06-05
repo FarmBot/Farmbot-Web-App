@@ -377,7 +377,7 @@ describe("<DrawnPoint />", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     const { container } = render(<DrawnPoint {...p} />);
-    expect(container).toContainHTML("generic-weed");
+    expect(container).toContainHTML("weed-icon");
     expect(container).toContainHTML("position=\"0,0,0\"");
     expect(container).toContainHTML("scale=\"30\"");
     expect(container).toContainHTML("color=\"green\"");
@@ -391,7 +391,7 @@ describe("<DrawnPoint />", () => {
     point.r = 0;
     p.designer.drawnPoint = point;
     const { container } = render(<DrawnPoint {...p} />);
-    expect(container).toContainHTML("generic-weed");
+    expect(container).toContainHTML("weed-icon");
     expect(container).toContainHTML("position=\"0,0,0\"");
     expect(container).toContainHTML("scale=\"50\"");
     expect(container).toContainHTML("color=\"green\"");

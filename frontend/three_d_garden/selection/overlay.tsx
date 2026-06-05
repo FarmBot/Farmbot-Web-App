@@ -15,7 +15,7 @@ import { ResolvedThreeDObjectBase } from "./resolve";
 
 const RING_SEGMENTS = 192;
 const RING_Z_OFFSET = 6;
-const RING_THICKNESS = 4;
+export const RING_THICKNESS = 6;
 const RING_DASH_SIZE = 14;
 const RING_GAP_SIZE = 10;
 const RING_DASH_SPEED = 45;

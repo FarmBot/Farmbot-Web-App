@@ -96,12 +96,14 @@ import {
 } from "./helpers";
 import { clickWasDragged } from "./click_event";
 import { clickMapPlant } from "../farm_designer/map/actions";
+import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
 
 const AnimatedGroup = animated(Group);
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
 const GRID_SELECTION_BLOCKED_MODES = [
   ...HOVER_OBJECT_MODES,
   Mode.boxSelect,
+  Mode.editGroup,
   Mode.cameraSelection,
 ];
 const gridSelectionAllowed = () =>
@@ -1055,10 +1057,13 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
-  const selectionPanelOpen = getMode() == Mode.boxSelect;
+  const mode = getMode();
+  const selectionPanelOpen = mode == Mode.boxSelect;
+  const groupPanelOpen = mode == Mode.editGroup;
+  const objectSelectionMode = selectionPanelOpen || groupPanelOpen;
   const selectionPointType = addPlantProps?.designer.selectionPointType;
   const kindSelectable = (kind: ThreeDObjectSelection["kind"]) =>
-    !selectionPanelOpen || selectionKindAllowed(kind, selectionPointType);
+    !objectSelectionMode || selectionKindAllowed(kind, selectionPointType);
   const plantsSelectable = kindSelectable("plant");
   const pointsSelectable = kindSelectable("point");
   const weedsSelectable = kindSelectable("weed");
@@ -1225,7 +1230,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const onSelectObject = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
-    if (selectionPanelOpen) {
+    if (objectSelectionMode) {
       const uuid = uuidForSelection(selectionLookup, selection);
       if (uuid && selectionKindAllowed(selection.kind, selectionPointType)) {
         dispatch?.(clickMapPlant(uuid));
@@ -1240,8 +1245,8 @@ export const GardenModel = (props: GardenModelProps) => {
     return true;
   }, [
     dispatch,
+    objectSelectionMode,
     selectionLookup,
-    selectionPanelOpen,
     selectionPointType,
   ]);
   const onSelectLocation = React.useCallback((
@@ -1259,6 +1264,9 @@ export const GardenModel = (props: GardenModelProps) => {
     setPopupSelection(undefined);
     setLocationSelection(undefined);
   }, []);
+  const activePopupSelection = objectSelectionMode ? undefined : popupSelection;
+  const activeLocationSelection =
+    objectSelectionMode ? undefined : locationSelection;
   const openSelectedObjectPanel = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
@@ -1279,13 +1287,13 @@ export const GardenModel = (props: GardenModelProps) => {
   }, []);
 
   React.useEffect(() => {
-    if (!popupSelection && !locationSelection) { return; }
+    if (!activePopupSelection && !activeLocationSelection) { return; }
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key == "Escape") { closePopup(); }
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [closePopup, locationSelection, popupSelection]);
+  }, [activeLocationSelection, activePopupSelection, closePopup]);
 
   React.useEffect(() => {
     if (!detailsReveal || detailsRevealNotified.current) { return; }
@@ -1315,9 +1323,22 @@ export const GardenModel = (props: GardenModelProps) => {
     showSpread, showMoistureMap,
     showMoistureReadings, topDownAtStart,
   } = layerVisibility;
+  const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
+  const groupIdFromPath = React.useMemo(() => {
+    const groupId = parseInt(
+      routeLocation.pathname.split("/").filter(Boolean).pop() || "");
+    return isFinite(groupId) ? groupId : undefined;
+  }, [routeLocation.pathname]);
+  const groupSelectedPoints = React.useMemo(() => {
+    if (!groupPanelOpen || groupIdFromPath == undefined) { return undefined; }
+    const group = groups.filter(group => group.body.id == groupIdFromPath)[0];
+    return group ? pointsSelectedByGroup(group, allPoints) : undefined;
+  }, [allPoints, groupIdFromPath, groupPanelOpen, groups]);
   const selectedObjectSelections = React.useMemo(() => {
-    const selectedPoints = addPlantProps?.designer.selectedPoints;
-    if (!selectionPanelOpen || !selectedPoints) { return undefined; }
+    const selectedPoints = selectionPanelOpen
+      ? addPlantProps?.designer.selectedPoints
+      : groupSelectedPoints?.map(point => point.uuid);
+    if (!selectedPoints) { return undefined; }
     const selections: ThreeDObjectSelection[] = [];
     selectedPoints.forEach(uuid => {
       const selection = selectionForUuid(selectionLookup, uuid);
@@ -1326,10 +1347,10 @@ export const GardenModel = (props: GardenModelProps) => {
     return selections;
   }, [
     addPlantProps?.designer.selectedPoints,
+    groupSelectedPoints,
     selectionLookup,
     selectionPanelOpen,
   ]);
-  const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
   const routeSelection = React.useMemo(
     () => routeSelectionFromPath(routeLocation.pathname),
     [routeLocation.pathname]);
@@ -1352,7 +1373,8 @@ export const GardenModel = (props: GardenModelProps) => {
     weeds,
     toolSlots,
   ]);
-  const visualSelection = popupSelection || hoverSelection || routeSelection;
+  const visualSelection =
+    activePopupSelection || hoverSelection || routeSelection;
   const gridHoverEnabled =
     config.grid && props.activeFocus != "Planter bed" && gridSelectionAllowed();
   const activeGridHoverPosition = gridHoverEnabled
@@ -1602,7 +1624,7 @@ export const GardenModel = (props: GardenModelProps) => {
         config={config}
         configPosition={props.configPosition}
         detailsReveal={detailsReveal}
-        dispatch={selectionPanelOpen ? undefined : dispatch}
+        dispatch={objectSelectionMode ? undefined : dispatch}
         getZ={getZ}
         loadProgress={loadProgress}
         markStep={markLoadStep}
@@ -1611,8 +1633,8 @@ export const GardenModel = (props: GardenModelProps) => {
         showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
         toolSlots={props.toolSlots}
         onSelectObject={slotsSelectable ? onSelectObject : undefined}
-        onHoverObject={selectionPanelOpen ? undefined : setSelectableObjectHover}
-        onToolSlotHoverObject={selectionPanelOpen && slotsSelectable
+        onHoverObject={objectSelectionMode ? undefined : setSelectableObjectHover}
+        onToolSlotHoverObject={objectSelectionMode && slotsSelectable
           ? setSelectableObjectHover
           : undefined}
         visible={farmbotVisible} />
@@ -1621,8 +1643,8 @@ export const GardenModel = (props: GardenModelProps) => {
         configPosition={props.configPosition}
         selection={visualSelection}
         selectedObjects={selectedObjectSelections}
-        popupSelection={popupSelection}
-        locationSelection={locationSelection}
+        popupSelection={activePopupSelection}
+        locationSelection={activeLocationSelection}
         selectedLocation={selectedLocation}
         onClosePopup={closePopup}
         onOpenPanel={openSelectedObjectPanel}
