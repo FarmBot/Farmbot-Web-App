@@ -5,7 +5,6 @@ import {
   get3DPositionFunc, get3DPositionNoMirrorFunc,
   zDir as zDirFunc, zZero as zZeroFunc,
 } from "../../helpers";
-import { utmHeight } from "../positioning";
 
 export interface ThreeDToolPositionInput {
   x: number;
@@ -46,7 +45,7 @@ export const getToolRenderPosition = (
       : noMirrorPosition.y,
     z: helpers.zZero
       - helpers.zDir * tool.z
-      + (inToolbay ? 0 : (utmHeight / 2 - 15)),
+      + (inToolbay ? 0 : (35 / 2 - 15)),
   };
 };
 

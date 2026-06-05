@@ -532,7 +532,7 @@ describe("<PlantInstances />", () => {
     expect(instancedRef?.current?.setMatrixAt).toHaveBeenCalled();
     const matrix = (instancedRef?.current?.setMatrixAt as jest.Mock)
       .mock.calls[0][1];
-    expect(matrix.elements[12]).toBeCloseTo(1260);
+    expect(matrix.elements[12]).toBeCloseTo(1250);
     expect(matrix.elements[13]).toBeCloseTo(460);
   });
 

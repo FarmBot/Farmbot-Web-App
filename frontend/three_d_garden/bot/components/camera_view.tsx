@@ -4,12 +4,20 @@ import { Config, PositionConfig } from "../../config";
 import { Mesh, MeshStandardMaterial } from "../../components";
 import { Edges } from "@react-three/drei";
 import { ConvexGeometry } from "three-stdlib";
-import { cameraMountOffset, cameraMountToLensOffset } from "../positioning";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
+const cameraMountOffset = {
+  x: 12,
+  y: 35,
+};
+const cameraMountToLensOffset = new THREE.Vector3(
+  0,
+  29,
+  0,
+);
 
 type V3 = [number, number, number];
 

@@ -71,23 +71,23 @@ const SolenoidBase = (props: SolenoidProps) => {
     return {
       lowerTubePath: easyCubicBezierCurve3(
         [
-          ...outerXY(x - 45, -25),
+          ...outerXY(x - 60, -25),
           -49,
         ],
         [200, -55, 25],
         [5, 10, -250],
         [
-          ...outerXY(x - 104.75, 20),
+          ...outerXY(x - 115.75, 20),
           columnLength - 217,
         ],
       ),
       solenoidPosition: [
-        ...outerXY(x - 104, 20),
+        ...outerXY(x - 115, 20),
         columnLength - 200,
       ] as [number, number, number],
       upperTubePath: easyCubicBezierCurve3(
         [
-          ...outerXY(x - 104.25, 20),
+          ...outerXY(x - 115.25, 20),
           columnLength - 98,
         ],
         [0, 0, 100],
@@ -105,19 +105,19 @@ const SolenoidBase = (props: SolenoidProps) => {
         [0, -50, 0],
         [0, 0, -50],
         [
-          ...gardenXY(x - 32.5, y - 10),
+          ...gardenXY(x - 43.5, y - 10),
           columnLength + 180,
         ],
       ),
       utmTubePath: easyCubicBezierCurve3(
         [
-          ...gardenXY(x + 32.5, y - 10),
+          ...gardenXY(x + 21.5, y - 10),
           columnLength - zDir * z - zGantryOffset + 200,
         ],
         [0, 0, -50],
         [0, 0, 50],
         [
-          ...gardenXY(x + 2, y + 15),
+          ...gardenXY(x - 9, y + 15),
           columnLength - zDir * z - zGantryOffset + 75,
         ],
       ),

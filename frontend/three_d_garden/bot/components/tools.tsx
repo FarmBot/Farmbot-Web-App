@@ -15,7 +15,6 @@ import {
 import {
   Group, Mesh, MeshPhongMaterial,
 } from "../../components";
-import { distinguishableBlack } from "../positioning";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { isUndefined, sortBy } from "lodash";
 import {
@@ -41,6 +40,8 @@ import {
   getToolPositionHelpers, getToolRenderPosition, ToolPositionHelpers,
 } from "./tool_slot_position";
 import { clickWasDragged } from "../../click_event";
+
+const distinguishableBlack = "#333";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -572,7 +573,7 @@ const SeedTroughWithAssemblyToolModel = React.memo(() => {
     <SeedTroughAssemblyModel
       model={seedTroughAssembly}
       name={"seedTroughAssembly"}
-      position={[3, 2, 30]}
+      position={[3, 5, 30]}
       scale={1000} />
     <SeedTroughHolderModel
       model={seedTroughHolder}
@@ -585,8 +586,8 @@ const SeedTroughOnlyToolModel = React.memo(() => {
   const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as unknown as SeedTrough;
   return <Mesh name={"seedTrough"}
     position={[
-      15,
-      2,
+      11.25,
+      5,
       30,
     ]}
     scale={1000}
@@ -611,8 +612,8 @@ const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
     : undefined;
   return <Group
     position={[
-      props.position.x - 30,
-      props.position.y + 2,
+      props.position.x - 19,
+      props.position.y + 5,
       props.position.z + SEED_TROUGH_SLOT_Z_OFFSET,
     ]}
     rotation={[0, 0, Math.PI / 2]}

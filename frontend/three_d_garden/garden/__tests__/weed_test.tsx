@@ -57,7 +57,7 @@ describe("<Weed />", () => {
     p.weed.body.x = 100;
     p.weed.body.y = 200;
     const { container } = render(<Weed {...p} />);
-    expect(container).toContainHTML("position=\"1260,460,400\"");
+    expect(container).toContainHTML("position=\"1250,460,400\"");
   });
 
   it("navigates to weed info", () => {

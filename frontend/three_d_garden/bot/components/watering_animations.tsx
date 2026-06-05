@@ -10,7 +10,6 @@ import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
 } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
-import { utmHeight } from "../positioning";
 import { Texture } from "three";
 
 export interface WateringAnimationsProps {
@@ -71,7 +70,7 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, getZ, config } = props;
   const { x, y, z } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
+  const utmZ = -zDir(config) * z + 35 / 2 - 15;
   const nozzleToSoil = getZ(x, y) - utmZ;
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {

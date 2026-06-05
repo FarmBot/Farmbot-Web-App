@@ -8,13 +8,13 @@ import {
   ASSETS, ElectronicsBoxMaterial, HOVER_OBJECT_MODES, LIB_DIR, PartName,
 } from "../../constants";
 import { Group, Mesh } from "../../components";
+import { get3DPositionNoMirrorFunc } from "../../helpers";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
 } from "../../selection_types";
 import { clickWasDragged } from "../../click_event";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
-import { getElectronicsBoxPosition } from "../positioning";
 
 type Box = GLTF & {
   nodes: {
@@ -126,6 +126,24 @@ export interface ElectronicsBoxProps {
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
 }
+
+export const getElectronicsBoxPosition = (
+  config: Config,
+  configPosition: PositionConfig,
+) => {
+  const { bedYOffset, columnLength } = config;
+  const { x } = configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(config);
+  const position = get3DPosition({
+    x: x - 73,
+    y: -20 - bedYOffset,
+  });
+  return new THREE.Vector3(
+    position.x,
+    position.y,
+    columnLength - 190,
+  );
+};
 
 const electronicsBoxPropsEqual = (
   prevProps: ElectronicsBoxProps,

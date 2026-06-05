@@ -4,8 +4,9 @@ import { useGLTF } from "@react-three/drei";
 import type { Vector3 } from "three";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
-import { ElectronicsBox, ElectronicsBoxProps } from "../electronics_box";
-import { getElectronicsBoxPosition } from "../../positioning";
+import {
+  ElectronicsBox, ElectronicsBoxProps, getElectronicsBoxPosition,
+} from "../electronics_box";
 import { ASSETS } from "../../../constants";
 import * as mapUtil from "../../../../farm_designer/map/util";
 import { Mode } from "../../../../farm_designer/map/interfaces";

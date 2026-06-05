@@ -6,7 +6,6 @@ import { Config, PositionConfig } from "../../config";
 import {
   DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
-import { extrusionWidth } from "../positioning";
 import { range } from "lodash";
 
 export interface GantryBeamProps {
@@ -43,7 +42,7 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
   const { x } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const position = get3DPosition({
-    x: x - extrusionWidth - 8,
+    x: x - 39,
     y: (bedWidthOuter + beamLength) / 2 - 50 - bedYOffset,
   });
   return <Group name={"gantry-beam"}

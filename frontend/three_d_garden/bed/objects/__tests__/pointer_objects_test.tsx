@@ -164,7 +164,7 @@ describe("soilClick()", () => {
     soilClick(p)(e);
     expect(e.stopPropagation).toHaveBeenCalled();
     expect(dropPlantSpy).toHaveBeenCalledWith(expect.objectContaining({
-      gardenCoords: { x: 1360, y: 660 },
+      gardenCoords: { x: 1350, y: 660 },
     }));
   });
 
@@ -182,7 +182,7 @@ describe("soilClick()", () => {
     } as unknown as ThreeEvent<MouseEvent>;
     soilClick(p)(e);
     expect(dropPlantSpy).toHaveBeenCalledWith(expect.objectContaining({
-      gardenCoords: { x: 1360, y: 660 },
+      gardenCoords: { x: 1350, y: 660 },
     }));
   });
 

@@ -55,7 +55,7 @@ describe("<Point />", () => {
     p.point.body.x = 100;
     p.point.body.y = 200;
     const { container } = render(<Point {...p} />);
-    expect(container).toContainHTML("position=\"1260,460,400\"");
+    expect(container).toContainHTML("position=\"1250,460,400\"");
   });
 
   it("renders: unsaved", () => {
@@ -195,7 +195,7 @@ describe("<Point />", () => {
     const wrapper = createRenderer(<PointInstances {...p} />);
     mountedWrappers.push(wrapper);
     const matrix = markerRef.current.setMatrixAt.mock.calls[0][1];
-    expect(matrix.elements[12]).toBeCloseTo(1260);
+    expect(matrix.elements[12]).toBeCloseTo(1250);
     expect(matrix.elements[13]).toBeCloseTo(460);
     expect(matrix.elements[14]).toBeCloseTo(400);
     useRefSpy.mockRestore();

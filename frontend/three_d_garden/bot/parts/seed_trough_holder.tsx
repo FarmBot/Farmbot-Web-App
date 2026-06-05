@@ -29,11 +29,11 @@ export const SeedTroughHolderModel = (props: SeedTroughHolderProps) => {
     <MeshComponent
       geometry={nodes.Seed_Trough_Holder_Mount_Plate.geometry}
       material={materials[SeedTroughHolderMaterial.zero]}
-      position={[-0.002, 0.023, 0]} />
+      position={[-0.002, 0.044, 0]} />
     <MeshComponent
       geometry={nodes.M5_x_10mm_Screw.geometry}
       material={materials[SeedTroughHolderMaterial.one]}
-      position={[0.003, 0.013, 0.03]}
+      position={[0.003, 0.034, 0.03]}
       rotation={[Math.PI / 2, Math.PI / 2, 0]} />
   </Group>;
 };

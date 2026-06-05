@@ -350,7 +350,7 @@ describe("<Tools />", () => {
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"1260,460,391\"");
+    expect(container).toContainHTML("position=\"1250,460,391\"");
   });
 
   it("flips rendered pullout direction for mirrored axis", () => {
@@ -381,7 +381,7 @@ describe("<Tools />", () => {
     toolSlot.body.gantry_mounted = true;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"1060,-680,391\"");
+    expect(container).toContainHTML("position=\"1050,-680,391\"");
   });
 
   it("calculates static and gantry tool slot render positions", () => {
@@ -402,7 +402,7 @@ describe("<Tools />", () => {
     expect(getToolSlotRenderPosition(config, configPosition, {
       toolSlot,
       tool: undefined,
-    }).x).toEqual(560);
+    }).x).toEqual(550);
   });
 
   it("doesn't mirror gantry-mounted tool y when mirrorY is active", () => {
@@ -418,7 +418,7 @@ describe("<Tools />", () => {
     toolSlot.body.gantry_mounted = true;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"-1060,-680,391\"");
+    expect(container).toContainHTML("position=\"-1050,-680,391\"");
   });
 
   it("renders vacuum animation when not in toolbay and vacuum", () => {

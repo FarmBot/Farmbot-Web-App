@@ -11,11 +11,14 @@ import {
   getToolRenderPosition, getToolSlotRenderPosition,
 } from "../bot/components/tool_slot_position";
 import {
-  cameraMountOffset, getElectronicsBoxPosition,
-} from "../bot/positioning";
+  getElectronicsBoxPosition,
+} from "../bot/components/electronics_box";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
+import {
+  reduceToolName, ToolName,
+} from "../../farm_designer/map/tool_graphics/all_tools";
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { BotPosition } from "../../devices/interfaces";
@@ -25,7 +28,11 @@ const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
 const FIXED_POPUP_Z_OFFSET = 75;
 const SLOT_RING_RADIUS = 50;
-const ELECTRONICS_RING_RADIUS = 120;
+const SEED_TROUGH_RING_Y_OFFSET = 20;
+const cameraMountOffset = {
+  x: 12,
+  y: 35,
+};
 
 export interface ResolvedThreeDObjectBase {
   selection: ThreeDObjectSelection;
@@ -207,14 +214,21 @@ const resolveSlotObject = (
   if (!slot) { return undefined; }
   const worldPosition =
     getToolSlotRenderPosition(props.config, props.configPosition, slot);
+  const ringYOffset = reduceToolName(slot.tool?.body.name) == ToolName.seedTrough
+    ? SEED_TROUGH_RING_Y_OFFSET
+    : 0;
   const slotBody = slot.toolSlot.body;
   return {
     kind: "slot",
     selection,
     slot,
     name: slot.tool?.body.name || t("Empty slot"),
-    worldPosition: [worldPosition.x, worldPosition.y, worldPosition.z],
-    popupPosition: [worldPosition.x, worldPosition.y,
+    worldPosition: [
+      worldPosition.x,
+      worldPosition.y + ringYOffset,
+      worldPosition.z,
+    ],
+    popupPosition: [worldPosition.x, worldPosition.y + ringYOffset,
       worldPosition.z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
@@ -265,7 +279,7 @@ const resolveElectronicsObject = (
     worldPosition: [worldPosition.x, worldPosition.y, worldPosition.z],
     popupPosition: [worldPosition.x, worldPosition.y,
       worldPosition.z + FIXED_POPUP_Z_OFFSET],
-    ringRadius: ELECTRONICS_RING_RADIUS,
+    ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
       x: props.configPosition.x,
       y: props.configPosition.y,
