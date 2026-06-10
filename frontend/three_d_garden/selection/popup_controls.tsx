@@ -69,15 +69,15 @@ const isPlantPointer = (plant: TaggedPlant): plant is TaggedPlantPointer =>
 
 const GoButton = (props: GoButtonProps) =>
   props.dispatch &&
-    <GoToThisLocationButton
-      dispatch={props.dispatch}
-      locationCoordinate={props.locationCoordinate}
-      botOnline={props.botOnline}
-      arduinoBusy={props.arduinoBusy}
-      currentBotLocation={props.currentBotLocation}
-      movementState={props.movementState}
-      noOptions={true}
-      defaultAxes={props.defaultAxes} />;
+  <GoToThisLocationButton
+    dispatch={props.dispatch}
+    locationCoordinate={props.locationCoordinate}
+    botOnline={props.botOnline}
+    arduinoBusy={props.arduinoBusy}
+    currentBotLocation={props.currentBotLocation}
+    movementState={props.movementState}
+    noOptions={true}
+    defaultAxes={props.defaultAxes} />;
 
 const PopupLocationRow = (props: PopupLocationRowProps) =>
   <div className={"object-popup-location-row row grid-exp-2"}>
@@ -405,6 +405,7 @@ const PopupBootSequenceSelector = (props: PopupBootSequenceSelectorProps) => {
   return <div className={"row grid-2-col"}>
     <label>{t("BOOT SEQUENCE")}</label>
     <FBSelect
+      usePortal={false}
       extraClass={getModifiedClassName("boot_sequence_id",
         selectedItem?.value, firmwareHardware)}
       allowEmpty={true}

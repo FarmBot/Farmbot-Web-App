@@ -96,6 +96,7 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
   return <div className="grid half-gap">
     <label>{t("Status")}</label>
     <FBSelect
+      usePortal={false}
       list={PLANT_STAGE_LIST()}
       selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
       onChange={ddi =>
@@ -358,6 +359,7 @@ export interface EditWeedStatusProps {
 export const EditWeedStatus = (props: EditWeedStatusProps) =>
   <FBSelect
     key={props.weed.uuid}
+    usePortal={false}
     list={WEED_STAGE_LIST()}
     selectedItem={WEED_STAGE_DDI_LOOKUP()[props.weed.body.plant_stage]}
     onChange={ddi =>

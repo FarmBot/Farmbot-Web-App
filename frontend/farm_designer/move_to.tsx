@@ -222,6 +222,7 @@ export class GoToThisLocationButton
       </button>
       <Popover position={Position.BOTTOM_RIGHT}
         isOpen={this.state.open}
+        usePortal={false}
         className={"go-button-axes"}
         popoverClassName={"go-button-axes-popover"}
         target={<button
