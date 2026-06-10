@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+// @ts-nocheck
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -17,7 +18,7 @@ const screenshotName = requiredEnv('SCREENSHOT_NAME');
 const fpsSamplesName = requiredEnv('FPS_SAMPLES_NAME');
 const sceneMetricsName = requiredEnv('SCENE_METRICS_NAME');
 const feCoverageName = requiredEnv('FE_COVERAGE_NAME');
-const renderImageScale = Number(process.env.COMBINED_RENDER_IMAGE_SCALE || 2);
+const renderImageScale = Number(process.env.COMBINED_RENDER_IMAGE_SCALE || 3);
 if (!Number.isFinite(renderImageScale) || renderImageScale <= 0) {
     console.error('COMBINED_RENDER_IMAGE_SCALE must be a positive number');
     process.exit(1);
@@ -34,10 +35,27 @@ const metricRow = name => [
     [`${name} metrics`, imagePath(`${sceneMetricsName}_${name}`)],
     [],
 ];
-const screenshotCell = name => [
-    name.replace(/_/g, ' '),
-    imagePath(`${screenshotName}_${name}`),
-];
+const actionScreenshotPaths = name => {
+    const prefix = `${screenshotName}_${name}_action_`;
+    if (!fs.existsSync('/tmp')) { return []; }
+    return fs.readdirSync('/tmp')
+        .filter(file => file.startsWith(prefix) && file.endsWith('.png'))
+        .sort((a, b) => {
+            const aIndex = Number(a.slice(prefix.length, -4));
+            const bIndex = Number(b.slice(prefix.length, -4));
+            return aIndex - bIndex;
+        })
+        .map(file => path.join('/tmp', file));
+};
+const screenshotCell = name => {
+    const actionPaths = actionScreenshotPaths(name);
+    return [
+        name.replace(/_/g, ' '),
+        actionPaths.length > 0
+            ? actionPaths
+            : imagePath(`${screenshotName}_${name}`),
+    ];
+};
 const rows = [
     metricRow('promo_xl'),
     metricRow('app'),
@@ -62,21 +80,26 @@ const escapeHtml = value => String(value)
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-const cell = ([title, filePath]) => {
-    if (!title && !filePath) {
+const imageTag = filePath => `<img src="${imageData(filePath)}" />`;
+const cell = ([title, filePaths]) => {
+    if (!title && !filePaths) {
         return '<div class="empty"></div>';
     }
-    if (!fs.existsSync(filePath)) {
+    const paths = Array.isArray(filePaths) ? filePaths : [filePaths];
+    const existingPaths = paths.filter(filePath => filePath && fs.existsSync(filePath));
+    if (existingPaths.length === 0) {
+        const missingPath = paths.find(Boolean);
         return `
           <figure class="missing">
             <figcaption>${escapeHtml(title)}</figcaption>
-            <div>Missing ${escapeHtml(path.basename(filePath))}</div>
+            <div>Missing ${escapeHtml(path.basename(missingPath))}</div>
           </figure>`;
     }
+    const imageClass = existingPaths.length > 1 ? 'images multi-images' : 'images';
     return `
       <figure>
         <figcaption>${escapeHtml(title)}</figcaption>
-        <img src="${imageData(filePath)}" />
+        <div class="${imageClass}">${existingPaths.map(imageTag).join('')}</div>
       </figure>`;
 };
 const rowHtml = rows
@@ -105,6 +128,8 @@ const html = `<!doctype html>
     figure {
       margin: 0;
       padding: 12px;
+      min-width: 0;
+      overflow: auto;
       background: #ffffff;
       border: 1px solid #d0d7de;
       border-radius: 6px;
@@ -121,6 +146,17 @@ const html = `<!doctype html>
       width: 100%;
       height: auto;
       background: #ffffff;
+    }
+    .images {
+      display: grid;
+      gap: 8px;
+    }
+    .multi-images {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+    }
+    .multi-images img {
+      object-fit: contain;
     }
     .missing div {
       min-height: 160px;

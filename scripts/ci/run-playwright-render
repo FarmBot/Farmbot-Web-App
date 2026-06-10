@@ -92,7 +92,7 @@ valid_scene_metrics() {
   [ -n "$row" ] && [ "$row" != "undefined" ] && [ "$row" != "null" ]
 }
 
-while IFS=$'\034' read -r -u 3 name mode url actions state; do
+while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
   screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
   fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
   scene_metrics_path="/tmp/${SCENE_METRICS_NAME}_${name}.csv"
@@ -106,6 +106,7 @@ while IFS=$'\034' read -r -u 3 name mode url actions state; do
     )
     [ -n "$actions" ] && fps_args+=(--actions "$actions")
     [ -n "$state" ] && fps_args+=(--state "$state")
+    [ -n "$roi" ] && fps_args+=(--roi "$roi")
 
     echo -e "\n\n\n"
     if [ "$mode" = "screenshot" ]; then

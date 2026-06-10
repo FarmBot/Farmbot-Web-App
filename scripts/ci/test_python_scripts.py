@@ -119,7 +119,29 @@ class CiPythonScriptTest(unittest.TestCase):
             "promo\034fps\034http://localhost:3000/promo\034"
             "[{\"click\":{\"title\":\"Run\"}},"
             "{\"fill\":{\"placeholder\":\"Filter...\",\"value\":\"Genesis\"}},"
-            "{\"hover\":{\"classname\":\"item\"}}]\034app\n")
+            "{\"hover\":{\"classname\":\"item\"}}]\034app\034\n")
+        self.assertEqual(stderr, "")
+
+    def test_render_url_records_outputs_roi_when_present(self):
+        with tempfile.NamedTemporaryFile("w", delete=False) as file:
+            json.dump([{
+                "name": "dropdown",
+                "mode": "screenshot",
+                "url": "http://localhost:3000/demo",
+                "roi": {"x": 1, "y": 2, "width": 3, "height": 4},
+            }], file)
+            file_path = file.name
+        try:
+            code, stdout, stderr = run_script(
+                "render-url-records", [file_path])
+        finally:
+            Path(file_path).unlink(missing_ok=True)
+
+        self.assertEqual(code, 0)
+        self.assertEqual(
+            stdout,
+            "dropdown\034screenshot\034http://localhost:3000/demo\034\034\034"
+            "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}\n")
         self.assertEqual(stderr, "")
 
     def test_create_compare_link_uses_latest_deployment_sha(self):

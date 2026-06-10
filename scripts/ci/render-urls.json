@@ -32,7 +32,13 @@
       {
         "fill": {
           "placeholder": "Filter...",
-          "value": "Genesis"
+          "value": "v1.8"
+        }
+      },
+      {
+        "fill": {
+          "placeholder": "Filter...",
+          "value": "v0"
         }
       },
       {
@@ -40,7 +46,14 @@
           "class": "bp6-icon-cross"
         }
       }
-    ]
+    ],
+    "roi": {
+      "x": 575,
+      "y": 430,
+      "width": 275,
+      "height": 400,
+      "scale": 2
+    }
   },
   {
     "name": "password_reset",
