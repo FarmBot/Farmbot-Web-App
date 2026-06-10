@@ -54,6 +54,7 @@ interface EditPlantProperty {
 
 export interface EditPlantStatusProps extends EditPlantProperty {
   plantStatus: PlantStage;
+  usePortal?: boolean;
 }
 
 export interface EditDatePlantedProps extends EditPlantProperty {

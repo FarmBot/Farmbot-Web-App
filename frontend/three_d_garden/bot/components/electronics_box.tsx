@@ -1,11 +1,20 @@
 import React from "react";
 import * as THREE from "three";
+import { ThreeEvent } from "@react-three/fiber";
 import { Cylinder, useGLTF } from "@react-three/drei";
-import { get3DPositionNoMirrorFunc } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
-import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
+import {
+  ASSETS, ElectronicsBoxMaterial, HOVER_OBJECT_MODES, LIB_DIR, PartName,
+} from "../../constants";
 import { Group, Mesh } from "../../components";
+import { get3DPositionNoMirrorFunc } from "../../helpers";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../../selection_types";
+import { clickWasDragged } from "../../click_event";
+import { Mode } from "../../../farm_designer/map/interfaces";
+import { getMode } from "../../../farm_designer/map/util";
 
 type Box = GLTF & {
   nodes: {
@@ -71,6 +80,7 @@ const buttons = (kitVersion: string) => {
       ];
   }
 };
+
 const ledsPresent = (kitVersion: string) => {
   switch (kitVersion) {
     case "v1.7":
@@ -113,7 +123,27 @@ const LedIndicators = () => {
 export interface ElectronicsBoxProps {
   config: Config;
   configPosition: PositionConfig;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
+
+export const getElectronicsBoxPosition = (
+  config: Config,
+  configPosition: PositionConfig,
+) => {
+  const { bedYOffset, columnLength } = config;
+  const { x } = configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(config);
+  const position = get3DPosition({
+    x: x - 73,
+    y: -20 - bedYOffset,
+  });
+  return new THREE.Vector3(
+    position.x,
+    position.y,
+    columnLength - 190,
+  );
+};
 
 const electronicsBoxPropsEqual = (
   prevProps: ElectronicsBoxProps,
@@ -125,24 +155,42 @@ const electronicsBoxPropsEqual = (
   prevProps.config.bedLengthOuter == nextProps.config.bedLengthOuter &&
   prevProps.config.bedWidthOuter == nextProps.config.bedWidthOuter &&
   prevProps.config.columnLength == nextProps.config.columnLength &&
-  prevProps.config.kitVersion == nextProps.config.kitVersion;
+  prevProps.config.kitVersion == nextProps.config.kitVersion &&
+  prevProps.onSelectObject == nextProps.onSelectObject &&
+  prevProps.onHoverObject == nextProps.onHoverObject;
 
 const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
-  const { bedYOffset, columnLength } = props.config;
-  const { x } = props.configPosition;
-  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
-  const position = get3DPosition({
-    x: x - 62,
-    y: -20 - bedYOffset,
-  });
-
+  const {
+    config, configPosition, onHoverObject, onSelectObject,
+  } = props;
+  const selectElectronics = React.useCallback((event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
+    if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+      return;
+    }
+    if (onSelectObject) {
+      onSelectObject({ kind: "electronics", id: 0 }) !== false &&
+        event.stopPropagation?.();
+    }
+  }, [onSelectObject]);
+  const hoverElectronics = React.useCallback((
+    hovered: boolean,
+    event: ThreeEvent<PointerEvent>,
+  ) => {
+    event.stopPropagation?.();
+    onHoverObject?.(hovered);
+  }, [onHoverObject]);
+  const onPointerOver = React.useCallback((event: ThreeEvent<PointerEvent>) =>
+    hoverElectronics(true, event), [hoverElectronics]);
+  const onPointerOut = React.useCallback((event: ThreeEvent<PointerEvent>) =>
+    hoverElectronics(false, event), [hoverElectronics]);
   return <Group name={"electronics-box"}
-    position={new THREE.Vector3(
-      position.x,
-      position.y,
-      columnLength - 190,
-    )}>
-    <ElectronicsBoxModel kitVersion={props.config.kitVersion} />
+    position={getElectronicsBoxPosition(config, configPosition)}>
+    <ElectronicsBoxModel
+      kitVersion={config.kitVersion}
+      onClick={selectElectronics}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut} />
   </Group>;
 };
 
@@ -151,6 +199,9 @@ export const ElectronicsBox = React.memo(
 
 interface ElectronicsBoxModelProps {
   kitVersion: string;
+  onClick(event: ThreeEvent<MouseEvent>): void;
+  onPointerOver(event: ThreeEvent<PointerEvent>): void;
+  onPointerOut(event: ThreeEvent<PointerEvent>): void;
 }
 
 const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
@@ -161,6 +212,9 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
     useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
   return <>
     <Group name={"box"}
+      onClick={props.onClick}
+      onPointerOver={props.onPointerOver}
+      onPointerOut={props.onPointerOut}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh name={"electronicsBox"}
         geometry={box.nodes.Electronics_Box.geometry}

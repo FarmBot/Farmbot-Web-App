@@ -26,10 +26,11 @@ import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
 import { NavigateFunction, Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
-import { get3DConfigValueFunction } from "../settings/three_d_settings";
+import {
+  findOrCreate3DConfigFunction, get3DConfigValueFunction,
+} from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
-import { ThreeDGardenToggle } from "../three_d_garden";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -170,6 +171,9 @@ export class RawFarmDesigner
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
     const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const get3DConfigValue = get3DConfigValueFunction(this.props.farmwareEnvs);
+    const set3DConfigValue = findOrCreate3DConfigFunction(
+      this.props.dispatch, this.props.farmwareEnvs);
 
     return <div className="farm-designer">
 
@@ -192,6 +196,8 @@ export class RawFarmDesigner
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
+        get3DConfigValue={get3DConfigValue}
+        set3DConfigValue={set3DConfigValue}
         allPoints={this.props.allPoints}
         sourceFbosConfig={this.props.sourceFbosConfig}
         firmwareConfig={this.props.botMcuParams}
@@ -218,8 +224,11 @@ export class RawFarmDesigner
         ? <ThreeDGardenMap
           designer={this.props.designer}
           device={this.props.device}
+          deviceAccount={this.props.deviceAccount}
+          bot={this.props.bot}
           plants={this.props.plants}
-          get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
+          get3DConfigValue={get3DConfigValue}
+          set3DConfigValue={set3DConfigValue}
           sourceFbosConfig={this.props.sourceFbosConfig}
           negativeZ={!!this.props.botMcuParams.movement_home_up_z}
           gridOffset={gridOffset}
@@ -229,6 +238,16 @@ export class RawFarmDesigner
           curves={this.props.curves}
           mapPoints={this.props.genericPoints}
           weeds={this.props.weeds}
+          tools={this.props.tools}
+          sequences={this.props.sequences}
+          fbosConfig={this.props.fbosConfig}
+          timeSettings={this.props.timeSettings}
+          botOnline={this.props.botOnline}
+          arduinoBusy={this.props.arduinoBusy}
+          currentBotLocation={this.props.currentBotLocation}
+          movementState={this.props.movementState}
+          defaultAxes={this.props.defaultAxes}
+          noUTM={this.props.mountedToolInfo.noUTM}
           toolSlots={this.props.toolSlots}
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
@@ -238,6 +257,7 @@ export class RawFarmDesigner
           images={this.props.latestImages}
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
+          env={this.props.env}
           farmwareEnvs={this.props.farmwareEnvs}
           logs={this.props.logs}
           cameraCalibrationData={this.props.cameraCalibrationData}
@@ -311,14 +331,6 @@ export class RawFarmDesigner
           farmwareEnvs={this.props.farmwareEnvs}
           mapTransformProps={this.mapTransformProps}
           allPoints={this.props.allPoints} />}
-
-      <ThreeDGardenToggle
-        navigate={this.navigate}
-        dispatch={this.props.dispatch}
-        device={this.props.device}
-        designer={this.props.designer}
-        getConfigValue={this.props.getConfigValue}
-        threeDGarden={threeDGarden} />
     </div>;
   }
 }

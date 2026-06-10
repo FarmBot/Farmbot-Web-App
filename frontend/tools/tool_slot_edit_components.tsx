@@ -70,6 +70,7 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) => {
 
 export const ToolSelection = (props: ToolSelectionProps) =>
   <FBSelect
+    usePortal={props.usePortal}
     list={([NULL_CHOICE] as DropDownItem[]).concat(props.tools
       .filter(tool => !props.filterSelectedTool
         || tool.body.id != props.selectedTool?.body.id)

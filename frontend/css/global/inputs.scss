@@ -179,6 +179,14 @@ select {
     .bp6-menu {
       padding-left: 0;
       padding-right: 0;
+      border-radius: 0;
+      a {
+        text-decoration: none !important;
+      }
+    }
+    .bp6-icon {
+      top: 0;
+      width: 0;
     }
     .bp6-input {
       height: auto !important;

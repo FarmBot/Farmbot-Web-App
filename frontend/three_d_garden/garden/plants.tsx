@@ -1,7 +1,7 @@
 import React from "react";
 import { useSpring } from "@react-spring/three";
 import { Config } from "../config";
-import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
+import { RenderOrder } from "../constants";
 import { Billboard } from "@react-three/drei";
 import {
   Vector3,
@@ -12,8 +12,6 @@ import {
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
-  type Raycaster,
-  type Intersection,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -22,12 +20,9 @@ import {
   get3DPositionFunc,
 } from "../helpers";
 import { Text } from "../elements";
-import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
-import { useNavigate } from "react-router";
-import { setPanelOpen3D } from "../panel_actions";
 import { getMode, round } from "../../farm_designer/map/util";
-import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { InstancedMesh, MeshPhongMaterial, SphereGeometry } from "../components";
 import {
   getSpreadOverlap, getSpreadRadii,
@@ -36,7 +31,9 @@ import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCropMetadata } from "../../crops/metadata";
 import { perfMeasure } from "../../performance/perf";
-import { clickWasDragged } from "../click_event";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../selection_types";
 
 const spreadLayerSpringConfig = {
   tension: 240,
@@ -161,6 +158,8 @@ export interface PlantSpreadInstancesProps {
   spreadVisible: boolean;
   instanceCapacity?: number;
   routeKey?: string;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 interface PlantSpreadUpdateState {
@@ -168,14 +167,7 @@ interface PlantSpreadUpdateState {
   lastUpdateKey: string;
 }
 
-const plantSpreadRaycast = function (
-  this: ThreeInstancedMesh,
-  raycaster: Raycaster,
-  intersects: Intersection[],
-) {
-  if (HOVER_OBJECT_MODES.includes(getMode())) { return; }
-  ThreeInstancedMesh.prototype.raycast.call(this, raycaster, intersects);
-};
+const noRaycast = () => undefined;
 
 interface StaticPlantSpreadInstance {
   id?: number;
@@ -210,10 +202,9 @@ export const findPlantById = (
 
 const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   const {
-    config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
+    config, plants, getZ, visible, activePositionRef, spreadVisible,
   } = props;
   const instanceCapacity = Math.max(props.instanceCapacity || 0, plants.length);
-  const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<ThreeInstancedMesh>(null);
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
@@ -456,18 +447,6 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     updateState.lastUpdateKey = updateKey;
   });
 
-  const onClick = (event: ThreeEvent<MouseEvent>) => {
-    if (clickWasDragged(event)) { return; }
-    const instanceId = event.instanceId;
-    if (isUndefined(instanceId)) { return; }
-    const plant = plants[instanceId];
-    if (plant?.id && dispatch && visible &&
-      ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-      dispatch(setPanelOpen3D(true));
-      navigate(Path.plants(plant.id));
-    }
-  };
-
   if (!spreadInstancesVisible) { return <></>; }
 
   return <InstancedMesh
@@ -477,8 +456,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     count={plants.length}
     userData={{ plantIndexes }}
     visible={visible}
-    raycast={plantSpreadRaycast}
-    onClick={onClick}>
+    raycast={noRaycast}>
     <SphereGeometry args={[1, 32, 32]} />
     <MeshPhongMaterial
       color={"white"}

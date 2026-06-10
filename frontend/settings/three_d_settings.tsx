@@ -21,7 +21,7 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
   beamLength: 1500,
   columnLength: 500,
   zAxisLength: 1000,
-  bedXOffset: 140,
+  bedXOffset: 150,
   bedYOffset: 20,
   bedZOffset: 0,
   legSize: 100,

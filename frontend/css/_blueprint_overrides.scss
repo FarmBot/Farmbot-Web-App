@@ -55,6 +55,12 @@
   .bp6-icon {
     top: 0.6rem;
   }
+  .bp6-input-action {
+    width: 3rem;
+    .bp6-icon {
+      width: 1.75rem;
+    }
+  }
 }
 
 .bp6-popover.help {
@@ -149,5 +155,6 @@
 *[class*=bp6-] {
   &:focus {
     outline: none;
+    box-shadow: none;
   }
 }

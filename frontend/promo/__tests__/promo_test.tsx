@@ -103,6 +103,10 @@ describe("<Promo />", () => {
     const configBtn = container.querySelector(".gear") as HTMLElement;
     fireEvent.click(configBtn);
     expect(container).toContainHTML("all-configs");
+    fireEvent.click(screen.getByRole("button", { name: "Summer" }));
+    const lastCall =
+      gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1];
+    expect(lastCall[0].seasonResetKey).toEqual(1);
     unmount();
   });
 

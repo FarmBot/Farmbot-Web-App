@@ -94,6 +94,7 @@ describe("<ThreeDGardenMap />", () => {
     sensors: [],
     sensorReadings: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
+    env: {},
     farmwareEnvs: [],
     logs: [],
   });

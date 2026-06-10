@@ -542,6 +542,46 @@ const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   && bedConfigFieldsEqual(prev.config, next.config)
   && bedSettingFieldsEqual(prev, next);
 
+type RenderSoilSurfaceGeometryConfig = Pick<Config,
+  "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
+  | "mirrorX" | "mirrorY">;
+
+export const getRenderSoilSurfaceGeometry = (
+  config: RenderSoilSurfaceGeometryConfig,
+  soilSurfaceGeometry: BufferGeometry,
+) => {
+  if (!config.mirrorX && !config.mirrorY) {
+    return soilSurfaceGeometry;
+  }
+  const geometry = soilSurfaceGeometry.clone();
+  const position = geometry.getAttribute("position");
+  const normal = geometry.getAttribute("normal");
+  const xMid = config.bedLengthOuter / 2 - config.bedXOffset;
+  const yMid = config.bedWidthOuter / 2 - config.bedYOffset;
+  const positionArray = position.array;
+  const normalArray = normal?.array;
+  for (let i = 0; i < position.count; i++) {
+    const offset = i * 3;
+    if (config.mirrorX) {
+      positionArray[offset] = 2 * xMid - positionArray[offset];
+    }
+    if (config.mirrorY) {
+      positionArray[offset + 1] = 2 * yMid - positionArray[offset + 1];
+    }
+    if (normalArray && config.mirrorX) {
+      normalArray[offset] = -normalArray[offset];
+    }
+    if (normalArray && config.mirrorY) {
+      normalArray[offset + 1] = -normalArray[offset + 1];
+    }
+  }
+  position.needsUpdate = true;
+  if (normal) { normal.needsUpdate = true; }
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+};
+
 const BedBase = (props: BedProps) => {
   const {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
@@ -612,45 +652,28 @@ const BedBase = (props: BedProps) => {
 
   const mirroredAxesCount = Number(mirrorX) + Number(mirrorY);
   const soilSurfaceSide = mirroredAxesCount % 2 == 1 ? FrontSide : BackSide;
-  const renderSoilSurfaceGeometry = React.useMemo(() => {
-    if (!mirrorX && !mirrorY) {
-      return props.soilSurfaceGeometry;
-    }
-    const geometry = props.soilSurfaceGeometry.clone();
-    const position = geometry.getAttribute("position");
-    const normal = geometry.getAttribute("normal");
-    const xMid = bedLengthOuter / 2 - bedXOffset;
-    const yMid = bedWidthOuter / 2 - bedYOffset;
-    const positionArray = position.array;
-    const normalArray = normal?.array;
-    for (let i = 0; i < position.count; i++) {
-      const offset = i * 3;
-      if (mirrorX) {
-        positionArray[offset] = 2 * xMid - positionArray[offset];
-      }
-      if (mirrorY) {
-        positionArray[offset + 1] = 2 * yMid - positionArray[offset + 1];
-      }
-      if (normalArray && mirrorX) {
-        normalArray[offset] = -normalArray[offset];
-      }
-      if (normalArray && mirrorY) {
-        normalArray[offset + 1] = -normalArray[offset + 1];
-      }
-    }
-    position.needsUpdate = true;
-    if (normal) { normal.needsUpdate = true; }
-    geometry.computeBoundingBox();
-    geometry.computeBoundingSphere();
-    return geometry;
-  }, [
+  const soilSurfaceConfig = React.useMemo(() => ({
     bedLengthOuter,
     bedWidthOuter,
     bedXOffset,
     bedYOffset,
     mirrorX,
     mirrorY,
+  }), [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    mirrorX,
+    mirrorY,
+  ]);
+  const renderSoilSurfaceGeometry = React.useMemo(() =>
+    getRenderSoilSurfaceGeometry(
+      soilSurfaceConfig,
+      props.soilSurfaceGeometry,
+    ), [
     props.soilSurfaceGeometry,
+    soilSurfaceConfig,
   ]);
   const soilPosition: [number, number, number] = [
     threeSpace(0, bedLengthOuter) + bedXOffset,
@@ -794,19 +817,21 @@ const BedBase = (props: BedProps) => {
             side={DoubleSide} />
         </Box>
       </>}
-    {props.addPlantProps &&
-      <PointerObjects
-        pointerPlantRef={pointerPlantRef}
-        radiusRef={radiusRef}
-        torusRef={torusRef}
-        billboardRef={billboardRef}
-        imageRef={imageRef}
-        xCrosshairRef={xCrosshairRef}
-        yCrosshairRef={yCrosshairRef}
-        activePositionRef={props.activePositionRef}
-        config={props.config}
-        addPlantProps={props.addPlantProps}
-        mapPoints={props.mapPoints} />}
+    <React.Suspense fallback={undefined}>
+      {props.addPlantProps &&
+        <PointerObjects
+          pointerPlantRef={pointerPlantRef}
+          radiusRef={radiusRef}
+          torusRef={torusRef}
+          billboardRef={billboardRef}
+          imageRef={imageRef}
+          xCrosshairRef={xCrosshairRef}
+          yCrosshairRef={yCrosshairRef}
+          activePositionRef={props.activePositionRef}
+          config={props.config}
+          addPlantProps={props.addPlantProps}
+          mapPoints={props.mapPoints} />}
+    </React.Suspense>
     <React.Suspense>
       {props.config.lowDetail
         ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />

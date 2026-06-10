@@ -15,8 +15,9 @@ function parseArgs(argv) {
         '--url': 'url',
         '--screenshot-path': 'screenshotPath',
         '--fps-samples-path': 'samplesCsvPath',
-        '--click': 'click',
+        '--actions': 'actions',
         '--state': 'state',
+        '--roi': 'roi',
     };
 
     for (let i = 0; i < argv.length; i++) {
@@ -50,11 +51,21 @@ const samplesCsvPath = options.samplesCsvPath;
 const maxLoadingSamples = 240;
 const postLoadSamples = 10;
 const sampleIntervalMs = 1000;
+const defaultActionTimeoutMs = 5000;
 const ci = Boolean(process.env.CI);
 const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 const screenshotOnly = options.screenshotOnly;
-const click = options.click;
+const actions = options.actions ? JSON.parse(options.actions) : [];
+const roi = options.roi ? JSON.parse(options.roi) : undefined;
+const roiScale = (() => {
+    if (!roi) { return undefined; }
+    const value = Number(roi.scale || 2);
+    if (!Number.isFinite(value) || value <= 0) {
+        throw new Error(`ROI scale must be a positive number: ${JSON.stringify(roi)}`);
+    }
+    return value;
+})();
 const state = options.state ? path.join('/tmp', `${options.state}.json`) : undefined;
 const saveState = path.join('/tmp', `${name}.json`);
 const commitSha = () => {
@@ -105,8 +116,9 @@ function printUsage() {
         '  --screenshot-path <path>               Full-page screenshot PNG path. Default: /tmp/fps.png',
         '  --fps-samples-path <path>              FPS samples CSV path. Default: /tmp/fps_samples.csv',
         '  --screenshot-only                      Take a screenshot without FPS metrics.',
-        '  --click <title>                        Click an element by title after page load.',
+        '  --actions <json>                       Perform ordered actions after page load.',
         '  --state <name>                         Load cookies and localStorage from /tmp/<name>.json.',
+        '  --roi <json>                           Crop screenshots to {x,y,width,height}.',
         '',
         'Environment:',
         '  CI                                    Use CI browser launch behavior.',
@@ -147,6 +159,108 @@ async function saveStorage(page) {
     console.log(`SAVE_STATE=${saveState}`);
 }
 
+function actionValue(action, type, keys = []) {
+    const value = action[type];
+    if (typeof value === 'object' && value !== null) {
+        for (const key of keys) {
+            if (value[key]) { return value[key]; }
+        }
+    }
+    return value;
+}
+
+function stringActionValue(action, type, keys = []) {
+    const value = actionValue(action, type, keys);
+    if (typeof value !== 'string') {
+        throw new Error(`${type} action requires a string value: ${JSON.stringify(action)}`);
+    }
+    return value;
+}
+
+function actionTimeout(action) {
+    const timeout = action.timeout || action.timeoutMs || defaultActionTimeoutMs;
+    const parsedTimeout = Number(timeout);
+    if (!Number.isFinite(parsedTimeout) || parsedTimeout <= 0) {
+        throw new Error(`Action timeout must be a positive number: ${JSON.stringify(action)}`);
+    }
+    return parsedTimeout;
+}
+
+async function performAction(page, action) {
+    const timeout = actionTimeout(action);
+    if (action.click) {
+        const title = stringActionValue(action, 'click', ['title']);
+        await page.getByTitle(title).click({ timeout });
+        console.log(`CLICK=${title}`);
+        return;
+    }
+
+    if (action.fill) {
+        const placeholder = action.placeholder || stringActionValue(action, 'fill', ['placeholder']);
+        const value = action.value || action.text || stringActionValue(action, 'fill', ['value', 'text']);
+        await page.getByPlaceholder(placeholder).fill(value, { timeout });
+        console.log(`FILL=${placeholder}`);
+        return;
+    }
+
+    if (action.hover) {
+        const className = action.classname
+            || action.class
+            || action.className
+            || stringActionValue(action, 'hover', ['classname', 'class', 'className']);
+        const selector = className.startsWith('.') ? className : `.${className}`;
+        await page.locator(selector).first().hover({ timeout });
+        console.log(`HOVER=${className}`);
+        return;
+    }
+
+    throw new Error(`Unknown action: ${JSON.stringify(action)}`);
+}
+
+function screenshotOptions(destination) {
+    const screenshot = {
+        path: destination,
+        fullPage: true,
+        timeout: 60_000,
+    };
+    if (!roi) { return screenshot; }
+
+    const clip = {};
+    for (const key of ['x', 'y', 'width', 'height']) {
+        const value = Number(roi[key]);
+        if (!Number.isFinite(value)) {
+            throw new Error(`ROI ${key} must be a finite number: ${JSON.stringify(roi)}`);
+        }
+        clip[key] = value;
+    }
+    if (clip.width <= 0 || clip.height <= 0 || clip.x < 0 || clip.y < 0) {
+        throw new Error(`ROI must have non-negative x/y and positive width/height: ${JSON.stringify(roi)}`);
+    }
+    delete screenshot.fullPage;
+    screenshot.clip = clip;
+    return screenshot;
+}
+
+async function saveScreenshot(page, destination, label) {
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    await page.screenshot(screenshotOptions(destination));
+    console.log(`${label}=${destination}`);
+}
+
+function actionScreenshotPath(index) {
+    const extension = path.extname(screenshotPath);
+    const basePath = extension
+        ? screenshotPath.slice(0, -extension.length)
+        : screenshotPath;
+    return `${basePath}_action_${index + 1}${extension}`;
+}
+
+async function performScreenshotAction(page, action, destination) {
+    await performAction(page, action);
+    await page.waitForTimeout(1000);
+    await saveScreenshot(page, destination, 'ACTION_SCREENSHOT');
+}
+
 async function main() {
     console.log(`Launching Chromium with args:\n  ${chromiumArgs.join('\n  ')}\n`);
     if (executablePath) {
@@ -157,7 +271,10 @@ async function main() {
         executablePath,
         args: chromiumArgs,
     });
-    const contextOptions = state ? { storageState: state } : {};
+    const contextOptions = {
+        ...(state ? { storageState: state } : {}),
+        ...(roiScale ? { deviceScaleFactor: roiScale } : {}),
+    };
     if (state) {
         console.log(`STATE=${state}`);
     }
@@ -168,19 +285,18 @@ async function main() {
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
-        if (click) {
-            await page.getByTitle(click).click();
-            console.log(`CLICK=${click}`);
+        for (const [index, action] of actions.entries()) {
+            if (screenshotOnly) {
+                await performScreenshotAction(page, action, actionScreenshotPath(index));
+            } else {
+                await performAction(page, action);
+            }
         }
         if (screenshotOnly) {
-            await page.waitForTimeout(1000);
-            fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
-            await page.screenshot({
-                path: screenshotPath,
-                fullPage: true,
-                timeout: 60_000,
-            });
-            console.log(`SCREENSHOT=${screenshotPath}`);
+            if (actions.length === 0) {
+                await page.waitForTimeout(1000);
+                await saveScreenshot(page, screenshotPath, 'SCREENSHOT');
+            }
             return;
         }
         const renderer = await webglRenderer(page);
@@ -249,13 +365,7 @@ async function main() {
             throw new Error('window.__scene_metrics was not available');
         }
         console.log(`SCENE_METRICS=${data}`);
-        fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
-        await page.screenshot({
-            path: screenshotPath,
-            fullPage: true,
-            timeout: 60_000,
-        });
-        console.log(`FPS_SCREENSHOT=${screenshotPath}`);
+        await saveScreenshot(page, screenshotPath, 'FPS_SCREENSHOT');
         saveFpsSamplesCsv(sampleValues, samplesCsvPath);
         console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
         await saveStorage(page);

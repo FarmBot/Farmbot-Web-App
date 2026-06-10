@@ -21,11 +21,13 @@ import type {
   TaggedPlantTemplate,
   TaggedPlantPointer,
   TaggedCurve,
+  TaggedFbosConfig,
   PlantStage,
+  TaggedDevice,
 } from "farmbot";
 import type { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import type {
-  BotPosition, BotLocationData, SourceFbosConfig,
+  BotPosition, BotLocationData, BotState, SourceFbosConfig, UserEnv,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import type {
@@ -86,6 +88,8 @@ export interface MountedToolInfo {
 export interface FarmDesignerProps {
   dispatch: Function;
   device: DeviceAccountSettings;
+  deviceAccount?: TaggedDevice;
+  bot?: BotState;
   selectedPlant: TaggedPlant | undefined;
   designer: DesignerState;
   hoveredPlant: TaggedPlant | undefined;
@@ -96,6 +100,8 @@ export interface FarmDesignerProps {
   tools: TaggedTool[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
+  sequences?: TaggedSequence[];
+  fbosConfig?: TaggedFbosConfig;
   botLocationData: BotLocationData;
   botMcuParams: McuParams;
   botSize: BotSize;
@@ -104,6 +110,11 @@ export interface FarmDesignerProps {
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
   timeSettings: TimeSettings;
+  botOnline?: boolean;
+  arduinoBusy?: boolean;
+  currentBotLocation?: BotPosition;
+  movementState?: MovementState;
+  defaultAxes?: string;
   getConfigValue: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
@@ -113,6 +124,7 @@ export interface FarmDesignerProps {
   logs: TaggedLog[];
   deviceTarget: string;
   sourceFbosConfig: SourceFbosConfig;
+  env: UserEnv;
   farmwareEnvs: TaggedFarmwareEnv[];
   children?: React.ReactNode;
   curves: TaggedCurve[];

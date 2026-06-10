@@ -4,11 +4,14 @@ import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
-import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
+import {
+  BotPosition, BotState, SourceFbosConfig, UserEnv,
+} from "../devices/interfaces";
 import {
   TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedImage, TaggedLog, TaggedPoint,
-  TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedWeedPointer,
+  TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedTool,
+  TaggedDevice, TaggedFbosConfig, TaggedSequence, TaggedWeedPointer,
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -25,12 +28,14 @@ import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
 import { isTopDown } from "../three_d_garden/helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
+import { MovementState, TimeSettings } from "../interfaces";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
   mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
-  get3DConfigValue(key: string): number;
+  get3DConfigValue(key: keyof Config): number;
+  set3DConfigValue?(key: keyof Config, value: string): void;
   sourceFbosConfig: SourceFbosConfig;
   negativeZ: boolean;
   designer: DesignerState;
@@ -40,6 +45,18 @@ export interface ThreeDGardenMapProps {
   curves: TaggedCurve[];
   mapPoints: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
+  tools?: TaggedTool[];
+  sequences?: TaggedSequence[];
+  fbosConfig?: TaggedFbosConfig;
+  timeSettings?: TimeSettings;
+  botOnline?: boolean;
+  arduinoBusy?: boolean;
+  currentBotLocation?: BotPosition;
+  movementState?: MovementState;
+  defaultAxes?: string;
+  noUTM?: boolean;
+  deviceAccount?: TaggedDevice;
+  bot?: BotState;
   botPosition: BotPosition;
   toolSlots?: SlotWithTool[];
   mountedToolName: string | undefined;
@@ -51,6 +68,7 @@ export interface ThreeDGardenMapProps {
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
   cameraCalibrationData: CameraCalibrationData;
+  env: UserEnv;
   farmwareEnvs: TaggedFarmwareEnv[];
   logs: TaggedLog[];
 }
@@ -373,15 +391,30 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     config={config}
     configPosition={position}
     threeDPlants={threeDPlants}
+    plants={props.plants}
     mapPoints={props.mapPoints}
     weeds={props.weeds}
     toolSlots={props.toolSlots}
+    tools={props.tools}
+    sequences={props.sequences}
+    fbosConfig={props.fbosConfig}
+    timeSettings={props.timeSettings}
+    botOnline={props.botOnline}
+    arduinoBusy={props.arduinoBusy}
+    currentBotLocation={props.currentBotLocation}
+    movementState={props.movementState}
+    defaultAxes={props.defaultAxes}
+    noUTM={props.noUTM}
+    deviceAccount={props.deviceAccount}
+    bot={props.bot}
     mountedToolName={props.mountedToolName}
     allPoints={props.allPoints}
     groups={props.groups}
     images={props.images}
     sensorReadings={props.sensorReadings}
     sensors={props.sensors}
+    env={props.env}
+    set3DConfigValue={props.set3DConfigValue}
     addPlantProps={addPlantProps} />;
 };
 

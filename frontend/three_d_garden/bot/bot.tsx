@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
+import { ThreeEvent } from "@react-three/fiber";
 import {
   Cylinder, Extrude, Trail, Tube, useGLTF,
 } from "@react-three/drei";
@@ -14,7 +15,7 @@ import {
 } from "../helpers";
 import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
-import { ASSETS, LIB_DIR, PartName } from "../constants";
+import { ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
@@ -39,21 +40,22 @@ import { WateringAnimations } from "./components/watering_animations";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
 import { WaterFlowTextureProvider } from "./components/water_stream";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
+  ThreeDObjectSelectionHandler,
+} from "../selection_types";
+import { clickWasDragged } from "../click_event";
+import { Mode } from "../../farm_designer/map/interfaces";
+import { getMode } from "../../farm_designer/map/util";
 
-export const extrusionWidth = 20;
+const xTrackPadding = 280;
+const extrusionWidth = 20;
 const utmRadius = 35;
-export const utmHeight = 35;
-export const cameraMountOffset = {
-  x: extrusionWidth + 3,
+const cameraMountOffset = {
+  x: extrusionWidth - 8,
   y: utmRadius,
 };
-export const cameraMountToLensOffset = new THREE.Vector3(
-  0,
-  extrusionWidth + 9,
-  0,
-);
-const xTrackPadding = 280;
-export const distinguishableBlack = "#333";
+const distinguishableBlack = "#333";
 
 type LeftBracket = GLTF & {
   nodes: { [PartName.leftBracket]: THREE.Mesh };
@@ -121,6 +123,10 @@ export interface FarmbotModelProps {
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
+  onToolSlotHoverObject?: ThreeDObjectHoverHandler;
+  onHoverLabel?: ThreeDObjectHoverLabelHandler;
 }
 
 interface RequestedShapes {
@@ -246,7 +252,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - extrusionWidth - 12,
+              x - extrusionWidth - 23,
               outerY + bedColumnYOffset,
             ),
             30,
@@ -261,7 +267,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - extrusionWidth - 12,
+              x - extrusionWidth - 23,
               outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
             ),
             columnLength - 30,
@@ -277,7 +283,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - (index == 0 ? 47 : 77),
+              x - (index == 0 ? 58 : 88),
               outerY - (index == 0 ? 0 : -20) + bedColumnYOffset,
             ),
             columnLength + 70,
@@ -290,7 +296,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - 68,
+              x - 79,
               outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
             ),
             columnLength + 80,
@@ -306,7 +312,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - 63,
+              x - 74,
               outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
             ),
             columnLength + 55,
@@ -324,8 +330,8 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
             ...botOuterXY(
               props.config,
               index == 0
-                ? botSizeX + xTrackPadding / 2
-                : -xTrackPadding / 2,
+                ? botSizeX + xTrackPadding / 2 - 10
+                : -xTrackPadding / 2 - 10,
               outerY + (index == 0 ? 2.5 : 17.5),
             ),
             2,
@@ -344,7 +350,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              -132,
+              -143,
               outerY + 10 + bedColumnYOffset,
             ),
             2 + (index == 0 ? 0 : 5),
@@ -362,7 +368,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              botSizeX - 5 + xTrackPadding / 2,
+              botSizeX - 16 + xTrackPadding / 2,
               outerY + 10 + bedColumnYOffset,
             ),
             2 + (index == 0 ? 5 : 0),
@@ -380,7 +386,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           position={[
             ...botOuterXY(
               props.config,
-              x - 42,
+              x - 53,
               outerY + (index == 0 ? 0 : extrusionWidth + 5)
               - 2 - (index == 0 ? 1 : 0)
               + bedColumnYOffset,
@@ -394,7 +400,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     {props.config.cableCarriers &&
     <XAxisCCMountModel
       position={[
-        ...botOuterXY(props.config, x - 32, -12),
+        ...botOuterXY(props.config, x - 43, -12),
         -40,
       ]} />}
     {props.config.cableCarriers &&
@@ -405,7 +411,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
       model={crossSlide}
       name={"crossSlide"}
       position={[
-        ...botGardenXY(props.config, x - 1.5, y + 5),
+        ...botGardenXY(props.config, x - 12.5, y + 5),
         columnLength + 105,
       ]}
       rotation={[0, 0, Math.PI / 2]}
@@ -496,7 +502,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       configPosition={props.configPosition} />}
     <Mesh name={"yStopMin"}
       position={[
-        ...botOuterXY(props.config, x - extrusionWidth + 2, bedYOffset - 125),
+        ...botOuterXY(props.config, x - extrusionWidth - 9, bedYOffset - 125),
         columnLength + 40 + extrusionWidth * 3,
       ]}
       rotation={[0, 0, Math.PI]}
@@ -507,7 +513,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
     <Extrude name={"yBelt"}
       args={yBeltArgs}
       position={[
-        ...botGardenXY(props.config, x - 14.5, -100),
+        ...botGardenXY(props.config, x - 25.5, -100),
         columnLength + 100,
       ]}
       rotation={[0, -Math.PI / 2, 0]}>
@@ -517,7 +523,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       position={[
         ...botOuterXY(
           props.config,
-          x - extrusionWidth + 2,
+          x - extrusionWidth - 9,
           botSizeY + bedYOffset + 135,
         ),
         columnLength + 40 + extrusionWidth * 3 + 5,
@@ -535,14 +541,29 @@ const BotGantrySubassemblies = React.memo(
   sameBotGantrySubassembliesProps,
 );
 
-const BotElectronicsSubassemblyBase = (props: BotXYSubassemblyProps) =>
+interface BotElectronicsSubassemblyProps extends BotXYSubassemblyProps {
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
+}
+
+const botElectronicsSubassemblyPropsEqual = (
+  prev: BotElectronicsSubassemblyProps,
+  next: BotElectronicsSubassemblyProps,
+) =>
+  sameBotXYSubassemblyProps(prev, next) &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject;
+
+const BotElectronicsSubassemblyBase = (props: BotElectronicsSubassemblyProps) =>
   <ElectronicsBox
     config={props.config}
-    configPosition={props.configPosition} />;
+    configPosition={props.configPosition}
+    onSelectObject={props.onSelectObject}
+    onHoverObject={props.onHoverObject} />;
 
 const BotElectronicsSubassembly = React.memo(
   BotElectronicsSubassemblyBase,
-  sameBotXYSubassemblyProps,
+  botElectronicsSubassemblyPropsEqual,
 );
 
 interface BotVerticalToolheadSubassemblyProps
@@ -550,6 +571,8 @@ interface BotVerticalToolheadSubassemblyProps
   zAxisShape: Shape | undefined;
   getZ(x: number, y: number): number;
   trailReady: boolean;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS: (keyof Config)[] = [
@@ -587,6 +610,8 @@ const sameBotVerticalToolheadSubassemblyProps = (
   prev.configPosition.y === next.configPosition.y &&
   prev.configPosition.z === next.configPosition.z &&
   prev.getZ === next.getZ &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject &&
   prev.trailReady === next.trailReady &&
   prev.zAxisShape === next.zAxisShape;
 
@@ -624,10 +649,10 @@ const BotVerticalToolheadSubassemblyBase =
     const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
       switch (kitVersion) {
         case "v1.7":
-          return [...gardenXY(x + 80, y + 100), zZero - zDir * z + 245];
+          return [...gardenXY(x + 69, y + 100), zZero - zDir * z + 245];
         case "v1.8":
         default:
-          return [...gardenXY(x + 35, y), zZero - zDir * z + 245];
+          return [...gardenXY(x + 24, y), zZero - zDir * z + 245];
       }
     };
     const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
@@ -642,20 +667,40 @@ const BotVerticalToolheadSubassemblyBase =
     const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
       switch (kitVersion) {
         case "v1.7":
-          return [...gardenXY(x + 12, y + 55), zZero - zDir * z + 490];
+          return [...gardenXY(x + 1, y + 55), zZero - zDir * z + 490];
         case "v1.8":
         default:
-          return [...gardenXY(x + 2, y + 110), zZero + columnLength + 25];
+          return [...gardenXY(x - 9, y + 110), zZero + columnLength + 25];
       }
     };
     const cameraMountPosition = new THREE.Vector3(
       ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
       zZero - zDir * z - 140 + zGantryOffset + 20,
     );
+    const selectUtm = (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event)) { return; }
+      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        return;
+      }
+      if (props.onSelectObject) {
+        props.onSelectObject({ kind: "utm", id: 0 }) !== false &&
+          event.stopPropagation?.();
+      }
+    };
+    const selectCamera = (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event)) { return; }
+      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+        return;
+      }
+      if (props.onSelectObject) {
+        props.onSelectObject({ kind: "camera", id: 0 }) !== false &&
+          event.stopPropagation?.();
+      }
+    };
     const utmComponent = <Group name={"UTM"}
       position={[
-        ...gardenXY(x + 11, y),
-        zZero - zDir * z + utmHeight / 2 - 19,
+        ...gardenXY(x, y),
+        zZero - zDir * z,
       ]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}>
@@ -663,6 +708,9 @@ const BotVerticalToolheadSubassemblyBase =
         geometry={utm.nodes.M5_Barb.geometry}
         material={utm.materials.PaletteMaterial001}
         position={[0.015, 0.009, 0.036]}
+        onClick={selectUtm}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[0, 0, 2.094]} />
     </Group>;
 
@@ -674,7 +722,7 @@ const BotVerticalToolheadSubassemblyBase =
           { steps: 1, depth: zAxisLength, bevelEnabled: false },
         ]}
         position={[
-          ...gardenXY(x, y + utmRadius),
+          ...gardenXY(x - 11, y + utmRadius),
           zZero - zDir * z,
         ]}
         rotation={[0, 0, 0]}>
@@ -683,7 +731,7 @@ const BotVerticalToolheadSubassemblyBase =
       <Group name={"zMotor"}>
         <Mesh name={"zMotorHousing"}
           position={[
-            ...gardenXY(x + 4, y + utmRadius - 47),
+            ...gardenXY(x - 7, y + utmRadius - 46),
             zZero - zDir * z + zAxisLength - 80,
           ]}
           rotation={[0, 0, Math.PI]}
@@ -693,7 +741,7 @@ const BotVerticalToolheadSubassemblyBase =
         </Mesh>
         <Mesh name={"zMotor"}
           position={[
-            ...gardenXY(x + 10, y + utmRadius - 5),
+            ...gardenXY(x - 1, y + utmRadius - 5),
             zZero - zDir * z + zAxisLength - 140,
           ]}
           rotation={[Math.PI / 2, 0, 0]}
@@ -702,7 +750,7 @@ const BotVerticalToolheadSubassemblyBase =
           material={undefined} />
         <Mesh name={"zMotorMount"}
           position={[
-            ...gardenXY(x + 5, y + utmRadius - 65),
+            ...gardenXY(x - 6, y + utmRadius - 65),
             zZero - zDir * z + zAxisLength - 80,
           ]}
           rotation={[0, 0, Math.PI]}
@@ -713,7 +761,7 @@ const BotVerticalToolheadSubassemblyBase =
         <Cylinder name={"motorShaft"}
           args={[2.5, 2.5, 40]}
           position={[
-            ...gardenXY(x + 5, y + utmRadius - 65),
+            ...gardenXY(x - 6, y + utmRadius - 65),
             zZero - zDir * z + zAxisLength - 80,
           ]}
           rotation={[Math.PI / 2, 0, 0]}>
@@ -722,7 +770,7 @@ const BotVerticalToolheadSubassemblyBase =
       </Group>
       <Mesh name={"shaftCoupler"}
         position={[
-          ...gardenXY(x + 5, y - 30),
+          ...gardenXY(x - 6, y - 30),
           zZero - zDir * z + zAxisLength - 120,
         ]}
         rotation={[0, 0, 0]}
@@ -733,7 +781,7 @@ const BotVerticalToolheadSubassemblyBase =
       <Cylinder name={"shaftCoupler"}
         args={[10, 10, 25]}
         position={[
-          ...gardenXY(x + 5, y - 30),
+          ...gardenXY(x - 6, y - 30),
           zZero - zDir * z + zAxisLength - 120 + 25 / 2,
         ]}
         rotation={[Math.PI / 2, 0, 0]}>
@@ -743,7 +791,7 @@ const BotVerticalToolheadSubassemblyBase =
         material-color={"#555"}
         args={[4, 4, zAxisLength - 200]}
         position={[
-          ...gardenXY(x + 6, y - 30),
+          ...gardenXY(x - 5, y - 30),
           zZero - zDir * z + zAxisLength / 2,
         ]}
         rotation={[Math.PI / 2, 0, 0]} />
@@ -752,10 +800,11 @@ const BotVerticalToolheadSubassemblyBase =
         config={config}
         configPosition={props.configPosition} />}
       {config.cableCarriers &&
-      <CableCarrierZ config={config} configPosition={props.configPosition} />}
+      <CableCarrierZ config={config}
+        configPosition={props.configPosition} />}
       <Mesh name={"zStopMax"}
         position={[
-          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
           zZero - zDir * z - 30 + zGantryOffset,
         ]}
         rotation={[0, Math.PI / 2, 0]}
@@ -765,7 +814,7 @@ const BotVerticalToolheadSubassemblyBase =
       </Mesh>
       <Mesh name={"zStopMin"}
         position={[
-          ...gardenXY(x - 5, y + utmRadius + extrusionWidth / 2),
+          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
           zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
         ]}
         rotation={[0, Math.PI / 2, 0]}
@@ -775,7 +824,7 @@ const BotVerticalToolheadSubassemblyBase =
       </Mesh>
       <Mesh name={"vacuumPump"}
         position={[
-          ...gardenXY(x + 28, y),
+          ...gardenXY(x + 17, y),
           zZero - zDir * z + 40,
         ]}
         rotation={[0, 0, Math.PI / 2]}
@@ -787,7 +836,7 @@ const BotVerticalToolheadSubassemblyBase =
         receiveShadow={true}
         args={[easyCubicBezierCurve3(
           [
-            ...gardenXY(x + 28, y),
+            ...gardenXY(x + 17, y),
             zZero - zDir * z + 35,
           ],
           [0, 0, 100],
@@ -806,6 +855,9 @@ const BotVerticalToolheadSubassemblyBase =
         scale={1000}
         position={vacuumPumpCoverPosition(config.kitVersion)} />
       <Group name={"camera"}
+        onClick={selectCamera}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[Math.PI, 0, 0]}
         position={cameraMountPosition}>
         <Mesh name={"cameraMount"}
@@ -826,7 +878,7 @@ const BotVerticalToolheadSubassemblyBase =
         config={config}
         configPosition={props.configPosition}
         cameraMountPosition={cameraMountPosition}
-        distanceToSoil={distanceToSoil} />
+        distanceToSoil={-props.getZ(x - 11, y) - zDir * z} />
       {props.trailReady && trail
         ? <Trail
           width={defaultTrailWidth}
@@ -957,6 +1009,8 @@ const EnabledBot = (props: FarmbotModelProps) => {
       config={config}
       configPosition={props.configPosition}
       getZ={props.getZ}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject}
       trailReady={trailReady}
       zAxisShape={zAxisShape} />
     <BotGantrySubassemblies
@@ -966,13 +1020,19 @@ const EnabledBot = (props: FarmbotModelProps) => {
     <Solenoid config={config} configPosition={props.configPosition} />
     <BotElectronicsSubassembly
       config={config}
-      configPosition={props.configPosition} />
+      configPosition={props.configPosition}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject} />
     <Tools
       dispatch={props.dispatch}
       config={config}
       configPosition={props.configPosition}
       getZ={props.getZ}
       toolSlots={props.toolSlots}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject}
+      onToolSlotHoverObject={props.onToolSlotHoverObject}
+      onHoverLabel={props.onHoverLabel}
       mountedToolName={props.mountedToolName} />
     {config.waterFlow &&
       <React.Suspense fallback={undefined}>

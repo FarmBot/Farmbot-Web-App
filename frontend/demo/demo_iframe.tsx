@@ -77,6 +77,7 @@ export abstract class DemoAccountBase<P = {}>
     return <FBSelect
       key={selection}
       extraClass={"demo-options"}
+      title={t("Select a model")}
       list={SEED_DATA_OPTIONS(true).filter(x => x.value != "none")}
       itemListFilter={maybeShowStressSeedOptions}
       customNullLabel={t("Select a model")}

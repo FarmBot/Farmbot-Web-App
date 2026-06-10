@@ -39,6 +39,7 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
 import { Tools, ToolsProps, toolsPropsEqual } from "../tools";
+import { getToolSlotRenderPosition } from "../tool_slot_position";
 import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
@@ -349,7 +350,7 @@ describe("<Tools />", () => {
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"1265,460,391\"");
+    expect(container).toContainHTML("position=\"1250,460,391\"");
   });
 
   it("flips rendered pullout direction for mirrored axis", () => {
@@ -380,7 +381,28 @@ describe("<Tools />", () => {
     toolSlot.body.gantry_mounted = true;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"1065,-680,391\"");
+    expect(container).toContainHTML("position=\"1050,-680,391\"");
+  });
+
+  it("calculates static and gantry tool slot render positions", () => {
+    const config = clone(INITIAL);
+    const configPosition = clone(INITIAL_POSITION);
+    config.mirrorX = true;
+    config.botSizeX = 1000;
+    configPosition.x = 200;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.x = 100;
+    toolSlot.body.y = 200;
+    toolSlot.body.z = 30;
+    expect(getToolSlotRenderPosition(config, configPosition, {
+      toolSlot,
+      tool: undefined,
+    }).z).toEqual(361);
+    toolSlot.body.gantry_mounted = true;
+    expect(getToolSlotRenderPosition(config, configPosition, {
+      toolSlot,
+      tool: undefined,
+    }).x).toEqual(550);
   });
 
   it("doesn't mirror gantry-mounted tool y when mirrorY is active", () => {
@@ -396,7 +418,7 @@ describe("<Tools />", () => {
     toolSlot.body.gantry_mounted = true;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML("position=\"-1055,-680,391\"");
+    expect(container).toContainHTML("position=\"-1050,-680,391\"");
   });
 
   it("renders vacuum animation when not in toolbay and vacuum", () => {
@@ -475,6 +497,86 @@ describe("<Tools />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots("1"));
+  });
+
+  it("selects tool slot object instead of navigating when handler is present", () => {
+    const p = fakeProps();
+    p.dispatch = mockDispatch(jest.fn());
+    p.onSelectObject = jest.fn();
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(<Tools {...p} />);
+    });
+    const draggedSlot = view?.root.findAllByProps({ name: "slot" })[0];
+    draggedSlot?.props.onClick({ delta: 2, stopPropagation: jest.fn() });
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    TestRenderer.act(() => view?.unmount());
+
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot']");
+    slot && fireEvent.click(slot);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "slot", id: 1 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("selects UTM object instead of navigating when handler is present", () => {
+    const p = fakeProps();
+    p.toolSlots = [];
+    p.onSelectObject = jest.fn();
+    const { container } = render(<Tools {...p} />);
+    const utm = container.querySelector("[name='utm-tool']");
+    utm && fireEvent.click(utm);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "utm", id: 0 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("hovers selectable tools", () => {
+    const p = fakeProps();
+    p.onHoverObject = jest.fn();
+    p.onHoverLabel = jest.fn();
+    p.toolSlots = configuredUserTools();
+    p.toolSlots.forEach((slot, index) => {
+      slot.toolSlot.body.id = index + 1;
+    });
+    const { container } = render(<Tools {...p} />);
+    container.querySelectorAll("[name='slot']").forEach(slot => {
+      fireEvent.pointerOver(slot);
+      fireEvent.pointerOut(slot);
+    });
+    const utm = container.querySelector("[name='utm-tool']");
+    utm && fireEvent.pointerOver(utm);
+    utm && fireEvent.pointerOut(utm);
+    container.querySelectorAll("group:not([name])").forEach(group => {
+      fireEvent.pointerOver(group);
+      fireEvent.pointerOut(group);
+    });
+    expect(p.onHoverObject).toHaveBeenCalledWith(true);
+    expect(p.onHoverObject).toHaveBeenCalledWith(false);
+    expect(p.onHoverLabel).toHaveBeenCalledWith(expect.objectContaining({
+      kind: "slot",
+    }));
+    expect(p.onHoverLabel).toHaveBeenCalledWith(undefined);
+  });
+
+  it("navigates to tools from the mounted UTM tool", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.toolSlots = [];
+    const { container } = render(<Tools {...p} />);
+    const utm = container.querySelector("[name='utm-tool']");
+    utm && fireEvent.click(utm);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't navigate to tool info", () => {

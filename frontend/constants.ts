@@ -2307,7 +2307,7 @@ export enum DeviceSetting {
   showReadingsMapLayer = `Show Readings Map Layer`,
   showMoisture = `Moisture`,
   showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
-  show3DMap = `3D Map beta`,
+  show3DMap = `3D beta`,
 
   // Controls
   invertJogButtonXAxis = `X Axis`,

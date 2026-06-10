@@ -20,6 +20,42 @@
     "url": "http://localhost:3000/demo"
   },
   {
+    "name": "dropdown",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/demo",
+    "actions": [
+      {
+        "click": {
+          "title": "Select a model"
+        }
+      },
+      {
+        "fill": {
+          "placeholder": "Filter...",
+          "value": "v1.8"
+        }
+      },
+      {
+        "fill": {
+          "placeholder": "Filter...",
+          "value": "v0"
+        }
+      },
+      {
+        "hover": {
+          "class": "bp6-icon-cross"
+        }
+      }
+    ],
+    "roi": {
+      "x": 575,
+      "y": 430,
+      "width": 275,
+      "height": 400,
+      "scale": 2
+    }
+  },
+  {
     "name": "password_reset",
     "mode": "screenshot",
     "url": "http://localhost:3000/password_reset/abc"
@@ -43,7 +79,13 @@
     "name": "water",
     "mode": "fps",
     "url": "http://localhost:3000/app/designer/sequences/Water_all",
-    "click": "Run",
+    "actions": [
+      {
+        "click": {
+          "title": "Run"
+        }
+      }
+    ],
     "state": "app"
   }
 ]

@@ -166,6 +166,8 @@ export interface GoToThisLocationButtonProps {
   dispatch: Function;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+  noOptions?: boolean;
+  usePortal?: boolean;
 }
 
 interface GoToThisLocationButtonState {
@@ -221,6 +223,7 @@ export class GoToThisLocationButton
       </button>
       <Popover position={Position.BOTTOM_RIGHT}
         isOpen={this.state.open}
+        usePortal={this.props.usePortal}
         className={"go-button-axes"}
         popoverClassName={"go-button-axes-popover"}
         target={<button
@@ -259,10 +262,11 @@ export class GoToThisLocationButton
                 onChange={this.toggle("setAsDefault")}
                 checked={this.state.setAsDefault} />
             </div>
-            <Link to={Path.location(target)}>
-              {t("More options")}
-              <i className={"fa fa-external-link"} />
-            </Link>
+            {!this.props.noOptions &&
+              <Link to={Path.location(target)}>
+                {t("More options")}
+                <i className={"fa fa-external-link"} />
+              </Link>}
           </div>} />
     </div>;
   }

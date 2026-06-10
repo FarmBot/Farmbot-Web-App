@@ -14,8 +14,9 @@ import { range } from "lodash";
 import {
   Group, Mesh, MeshPhongMaterial, InstancedMesh,
 } from "../../components";
-import { distinguishableBlack, extrusionWidth } from "../bot";
 import { EMISSIVE_PROPS } from "./gantry_beam";
+
+const distinguishableBlack = "#333";
 
 type CCSupportHorizontal = GLTF & {
   nodes: { [PartName.ccSupportHorizontal]: THREE.Mesh };
@@ -193,12 +194,12 @@ const VisibleCableCarrierX = (props: CableCarrierXProps) => {
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const position = get3DPosition({
-    x: botSizeX / 2,
-    y: (tracks ? 0 : extrusionWidth) - 15 - bedYOffset,
+    x: botSizeX / 2 - 11,
+    y: (tracks ? 0 : 20) - 15 - bedYOffset,
   });
   const args = React.useMemo(() => [
     ccPath(
-      botSizeX / 2, botSizeX / 2 - x + 20,
+      botSizeX / 2, botSizeX / 2 - x + 31,
       bedCCSupportHeight - 40,
       true),
     { steps: 1, depth: 22, bevelEnabled: false },
@@ -239,7 +240,7 @@ const VisibleCableCarrierY = (props: CableCarrierYProps) => {
     }
   };
   const getPosition = (): [number, number, number] => {
-    const position = get3DPosition({ x: x - 28, y: 20 });
+    const position = get3DPosition({ x: x - 39, y: 20 });
     return [position.x, position.y, columnLength + 150];
   };
   const args = React.useMemo(() => [
@@ -270,7 +271,7 @@ const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
-  const position = get3DPosition({ x: x - 41, y: y - 25 });
+  const position = get3DPosition({ x: x - 52, y: y - 25 });
   const args = React.useMemo(() => [
     ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
     { steps: 1, depth: 60, bevelEnabled: false },
@@ -319,7 +320,7 @@ const CableCarrierSupportVerticalV17 =
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
       verticalInstances.forEach((i, index) => {
-        const position = get3DPosition({ x: x + 20, y: y + 55 });
+        const position = get3DPosition({ x: x + 9, y: y + 55 });
         temp.position.set(
           position.x,
           position.y,
@@ -383,7 +384,7 @@ const CableCarrierSupportVerticalV18 =
     }, [zAxisLength]);
     React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
     const getPosition = (): [number, number, number] => {
-      const position = get3DPosition({ x: x + 20, y: y + 35 });
+      const position = get3DPosition({ x: x + 9, y: y + 35 });
       return [position.x, position.y, zZero - zDir * z + 125];
     };
     return <Group name={"ccSupportVertical"}>
@@ -428,7 +429,7 @@ const CableCarrierSupportHorizontalV17 =
       if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
       horizontalInstances.forEach((i, index) => {
-        const position = get3DPosition({ x: x - 28, y: 50 + i * 300 });
+        const position = get3DPosition({ x: x - 39, y: 50 + i * 300 });
         temp.position.set(
           position.x,
           position.y,
@@ -484,7 +485,7 @@ const CableCarrierSupportHorizontalV18 =
       });
     }, [botSizeY]);
     React.useEffect(() => () => horizontalGeometry.dispose(), [horizontalGeometry]);
-    const position = get3DPosition({ x: x - 28, y: 20 });
+    const position = get3DPosition({ x: x - 39, y: 20 });
     return <Group name={"ccSupportHorizontal"}>
       <Mesh
         position={[

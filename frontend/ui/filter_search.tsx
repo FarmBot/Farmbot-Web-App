@@ -12,6 +12,8 @@ export interface FilterSearchProps {
   onChange: (item: DropDownItem) => void;
   nullChoice: DropDownItem;
   itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
+  usePortal?: boolean;
+  title?: string;
 }
 
 interface State {
@@ -41,6 +43,7 @@ export class FilterSearch
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
       onQueryChange={this.handleQueryChange}
+      popoverTargetProps={{ title: this.props.title }}
       popoverProps={{
         popoverClassName: [
           "filter-search-popover",
@@ -48,6 +51,7 @@ export class FilterSearch
           items.length < 4 ? "few-items" : "",
         ].join(" "),
         modifiers: { offset: { options: { offset: [0, 0] } } },
+        usePortal: this.props.usePortal,
       }}>
       <i className="fa fa-caret-down fa-md" />
       <Button

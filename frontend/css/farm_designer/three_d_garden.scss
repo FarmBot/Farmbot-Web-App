@@ -53,12 +53,145 @@
     height: 100vh;
     cursor: grab;
 
-    &:active {
-      cursor: grabbing;
-    }
-
     @media screen and (max-width: 768px) {
       width: 100vw;
+    }
+  }
+
+  .three-d-object-popup-wrapper {
+    pointer-events: none;
+  }
+
+  .three-d-object-popup {
+    width: min(30rem, calc(100vw - 2rem));
+    padding: 1rem;
+    color: var(--text-color);
+    cursor: default;
+    pointer-events: auto;
+    background: var(--main-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: var(--box-shadow);
+    backdrop-filter: var(--blur);
+    opacity: 0;
+    transform: translateY(calc(-50% + 0.75rem)) scale(0.98);
+    transform-origin: bottom center;
+    transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+
+    .object-popup-header {
+      align-items: center;
+
+      h3 {
+        margin: 0;
+        overflow: hidden;
+        font-family: $inknut;
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .object-popup-button-cluster {
+      align-items: center;
+      justify-self: end;
+
+      .point-color-input {
+        display: grid;
+        padding-right: 0.5rem;
+        place-items: center;
+
+        .saucer {
+          margin: 0;
+        }
+      }
+    }
+
+    .object-popup-content {
+      label {
+        margin-top: 0;
+        font-size: 1rem;
+      }
+
+      .go-button-axes-wrapper {
+        margin: 0;
+        justify-self: end;
+      }
+
+      .object-popup-location-row {
+        align-items: end;
+      }
+
+      .object-popup-coordinate-inputs {
+        align-items: end;
+        min-width: 0;
+
+        > div {
+          min-width: 0;
+        }
+
+        input {
+          width: 100%;
+        }
+      }
+
+      .point-color-input {
+        align-self: end;
+      }
+
+      .object-popup-mounted-tool-row {
+        align-items: center;
+      }
+
+      .object-popup-trail-row,
+      .object-popup-laser-row,
+      .object-popup-camera-row {
+        align-items: center;
+
+        button {
+          margin: 0;
+          float: none;
+          justify-self: end;
+        }
+      }
+
+      .object-popup-tool-verification-row {
+        .tool-verification-status {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+
+          p {
+            margin: 0;
+          }
+
+          button {
+            margin: 0;
+            float: none;
+          }
+        }
+      }
+
+      .object-popup-electronics-controls {
+        .row {
+          align-items: center;
+        }
+
+        button:not(.bp6-button) {
+          margin: 0;
+          float: none;
+          justify-self: end;
+        }
+      }
     }
   }
 

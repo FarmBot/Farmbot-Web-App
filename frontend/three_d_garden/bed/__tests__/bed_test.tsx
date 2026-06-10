@@ -326,7 +326,7 @@ describe("<Bed />", () => {
     const soil = soilMesh(container);
     fireEvent.click(soil);
     expect(plantActions.dropPlant3D).toHaveBeenCalledWith(expect.objectContaining({
-      gardenCoords: { x: 1360, y: 660 },
+      gardenCoords: { x: 1350, y: 660 },
     }));
   });
 
@@ -360,7 +360,7 @@ describe("<Bed />", () => {
     fireEvent.click(soil);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { ...point, cx: 1360, cy: 660, z: 0 },
+      payload: { ...point, cx: 1350, cy: 660, z: 0 },
     });
     expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(1);
   });
@@ -510,10 +510,10 @@ describe("<Bed />", () => {
     const soil = soilMesh(container);
     fireEvent.pointerMove(soil);
     expect(mockSetPlantPosition).not.toHaveBeenCalled();
-    expect(mockSetRadiusScale).toHaveBeenCalledWith(1510, 1510, 1510);
-    expect(mockSetTorusScale).toHaveBeenCalledWith(1510, 1510, 400);
-    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 672);
-    expect(mockSetImageScale).toHaveBeenCalledWith(1344, 1344, 1344);
+    expect(mockSetRadiusScale).toHaveBeenCalledWith(1500, 1500, 1500);
+    expect(mockSetTorusScale).toHaveBeenCalledWith(1500, 1500, 400);
+    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 667.5);
+    expect(mockSetImageScale).toHaveBeenCalledWith(1335, 1335, 1335);
   });
 
   it("doesn't update pointer point radius: no ref", () => {

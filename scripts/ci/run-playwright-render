@@ -12,6 +12,44 @@ if [ -z "${GITHUB_ACTIONS:-}" ]; then
   export OPEN_WINDOW="${OPEN_WINDOW:-1}"
 fi
 
+summary_only=false
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --summary-only)
+      summary_only=true
+      ;;
+    -h|--help)
+      echo "Usage: scripts/ci/run-playwright-render [--summary-only]"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+render_summary() {
+  if [ -z "${GITHUB_ACTIONS:-}" ]; then
+    echo -e "\n\n\n"
+    echo "Plotting metrics..."
+    for csv in /tmp/*.csv; do
+      [ -f "$csv" ] || continue
+      bun scripts/metric_plot.js "$csv"
+    done
+    echo -e "\n\n\n"
+    echo "Combining render images..."
+    bun scripts/ci/combine-render-images
+    echo -e "\n\n\n"
+  fi
+}
+
+if [ "$summary_only" = "true" ]; then
+  render_summary
+  exit 0
+fi
+
 attempts="${ATTEMPTS:-2}"
 : "${CHOSEN_NAME:?CHOSEN_NAME is required}"
 : "${SCREENSHOT_NAME:?SCREENSHOT_NAME is required}"
@@ -54,7 +92,7 @@ valid_scene_metrics() {
   [ -n "$row" ] && [ "$row" != "undefined" ] && [ "$row" != "null" ]
 }
 
-while IFS=$'\034' read -r -u 3 name mode url click state; do
+while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
   screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
   fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
   scene_metrics_path="/tmp/${SCENE_METRICS_NAME}_${name}.csv"
@@ -66,8 +104,9 @@ while IFS=$'\034' read -r -u 3 name mode url click state; do
       --screenshot-path "$screenshot_path"
       --fps-samples-path "$fps_samples_path"
     )
-    [ -n "$click" ] && fps_args+=(--click "$click")
+    [ -n "$actions" ] && fps_args+=(--actions "$actions")
     [ -n "$state" ] && fps_args+=(--state "$state")
+    [ -n "$roi" ] && fps_args+=(--roi "$roi")
 
     echo -e "\n\n\n"
     if [ "$mode" = "screenshot" ]; then
@@ -123,15 +162,4 @@ if [ "$chosen_seen" != "true" ]; then
   exit 1
 fi
 
-if [ -z "${GITHUB_ACTIONS:-}" ]; then
-  echo -e "\n\n\n"
-  echo "Plotting metrics..."
-  for csv in /tmp/*.csv; do
-    [ -f "$csv" ] || continue
-    bun scripts/metric_plot.js "$csv"
-  done
-  echo -e "\n\n\n"
-  echo "Combining render images..."
-  bun scripts/ci/combine-render-images
-  echo -e "\n\n\n"
-fi
+render_summary

@@ -1,7 +1,7 @@
 import React from "react";
 import { Center, Text3D } from "@react-three/drei";
 import { ASSETS, RenderOrder } from "../constants";
-import { MeshPhongMaterial } from "../components";
+import { MeshBasicMaterial } from "../components";
 
 export interface TextProps {
   children: React.ReactNode;
@@ -46,7 +46,7 @@ const TextBase = (props: TextProps) => {
       height={props.thickness || 0.01}
       rotation={props.rotation}>
       {props.children}
-      <MeshPhongMaterial color={props.color} />
+      <MeshBasicMaterial color={props.color} />
     </Text3D>
   </Center>;
 };

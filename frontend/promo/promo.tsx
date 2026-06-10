@@ -235,6 +235,7 @@ export const Promo = () => {
               plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
               seasonResetKey={seasonResetKey}
+              promo={true}
               preloadEnvironmentScenes={true}
               showFarmbotLayerLoadProgress={false}
               onDetailsRevealStart={handleThreeDLoadComplete}

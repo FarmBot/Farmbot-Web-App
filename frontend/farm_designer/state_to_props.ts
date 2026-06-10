@@ -19,6 +19,7 @@ import {
   maybeGetSequence,
   selectAllLogs,
   selectAllTools,
+  selectAllSequences,
   selectAllFarmwareEnvs,
   selectAllCurves,
 } from "../resources/selectors";
@@ -44,6 +45,8 @@ import {
 import { isToolFlipped } from "../tools/tool_slot_edit_components";
 import { UserEnv } from "../devices/interfaces";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
+import { isBotOnlineFromState } from "../devices/must_be_online";
+import { validGoButtonAxes } from "./move_to";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -76,6 +79,7 @@ const selectPointGroups = memoizeLast(selectAllPointGroups);
 const selectPoints = memoizeLast(selectAllPoints);
 const selectTools = memoizeLast(selectAllTools);
 const selectToolSlots = memoizeLast(joinToolsAndSlot);
+const selectSequences = memoizeLast(selectAllSequences);
 const selectPeripherals = memoizeLast(selectAllPeripherals);
 const selectImages = memoizeLast((index: RestResources["index"]) =>
   chain(selectAllImages(index))
@@ -180,9 +184,11 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   const { hardware } = props.bot;
   const { mcu_params } = hardware;
   const firmwareSettings = fwConfig || mcu_params;
-  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const taggedFbosConfig = getFbosConfig(props.resources.index);
+  const fbosConfig = validFbosConfig(taggedFbosConfig);
 
-  const device = getDeviceAccountSettings(props.resources.index).body;
+  const deviceAccount = getDeviceAccountSettings(props.resources.index);
+  const device = deviceAccount.body;
   const mountedToolId = device.mounted_tool_id;
   const mountedToolName =
     maybeFindToolById(props.resources.index, mountedToolId)?.body.name;
@@ -215,12 +221,16 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     crops: selectCrops(props.resources.index),
     dispatch: props.dispatch,
     device,
+    deviceAccount,
+    bot: props.bot,
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
     genericPoints,
     weeds,
     allPoints,
     tools: selectTools(props.resources.index),
+    sequences: selectSequences(props.resources.index),
+    fbosConfig: taggedFbosConfig,
     toolSlots: selectToolSlots(props.resources.index),
     hoveredPlant,
     plants,
@@ -233,6 +243,11 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     latestImages,
     cameraCalibrationData: selectCameraCalibrationData(env),
     timeSettings: selectTimeSettings(props.resources.index),
+    botOnline: isBotOnlineFromState(props.bot),
+    arduinoBusy: hardware.informational_settings.busy,
+    currentBotLocation: validBotLocationData(hardware.location_data).position,
+    movementState: props.app.movement,
+    defaultAxes: validGoButtonAxes(getConfigValue),
     getConfigValue,
     sensorReadings,
     sensors: selectSensors(props.resources.index),
@@ -241,6 +256,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     visualizedSequenceBody,
     logs: selectLogs(props.resources.index),
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
+    env,
     farmwareEnvs: selectFarmwareEnvs(props.resources.index),
     curves: selectCurves(props.resources.index),
   };
