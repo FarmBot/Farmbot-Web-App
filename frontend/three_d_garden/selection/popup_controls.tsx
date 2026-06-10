@@ -70,6 +70,7 @@ const isPlantPointer = (plant: TaggedPlant): plant is TaggedPlantPointer =>
 const GoButton = (props: GoButtonProps) =>
   props.dispatch &&
   <GoToThisLocationButton
+    usePortal={false}
     dispatch={props.dispatch}
     locationCoordinate={props.locationCoordinate}
     botOnline={props.botOnline}
@@ -193,6 +194,7 @@ const PlantPopupControls = (props: PopupControlProps) => {
         </div>
         <EditPlantStatus
           {...commonProps}
+          usePortal={false}
           plantStatus={plant.body.plant_stage} />
       </div>}
     <div className={"row grid-2-col"}>
@@ -231,7 +233,7 @@ const WeedPopupControls = (props: PopupControlProps) => {
     <div className={"row grid-2-col"}>
       <div className={"grid half-gap"}>
         <label>{t("Status")}</label>
-        <EditWeedStatus weed={weed} updateWeed={update} />
+        <EditWeedStatus weed={weed} updateWeed={update} usePortal={false} />
       </div>
       <EditPointRadius
         radius={weed.body.radius}
@@ -268,6 +270,7 @@ const UtmPopupControls = (props: PopupControlProps) => {
     <div className={"object-popup-mounted-tool-row row grid-2-col"}>
       <label>{t("Mounted Tool")}</label>
       <ToolSelection
+        usePortal={false}
         tools={props.tools}
         selectedTool={mountedTool}
         onChange={({ tool_id }) => {

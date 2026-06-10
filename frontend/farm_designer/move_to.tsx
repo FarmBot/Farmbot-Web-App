@@ -167,6 +167,7 @@ export interface GoToThisLocationButtonProps {
   currentBotLocation: BotPosition;
   movementState: MovementState;
   noOptions?: boolean;
+  usePortal?: boolean;
 }
 
 interface GoToThisLocationButtonState {
@@ -222,7 +223,7 @@ export class GoToThisLocationButton
       </button>
       <Popover position={Position.BOTTOM_RIGHT}
         isOpen={this.state.open}
-        usePortal={false}
+        usePortal={this.props.usePortal}
         className={"go-button-axes"}
         popoverClassName={"go-button-axes-popover"}
         target={<button

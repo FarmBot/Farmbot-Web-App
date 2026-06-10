@@ -142,6 +142,7 @@ interface ToolInputPropsBase {
 export interface ToolSelectionProps extends ToolInputPropsBase {
   filterSelectedTool: boolean;
   filterActiveTools: boolean;
+  usePortal?: boolean;
 }
 
 export interface ToolInputRowProps extends ToolInputPropsBase {
