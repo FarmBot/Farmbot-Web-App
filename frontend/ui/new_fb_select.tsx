@@ -19,6 +19,7 @@ export interface FBSelectProps {
   /** Optionally filter the list with access to the current search query. */
   itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
   usePortal?: boolean;
+  title?: string;
 }
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
@@ -56,7 +57,8 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
         itemListFilter={this.props.itemListFilter}
         onChange={this.props.onChange}
         usePortal={this.props.usePortal}
-        nullChoice={this.NULL_CHOICE} />
+        nullChoice={this.NULL_CHOICE}
+        title={this.props.title} />
     </div>;
   }
 }

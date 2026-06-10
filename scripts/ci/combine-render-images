@@ -32,6 +32,7 @@ const metricRow = name => [
     [`${name} screenshot`, imagePath(`${screenshotName}_${name}`)],
     [`${name} fps`, imagePath(`${fpsSamplesName}_${name}`)],
     [`${name} metrics`, imagePath(`${sceneMetricsName}_${name}`)],
+    [],
 ];
 const screenshotCell = name => [
     name.replace(/_/g, ' '),
@@ -46,11 +47,13 @@ const rows = [
         screenshotCell('login'),
         screenshotCell('os'),
         screenshotCell('demo'),
+        ['fe coverage', imagePath(feCoverageName)],
     ],
     [
         screenshotCell('password_reset'),
         screenshotCell('404'),
-        ['fe coverage', imagePath(feCoverageName)],
+        screenshotCell('dropdown'),
+        [],
     ],
 ];
 
@@ -60,6 +63,9 @@ const escapeHtml = value => String(value)
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 const cell = ([title, filePath]) => {
+    if (!title && !filePath) {
+        return '<div class="empty"></div>';
+    }
     if (!fs.existsSync(filePath)) {
         return `
           <figure class="missing">
@@ -91,7 +97,7 @@ const html = `<!doctype html>
     }
     .row {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 16px;
     }

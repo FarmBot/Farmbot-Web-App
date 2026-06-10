@@ -13,6 +13,7 @@ export interface FilterSearchProps {
   nullChoice: DropDownItem;
   itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
   usePortal?: boolean;
+  title?: string;
 }
 
 interface State {
@@ -42,6 +43,7 @@ export class FilterSearch
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
       onQueryChange={this.handleQueryChange}
+      popoverTargetProps={{ title: this.props.title }}
       popoverProps={{
         popoverClassName: [
           "filter-search-popover",

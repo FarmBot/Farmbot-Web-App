@@ -82,7 +82,7 @@ body {
   --blur: blur(20px);
 }
 
-body:has(.app.light) {
+@mixin light-theme-vars {
   --main-bg: #{$light_bg};
   --secondary-bg: rgba(255, 255, 255, 0.3);
   --text-color: #{$dark_gray};
@@ -91,13 +91,30 @@ body:has(.app.light) {
   --highlight: inset 0px 0px 5px 5px #{$yellow};
 }
 
-body:has(.app.dark) {
+@mixin dark-theme-vars {
   --main-bg: #{$dark_bg};
   --secondary-bg: rgba(255, 255, 255, 0.05);
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
   --box-shadow: inset 0 0 5px 1px #{$translucent1_white}, inset 0 0 2px 1px #{$translucent2_white}, 0 0 5px 2px #{$translucent1};
   --highlight: inset 0px 0px 5px 5px #{$yellow};
+}
+
+body,
+.app.light {
+  @include light-theme-vars;
+}
+
+body:has(.app.light) {
+  @include light-theme-vars;
+}
+
+.app.dark {
+  @include dark-theme-vars;
+}
+
+body:has(.app.dark) {
+  @include dark-theme-vars;
 }
 
 .dark-gray {

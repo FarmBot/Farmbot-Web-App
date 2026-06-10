@@ -99,7 +99,11 @@ class CiPythonScriptTest(unittest.TestCase):
                 "name": "promo",
                 "mode": "fps",
                 "url": "http://localhost:3000/promo",
-                "click": "Run",
+                "actions": [
+                    {"click": {"title": "Run"}},
+                    {"fill": {"placeholder": "Filter...", "value": "Genesis"}},
+                    {"hover": {"classname": "item"}},
+                ],
                 "state": "app",
             }], file)
             file_path = file.name
@@ -111,7 +115,11 @@ class CiPythonScriptTest(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertEqual(
-            stdout, "promo\034fps\034http://localhost:3000/promo\034Run\034app\n")
+            stdout,
+            "promo\034fps\034http://localhost:3000/promo\034"
+            "[{\"click\":{\"title\":\"Run\"}},"
+            "{\"fill\":{\"placeholder\":\"Filter...\",\"value\":\"Genesis\"}},"
+            "{\"hover\":{\"classname\":\"item\"}}]\034app\n")
         self.assertEqual(stderr, "")
 
     def test_create_compare_link_uses_latest_deployment_sha(self):

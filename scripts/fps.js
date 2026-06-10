@@ -15,7 +15,7 @@ function parseArgs(argv) {
         '--url': 'url',
         '--screenshot-path': 'screenshotPath',
         '--fps-samples-path': 'samplesCsvPath',
-        '--click': 'click',
+        '--actions': 'actions',
         '--state': 'state',
     };
 
@@ -50,11 +50,12 @@ const samplesCsvPath = options.samplesCsvPath;
 const maxLoadingSamples = 240;
 const postLoadSamples = 10;
 const sampleIntervalMs = 1000;
+const defaultActionTimeoutMs = 5000;
 const ci = Boolean(process.env.CI);
 const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 const screenshotOnly = options.screenshotOnly;
-const click = options.click;
+const actions = options.actions ? JSON.parse(options.actions) : [];
 const state = options.state ? path.join('/tmp', `${options.state}.json`) : undefined;
 const saveState = path.join('/tmp', `${name}.json`);
 const commitSha = () => {
@@ -105,7 +106,7 @@ function printUsage() {
         '  --screenshot-path <path>               Full-page screenshot PNG path. Default: /tmp/fps.png',
         '  --fps-samples-path <path>              FPS samples CSV path. Default: /tmp/fps_samples.csv',
         '  --screenshot-only                      Take a screenshot without FPS metrics.',
-        '  --click <title>                        Click an element by title after page load.',
+        '  --actions <json>                       Perform ordered actions after page load.',
         '  --state <name>                         Load cookies and localStorage from /tmp/<name>.json.',
         '',
         'Environment:',
@@ -147,6 +148,64 @@ async function saveStorage(page) {
     console.log(`SAVE_STATE=${saveState}`);
 }
 
+function actionValue(action, type, keys = []) {
+    const value = action[type];
+    if (typeof value === 'object' && value !== null) {
+        for (const key of keys) {
+            if (value[key]) { return value[key]; }
+        }
+    }
+    return value;
+}
+
+function stringActionValue(action, type, keys = []) {
+    const value = actionValue(action, type, keys);
+    if (typeof value !== 'string') {
+        throw new Error(`${type} action requires a string value: ${JSON.stringify(action)}`);
+    }
+    return value;
+}
+
+function actionTimeout(action) {
+    const timeout = action.timeout || action.timeoutMs || defaultActionTimeoutMs;
+    const parsedTimeout = Number(timeout);
+    if (!Number.isFinite(parsedTimeout) || parsedTimeout <= 0) {
+        throw new Error(`Action timeout must be a positive number: ${JSON.stringify(action)}`);
+    }
+    return parsedTimeout;
+}
+
+async function performAction(page, action) {
+    const timeout = actionTimeout(action);
+    if (action.click) {
+        const title = stringActionValue(action, 'click', ['title']);
+        await page.getByTitle(title).click({ timeout });
+        console.log(`CLICK=${title}`);
+        return;
+    }
+
+    if (action.fill) {
+        const placeholder = action.placeholder || stringActionValue(action, 'fill', ['placeholder']);
+        const value = action.value || action.text || stringActionValue(action, 'fill', ['value', 'text']);
+        await page.getByPlaceholder(placeholder).fill(value, { timeout });
+        console.log(`FILL=${placeholder}`);
+        return;
+    }
+
+    if (action.hover) {
+        const className = action.classname
+            || action.class
+            || action.className
+            || stringActionValue(action, 'hover', ['classname', 'class', 'className']);
+        const selector = className.startsWith('.') ? className : `.${className}`;
+        await page.locator(selector).first().hover({ timeout });
+        console.log(`HOVER=${className}`);
+        return;
+    }
+
+    throw new Error(`Unknown action: ${JSON.stringify(action)}`);
+}
+
 async function main() {
     console.log(`Launching Chromium with args:\n  ${chromiumArgs.join('\n  ')}\n`);
     if (executablePath) {
@@ -168,9 +227,8 @@ async function main() {
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
-        if (click) {
-            await page.getByTitle(click).click();
-            console.log(`CLICK=${click}`);
+        for (const action of actions) {
+            await performAction(page, action);
         }
         if (screenshotOnly) {
             await page.waitForTimeout(1000);
