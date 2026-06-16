@@ -134,6 +134,7 @@ while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
     echo "${fps_output}"
 
     fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+    load_duration=$(echo "${fps_output}" | awk -F= '/^LOAD_DURATION=/{print $2; exit}')
     scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
     if ! valid_scene_metrics "$scene_metrics"; then
       echo "Missing scene metrics for ${url}"
@@ -146,6 +147,7 @@ while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
 
     if [ "$name" = "${CHOSEN_NAME}" ]; then
       echo "FPS_VALUE=${fps_value}" >> "$GITHUB_ENV"
+      echo "LOAD_DURATION=${load_duration}" >> "$GITHUB_ENV"
       echo "SCENE_METRICS=${scene_metrics}" >> "$GITHUB_ENV"
       chosen_seen=true
     fi

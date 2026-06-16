@@ -68,10 +68,10 @@ class CiPythonScriptTest(unittest.TestCase):
         history_name = f"fps_history_test_{os.getpid()}"
         path = Path("/tmp") / f"{history_name}.csv"
         path.write_text(
-            "fps,% change\n"
-            "80,0.00\n"
-            "90,12.50\n"
-            "100,11.11\n",
+            "fps,% change,load duration,commit sha\n"
+            "80,0.00,5.00,old123\n"
+            "90,12.50,5.00,old123\n"
+            "100,11.11,5.00,old123\n",
         )
         try:
             code, stdout, stderr = run_script("previous-fps-value", env={
@@ -98,13 +98,14 @@ class CiPythonScriptTest(unittest.TestCase):
         path = Path("/tmp") / f"{history_name}.csv"
         github_env = Path("/tmp") / f"github_env_track_test_{os.getpid()}"
         path.write_text(
-            "fps,% change,commit sha\n"
-            "100.00,0.00,old123\n")
+            "fps,% change,load duration,commit sha\n"
+            "100.00,0.00,5.00,old123\n")
         try:
             code, stdout, stderr = run_script("track-fps-history", env={
                 "FPS_HISTORY": history_name,
                 "FPS_VALUE": "106.04",
                 "FALLBACK_FPS_VALUE": "100",
+                "LOAD_DURATION": "5.00",
                 "GITHUB_SHA": "0123456789abcdef",
                 "GITHUB_ENV": str(github_env),
                 "PATH": os.environ["PATH"],
@@ -117,9 +118,9 @@ class CiPythonScriptTest(unittest.TestCase):
             self.assertEqual(stderr, "")
             self.assertEqual(
                 path.read_text(),
-                "fps,% change,commit sha\n"
-                "100.00,0.00,old123\n"
-                "106.04,6.04,0123456789\n")
+                "fps,% change,load duration,commit sha\n"
+                "100.00,0.00,5.00,old123\n"
+                "106.04,6.04,5.00,0123456789\n")
             self.assertEqual(github_env.read_text(), "PERCENT_CHANGE=6.04\n")
         finally:
             path.unlink(missing_ok=True)

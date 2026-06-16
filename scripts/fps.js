@@ -360,6 +360,7 @@ async function main() {
             throw new Error('Average post-load FPS was not a valid value');
         }
         console.log(`FPS_VALUE=${averagePostLoadSample.toFixed(2)}`);
+        console.log(`LOAD_DURATION=${sampleValues.find(s => !s.loading)?.elapsedSeconds.toFixed(2) || 'unknown'}`);
         const data = await page.evaluate(() => window.__scene_metrics);
         if (!data || data === 'undefined') {
             throw new Error('window.__scene_metrics was not available');

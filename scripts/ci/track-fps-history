@@ -7,10 +7,11 @@ import subprocess
 
 fps_history = os.environ["FPS_HISTORY"]
 fps_value = os.environ["FPS_VALUE"]
+load_duration = os.environ["LOAD_DURATION"]
 commit_sha = os.environ["GITHUB_SHA"][:10]
 github_env = os.environ["GITHUB_ENV"]
 csv_path = Path("/tmp") / f"{fps_history}.csv"
-csv_header = ["fps", "% change", "commit sha"]
+csv_header = ["fps", "% change", "load duration", "commit sha"]
 
 previous = subprocess.check_output(
     ["scripts/ci/previous-fps-value"],
@@ -35,4 +36,4 @@ if not csv_path.exists():
 
 with csv_path.open("a", newline="") as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow([fps_value, percent_change, commit_sha])
+    writer.writerow([fps_value, percent_change, load_duration, commit_sha])
