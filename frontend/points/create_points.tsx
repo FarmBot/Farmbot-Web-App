@@ -74,7 +74,9 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
   get panel() { return Path.getSlug(Path.designer()); }
 
   componentDidMount() {
-    this.props.dispatch(resetDrawnPointDataAction());
+    if (isUndefined(this.props.drawnPoint)) {
+      this.props.dispatch(resetDrawnPointDataAction());
+    }
   }
 
   componentWillUnmount() {

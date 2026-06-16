@@ -124,6 +124,51 @@ describe("<CreatePoints />", () => {
     expect(text.includes("add point") || text.includes("save")).toBeTruthy();
   });
 
+  it("initializes point data", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    render(<CreatePoints {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point",
+        cx: undefined,
+        cy: undefined,
+        z: 0,
+        r: 0,
+        color: "green",
+        at_soil_level: false,
+      },
+    });
+  });
+
+  it("keeps existing point data", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.drawnPoint = {
+      name: "Location Point",
+      cx: 300,
+      cy: 540,
+      z: 0,
+      r: 0,
+      color: "gray",
+      at_soil_level: false,
+    };
+    render(<CreatePoints {...p} />);
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point",
+        cx: undefined,
+        cy: undefined,
+        z: 0,
+        r: 0,
+        color: "green",
+        at_soil_level: false,
+      },
+    });
+  });
+
   it("renders for weeds", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
@@ -208,9 +253,18 @@ describe("<CreatePoints />", () => {
   ])("uses current location: %s %s %s", (pointName, color, path) => {
     location.pathname = Path.mock(path);
     const p = fakeProps();
-    p.drawnPoint = fakeDrawnPoint();
+    p.drawnPoint = {
+      name: pointName,
+      cx: undefined,
+      cy: undefined,
+      z: 0,
+      r: 0,
+      color,
+      at_soil_level: false,
+    };
     p.botPosition = { x: 1, y: 2, z: 3 };
     const view = render(<CreatePoints {...p} />);
+    jest.clearAllMocks();
     const button = view.container
       .querySelector(".fa-crosshairs")
       ?.closest("button");
@@ -219,7 +273,7 @@ describe("<CreatePoints />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
         name: pointName,
-        cx: undefined, cy: undefined, z: 0, r: 0, color,
+        cx: 1, cy: 2, z: 3, r: 0, color,
         at_soil_level: false,
       },
       type: Actions.SET_DRAWN_POINT_DATA,
