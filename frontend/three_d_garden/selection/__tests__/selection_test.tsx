@@ -773,18 +773,25 @@ describe("selection popup controls", () => {
   });
 
   it("renders header color and delete buttons for supported objects", () => {
-    [pointObject(), weedObject()].forEach(object => {
-      const p = layerProps();
-      const wrapper = createRenderer(<ObjectPopupHeaderColor
-        {...p}
-        object={object} />);
-      expect(wrapper.toJSON()).toBeTruthy();
-      unmountRenderer(wrapper);
-    });
-    expect(createRenderer(<ObjectPopupHeaderColor
-      {...layerProps()}
-      dispatch={undefined}
-      object={pointObject()} />).toJSON()).toBeNull();
+    const popoverSpy = jest.spyOn(ui, "Popover")
+      .mockImplementation(({ target, content }: ui.PopoverProps) =>
+        <div>{target}{content}</div>);
+    try {
+      [pointObject(), weedObject()].forEach(object => {
+        const p = layerProps();
+        const wrapper = createRenderer(<ObjectPopupHeaderColor
+          {...p}
+          object={object} />);
+        expect(wrapper.toJSON()).toBeTruthy();
+        unmountRenderer(wrapper);
+      });
+      expect(createRenderer(<ObjectPopupHeaderColor
+        {...layerProps()}
+        dispatch={undefined}
+        object={pointObject()} />).toJSON()).toBeNull();
+    } finally {
+      popoverSpy.mockRestore();
+    }
 
     [
       plantObject(),

@@ -9,7 +9,6 @@ export interface InputErrorProps {
 export const InputError = (props: InputErrorProps) =>
   props.error
     ? <Popover
-      minimal={true}
       usePortal={false}
       position={Position.TOP_LEFT}
       interactionKind={PopoverInteractionKind.HOVER}

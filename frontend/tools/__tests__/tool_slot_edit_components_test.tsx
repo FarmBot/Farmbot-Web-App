@@ -43,12 +43,16 @@ const createWrapper = (element: React.ReactElement) => {
   return wrapper;
 };
 let fbSelectSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
     .mockImplementation(((_: ui.FBSelectProps) => <div />) as never);
+  popoverSpy = jest.spyOn(ui, "Popover")
+    .mockImplementation(({ target }: ui.PopoverProps) =>
+      <div>{target}</div>);
 });
 
 afterEach(() => {
@@ -58,6 +62,7 @@ afterEach(() => {
     wrapper && unmountRenderer(wrapper);
   }
   fbSelectSpy.mockRestore();
+  popoverSpy.mockRestore();
 });
 
 describe("<GantryMountedInput />", () => {

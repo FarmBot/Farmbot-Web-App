@@ -1,7 +1,7 @@
 let mockSave = () => Promise.resolve();
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SaveBtn } from "../../ui";
@@ -49,27 +49,21 @@ describe("<AddTool />", () => {
   });
 
   it("renders watering nozzle", () => {
-    const wrapper = createWrapper();
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "watering nozzle" });
+    const ref = React.createRef<AddTool>();
+    const { container } = render(<AddTool {...fakeProps()} ref={ref} />);
+    act(() => {
+      ref.current?.setState({ toolName: "watering nozzle" });
     });
-    const labels = wrapper.root.findAllByType("label")
-      .map(node => node.children.join("").toLowerCase());
-    expect(labels.some(label => label.includes("flow rate"))).toBeTruthy();
-    unmountRenderer(wrapper);
+    expect(container.textContent?.toLowerCase()).toContain("flow rate");
   });
 
   it("renders seeder", () => {
-    const wrapper = createWrapper();
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "seeder" });
+    const ref = React.createRef<AddTool>();
+    const { container } = render(<AddTool {...fakeProps()} ref={ref} />);
+    act(() => {
+      ref.current?.setState({ toolName: "seeder" });
     });
-    const labels = wrapper.root.findAllByType("label")
-      .map(node => node.children.join("").toLowerCase());
-    expect(labels.some(label => label.includes("tip z offset"))).toBeTruthy();
-    unmountRenderer(wrapper);
+    expect(container.textContent?.toLowerCase()).toContain("tip z offset");
   });
 
   it("changes flow rate", () => {

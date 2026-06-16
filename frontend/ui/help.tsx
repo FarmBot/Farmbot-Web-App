@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  PopoverInteractionKind, PopoverPosition, Position,
+  PopoverInteractionKind, Position,
 } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 import { Markdown } from "./markdown";
@@ -9,7 +9,7 @@ import { Popover } from "./popover";
 export interface HelpProps {
   text: string;
   onHover?: boolean;
-  position?: PopoverPosition;
+  position?: Position;
   customIcon?: string;
   customClass?: string;
   links?: React.ReactElement[];
