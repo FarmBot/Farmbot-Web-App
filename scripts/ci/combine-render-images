@@ -18,6 +18,7 @@ const screenshotName = requiredEnv('SCREENSHOT_NAME');
 const fpsSamplesName = requiredEnv('FPS_SAMPLES_NAME');
 const sceneMetricsName = requiredEnv('SCENE_METRICS_NAME');
 const feCoverageName = requiredEnv('FE_COVERAGE_NAME');
+const fpsHistoryName = requiredEnv('FPS_HISTORY');
 const renderImageScale = Number(process.env.COMBINED_RENDER_IMAGE_SCALE || 3);
 if (!Number.isFinite(renderImageScale) || renderImageScale <= 0) {
     console.error('COMBINED_RENDER_IMAGE_SCALE must be a positive number');
@@ -70,7 +71,11 @@ const rows = [
         screenshotCell('404'),
         screenshotCell('dropdown'),
     ],
-    [['fe coverage', imagePath(feCoverageName)], [], []],
+    [
+        ['fe coverage', imagePath(feCoverageName)],
+        ['fps history', imagePath(fpsHistoryName)],
+        [],
+    ],
 ];
 
 const escapeHtml = value => String(value)

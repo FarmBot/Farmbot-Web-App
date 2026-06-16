@@ -64,34 +64,66 @@ class CiPythonScriptTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(stdout, "n/a\n")
 
-    def test_previous_fps_value_reads_previous_row(self):
-        metrics_name = f"scene_metrics_test_{os.getpid()}"
-        path = Path("/tmp") / f"{metrics_name}.csv"
+    def test_previous_fps_value_reads_latest_history_row(self):
+        history_name = f"fps_history_test_{os.getpid()}"
+        path = Path("/tmp") / f"{history_name}.csv"
         path.write_text(
-            "epoch, FPS, Calls\n"
-            "1, 80, 1\n"
-            "2, 90, 1\n"
-            "3, 100, 1\n",
+            "fps,% change\n"
+            "80,0.00\n"
+            "90,12.50\n"
+            "100,11.11\n",
         )
         try:
             code, stdout, stderr = run_script("previous-fps-value", env={
-                "CHOSEN_METRICS": metrics_name,
+                "FPS_HISTORY": history_name,
                 "FALLBACK_FPS_VALUE": "100",
             })
         finally:
             path.unlink(missing_ok=True)
 
         self.assertEqual(code, 0)
-        self.assertEqual(stdout, "90.00\n")
+        self.assertEqual(stdout, "100.00\n")
         self.assertEqual(stderr, "")
 
     def test_previous_fps_value_uses_fallback_without_history(self):
         code, stdout, _stderr = run_script("previous-fps-value", env={
-            "CHOSEN_METRICS": f"missing_metrics_{os.getpid()}",
+            "FPS_HISTORY": f"missing_history_{os.getpid()}",
             "FALLBACK_FPS_VALUE": "100",
         })
         self.assertEqual(code, 0)
         self.assertEqual(stdout, "100\n")
+
+    def test_track_fps_history_appends_csv(self):
+        history_name = f"fps_history_track_test_{os.getpid()}"
+        path = Path("/tmp") / f"{history_name}.csv"
+        github_env = Path("/tmp") / f"github_env_track_test_{os.getpid()}"
+        path.write_text(
+            "fps,% change,commit sha\n"
+            "100.00,0.00,old123\n")
+        try:
+            code, stdout, stderr = run_script("track-fps-history", env={
+                "FPS_HISTORY": history_name,
+                "FPS_VALUE": "106.04",
+                "FALLBACK_FPS_VALUE": "100",
+                "GITHUB_SHA": "0123456789abcdef",
+                "GITHUB_ENV": str(github_env),
+                "PATH": os.environ["PATH"],
+            })
+            self.assertEqual(code, 0)
+            self.assertEqual(
+                stdout,
+                "Previous value: 100.00 fps\n"
+                "106.04 fps (6.04% change)\n")
+            self.assertEqual(stderr, "")
+            self.assertEqual(
+                path.read_text(),
+                "fps,% change,commit sha\n"
+                "100.00,0.00,old123\n"
+                "106.04,6.04,0123456789\n")
+            self.assertEqual(github_env.read_text(), "PERCENT_CHANGE=6.04\n")
+        finally:
+            path.unlink(missing_ok=True)
+            github_env.unlink(missing_ok=True)
 
     def test_render_url_records_outputs_field_separated_records(self):
         with tempfile.NamedTemporaryFile("w", delete=False) as file:

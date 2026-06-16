@@ -94,6 +94,14 @@ jobs:
             echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Restore fps history
+        id: restore_fps_history
+        run: |
+          scripts/ci/git-restore-artifact-branch-file "$FPS_HISTORY.csv"
+          if compgen -G "/tmp/$FPS_HISTORY.csv" >/dev/null; then
+            echo "fps_history_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Restore FPS metrics
         if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
         uses: actions/cache/restore@v5
@@ -124,12 +132,7 @@ jobs:
         run: scripts/ci/run-playwright-render
 
       - name: Track FPS value
-        run: |
-          PREV=$(scripts/ci/previous-fps-value)
-          echo "Previous value: $PREV fps"
-          percent_change=$(scripts/ci/percent-change --new "$FPS_VALUE" --old "$PREV")
-          echo "$FPS_VALUE fps ($percent_change% change)"
-          echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
+        run: scripts/ci/track-fps-history
 
       - name: Plot metric CSVs
         if: always()

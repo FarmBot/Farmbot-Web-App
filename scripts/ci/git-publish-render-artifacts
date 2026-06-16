@@ -5,6 +5,7 @@ set -euo pipefail
 : "${COMBINED_RENDER_IMAGE:?COMBINED_RENDER_IMAGE is required}"
 : "${CHOSEN_FPS:?CHOSEN_FPS is required}"
 : "${SCENE_METRICS_NAME:?SCENE_METRICS_NAME is required}"
+: "${FPS_HISTORY:?FPS_HISTORY is required}"
 : "${FE_COVERAGE_NAME:?FE_COVERAGE_NAME is required}"
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 : "${GITHUB_RUN_ID:?GITHUB_RUN_ID is required}"
@@ -28,11 +29,11 @@ for image in "$COMBINED_RENDER_IMAGE"; do
 done
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/latest/$CHOSEN_FPS.csv"
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/${GITHUB_RUN_ID}/$CHOSEN_FPS.csv"
-for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FE_COVERAGE_NAME.csv"; do
+for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FPS_HISTORY.csv" "/tmp/$FE_COVERAGE_NAME.csv"; do
   [ -f "$metric" ] && cp "$metric" "$worktree/$(basename "$metric")"
 done
 git -C "$worktree" add build
-for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FE_COVERAGE_NAME.csv"; do
+for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FPS_HISTORY.csv" "$worktree/$FE_COVERAGE_NAME.csv"; do
   [ -f "$artifact" ] && git -C "$worktree" add "$(basename "$artifact")"
 done
 git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true

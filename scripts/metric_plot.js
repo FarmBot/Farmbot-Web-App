@@ -370,6 +370,7 @@ const title = (basename, prefix) => {
 const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const basename = path.basename(filename);
     const isSceneMetricsCsv = /^scene_metrics(?:_[^/]+)?\.csv$/.test(basename);
+    const isFpsHistoryCsv = basename === 'fps_history.csv';
     const firstHeader = headers[0];
     const xHeader = headers.find(header =>
         ['elapsed seconds', 'elapsedSeconds'].includes(header));
@@ -403,6 +404,18 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             decimalValues: true,
             samples: rows.map((row, index) => sampleFor(row, index, 'percent')),
             latestCommitSha: latestCommitShaFor(rows, ['percent']),
+        };
+    }
+    if (isFpsHistoryCsv && headers.includes('fps')) {
+        return {
+            title: 'FPS history',
+            xLabel: 'Runs',
+            yMin: 0,
+            yMaxBaseline: 200,
+            yTickInterval: 100,
+            decimalValues: true,
+            samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
+            latestCommitSha: latestCommitShaFor(rows, ['fps']),
         };
     }
     if (headers.includes('FPS')) {
@@ -495,6 +508,7 @@ function printUsage() {
         '',
         'Supported CSV inputs:',
         '  fps_samples.csv     Plots the fps column against elapsed seconds.',
+        '  fps_history.csv     Plots historical fps values.',
         '  fe_coverage.csv     Plots the percent column.',
         '  scene_metrics.csv   Plots numeric columns.',
         '',
