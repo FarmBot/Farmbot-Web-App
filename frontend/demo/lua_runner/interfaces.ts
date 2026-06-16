@@ -7,6 +7,7 @@ export interface Action {
     | "move_relative"
     | "move"
     | "_move"
+    | "busy"
     | "toggle_pin"
     | "read_pin"
     | "sensor_reading"

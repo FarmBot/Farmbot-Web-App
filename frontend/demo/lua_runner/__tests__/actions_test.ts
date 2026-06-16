@@ -111,7 +111,13 @@ describe("expandActions()", () => {
     if (!last || Math.abs(last - target) >= 0.01) {
       chunks.push(target);
     }
-    return chunks.flatMap(x => [defaultWait(), defaultMove(x)]);
+    const withWait = chunks.flatMap(x => [defaultWait(), defaultMove(x)]);
+    const withBusy = [
+      { type: "busy", args: [1] },
+      ...withWait,
+      { type: "busy", args: [0] },
+    ];
+    return withBusy;
   };
 
   beforeEach(() => {
@@ -155,8 +161,10 @@ describe("expandActions()", () => {
     expect(expandActions([
       { type: "move_absolute", args: [300, 0, 0] },
     ], [])).toEqual([
+      { type: "busy", args: [1] },
       { type: "wait_ms", args: [1000] },
       { type: "expanded_move_absolute", args: [300, 0, 0] },
+      { type: "busy", args: [0] },
     ]);
   });
 
@@ -165,8 +173,10 @@ describe("expandActions()", () => {
     expect(expandActions([
       { type: "move_absolute", args: [2000, 0, 0] },
     ], [])).toEqual([
+      { type: "busy", args: [1] },
       defaultWait(),
       { type: "expanded_move_absolute", args: [2000, 0, 0] },
+      { type: "busy", args: [0] },
     ]);
   });
 
@@ -195,8 +205,10 @@ describe("expandActions()", () => {
           "{\"x\":0,\"y\":0,\"z\":0}",
         ],
       },
+      { type: "busy", args: [1] },
       defaultWait(),
       { type: "expanded_move_absolute", args: [0, 0, 0] },
+      { type: "busy", args: [0] },
     ]);
   });
 

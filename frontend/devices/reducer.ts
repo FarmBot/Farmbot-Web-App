@@ -175,6 +175,7 @@ export const botReducer = generateReducer<BotState>(initialState())
     })
   .add<boolean>(Actions.DEMO_SET_ESTOP, (s, { payload }) => {
     s.hardware.informational_settings.locked = payload;
+    s.hardware.informational_settings.busy = false;
     s.hardware.pins = {};
     s.hardware.jobs = {};
     s.demoQueueLength = 0;
@@ -182,6 +183,10 @@ export const botReducer = generateReducer<BotState>(initialState())
   })
   .add<number>(Actions.DEMO_SET_QUEUE_LENGTH, (s, { payload }) => {
     s.demoQueueLength = payload;
+    return s;
+  })
+  .add<boolean>(Actions.DEMO_SET_BUSY, (s, { payload }) => {
+    s.hardware.informational_settings.busy = payload;
     return s;
   })
   .add<PingResultPayload>(Actions.PING_OK, (s) => {

@@ -234,8 +234,8 @@ nav {
     .movement-progress {
       top: 0;
       left: 0;
-      background: $placeholder_gray;
       border-radius: 0;
+      z-index: unset;
     }
   }
   .jobs-button {

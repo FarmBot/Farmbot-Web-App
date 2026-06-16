@@ -124,6 +124,8 @@ export const expandActionsFromPosition = (
       args: [position.x, position.y, position.z],
     });
   };
+  const start = () => { expanded.push({ type: "busy", args: [1] }); };
+  const stop = () => { expanded.push({ type: "busy", args: [0] }); };
   // eslint-disable-next-line complexity
   actions.map(action => {
     switch (action.type) {
@@ -133,9 +135,11 @@ export const expandActionsFromPosition = (
           y: action.args[1] as number,
           z: action.args[2] as number,
         });
+        start();
         movementChunks(
           expansionCurrent, moveAbsoluteTarget, mmPerTimeStep, disableChunking)
           .map(addPosition);
+        stop();
         setExpansionCurrent(moveAbsoluteTarget);
         break;
       case "move_relative":
@@ -144,9 +148,11 @@ export const expandActionsFromPosition = (
           y: expansionCurrent.y + (action.args[1] as number),
           z: expansionCurrent.z + (action.args[2] as number),
         });
+        start();
         movementChunks(
           expansionCurrent, moveRelativeTarget, mmPerTimeStep, disableChunking)
           .map(addPosition);
+        stop();
         setExpansionCurrent(moveRelativeTarget);
         break;
       case "_move":
@@ -163,12 +169,14 @@ export const expandActionsFromPosition = (
           ],
         });
         const actualMoveTargets = moves.map(clampTarget);
+        start();
         actualMoveTargets.map(actualMoveTarget => {
           movementChunks(
             expansionCurrent, actualMoveTarget, mmPerTimeStep, disableChunking)
             .map(addPosition);
           setExpansionCurrent(actualMoveTarget);
         });
+        stop();
         break;
       case "send_message":
         const sendMessageArgs = [...action.args];
@@ -437,6 +445,14 @@ export const runActions = (
             store.dispatch({
               type: Actions.DEMO_SET_POSITION,
               payload: position,
+            });
+          };
+        case "busy":
+          const busy = action.args[0] as number;
+          return () => {
+            store.dispatch({
+              type: Actions.DEMO_SET_BUSY,
+              payload: !!busy,
             });
           };
         case "toggle_pin":
