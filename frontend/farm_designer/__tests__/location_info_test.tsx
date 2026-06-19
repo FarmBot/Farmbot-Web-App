@@ -169,7 +169,7 @@ describe("<LocationInfo />", () => {
 
   it("sets point data", () => {
     const p = fakeProps();
-    p.chosenLocation = { x: 1, y: 1, z: 0 };
+    p.chosenLocation = { x: 1, y: 1, z: -123 };
     p.currentBotLocation = { x: 10, y: 1, z: 0 };
     const { container } = track(render(
       <NavigationContext.Provider value={mockNavigate}>
@@ -182,8 +182,9 @@ describe("<LocationInfo />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: {
-        name: "Location Point", cx: 1, cy: 1, color: "gray", r: 0, z: 0,
+        name: "Location Point", cx: 1, cy: 1, color: "gray", r: 0,
         at_soil_level: false,
+        z: -123,
       },
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("add"));

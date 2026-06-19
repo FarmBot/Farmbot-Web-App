@@ -491,7 +491,7 @@ const LocationActions = (props: LocationActionsProps) => {
           color: "gray",
           at_soil_level: false,
           r: 0,
-          z: 0,
+          z: props.chosenLocation.z || 0,
         };
         props.dispatch({ type: Actions.SET_DRAWN_POINT_DATA, payload });
         navigate(Path.points("add"));
