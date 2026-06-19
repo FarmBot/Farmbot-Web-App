@@ -54,6 +54,7 @@ export interface Config {
   config: boolean;
   urlParamAutoAdd: boolean;
   zoom: boolean;
+  zoomFactor: number;
   pan: boolean;
   rotate: boolean;
   bounds: boolean;
@@ -181,6 +182,7 @@ export const INITIAL: ConfigWithPosition = {
   config: false,
   urlParamAutoAdd: false,
   zoom: false,
+  zoomFactor: 10,
   pan: false,
   rotate: true,
   bounds: false,
@@ -254,7 +256,7 @@ export const NUMBER_KEYS = [
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
-  "interpolationPower", "lastImageCapture", "viewpointHeading",
+  "interpolationPower", "lastImageCapture", "viewpointHeading", "zoomFactor",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -476,7 +478,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "perspective", "topDown", "bot", "laser", "viewpointHeading",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
-  "settingsBar", "zoomBeacons", "pan", "rotate",
+  "settingsBar", "zoomBeacons", "pan", "rotate", "zoomFactor",
   "solar", "utilitiesPost", "packaging",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",

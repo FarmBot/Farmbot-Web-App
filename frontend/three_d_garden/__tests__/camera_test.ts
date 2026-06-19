@@ -29,6 +29,7 @@ describe("cameraInit()", () => {
     topDown: false,
     viewpointHeading: 45,
     bedSize: { x: 3000, y: 1500 },
+    zoomFactor: 10,
   });
 
   it("initializes camera", () => {
@@ -96,6 +97,7 @@ describe("getDefaultCameraPosition()", () => {
     bedSize: { x: 3000, y: 1500 },
     topDown: false,
     visual: false,
+    zoomFactor: 10,
   });
 
   it("returns desktop position", () => {

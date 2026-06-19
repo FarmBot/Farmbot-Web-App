@@ -466,7 +466,8 @@ function getGardenLayerVisibility(
     && params.botVisibleInConfig;
   const showPoints = params.showSoilPoints
     || !!getConfigValue?.(BooleanSetting.show_points);
-  const showWeeds = !!getConfigValue?.(BooleanSetting.show_weeds);
+  const showWeeds = !params.addPlantProps
+    || !!getConfigValue?.(BooleanSetting.show_weeds);
   const showSpread = !!getConfigValue?.(BooleanSetting.show_spread);
   const showMoistureMap = !!getConfigValue?.(
     BooleanSetting.show_moisture_interpolation_map);
@@ -624,15 +625,15 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markReadyOnMount={!gridVisible}
       markName={"three_d_grid_ready"}>
       {gridVisible &&
-      <GridRevealGroup
-        name={"grid-load-in"}
-        reveal={gridReveal}
-        onRest={() => markStep("grid")}>
-        <Grid
-          config={config}
-          getZ={getZ}
-          activeFocus={activeFocus} />
-      </GridRevealGroup>}
+        <GridRevealGroup
+          name={"grid-load-in"}
+          reveal={gridReveal}
+          onRest={() => markStep("grid")}>
+          <Grid
+            config={config}
+            getZ={getZ}
+            activeFocus={activeFocus} />
+        </GridRevealGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"plants"}
@@ -641,50 +642,50 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markReadyOnMount={!plantLayerHasWork || !plantsVisible}
       markName={"three_d_core_ready"}>
       {plantLayerHasWork &&
-      <PopInGroup
-        key={seasonLayerKey}
-        name={"plants-load-in"}
-        reveal={plantsLayerReveal}
-        onRest={() => markStep("plants")}
-        distance={200}
-        animateExit={true}
-        hideAfterExit={true}>
-        <FocusVisibilityGroup
-          name={"plant-labels"}
-          visible={!activeFocus}>
-          {plantLabelNodes}
-        </FocusVisibilityGroup>
-        <FocusVisibilityGroup name={"plants"}
-          visible={true}
-          keepMounted={true}
-          onPointerEnter={plantsSelectable ? handlePlantPointerEnter : undefined}
-          onPointerMove={plantsSelectable ? handlePlantPointerMove : undefined}
-          onPointerLeave={plantsSelectable ? handlePlantPointerLeave : undefined}>
-          <PlantInstances
-            plants={threeDPlants}
-            config={config}
-            getZ={getZ}
+        <PopInGroup
+          key={seasonLayerKey}
+          name={"plants-load-in"}
+          reveal={plantsLayerReveal}
+          onRest={() => markStep("plants")}
+          distance={200}
+          animateExit={true}
+          hideAfterExit={true}>
+          <FocusVisibilityGroup
+            name={"plant-labels"}
+            visible={!activeFocus}>
+            {plantLabelNodes}
+          </FocusVisibilityGroup>
+          <FocusVisibilityGroup name={"plants"}
             visible={true}
-            iconCapacities={plantIconCapacities}
-            plantIconAtlas={plantIconAtlas}
-            startTimeRef={startTimeRef}
-            onSelectObject={plantsSelectable ? onSelectObject : undefined}
-            onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
-            dispatch={plantsSelectable ? dispatch : undefined} />
-          <PlantSpreadInstances
-            plants={threeDPlants}
-            visible={true}
-            spreadVisible={showSpread}
-            config={config}
-            instanceCapacity={plantInstanceCapacity}
-            activePositionRef={activePositionRef}
-            routeKey={routeKey}
-            getZ={getZ}
-            onSelectObject={plantsSelectable ? onSelectObject : undefined}
-            onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
-            dispatch={plantsSelectable ? dispatch : undefined} />
-        </FocusVisibilityGroup>
-      </PopInGroup>}
+            keepMounted={true}
+            onPointerEnter={plantsSelectable ? handlePlantPointerEnter : undefined}
+            onPointerMove={plantsSelectable ? handlePlantPointerMove : undefined}
+            onPointerLeave={plantsSelectable ? handlePlantPointerLeave : undefined}>
+            <PlantInstances
+              plants={threeDPlants}
+              config={config}
+              getZ={getZ}
+              visible={true}
+              iconCapacities={plantIconCapacities}
+              plantIconAtlas={plantIconAtlas}
+              startTimeRef={startTimeRef}
+              onSelectObject={plantsSelectable ? onSelectObject : undefined}
+              onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
+              dispatch={plantsSelectable ? dispatch : undefined} />
+            <PlantSpreadInstances
+              plants={threeDPlants}
+              visible={true}
+              spreadVisible={showSpread}
+              config={config}
+              instanceCapacity={plantInstanceCapacity}
+              activePositionRef={activePositionRef}
+              routeKey={routeKey}
+              getZ={getZ}
+              onSelectObject={plantsSelectable ? onSelectObject : undefined}
+              onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
+              dispatch={plantsSelectable ? dispatch : undefined} />
+          </FocusVisibilityGroup>
+        </PopInGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"weeds"}
@@ -693,27 +694,27 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markReadyOnMount={!weedLayerHasWork || !showWeeds}
       markName={"three_d_weeds_ready"}>
       {weedLayerHasWork &&
-      <PopInGroup
-        name={"weeds-load-in"}
-        reveal={weedsLayerReveal}
-        onRest={() => markStep("weeds")}
-        distance={200}
-        animateExit={true}
-        hideAfterExit={true}>
-        <Group name={"weeds"}
-          visible={true}>
-          <WeedInstances
-            weeds={weeds}
-            visible={true}
-            config={config}
-            getZ={getZ}
-            plantIconAtlas={plantIconAtlas}
-            onSelectObject={weedsSelectable ? onSelectObject : undefined}
-            onHoverObject={weedsSelectable ? onHoverObject : undefined}
-            onHoverLabel={weedsSelectable ? onHoverLabel : undefined}
-            dispatch={weedsSelectable ? dispatch : undefined} />
-        </Group>
-      </PopInGroup>}
+        <PopInGroup
+          name={"weeds-load-in"}
+          reveal={weedsLayerReveal}
+          onRest={() => markStep("weeds")}
+          distance={200}
+          animateExit={true}
+          hideAfterExit={true}>
+          <Group name={"weeds"}
+            visible={true}>
+            <WeedInstances
+              weeds={weeds}
+              visible={true}
+              config={config}
+              getZ={getZ}
+              plantIconAtlas={plantIconAtlas}
+              onSelectObject={weedsSelectable ? onSelectObject : undefined}
+              onHoverObject={weedsSelectable ? onHoverObject : undefined}
+              onHoverLabel={weedsSelectable ? onHoverLabel : undefined}
+              dispatch={weedsSelectable ? dispatch : undefined} />
+          </Group>
+        </PopInGroup>}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"points"}
@@ -722,26 +723,26 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markReadyOnMount={!pointLayerHasWork || !showPoints}
       markName={"three_d_points_ready"}>
       {pointLayerHasWork &&
-      <PopInGroup
-        name={"points-load-in"}
-        reveal={pointsLayerReveal}
-        onRest={() => markStep("points")}
-        distance={200}
-        animateExit={true}
-        hideAfterExit={true}>
-        <Group name={"points"}
-          visible={true}>
-          <PointInstances
-            points={mapPoints}
-            visible={true}
-            config={config}
-            getZ={getZ}
-            onSelectObject={pointsSelectable ? onSelectObject : undefined}
-            onHoverObject={pointsSelectable ? onHoverObject : undefined}
-            onHoverLabel={pointsSelectable ? onHoverLabel : undefined}
-            dispatch={pointsSelectable ? dispatch : undefined} />
-        </Group>
-      </PopInGroup>}
+        <PopInGroup
+          name={"points-load-in"}
+          reveal={pointsLayerReveal}
+          onRest={() => markStep("points")}
+          distance={200}
+          animateExit={true}
+          hideAfterExit={true}>
+          <Group name={"points"}
+            visible={true}>
+            <PointInstances
+              points={mapPoints}
+              visible={true}
+              config={config}
+              getZ={getZ}
+              onSelectObject={pointsSelectable ? onSelectObject : undefined}
+              onHoverObject={pointsSelectable ? onHoverObject : undefined}
+              onHoverLabel={pointsSelectable ? onHoverLabel : undefined}
+              dispatch={pointsSelectable ? dispatch : undefined} />
+          </Group>
+        </PopInGroup>}
     </SceneBoundary>
   </>;
 };
@@ -906,9 +907,9 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
 
   return <>
     {props.showLoadProgress && props.detailsReveal && props.layerVisible &&
-    <ThreeDLoadProgressOverlay
-      progress={farmbotLayerLoadProgress}
-      complete={loadInComplete} />}
+      <ThreeDLoadProgressOverlay
+        progress={farmbotLayerLoadProgress}
+        complete={loadInComplete} />}
     <SceneBoundary
       loadStep={"farmbot"}
       loadProgress={props.loadProgress}
@@ -1319,6 +1320,7 @@ export const GardenModel = (props: GardenModelProps) => {
         topDown: cameraConfig.topDown,
         viewpointHeading: cameraConfig.viewpointHeading,
         bedSize: cameraBedSize,
+        zoomFactor: config.zoomFactor,
       });
       return props.smoothFocusTransitions && isXL
         ? {
@@ -1330,12 +1332,14 @@ export const GardenModel = (props: GardenModelProps) => {
           ] as typeof nextCamera.position,
         }
         : nextCamera;
-    }, [
+    },
+    [
       cameraBedSize,
       cameraConfig.topDown,
       cameraConfig.viewpointHeading,
       isXL,
       props.smoothFocusTransitions,
+      config.zoomFactor,
     ]);
   const camera = props.activeFocus
     ? getCamera(
@@ -1774,24 +1778,24 @@ export const GardenModel = (props: GardenModelProps) => {
           up={[0, 0, 1]} />
       </AnimatedGroup>
       {controlsCamera &&
-      <OrbitControls
-        ref={setControls}
-        camera={controlsCamera}
-        maxPolarAngle={Math.PI / 2}
-        minAzimuthAngle={topDownCameraAngle}
-        maxAzimuthAngle={topDownCameraAngle}
-        enableRotate={config.rotate}
-        enableZoom={config.zoom}
-        zoomToCursor={true}
-        enablePan={config.pan}
-        dampingFactor={0.2}
-        {...orbitControlProps}
-        onStart={handleCameraDragStart}
-        onEnd={handleCameraDragEnd}
-        minZoom={config.lightsDebug ? 0 : 0.05}
-        maxZoom={10}
-        minDistance={config.lightsDebug ? 50 : 500}
-        maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
+        <OrbitControls
+          ref={setControls}
+          camera={controlsCamera}
+          maxPolarAngle={Math.PI / 2}
+          minAzimuthAngle={topDownCameraAngle}
+          maxAzimuthAngle={topDownCameraAngle}
+          enableRotate={config.rotate}
+          enableZoom={config.zoom}
+          zoomToCursor={true}
+          enablePan={config.pan}
+          dampingFactor={0.2}
+          {...orbitControlProps}
+          onStart={handleCameraDragStart}
+          onEnd={handleCameraDragEnd}
+          minZoom={config.lightsDebug ? 0 : 0.05}
+          maxZoom={10}
+          minDistance={config.lightsDebug ? 50 : 500}
+          maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
       <ThreeDLoadProgressOverlay
         progress={loadProgress}
         complete={detailsReveal} />
@@ -1917,23 +1921,23 @@ export const GardenModel = (props: GardenModelProps) => {
         {config.stats && <StatsGl className={"stats-gl"} />}
         {config.stats && <Stats />}
         {config.zoomBeacons &&
-        <ZoomBeaconsLoadIn
-          config={config}
-          configPosition={props.configPosition}
-          activeFocus={props.activeFocus}
-          setActiveFocus={props.setActiveFocus}
-          reveal={detailsReveal}
-          onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
+          <ZoomBeaconsLoadIn
+            config={config}
+            configPosition={props.configPosition}
+            activeFocus={props.activeFocus}
+            setActiveFocus={props.setActiveFocus}
+            reveal={detailsReveal}
+            onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
         {config.threeAxes && <AxesHelper args={[5000]} />}
         {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
         {config.clouds && <Clouds config={config} />}
         {showMoistureMap && config.moistureDebug &&
-        <MoistureReadings
-          color={"green"}
-          radius={50}
-          applyOffset={true}
-          config={config}
-          readings={sensorReadings} />}
+          <MoistureReadings
+            color={"green"}
+            radius={50}
+            applyOffset={true}
+            config={config}
+            readings={sensorReadings} />}
         <GroupOrderVisual
           allPoints={allPoints}
           groups={groups}
@@ -1941,38 +1945,38 @@ export const GardenModel = (props: GardenModelProps) => {
           tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
           getZ={getZ} />
         {props.addPlantProps?.designer.visualizedSequence &&
-        <LazyVisualization
-          visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-          config={config}
-          configPosition={props.configPosition} />}
+          <LazyVisualization
+            visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+            config={config}
+            configPosition={props.configPosition} />}
         {renderSolar &&
-        <Solar config={config} activeFocus={props.activeFocus} />}
+          <Solar config={config} activeFocus={props.activeFocus} />}
         {config.scene == "Lab" &&
-        <Lab
-          config={config}
-          activeFocus={props.activeFocus}
-          reveal={detailsReveal}
-          onDetailsLoadInRest={markDetailsLoaded} />}
+          <Lab
+            config={config}
+            activeFocus={props.activeFocus}
+            reveal={detailsReveal}
+            onDetailsLoadInRest={markDetailsLoaded} />}
         {config.scene == "Greenhouse" &&
-        <Greenhouse
-          config={config}
-          activeFocus={props.activeFocus}
-          plantIconAtlas={props.plantIconAtlas}
-          reveal={detailsReveal}
-          onDetailsLoadInRest={markDetailsLoaded} />}
+          <Greenhouse
+            config={config}
+            activeFocus={props.activeFocus}
+            plantIconAtlas={props.plantIconAtlas}
+            reveal={detailsReveal}
+            onDetailsLoadInRest={markDetailsLoaded} />}
         {config.cameraSelectionView &&
-        <CameraSelectionUI
-          config={config}
-          dispatch={dispatch}
-          topDownAtStart={topDownAtStart} />}
+          <CameraSelectionUI
+            config={config}
+            dispatch={dispatch}
+            topDownAtStart={topDownAtStart} />}
         <EnvironmentScenePreloader
           config={config}
           enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
           plantIconAtlas={props.plantIconAtlas} />
         {detailsReveal && !animatedDetailsLoadIn &&
-        <LoadStepReady
-          step={"details"}
-          markStep={loadProgress.markStep} />}
+          <LoadStepReady
+            step={"details"}
+            markStep={loadProgress.markStep} />}
       </SceneBoundary>
     </Group>
   </FocusTransitionProvider>;

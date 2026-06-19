@@ -382,6 +382,7 @@ describe("<GardenModel />", () => {
       topDown: p.config.topDown,
       viewpointHeading: p.config.viewpointHeading,
       bedSize: { x: p.config.bedLengthOuter, y: p.config.bedWidthOuter },
+      zoomFactor: p.config.zoomFactor,
     });
     const expectedCamera = getCamera(
       p.config,
@@ -410,6 +411,7 @@ describe("<GardenModel />", () => {
         x: p.config.bedLengthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
         y: p.config.bedWidthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
       },
+      zoomFactor: p.config.zoomFactor,
     });
     expect(camera?.props.position).toEqual([
       expectedCamera.position[0],

@@ -23,6 +23,9 @@ import { FocusTransitionProvider } from "../three_d_garden/focus_transition";
 import {
   PROMO_PLANT_ICON_ATLAS,
 } from "../three_d_garden/garden/plant_icon_atlas";
+import {
+  getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
+} from "./resources";
 
 const PROMO_BED_SIZES = [
   {
@@ -143,7 +146,7 @@ export const Promo = () => {
 
   const mapPoints = React.useMemo<TaggedGenericPointer[]>(() =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    calculatePointPositions(config), [
+    getPromoResourcePoints() || calculatePointPositions(config), [
     config.soilSurface, config.soilHeight, config.soilSurfacePointCount,
     config.soilSurfaceVariance, config.bedXOffset, config.bedYOffset,
     config.bedWallThickness, config.bedLengthOuter, config.bedWidthOuter,
@@ -194,9 +197,10 @@ export const Promo = () => {
   }, [activeFocus, clearActiveFocus]);
 
   const plants = React.useMemo(() => {
-    return getCachedPlants(config);
+    return getPromoResourcePlants() || getCachedPlants(config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.plants, config.bedLengthOuter, config.bedWidthOuter]);
+  const weeds = React.useMemo(() => getPromoResourceWeeds() || [], []);
 
   const threeDPlants = React.useMemo(() => {
     return config.promoSpread
@@ -231,6 +235,7 @@ export const Promo = () => {
               startTimeRef={startTimeRef}
               threeDPlants={threeDPlants}
               mapPoints={mapPoints}
+              weeds={weeds}
               plantIconCapacities={plantCapacities.iconCapacities}
               plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}

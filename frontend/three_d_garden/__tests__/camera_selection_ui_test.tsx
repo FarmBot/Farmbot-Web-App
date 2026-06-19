@@ -88,6 +88,7 @@ describe("<CameraSelectionUI />", () => {
       },
       topDown,
       visual: !debug,
+      zoomFactor: config.zoomFactor,
     });
     const baseScaleXY = debug ? 1 : 0.5;
     const scale = topDown ? 0.1 : baseScaleXY;

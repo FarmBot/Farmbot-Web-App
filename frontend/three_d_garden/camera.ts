@@ -8,10 +8,11 @@ export interface CameraInitProps {
   topDown: boolean;
   viewpointHeading: number;
   bedSize: AxisNumberProperty;
+  zoomFactor: number;
 }
 
 export const cameraInit = (props: CameraInitProps): Camera => {
-  const { topDown, viewpointHeading, bedSize } = props;
+  const { topDown, viewpointHeading, bedSize, zoomFactor } = props;
   const devCameraString = DevSettings.get3dCamera();
   let devCamera;
   try {
@@ -28,6 +29,7 @@ export const cameraInit = (props: CameraInitProps): Camera => {
       bedSize,
       topDown: false,
       visual: false,
+      zoomFactor: zoomFactor,
     });
 
   const defaultCameraTarget = [0, 0, 0];
@@ -51,11 +53,12 @@ export interface GetDefaultCameraPositionProps {
   bedSize: AxisNumberProperty;
   topDown: boolean;
   visual: boolean;
+  zoomFactor: number;
 }
 
 export const getDefaultCameraPosition =
   (props: GetDefaultCameraPositionProps): [number, number, number] => {
-    const { heading, bedSize, topDown, visual } = props;
+    const { heading, bedSize, topDown, visual, zoomFactor } = props;
     const angle = topDown ? heading : (heading - 45) % 360;
     const radians = angle * Math.PI / 180;
     const smallF = Math.min(SMALL_FACTOR, SMALL_FACTOR * (3000 / bedSize.x) ** 2);
@@ -64,26 +67,27 @@ export const getDefaultCameraPosition =
     const smallY = visual ? bedSize.y / 2 + smallF : smallX;
     const bigX = bedSize.x / 2 + bigF;
     const bigY = visual ? bedSize.y / 2 + BIG_FACTOR : bigX;
+    const f = 1 / (zoomFactor / 10);
 
     if (topDown) {
       const phase = Math.PI / 2;
       return [
-        round(smallX * Math.cos(radians - phase)),
-        round(smallY * Math.sin(radians - phase)),
-        5000,
+        round(smallX * Math.cos(radians - phase) * f),
+        round(smallY * Math.sin(radians - phase) * f),
+        5000 * f,
       ];
     }
 
     const phase = Math.PI / 4;
     return isDesktop()
       ? [
-        round(smallX * Math.cos(radians - phase)),
-        round(smallY * Math.sin(radians - phase)),
-        2500,
+        round(smallX * Math.cos(radians - phase) * f),
+        round(smallY * Math.sin(radians - phase) * f),
+        2500 * f,
       ]
       : [
-        round(bigX * Math.cos(radians - phase)),
-        round(bigY * Math.sin(radians - phase)),
-        3400,
+        round(bigX * Math.cos(radians - phase) * f),
+        round(bigY * Math.sin(radians - phase) * f),
+        3400 * f,
       ];
   };

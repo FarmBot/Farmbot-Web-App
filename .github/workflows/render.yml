@@ -196,8 +196,11 @@ jobs:
         if: success() && env.NOTIFY == 'true'
         run: |
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          for MESSAGE in \
-            "<${RENDER_SUMMARY_URL:-$RUN_URL}|render summary>"
-          do
-            scripts/ci/send-notification "$MESSAGE"
-          done
+          if [ -n "${RENDER_SUMMARY_URLS:-}" ]; then
+            for URL in $RENDER_SUMMARY_URLS; do
+              NAME="$(basename "$URL" .png)"
+              scripts/ci/send-notification "<$URL|$NAME>"
+            done
+          else
+            scripts/ci/send-notification "<$RUN_URL|render summary>"
+          fi

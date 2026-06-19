@@ -87,6 +87,7 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
         topDown={true}
         selected={topDownSelected && angle == config.viewpointHeading}
         hovered={hovered?.angle == angle && hovered.topDown}
+        zoomFactor={config.zoomFactor}
         debug={false} />)}
     {isoAngles.map(angle =>
       <CameraLocation key={`iso-${angle}`} {...common}
@@ -94,6 +95,7 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
         topDown={false}
         selected={!topDownSelected && angle == config.viewpointHeading}
         hovered={hovered?.angle == angle && hovered.topDown === false}
+        zoomFactor={config.zoomFactor}
         debug={false} />)}
     {config.lightsDebug && CAMERA_ANGLES.map(angle =>
       <CameraLocation key={`debug-${angle}`} {...common}
@@ -101,6 +103,7 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
         topDown={false}
         selected={!topDownSelected && angle == config.viewpointHeading}
         hovered={hovered?.angle == angle && hovered.topDown === false}
+        zoomFactor={config.zoomFactor}
         debug={true} />)}
   </Group>;
 };
@@ -116,12 +119,14 @@ interface CameraLocationProps extends Hovered {
   bedHeight: number;
   lightsDebug: boolean;
   debug: boolean;
+  zoomFactor: number;
 }
 
 const CameraLocation = React.memo((props: CameraLocationProps) => {
   const {
     dispatch, selected, hovered, setHoveredMarker, angle, topDown, debug,
     bedLengthOuter, bedWidthOuter, bedZOffset, bedHeight, lightsDebug,
+    zoomFactor,
   } = props;
   const baseColor = selected ? "blue" : "orange";
   const color = hovered ? "cyan" : baseColor;
@@ -132,6 +137,7 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
       bedSize,
       topDown,
       visual: !debug,
+      zoomFactor,
     });
     const baseScaleXY = debug ? 1 : 0.5;
     const scale = topDown ? 0.1 : baseScaleXY;
@@ -149,7 +155,7 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
     };
   }, [
     angle, bedHeight, bedLengthOuter, bedWidthOuter,
-    bedZOffset, debug, topDown,
+    bedZOffset, debug, topDown, zoomFactor,
   ]);
   const click = React.useMemo(() => debounce(() => {
     if (dispatch) {

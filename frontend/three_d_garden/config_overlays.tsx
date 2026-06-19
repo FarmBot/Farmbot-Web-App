@@ -218,49 +218,49 @@ export const PublicOverlay = (props: OverlayProps) => {
 
   return <div className={"overlay"}>
     {config.settingsBar &&
-    <FocusVisibilityDiv
-      className={settingsBarClassName}
-      visible={!props.activeFocus}>
-      <div className={"settings-bar-content"}>
-        <PublicOverlaySection
-          {...commonSectionProps}
-          title={"FarmBot"}
-          configKey={"sizePreset"}
-          options={{
-            "genesis": "Genesis",
-            "genesis-xl": "Genesis XL",
-          }} />
-        <PublicOverlaySection
-          {...commonSectionProps}
-          title={"Season"}
-          configKey={"plants"}
-          startTimeRef={props.startTimeRef}
-          showAnimationControl={true}
-          options={{
-            "spring": "Spring",
-            "summer": "Summer",
-            "fall": "Fall",
-            "winter": "Winter",
-          }} />
-        <PublicOverlaySection
-          {...commonSectionProps}
-          title={"Bed Type"}
-          configKey={"bedType"}
-          options={{
-            "standard": "Standard",
-            "mobile": "Mobile",
-          }} />
-        <PublicOverlaySection
-          {...commonSectionProps}
-          title={"Environment"}
-          configKey={"scene"}
-          options={{
-            "outdoor": "Outdoor",
-            "lab": "Lab",
-            "greenhouse": "Greenhouse",
-          }} />
-      </div>
-    </FocusVisibilityDiv>}
+      <FocusVisibilityDiv
+        className={settingsBarClassName}
+        visible={!props.activeFocus}>
+        <div className={"settings-bar-content"}>
+          <PublicOverlaySection
+            {...commonSectionProps}
+            title={"FarmBot"}
+            configKey={"sizePreset"}
+            options={{
+              "genesis": "Genesis",
+              "genesis-xl": "Genesis XL",
+            }} />
+          <PublicOverlaySection
+            {...commonSectionProps}
+            title={"Season"}
+            configKey={"plants"}
+            startTimeRef={props.startTimeRef}
+            showAnimationControl={true}
+            options={{
+              "spring": "Spring",
+              "summer": "Summer",
+              "fall": "Fall",
+              "winter": "Winter",
+            }} />
+          <PublicOverlaySection
+            {...commonSectionProps}
+            title={"Bed Type"}
+            configKey={"bedType"}
+            options={{
+              "standard": "Standard",
+              "mobile": "Mobile",
+            }} />
+          <PublicOverlaySection
+            {...commonSectionProps}
+            title={"Environment"}
+            configKey={"scene"}
+            options={{
+              "outdoor": "Outdoor",
+              "lab": "Lab",
+              "greenhouse": "Greenhouse",
+            }} />
+        </div>
+      </FocusVisibilityDiv>}
     <FocusVisibilityDiv
       className={"promo-info"}
       visible={config.promoInfo && !props.activeFocus}>
@@ -600,6 +600,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         <Toggle {...common} configKey={"rotate"} />
         <Toggle {...common} configKey={"topDown"} />
         <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
+        <Slider {...common} configKey={"zoomFactor"} min={1} max={100} />
         <Toggle {...common} configKey={"cameraSelectionView"} />
         <Toggle {...common} configKey={"lowDetail"} />
       </div>

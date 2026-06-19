@@ -10,6 +10,7 @@ import * as zoomBeaconConstants from
 import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
 import * as screenSize from "../../screen_size";
+import { PROMO_RESOURCES_KEY } from "../resources";
 
 type CanvasComponentProps = React.ComponentProps<typeof reactThreeFiber.Canvas>;
 type CanvasCreatedState =
@@ -49,6 +50,7 @@ describe("<Promo />", () => {
 
   afterEach(() => {
     window.location.search = originalSearch;
+    localStorage.removeItem(PROMO_RESOURCES_KEY);
     jest.useRealTimers();
     console.error = originalConsoleError;
     canvasSpy.mockRestore();
@@ -114,6 +116,26 @@ describe("<Promo />", () => {
     window.location.search = "?promoSpread=true&bedLengthOuter=1234";
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("spread");
+    unmount();
+  });
+
+  it("uses promo resources from local storage", () => {
+    localStorage.setItem(PROMO_RESOURCES_KEY, JSON.stringify({
+      plants: [{ name: "Spinach", openfarm_slug: "spinach", x: 100, y: 200 }],
+      points: [{ name: "Point 1", x: 300, y: 400, z: -100 }],
+      weeds: [{ name: "Weed", x: 500, y: 600, z: -100 }],
+    }));
+    const { unmount } = render(<Promo />);
+    expect(gardenModelSpy.mock.calls[0][0].threeDPlants)
+      .toEqual([expect.objectContaining({ label: "Spinach", x: 100, y: 200 })]);
+    expect(gardenModelSpy.mock.calls[0][0].mapPoints)
+      .toEqual([expect.objectContaining({
+        body: expect.objectContaining({ name: "Point 1", x: 300, y: 400 }),
+      })]);
+    expect(gardenModelSpy.mock.calls[0][0].weeds)
+      .toEqual([expect.objectContaining({
+        body: expect.objectContaining({ name: "Weed", x: 500, y: 600 }),
+      })]);
     unmount();
   });
 

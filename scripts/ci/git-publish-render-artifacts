@@ -23,9 +23,13 @@ else
 fi
 
 mkdir -p "$worktree/build/latest" "$worktree/build/${GITHUB_RUN_ID}"
-for image in "$COMBINED_RENDER_IMAGE"; do
-  cp "/tmp/$image.png" "$worktree/build/latest/$image.png"
-  cp "/tmp/$image.png" "$worktree/build/${GITHUB_RUN_ID}/$image.png"
+render_summary_urls=()
+for image in "/tmp/$COMBINED_RENDER_IMAGE"*.png; do
+  [ -f "$image" ] || continue
+  image_name="$(basename "$image")"
+  cp "$image" "$worktree/build/latest/$image_name"
+  cp "$image" "$worktree/build/${GITHUB_RUN_ID}/$image_name"
+  render_summary_urls+=("$image_name")
 done
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/latest/$CHOSEN_FPS.csv"
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/${GITHUB_RUN_ID}/$CHOSEN_FPS.csv"
@@ -40,6 +44,10 @@ git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" ||
 git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"
 
 raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${ARTIFACT_BRANCH}/build/${GITHUB_RUN_ID}"
-render_summary_url="${raw_base}/${COMBINED_RENDER_IMAGE}.png"
-echo "RENDER_SUMMARY_URL=${render_summary_url}"
-echo "RENDER_SUMMARY_URL=${render_summary_url}" >> "$GITHUB_ENV"
+render_summary_urls=$(
+  printf '%s\n' "${render_summary_urls[@]}" \
+    | awk -v raw_base="$raw_base" 'NF { print raw_base "/" $0 }' \
+    | paste -sd ' ' -
+)
+echo "RENDER_SUMMARY_URLS=${render_summary_urls}"
+echo "RENDER_SUMMARY_URLS=${render_summary_urls}" >> "$GITHUB_ENV"

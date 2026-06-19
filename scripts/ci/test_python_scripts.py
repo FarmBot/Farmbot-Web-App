@@ -177,6 +177,39 @@ class CiPythonScriptTest(unittest.TestCase):
             "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}\n")
         self.assertEqual(stderr, "")
 
+    def test_generate_storage_states(self):
+        with tempfile.TemporaryDirectory() as source_dir:
+            with tempfile.TemporaryDirectory() as output_dir:
+                source = Path(source_dir) / "promo.json"
+                source.write_text(json.dumps({
+                    "origin": "http://localhost:3000",
+                    "localStorage": {
+                        "PROMO_RESOURCES": {"points": [{"x": 1}]},
+                        "PLAIN": "value",
+                    },
+                }))
+
+                code, stdout, stderr = run_script(
+                    "generate-storage-states", [source_dir, output_dir])
+
+                output = Path(output_dir) / "promo.json"
+                self.assertEqual(code, 0)
+                self.assertEqual(stdout, f"STORAGE_STATE={output}\n")
+                self.assertEqual(stderr, "")
+                self.assertEqual(json.loads(output.read_text()), {
+                    "cookies": [],
+                    "origins": [{
+                        "origin": "http://localhost:3000",
+                        "localStorage": [
+                            {
+                                "name": "PROMO_RESOURCES",
+                                "value": "{\"points\":[{\"x\":1}]}",
+                            },
+                            {"name": "PLAIN", "value": "value"},
+                        ],
+                    }],
+                })
+
     def test_create_compare_link_uses_latest_deployment_sha(self):
         deployments = json.dumps([{"sha": "old123"}])
         with patch("urllib.request.urlopen", return_value=FakeResponse(deployments)):

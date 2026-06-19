@@ -58,6 +58,7 @@ attempts="${ATTEMPTS:-2}"
 : "${SCENE_METRICS_HEADER:?SCENE_METRICS_HEADER is required}"
 GITHUB_ENV="${GITHUB_ENV:-/tmp/render-github-env}"
 URLS_JSON="${URLS_JSON:-scripts/ci/render-urls.json}"
+STORAGE_STATES_DIR="${STORAGE_STATES_DIR:-scripts/ci/storage-states}"
 commit_sha="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 commit_sha="${commit_sha:0:10}"
 chosen_seen=false
@@ -92,6 +93,8 @@ valid_scene_metrics() {
   [ -n "$row" ] && [ "$row" != "undefined" ] && [ "$row" != "null" ]
 }
 
+scripts/ci/generate-storage-states "$STORAGE_STATES_DIR" /tmp
+
 while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
   screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
   fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
@@ -120,6 +123,15 @@ while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
 
     if [ "$mode" = "screenshot" ]; then
       if ! screenshot_output=$(bun scripts/fps.js --screenshot-only "${fps_args[@]}"); then
+        echo "${screenshot_output}"
+        continue
+      fi
+      echo "${screenshot_output}"
+      continue 2
+    fi
+
+    if [ "$mode" = "3d_screenshot" ]; then
+      if ! screenshot_output=$(bun scripts/fps.js --screenshot-3d-only "${fps_args[@]}"); then
         echo "${screenshot_output}"
         continue
       fi

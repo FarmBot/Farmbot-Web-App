@@ -9,6 +9,7 @@ function parseArgs(argv) {
         screenshotPath: '/tmp/fps.png',
         samplesCsvPath: '/tmp/fps_samples.csv',
         screenshotOnly: false,
+        screenshot3dOnly: false,
     };
     const valueOptions = {
         '--name': 'name',
@@ -30,6 +31,10 @@ function parseArgs(argv) {
             options.screenshotOnly = true;
             continue;
         }
+        if (arg === '--screenshot-3d-only') {
+            options.screenshot3dOnly = true;
+            continue;
+        }
         const optionName = valueOptions[arg];
         if (!optionName) { throw new Error(`Unknown argument: ${arg}`); }
         const value = argv[i + 1];
@@ -48,8 +53,9 @@ const name = options.name;
 const url = options.url;
 const screenshotPath = options.screenshotPath;
 const samplesCsvPath = options.samplesCsvPath;
+const screenshot3dOnly = options.screenshot3dOnly;
 const maxLoadingSamples = 240;
-const postLoadSamples = 10;
+const postLoadSamples = screenshot3dOnly ? 1 : 10;
 const sampleIntervalMs = 1000;
 const defaultActionTimeoutMs = 5000;
 const ci = Boolean(process.env.CI);
@@ -116,6 +122,7 @@ function printUsage() {
         '  --screenshot-path <path>               Full-page screenshot PNG path. Default: /tmp/fps.png',
         '  --fps-samples-path <path>              FPS samples CSV path. Default: /tmp/fps_samples.csv',
         '  --screenshot-only                      Take a screenshot without FPS metrics.',
+        '  --screenshot-3d-only                   Take a screenshot of 3D scene without saving FPS metrics.',
         '  --actions <json>                       Perform ordered actions after page load.',
         '  --state <name>                         Load cookies and localStorage from /tmp/<name>.json.',
         '  --roi <json>                           Crop screenshots to {x,y,width,height}.',
@@ -353,6 +360,7 @@ async function main() {
         if (loading) {
             throw new Error(`3D load did not finish after ${sampleValues.length} samples`);
         }
+
         averagePostLoadSample =
             postLoadValues.reduce((total, value) => total + value, 0)
             / postLoadValues.length;
@@ -367,8 +375,10 @@ async function main() {
         }
         console.log(`SCENE_METRICS=${data}`);
         await saveScreenshot(page, screenshotPath, 'FPS_SCREENSHOT');
-        saveFpsSamplesCsv(sampleValues, samplesCsvPath);
-        console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
+        if (!screenshot3dOnly) {
+            saveFpsSamplesCsv(sampleValues, samplesCsvPath);
+            console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
+        }
         await saveStorage(page);
     } catch (err) {
         console.error('Failed to read window.__fps:', err.message || err);
