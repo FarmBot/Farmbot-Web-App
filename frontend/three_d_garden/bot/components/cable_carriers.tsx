@@ -18,6 +18,9 @@ import { EMISSIVE_PROPS } from "./gantry_beam";
 
 const distinguishableBlack = "#333";
 
+const usesV18CableCarrierSupports = (kitVersion: string): boolean =>
+  ["v1.8", "v1.9"].includes(kitVersion);
+
 type CCSupportHorizontal = GLTF & {
   nodes: { [PartName.ccSupportHorizontal]: THREE.Mesh };
   materials: never;
@@ -61,6 +64,7 @@ const cableCarrierYConfigFields: ConfigField[] = [
 const cableCarrierZConfigFields: ConfigField[] = [
   "cableCarriers",
   "botSizeZ",
+  "kitVersion",
   "zGantryOffset",
   "columnLength",
   "negativeZ",
@@ -141,10 +145,11 @@ const sameCableCarrierSupportHorizontalProps = (
   prev: CableCarrierSupportHorizontalProps,
   next: CableCarrierSupportHorizontalProps,
 ) => {
-  const configFields = prev.config.kitVersion == "v1.8" ||
-    next.config.kitVersion == "v1.8"
-    ? supportHorizontalV18ConfigFields
-    : supportHorizontalConfigFields;
+  const configFields =
+    usesV18CableCarrierSupports(prev.config.kitVersion) ||
+    usesV18CableCarrierSupports(next.config.kitVersion)
+      ? supportHorizontalV18ConfigFields
+      : supportHorizontalConfigFields;
   return sameCableCarrierProps(
     prev, next, configFields, ["x"],
   );
@@ -235,8 +240,10 @@ const VisibleCableCarrierY = (props: CableCarrierYProps) => {
       case "v1.7":
         return 60;
       case "v1.8":
-      default:
         return 40;
+      case "v1.9":
+      default:
+        return 30;
     }
   };
   const getPosition = (): [number, number, number] => {
@@ -265,17 +272,33 @@ export const CableCarrierZ = React.memo((props: CableCarrierZProps) => {
 
 const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const {
-    botSizeZ, zGantryOffset,
+    botSizeZ, kitVersion, zGantryOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
-  const position = get3DPosition({ x: x - 52, y: y - 25 });
+  const ccDepth = (kitVersion: string) => {
+    switch (kitVersion) {
+      case "v1.7":
+      case "v1.8":
+        return 60;
+      case "v1.9":
+      default:
+        return 30;
+    }
+  };
+  const position = get3DPosition({ x: x - 52, y: y - ccDepth(kitVersion) + 35 });
   const args = React.useMemo(() => [
     ccPath(botSizeZ + zGantryOffset - 100, zDir * z + zGantryOffset - 15, 87),
-    { steps: 1, depth: 60, bevelEnabled: false },
-  ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeZ, z, zDir, zGantryOffset]);
+    { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
+  ] as [Shape, THREE.ExtrudeGeometryOptions], [
+    botSizeZ,
+    kitVersion,
+    z,
+    zDir,
+    zGantryOffset,
+  ]);
   return <Extrude name={"zCC"}
     castShadow={true}
     args={args}
@@ -295,11 +318,23 @@ export interface CableCarrierSupportVerticalProps
 export const CableCarrierSupportVertical =
   React.memo((props: CableCarrierSupportVerticalProps) => {
     if (!props.config.cableCarriers) { return <></>; }
+    const width = (kitVersion: string) => {
+      switch (kitVersion) {
+        case "v1.8":
+          return 60;
+        case "v1.9":
+        default:
+          return 30;
+      }
+    };
     switch (props.config.kitVersion) {
       case "v1.7":
         return <CableCarrierSupportVerticalV17 {...props} />;
       case "v1.8":
-        return <CableCarrierSupportVerticalV18 {...props} />;
+      case "v1.9":
+      default:
+        return <CableCarrierSupportVerticalExtruded {...props}
+          width={width(props.config.kitVersion)} />;
     }
   }, sameCableCarrierSupportVerticalProps);
 
@@ -355,14 +390,20 @@ const CableCarrierSupportVerticalV17 =
     </Group>;
   };
 
-const CableCarrierSupportVerticalV18 =
-  (props: CableCarrierSupportVerticalProps) => {
+interface CableCarrierSupportVerticalExtrudedProps
+  extends CableCarrierSupportVerticalProps {
+  width: number;
+}
+
+const CableCarrierSupportVerticalExtruded =
+  (props: CableCarrierSupportVerticalExtrudedProps) => {
     const {
       zAxisLength,
     } = props.config;
     const { x, y, z } = props.configPosition;
     const zZero = zZeroFunc(props.config);
     const zDir = zDirFunc(props.config);
+    const { width } = props;
     const get3DPosition = get3DPositionNoMirrorFunc(props.config);
     const verticalGeometry = React.useMemo(() => {
       const shape = new THREE.Shape();
@@ -371,17 +412,17 @@ const CableCarrierSupportVerticalV18 =
       shape.lineTo(15, 20);
       shape.lineTo(20, 1.5);
       shape.lineTo(28.5, 1.5);
-      shape.lineTo(28.5, -61);
-      shape.lineTo(24, -63);
-      shape.lineTo(24, -61.5);
-      shape.lineTo(27, -60);
+      shape.lineTo(28.5, -width - 1);
+      shape.lineTo(24, -width - 3);
+      shape.lineTo(24, -width - 1.5);
+      shape.lineTo(27, -width);
       shape.lineTo(27, 0);
       shape.lineTo(0, 0);
       return new THREE.ExtrudeGeometry(shape, {
         depth: zAxisLength - 350,
         bevelEnabled: false,
       });
-    }, [zAxisLength]);
+    }, [width, zAxisLength]);
     React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
     const getPosition = (): [number, number, number] => {
       const position = get3DPosition({ x: x + 9, y: y + 35 });
@@ -409,7 +450,10 @@ export const CableCarrierSupportHorizontal =
       case "v1.7":
         return <CableCarrierSupportHorizontalV17 {...props} />;
       case "v1.8":
-        return <CableCarrierSupportHorizontalV18 {...props} />;
+        return <CableCarrierSupportHorizontalExtruded {...props} width={40} />;
+      case "v1.9":
+      default:
+        return <CableCarrierSupportHorizontalExtruded {...props} width={30} />;
     }
   }, sameCableCarrierSupportHorizontalProps);
 
@@ -461,29 +505,35 @@ const CableCarrierSupportHorizontalV17 =
     </Group>;
   };
 
-const CableCarrierSupportHorizontalV18 =
-  (props: CableCarrierSupportHorizontalProps) => {
+interface CableCarrierSupportHorizontalExtrudedProps
+  extends CableCarrierSupportHorizontalProps {
+  width: number;
+}
+
+const CableCarrierSupportHorizontalExtruded =
+  (props: CableCarrierSupportHorizontalExtrudedProps) => {
     const {
       botSizeY, columnLength,
     } = props.config;
     const { x } = props.configPosition;
+    const { width } = props;
     const get3DPosition = get3DPositionNoMirrorFunc(props.config);
     const horizontalGeometry = React.useMemo(() => {
       const shape = new THREE.Shape();
       shape.moveTo(0, 0);
       shape.lineTo(0, 20);
-      shape.lineTo(-40, 20);
-      shape.lineTo(-41, 22.5);
-      shape.lineTo(-42.5, 22.5);
-      shape.lineTo(-41.5, 18.5);
-      shape.lineTo(-30, 18.5);
-      shape.lineTo(-25, 0);
+      shape.lineTo(-width, 20);
+      shape.lineTo(-width - 1, 22.5);
+      shape.lineTo(-width - 2.5, 22.5);
+      shape.lineTo(-width - 1.5, 18.5);
+      shape.lineTo(-width + 10, 18.5);
+      shape.lineTo(-width + 15, 0);
       shape.lineTo(0, 0);
       return new THREE.ExtrudeGeometry(shape, {
         depth: botSizeY - 30,
         bevelEnabled: false,
       });
-    }, [botSizeY]);
+    }, [botSizeY, width]);
     React.useEffect(() => () => horizontalGeometry.dispose(), [horizontalGeometry]);
     const position = get3DPosition({ x: x - 39, y: 20 });
     return <Group name={"ccSupportHorizontal"}>
