@@ -48,7 +48,8 @@ import {
 import { TaggedWizardStepResult } from "farmbot";
 import {
   btnIndexList,
-  hasEthernet, hasExtraButtons, hasRotaryTool, hasUTM, hasWeeder, isExpress,
+  hasEthernet, hasExtraButtons, hasRotaryTool, hasUTM,
+  hasWateringNozzleTool, hasWeeder, isExpress,
 } from "../settings/firmware/firmware_hardware_support";
 import { BooleanSetting } from "../session_keys";
 import { ExternalUrl } from "../external_urls";
@@ -190,6 +191,8 @@ export enum WizardStepSlug {
 // eslint-disable-next-line complexity
 export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
   const { firmwareHardware } = props;
+  const usesWateringNozzleTool = hasWateringNozzleTool(firmwareHardware);
+  const toolbaySlotCount = usesWateringNozzleTool ? 6 : 5;
   const is3D = !!props.getConfigValue?.(BooleanSetting.three_d_garden);
   const xySwap = !!props.getConfigValue?.(BooleanSetting.xy_swap);
   const positiveMovementInstruction = (swap: boolean) =>
@@ -1474,7 +1477,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         ],
       }]
       : []),
-    ...(hasUTM(firmwareHardware)
+    ...(hasUTM(firmwareHardware) && usesWateringNozzleTool
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.wateringNozzle,
@@ -1625,7 +1628,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         slug: WizardStepSlug.slotsSetup,
         title: t("Setup"),
         content: t(SetupWizardContent.SLOTS_SETUP),
-        question: t("Is the watering nozzle in the toolbay?"),
+        question: t("Is the seeder in the toolbay?"),
         outcomes: [],
       }]
       : []),
@@ -1660,7 +1663,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         title: t("Remaining slot coordinates"),
         content: t(SetupWizardContent.SLOTS_REMAINING_COORDINATES),
         controlsCheckOptions: {},
-        slotInputRows: range(6),
+        slotInputRows: range(toolbaySlotCount),
         question: t("Have you saved coordinate locations for all of the slots?"),
         outcomes: [],
       }]
@@ -1672,7 +1675,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         title: t("Load tools"),
         content: t(SetupWizardContent.SLOTS_LOAD_TOOLS),
         controlsCheckOptions: {},
-        slotDropdownRows: range(6),
+        slotDropdownRows: range(toolbaySlotCount),
         question: t("Are the physical and virtual configurations matching?"),
         outcomes: [],
       }]
@@ -1684,7 +1687,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         title: t("Seed trough 1"),
         content: t(SetupWizardContent.SLOTS_SEED_TROUGH_1),
         controlsCheckOptions: {},
-        slotInputRows: [6],
+        slotInputRows: [toolbaySlotCount],
         question: t("Have you saved the current position to the slot?"),
         outcomes: [],
       }]
@@ -1696,7 +1699,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
         title: t("Seed trough 2"),
         content: t(SetupWizardContent.SLOTS_SEED_TROUGH_2),
         controlsCheckOptions: {},
-        slotInputRows: [7],
+        slotInputRows: [toolbaySlotCount + 1],
         question: t("Have you saved the current position to the slot?"),
         outcomes: [],
       }]

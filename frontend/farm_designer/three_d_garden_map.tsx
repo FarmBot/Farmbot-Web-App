@@ -73,6 +73,12 @@ export interface ThreeDGardenMapProps {
   logs: TaggedLog[];
 }
 
+const kitVersionFromFirmware = (firmwareHardware: unknown): string => {
+  if (firmwareHardware == "farmduino_k19") { return "v1.9"; }
+  if (firmwareHardware == "farmduino_k18") { return "v1.8"; }
+  return "v1.7";
+};
+
 const localIdFromUuid = (uuid: string) => {
   const index = uuid.lastIndexOf(".");
   return parseInt(uuid.slice(index + 1), 10);
@@ -203,8 +209,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.trail = displayTrail;
     nextConfig.animate = animate;
     nextConfig.cameraView = cameraView;
-    nextConfig.kitVersion =
-      firmwareHardware == "farmduino_k18" ? "v1.8" : "v1.7";
+    nextConfig.kitVersion = kitVersionFromFirmware(firmwareHardware);
     nextConfig.negativeZ = props.negativeZ;
     nextConfig.exaggeratedZ = designer.threeDExaggeratedZ;
     nextConfig.mirrorX = mirrorX;

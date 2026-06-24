@@ -1933,12 +1933,12 @@ export namespace SetupWizardContent {
     protective equipment. Disconnect the rotary tool when not in use.`);
 
   export const SLOTS_SETUP =
-    trim(`In real life, manually (by hand) load the watering nozzle tool
+    trim(`In real life, manually (by hand) load the seeder tool
     into the toolbay slot nearest the home position.`);
 
   export const SLOTS_1_COORDINATES =
     trim(`Using the manual controls, instruct FarmBot to move towards the
-    slot with the watering nozzle in it. As you get closer, change the
+    slot with the seeder in it. As you get closer, change the
     MOVE AMOUNT to a smaller value for finer movements. Your goal is to
     position the UTM just above the tool and then descend down onto it
     (mounting it). Once the UTM has fully mounted the tool, click the blue
@@ -1947,9 +1947,9 @@ export namespace SetupWizardContent {
 
   export const SLOTS_2_COORDINATES =
     trim(`Using the manual controls, move the UTM up 100mm in the +Z
-    direction to dismount the watering nozzle. Then move the UTM 100mm
-    in the +Y direction to roughly align with the next slot in the toolbay.
-    Manually (by hand) move the watering nozzle tool into the next slot.
+    direction to dismount the seeder. Then move the UTM 100mm in the +Y
+    direction to roughly align with the next slot in the toolbay. Manually
+    (by hand) move the seeder tool into the next slot.
     Using the manual controls, move the UTM to descend down onto the tool.
     Take your time, you may need to make fine +/- 1mm adjustments to the
     X and Y position as you are descending. Once the tool is mounted,

@@ -110,6 +110,7 @@ const getDefaultConfigValue =
         case "farmduino_k16":
         case "farmduino_k17":
         case "farmduino_k18":
+        case "farmduino_k19":
           return DEFAULT_GENESIS_WEB_APP_CONFIG_VALUES[key];
         case "express_k10":
         case "express_k11":

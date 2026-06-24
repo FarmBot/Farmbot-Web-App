@@ -119,6 +119,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       case "farmduino_k16":
       case "farmduino_k17":
       case "farmduino_k18":
+      case "farmduino_k19":
         return [
           ...BASE_TOOLS,
           t("Rotary Tool"),

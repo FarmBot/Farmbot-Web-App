@@ -168,6 +168,11 @@ const FirmwareChoiceTable = () =>
     </thead>
     <tbody>
       <tr>
+        <td>{"Genesis v1.9"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k19"].label}</code></td>
+      </tr>
+      <tr>
         <td>{"Genesis v1.8"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k18"].label}</code></td>
@@ -263,6 +268,8 @@ const DEMO_STRESS_SEED_DATA_OPTIONS: DropDownItem[] = [
 ];
 
 export const SEED_DATA_OPTIONS = (displayAll = false): DropDownItem[] => [
+  { label: "Genesis v1.9", value: "genesis_1.9" },
+  { label: "Genesis XL v1.9", value: "genesis_xl_1.9" },
   { label: "Genesis v1.8", value: "genesis_1.8" },
   { label: "Genesis v1.8 XL", value: "genesis_xl_1.8" },
   ...(displayAll ? DEMO_STRESS_SEED_DATA_OPTIONS : []),

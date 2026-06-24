@@ -209,7 +209,7 @@ export const INITIAL: ConfigWithPosition = {
   animate: true,
   animateSeasons: false,
   distanceIndicator: "",
-  kitVersion: "v1.7",
+  kitVersion: "v1.9",
   negativeZ: false,
   exaggeratedZ: false,
   waterFlow: false,
