@@ -19,7 +19,7 @@ import { ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
-  CrossSlideFull, CrossSlideModel,
+  CrossSlideFull, CrossSlideModel, CrossSlideV19Full, CrossSlideV19Model,
   GantryWheelPlate, GantryWheelPlateFull,
   VacuumPumpCoverFull, VacuumPumpCoverModel,
 } from "./parts";
@@ -206,6 +206,7 @@ const BOT_FRAME_CONFIG_FIELDS: (keyof Config)[] = [
   "botSizeX",
   "cableCarriers",
   "columnLength",
+  "kitVersion",
   "tracks",
 ];
 
@@ -234,7 +235,10 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
   const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
+  const isV19 = props.config.kitVersion == "v1.9";
+  const crossSlide = useGLTF(isV19
+    ? ASSETS.models.crossSlideV19
+    : ASSETS.models.crossSlide, LIB_DIR);
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
   const horizontalMotorHousing = useGLTF(
     ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
@@ -407,15 +411,25 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     <CableCarrierX
       config={props.config}
       configPosition={props.configPosition} />}
-    <CrossSlideModel
-      model={crossSlide}
-      name={"crossSlide"}
-      position={[
-        ...botGardenXY(props.config, x - 12.5, y + 5),
-        columnLength + 105,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
+    {isV19
+      ? <CrossSlideV19Model
+        model={crossSlide as unknown as CrossSlideV19Full}
+        name={"crossSlide"}
+        position={[
+          ...botGardenXY(props.config, x - 12.5, y + 45),
+          columnLength + 105,
+        ]}
+        rotation={[0, 0, Math.PI / 2]}
+        scale={1000} />
+      : <CrossSlideModel
+        model={crossSlide as unknown as CrossSlideFull}
+        name={"crossSlide"}
+        position={[
+          ...botGardenXY(props.config, x - 12.5, y + 5),
+          columnLength + 105,
+        ]}
+        rotation={[0, 0, Math.PI / 2]}
+        scale={1000} />}
   </>;
 };
 

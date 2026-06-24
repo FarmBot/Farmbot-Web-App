@@ -412,6 +412,14 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.crossSlideV19]: {
+      nodes: {
+        [PartName.crossSlideV19]: {} as THREE.Mesh,
+      },
+      materials: {
+        PaletteMaterial001: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.gantryWheelPlate]: {
       nodes: {
         Gantry_Wheel_Plate: {} as THREE.Mesh,
