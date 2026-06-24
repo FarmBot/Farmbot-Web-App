@@ -1,11 +1,12 @@
 import React from "react";
 import * as THREE from "three";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useTexture } from "@react-three/drei";
 import { threeSpace } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import {
-  ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
+  ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, RenderOrder,
+  SeedTroughAssemblyMaterial,
 } from "../../constants";
 import {
   SoilSensorFull, SoilSensorModel,
@@ -13,7 +14,7 @@ import {
   SeedTroughHolderFull, SeedTroughHolderModel,
 } from "../parts";
 import {
-  Group, Mesh, MeshPhongMaterial,
+  Group, Mesh, MeshBasicMaterial, MeshPhongMaterial, PlaneGeometry,
 } from "../../components";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { isUndefined, sortBy } from "lodash";
@@ -202,17 +203,32 @@ const PromoToolbay5 = (props: PromoToolbay3Props) => {
     bedLengthOuter, bedWidthOuter, bedWallThickness,
   } = props.config;
   const toolbay5 = useGLTF(ASSETS.models.toolbay5, LIB_DIR) as unknown as Toolbay5;
-  return <Group name={"toolbay5"}>
+  const logoTexture = useTexture(ASSETS.other.farmbotLogo);
+  return <Group name={"toolbay5"}
+    position={[
+      threeSpace(105 + bedWallThickness, bedLengthOuter),
+      threeSpace(bedWidthOuter / 2, bedWidthOuter),
+      50,
+    ]}
+    rotation={[0, 0, -Math.PI / 2]}>
     <Mesh name={"toolbay5"}
-      position={[
-        threeSpace(105 + bedWallThickness, bedLengthOuter),
-        threeSpace(bedWidthOuter / 2, bedWidthOuter),
-        50,
-      ]}
-      rotation={[0, 0, -Math.PI / 2]}
       scale={1000}
       geometry={toolbay5.nodes[PartName.toolbay5].geometry}>
       <MeshPhongMaterial color={distinguishableBlack} />
+    </Mesh>
+    <Mesh name={"toolbay5Logo"}
+      position={[0, -66, -20]}
+      rotation={[Math.PI / 4, 0, 0]}
+      renderOrder={RenderOrder.plantLabels}
+      raycast={() => undefined}>
+      <PlaneGeometry args={[77, 77 * 274 / 595]} />
+      <MeshBasicMaterial
+        map={logoTexture}
+        transparent={true}
+        alphaTest={0.1}
+        depthWrite={false}
+        toneMapped={false}
+        side={THREE.DoubleSide} />
     </Mesh>
   </Group>;
 };

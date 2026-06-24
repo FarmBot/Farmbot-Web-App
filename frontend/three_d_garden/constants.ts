@@ -72,6 +72,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     led: "/3D/models/led_indicator.glb",
   },
   other: {
+    farmbotLogo: "/app-resources/img/farmbot.avif",
     gear: "/app-resources/img/icons/settings.svg",
     weed: "/3D/icons/generic-weed.avif",
     plant: "/3D/icons/generic-plant.avif",
