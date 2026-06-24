@@ -26,6 +26,7 @@ const SOLENOID_CONFIG_FIELDS: (keyof Config)[] = [
   "bedXOffset",
   "bedYOffset",
   "columnLength",
+  "kitVersion",
   "negativeZ",
   "waterFlow",
   "zGantryOffset",
@@ -45,8 +46,9 @@ const SolenoidBase = (props: SolenoidProps) => {
   const { config } = props;
   const {
     bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, columnLength,
-    negativeZ, zGantryOffset,
+    kitVersion, negativeZ, zGantryOffset,
   } = config;
+  const isV19 = kitVersion == "v1.9";
   const { x, y, z } = props.configPosition;
   const {
     lowerTubePath,
@@ -97,18 +99,31 @@ const SolenoidBase = (props: SolenoidProps) => {
           columnLength + 90,
         ],
       ),
-      yzTubePath: easyCubicBezierCurve3(
-        [
-          ...gardenXY(x - 70, y + 80),
-          columnLength + 140,
-        ],
-        [0, -50, 0],
-        [0, 0, -50],
-        [
-          ...gardenXY(x - 43.5, y - 10),
-          columnLength + 180,
-        ],
-      ),
+      yzTubePath: kitVersion == "v1.9"
+        ? easyCubicBezierCurve3(
+          [
+            ...gardenXY(x - 60, y + 80),
+            columnLength + 140,
+          ],
+          [0, -50, 0],
+          [20, 20, 0],
+          [
+            ...gardenXY(x - 83.5, y + 40),
+            columnLength + 159,
+          ],
+        )
+        : easyCubicBezierCurve3(
+          [
+            ...gardenXY(x - 70, y + 80),
+            columnLength + 140,
+          ],
+          [0, -50, 0],
+          [0, 0, -50],
+          [
+            ...gardenXY(x - 43.5, y - 10),
+            columnLength + 180,
+          ],
+        ),
       utmTubePath: easyCubicBezierCurve3(
         [
           ...gardenXY(x + 21.5, y - 10),
@@ -128,6 +143,7 @@ const SolenoidBase = (props: SolenoidProps) => {
     bedXOffset,
     bedYOffset,
     columnLength,
+    kitVersion,
     negativeZ,
     x,
     y,
@@ -160,12 +176,12 @@ const SolenoidBase = (props: SolenoidProps) => {
       tubularSegments={20}
       radius={5}
       radialSegments={8} />
-    <WaterTube tubeName={"utm-water-tube"}
+    {!isV19 && <WaterTube tubeName={"utm-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={utmTubePath}
       tubularSegments={20}
       radius={5}
-      radialSegments={8} />
+      radialSegments={8} />}
   </Group>;
 };
 

@@ -25,6 +25,7 @@ const WATERING_ANIMATION_CONFIG_FIELDS: (keyof Config)[] = [
   "bedXOffset",
   "bedYOffset",
   "columnLength",
+  "kitVersion",
   "negativeZ",
   "zGantryOffset",
 ];
@@ -70,8 +71,21 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, getZ, config } = props;
   const { x, y, z } = props.configPosition;
   const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const utmZ = -zDir(config) * z + 35 / 2 - 15;
-  const nozzleToSoil = getZ(x, y) - utmZ;
+  const baseZ = zZero(config);
+  const nozzlePosition = config.kitVersion == "v1.9"
+    ? {
+      x: x - 99.5,
+      y: y + 31.5,
+      z: config.columnLength - baseZ + 77,
+    }
+    : {
+      x,
+      y,
+      z: -zDir(config) * z + 35 / 2 - 15,
+    };
+  const nozzleToSoil = getZ(nozzlePosition.x, nozzlePosition.y) -
+    nozzlePosition.z;
+  const nozzleRadius = config.kitVersion == "v1.9" ? 9 : 12.5;
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,13 +93,16 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
     }, 50);
     return () => clearTimeout(timer);
   }, []);
-  const position = get3DPosition({ x, y });
+  const position = get3DPosition({
+    x: nozzlePosition.x,
+    y: nozzlePosition.y,
+  });
   return <Group name={"watering-animations"}
     visible={visible}
     position={[
       position.x,
       position.y,
-      zZero(config),
+      baseZ,
     ]}>
     {range(16).map(i => {
       const angle = (i * Math.PI * 2) / 16;
@@ -93,9 +110,9 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
         name={`water-stream-${i}`}
         waterFlow={waterFlow}
         waterTexture={props.waterTexture}
-        position={[0, 0, utmZ]}
+        position={[0, 0, nozzlePosition.z]}
         args={[easyCubicBezierCurve3(
-          [12.5 * Math.sin(angle), 12.5 * Math.cos(angle), 0],
+          [nozzleRadius * Math.sin(angle), nozzleRadius * Math.cos(angle), 0],
           [10 * Math.sin(angle), 0, -10],
           [0, 0, 10],
           [25 * Math.sin(angle), 25 * Math.cos(angle), nozzleToSoil],
@@ -104,7 +121,7 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
     <Clouds name={"waterfall-mist"}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}
-        position={[0, 0, utmZ + nozzleToSoil / 2 - 40]}
+        position={[0, 0, nozzlePosition.z + nozzleToSoil / 2 - 40]}
         seed={0}
         bounds={[15, 15, nozzleToSoil / 2]}
         segments={30}
@@ -120,7 +137,7 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
     <Clouds name={"water-spot-mist"}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}
-        position={[0, 0, getZ(x, y)]}
+        position={[0, 0, getZ(nozzlePosition.x, nozzlePosition.y)]}
         seed={0}
         bounds={[30, 30, 30]}
         segments={25}
