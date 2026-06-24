@@ -640,6 +640,11 @@ jest.mock("@react-three/drei", () => {
         [PartName.toolbay3Logo]: {} as THREE.Mesh,
       },
     },
+    [ASSETS.models.toolbay5]: {
+      nodes: {
+        [PartName.toolbay5]: {} as THREE.Mesh,
+      },
+    },
     [ASSETS.models.toolbay1]: {
       nodes: {
         [PartName.toolbay1]: {} as THREE.Mesh,

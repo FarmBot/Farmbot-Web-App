@@ -50,6 +50,12 @@ type Toolbay3 = GLTF & {
   };
   materials: never;
 }
+type Toolbay5 = GLTF & {
+  nodes: {
+    [PartName.toolbay5]: THREE.Mesh;
+  };
+  materials: never;
+}
 type Toolbay1 = GLTF & {
   nodes: {
     [PartName.toolbay1]: THREE.Mesh;
@@ -114,6 +120,7 @@ const TOOLS_CONFIG_FIELDS: (keyof Config)[] = [
   "bedYOffset",
   "botSizeX",
   "columnLength",
+  "kitVersion",
   "mirrorX",
   "mirrorY",
   "negativeZ",
@@ -190,6 +197,26 @@ const PromoToolbay3 = (props: PromoToolbay3Props) => {
   </Group>;
 };
 
+const PromoToolbay5 = (props: PromoToolbay3Props) => {
+  const {
+    bedLengthOuter, bedWidthOuter, bedWallThickness,
+  } = props.config;
+  const toolbay5 = useGLTF(ASSETS.models.toolbay5, LIB_DIR) as unknown as Toolbay5;
+  return <Group name={"toolbay5"}>
+    <Mesh name={"toolbay5"}
+      position={[
+        threeSpace(105 + bedWallThickness, bedLengthOuter),
+        threeSpace(bedWidthOuter / 2, bedWidthOuter),
+        50,
+      ]}
+      rotation={[0, 0, -Math.PI / 2]}
+      scale={1000}
+      geometry={toolbay5.nodes[PartName.toolbay5].geometry}>
+      <MeshPhongMaterial color={distinguishableBlack} />
+    </Mesh>
+  </Group>;
+};
+
 const ToolsBase = (props: ToolsProps) => {
   const mirroredBotX = props.config.mirrorX
     ? props.config.botSizeX - props.configPosition.x
@@ -225,7 +252,9 @@ const ToolsBase = (props: ToolsProps) => {
       toolPulloutDirection={ToolPulloutDirection.NONE}
       onHoverLabel={props.onHoverLabel}
       inToolbay={false} />
-    {isUndefined(props.toolSlots) && <PromoToolbay3 config={props.config} />}
+    {isUndefined(props.toolSlots) && (props.config.kitVersion == "v1.9"
+      ? <PromoToolbay5 config={props.config} />
+      : <PromoToolbay3 config={props.config} />)}
     {tools.map((tool, i) =>
       <Tool key={i}
         config={props.config}
