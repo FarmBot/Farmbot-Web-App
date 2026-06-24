@@ -109,7 +109,7 @@ const SolenoidBase = (props: SolenoidProps) => {
           [20, 20, 0],
           [
             ...gardenXY(x - 83.5, y + 40),
-            columnLength + 159,
+            columnLength + 151,
           ],
         )
         : easyCubicBezierCurve3(

@@ -135,6 +135,7 @@ export interface FarmbotModelProps {
 interface RequestedShapes {
   track: boolean;
   beam: boolean;
+  beamV19: boolean;
   column: boolean;
   zAxis: boolean;
 }
@@ -142,6 +143,7 @@ interface RequestedShapes {
 interface BotShapeCache {
   track?: Shape;
   beam?: Shape;
+  beamV19?: Shape;
   column?: Shape;
   zAxis?: Shape;
 }
@@ -151,6 +153,7 @@ const botShapeCache: BotShapeCache = {};
 export const clearBotShapeCache = () => {
   botShapeCache.track = undefined;
   botShapeCache.beam = undefined;
+  botShapeCache.beamV19 = undefined;
   botShapeCache.column = undefined;
   botShapeCache.zAxis = undefined;
 };
@@ -420,7 +423,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
         name={"crossSlide"}
         position={[
           ...botGardenXY(props.config, x - 12.5, y + 45),
-          columnLength + 105,
+          columnLength + 97,
         ]}
         rotation={[0, 0, Math.PI / 2]}
         scale={1000} />
@@ -959,10 +962,13 @@ export const Bot = (props: FarmbotModelProps) =>
 const EnabledBot = (props: FarmbotModelProps) => {
   const config = props.config;
   const { tracks } = props.config;
+  const isV19 = config.kitVersion == "v1.9";
   const [trackShape, setTrackShape] =
     useState<Shape | undefined>(() => botShapeCache.track);
   const [beamShape, setBeamShape] =
     useState<Shape | undefined>(() => botShapeCache.beam);
+  const [beamV19Shape, setBeamV19Shape] =
+    useState<Shape | undefined>(() => botShapeCache.beamV19);
   const [columnShape, setColumnShape] =
     useState<Shape | undefined>(() => botShapeCache.column);
   const [zAxisShape, setZAxisShape] =
@@ -970,6 +976,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
   const requestedShapes = React.useRef<RequestedShapes>({
     track: false,
     beam: false,
+    beamV19: false,
     column: false,
     zAxis: false,
   });
@@ -992,17 +999,30 @@ const EnabledBot = (props: FarmbotModelProps) => {
           setTrackShape(outline);
         });
     }
-    if (!beamShape && !requestedShapes.current.beam) {
+    if (!isV19 && !beamShape && !requestedShapes.current.beam) {
       requestedShapes.current.beam = true;
       getLoader().load(ASSETS.shapes.beam,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          range(1, 6).map(i => {
+          range(1, svg.paths.length).map(i => {
             const hole = SVGLoader.createShapes(svg.paths[i])[0];
             outline.holes.push(hole);
           });
           botShapeCache.beam = outline;
           setBeamShape(outline);
+        });
+    }
+    if (isV19 && !beamV19Shape && !requestedShapes.current.beamV19) {
+      requestedShapes.current.beamV19 = true;
+      getLoader().load(ASSETS.shapes.beamV19,
+        svg => {
+          const outline = SVGLoader.createShapes(svg.paths[0])[0];
+          range(1, svg.paths.length).map(i => {
+            const hole = SVGLoader.createShapes(svg.paths[i])[0];
+            outline.holes.push(hole);
+          });
+          botShapeCache.beamV19 = outline;
+          setBeamV19Shape(outline);
         });
     }
     if (!columnShape && !requestedShapes.current.column) {
@@ -1029,7 +1049,15 @@ const EnabledBot = (props: FarmbotModelProps) => {
           setZAxisShape(outline);
         });
     }
-  }, [beamShape, columnShape, trackShape, tracks, zAxisShape]);
+  }, [
+    beamShape,
+    beamV19Shape,
+    columnShape,
+    isV19,
+    trackShape,
+    tracks,
+    zAxisShape,
+  ]);
   const trailReady = props.trailReady !== false;
 
   const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
@@ -1051,7 +1079,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
     <BotGantrySubassemblies
       config={config}
       configPosition={props.configPosition}
-      beamShape={beamShape} />
+      beamShape={isV19 ? beamV19Shape : beamShape} />
     <Solenoid config={config} configPosition={props.configPosition} />
     <BotElectronicsSubassembly
       config={config}

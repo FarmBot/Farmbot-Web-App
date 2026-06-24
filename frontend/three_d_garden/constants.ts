@@ -32,6 +32,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     track: "/3D/shapes/track.svg",
     column: "/3D/shapes/column.svg",
     beam: "/3D/shapes/beam.svg",
+    beamV19: "/3D/shapes/beam_v19.svg",
     zAxis: "/3D/shapes/z_axis.svg",
   },
   models: {
