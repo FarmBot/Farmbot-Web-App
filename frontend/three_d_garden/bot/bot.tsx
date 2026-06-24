@@ -15,12 +15,15 @@ import {
 } from "../helpers";
 import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
-import { ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName } from "../constants";
+import {
+  ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName,
+} from "../constants";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { range } from "lodash";
 import {
   CrossSlideFull, CrossSlideModel, CrossSlideV19Full, CrossSlideV19Model,
   GantryWheelPlate, GantryWheelPlateFull,
+  MountedIdlerPulleyFull, MountedIdlerPulleyModel,
   VacuumPumpCoverFull, VacuumPumpCoverModel,
 } from "./parts";
 import { PowerSupply } from "./power_supply";
@@ -643,7 +646,10 @@ const BotVerticalToolheadSubassemblyBase =
       const position = get3DPosition({ x: gardenX, y: gardenY });
       return [position.x, position.y];
     };
-    const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
+    const isV19 = config.kitVersion == "v1.9";
+    const zStop = useGLTF(isV19
+      ? ASSETS.models.mountedIdlerPulley
+      : ASSETS.models.zStop, LIB_DIR);
     const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
     const housingVertical = useGLTF(
       ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
@@ -691,6 +697,33 @@ const BotVerticalToolheadSubassemblyBase =
       ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
       zZero - zDir * z - 140 + zGantryOffset + 20,
     );
+    const zStopComponent = (
+      name: string,
+      position: [number, number, number],
+      lower = false,
+    ) => {
+      if (isV19) {
+        const mountedIdlerPulleyPosition: [number, number, number] = [
+          position[0],
+          position[1],
+          position[2] - 20,
+        ];
+        return <MountedIdlerPulleyModel
+          model={zStop as unknown as MountedIdlerPulleyFull}
+          name={name}
+          position={mountedIdlerPulleyPosition}
+          rotation={[0, 0, -Math.PI / 2]}
+          scale={1000}
+          lower={lower} />;
+      }
+      return <Mesh name={name}
+        position={position}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={(zStop as unknown as ZStop).nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>;
+    };
     const selectUtm = (event: ThreeEvent<MouseEvent>) => {
       if (clickWasDragged(event)) { return; }
       if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
@@ -742,7 +775,7 @@ const BotVerticalToolheadSubassemblyBase =
         rotation={[0, 0, 0]}>
         <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
       </Extrude>
-      <Group name={"zMotor"}>
+      {!isV19 && <Group name={"zMotor"}>
         <Mesh name={"zMotorHousing"}
           position={[
             ...gardenXY(x - 7, y + utmRadius - 46),
@@ -781,8 +814,8 @@ const BotVerticalToolheadSubassemblyBase =
           rotation={[Math.PI / 2, 0, 0]}>
           <MeshPhongMaterial color={"#999"} />
         </Cylinder>
-      </Group>
-      <Mesh name={"shaftCoupler"}
+      </Group>}
+      {!isV19 && <Mesh name={"shaftCoupler"}
         position={[
           ...gardenXY(x - 6, y - 30),
           zZero - zDir * z + zAxisLength - 120,
@@ -791,8 +824,8 @@ const BotVerticalToolheadSubassemblyBase =
         scale={1000}
         geometry={undefined}>
         <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Cylinder name={"shaftCoupler"}
+      </Mesh>}
+      {!isV19 && <Cylinder name={"shaftCoupler"}
         args={[10, 10, 25]}
         position={[
           ...gardenXY(x - 6, y - 30),
@@ -800,15 +833,15 @@ const BotVerticalToolheadSubassemblyBase =
         ]}
         rotation={[Math.PI / 2, 0, 0]}>
         <MeshPhongMaterial color={"silver"} />
-      </Cylinder>
-      <Cylinder name={"leadscrew"}
+      </Cylinder>}
+      {!isV19 && <Cylinder name={"leadscrew"}
         material-color={"#555"}
         args={[4, 4, zAxisLength - 200]}
         position={[
           ...gardenXY(x - 5, y - 30),
           zZero - zDir * z + zAxisLength / 2,
         ]}
-        rotation={[Math.PI / 2, 0, 0]} />
+        rotation={[Math.PI / 2, 0, 0]} />}
       {config.cableCarriers &&
       <CableCarrierSupportVertical
         config={config}
@@ -816,26 +849,14 @@ const BotVerticalToolheadSubassemblyBase =
       {config.cableCarriers &&
       <CableCarrierZ config={config}
         configPosition={props.configPosition} />}
-      <Mesh name={"zStopMax"}
-        position={[
-          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
-          zZero - zDir * z - 30 + zGantryOffset,
-        ]}
-        rotation={[0, Math.PI / 2, 0]}
-        scale={1000}
-        geometry={zStop.nodes[PartName.zStop].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"zStopMin"}
-        position={[
-          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
-          zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
-        ]}
-        rotation={[0, Math.PI / 2, 0]}
-        scale={1000}
-        geometry={zStop.nodes[PartName.zStop].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
+      {zStopComponent("zStopMax", [
+        ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
+        zZero - zDir * z - 30 + zGantryOffset,
+      ], true)}
+      {zStopComponent("zStopMin", [
+        ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
+        zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
+      ])}
       <Mesh name={"vacuumPump"}
         position={[
           ...gardenXY(x + 17, y),
@@ -874,19 +895,19 @@ const BotVerticalToolheadSubassemblyBase =
         onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[Math.PI, 0, 0]}
         position={cameraMountPosition}>
-        <Mesh name={"cameraMount"}
+        {!isV19 && <Mesh name={"cameraMount"}
           rotation={[0, 0, 0]}
           position={[0, 0, -40]}
           scale={1000}
           geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
           <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"cameraMount"}
+        </Mesh>}
+        {!isV19 && <Mesh name={"cameraMount"}
           rotation={[0, Math.PI, 0]}
           scale={1000}
           geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
           <MeshPhongMaterial color={"silver"} />
-        </Mesh>
+        </Mesh>}
       </Group>
       <CameraView
         config={config}

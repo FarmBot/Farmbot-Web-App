@@ -93,6 +93,9 @@ module Devices
         FarmwareEnvs::Create.run(
           { key: "3D_beamLength", value: "3000" },
           device: device)
+        FarmwareEnvs::Create.run(
+          { key: "3D_zAxisLength", value: "800" },
+          device: device)
       end
     end
   end

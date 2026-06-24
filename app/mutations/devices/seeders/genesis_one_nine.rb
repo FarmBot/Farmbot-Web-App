@@ -76,6 +76,12 @@ module Devices
           Sequences::Create.run!(s, device: device)
         end
       end
+
+      def settings_three_d
+        FarmwareEnvs::Create.run(
+          { key: "3D_zAxisLength", value: "800" },
+          device: device)
+      end
     end
   end
 end

@@ -139,7 +139,7 @@ export const INITIAL: ConfigWithPosition = {
   z: 200,
   beamLength: 1500,
   columnLength: 500,
-  zAxisLength: 1000,
+  zAxisLength: 800,
   bedXOffset: 150,
   bedYOffset: 20,
   bedZOffset: 0,
@@ -492,6 +492,22 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "mirrorX", "mirrorY", "cameraSelectionView",
 ];
 
+const zAxisLengthFromKitVersion = (kitVersion: string): number =>
+  kitVersion == "v1.9" ? 800 : 1000;
+
+const maybeUpdateZAxisLengthFromKitVersion = (
+  config: ConfigWithPosition,
+  update: Partial<ConfigWithPosition>,
+): ConfigWithPosition => {
+  if (!update.kitVersion && (!update.sizePreset || update.sizePreset == "Jr")) {
+    return config;
+  }
+  return {
+    ...config,
+    zAxisLength: zAxisLengthFromKitVersion(config.kitVersion),
+  };
+};
+
 export const modifyConfig =
   (config: ConfigWithPosition, update: Partial<ConfigWithPosition>) => {
     const newConfig: ConfigWithPosition = { ...config, ...update };
@@ -534,7 +550,7 @@ export const modifyConfig =
         OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
       }
     }
-    return newConfig;
+    return maybeUpdateZAxisLengthFromKitVersion(newConfig, update);
   };
 
 export const KIT_LOOKUP: { [x: string]: string } = {

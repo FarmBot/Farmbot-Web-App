@@ -327,6 +327,15 @@ export const CableCarrierSupportVertical =
           return 30;
       }
     };
+    const extraLength = (kitVersion: string) => {
+      switch (kitVersion) {
+        case "v1.8":
+          return 0;
+        case "v1.9":
+        default:
+          return 225;
+      }
+    };
     switch (props.config.kitVersion) {
       case "v1.7":
         return <CableCarrierSupportVerticalV17 {...props} />;
@@ -334,7 +343,8 @@ export const CableCarrierSupportVertical =
       case "v1.9":
       default:
         return <CableCarrierSupportVerticalExtruded {...props}
-          width={width(props.config.kitVersion)} />;
+          width={width(props.config.kitVersion)}
+          extraLength={extraLength(props.config.kitVersion)} />;
     }
   }, sameCableCarrierSupportVerticalProps);
 
@@ -393,6 +403,7 @@ const CableCarrierSupportVerticalV17 =
 interface CableCarrierSupportVerticalExtrudedProps
   extends CableCarrierSupportVerticalProps {
   width: number;
+  extraLength: number;
 }
 
 const CableCarrierSupportVerticalExtruded =
@@ -403,7 +414,7 @@ const CableCarrierSupportVerticalExtruded =
     const { x, y, z } = props.configPosition;
     const zZero = zZeroFunc(props.config);
     const zDir = zDirFunc(props.config);
-    const { width } = props;
+    const { extraLength, width } = props;
     const get3DPosition = get3DPositionNoMirrorFunc(props.config);
     const verticalGeometry = React.useMemo(() => {
       const shape = new THREE.Shape();
@@ -419,10 +430,10 @@ const CableCarrierSupportVerticalExtruded =
       shape.lineTo(27, 0);
       shape.lineTo(0, 0);
       return new THREE.ExtrudeGeometry(shape, {
-        depth: zAxisLength - 350,
+        depth: zAxisLength - 350 + extraLength,
         bevelEnabled: false,
       });
-    }, [width, zAxisLength]);
+    }, [extraLength, width, zAxisLength]);
     React.useEffect(() => () => verticalGeometry.dispose(), [verticalGeometry]);
     const getPosition = (): [number, number, number] => {
       const position = get3DPosition({ x: x + 9, y: y + 35 });

@@ -42,6 +42,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     crossSlideV19: "/3D/models/cross_slide_v19.glb",
     beltClip: "/3D/models/belt_clip.glb",
     zStop: "/3D/models/z_stop.glb",
+    mountedIdlerPulley: "/3D/models/mounted_idler_pulley.glb",
     utm: "/3D/models/utm.glb",
     ccSupportHorizontal: "/3D/models/cc_support_horizontal.glb",
     ccSupportVertical: "/3D/models/cc_support_vertical.glb",
@@ -116,6 +117,13 @@ export enum VacuumPumpCoverMaterial {
   one = "0.603922_0.647059_0.686275_0.000000_0.000000",
 }
 
+export enum MountedIdlerPulleyMaterial {
+  mount = "0.901961_0.901961_0.901961_0.000000_0.000000",
+  locknut = "0.800000_0.800000_0.800000_0.000000_0.000000",
+  shim = "0.917647_0.917647_0.917647_0.000000_0.000000",
+  bearing = "0.301961_0.301961_0.301961_0.000000_0.000000",
+}
+
 export enum PartName {
   gantryWheelPlate = "Gantry_Wheel_Plate",
   leftBracket = "Left_Gantry_Corner_Bracket",
@@ -123,6 +131,10 @@ export enum PartName {
   crossSlide = "Cross-Slide_Plate",
   crossSlideV19 = "M5_Flange_Locknut",
   zStop = "Z-Axis_Hardstop",
+  mountedIdlerPulleyMount = "Idler_Pulley_Mount",
+  mountedIdlerPulleyLocknut = "M5_Locknut",
+  mountedIdlerPulleyShim = "M5_Shim",
+  mountedIdlerPulleyBearing = "Bearing",
   beltClip = "Belt_Clip_-_Slim",
   utm = "M5_Barb",
   ccSupportHorizontal = "60mm_Horizontal_Cable_Carrier_Support",

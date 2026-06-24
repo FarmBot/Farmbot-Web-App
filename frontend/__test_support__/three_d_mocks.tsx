@@ -1,6 +1,7 @@
 import {
   ASSETS,
   ElectronicsBoxMaterial,
+  MountedIdlerPulleyMaterial,
   PartName,
   SeedTroughAssemblyMaterial,
   SeedTroughHolderMaterial,
@@ -620,6 +621,20 @@ jest.mock("@react-three/drei", () => {
     },
     [ASSETS.models.zStop]: {
       nodes: { [PartName.zStop]: {} as THREE.Mesh },
+    },
+    [ASSETS.models.mountedIdlerPulley]: {
+      nodes: {
+        [PartName.mountedIdlerPulleyMount]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyLocknut]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyShim]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyBearing]: {} as THREE.Mesh,
+      },
+      materials: {
+        [MountedIdlerPulleyMaterial.mount]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.locknut]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.shim]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.bearing]: {} as THREE.MeshStandardMaterial,
+      },
     },
     [ASSETS.models.utm]: {
       nodes: { [PartName.utm]: {} as THREE.Mesh },
