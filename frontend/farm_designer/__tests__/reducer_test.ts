@@ -6,10 +6,12 @@ import { BotPosition } from "../../devices/interfaces";
 import {
   fakeDesignerState, fakeDrawnPoint,
 } from "../../__test_support__/fake_designer_state";
+import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PlantStage, PointType } from "farmbot";
 import { UUID } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
+import { SceneObjectFormValues } from "../../scene_objects/interfaces";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
@@ -117,6 +119,34 @@ describe("designer reducer", () => {
     expect(newState.cropRadius).toEqual(100);
   });
 
+  it("sets drawn scene object data", () => {
+    const sceneObject: SceneObjectFormValues = fakeSceneObject().body;
+    const action: ReduxAction<SceneObjectFormValues | undefined> = {
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: sceneObject,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.drawnSceneObject).toEqual(sceneObject);
+  });
+
+  it("sets focused scene object field", () => {
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: "x_size",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.focusedSceneObjectField).toEqual("x_size");
+  });
+
+  it("sets unified scene object size", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.SET_UNIFIED_SCENE_OBJECT_SIZE,
+      payload: "SceneObject.1.2",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.unifiedSceneObjectSize).toEqual("SceneObject.1.2");
+  });
+
   it("sets distance indicator", () => {
     const action: ReduxAction<string> = {
       type: Actions.SET_DISTANCE_INDICATOR,
@@ -207,6 +237,15 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.hoveredPoint).toEqual("uuid");
+  });
+
+  it("sets hovered scene object", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: "sceneObjectUuid"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredSceneObject).toEqual("sceneObjectUuid");
   });
 
   it("sets hovered tool slot", () => {

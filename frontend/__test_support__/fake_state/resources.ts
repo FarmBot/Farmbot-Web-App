@@ -36,6 +36,9 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
+import {
+  _SO_RN, SceneObject, TaggedSceneObject,
+} from "../../scene_objects/interfaces";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 const globalAny = globalThis as typeof globalThis & {
@@ -543,6 +546,28 @@ export function fakeFarmwareEnv(): TaggedFarmwareEnv {
     key: "fake_FarmwareEnv_key",
     value: "fake_FarmwareEnv_value"
   });
+}
+
+export function fakeSceneObject(
+  input: Partial<SceneObject> = {},
+): TaggedSceneObject {
+  return fakeResource(_SO_RN, {
+    id: nextFakeId(),
+    name: "Scene Object 1",
+    texture: "concrete",
+    shape: "box",
+    color: "#fff",
+    x_center: 50,
+    y_center: 50,
+    z_base: 0,
+    x_size: 100,
+    y_size: 100,
+    z_size: 100,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+    ...input,
+  }) as TaggedSceneObject;
 }
 
 export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {

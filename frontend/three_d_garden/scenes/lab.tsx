@@ -1,13 +1,10 @@
 import React from "react";
-import { Box, Extrude } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping } from "three";
 import { ASSETS } from "../constants";
-import { threeSpace } from "../helpers";
 import { Config } from "../config";
-import { Desk, People } from "./props";
-import { Group, MeshPhongMaterial } from "../components";
+import { People } from "./props";
+import { Group } from "../components";
 import { PopInGroup } from "../progressive_load";
-import { useTextureVariant } from "../texture_variants";
+import { SceneObject } from "../../scene_objects/interfaces";
 
 export interface LabProps {
   config: Config;
@@ -16,26 +13,98 @@ export interface LabProps {
   onDetailsLoadInRest?(): void;
 }
 
-const wallLength = 10000;
-const wallHeight = 2500;
-const wallThickness = 200;
-const wallOffset = 2000;
-const wallColor = "#f4f4f4";
-const shelfThickness = 50;
-
-const wallStructure2D = () => {
-  const shape = new Shape();
-
-  shape.moveTo(0, 0);
-  shape.lineTo(wallLength, 0);
-  shape.lineTo(wallLength, wallThickness);
-  shape.lineTo(-wallThickness, wallThickness);
-  shape.lineTo(-wallThickness, -wallLength);
-  shape.lineTo(0, -wallLength);
-  shape.lineTo(0, 0);
-
-  return shape;
-};
+export const LAB_SCENE_OBJECTS: SceneObject[] = [
+  {
+    name: "Wall Y",
+    texture: "none",
+    shape: "box",
+    color: "#f4f4f4",
+    x_center: -2250,
+    y_center: -1600,
+    z_base: 0,
+    x_size: 200,
+    y_size: 10000,
+    z_size: 2500,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Wall X",
+    texture: "none",
+    shape: "box",
+    color: "#f4f4f4",
+    x_center: 2750,
+    y_center: 3470,
+    z_base: 0,
+    x_size: 10200,
+    y_size: 200,
+    z_size: 2500,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Lower Shelf",
+    texture: "wood",
+    shape: "box",
+    color: "#999",
+    x_center: 2850,
+    y_center: 3270,
+    z_base: 810,
+    x_size: 10000,
+    y_size: 200,
+    z_size: 50,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Upper Shelf",
+    texture: "wood",
+    shape: "box",
+    color: "#999",
+    x_center: 2850,
+    y_center: 3270,
+    z_base: 1230,
+    x_size: 10000,
+    y_size: 200,
+    z_size: 50,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Desk",
+    texture: "wood",
+    shape: "desk",
+    color: "#666",
+    x_center: 850,
+    y_center: 0,
+    z_base: 0,
+    x_size: 500,
+    y_size: 1000,
+    z_size: 600,
+    x_origin: "max",
+    y_origin: "world",
+    z_origin: "world",
+  },
+  {
+    name: "Laptop",
+    texture: "none",
+    shape: "laptop",
+    color: "#fff",
+    x_center: 800,
+    y_center: 0,
+    z_base: 600,
+    x_size: 300,
+    y_size: 300,
+    z_size: 200,
+    x_origin: "max",
+    y_origin: "world",
+    z_origin: "world",
+  },
+];
 
 const LabBase = (props: LabProps) => {
   if (props.config.scene != "Lab") { return <></>; }
@@ -44,13 +113,6 @@ const LabBase = (props: LabProps) => {
 
 const EnabledLab = (props: LabProps) => {
   const { config } = props;
-  const groundZ = -config.bedZOffset - config.bedHeight;
-
-  const shelfWoodTexture = useTextureVariant(ASSETS.textures.wood, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.3, 0.3],
-  });
 
   return <Group name={"lab-environment"} visible={config.scene == "Lab"}>
     <PopInGroup
@@ -58,43 +120,6 @@ const EnabledLab = (props: LabProps) => {
       reveal={props.reveal}
       onRest={props.onDetailsLoadInRest}
       distance={300}>
-      <Group
-        name={"lab-walls"}
-        position={[
-          threeSpace(-wallOffset, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <Extrude
-          name={"walls"}
-          castShadow={true}
-          receiveShadow={true}
-          args={[
-            wallStructure2D(),
-            { steps: 1, depth: wallHeight, bevelEnabled: false },
-          ]}>
-          <MeshPhongMaterial color={wallColor} side={DoubleSide} />
-        </Extrude>
-        {[wallHeight / 2, wallHeight / 3].map((shelfHeight, index) => (
-          <Box
-            name={"shelf"}
-            key={index}
-            castShadow={true}
-            receiveShadow={true}
-            args={[wallLength, wallThickness, shelfThickness]}
-            position={[
-              wallLength / 2,
-              -wallThickness / 2,
-              shelfHeight,
-            ]}>
-            <MeshPhongMaterial
-              map={shelfWoodTexture}
-              color={"#999"}
-              side={DoubleSide} />
-          </Box>
-        ))}
-      </Group>
-      <Desk config={config} activeFocus={props.activeFocus} />
       <People
         activeFocus={props.activeFocus}
         config={config}
@@ -117,7 +142,6 @@ const LAB_CONFIG_FIELDS: (keyof Config)[] = [
   "bedLengthOuter",
   "bedWidthOuter",
   "bedZOffset",
-  "desk",
   "people",
   "scene",
 ];

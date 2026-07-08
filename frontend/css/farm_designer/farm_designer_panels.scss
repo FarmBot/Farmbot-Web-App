@@ -747,6 +747,32 @@
   }
 }
 
+.scene-object-form-fields {
+  .info-box {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .scene-object-field-highlight {
+    border: 2px solid $dark_blue;
+  }
+
+  .scene-object-field-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: fit-content;
+  }
+
+  .scene-object-reset-z {
+    width: 1.5rem;
+    height: 1.5rem;
+    min-height: 1.5rem;
+    padding: 0;
+    line-height: 1;
+  }
+}
+
 .desktop-hide {
   display: none !important;
 

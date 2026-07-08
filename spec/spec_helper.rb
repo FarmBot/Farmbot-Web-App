@@ -154,6 +154,7 @@ def destroy_everything!
     FarmwareInstallation,
     Tool,
     Telemetry,
+    SceneObject,
     Delayed::Job,
     Delayed::Backend::ActiveRecord::Job,
     Fragment,

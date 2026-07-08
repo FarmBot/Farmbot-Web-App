@@ -29,6 +29,7 @@ import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map
 import { isTopDown } from "../three_d_garden/helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { MovementState, TimeSettings } from "../interfaces";
+import { TaggedSceneObject } from "../scene_objects/interfaces";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -67,6 +68,7 @@ export interface ThreeDGardenMapProps {
   images: TaggedImage[];
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
+  sceneObjects: TaggedSceneObject[];
   cameraCalibrationData: CameraCalibrationData;
   env: UserEnv;
   farmwareEnvs: TaggedFarmwareEnv[];
@@ -137,7 +139,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     zDimension: getValue("zDimension"),
     scene: getValue("scene"),
     people: getValue("people"),
-    desk: getValue("desk"),
     sunAzimuth: getValue("sunAzimuth"),
     sunInclination: getValue("sunInclination"),
   };
@@ -251,7 +252,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.scene = SCENES[configValues.scene];
     nextConfig.people = !!configValues.people;
     nextConfig.north = true;
-    nextConfig.desk = !!configValues.desk;
     nextConfig.plants = "";
     nextConfig.sunAzimuth = sunPositionConfig.azimuth;
     nextConfig.sunInclination = sunPositionConfig.inclination;
@@ -305,7 +305,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.ccSupportSize,
     configValues.clouds,
     configValues.columnLength,
-    configValues.desk,
     configValues.eventDebug,
     configValues.extraLegsX,
     configValues.extraLegsY,
@@ -415,6 +414,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     sensors={props.sensors}
     env={props.env}
     set3DConfigValue={props.set3DConfigValue}
+    sceneObjects={props.sceneObjects}
     addPlantProps={addPlantProps} />;
 };
 

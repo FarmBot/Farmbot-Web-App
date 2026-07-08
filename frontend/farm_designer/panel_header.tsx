@@ -20,6 +20,7 @@ export enum Panel {
   Groups = "Groups",
   Curves = "Curves",
   SavedGardens = "SavedGardens",
+  SceneObjects = "SceneObjects",
   Sequences = "Sequences",
   Regimens = "Regimens",
   FarmEvents = "FarmEvents",
@@ -62,6 +63,7 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Sequences]: PanelColor.gray,
   [Panel.Regimens]: PanelColor.gray,
   [Panel.SavedGardens]: PanelColor.gray,
+  [Panel.SceneObjects]: PanelColor.gray,
   [Panel.FarmEvents]: PanelColor.gray,
   [Panel.Zones]: PanelColor.gray,
   [Panel.Controls]: PanelColor.gray,
@@ -86,6 +88,7 @@ export const TAB_ICON: Record<Panel, string> = {
   [Panel.Sequences]: FilePath.icon(Icon.sequence),
   [Panel.Regimens]: FilePath.icon(Icon.regimens),
   [Panel.SavedGardens]: FilePath.icon(Icon.gardens),
+  [Panel.SceneObjects]: FilePath.icon(Icon.zones),
   [Panel.FarmEvents]: FilePath.icon(Icon.calendar),
   [Panel.Zones]: FilePath.icon(Icon.zones),
   [Panel.Controls]: FilePath.icon(Icon.controls),
@@ -110,6 +113,7 @@ export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Sequences]: "sequences",
   [Panel.Regimens]: "regimens",
   [Panel.SavedGardens]: "gardens",
+  [Panel.SceneObjects]: "scene_objects",
   [Panel.FarmEvents]: "events",
   [Panel.Zones]: "zones",
   [Panel.Controls]: "controls",
@@ -149,6 +153,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Sequences]: t("Sequences"),
   [Panel.Regimens]: t("Regimens"),
   [Panel.SavedGardens]: t("Gardens"),
+  [Panel.SceneObjects]: t("Scene Objects"),
   [Panel.FarmEvents]: t("Events"),
   [Panel.Zones]: t("Zones"),
   [Panel.Controls]: t("Controls"),
@@ -282,6 +287,7 @@ export class DesignerNavTabs
         <NavTab {...common} panel={Panel.Sequences} />
         <NavTab {...common} panel={Panel.Regimens} />
         <NavTab {...common} panel={Panel.FarmEvents} />
+        <NavTab {...common} panel={Panel.SceneObjects} />
         {DevSettings.futureFeaturesEnabled() &&
           <NavTab {...common} panel={Panel.Zones} />}
         {showSensors() && <NavTab {...common} panel={Panel.Sensors} />}

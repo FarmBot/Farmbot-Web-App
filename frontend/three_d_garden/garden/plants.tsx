@@ -526,8 +526,13 @@ export const outOfBoundsShaderModification =
       colorVertex,
     ).replace(
       "#include <worldpos_vertex>",
-      `#include <worldpos_vertex>
-       vWorldPosition = worldPosition.xyz;`);
+      `vec4 boundsWorldPosition = vec4(position, 1.0);
+       #ifdef USE_INSTANCING
+         boundsWorldPosition = instanceMatrix * boundsWorldPosition;
+       #endif
+       boundsWorldPosition = modelMatrix * boundsWorldPosition;
+       vWorldPosition = boundsWorldPosition.xyz;
+       #include <worldpos_vertex>`);
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <common>",
       `#include <common>

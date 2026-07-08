@@ -1,15 +1,11 @@
 import React from "react";
-import { Box } from "@react-three/drei";
-import { DoubleSide, RepeatWrapping } from "three";
 import { ASSETS } from "../constants";
-import { threeSpace } from "../helpers";
 import { Config } from "../config";
-import { Group, MeshPhongMaterial } from "../components";
-import { StarterTrays, PottedPlant, GreenhouseWall, People } from "./props";
+import { Group } from "../components";
+import { People } from "./props";
 import { PopInGroup } from "../progressive_load";
-import { FocusVisibilityGroup } from "../focus_transition";
-import { useTextureVariant } from "../texture_variants";
 import { type PlantIconAtlas } from "../garden/plant_icon_atlas";
+import { SceneObject } from "../../scene_objects/interfaces";
 
 export interface GreenhouseProps {
   config: Config;
@@ -19,11 +15,98 @@ export interface GreenhouseProps {
   onDetailsLoadInRest?(): void;
 }
 
-const wallLength = 10000;
-const wallOffset = 2000;
-const shelfThickness = 50;
-const shelfHeight = 800;
-const shelfDepth = 600;
+export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
+  {
+    name: "Wall Y",
+    texture: "none",
+    shape: "window",
+    color: "#f4f4f4",
+    x_center: -2150,
+    y_center: -1600,
+    z_base: 0,
+    x_size: 10,
+    y_size: 10000,
+    z_size: 2500,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Wall X",
+    texture: "none",
+    shape: "window",
+    color: "#f4f4f4",
+    x_center: 2850,
+    y_center: 3370,
+    z_base: 0,
+    x_size: 10000,
+    y_size: 10,
+    z_size: 2500,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Potted Plant",
+    texture: "none",
+    shape: "plant",
+    color: "#ffffff",
+    x_center: -1920,
+    y_center: 2200,
+    z_base: 0,
+    x_size: 500,
+    y_size: 500,
+    z_size: 900,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Shelf",
+    texture: "wood",
+    shape: "box",
+    color: "#aaa",
+    x_center: 2850,
+    y_center: 3070,
+    z_base: 775,
+    x_size: 10000,
+    y_size: 600,
+    z_size: 50,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Starter Tray 1",
+    texture: "none",
+    shape: "tray",
+    color: "#ffffff",
+    x_center: -150,
+    y_center: 3060,
+    z_base: 825,
+    x_size: 700,
+    y_size: 250,
+    z_size: 90,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+  {
+    name: "Starter Tray 2",
+    texture: "none",
+    shape: "tray",
+    color: "#ffffff",
+    x_center: 850,
+    y_center: 3060,
+    z_base: 825,
+    x_size: 700,
+    y_size: 250,
+    z_size: 90,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+  },
+];
 
 const GreenhouseBase = (props: GreenhouseProps) => {
   if (props.config.scene != "Greenhouse") { return <></>; }
@@ -32,14 +115,6 @@ const GreenhouseBase = (props: GreenhouseProps) => {
 
 const EnabledGreenhouse = (props: GreenhouseProps) => {
   const { config } = props;
-  const groundZ = -config.bedZOffset - config.bedHeight;
-
-  const shelfWoodTexture = useTextureVariant(ASSETS.textures.wood, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.3, 0.3],
-  });
-
   return <Group
     name={"greenhouse-environment"}
     visible={config.scene == "Greenhouse"}>
@@ -48,45 +123,6 @@ const EnabledGreenhouse = (props: GreenhouseProps) => {
       reveal={props.reveal}
       onRest={props.onDetailsLoadInRest}
       distance={300}>
-
-      <Group
-        name={"right-greenhouse-wall"}
-        position={[
-          threeSpace(-wallOffset, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <GreenhouseWall />
-        <Box
-          name={"shelf"}
-          castShadow={true}
-          receiveShadow={true}
-          args={[wallLength, shelfDepth, shelfThickness]}
-          position={[wallLength / 2, -shelfDepth / 2, shelfHeight]}>
-          <MeshPhongMaterial
-            map={shelfWoodTexture}
-            color={"#aaa"}
-            side={DoubleSide}
-          />
-        </Box>
-        <StarterTrays positions={[
-          [2000, -shelfDepth / 2, shelfHeight + 25],
-          [3000, -shelfDepth / 2, shelfHeight + 25],
-        ]} plantIconAtlas={props.plantIconAtlas} />
-      </Group>
-
-      <Group
-        name={"left-greenhouse-wall"}
-        position={[
-          threeSpace(-wallOffset, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + wallOffset - 10000,
-            config.bedWidthOuter),
-          groundZ,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}>
-        <GreenhouseWall />
-      </Group>
-
       <People
         activeFocus={props.activeFocus}
         config={config}
@@ -100,17 +136,6 @@ const EnabledGreenhouse = (props: GreenhouseProps) => {
             offset: [0, config.bedWidthOuter + 900],
           },
         ]} />
-
-      <FocusVisibilityGroup
-        name="potted-plant"
-        visible={props.activeFocus == ""}
-        position={[
-          threeSpace(-1750, config.bedLengthOuter),
-          threeSpace(850, -config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <PottedPlant plantIconAtlas={props.plantIconAtlas} />
-      </FocusVisibilityGroup>
     </PopInGroup>
   </Group>;
 };

@@ -3,6 +3,7 @@ import {
   DrawnPointPayl,
   HoveredPlantPayl,
 } from "./interfaces";
+import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource, PointType, PlantStage } from "farmbot";
 import { Actions } from "../constants";
@@ -22,12 +23,16 @@ export const initialState: DesignerState = {
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
+  hoveredSceneObject: undefined,
   cropSearchQuery: "",
   companionIndex: undefined,
   plantTypeChangeId: undefined,
   bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
+  drawnSceneObject: undefined,
+  focusedSceneObjectField: undefined,
+  unifiedSceneObjectSize: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
@@ -127,6 +132,10 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.hoveredPoint = payload;
     return s;
   })
+  .add<string | undefined>(Actions.HOVER_SCENE_OBJECT, (s, { payload }) => {
+    s.hoveredSceneObject = payload;
+    return s;
+  })
   .add<string | undefined>(Actions.HOVER_TOOL_SLOT, (s, { payload }) => {
     s.hoveredToolSlot = payload;
     return s;
@@ -142,6 +151,21 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<DrawnPointPayl | undefined>(
     Actions.SET_DRAWN_POINT_DATA, (s, { payload }) => {
       s.drawnPoint = payload;
+      return s;
+    })
+  .add<SceneObjectFormValues | undefined>(
+    Actions.SET_DRAWN_SCENE_OBJECT_DATA, (s, { payload }) => {
+      s.drawnSceneObject = payload;
+      return s;
+    })
+  .add<string | undefined>(
+    Actions.SET_FOCUSED_SCENE_OBJECT_FIELD, (s, { payload }) => {
+      s.focusedSceneObjectField = payload;
+      return s;
+    })
+  .add<string | undefined>(
+    Actions.SET_UNIFIED_SCENE_OBJECT_SIZE, (s, { payload }) => {
+      s.unifiedSceneObjectSize = payload;
       return s;
     })
   .add<number>(Actions.SET_COMPANION_INDEX, (s, a) => {

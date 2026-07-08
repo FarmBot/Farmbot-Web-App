@@ -17,7 +17,6 @@ describe("<Lab />", () => {
     p.activeFocus = "";
     render(<Lab {...p} />);
     const { container } = render(<Lab {...p} />);
-    expect(container).toContainHTML("shelf");
     expect(container).not.toContainHTML("people");
   });
 
@@ -36,10 +35,6 @@ describe("<Lab />", () => {
       ...p,
       config: { ...p.config, sun: p.config.sun + 1 },
     })).toBeTruthy();
-    expect(labPropsEqual(p, {
-      ...p,
-      config: { ...p.config, desk: !p.config.desk },
-    })).toBeFalsy();
     expect(labPropsEqual(p, { ...p, activeFocus: "desk" })).toBeFalsy();
   });
 
@@ -59,7 +54,6 @@ describe("<Lab />", () => {
     p.activeFocus = "";
     render(<Lab {...p} />);
     const { container } = render(<Lab {...p} />);
-    expect(container).toContainHTML("shelf");
     expect(container).toContainHTML("people");
   });
 

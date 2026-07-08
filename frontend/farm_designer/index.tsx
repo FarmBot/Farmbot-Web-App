@@ -258,6 +258,7 @@ export class RawFarmDesigner
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
           env={this.props.env}
+          sceneObjects={this.props.sceneObjects}
           farmwareEnvs={this.props.farmwareEnvs}
           logs={this.props.logs}
           cameraCalibrationData={this.props.cameraCalibrationData}

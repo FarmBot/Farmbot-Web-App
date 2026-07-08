@@ -1,5 +1,5 @@
 import React from "react";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui";
 import { ToolColor } from "./all_tools";
 import { ToolGraphicProps } from "./interfaces";
 import { seedBinGradient } from "./seed_bin";

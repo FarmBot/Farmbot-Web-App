@@ -107,6 +107,10 @@ import { Text } from "./elements";
 import {
   getToolSlotRenderPosition,
 } from "./bot/components/tool_slot_position";
+import { TaggedSceneObject } from "../scene_objects/interfaces";
+import {
+  SceneObjects, useSceneObjectPlacement,
+} from "./scene_objects";
 
 const AnimatedGroup = animated(Group);
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
@@ -331,6 +335,7 @@ export interface GardenModelProps {
   sensors?: TaggedSensor[];
   env?: UserEnv;
   set3DConfigValue?(key: keyof Config, value: string): void;
+  sceneObjects?: TaggedSceneObject[];
   smoothFocusTransitions?: boolean;
   smoothConfigTransitions?: boolean;
   plantIconCapacities?: Record<string, number>;
@@ -532,6 +537,9 @@ interface StaticGardenLayersProps {
   onHoverObject?: ThreeDObjectHoverHandler;
   onHoverLabel?(selection: ThreeDObjectSelection | undefined): void;
   onPlantHoverChange(hovered: boolean): void;
+  sceneObjectClick?: (e: ThreeEvent<MouseEvent>) => void;
+  sceneObjectPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
+  sceneObjectPreview?: React.ReactNode;
 }
 
 // eslint-disable-next-line complexity
@@ -547,6 +555,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
+    sceneObjectClick, sceneObjectPointerMove, sceneObjectPreview,
   } = props;
   const seasonLayerKey = `${config.plants}-${seasonResetKey || 0}`;
   const gridVisible = config.grid && activeFocus != "Planter bed";
@@ -589,7 +598,12 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         skyRef={skyRef}
         startTimeRef={startTimeRef} />
       <AmbientLight intensity={config.ambient / 100} />
-      {config.ground && <Ground config={config} />}
+      {config.ground &&
+        <Ground
+          config={config}
+          onClick={sceneObjectClick}
+          onPointerMove={sceneObjectPointerMove} />}
+      {sceneObjectPreview}
     </SceneBoundary>
     <SceneBoundary
       loadStep={"bed"}
@@ -1209,9 +1223,11 @@ export const GardenModel = (props: GardenModelProps) => {
     points: mapPoints,
     weeds,
     toolSlots,
+    sceneObjects: props.sceneObjects || [],
   }), [
     mapPoints,
     plants,
+    props.sceneObjects,
     toolSlots,
     weeds,
   ]);
@@ -1578,10 +1594,12 @@ export const GardenModel = (props: GardenModelProps) => {
       mapPoints,
       weeds,
       toolSlots,
+      props.sceneObjects || [],
     ), [
     addPlantProps?.designer,
     plants,
     mapPoints,
+    props.sceneObjects,
     weeds,
     toolSlots,
   ]);
@@ -1651,6 +1669,17 @@ export const GardenModel = (props: GardenModelProps) => {
   const getZ = React.useMemo(
     () => getZFunc(soilSurface.triangles, -config.soilHeight),
     [soilSurface.triangles, config.soilHeight]);
+  const addingSceneObject = location.pathname == Path.sceneObjects("add");
+  const editingSceneObject = Path.startsWith(Path.sceneObjects())
+    && !addingSceneObject
+    && !!Path.getSlug(Path.sceneObjects());
+  const sceneObjectPlacement = useSceneObjectPlacement({
+    config,
+    enabled: addingSceneObject,
+    dispatch,
+    sceneObjects: props.sceneObjects,
+    drawnSceneObject: props.addPlantProps?.designer.drawnSceneObject,
+  });
 
   const sceneDetailsLoadIn =
     config.scene == "Lab" || config.scene == "Greenhouse";
@@ -1841,7 +1870,16 @@ export const GardenModel = (props: GardenModelProps) => {
         onHoverObject={setSelectableObjectHover}
         onHoverLabel={config.labelsOnHover ? setObjectHoverLabel : undefined}
         onPlantHoverChange={setPlantIntersected}
-        showPoints={showPoints} />
+        showPoints={showPoints}
+        sceneObjectClick={addingSceneObject
+          ? sceneObjectPlacement.onClick
+          : undefined}
+        sceneObjectPointerMove={addingSceneObject && !editingSceneObject
+          ? sceneObjectPlacement.onPointerMove
+          : undefined}
+        sceneObjectPreview={addingSceneObject
+          ? sceneObjectPlacement.preview
+          : undefined} />
       {objectHoverLabelNode}
       {gridHoverEnabled &&
         <GridHoverTarget
@@ -1977,6 +2015,13 @@ export const GardenModel = (props: GardenModelProps) => {
           <LoadStepReady
             step={"details"}
             markStep={loadProgress.markStep} />}
+        <SceneObjects
+          config={config}
+          activeFocus={props.activeFocus}
+          dispatch={dispatch}
+          designer={addPlantProps?.designer}
+          hoverSelection={hoverSelection}
+          sceneObjects={props.sceneObjects} />
       </SceneBoundary>
     </Group>
   </FocusTransitionProvider>;

@@ -33,6 +33,7 @@ import { isNumber } from "lodash";
 import type {
   AxisNumberProperty, BotSize, MapTransformProps, TaggedPlant,
 } from "./map/interfaces";
+import type { SceneObjectFormValues, TaggedSceneObject } from "../scene_objects/interfaces";
 import type { SelectionBoxData } from "./map/background";
 import type { GetWebAppConfigValue } from "../config_storage/actions";
 import type {
@@ -117,6 +118,7 @@ export interface FarmDesignerProps {
   defaultAxes?: string;
   getConfigValue: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
+  sceneObjects: TaggedSceneObject[];
   sensors: TaggedSensor[];
   groups: TaggedPointGroup[];
   mountedToolInfo: MountedToolInfo;
@@ -151,6 +153,7 @@ export interface DesignerState {
   hoveredPoint: string | undefined;
   hoveredSpread: number | undefined;
   hoveredPlantListItem: string | undefined;
+  hoveredSceneObject: string | undefined;
   hoveredToolSlot: string | undefined;
   hoveredSensorReading: string | undefined;
   hoveredImage: string | undefined;
@@ -160,6 +163,9 @@ export interface DesignerState {
   bulkPlantSlug: string | undefined;
   chosenLocation: BotPosition;
   drawnPoint: DrawnPointPayl | undefined;
+  drawnSceneObject: SceneObjectFormValues | undefined;
+  focusedSceneObjectField: string | undefined;
+  unifiedSceneObjectSize: string | undefined;
   openedSavedGarden: number | undefined;
   tryGroupSortType: ExtendedPointGroupSortType | undefined;
   editGroupAreaInMap: boolean;

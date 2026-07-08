@@ -26,6 +26,7 @@ describe("<ThreeDGarden />", () => {
     mapPoints: [],
     weeds: [],
     threeDPlants: [],
+    sceneObjects: [],
   });
 
   it("renders", () => {

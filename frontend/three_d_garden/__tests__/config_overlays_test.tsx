@@ -99,6 +99,29 @@ describe("<PublicOverlay />", () => {
     expect(buyButton?.getAttribute("href")).toContain("genesis-xl-v1-8");
     expect(buyButton?.textContent).toContain("GenesisXLv1.8");
   });
+
+  it("toggles season animation controls", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 10 };
+    p.setSeasonAnimationPaused = jest.fn();
+    const { getByLabelText, rerender } = render(<PublicOverlay {...p} />);
+
+    fireEvent.click(getByLabelText("Pause seasons"));
+
+    expect(p.setSeasonAnimationPaused).toHaveBeenCalledWith(true);
+    expect(p.setConfig).toHaveBeenCalledWith({
+      ...p.config,
+      animateSeasons: false,
+    });
+
+    p.config.animateSeasons = false;
+    p.startTimeRef.current = -5;
+    rerender(<PublicOverlay {...p} seasonAnimationPaused={true} />);
+    fireEvent.keyDown(getByLabelText("Play seasons"), { key: "Enter" });
+
+    expect(p.setSeasonAnimationPaused).toHaveBeenCalledWith(false);
+  });
 });
 
 describe("<PrivateOverlay />", () => {
@@ -236,5 +259,13 @@ describe("maybeAddParam()", () => {
   it("adds param", () => {
     maybeAddParam(true, "x", "1");
     expect(setUrlParamSpy).toHaveBeenCalledWith("x", "1");
+  });
+
+  it("adds auto-add param and skips reset all", () => {
+    maybeAddParam(false, "urlParamAutoAdd", "true");
+    expect(setUrlParamSpy).toHaveBeenCalledWith("urlParamAutoAdd", "true");
+    setUrlParamSpy.mockClear();
+    maybeAddParam(true, "otherPreset", "Reset all");
+    expect(setUrlParamSpy).not.toHaveBeenCalled();
   });
 });

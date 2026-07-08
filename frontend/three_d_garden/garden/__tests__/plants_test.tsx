@@ -640,5 +640,7 @@ describe("outOfBoundsShaderModification", () => {
     expect(shader.fragmentShader).toContain("p.x *= uMirrorX");
     expect(shader.fragmentShader).toContain("p.y *= uMirrorY");
     expect(shader.vertexShader).not.toContain("vInstanceColor");
+    expect(shader.vertexShader).toContain("boundsWorldPosition");
+    expect(shader.vertexShader).not.toContain("worldPosition.xyz");
   });
 });

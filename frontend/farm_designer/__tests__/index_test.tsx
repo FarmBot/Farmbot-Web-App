@@ -90,6 +90,7 @@ describe("<FarmDesigner />", () => {
     getConfigValue: jest.fn(),
     sensorReadings: [],
     sensors: [],
+    sceneObjects: [],
     groups: [],
     mountedToolInfo: fakeMountedToolInfo(),
     visualizedSequenceBody: [],

@@ -55,7 +55,6 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
   xyDimensions: 0,
   zDimension: 0,
   people: 0,
-  desk: 0,
 };
 
 export const SCENES: Record<number, string> = {
@@ -157,7 +156,7 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
   </Highlight>;
 };
 
-const SCENE_DDIS: Record<number, DropDownItem> = Object.entries(SCENES)
+export const SCENE_DDIS: Record<number, DropDownItem> = Object.entries(SCENES)
   .reduce((acc, [key, label]) => {
     acc[Number(key)] = { label, value: Number(key) };
     return acc;
