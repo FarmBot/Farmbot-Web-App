@@ -50,7 +50,7 @@ import {
 import { clickWasDragged } from "../click_event";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { getMode } from "../../farm_designer/map/util";
-import { XAxisBelt, YAxisBelt } from "./belts";
+import { XAxisBelt, YAxisBelt, ZAxisBelt } from "./belts";
 
 const xTrackPadding = 280;
 const extrusionWidth = 20;
@@ -394,6 +394,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
         </Mesh>
         <XAxisBelt
           name={index == 0 ? "x1Belt" : "x2Belt"}
+          kitVersion={props.config.kitVersion}
           position={[
             ...botOuterXY(
               props.config,
@@ -520,6 +521,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
     </Mesh>
     <YAxisBelt
       botSizeY={botSizeY}
+      kitVersion={props.config.kitVersion}
       y={y}
       position={[
         ...botGardenXY(props.config, x - 25.5, -100),
@@ -1066,6 +1068,15 @@ const EnabledBot = (props: FarmbotModelProps) => {
       config={config}
       configPosition={props.configPosition}
       beamShape={isV19 ? beamV19Shape : beamShape} />
+    {isV19 && <ZAxisBelt
+      botSizeY={config.botSizeY}
+      y={props.configPosition.y}
+      z={props.configPosition.z}
+      zAxisLength={config.zAxisLength}
+      position={[
+        ...botGardenXY(config, props.configPosition.x - 25.5, -100),
+        config.columnLength + 99,
+      ]} />}
     <Solenoid config={config} configPosition={props.configPosition} />
     <BotElectronicsSubassembly
       config={config}
