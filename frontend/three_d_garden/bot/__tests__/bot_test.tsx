@@ -75,7 +75,7 @@ describe("<Bot />", () => {
     const slots = container.querySelectorAll("[name='slot']");
     const lastSlot = slots[slots.length - 1];
     expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1350,100,51");
+      .toContain("-1350,200,51");
   });
 
   it("renders: v1.7", () => {
@@ -216,14 +216,14 @@ describe("<Bot />", () => {
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);
-    expect(createShapesMock).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(14);
   });
 
   it("skips track shape loading when tracks are disabled", () => {
     const p = fakeProps();
     p.config.tracks = false;
     render(<Bot {...p} />);
-    expect(createShapesMock).toHaveBeenCalledTimes(12);
+    expect(createShapesMock).toHaveBeenCalledTimes(11);
   });
 
   it("skips X-axis carrier mount model when carriers are disabled", () => {
@@ -294,7 +294,7 @@ describe("<Bot />", () => {
     expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
     expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
     expect(urls).not.toContain(ASSETS.models.beltClip);
-    expect(urls).toContain(ASSETS.models.zStop);
+    expect(urls).toContain(ASSETS.models.mountedIdlerPulley);
     unmountRenderer(wrapper);
   });
 
@@ -347,7 +347,7 @@ describe("<Bot />", () => {
 
     const urls = useGltfMock.mock.calls.map(([url]) => url);
     expect(urls).toContain(ASSETS.models.gantryWheelPlate);
-    expect(urls).toContain(ASSETS.models.crossSlide);
+    expect(urls).toContain(ASSETS.models.crossSlideV19);
     expect(urls).toContain(ASSETS.models.xAxisCCMount);
     expect(urls).toContain(ASSETS.models.beltClip);
     unmountRenderer(wrapper);
@@ -360,6 +360,6 @@ describe("<Bot />", () => {
     const second = render(<Bot {...p} />);
     second.unmount();
 
-    expect(createShapesMock).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(14);
   });
 });

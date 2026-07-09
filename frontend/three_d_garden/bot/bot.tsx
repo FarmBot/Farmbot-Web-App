@@ -6,7 +6,7 @@ import {
   Cylinder, Extrude, Trail, Tube, useGLTF,
 } from "@react-three/drei";
 import {
-  DoubleSide, ExtrudeGeometryOptions, Shape, RepeatWrapping,
+  DoubleSide, Shape, RepeatWrapping,
 } from "three";
 import {
   easyCubicBezierCurve3, get3DPositionNoMirrorFunc,
@@ -50,6 +50,7 @@ import {
 import { clickWasDragged } from "../click_event";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { getMode } from "../../farm_designer/map/util";
+import { XAxisBelt, YAxisBelt } from "./belts";
 
 const xTrackPadding = 280;
 const extrusionWidth = 20;
@@ -58,7 +59,6 @@ const cameraMountOffset = {
   x: extrusionWidth - 8,
   y: utmRadius,
 };
-const distinguishableBlack = "#333";
 
 type LeftBracket = GLTF & {
   nodes: { [PartName.leftBracket]: THREE.Mesh };
@@ -392,6 +392,19 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           geometry={beltClip.nodes[PartName.beltClip].geometry}>
           <MeshPhongMaterial color={"silver"} />
         </Mesh>
+        <XAxisBelt
+          name={index == 0 ? "x1Belt" : "x2Belt"}
+          position={[
+            ...botOuterXY(
+              props.config,
+              -143,
+              outerY + 10 + bedColumnYOffset,
+            ),
+            0,
+          ]}
+          length={botSizeX + 127 + xTrackPadding / 2}
+          x={x}
+          columnLength={columnLength} />
         <GantryWheelPlateComponent name={"gantryWheelPlate"}
           position={[
             ...botOuterXY(
@@ -481,31 +494,6 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
     repeat: [0.01, 0.0003],
   });
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
-  const yBeltPath = React.useCallback(() => {
-    const radius = 12;
-    const path = new Shape();
-    path.moveTo(0, 0);
-    path.lineTo(0, y + 30);
-    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true);
-    path.lineTo(45, y + 30);
-    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4);
-    path.lineTo(0, y + 100);
-    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true);
-    path.lineTo(0, botSizeY + 220);
-    path.lineTo(-2, botSizeY + 220);
-    path.lineTo(-2, y + 100);
-    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI);
-    path.lineTo(45, y + 50);
-    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true);
-    path.lineTo(radius, y + 40);
-    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
-    path.lineTo(-2, 0);
-    return path;
-  }, [botSizeY, y]);
-  const yBeltArgs = React.useMemo(() => [
-    yBeltPath(),
-    { steps: 1, depth: 6, bevelEnabled: false },
-  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
   return <>
     <GantryBeam
       config={props.config}
@@ -530,15 +518,13 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Extrude name={"yBelt"}
-      args={yBeltArgs}
+    <YAxisBelt
+      botSizeY={botSizeY}
+      y={y}
       position={[
         ...botGardenXY(props.config, x - 25.5, -100),
-        columnLength + 100,
-      ]}
-      rotation={[0, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
+        columnLength + 99,
+      ]} />
     <Mesh name={"yStopMax"}
       position={[
         ...botOuterXY(
