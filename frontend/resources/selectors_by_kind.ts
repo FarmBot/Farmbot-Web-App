@@ -32,6 +32,7 @@ import {
 import { error } from "../toast/toast";
 import { assertUuid } from "./util";
 import { findAll } from "./find_all";
+import { TaggedSceneObject } from "../scene_objects/interfaces";
 
 const isSaved = <T extends TaggedResource>(t: T) =>
   t.specialStatus === SpecialStatus.SAVED;
@@ -90,6 +91,9 @@ export const selectAllRegimens = (i: ResourceIndex) =>
   findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors =
   (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
+export const selectAllSceneObjects =
+  /** @ts-expect-error: todo */
+  (i: ResourceIndex) => findAll<TaggedSceneObject>(i, "SceneObject");
 export const selectAllPinBindings =
   (i: ResourceIndex) => findAll<TaggedPinBinding>(i, "PinBinding");
 export const selectAllSequences = (i: ResourceIndex) =>

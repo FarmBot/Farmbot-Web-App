@@ -1,7 +1,7 @@
 import React from "react";
 import { UserEnv } from "../devices/interfaces";
 import { reduceFarmwareEnv } from "../farmware/state_to_props";
-import { Color } from "../ui/colors";
+import { Color } from "../ui";
 import { store } from "../redux/store";
 
 interface CustomToolGraphics {

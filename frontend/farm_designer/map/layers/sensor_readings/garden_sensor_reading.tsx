@@ -4,7 +4,7 @@ import { transformXY } from "../../util";
 import { TaggedSensorReading } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { isNumber } from "lodash";
-import { Color } from "../../../../ui/colors";
+import { Color } from "../../../../ui";
 import { t } from "../../../../i18next_wrapper";
 import { TimeSettings } from "../../../../interfaces";
 import { formatTime } from "../../../../util";

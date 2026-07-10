@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { clone } from "lodash";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
-  fakeToolSlot, fakeWeed,
+  fakeToolSlot, fakeWeed, fakeSceneObject,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
@@ -15,8 +15,10 @@ import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../../selection_types";
 import {
-  hoverSelectionFromDesigner, pathForThreeDSelection,
-  routeLocationSelectionFromPath, routeSelectionFromPath,
+  createSelectionLookup, hoverSelectionFromDesigner, pathForThreeDSelection,
+  pointTypeForSelectionKind, routeLocationSelectionFromPath,
+  routeSelectionFromPath, selectionForUuid, selectionKindAllowed,
+  uuidForSelection,
 } from "../routes";
 import {
   ObjectPopupControls, ObjectPopupDeleteButton, ObjectPopupHeaderColor,
@@ -209,6 +211,15 @@ const commit = (
   });
 
 describe("selection routes", () => {
+  it("looks up point types for selection kinds", () => {
+    expect(pointTypeForSelectionKind("plant")).toEqual("Plant");
+    expect(pointTypeForSelectionKind("sceneObject")).toBeUndefined();
+    expect(selectionKindAllowed("plant", undefined)).toBeTruthy();
+    expect(selectionKindAllowed("point", ["Plant"])).toBeFalsy();
+    expect(selectionKindAllowed("point", ["GenericPointer"])).toBeTruthy();
+    expect(selectionKindAllowed("sceneObject", undefined)).toBeFalsy();
+  });
+
   it("resolves selections from routes", () => {
     expect(routeSelectionFromPath("/app/designer/plants/1")).toEqual({
       kind: "plant",
@@ -225,6 +236,10 @@ describe("selection routes", () => {
     expect(routeSelectionFromPath("/app/designer/tool-slots/4")).toEqual({
       kind: "slot",
       id: 4,
+    });
+    expect(routeSelectionFromPath("/app/designer/scene-objects/5")).toEqual({
+      kind: "sceneObject",
+      id: 5,
     });
     expect(routeSelectionFromPath("/app/controls")).toBeUndefined();
     expect(routeSelectionFromPath("/app/designer/plants/nope")).toBeUndefined();
@@ -259,6 +274,8 @@ describe("selection routes", () => {
     weed.body.id = 3;
     const slot = fakeToolSlot();
     slot.body.id = 4;
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
     const designer = fakeDesignerState();
     designer.hoveredPlant.plantUUID = plant.uuid;
     expect(hoverSelectionFromDesigner(
@@ -280,10 +297,41 @@ describe("selection routes", () => {
     expect(hoverSelectionFromDesigner(
       designer, [], [], [], [{ toolSlot: slot, tool: undefined }],
     )).toEqual({ kind: "slot", id: 4 });
+    designer.hoveredToolSlot = undefined;
+    designer.hoveredSceneObject = sceneObject.uuid;
+    expect(hoverSelectionFromDesigner(
+      designer, [], [], [], [], [sceneObject],
+    )).toEqual({ kind: "sceneObject", id: 1 });
+    designer.hoveredSceneObject = undefined;
     slot.body.id = undefined;
     expect(hoverSelectionFromDesigner(
       designer, [], [], [], [{ toolSlot: slot, tool: undefined }],
     )).toBeUndefined();
+  });
+
+  it("creates selection lookup maps", () => {
+    const plant = fakePlant();
+    plant.body.id = 1;
+    const point = fakePoint();
+    point.body.id = 2;
+    const weed = fakeWeed();
+    weed.body.id = 3;
+    const slot = fakeToolSlot();
+    slot.body.id = 4;
+    const sceneObject = fakeSceneObject({ id: 5 });
+
+    const lookup = createSelectionLookup({
+      plants: [plant],
+      points: [point],
+      weeds: [weed],
+      toolSlots: [{ toolSlot: slot, tool: undefined }],
+      sceneObjects: [sceneObject],
+    });
+
+    expect(uuidForSelection(lookup, { kind: "plant", id: 1 }))
+      .toEqual(plant.uuid);
+    expect(selectionForUuid(lookup, sceneObject.uuid))
+      .toEqual({ kind: "sceneObject", id: 5 });
   });
 
   it("builds paths", () => {
@@ -301,6 +349,8 @@ describe("selection routes", () => {
       .toEqual(Path.settings("farmbot"));
     expect(pathForThreeDSelection({ kind: "camera", id: 0 }))
       .toEqual(Path.photos());
+    expect(pathForThreeDSelection({ kind: "sceneObject", id: 5 }))
+      .toEqual(Path.sceneObjects(5));
   });
 });
 

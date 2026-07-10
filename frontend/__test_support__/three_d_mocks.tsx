@@ -13,7 +13,7 @@ import React, { type ReactNode } from "react";
 import type { UseSpringProps } from "@react-spring/three";
 import type { ThreeElements, ThreeEvent } from "@react-three/fiber";
 import type {
-  Billboard, Cloud, Clouds, Cylinder, Image, Instance, Instances, Plane,
+  Billboard, Cloud, Clouds, Cone, Cylinder, Image, Instance, Instances, Plane,
   Sphere, Torus, Trail, Tube,
 } from "@react-three/drei";
 
@@ -832,6 +832,12 @@ jest.mock("@react-three/drei", () => {
     Cylinder: (props: React.ComponentProps<typeof Cylinder>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"cylinder"} {...props}>
+        {props.name}
+        {props.children}
+      </div>,
+    Cone: (props: React.ComponentProps<typeof Cone>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"cone"} {...props}>
         {props.name}
         {props.children}
       </div>,

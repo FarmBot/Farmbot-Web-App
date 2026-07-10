@@ -433,6 +433,8 @@ const KIND_PRIORITY: ResourceLookupTable = {
   WizardStepResult: 4,
   Telemetry: 4,
   Crop: 4,
+  /** @ts-expect-error: todo */
+  SceneObject: 4,
 };
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   state = emptyState()) {

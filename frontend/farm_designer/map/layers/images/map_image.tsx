@@ -5,7 +5,7 @@ import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isNumber, round, last } from "lodash";
 import { equals } from "../../../../util";
-import { Color } from "../../../../ui/colors";
+import { Color } from "../../../../ui";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
 

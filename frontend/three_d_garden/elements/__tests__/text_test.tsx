@@ -39,5 +39,9 @@ describe("<Text />", () => {
       ...p,
       visible: false,
     })).toBeFalsy();
+    expect(textPropsEqual(p, {
+      ...p,
+      depthTest: false,
+    })).toBeFalsy();
   });
 });

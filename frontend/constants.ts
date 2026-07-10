@@ -1259,6 +1259,9 @@ export namespace Content {
   export const NO_SEED_CONTAINERS =
     trim(`Press + to add a seed container`);
 
+  export const NO_SCENE_OBJECTS =
+    trim(`Press + to add a scene object`);
+
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
     a MARK AS step in a sequence. Use the verify button or read the tool
@@ -1447,6 +1450,11 @@ export namespace TourContent {
     sensors and sensor readings. Click the Read Sensor buttons to read the
     current value of your sensors. Create and view historical sensor
     readings in the Sensor History section.`);
+
+  export const SCENE_OBJECTS_PANEL =
+    trim(`This is the scene objects panel. Here you can view and manage all of the
+    scene objects in your virtual environment. Pressing the + button
+    will create a new scene object.`);
 
   export const JOBS_AND_LOGS_PANEL =
     trim(`Here you can view running and completed jobs as well as log messages.`);
@@ -2531,6 +2539,7 @@ export enum Actions {
   HOVER_SENSOR_READING = "HOVER_SENSOR_READING",
   HOVER_IMAGE = "HOVER_IMAGE",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  HOVER_SCENE_OBJECT = "HOVER_SCENE_OBJECT",
   HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
@@ -2540,6 +2549,9 @@ export enum Actions {
   SET_SLUG_BULK = "SET_SLUG_BULK",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_DRAWN_POINT_DATA = "SET_DRAWN_POINT_DATA",
+  SET_DRAWN_SCENE_OBJECT_DATA = "SET_DRAWN_SCENE_OBJECT_DATA",
+  SET_FOCUSED_SCENE_OBJECT_FIELD = "SET_FOCUSED_SCENE_OBJECT_FIELD",
+  SET_UNIFIED_SCENE_OBJECT_SIZE = "SET_UNIFIED_SCENE_OBJECT_SIZE",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
   SET_SETTINGS_SEARCH_TERM = "SET_SETTINGS_SEARCH_TERM",

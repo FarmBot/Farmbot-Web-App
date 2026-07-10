@@ -31,6 +31,8 @@ export interface BIProps {
   title?: string;
   autoFocus?: boolean;
   autoSelect?: boolean;
+  onFocus?(e: React.FocusEvent<HTMLInputElement>): void;
+  onBlur?(e: React.SyntheticEvent<HTMLInputElement>): void;
   keyCallback?: (key: string, buffer: string) => void;
   clearBtn?: boolean;
 }
@@ -85,6 +87,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   focus = (e: React.FocusEvent<HTMLInputElement>) => {
     const { value } = this.props;
+    this.props.onFocus?.(e);
     this.props.autoSelect &&
       e.target.setSelectionRange(0, e.target.value.length);
     this.setState({
@@ -92,6 +95,11 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       buffer: "" + (value || ""),
       error: undefined
     });
+  };
+
+  blur = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    this.props.onBlur?.(e);
+    this.maybeCommit(e);
   };
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -118,7 +126,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       onChange: this.updateBuffer,
       onKeyUp: this.keyUp,
       onSubmit: this.maybeCommit,
-      onBlur: this.maybeCommit,
+      onBlur: this.blur,
       name: this.props.name,
       id: this.props.id,
       min: this.props.min,

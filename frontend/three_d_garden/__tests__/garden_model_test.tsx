@@ -31,6 +31,7 @@ import { cameraInit } from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
 import { Mode } from "../../farm_designer/map/interfaces";
+import { DEFAULT_SCENE_OBJECT } from "../../scene_objects/add";
 import * as mapUtil from "../../farm_designer/map/util";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
@@ -42,7 +43,7 @@ import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
-import { get3DPositionFunc } from "../helpers";
+import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
 
 let isDesktopSpy: jest.SpyInstance;
@@ -1335,6 +1336,74 @@ describe("<GardenModel />", () => {
     render(<GardenModel {...p} />);
     await waitFor(() =>
       expect(p.onLoadComplete).toHaveBeenCalled());
+  });
+
+  it("adds a scene object from ground clicks", () => {
+    useStateSpy.mockRestore();
+    location.pathname = Path.sceneObjects("add");
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.drawnSceneObject = DEFAULT_SCENE_OBJECT;
+    const dispatch = jest.fn<Promise<void>, [{
+      type: string,
+      payload: { body: { name: string } },
+    }]>(() => Promise.resolve());
+    p.addPlantProps.dispatch = dispatch;
+    const wrapper = createWrapper(p);
+    const ground = () => wrapper.root.findAll(node =>
+      `${node.props.name}`.startsWith("ground "))[0];
+    const stopPropagation = jest.fn();
+    const groundWorldZ = -p.config.bedZOffset - p.config.bedHeight;
+    const click = (x: number, y: number, clientY = y) =>
+      ground().props.onClick({
+        point: { x, y, z: groundWorldZ },
+        nativeEvent: { clientY },
+        stopPropagation,
+      });
+    const move = (x: number, y: number, clientY = y) =>
+      ground().props.onPointerMove({
+        point: { x, y, z: groundWorldZ },
+        nativeEvent: { clientY },
+      });
+    const getGardenPosition = getGardenPositionFunc(p.config);
+    const center = getGardenPosition({ x: 0, y: 0 });
+    const corner = getGardenPosition({ x: 100, y: 200 });
+    const height = 300;
+
+    actRenderer(() => move(0, 0, 500));
+    actRenderer(() => click(0, 0, 500));
+    actRenderer(() => move(100, 200, 500));
+    actRenderer(() => click(100, 200, 500));
+    actRenderer(() => move(100, 350, 500 - height / 2));
+    actRenderer(() => click(100, 350, 500 - height / 2));
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "INIT_RESOURCE",
+      payload: expect.objectContaining({
+        body: expect.objectContaining({
+          name: "Scene Object 1",
+          x_center: center.x,
+          y_center: center.y,
+          z_base: 0,
+          x_size: Math.abs(corner.x - center.x) * 2,
+          y_size: Math.abs(corner.y - center.y) * 2,
+          z_size: height,
+        }),
+      }),
+    }));
+
+    actRenderer(() => move(10, 10, 400));
+    actRenderer(() => click(10, 10, 400));
+    actRenderer(() => move(20, 20, 400));
+    actRenderer(() => click(20, 20, 400));
+    actRenderer(() => move(20, 40, 350));
+    actRenderer(() => click(20, 40, 350));
+
+    const initActions = dispatch.mock.calls
+      .map(([action]) => action)
+      .filter(action => action.type == "INIT_RESOURCE");
+    expect(initActions).toHaveLength(2);
+    expect(initActions[1]?.payload.body.name).toEqual("Scene Object 2");
   });
 
   it.each<[string, string]>([

@@ -1,0 +1,113 @@
+import React from "react";
+import { fireEvent, render } from "@testing-library/react";
+import {
+  DEFAULT_SCENE_OBJECT, mapStateToProps, RawAddSceneObject,
+} from "../add";
+import { AddSceneObjectProps } from "../interfaces";
+import * as crud from "../../api/crud";
+import { Actions } from "../../constants";
+import { fakeState } from "../../__test_support__/fake_state";
+import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
+
+describe("<RawAddSceneObject />", () => {
+  const fakeProps = (): AddSceneObjectProps => ({
+    dispatch: jest.fn(),
+    drawnSceneObject: fakeSceneObject().body,
+    focusedSceneObjectField: undefined,
+  });
+
+  it("saves the drawn scene object state", () => {
+    const initSave = jest.spyOn(crud, "initSave")
+      .mockImplementation(() => "init save action" as never);
+    const p = fakeProps();
+    const { container } = render(<RawAddSceneObject {...p} />);
+
+    fireEvent.click(container.querySelector(".save-btn") as Element);
+
+    expect(initSave).toHaveBeenCalledWith("SceneObject", p.drawnSceneObject);
+    expect(p.dispatch).toHaveBeenCalledWith("init save action");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: undefined,
+    });
+    initSave.mockRestore();
+  });
+
+  it("updates the drawn scene object state", () => {
+    const p = fakeProps();
+    const { container } = render(<RawAddSceneObject {...p} />);
+    const input = container.querySelector("input[name='sceneObjectName']")!;
+
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "Updated object" } });
+    expect(p.dispatch).not.toHaveBeenCalled();
+    fireEvent.blur(input, { target: { value: "Updated object" } });
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: { ...p.drawnSceneObject, name: "Updated object" },
+    });
+  });
+
+  it("updates focused scene object field state", () => {
+    const p = fakeProps();
+    const { container } = render(<RawAddSceneObject {...p} />);
+    const input = container.querySelector("input[name='x_size']")!;
+
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: "x_size",
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: undefined,
+    });
+  });
+
+  it("returns focused scene object field state", () => {
+    const state = fakeState();
+    state.resources.consumers.farm_designer.focusedSceneObjectField = "x_size";
+
+    expect(mapStateToProps(state).focusedSceneObjectField).toEqual("x_size");
+  });
+
+  it("initializes and clears drawn scene object state", () => {
+    const p = fakeProps();
+    p.drawnSceneObject = undefined;
+    const { unmount } = render(<RawAddSceneObject {...p} />);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: DEFAULT_SCENE_OBJECT,
+    });
+
+    unmount();
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: undefined,
+    });
+  });
+
+  it("doesn't save without a drawn scene object", () => {
+    const initSave = jest.spyOn(crud, "initSave")
+      .mockImplementation(() => "init save action" as never);
+    const p = fakeProps();
+    p.drawnSceneObject = undefined;
+    const { container } = render(<RawAddSceneObject {...p} />);
+
+    fireEvent.click(container.querySelector(".save-btn") as Element);
+
+    expect(initSave).not.toHaveBeenCalled();
+    initSave.mockRestore();
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    expect(mapStateToProps(fakeState()).drawnSceneObject).toEqual(undefined);
+  });
+});

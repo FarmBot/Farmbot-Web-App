@@ -22,6 +22,7 @@ import {
   selectAllSequences,
   selectAllFarmwareEnvs,
   selectAllCurves,
+  selectAllSceneObjects,
 } from "../resources/selectors";
 import { validFwConfig, validFbosConfig } from "../util";
 import { validBotLocationData } from "../util/location";
@@ -94,6 +95,7 @@ const selectSensorReadings = memoizeLast((index: RestResources["index"]) =>
     .reverse()
     .value());
 const selectSensors = memoizeLast(selectAllSensors);
+const selectSceneObjects = memoizeLast(selectAllSceneObjects);
 const selectLogs = memoizeLast(selectAllLogs);
 const selectFarmwareEnvs = memoizeLast(selectAllFarmwareEnvs);
 const selectCurves = memoizeLast(selectAllCurves);
@@ -259,6 +261,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     env,
     farmwareEnvs: selectFarmwareEnvs(props.resources.index),
     curves: selectCurves(props.resources.index),
+    sceneObjects: selectSceneObjects(props.resources.index),
   };
 }
 

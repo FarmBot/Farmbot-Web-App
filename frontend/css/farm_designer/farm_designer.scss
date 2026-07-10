@@ -156,6 +156,7 @@
   }
   .plant-search-item,
   .group-search-item,
+  .scene-object-search-item,
   .curve-search-item {
     display: grid;
     gap: 1rem;
@@ -179,6 +180,7 @@
       }
     }
   }
+  .scene-object-search-item-name,
   .curve-search-item-name,
   .plant-search-item-name,
   .regimen-search-item-name,

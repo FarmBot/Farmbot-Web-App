@@ -1,6 +1,6 @@
 import React from "react";
 import { CustomToolTop } from "../../../tools/custom_tool_graphics_display";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui";
 import { ToolGraphicProps } from "./interfaces";
 
 export enum ToolDimensions {

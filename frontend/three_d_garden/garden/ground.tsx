@@ -5,15 +5,20 @@ import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
 import { CircleGeometry, Float32BufferAttribute, RepeatWrapping } from "three";
 import { useTextureVariant } from "../texture_variants";
+import { ThreeEvent } from "@react-three/fiber";
 
 export interface GroundProps {
   config: Config;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
 }
 
 interface GroundWrapperProps {
   sceneName: string;
   groundZ: number;
   geometry: CircleGeometry;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
   children: React.ReactElement;
 }
 
@@ -23,6 +28,8 @@ const GroundWrapper = (props: GroundWrapperProps) =>
     geometry={props.geometry}
     // eslint-disable-next-line no-null/no-null
     dispose={null}
+    onClick={props.onClick}
+    onPointerMove={props.onPointerMove}
     position={[0, 0, -props.groundZ]}>
     {props.children}
   </Mesh>;
@@ -113,7 +120,9 @@ const GROUND_CONFIG_FIELDS: (keyof Config)[] = [
 ];
 
 export const groundPropsEqual = (prev: GroundProps, next: GroundProps) =>
-  GROUND_CONFIG_FIELDS.every(field =>
+  prev.onClick === next.onClick
+  && prev.onPointerMove === next.onPointerMove
+  && GROUND_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
 export const Ground = React.memo(GroundBase, groundPropsEqual);
@@ -123,7 +132,12 @@ const VisibleGround = (props: GroundProps) => {
   const groundZ = config.bedZOffset + config.bedHeight;
 
   const groundProperties = getGroundProperties(config.scene);
-  const common = { sceneName: config.scene, groundZ };
+  const common = {
+    sceneName: config.scene,
+    groundZ,
+    onClick: props.onClick,
+    onPointerMove: props.onPointerMove,
+  };
 
   if (config.lowDetail) {
     return <LowDetailGround
@@ -141,12 +155,16 @@ interface LowDetailGroundProps {
   sceneName: string;
   groundZ: number;
   color: string;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
 }
 
 const LowDetailGround = (props: LowDetailGroundProps) => {
   return <GroundWrapper
     sceneName={props.sceneName}
     groundZ={props.groundZ}
+    onClick={props.onClick}
+    onPointerMove={props.onPointerMove}
     geometry={getLowDetailGroundGeometry()}>
     <MeshPhongMaterial
       color={props.color}
@@ -163,6 +181,8 @@ const DetailedGround = (props: DetailedGroundProps) => {
   const common = {
     sceneName: props.sceneName,
     groundZ: props.groundZ,
+    onClick: props.onClick,
+    onPointerMove: props.onPointerMove,
   };
 
   return <Detailed distances={detailLevels(props.config)}

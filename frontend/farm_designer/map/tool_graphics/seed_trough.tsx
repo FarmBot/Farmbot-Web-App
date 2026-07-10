@@ -1,5 +1,5 @@
 import React from "react";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui";
 import { trim } from "../../../util";
 import { GantryToolSlotGraphicProps, ToolGraphicProps } from "./interfaces";
 

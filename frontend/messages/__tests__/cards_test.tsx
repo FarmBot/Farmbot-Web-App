@@ -194,9 +194,9 @@ describe("<AlertCard />", () => {
     p.alert.problem_tag = "api.setup.not_completed";
     const { container } = render(<AlertCard {...p} />);
     expect(container.textContent?.toLowerCase()).toContain("wizard");
+    expect(container.textContent?.toLowerCase()).toContain("get started");
     fireEvent.click(container.querySelector("a") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
-    expect(container.textContent?.toLowerCase()).toContain("get started");
   });
 
   it("renders setup card: partially complete", () => {

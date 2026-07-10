@@ -103,9 +103,7 @@ jobs:
 
       - name: Check frontend file coverage status
         if: always()
-        run: |
-          changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
-          sudo docker compose run --rm -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
+        run: scripts/ci/check-frontend-file-coverage || true
 
       - name: Report frontend coverage to Coveralls
         if: env.COVERAGE_AVAILABLE == 'true'

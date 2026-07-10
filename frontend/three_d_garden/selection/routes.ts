@@ -8,6 +8,7 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
+import { TaggedSceneObject } from "../../scene_objects/interfaces";
 
 const POINT_TYPE_BY_SELECTION_KIND:
   Partial<Record<ThreeDObjectSelection["kind"], PointType>> = {
@@ -34,6 +35,7 @@ interface SelectionLookupProps {
   points: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   toolSlots: SlotWithTool[];
+  sceneObjects: TaggedSceneObject[];
 }
 
 export interface ThreeDObjectSelectionLookup {
@@ -68,6 +70,10 @@ export const createSelectionLookup = (props: SelectionLookupProps) => {
     lookup, slot.toolSlot.uuid, {
       kind: "slot", id: slot.toolSlot.body.id,
     }));
+  props.sceneObjects.forEach(sceneObject => sceneObject.body.id
+    && addLookupSelection(lookup, sceneObject.uuid, {
+      kind: "sceneObject", id: sceneObject.body.id,
+    }));
   return lookup;
 };
 
@@ -95,6 +101,7 @@ export const routeSelectionFromPath = (
     case "points": return { kind: "point", id };
     case "weeds": return { kind: "weed", id };
     case "tool-slots": return { kind: "slot", id };
+    case "scene-objects": return { kind: "sceneObject", id };
     default: return undefined;
   }
 };
@@ -129,6 +136,7 @@ export const hoverSelectionFromDesigner = (
   points: TaggedGenericPointer[],
   weeds: TaggedWeedPointer[],
   toolSlots: SlotWithTool[],
+  sceneObjects: TaggedSceneObject[] = [],
 ): ThreeDObjectSelection | undefined => {
   const hoveredPlantUuid =
     designer?.hoveredPlant.plantUUID || designer?.hoveredPlantListItem;
@@ -144,7 +152,12 @@ export const hoverSelectionFromDesigner = (
 
   const slot = toolSlots.filter(resource =>
     resource.toolSlot.uuid == designer?.hoveredToolSlot)[0];
-  return selectionFromResource("slot", slot?.toolSlot);
+  const slotSelection = selectionFromResource("slot", slot?.toolSlot);
+  if (slotSelection) { return slotSelection; }
+
+  const sceneObject = sceneObjects.filter(resource =>
+    resource.uuid == designer?.hoveredSceneObject)[0];
+  return selectionFromResource("sceneObject", sceneObject);
 };
 
 export const pathForThreeDSelection = (
@@ -158,5 +171,6 @@ export const pathForThreeDSelection = (
     case "utm": return Path.tools();
     case "electronics": return Path.settings("farmbot");
     case "camera": return Path.photos();
+    case "sceneObject": return Path.sceneObjects(selection.id);
   }
 };

@@ -20,6 +20,7 @@ import { ThreeDGardenPlant } from "./garden";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
+import { TaggedSceneObject } from "../scene_objects/interfaces";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -50,6 +51,7 @@ export interface ThreeDGardenProps {
   sensors?: TaggedSensor[];
   env?: UserEnv;
   set3DConfigValue?(key: keyof Config, value: string): void;
+  sceneObjects: TaggedSceneObject[];
 }
 
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
@@ -95,6 +97,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           sensors={props.sensors}
           env={props.env}
           set3DConfigValue={props.set3DConfigValue}
+          sceneObjects={props.sceneObjects}
           addPlantProps={props.addPlantProps} />
       </Canvas>
     </div>

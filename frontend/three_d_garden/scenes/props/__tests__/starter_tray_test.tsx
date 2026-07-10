@@ -11,9 +11,16 @@ const mockMesh = () => ({
   instanceMatrix: { needsUpdate: false },
 }) as unknown as InstancedMesh;
 
+const dimensions = {
+  width: 700,
+  length: 250,
+  height: 50,
+  seedlingSize: 40,
+};
+
 describe("<StarterTray />", () => {
   it("renders a single starter tray", () => {
-    const { container } = render(<StarterTray />);
+    const { container } = render(<StarterTray size={[700, 250, 90]} />);
 
     expect(container).toContainHTML("starter-tray");
     expect(container).toContainHTML("starter-trays");
@@ -25,7 +32,9 @@ describe("<StarterTrays />", () => {
   it("doesn't render empty starter trays", () => {
     const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(() => undefined as never);
-    const { container } = render(<StarterTrays positions={[]} />);
+    const { container } = render(<StarterTrays
+      positions={[]}
+      dimensions={dimensions} />);
     expect(container).not.toContainHTML("starter-trays");
     expect(useFrameSpy).not.toHaveBeenCalled();
     useFrameSpy.mockRestore();
@@ -35,7 +44,7 @@ describe("<StarterTrays />", () => {
     const { container } = render(<StarterTrays positions={[
       [100, 200, 300],
       [400, 500, 600],
-    ]} />);
+    ]} dimensions={dimensions} />);
 
     expect(container).toContainHTML("starter-tray-bases");
     expect(container).toContainHTML("starter-tray-seedlings");
@@ -49,22 +58,25 @@ describe("<StarterTrays />", () => {
       [100, 200, 300],
       [400, 500, 600],
     ];
-    expect(starterTraysPropsEqual({ positions }, {
+    expect(starterTraysPropsEqual({ positions, dimensions }, {
       positions: [
         [100, 200, 300],
         [400, 500, 600],
       ],
+      dimensions,
     })).toBeTruthy();
-    expect(starterTraysPropsEqual({ positions }, {
+    expect(starterTraysPropsEqual({ positions, dimensions }, {
       positions: [
         [100, 200, 300],
       ],
+      dimensions,
     })).toBeFalsy();
-    expect(starterTraysPropsEqual({ positions }, {
+    expect(starterTraysPropsEqual({ positions, dimensions }, {
       positions: [
         [100, 200, 300],
         [400, 501, 600],
       ],
+      dimensions,
     })).toBeFalsy();
   });
 
@@ -84,12 +96,49 @@ describe("<StarterTrays />", () => {
     render(<StarterTrays positions={[
       [100, 200, 300],
       [400, 500, 600],
-    ]} />);
+    ]} dimensions={dimensions} />);
 
     expect(trayMesh.setMatrixAt).toHaveBeenCalledTimes(2);
     expect(seedlingMesh.setMatrixAt).toHaveBeenCalledTimes(140);
     expect(trayMesh.instanceMatrix.needsUpdate).toBeTruthy();
     expect(seedlingMesh.instanceMatrix.needsUpdate).toBeTruthy();
+    useRefSpy.mockRestore();
+    useEffectSpy.mockRestore();
+  });
+
+  it("tiles a single tray to fit a bounding box", () => {
+    const { container } = render(<StarterTray size={[1400, 500, 180]} />);
+
+    expect(container.querySelector("group[name='starter-tray']"))
+      .not.toHaveAttribute("scale", "2,2,2");
+    expect(container.querySelector("group[position='0,0,-90']"))
+      .toBeTruthy();
+  });
+
+  it("tiles cells without stretching seedlings", () => {
+    const trayMesh = mockMesh();
+    const seedlingMesh = mockMesh();
+    const useRef = React.useRef;
+    const useEffectSpy = jest.spyOn(React, "useEffect")
+      .mockImplementationOnce(effect => {
+        effect();
+      });
+    const useRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementationOnce(() => ({ current: trayMesh }))
+      .mockImplementationOnce(() => ({ current: seedlingMesh }))
+      .mockImplementation(useRef);
+
+    render(<StarterTrays
+      positions={[[0, 0, 0]]}
+      dimensions={{
+        width: 1400,
+        length: 500,
+        height: 140,
+        seedlingSize: 40,
+      }} />);
+
+    expect(trayMesh.setMatrixAt).toHaveBeenCalledTimes(1);
+    expect(seedlingMesh.setMatrixAt).toHaveBeenCalledTimes(280);
     useRefSpy.mockRestore();
     useEffectSpy.mockRestore();
   });
@@ -119,7 +168,7 @@ describe("<StarterTrays />", () => {
     render(<StarterTrays positions={[
       [100, 200, 300],
       [400, 500, 600],
-    ]} />);
+    ]} dimensions={dimensions} />);
     refs[0].current = trayMesh;
     refs[1].current = seedlingMesh;
 

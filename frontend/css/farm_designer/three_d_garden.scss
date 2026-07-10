@@ -52,6 +52,7 @@
     position: relative;
     height: 100vh;
     cursor: grab;
+    touch-action: none;
 
     @media screen and (max-width: 768px) {
       width: 100vw;

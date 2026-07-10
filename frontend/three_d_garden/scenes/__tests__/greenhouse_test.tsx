@@ -18,12 +18,6 @@ describe("<Greenhouse />", () => {
     const { container } = render(<Greenhouse {...p} />);
     expect(container).toContainHTML("greenhouse-environment");
     expect(container).not.toContainHTML("people");
-    expect(container).toContainHTML("starter-trays");
-    expect(container).toContainHTML("starter-tray-bases");
-    expect(container).toContainHTML("starter-tray-seedlings");
-    expect(container).toContainHTML("left-greenhouse-wall");
-    expect(container).toContainHTML("right-greenhouse-wall");
-    expect(container).toContainHTML("potted-plant");
   });
 
   it("memoizes unchanged scene props", () => {

@@ -41,6 +41,23 @@ describe("<Ground />", () => {
     expect(color.itemSize).toEqual(3);
   });
 
+  it("passes ground events to handlers", () => {
+    const p = fakeProps();
+    p.onClick = jest.fn();
+    p.onPointerMove = jest.fn();
+    const wrapper = createRenderer(<Ground {...p} />);
+    mountedWrappers.push(wrapper);
+    const ground = wrapper.root.findAll(node =>
+      node.props.name == "ground Outdoor")[0];
+    const event = {};
+
+    ground.props.onClick(event);
+    ground.props.onPointerMove(event);
+
+    expect(p.onClick).toHaveBeenCalledWith(event);
+    expect(p.onPointerMove).toHaveBeenCalledWith(event);
+  });
+
   it("reuses detailed ground geometry across mounts", () => {
     const first = createRenderer(<Ground {...fakeProps()} />);
     const firstGround = first.root.findAll(node =>
@@ -84,6 +101,10 @@ describe("<Ground />", () => {
     })).toBeFalsy();
     expect(groundPropsEqual(p, {
       config: { ...p.config, lowDetail: !p.config.lowDetail },
+    })).toBeFalsy();
+    expect(groundPropsEqual(p, {
+      ...p,
+      onClick: jest.fn(),
     })).toBeFalsy();
   });
 

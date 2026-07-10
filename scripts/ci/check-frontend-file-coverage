@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+changed=$(git diff --name-only "$(git merge-base staging HEAD)" | tr '\n' ',' | sed 's/,$//') || changed=""
+
+sudo docker compose run --rm \
+  -e CHANGED_FILES="$changed" \
+  web bundle exec rake check_file_coverage:fe

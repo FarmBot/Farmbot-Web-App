@@ -8,6 +8,9 @@ const EditFarmEvent = React.lazy(() => import("./farm_events/edit_farm_event"));
 const Plants = React.lazy(() => import("./plants/plant_inventory"));
 const LocationInfo = React.lazy(() => import("./farm_designer/location_info"));
 const SavedGardens = React.lazy(() => import("./saved_gardens/saved_gardens"));
+const SceneObjects = React.lazy(() => import("./scene_objects/list"));
+const AddSceneObject = React.lazy(() => import("./scene_objects/add"));
+const EditSceneObject = React.lazy(() => import("./scene_objects/edit"));
 const SelectPlants = React.lazy(() => import("./plants/select_plants"));
 const Points = React.lazy(() => import("./points/point_inventory"));
 const CreatePoints = React.lazy(() => import("./points/create_points"));
@@ -79,6 +82,9 @@ export const CHILD_ROUTES: RouteObject[] = [
   { path: Path.cropSearch(":crop"), element: <CropInfo /> },
   { path: Path.plants(":plant_id"), element: <PlantInfo /> },
   { path: Path.savedGardens(), element: <SavedGardens /> },
+  { path: Path.sceneObjects(), element: <SceneObjects /> },
+  { path: Path.sceneObjects("add"), element: <AddSceneObject /> },
+  { path: Path.sceneObjects(":scene_object_id"), element: <EditSceneObject /> },
   { path: Path.plantTemplates(), element: <Plants /> },
   { path: Path.plantTemplates(":plant_template_id"), element: <PlantInfo /> },
   { path: Path.savedGardens("add"), element: <AddGarden /> },

@@ -1,5 +1,5 @@
 import React from "react";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui";
 import { reservedPiGPIO } from "./list_and_label_support";
 import { gpio } from "./rpi_gpio_data";
 import { range, isNumber, includes, noop } from "lodash";

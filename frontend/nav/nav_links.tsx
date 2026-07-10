@@ -16,6 +16,7 @@ export const getLinks = (): Panel[] => [
   Panel.Points,
   Panel.Curves,
   Panel.Sequences,
+  Panel.SceneObjects,
   Panel.Regimens,
   Panel.FarmEvents,
   ...(showSensors() ? [Panel.Sensors] : []),

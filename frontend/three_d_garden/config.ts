@@ -90,7 +90,6 @@ export interface Config {
   vacuum: boolean;
   rotary: number;
   north: boolean;
-  desk: boolean;
   imgScale: number;
   imgRotation: number;
   imgOffsetX: number;
@@ -219,7 +218,6 @@ export const INITIAL: ConfigWithPosition = {
   vacuum: false,
   rotary: 0,
   north: false,
-  desk: true,
   imgScale: 1,
   imgRotation: 0,
   imgOffsetX: 0,
@@ -271,7 +269,7 @@ export const BOOLEAN_KEYS = [
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "urlCameraPos",
-  "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
+  "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
 ];
 
@@ -395,7 +393,6 @@ export const PRESETS: Record<string, Config> = {
     animateSeasons: false,
     distanceIndicator: "",
     north: false,
-    desk: false,
   },
   "Maximal": {
     ...INITIAL,
@@ -460,7 +457,6 @@ export const PRESETS: Record<string, Config> = {
     rotary: 1,
     exaggeratedZ: true,
     north: true,
-    desk: true,
     promoSpread: true,
     cameraView: true,
   },
@@ -488,7 +484,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary", "animateSeasons",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
-  "showSoilPoints", "urlParamAutoAdd", "urlCameraPos", "north", "desk",
+  "showSoilPoints", "urlParamAutoAdd", "urlCameraPos", "north",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",

@@ -32,14 +32,14 @@ describe("fetchSyncData", () => {
     await fetchSyncData(dispatch);
     await flushPromises();
 
-    expect(axios.get).toHaveBeenCalledTimes(27);
+    expect(axios.get).toHaveBeenCalledTimes(28);
     expect(axios.get).toHaveBeenCalledWith("http://localhost/api/users/");
     expect(axios.get).toHaveBeenCalledWith("http://localhost/api/device/");
     expect(axios.get).toHaveBeenCalledWith("http://localhost/api/tools/");
     expect(axios.get).toHaveBeenCalledWith("http://localhost/api/logs/search");
     expect(axios.get)
       .toHaveBeenCalledWith("http://localhost/api/telemetries/");
-    expect(dispatch).toHaveBeenCalledTimes(27);
+    expect(dispatch).toHaveBeenCalledTimes(28);
     expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: Actions.RESOURCE_READY,
       payload: expect.objectContaining({ kind: "User" }),

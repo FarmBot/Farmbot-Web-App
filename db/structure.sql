@@ -1595,6 +1595,50 @@ ALTER SEQUENCE public.saved_gardens_id_seq OWNED BY public.saved_gardens.id;
 
 
 --
+-- Name: scene_objects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.scene_objects (
+    id bigint NOT NULL,
+    device_id bigint,
+    name character varying(80) NOT NULL,
+    texture character varying(80) NOT NULL,
+    shape character varying(80) NOT NULL,
+    color character varying(80) NOT NULL,
+    x_origin character varying(80) NOT NULL,
+    y_origin character varying(80) NOT NULL,
+    z_origin character varying(80) NOT NULL,
+    x_center integer NOT NULL,
+    y_center integer NOT NULL,
+    z_base integer NOT NULL,
+    x_size integer NOT NULL,
+    y_size integer NOT NULL,
+    z_size integer NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: scene_objects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.scene_objects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: scene_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.scene_objects_id_seq OWNED BY public.scene_objects.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2389,6 +2433,13 @@ ALTER TABLE ONLY public.saved_gardens ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: scene_objects id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scene_objects ALTER COLUMN id SET DEFAULT nextval('public.scene_objects_id_seq'::regclass);
+
+
+--
 -- Name: sensor_readings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2784,6 +2835,14 @@ ALTER TABLE ONLY public.saved_gardens
 
 
 --
+-- Name: scene_objects scene_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scene_objects
+    ADD CONSTRAINT scene_objects_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3064,10 +3123,10 @@ CREATE INDEX index_fragments_on_device_id ON public.fragments USING btree (devic
 
 
 --
--- Name: index_fragments_on_owner; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fragments_on_owner_type_and_owner_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fragments_on_owner ON public.fragments USING btree (owner_type, owner_id);
+CREATE INDEX index_fragments_on_owner_type_and_owner_id ON public.fragments USING btree (owner_type, owner_id);
 
 
 --
@@ -3358,6 +3417,13 @@ CREATE INDEX index_saved_gardens_on_device_id ON public.saved_gardens USING btre
 
 
 --
+-- Name: index_scene_objects_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_scene_objects_on_device_id ON public.scene_objects USING btree (device_id);
+
+
+--
 -- Name: index_sensor_readings_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3551,6 +3617,14 @@ ALTER TABLE ONLY public.folders
 
 
 --
+-- Name: scene_objects fk_rails_5dcf70b106; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.scene_objects
+    ADD CONSTRAINT fk_rails_5dcf70b106 FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: telemetries fk_rails_6f6c1e8196; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3711,6 +3785,14 @@ ALTER TABLE ONLY public.plant_templates
 
 
 --
+-- Name: plant_templates plant_templates_saved_garden_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plant_templates
+    ADD CONSTRAINT plant_templates_saved_garden_id_fk FOREIGN KEY (saved_garden_id) REFERENCES public.saved_gardens(id);
+
+
+--
 -- Name: point_group_items point_group_items_point_group_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3765,6 +3847,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260430202719'),
 ('20260422013033'),
 ('20260417190743'),
 ('20260305192457'),

@@ -1,0 +1,2327 @@
+import React, { ElementType } from "react";
+import { act, renderHook } from "@testing-library/react";
+import { Cone, Cylinder, Sphere } from "@react-three/drei";
+import * as threeFiber from "@react-three/fiber";
+import {
+  nextSceneObjectName, sceneObjectCornersFromCenter, sceneObjectPoint,
+  sceneObjectMoveUpdate, sceneObjectPosition, pointerRayPointAtZ,
+  sceneObjectWithDragPreview, stopSceneObjectMarkerDragEvent,
+  stopSceneObjectMarkerEvent, SceneObjects,
+  staticSceneObjects, useSceneObjectPlacement, heightFromPointerRay,
+  sceneObjectTopResizeUpdate, topResizeMarkerHandlers,
+} from "../scene_objects";
+import { clone } from "lodash";
+import { INITIAL } from "../config";
+import { BigDistance } from "../constants";
+import { zZero } from "../helpers";
+import { Ray, Vector3 } from "three";
+import {
+  createRenderer, unmountRenderer,
+} from "../../__test_support__/test_renderer";
+import { Path } from "../../internal_urls";
+import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
+import { Actions } from "../../constants";
+
+const positionArray = (position: unknown): [number, number, number] => {
+  if (!Array.isArray(position)) { throw new Error("Expected position array."); }
+  const [x, y, z] = position;
+  if (typeof x != "number" || typeof y != "number" || typeof z != "number") {
+    throw new Error("Expected numeric position.");
+  }
+  return [x, y, z];
+};
+
+const findSelectionMarker = (
+  wrapper: ReturnType<typeof createRenderer>,
+  name: string,
+) => wrapper.root.findAll(node =>
+  node.props.name == name &&
+  Array.isArray(node.props.args) &&
+  typeof node.props.onPointerDown == "function")[0];
+
+describe("scene object placement helpers", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line no-null/no-null
+    jest.spyOn(threeFiber, "useFrame").mockImplementation(() => null);
+  });
+
+  it("calculates box bounds from a center and corner", () => {
+    expect(sceneObjectCornersFromCenter(
+      { x: 100, y: 200, z: 0 },
+      { x: 140, y: 260, z: 0 },
+    )).toEqual({
+      x_0: 60,
+      y_0: 140,
+      z_0: 0,
+      x_1: 140,
+      y_1: 260,
+    });
+  });
+
+  it("increments scene object names", () => {
+    const sceneObject = fakeSceneObject({ name: "Scene Object 2" });
+    expect(nextSceneObjectName([sceneObject], [
+      "custom",
+      "Scene Object 3",
+    ])).toEqual("Scene Object 4");
+    expect(nextSceneObjectName(undefined, [])).toEqual("Scene Object 1");
+  });
+
+  it("positions scene objects above the ground", () => {
+    const config = clone(INITIAL);
+    config.bedLengthOuter = 1000;
+    config.bedWidthOuter = 2000;
+    config.bedHeight = 300;
+    config.bedZOffset = 100;
+    config.bedXOffset = 50;
+    config.bedYOffset = 25;
+    const sceneObject = fakeSceneObject({
+      x_center: 200,
+      y_center: 400,
+      x_size: 200,
+      y_size: 400,
+      z_size: 500,
+    });
+
+    expect(sceneObjectPosition(config, sceneObject)).toEqual([
+      -250,
+      -575,
+      -150,
+    ]);
+    expect(sceneObjectPosition(config, fakeSceneObject({
+      z_base: 0,
+      z_origin: "world",
+      z_size: 100,
+    }))[2]).toEqual(-350);
+    expect(sceneObjectPosition(config, fakeSceneObject({
+      z_base: 0,
+      z_origin: "max",
+      z_size: 100,
+    }))[2]).toEqual(50);
+    expect(sceneObjectPosition(config, fakeSceneObject({
+      z_base: 0,
+      z_origin: "home",
+      z_size: 100,
+    }))[2]).toEqual(450);
+    const homePosition = sceneObjectPosition(config, fakeSceneObject({
+      x_center: 0,
+      y_center: 0,
+    }))[0];
+    const maxPosition = sceneObjectPosition(config, fakeSceneObject({
+      x_center: 0,
+      y_center: 0,
+      x_origin: "max",
+      y_origin: "max",
+    }))[0];
+    const worldPosition = sceneObjectPosition(config, fakeSceneObject({
+      x_center: 0,
+      y_center: 0,
+      x_origin: "world",
+      y_origin: "world",
+    }))[0];
+    expect(maxPosition).toBeGreaterThan(worldPosition);
+    expect(worldPosition).toBeGreaterThan(homePosition);
+  });
+
+  it("positions scene object selection marker points", () => {
+    const config = clone(INITIAL);
+    config.bedLengthOuter = 1000;
+    config.bedWidthOuter = 2000;
+    config.bedHeight = 300;
+    config.bedZOffset = 100;
+    config.bedXOffset = 50;
+    config.bedYOffset = 25;
+
+    expect(sceneObjectPoint(config, { x: 100, y: 200, z: 0 }))
+      .toEqual([-350, -775, -400]);
+    expect(sceneObjectPoint(config, { x: 300, y: 600, z: 500 }))
+      .toEqual([-150, -375, 100]);
+    expect(sceneObjectPoint(config, { x: 200, y: 400, z: 500 }))
+      .toEqual([-250, -575, 100]);
+  });
+
+  it("finds a pointer ray point at z", () => {
+    const point = pointerRayPointAtZ({
+      point: new Vector3(1, 1, 1),
+      ray: new Ray(
+        new Vector3(10, 20, 100),
+        new Vector3(0, 0, -1),
+      ),
+    } as never, 40);
+
+    expect(point.toArray()).toEqual([10, 20, 40]);
+    expect(pointerRayPointAtZ({ point: new Vector3(1, 2, 3) } as never, 40)
+      .toArray()).toEqual([1, 2, 3]);
+    expect(pointerRayPointAtZ({
+      point: new Vector3(1, 2, 3),
+      ray: new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, 1)),
+    } as never, -1).toArray()).toEqual([1, 2, 3]);
+  });
+
+  it("calculates height from a pointer ray", () => {
+    expect(heightFromPointerRay({
+      ray: new Ray(
+        new Vector3(0, 0, 100),
+        new Vector3(1, 0, -1).normalize(),
+      ),
+    } as never, { x: 10, y: 0, z: 25 })).toEqual(65);
+    expect(heightFromPointerRay({
+      ray: new Ray(
+        new Vector3(0, 0, 100),
+        new Vector3(-1, 0, -1).normalize(),
+      ),
+    } as never, { x: 10, y: 0, z: 25 })).toBeUndefined();
+  });
+
+  it("calculates a scene object top resize update", () => {
+    const config = clone(INITIAL);
+    const sceneObject = fakeSceneObject({ z_size: 100 });
+    const baseZ = sceneObject.body.z_base;
+    const [baseX, baseY] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: baseZ,
+    });
+    const event = {
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(baseX - 10, baseY - 10, baseZ + 100),
+        new Vector3(1, 1, -1).normalize(),
+      ),
+    };
+
+    const update = sceneObjectTopResizeUpdate(event as never, config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+    }, sceneObject);
+
+    expect(update.z_size).toBeGreaterThan(sceneObject.body.z_size);
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(sceneObjectTopResizeUpdate({
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(baseX, baseY, baseZ + 100),
+        new Vector3(0, 0, -1),
+      ),
+    } as never, config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+    }, sceneObject)).toEqual({ z_size: sceneObject.body.z_size });
+  });
+
+  it("handles top resize marker preview and update", () => {
+    const config = clone(INITIAL);
+    const sceneObject = fakeSceneObject();
+    const baseZ = sceneObject.body.z_base;
+    const [baseX, baseY] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: baseZ,
+    });
+    const event = {
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(baseX - 10, baseY - 10, baseZ + 100),
+        new Vector3(1, 1, -1).normalize(),
+      ),
+    };
+    const onPreview = jest.fn();
+    const updateSceneObject = jest.fn();
+    const onPreviewEnd = jest.fn();
+    const handlers = topResizeMarkerHandlers({
+      config,
+      center: { x: sceneObject.body.x_center, y: sceneObject.body.y_center },
+      sceneObject,
+      onPreview,
+      updateSceneObject,
+      onPreviewEnd,
+    });
+
+    handlers.onPointerMove(event as never);
+    handlers.onPointerUp(event as never);
+
+    expect(onPreview).toHaveBeenCalled();
+    expect(updateSceneObject).toHaveBeenCalled();
+    expect(onPreviewEnd).toHaveBeenCalled();
+  });
+
+  it("stops scene object marker events", () => {
+    const event = {
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        preventDefault: jest.fn(),
+        stopImmediatePropagation: jest.fn(),
+      },
+    };
+
+    stopSceneObjectMarkerEvent(event as never);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(event.nativeEvent.preventDefault).not.toHaveBeenCalled();
+    expect(event.nativeEvent.stopImmediatePropagation).not.toHaveBeenCalled();
+  });
+
+  it("stops scene object marker drag events", () => {
+    const event = {
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        preventDefault: jest.fn(),
+        stopImmediatePropagation: jest.fn(),
+      },
+    };
+
+    stopSceneObjectMarkerDragEvent(event as never);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(event.nativeEvent.preventDefault).not.toHaveBeenCalled();
+    expect(event.nativeEvent.stopImmediatePropagation).toHaveBeenCalled();
+  });
+
+  it("applies scene object drag preview updates", () => {
+    const sceneObject = fakeSceneObject({
+      y_size: 200,
+      z_size: 300,
+    });
+    sceneObject.uuid = "matching";
+
+    const received = sceneObjectWithDragPreview(sceneObject, {
+      uuid: "matching",
+      update: { x_size: 400 },
+    }).body;
+    expect(received.x_size).toEqual(400);
+    expect(received.y_size).toEqual(200);
+    expect(received.z_size).toEqual(300);
+    expect(sceneObjectWithDragPreview(sceneObject, {
+      uuid: "other",
+      update: { x_size: 400 },
+    })).toEqual(sceneObject);
+  });
+
+  it("calculates scene object move updates", () => {
+    expect(sceneObjectMoveUpdate(
+      { x: 100.4, y: 200.6 },
+      { x: 10.4, y: -20.4 },
+    )).toEqual({ x_center: 110, y_center: 180 });
+  });
+
+  it("renders edges for hovered scene objects", () => {
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      hoverSelection: { kind: "sceneObject", id: 1 },
+    }));
+
+    expect(wrapper.root.findAllByProps({ className: "edges" }).length)
+      .toEqual(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders greenhouse walls along the longest horizontal axis", () => {
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [fakeSceneObject({
+        shape: "window",
+        x_size: 10,
+        y_size: 10000,
+        z_size: 2500,
+      })],
+      hoverSelection: { kind: "sceneObject", id: 1 },
+    }));
+    const wallGeometry = wrapper.root.findAll(node =>
+      node.props.args?.join(",") == "1227.5,10,600")[0];
+    const verticalFrameGeometry = wrapper.root.findAll(node =>
+      node.props.args?.join(",") == "20,10,2500")[0];
+    const horizontalFrameGeometry = wrapper.root.findAll(node =>
+      node.props.args?.join(",") == "10000,10,20")[0];
+    const wallGroup = wrapper.root.findAll(node =>
+      Array.isArray(node.props.rotation) &&
+      node.props.rotation[2] === Math.PI / 2);
+
+    expect(wallGeometry).toBeTruthy();
+    expect(verticalFrameGeometry).toBeTruthy();
+    expect(horizontalFrameGeometry).toBeTruthy();
+    expect(wallGroup.length).toEqual(3);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders scene object shapes", () => {
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [
+        fakeSceneObject({ shape: "plant" }),
+        fakeSceneObject({ shape: "tray" }),
+        fakeSceneObject({ shape: "laptop" }),
+        fakeSceneObject({ shape: "desk" }),
+        fakeSceneObject({ shape: "cylinder" }),
+        fakeSceneObject({ shape: "sphere", texture: "none" }),
+        fakeSceneObject({ shape: "window", x_size: 10000, y_size: 10 }),
+      ],
+    }));
+
+    expect(wrapper.root.findAllByProps({ name: "desk" }).length).toBeTruthy();
+    expect(wrapper.root.findAllByProps({ name: "laptop" }).length).toBeTruthy();
+    expect(wrapper.root.findAll(node =>
+      node.props.args?.join(",") == "0.5,0.5,1,32").length)
+      .toEqual(2);
+    expect(wrapper.root.findAll(node =>
+      node.props.args?.join(",") == "0.5,32,32").length)
+      .toEqual(2);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders static scene objects by scene", () => {
+    expect(staticSceneObjects("Lab").length).toBeGreaterThan(0);
+    expect(staticSceneObjects("Greenhouse").length).toBeGreaterThan(0);
+    expect(staticSceneObjects("Outdoor")).toEqual([]);
+  });
+
+  it("drags selected scene object handles", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(new Vector3(0, 0, 100), new Vector3(1, 1, -1)),
+    };
+    const moveHandle = wrapper.root.findAll(node =>
+      node.props.renderOrder == 999)[0];
+    const axisObject = {
+      name: "",
+      parent: { name: "scene-object-base-x-axis-arrow" },
+    };
+    const faceArrowObject = {
+      name: "",
+      parent: { name: "scene-object-face-size-arrow-1" },
+    };
+    const faceMarkerObject = {
+      name: "scene-object-selection-marker-1",
+    };
+
+    act(() => {
+      moveHandle.props.onPointerDown({
+        ...event,
+        intersections: [{ object: axisObject }],
+      });
+      moveHandle.props.onPointerDown({
+        ...event,
+        intersections: [{ object: faceArrowObject }],
+      });
+      moveHandle.props.onPointerDown({
+        ...event,
+        intersections: [{ object: faceMarkerObject }],
+      });
+      moveHandle.props.onPointerDown({
+        ...event,
+        intersections: [{
+          object: {
+            name: "scene-object-base-x",
+            parent: { name: "not-an-axis-arrow" },
+          },
+        }],
+      });
+      moveHandle.props.onPointerDown(event);
+      moveHandle.props.onPointerMove(event);
+      moveHandle.props.onPointerUp(event);
+      moveHandle.props.onPointerDown(event);
+      moveHandle.props.onPointerCancel(event);
+      moveHandle.props.onPointerDown(event);
+      moveHandle.props.onLostPointerCapture(event);
+    });
+
+    expect(dispatch).toHaveBeenCalled();
+    expect(event.stopPropagation).toHaveBeenCalledTimes(8);
+
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0");
+    const topMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-4");
+
+    act(() => {
+      marker.props.onPointerOver(event);
+      marker.props.onPointerOut(event);
+      marker.props.onPointerMove(event);
+      marker.props.onPointerDown(event);
+      marker.props.onPointerMove(event);
+      marker.props.onPointerUp(event);
+      marker.props.onPointerDown(event);
+      window.dispatchEvent(new Event("pointerup"));
+      marker.props.onPointerDown(event);
+      marker.props.onPointerCancel(event);
+      marker.props.onPointerDown(event);
+      marker.props.onLostPointerCapture(event);
+    });
+
+    const baseZ = sceneObject.body.z_base;
+    const [baseX, baseY] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: baseZ,
+    });
+    const topEvent = {
+      ...event,
+      ray: new Ray(
+        new Vector3(baseX - 10, baseY - 10, baseZ + 100),
+        new Vector3(1, 1, -1).normalize(),
+      ),
+    };
+
+    act(() => {
+      topMarker.props.onPointerDown(topEvent);
+      topMarker.props.onPointerMove(topEvent);
+      topMarker.props.onPointerUp(topEvent);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("drags the selected scene object top resize marker", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const baseZ = sceneObject.body.z_base;
+    const [baseX, baseY] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: baseZ,
+    });
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(baseX - 10, baseY - 10, baseZ + 100),
+        new Vector3(1, 1, -1).normalize(),
+      ),
+    };
+    const topMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-4");
+
+    act(() => {
+      topMarker.props.onPointerDown(event);
+    });
+    act(() => {
+      topMarker.props.onPointerMove(event);
+    });
+    act(() => {
+      topMarker.props.onPointerUp(event);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("drags a selected scene object face resize marker", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const [targetX, targetY] = sceneObjectPoint(config, {
+      x: 200,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+    };
+    const xMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const [markerX, markerY, markerZ] =
+      positionArray(xMaxMarker.props.position);
+    event.point = new Vector3(targetX, targetY, markerZ);
+    const downEvent = {
+      ...event,
+      point: new Vector3(markerX, markerY, markerZ),
+    };
+
+    act(() => {
+      xMaxMarker.props.onPointerDown(downEvent);
+    });
+    const draggedXMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    act(() => {
+      draggedXMaxMarker.props.onPointerMove(event);
+      draggedXMaxMarker.props.onPointerUp(event);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          x_center: 100,
+          x_size: 200,
+        },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("drags a selected scene object y face resize marker", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const [targetX, targetY] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: 250,
+      z: sceneObject.body.z_base,
+    });
+    const yMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-3");
+    const [markerX, markerY, markerZ] =
+      positionArray(yMaxMarker.props.position);
+    const event = {
+      point: new Vector3(targetX, targetY, markerZ),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+    };
+
+    act(() => {
+      yMaxMarker.props.onPointerDown({
+        ...event,
+        point: new Vector3(markerX, markerY, markerZ),
+      });
+    });
+    const draggedYMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-3");
+    act(() => {
+      draggedYMaxMarker.props.onPointerMove(event);
+      draggedYMaxMarker.props.onPointerUp(event);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          y_center: 130,
+          y_size: 250,
+        },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't jump when starting selected scene object face marker drag", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const xMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const [markerX, markerY, markerZ] =
+      positionArray(xMaxMarker.props.position);
+    const event = {
+      point: new Vector3(markerX, markerY, markerZ),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(markerX - 100, markerY, markerZ + 100),
+        new Vector3(1, 0, -1).normalize(),
+      ),
+    };
+
+    act(() => {
+      xMaxMarker.props.onPointerDown(event);
+      xMaxMarker.props.onPointerUp(event);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          x_center: sceneObject.body.x_center,
+          x_size: sceneObject.body.x_size,
+        },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("positions side resize markers in the middle of each face", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject({ z_base: 20, z_size: 80 });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      designer: {
+        focusedSceneObjectField: "z_base",
+        unifiedSceneObjectSize: undefined,
+      },
+      sceneObjects: [sceneObject],
+    }));
+    const markers = [0, 1, 2, 3].map(index =>
+      findSelectionMarker(wrapper, `scene-object-selection-marker-${index}`));
+
+    expect(markers.slice(0, 4).map(marker => marker.props.position[2]))
+      .toEqual(Array(4).fill(
+        sceneObjectPoint(config, {
+          x: sceneObject.body.x_center,
+          y: sceneObject.body.y_center,
+          z: 60,
+        })[2],
+      ));
+    unmountRenderer(wrapper);
+  });
+
+  it("positions selected scene object origin markers", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const config = clone(INITIAL);
+    const sceneObject = fakeSceneObject({
+      x_center: 10,
+      y_center: 20,
+      z_base: 30,
+      x_origin: "max",
+      y_origin: "world",
+      z_origin: "home",
+    });
+    sceneObject.body.id = 1;
+    const center = {
+      x: sceneObject.body.x_center + config.bedLengthOuter,
+      y: sceneObject.body.y_center + config.bedWidthOuter / 2,
+      z: sceneObject.body.z_base
+        + config.bedHeight
+        + config.bedZOffset
+        + zZero(config),
+    };
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const midpoint = (
+      start: number[],
+      end: number[],
+    ) => start.map((value, index) => (value + end[index]) / 2);
+    const objectBase = sceneObjectPoint(config, center);
+    const zOrigin = sceneObjectPoint(config, {
+      x: center.x,
+      y: center.y,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+    const yOrigin = sceneObjectPoint(config, {
+      x: center.x,
+      y: config.bedWidthOuter / 2,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+    const xOrigin = sceneObjectPoint(config, {
+      x: config.bedLengthOuter,
+      y: config.bedWidthOuter / 2,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+    const yOriginArrowEnd = sceneObjectPoint(config, {
+      x: center.x,
+      y: center.y,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+    const xOriginArrowStart = sceneObjectPoint(config, {
+      x: config.bedLengthOuter,
+      y: config.bedWidthOuter / 2,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+    const xOriginArrowEnd = sceneObjectPoint(config, {
+      x: center.x,
+      y: config.bedWidthOuter / 2,
+      z: config.bedHeight + config.bedZOffset + zZero(config),
+    });
+
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-z-origin-marker",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-y-origin-marker",
+    })).toEqual([]);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-x-origin-marker",
+    }).props.position).toEqual(xOrigin);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-base-marker",
+    }).props.position).toEqual(objectBase);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-base-marker",
+    }).props.renderOrder).toEqual(998);
+    ["x", "y", "z"].map(axis =>
+      expect(wrapper.root.findByProps({
+        name: `scene-object-base-${axis}-axis-arrow`,
+      }).props.renderOrder).toEqual(1000));
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "scene-object-z-origin-arrow" &&
+      Array.isArray(node.props.position))[0].props.position)
+      .toEqual(midpoint(zOrigin, objectBase));
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "scene-object-z-origin-arrow" &&
+      node.props.renderOrder == 999)[0]).toBeTruthy();
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "scene-object-y-origin-arrow" &&
+      Array.isArray(node.props.position))[0].props.position)
+      .toEqual(midpoint(yOrigin, yOriginArrowEnd));
+    expect(wrapper.root.findAll(node =>
+      node.props.name == "scene-object-x-origin-arrow" &&
+      Array.isArray(node.props.position))[0].props.position)
+      .toEqual(midpoint(xOriginArrowStart, xOriginArrowEnd));
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-z-origin-arrow-label",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-y-origin-arrow-label",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-x-origin-arrow-label",
+    })).toEqual([]);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders selected scene object face size arrows", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const dispatch = jest.fn();
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+
+    [0, 1, 2, 3, 4].map(index =>
+      expect(wrapper.root.findByProps({
+        name: `scene-object-face-size-arrow-${index}`,
+      })).toBeTruthy());
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-0",
+    }).props.renderOrder).toBeUndefined();
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-0-arrow",
+    }).props.renderOrder).toEqual(1001);
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0")).toBeTruthy();
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0").findByProps({
+      color: "dodgerblue",
+    }).props.depthTest).toBeTruthy();
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0").findByProps({
+      color: "dodgerblue",
+    }).props.depthWrite).toBeTruthy();
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-0-arrow",
+    }).findAllByProps({
+      depthTest: true,
+      depthWrite: true,
+    }).length).toBeGreaterThan(0);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-0-arrow",
+    }).props.rotation).toEqual([0, -0, Math.PI]);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-1-arrow",
+    }).props.rotation).toEqual([0, -0, 0]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-0-label",
+    })).toEqual([]);
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1" &&
+        typeof node.props.onPointerOver == "function")[0]
+        .props.onPointerOver({ stopPropagation: jest.fn() });
+    });
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-1-label",
+    }).props.rotation).toEqual([0, 0, 0]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: "x_size",
+    });
+    const arrow = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-face-size-arrow-1" &&
+      typeof node.props.onPointerDown == "function")[0];
+    act(() => {
+      arrow.props.onPointerDown({
+        point: new Vector3(0, 0, 0),
+        pointerId: 1,
+        stopPropagation: jest.fn(),
+        nativeEvent: { stopImmediatePropagation: jest.fn() },
+        target: { setPointerCapture: jest.fn() },
+        ray: new Ray(new Vector3(0, 0, 100), new Vector3(0, 0, -1)),
+      });
+    });
+    dispatch.mockClear();
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerOver({ stopPropagation: jest.fn() });
+      expect(dispatch).not.toHaveBeenCalledWith({
+        type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+        payload: "x_center",
+      });
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1" &&
+        typeof node.props.onPointerOut == "function")[0]
+        .props.onPointerOut({ stopPropagation: jest.fn() });
+    });
+    expect(dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: undefined,
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1" &&
+        typeof node.props.onPointerUp == "function")[0]
+        .props.onPointerUp({
+          point: new Vector3(0, 0, 0),
+          pointerId: 1,
+          stopPropagation: jest.fn(),
+          nativeEvent: { stopImmediatePropagation: jest.fn() },
+          target: { releasePointerCapture: jest.fn() },
+          ray: new Ray(new Vector3(0, 0, 100), new Vector3(0, 0, -1)),
+        });
+    });
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1").props.args[0])
+      .toBeGreaterThan(35);
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1" &&
+        typeof node.props.onPointerOut == "function")[0]
+        .props.onPointerOut({ stopPropagation: jest.fn() });
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-1-label",
+    })).toEqual([]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: undefined,
+    });
+    expect(wrapper.root.findAllByType(Cone).length).toBeGreaterThan(0);
+    expect(wrapper.root.findAllByType(Cylinder).length).toBeGreaterThan(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders selected scene object labels for focused form fields", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      designer: {
+        focusedSceneObjectField: "x_size",
+        unifiedSceneObjectSize: undefined,
+      },
+      sceneObjects: [sceneObject],
+    }));
+
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-0-label",
+    })).toBeTruthy();
+    expect(wrapper.root.findByProps({
+      name: "scene-object-face-size-arrow-1-label",
+    })).toBeTruthy();
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-2-label",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-z-origin-arrow-label",
+    })).toEqual([]);
+    unmountRenderer(wrapper);
+  });
+
+  it("hovers the selected scene object top resize marker", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const topMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-4");
+    const event = {
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+    };
+
+    act(() => {
+      topMarker.props.onPointerOver(event);
+    });
+    const hoveredMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-4");
+    expect(hoveredMarker).toBeTruthy();
+    act(() => {
+      hoveredMarker.props.onPointerOut(event);
+    });
+    act(() => {
+      topMarker.props.onPointerDown(event);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalledTimes(3);
+    unmountRenderer(wrapper);
+  });
+
+  it("scales selected scene object markers with camera distance", () => {
+    const frameCallbacks: (() => void)[] = [];
+    const previousUseThree = (threeFiber.useThree as jest.Mock)
+      .getMockImplementation();
+    (threeFiber.useFrame as jest.Mock).mockImplementation((
+      callback: () => void,
+    ) => {
+      frameCallbacks.push(callback);
+      return undefined;
+    });
+    (threeFiber.useThree as jest.Mock).mockReturnValue({
+      camera: { position: { x: 14000, y: 0, z: 0 } },
+    });
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    act(() => {
+      frameCallbacks.map(callback => callback());
+    });
+    act(() => {
+      frameCallbacks.map(callback => callback());
+    });
+
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0").props.args[0])
+      .toBeGreaterThan(35);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-base-x-axis-arrow",
+    }).findAllByProps({
+      color: "#ff3333",
+    })).toEqual([]);
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerOver({
+        stopPropagation: jest.fn(),
+        nativeEvent: { stopImmediatePropagation: jest.fn() },
+      });
+    });
+    expect(wrapper.root.findByProps({
+      name: "scene-object-base-x-axis-arrow",
+    }).findAllByProps({
+      color: "#ff3333",
+    }).length).toBeGreaterThan(0);
+    unmountRenderer(wrapper);
+    (threeFiber.useThree as jest.Mock).mockImplementation(previousUseThree);
+  });
+
+  it("drags a selected scene object face size arrow", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const arrow = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-face-size-arrow-1")[0];
+    const xMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const [markerX, markerY, markerZ] =
+      positionArray(xMaxMarker.props.position);
+    const [targetX, targetY, targetZ] = sceneObjectPoint(config, {
+      x: 200,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const downEvent = {
+      point: new Vector3(markerX, markerY, markerZ),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: { setPointerCapture: jest.fn() },
+      ray: new Ray(
+        new Vector3(markerX, markerY, markerZ + 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const dragEvent = {
+      ...downEvent,
+      target: {
+        ...downEvent.target,
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(targetX, targetY, targetZ + 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+
+    act(() => {
+      arrow.props.onPointerDown(downEvent);
+      arrow.props.onPointerMove(dragEvent);
+      arrow.props.onPointerUp(dragEvent);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          x_center: 100,
+          x_size: 200,
+        },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("only shows and drags the xyz size arrow when cube mode is active", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({
+      x_size: 100,
+      y_size: 200,
+      z_size: 300,
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+      designer: {
+        focusedSceneObjectField: undefined,
+        unifiedSceneObjectSize: sceneObject.uuid,
+      },
+    }));
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-1",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-4",
+    })).toEqual([]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-selection-marker-1",
+    })).toEqual([]);
+    const arrow = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-face-size-arrow-0")[0];
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0");
+    const [markerX, markerY, markerZ] = positionArray(marker.props.position);
+    const event = (delta: number) => ({
+      point: new Vector3(markerX + delta, markerY + delta, markerZ + delta),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(markerX + delta, markerY + delta, markerZ + delta + 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+
+    act(() => {
+      arrow.props.onPointerDown(event(0));
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-0")[0]
+        .props.onPointerUp(event(150));
+    });
+    const update = dispatch.mock.calls.find(call =>
+      call[0].type == "EDIT_RESOURCE")?.[0].payload.update;
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          x_size: 200,
+          y_size: 400,
+          z_size: 600,
+        }),
+      }),
+    }));
+    expect(update.x_center).toBeUndefined();
+    expect(update.y_center).toBeUndefined();
+    unmountRenderer(wrapper);
+  });
+
+  it("drags all scene object sizes from the xyz size arrow", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({
+      x_size: 100,
+      y_size: 200,
+      z_size: 300,
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const arrow = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-face-size-arrow-5")[0];
+    act(() => {
+      arrow.props.onPointerOver({ stopPropagation: jest.fn() });
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-face-size-arrow-5-label",
+    })).toEqual([]);
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-5");
+    const [markerX, markerY, markerZ] = positionArray(marker.props.position);
+    const event = (delta: number) => ({
+      point: new Vector3(markerX + delta, markerY + delta, markerZ + delta),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(markerX + delta, markerY + delta, markerZ + delta + 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+
+    act(() => {
+      arrow.props.onPointerDown(event(0));
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-5")[0]
+        .props.onPointerUp(event(150));
+    });
+    const update = dispatch.mock.calls.find(call =>
+      call[0].type == "EDIT_RESOURCE")?.[0].payload.update;
+
+    expect(update).toEqual({
+      x_size: 200,
+      y_size: 400,
+      z_size: 600,
+    });
+    unmountRenderer(wrapper);
+  });
+
+  it("drags a selected scene object z size arrow from its start size", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({ z_size: 100 });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const arrow = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-face-size-arrow-4")[0];
+    const [baseX, baseY, baseZ] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const event = (height: number) => ({
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        stopImmediatePropagation: jest.fn(),
+      },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(baseX - 10, baseY, baseZ + height + 10),
+        new Vector3(1, 0, -1).normalize(),
+      ),
+    });
+
+    act(() => {
+      arrow.props.onPointerDown(event(100));
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-4")[0]
+        .props.onPointerUp(event(120));
+    });
+    const update = dispatch.mock.calls.find(call =>
+      call[0].type == "EDIT_RESOURCE")?.[0].payload.update;
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: { z_size: 120 },
+      }),
+    }));
+    expect(update.x_center).toBeUndefined();
+    expect(update.y_center).toBeUndefined();
+    unmountRenderer(wrapper);
+  });
+
+  it("cancels selected scene object face size arrow dragging", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const xMaxMarker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const [markerX, markerY, markerZ] =
+      positionArray(xMaxMarker.props.position);
+    const event = {
+      point: new Vector3(markerX, markerY, markerZ),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        clientY: 100,
+        stopImmediatePropagation: jest.fn(),
+      },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(markerX, markerY, markerZ + 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+
+    act(() => {
+      const arrow = wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1")[0];
+      arrow.props.onPointerMove(event);
+      arrow.props.onPointerUp(event);
+      arrow.props.onPointerCancel(event);
+      arrow.props.onPointerDown(event);
+    });
+    act(() => {
+      const arrow = wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1")[0];
+      arrow.props.onPointerMove(event);
+      arrow.props.onPointerCancel(event);
+    });
+    act(() => {
+      const arrow = wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-1")[0];
+      arrow.props.onPointerDown(event);
+      arrow.props.onLostPointerCapture(event);
+    });
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(event.nativeEvent.stopImmediatePropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("drags the selected scene object base x axis arrow", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const basePoint = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const targetPoint = sceneObjectPoint(config, {
+      x: 100,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const event = (point: number[]) => ({
+      point: new Vector3(point[0], point[1], point[2]),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(point[0], point[1], point[2] + 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerDown(event(basePoint));
+    });
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      });
+      arrow.props.onPointerMove(event(targetPoint));
+      arrow.props.onPointerUp(event(targetPoint));
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: { x_center: 100 },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("drags the selected scene object base y and z axis arrows", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const basePoint = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const yTargetPoint = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: 125,
+      z: sceneObject.body.z_base,
+    });
+    const zTargetPoint = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base + 100,
+    });
+    const event = (point: number[], clientY = 200) => ({
+      point: new Vector3(point[0], point[1], point[2]),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        clientY,
+        stopImmediatePropagation: jest.fn(),
+      },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      ray: new Ray(
+        new Vector3(point[0], point[1], point[2] + 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-y-axis-arrow",
+      }).props.onPointerDown(event(basePoint));
+    });
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-y-axis-arrow",
+      });
+      arrow.props.onPointerMove(event(yTargetPoint));
+      arrow.props.onPointerUp(event(yTargetPoint));
+    });
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-z-axis-arrow",
+      }).props.onPointerDown(event(basePoint, 200));
+    });
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-z-axis-arrow",
+      });
+      arrow.props.onPointerMove(event(zTargetPoint));
+      arrow.props.onPointerUp(event(zTargetPoint));
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: { y_center: 130 },
+      }),
+    }));
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: { z_base: sceneObject.body.z_base + 100 },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
+  it("handles base axis hover, cancel, and lost capture", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const dispatch = jest.fn();
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+    }));
+    const point = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const event = {
+      point: new Vector3(point[0], point[1], point[2]),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        clientY: 200,
+        stopImmediatePropagation: jest.fn(),
+      },
+      target: { setPointerCapture: jest.fn() },
+      ray: new Ray(
+        new Vector3(point[0], point[1], point[2] + 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      });
+      arrow.props.onPointerOver(event);
+    });
+    expect(wrapper.root.findByProps({
+      name: "scene-object-x-origin-arrow-label",
+    })).toBeTruthy();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: "x_center",
+    });
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      });
+      arrow.props.onPointerDown(event);
+    });
+    dispatch.mockClear();
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerOut(event);
+      expect(dispatch).not.toHaveBeenCalledWith({
+        type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+        payload: undefined,
+      });
+    });
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerCancel(event);
+    });
+    act(() => {
+      const arrow = wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      });
+      arrow.props.onPointerOut(event);
+      arrow.props.onPointerMove(event);
+      arrow.props.onPointerUp(event);
+      arrow.props.onPointerCancel(event);
+      arrow.props.onLostPointerCapture(event);
+      arrow.props.onPointerDown(event);
+    });
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerCancel(event);
+    });
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onPointerDown(event);
+    });
+    act(() => {
+      wrapper.root.findByProps({
+        name: "scene-object-base-x-axis-arrow",
+      }).props.onLostPointerCapture(event);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("cancels selected scene object marker dragging from window events", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0");
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: { setPointerCapture: jest.fn() },
+    };
+
+    act(() => {
+      marker.props.onPointerDown(event);
+    });
+    act(() => {
+      window.dispatchEvent(new Event("pointercancel"));
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("ignores selected scene object marker events when not dragging", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0");
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: { releasePointerCapture: jest.fn() },
+      ray: new Ray(new Vector3(0, 0, 100), new Vector3(1, 1, -1)),
+    };
+    const downEvent = {
+      ...event,
+      target: { setPointerCapture: jest.fn() },
+    };
+
+    act(() => {
+      marker.props.onPointerUp(event);
+      marker.props.onPointerCancel(event);
+      marker.props.onLostPointerCapture(event);
+      marker.props.onPointerDown(downEvent);
+      marker.props.onPointerUp(event);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("ignores selected scene object move handle events when not dragging", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+    }));
+    const moveHandle = wrapper.root.findAll(node =>
+      node.props.renderOrder == 999)[0];
+    const event = {
+      point: new Vector3(0, 0, 0),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: { releasePointerCapture: jest.fn() },
+      ray: new Ray(new Vector3(0, 0, 100), new Vector3(1, 1, -1)),
+    };
+
+    act(() => {
+      moveHandle.props.onPointerMove(event);
+      moveHandle.props.onPointerUp(event);
+      moveHandle.props.onPointerDown({
+        ...event,
+        target: { setPointerCapture: jest.fn() },
+      });
+      moveHandle.props.onPointerUp(event);
+    });
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("ignores placement events when disabled", () => {
+    const dispatch = jest.fn();
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: false,
+      dispatch,
+      drawnSceneObject: fakeSceneObject().body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove({
+        point: new Vector3(0, 0, 0),
+      } as never);
+      result.current.onClick({
+        stopPropagation: jest.fn(),
+      } as never);
+    });
+
+    expect(result.current.preview).toBeUndefined();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("handles placement preview without drawn scene object data", () => {
+    const config = clone(INITIAL);
+    const event = {
+      point: new Vector3(0, 0, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(0, 0, 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const { result, rerender } = renderHook(
+      ({ drawnSceneObject }) => useSceneObjectPlacement({
+        config,
+        enabled: true,
+        dispatch: jest.fn(),
+        drawnSceneObject,
+      }),
+      { initialProps: { drawnSceneObject: fakeSceneObject().body } },
+    );
+
+    act(() => {
+      result.current.onPointerMove(event as never);
+    });
+    act(() => {
+      result.current.onClick(event as never);
+    });
+    rerender({ drawnSceneObject: undefined as never });
+    act(() => {
+      result.current.onPointerMove({
+        ...event,
+        point: new Vector3(50, 50, 0),
+      } as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+    expect(wrapper.root.findByProps({
+      name: "scene-object-placement-preview",
+    })).toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
+  it("renders scene objects without provided scene object list", () => {
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+    }));
+
+    expect(wrapper.root).toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
+  it("renders hover edges for non-selected scene objects", () => {
+    location.pathname = Path.mock(Path.sceneObjects());
+    const sceneObject = fakeSceneObject({ texture: "none" });
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      hoverSelection: { kind: "sceneObject", id: 1 },
+    }));
+
+    expect(wrapper.root.findAllByProps({ className: "edges" }).length)
+      .toBeGreaterThan(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("handles placement events without dispatch", () => {
+    const event = (point: Vector3, clientY: number) => ({
+      point,
+      nativeEvent: { clientY },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(point.x, point.y, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      drawnSceneObject: fakeSceneObject().body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    act(() => {
+      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
+    });
+    act(() => {
+      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
+    });
+    act(() =>
+      result.current.onPointerMove(
+        event(new Vector3(50, 50, 100), 50) as never));
+    act(() =>
+      result.current.onClick(event(new Vector3(50, 50, 100), 50) as never));
+
+    expect(result.current.preview).toBeUndefined();
+  });
+
+  it("renders placement preview defaults with incomplete scene object data", () => {
+    const drawnSceneObject = {
+      ...fakeSceneObject().body,
+      name: "",
+      texture: undefined,
+      shape: undefined,
+      color: undefined,
+      z_base: undefined,
+      x_size: undefined,
+      y_size: undefined,
+      x_origin: undefined,
+      y_origin: undefined,
+    };
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject: drawnSceneObject as never,
+    }));
+    const event = {
+      point: new Vector3(0, 0, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+    };
+
+    act(() => {
+      result.current.onPointerMove(event as never);
+    });
+    act(() => {
+      result.current.onClick(event as never);
+    });
+    act(() => {
+      result.current.onPointerMove({
+        ...event,
+        point: new Vector3(50, 50, 0),
+      } as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+    expect(wrapper.root).toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
+  it("places and saves a scene object", async () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const body = fakeSceneObject({ name: "" }).body;
+    const event = (point: Vector3, clientY: number) => ({
+      point,
+      nativeEvent: { clientY },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(point.x, point.y, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      dispatch,
+      sceneObjects: [fakeSceneObject()],
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    expect(result.current.preview).toBeTruthy();
+
+    act(() => {
+      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "SET_DRAWN_SCENE_OBJECT_DATA",
+    }));
+
+    act(() =>
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never));
+    act(() =>
+      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never));
+
+    await act(async () => {
+      result.current.onPointerMove(event(new Vector3(50, 50, 100), 50) as never);
+      await Promise.resolve();
+    });
+    await act(async () => {
+      result.current.onClick(event(new Vector3(50, 50, 100), 50) as never);
+      await Promise.resolve();
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "INIT_RESOURCE",
+    }));
+    expect(mockNavigate).toHaveBeenCalled();
+  });
+
+  it("places scene objects with non-home origins", async () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({
+      x_origin: "max",
+      y_origin: "world",
+      z_origin: "max",
+    }).body;
+    const event = (point: Vector3, clientY: number) => ({
+      point,
+      nativeEvent: { clientY },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(point.x, point.y, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch,
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    act(() => {
+      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
+    });
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
+    });
+    act(() => {
+      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
+    });
+
+    await act(async () => {
+      result.current.onPointerMove(event(new Vector3(50, 50, 100), 50) as never);
+      await Promise.resolve();
+    });
+    await act(async () => {
+      result.current.onClick(event(new Vector3(50, 50, 100), 50) as never);
+      await Promise.resolve();
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "INIT_RESOURCE",
+      payload: expect.objectContaining({
+        body: expect.objectContaining({
+          z_base: 0,
+        }),
+      }),
+    }));
+  });
+
+  it("uses latest form values when placing scene objects", () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const config = clone(INITIAL);
+    const initialBody = fakeSceneObject().body;
+    const updatedBody = {
+      ...initialBody,
+      x_origin: "max",
+      y_origin: "world",
+      z_origin: "max",
+    };
+    const event = {
+      point: new Vector3(0, 0, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(0, 0, 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const { result, rerender } = renderHook(
+      ({ drawnSceneObject }) => useSceneObjectPlacement({
+        config,
+        enabled: true,
+        dispatch,
+        drawnSceneObject,
+      }),
+      { initialProps: { drawnSceneObject: initialBody } },
+    );
+
+    act(() => {
+      result.current.onPointerMove(event as never);
+    });
+    const staleClick = result.current.onClick;
+    rerender({ drawnSceneObject: updatedBody });
+    act(() => {
+      staleClick(event as never);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "SET_DRAWN_SCENE_OBJECT_DATA",
+      payload: expect.objectContaining({
+        x_origin: "max",
+        y_origin: "world",
+        z_origin: "max",
+        z_base: 0,
+      }),
+    }));
+  });
+
+  it("starts new scene objects from the home origin plane", () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "home" }).body;
+    const event = {
+      point: new Vector3(0, 0, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(0, 0, 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch,
+      drawnSceneObject: body,
+    }));
+
+    act(() => result.current.onPointerMove(event as never));
+    act(() => result.current.onClick(event as never));
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "SET_DRAWN_SCENE_OBJECT_DATA",
+      payload: expect.objectContaining({
+        z_origin: "home",
+        z_base: 0,
+      }),
+    }));
+  });
+
+  it("previews new scene objects from the selected home origin plane", () => {
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "home" }).body;
+    const event = {
+      point: new Vector3(0, 0, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+    };
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove(event as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+    const preview = wrapper.root.findByProps({
+      name: "scene-object-placement-preview",
+    });
+
+    const plane = preview.findByProps({ name: "scene-object-origin-plane" });
+    expect(plane.props.args).toEqual([
+      BigDistance.ground * 2,
+      BigDistance.ground * 2,
+      2,
+    ]);
+    expect(plane.props.position[2]).toEqual(zZero(config));
+    expect(preview.findAllByType(Sphere)[0].props.position[2])
+      .toEqual(zZero(config) + 25);
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't show the origin plane for world origin scene objects", () => {
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "world" }).body;
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove({
+        point: new Vector3(0, 0, 0),
+        nativeEvent: { clientY: 100 },
+        stopPropagation: jest.fn(),
+      } as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-origin-plane",
+    })).toEqual([]);
+    unmountRenderer(wrapper);
+  });
+
+  it("projects new scene object cursor onto the selected home origin plane", () => {
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "home" }).body;
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove({
+        point: new Vector3(0, 0, 0),
+        nativeEvent: { clientY: 100 },
+        stopPropagation: jest.fn(),
+        ray: new Ray(
+          new Vector3(0, 0, zZero(config) + 100),
+          new Vector3(0, 0, -1),
+        ),
+      } as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+    const preview = wrapper.root.findByProps({
+      name: "scene-object-placement-preview",
+    });
+
+    expect(preview.findAllByType(Sphere)[0].props.position)
+      .toEqual([0, 0, zZero(config) + 25]);
+    unmountRenderer(wrapper);
+  });
+
+  it("sizes new scene objects up from the selected home origin plane", async () => {
+    const dispatch = jest.fn(() => Promise.resolve());
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "home" }).body;
+    const event = (point: Vector3, clientY: number) => ({
+      point,
+      nativeEvent: { clientY },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(point.x, point.y, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch,
+      drawnSceneObject: body,
+    }));
+
+    act(() =>
+      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never));
+    act(() =>
+      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never));
+    act(() =>
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never));
+    act(() =>
+      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never));
+    await act(async () => {
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 50) as never);
+      await Promise.resolve();
+    });
+    await act(async () => {
+      result.current.onClick(event(new Vector3(50, 50, 0), 50) as never);
+      await Promise.resolve();
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "INIT_RESOURCE",
+      payload: expect.objectContaining({
+        body: expect.objectContaining({
+          z_origin: "home",
+          z_base: 0,
+          z_size: 80,
+        }),
+      }),
+    }));
+  });
+
+  it("keeps the origin plane fixed while sizing scene object height", () => {
+    const config = clone(INITIAL);
+    const body = fakeSceneObject({ z_origin: "home" }).body;
+    const event = (point: Vector3, clientY: number) => ({
+      point,
+      nativeEvent: { clientY },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(point.x, point.y, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject: body,
+    }));
+
+    act(() => {
+      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never);
+      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 50) as never);
+    });
+
+    const wrapper = createRenderer(result.current.preview as React.ReactElement);
+    const plane = wrapper.root.findByProps({ name: "scene-object-origin-plane" });
+
+    expect(plane.props.position[2]).toEqual(zZero(config));
+    unmountRenderer(wrapper);
+  });
+
+  it("renders placement previews for custom scene object shapes", () => {
+    ["plant", "tray", "window", "laptop", "desk", "box"].forEach(shape => {
+      const { result } = renderHook(() => useSceneObjectPlacement({
+        config: clone(INITIAL),
+        enabled: true,
+        dispatch: jest.fn(),
+        drawnSceneObject: fakeSceneObject({ shape }).body,
+      }));
+      const event = {
+        point: new Vector3(0, 0, 0),
+        nativeEvent: { clientY: 100 },
+        stopPropagation: jest.fn(),
+      };
+
+      act(() => {
+        result.current.onPointerMove(event as never);
+      });
+      act(() => {
+        result.current.onClick(event as never);
+      });
+      act(() => {
+        result.current.onPointerMove({
+          ...event,
+          point: new Vector3(50, 50, 0),
+        } as never);
+      });
+
+      const wrapper = createRenderer(result.current.preview as React.ReactElement);
+      expect(wrapper.root).toBeTruthy();
+      unmountRenderer(wrapper);
+    });
+  });
+});

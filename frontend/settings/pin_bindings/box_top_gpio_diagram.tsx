@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { Color } from "../../ui/colors";
+import { Color } from "../../ui";
 import { FirmwareHardware, SyncStatus } from "farmbot";
 import {
   btnIndexList, hasExtraButtons,

@@ -93,6 +93,7 @@ describe("<ThreeDGardenMap />", () => {
     images: [],
     sensors: [],
     sensorReadings: [],
+    sceneObjects: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
     env: {},
     farmwareEnvs: [],
@@ -141,7 +142,6 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.stats = true;
     expectedConfig.heading = 1;
     expectedConfig.north = true;
-    expectedConfig.desk = true;
     expectedConfig.laser = true;
     expectedConfig.threeAxes = true;
     expectedConfig.sunAzimuth = 1;
