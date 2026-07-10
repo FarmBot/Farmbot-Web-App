@@ -149,17 +149,17 @@ const zAxisBeltPathV19 = (
   y: number,
   z: number,
 ) => {
-  const radius = 8;
+  const radius = 7;
   const path = new BeltPath();
   path.start(0, botSizeY + 220, 0);
   path.pulley(0, y + 160, radius, radius, 1);
-  path.pulley(0, y + 145, -z + botSizeZ + 90, radius, -1);
+  path.pulley(0, y + 145, z + botSizeZ + 90, radius, -1);
   path.pulley(0, y + 130, radius, radius, 1);
   path.pulley(0, 20, -radius, radius, -1);
   path.pulley(0, 25, -radius - 104, radius, -1);
   path.pulley(0, 40, -radius - 104 + 49, radius, 1);
   path.pulley(0, y + 130, -60 - radius, radius, 1);
-  path.pulley(0, y + 145, -z - 155, radius, -1);
+  path.pulley(0, y + 145, z - 155, radius, -1);
   path.pulley(0, y + 160, -60 - radius, radius, 1);
   path.end(0, botSizeY + 220, -60);
   return path;
