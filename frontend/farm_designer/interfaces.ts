@@ -24,6 +24,7 @@ import type {
   TaggedFbosConfig,
   PlantStage,
   TaggedDevice,
+  TaggedPeripheral,
 } from "farmbot";
 import type { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import type {
@@ -107,6 +108,7 @@ export interface FarmDesignerProps {
   botMcuParams: McuParams;
   botSize: BotSize;
   peripheralValues: PeripheralValues;
+  peripherals: TaggedPeripheral[];
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;

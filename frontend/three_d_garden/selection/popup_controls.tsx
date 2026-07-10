@@ -17,7 +17,9 @@ import { Content, DeviceSetting } from "../../constants";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
-import { reboot, powerOff, takePhoto } from "../../devices/actions";
+import {
+  findHome, moveToHome, powerOff, reboot, takePhoto,
+} from "../../devices/actions";
 import { resetVirtualTrail } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
 import {
@@ -45,6 +47,7 @@ import { getFwHardwareValue } from
   "../../settings/firmware/firmware_hardware_support";
 import { cameraBtnProps } from
   "../../photos/capture_settings/camera_selection";
+import { ToolActionRow } from "../../tools/tool_action_row";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -283,6 +286,15 @@ const UtmPopupControls = (props: PopupControlProps) => {
         filterSelectedTool={true}
         filterActiveTools={false} />
     </div>
+    <ToolActionRow
+      className={"object-popup-tool-action-row"}
+      mountedTool={mountedTool}
+      sensors={props.sensors}
+      peripherals={props.peripherals}
+      peripheralValues={props.peripheralValues}
+      botOnline={props.botOnline}
+      arduinoBusy={props.arduinoBusy}
+      locked={!!props.bot?.hardware.informational_settings.locked} />
     <div className={"object-popup-tool-verification-row"}>
       {props.bot &&
         <ToolVerification sensors={props.sensors} bot={props.bot} />}
@@ -310,7 +322,26 @@ const UtmPopupControls = (props: PopupControlProps) => {
           title={`${t("toggle")} ${t("LASER")}`}
           customText={{ textFalse: t("off"), textTrue: t("on") }} />
       </div>}
+    <UtmHomeRow {...props} />
   </>;
+};
+
+const UtmHomeRow = (props: PopupControlProps) => {
+  const disabled = !props.botOnline || props.arduinoBusy
+    || !!props.bot?.hardware.informational_settings.locked;
+  return <div className={"object-popup-home-row row grid-exp-1"}>
+    <label>{t("HOME")}</label>
+    <div className={"object-popup-action-buttons row half-gap"}>
+      <button type={"button"} className={"fb-button gray"} disabled={disabled}
+        onClick={() => void moveToHome("all")}>
+        {t("MOVE TO HOME")}
+      </button>
+      <button type={"button"} className={"fb-button gray"} disabled={disabled}
+        onClick={() => void findHome("all")}>
+        {t("FIND HOME")}
+      </button>
+    </div>
+  </div>;
 };
 
 const CameraPopupControls = (props: PopupControlProps) => {

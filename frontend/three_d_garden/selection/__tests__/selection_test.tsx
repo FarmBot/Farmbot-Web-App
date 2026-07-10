@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { clone } from "lodash";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
-  fakeToolSlot, fakeWeed, fakeSceneObject,
+  fakeToolSlot, fakeWeed, fakeSceneObject, fakePeripheral,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
@@ -64,6 +64,8 @@ const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   tools: [],
   sequences: [],
   sensors: [],
+  peripherals: [],
+  peripheralValues: [],
   fbosConfig: undefined,
   timeSettings: fakeTimeSettings(),
   botOnline: true,
@@ -475,18 +477,29 @@ describe("selection overlay and popups", () => {
 
   it("handles object popup actions", () => {
     const p = layerProps();
+    const onWheel = jest.fn();
     const object = {
       kind: "utm" as const,
       ...objectBase({ kind: "utm", id: 0 }),
+      locationCoordinate: { x: 10.4, y: 20.5, z: 30.6 },
     };
-    const { container } = render(<ObjectPopup
-      {...p}
-      object={object}
-      visible={true} />);
+    const { container } = render(<div onWheel={onWheel}>
+      <ObjectPopup
+        {...p}
+        object={object}
+        visible={true} />
+    </div>);
+    expect(container.querySelector("h3")).toHaveClass("row");
+    expect(container.querySelector("h3")).toHaveTextContent(
+      "utm (10, 21, 31)");
+    expect(container.querySelector(".object-popup-title-coordinates"))
+      .toHaveTextContent("(10, 21, 31)");
     const popup = container.querySelector(".three-d-object-popup");
     popup && fireEvent.pointerDown(popup);
     popup && fireEvent.contextMenu(popup);
+    popup && fireEvent.wheel(popup);
     popup && fireEvent.click(popup);
+    expect(onWheel).not.toHaveBeenCalled();
     const buttons = container.querySelectorAll("button");
     fireEvent.click(buttons[0]);
     fireEvent.click(buttons[1]);
@@ -496,12 +509,18 @@ describe("selection overlay and popups", () => {
 
   it("handles location popup actions", () => {
     const p = layerProps();
-    const { container } = render(<LocationPopup
-      {...p}
-      object={locationObject()}
-      visible={false} />);
+    const onWheel = jest.fn();
+    const { container } = render(<div onWheel={onWheel}>
+      <LocationPopup
+        {...p}
+        object={locationObject()}
+        visible={false} />
+    </div>);
     expect(container.querySelector(".three-d-object-popup")?.className)
       .toContain("hidden");
+    const popup = container.querySelector(".three-d-object-popup");
+    popup && fireEvent.wheel(popup);
+    expect(onWheel).not.toHaveBeenCalled();
     const buttons = container.querySelectorAll("button");
     fireEvent.click(buttons[0]);
     fireEvent.click(buttons[1]);
@@ -754,6 +773,56 @@ describe("selection popup controls", () => {
     expect(p.dispatch).toHaveBeenCalled();
     controls.unmount();
     toolSelectionSpy.mockRestore();
+  });
+
+  it("uses UTM home and mounted tool actions", () => {
+    const moveToHomeSpy = jest.spyOn(deviceActions, "moveToHome")
+      .mockImplementation(jest.fn());
+    const findHomeSpy = jest.spyOn(deviceActions, "findHome")
+      .mockImplementation(jest.fn());
+    const p = layerProps();
+    const tool = fakeTool();
+    tool.body.id = 4;
+    p.tools = [tool];
+    p.deviceAccount = fakeDevice({ mounted_tool_id: 4 });
+    const peripheral = fakePeripheral();
+    peripheral.body.label = "Vacuum Pump";
+    peripheral.body.pin = 9;
+    p.peripherals = [peripheral];
+    p.peripheralValues = [{ label: "Vacuum Pump", value: true }];
+    const object = {
+      kind: "utm" as const,
+      ...objectBase({ kind: "utm", id: 0 }),
+    };
+
+    tool.body.name = "Seeder";
+    const controls = render(<ObjectPopupControls {...p} object={object} />);
+    expect(controls.container.querySelector(
+      ".object-popup-tool-action-row .fb-toggle-button"))
+      .toHaveClass("green");
+    expect(controls.container.querySelector(
+      ".object-popup-tool-action-row .fb-toggle-button"))
+      .toHaveTextContent("on");
+    fireEvent.click(controls.getByText("MOVE TO HOME"));
+    fireEvent.click(controls.getByText("FIND HOME"));
+    expect(moveToHomeSpy).toHaveBeenCalledWith("all");
+    expect(findHomeSpy).toHaveBeenCalledWith("all");
+    controls.unmount();
+  });
+
+  it("toggles the UTM laser", () => {
+    const p = layerProps();
+    p.set3DConfigValue = jest.fn();
+    const controls = render(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "utm",
+        ...objectBase({ kind: "utm", id: 0 }),
+      }} />);
+    fireEvent.click(controls.container.querySelector(
+      ".object-popup-laser-row .fb-toggle-button") as Element);
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("laser", "1");
+    controls.unmount();
   });
 
   it("updates slot tool selection", () => {

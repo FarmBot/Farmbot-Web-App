@@ -1,6 +1,6 @@
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  fakeWebAppConfig, fakeTool,
+  fakeWebAppConfig, fakeTool, fakeToolSlot,
 } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, fakeDevice,
@@ -16,11 +16,17 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = 42;
     webAppConfig.body.id = 1;
     webAppConfig.body.bot_origin_quadrant = 1;
-    state.resources = buildResourceIndex([fakeDevice(), webAppConfig]);
+    state.resources = buildResourceIndex([
+      fakeDevice(), webAppConfig, toolSlot,
+    ]);
     const props = mapStateToProps(state);
     expect([1, 2, 3, 4]).toContain(props.toolTransformProps.quadrant);
+    expect(props.isActive(undefined)).toBeFalsy();
+    expect(props.isActive(42)).toBeTruthy();
   });
 
   it("returns props: incorrect quadrant", () => {

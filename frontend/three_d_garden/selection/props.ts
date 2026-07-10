@@ -1,6 +1,7 @@
 import {
   TaggedDevice, TaggedFbosConfig, TaggedGenericPointer, TaggedSensor,
   TaggedSequence, TaggedTool, TaggedWeedPointer,
+  TaggedPeripheral,
 } from "farmbot";
 import { Config, PositionConfig } from "../config";
 import {
@@ -10,6 +11,8 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
 import { MovementState, TimeSettings } from "../../interfaces";
+import { PeripheralValues } from
+  "../../farm_designer/map/layers/farmbot/bot_trail";
 
 export interface ThreeDObjectSelectionLayerProps {
   config: Config;
@@ -30,6 +33,8 @@ export interface ThreeDObjectSelectionLayerProps {
   tools: TaggedTool[];
   sequences: TaggedSequence[];
   sensors: TaggedSensor[];
+  peripherals: TaggedPeripheral[];
+  peripheralValues: PeripheralValues;
   fbosConfig: TaggedFbosConfig | undefined;
   timeSettings: TimeSettings | undefined;
   botOnline: boolean;

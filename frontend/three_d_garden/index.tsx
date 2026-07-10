@@ -13,6 +13,7 @@ import {
   TaggedSequence,
   TaggedTool,
   TaggedWeedPointer,
+  TaggedPeripheral,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
@@ -21,6 +22,8 @@ import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
 import { TaggedSceneObject } from "../scene_objects/interfaces";
+import { PeripheralValues } from
+  "../farm_designer/map/layers/farmbot/bot_trail";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -49,6 +52,8 @@ export interface ThreeDGardenProps {
   images?: TaggedImage[];
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
+  peripherals?: TaggedPeripheral[];
+  peripheralValues?: PeripheralValues;
   env?: UserEnv;
   set3DConfigValue?(key: keyof Config, value: string): void;
   sceneObjects: TaggedSceneObject[];
@@ -95,6 +100,8 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           images={props.images}
           sensorReadings={props.sensorReadings}
           sensors={props.sensors}
+          peripherals={props.peripherals}
+          peripheralValues={props.peripheralValues}
           env={props.env}
           set3DConfigValue={props.set3DConfigValue}
           sceneObjects={props.sceneObjects}

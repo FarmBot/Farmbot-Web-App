@@ -65,6 +65,7 @@ describe("mapStateToProps()", () => {
     expect(second.farmwareEnvs).toBe(first.farmwareEnvs);
     expect(second.curves).toBe(first.curves);
     expect(second.peripheralValues).toBe(first.peripheralValues);
+    expect(second.peripherals).toBe(first.peripherals);
   });
 
   it("peripherals pins have correct states", () => {
@@ -75,8 +76,11 @@ describe("mapStateToProps()", () => {
     const peripheral2 = fakePeripheral();
     peripheral2.body.pin = undefined;
     peripheral2.body.label = "none";
+    const peripheral3 = fakePeripheral();
+    peripheral3.body.pin = 0;
+    peripheral3.body.label = "zero";
     state.resources = buildResourceIndex([
-      fakeDevice(), peripheral1, peripheral2,
+      fakeDevice(), peripheral1, peripheral2, peripheral3,
     ]);
     function checkValue(input: number, value: boolean) {
       state.bot.hardware.pins = { 13: { value: input, mode: 0 } };
@@ -90,6 +94,9 @@ describe("mapStateToProps()", () => {
     checkValue(2, true);
     expect(mapStateToProps(state).peripheralValues[1])
       .toEqual({ label: "none", value: false });
+    state.bot.hardware.pins[0] = { value: 1, mode: 0 };
+    expect(mapStateToProps(state).peripheralValues[2])
+      .toEqual({ label: "zero", value: true });
   });
 
   it("returns selected plant", () => {

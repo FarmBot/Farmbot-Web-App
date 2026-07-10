@@ -98,6 +98,10 @@
         line-height: 1.2;
         text-overflow: ellipsis;
         white-space: nowrap;
+
+        .object-popup-title-coordinates {
+          font-size: 0.65em;
+        }
       }
     }
 
@@ -154,13 +158,26 @@
 
       .object-popup-trail-row,
       .object-popup-laser-row,
-      .object-popup-camera-row {
+      .object-popup-camera-row,
+      .object-popup-home-row,
+      .object-popup-tool-action-row {
         align-items: center;
 
         button {
           margin: 0;
           float: none;
           justify-self: end;
+        }
+      }
+
+      .tool-action-buttons,
+      .tool-peripheral-action {
+        align-items: center;
+        justify-self: end;
+
+        button {
+          margin: 0;
+          float: none;
         }
       }
 

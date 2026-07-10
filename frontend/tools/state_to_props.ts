@@ -6,6 +6,7 @@ import {
   selectAllSensors,
   selectAllPointGroups,
   selectAllActivePoints,
+  selectAllPeripherals,
 } from "../resources/selectors";
 import { validBotLocationData } from "../util/location";
 import { UUID } from "../resources/interfaces";
@@ -21,6 +22,7 @@ import {
 } from "./interfaces";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { validGoButtonAxes } from "../farm_designer/move_to";
+import { selectPeripheralValues } from "../farm_designer/peripheral_values";
 
 const isActive = (toolSlots: ReturnType<typeof selectAllToolSlotPointers>) =>
   (toolId: number | undefined) =>
@@ -31,6 +33,7 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
   const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
   const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
   const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
+  const peripherals = selectAllPeripherals(props.resources.index);
   return {
     tools: selectAllTools(props.resources.index),
     toolSlots: selectAllToolSlotPointers(props.resources.index),
@@ -38,6 +41,9 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
     findTool: (id: number) => maybeFindToolById(props.resources.index, id),
     device: getDeviceAccountSettings(props.resources.index),
     sensors: selectAllSensors(props.resources.index),
+    peripherals,
+    peripheralValues: selectPeripheralValues(
+      peripherals, props.bot.hardware.pins),
     bot: props.bot,
     hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),

@@ -20,6 +20,11 @@ interface ObjectPopupProps extends ThreeDObjectSelectionLayerProps {
 }
 
 export const ObjectPopup = (props: ObjectPopupProps) => {
+  const coordinates = props.object.kind == "utm"
+    ? `(${Math.round(props.object.locationCoordinate.x)}, `
+      + `${Math.round(props.object.locationCoordinate.y)}, `
+      + `${Math.round(props.object.locationCoordinate.z)})`
+    : undefined;
   return <Html
     name={"selected-object-popup"}
     wrapperClass={"three-d-object-popup-wrapper"}
@@ -33,9 +38,16 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
       ].join(" ")}
       onPointerDown={stopPopupEvent}
       onContextMenu={stopPopupEvent}
+      onWheel={stopPopupEvent}
       onClick={stopPopupEvent}>
       <div className={"object-popup-header row grid-exp-2"}>
-        <h3>{props.object.name}</h3>
+        <h3 className={"row"}>
+          {props.object.name}
+          {coordinates &&
+            <span className={"object-popup-title-coordinates"}>
+              {` ${coordinates}`}
+            </span>}
+        </h3>
         <div className={"object-popup-button-cluster row no-gap"}>
           <ObjectPopupHeaderColor {...props} />
           <ObjectPopupDeleteButton {...props} />
@@ -81,6 +93,7 @@ export const LocationPopup = (props: LocationPopupProps) => {
       ].join(" ")}
       onPointerDown={stopPopupEvent}
       onContextMenu={stopPopupEvent}
+      onWheel={stopPopupEvent}
       onClick={stopPopupEvent}>
       <div className={"object-popup-header row grid-exp-2"}>
         <h3>{t("Location")}</h3>

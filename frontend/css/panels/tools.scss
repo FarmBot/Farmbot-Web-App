@@ -66,6 +66,24 @@
         margin-top: 0;
       }
     }
+    .mounted-tool-action-row {
+      align-items: center;
+      margin-top: 1rem;
+
+      .tool-action-buttons,
+      .tool-peripheral-action {
+        align-items: center;
+        justify-self: end;
+      }
+
+      .tool-peripheral-action span {
+        font-size: 1.2rem;
+      }
+
+      button:not(.bp6-button) {
+        margin-top: 0;
+      }
+    }
     .panel-section {
       margin-left: -10px;
       margin-right: -10px;

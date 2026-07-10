@@ -51,8 +51,11 @@ import {
   TaggedSequence,
   TaggedTool,
   TaggedWeedPointer,
+  TaggedPeripheral,
 } from "farmbot";
 import { BooleanSetting } from "../session_keys";
+import { PeripheralValues } from
+  "../farm_designer/map/layers/farmbot/bot_trail";
 import { Actions } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
 import {
@@ -336,6 +339,8 @@ export interface GardenModelProps {
   images?: TaggedImage[];
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
+  peripherals?: TaggedPeripheral[];
+  peripheralValues?: PeripheralValues;
   env?: UserEnv;
   set3DConfigValue?(key: keyof Config, value: string): void;
   sceneObjects?: TaggedSceneObject[];
@@ -2018,6 +2023,8 @@ export const GardenModel = (props: GardenModelProps) => {
         tools={tools}
         sequences={sequences}
         sensors={sensors}
+        peripherals={props.peripherals || []}
+        peripheralValues={props.peripheralValues || []}
         fbosConfig={props.fbosConfig}
         timeSettings={props.timeSettings}
         botOnline={!!props.botOnline}

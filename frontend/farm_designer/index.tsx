@@ -252,6 +252,7 @@ export class RawFarmDesigner
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
           peripheralValues={this.props.peripheralValues}
+          peripherals={this.props.peripherals}
           allPoints={this.props.allPoints}
           groups={this.props.groups}
           images={this.props.latestImages}

@@ -12,6 +12,7 @@ import {
   TaggedImage, TaggedLog, TaggedPoint,
   TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedTool,
   TaggedDevice, TaggedFbosConfig, TaggedSequence, TaggedWeedPointer,
+  TaggedPeripheral,
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -62,6 +63,7 @@ export interface ThreeDGardenMapProps {
   toolSlots?: SlotWithTool[];
   mountedToolName: string | undefined;
   peripheralValues: PeripheralValues;
+  peripherals: TaggedPeripheral[];
   device: DeviceAccountSettings;
   allPoints: TaggedPoint[];
   groups: TaggedPointGroup[];
@@ -420,6 +422,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     images={props.images}
     sensorReadings={props.sensorReadings}
     sensors={props.sensors}
+    peripherals={props.peripherals}
+    peripheralValues={props.peripheralValues}
     env={props.env}
     set3DConfigValue={props.set3DConfigValue}
     sceneObjects={props.sceneObjects}

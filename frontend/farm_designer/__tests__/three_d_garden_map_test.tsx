@@ -88,6 +88,7 @@ describe("<ThreeDGardenMap />", () => {
     negativeZ: false,
     mountedToolName: undefined,
     peripheralValues: [],
+    peripherals: [],
     allPoints: [],
     groups: [],
     images: [],
@@ -347,6 +348,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ waterFlow: true }),
+      peripheralValues: p.peripheralValues,
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,

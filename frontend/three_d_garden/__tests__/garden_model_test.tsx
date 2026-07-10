@@ -1053,6 +1053,7 @@ describe("<GardenModel />", () => {
 
   it("updates selection callbacks from the model", () => {
     const p = fakeProps();
+    p.peripheralValues = [{ label: "Vacuum", value: true }];
     p.addPlantProps = fakeAddPlantProps();
     const dispatch = jest.fn();
     p.addPlantProps.dispatch = dispatch;
@@ -1061,6 +1062,7 @@ describe("<GardenModel />", () => {
       typeof node.props.onSelectObject == "function"
       && typeof node.props.onPlantHoverChange == "function")[0];
     const selectionLayer = wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    expect(selectionLayer.props.peripheralValues).toEqual(p.peripheralValues);
     const location = { kind: "location" as const, x: 1, y: 2, z: 3 };
     actRenderer(() => {
       staticLayers.props.onSelectObject({ kind: "plant", id: 1 });

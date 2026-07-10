@@ -83,6 +83,7 @@ describe("<FarmDesigner />", () => {
     botMcuParams: bot.hardware.mcu_params,
     botSize: fakeBotSize(),
     peripheralValues: [],
+    peripherals: [],
     eStopStatus: false,
     latestImages: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
