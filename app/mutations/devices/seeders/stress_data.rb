@@ -85,7 +85,7 @@ module Devices
 
       def soil_height_rows
         count.times.map do |i|
-          x, y = coordinate(i, x_offset: 35, y_offset: 20)
+          x, y = coordinate(i, x_offset: 35, y_offset: 20, round_to: 10)
           timestamp = timestamp(i)
           {
             created_at: timestamp,
@@ -175,7 +175,7 @@ module Devices
         ActiveStorage::Attachment.insert_all!(rows)
       end
 
-      def coordinate(index, x_offset: 0, y_offset: 0)
+      def coordinate(index, x_offset: 0, y_offset: 0, round_to: 1)
         col_count = Math.sqrt(count).ceil
         row_count = (count.to_f / col_count).ceil
         col = index % col_count
@@ -183,7 +183,7 @@ module Devices
         [
           clamp(100 + col * x_spacing(col_count) + x_offset, map_size_x),
           clamp(100 + row * y_spacing(row_count) + y_offset, map_size_y),
-        ].map(&:round)
+        ].map { |value| (value / round_to.to_f).round * round_to }
       end
 
       def x_spacing(col_count)

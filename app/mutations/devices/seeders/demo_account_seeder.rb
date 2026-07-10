@@ -102,13 +102,15 @@ module Devices
       end
 
       def add_soil_height_points(product_line)
+        max_x = product_line.include?("xl") ? 5700 : 2700
+        max_y = product_line.include?("xl") ? 2700 : 1200
         4.times do
           4.times do
             Points::Create.run!(device: device,
                                 pointer_type: "GenericPointer",
                                 name: "Soil Height",
-                                x: rand(0..(product_line.include?("xl") ? 5700 : 2700)),
-                                y: rand(0..(product_line.include?("xl") ? 2700 : 1200)),
+                                x: rand(0..max_x).round(-1),
+                                y: rand(0..max_y).round(-1),
                                 z: rand(-550..-450),
                                 radius: 0,
                                 meta: { color: "gray", at_soil_level: "true" })
