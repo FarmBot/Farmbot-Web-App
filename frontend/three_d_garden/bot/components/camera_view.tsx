@@ -9,15 +9,16 @@ import { useSpring, animated } from "@react-spring/three";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
-const cameraMountOffset = {
+const zMountedCameraMountOffset = {
   x: 12,
   y: 35,
 };
-const cameraMountToLensOffset = new THREE.Vector3(
+const zMountedCameraMountToLensOffset = new THREE.Vector3(
   0,
   29,
   0,
 );
+const noCameraOffset = new THREE.Vector3(0, 0, 0);
 
 type V3 = [number, number, number];
 
@@ -46,6 +47,7 @@ export interface CameraViewProps {
 
 type CameraViewPointConfig = Pick<Config,
   "negativeZ"
+  | "kitVersion"
   | "imgCenterX"
   | "imgCenterY"
   | "imgScale"
@@ -65,6 +67,7 @@ interface CameraViewPointInputs extends CameraViewPointConfig {
 const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
   const {
     negativeZ,
+    kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -77,13 +80,22 @@ const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
     cameraMountY,
     cameraMountZ,
   } = inputs;
+  const isV19 = kitVersion == "v1.9";
+  const cameraMountOffset = isV19
+    ? { x: 0, y: 0 }
+    : zMountedCameraMountOffset;
+  const cameraMountToLensOffset = isV19
+    ? noCameraOffset
+    : zMountedCameraMountToLensOffset;
   const cameraLensPosition = new THREE.Vector3(
     cameraMountX,
     cameraMountY,
     cameraMountZ,
   )
     .add(cameraMountToLensOffset);
-  const soilZ = distanceToSoil + (negativeZ ? -1 : 1) * configZ;
+  const soilZ = distanceToSoil + (isV19
+    ? 0
+    : (negativeZ ? -1 : 1) * configZ);
 
   const widthAtSoilFromZero = imgCenterX * 2 * imgScale;
   const heightAtSoilFromZero = imgCenterY * 2 * imgScale;
@@ -131,6 +143,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
   const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
   return getCameraViewPointsFromInputs({
     negativeZ: config.negativeZ,
+    kitVersion: config.kitVersion,
     imgCenterX: config.imgCenterX,
     imgCenterY: config.imgCenterY,
     imgScale: config.imgScale,
@@ -149,7 +162,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
 const CameraViewBase = (props: CameraViewProps) => {
   const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
   const {
-    negativeZ,
+    negativeZ, kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -164,6 +177,7 @@ const CameraViewBase = (props: CameraViewProps) => {
   const { cameraLensPosition, points } = React.useMemo(() =>
     getCameraViewPointsFromInputs({
       negativeZ,
+      kitVersion,
       imgCenterX,
       imgCenterY,
       imgScale,
@@ -178,6 +192,7 @@ const CameraViewBase = (props: CameraViewProps) => {
       cameraMountZ,
     }), [
     negativeZ,
+    kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -207,6 +222,7 @@ const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "imgScale",
   "lastImageCapture",
   "negativeZ",
+  "kitVersion",
 ];
 
 export const cameraViewPropsEqual = (

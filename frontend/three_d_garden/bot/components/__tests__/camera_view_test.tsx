@@ -67,6 +67,7 @@ describe("<CameraView />", () => {
 
   it("computes camera view points from props", () => {
     const p = fakeProps();
+    p.config.kitVersion = "v1.8";
     p.config.imgCenterX = 100;
     p.config.imgCenterY = 50;
     p.config.imgScale = 1;

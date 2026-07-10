@@ -790,12 +790,29 @@ const BotVerticalToolheadSubassemblyBase =
           return [...gardenXY(x - 9, y + 110), zZero + columnLength + 25];
       }
     };
-    const cameraMountPosition = new THREE.Vector3(...(isV19
-      ? crossSlideV19Position(config, props.configPosition)
-      : [
+    const cameraViewGardenPositionV19 = {
+      x: x - 100,
+      y: y - 1,
+    };
+    const cameraViewPositionV19 = new THREE.Vector3(
+      ...gardenXY(
+        cameraViewGardenPositionV19.x,
+        cameraViewGardenPositionV19.y,
+      ),
+      columnLength + 89.5,
+    );
+    const cameraMountPosition = isV19
+      ? cameraViewPositionV19
+      : new THREE.Vector3(
         ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
         zZero - zDir * z - 140 + zGantryOffset + 20,
-      ] as [number, number, number]));
+      );
+    const cameraDistanceToSoil = isV19
+      ? cameraViewPositionV19.z - zZero - props.getZ(
+        cameraViewGardenPositionV19.x,
+        cameraViewGardenPositionV19.y,
+      )
+      : -props.getZ(x - 11, y) - zDir * z;
     const zStopComponent = (
       name: string,
       position: [number, number, number],
@@ -1015,7 +1032,7 @@ const BotVerticalToolheadSubassemblyBase =
         config={config}
         configPosition={props.configPosition}
         cameraMountPosition={cameraMountPosition}
-        distanceToSoil={-props.getZ(x - 11, y) - zDir * z} />
+        distanceToSoil={cameraDistanceToSoil} />
       {props.trailReady && trail
         ? <Trail
           width={defaultTrailWidth}
