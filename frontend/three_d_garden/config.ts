@@ -136,7 +136,7 @@ export const INITIAL: ConfigWithPosition = {
   ccSupportSize: 50,
   x: 300,
   y: 700,
-  z: 200,
+  z: -200,
   beamLength: 1500,
   columnLength: 500,
   zAxisLength: 800,
@@ -211,7 +211,7 @@ export const INITIAL: ConfigWithPosition = {
   animateSeasons: false,
   distanceIndicator: "",
   kitVersion: "v1.9",
-  negativeZ: false,
+  negativeZ: true,
   exaggeratedZ: false,
   waterFlow: false,
   light: false,
@@ -239,7 +239,7 @@ export const INITIAL: ConfigWithPosition = {
 export const INITIAL_POSITION: PositionConfig = {
   x: 300,
   y: 700,
-  z: 200,
+  z: -200,
 };
 
 export const STRING_KEYS = [
@@ -516,7 +516,7 @@ export const modifyConfig =
       if (update.sizePreset == "Jr") {
         newConfig.x = 100;
         newConfig.y = 100;
-        newConfig.z = 50;
+        newConfig.z = newConfig.negativeZ ? -50 : 50;
       }
     }
     if (update.scene) {

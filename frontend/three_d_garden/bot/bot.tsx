@@ -1201,6 +1201,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
     {isV19 && <ZAxisBelt
       botSizeY={config.botSizeY}
       botSizeZ={config.botSizeZ}
+      negativeZ={config.negativeZ}
       y={props.configPosition.y}
       z={props.configPosition.z}
       position={[

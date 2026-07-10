@@ -199,7 +199,7 @@ describe("<PrivateOverlay />", () => {
       ...PRESETS["Jr"],
       x: 100,
       y: 100,
-      z: 50,
+      z: -50,
     });
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
   });

@@ -138,6 +138,7 @@ export const YAxisBelt = (props: YAxisBeltProps) => {
 interface ZAxisBeltProps {
   botSizeY: number;
   botSizeZ: number;
+  negativeZ: boolean;
   y: number;
   position: [number, number, number];
   z: number;
@@ -171,10 +172,16 @@ export const ZAxisBelt = (props: ZAxisBeltProps) => {
       props.botSizeY,
       props.botSizeZ,
       props.y,
-      props.z,
+      props.negativeZ ? props.z : -props.z,
     );
     return beltArgs(path);
-  }, [props.botSizeY, props.botSizeZ, props.y, props.z]);
+  }, [
+    props.botSizeY,
+    props.botSizeZ,
+    props.negativeZ,
+    props.y,
+    props.z,
+  ]);
   return <Belt name={"zBelt"}
     args={args}
     position={props.position} />;
