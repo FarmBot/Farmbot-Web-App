@@ -37,6 +37,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
   },
   models: {
     gantryWheelPlate: "/3D/models/gantry_wheel_plate.glb",
+    gantryWheelPlateV19: "/3D/models/gantry_wheel_plate_v19.glb",
     leftBracket: "/3D/models/left_bracket.glb",
     rightBracket: "/3D/models/right_bracket.glb",
     crossSlide: "/3D/models/cross_slide.glb",

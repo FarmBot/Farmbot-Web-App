@@ -512,6 +512,14 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.gantryWheelPlateV19]: {
+      nodes: {
+        Gantry_Wheel_Plate: {} as THREE.Mesh,
+      },
+      materials: {
+        PaletteMaterial001: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.rotaryToolBase]: {
       nodes: { mesh: {} as THREE.Mesh },
       materials: { material: {} as THREE.MeshStandardMaterial },

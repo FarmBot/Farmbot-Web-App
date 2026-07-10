@@ -346,9 +346,9 @@ describe("<Bot />", () => {
     });
 
     const urls = useGltfMock.mock.calls.map(([url]) => url);
-    expect(urls).toContain(ASSETS.models.gantryWheelPlate);
+    expect(urls).toContain(ASSETS.models.gantryWheelPlateV19);
     expect(urls).toContain(ASSETS.models.crossSlideV19);
-    expect(urls).toContain(ASSETS.models.xAxisCCMount);
+    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
     expect(urls).toContain(ASSETS.models.beltClip);
     unmountRenderer(wrapper);
   });

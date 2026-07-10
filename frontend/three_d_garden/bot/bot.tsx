@@ -117,6 +117,27 @@ const XAxisCCMountModel = (props: XAxisCCMountModelProps) => {
   </Mesh>;
 };
 
+interface HorizontalMotorHousingModelProps {
+  name: "leftMotor" | "rightMotor";
+  position: [number, number, number];
+  rotation: [number, number, number];
+}
+
+const HorizontalMotorHousingModel =
+  (props: HorizontalMotorHousingModelProps) => {
+    const model = useGLTF(
+      ASSETS.models.horizontalMotorHousing,
+      LIB_DIR,
+    ) as unknown as HorizontalMotorHousing;
+    return <Mesh name={props.name}
+      position={props.position}
+      rotation={props.rotation}
+      scale={1000}
+      geometry={model.nodes[PartName.horizontalMotorHousing].geometry}>
+      <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+    </Mesh>;
+  };
+
 export interface FarmbotModelProps {
   config: Config;
   configPosition: PositionConfig;
@@ -236,18 +257,19 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     wrapT: RepeatWrapping,
     repeat: [0.01, 0.0003],
   });
+  const isV19 = props.config.kitVersion == "v1.9";
   const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
+    useGLTF(isV19
+      ? ASSETS.models.gantryWheelPlateV19
+      : ASSETS.models.gantryWheelPlate,
+    LIB_DIR) as unknown as GantryWheelPlateFull;
+  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate, isV19);
   const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
-  const isV19 = props.config.kitVersion == "v1.9";
   const crossSlide = useGLTF(isV19
     ? ASSETS.models.crossSlideV19
     : ASSETS.models.crossSlide, LIB_DIR);
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
-  const horizontalMotorHousing = useGLTF(
-    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
   return <>
     {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
       const bedColumnYOffset =
@@ -257,7 +279,11 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           castShadow={true}
           args={[
             props.columnShape,
-            { steps: 1, depth: columnLength, bevelEnabled: false },
+            {
+              steps: 1,
+              depth: isV19 ? 450 : columnLength,
+              bevelEnabled: false,
+            },
           ]}
           position={[
             ...botOuterXY(
@@ -265,7 +291,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
               x - extrusionWidth - 23,
               outerY + bedColumnYOffset,
             ),
-            30,
+            isV19 ? 90 : 30,
           ]}
           rotation={[0, 0, Math.PI / 2]}>
           <MeshPhongMaterial
@@ -289,47 +315,30 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
             : rightBracket.nodes[PartName.rightBracket].geometry}>
           <MeshPhongMaterial color={"silver"} side={DoubleSide} />
         </Mesh>
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
+        {!isV19 && <HorizontalMotorHousingModel
+          name={index == 0 ? "leftMotor" : "rightMotor"}
           position={[
             ...botOuterXY(
               props.config,
-              x - (index == 0 ? 58 : 88),
-              outerY - (index == 0 ? 0 : -20) + bedColumnYOffset,
-            ),
-            columnLength + 70,
-          ]}
-          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
-          scale={1000}
-          geometry={undefined}
-          material={undefined} />
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - 79,
+              x - 73,
               outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
             ),
             columnLength + 80,
           ]}
-          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
-          scale={1000}
-          geometry={
-            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Cylinder name={"motorPulley"}
+          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]} />}
+        {!isV19 && <Cylinder name={"motorPulley"}
           args={[8, 8, 40]}
           position={[
             ...botOuterXY(
               props.config,
-              x - 74,
+              x - 73,
               outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
             ),
             columnLength + 55,
           ]}
           rotation={[0, 0, 0]}>
           <MeshPhongMaterial color={"#999"} />
-        </Cylinder>
+        </Cylinder>}
         {tracks && <Extrude name={"tracks"}
           castShadow={true}
           args={[
@@ -421,7 +430,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
           scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
       </Group>;
     })}
-    {props.config.cableCarriers &&
+    {props.config.cableCarriers && !isV19 &&
     <XAxisCCMountModel
       position={[
         ...botOuterXY(props.config, x - 43, -12),

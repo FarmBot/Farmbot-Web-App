@@ -22,7 +22,10 @@ export type GantryWheelPlateFull = GLTF & {
   };
 }
 
-export const GantryWheelPlate = (model: GantryWheelPlateFull) =>
+export const GantryWheelPlate = (
+  model: GantryWheelPlateFull,
+  isV19 = false,
+) =>
   (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
@@ -30,7 +33,7 @@ export const GantryWheelPlate = (model: GantryWheelPlateFull) =>
       <MeshComponent
         geometry={nodes.Gantry_Wheel_Plate.geometry}
         material={materials.PaletteMaterial001}
-        position={[0.002, 0.05, 0]}
+        position={[0.002, 0.05, isV19 ? 0.162 : 0]}
         rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       {mergedGeometry
         ? <MeshComponent
