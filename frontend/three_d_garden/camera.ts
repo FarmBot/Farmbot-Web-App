@@ -4,6 +4,51 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { Camera } from "./zoom_beacons_constants";
 import { AxisNumberProperty } from "../farm_designer/map/interfaces";
 
+const CAMERA_POSITION_PARAMS = ["camX", "camY", "camZ"] as const;
+const CAMERA_TARGET_PARAMS = ["camTX", "camTY", "camTZ"] as const;
+const CAMERA_URL_PARAMS = [
+  ...CAMERA_POSITION_PARAMS,
+  ...CAMERA_TARGET_PARAMS,
+];
+
+const cameraVectorFromUrl = (
+  params: URLSearchParams,
+  keys: readonly string[],
+): Camera["position"] | undefined => {
+  const values = keys.map(key => params.get(key));
+  if (values.some(value => !value || value.trim() == "")) {
+    return undefined;
+  }
+  const numbers = values.map(Number);
+  if (numbers.some(value => !Number.isFinite(value))) { return undefined; }
+  return numbers as Camera["position"];
+};
+
+export const getCameraFromUrlParams = (): Camera | undefined => {
+  const params = new URLSearchParams(window.location.search);
+  const position = cameraVectorFromUrl(params, CAMERA_POSITION_PARAMS);
+  const target = cameraVectorFromUrl(params, CAMERA_TARGET_PARAMS);
+  return position && target ? { position, target } : undefined;
+};
+
+const replaceCameraUrlParams = (camera?: Camera) => {
+  const url = new URL(window.location.href);
+  CAMERA_URL_PARAMS.map(key => url.searchParams.delete(key));
+  if (camera) {
+    url.searchParams.set("urlCameraPos", "true");
+    CAMERA_POSITION_PARAMS.map((key, index) =>
+      url.searchParams.set(key, "" + round(camera.position[index])));
+    CAMERA_TARGET_PARAMS.map((key, index) =>
+      url.searchParams.set(key, "" + round(camera.target[index])));
+  }
+  window.history.replaceState(window.history.state, "", url.toString());
+};
+
+export const setCameraUrlParams = (camera: Camera) =>
+  replaceCameraUrlParams(camera);
+
+export const clearCameraUrlParams = () => replaceCameraUrlParams();
+
 export interface CameraInitProps {
   topDown: boolean;
   viewpointHeading: number;

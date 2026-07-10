@@ -4,6 +4,7 @@ import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
 import { FocusVisibilityDiv } from "./focus_transition";
 import { SEASON_TIMINGS } from "../promo/constants";
+import { clearCameraUrlParams } from "./camera";
 
 export interface ToolTip {
   timeoutId: number;
@@ -339,6 +340,7 @@ const ConfigRow = (props: ConfigRowProps) => {
     !!(new URLSearchParams(window.location.search)).get(key);
   const removeParam = () => {
     setHasParam(false);
+    if (configKey == "urlCameraPos") { clearCameraUrlParams(); }
     setUrlParam(configKey, "");
   };
   const [hasParam, setHasParam] = React.useState(urlHasParam(configKey));
@@ -363,7 +365,8 @@ const ConfigRow = (props: ConfigRowProps) => {
 
 export const maybeAddParam =
   (paramAdd: boolean, configKey: string, value: string) =>
-    (paramAdd || configKey == "urlParamAutoAdd") && value != "Reset all" &&
+    (paramAdd || ["urlParamAutoAdd", "urlCameraPos"].includes(configKey))
+    && value != "Reset all" &&
     setUrlParam(configKey, value);
 
 interface SliderProps extends OverlayProps {
@@ -411,6 +414,9 @@ const Toggle = (props: ToggleProps) => {
         const newValue = e.target.checked;
         const update = { [configKey]: newValue };
         setConfig(modifyConfig(config, update));
+        if (configKey == "urlCameraPos" && !newValue) {
+          clearCameraUrlParams();
+        }
         maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
       }}
     />
@@ -486,6 +492,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
     />
     <ConfigSearchContext.Provider value={search}>
       <Toggle {...common} configKey={"urlParamAutoAdd"} />
+      <Toggle {...common} configKey={"urlCameraPos"} />
       <Toggle {...common} configKey={"promoInfo"} />
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />

@@ -26,6 +26,7 @@ import {
 import {
   getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
 } from "./resources";
+import { clearCameraUrlParams } from "../three_d_garden/camera";
 
 const PROMO_BED_SIZES = [
   {
@@ -128,8 +129,14 @@ export const Promo = () => {
     return next;
   });
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = React.useState(() =>
+  const [activeFocus, setActiveFocusState] = React.useState(() =>
     getFocusFromUrlParams());
+  const setActiveFocus = React.useCallback((focus: string) => {
+    if (focus != activeFocus) {
+      clearCameraUrlParams();
+    }
+    setActiveFocusState(focus);
+  }, [activeFocus]);
   const [threeDLoaded, setThreeDLoaded] = React.useState(false);
   const [seasonAnimationPaused, setSeasonAnimationPaused] =
     React.useState(false);
@@ -184,7 +191,7 @@ export const Promo = () => {
   const clearActiveFocus = React.useCallback(() => {
     setActiveFocus("");
     setUrlParam("focus", "");
-  }, []);
+  }, [setActiveFocus]);
 
   React.useEffect(() => {
     if (!activeFocus) { return; }

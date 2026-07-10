@@ -55,7 +55,9 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { Actions } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
-import { cameraInit } from "./camera";
+import {
+  cameraInit, getCameraFromUrlParams, setCameraUrlParams,
+} from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance, HOVER_OBJECT_MODES, RenderOrder } from "./constants";
 import { getZFunc, serializeTriangles } from "./triangle_functions";
@@ -74,7 +76,7 @@ import {
 } from "./progressive_load";
 import {
   FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
-  useSmoothCamera,
+  readSmoothCameraState, useSmoothCamera,
 } from "./focus_transition";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 import { Mode, TaggedPlant } from "../farm_designer/map/interfaces";
@@ -163,6 +165,7 @@ const LazyVisualization = React.lazy(() =>
   })));
 export const SMOOTH_XL_CAMERA_BED_SCALE = 1.9;
 export const SMOOTH_XL_CAMERA_HEIGHT_SCALE = 1.45;
+const CAMERA_URL_SAVE_DELAY_MS = 150;
 
 interface ObjectHoverLabelProps {
   label: string;
@@ -1236,14 +1239,6 @@ export const GardenModel = (props: GardenModelProps) => {
     (selection: ThreeDObjectSelection | undefined) =>
       setHoveredObjectLabel(selection),
     []);
-  const handleCameraDragStart = React.useCallback(() => {
-    setSelectableObjectHoverCount(0);
-    setHoveredObjectLabel(undefined);
-    setCameraDragging(true);
-  }, []);
-  const handleCameraDragEnd = React.useCallback(() => {
-    setCameraDragging(false);
-  }, []);
   const handleScenePointerLeave = React.useCallback(() => {
     setSelectableObjectHoverCount(0);
     setPlantIntersected(false);
@@ -1341,20 +1336,32 @@ export const GardenModel = (props: GardenModelProps) => {
       props.smoothFocusTransitions,
       config.zoomFactor,
     ]);
-  const camera = props.activeFocus
+  const urlCamera = React.useMemo(
+    () => props.promo && baseConfig.urlCameraPos
+      ? getCameraFromUrlParams()
+      : undefined,
+    // Re-read after Promo clears camera params for an explicit focus change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [baseConfig.urlCameraPos, props.activeFocus, props.promo],
+  );
+  const camera = urlCamera || (props.activeFocus
     ? getCamera(
       cameraConfig,
       props.configPosition,
       props.activeFocus,
       defaultCamera,
     )
-    : defaultCamera;
+    : defaultCamera);
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
   const [controls, setControls] =
     // eslint-disable-next-line no-null/no-null
     React.useState<SmoothCameraControls | null>(null);
+  const cameraUrlSaveTimeoutRef = React.useRef<number | undefined>(undefined);
+  const cameraUrlInteractionRef =
+    React.useRef<"idle" | "active" | "settling">("idle");
+  const activeFocusRef = React.useRef(props.activeFocus);
   const loadProgress = useThreeDLoadProgress();
   const environmentReveal = loadProgress.isStepAllowed("environment");
   const bedReveal = loadProgress.isStepAllowed("bed");
@@ -1658,6 +1665,87 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const topDownZoomLevel = 0.25 * 3000 / cameraConfig.bedLengthOuter;
   const targetZoom = cameraConfig.topDown ? topDownZoomLevel : 1;
+  const clearCameraUrlSaveTimeout = React.useCallback(() => {
+    const timeoutId = cameraUrlSaveTimeoutRef.current;
+    if (timeoutId === undefined) { return; }
+    window.clearTimeout(timeoutId);
+    cameraUrlSaveTimeoutRef.current = undefined;
+  }, []);
+  const saveCameraUrl = React.useCallback(() => {
+    if (!props.promo || !baseConfig.urlCameraPos
+      || !controlsCamera || !controls) {
+      return;
+    }
+    const state = readSmoothCameraState({
+      position: camera.position,
+      target: camera.target,
+      zoom: targetZoom,
+    }, controlsCamera, controls);
+    setCameraUrlParams({
+      position: state.position,
+      target: state.target,
+    });
+  }, [
+    baseConfig.urlCameraPos,
+    camera.position,
+    camera.target,
+    controls,
+    controlsCamera,
+    props.promo,
+    targetZoom,
+  ]);
+  const finishCameraUrlSave = React.useCallback(() => {
+    clearCameraUrlSaveTimeout();
+    saveCameraUrl();
+    cameraUrlInteractionRef.current = "idle";
+  }, [clearCameraUrlSaveTimeout, saveCameraUrl]);
+  const scheduleCameraUrlSave = React.useCallback(() => {
+    if (cameraUrlInteractionRef.current != "settling") { return; }
+    clearCameraUrlSaveTimeout();
+    cameraUrlSaveTimeoutRef.current = window.setTimeout(
+      finishCameraUrlSave,
+      CAMERA_URL_SAVE_DELAY_MS,
+    );
+  }, [clearCameraUrlSaveTimeout, finishCameraUrlSave]);
+  const handleCameraDragStart = React.useCallback(() => {
+    setSelectableObjectHoverCount(0);
+    setHoveredObjectLabel(undefined);
+    setCameraDragging(true);
+    clearCameraUrlSaveTimeout();
+    cameraUrlInteractionRef.current = props.promo
+      && baseConfig.urlCameraPos
+      ? "active"
+      : "idle";
+  }, [
+    baseConfig.urlCameraPos,
+    clearCameraUrlSaveTimeout,
+    props.promo,
+  ]);
+  const handleCameraDragEnd = React.useCallback(() => {
+    setCameraDragging(false);
+    if (cameraUrlInteractionRef.current != "active") { return; }
+    cameraUrlInteractionRef.current = "settling";
+    saveCameraUrl();
+    scheduleCameraUrlSave();
+  }, [saveCameraUrl, scheduleCameraUrlSave]);
+  React.useEffect(() => {
+    if (props.promo && baseConfig.urlCameraPos) { return; }
+    cameraUrlInteractionRef.current = "idle";
+    clearCameraUrlSaveTimeout();
+  }, [
+    baseConfig.urlCameraPos,
+    clearCameraUrlSaveTimeout,
+    props.promo,
+  ]);
+  React.useEffect(() => {
+    if (activeFocusRef.current == props.activeFocus) { return; }
+    activeFocusRef.current = props.activeFocus;
+    cameraUrlInteractionRef.current = "idle";
+    clearCameraUrlSaveTimeout();
+  }, [clearCameraUrlSaveTimeout, props.activeFocus]);
+  React.useEffect(() => {
+    return () => clearCameraUrlSaveTimeout();
+  }, [clearCameraUrlSaveTimeout]);
   const focusTransitionsEnabled =
     !!props.smoothFocusTransitions && config.animate;
   const solarVisible =
@@ -1791,6 +1879,7 @@ export const GardenModel = (props: GardenModelProps) => {
           dampingFactor={0.2}
           {...orbitControlProps}
           onStart={handleCameraDragStart}
+          onChange={scheduleCameraUrlSave}
           onEnd={handleCameraDragEnd}
           minZoom={config.lightsDebug ? 0 : 0.05}
           maxZoom={10}

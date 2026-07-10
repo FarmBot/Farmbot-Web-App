@@ -53,6 +53,7 @@ export interface Config {
   stats: boolean;
   config: boolean;
   urlParamAutoAdd: boolean;
+  urlCameraPos: boolean;
   zoom: boolean;
   zoomFactor: number;
   pan: boolean;
@@ -181,6 +182,7 @@ export const INITIAL: ConfigWithPosition = {
   stats: false,
   config: false,
   urlParamAutoAdd: false,
+  urlCameraPos: false,
   zoom: false,
   zoomFactor: 10,
   pan: false,
@@ -268,6 +270,7 @@ export const BOOLEAN_KEYS = [
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
+  "urlCameraPos",
   "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
 ];
@@ -485,7 +488,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary", "animateSeasons",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
-  "showSoilPoints", "urlParamAutoAdd", "north", "desk",
+  "showSoilPoints", "urlParamAutoAdd", "urlCameraPos", "north", "desk",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
