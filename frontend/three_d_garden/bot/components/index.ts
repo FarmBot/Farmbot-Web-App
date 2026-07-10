@@ -5,5 +5,6 @@ export * from "./tools";
 export * from "./water_tube";
 export * from "./x_axis_water_tube";
 export * from "./cable_carriers";
+export * from "./camera";
 export * from "./gantry_beam";
 export * from "./camera_view";

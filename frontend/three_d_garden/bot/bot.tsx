@@ -38,6 +38,7 @@ import {
   CableCarrierY,
   CableCarrierSupportHorizontal,
   GantryBeam,
+  Camera,
   CameraView,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
@@ -200,6 +201,18 @@ const botOuterXY = (
 ): [number, number] =>
   botGardenXY(config, gardenX, outerY - config.bedYOffset);
 
+const crossSlideV19Position = (
+  config: Config,
+  configPosition: PositionConfig,
+): [number, number, number] => [
+  ...botGardenXY(
+    config,
+    configPosition.x - 12.5,
+    configPosition.y + 45,
+  ),
+  config.columnLength + 97,
+];
+
 interface BotXYSubassemblyProps {
   config: Config;
   configPosition: PositionConfig;
@@ -224,6 +237,8 @@ interface BotFrameSubassembliesProps
   extends BotXYSubassemblyProps {
   trackShape: Shape | undefined;
   columnShape: Shape | undefined;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const BOT_FRAME_CONFIG_FIELDS: (keyof Config)[] = [
@@ -247,7 +262,9 @@ const sameBotFrameSubassembliesProps = (
   prev.configPosition.x === next.configPosition.x &&
   prev.configPosition.y === next.configPosition.y &&
   prev.trackShape === next.trackShape &&
-  prev.columnShape === next.columnShape;
+  prev.columnShape === next.columnShape &&
+  prev.onSelectObject === next.onSelectObject &&
+  prev.onHoverObject === next.onHoverObject;
 
 const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
   const {
@@ -280,6 +297,16 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     ? ASSETS.models.crossSlideV19
     : ASSETS.models.crossSlide, LIB_DIR);
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const selectCamera = (event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)) { return; }
+    if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+      return;
+    }
+    if (props.onSelectObject) {
+      props.onSelectObject({ kind: "camera", id: 0 }) !== false &&
+        event.stopPropagation?.();
+    }
+  };
   return <>
     {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
       const bedColumnYOffset =
@@ -487,15 +514,21 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
       config={props.config}
       configPosition={props.configPosition} />}
     {isV19
-      ? <CrossSlideV19Model
-        model={crossSlide as unknown as CrossSlideV19Full}
-        name={"crossSlide"}
-        position={[
-          ...botGardenXY(props.config, x - 12.5, y + 45),
-          columnLength + 97,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}
-        scale={1000} />
+      ? <Group name={"crossSlide"}
+        position={crossSlideV19Position(props.config, props.configPosition)}
+        rotation={[0, 0, Math.PI / 2]}>
+        <CrossSlideV19Model
+          model={crossSlide as unknown as CrossSlideV19Full}
+          scale={1000} />
+        <Group name={"camera"}
+          onClick={selectCamera}
+          onPointerOver={() => props.onHoverObject?.(true)}
+          onPointerOut={() => props.onHoverObject?.(false)}
+          position={[-46, 87.5, -7.5]}
+          rotation={[Math.PI, 0, 0]}>
+          <Camera kitVersion={props.config.kitVersion} />
+        </Group>
+      </Group>
       : <CrossSlideModel
         model={crossSlide as unknown as CrossSlideFull}
         name={"crossSlide"}
@@ -733,8 +766,10 @@ const BotVerticalToolheadSubassemblyBase =
         case "v1.7":
           return [...gardenXY(x + 69, y + 100), zZero - zDir * z + 245];
         case "v1.8":
-        default:
           return [...gardenXY(x + 24, y), zZero - zDir * z + 245];
+        case "v1.9":
+        default:
+          return [...gardenXY(x + 24, y + 20), zZero - zDir * z + 245];
       }
     };
     const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
@@ -755,10 +790,12 @@ const BotVerticalToolheadSubassemblyBase =
           return [...gardenXY(x - 9, y + 110), zZero + columnLength + 25];
       }
     };
-    const cameraMountPosition = new THREE.Vector3(
-      ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
-      zZero - zDir * z - 140 + zGantryOffset + 20,
-    );
+    const cameraMountPosition = new THREE.Vector3(...(isV19
+      ? crossSlideV19Position(config, props.configPosition)
+      : [
+        ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
+        zZero - zDir * z - 140 + zGantryOffset + 20,
+      ] as [number, number, number]));
     const zStopComponent = (
       name: string,
       position: [number, number, number],
@@ -951,26 +988,29 @@ const BotVerticalToolheadSubassemblyBase =
         rotation={vacuumPumpCoverRotation(config.kitVersion)}
         scale={1000}
         position={vacuumPumpCoverPosition(config.kitVersion)} />
-      <Group name={"camera"}
+      {!isV19 && <Group name={"camera"}
         onClick={selectCamera}
         onPointerOver={() => props.onHoverObject?.(true)}
         onPointerOut={() => props.onHoverObject?.(false)}
         rotation={[Math.PI, 0, 0]}
         position={cameraMountPosition}>
-        {!isV19 && <Mesh name={"cameraMount"}
+        <Group name={"cameraModel"} position={[0, -28, 1]}>
+          <Camera kitVersion={config.kitVersion} />
+        </Group>
+        <Mesh name={"cameraMount"}
           rotation={[0, 0, 0]}
           position={[0, 0, -40]}
           scale={1000}
           geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
           <MeshPhongMaterial color={"silver"} />
-        </Mesh>}
-        {!isV19 && <Mesh name={"cameraMount"}
+        </Mesh>
+        <Mesh name={"cameraMount"}
           rotation={[0, Math.PI, 0]}
           scale={1000}
           geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
           <MeshPhongMaterial color={"silver"} />
-        </Mesh>}
-      </Group>
+        </Mesh>
+      </Group>}
       <CameraView
         config={config}
         configPosition={props.configPosition}
@@ -1126,7 +1166,9 @@ const EnabledBot = (props: FarmbotModelProps) => {
       config={config}
       configPosition={props.configPosition}
       trackShape={trackShape}
-      columnShape={columnShape} />
+      columnShape={columnShape}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject} />
     <BotVerticalToolheadSubassembly
       config={config}
       configPosition={props.configPosition}
