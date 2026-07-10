@@ -1,7 +1,11 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
-import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
+import {
+  Bot, clearBotShapeCache, FarmbotModelProps,
+  getBotSpringTarget, getDemoMovementSpringCallbacks,
+  getUnmirroredBotPosition,
+} from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
@@ -24,6 +28,7 @@ import {
 } from "../components/cable_carriers";
 import { Bounds } from "../components/bounds";
 import { WaterFlowTextureProvider } from "../components/water_stream";
+import * as demoMovement from "../../../demo/lua_runner/movement";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -49,6 +54,74 @@ describe("<Bot />", () => {
       getZ: jest.fn(),
     };
   };
+
+  it("converts mirrored render positions back to garden coordinates", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getUnmirroredBotPosition(config, { x: 100, y: 200, z: 300 }))
+      .toEqual({
+        x: config.botSizeX - 100,
+        y: config.botSizeY - 200,
+        z: 300,
+      });
+    config.mirrorX = false;
+    config.mirrorY = false;
+    expect(getUnmirroredBotPosition(config, { x: 100, y: 200, z: 300 }))
+      .toEqual({ x: 100, y: 200, z: 300 });
+  });
+
+  it("reports raw spring positions to the demo movement coordinator", () => {
+    const changeSpy = jest.spyOn(demoMovement, "reportDemoMovementPosition");
+    const restSpy = jest.spyOn(demoMovement, "reportDemoMovementComplete");
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    const callbacks = getDemoMovementSpringCallbacks(config);
+    callbacks.onChange({ x: 100, y: 200, z: 300 });
+    callbacks.onRest({ x: 100, y: 200, z: 300 });
+    const rawPosition = {
+      x: config.botSizeX - 100,
+      y: config.botSizeY - 200,
+      z: 300,
+    };
+    expect(changeSpy).toHaveBeenCalledWith(rawPosition);
+    expect(restSpy).toHaveBeenCalledWith(rawPosition);
+    changeSpy.mockRestore();
+    restSpy.mockRestore();
+  });
+
+  it("keeps the demo target while Redux reports spring progress", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getBotSpringTarget(
+      config,
+      { x: 40, y: 50, z: 60 },
+      { x: 100, y: 200, z: 300 },
+    )).toEqual({
+      x: config.botSizeX - 100,
+      y: config.botSizeY - 200,
+      z: 300,
+    });
+    expect(getBotSpringTarget(
+      config,
+      { x: 40, y: 50, z: 60 },
+      undefined,
+    )).toEqual({ x: 40, y: 50, z: 60 });
+  });
+
+  it("doesn't register an animation driver when animations are disabled", () => {
+    const registerSpy = jest.spyOn(
+      demoMovement,
+      "registerDemoMovementDriver",
+    );
+    const p = fakeProps();
+    p.config.animate = false;
+    render(<Bot {...p} />);
+    expect(registerSpy).not.toHaveBeenCalled();
+    registerSpy.mockRestore();
+  });
 
   it("renders", () => {
     const p = fakeProps();

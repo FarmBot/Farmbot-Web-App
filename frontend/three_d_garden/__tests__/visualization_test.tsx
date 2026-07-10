@@ -175,7 +175,7 @@ describe("<Visualization />", () => {
 
     const points = getVisualizationPoints(config, position, [
       { type: "other", args: [] } as never,
-      { type: "expanded_move_absolute", args: [100, 200, 300] } as never,
+      { type: "animated_move_absolute", args: [100, 200, 300] } as never,
     ]);
 
     expect(points).toEqual([
@@ -188,7 +188,7 @@ describe("<Visualization />", () => {
     const config = clone(INITIAL);
     const position = clone(INITIAL_POSITION);
     const actions = [
-      { type: "expanded_move_absolute", args: [100, 200, 300] } as never,
+      { type: "animated_move_absolute", args: [100, 200, 300] } as never,
     ];
     const points = getVisualizationPoints(config, position, actions);
     const churnConfig = clone(config);

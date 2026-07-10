@@ -149,12 +149,13 @@ describe("<Promo />", () => {
 
   it("clears active focus on Escape", async () => {
     focusFromUrlParamsSpy.mockReturnValue("What you can grow");
-    const { unmount } = render(<Promo />);
+    const { container, unmount } = render(<Promo />);
     await waitFor(() => expect(gardenModelSpy.mock.calls[0][0])
       .toEqual(expect.objectContaining({ activeFocus: "What you can grow" })));
-    fireEvent.keyDown(window, { key: "Enter" });
+    const promo = container.querySelector(".promo") as HTMLElement;
+    fireEvent.keyDown(promo, { key: "Enter" });
     expect(pushStateSpy).not.toHaveBeenCalled();
-    fireEvent.keyDown(window, { key: "Escape" });
+    fireEvent.keyDown(promo, { key: "Escape" });
     await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
     const nextUrl = pushStateSpy.mock.calls[0][2] as string;
     expect(nextUrl).not.toContain("focus=");

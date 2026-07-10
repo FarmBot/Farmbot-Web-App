@@ -10,10 +10,18 @@ let mockResources = buildResourceIndex([]);
 let mockLocked = false;
 
 import { TOAST_OPTIONS } from "../../../toast/constants";
+import { Actions } from "../../../constants";
 import { error, info } from "../../../toast/toast";
 import { store } from "../../../redux/store";
 import { eStop, expandActions, runActions, setCurrent } from "../actions";
 import * as lodash from "lodash";
+import {
+  getDemoMovementTarget,
+  getDemoMovementStopVersion,
+  registerDemoMovementDriver,
+  reportDemoMovementComplete,
+  reportDemoMovementPosition,
+} from "../movement";
 
 const originalDispatch = store.dispatch;
 const originalGetState = store.getState;
@@ -30,6 +38,8 @@ const mockGetState = () => ({
 });
 
 describe("runActions()", () => {
+  let unregisterMovementDriver: (() => void) | undefined;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
@@ -38,9 +48,14 @@ describe("runActions()", () => {
     mockLocked = false;
     (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
     (store as unknown as { getState: Function }).getState = mockGetState;
+    eStop();
+    mockDispatch.mockClear();
+    unregisterMovementDriver = undefined;
   });
 
   afterEach(() => {
+    unregisterMovementDriver?.();
+    eStop();
     randomSpy.mockRestore();
   });
 
@@ -93,31 +108,118 @@ describe("runActions()", () => {
     jest.runAllTimers();
     expect(info).toHaveBeenCalledTimes(1);
   });
+
+  it("waits for the movement callback before continuing", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    runActions([
+      { type: "busy", args: [1] },
+      { type: "animated_move_absolute", args: [100, 0, 0] },
+      { type: "busy", args: [0] },
+    ]);
+
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 0, z: 0 });
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+  });
+
+  it("runs semantic movement targets one at a time", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    runActions([
+      { type: "animated_move_absolute", args: [100, 0, 0] },
+      { type: "animated_move_absolute", args: [200, 0, 0] },
+    ]);
+
+    jest.runAllTimers();
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 200, y: 0, z: 0 },
+    });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 200, y: 0, z: 0 });
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 200, y: 0, z: 0 },
+    });
+    reportDemoMovementComplete({ x: 200, y: 0, z: 0 });
+  });
+
+  it("starts a wait only after the movement reaches its target", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    runActions([
+      { type: "animated_move_absolute", args: [100, 0, 0] },
+      { type: "wait_ms", args: [1000] },
+      { type: "busy", args: [0] },
+    ]);
+    jest.runAllTimers();
+
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.advanceTimersByTime(999);
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+    jest.advanceTimersByTime(1);
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+  });
+
+  it("freezes at the rendered position on emergency stop", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    runActions([
+      { type: "animated_move_absolute", args: [100, 0, 0] },
+      { type: "busy", args: [0] },
+    ]);
+    jest.runAllTimers();
+    reportDemoMovementPosition({ x: 40, y: 0, z: 0 });
+    const previousStopVersion = getDemoMovementStopVersion();
+
+    eStop();
+    expect(getDemoMovementStopVersion()).toEqual(previousStopVersion + 1);
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 40, y: 0, z: 0 },
+    });
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+  });
 });
 
 describe("expandActions()", () => {
-  const defaultTimeStepMs = 33.33;
-  const defaultMmPerStep = 500 * defaultTimeStepMs / 1000;
-  const defaultWait = () => ({ type: "wait_ms", args: [defaultTimeStepMs] });
-  const defaultMove = (x: number) => ({
-    type: "expanded_move_absolute",
-    args: [x, 0, 0],
+  const defaultMove = (x: number, y = 0, z = 0) => ({
+    type: "animated_move_absolute",
+    args: [x, y, z],
   });
   const defaultXAxisMovement = (target: number) => {
-    const steps = Math.floor(target / defaultMmPerStep);
-    const chunks = Array.from({ length: steps }, (_value, index) =>
-      defaultMmPerStep * (index + 1));
-    const last = chunks[chunks.length - 1];
-    if (!last || Math.abs(last - target) >= 0.01) {
-      chunks.push(target);
-    }
-    const withWait = chunks.flatMap(x => [defaultWait(), defaultMove(x)]);
-    const withBusy = [
+    return [
       { type: "busy", args: [1] },
-      ...withWait,
+      defaultMove(target),
       { type: "busy", args: [0] },
     ];
-    return withBusy;
   };
 
   beforeEach(() => {
@@ -125,9 +227,6 @@ describe("expandActions()", () => {
     jest.useRealTimers();
     randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
     setCurrent({ x: 0, y: 0, z: 0 });
-    localStorage.removeItem("timeStepMs");
-    localStorage.removeItem("mmPerSecond");
-    localStorage.removeItem("DISABLE_CHUNKING");
     console.log = jest.fn();
     mockResources = buildResourceIndex([
       fakeFirmwareConfig(),
@@ -143,56 +242,71 @@ describe("expandActions()", () => {
     randomSpy.mockRestore();
   });
 
-  it("chunks movements: default", () => {
+  it("expands an absolute movement to one target", () => {
     expect(expandActions([
       { type: "move_absolute", args: [300, 0, 0] },
     ], [])).toEqual(defaultXAxisMovement(300));
   });
 
-  it("chunks movements: lands on target", () => {
+  it("retains an already resolved animated movement", () => {
     expect(expandActions([
-      { type: "move_absolute", args: [125, 0, 0] },
-    ], [])).toEqual(defaultXAxisMovement(125));
+      { type: "animated_move_absolute", args: [100, 200, 0] },
+    ], [])).toEqual([
+      { type: "animated_move_absolute", args: [100, 200, 0] },
+    ]);
   });
 
-  it("chunks movements: custom", () => {
-    localStorage.setItem("timeStepMs", "1000");
-    localStorage.setItem("mmPerSecond", "1000");
+  it("expands a relative movement to one target", () => {
+    setCurrent({ x: 100, y: 200, z: 0 });
     expect(expandActions([
-      { type: "move_absolute", args: [300, 0, 0] },
+      { type: "move_relative", args: [25, 25, 0] },
     ], [])).toEqual([
       { type: "busy", args: [1] },
-      { type: "wait_ms", args: [1000] },
-      { type: "expanded_move_absolute", args: [300, 0, 0] },
+      defaultMove(125, 225, 0),
       { type: "busy", args: [0] },
     ]);
   });
 
-  it("doesn't chunk movements", () => {
-    localStorage.setItem("DISABLE_CHUNKING", "true");
+  it("preserves ordered homing targets", () => {
+    setCurrent({ x: 100, y: 200, z: 300 });
     expect(expandActions([
-      { type: "move_absolute", args: [2000, 0, 0] },
-    ], [])).toEqual([
-      { type: "busy", args: [1] },
-      defaultWait(),
-      { type: "expanded_move_absolute", args: [2000, 0, 0] },
-      { type: "busy", args: [0] },
-    ]);
-  });
-
-  it("reads chunking preference once per expansion", () => {
-    const getItem = jest.spyOn(localStorage, "getItem");
-    expect(expandActions([
-      { type: "move_absolute", args: [300, 0, 0] },
-      { type: "move_relative", args: [0, 300, 0] },
       { type: "find_home", args: ["all"] },
-    ], []).length).toBeGreaterThan(0);
-    expect(getItem.mock.calls
-      .filter(([key]) => key === "DISABLE_CHUNKING")).toHaveLength(1);
-    getItem.mockRestore();
+    ], [])).toEqual([
+      defaultMove(100, 200, 0),
+      defaultMove(100, 0, 0),
+      defaultMove(0, 0, 0),
+    ]);
   });
 
-  it("chunks movements: warns", () => {
+  it("preserves computed axis-order submoves", () => {
+    const moveItems = JSON.stringify([
+      {
+        kind: "axis_overwrite",
+        args: {
+          axis: "all",
+          axis_operand: {
+            kind: "coordinate",
+            args: { x: 100, y: 200, z: -300 },
+          },
+        },
+      },
+      {
+        kind: "axis_order",
+        args: { grouping: "x,y,z", route: "in_order" },
+      },
+    ]);
+    expect(expandActions([
+      { type: "_move", args: [moveItems] },
+    ], [])).toEqual([
+      { type: "busy", args: [1] },
+      defaultMove(100, 0, 0),
+      defaultMove(100, 200, 0),
+      defaultMove(100, 200, -300),
+      { type: "busy", args: [0] },
+    ]);
+  });
+
+  it("expands movement warnings", () => {
     expect(expandActions([
       { type: "_move", args: [JSON.stringify([{ kind: "foo", args: {} }])] },
     ], [])).toEqual([
@@ -206,8 +320,7 @@ describe("expandActions()", () => {
         ],
       },
       { type: "busy", args: [1] },
-      defaultWait(),
-      { type: "expanded_move_absolute", args: [0, 0, 0] },
+      { type: "animated_move_absolute", args: [0, 0, 0] },
       { type: "busy", args: [0] },
     ]);
   });

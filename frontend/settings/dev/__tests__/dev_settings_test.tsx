@@ -6,8 +6,7 @@ import {
   DevWidgetShowInternalEnvsRow,
   DevWidget3dCameraRow,
   DevWidgetAllOrderOptionsRow,
-  DevWidgetChunkingDisabledRow,
-  Dev3dDebugSettings,
+  Dev3dDebugSettings, DevSettingsRows,
 } from "../dev_settings";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { DevSettings } from "../dev_support";
@@ -40,7 +39,6 @@ const expectRemovedFromInternalUse = (key: string) => {
 beforeEach(() => {
   jest.clearAllMocks();
   Object.keys(mockDevSettings).forEach(key => delete mockDevSettings[key]);
-  localStorage.removeItem("DISABLE_CHUNKING");
   setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(() => () => { });
   getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
@@ -221,20 +219,11 @@ describe("<DevWidgetAllOrderOptionsRow />", () => {
   });
 });
 
-describe("<DevWidgetChunkingDisabledRow />", () => {
-  it("enables chunking disabled", () => {
-    const { container } = render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(toggleButton(container));
-    expect(localStorage.getItem("DISABLE_CHUNKING")).toEqual("true");
-    localStorage.removeItem("DISABLE_CHUNKING");
-  });
-
-  it("disables chunking disabled", () => {
-    localStorage.setItem("DISABLE_CHUNKING", "true");
-    const { container } = render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(toggleButton(container));
-    expect(localStorage.getItem("DISABLE_CHUNKING")).toBeFalsy();
-    localStorage.removeItem("DISABLE_CHUNKING");
+describe("<DevSettingsRows />", () => {
+  it("renders without the obsolete movement chunking control", () => {
+    const { container } = render(<DevSettingsRows />);
+    expect(container.textContent).toContain("Demo Queue Length");
+    expect(container.textContent).not.toContain("Demo movement chunking");
   });
 });
 

@@ -14,56 +14,14 @@ import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
 import { getFirmwareSettings, getGardenSize } from "./stubs";
 import { clamp, random } from "lodash";
-import { validBotLocationData } from "../../util/location";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { calculateMove } from "./calculate_move";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
 import { isMessageType } from "../../sequences/interfaces";
-
-const DEFAULT_TIME_STEP_MS = 33.33;
-
-const almostEqual = (a: XyzNumber, b: XyzNumber) => {
-  const epsilon = 0.01;
-  return Math.abs(a.x - b.x) < epsilon &&
-    Math.abs(a.y - b.y) < epsilon &&
-    Math.abs(a.z - b.z) < epsilon;
-};
-
-const movementChunks = (
-  current: XyzNumber,
-  target: XyzNumber,
-  mmPerTimeStep: number,
-  disableChunking: boolean,
-): XyzNumber[] => {
-  const dx = target.x - current.x;
-  const dy = target.y - current.y;
-  const dz = target.z - current.z;
-
-  const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
-  if (length === 0) { return [target]; }
-  const direction = {
-    x: dx / length,
-    y: dy / length,
-    z: dz / length,
-  };
-  const steps = disableChunking
-    ? 0
-    : Math.floor(length / mmPerTimeStep);
-  const chunks: XyzNumber[] = [];
-  for (let i = 1; i <= steps; i++) {
-    const step = {
-      x: current.x + direction.x * mmPerTimeStep * i,
-      y: current.y + direction.y * mmPerTimeStep * i,
-      z: current.z + direction.z * mmPerTimeStep * i,
-    };
-    chunks.push(step);
-  }
-  if (chunks.length === 0 || !almostEqual(chunks[chunks.length - 1], target)) {
-    chunks.push(target);
-  }
-  return chunks;
-};
+import {
+  cancelDemoMovement, demoMovementActive, startDemoMovement,
+} from "./movement";
 
 const clampTarget = (target: XyzNumber): XyzNumber => {
   const firmwareConfig = getFirmwareSettings();
@@ -107,20 +65,9 @@ export const expandActionsFromPosition = (
     expansionCurrent.y = position.y;
     expansionCurrent.z = position.z;
   };
-  const storedTimeStepMs = localStorage.getItem("timeStepMs");
-  const timeStepMs = storedTimeStepMs
-    ? parseFloat(storedTimeStepMs)
-    : DEFAULT_TIME_STEP_MS;
-  const mmPerSecond = parseInt(localStorage.getItem("mmPerSecond") || "500");
-  const disableChunking = localStorage.getItem("DISABLE_CHUNKING") === "true";
-  const mmPerTimeStep = (mmPerSecond * timeStepMs) / 1000;
   const addPosition = (position: XyzNumber) => {
     expanded.push({
-      type: "wait_ms",
-      args: [timeStepMs],
-    });
-    expanded.push({
-      type: "expanded_move_absolute",
+      type: "animated_move_absolute",
       args: [position.x, position.y, position.z],
     });
   };
@@ -136,9 +83,7 @@ export const expandActionsFromPosition = (
           z: action.args[2] as number,
         });
         start();
-        movementChunks(
-          expansionCurrent, moveAbsoluteTarget, mmPerTimeStep, disableChunking)
-          .map(addPosition);
+        addPosition(moveAbsoluteTarget);
         stop();
         setExpansionCurrent(moveAbsoluteTarget);
         break;
@@ -149,9 +94,7 @@ export const expandActionsFromPosition = (
           z: expansionCurrent.z + (action.args[2] as number),
         });
         start();
-        movementChunks(
-          expansionCurrent, moveRelativeTarget, mmPerTimeStep, disableChunking)
-          .map(addPosition);
+        addPosition(moveRelativeTarget);
         stop();
         setExpansionCurrent(moveRelativeTarget);
         break;
@@ -171,9 +114,7 @@ export const expandActionsFromPosition = (
         const actualMoveTargets = moves.map(clampTarget);
         start();
         actualMoveTargets.map(actualMoveTarget => {
-          movementChunks(
-            expansionCurrent, actualMoveTarget, mmPerTimeStep, disableChunking)
-            .map(addPosition);
+          addPosition(actualMoveTarget);
           setExpansionCurrent(actualMoveTarget);
         });
         stop();
@@ -269,9 +210,7 @@ export const expandActionsFromPosition = (
             y: axis == "y" ? 0 : expansionCurrent.y,
             z: axis == "z" ? 0 : expansionCurrent.z,
           };
-          movementChunks(
-            expansionCurrent, homeTarget, mmPerTimeStep, disableChunking)
-            .map(addPosition);
+          addPosition(homeTarget);
           setExpansionCurrent(homeTarget);
         });
         break;
@@ -287,14 +226,14 @@ export const expandActionsFromPosition = (
           ],
         });
         break;
-      case "expanded_move_absolute":
+      case "animated_move_absolute":
         const expandedMoveTarget = {
           x: action.args[0] as number,
           y: action.args[1] as number,
           z: action.args[2] as number,
         };
         expanded.push({
-          type: "expanded_move_absolute",
+          type: "animated_move_absolute",
           args: [
             expandedMoveTarget.x,
             expandedMoveTarget.y,
@@ -326,15 +265,17 @@ export const expandActions = (
 };
 
 interface Scheduled {
-  func(): void;
-  timestamp: number;
+  func(done: () => void): (() => void) | undefined;
+  delay: number;
 }
 const pending: Scheduled[] = [];
-let latestActionMs = Date.now();
 let currentTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+let activeCancellation: (() => void) | undefined;
+let activeToken = 0;
+let actionRunning = false;
 
 export const syncCurrentFromBotPosition = () => {
-  if (pending.length > 0) { return; }
+  if (pending.length > 0 || actionRunning || demoMovementActive()) { return; }
   const position = store.getState().bot.hardware.location_data?.position;
   if (typeof position?.x != "number" ||
     typeof position.y != "number" ||
@@ -343,17 +284,25 @@ export const syncCurrentFromBotPosition = () => {
 };
 
 export const eStop = () => {
-  latestActionMs = 0;
+  activeToken++;
   pending.length = 0;
+  actionRunning = false;
+  currentTimer && clearTimeout(currentTimer);
+  currentTimer = undefined;
+  activeCancellation?.();
+  activeCancellation = undefined;
+  const stoppedPosition = cancelDemoMovement();
+  if (stoppedPosition) {
+    store.dispatch({
+      type: Actions.DEMO_SET_POSITION,
+      payload: stoppedPosition,
+    });
+    setCurrent(stoppedPosition);
+  }
   store.dispatch({
     type: Actions.DEMO_SET_ESTOP,
     payload: true,
   });
-  const { position } = validBotLocationData(
-    store.getState().bot.hardware.location_data);
-  current.x = position.x as number;
-  current.y = position.y as number;
-  current.z = position.z as number;
 };
 
 export const runActions = (
@@ -362,24 +311,39 @@ export const runActions = (
   let delay = 0;
   let notified = false;
   actions.map(action => {
+    const estopped =
+      store.getState().bot.hardware.informational_settings.locked;
+    if (estopped && action.type !== "emergency_unlock") {
+      if (!notified) {
+        info(t("Command not available while locked."), {
+          ...TOAST_OPTIONS().error,
+          title: t("Emergency stop active"),
+        });
+        notified = true;
+      }
+      return;
+    }
+    if (action.type == "wait_ms") {
+      delay += action.args[0] as number;
+      return;
+    }
+    if (action.type == "animated_move_absolute") {
+      const position = {
+        x: action.args[0] as number,
+        y: action.args[1] as number,
+        z: action.args[2] as number,
+      };
+      pending.push({
+        delay,
+        func: done => startDemoMovement(position, done),
+      });
+      delay = 0;
+      runNext();
+      return;
+    }
     // eslint-disable-next-line complexity
     const getFunc = () => {
-      const estopped = store.getState().bot.hardware.informational_settings.locked;
-      if (estopped && action.type !== "emergency_unlock") {
-        if (!notified) {
-          info(t("Command not available while locked."), {
-            ...TOAST_OPTIONS().error,
-            title: t("Emergency stop active"),
-          });
-          notified = true;
-        }
-        return;
-      }
       switch (action.type) {
-        case "wait_ms":
-          const ms = action.args[0] as number;
-          delay += ms;
-          return undefined;
         case "send_message":
           const type = "" + action.args[0];
           if (!isMessageType(type)) {
@@ -434,17 +398,6 @@ export const runActions = (
             store.dispatch({
               type: Actions.DEMO_SET_ESTOP,
               payload: false,
-            });
-          };
-        case "expanded_move_absolute":
-          const x = action.args[0] as number;
-          const y = action.args[1] as number;
-          const z = action.args[2] as number;
-          const position = { x, y, z };
-          return () => {
-            store.dispatch({
-              type: Actions.DEMO_SET_POSITION,
-              payload: position,
             });
           };
         case "busy":
@@ -524,9 +477,14 @@ export const runActions = (
     };
     const func = getFunc();
     if (func) {
-      latestActionMs = Math.max(latestActionMs, Date.now()) + delay;
-      const item = { func, timestamp: latestActionMs };
-      pending.push(item);
+      pending.push({
+        delay,
+        func: done => {
+          func();
+          done();
+          return undefined;
+        },
+      });
       delay = 0;
       runNext();
     }
@@ -534,20 +492,28 @@ export const runActions = (
 };
 
 const runNext = () => {
-  if (currentTimer || pending.length === 0) {
+  if (currentTimer || actionRunning || pending.length === 0) {
     return;
   }
-  const next = pending[0];
-  const delay = Math.max(next.timestamp - Date.now(), 0);
-
+  const next = pending.shift() as Scheduled;
+  const token = ++activeToken;
+  actionRunning = true;
   currentTimer = setTimeout(() => {
     currentTimer = undefined;
-    const task = pending.shift();
-    task?.func();
-    store.dispatch({
-      type: Actions.DEMO_SET_QUEUE_LENGTH,
-      payload: pending.length,
-    });
-    runNext();
-  }, delay);
+    if (!actionRunning || token != activeToken) { return; }
+    const done = () => {
+      if (!actionRunning || token != activeToken) { return; }
+      actionRunning = false;
+      activeCancellation = undefined;
+      store.dispatch({
+        type: Actions.DEMO_SET_QUEUE_LENGTH,
+        payload: pending.length,
+      });
+      runNext();
+    };
+    const cancellation = next.func(done);
+    if (actionRunning && token == activeToken) {
+      activeCancellation = cancellation;
+    }
+  }, next.delay);
 };

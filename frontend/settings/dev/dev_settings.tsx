@@ -101,18 +101,6 @@ export const DevWidgetAllOrderOptionsRow = () =>
         : DevSettings.enableAllOrderOptions} />
   </Row>;
 
-export const DevWidgetChunkingDisabledRow = () =>
-  <Row className="grid-exp-1">
-    <label>
-      {"Demo movement chunking"}
-    </label>
-    <ToggleButton
-      toggleValue={localStorage.getItem("DISABLE_CHUNKING") !== "true"}
-      toggleAction={localStorage.getItem("DISABLE_CHUNKING") === "true"
-        ? () => localStorage.removeItem("DISABLE_CHUNKING")
-        : () => localStorage.setItem("DISABLE_CHUNKING", "true")} />
-  </Row>;
-
 export const Dev3dDebugSettings = () => {
   const dispatch = store.dispatch as Function;
   const farmwareEnvs = selectAllFarmwareEnvs(store.getState().resources.index);
@@ -150,7 +138,6 @@ export const DevSettingsRows = () =>
     <DevWidgetShowInternalEnvsRow />
     <DevWidgetFBOSRow />
     <DevWidgetAllOrderOptionsRow />
-    <DevWidgetChunkingDisabledRow />
     <Dev3dDebugSettings />
     <p>Demo Queue Length: {store.getState().bot.demoQueueLength}</p>
   </div>;

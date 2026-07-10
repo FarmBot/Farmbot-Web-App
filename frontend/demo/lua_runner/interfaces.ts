@@ -3,7 +3,7 @@ import { Xyz } from "farmbot";
 export interface Action {
     type:
     | "move_absolute"
-    | "expanded_move_absolute"
+    | "animated_move_absolute"
     | "move_relative"
     | "move"
     | "_move"

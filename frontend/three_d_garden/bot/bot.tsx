@@ -16,6 +16,14 @@ import {
 import { getBotKinematics } from "./kinematics";
 import { getBotVersion } from "./bot_versions";
 import { useBotShapes } from "./bot_shapes";
+import { useBotPositionSpring } from "./position_spring";
+import {
+  getDemoMovementStopVersion,
+  getDemoMovementTarget,
+  registerDemoMovementDriver,
+  reportDemoMovementComplete,
+  reportDemoMovementPosition,
+} from "../../demo/lua_runner/movement";
 
 export { clearBotShapeCache } from "./bot_shapes";
 
@@ -37,8 +45,61 @@ export interface FarmbotModelProps {
 export const Bot = (props: FarmbotModelProps) =>
   props.config.bot ? <EnabledBot {...props} /> : undefined;
 
+type BotPositionTransformConfig = Pick<Config,
+  "botSizeX" | "botSizeY" | "mirrorX" | "mirrorY">;
+
+export const getUnmirroredBotPosition = (
+  config: BotPositionTransformConfig,
+  position: PositionConfig,
+): PositionConfig => ({
+  x: config.mirrorX ? config.botSizeX - position.x : position.x,
+  y: config.mirrorY ? config.botSizeY - position.y : position.y,
+  z: position.z,
+});
+
+export const getDemoMovementSpringCallbacks = (
+  config: BotPositionTransformConfig,
+) => {
+  const toGardenPosition = (position: PositionConfig) =>
+    getUnmirroredBotPosition(config, position);
+  return {
+    onChange: (position: PositionConfig) =>
+      reportDemoMovementPosition(toGardenPosition(position)),
+    onRest: (position: PositionConfig) =>
+      reportDemoMovementComplete(toGardenPosition(position)),
+  };
+};
+
+export const getBotSpringTarget = (
+  config: BotPositionTransformConfig,
+  reportedPosition: PositionConfig,
+  demoTarget = getDemoMovementTarget(),
+): PositionConfig => demoTarget
+  ? getUnmirroredBotPosition(config, demoTarget)
+  : reportedPosition;
+
 const EnabledBot = (props: FarmbotModelProps) => {
-  const { config, configPosition } = props;
+  const { config } = props;
+  const { botSizeX, botSizeY, mirrorX, mirrorY } = config;
+  const springCallbacks = React.useMemo(
+    () => getDemoMovementSpringCallbacks({
+      botSizeX,
+      botSizeY,
+      mirrorX,
+      mirrorY,
+    }),
+    [botSizeX, botSizeY, mirrorX, mirrorY],
+  );
+  const springTarget = getBotSpringTarget(config, props.configPosition);
+  const configPosition = useBotPositionSpring(
+    springTarget,
+    config.animate,
+    springCallbacks,
+    getDemoMovementStopVersion(),
+  );
+  React.useEffect(() => config.animate
+    ? registerDemoMovementDriver()
+    : undefined, [config.animate]);
   const version = getBotVersion(config.kitVersion);
   const shapes = useBotShapes(config.tracks, version);
   const kinematics = getBotKinematics(config, configPosition, version);
@@ -56,6 +117,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
             trackShape={shapes.track} />
           <Tools
             {...props}
+            configPosition={configPosition}
             frame={"stationary"} />
         </Group>
         <XAxisWaterTube config={config} />
@@ -72,6 +134,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
             onHoverObject={props.onHoverObject} />
           <Tools
             {...props}
+            configPosition={configPosition}
             frame={"gantry"} />
           <Group name={"bot-cross-slide"}
             position={kinematics.crossSlidePosition}>
@@ -92,6 +155,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
                 onHoverObject={props.onHoverObject} />
               <Tools
                 {...props}
+                configPosition={configPosition}
                 frame={"z-axis"} />
             </Group>
           </Group>
