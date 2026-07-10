@@ -58,23 +58,22 @@ const xAxisBeltPath = (
 ) => {
   const path = new BeltPath();
   path.start(0, 0, 0);
-  path.pulley(x + 49, 0, 12, 12, -1);
-  path.pulley(x + 69, 0, columnLength + 55, 8, 1);
-  path.pulley(x + 89, 0, 12, 12, -1);
+  path.pulley(x + 50, 0, 12, 12, -1);
+  path.pulley(x + 70, 0, columnLength + 55, 8, 1);
+  path.pulley(x + 90, 0, 12, 12, -1);
   path.end(length, 0, 0);
   return path;
 };
 
 const xAxisBeltPathV19 = (
-  columnLength: number,
   length: number,
   x: number,
 ) => {
   const path = new BeltPath();
   path.start(0, 0, 0);
-  path.pulley(x + 49, 0, 12, 12, -1);
-  path.pulley(x + 69, 0, columnLength + 55, 8, 1);
-  path.pulley(x + 89, 0, 12, 12, -1);
+  path.pulley(x + 50, 0, 12, 12, -1);
+  path.pulley(x + 70, 0, 45, 8, 1);
+  path.pulley(x + 90, 0, 12, 12, -1);
   path.end(length, 0, 0);
   return path;
 };
@@ -82,7 +81,7 @@ const xAxisBeltPathV19 = (
 export const XAxisBelt = (props: XAxisBeltProps) => {
   const args = React.useMemo(() => {
     const path = props.kitVersion == "v1.9"
-      ? xAxisBeltPathV19(props.columnLength, props.length, props.x)
+      ? xAxisBeltPathV19(props.length, props.x)
       : xAxisBeltPath(props.columnLength, props.length, props.x);
     return beltArgs(path);
   }, [props.columnLength, props.kitVersion, props.length, props.x]);
