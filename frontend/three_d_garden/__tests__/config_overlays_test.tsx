@@ -200,6 +200,7 @@ describe("<PrivateOverlay />", () => {
       x: 100,
       y: 100,
       z: -50,
+      zAxisLength: 550,
     });
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
   });

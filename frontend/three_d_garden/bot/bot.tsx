@@ -369,7 +369,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
             props.columnShape,
             {
               steps: 1,
-              depth: isV19 ? 450 : columnLength,
+              depth: isV19 ? columnLength - 50 : columnLength,
               bevelEnabled: false,
             },
           ]}

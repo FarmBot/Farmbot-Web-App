@@ -286,7 +286,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 300,
     zAxisLength: 750,
     bedXOffset: 150,
-    bedYOffset: 80,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 400,
     bedLengthOuter: 900,
@@ -491,19 +491,27 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "mirrorX", "mirrorY", "cameraSelectionView",
 ];
 
-const zAxisLengthFromKitVersion = (kitVersion: string): number =>
-  kitVersion == "v1.9" ? 800 : 1000;
+const zAxisLengthFromKitVersion = (
+  sizePreset: string,
+  kitVersion: string,
+): number => {
+  const presetLength = PRESETS[sizePreset].zAxisLength;
+  return kitVersion == "v1.9" ? presetLength - 200 : presetLength;
+};
 
 const maybeUpdateZAxisLengthFromKitVersion = (
   config: ConfigWithPosition,
   update: Partial<ConfigWithPosition>,
 ): ConfigWithPosition => {
-  if (!update.kitVersion && (!update.sizePreset || update.sizePreset == "Jr")) {
+  if (!update.kitVersion && !update.sizePreset) {
     return config;
   }
   return {
     ...config,
-    zAxisLength: zAxisLengthFromKitVersion(config.kitVersion),
+    zAxisLength: zAxisLengthFromKitVersion(
+      config.sizePreset,
+      config.kitVersion,
+    ),
   };
 };
 
