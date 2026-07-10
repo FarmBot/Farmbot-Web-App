@@ -644,6 +644,20 @@ jest.mock("@react-three/drei", () => {
         [MountedIdlerPulleyMaterial.bearing]: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.mountedIdlerPulleyGantry]: {
+      nodes: {
+        [PartName.mountedIdlerPulleyMount]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyLocknut]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyShim]: {} as THREE.Mesh,
+        [PartName.mountedIdlerPulleyBearing]: {} as THREE.Mesh,
+      },
+      materials: {
+        [MountedIdlerPulleyMaterial.mount]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.locknut]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.shim]: {} as THREE.MeshStandardMaterial,
+        [MountedIdlerPulleyMaterial.bearing]: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.utm]: {
       nodes: { [PartName.utm]: {} as THREE.Mesh },
       materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },

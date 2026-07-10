@@ -498,18 +498,32 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
     botSizeY, bedYOffset, columnLength,
   } = props.config;
   const { x, y } = props.configPosition;
+  const isV19 = props.config.kitVersion == "v1.9";
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
     repeat: [0.01, 0.0003],
   });
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const mountedIdlerPulley = useGLTF(
+    ASSETS.models.mountedIdlerPulleyGantry,
+    LIB_DIR,
+  ) as unknown as MountedIdlerPulleyFull;
   return <>
     <GantryBeam
       config={props.config}
       configPosition={props.configPosition}
       aluminumTexture={aluminumTexture}
       beamShape={props.beamShape} />
+    {isV19 && <MountedIdlerPulleyModel
+      model={mountedIdlerPulley}
+      name={"yIdlerPulley"}
+      position={[
+        ...botGardenXY(props.config, x - 39, botSizeY + 115),
+        columnLength + 71,
+      ]}
+      rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+      scale={1000} />}
     {props.config.cableCarriers &&
     <CableCarrierSupportHorizontal
       config={props.config}
@@ -533,7 +547,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       kitVersion={props.config.kitVersion}
       y={y}
       position={[
-        ...botGardenXY(props.config, x - 25.5, -100),
+        ...botGardenXY(props.config, isV19 ? x - 25 : x - 29, -100),
         columnLength + 99,
       ]} />
     <Mesh name={"yStopMax"}
@@ -1079,11 +1093,11 @@ const EnabledBot = (props: FarmbotModelProps) => {
       beamShape={isV19 ? beamV19Shape : beamShape} />
     {isV19 && <ZAxisBelt
       botSizeY={config.botSizeY}
+      botSizeZ={config.botSizeZ}
       y={props.configPosition.y}
       z={props.configPosition.z}
-      zAxisLength={config.zAxisLength}
       position={[
-        ...botGardenXY(config, props.configPosition.x - 25.5, -100),
+        ...botGardenXY(config, props.configPosition.x - 29, -100),
         config.columnLength + 99,
       ]} />}
     <Solenoid config={config} configPosition={props.configPosition} />

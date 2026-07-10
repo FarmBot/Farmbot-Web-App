@@ -45,6 +45,8 @@ export const ASSETS: Record<string, Record<string, string>> = {
     beltClip: "/3D/models/belt_clip.glb",
     zStop: "/3D/models/z_stop.glb",
     mountedIdlerPulley: "/3D/models/mounted_idler_pulley.glb",
+    mountedIdlerPulleyGantry:
+      "/3D/models/mounted_idler_pulley_gantry.glb",
     utm: "/3D/models/utm.glb",
     ccSupportHorizontal: "/3D/models/cc_support_horizontal.glb",
     ccSupportVertical: "/3D/models/cc_support_vertical.glb",

@@ -136,23 +136,23 @@ export const YAxisBelt = (props: YAxisBeltProps) => {
 
 interface ZAxisBeltProps {
   botSizeY: number;
+  botSizeZ: number;
   y: number;
   position: [number, number, number];
   z: number;
-  zAxisLength: number;
 }
 
 const zAxisBeltPathV19 = (
   botSizeY: number,
+  botSizeZ: number,
   y: number,
   z: number,
-  zAxisLength: number,
 ) => {
   const radius = 8;
   const path = new BeltPath();
   path.start(0, botSizeY + 220, 0);
   path.pulley(0, y + 160, radius, radius, 1);
-  path.pulley(0, y + 145, -z + zAxisLength - 210, radius, -1);
+  path.pulley(0, y + 145, -z + botSizeZ + 90, radius, -1);
   path.pulley(0, y + 130, radius, radius, 1);
   path.pulley(0, -60, -radius, radius, -1);
   path.pulley(0, -55, -radius - 104, radius, -1);
@@ -168,12 +168,12 @@ export const ZAxisBelt = (props: ZAxisBeltProps) => {
   const args = React.useMemo(() => {
     const path = zAxisBeltPathV19(
       props.botSizeY,
+      props.botSizeZ,
       props.y,
       props.z,
-      props.zAxisLength,
     );
     return beltArgs(path);
-  }, [props.botSizeY, props.y, props.z, props.zAxisLength]);
+  }, [props.botSizeY, props.botSizeZ, props.y, props.z]);
   return <Belt name={"zBelt"}
     args={args}
     position={props.position} />;
