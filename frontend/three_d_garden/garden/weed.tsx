@@ -36,6 +36,7 @@ import {
   ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
   ThreeDObjectSelectionHandler,
 } from "../selection_types";
+import { SPREAD_SPHERE_SEGMENTS } from "./geometry_detail";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
 const noRaycast = () => undefined;
@@ -51,7 +52,10 @@ const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
 
 let weedRadiusGeometry: BufferGeometry | undefined = undefined;
 const getWeedRadiusGeometry = () => {
-  weedRadiusGeometry ||= new SphereGeometry(1, 32, 32);
+  weedRadiusGeometry ||= new SphereGeometry(
+    1,
+    ...SPREAD_SPHERE_SEGMENTS,
+  );
   return weedRadiusGeometry;
 };
 

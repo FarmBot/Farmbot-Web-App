@@ -171,7 +171,8 @@ describe("<Bot />", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.7";
     const { container } = render(<Bot {...p} />);
-    expect(container.querySelectorAll("[name='button-group']").length).toEqual(5);
+    expect(container.querySelector("[name='button-housings']")
+      ?.getAttribute("args")).toContain("5");
     expect(container.querySelectorAll("[name='leftMotor']")).toHaveLength(1);
     expect(container.querySelector("[name='zMotor']")).toBeTruthy();
     expect(container.querySelector("[name='zBelt']")).toBeNull();
@@ -182,7 +183,8 @@ describe("<Bot />", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
     const { container } = render(<Bot {...p} />);
-    expect(container.querySelectorAll("[name='button-group']").length).toEqual(3);
+    expect(container.querySelector("[name='button-housings']")
+      ?.getAttribute("args")).toContain("3");
     expect(container.querySelector("[name='zMotor']")).toBeTruthy();
     expect(container.querySelector("[name='zBelt']")).toBeNull();
   });
@@ -194,6 +196,42 @@ describe("<Bot />", () => {
     expect(container.querySelector("[name='zMotor']")).toBeNull();
     expect(container.querySelector("[name='zBelt']")).toBeTruthy();
     expect(container.querySelector("[name='yIdlerPulley']")).toBeTruthy();
+  });
+
+  it("only loads v1.9 gantry and Z-axis model variants", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    render(<Bot {...p} />);
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+
+    expect(urls).toContain(ASSETS.models.leftBracketV19);
+    expect(urls).toContain(ASSETS.models.rightBracketV19);
+    expect(urls).toContain(ASSETS.models.mountedIdlerPulleyGantry);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.housingVertical);
+    expect(urls).not.toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).not.toContain(ASSETS.models.cameraMountHalf);
+  });
+
+  it("doesn't load v1.9-only models for a legacy FarmBot", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    render(<Bot {...p} />);
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+
+    expect(urls).toContain(ASSETS.models.leftBracket);
+    expect(urls).toContain(ASSETS.models.rightBracket);
+    expect(urls).toContain(ASSETS.models.housingVertical);
+    expect(urls).toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).toContain(ASSETS.models.cameraMountHalf);
+    expect(urls).not.toContain(ASSETS.models.leftBracketV19);
+    expect(urls).not.toContain(ASSETS.models.rightBracketV19);
+    expect(urls).not.toContain(ASSETS.models.mountedIdlerPulleyGantry);
   });
 
   it.each([

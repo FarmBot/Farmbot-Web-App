@@ -96,23 +96,31 @@ interface GantrySideProps {
   columnShape: Shape | undefined;
   config: Config;
   index: number;
-  leftBracket: LeftBracket;
-  leftBracketV19: LeftGantryCornerBracketFull;
   outerY: number;
-  rightBracket: RightBracket;
-  rightBracketV19: RightGantryCornerBracketFull;
   version: BotVersion;
   WheelPlate: ReturnType<typeof GantryWheelPlate>;
 }
+
+const gantryBracketUrl = (version: BotVersion, index: number) => {
+  if (version.number == "v1.9") {
+    return index == 0
+      ? ASSETS.models.leftBracketV19
+      : ASSETS.models.rightBracketV19;
+  }
+  return index == 0
+    ? ASSETS.models.leftBracket
+    : ASSETS.models.rightBracket;
+};
 
 const GantryCornerBracket = (props: GantrySideProps & {
   bedColumnYOffset: number;
 }) => {
   const { config, index, outerY, version } = props;
   const sideY = (value: number) => machineOuterY(config, value);
+  const model = useGLTF(gantryBracketUrl(version, index), LIB_DIR);
   if (version.number == "v1.9" && index == 0) {
     return <LeftGantryCornerBracketModel
-      model={props.leftBracketV19}
+      model={model as unknown as LeftGantryCornerBracketFull}
       name={"leftBracket"}
       position={[-38, sideY(outerY + props.bedColumnYOffset - 35),
         config.columnLength - 15]}
@@ -120,7 +128,7 @@ const GantryCornerBracket = (props: GantrySideProps & {
   }
   if (version.number == "v1.9") {
     return <RightGantryCornerBracketModel
-      model={props.rightBracketV19}
+      model={model as unknown as RightGantryCornerBracketFull}
       name={"rightBracket"}
       position={[-38, sideY(outerY - 10 + props.bedColumnYOffset),
         config.columnLength + 80]}
@@ -133,10 +141,26 @@ const GantryCornerBracket = (props: GantrySideProps & {
     rotation={[Math.PI / 2, Math.PI / 2, 0]}
     scale={1000}
     geometry={index == 0
-      ? props.leftBracket.nodes[PartName.leftBracket].geometry
-      : props.rightBracket.nodes[PartName.rightBracket].geometry}>
-    <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+      ? (model as unknown as LeftBracket)
+        .nodes[PartName.leftBracket].geometry
+      : (model as unknown as RightBracket)
+        .nodes[PartName.rightBracket].geometry}>
+    <MeshPhongMaterial color={"silver"} />
   </Mesh>;
+};
+
+const V19YIdler = (props: {
+  position: [number, number, number];
+}) => {
+  const model = useGLTF(
+    ASSETS.models.mountedIdlerPulleyGantry,
+    LIB_DIR,
+  ) as unknown as MountedIdlerPulleyFull;
+  return <MountedIdlerPulleyModel
+    model={model}
+    name={"yIdlerPulley"}
+    position={props.position}
+    rotation={[-Math.PI / 2, 0, Math.PI / 2]} />;
 };
 
 const GantrySide = (props: GantrySideProps) => {
@@ -210,31 +234,10 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
     wheelPlate,
     version.number == "v1.9",
   );
-  const leftBracket = useGLTF(
-    ASSETS.models.leftBracket,
-    LIB_DIR,
-  ) as unknown as LeftBracket;
-  const rightBracket = useGLTF(
-    ASSETS.models.rightBracket,
-    LIB_DIR,
-  ) as unknown as RightBracket;
-  const leftBracketV19 = useGLTF(
-    ASSETS.models.leftBracketV19,
-    LIB_DIR,
-  ) as unknown as LeftGantryCornerBracketFull;
-  const rightBracketV19 = useGLTF(
-    ASSETS.models.rightBracketV19,
-    LIB_DIR,
-  ) as unknown as RightGantryCornerBracketFull;
   const beltClip = useGLTF(
     ASSETS.models.beltClip,
     LIB_DIR,
   ) as unknown as BeltClip;
-  const yIdler = useGLTF(
-    ASSETS.models.mountedIdlerPulleyGantry,
-    LIB_DIR,
-  ) as unknown as MountedIdlerPulleyFull;
-
   return <Group name={"gantry-assembly"}>
     {[0 - EXTRUSION_WIDTH, bedWidthOuter].map((outerY, index) =>
       <GantrySide key={outerY}
@@ -242,11 +245,7 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
         columnShape={props.columnShape}
         config={config}
         index={index}
-        leftBracket={leftBracket}
-        leftBracketV19={leftBracketV19}
         outerY={outerY}
-        rightBracket={rightBracket}
-        rightBracketV19={rightBracketV19}
         version={version}
         WheelPlate={GantryWheelPlateComponent} />)}
     {config.cableCarriers && version.xCableCarrierMount &&
@@ -257,11 +256,8 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
       aluminumTexture={aluminumTexture}
       beamShape={props.beamShape}
       local={true} />
-    {version.number == "v1.9" && <MountedIdlerPulleyModel
-      model={yIdler}
-      name={"yIdlerPulley"}
-      position={[-39, beamLength - 70, columnLength + 71]}
-      rotation={[-Math.PI / 2, 0, Math.PI / 2]} />}
+    {version.number == "v1.9" && <V19YIdler
+      position={[-39, beamLength - 70, columnLength + 71]} />}
     {config.cableCarriers && <CableCarrierSupportHorizontal
       config={config}
       configPosition={props.configPosition}

@@ -3,11 +3,15 @@ import { act, render } from "@testing-library/react";
 import { useTexture } from "@react-three/drei";
 import * as reactSpring from "@react-spring/three";
 import {
-  UtilitiesPost, utilitiesPostPropsEqual, UtilitiesPostProps,
+  makeUtilitiesPostGeometry,
+  UtilitiesPost,
+  utilitiesPostPropsEqual,
+  UtilitiesPostProps,
 } from "../utilities_post";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 import { FocusTransitionProvider } from "../../../focus_transition";
+import * as THREE from "three";
 
 describe("<UtilitiesPost />", () => {
   const fakeProps = (): UtilitiesPostProps => ({
@@ -18,6 +22,25 @@ describe("<UtilitiesPost />", () => {
   it("renders", () => {
     const { container } = render(<UtilitiesPost {...fakeProps()} />);
     expect(container.innerHTML).toContain("utilities-post");
+    expect(container.querySelector("[name='utilities-solid-hardware']"))
+      .toBeTruthy();
+  });
+
+  it("merges solid hardware into one colored geometry", () => {
+    const geometry = makeUtilitiesPostGeometry({
+      legSize: 100,
+      hosePathCurved: new THREE.LineCurve3(
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(1, 1, 1),
+      ),
+      hosePathStraight: new THREE.LineCurve3(
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(1, 0, 0),
+      ),
+    });
+    expect(geometry?.getAttribute("position").count).toBeGreaterThan(0);
+    expect(geometry?.getAttribute("color").count)
+      .toEqual(geometry?.getAttribute("position").count);
   });
 
   it("doesn't load hidden utilities", () => {

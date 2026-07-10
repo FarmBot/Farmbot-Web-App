@@ -34,6 +34,7 @@ import { perfMeasure } from "../../performance/perf";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
 } from "../selection_types";
+import { SPREAD_SPHERE_SEGMENTS } from "./geometry_detail";
 
 const spreadLayerSpringConfig = {
   tension: 240,
@@ -457,7 +458,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     userData={{ plantIndexes }}
     visible={visible}
     raycast={noRaycast}>
-    <SphereGeometry args={[1, 32, 32]} />
+    <SphereGeometry args={[1, ...SPREAD_SPHERE_SEGMENTS]} />
     <MeshPhongMaterial
       color={"white"}
       transparent={true}

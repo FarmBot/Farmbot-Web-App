@@ -67,6 +67,95 @@ const V17VacuumPumpCover = () => {
     position={[1, 55, 490]} />;
 };
 
+const LeadscrewDrive = (props: {
+  zAxisLength: number;
+}) => {
+  const { zAxisLength } = props;
+  const housingVertical = useGLTF(
+    ASSETS.models.housingVertical,
+    LIB_DIR,
+  ) as unknown as HousingVertical;
+  const zAxisMotorMount = useGLTF(
+    ASSETS.models.zAxisMotorMount,
+    LIB_DIR,
+  ) as unknown as ZAxisMotorMount;
+  return <Group name={"zMotor"}>
+    <Mesh name={"zMotorHousing"}
+      position={[-7, UTM_RADIUS - 46, zAxisLength - 80]}
+      rotation={[0, 0, Math.PI]}
+      scale={1000}
+      geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+    <Mesh name={"zMotor"}
+      position={[-1, UTM_RADIUS - 5, zAxisLength - 140]}
+      rotation={[Math.PI / 2, 0, 0]}
+      scale={1000}
+      geometry={undefined}
+      material={undefined} />
+    <Mesh name={"zMotorMount"}
+      position={[-6, UTM_RADIUS - 65, zAxisLength - 80]}
+      rotation={[0, 0, Math.PI]}
+      scale={1000}
+      geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+    <Cylinder name={"motorShaft"}
+      args={[2.5, 2.5, 40]}
+      position={[-6, UTM_RADIUS - 65, zAxisLength - 80]}
+      rotation={[Math.PI / 2, 0, 0]}>
+      <MeshPhongMaterial color={"#999"} />
+    </Cylinder>
+    <Cylinder name={"shaftCoupler"}
+      args={[10, 10, 25]}
+      position={[-6, -30, zAxisLength - 120 + 25 / 2]}
+      rotation={[Math.PI / 2, 0, 0]}>
+      <MeshPhongMaterial color={"silver"} />
+    </Cylinder>
+    <Cylinder name={"leadscrew"}
+      material-color={"#555"}
+      args={[4, 4, zAxisLength - 200]}
+      position={[-5, -30, zAxisLength / 2]}
+      rotation={[Math.PI / 2, 0, 0]} />
+  </Group>;
+};
+
+interface ZAxisCameraProps {
+  onClick(event: ThreeEvent<MouseEvent>): void;
+  onHoverObject?: ThreeDObjectHoverHandler;
+  version: BotVersion;
+  zGantryOffset: number;
+}
+
+const ZAxisCamera = (props: ZAxisCameraProps) => {
+  const cameraMountHalf = useGLTF(
+    ASSETS.models.cameraMountHalf,
+    LIB_DIR,
+  ) as unknown as CameraMountHalf;
+  return <Group name={"camera"}
+    onClick={props.onClick}
+    onPointerOver={() => props.onHoverObject?.(true)}
+    onPointerOut={() => props.onHoverObject?.(false)}
+    rotation={[Math.PI, 0, 0]}
+    position={[12, 35, props.zGantryOffset - 120]}>
+    <Group name={"cameraModel"} position={[0, -28, 1]}>
+      <Camera kitVersion={props.version.number} />
+    </Group>
+    <Mesh name={"cameraMount"}
+      position={[0, 0, -40]}
+      scale={1000}
+      geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+    <Mesh name={"cameraMount"}
+      rotation={[0, Math.PI, 0]}
+      scale={1000}
+      geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+      <MeshPhongMaterial color={"silver"} />
+    </Mesh>
+  </Group>;
+};
+
 const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
   const { config, version } = props;
   const {
@@ -79,18 +168,6 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     LIB_DIR,
   );
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
-  const housingVertical = useGLTF(
-    ASSETS.models.housingVertical,
-    LIB_DIR,
-  ) as unknown as HousingVertical;
-  const zAxisMotorMount = useGLTF(
-    ASSETS.models.zAxisMotorMount,
-    LIB_DIR,
-  ) as unknown as ZAxisMotorMount;
-  const cameraMountHalf = useGLTF(
-    ASSETS.models.cameraMountHalf,
-    LIB_DIR,
-  ) as unknown as CameraMountHalf;
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -159,45 +236,8 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
         map={aluminumTexture}
         side={DoubleSide} />
     </Extrude>
-    {version.leadscrewDrive && <Group name={"zMotor"}>
-      <Mesh name={"zMotorHousing"}
-        position={[-7, UTM_RADIUS - 46, zAxisLength - 80]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"zMotor"}
-        position={[-1, UTM_RADIUS - 5, zAxisLength - 140]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={1000}
-        geometry={undefined}
-        material={undefined} />
-      <Mesh name={"zMotorMount"}
-        position={[-6, UTM_RADIUS - 65, zAxisLength - 80]}
-        rotation={[0, 0, Math.PI]}
-        scale={1000}
-        geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
-        <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-      </Mesh>
-      <Cylinder name={"motorShaft"}
-        args={[2.5, 2.5, 40]}
-        position={[-6, UTM_RADIUS - 65, zAxisLength - 80]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"#999"} />
-      </Cylinder>
-      <Cylinder name={"shaftCoupler"}
-        args={[10, 10, 25]}
-        position={[-6, -30, zAxisLength - 120 + 25 / 2]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"silver"} />
-      </Cylinder>
-      <Cylinder name={"leadscrew"}
-        material-color={"#555"}
-        args={[4, 4, zAxisLength - 200]}
-        position={[-5, -30, zAxisLength / 2]}
-        rotation={[Math.PI / 2, 0, 0]} />
-    </Group>}
+    {version.leadscrewDrive && <LeadscrewDrive
+      zAxisLength={zAxisLength} />}
     {config.cableCarriers && <CableCarrierSupportVertical
       config={config}
       configPosition={props.configPosition}
@@ -219,28 +259,11 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
       geometry={undefined}
       material={undefined} />
     {version.number == "v1.7" && <V17VacuumPumpCover />}
-    {version.cameraFrame == "z-axis" && <Group name={"camera"}
+    {version.cameraFrame == "z-axis" && <ZAxisCamera
       onClick={selectCamera}
-      onPointerOver={() => props.onHoverObject?.(true)}
-      onPointerOut={() => props.onHoverObject?.(false)}
-      rotation={[Math.PI, 0, 0]}
-      position={[12, 35, zGantryOffset - 120]}>
-      <Group name={"cameraModel"} position={[0, -28, 1]}>
-        <Camera kitVersion={version.number} />
-      </Group>
-      <Mesh name={"cameraMount"}
-        position={[0, 0, -40]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"cameraMount"}
-        rotation={[0, Math.PI, 0]}
-        scale={1000}
-        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-    </Group>}
+      onHoverObject={props.onHoverObject}
+      version={version}
+      zGantryOffset={zGantryOffset} />}
     {props.trailReady && trail
       ? <Trail
         target={props.trailTarget}

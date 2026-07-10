@@ -43,6 +43,7 @@ import {
 import { clickWasDragged } from "../../click_event";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
+import { frontSideMaterial } from "../../geometry_batching";
 
 const distinguishableBlack = "#333";
 
@@ -685,7 +686,9 @@ const SeedTroughOnlyToolModel = React.memo(() => {
     ]}
     scale={1000}
     geometry={seedTrough.nodes[PartName.seedTrough].geometry}
-    material={seedTrough.materials[SeedTroughAssemblyMaterial.two]} />;
+    material={frontSideMaterial(
+      seedTrough.materials[SeedTroughAssemblyMaterial.two],
+    )} />;
 });
 
 const SeedTroughToolModel = React.memo((props: SeedTroughToolModelProps) =>

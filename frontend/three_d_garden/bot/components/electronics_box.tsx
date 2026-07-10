@@ -1,13 +1,15 @@
 import React from "react";
 import * as THREE from "three";
 import { ThreeEvent } from "@react-three/fiber";
-import { Cylinder, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import {
   ASSETS, ElectronicsBoxMaterial, HOVER_OBJECT_MODES, LIB_DIR, PartName,
 } from "../../constants";
-import { Group, Mesh } from "../../components";
+import {
+  Group, InstancedMesh, Mesh, MeshBasicMaterial,
+} from "../../components";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
 } from "../../selection_types";
@@ -16,6 +18,7 @@ import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
+import { frontSideMaterial } from "../../geometry_batching";
 
 type Box = GLTF & {
   nodes: {
@@ -87,25 +90,104 @@ const LED_INDICATORS = [
   { position: 45, color: BoxButtonColor.blank },
 ];
 
+interface HardwareInstance {
+  color: THREE.ColorRepresentation;
+  position: number;
+}
+
+export const makeHardwareInstanceAttributes = (
+  instances: HardwareInstance[],
+  x: number,
+  scale: number,
+  rotation: [number, number, number] = [0, 0, 0],
+) => {
+  const matrices = new Float32Array(instances.length * 16);
+  const colors = new Float32Array(instances.length * 3);
+  const quaternion = new THREE.Quaternion().setFromEuler(
+    new THREE.Euler(...rotation),
+  );
+  const scaleVector = new THREE.Vector3(scale, scale, scale);
+  instances.forEach((instance, index) => {
+    new THREE.Matrix4().compose(
+      new THREE.Vector3(x, instance.position, 0),
+      quaternion,
+      scaleVector,
+    ).toArray(matrices, index * 16);
+    new THREE.Color(instance.color).toArray(colors, index * 3);
+  });
+  return {
+    instanceColor: new THREE.InstancedBufferAttribute(colors, 3),
+    instanceMatrix: new THREE.InstancedBufferAttribute(matrices, 16),
+  };
+};
+
 const LedIndicators = () => {
   const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
+  const housingAttributes = React.useMemo(() =>
+    makeHardwareInstanceAttributes(LED_INDICATORS, -50, 1000), []);
+  const lightAttributes = React.useMemo(() =>
+    makeHardwareInstanceAttributes(
+      LED_INDICATORS, -50, 1, [Math.PI / 2, 0, 0],
+    ), []);
   return <Group name={"leds"} position={[0, 0, 130]}>
-    {LED_INDICATORS.map(ledIndicator => {
-      const { position, color } = ledIndicator;
-      return <Group key={position}>
-        <Mesh name={"led-housing"}
-          geometry={led.nodes.LED.geometry}
-          material={led.materials[ElectronicsBoxMaterial.led]}
-          position={[-50, position, 0]}
-          material-color={0xcccccc}
-          scale={1000} />
-        <Cylinder name={"led-color"}
-          material-color={color}
-          args={[6.75, 6.75, 3]}
-          position={[-50, position, 0]}
-          rotation={[Math.PI / 2, 0, 0]} />
-      </Group>;
-    })}
+    <InstancedMesh name={"led-housings"}
+      args={[
+        led.nodes.LED.geometry,
+        frontSideMaterial(led.materials[ElectronicsBoxMaterial.led]),
+        LED_INDICATORS.length,
+      ]}
+      instanceMatrix={housingAttributes.instanceMatrix}
+      material-color={0xcccccc} />
+    <InstancedMesh name={"led-colors"}
+      args={[undefined, undefined, LED_INDICATORS.length]}
+      instanceColor={lightAttributes.instanceColor}
+      instanceMatrix={lightAttributes.instanceMatrix}>
+      <cylinderGeometry args={[6.75, 6.75, 3]} />
+      <MeshBasicMaterial color={"white"} vertexColors={true} />
+    </InstancedMesh>
+  </Group>;
+};
+
+const ButtonInstances = (props: {
+  btn: Btn;
+  kitVersion: string;
+}) => {
+  const buttonInstances = React.useMemo(
+    () => buttons(props.kitVersion),
+    [props.kitVersion],
+  );
+  const housingAttributes = React.useMemo(() =>
+    makeHardwareInstanceAttributes(buttonInstances, -30, 1000),
+  [buttonInstances]);
+  const buttonAttributes = React.useMemo(() =>
+    makeHardwareInstanceAttributes(
+      buttonInstances, -30, 1, [Math.PI / 2, 0, 0],
+    ),
+  [buttonInstances]);
+  return <Group name={"buttons"} position={[0, 0, 130]}>
+    <InstancedMesh name={"button-housings"}
+      args={[
+        props.btn.nodes["Push_Button_-_Red"].geometry,
+        frontSideMaterial(
+          props.btn.materials[ElectronicsBoxMaterial.button],
+        ),
+        buttonInstances.length,
+      ]}
+      instanceMatrix={housingAttributes.instanceMatrix}
+      material-color={0xcccccc} />
+    <InstancedMesh name={"button-colors"}
+      args={[undefined, undefined, buttonInstances.length]}
+      instanceColor={buttonAttributes.instanceColor}
+      instanceMatrix={buttonAttributes.instanceMatrix}>
+      <cylinderGeometry args={[9, 0, 3.5]} />
+      <MeshBasicMaterial color={"white"} vertexColors={true} />
+    </InstancedMesh>
+    <InstancedMesh name={"button-centers"}
+      args={[undefined, undefined, buttonInstances.length]}
+      instanceMatrix={buttonAttributes.instanceMatrix}>
+      <cylinderGeometry args={[6.75, 0, 4]} />
+      <MeshBasicMaterial color={0xcccccc} />
+    </InstancedMesh>
   </Group>;
 };
 
@@ -214,32 +296,7 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
         geometry={box.nodes.Electronics_Box_Lid.geometry}
         material={box.materials[ElectronicsBoxMaterial.lid]}
         scale={1000} />
-      <Group name={"buttons"}
-        position={[0, 0, 130]}>
-        {buttons(props.kitVersion).map(button => {
-          const { position, color } = button;
-          const btnPosition = position;
-          return <Group key={btnPosition} name={"button-group"}>
-            <Mesh name={"button-housing"}
-              geometry={btn.nodes["Push_Button_-_Red"].geometry}
-              material={btn.materials[ElectronicsBoxMaterial.button]}
-              position={[-30, btnPosition, 0]}
-              scale={1000}
-              material-color={0xcccccc} />
-            <Cylinder
-              name={"button-color"}
-              material-color={color}
-              args={[9, 0, 3.5]}
-              position={[-30, btnPosition, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-            <Cylinder name={"button-center"}
-              material-color={0xcccccc}
-              args={[6.75, 0, 4]}
-              position={[-30, btnPosition, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-          </Group>;
-        })}
-      </Group>
+      <ButtonInstances btn={btn} kitVersion={props.kitVersion} />
       {ledsPresent(props.kitVersion) && <LedIndicators />}
     </Group>
     <Mesh name={"farmduino"}
@@ -247,13 +304,15 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
       rotation={[Math.PI / 2, 0, 0]}
       scale={1000}
       geometry={farmduino.nodes[PartName.farmduino].geometry}
-      material={farmduino.materials.PaletteMaterial001} />
+      material={frontSideMaterial(
+        farmduino.materials.PaletteMaterial001,
+      )} />
     <Mesh name={"pi"}
       position={[-15, -10, 40]}
       rotation={[Math.PI / 2, 0, Math.PI]}
       scale={1000}
       geometry={pi.nodes[PartName.pi].geometry}
-      material={pi.materials.PaletteMaterial001} />
+      material={frontSideMaterial(pi.materials.PaletteMaterial001)} />
   </>;
 };
 

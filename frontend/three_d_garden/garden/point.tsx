@@ -39,6 +39,10 @@ import {
   ThreeDObjectSelection,
   ThreeDObjectSelectionHandler,
 } from "../selection_types";
+import {
+  MARKER_SPHERE_SEGMENTS,
+  RADIUS_TORUS_SEGMENTS,
+} from "./geometry_detail";
 
 export const POINT_PIN_RADIUS = 12.5;
 export const POINT_PIN_HEIGHT = 50;
@@ -47,7 +51,6 @@ const POINT_CYLINDER_INNER_R_FRACTION = 0.95;
 const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
 export const POINT_CYLINDER_SCALE_FACTOR =
   round(1 / POINT_CYLINDER_TUBE_SIZE ** 2);
-const SEGMENTS = 64;
 
 const stopPropagationForSelectedPoint = (
   event: ThreeEvent<MouseEvent>,
@@ -69,8 +72,7 @@ const makePointMarkerGeometry = () => {
   pinGeometry.translate(0, 0, POINT_PIN_HEIGHT / 2);
   const sphereGeometry = new SphereGeometry(
     POINT_PIN_RADIUS,
-    16,
-    16,
+    ...MARKER_SPHERE_SEGMENTS,
   );
   sphereGeometry.translate(0, 0, POINT_PIN_HEIGHT);
   const markerGeometry = mergeGeometries(
@@ -93,8 +95,7 @@ const getPointRadiusGeometry = () => {
   pointRadiusGeometry ||= new TorusGeometry(
     1,
     POINT_CYLINDER_TUBE_SIZE,
-    SEGMENTS,
-    SEGMENTS,
+    ...RADIUS_TORUS_SEGMENTS,
   );
   return pointRadiusGeometry;
 };
@@ -560,7 +561,11 @@ const HollowCylinder = (
       ref={setTorusRef}
       scale={[radius, radius, POINT_CYLINDER_SCALE_FACTOR]}
       rotation={[-Math.PI / 2, 0, 0]}
-      args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]}>
+      args={[
+        1,
+        POINT_CYLINDER_TUBE_SIZE,
+        ...RADIUS_TORUS_SEGMENTS,
+      ]}>
       <MeshPhongMaterial
         color={color}
         transparent={true}
@@ -570,7 +575,7 @@ const HollowCylinder = (
     : <Torus
       rotation={[-Math.PI / 2, 0, 0]}
       scale={[1, 1, POINT_CYLINDER_HEIGHT / 5]}
-      args={[radius, 5, SEGMENTS, SEGMENTS]}>
+      args={[radius, 5, ...RADIUS_TORUS_SEGMENTS]}>
       <MeshPhongMaterial
         color={color}
         transparent={true}
