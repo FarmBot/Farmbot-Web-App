@@ -143,6 +143,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     axes: getValue("axes"),
     xyDimensions: getValue("xyDimensions"),
     zDimension: getValue("zDimension"),
+    urlCameraPos: getValue("urlCameraPos"),
     scene: getValue("scene"),
     people: getValue("people"),
     sunAzimuth: getValue("sunAzimuth"),
@@ -254,6 +255,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.axes = !!configValues.axes;
     nextConfig.xyDimensions = !!configValues.xyDimensions;
     nextConfig.zDimension = !!configValues.zDimension;
+    nextConfig.urlCameraPos = !!configValues.urlCameraPos;
     nextConfig.scene = SCENES[configValues.scene];
     nextConfig.people = !!configValues.people;
     nextConfig.north = true;
@@ -329,6 +331,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.surfaceDebug,
     configValues.threeAxes,
     configValues.tracks,
+    configValues.urlCameraPos,
     configValues.xyDimensions,
     configValues.zAxisLength,
     configValues.zDimension,

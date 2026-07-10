@@ -152,6 +152,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.people = true;
     expectedConfig.xyDimensions = true;
     expectedConfig.zDimension = true;
+    expectedConfig.urlCameraPos = true;
     expectedConfig.imgScale = 0.6;
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;

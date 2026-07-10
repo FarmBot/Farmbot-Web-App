@@ -1353,12 +1353,12 @@ export const GardenModel = (props: GardenModelProps) => {
       config.zoomFactor,
     ]);
   const urlCamera = React.useMemo(
-    () => props.promo && baseConfig.urlCameraPos
+    () => baseConfig.urlCameraPos
       ? getCameraFromUrlParams()
       : undefined,
     // Re-read after Promo clears camera params for an explicit focus change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [baseConfig.urlCameraPos, props.activeFocus, props.promo],
+    [baseConfig.urlCameraPos, props.activeFocus],
   );
   const camera = urlCamera || (props.activeFocus
     ? getCamera(
@@ -1701,7 +1701,7 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraUrlSaveTimeoutRef.current = undefined;
   }, []);
   const saveCameraUrl = React.useCallback(() => {
-    if (props.promo && baseConfig.urlCameraPos && controlsCamera && controls) {
+    if (baseConfig.urlCameraPos && controlsCamera && controls) {
       const state = readSmoothCameraState({
         position: camera.position,
         target: camera.target,
@@ -1718,7 +1718,6 @@ export const GardenModel = (props: GardenModelProps) => {
     camera.target,
     controls,
     controlsCamera,
-    props.promo,
     targetZoom,
   ]);
   const finishCameraUrlSave = React.useCallback(() => {
@@ -1739,14 +1738,12 @@ export const GardenModel = (props: GardenModelProps) => {
     setHoveredObjectLabel(undefined);
     setCameraDragging(true);
     clearCameraUrlSaveTimeout();
-    cameraUrlInteractionRef.current = props.promo
-      && baseConfig.urlCameraPos
+    cameraUrlInteractionRef.current = baseConfig.urlCameraPos
       ? "active"
       : "idle";
   }, [
     baseConfig.urlCameraPos,
     clearCameraUrlSaveTimeout,
-    props.promo,
   ]);
   const handleCameraDragEnd = React.useCallback(() => {
     setCameraDragging(false);
@@ -1756,13 +1753,12 @@ export const GardenModel = (props: GardenModelProps) => {
     scheduleCameraUrlSave();
   }, [saveCameraUrl, scheduleCameraUrlSave]);
   React.useEffect(() => {
-    if (props.promo && baseConfig.urlCameraPos) { return; }
+    if (baseConfig.urlCameraPos) { return; }
     cameraUrlInteractionRef.current = "idle";
     clearCameraUrlSaveTimeout();
   }, [
     baseConfig.urlCameraPos,
     clearCameraUrlSaveTimeout,
-    props.promo,
   ]);
   React.useEffect(() => {
     if (activeFocusRef.current == props.activeFocus) { return; }

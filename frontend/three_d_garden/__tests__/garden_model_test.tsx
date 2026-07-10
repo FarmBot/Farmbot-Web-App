@@ -109,11 +109,11 @@ describe("<GardenModel />", () => {
     return wrapper;
   };
 
-  const createPromoCameraWrapper = () => {
+  const createCameraUrlWrapper = (promo = true) => {
     setCameraUrlParamsSpy = jest.spyOn(cameraModule, "setCameraUrlParams")
       .mockImplementation(jest.fn());
     const p = fakeProps();
-    p.promo = true;
+    p.promo = promo;
     p.config.urlCameraPos = true;
     const wrapper = createWrapper(p);
     const controls = () => wrapper.root.findByType(OrbitControls);
@@ -420,6 +420,25 @@ describe("<GardenModel />", () => {
     expect(camera?.props.position).toEqual(expectedCamera.position);
     expect(wrapper.root.findByType(OrbitControls).props.target)
       .toEqual(expectedCamera.target);
+  });
+
+  it("loads app camera position and target from the URL", () => {
+    const expectedCamera = {
+      position: [100, 200, 300] as [number, number, number],
+      target: [10, 20, 30] as [number, number, number],
+    };
+    const getCameraFromUrlParamsSpy = jest
+      .spyOn(cameraModule, "getCameraFromUrlParams")
+      .mockReturnValue(expectedCamera);
+    const p = fakeProps();
+    p.config.urlCameraPos = true;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+
+    expect(camera?.props.position).toEqual(expectedCamera.position);
+    expect(wrapper.root.findByType(OrbitControls).props.target)
+      .toEqual(expectedCamera.target);
+    getCameraFromUrlParamsSpy.mockRestore();
   });
 
   it("moves the smooth XL default camera back and higher", () => {
@@ -908,7 +927,19 @@ describe("<GardenModel />", () => {
   });
 
   it("saves immediate and settled promo camera URL values", async () => {
-    const { controls, expectedCamera } = createPromoCameraWrapper();
+    const { controls, expectedCamera } = createCameraUrlWrapper();
+    actRenderer(() => {
+      controls().props.onStart();
+      controls().props.onEnd();
+    });
+    expect(setCameraUrlParamsSpy).toHaveBeenNthCalledWith(1, expectedCamera);
+
+    await actRenderer(waitForCameraUrlSave);
+    expect(setCameraUrlParamsSpy).toHaveBeenNthCalledWith(2, expectedCamera);
+  });
+
+  it("saves immediate and settled app camera URL values", async () => {
+    const { controls, expectedCamera } = createCameraUrlWrapper(false);
     actRenderer(() => {
       controls().props.onStart();
       controls().props.onEnd();
@@ -920,7 +951,7 @@ describe("<GardenModel />", () => {
   });
 
   it("cancels a pending camera URL save when focus changes", async () => {
-    const { controls, p, wrapper } = createPromoCameraWrapper();
+    const { controls, p, wrapper } = createCameraUrlWrapper();
     actRenderer(() => {
       controls().props.onStart();
       controls().props.onEnd();
@@ -936,7 +967,7 @@ describe("<GardenModel />", () => {
   });
 
   it("cancels a pending camera URL save when unmounted", async () => {
-    const { controls, wrapper } = createPromoCameraWrapper();
+    const { controls, wrapper } = createCameraUrlWrapper();
     actRenderer(() => {
       controls().props.onStart();
       controls().props.onEnd();
