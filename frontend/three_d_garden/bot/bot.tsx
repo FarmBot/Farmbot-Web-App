@@ -1,4 +1,5 @@
 import React from "react";
+import { Object3D } from "three";
 import { Config, PositionConfig } from "../config";
 import { Group } from "../components";
 import { FocusVisibilityGroup } from "../focus_transition";
@@ -103,6 +104,11 @@ const EnabledBot = (props: FarmbotModelProps) => {
   const version = getBotVersion(config.kitVersion);
   const shapes = useBotShapes(config.tracks, version);
   const kinematics = getBotKinematics(config, configPosition, version);
+  const trailTarget = React.useRef(new Object3D());
+  const [utmX, utmY, utmZ] = kinematics.anchors.utm.worldPosition;
+  React.useLayoutEffect(() => {
+    trailTarget.current.position.set(utmX, utmY, utmZ);
+  }, [utmX, utmY, utmZ]);
   const trailReady = props.trailReady !== false;
 
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
@@ -151,6 +157,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
                 version={version}
                 zAxisShape={shapes.zAxis}
                 trailReady={trailReady}
+                trailTarget={trailTarget}
                 onSelectObject={props.onSelectObject}
                 onHoverObject={props.onHoverObject} />
               <Tools

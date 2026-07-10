@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { useGLTF } from "@react-three/drei";
+import { Trail, useGLTF } from "@react-three/drei";
 import {
   Bot, clearBotShapeCache, FarmbotModelProps,
   getBotSpringTarget, getDemoMovementSpringCallbacks,
@@ -29,6 +29,7 @@ import {
 import { Bounds } from "../components/bounds";
 import { WaterFlowTextureProvider } from "../components/water_stream";
 import * as demoMovement from "../../../demo/lua_runner/movement";
+import { getBotKinematics } from "../kinematics";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -358,6 +359,21 @@ describe("<Bot />", () => {
 
     expect(wrapper.root.findAll(node => node.props.className == "trail"))
       .toHaveLength(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("seeds the trail at the UTM world position", () => {
+    const p = fakeProps();
+    p.config.trail = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const trail = wrapper.root.findByType(Trail);
+    const expectedPosition = getBotKinematics(
+      p.config,
+      p.configPosition,
+    ).anchors.utm.worldPosition;
+
+    expect(trail.props.target.current.position.toArray())
+      .toEqual(expectedPosition);
     unmountRenderer(wrapper);
   });
 

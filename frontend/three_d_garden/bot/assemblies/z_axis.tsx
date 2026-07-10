@@ -51,6 +51,7 @@ export interface ZAxisAssemblyProps {
   version: BotVersion;
   zAxisShape: Shape | undefined;
   trailReady: boolean;
+  trailTarget: React.RefObject<THREE.Object3D>;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
 }
@@ -242,6 +243,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     </Group>}
     {props.trailReady && trail
       ? <Trail
+        target={props.trailTarget}
         width={perspective ? 500 : 0.1}
         attenuation={t => Math.pow(t, 3)}
         color={"red"}
@@ -276,6 +278,7 @@ export const ZAxisAssembly = React.memo(
     prev.version === next.version &&
     prev.zAxisShape === next.zAxisShape &&
     prev.trailReady === next.trailReady &&
+    prev.trailTarget === next.trailTarget &&
     prev.onSelectObject === next.onSelectObject &&
     prev.onHoverObject === next.onHoverObject,
 );
