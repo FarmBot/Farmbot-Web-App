@@ -4,7 +4,6 @@ import { Config, PositionConfig } from "../../config";
 import {
   LineBasicMaterial, LineSegments, Mesh, MeshStandardMaterial,
 } from "../../components";
-import { ConvexGeometry } from "three-stdlib";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
 import { getBotVersion } from "../bot_versions";
@@ -249,6 +248,24 @@ interface FrustumProps {
   config: Config;
 }
 
+const frustumFaces = [
+  [0, 2, 3], [0, 3, 1],
+  [4, 5, 7], [4, 7, 6],
+  [0, 1, 5], [0, 5, 4],
+  [2, 6, 7], [2, 7, 3],
+  [0, 4, 6], [0, 6, 2],
+  [1, 3, 7], [1, 7, 5],
+];
+
+const frustumGeometry = (points: THREE.Vector3[]) => {
+  const geometry = new THREE.BufferGeometry().setFromPoints(
+    frustumFaces.flatMap(face => face.map(index => points[index])),
+  );
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return geometry;
+};
+
 const frustumEdgesGeometry = (points: THREE.Vector3[]) => {
   const pairs = [
     [0, 1], [0, 2], [1, 3], [2, 3],
@@ -265,10 +282,7 @@ const Frustum = (props: FrustumProps) => {
     point.toArray().map(coordinate => Math.round(coordinate))).join(":");
   const [geometry] = React.useState(() => {
     perfCount("bot.geometry.cameraView");
-    const g = new ConvexGeometry(props.points);
-    g.computeVertexNormals();
-    g.computeBoundingSphere();
-    return g;
+    return frustumGeometry(props.points);
   });
   const [edgesGeometry] = React.useState(() => {
     perfCount("bot.geometry.cameraViewEdges");
@@ -278,9 +292,7 @@ const Frustum = (props: FrustumProps) => {
   React.useLayoutEffect(() => {
     if (geometryKeyRef.current == geometryKey) { return; }
     perfCount("bot.geometry.cameraView");
-    const replacement = new ConvexGeometry(props.points);
-    replacement.computeVertexNormals();
-    replacement.computeBoundingSphere();
+    const replacement = frustumGeometry(props.points);
     updateBufferGeometry(geometry, replacement);
     replacement.dispose();
     perfCount("bot.geometry.cameraViewEdges");

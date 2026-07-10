@@ -7,7 +7,6 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import {
   CameraView, cameraViewPropsEqual, CameraViewProps, getCameraViewPoints,
 } from "../camera_view";
-import { ConvexGeometry } from "three-stdlib";
 
 describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
@@ -82,7 +81,7 @@ describe("<CameraView />", () => {
 
   it("moves the frustum without rebuilding unchanged local geometry", () => {
     const normalsSpy = jest.spyOn(
-      ConvexGeometry.prototype,
+      THREE.BufferGeometry.prototype,
       "computeVertexNormals",
     );
     const p = fakeProps();
@@ -98,6 +97,17 @@ describe("<CameraView />", () => {
       distanceToSoil={p.distanceToSoil + 1} />);
     expect(normalsSpy).toHaveBeenCalledTimes(2);
     normalsSpy.mockRestore();
+  });
+
+  it("accepts camera configuration after an incomplete initial layout", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.distanceToSoil = 0;
+    const { rerender } = render(<CameraView {...p} />);
+
+    expect(() => rerender(<CameraView
+      {...p}
+      distanceToSoil={500} />)).not.toThrow();
   });
 
   it("compares camera-view-relevant inputs", () => {
