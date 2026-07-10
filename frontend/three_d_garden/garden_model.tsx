@@ -632,6 +632,11 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           images={images}
           activeFocus={activeFocus}
           mapPoints={mapPoints}
+          plants={threeDPlants}
+          weeds={weeds}
+          showPlants={plantsVisible}
+          showPoints={showPoints}
+          showWeeds={showWeeds}
           showMoistureMap={showMoistureMap}
           showMoistureReadings={showMoistureReadings}
           sensors={sensors}

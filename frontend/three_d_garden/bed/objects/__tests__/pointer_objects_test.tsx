@@ -55,6 +55,12 @@ describe("<PointerObjects />", () => {
   const fakeProps = (): PointerObjectsProps => ({
     config: clone(INITIAL),
     mapPoints: [],
+    plants: [],
+    weeds: [],
+    showPlants: true,
+    showPoints: true,
+    showWeeds: true,
+    getZ: () => 0,
     addPlantProps: fakeAddPlantProps(),
     pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
     radiusRef: { current: { scale: new Vector3(0, 0, 0) } } as RadiusRef,
@@ -63,6 +69,7 @@ describe("<PointerObjects />", () => {
     imageRef: { current: { scale: new Vector3(0, 0, 0) } } as ImageRef,
     xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as XCrosshairRef,
     yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as YCrosshairRef,
+    alignmentIndicatorRef: { current: { update: jest.fn() } },
     activePositionRef: { current: { x: 0, y: 0 } },
   });
 
@@ -71,6 +78,33 @@ describe("<PointerObjects />", () => {
     mockIsMobile = false;
     const { container } = render(<PointerObjects {...fakeProps()} />);
     expect(container).toContainHTML("pointerPlant");
+    expect(container).toContainHTML("alignment-indicators");
+  });
+
+  it("hides indicators during a grid preview", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const point = fakePoint();
+    point.specialStatus = SpecialStatus.DIRTY;
+    point.body.meta.gridId = "preview";
+    p.mapPoints = [point];
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("alignment-indicators");
+  });
+
+  it("hides indicators while setting a point radius", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.cx = 100;
+    point.cy = 200;
+    p.addPlantProps.designer.drawnPoint = point;
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("alignment-indicators");
   });
 
   it("loads the atlas texture for the pointer plant preview", () => {
@@ -242,6 +276,7 @@ describe("soilPointerMove()", () => {
     imageRef: { current: { scale: { set: jest.fn() } } } as unknown as ImageRef,
     xCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as XCrosshairRef,
     yCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as YCrosshairRef,
+    alignmentIndicatorRef: { current: { update: jest.fn() } },
     activePositionRef: { current: { x: 0, y: 0 } },
   });
 
@@ -257,6 +292,8 @@ describe("soilPointerMove()", () => {
     soilPointerMove(p)(e);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(100, 200, 0);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledWith({ x: 1450, y: 860 });
   });
 
   it("coalesces pointer updates into one animation frame", () => {
@@ -285,6 +322,10 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(110, 210, 0);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledTimes(1);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledWith({ x: 1460, y: 870 });
   });
 
   it("updates plant position with mirrored world coordinates", () => {
@@ -332,6 +373,8 @@ describe("soilPointerMove()", () => {
     expect(p.xCrosshairRef.current?.position.set)
       .toHaveBeenCalledTimes(1);
     expect(p.yCrosshairRef.current?.position.set)
+      .toHaveBeenCalledTimes(1);
+    expect(p.alignmentIndicatorRef.current?.update)
       .toHaveBeenCalledTimes(1);
     expect(getZ).toHaveBeenCalledTimes(1);
   });

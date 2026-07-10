@@ -16,6 +16,7 @@ import {
   getHalfSize,
   outOfBoundsShaderModification,
   POINT_CYLINDER_SCALE_FACTOR,
+  ThreeDGardenPlant,
   WEED_IMG_SIZE_FRACTION,
 } from "../../garden";
 import {
@@ -26,7 +27,9 @@ import {
   getWorldPositionFunc,
 } from "../../helpers";
 import { Config } from "../../config";
-import { SpecialStatus, TaggedGenericPointer } from "farmbot";
+import {
+  SpecialStatus, TaggedGenericPointer, TaggedWeedPointer,
+} from "farmbot";
 import { AddPlantProps } from "../bed";
 import { isUndefined, round as mathRound } from "lodash";
 import { Mesh as MeshType, Group as GroupType, Color } from "three";
@@ -43,6 +46,9 @@ import {
   getPlantIconTextureUrl,
 } from "../../garden/plant_icon_atlas";
 import { clickWasDragged } from "../../click_event";
+import {
+  AlignmentIndicatorRef, AlignmentIndicators,
+} from "./alignment_indicators";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -61,11 +67,18 @@ interface AllRefs {
   imageRef: ImageRef;
   xCrosshairRef: XCrosshairRef;
   yCrosshairRef: YCrosshairRef;
+  alignmentIndicatorRef: AlignmentIndicatorRef;
 }
 
 export interface PointerObjectsProps extends AllRefs {
   config: Config;
   mapPoints: TaggedGenericPointer[];
+  plants: ThreeDGardenPlant[];
+  weeds: TaggedWeedPointer[];
+  showPlants: boolean;
+  showPoints: boolean;
+  showWeeds: boolean;
+  getZ(x: number, y: number): number;
   addPlantProps: AddPlantProps;
   activePositionRef: ActivePositionRef;
 }
@@ -129,6 +142,7 @@ const samePreviewRefs = (
   prev.imageRef === next.imageRef &&
   prev.xCrosshairRef === next.xCrosshairRef &&
   prev.yCrosshairRef === next.yCrosshairRef &&
+  prev.alignmentIndicatorRef === next.alignmentIndicatorRef &&
   prev.activePositionRef === next.activePositionRef;
 
 const samePreviewDesigner = (
@@ -151,6 +165,13 @@ export const activePointerObjectsPropsEqual = (
   prev.mode === next.mode &&
   prev.cropSlug === next.cropSlug &&
   samePreviewRefs(prev, next) &&
+  prev.getZ === next.getZ &&
+  prev.plants === next.plants &&
+  prev.weeds === next.weeds &&
+  prev.mapPoints === next.mapPoints &&
+  prev.showPlants === next.showPlants &&
+  prev.showPoints === next.showPoints &&
+  prev.showWeeds === next.showWeeds &&
   samePreviewConfig(prev.config, next.config) &&
   samePreviewDesigner(
     prev.addPlantProps.designer,
@@ -161,7 +182,7 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const {
     config, mapPoints, addPlantProps,
     pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
-    xCrosshairRef, yCrosshairRef,
+    xCrosshairRef, yCrosshairRef, alignmentIndicatorRef,
     mode, cropSlug,
   } = props;
   const zero = zeroFunc(config);
@@ -208,6 +229,16 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
               [0, zero.y, 0],
               [0, extents.y, 0],
             ]} />
+          <AlignmentIndicators
+            ref={alignmentIndicatorRef}
+            config={config}
+            plants={props.plants}
+            weeds={props.weeds}
+            points={mapPoints}
+            showPlants={props.showPlants}
+            showPoints={props.showPoints}
+            showWeeds={props.showWeeds}
+            getZ={props.getZ} />
         </Group>}
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
         <Group position={[0, 0, 0]}>
@@ -333,6 +364,7 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       pointerPlantRef,
       radiusRef, torusRef, billboardRef, imageRef,
       xCrosshairRef, yCrosshairRef, activePositionRef,
+      alignmentIndicatorRef,
     } = props;
     const getGardenPosition = getGardenPositionFunc(config);
     const get3DPosition = get3DPositionFunc(config);
@@ -362,6 +394,7 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
+      alignmentIndicatorRef.current?.update(gardenPosition);
       lastRenderedPosition = { x, y };
       if (getMode() == Mode.clickToAdd) {
         pointerPlantRef.current.position?.set(x, y, z);

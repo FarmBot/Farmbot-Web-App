@@ -36,6 +36,7 @@ import {
   TaggedCurve, TaggedGenericPointer, TaggedImage,
   TaggedSensor,
   TaggedSensorReading,
+  TaggedWeedPointer,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
@@ -51,7 +52,7 @@ import {
   YCrosshairRef,
 } from "./objects/pointer_objects";
 import { ThreeElements } from "@react-three/fiber";
-import { ImageTexture } from "../garden";
+import { ImageTexture, ThreeDGardenPlant } from "../garden";
 import {
   VertexNormalsHelper,
 } from "three/examples/jsm/helpers/VertexNormalsHelper.js";
@@ -59,6 +60,9 @@ import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 import { FocusVisibilityGroup } from "../focus_transition";
 import { useTextureVariant } from "../texture_variants";
+import {
+  AlignmentIndicatorController,
+} from "./objects/alignment_indicators";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -453,6 +457,11 @@ export interface BedProps {
   config: Config;
   activeFocus: string;
   mapPoints: TaggedGenericPointer[];
+  plants: ThreeDGardenPlant[];
+  weeds: TaggedWeedPointer[];
+  showPlants: boolean;
+  showPoints: boolean;
+  showWeeds: boolean;
   addPlantProps?: AddPlantProps;
   getZ(x: number, y: number): number;
   images?: TaggedImage[];
@@ -527,9 +536,20 @@ const bedSettingFieldsEqual = (prev: BedProps, next: BedProps) =>
     prev.addPlantProps?.getConfigValue(field)
     === next.addPlantProps?.getConfigValue(field));
 
+const bedAlignmentPropsEqual = (
+  prev: Readonly<BedProps>,
+  next: Readonly<BedProps>,
+) =>
+  prev.mapPoints === next.mapPoints
+  && prev.plants === next.plants
+  && prev.weeds === next.weeds
+  && prev.showPlants === next.showPlants
+  && prev.showPoints === next.showPoints
+  && prev.showWeeds === next.showWeeds;
+
 const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   prev.activeFocus === next.activeFocus
-  && prev.mapPoints === next.mapPoints
+  && bedAlignmentPropsEqual(prev, next)
   && prev.addPlantProps === next.addPlantProps
   && prev.getZ === next.getZ
   && prev.images === next.images
@@ -648,6 +668,10 @@ const BedBase = (props: BedProps) => {
   // eslint-disable-next-line no-null/no-null
   const yCrosshairRef: YCrosshairRef = React.useRef(null);
 
+  const alignmentIndicatorRef =
+    // eslint-disable-next-line no-null/no-null
+    React.useRef<AlignmentIndicatorController>(null);
+
   const navigate = useNavigate();
 
   const mirroredAxesCount = Number(mirrorX) + Number(mirrorY);
@@ -704,6 +728,7 @@ const BedBase = (props: BedProps) => {
           imageRef,
           xCrosshairRef,
           yCrosshairRef,
+          alignmentIndicatorRef,
           activePositionRef: props.activePositionRef,
           getZ: props.getZ,
         })
@@ -827,10 +852,17 @@ const BedBase = (props: BedProps) => {
           imageRef={imageRef}
           xCrosshairRef={xCrosshairRef}
           yCrosshairRef={yCrosshairRef}
+          alignmentIndicatorRef={alignmentIndicatorRef}
           activePositionRef={props.activePositionRef}
           config={props.config}
           addPlantProps={props.addPlantProps}
-          mapPoints={props.mapPoints} />}
+          mapPoints={props.mapPoints}
+          plants={props.plants}
+          weeds={props.weeds}
+          showPlants={props.showPlants}
+          showPoints={props.showPoints}
+          showWeeds={props.showWeeds}
+          getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>
       {props.config.lowDetail

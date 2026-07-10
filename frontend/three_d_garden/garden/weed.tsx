@@ -39,6 +39,7 @@ import {
 import { SPREAD_SPHERE_SEGMENTS } from "./geometry_detail";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
+export const DEFAULT_WEED_RADIUS = 50;
 const noRaycast = () => undefined;
 
 const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
@@ -129,7 +130,7 @@ export const WeedBase = (props: WeedBaseProps) => {
     radiusRef, billboardRef, imageRef,
   } = props;
   const getWorldPosition = getWorldPositionFunc(config);
-  const weedSize = radius == 0 ? 50 : radius;
+  const weedSize = radius == 0 ? DEFAULT_WEED_RADIUS : radius;
   const iconSize = weedSize * WEED_IMG_SIZE_FRACTION;
   const texture = useWeedIconTexture();
   return <Group
@@ -236,7 +237,9 @@ const getWeedInstances = (
 
   for (let index = 0; index < weeds.length; index++) {
     const weed = weeds[index];
-    const size = weed.body.radius == 0 ? 50 : weed.body.radius;
+    const size = weed.body.radius == 0
+      ? DEFAULT_WEED_RADIUS
+      : weed.body.radius;
     weedInstances[index] = {
       weed,
       position: getWorldPosition({

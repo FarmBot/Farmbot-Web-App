@@ -28,6 +28,9 @@ interface MockXCrosshairRefCurrent {
 interface MockYCrosshairRefCurrent {
   position: { set: Function; };
 }
+interface MockAlignmentRefCurrent {
+  update: Function;
+}
 interface MockInstancesRefCurrent {
   geometry: { setAttribute: Function; };
 }
@@ -52,6 +55,9 @@ interface MockXCrosshairRef {
 interface MockYCrosshairRef {
   current: MockYCrosshairRefCurrent | undefined;
 }
+interface MockAlignmentRef {
+  current: MockAlignmentRefCurrent | undefined;
+}
 interface MockInstancesRef {
   current: MockInstancesRefCurrent | undefined;
 }
@@ -62,6 +68,9 @@ const mockBillboardRef: MockBillboardRef = { current: undefined };
 const mockImageRef: MockImageRef = { current: undefined };
 const mockXCrosshairRef: MockXCrosshairRef = { current: undefined };
 const mockYCrosshairRef: MockYCrosshairRef = { current: undefined };
+const mockAlignmentRef: MockAlignmentRef = {
+  current: { update: jest.fn() },
+};
 const mockInstancesRef: MockInstancesRef =
   { current: { geometry: { setAttribute: jest.fn() } } };
 
@@ -115,6 +124,7 @@ describe("<Bed />", () => {
     mockImageRef.current = undefined;
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
+    mockAlignmentRef.current = { update: jest.fn() };
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     jest.spyOn(plantActions, "dropPlant3D")
       .mockImplementation(jest.fn());
@@ -133,6 +143,7 @@ describe("<Bed />", () => {
       .mockImplementationOnce(() => mockImageRef)
       .mockImplementationOnce(() => mockXCrosshairRef)
       .mockImplementationOnce(() => mockYCrosshairRef)
+      .mockImplementationOnce(() => mockAlignmentRef)
       .mockImplementationOnce(() => mockInstancesRef)
       .mockImplementation(actualUseRef);
   });
@@ -146,6 +157,11 @@ describe("<Bed />", () => {
     config: clone(INITIAL),
     activeFocus: "",
     mapPoints: [],
+    plants: [],
+    weeds: [],
+    showPlants: true,
+    showPoints: true,
+    showWeeds: true,
     soilSurfaceGeometry: new BufferGeometry(),
     getZ: () => 0,
     showMoistureMap: true,

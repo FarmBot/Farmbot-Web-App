@@ -46,6 +46,7 @@ import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
+import { Bed } from "../bed";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -257,8 +258,26 @@ describe("<GardenModel />", () => {
     const after = findBedProps();
     expect(after.images).toBe(before.images);
     expect(after.mapPoints).toBe(before.mapPoints);
+    expect(after.plants).toBe(before.plants);
+    expect(after.weeds).toBe(before.weeds);
     expect(after.sensors).toBe(before.sensors);
     expect(after.sensorReadings).toBe(before.sensorReadings);
+  });
+
+  it("passes visible alignment resources to the bed", () => {
+    const p = fakeProps();
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    p.mapPoints = [fakePoint()];
+    p.weeds = [fakeWeed()];
+    const wrapper = createWrapper(p);
+    const bedProps = wrapper.root.findByType(Bed).props;
+
+    expect(bedProps.plants).toBe(p.threeDPlants);
+    expect(bedProps.mapPoints).toBe(p.mapPoints);
+    expect(bedProps.weeds).toBe(p.weeds);
+    expect(bedProps.showPlants).toBeTruthy();
+    expect(bedProps.showPoints).toBeTruthy();
+    expect(bedProps.showWeeds).toBeTruthy();
   });
 
   it("reuses soil surface geometry across unrelated config updates", () => {
@@ -699,15 +718,19 @@ describe("<GardenModel />", () => {
     expect(useGltfMock).not.toHaveBeenCalled();
   });
 
-  it("unmounts FarmBot after hide animation exits", () => {
+  it("unmounts FarmBot after hide animation exits", async () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
-    const botLoadIn = wrapper.root.findAllByType(FallInGroup)
-      .find(node => node.props.name == "bot-load-in");
+    let botLoadIn = wrapper.root.findAllByType(FallInGroup)
+      .find(() => false);
+    await waitFor(() => {
+      botLoadIn = wrapper.root.findAllByType(FallInGroup)
+        .find(node => node.props.name == "bot-load-in");
+      expect(botLoadIn).toBeTruthy();
+    });
     actRenderer(() => {
       botLoadIn?.props.onExitRest();
     });
-    expect(botLoadIn).toBeTruthy();
   });
 
   it("handles FarmBot layer progress callbacks", () => {
