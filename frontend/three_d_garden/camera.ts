@@ -41,7 +41,8 @@ const replaceCameraUrlParams = (camera?: Camera) => {
     CAMERA_TARGET_PARAMS.map((key, index) =>
       url.searchParams.set(key, "" + round(camera.target[index])));
   }
-  window.history.replaceState(window.history.state, "", url.toString());
+  const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
+  window.history.replaceState(window.history.state, "", relativeUrl);
 };
 
 export const setCameraUrlParams = (camera: Camera) =>

@@ -3,6 +3,7 @@ import { Extrude } from "@react-three/drei";
 import { type ExtrudeGeometryOptions, Shape } from "three";
 import { Group, MeshPhongMaterial } from "../components";
 import { BeltPath } from "./belt_path";
+import { getBotVersion } from "./bot_versions";
 
 const beltThickness = 1.5;
 const beltWidth = 5;
@@ -78,12 +79,23 @@ const xAxisBeltPathV19 = (
   return path;
 };
 
+export const buildXAxisBeltPath = (
+  kitVersion: string,
+  columnLength: number,
+  length: number,
+  x: number,
+) => getBotVersion(kitVersion).beltRouting == "v1.9"
+  ? xAxisBeltPathV19(length, x)
+  : xAxisBeltPath(columnLength, length, x);
+
 export const XAxisBelt = (props: XAxisBeltProps) => {
   const args = React.useMemo(() => {
-    const path = props.kitVersion == "v1.9"
-      ? xAxisBeltPathV19(props.length, props.x)
-      : xAxisBeltPath(props.columnLength, props.length, props.x);
-    return beltArgs(path);
+    return beltArgs(buildXAxisBeltPath(
+      props.kitVersion || "v1.8",
+      props.columnLength,
+      props.length,
+      props.x,
+    ));
   }, [props.columnLength, props.kitVersion, props.length, props.x]);
   return <Belt name={props.name}
     args={args}
@@ -123,12 +135,23 @@ const yAxisBeltPathV19 = (
   return path;
 };
 
+export const buildYAxisBeltPath = (
+  kitVersion: string,
+  beamLength: number,
+  botSizeY: number,
+  y: number,
+) => getBotVersion(kitVersion).beltRouting == "v1.9"
+  ? yAxisBeltPathV19(beamLength, y)
+  : yAxisBeltPath(botSizeY, y);
+
 export const YAxisBelt = (props: YAxisBeltProps) => {
   const args = React.useMemo(() => {
-    const path = props.kitVersion == "v1.9"
-      ? yAxisBeltPathV19(props.beamLength, props.y)
-      : yAxisBeltPath(props.botSizeY, props.y);
-    return beltArgs(path);
+    return beltArgs(buildYAxisBeltPath(
+      props.kitVersion || "v1.8",
+      props.beamLength,
+      props.botSizeY,
+      props.y,
+    ));
   }, [props.beamLength, props.botSizeY, props.kitVersion, props.y]);
   return <Belt name={"yBelt"}
     args={args}
@@ -166,9 +189,16 @@ const zAxisBeltPathV19 = (
   return path;
 };
 
+export const buildZAxisBeltPath = (
+  botSizeY: number,
+  botSizeZ: number,
+  y: number,
+  z: number,
+) => zAxisBeltPathV19(botSizeY, botSizeZ, y, z);
+
 export const ZAxisBelt = (props: ZAxisBeltProps) => {
   const args = React.useMemo(() => {
-    const path = zAxisBeltPathV19(
+    const path = buildZAxisBeltPath(
       props.botSizeY,
       props.botSizeZ,
       props.y,

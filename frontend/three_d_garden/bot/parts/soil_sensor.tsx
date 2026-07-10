@@ -22,7 +22,9 @@ export type SoilSensorFull = GLTF & {
   };
 }
 
-interface SoilSensorProps extends Omit<ThreeElements["group"], "ref"> {
+type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
+
+interface SoilSensorProps extends PartGroupProps {
   model: SoilSensorFull;
 }
 
@@ -35,7 +37,8 @@ export const SoilSensorModel = (props: SoilSensorProps) => {
     <MeshComponent
       geometry={nodes.Soil_Sensor.geometry}
       material={materials.PaletteMaterial001}
-      position={[0, 0, -0.015]} />
+      position={[0, 0, -15]}
+      scale={1000} />
     {mergedGeometry
       ? <MeshComponent
         geometry={mergedGeometry}
@@ -45,5 +48,5 @@ export const SoilSensorModel = (props: SoilSensorProps) => {
 };
 
 export const SoilSensor = (model: SoilSensorFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) =>
+  (props: PartGroupProps) =>
     <SoilSensorModel {...props} model={model} />;

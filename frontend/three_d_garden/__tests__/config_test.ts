@@ -66,6 +66,13 @@ describe("modifyConfig()", () => {
     expect(result.perspective).toEqual(false);
     expect(result.rotate).toEqual(false);
   });
+
+  it("uses the latest geometry for an unknown kit version", () => {
+    const initial = clone(INITIAL);
+    const result = modifyConfig(initial, { kitVersion: "v1000" });
+    expect(result.kitVersion).toEqual("v1000");
+    expect(result.zAxisLength).toEqual(800);
+  });
 });
 
 describe("modifyConfigsFromUrlParams()", () => {

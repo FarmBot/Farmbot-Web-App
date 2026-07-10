@@ -157,6 +157,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgCenterY = 0;
     expectedConfig.mirrorX = true;
     expectedConfig.mirrorY = true;
+    expectedConfig.negativeZ = false;
     expectedConfig.viewpointHeading = 0;
     expectedConfig.kitVersion = "v1.7";
 

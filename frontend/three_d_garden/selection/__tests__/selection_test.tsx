@@ -415,6 +415,13 @@ describe("selection resolve", () => {
     expect(camera?.name).toEqual("Camera");
   });
 
+  it("resolves the v1.9 camera from the cross-slide anchor", () => {
+    const props = resolveProps();
+    const camera = resolveSelectedObject(props, { kind: "camera", id: 0 });
+    expect(camera?.worldPosition).toEqual([-1150, 39, 589.5]);
+    expect(camera?.locationCoordinate).toEqual({ x: 200, y: 699, z: -200 });
+  });
+
   it("resolves selected locations and overlay eligibility", () => {
     const props = resolveProps();
     const selection: ThreeDLocationSelection = {

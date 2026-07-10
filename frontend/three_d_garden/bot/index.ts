@@ -1,2 +1,2 @@
 export * from "./bot";
-export * from "./power_supply";
+export * from "./components/power_supply";

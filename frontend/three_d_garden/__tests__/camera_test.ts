@@ -2,26 +2,83 @@ let mockDev: string | undefined = undefined;
 let mockIsDesktop = true;
 
 import {
-  cameraInit, CameraInitProps, getDefaultCameraPosition,
-  GetDefaultCameraPositionProps,
+  cameraInit, CameraInitProps, clearCameraUrlParams,
+  getCameraFromUrlParams, getDefaultCameraPosition,
+  GetDefaultCameraPositionProps, setCameraUrlParams,
 } from "../camera";
 import * as devSupport from "../../settings/dev/dev_support";
 import * as screenSize from "../../screen_size";
 
 let get3dCameraSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
+let replaceStateSpy: jest.SpyInstance;
+let originalUrl: string;
 
 beforeEach(() => {
+  originalUrl = window.location.href;
   get3dCameraSpy = jest.spyOn(devSupport.DevSettings, "get3dCamera")
     .mockImplementation((() =>
       mockDev || ""));
   isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
     .mockImplementation(() => mockIsDesktop);
+  replaceStateSpy = jest.spyOn(window.history, "replaceState")
+    .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
   get3dCameraSpy.mockRestore();
   isDesktopSpy.mockRestore();
+  replaceStateSpy.mockRestore();
+  const url = new URL(originalUrl);
+  window.location.href = url.toString();
+  window.location.pathname = url.pathname;
+  window.location.search = url.search;
+  window.location.hash = url.hash;
+});
+
+describe("camera URL params", () => {
+  const setUrl = (search = "") => {
+    const url = new URL(`/app/designer${search}`, window.location.href);
+    window.location.href = url.toString();
+    window.location.pathname = url.pathname;
+    window.location.search = url.search;
+  };
+
+  it("reads a camera from URL params", () => {
+    setUrl("?camX=1&camY=2&camZ=3&camTX=4&camTY=5&camTZ=6");
+    expect(getCameraFromUrlParams()).toEqual({
+      position: [1, 2, 3],
+      target: [4, 5, 6],
+    });
+  });
+
+  it.each([
+    "?camX=1",
+    "?camX=1&camY=2&camZ=3&camTX=4&camTY=5&camTZ=invalid",
+  ])("rejects an incomplete or invalid camera: %s", search => {
+    setUrl(search);
+    expect(getCameraFromUrlParams()).toBeUndefined();
+  });
+
+  it("sets and clears camera URL params", () => {
+    setUrl("?keep=true&camX=100");
+    setCameraUrlParams({
+      position: [1.2, 2.5, 3.8],
+      target: [4.4, 5.5, 6.6],
+    });
+    const setUrlCall = replaceStateSpy.mock.calls[0][2] as string;
+    expect(setUrlCall.startsWith("/app/designer?")).toBeTruthy();
+    expect(new URL(setUrlCall, window.location.href).search).toEqual(
+      "?keep=true&urlCameraPos=true&camX=1&camY=3&camZ=4"
+      + "&camTX=4&camTY=6&camTZ=7",
+    );
+
+    setUrl(new URL(setUrlCall, window.location.href).search);
+    clearCameraUrlParams();
+    const clearUrlCall = replaceStateSpy.mock.calls[1][2] as string;
+    expect(new URL(clearUrlCall, window.location.href).search)
+      .toEqual("?keep=true&urlCameraPos=true");
+  });
 });
 
 describe("cameraInit()", () => {

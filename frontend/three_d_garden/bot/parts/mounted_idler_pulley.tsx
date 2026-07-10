@@ -20,7 +20,8 @@ export type MountedIdlerPulleyFull = GLTF & {
   };
 }
 
-interface MountedIdlerPulleyProps extends Omit<ThreeElements["group"], "ref"> {
+interface MountedIdlerPulleyProps
+  extends Omit<ThreeElements["group"], "ref" | "scale"> {
   model: MountedIdlerPulleyFull;
   lower?: boolean;
 }
@@ -29,7 +30,7 @@ export const MountedIdlerPulleyModel = (props: MountedIdlerPulleyProps) => {
   const { lower, model, ...groupProps } = props;
   const { nodes, materials } = model;
   const lowerPosition: [number, number, number] | undefined =
-    lower ? [0, 0, -0.015] : undefined;
+    lower ? [0, 0, -15] : undefined;
   return <Group {...groupProps}>
     <Group
       position={lowerPosition}
@@ -37,21 +38,25 @@ export const MountedIdlerPulleyModel = (props: MountedIdlerPulleyProps) => {
       <MeshComponent
         geometry={nodes[PartName.mountedIdlerPulleyMount].geometry}
         material={materials[MountedIdlerPulleyMaterial.mount]}
-        position={[0, 0.005, -0.01]} />
+        position={[0, 5, -10]}
+        scale={1000} />
       <MeshComponent
         geometry={nodes[PartName.mountedIdlerPulleyLocknut].geometry}
         material={materials[MountedIdlerPulleyMaterial.locknut]}
-        position={[0, -0.019, 0.03]}
+        position={[0, -19, 30]}
+        scale={1000}
         rotation={[Math.PI / 2, 0, 0]} />
       <MeshComponent
         geometry={nodes[PartName.mountedIdlerPulleyShim].geometry}
         material={materials[MountedIdlerPulleyMaterial.shim]}
-        position={[0, -0.014, 0.03]}
+        position={[0, -14, 30]}
+        scale={1000}
         rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       <MeshComponent
         geometry={nodes[PartName.mountedIdlerPulleyBearing].geometry}
         material={materials[MountedIdlerPulleyMaterial.bearing]}
-        position={[0, -0.016, 0.03]}
+        position={[0, -16, 30]}
+        scale={1000}
         rotation={[-Math.PI / 2, 0, 0]} />
     </Group>
   </Group>;

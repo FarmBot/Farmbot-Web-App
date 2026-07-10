@@ -5,6 +5,7 @@ import {
   CableCarrierX, CableCarrierY, CableCarrierZ,
   CableCarrierSupportVertical, CableCarrierSupportVerticalProps,
   CableCarrierSupportHorizontal, CableCarrierSupportHorizontalProps,
+  buildCableCarrierShape,
 } from "../cable_carriers";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
@@ -21,6 +22,11 @@ describe("moving cable carriers", () => {
   const fakeProps = () => ({
     config: clone(INITIAL),
     configPosition: clone(INITIAL_POSITION),
+  });
+
+  it.each([0, 500, 1000])("builds a carrier at axis position %s", position => {
+    const shape = buildCableCarrierShape(1000, position, 70);
+    expect(shape.getPoints()).not.toHaveLength(0);
   });
 
   it("skips disabled moving carriers", () => {

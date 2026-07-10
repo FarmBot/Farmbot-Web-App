@@ -17,7 +17,9 @@ export type SeedTroughHolderFull = GLTF & {
   };
 }
 
-interface SeedTroughHolderProps extends Omit<ThreeElements["group"], "ref"> {
+type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
+
+interface SeedTroughHolderProps extends PartGroupProps {
   model: SeedTroughHolderFull;
 }
 
@@ -29,15 +31,17 @@ export const SeedTroughHolderModel = (props: SeedTroughHolderProps) => {
     <MeshComponent
       geometry={nodes.Seed_Trough_Holder_Mount_Plate.geometry}
       material={materials[SeedTroughHolderMaterial.zero]}
-      position={[-0.002, 0.044, 0]} />
+      position={[-2, 44, 0]}
+      scale={1000} />
     <MeshComponent
       geometry={nodes.M5_x_10mm_Screw.geometry}
       material={materials[SeedTroughHolderMaterial.one]}
-      position={[0.003, 0.034, 0.03]}
+      position={[3, 34, 30]}
+      scale={1000}
       rotation={[Math.PI / 2, Math.PI / 2, 0]} />
   </Group>;
 };
 
 export const SeedTroughHolder = (model: SeedTroughHolderFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) =>
+  (props: PartGroupProps) =>
     <SeedTroughHolderModel {...props} model={model} />;

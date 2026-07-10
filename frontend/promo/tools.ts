@@ -3,12 +3,13 @@ import { ToolName } from "../farm_designer/map/tool_graphics/all_tools";
 import { Config, PositionConfig } from "../three_d_garden/config";
 import { ThreeDTool } from "../three_d_garden/bot/components";
 import { zDir, zZero } from "../three_d_garden/helpers";
+import { getBotVersion } from "../three_d_garden/bot/bot_versions";
 
 export const PROMO_TOOLS =
   (config: Config, configPosition: PositionConfig): ThreeDTool[] => {
 
     const isJr = config.sizePreset == "Jr";
-    const isV19 = config.kitVersion == "v1.9";
+    const isV19 = getBotVersion(config.kitVersion).number == "v1.9";
 
     const promoToolOffset = {
       x: 110 + config.bedWallThickness - config.bedXOffset,
@@ -39,6 +40,7 @@ export const PROMO_TOOLS =
         z: promoToolOffset.z,
         toolName: tool.toolName,
         toolPulloutDirection: ToolPulloutDirection.NONE,
+        mountFrame: "stationary" as const,
       })),
       {
         x: configPosition.x - config.bedXOffset + 140,
@@ -47,6 +49,7 @@ export const PROMO_TOOLS =
         toolName: ToolName.seedTrough,
         toolPulloutDirection: ToolPulloutDirection.NONE,
         firstTrough: true,
+        mountFrame: "gantry" as const,
       },
     ];
   };

@@ -4,15 +4,15 @@ import {
 import { round } from "lodash";
 import { Config, PositionConfig } from "../config";
 import {
-  get3DPositionNoMirrorFunc, getWorldPositionFunc, zDir as zDirFunc,
-  zZero as zZeroFunc,
+  getWorldPositionFunc,
 } from "../helpers";
 import {
-  getToolRenderPosition, getToolSlotRenderPosition,
+  getToolSlotRenderPosition,
 } from "../bot/components/tool_slot_position";
 import {
   getElectronicsBoxPosition,
 } from "../bot/components/electronics_box";
+import { getBotKinematics } from "../bot/kinematics";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
@@ -29,11 +29,6 @@ const POPUP_Z_PADDING = 25;
 const FIXED_POPUP_Z_OFFSET = 75;
 const SLOT_RING_RADIUS = 50;
 const SEED_TROUGH_RING_Y_OFFSET = 20;
-const cameraMountOffset = {
-  x: 12,
-  y: 35,
-};
-
 export interface ResolvedThreeDObjectBase {
   selection: ThreeDObjectSelection;
   name: string;
@@ -245,18 +240,17 @@ const resolveUtmObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection,
 ): ResolvedUtmObject => {
-  const worldPosition = getToolRenderPosition(props.config, {
-    x: props.configPosition.x,
-    y: props.configPosition.y,
-    z: props.configPosition.z,
-  }, false);
+  const worldPosition = getBotKinematics(
+    props.config,
+    props.configPosition,
+  ).anchors.utm.worldPosition;
   return {
     kind: "utm",
     selection,
     name: t("UTM"),
-    worldPosition: [worldPosition.x, worldPosition.y, worldPosition.z],
-    popupPosition: [worldPosition.x, worldPosition.y,
-      worldPosition.z + FIXED_POPUP_Z_OFFSET],
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1],
+      worldPosition[2] + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
       x: props.configPosition.x,
@@ -292,25 +286,22 @@ const resolveCameraObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection,
 ): ResolvedCameraObject => {
-  const { x, y, z } = props.configPosition;
-  const position = get3DPositionNoMirrorFunc(props.config)({
-    x: x + cameraMountOffset.x,
-    y: y + cameraMountOffset.y,
-  });
-  const zPosition =
-    zZeroFunc(props.config) - zDirFunc(props.config) * z
-    - 140 + props.config.zGantryOffset + 20;
+  const camera = getBotKinematics(
+    props.config,
+    props.configPosition,
+  ).anchors.camera;
+  const [x, y, z] = camera.worldPosition;
   return {
     kind: "camera",
     selection,
     name: t("Camera"),
-    worldPosition: [position.x, position.y, zPosition],
-    popupPosition: [position.x, position.y, zPosition + FIXED_POPUP_Z_OFFSET],
+    worldPosition: camera.worldPosition,
+    popupPosition: [x, y, z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
-      x: x + cameraMountOffset.x,
-      y: y + cameraMountOffset.y,
-      z,
+      x: camera.gardenPosition.x,
+      y: camera.gardenPosition.y,
+      z: props.configPosition.z,
     },
   };
 };

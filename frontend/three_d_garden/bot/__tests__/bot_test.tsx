@@ -59,10 +59,27 @@ describe("<Bot />", () => {
     const { container } = render(<Bot {...p} />);
     expect(container).toContainHTML("bot");
     expect(container).toContainHTML("water-tube");
-    const slots = container.querySelectorAll("[name='slot']");
-    const lastSlot = slots[slots.length - 1];
-    expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1350,200,51");
+    expect(container.querySelector("[name='bot-static']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-gantry']")
+      ?.getAttribute("position")).toContain("300,0,0");
+    expect(container.querySelector("[name='bot-cross-slide']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='bot-z-axis']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-routing']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-effects']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerSupply']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerPlug']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-routing'] [name='powerCable']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerCable']",
+    )).toBeNull();
   });
 
   it("renders: Jr", () => {
@@ -72,10 +89,8 @@ describe("<Bot />", () => {
     p.config.trail = false;
     const { container } = render(<Bot {...p} />);
     expect(container).toContainHTML("bot");
-    const slots = container.querySelectorAll("[name='slot']");
-    const lastSlot = slots[slots.length - 1];
-    expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1350,200,51");
+    expect(container.querySelectorAll("[name='tracks']")).toHaveLength(0);
+    expect(container.querySelector("[name='bot-gantry']")).toBeTruthy();
   });
 
   it("renders: v1.7", () => {
@@ -83,6 +98,10 @@ describe("<Bot />", () => {
     p.config.kitVersion = "v1.7";
     const { container } = render(<Bot {...p} />);
     expect(container.querySelectorAll("[name='button-group']").length).toEqual(5);
+    expect(container.querySelectorAll("[name='leftMotor']")).toHaveLength(1);
+    expect(container.querySelector("[name='zMotor']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeNull();
+    expect(container.querySelector("[name='yIdlerPulley']")).toBeNull();
   });
 
   it("renders: v1.8", () => {
@@ -90,6 +109,57 @@ describe("<Bot />", () => {
     p.config.kitVersion = "v1.8";
     const { container } = render(<Bot {...p} />);
     expect(container.querySelectorAll("[name='button-group']").length).toEqual(3);
+    expect(container.querySelector("[name='zMotor']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeNull();
+  });
+
+  it("renders the v1.9 belt-driven structure", () => {
+    const p = fakeProps();
+    const { container } = render(<Bot {...p} />);
+    expect(container.querySelector("[name='leftMotor']")).toBeNull();
+    expect(container.querySelector("[name='zMotor']")).toBeNull();
+    expect(container.querySelector("[name='zBelt']")).toBeTruthy();
+    expect(container.querySelector("[name='yIdlerPulley']")).toBeTruthy();
+  });
+
+  it.each([
+    ["v1.7", 500],
+    ["v1.8", 500],
+    ["v1.9", 450],
+  ])("renders %s columns at the profile length", (kitVersion, depth) => {
+    const p = fakeProps();
+    p.config.kitVersion = kitVersion;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const columns = wrapper.root
+      .findAll(node => node.props.name == "columns");
+    expect(columns).toHaveLength(2);
+    expect(columns[0].props.args[1].depth).toEqual(depth);
+    unmountRenderer(wrapper);
+  });
+
+  it("preserves the Jr column length adjustment", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    p.config.columnLength = 300;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const columns = wrapper.root
+      .findAll(node => node.props.name == "columns");
+    expect(columns[0].props.args[1].depth).toEqual(250);
+    unmountRenderer(wrapper);
+  });
+
+  it("uses local kinematic frame positions", () => {
+    const { container } = render(<Bot {...fakeProps()} />);
+    expect(container.querySelector("[name='bot-machine']")
+      ?.getAttribute("position")).toContain("-1350,-660,0");
+    expect(container.querySelector("[name='bot-cross-slide']")
+      ?.getAttribute("position")).toContain("-12.5,745,597");
+    expect(container.querySelector("[name='bot-z-axis']")
+      ?.getAttribute("position")).toContain("12.5,-45,-397");
+    expect(container.querySelector("[name='bot-static'] [name='slot']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='bot-z-axis'] [name='utm-tool']"))
+      .toBeTruthy();
   });
 
   it("selects the UTM", () => {
@@ -107,9 +177,10 @@ describe("<Bot />", () => {
     expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "utm", id: 0 });
   });
 
-  it("selects the camera", () => {
+  it.each(["v1.7", "v1.9"])("selects the %s camera", kitVersion => {
     location.pathname = Path.mock(Path.designer());
     const p = fakeProps();
+    p.config.kitVersion = kitVersion;
     p.onSelectObject = jest.fn();
     p.onHoverObject = jest.fn();
     const { container } = render(<Bot {...p} />);
@@ -122,20 +193,24 @@ describe("<Bot />", () => {
     expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "camera", id: 0 });
   });
 
-  it("doesn't select the UTM in camera selection mode", () => {
-    const getModeSpy = jest.spyOn(mapUtil, "getMode")
-      .mockReturnValue(Mode.cameraSelection);
-    location.pathname = Path.mock(Path.designer());
-    const p = fakeProps();
-    p.onSelectObject = jest.fn();
-    const { container } = render(<Bot {...p} />);
-    const utm = container.querySelector("group[name='UTM'] mesh");
-    const camera = container.querySelector("group[name='camera']");
-    utm && fireEvent.click(utm);
-    camera && fireEvent.click(camera);
-    expect(p.onSelectObject).not.toHaveBeenCalled();
-    getModeSpy.mockRestore();
-  });
+  it.each(["v1.7", "v1.9"])(
+    "doesn't select the %s camera in camera selection mode",
+    kitVersion => {
+      const getModeSpy = jest.spyOn(mapUtil, "getMode")
+        .mockReturnValue(Mode.cameraSelection);
+      location.pathname = Path.mock(Path.designer());
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.onSelectObject = jest.fn();
+      const { container } = render(<Bot {...p} />);
+      const utm = container.querySelector("group[name='UTM'] mesh");
+      const camera = container.querySelector("group[name='camera']");
+      utm && fireEvent.click(utm);
+      camera && fireEvent.click(camera);
+      expect(p.onSelectObject).not.toHaveBeenCalled();
+      getModeSpy.mockRestore();
+    },
+  );
 
   it("hides FarmBot in Planter bed focus", () => {
     const p = fakeProps();
@@ -271,7 +346,7 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("skips X/Y-only model hooks during z-only rerenders", () => {
+  it("moves the Z frame without rerendering rigid models", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();
     const wrapper = createRenderer(<Bot {...p} />);
@@ -294,7 +369,7 @@ describe("<Bot />", () => {
     expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
     expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
     expect(urls).not.toContain(ASSETS.models.beltClip);
-    expect(urls).toContain(ASSETS.models.mountedIdlerPulley);
+    expect(urls).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 
@@ -330,7 +405,7 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("updates X/Y-only model hooks when x changes", () => {
+  it("moves the gantry frame without rerendering rigid models", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();
     const wrapper = createRenderer(<Bot {...p} />);
@@ -346,10 +421,7 @@ describe("<Bot />", () => {
     });
 
     const urls = useGltfMock.mock.calls.map(([url]) => url);
-    expect(urls).toContain(ASSETS.models.gantryWheelPlateV19);
-    expect(urls).toContain(ASSETS.models.crossSlideV19);
-    expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
-    expect(urls).toContain(ASSETS.models.beltClip);
+    expect(urls).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 

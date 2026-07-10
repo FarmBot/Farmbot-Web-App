@@ -22,18 +22,25 @@ export type GantryWheelPlateFull = GLTF & {
   };
 }
 
+interface GantryWheelPlateProps
+  extends Omit<ThreeElements["group"], "ref" | "scale"> {
+  mirrorY?: boolean;
+}
+
 export const GantryWheelPlate = (
   model: GantryWheelPlateFull,
   isV19 = false,
 ) =>
-  (props: Omit<ThreeElements["group"], "ref">) => {
+  (props: GantryWheelPlateProps) => {
+    const { mirrorY, ...groupProps } = props;
     const { nodes, materials } = model;
     const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
-    return <Group {...props}>
+    return <Group {...groupProps} scale={[1, mirrorY ? -1 : 1, 1]}>
       <MeshComponent
         geometry={nodes.Gantry_Wheel_Plate.geometry}
         material={materials.PaletteMaterial001}
-        position={[0.002, 0.05, isV19 ? 0.162 : 0]}
+        position={[2, 50, isV19 ? 162 : 0]}
+        scale={1000}
         rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
       {mergedGeometry
         ? <MeshComponent

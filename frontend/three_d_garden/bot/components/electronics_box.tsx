@@ -8,13 +8,14 @@ import {
   ASSETS, ElectronicsBoxMaterial, HOVER_OBJECT_MODES, LIB_DIR, PartName,
 } from "../../constants";
 import { Group, Mesh } from "../../components";
-import { get3DPositionNoMirrorFunc } from "../../helpers";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
 } from "../../selection_types";
 import { clickWasDragged } from "../../click_event";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
+import { getBotKinematics } from "../kinematics";
+import { getBotVersion } from "../bot_versions";
 
 type Box = GLTF & {
   nodes: {
@@ -61,35 +62,23 @@ const BoxButtonColor = {
   blank: 0xffffff,
 };
 
-const buttons = (kitVersion: string) => {
-  switch (kitVersion) {
-    case "v1.7":
-      return [
-        { position: -60, color: BoxButtonColor.estop },
-        { position: -30, color: BoxButtonColor.unlock },
-        { position: 0, color: BoxButtonColor.blank },
-        { position: 30, color: BoxButtonColor.blank },
-        { position: 60, color: BoxButtonColor.blank },
-      ];
-    case "v1.8":
-    default:
-      return [
-        { position: -30, color: BoxButtonColor.estop },
-        { position: 0, color: BoxButtonColor.unlock },
-        { position: 30, color: BoxButtonColor.blank },
-      ];
-  }
-};
+const buttons = (kitVersion: string) =>
+  getBotVersion(kitVersion).electronicsButtonCount == 5
+    ? [
+      { position: -60, color: BoxButtonColor.estop },
+      { position: -30, color: BoxButtonColor.unlock },
+      { position: 0, color: BoxButtonColor.blank },
+      { position: 30, color: BoxButtonColor.blank },
+      { position: 60, color: BoxButtonColor.blank },
+    ]
+    : [
+      { position: -30, color: BoxButtonColor.estop },
+      { position: 0, color: BoxButtonColor.unlock },
+      { position: 30, color: BoxButtonColor.blank },
+    ];
 
-const ledsPresent = (kitVersion: string) => {
-  switch (kitVersion) {
-    case "v1.7":
-      return true;
-    case "v1.8":
-    default:
-      return false;
-  }
-};
+const ledsPresent = (kitVersion: string) =>
+  getBotVersion(kitVersion).electronicsLeds;
 
 const LED_INDICATORS = [
   { position: -45, color: BoxButtonColor.sync },
@@ -125,31 +114,23 @@ export interface ElectronicsBoxProps {
   configPosition: PositionConfig;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  local?: boolean;
 }
 
 export const getElectronicsBoxPosition = (
   config: Config,
   configPosition: PositionConfig,
-) => {
-  const { bedYOffset, columnLength } = config;
-  const { x } = configPosition;
-  const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const position = get3DPosition({
-    x: x - 73,
-    y: -20 - bedYOffset,
-  });
-  return new THREE.Vector3(
-    position.x,
-    position.y,
-    columnLength - 190,
-  );
-};
+) => new THREE.Vector3(
+  ...getBotKinematics(config, configPosition)
+    .anchors.electronics.worldPosition,
+);
 
 const electronicsBoxPropsEqual = (
   prevProps: ElectronicsBoxProps,
   nextProps: ElectronicsBoxProps,
 ) =>
   prevProps.configPosition.x == nextProps.configPosition.x &&
+  prevProps.local == nextProps.local &&
   prevProps.config.bedXOffset == nextProps.config.bedXOffset &&
   prevProps.config.bedYOffset == nextProps.config.bedYOffset &&
   prevProps.config.bedLengthOuter == nextProps.config.bedLengthOuter &&
@@ -184,8 +165,10 @@ const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
     hoverElectronics(true, event), [hoverElectronics]);
   const onPointerOut = React.useCallback((event: ThreeEvent<PointerEvent>) =>
     hoverElectronics(false, event), [hoverElectronics]);
-  return <Group name={"electronics-box"}
-    position={getElectronicsBoxPosition(config, configPosition)}>
+  const position = props.local
+    ? getBotKinematics(config, configPosition).anchors.electronics.localPosition
+    : getElectronicsBoxPosition(config, configPosition);
+  return <Group name={"electronics-box"} position={position}>
     <ElectronicsBoxModel
       kitVersion={config.kitVersion}
       onClick={selectElectronics}

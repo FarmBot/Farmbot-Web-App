@@ -1,5 +1,6 @@
 import React from "react";
 import { animated, useSpring } from "@react-spring/three";
+import { to } from "@react-spring/core";
 import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
 import { RepeatWrapping } from "three";
 import { ASSETS } from "../../constants";
@@ -29,26 +30,26 @@ type Vector3 = [number, number, number];
 
 interface UtilitiesPostFocusGroupProps
   extends Omit<React.ComponentProps<typeof Group>, "position" | "visible"> {
-  hiddenPosition: Vector3;
+  hiddenDepthOffset: number;
   shownPosition: Vector3;
   visible: boolean;
 }
 
 const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
   const {
-    hiddenPosition, shownPosition, visible, children, ...groupProps
+    hiddenDepthOffset, shownPosition, visible, children, ...groupProps
   } = props;
   const transition = useFocusTransition();
   const [groupVisible, setGroupVisible] = React.useState(visible);
-  const [{ position }, api] = useSpring(() => ({
-    position: visible ? shownPosition : hiddenPosition,
+  const [{ focusDepthOffset }, api] = useSpring(() => ({
+    focusDepthOffset: visible ? 0 : hiddenDepthOffset,
     immediate: !transition.enabled,
     config: utilitiesPostFocusSpringConfig,
   }));
 
   React.useEffect(() => {
     api.start({
-      position: visible ? shownPosition : hiddenPosition,
+      focusDepthOffset: visible ? 0 : hiddenDepthOffset,
       immediate: !transition.enabled,
       config: utilitiesPostFocusSpringConfig,
       onRest: () => {
@@ -57,7 +58,7 @@ const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
         }
       },
     });
-  }, [api, hiddenPosition, shownPosition, transition.enabled, visible]);
+  }, [api, hiddenDepthOffset, transition.enabled, visible]);
 
   React.useEffect(() => {
     if (!transition.enabled || !visible) { return; }
@@ -65,11 +66,16 @@ const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
     setGroupVisible(true);
   }, [transition.enabled, visible]);
 
-  return <AnimatedGroup {...groupProps}
+  const focusPosition = to(focusDepthOffset,
+    depth => [0, 0, depth] as Vector3);
+
+  return <Group {...groupProps}
     visible={transition.enabled ? visible || groupVisible : visible}
-    position={position}>
-    {children}
-  </AnimatedGroup>;
+    position={shownPosition}>
+    <AnimatedGroup position={focusPosition}>
+      {children}
+    </AnimatedGroup>
+  </Group>;
 };
 
 const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
@@ -133,17 +139,13 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     threeSpace(legSize / 2, bedWidthOuter),
     groundZ + 150,
   ], [bedLengthOuter, bedWidthOuter, groundZ, legSize]);
-  const hiddenPosition = React.useMemo<Vector3>(() => [
-    shownPosition[0],
-    shownPosition[1],
-    shownPosition[2]
-      - (bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE,
-  ], [bedHeight, bedZOffset, shownPosition]);
+  const hiddenDepthOffset =
+    -(bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE;
 
   return <UtilitiesPostFocusGroup name={"utilities"}
     visible={props.activeFocus != "Planter bed"}
     shownPosition={shownPosition}
-    hiddenPosition={hiddenPosition}>
+    hiddenDepthOffset={hiddenDepthOffset}>
     <Box name={"utilities-post"}
       castShadow={true}
       args={[legSize, legSize, 300]}>

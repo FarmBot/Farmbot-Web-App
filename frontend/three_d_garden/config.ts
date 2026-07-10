@@ -496,7 +496,9 @@ const zAxisLengthFromKitVersion = (
   kitVersion: string,
 ): number => {
   const presetLength = PRESETS[sizePreset].zAxisLength;
-  return kitVersion == "v1.9" ? presetLength - 200 : presetLength;
+  return kitVersion == "v1.7" || kitVersion == "v1.8"
+    ? presetLength
+    : presetLength - 200;
 };
 
 const maybeUpdateZAxisLengthFromKitVersion = (

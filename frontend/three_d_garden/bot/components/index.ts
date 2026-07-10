@@ -8,3 +8,4 @@ export * from "./cable_carriers";
 export * from "./camera";
 export * from "./gantry_beam";
 export * from "./camera_view";
+export * from "./power_supply";

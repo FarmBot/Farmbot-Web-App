@@ -1,8 +1,20 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { XAxisBelt, YAxisBelt } from "../belts";
+import {
+  buildXAxisBeltPath, buildYAxisBeltPath, buildZAxisBeltPath,
+  XAxisBelt, YAxisBelt,
+} from "../belts";
 
 describe("belts", () => {
+  it.each([0, 700, 1230])("builds routes at axis position %s", position => {
+    expect(buildXAxisBeltPath("v1.9", 500, 2987, position)
+      .getSegments()).not.toHaveLength(0);
+    expect(buildYAxisBeltPath("v1.9", 1500, 1230, position)
+      .getSegments()).not.toHaveLength(0);
+    expect(buildZAxisBeltPath(1230, 500, position, -200)
+      .getSegments()).not.toHaveLength(0);
+  });
+
   it("renders the Y-axis belt as separate segments", () => {
     const { container, rerender } = render(<YAxisBelt
       beamLength={1500}

@@ -32,11 +32,13 @@ export type CrossSlideV19Full = GLTF & {
   };
 }
 
-interface CrossSlideProps extends Omit<ThreeElements["group"], "ref"> {
+type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
+
+interface CrossSlideProps extends PartGroupProps {
   model: CrossSlideFull;
 }
 
-interface CrossSlideV19Props extends Omit<ThreeElements["group"], "ref"> {
+interface CrossSlideV19Props extends PartGroupProps {
   model: CrossSlideV19Full;
 }
 
@@ -48,7 +50,8 @@ export const CrossSlideModel = (props: CrossSlideProps) => {
     <MeshComponent
       geometry={nodes.Cable_Carrier_Spacer_Block.geometry}
       material={materials.PaletteMaterial001}
-      position={[0.03, 0.005, 0.061]}
+      position={[30, 5, 61]}
+      scale={1000}
       rotation={[-Math.PI / 2, 0, Math.PI]} />
     {mergedGeometry
       ? <MeshComponent
@@ -65,11 +68,12 @@ export const CrossSlideV19Model = (props: CrossSlideV19Props) => {
     <MeshComponent
       geometry={nodes[PartName.crossSlideV19].geometry}
       material={materials.PaletteMaterial001}
-      position={[0.04, -0.002, 0.038]}
+      position={[40, -2, 38]}
+      scale={1000}
       rotation={[Math.PI / 2, 0, -Math.PI / 2]} />
   </Group>;
 };
 
 export const CrossSlide = (model: CrossSlideFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) =>
+  (props: PartGroupProps) =>
     <CrossSlideModel {...props} model={model} />;

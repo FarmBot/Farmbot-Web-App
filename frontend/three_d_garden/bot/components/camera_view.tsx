@@ -6,6 +6,7 @@ import { Edges } from "@react-three/drei";
 import { ConvexGeometry } from "three-stdlib";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
+import { getBotVersion } from "../bot_versions";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
@@ -80,7 +81,7 @@ const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
     cameraMountY,
     cameraMountZ,
   } = inputs;
-  const isV19 = kitVersion == "v1.9";
+  const isV19 = getBotVersion(kitVersion).number == "v1.9";
   const cameraMountOffset = isV19
     ? { x: 0, y: 0 }
     : zMountedCameraMountOffset;

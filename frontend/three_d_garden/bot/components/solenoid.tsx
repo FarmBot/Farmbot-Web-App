@@ -9,15 +9,34 @@ import {
 import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
+import { getBotVersion } from "../bot_versions";
 
 type SolenoidPart = GLTF & {
   nodes: { [PartName.solenoid]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
 
+const SolenoidBody = React.memo((props: {
+  position: [number, number, number];
+}) => {
+  const solenoid = useGLTF(
+    ASSETS.models.solenoid,
+    LIB_DIR,
+  ) as unknown as SolenoidPart;
+  return <Mesh name={"solenoid"}
+    position={props.position}
+    rotation={[0, 0, -Math.PI / 2]}
+    scale={1000}
+    geometry={solenoid.nodes[PartName.solenoid].geometry}
+    material={solenoid.materials.PaletteMaterial001} />;
+});
+
 export interface SolenoidProps {
   config: Config;
   configPosition: PositionConfig;
+  frame?: "world" | "machine" | "gantry";
+  renderBody?: boolean;
+  renderTubes?: boolean;
 }
 
 const SOLENOID_CONFIG_FIELDS: (keyof Config)[] = [
@@ -39,6 +58,9 @@ export const solenoidPropsEqual = (
   prev.configPosition.x === next.configPosition.x &&
   prev.configPosition.y === next.configPosition.y &&
   prev.configPosition.z === next.configPosition.z &&
+  prev.frame === next.frame &&
+  prev.renderBody === next.renderBody &&
+  prev.renderTubes === next.renderTubes &&
   SOLENOID_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -48,7 +70,7 @@ const SolenoidBase = (props: SolenoidProps) => {
     bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, columnLength,
     kitVersion, negativeZ, zGantryOffset,
   } = config;
-  const isV19 = kitVersion == "v1.9";
+  const version = getBotVersion(kitVersion);
   const { x, y, z } = props.configPosition;
   const {
     lowerTubePath,
@@ -58,10 +80,18 @@ const SolenoidBase = (props: SolenoidProps) => {
     utmTubePath,
   } = React.useMemo(() => {
     const zDir = negativeZ ? -1 : 1;
-    const get3DPositionNoMirror = (gardenX: number, gardenY: number) => ({
-      x: threeSpace(gardenX + bedXOffset, bedLengthOuter),
-      y: threeSpace(gardenY + bedYOffset, bedWidthOuter),
-    });
+    const get3DPositionNoMirror = (gardenX: number, gardenY: number) => {
+      switch (props.frame) {
+        case "machine": return { x: gardenX, y: gardenY };
+        case "gantry": return { x: gardenX - x, y: gardenY };
+        case "world":
+        default:
+          return {
+            x: threeSpace(gardenX + bedXOffset, bedLengthOuter),
+            y: threeSpace(gardenY + bedYOffset, bedWidthOuter),
+          };
+      }
+    };
     const outerXY = (gardenX: number, outerY: number): [number, number] => {
       const position = get3DPositionNoMirror(gardenX, outerY - bedYOffset);
       return [position.x, position.y];
@@ -99,7 +129,7 @@ const SolenoidBase = (props: SolenoidProps) => {
           columnLength + 90,
         ],
       ),
-      yzTubePath: kitVersion == "v1.9"
+      yzTubePath: version.number == "v1.9"
         ? easyCubicBezierCurve3(
           [
             ...gardenXY(x - 60, y + 80),
@@ -143,40 +173,40 @@ const SolenoidBase = (props: SolenoidProps) => {
     bedXOffset,
     bedYOffset,
     columnLength,
-    kitVersion,
     negativeZ,
     x,
     y,
     z,
     zGantryOffset,
+    props.frame,
+    version.number,
   ]);
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>
-    <WaterTube tubeName={"lower-solenoid-water-tube"}
+    {props.renderTubes !== false && <WaterTube
+      tubeName={"lower-solenoid-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={lowerTubePath}
       tubularSegments={40}
       radius={5}
-      radialSegments={8} />
-    <Mesh name={"solenoid"}
-      position={solenoidPosition}
-      rotation={[0, 0, -Math.PI / 2]}
-      scale={1000}
-      geometry={solenoid.nodes[PartName.solenoid].geometry}
-      material={solenoid.materials.PaletteMaterial001} />
-    <WaterTube tubeName={"upper-solenoid-water-tube"}
+      radialSegments={8} />}
+    {props.renderBody !== false &&
+      <SolenoidBody position={solenoidPosition} />}
+    {props.renderTubes !== false && <WaterTube
+      tubeName={"upper-solenoid-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={upperTubePath}
       tubularSegments={20}
       radius={5}
-      radialSegments={8} />
-    <WaterTube tubeName={"y-z-water-tube"}
+      radialSegments={8} />}
+    {props.renderTubes !== false && <WaterTube
+      tubeName={"y-z-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={yzTubePath}
       tubularSegments={20}
       radius={5}
-      radialSegments={8} />
-    {!isV19 && <WaterTube tubeName={"utm-water-tube"}
+      radialSegments={8} />}
+    {props.renderTubes !== false && version.number != "v1.9" &&
+    <WaterTube tubeName={"utm-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={utmTubePath}
       tubularSegments={20}

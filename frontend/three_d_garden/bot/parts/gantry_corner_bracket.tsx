@@ -28,12 +28,12 @@ export type LeftGantryCornerBracketFull = GLTF & {
 }
 
 interface LeftGantryCornerBracketProps
-  extends Omit<ThreeElements["group"], "ref"> {
+  extends Omit<ThreeElements["group"], "ref" | "scale"> {
   model: LeftGantryCornerBracketFull;
 }
 
 interface RightGantryCornerBracketProps
-  extends Omit<ThreeElements["group"], "ref"> {
+  extends Omit<ThreeElements["group"], "ref" | "scale"> {
   model: RightGantryCornerBracketFull;
 }
 
@@ -44,7 +44,8 @@ export const LeftGantryCornerBracketModel =
       <Mesh
         geometry={model.nodes[PartName.leftBracket].geometry}
         material={model.materials.PaletteMaterial001}
-        position={[0.045, 0.005, -0.002]} />
+        position={[45, 5, -2]}
+        scale={1000} />
     </Group>;
   };
 
@@ -56,11 +57,13 @@ export const RightGantryCornerBracketModel =
       <Mesh
         geometry={nodes[PartName.gantryCornerBracketNutBar].geometry}
         material={materials[GantryCornerBracketMaterial.hardware]}
-        position={[0.02, 0.011, -0.07]}
+        position={[20, 11, -70]}
+        scale={1000}
         rotation={[Math.PI / 2, 0, -Math.PI]} />
       <Mesh
         geometry={nodes[PartName.rightBracket].geometry}
         material={materials[GantryCornerBracketMaterial.bracket]}
-        position={[-0.03, 0.005, -0.04]} />
+        position={[-30, 5, -40]}
+        scale={1000} />
     </Group>;
   };
