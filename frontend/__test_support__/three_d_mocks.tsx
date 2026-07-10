@@ -1,6 +1,7 @@
 import {
   ASSETS,
   ElectronicsBoxMaterial,
+  GantryCornerBracketMaterial,
   MountedIdlerPulleyMaterial,
   PartName,
   SeedTroughAssemblyMaterial,
@@ -621,8 +622,26 @@ jest.mock("@react-three/drei", () => {
     [ASSETS.models.leftBracket]: {
       nodes: { [PartName.leftBracket]: {} as THREE.Mesh },
     },
+    [ASSETS.models.leftBracketV19]: {
+      nodes: { [PartName.leftBracket]: {} as THREE.Mesh },
+      materials: {
+        PaletteMaterial001: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.rightBracket]: {
       nodes: { [PartName.rightBracket]: {} as THREE.Mesh },
+    },
+    [ASSETS.models.rightBracketV19]: {
+      nodes: {
+        [PartName.gantryCornerBracketNutBar]: {} as THREE.Mesh,
+        [PartName.rightBracket]: {} as THREE.Mesh,
+      },
+      materials: {
+        [GantryCornerBracketMaterial.hardware]:
+          {} as THREE.MeshStandardMaterial,
+        [GantryCornerBracketMaterial.bracket]:
+          {} as THREE.MeshStandardMaterial,
+      },
     },
     [ASSETS.models.beltClip]: {
       nodes: { [PartName.beltClip]: {} as THREE.Mesh },

@@ -1,4 +1,5 @@
 export * from "./cross_slide";
+export * from "./gantry_corner_bracket";
 export * from "./gantry_wheel_plate";
 export * from "./mounted_idler_pulley";
 export * from "./seed_trough_assembly";

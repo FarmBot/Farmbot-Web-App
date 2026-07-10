@@ -23,7 +23,9 @@ import { range } from "lodash";
 import {
   CrossSlideFull, CrossSlideModel, CrossSlideV19Full, CrossSlideV19Model,
   GantryWheelPlate, GantryWheelPlateFull,
+  LeftGantryCornerBracketFull, LeftGantryCornerBracketModel,
   MountedIdlerPulleyFull, MountedIdlerPulleyModel,
+  RightGantryCornerBracketFull, RightGantryCornerBracketModel,
   VacuumPumpCoverFull, VacuumPumpCoverModel,
 } from "./parts";
 import { PowerSupply } from "./power_supply";
@@ -265,7 +267,15 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     LIB_DIR) as unknown as GantryWheelPlateFull;
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate, isV19);
   const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
+  const leftBracketV19 = useGLTF(
+    ASSETS.models.leftBracketV19,
+    LIB_DIR,
+  ) as unknown as LeftGantryCornerBracketFull;
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
+  const rightBracketV19 = useGLTF(
+    ASSETS.models.rightBracketV19,
+    LIB_DIR,
+  ) as unknown as RightGantryCornerBracketFull;
   const crossSlide = useGLTF(isV19
     ? ASSETS.models.crossSlideV19
     : ASSETS.models.crossSlide, LIB_DIR);
@@ -274,6 +284,57 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
     {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
       const bedColumnYOffset =
         (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
+      const leftBracketPositionV19: [number, number, number] = [
+        ...botOuterXY(
+          props.config,
+          x - extrusionWidth - 18,
+          outerY + bedColumnYOffset - 35,
+        ),
+        columnLength - 15,
+      ];
+      const rightBracketPositionV19: [number, number, number] = [
+        ...botOuterXY(
+          props.config,
+          x - extrusionWidth - 18,
+          outerY - 10 + bedColumnYOffset,
+        ),
+        columnLength + 80,
+      ];
+      const bracketPosition: [number, number, number] = [
+        ...botOuterXY(
+          props.config,
+          x - extrusionWidth - 23,
+          outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
+        ),
+        columnLength - 30,
+      ];
+      let cornerBracket;
+      if (isV19 && index == 0) {
+        cornerBracket = <LeftGantryCornerBracketModel
+          model={leftBracketV19}
+          name={"leftBracket"}
+          position={leftBracketPositionV19}
+          rotation={[0, 0, Math.PI / 2]}
+          scale={1000} />;
+      } else if (isV19) {
+        cornerBracket = <RightGantryCornerBracketModel
+          model={rightBracketV19}
+          name={"rightBracket"}
+          position={rightBracketPositionV19}
+          rotation={[0, 0, Math.PI / 2]}
+          scale={1000} />;
+      } else {
+        cornerBracket = <Mesh
+          name={index == 0 ? "leftBracket" : "rightBracket"}
+          position={bracketPosition}
+          rotation={[Math.PI / 2, Math.PI / 2, 0]}
+          scale={1000}
+          geometry={index == 0
+            ? leftBracket.nodes[PartName.leftBracket].geometry
+            : rightBracket.nodes[PartName.rightBracket].geometry}>
+          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
+        </Mesh>;
+      }
       return <Group key={outerY}>
         <Extrude name={"columns"}
           castShadow={true}
@@ -299,22 +360,7 @@ const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
             map={aluminumTexture}
             side={DoubleSide} />
         </Extrude>
-        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - extrusionWidth - 23,
-              outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
-            ),
-            columnLength - 30,
-          ]}
-          rotation={[Math.PI / 2, Math.PI / 2, 0]}
-          scale={1000}
-          geometry={index == 0
-            ? leftBracket.nodes[PartName.leftBracket].geometry
-            : rightBracket.nodes[PartName.rightBracket].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
+        {cornerBracket}
         {!isV19 && <HorizontalMotorHousingModel
           name={index == 0 ? "leftMotor" : "rightMotor"}
           position={[
@@ -477,6 +523,7 @@ const BOT_GANTRY_CONFIG_FIELDS: (keyof Config)[] = [
   "bedWidthOuter",
   "bedXOffset",
   "bedYOffset",
+  "beamLength",
   "botSizeY",
   "cableCarriers",
   "columnLength",
@@ -495,7 +542,7 @@ const sameBotGantrySubassembliesProps = (
 
 const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
   const {
-    botSizeY, bedYOffset, columnLength,
+    beamLength, botSizeY, bedYOffset, columnLength,
   } = props.config;
   const { x, y } = props.configPosition;
   const isV19 = props.config.kitVersion == "v1.9";
@@ -519,7 +566,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       model={mountedIdlerPulley}
       name={"yIdlerPulley"}
       position={[
-        ...botGardenXY(props.config, x - 39, botSizeY + 115),
+        ...botGardenXY(props.config, x - 39, beamLength - 70),
         columnLength + 71,
       ]}
       rotation={[-Math.PI / 2, 0, Math.PI / 2]}
@@ -532,7 +579,7 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
     <CableCarrierY
       config={props.config}
       configPosition={props.configPosition} />}
-    <Mesh name={"yStopMin"}
+    {!isV19 && <Mesh name={"yStopMin"}
       position={[
         ...botOuterXY(props.config, x - extrusionWidth - 9, bedYOffset - 125),
         columnLength + 40 + extrusionWidth * 3,
@@ -541,8 +588,9 @@ const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
       scale={1000}
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
-    </Mesh>
+    </Mesh>}
     <YAxisBelt
+      beamLength={beamLength}
       botSizeY={botSizeY}
       kitVersion={props.config.kitVersion}
       y={y}

@@ -91,6 +91,7 @@ export const XAxisBelt = (props: XAxisBeltProps) => {
 };
 
 interface YAxisBeltProps {
+  beamLength: number;
   botSizeY: number;
   kitVersion?: string;
   y: number;
@@ -109,15 +110,15 @@ const yAxisBeltPath = (botSizeY: number, y: number) => {
 };
 
 const yAxisBeltPathV19 = (
-  botSizeY: number,
+  beamLength: number,
   y: number,
 ) => {
   const radius = 8;
   const zOffset = -20;
   const path = new BeltPath();
   path.start(0, y + 105, zOffset);
-  path.pulley(0, -55, zOffset - radius, radius, -1);
-  path.pulley(0, botSizeY + 245, zOffset - radius, radius, -1);
+  path.pulley(0, 25, zOffset - radius, radius, -1);
+  path.pulley(0, beamLength + 60, zOffset - radius, radius, -1);
   path.end(0, y + 190, zOffset);
   return path;
 };
@@ -125,10 +126,10 @@ const yAxisBeltPathV19 = (
 export const YAxisBelt = (props: YAxisBeltProps) => {
   const args = React.useMemo(() => {
     const path = props.kitVersion == "v1.9"
-      ? yAxisBeltPathV19(props.botSizeY, props.y)
+      ? yAxisBeltPathV19(props.beamLength, props.y)
       : yAxisBeltPath(props.botSizeY, props.y);
     return beltArgs(path);
-  }, [props.botSizeY, props.kitVersion, props.y]);
+  }, [props.beamLength, props.botSizeY, props.kitVersion, props.y]);
   return <Belt name={"yBelt"}
     args={args}
     position={props.position} />;
@@ -154,9 +155,9 @@ const zAxisBeltPathV19 = (
   path.pulley(0, y + 160, radius, radius, 1);
   path.pulley(0, y + 145, -z + botSizeZ + 90, radius, -1);
   path.pulley(0, y + 130, radius, radius, 1);
-  path.pulley(0, -60, -radius, radius, -1);
-  path.pulley(0, -55, -radius - 104, radius, -1);
-  path.pulley(0, -40, -radius - 104 + 47, radius, 1);
+  path.pulley(0, 20, -radius, radius, -1);
+  path.pulley(0, 25, -radius - 104, radius, -1);
+  path.pulley(0, 40, -radius - 104 + 49, radius, 1);
   path.pulley(0, y + 130, -60 - radius, radius, 1);
   path.pulley(0, y + 145, -z - 155, radius, -1);
   path.pulley(0, y + 160, -60 - radius, radius, 1);

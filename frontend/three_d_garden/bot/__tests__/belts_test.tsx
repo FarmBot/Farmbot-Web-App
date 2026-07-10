@@ -5,6 +5,7 @@ import { XAxisBelt, YAxisBelt } from "../belts";
 describe("belts", () => {
   it("renders the Y-axis belt as separate segments", () => {
     const { container, rerender } = render(<YAxisBelt
+      beamLength={1500}
       botSizeY={1230}
       y={700}
       position={[1, 2, 3]} />);
@@ -17,6 +18,7 @@ describe("belts", () => {
     expect(container).toContainHTML("yBeltSegment0");
 
     rerender(<YAxisBelt
+      beamLength={1500}
       botSizeY={1230}
       y={701}
       position={[1, 2, 3]} />);

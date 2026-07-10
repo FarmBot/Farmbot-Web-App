@@ -37,13 +37,14 @@ const gantryBeamPropsEqual = (
 
 const GantryBeamComponent = (props: GantryBeamProps) => {
   const {
-    beamLength, columnLength, bedYOffset, bedWidthOuter,
+    beamLength, columnLength, kitVersion,
   } = props.config;
   const { x } = props.configPosition;
+  const isV19 = kitVersion == "v1.9";
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const position = get3DPosition({
     x: x - 39,
-    y: (bedWidthOuter + beamLength) / 2 - 50 - bedYOffset,
+    y: isV19 ? beamLength - 50 : beamLength - 130,
   });
   return <Group name={"gantry-beam"}
     position={[
@@ -67,7 +68,7 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
       <LightStrip
         width={beamLength}
         debug={props.config.lightsDebug}
-        ledsUnderBeam={ledsUnderBeam(props.config.kitVersion)} />}
+        ledsUnderBeam={ledsUnderBeam(kitVersion)} />}
   </Group>;
 };
 

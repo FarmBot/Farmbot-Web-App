@@ -39,7 +39,9 @@ export const ASSETS: Record<string, Record<string, string>> = {
     gantryWheelPlate: "/3D/models/gantry_wheel_plate.glb",
     gantryWheelPlateV19: "/3D/models/gantry_wheel_plate_v19.glb",
     leftBracket: "/3D/models/left_bracket.glb",
+    leftBracketV19: "/3D/models/left_bracket_v19.glb",
     rightBracket: "/3D/models/right_bracket.glb",
+    rightBracketV19: "/3D/models/right_bracket_v19.glb",
     crossSlide: "/3D/models/cross_slide.glb",
     crossSlideV19: "/3D/models/cross_slide_v19.glb",
     beltClip: "/3D/models/belt_clip.glb",
@@ -128,10 +130,16 @@ export enum MountedIdlerPulleyMaterial {
   bearing = "0.301961_0.301961_0.301961_0.000000_0.000000",
 }
 
+export enum GantryCornerBracketMaterial {
+  hardware = "0.800000_0.800000_0.800000_0.000000_0.000000",
+  bracket = "0.901961_0.901961_0.901961_0.000000_0.000000",
+}
+
 export enum PartName {
   gantryWheelPlate = "Gantry_Wheel_Plate",
   leftBracket = "Left_Gantry_Corner_Bracket",
   rightBracket = "Right_Gantry_Corner_Bracket",
+  gantryCornerBracketNutBar = "Nut_Bar_-_60mm",
   crossSlide = "Cross-Slide_Plate",
   crossSlideV19 = "M5_Flange_Locknut",
   zStop = "Z-Axis_Hardstop",
