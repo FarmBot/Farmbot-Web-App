@@ -11,8 +11,8 @@ import {
 import { Tools, XAxisWaterTube } from "./components";
 import { WaterFlowTextureProvider } from "./components/water_stream";
 import {
-  CrossSlideAssembly, EffectsAssembly, GantryAssembly, RoutingAssembly,
-  StationaryAssembly, ZAxisAssembly,
+  CrossSlideAssembly, EffectsAssembly, FluidRoutingAssembly,
+  FrameRoutingAssembly, GantryAssembly, StationaryAssembly, ZAxisAssembly,
 } from "./assemblies";
 import { BotKinematics, getBotKinematics } from "./kinematics";
 import { getBotVersion } from "./bot_versions";
@@ -120,8 +120,8 @@ interface SnapshotAssembliesProps {
 const SnapshotAssemblies = (props: SnapshotAssembliesProps) => {
   const configPosition = useBotPositionSnapshot(props.snapshotStore);
   return <>
-    <Group name={"bot-routing"} position={props.machineOrigin}>
-      <RoutingAssembly
+    <Group name={"bot-fluid-routing"} position={props.machineOrigin}>
+      <FluidRoutingAssembly
         config={props.config}
         configPosition={configPosition}
         positionRef={props.currentPosition}
@@ -294,6 +294,13 @@ const EnabledBot = (props: FarmbotModelProps) => {
             </Group>
           </Group>
         </Group>
+      </Group>
+      <Group name={"bot-routing"} position={kinematics.machineOrigin}>
+        <FrameRoutingAssembly
+          config={config}
+          configPosition={configPosition}
+          positionRef={currentPosition}
+          version={version} />
       </Group>
       <SnapshotAssemblies
         config={config}

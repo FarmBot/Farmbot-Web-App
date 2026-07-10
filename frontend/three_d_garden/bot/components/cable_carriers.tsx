@@ -22,6 +22,7 @@ import {
   useOwnedExtrudeGeometries,
 } from "./owned_extrude_geometry";
 import { perfCount } from "../../../performance/perf";
+import { MutableCarrierGeometry } from "./mutable_routing_geometry";
 
 const distinguishableBlack = "#333";
 
@@ -45,7 +46,9 @@ const CableCarrierMesh = (props: CableCarrierMeshProps) => {
     geometry={geometry}
     position={props.position}
     rotation={props.rotation}>
-    <MeshPhongMaterial color={distinguishableBlack} />
+    <MeshPhongMaterial
+      color={distinguishableBlack}
+      side={THREE.DoubleSide} />
   </Mesh>;
 };
 
@@ -64,9 +67,17 @@ const buildCarrierGeometry = (
   createArgs: FrameCableCarrierMeshProps["createArgs"],
   position: PositionConfig,
 ) => {
+  const args = requiredCarrierArgs(createArgs, position);
+  return new MutableCarrierGeometry(args[0], Number(args[1].depth || 0));
+};
+
+const requiredCarrierArgs = (
+  createArgs: FrameCableCarrierMeshProps["createArgs"],
+  position: PositionConfig,
+) => {
   const args = createArgs(position)[0];
   if (!args) { throw new Error("Cable carrier geometry is missing."); }
-  return new THREE.ExtrudeGeometry(...args);
+  return args;
 };
 
 const FrameCableCarrierMesh = (props: FrameCableCarrierMeshProps) => {
@@ -75,7 +86,6 @@ const FrameCableCarrierMesh = (props: FrameCableCarrierMeshProps) => {
     perfCount(props.metric);
     return buildCarrierGeometry(props.createArgs, initialBotPosition);
   });
-  const geometry = React.useRef(initialGeometry);
   const mesh = React.useRef<THREE.Mesh | undefined>(undefined);
   const lastDeformationKey = React.useRef(
     props.deformationKey(initialBotPosition),
@@ -86,22 +96,16 @@ const FrameCableCarrierMesh = (props: FrameCableCarrierMeshProps) => {
     mesh.current?.position.set(...props.position(botPosition));
     const deformationKey = props.deformationKey(botPosition);
     if (deformationKey === lastDeformationKey.current) { return; }
-    perfCount(props.metric);
-    const nextGeometry = buildCarrierGeometry(
-      props.createArgs,
-      botPosition,
-    );
-    if (mesh.current) { mesh.current.geometry = nextGeometry; }
-    perfCount(`${props.metric}.dispose`);
-    geometry.current.dispose();
-    geometry.current = nextGeometry;
+    const args = requiredCarrierArgs(props.createArgs, botPosition);
+    perfCount(`${props.metric}.update`);
+    initialGeometry.update(args[0]);
     lastDeformationKey.current = deformationKey;
   });
 
   React.useLayoutEffect(() => () => {
     perfCount(`${props.metric}.dispose`);
-    geometry.current.dispose();
-  }, [props.metric]);
+    initialGeometry.dispose();
+  }, [initialGeometry, props.metric]);
 
   return <Mesh ref={mesh}
     name={props.name}
@@ -109,7 +113,9 @@ const FrameCableCarrierMesh = (props: FrameCableCarrierMeshProps) => {
     geometry={initialGeometry}
     position={props.initialPosition}
     rotation={props.rotation}>
-    <MeshPhongMaterial color={distinguishableBlack} />
+    <MeshPhongMaterial
+      color={distinguishableBlack}
+      side={THREE.DoubleSide} />
   </Mesh>;
 };
 

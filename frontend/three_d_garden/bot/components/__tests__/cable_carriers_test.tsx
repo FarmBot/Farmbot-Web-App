@@ -132,7 +132,6 @@ describe("moving cable carriers", () => {
     act(() => frameCallbacks.forEach(callback =>
       callback({} as never, 0)));
 
-    expect(mesh.geometry).toBeInstanceOf(ExtrudeGeometry);
     expect(mesh.position.x).toEqual(positionRef.current.x - 39);
     unmount();
     (useFrame as jest.Mock).mockReset();

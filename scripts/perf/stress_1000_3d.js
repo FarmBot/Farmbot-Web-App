@@ -17,16 +17,22 @@ const MOVEMENT_COUNT_METRICS = {
   effectsRenders: "render.BotEffects",
   getZCalls: "bot.getZ",
   xBeltBuilds: "bot.geometry.belt.x",
+  xBeltUpdates: "bot.geometry.belt.x.update",
   xBeltDisposals: "bot.geometry.belt.x.dispose",
   yBeltBuilds: "bot.geometry.belt.y",
+  yBeltUpdates: "bot.geometry.belt.y.update",
   yBeltDisposals: "bot.geometry.belt.y.dispose",
   zBeltBuilds: "bot.geometry.belt.z",
+  zBeltUpdates: "bot.geometry.belt.z.update",
   zBeltDisposals: "bot.geometry.belt.z.dispose",
   xCarrierBuilds: "bot.geometry.carrier.x",
+  xCarrierUpdates: "bot.geometry.carrier.x.update",
   xCarrierDisposals: "bot.geometry.carrier.x.dispose",
   yCarrierBuilds: "bot.geometry.carrier.y",
+  yCarrierUpdates: "bot.geometry.carrier.y.update",
   yCarrierDisposals: "bot.geometry.carrier.y.dispose",
   zCarrierBuilds: "bot.geometry.carrier.z",
+  zCarrierUpdates: "bot.geometry.carrier.z.update",
   zCarrierDisposals: "bot.geometry.carrier.z.dispose",
   airTubeBuilds: "bot.geometry.tube.air",
   solenoidTubeBuilds: "bot.geometry.tube.solenoid",
@@ -720,21 +726,29 @@ const collectMovementRun = async (
     page,
     WATER_MOVEMENT_SCENARIO,
   );
+  const runtimeBeforeRepeatGC = await runtimeSummary(page);
+  await page.requestGC();
   const runtimeBeforeRepeat = await runtimeSummary(page);
   await measureBotScenario(page, WATER_MOVEMENT_SCENARIO);
+  const runtimeAfterRepeatGC = await runtimeSummary(page);
+  await page.requestGC();
   const runtimeAfterRepeat = await runtimeSummary(page);
   await context.close();
   return {
     runIndex,
     config,
     scenarios,
+    runtimeBeforeRepeatGC,
     runtimeBeforeRepeat,
+    runtimeAfterRepeatGC,
     runtimeAfterRepeat,
     geometryGrowth:
       runtimeAfterRepeat.webglGeometries -
       runtimeBeforeRepeat.webglGeometries,
     objectGrowth:
       runtimeAfterRepeat.sceneObjects - runtimeBeforeRepeat.sceneObjects,
+    postGCHeapGrowth:
+      runtimeAfterRepeat.usedJSHeapSize - runtimeBeforeRepeat.usedJSHeapSize,
   };
 };
 
@@ -794,6 +808,8 @@ const runMovementBenchmark = async args => {
       summary: movementSummary(measuredRuns),
       geometryGrowth: median(measuredRuns.map(run => run.geometryGrowth)),
       objectGrowth: median(measuredRuns.map(run => run.objectGrowth)),
+      postGCHeapGrowth: median(measuredRuns
+        .map(run => run.postGCHeapGrowth)),
     };
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, `${JSON.stringify(result, undefined, 2)}\n`);

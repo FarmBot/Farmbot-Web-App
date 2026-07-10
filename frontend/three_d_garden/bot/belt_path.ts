@@ -53,6 +53,8 @@ interface BeltSpan {
 }
 
 export interface BeltPathSegment {
+  maxSteps: number;
+  normal: Vector3;
   path: CurvePath<Vector3>;
   steps: number;
   type: "arc" | "span";
@@ -388,7 +390,12 @@ const beltSegment = (
   curve: Curve<Vector3>,
   axisNormal: Vector3,
   type: BeltPathSegment["type"],
+  radius = 0,
 ): BeltPathSegment => ({
+  maxSteps: type == "span"
+    ? 1
+    : Math.max(1, Math.ceil(2 * Math.PI * radius / maxArcSegmentLength)),
+  normal: axisNormal,
   path: new BeltSegmentPath(curve, axisNormal),
   steps: type == "span"
     ? 1
@@ -425,7 +432,7 @@ const drawBeltPath = (
           ),
           pulleyWrapIsClockwise(node, spans[index - 1]),
           projection,
-        ), projection.normal, "arc"));
+        ), projection.normal, "arc", node.radius));
       }
     }
     index > 0 && segments.push(beltSegment(

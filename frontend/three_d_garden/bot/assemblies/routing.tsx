@@ -229,7 +229,7 @@ const ZRouting = React.memo((props: RoutingAssemblyProps) => {
   </Group>;
 }, zRoutingPropsEqual);
 
-const FluidRouting = (props: RoutingAssemblyProps) => {
+export const FluidRoutingAssembly = (props: RoutingAssemblyProps) => {
   const { config, configPosition } = props;
   return <Group name={"fluid-routing"}>
     <AirTube {...props} />
@@ -241,13 +241,12 @@ const FluidRouting = (props: RoutingAssemblyProps) => {
   </Group>;
 };
 
-export const RoutingAssembly = (props: RoutingAssemblyProps) => {
+export const FrameRoutingAssembly = (props: RoutingAssemblyProps) => {
   usePerfRenderCount("BotRouting");
   return <Group name={"routing-systems"}>
     <PowerCable config={props.config} />
     <XRouting {...props} />
     <YRouting {...props} />
     <ZRouting {...props} />
-    <FluidRouting {...props} />
   </Group>;
 };

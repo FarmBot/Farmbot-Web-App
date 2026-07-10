@@ -1,7 +1,7 @@
 import React from "react";
 import {
   BufferGeometry, ExtrudeGeometry, Group as ThreeGroup,
-  Mesh as ThreeMesh, Shape,
+  Shape,
 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { mergeGeometries } from
@@ -14,6 +14,8 @@ import {
 } from "./components/owned_extrude_geometry";
 import { PositionConfig } from "../config";
 import { perfCount } from "../../performance/perf";
+import { MutableBeltGeometry } from
+  "./components/mutable_routing_geometry";
 
 const beltThickness = 1.5;
 const beltWidth = 5;
@@ -56,7 +58,7 @@ const Belt = (props: BeltProps) =>
   </Group>;
 
 interface FrameBeltProps {
-  buildGeometry(position: PositionConfig): BufferGeometry;
+  createPath(position: PositionConfig): BeltPath;
   deformationKey(position: PositionConfig): string;
   getPositions(position: PositionConfig): [number, number, number][];
   metric: string;
@@ -68,14 +70,12 @@ const FrameBelt = (props: FrameBeltProps) => {
   const initialPosition = props.positionRef.current;
   const [initialGeometry] = React.useState(() => {
     perfCount(props.metric);
-    return props.buildGeometry(initialPosition);
+    return new MutableBeltGeometry(props.createPath(initialPosition));
   });
-  const geometry = React.useRef(initialGeometry);
   const lastDeformationKey = React.useRef(
     props.deformationKey(initialPosition),
   );
   const groupRefs = React.useRef<(ThreeGroup | null)[]>([]);
-  const meshRefs = React.useRef<(ThreeMesh | null)[]>([]);
 
   useFrame(() => {
     const position = props.positionRef.current;
@@ -84,21 +84,15 @@ const FrameBelt = (props: FrameBeltProps) => {
     });
     const deformationKey = props.deformationKey(position);
     if (deformationKey === lastDeformationKey.current) { return; }
-    perfCount(props.metric);
-    const nextGeometry = props.buildGeometry(position);
-    meshRefs.current.forEach(mesh => {
-      if (mesh) { mesh.geometry = nextGeometry; }
-    });
-    perfCount(`${props.metric}.dispose`);
-    geometry.current.dispose();
-    geometry.current = nextGeometry;
+    perfCount(`${props.metric}.update`);
+    initialGeometry.update(props.createPath(position));
     lastDeformationKey.current = deformationKey;
   });
 
   React.useLayoutEffect(() => () => {
     perfCount(`${props.metric}.dispose`);
-    geometry.current.dispose();
-  }, [props.metric]);
+    initialGeometry.dispose();
+  }, [initialGeometry, props.metric]);
 
   const positions = props.getPositions(initialPosition);
   return <>{props.names.map((name, index) =>
@@ -108,11 +102,7 @@ const FrameBelt = (props: FrameBeltProps) => {
       }}
       name={name}
       position={positions[index]}>
-      <Mesh ref={mesh => {
-        meshRefs.current[index] = mesh as ThreeMesh | null;
-      }}
-      name={`${name}Segment0`}
-      geometry={initialGeometry}>
+      <Mesh name={`${name}Segment0`} geometry={initialGeometry}>
         <MeshPhongMaterial color={distinguishableBlack} />
       </Mesh>
     </Group>)}</>;
@@ -199,12 +189,12 @@ const XAxisBeltBase = (props: XAxisBeltProps) => props.positionRef
     props.columnLength,
     props.length,
   ].join(":")}
-  buildGeometry={position => buildBeltGeometry(buildXAxisBeltPath(
+  createPath={position => buildXAxisBeltPath(
     props.kitVersion || "v1.8",
     props.columnLength,
     props.length,
     position.x,
-  ))}
+  )}
   deformationKey={position => `${position.x}`}
   getPositions={() => [props.position]}
   metric={"bot.geometry.belt.x"}
@@ -269,12 +259,12 @@ const XAxisBeltPairBase = (props: XAxisBeltPairProps) => props.positionRef
     props.columnLength,
     props.length,
   ].join(":")}
-  buildGeometry={position => buildBeltGeometry(buildXAxisBeltPath(
+  createPath={position => buildXAxisBeltPath(
     props.kitVersion || "v1.8",
     props.columnLength,
     props.length,
     position.x,
-  ))}
+  )}
   deformationKey={position => `${position.x}`}
   getPositions={() => props.positions}
   metric={"bot.geometry.belt.x"}
@@ -373,12 +363,12 @@ const YAxisBeltBase = (props: YAxisBeltProps) => {
       props.beamLength,
       props.botSizeY,
     ].join(":")}
-    buildGeometry={position => buildBeltGeometry(buildYAxisBeltPath(
+    createPath={position => buildYAxisBeltPath(
       props.kitVersion || "v1.8",
       props.beamLength,
       props.botSizeY,
       position.y,
-    ))}
+    )}
     deformationKey={position => `${position.y}`}
     getPositions={position => [[
       position.x + xOffset,
@@ -486,12 +476,12 @@ const ZAxisBeltBase = (props: ZAxisBeltProps) => {
       props.botSizeZ,
       Number(props.negativeZ),
     ].join(":")}
-    buildGeometry={position => buildBeltGeometry(buildZAxisBeltPath(
+    createPath={position => buildZAxisBeltPath(
       props.botSizeY,
       props.botSizeZ,
       position.y,
       props.negativeZ ? position.z : -position.z,
-    ))}
+    )}
     deformationKey={position => `${position.y}:${position.z}`}
     getPositions={position => [[
       position.x + xOffset,

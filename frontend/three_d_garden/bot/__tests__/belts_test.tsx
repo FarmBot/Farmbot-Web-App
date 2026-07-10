@@ -168,18 +168,15 @@ describe("belts", () => {
     const group = container.querySelector("group") as unknown as {
       position: Vector3;
     };
-    const mesh = container.querySelector("mesh") as unknown as {
-      geometry: BufferGeometry;
-    };
     group.position = new Vector3();
     positionRef.current = { x: 301, y: 0, z: 0 };
 
     act(() => frameCallbacks.forEach(callback =>
       callback({} as never, 0)));
 
-    expect(mesh.geometry).toBeInstanceOf(BufferGeometry);
-    expect(disposeSpy).toHaveBeenCalled();
+    expect(disposeSpy).not.toHaveBeenCalled();
     unmount();
+    expect(disposeSpy).toHaveBeenCalledTimes(1);
     disposeSpy.mockRestore();
     (useFrame as jest.Mock).mockReset();
   });
