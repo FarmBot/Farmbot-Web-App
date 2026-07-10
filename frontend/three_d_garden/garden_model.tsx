@@ -1701,19 +1701,17 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraUrlSaveTimeoutRef.current = undefined;
   }, []);
   const saveCameraUrl = React.useCallback(() => {
-    if (!props.promo || !baseConfig.urlCameraPos
-      || !controlsCamera || !controls) {
-      return;
+    if (props.promo && baseConfig.urlCameraPos && controlsCamera && controls) {
+      const state = readSmoothCameraState({
+        position: camera.position,
+        target: camera.target,
+        zoom: targetZoom,
+      }, controlsCamera, controls);
+      setCameraUrlParams({
+        position: state.position,
+        target: state.target,
+      });
     }
-    const state = readSmoothCameraState({
-      position: camera.position,
-      target: camera.target,
-      zoom: targetZoom,
-    }, controlsCamera, controls);
-    setCameraUrlParams({
-      position: state.position,
-      target: state.target,
-    });
   }, [
     baseConfig.urlCameraPos,
     camera.position,

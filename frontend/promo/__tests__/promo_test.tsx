@@ -153,8 +153,8 @@ describe("<Promo />", () => {
     await waitFor(() => expect(gardenModelSpy.mock.calls[0][0])
       .toEqual(expect.objectContaining({ activeFocus: "What you can grow" })));
     fireEvent.keyDown(window, { key: "Enter" });
-    fireEvent.keyDown(screen.getByText("garden-model")
-      .closest(".three-d-garden") as HTMLElement, { key: "Escape" });
+    expect(pushStateSpy).not.toHaveBeenCalled();
+    fireEvent.keyDown(window, { key: "Escape" });
     await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
     const nextUrl = pushStateSpy.mock.calls[0][2] as string;
     expect(nextUrl).not.toContain("focus=");

@@ -16,6 +16,7 @@ import {
   getRendererInstance,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import { NavigationContext } from "../../routes_helpers";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -131,15 +132,16 @@ describe("<AddTool />", () => {
     mockSave = () => Promise.resolve();
     const p = fakeProps();
     p.dispatch = mockDispatch();
-    const wrapper = createWrapper(p);
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "Foo" });
-    });
     const navigate = jest.fn();
-    instance.navigate = navigate;
-    await actRenderer(async () => {
-      instance.save();
+    const ref = React.createRef<AddTool>();
+    render(<NavigationContext.Provider value={navigate}>
+      <AddTool {...p} ref={ref} />
+    </NavigationContext.Provider>);
+    act(() => {
+      ref.current?.setState({ toolName: "Foo" });
+    });
+    await act(async () => {
+      ref.current?.save();
       await Promise.resolve();
     });
     expect(crud.init).toHaveBeenCalledWith("Tool", {
@@ -147,9 +149,8 @@ describe("<AddTool />", () => {
       flow_rate_ml_per_s: 0,
       seeder_tip_z_offset: 80,
     });
-    expect(instance.state.uuid).toEqual(undefined);
+    expect(ref.current?.state.uuid).toEqual(undefined);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    unmountRenderer(wrapper);
   });
 
   it("removes unsaved tool on exit", async () => {

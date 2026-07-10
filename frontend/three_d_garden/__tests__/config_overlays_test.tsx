@@ -6,8 +6,10 @@ import {
 import { INITIAL, PRESETS } from "../config";
 import { clone } from "lodash";
 import * as zoomBeaconConstants from "../zoom_beacons_constants";
+import * as camera from "../camera";
 
 let setUrlParamSpy: jest.SpyInstance;
+let clearCameraUrlParamsSpy: jest.SpyInstance | undefined;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -17,6 +19,8 @@ beforeEach(() => {
 
 afterEach(() => {
   setUrlParamSpy.mockRestore();
+  clearCameraUrlParamsSpy?.mockRestore();
+  clearCameraUrlParamsSpy = undefined;
   jest.useRealTimers();
 });
 
@@ -187,6 +191,22 @@ describe("<PrivateOverlay />", () => {
       promoInfo: false,
     });
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
+  });
+
+  it("clears camera URL values when URL camera tracking is disabled", () => {
+    clearCameraUrlParamsSpy = jest.spyOn(camera, "clearCameraUrlParams")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.config.urlCameraPos = true;
+    const { getByTitle } = render(<PrivateOverlay {...p} />);
+
+    fireEvent.click(getByTitle("urlCameraPos"));
+
+    expect(p.setConfig).toHaveBeenCalledWith({
+      ...p.config,
+      urlCameraPos: false,
+    });
+    expect(clearCameraUrlParamsSpy).toHaveBeenCalled();
   });
 
   it("changes value: radio", () => {

@@ -438,9 +438,15 @@ const drawBeltPath = (
 };
 
 export class BeltPath {
-  private nodes: BeltPathNode3D[] = [];
-  private complete = false;
-  private segments: BeltPathSegment[] = [];
+  private nodes: BeltPathNode3D[];
+  private complete: boolean;
+  private segments: BeltPathSegment[];
+
+  constructor() {
+    this.nodes = [];
+    this.complete = false;
+    this.segments = [];
+  }
 
   start(x: number, y: number, z: number): this {
     if (this.nodes.length > 0) {

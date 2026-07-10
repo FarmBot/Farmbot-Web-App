@@ -28,6 +28,7 @@ import {
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import { cameraInit } from "../camera";
+import * as cameraModule from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -49,6 +50,7 @@ import { ThreeDObjectSelectionLayer } from "../selection/layer";
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 let useStateSpy: jest.SpyInstance;
+let setCameraUrlParamsSpy: jest.SpyInstance | undefined;
 let resetStoreAfterTest = false;
 const originalPathname = location.pathname;
 const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
@@ -88,6 +90,8 @@ describe("<GardenModel />", () => {
     }
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
     location.pathname = originalPathname;
+    setCameraUrlParamsSpy?.mockRestore();
+    setCameraUrlParamsSpy = undefined;
   });
 
   const fakeProps = (): GardenModelProps => ({
@@ -104,6 +108,28 @@ describe("<GardenModel />", () => {
     mountedWrappers.push(wrapper);
     return wrapper;
   };
+
+  const createPromoCameraWrapper = () => {
+    setCameraUrlParamsSpy = jest.spyOn(cameraModule, "setCameraUrlParams")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.promo = true;
+    p.config.urlCameraPos = true;
+    const wrapper = createWrapper(p);
+    const controls = () => wrapper.root.findByType(OrbitControls);
+    const expectedCamera = cameraInit({
+      topDown: p.config.topDown,
+      viewpointHeading: p.config.viewpointHeading,
+      bedSize: {
+        x: p.config.bedLengthOuter,
+        y: p.config.bedWidthOuter,
+      },
+      zoomFactor: p.config.zoomFactor,
+    });
+    return { controls, expectedCamera, p, wrapper };
+  };
+  const waitForCameraUrlSave = () =>
+    new Promise<void>(resolve => window.setTimeout(resolve, 200));
 
   const defaultLayerSetting = (setting: string) =>
     setting == BooleanSetting.show_plants
@@ -879,6 +905,48 @@ describe("<GardenModel />", () => {
       orbitControls.props.onEnd();
     });
     expect(root).toBeTruthy();
+  });
+
+  it("saves immediate and settled promo camera URL values", async () => {
+    const { controls, expectedCamera } = createPromoCameraWrapper();
+    actRenderer(() => {
+      controls().props.onStart();
+      controls().props.onEnd();
+    });
+    expect(setCameraUrlParamsSpy).toHaveBeenNthCalledWith(1, expectedCamera);
+
+    await actRenderer(waitForCameraUrlSave);
+    expect(setCameraUrlParamsSpy).toHaveBeenNthCalledWith(2, expectedCamera);
+  });
+
+  it("cancels a pending camera URL save when focus changes", async () => {
+    const { controls, p, wrapper } = createPromoCameraWrapper();
+    actRenderer(() => {
+      controls().props.onStart();
+      controls().props.onEnd();
+    });
+    expect(setCameraUrlParamsSpy).toHaveBeenCalledTimes(1);
+
+    actRenderer(() => {
+      wrapper.update(<GardenModel {...p} activeFocus={"What you can grow"} />);
+    });
+
+    await actRenderer(waitForCameraUrlSave);
+    expect(setCameraUrlParamsSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels a pending camera URL save when unmounted", async () => {
+    const { controls, wrapper } = createPromoCameraWrapper();
+    actRenderer(() => {
+      controls().props.onStart();
+      controls().props.onEnd();
+    });
+    expect(setCameraUrlParamsSpy).toHaveBeenCalledTimes(1);
+
+    mountedWrappers.pop();
+    unmountRenderer(wrapper);
+    await actRenderer(waitForCameraUrlSave);
+    expect(setCameraUrlParamsSpy).toHaveBeenCalledTimes(1);
   });
 
   it("handles grid hover and location selection", () => {
