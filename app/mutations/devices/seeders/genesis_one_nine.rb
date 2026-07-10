@@ -52,8 +52,6 @@ module Devices
 
       def tools_weeder; end
 
-      def tools_watering_nozzle; end
-
       def tools_rotary
         @tools_rotary ||=
           add_tool(ToolNames::ROTARY_TOOL)
