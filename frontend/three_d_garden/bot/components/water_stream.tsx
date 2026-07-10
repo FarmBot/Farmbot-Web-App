@@ -1,9 +1,12 @@
 import React, { useMemo } from "react";
 import { Tube } from "@react-three/drei";
-import { MeshPhongMaterial } from "../../components";
-import { TextureLoader, RepeatWrapping, Texture } from "three";
+import { Mesh, MeshPhongMaterial } from "../../components";
+import {
+  Curve, TextureLoader, RepeatWrapping, Texture, Vector3,
+} from "three";
 import * as threeFiber from "@react-three/fiber";
 import { ASSETS } from "../../constants";
+import { useManagedTubeGeometry } from "./managed_tube_geometry";
 
 export interface WaterStreamProps extends React.ComponentProps<typeof Tube> {
   waterFlow: boolean;
@@ -53,12 +56,28 @@ export const useSharedWaterFlowTexture = () =>
 
 export const WaterStream = (props: WaterStreamProps) => {
   const { waterFlow, waterTexture, ...tubeProps } = props;
+  const name = "" + props.name;
+  const [path, tubularSegments = 64, radius = 1,
+    radialSegments = 8] = tubeProps.args as unknown as [
+      Curve<Vector3>, number?, number?, number?,
+    ];
+  const geometry = useManagedTubeGeometry(
+    path,
+    tubularSegments,
+    radius,
+    radialSegments,
+    name.startsWith("water-stream-")
+      ? "bot.geometry.waterSpray"
+      : "bot.geometry.tube.solenoidStream",
+  );
+  const { args: _args, ...meshProps } = tubeProps;
 
-  return <Tube
-    {...tubeProps}
+  return <Mesh
+    {...meshProps}
+    geometry={geometry}
     castShadow={true}
     receiveShadow={true}
     visible={waterFlow}>
     <MeshPhongMaterial map={waterTexture} />
-  </Tube>;
+  </Mesh>;
 };

@@ -1,5 +1,7 @@
 import React from "react";
+import { useFrame } from "@react-three/fiber";
 import { PositionConfig } from "../config";
+import { perfCount } from "../../performance/perf";
 
 // Millimetres and seconds; damping is critical for unit mass.
 export const BOT_POSITION_SPRING = {
@@ -98,57 +100,130 @@ export interface BotPositionSpringCallbacks {
   onRest?(position: PositionConfig): void;
 }
 
+export interface BotPositionSpringResult {
+  snapshotStore: BotPositionSnapshotStore;
+  currentPosition: React.MutableRefObject<PositionConfig>;
+}
+
+export interface BotPositionSnapshotStore {
+  getSnapshot(): PositionConfig;
+  subscribe(listener: () => void): () => void;
+  publish(position: PositionConfig): void;
+}
+
+const copyPosition = (position: PositionConfig): PositionConfig => ({
+  x: position.x,
+  y: position.y,
+  z: position.z,
+});
+
+export const createBotPositionSnapshotStore = (
+  initialPosition: PositionConfig,
+): BotPositionSnapshotStore => {
+  let snapshot = copyPosition(initialPosition);
+  const listeners = new Set<() => void>();
+  return {
+    getSnapshot: () => snapshot,
+    subscribe: listener => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    publish: position => {
+      snapshot = copyPosition(position);
+      listeners.forEach(listener => listener());
+    },
+  };
+};
+
+export const useBotPositionSnapshot = (
+  store: BotPositionSnapshotStore,
+): PositionConfig => React.useSyncExternalStore(
+  store.subscribe,
+  store.getSnapshot,
+  store.getSnapshot,
+);
+
 export const useBotPositionSpring = (
   target: PositionConfig,
   enabled: boolean,
   callbacks: BotPositionSpringCallbacks = {},
   resetKey = 0,
-): PositionConfig => {
-  const motion = React.useRef(positionState(target));
+): BotPositionSpringResult => {
+  const [initialPosition] = React.useState(() => copyPosition(target));
+  const motion = React.useRef(positionState(initialPosition));
+  const targetRef = React.useRef(initialPosition);
+  const enabledRef = React.useRef(enabled);
+  const callbacksRef = React.useRef(callbacks);
   const resetKeyRef = React.useRef(resetKey);
-  const [position, setPosition] = React.useState(target);
+  const currentPosition = React.useRef(initialPosition);
+  const lastSnapshot = React.useRef(initialPosition);
+  const [snapshotStore] = React.useState(
+    () => createBotPositionSnapshotStore(initialPosition),
+  );
   const { x: targetX, y: targetY, z: targetZ } = target;
-  const { onChange, onRest } = callbacks;
 
-  React.useEffect(() => {
+  const publishSnapshot = React.useCallback((position: PositionConfig) => {
+    if (position.x === lastSnapshot.current.x &&
+      position.y === lastSnapshot.current.y &&
+      position.z === lastSnapshot.current.z) {
+      return false;
+    }
+    const snapshot = copyPosition(position);
+    lastSnapshot.current = snapshot;
+    perfCount("bot.routingSnapshot");
+    snapshotStore.publish(snapshot);
+    return true;
+  }, [snapshotStore]);
+
+  React.useLayoutEffect(() => {
+    callbacksRef.current = callbacks;
+  }, [callbacks]);
+
+  React.useLayoutEffect(() => {
     const springTarget = { x: targetX, y: targetY, z: targetZ };
     const reset = resetKeyRef.current != resetKey;
     resetKeyRef.current = resetKey;
+    targetRef.current = springTarget;
+    enabledRef.current = enabled;
     if (reset || !enabled || positionAtRest(motion.current, springTarget)) {
       motion.current = positionState(springTarget);
-      const frame = window.requestAnimationFrame(() => {
-        setPosition(springTarget);
-        onChange?.(springTarget);
-        onRest?.(springTarget);
-      });
-      return () => window.cancelAnimationFrame(frame);
+      currentPosition.current = springTarget;
+      callbacksRef.current.onChange?.(springTarget);
+      publishSnapshot(springTarget);
+      callbacksRef.current.onRest?.(springTarget);
     }
-    let frame = 0;
-    let previousTime: number | undefined;
-    const tick = (time: number) => {
-      const deltaSeconds = previousTime === undefined
-        ? 1 / 60
-        : (time - previousTime) / 1000;
-      previousTime = time;
-      const next = stepMechanicalPosition(
-        motion.current,
-        springTarget,
-        deltaSeconds,
-      );
-      motion.current = next;
-      onChange?.(next.position);
-      if (positionAtRest(next, springTarget)) {
-        motion.current = positionState(springTarget);
-        setPosition(springTarget);
-        onRest?.(springTarget);
-      } else {
-        setPosition(next.position);
-        frame = window.requestAnimationFrame(tick);
-      }
-    };
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, [enabled, onChange, onRest, resetKey, targetX, targetY, targetZ]);
+  }, [
+    enabled,
+    publishSnapshot,
+    resetKey,
+    targetX,
+    targetY,
+    targetZ,
+  ]);
 
-  return enabled ? position : target;
+  useFrame((_state, deltaSeconds) => {
+    if (!enabledRef.current ||
+      positionAtRest(motion.current, targetRef.current)) {
+      return;
+    }
+    const next = stepMechanicalPosition(
+      motion.current,
+      targetRef.current,
+      deltaSeconds,
+    );
+    motion.current = next;
+    currentPosition.current = next.position;
+    callbacksRef.current.onChange?.(next.position);
+    if (positionAtRest(next, targetRef.current)) {
+      const exactTarget = copyPosition(targetRef.current);
+      motion.current = positionState(exactTarget);
+      currentPosition.current = exactTarget;
+      publishSnapshot(exactTarget);
+      callbacksRef.current.onRest?.(exactTarget);
+    } else {
+      publishSnapshot(next.position);
+    }
+  }, -1);
+
+  return { snapshotStore, currentPosition };
 };

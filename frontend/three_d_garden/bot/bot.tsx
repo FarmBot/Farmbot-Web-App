@@ -14,17 +14,27 @@ import {
   CrossSlideAssembly, EffectsAssembly, GantryAssembly, RoutingAssembly,
   StationaryAssembly, ZAxisAssembly,
 } from "./assemblies";
-import { getBotKinematics } from "./kinematics";
+import { BotKinematics, getBotKinematics } from "./kinematics";
 import { getBotVersion } from "./bot_versions";
 import { useBotShapes } from "./bot_shapes";
-import { useBotPositionSpring } from "./position_spring";
+import {
+  BotPositionSnapshotStore, useBotPositionSnapshot,
+  useBotPositionSpring,
+} from "./position_spring";
 import {
   getDemoMovementStopVersion,
+  getDemoMovementPosition,
   getDemoMovementTarget,
+  demoMovementActive,
   registerDemoMovementDriver,
   reportDemoMovementComplete,
   reportDemoMovementPosition,
+  startDemoMovement,
 } from "../../demo/lua_runner/movement";
+import {
+  perfEnabled, usePerfRenderCount,
+} from "../../performance/perf";
+import { Actions } from "../../constants";
 
 export { clearBotShapeCache } from "./bot_shapes";
 
@@ -79,10 +89,72 @@ export const getBotSpringTarget = (
   ? getUnmirroredBotPosition(config, demoTarget)
   : reportedPosition;
 
+export interface BotKinematicObjects {
+  gantry?: Object3D | null;
+  crossSlide?: Object3D | null;
+  zAxis?: Object3D | null;
+  trailTarget?: Object3D | null;
+}
+
+export const applyBotKinematicFrame = (
+  objects: BotKinematicObjects,
+  kinematics: BotKinematics,
+) => {
+  objects.gantry?.position?.set(...kinematics.gantryPosition);
+  objects.crossSlide?.position?.set(...kinematics.crossSlidePosition);
+  objects.zAxis?.position?.set(...kinematics.zAxisPosition);
+  objects.trailTarget?.position?.set(
+    ...kinematics.anchors.utm.worldPosition,
+  );
+};
+
+interface SnapshotAssembliesProps {
+  config: Config;
+  currentPosition: React.MutableRefObject<PositionConfig>;
+  getZ(x: number, y: number): number;
+  machineOrigin: [number, number, number];
+  snapshotStore: BotPositionSnapshotStore;
+  version: ReturnType<typeof getBotVersion>;
+}
+
+const SnapshotAssemblies = (props: SnapshotAssembliesProps) => {
+  const configPosition = useBotPositionSnapshot(props.snapshotStore);
+  return <>
+    <Group name={"bot-routing"} position={props.machineOrigin}>
+      <RoutingAssembly
+        config={props.config}
+        configPosition={configPosition}
+        positionRef={props.currentPosition}
+        version={props.version} />
+    </Group>
+    <Group name={"bot-effects"}>
+      <EffectsAssembly
+        config={props.config}
+        configPosition={configPosition}
+        version={props.version}
+        getZ={props.getZ} />
+    </Group>
+  </>;
+};
+
+interface SnapshotGantryToolsProps extends FarmbotModelProps {
+  snapshotStore: BotPositionSnapshotStore;
+}
+
+const SnapshotGantryTools = (props: SnapshotGantryToolsProps) => {
+  const configPosition = useBotPositionSnapshot(props.snapshotStore);
+  return <Tools {...props}
+    configPosition={configPosition}
+    frame={"gantry"} />;
+};
+
 const EnabledBot = (props: FarmbotModelProps) => {
-  const { config } = props;
+  usePerfRenderCount("EnabledBot");
+  const { config, dispatch } = props;
   const { botSizeX, botSizeY, mirrorX, mirrorY } = config;
-  const springCallbacks = React.useMemo(
+  const version = getBotVersion(config.kitVersion);
+  const shapes = useBotShapes(config.tracks, version);
+  const demoSpringCallbacks = React.useMemo(
     () => getDemoMovementSpringCallbacks({
       botSizeX,
       botSizeY,
@@ -92,23 +164,73 @@ const EnabledBot = (props: FarmbotModelProps) => {
     [botSizeX, botSizeY, mirrorX, mirrorY],
   );
   const springTarget = getBotSpringTarget(config, props.configPosition);
-  const configPosition = useBotPositionSpring(
-    springTarget,
-    config.animate,
-    springCallbacks,
-    getDemoMovementStopVersion(),
+  const [initialKinematics] = React.useState(
+    () => getBotKinematics(config, springTarget, version),
   );
+  const gantry = React.useRef<Object3D | undefined>(undefined);
+  const crossSlide = React.useRef<Object3D | undefined>(undefined);
+  const zAxis = React.useRef<Object3D | undefined>(undefined);
+  const trailTarget = React.useRef(new Object3D());
+  const applyPosition = React.useCallback((position: PositionConfig) => {
+    applyBotKinematicFrame(
+      {
+        gantry: gantry.current,
+        crossSlide: crossSlide.current,
+        zAxis: zAxis.current,
+        trailTarget: trailTarget.current,
+      },
+      getBotKinematics(config, position, version),
+    );
+  }, [config, version]);
+  const springCallbacks = React.useMemo(() => ({
+    onChange: (position: PositionConfig) => {
+      applyPosition(position);
+      demoSpringCallbacks.onChange(position);
+    },
+    onRest: demoSpringCallbacks.onRest,
+  }), [applyPosition, demoSpringCallbacks]);
+  const springResetKey = getDemoMovementStopVersion();
+  const { snapshotStore, currentPosition } =
+    useBotPositionSpring(
+      springTarget,
+      config.animate,
+      springCallbacks,
+      springResetKey,
+    );
+  React.useLayoutEffect(() => {
+    applyPosition(currentPosition.current);
+  }, [applyPosition, config.animate, currentPosition, springResetKey]);
   React.useEffect(() => config.animate
     ? registerDemoMovementDriver()
     : undefined, [config.animate]);
-  const version = getBotVersion(config.kitVersion);
-  const shapes = useBotShapes(config.tracks, version);
-  const kinematics = getBotKinematics(config, configPosition, version);
-  const trailTarget = React.useRef(new Object3D());
-  const [utmX, utmY, utmZ] = kinematics.anchors.utm.worldPosition;
-  React.useLayoutEffect(() => {
-    trailTarget.current.position.set(utmX, utmY, utmZ);
-  }, [utmX, utmY, utmZ]);
+  React.useEffect(() => {
+    if (!perfEnabled()) { return; }
+    const benchmark = {
+      active: demoMovementActive,
+      config: () => ({
+        cableCarriers: config.cableCarriers,
+        trail: config.trail,
+        waterFlow: config.waterFlow,
+      }),
+      moveTo: (position: PositionConfig) =>
+        new Promise<void>(resolve => {
+          startDemoMovement(position, resolve);
+        }),
+      position: getDemoMovementPosition,
+      setWater: (enabled: boolean) => dispatch?.({
+        type: Actions.DEMO_WRITE_PIN,
+        payload: { pin: 8, mode: "digital", value: Number(enabled) },
+      }),
+    };
+    window.__threeDBotBenchmark = benchmark;
+    return () => {
+      if (window.__threeDBotBenchmark == benchmark) {
+        delete window.__threeDBotBenchmark;
+      }
+    };
+  }, [config.cableCarriers, config.trail, config.waterFlow, dispatch]);
+  const kinematics = getBotKinematics(config, springTarget, version);
+  const configPosition = snapshotStore.getSnapshot();
   const trailReady = props.trailReady !== false;
 
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
@@ -129,7 +251,8 @@ const EnabledBot = (props: FarmbotModelProps) => {
         <XAxisWaterTube config={config} />
       </Group>
       <Group name={"bot-machine"} position={kinematics.machineOrigin}>
-        <Group name={"bot-gantry"} position={kinematics.gantryPosition}>
+        <Group ref={gantry} name={"bot-gantry"}
+          position={initialKinematics.gantryPosition}>
           <GantryAssembly
             config={config}
             configPosition={configPosition}
@@ -138,19 +261,23 @@ const EnabledBot = (props: FarmbotModelProps) => {
             beamShape={shapes.beam}
             onSelectObject={props.onSelectObject}
             onHoverObject={props.onHoverObject} />
-          <Tools
-            {...props}
-            configPosition={configPosition}
-            frame={"gantry"} />
-          <Group name={"bot-cross-slide"}
-            position={kinematics.crossSlidePosition}>
+          {config.mirrorX
+            ? <SnapshotGantryTools
+              {...props}
+              snapshotStore={snapshotStore} />
+            : <Tools
+              {...props}
+              configPosition={configPosition}
+              frame={"gantry"} />}
+          <Group ref={crossSlide} name={"bot-cross-slide"}
+            position={initialKinematics.crossSlidePosition}>
             <CrossSlideAssembly
               config={config}
               version={version}
               onSelectObject={props.onSelectObject}
               onHoverObject={props.onHoverObject} />
-            <Group name={"bot-z-axis"}
-              position={kinematics.zAxisPosition}>
+            <Group ref={zAxis} name={"bot-z-axis"}
+              position={initialKinematics.zAxisPosition}>
               <ZAxisAssembly
                 config={config}
                 configPosition={configPosition}
@@ -168,19 +295,13 @@ const EnabledBot = (props: FarmbotModelProps) => {
           </Group>
         </Group>
       </Group>
-      <Group name={"bot-routing"} position={kinematics.machineOrigin}>
-        <RoutingAssembly
-          config={config}
-          configPosition={configPosition}
-          version={version} />
-      </Group>
-      <Group name={"bot-effects"}>
-        <EffectsAssembly
-          config={config}
-          configPosition={configPosition}
-          version={version}
-          getZ={props.getZ} />
-      </Group>
+      <SnapshotAssemblies
+        config={config}
+        currentPosition={currentPosition}
+        getZ={props.getZ}
+        machineOrigin={kinematics.machineOrigin}
+        snapshotStore={snapshotStore}
+        version={version} />
     </FocusVisibilityGroup>
   </WaterFlowTextureProvider>;
 };

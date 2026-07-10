@@ -1,6 +1,7 @@
 import React from "react";
 import * as THREE from "three";
-import { Extrude, useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 import { Shape } from "three";
 import {
   get3DPositionNoMirrorFunc,
@@ -16,8 +17,101 @@ import {
 } from "../../components";
 import { EMISSIVE_PROPS } from "./gantry_beam";
 import { getBotVersion } from "../bot_versions";
+import {
+  ExtrudeGeometryArgs, millimetreGeometryKey,
+  useOwnedExtrudeGeometries,
+} from "./owned_extrude_geometry";
+import { perfCount } from "../../../performance/perf";
 
 const distinguishableBlack = "#333";
+
+interface CableCarrierMeshProps {
+  cacheKey: string;
+  createArgs(): ExtrudeGeometryArgs[];
+  metric: string;
+  name: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+}
+
+const CableCarrierMesh = (props: CableCarrierMeshProps) => {
+  const [geometry] = useOwnedExtrudeGeometries(
+    props.cacheKey,
+    props.createArgs,
+    props.metric,
+  );
+  return <Mesh name={props.name}
+    castShadow={true}
+    geometry={geometry}
+    position={props.position}
+    rotation={props.rotation}>
+    <MeshPhongMaterial color={distinguishableBlack} />
+  </Mesh>;
+};
+
+interface FrameCableCarrierMeshProps {
+  createArgs(position: PositionConfig): ExtrudeGeometryArgs[];
+  deformationKey(position: PositionConfig): string;
+  initialPosition: [number, number, number];
+  metric: string;
+  name: string;
+  position(position: PositionConfig): [number, number, number];
+  positionRef: React.MutableRefObject<PositionConfig>;
+  rotation: [number, number, number];
+}
+
+const buildCarrierGeometry = (
+  createArgs: FrameCableCarrierMeshProps["createArgs"],
+  position: PositionConfig,
+) => {
+  const args = createArgs(position)[0];
+  if (!args) { throw new Error("Cable carrier geometry is missing."); }
+  return new THREE.ExtrudeGeometry(...args);
+};
+
+const FrameCableCarrierMesh = (props: FrameCableCarrierMeshProps) => {
+  const initialBotPosition = props.positionRef.current;
+  const [initialGeometry] = React.useState(() => {
+    perfCount(props.metric);
+    return buildCarrierGeometry(props.createArgs, initialBotPosition);
+  });
+  const geometry = React.useRef(initialGeometry);
+  const mesh = React.useRef<THREE.Mesh | undefined>(undefined);
+  const lastDeformationKey = React.useRef(
+    props.deformationKey(initialBotPosition),
+  );
+
+  useFrame(() => {
+    const botPosition = props.positionRef.current;
+    mesh.current?.position.set(...props.position(botPosition));
+    const deformationKey = props.deformationKey(botPosition);
+    if (deformationKey === lastDeformationKey.current) { return; }
+    perfCount(props.metric);
+    const nextGeometry = buildCarrierGeometry(
+      props.createArgs,
+      botPosition,
+    );
+    if (mesh.current) { mesh.current.geometry = nextGeometry; }
+    perfCount(`${props.metric}.dispose`);
+    geometry.current.dispose();
+    geometry.current = nextGeometry;
+    lastDeformationKey.current = deformationKey;
+  });
+
+  React.useLayoutEffect(() => () => {
+    perfCount(`${props.metric}.dispose`);
+    geometry.current.dispose();
+  }, [props.metric]);
+
+  return <Mesh ref={mesh}
+    name={props.name}
+    castShadow={true}
+    geometry={initialGeometry}
+    position={props.initialPosition}
+    rotation={props.rotation}>
+    <MeshPhongMaterial color={distinguishableBlack} />
+  </Mesh>;
+};
 
 const usesExtrudedCableCarrierSupports = (kitVersion: string): boolean =>
   getBotVersion(kitVersion).yCCSupport == "extrusion";
@@ -35,6 +129,7 @@ interface CableCarrierBaseProps {
   config: Config;
   configPosition: PositionConfig;
   local?: boolean;
+  positionRef?: React.MutableRefObject<PositionConfig>;
 }
 
 type ConfigField = keyof Config;
@@ -112,7 +207,12 @@ const sameCableCarrierProps = (
     return true;
   }
   return sameFields(prev.config, next.config, configFields) &&
-    sameFields(prev.configPosition, next.configPosition, positionFields) &&
+    prev.positionRef === next.positionRef &&
+    (!!prev.positionRef || sameFields(
+      prev.configPosition,
+      next.configPosition,
+      positionFields,
+    )) &&
     prev.local === next.local;
 };
 
@@ -205,13 +305,27 @@ const VisibleCableCarrierX = (props: CableCarrierXProps) => {
     x: botSizeX / 2 - 11,
     y: (tracks ? 0 : 20) - 15 - bedYOffset,
   });
-  const args = React.useMemo(() => [
+  const createArgs = React.useCallback(() => [[
     buildCableCarrierShape(
       botSizeX / 2, botSizeX / 2 - x + 31,
       bedCCSupportHeight - 40,
-      true),
+      true,
+    ),
     { steps: 1, depth: 22, bevelEnabled: false },
-  ] as [Shape, THREE.ExtrudeGeometryOptions], [bedCCSupportHeight, botSizeX, x]);
+  ]] as ExtrudeGeometryArgs[], [
+    bedCCSupportHeight,
+    botSizeX,
+    x,
+  ]);
+  const createFrameArgs = (botPosition: PositionConfig) => [[
+    buildCableCarrierShape(
+      botSizeX / 2,
+      botSizeX / 2 - botPosition.x + 31,
+      bedCCSupportHeight - 40,
+      true,
+    ),
+    { steps: 1, depth: 22, bevelEnabled: false },
+  ]] as ExtrudeGeometryArgs[];
   const renderPosition = props.local
     ? [
       botSizeX / 2 - 11,
@@ -219,13 +333,28 @@ const VisibleCableCarrierX = (props: CableCarrierXProps) => {
       -40,
     ] as [number, number, number]
     : [position.x, position.y, -40] as [number, number, number];
-  return <Extrude name={"xCC"}
-    castShadow={true}
-    args={args}
+  if (props.positionRef) {
+    return <FrameCableCarrierMesh key={[
+      bedCCSupportHeight,
+      botSizeX,
+    ].join(":")}
+    createArgs={createFrameArgs}
+    deformationKey={botPosition => `${botPosition.x}`}
+    initialPosition={renderPosition}
+    metric={"bot.geometry.carrier.x"}
+    name={"xCC"}
+    position={() => renderPosition}
+    positionRef={props.positionRef}
+    rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]} />;
+  }
+  return <CableCarrierMesh name={"xCC"}
+    cacheKey={millimetreGeometryKey([
+      bedCCSupportHeight, botSizeX,
+    ].join(":"), x)}
+    createArgs={createArgs}
+    metric={"bot.geometry.carrier.x"}
     position={renderPosition}
-    rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]}>
-    <MeshPhongMaterial color={distinguishableBlack} />
-  </Extrude>;
+    rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]} />;
 };
 
 interface CableCarrierYProps extends CableCarrierBaseProps { }
@@ -248,17 +377,45 @@ const VisibleCableCarrierY = (props: CableCarrierYProps) => {
       ? [x - 39, 20, columnLength + 150]
       : [position.x, position.y, columnLength + 150];
   };
-  const args = React.useMemo(() => [
+  const getFramePosition = (
+    botPosition: PositionConfig,
+  ): [number, number, number] => {
+    const position = get3DPosition({ x: botPosition.x - 39, y: 20 });
+    return props.local
+      ? [botPosition.x - 39, 20, columnLength + 150]
+      : [position.x, position.y, columnLength + 150];
+  };
+  const createArgs = React.useCallback(() => [[
     buildCableCarrierShape(botSizeY, y + 40, 70),
     { steps: 1, depth: ccDepth, bevelEnabled: false },
-  ] as [Shape, THREE.ExtrudeGeometryOptions], [botSizeY, ccDepth, y]);
-  return <Extrude name={"yCC"}
-    castShadow={true}
-    args={args}
+  ]] as ExtrudeGeometryArgs[], [botSizeY, ccDepth, y]);
+  const createFrameArgs = (botPosition: PositionConfig) => [[
+    buildCableCarrierShape(botSizeY, botPosition.y + 40, 70),
+    { steps: 1, depth: ccDepth, bevelEnabled: false },
+  ]] as ExtrudeGeometryArgs[];
+  if (props.positionRef) {
+    return <FrameCableCarrierMesh key={[
+      botSizeY,
+      ccDepth,
+      columnLength,
+    ].join(":")}
+    createArgs={createFrameArgs}
+    deformationKey={botPosition => `${botPosition.y}`}
+    initialPosition={getFramePosition(props.positionRef.current)}
+    metric={"bot.geometry.carrier.y"}
+    name={"yCC"}
+    position={getFramePosition}
+    positionRef={props.positionRef}
+    rotation={[-Math.PI / 2, -Math.PI / 2, 0]} />;
+  }
+  return <CableCarrierMesh name={"yCC"}
+    cacheKey={millimetreGeometryKey([
+      botSizeY, ccDepth,
+    ].join(":"), y)}
+    createArgs={createArgs}
+    metric={"bot.geometry.carrier.y"}
     position={getPosition()}
-    rotation={[-Math.PI / 2, -Math.PI / 2, 0]}>
-    <MeshPhongMaterial color={distinguishableBlack} />
-  </Extrude>;
+    rotation={[-Math.PI / 2, -Math.PI / 2, 0]} />;
 };
 
 interface CableCarrierZProps extends CableCarrierBaseProps { }
@@ -278,29 +435,73 @@ const VisibleCableCarrierZ = (props: CableCarrierZProps) => {
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const ccDepth = getBotVersion(kitVersion).zCCDepth;
   const position = get3DPosition({ x: x - 52, y: y - ccDepth + 35 });
-  const args = React.useMemo(() => [
+  const createArgs = React.useCallback(() => [[
     buildCableCarrierShape(
       botSizeZ + zGantryOffset - 100,
       zDir * z + zGantryOffset - 15,
       87,
     ),
     { steps: 1, depth: ccDepth, bevelEnabled: false },
-  ] as [Shape, THREE.ExtrudeGeometryOptions], [
+  ]] as ExtrudeGeometryArgs[], [
     botSizeZ,
     ccDepth,
     z,
     zDir,
     zGantryOffset,
   ]);
-  return <Extrude name={"zCC"}
-    castShadow={true}
-    args={args}
+  const createFrameArgs = (botPosition: PositionConfig) => [[
+    buildCableCarrierShape(
+      botSizeZ + zGantryOffset - 100,
+      zDir * botPosition.z + zGantryOffset - 15,
+      87,
+    ),
+    { steps: 1, depth: ccDepth, bevelEnabled: false },
+  ]] as ExtrudeGeometryArgs[];
+  const getFramePosition = (
+    botPosition: PositionConfig,
+  ): [number, number, number] => {
+    const position = get3DPosition({
+      x: botPosition.x - 52,
+      y: botPosition.y - ccDepth + 35,
+    });
+    return props.local
+      ? [
+        botPosition.x - 52,
+        botPosition.y - ccDepth + 35,
+        zZero - zDir * botPosition.z + 125,
+      ]
+      : [
+        position.x,
+        position.y,
+        zZero - zDir * botPosition.z + 125,
+      ];
+  };
+  if (props.positionRef) {
+    return <FrameCableCarrierMesh key={[
+      botSizeZ,
+      ccDepth,
+      zDir,
+      zGantryOffset,
+    ].join(":")}
+    createArgs={createFrameArgs}
+    deformationKey={botPosition => `${botPosition.z}`}
+    initialPosition={getFramePosition(props.positionRef.current)}
+    metric={"bot.geometry.carrier.z"}
+    name={"zCC"}
+    position={getFramePosition}
+    positionRef={props.positionRef}
+    rotation={[Math.PI / 2, Math.PI, Math.PI / 2]} />;
+  }
+  return <CableCarrierMesh name={"zCC"}
+    cacheKey={millimetreGeometryKey([
+      botSizeZ, ccDepth, zDir, zGantryOffset,
+    ].join(":"), z)}
+    createArgs={createArgs}
+    metric={"bot.geometry.carrier.z"}
     position={props.local
       ? [x - 52, y - ccDepth + 35, zZero - zDir * z + 125]
       : [position.x, position.y, zZero - zDir * z + 125]}
-    rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}>
-    <MeshPhongMaterial color={distinguishableBlack} />
-  </Extrude>;
+    rotation={[Math.PI / 2, Math.PI, Math.PI / 2]} />;
 };
 
 export interface CableCarrierSupportVerticalProps

@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
 import { clone } from "lodash";
-import { Bounds, BoundsProps } from "../bounds";
+import { areBoundsPropsEqual, Bounds, BoundsProps } from "../bounds";
 
 describe("<Bounds />", () => {
   const fakeProps = (): BoundsProps => ({
@@ -103,5 +103,26 @@ describe("<Bounds />", () => {
       }} />);
 
     expect(container).toContainHTML("2000mm");
+  });
+
+  it("compares position using the active indicator dependencies", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    const move = (axis: keyof typeof p.configPosition) => ({
+      ...p,
+      configPosition: {
+        ...p.configPosition,
+        [axis]: p.configPosition[axis] + 1,
+      },
+    });
+    expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
+    p.config.zDimension = true;
+    expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
+    expect(areBoundsPropsEqual(p, move("z"))).toBeFalsy();
+    p.config.distanceIndicator = "beamLength";
+    expect(areBoundsPropsEqual(p, move("x"))).toBeFalsy();
+    expect(areBoundsPropsEqual(p, move("y"))).toBeTruthy();
+    p.config.distanceIndicator = "zAxisLength";
+    expect(areBoundsPropsEqual(p, move("y"))).toBeFalsy();
   });
 });

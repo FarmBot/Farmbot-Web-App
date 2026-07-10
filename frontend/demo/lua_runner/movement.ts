@@ -1,8 +1,10 @@
 import { Actions } from "../../constants";
 import { store } from "../../redux/store";
 import { XyzNumber } from "./interfaces";
+import { perfCount } from "../../performance/perf";
 
 const POSITION_EPSILON = 0.01;
+export const DEMO_POSITION_PUBLISH_INTERVAL_MS = 1000 / 30;
 
 interface ActiveMovement {
   id: number;
@@ -16,6 +18,24 @@ let driverCount = 0;
 let movementId = 0;
 let stopVersion = 0;
 let renderedPosition: XyzNumber | undefined;
+let lastPositionPublishAt: number | undefined;
+
+const publishPosition = (position: XyzNumber) => {
+  lastPositionPublishAt = Date.now();
+  perfCount("bot.demoPositionPublish");
+  store.dispatch({
+    type: Actions.DEMO_SET_POSITION,
+    payload: position,
+  });
+};
+
+const publishProgress = (position: XyzNumber) => {
+  const now = Date.now();
+  if (lastPositionPublishAt === undefined ||
+    now - lastPositionPublishAt >= DEMO_POSITION_PUBLISH_INTERVAL_MS) {
+    publishPosition(position);
+  }
+};
 
 const positionsMatch = (a: XyzNumber, b: XyzNumber) =>
   Math.abs(a.x - b.x) < POSITION_EPSILON &&
@@ -36,10 +56,7 @@ const finishMovement = (id: number) => {
   activeMovement = undefined;
   movement.fallbackTimer && clearTimeout(movement.fallbackTimer);
   renderedPosition = { ...movement.target };
-  store.dispatch({
-    type: Actions.DEMO_SET_POSITION,
-    payload: movement.target,
-  });
+  publishPosition(movement.target);
   movement.onTargetReached();
 };
 
@@ -63,10 +80,7 @@ export const registerDemoMovementDriver = () => {
 export const reportDemoMovementPosition = (position: XyzNumber) => {
   renderedPosition = { ...position };
   if (activeMovement) {
-    store.dispatch({
-      type: Actions.DEMO_SET_POSITION,
-      payload: position,
-    });
+    publishProgress(position);
   }
 };
 
@@ -88,10 +102,7 @@ export const startDemoMovement = (
     onTargetReached,
   };
   activeMovement = movement;
-  store.dispatch({
-    type: Actions.DEMO_SET_POSITION,
-    payload: startingPosition || target,
-  });
+  publishPosition(startingPosition || target);
   if (driverCount === 0 ||
     !!startingPosition && positionsMatch(startingPosition, target)) {
     finishMovementSoon(movement);
@@ -111,6 +122,8 @@ export const cancelDemoMovement = (): XyzNumber | undefined => {
     clearTimeout(activeMovement.fallbackTimer);
   activeMovement = undefined;
   const position = renderedPosition || getStorePosition();
+  renderedPosition = undefined;
+  lastPositionPublishAt = undefined;
   return position && { ...position };
 };
 
@@ -118,5 +131,8 @@ export const demoMovementActive = () => !!activeMovement;
 
 export const getDemoMovementTarget = (): XyzNumber | undefined =>
   activeMovement && { ...activeMovement.target };
+
+export const getDemoMovementPosition = (): XyzNumber | undefined =>
+  renderedPosition && { ...renderedPosition };
 
 export const getDemoMovementStopVersion = () => stopVersion;

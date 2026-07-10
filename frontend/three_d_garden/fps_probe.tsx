@@ -72,10 +72,17 @@ export const FPSProbe = () => {
     window.__fps = 0;
     return () => {
       delete window.__fps;
+      delete window.__threeDRenderMetrics;
     };
   }, []);
 
   useFrame(() => {
+    if (perfEnabled()) {
+      window.__threeDRenderMetrics = {
+        ...gl.info.render,
+        ...gl.info.memory,
+      };
+    }
     const now = performance.now();
     if (lastTime.current === undefined) {
       lastTime.current = now;

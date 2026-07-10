@@ -5,10 +5,70 @@ const path = require("path");
 
 const DEFAULT_URL = "http://localhost:3000";
 const PRODUCT_LINE = "genesis_xl_1.8_stress_1000";
+const MOVEMENT_PRODUCT_LINE = "genesis_xl_1.8";
 const DEMO_USER = "farmbot_demo";
 const TIMEOUT = 180_000;
 const DEFAULT_VIEWPORT = { width: 3840, height: 2160 };
+const MOVEMENT_VIEWPORT = { width: 1920, height: 1080 };
 const DEFAULT_SAMPLE_MS = 12_000;
+
+const MOVEMENT_COUNT_METRICS = {
+  routingRenders: "render.BotRouting",
+  effectsRenders: "render.BotEffects",
+  getZCalls: "bot.getZ",
+  xBeltBuilds: "bot.geometry.belt.x",
+  xBeltDisposals: "bot.geometry.belt.x.dispose",
+  yBeltBuilds: "bot.geometry.belt.y",
+  yBeltDisposals: "bot.geometry.belt.y.dispose",
+  zBeltBuilds: "bot.geometry.belt.z",
+  zBeltDisposals: "bot.geometry.belt.z.dispose",
+  xCarrierBuilds: "bot.geometry.carrier.x",
+  xCarrierDisposals: "bot.geometry.carrier.x.dispose",
+  yCarrierBuilds: "bot.geometry.carrier.y",
+  yCarrierDisposals: "bot.geometry.carrier.y.dispose",
+  zCarrierBuilds: "bot.geometry.carrier.z",
+  zCarrierDisposals: "bot.geometry.carrier.z.dispose",
+  airTubeBuilds: "bot.geometry.tube.air",
+  solenoidTubeBuilds: "bot.geometry.tube.solenoid",
+  solenoidStreamBuilds: "bot.geometry.tube.solenoidStream",
+  waterSprayBuilds: "bot.geometry.waterSpray",
+  cameraViewBuilds: "bot.geometry.cameraView",
+  cameraViewEdgeBuilds: "bot.geometry.cameraViewEdges",
+};
+
+const MOVEMENT_SCENARIOS = [
+  {
+    name: "idle",
+    start: { x: 500, y: 500, z: -100 },
+    idleMs: 4_000,
+  },
+  {
+    name: "x",
+    start: { x: 500, y: 500, z: -100 },
+    target: { x: 4_500, y: 500, z: -100 },
+  },
+  {
+    name: "y",
+    start: { x: 500, y: 300, z: -100 },
+    target: { x: 500, y: 2_300, z: -100 },
+  },
+  {
+    name: "z",
+    start: { x: 500, y: 500, z: -50 },
+    target: { x: 500, y: 500, z: -450 },
+  },
+  {
+    name: "xyz",
+    start: { x: 500, y: 300, z: -50 },
+    target: { x: 4_500, y: 2_300, z: -450 },
+  },
+];
+
+const WATER_MOVEMENT_SCENARIO = {
+  name: "xyzWater",
+  start: { x: 500, y: 300, z: -50 },
+  target: { x: 4_500, y: 2_300, z: -450 },
+};
 
 const parseArgs = () => {
   const [command = "run", ...rest] = process.argv.slice(2);
@@ -80,6 +140,29 @@ const summary = runs => {
     moistureSurfaceMs: metric("moistureSurfaceMs"),
     moistureInstanceNodesMs: metric("moistureInstanceNodesMs"),
   };
+};
+
+const movementSummary = runs => {
+  const result = {};
+  for (const scenario of [
+    ...MOVEMENT_SCENARIOS.map(({ name }) => name),
+    WATER_MOVEMENT_SCENARIO.name,
+  ]) {
+    const scenarioRuns = runs.map(run => run.scenarios[scenario]);
+    const metric = key => median(scenarioRuns.map(run => run[key]));
+    result[scenario] = {
+      fps: metric("fps"),
+      frameP50Ms: metric("frameP50Ms"),
+      frameP95Ms: metric("frameP95Ms"),
+      enabledBotRenders: metric("enabledBotRenders"),
+      gardenModelRenders: metric("gardenModelRenders"),
+      reduxPublishes: metric("reduxPublishes"),
+      routingSnapshots: metric("routingSnapshots"),
+      ...Object.fromEntries(Object.keys(MOVEMENT_COUNT_METRICS)
+        .map(key => [key, metric(key)])),
+    };
+  }
+  return result;
 };
 
 const firstMark = (marks, ...names) => {
@@ -176,7 +259,11 @@ const runtimeSummary = async page => page.evaluate(() => {
   };
 });
 
-const createDemoSession = async (browser, baseUrl) => {
+const createDemoSession = async (
+  browser,
+  baseUrl,
+  productLine = PRODUCT_LINE,
+) => {
   const secret = crypto.randomUUID().replaceAll("-", "");
   const page = await browser.newPage();
   await page.goto(`${baseUrl}/demo`, { waitUntil: "domcontentloaded" });
@@ -215,7 +302,7 @@ const createDemoSession = async (browser, baseUrl) => {
     return tokenPromise;
   }, {
     demoUser: DEMO_USER,
-    line: PRODUCT_LINE,
+    line: productLine,
     value: secret,
   });
   await page.close();
@@ -263,6 +350,112 @@ const waitFor3D = async page => {
   await page.waitForFunction(() => typeof window.__fps == "number", {
     timeout: TIMEOUT,
   });
+};
+
+const waitForBotBenchmark = async page => {
+  await page.waitForFunction(() => !!window.__threeDBotBenchmark, {
+    timeout: TIMEOUT,
+  });
+};
+
+const summarizeFrameMeasurement = measurement => {
+  const frameTimes = measurement.frameTimes.filter(Number.isFinite);
+  const frameTime = frameTimes.reduce((total, value) => total + value, 0);
+  const countDelta = key =>
+    (measurement.afterCounts[key] || 0) -
+    (measurement.beforeCounts[key] || 0);
+  const movementCounts = Object.fromEntries(
+    Object.entries(MOVEMENT_COUNT_METRICS)
+      .map(([name, key]) => [name, countDelta(key)]),
+  );
+  return {
+    fps: frameTime > 0 ? frameTimes.length * 1000 / frameTime : undefined,
+    frameP50Ms: percentile(frameTimes, 50),
+    frameP95Ms: percentile(frameTimes, 95),
+    enabledBotRenders: countDelta("render.EnabledBot"),
+    gardenModelRenders: countDelta("render.GardenModel"),
+    reduxPublishes: countDelta("bot.demoPositionPublish"),
+    routingSnapshots: countDelta("bot.routingSnapshot"),
+    ...movementCounts,
+    elapsedMs: measurement.elapsedMs,
+    finalPosition: measurement.finalPosition,
+  };
+};
+
+const verifyFinalPosition = (scenario, position) => {
+  const expected = scenario.target || scenario.start;
+  const exact = position && ["x", "y", "z"].every(axis =>
+    Math.abs(position[axis] - expected[axis]) < 0.01);
+  if (!exact) {
+    throw new Error(
+      `${scenario.name} ended at ${JSON.stringify(position)}, ` +
+      `expected ${JSON.stringify(expected)}`,
+    );
+  }
+};
+
+const repositionBot = async (page, position) => {
+  await page.evaluate(async target => {
+    await window.__threeDBotBenchmark?.moveTo(target);
+  }, position);
+  await nextPaint(page);
+};
+
+const measureBotScenario = async (page, scenario) => {
+  await repositionBot(page, scenario.start);
+  const measurement = await page.evaluate(async options => {
+    const benchmark = window.__threeDBotBenchmark;
+    if (!benchmark) { throw new Error("Bot benchmark API is unavailable."); }
+    const beforeCounts = { ...(window.__fbPerf?.counts || {}) };
+    const frameTimes = [];
+    let collecting = true;
+    let previousFrame;
+    let finishFrames;
+    const framesFinished = new Promise(resolve => {
+      finishFrames = resolve;
+    });
+    const collectFrame = time => {
+      if (previousFrame !== undefined) {
+        frameTimes.push(time - previousFrame);
+      }
+      previousFrame = time;
+      if (collecting) {
+        requestAnimationFrame(collectFrame);
+      } else {
+        finishFrames();
+      }
+    };
+    requestAnimationFrame(collectFrame);
+    const startedAt = performance.now();
+    if (options.idleMs) {
+      await new Promise(resolve => setTimeout(resolve, options.idleMs));
+    } else if (options.target) {
+      await benchmark.moveTo(options.target);
+    }
+    const elapsedMs = performance.now() - startedAt;
+    collecting = false;
+    await framesFinished;
+    return {
+      afterCounts: { ...(window.__fbPerf?.counts || {}) },
+      beforeCounts,
+      elapsedMs,
+      finalPosition: benchmark.position(),
+      frameTimes,
+    };
+  }, {
+    idleMs: scenario.idleMs,
+    target: scenario.target,
+  });
+  const summary = summarizeFrameMeasurement(measurement);
+  verifyFinalPosition(scenario, summary.finalPosition);
+  return summary;
+};
+
+const enableBenchmarkWater = async page => {
+  await page.evaluate(() => window.__threeDBotBenchmark?.setWater(true));
+  await page.waitForFunction(() =>
+    window.__threeDBotBenchmark?.config().waterFlow === true,
+  { timeout: TIMEOUT });
 };
 
 const waitForGardenRender = async (page, beforeRenderCount) => {
@@ -481,6 +674,136 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   };
 };
 
+const collectMovementRun = async (
+  browser,
+  baseUrl,
+  session,
+  runIndex,
+  viewport,
+) => {
+  const context = await browser.newContext({ viewport });
+  await context.addInitScript(value => {
+    window.localStorage.setItem("session", value.session);
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    window.localStorage.setItem("FPS_LOGS", "false");
+  }, { session });
+  const page = await context.newPage();
+  page.on("pageerror", error => console.error("pageerror", error));
+  page.on("console", message => {
+    if (message.type() == "error") {
+      console.error("console", message.text());
+    }
+  });
+  page.setDefaultTimeout(TIMEOUT);
+  await page.goto(`${baseUrl}/app/designer/plants?fb_perf=1`, {
+    waitUntil: "domcontentloaded",
+  });
+  await waitFor3D(page);
+  await waitForBotBenchmark(page);
+  await nextPaint(page);
+  const config = await page.evaluate(() =>
+    window.__threeDBotBenchmark?.config());
+  if (!config?.trail || !config.cableCarriers) {
+    throw new Error(
+      `Unexpected movement benchmark config: ${JSON.stringify(config)}`,
+    );
+  }
+  const scenarios = {};
+  for (const scenario of MOVEMENT_SCENARIOS) {
+    console.log(`movement scenario: ${scenario.name}`);
+    scenarios[scenario.name] = await measureBotScenario(page, scenario);
+  }
+  console.log("movement scenario: enabling water");
+  await enableBenchmarkWater(page);
+  console.log(`movement scenario: ${WATER_MOVEMENT_SCENARIO.name}`);
+  scenarios[WATER_MOVEMENT_SCENARIO.name] = await measureBotScenario(
+    page,
+    WATER_MOVEMENT_SCENARIO,
+  );
+  const runtimeBeforeRepeat = await runtimeSummary(page);
+  await measureBotScenario(page, WATER_MOVEMENT_SCENARIO);
+  const runtimeAfterRepeat = await runtimeSummary(page);
+  await context.close();
+  return {
+    runIndex,
+    config,
+    scenarios,
+    runtimeBeforeRepeat,
+    runtimeAfterRepeat,
+    geometryGrowth:
+      runtimeAfterRepeat.webglGeometries -
+      runtimeBeforeRepeat.webglGeometries,
+    objectGrowth:
+      runtimeAfterRepeat.sceneObjects - runtimeBeforeRepeat.sceneObjects,
+  };
+};
+
+const runMovementBenchmark = async args => {
+  const baseUrl = args["base-url"] || DEFAULT_URL;
+  const runs = Number(args.runs || 5);
+  const warmups = Number(args.warmups || 1);
+  const out = args.out || "tmp/perf/bot_movement_3d.json";
+  const productLine = args["product-line"] || MOVEMENT_PRODUCT_LINE;
+  const viewport = {
+    width: Number(args.width || MOVEMENT_VIEWPORT.width),
+    height: Number(args.height || MOVEMENT_VIEWPORT.height),
+  };
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
+      "--enable-gpu",
+    ],
+  });
+  try {
+    const session = await createDemoSession(browser, baseUrl, productLine);
+    await apiJson(baseUrl, session, "/api/web_app_config/", {
+      method: "PUT",
+      body: JSON.stringify({
+        display_trail: true,
+        three_d_garden: true,
+      }),
+    });
+    await setFarmwareEnv(
+      baseUrl,
+      session,
+      "3D_cableCarriers",
+      "1",
+    );
+    const measuredRuns = [];
+    for (let i = 0; i < warmups + runs; i++) {
+      const run = await collectMovementRun(
+        browser,
+        baseUrl,
+        session,
+        i,
+        viewport,
+      );
+      console.log(`${i < warmups ? "warmup" : "run"} ${i + 1}`, run);
+      if (i >= warmups) { measuredRuns.push(run); }
+    }
+    const result = {
+      productLine,
+      createdAt: new Date().toISOString(),
+      viewport,
+      runs: measuredRuns,
+      summary: movementSummary(measuredRuns),
+      geometryGrowth: median(measuredRuns.map(run => run.geometryGrowth)),
+      objectGrowth: median(measuredRuns.map(run => run.objectGrowth)),
+    };
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    fs.writeFileSync(out, `${JSON.stringify(result, undefined, 2)}\n`);
+    console.log(`Wrote ${out}`);
+    console.log(result.summary);
+  } finally {
+    await browser.close();
+  }
+};
+
 const runBenchmark = async args => {
   const baseUrl = args["base-url"] || DEFAULT_URL;
   const runs = Number(args.runs || 5);
@@ -696,6 +1019,8 @@ const main = async () => {
   const args = parseArgs();
   if (args.command == "compare") {
     compare(args);
+  } else if (args.command == "movement") {
+    await runMovementBenchmark(args);
   } else if (args.command == "screenshot") {
     await screenshot(args);
   } else if (args.command == "image-diff") {

@@ -22,11 +22,28 @@ interface Window {
   logStore: LogStore;
   __fps?: number;
   __scene_metrics?: string;
+  __threeDRenderMetrics?: {
+    calls: number;
+    triangles: number;
+    geometries: number;
+    textures: number;
+  };
   __fbPerf?: {
     startedAt: number;
     marks: Record<string, number[]>;
     counts: Record<string, number>;
     samples: Record<string, number[]>;
+  };
+  __threeDBotBenchmark?: {
+    active(): boolean;
+    config(): {
+      cableCarriers: boolean;
+      trail: boolean;
+      waterFlow: boolean;
+    };
+    moveTo(position: { x: number; y: number; z: number }): Promise<void>;
+    position(): { x: number; y: number; z: number } | undefined;
+    setWater(enabled: boolean): void;
   };
 }
 

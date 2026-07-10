@@ -33,14 +33,17 @@ const WATERING_ANIMATION_CONFIG_FIELDS: (keyof Config)[] = [
 export const wateringAnimationsPropsEqual = (
   prev: WateringAnimationsProps,
   next: WateringAnimationsProps,
-) =>
-  prev.waterFlow === next.waterFlow &&
+) => {
+  const sameZ = getBotVersion(prev.config.kitVersion).number == "v1.9" ||
+    prev.configPosition.z === next.configPosition.z;
+  return prev.waterFlow === next.waterFlow &&
   prev.getZ === next.getZ &&
   prev.configPosition.x === next.configPosition.x &&
   prev.configPosition.y === next.configPosition.y &&
-  prev.configPosition.z === next.configPosition.z &&
+  sameZ &&
   WATERING_ANIMATION_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
+};
 
 interface WateringAnimationsContentProps extends WateringAnimationsProps {
   waterTexture: Texture | undefined;
@@ -76,6 +79,20 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
     getZ(nozzle.gardenPosition.x, nozzle.gardenPosition.y);
   const nozzleToSoil = soilZ - nozzle.worldPosition[2];
   const nozzleRadius = version.number == "v1.9" ? 9 : 12.5;
+  const geometryDistance = Math.round(nozzleToSoil);
+  const streamPaths = React.useMemo(() => range(16).map(i => {
+    const angle = (i * Math.PI * 2) / 16;
+    return easyCubicBezierCurve3(
+      [nozzleRadius * Math.sin(angle), nozzleRadius * Math.cos(angle), 0],
+      [10 * Math.sin(angle), 0, -10],
+      [0, 0, 10],
+      [
+        25 * Math.sin(angle),
+        25 * Math.cos(angle),
+        geometryDistance,
+      ],
+    );
+  }), [geometryDistance, nozzleRadius]);
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -86,20 +103,13 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   return <Group name={"watering-animations"}
     visible={visible}
     position={nozzle.worldPosition}>
-    {range(16).map(i => {
-      const angle = (i * Math.PI * 2) / 16;
-      return <WaterStream key={i}
+    {streamPaths.map((path, i) =>
+      <WaterStream key={i}
         name={`water-stream-${i}`}
         waterFlow={waterFlow}
         waterTexture={props.waterTexture}
         position={[0, 0, 0]}
-        args={[easyCubicBezierCurve3(
-          [nozzleRadius * Math.sin(angle), nozzleRadius * Math.cos(angle), 0],
-          [10 * Math.sin(angle), 0, -10],
-          [0, 0, 10],
-          [25 * Math.sin(angle), 25 * Math.cos(angle), nozzleToSoil],
-        ), 8, 1.5, 6]} />;
-    })}
+        args={[path, 8, 1.5, 6]} />)}
     <Clouds name={"waterfall-mist"}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}

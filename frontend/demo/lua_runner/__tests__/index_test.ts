@@ -396,9 +396,12 @@ describe("runDemoSequence()", () => {
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     const dispatchCalls = (store.dispatch as jest.Mock).mock.calls;
-    const moveCall = dispatchCalls.find(([action]) =>
-      action?.type == Actions.DEMO_SET_POSITION) as
-      [{ type?: string, payload?: { x?: number, y?: number, z?: number } }] | undefined;
+    const moveCall = dispatchCalls.filter(([action]) =>
+      action?.type == Actions.DEMO_SET_POSITION).slice(-1)[0] as
+      [{
+        type?: string,
+        payload?: { x?: number, y?: number, z?: number },
+      }] | undefined;
     if (moveCall?.[0]?.payload) {
       expect(moveCall[0]).toEqual({
         type: Actions.DEMO_SET_POSITION,

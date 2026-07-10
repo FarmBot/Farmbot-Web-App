@@ -1,6 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
+import { useFrame } from "@react-three/fiber";
 import {
   BOT_POSITION_SPRING,
+  createBotPositionSnapshotStore,
   MechanicalPositionState,
   stepMechanicalAxis,
   stepMechanicalPosition,
@@ -98,66 +100,71 @@ describe("bot position spring", () => {
 });
 
 describe("useBotPositionSpring()", () => {
-  let callbacks: Map<number, FrameRequestCallback>;
-  let nextFrameId: number;
-  let requestFrameSpy: jest.SpyInstance;
-  let cancelFrameSpy: jest.SpyInstance;
+  let frameCallback: Parameters<typeof useFrame>[0];
 
-  const runNextFrame = (time: number) => {
-    const entry = callbacks.entries().next().value;
-    expect(entry).toBeTruthy();
-    if (!entry) { return; }
-    callbacks.delete(entry[0]);
-    act(() => entry[1](time));
+  const runFrame = (deltaSeconds = 1 / 60) => {
+    expect(frameCallback).toBeTruthy();
+    act(() => frameCallback({} as never, deltaSeconds));
   };
 
   beforeEach(() => {
-    callbacks = new Map();
-    nextFrameId = 1;
-    requestFrameSpy = jest.spyOn(window, "requestAnimationFrame")
-      .mockImplementation(callback => {
-        const id = nextFrameId++;
-        callbacks.set(id, callback);
-        return id;
-      });
-    cancelFrameSpy = jest.spyOn(window, "cancelAnimationFrame")
-      .mockImplementation(id => {
-        callbacks.delete(id);
-      });
+    (useFrame as jest.Mock).mockImplementation(callback => {
+      frameCallback = callback;
+      return undefined;
+    });
   });
 
-  afterEach(() => {
-    requestFrameSpy.mockRestore();
-    cancelFrameSpy.mockRestore();
-  });
-
-  it("continues smoothly toward position updates received in flight", () => {
+  it("advances rigid motion every frame and retargets in flight", () => {
     const initial = { x: 0, y: 0, z: 0 };
-    const { result, rerender, unmount } = renderHook(
-      ({ target, enabled }: {
-        target: PositionConfig;
-        enabled: boolean;
-      }) => useBotPositionSpring(target, enabled),
-      { initialProps: { target: initial, enabled: true } },
+    const onChange = jest.fn();
+    const { result, rerender } = renderHook(
+      ({ target }: { target: PositionConfig }) =>
+        useBotPositionSpring(target, true, { onChange }),
+      { initialProps: { target: initial } },
     );
-    expect(result.current).toEqual(initial);
-    runNextFrame(0);
-    expect(callbacks.size).toEqual(0);
+    onChange.mockClear();
 
-    rerender({ target: { x: 100, y: 200, z: -100 }, enabled: true });
-    runNextFrame(0);
-    const firstPosition = result.current;
-    expect(firstPosition.x).toBeGreaterThan(0);
-    expect(firstPosition.y).toBeGreaterThan(0);
-    expect(firstPosition.z).toBeLessThan(0);
+    rerender({ target: { x: 100, y: 200, z: -100 } });
+    runFrame();
+    expect(result.current.currentPosition.current.x).toBeGreaterThan(0);
+    expect(result.current.currentPosition.current.y).toBeGreaterThan(0);
+    expect(result.current.currentPosition.current.z).toBeLessThan(0);
+    expect(result.current.snapshotStore.getSnapshot().x).toBeGreaterThan(0);
+    expect(onChange).toHaveBeenCalledTimes(1);
 
-    rerender({ target: { x: 200, y: 300, z: -200 }, enabled: true });
-    runNextFrame(16);
-    expect(result.current.x).toBeGreaterThan(firstPosition.x);
-    expect(result.current.y).toBeGreaterThan(firstPosition.y);
-    expect(result.current.z).toBeLessThan(firstPosition.z);
-    unmount();
-    expect(cancelFrameSpy).toHaveBeenCalled();
+    runFrame();
+    const firstPosition = {
+      ...result.current.currentPosition.current,
+    };
+    expect(result.current.snapshotStore.getSnapshot().x).toBeGreaterThan(0);
+
+    rerender({ target: { x: 200, y: 300, z: -200 } });
+    runFrame();
+    expect(result.current.currentPosition.current.x)
+      .toBeGreaterThan(firstPosition.x);
+    expect(result.current.currentPosition.current.y)
+      .toBeGreaterThan(firstPosition.y);
+    expect(result.current.currentPosition.current.z)
+      .toBeLessThan(firstPosition.z);
+  });
+
+  it("publishes every moving frame, including sub-mm motion", () => {
+    const initial = { x: 0, y: 0, z: 0 };
+    const { result, rerender } = renderHook(
+      ({ target }: { target: PositionConfig }) =>
+        useBotPositionSpring(target, true),
+      { initialProps: { target: initial } },
+    );
+    rerender({ target: { x: 100, y: 0, z: 0 } });
+    expect(useFrame).toHaveBeenCalledWith(expect.any(Function), -1);
+
+    runFrame(1 / 240);
+    const firstSnapshot = result.current.snapshotStore.getSnapshot();
+    expect(firstSnapshot.x).toBeGreaterThan(0);
+    expect(firstSnapshot.x).toBeLessThan(0.1);
+
+    runFrame(1 / 240);
+    expect(result.current.snapshotStore.getSnapshot()).not.toBe(firstSnapshot);
   });
 
   it("clears velocity immediately when reset", () => {
@@ -169,21 +176,22 @@ describe("useBotPositionSpring()", () => {
       }) => useBotPositionSpring(target, true, {}, resetKey),
       { initialProps: { target: initial, resetKey: 0 } },
     );
-    runNextFrame(0);
     rerender({ target: { x: 100, y: 0, z: 0 }, resetKey: 0 });
-    let time = 0;
     for (let frame = 0; frame < 5; frame++) {
-      time += 16;
-      runNextFrame(time);
+      runFrame();
     }
-    const movingPosition = result.current;
+    const movingPosition = result.current.currentPosition.current;
     expect(movingPosition.x).toBeGreaterThan(0);
-    const stoppedPosition = { ...movingPosition, x: movingPosition.x - 2 };
+    const stoppedPosition = {
+      ...movingPosition,
+      x: movingPosition.x - 2,
+    };
 
     rerender({ target: stoppedPosition, resetKey: 1 });
-    runNextFrame(time + 16);
-    expect(result.current).toEqual(stoppedPosition);
-    expect(callbacks.size).toEqual(0);
+    expect(result.current.snapshotStore.getSnapshot()).toEqual(stoppedPosition);
+    expect(result.current.currentPosition.current).toEqual(stoppedPosition);
+    runFrame();
+    expect(result.current.currentPosition.current).toEqual(stoppedPosition);
   });
 
   it("applies updates immediately when animation is disabled", () => {
@@ -203,9 +211,8 @@ describe("useBotPositionSpring()", () => {
     );
     const target = { x: 100, y: 200, z: 300 };
     rerender({ target, enabled: false });
-    expect(result.current).toEqual(target);
-    runNextFrame(0);
-    expect(callbacks.size).toEqual(0);
+    expect(result.current.snapshotStore.getSnapshot()).toEqual(target);
+    expect(result.current.currentPosition.current).toEqual(target);
     expect(onChange).toHaveBeenLastCalledWith(target);
     expect(onRest).toHaveBeenLastCalledWith(target);
   });
@@ -219,23 +226,39 @@ describe("useBotPositionSpring()", () => {
         useBotPositionSpring(target, true, { onChange, onRest }),
       { initialProps: { target: initial } },
     );
-    runNextFrame(0);
     onChange.mockClear();
     onRest.mockClear();
     const target = { x: 1, y: 0, z: 0 };
     rerender({ target });
-    let time = 0;
     let frameCount = 0;
-    while (callbacks.size > 0 && frameCount < 500) {
-      time += 16;
+    while (onRest.mock.calls.length == 0 && frameCount < 500) {
       frameCount++;
-      runNextFrame(time);
+      runFrame();
     }
     expect(frameCount).toBeGreaterThan(1);
-    expect(callbacks.size).toEqual(0);
-    expect(result.current).toEqual(target);
+    expect(result.current.snapshotStore.getSnapshot()).toEqual(target);
+    expect(result.current.currentPosition.current).toEqual(target);
     expect(onChange).toHaveBeenCalled();
     expect(onRest).toHaveBeenCalledTimes(1);
     expect(onRest).toHaveBeenCalledWith(target);
+  });
+});
+
+describe("bot position snapshot store", () => {
+  it("notifies subscribers without requiring parent React state", () => {
+    const initial = { x: 0, y: 0, z: 0 };
+    const store = createBotPositionSnapshotStore(initial);
+    const listener = jest.fn();
+    const unsubscribe = store.subscribe(listener);
+    const next = { x: 1, y: 2, z: 3 };
+
+    store.publish(next);
+    expect(store.getSnapshot()).toEqual(next);
+    expect(store.getSnapshot()).not.toBe(next);
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    store.publish({ x: 4, y: 5, z: 6 });
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

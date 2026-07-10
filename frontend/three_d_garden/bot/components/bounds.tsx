@@ -23,17 +23,33 @@ const CONFIG_FIELDS: (keyof Config)[] = [
   "zGantryOffset",
 ];
 
-const POSITION_FIELDS: (keyof PositionConfig)[] = ["x", "y", "z"];
-
 const sameFields = <T, K extends keyof T>(
   prev: T,
   next: T,
   fields: K[],
 ) => fields.every(field => prev[field] === next[field]);
 
-const areBoundsPropsEqual = (prev: BoundsProps, next: BoundsProps) =>
-  sameFields(prev.config, next.config, CONFIG_FIELDS) &&
-  sameFields(prev.configPosition, next.configPosition, POSITION_FIELDS);
+export const areBoundsPropsEqual = (prev: BoundsProps, next: BoundsProps) => {
+  if (!sameFields(prev.config, next.config, CONFIG_FIELDS)) { return false; }
+  const positionFields = new Set<keyof PositionConfig>();
+  if (prev.config.zDimension) { positionFields.add("z"); }
+  switch (prev.config.distanceIndicator) {
+    case "beamLength":
+    case "columnLength":
+      positionFields.add("x");
+      break;
+    case "zAxisLength":
+      positionFields.add("x");
+      positionFields.add("y");
+      positionFields.add("z");
+      break;
+  }
+  return sameFields(
+    prev.configPosition,
+    next.configPosition,
+    [...positionFields],
+  );
+};
 
 const BoundsComponent = (props: BoundsProps) => {
   if (!props.config.bounds &&

@@ -1,12 +1,15 @@
 import React from "react";
 import * as THREE from "three";
 import { Config, PositionConfig } from "../../config";
-import { Mesh, MeshStandardMaterial } from "../../components";
-import { Edges } from "@react-three/drei";
+import {
+  LineBasicMaterial, LineSegments, Mesh, MeshStandardMaterial,
+} from "../../components";
 import { ConvexGeometry } from "three-stdlib";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
 import { getBotVersion } from "../bot_versions";
+import { updateBufferGeometry } from "./owned_extrude_geometry";
+import { perfCount } from "../../../performance/perf";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
@@ -246,13 +249,50 @@ interface FrustumProps {
   config: Config;
 }
 
+const frustumEdgesGeometry = (points: THREE.Vector3[]) => {
+  const pairs = [
+    [0, 1], [0, 2], [1, 3], [2, 3],
+    [4, 5], [4, 6], [5, 7], [6, 7],
+    [0, 4], [1, 5], [2, 6], [3, 7],
+  ];
+  return new THREE.BufferGeometry().setFromPoints(
+    pairs.flatMap(([start, end]) => [points[start], points[end]]),
+  );
+};
+
 const Frustum = (props: FrustumProps) => {
-  const geometry = React.useMemo(() => {
+  const geometryKey = props.points.flatMap(point =>
+    point.toArray().map(coordinate => Math.round(coordinate))).join(":");
+  const [geometry] = React.useState(() => {
+    perfCount("bot.geometry.cameraView");
     const g = new ConvexGeometry(props.points);
     g.computeVertexNormals();
     g.computeBoundingSphere();
     return g;
-  }, [props.points]);
+  });
+  const [edgesGeometry] = React.useState(() => {
+    perfCount("bot.geometry.cameraViewEdges");
+    return frustumEdgesGeometry(props.points);
+  });
+  const geometryKeyRef = React.useRef(geometryKey);
+  React.useLayoutEffect(() => {
+    if (geometryKeyRef.current == geometryKey) { return; }
+    perfCount("bot.geometry.cameraView");
+    const replacement = new ConvexGeometry(props.points);
+    replacement.computeVertexNormals();
+    replacement.computeBoundingSphere();
+    updateBufferGeometry(geometry, replacement);
+    replacement.dispose();
+    perfCount("bot.geometry.cameraViewEdges");
+    const replacementEdges = frustumEdgesGeometry(props.points);
+    updateBufferGeometry(edgesGeometry, replacementEdges);
+    replacementEdges.dispose();
+    geometryKeyRef.current = geometryKey;
+  }, [edgesGeometry, geometry, geometryKey, props.points]);
+  React.useLayoutEffect(() => () => {
+    geometry.dispose();
+    edgesGeometry.dispose();
+  }, [edgesGeometry, geometry]);
 
   const baseOpacity = 0.25;
   const [spring, api] = useSpring(() => ({ opacity: baseOpacity }));
@@ -286,11 +326,12 @@ const Frustum = (props: FrustumProps) => {
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges
-      lineWidth={1.1}
-      color={"white"}
-      transparent={true}
-      opacity={0.75}
-      threshold={1} />
+    <LineSegments geometry={edgesGeometry}>
+      <LineBasicMaterial
+        linewidth={1.1}
+        color={"white"}
+        transparent={true}
+        opacity={0.75} />
+    </LineSegments>
   </AnimatedMesh>;
 };

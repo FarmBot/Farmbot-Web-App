@@ -3,14 +3,16 @@ import { fireEvent, render } from "@testing-library/react";
 import { Trail, useGLTF } from "@react-three/drei";
 import {
   Bot, clearBotShapeCache, FarmbotModelProps,
+  applyBotKinematicFrame,
   getBotSpringTarget, getDemoMovementSpringCallbacks,
   getUnmirroredBotPosition,
 } from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
-import { Texture, TextureLoader } from "three";
+import { Object3D, Texture, TextureLoader } from "three";
 import { ASSETS } from "../../constants";
+import { Actions } from "../../../constants";
 import { Path } from "../../../internal_urls";
 import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
@@ -37,10 +39,16 @@ describe("<Bot />", () => {
   beforeEach(() => {
     clearBotShapeCache();
     createShapesMock.mockClear();
+    localStorage.removeItem("FB_PERF_BENCHMARK");
+    delete window.__threeDBotBenchmark;
+    demoMovement.cancelDemoMovement();
   });
 
   afterEach(() => {
     jest.useRealTimers();
+    localStorage.removeItem("FB_PERF_BENCHMARK");
+    delete window.__threeDBotBenchmark;
+    demoMovement.cancelDemoMovement();
   });
 
   const fakeProps = (): FarmbotModelProps => {
@@ -112,6 +120,47 @@ describe("<Bot />", () => {
     )).toEqual({ x: 40, y: 50, z: 60 });
   });
 
+  it.each(["v1.7", "v1.9"])(
+    "applies mirrored %s kinematics directly to object frames",
+    kitVersion => {
+      const config = clone(INITIAL);
+      config.kitVersion = kitVersion;
+      config.mirrorX = true;
+      config.mirrorY = true;
+      config.negativeZ = true;
+      const gardenPosition = { x: 100, y: 200, z: -250 };
+      const position = getUnmirroredBotPosition(config, gardenPosition);
+      const kinematics = getBotKinematics(config, position);
+      const gantry = new Object3D();
+      const crossSlide = new Object3D();
+      const zAxis = new Object3D();
+      const trailTarget = new Object3D();
+
+      applyBotKinematicFrame({
+        gantry,
+        crossSlide,
+        zAxis,
+        trailTarget,
+      }, kinematics);
+
+      expect(gantry.position.toArray()).toEqual([
+        config.botSizeX - gardenPosition.x,
+        0,
+        0,
+      ]);
+      expect(crossSlide.position.y).toEqual(
+        config.botSizeY - gardenPosition.y +
+        (kitVersion == "v1.9" ? 45 : 5),
+      );
+      expect(zAxis.position.y).toEqual(
+        kitVersion == "v1.9" ? -45 : -5,
+      );
+      expect(zAxis.position.z).toEqual(kinematics.zAxisPosition[2]);
+      expect(trailTarget.position.toArray())
+        .toEqual(kinematics.anchors.utm.worldPosition);
+    },
+  );
+
   it("doesn't register an animation driver when animations are disabled", () => {
     const registerSpy = jest.spyOn(
       demoMovement,
@@ -122,6 +171,36 @@ describe("<Bot />", () => {
     render(<Bot {...p} />);
     expect(registerSpy).not.toHaveBeenCalled();
     registerSpy.mockRestore();
+  });
+
+  it("exposes movement controls only for performance benchmarks", async () => {
+    localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    p.config.trail = true;
+    p.dispatch = jest.fn();
+    const result = render(<Bot {...p} />);
+    const benchmark = window.__threeDBotBenchmark;
+    expect(benchmark?.config()).toEqual({
+      cableCarriers: true,
+      trail: true,
+      waterFlow: false,
+    });
+    benchmark?.setWater(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 8, mode: "digital", value: 1 },
+    });
+
+    const target = { x: 100, y: 200, z: -300 };
+    const movement = benchmark?.moveTo(target);
+    expect(benchmark?.active()).toBeTruthy();
+    demoMovement.reportDemoMovementComplete(target);
+    await movement;
+    expect(benchmark?.active()).toBeFalsy();
+    expect(benchmark?.position()).toEqual(target);
+
+    result.unmount();
+    expect(window.__threeDBotBenchmark).toBeUndefined();
   });
 
   it("renders", () => {
@@ -154,6 +233,15 @@ describe("<Bot />", () => {
     expect(container.querySelector(
       "[name='bot-static'] [name='powerCable']",
     )).toBeNull();
+  });
+
+  it("keeps mirrored gantry tools subscribed to movement snapshots", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    const { container } = render(<Bot {...p} />);
+
+    expect(container.querySelector("[name='bot-gantry']"))
+      .toBeTruthy();
   });
 
   it("renders: Jr", () => {

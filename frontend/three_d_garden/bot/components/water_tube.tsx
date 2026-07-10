@@ -1,11 +1,11 @@
 import React from "react";
-import { Tube } from "@react-three/drei";
-import { MeshPhongMaterial, Group } from "../../components";
+import { MeshPhongMaterial, Group, Mesh } from "../../components";
 import {
   WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
 } from "./water_stream";
 import { Curve, Vector3 } from "three";
 import { RenderOrder } from "../../constants";
+import { useManagedTubeGeometry } from "./managed_tube_geometry";
 
 export interface WaterTubeProps {
   tubeName: string;
@@ -46,16 +46,23 @@ const WaterTubeBase = (props: WaterTubeProps) => {
   const {
     tubeName, tubePath, tubularSegments, radius, radialSegments, waterFlow,
   } = props;
+  const geometry = useManagedTubeGeometry(
+    tubePath,
+    tubularSegments,
+    radius,
+    radialSegments,
+    "bot.geometry.tube.solenoid",
+  );
 
   return <Group name={tubeName}>
-    <Tube name={tubeName + "-tube"}
+    <Mesh name={tubeName + "-tube"}
       castShadow={true}
       receiveShadow={true}
       renderOrder={RenderOrder.one}
-      args={[tubePath, tubularSegments, radius, radialSegments]}>
+      geometry={geometry}>
       <MeshPhongMaterial transparent={true}
         opacity={0.4} />
-    </Tube>
+    </Mesh>
     {waterFlow &&
       <WaterTubeStream
         name={tubeName + "-water-stream"}

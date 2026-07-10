@@ -80,7 +80,7 @@ describe("<CameraView />", () => {
     expect(result.points.length).toEqual(8);
   });
 
-  it("reuses unchanged frustum geometry and rebuilds when inputs change", () => {
+  it("moves the frustum without rebuilding unchanged local geometry", () => {
     const normalsSpy = jest.spyOn(
       ConvexGeometry.prototype,
       "computeVertexNormals",
@@ -92,6 +92,10 @@ describe("<CameraView />", () => {
     expect(normalsSpy).toHaveBeenCalledTimes(1);
     rerender(<CameraView {...p}
       cameraMountPosition={new THREE.Vector3(101, 200, 300)} />);
+    expect(normalsSpy).toHaveBeenCalledTimes(1);
+    rerender(<CameraView {...p}
+      cameraMountPosition={new THREE.Vector3(101, 200, 300)}
+      distanceToSoil={p.distanceToSoil + 1} />);
     expect(normalsSpy).toHaveBeenCalledTimes(2);
     normalsSpy.mockRestore();
   });

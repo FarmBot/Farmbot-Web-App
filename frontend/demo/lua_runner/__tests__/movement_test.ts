@@ -2,6 +2,7 @@ import { Actions } from "../../../constants";
 import { store } from "../../../redux/store";
 import {
   cancelDemoMovement,
+  DEMO_POSITION_PUBLISH_INTERVAL_MS,
   demoMovementActive,
   getDemoMovementTarget,
   registerDemoMovementDriver,
@@ -26,6 +27,7 @@ describe("demo movement coordinator", () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
+    jest.setSystemTime(0);
     jest.clearAllMocks();
     (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
     (store as unknown as { getState: Function }).getState = mockGetState;
@@ -83,6 +85,7 @@ describe("demo movement coordinator", () => {
     const target = { x: 100, y: 200, z: 300 };
     startDemoMovement(target, onTargetReached);
 
+    jest.advanceTimersByTime(Math.ceil(DEMO_POSITION_PUBLISH_INTERVAL_MS));
     reportDemoMovementPosition({ x: 40, y: 50, z: 60 });
     expect(mockDispatch).toHaveBeenCalledWith({
       type: Actions.DEMO_SET_POSITION,
@@ -94,6 +97,33 @@ describe("demo movement coordinator", () => {
     reportDemoMovementComplete(target);
     expect(getDemoMovementTarget()).toBeUndefined();
     expect(onTargetReached).toHaveBeenCalledTimes(1);
+  });
+
+  it("limits progress publication to 30 Hz and publishes final position", () => {
+    unregisterMovementDriver = registerDemoMovementDriver();
+    const target = { x: 100, y: 200, z: 300 };
+    startDemoMovement(target, jest.fn());
+    mockDispatch.mockClear();
+
+    reportDemoMovementPosition({ x: 10, y: 20, z: 30 });
+    jest.setSystemTime(Math.ceil(DEMO_POSITION_PUBLISH_INTERVAL_MS) - 1);
+    reportDemoMovementPosition({ x: 20, y: 30, z: 40 });
+    expect(mockDispatch).not.toHaveBeenCalled();
+
+    jest.setSystemTime(Math.ceil(DEMO_POSITION_PUBLISH_INTERVAL_MS));
+    reportDemoMovementPosition({ x: 30, y: 40, z: 50 });
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(mockDispatch).toHaveBeenLastCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 30, y: 40, z: 50 },
+    });
+
+    reportDemoMovementComplete(target);
+    expect(mockDispatch).toHaveBeenCalledTimes(2);
+    expect(mockDispatch).toHaveBeenLastCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: target,
+    });
   });
 
   it("completes a zero-distance movement without waiting for a rerender", () => {

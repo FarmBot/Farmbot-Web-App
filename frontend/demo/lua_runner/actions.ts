@@ -22,6 +22,7 @@ import { isMessageType } from "../../sequences/interfaces";
 import {
   cancelDemoMovement, demoMovementActive, startDemoMovement,
 } from "./movement";
+import { perfCount } from "../../performance/perf";
 
 const clampTarget = (target: XyzNumber): XyzNumber => {
   const firmwareConfig = getFirmwareSettings();
@@ -293,6 +294,7 @@ export const eStop = () => {
   activeCancellation = undefined;
   const stoppedPosition = cancelDemoMovement();
   if (stoppedPosition) {
+    perfCount("bot.demoPositionPublish");
     store.dispatch({
       type: Actions.DEMO_SET_POSITION,
       payload: stoppedPosition,
