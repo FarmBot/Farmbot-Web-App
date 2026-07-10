@@ -186,7 +186,7 @@ describe("<Tools />", () => {
 
   it("renders promo tools", () => {
     const { container } = render(<Tools {...fakeProps()} />);
-    expect(container).toContainHTML("toolbay3");
+    expect(container).toContainHTML("toolbay5");
   });
 
   it("renders user tools", () => {

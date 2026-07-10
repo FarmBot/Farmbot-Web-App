@@ -331,12 +331,12 @@ describe("changeFirmwareHardware()", () => {
 describe("SEED_DATA_OPTIONS()", () => {
   it("returns options", () => {
     mockFeatureBoolean = false;
-    expect(SEED_DATA_OPTIONS().length).toEqual(17);
+    expect(SEED_DATA_OPTIONS().length).toEqual(19);
   });
 
   it("returns more options", () => {
     mockFeatureBoolean = true;
-    expect(SEED_DATA_OPTIONS().length).toEqual(19);
+    expect(SEED_DATA_OPTIONS().length).toEqual(21);
   });
 
   it("shows stress options only after a stress search", () => {
