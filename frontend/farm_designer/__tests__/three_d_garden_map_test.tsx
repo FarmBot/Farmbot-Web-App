@@ -158,6 +158,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.mirrorX = true;
     expectedConfig.mirrorY = true;
     expectedConfig.viewpointHeading = 0;
+    expectedConfig.kitVersion = "v1.7";
 
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({

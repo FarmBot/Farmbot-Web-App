@@ -59,6 +59,7 @@ describe("<PublicOverlay />", () => {
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       ...PRESETS["Genesis XL"],
+      zAxisLength: 800,
     });
   });
 
