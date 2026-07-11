@@ -41,12 +41,12 @@ export enum DiagramNodes {
 }
 
 const diagramPositions: Record<string, Record<"x" | "y", number>> = {
-  top: { x: 0, y: -75 },
+  top: { x: 0, y: -60 },
   left: { x: -50, y: 0 },
   right: { x: 50, y: 0 },
-  bottom: { x: 0, y: 75 },
-  subLeft: { x: -10, y: 110 },
-  subRight: { x: 40, y: 110 }
+  bottom: { x: 0, y: 60 },
+  subLeft: { x: -10, y: 90 },
+  subRight: { x: 40, y: 90 }
 };
 
 export function getTextPosition(
@@ -148,7 +148,7 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
       width="100%"
       height="100%"
       style={{ maxHeight: "250px" }}
-      viewBox="-120 -100 245 220">
+      viewBox="-120 -80 245 185">
       <g className="text"
         dominantBaseline="middle">
         {nodeLabel(browser, DiagramNodes.browser)}
@@ -192,7 +192,7 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
           connectionData={botFirmware}
           from={DiagramNodes.bot}
           to={DiagramNodes.arduino}
-          customLineProps={{ x1: 0, y1: 110, x2: 30, y2: 110 }}
+          customLineProps={{ x1: 0, y1: 90, x2: 30, y2: 90 }}
           hover={hover}
           hoveredConnection={hoveredConnection} />
       </g>

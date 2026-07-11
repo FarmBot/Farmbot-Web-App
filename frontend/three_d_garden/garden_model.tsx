@@ -642,6 +642,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           sensors={sensors}
           sensorReadings={sensorReadings}
           activePositionRef={activePositionRef}
+          onSelectObject={onSelectObject}
           addPlantProps={addPlantProps} />
       </PopInGroup>
     </SceneBoundary>
@@ -1518,6 +1519,18 @@ export const GardenModel = (props: GardenModelProps) => {
   const openSelectedObjectPanel = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
+    if (selection.kind == "connectivity") {
+      dispatch?.({
+        type: Actions.SET_METRIC_PANEL_OPTION,
+        payload: "realtime",
+      });
+      dispatch?.({
+        type: Actions.OPEN_POPUP,
+        payload: "connectivity",
+      });
+      closePopup();
+      return;
+    }
     dispatch?.(setPanelOpen3D(true));
     navigate(pathForThreeDSelection(selection));
     closePopup();

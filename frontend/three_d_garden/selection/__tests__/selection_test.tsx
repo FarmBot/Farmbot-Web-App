@@ -45,6 +45,7 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import { bot as fakeBot } from "../../../__test_support__/fake_state/bot";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -351,6 +352,8 @@ describe("selection routes", () => {
       .toEqual(Path.settings("farmbot"));
     expect(pathForThreeDSelection({ kind: "camera", id: 0 }))
       .toEqual(Path.photos());
+    expect(pathForThreeDSelection({ kind: "connectivity", id: 0 }))
+      .toEqual(Path.designer());
     expect(pathForThreeDSelection({ kind: "sceneObject", id: 5 }))
       .toEqual(Path.sceneObjects(5));
   });
@@ -451,6 +454,15 @@ describe("selection resolve", () => {
     expect(objectHasSelectionOverlay(
       resolveSelectedObject(props, { kind: "camera", id: 0 }),
     )).toBeFalsy();
+    const connectivity = resolveSelectedObject(props, {
+      kind: "connectivity",
+      id: 0,
+    });
+    expect(connectivity).toEqual(expect.objectContaining({
+      kind: "connectivity",
+      name: "Connectivity",
+    }));
+    expect(objectHasSelectionOverlay(connectivity)).toBeFalsy();
   });
 });
 
@@ -505,6 +517,23 @@ describe("selection overlay and popups", () => {
     fireEvent.click(buttons[1]);
     expect(p.onOpenPanel).toHaveBeenCalledWith({ kind: "utm", id: 0 });
     expect(p.onClosePopup).toHaveBeenCalled();
+  });
+
+  it("renders the connectivity popup title indicator and content", () => {
+    const p = layerProps();
+    p.bot = clone(fakeBot);
+    const object = {
+      kind: "connectivity" as const,
+      ...objectBase({ kind: "connectivity", id: 0 }),
+    };
+    const { container } = render(<ObjectPopup
+      {...p}
+      object={object}
+      visible={true} />);
+    expect(container.querySelector("h3")).toHaveTextContent("connectivity");
+    expect(container.querySelector("h3 .diagnosis-indicator")).toBeTruthy();
+    expect(container.querySelector(".connectivity-popup-content")).toBeTruthy();
+    expect(container.querySelector(".object-popup-location-row")).toBeNull();
   });
 
   it("handles location popup actions", () => {

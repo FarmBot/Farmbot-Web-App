@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { useTexture } from "@react-three/drei";
 import * as reactSpring from "@react-spring/three";
 import {
@@ -24,6 +24,18 @@ describe("<UtilitiesPost />", () => {
     expect(container.innerHTML).toContain("utilities-post");
     expect(container.querySelector("[name='utilities-solid-hardware']"))
       .toBeTruthy();
+  });
+
+  it("selects connectivity from the WiFi router", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    const { container } = render(<UtilitiesPost {...p} />);
+    const router = container.querySelector("[name='wifi-router']");
+    router && fireEvent.click(router);
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "connectivity",
+      id: 0,
+    });
   });
 
   it("merges solid hardware into one colored geometry", () => {
@@ -62,6 +74,10 @@ describe("<UtilitiesPost />", () => {
     expect(utilitiesPostPropsEqual(p, {
       ...p,
       activeFocus: "Planter bed",
+    })).toBeFalsy();
+    expect(utilitiesPostPropsEqual(p, {
+      ...p,
+      onSelectObject: jest.fn(),
     })).toBeFalsy();
     expect(utilitiesPostPropsEqual(p, {
       ...p,

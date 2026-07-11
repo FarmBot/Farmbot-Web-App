@@ -59,6 +59,7 @@ import {
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 import { FocusVisibilityGroup } from "../focus_transition";
+import { ThreeDObjectSelectionHandler } from "../selection_types";
 import { useTextureVariant } from "../texture_variants";
 import {
   AlignmentIndicatorController,
@@ -471,6 +472,7 @@ export interface BedProps {
   sensors: TaggedSensor[];
   sensorReadings: TaggedSensorReading[];
   activePositionRef: ActivePositionRef;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 const BED_CONFIG_FIELDS: (keyof Config)[] = [
@@ -559,6 +561,7 @@ const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   && prev.sensors === next.sensors
   && prev.sensorReadings === next.sensorReadings
   && prev.activePositionRef === next.activePositionRef
+  && prev.onSelectObject === next.onSelectObject
   && bedConfigFieldsEqual(prev.config, next.config)
   && bedSettingFieldsEqual(prev, next);
 
@@ -901,7 +904,8 @@ const BedBase = (props: BedProps) => {
       bedColor={bedColor}
       legWoodTexture={legWoodTexture}
       supports={supports} />
-    <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
+    <UtilitiesPost config={props.config} activeFocus={props.activeFocus}
+      onSelectObject={props.onSelectObject} />
     <Packaging config={props.config} />
   </Group>;
 };

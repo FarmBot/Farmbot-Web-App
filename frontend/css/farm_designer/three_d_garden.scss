@@ -152,6 +152,57 @@
         align-self: end;
       }
 
+      .connectivity-popup-content {
+        gap: 1rem;
+
+        .connectivity-diagram {
+          width: 20rem;
+
+          text {
+            font-size: 1.3rem;
+          }
+        }
+
+        .connectivity-summary-table {
+          width: 100%;
+          font-size: 1.2rem;
+
+          th,
+          td {
+            padding: 0.3rem 0.5rem;
+            text-align: left;
+          }
+
+          th {
+            width: 55%;
+          }
+
+          .connectivity-summary-indicator {
+            width: 2rem;
+
+            .saucer {
+              float: right;
+              width: 1rem;
+              height: 1rem;
+              margin: 0;
+              cursor: default;
+            }
+
+            .connectivity-summary-wifi {
+              width: 2.5rem;
+              height: 1rem;
+
+              .percent-bar {
+                position: relative;
+                top: 0;
+                right: auto;
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+
       .object-popup-mounted-tool-row {
         align-items: center;
       }

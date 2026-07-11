@@ -23,6 +23,8 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
+import { getWifiRouterWorldPosition } from
+  "../bed/objects/utilities_post_position";
 
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
@@ -70,6 +72,10 @@ interface ResolvedCameraObject extends ResolvedThreeDObjectBase {
   kind: "camera";
 }
 
+interface ResolvedConnectivityObject extends ResolvedThreeDObjectBase {
+  kind: "connectivity";
+}
+
 export type ResolvedThreeDObject =
   | ResolvedPlantObject
   | ResolvedPointObject
@@ -77,7 +83,8 @@ export type ResolvedThreeDObject =
   | ResolvedSlotObject
   | ResolvedUtmObject
   | ResolvedElectronicsObject
-  | ResolvedCameraObject;
+  | ResolvedCameraObject
+  | ResolvedConnectivityObject;
 
 export interface ResolvedLocationObject {
   kind: "location";
@@ -98,7 +105,8 @@ export const objectHasSelectionOverlay = (
   !!object
   && object.kind != "utm"
   && object.kind != "electronics"
-  && object.kind != "camera";
+  && object.kind != "camera"
+  && object.kind != "connectivity";
 
 const objectName = (
   resource: { body: { name?: string, id?: number } },
@@ -306,6 +314,23 @@ const resolveCameraObject = (
   };
 };
 
+const resolveConnectivityObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedConnectivityObject => {
+  const worldPosition = getWifiRouterWorldPosition(props.config);
+  return {
+    kind: "connectivity",
+    selection,
+    name: t("Connectivity"),
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1],
+      worldPosition[2] + FIXED_POPUP_Z_OFFSET],
+    ringRadius: SLOT_RING_RADIUS,
+    locationCoordinate: { x: 0, y: 0, z: 0 },
+  };
+};
+
 export const resolveSelectedObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection | undefined,
@@ -319,6 +344,7 @@ export const resolveSelectedObject = (
     case "utm": return resolveUtmObject(props, selection);
     case "electronics": return resolveElectronicsObject(props, selection);
     case "camera": return resolveCameraObject(props, selection);
+    case "connectivity": return resolveConnectivityObject(props, selection);
   }
 };
 

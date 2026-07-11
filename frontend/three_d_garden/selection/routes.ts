@@ -171,6 +171,7 @@ export const pathForThreeDSelection = (
     case "utm": return Path.tools();
     case "electronics": return Path.settings("farmbot");
     case "camera": return Path.photos();
+    case "connectivity": return Path.designer();
     case "sceneObject": return Path.sceneObjects(selection.id);
   }
 };

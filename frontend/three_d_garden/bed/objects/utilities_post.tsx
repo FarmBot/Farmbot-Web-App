@@ -6,7 +6,7 @@ import { RepeatWrapping } from "three";
 import { ASSETS } from "../../constants";
 import { Config } from "../../config";
 import {
-  threeSpace, getColorFromBrightness, easyCubicBezierCurve3,
+  getColorFromBrightness, easyCubicBezierCurve3,
 } from "../../helpers";
 import { outletDepth } from "../../bot";
 import * as THREE from "three";
@@ -17,6 +17,12 @@ import {
   mergeSolidGeometries,
   SolidGeometryPart,
 } from "../../geometry_batching";
+import { ThreeDObjectSelectionHandler } from "../../selection_types";
+import { ThreeEvent } from "@react-three/fiber";
+import { clickWasDragged } from "../../click_event";
+import {
+  getUtilitiesPostWorldPosition, WIFI_ROUTER_LOCAL_Z,
+} from "./utilities_post_position";
 
 const AnimatedGroup = animated(Group);
 const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
@@ -28,6 +34,7 @@ const utilitiesPostFocusSpringConfig = {
 export interface UtilitiesPostProps {
   config: Config;
   activeFocus: string;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 type Vector3 = [number, number, number];
@@ -176,6 +183,7 @@ export const utilitiesPostPropsEqual = (
   next: UtilitiesPostProps,
 ) =>
   prev.activeFocus === next.activeFocus &&
+  prev.onSelectObject === next.onSelectObject &&
   UTILITIES_POST_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -186,11 +194,11 @@ const UtilitiesPostBase = (props: UtilitiesPostProps) => {
 };
 
 const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
+  const { onSelectObject } = props;
   const {
     legSize, bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
   } = props.config;
-  const groundZ = -bedHeight - bedZOffset;
   const postColor = getColorFromBrightness(bedBrightness);
   const faucetX = 0;
   const faucetY = -115;
@@ -217,11 +225,20 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     wrapT: RepeatWrapping,
     repeat: [0.02, 0.05],
   });
-  const shownPosition = React.useMemo<Vector3>(() => [
-    threeSpace(bedLengthOuter + 600, bedLengthOuter),
-    threeSpace(legSize / 2, bedWidthOuter),
-    groundZ + 150,
-  ], [bedLengthOuter, bedWidthOuter, groundZ, legSize]);
+  const shownPosition = React.useMemo<Vector3>(() =>
+    getUtilitiesPostWorldPosition({
+      bedHeight,
+      bedLengthOuter,
+      bedWidthOuter,
+      bedZOffset,
+      legSize,
+    }), [
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedZOffset,
+    legSize,
+  ]);
   const hiddenDepthOffset =
     -(bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE;
   const solidGeometry = React.useMemo(() => makeUtilitiesPostGeometry({
@@ -230,6 +247,12 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     legSize,
   }), [hosePathCurved, hosePathStraight, legSize]);
   React.useEffect(() => () => solidGeometry?.dispose(), [solidGeometry]);
+  const selectConnectivity = React.useCallback(
+    (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event) || !onSelectObject) { return; }
+      onSelectObject({ kind: "connectivity", id: 0 }) !== false &&
+        event.stopPropagation?.();
+    }, [onSelectObject]);
 
   return <UtilitiesPostFocusGroup name={"utilities"}
     visible={props.activeFocus != "Planter bed"}
@@ -247,7 +270,8 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
       <MeshPhongMaterial color={"gray"} />
     </Box>
     <Group name={"wifi-router"}
-      position={[0, 0, 165]}>
+      onClick={selectConnectivity}
+      position={[0, 0, WIFI_ROUTER_LOCAL_Z]}>
       <RoundedBox name={"router-base"}
         castShadow={true}
         receiveShadow={true}

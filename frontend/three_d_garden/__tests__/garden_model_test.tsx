@@ -47,6 +47,7 @@ import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
 import { Bed } from "../bed";
+import { Actions } from "../../constants";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -1091,12 +1092,21 @@ describe("<GardenModel />", () => {
       staticLayers.props.onSelectObject({ kind: "plant", id: 1 });
       selectionLayer.props.onUpdateLocationSelection(location);
       selectionLayer.props.onOpenPanel({ kind: "plant", id: 1 });
+      selectionLayer.props.onOpenPanel({ kind: "connectivity", id: 0 });
       selectionLayer.props.onOpenLocationPanel(location);
       selectionLayer.props.onClosePopup();
       staticLayers.props.onHoverObject(true);
       staticLayers.props.onHoverObject(false);
     });
     expect(dispatch).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_METRIC_PANEL_OPTION,
+      payload: "realtime",
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_POPUP,
+      payload: "connectivity",
+    });
     expect(mockNavigate).toHaveBeenCalled();
   });
 

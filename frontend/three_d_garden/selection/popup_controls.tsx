@@ -488,6 +488,7 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "utm": return <UtmPopupControls {...props} />;
     case "electronics": return <ElectronicsPopupControls {...props} />;
     case "camera": return <CameraPopupControls {...props} />;
+    case "connectivity": return <></>;
   }
 };
 
@@ -510,6 +511,7 @@ export const ObjectPopupHeaderColor = (props: PopupControlProps) => {
 type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
+  | { kind: "connectivity" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -526,7 +528,8 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
   if (!props.dispatch
     || object.kind == "utm"
     || object.kind == "electronics"
-    || object.kind == "camera") {
+    || object.kind == "camera"
+    || object.kind == "connectivity") {
     return undefined;
   }
   return <button
