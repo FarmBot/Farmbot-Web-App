@@ -55,9 +55,14 @@ export const fakeDesignerState = (): DesignerState => ({
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
-  threeDTopDownView: undefined,
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
+  threeDPerspective: true,
+  threeDProfileOpen: false,
+  threeDProfileAxis: "x",
+  threeDProfileCenter: { x: undefined, y: undefined },
+  threeDProfileWidth: 100,
+  threeDProfileFollowBot: true,
   threeDTime: undefined,
 });
 

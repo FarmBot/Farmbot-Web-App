@@ -1,6 +1,9 @@
 import React from "react";
 import { Config } from "./config";
-import { getDefaultCameraPosition } from "./camera";
+import {
+  alignCameraPositionToViewPrism, getDefaultCameraPosition,
+  nearestCardinalHeading, nearestViewPrismHeading,
+} from "./camera";
 import { ThreeEvent } from "@react-three/fiber";
 import { Cylinder, Line, Sphere } from "@react-three/drei";
 import { Group, MeshPhongMaterial } from "./components";
@@ -13,6 +16,7 @@ export interface CameraSelectionUIProps {
   config: Config;
   dispatch: Function | undefined;
   topDownAtStart: boolean;
+  onSelect(angle: number, topDown: boolean): void;
 }
 
 interface Hovered {
@@ -21,11 +25,8 @@ interface Hovered {
 }
 
 const ORTHOGONAL_ANGLES = [0, 90, 180, 270];
-const ISO_ANGLES = [30, 150, 210, 330];
+const ISO_ANGLES = [45, 135, 225, 315];
 const CAMERA_ANGLES = ORTHOGONAL_ANGLES.concat(ISO_ANGLES);
-
-const angleList = (angles: number[], angle: number) =>
-  angles.includes(angle) ? angles : angles.concat(angle);
 
 const CAMERA_SELECTION_CONFIG_FIELDS: (keyof Config)[] = [
   "bedHeight",
@@ -43,6 +44,7 @@ export const cameraSelectionUIPropsEqual = (
 ) =>
   prev.dispatch === next.dispatch &&
   prev.topDownAtStart === next.topDownAtStart &&
+  prev.onSelect === next.onSelect &&
   CAMERA_SELECTION_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -58,19 +60,15 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
     hoveredRef.current = nextHovered;
     setHovered(nextHovered);
   }, []);
-  const topDownSelected = props.topDownAtStart;
-  const topDownAngles = React.useMemo(
-    () => angleList(ORTHOGONAL_ANGLES,
-      topDownSelected ? config.viewpointHeading : 0),
-    [topDownSelected, config.viewpointHeading],
+  const selectedAngledHeading = nearestViewPrismHeading(
+    config.viewpointHeading,
   );
-  const isoAngles = React.useMemo(
-    () => angleList(CAMERA_ANGLES,
-      topDownSelected ? 0 : config.viewpointHeading),
-    [topDownSelected, config.viewpointHeading],
+  const selectedTopDownHeading = nearestCardinalHeading(
+    config.viewpointHeading,
   );
   const common = {
     dispatch: props.dispatch,
+    onSelect: props.onSelect,
     setHoveredMarker,
     bedLengthOuter: config.bedLengthOuter,
     bedWidthOuter: config.bedWidthOuter,
@@ -81,19 +79,21 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
   return <Group
     name={"camera-selection"}
     visible={config.cameraSelectionView}>
-    {topDownAngles.map(angle =>
+    {ORTHOGONAL_ANGLES.map(angle =>
       <CameraLocation key={`top-down-${angle}`} {...common}
         angle={angle}
         topDown={true}
-        selected={topDownSelected && angle == config.viewpointHeading}
+        selected={props.topDownAtStart
+          && angle == selectedTopDownHeading}
         hovered={hovered?.angle == angle && hovered.topDown}
         zoomFactor={config.zoomFactor}
         debug={false} />)}
-    {isoAngles.map(angle =>
+    {CAMERA_ANGLES.map(angle =>
       <CameraLocation key={`iso-${angle}`} {...common}
         angle={angle}
         topDown={false}
-        selected={!topDownSelected && angle == config.viewpointHeading}
+        selected={!props.topDownAtStart
+          && angle == selectedAngledHeading}
         hovered={hovered?.angle == angle && hovered.topDown === false}
         zoomFactor={config.zoomFactor}
         debug={false} />)}
@@ -101,7 +101,8 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
       <CameraLocation key={`debug-${angle}`} {...common}
         angle={angle}
         topDown={false}
-        selected={!topDownSelected && angle == config.viewpointHeading}
+        selected={!props.topDownAtStart
+          && angle == selectedAngledHeading}
         hovered={hovered?.angle == angle && hovered.topDown === false}
         zoomFactor={config.zoomFactor}
         debug={true} />)}
@@ -110,6 +111,7 @@ const CameraSelectionUIBase = (props: CameraSelectionUIProps) => {
 
 interface CameraLocationProps extends Hovered {
   dispatch: Function | undefined;
+  onSelect(angle: number, topDown: boolean): void;
   selected: boolean;
   hovered: boolean;
   setHoveredMarker(hovered?: Hovered): void;
@@ -124,7 +126,8 @@ interface CameraLocationProps extends Hovered {
 
 const CameraLocation = React.memo((props: CameraLocationProps) => {
   const {
-    dispatch, selected, hovered, setHoveredMarker, angle, topDown, debug,
+    dispatch, onSelect, selected, hovered, setHoveredMarker,
+    angle, topDown, debug,
     bedLengthOuter, bedWidthOuter, bedZOffset, bedHeight, lightsDebug,
     zoomFactor,
   } = props;
@@ -132,13 +135,16 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
   const color = hovered ? "cyan" : baseColor;
   const markerPosition = React.useMemo(() => {
     const bedSize = { x: bedLengthOuter, y: bedWidthOuter };
-    const position = getDefaultCameraPosition({
+    const defaultPosition = getDefaultCameraPosition({
       heading: angle,
       bedSize,
       topDown,
       visual: !debug,
       zoomFactor,
     });
+    const position = topDown
+      ? defaultPosition
+      : alignCameraPositionToViewPrism(defaultPosition, angle);
     const baseScaleXY = debug ? 1 : 0.5;
     const scale = topDown ? 0.1 : baseScaleXY;
     const baseScaleZ = debug ? 1 : 0.5 * 0.25;
@@ -168,11 +174,12 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
         payload: undefined,
       });
       dispatch({
-        type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-        payload: topDown,
+        type: Actions.SET_3D_PERSPECTIVE,
+        payload: true,
       });
+      onSelect(angle, topDown);
     }
-  }), [angle, dispatch, topDown]);
+  }), [angle, dispatch, onSelect, topDown]);
   React.useEffect(() => () => click.cancel?.(), [click]);
   const hoveredData = React.useMemo(() => ({ angle, topDown }),
     [angle, topDown]);

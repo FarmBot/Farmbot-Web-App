@@ -27,10 +27,10 @@ import { SCENES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
-import { isTopDown } from "../three_d_garden/helpers";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { MovementState, TimeSettings } from "../interfaces";
 import { TaggedSceneObject } from "../scene_objects/interfaces";
+import { effectiveThreeDPerspective } from "./three_d_camera_controls";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -134,6 +134,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     cableDebug: getValue("cableDebug"),
     lightsDebug: getValue("lightsDebug"),
     moistureDebug: getValue("moistureDebug"),
+    cameraFitDebug: getValue("cameraFitDebug"),
+    viewCube: getValue("viewCube"),
     surfaceDebug: getValue("surfaceDebug"),
     sun: getValue("sun"),
     ambient: getValue("ambient"),
@@ -164,7 +166,11 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     !props.getWebAppConfigValue(BooleanSetting.disable_animations);
   const cameraView =
     !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
-  const topDown = isTopDown(props.designer, props.getWebAppConfigValue);
+  const topDownAtStart =
+    !!props.getWebAppConfigValue(BooleanSetting.top_down_view);
+  const perspective = effectiveThreeDPerspective(
+    designer,
+  );
   const viewpointHeading = parseInt(
     "" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
   const { latitude, longitude, valid } = latLng(props.device);
@@ -246,6 +252,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.cableDebug = !!configValues.cableDebug;
     nextConfig.lightsDebug = !!configValues.lightsDebug;
     nextConfig.moistureDebug = !!configValues.moistureDebug;
+    nextConfig.cameraFitDebug = !!configValues.cameraFitDebug;
+    nextConfig.viewCube = !!configValues.viewCube;
     nextConfig.surfaceDebug = configValues.surfaceDebug;
     nextConfig.sun = configValues.sun;
     nextConfig.ambient = configValues.ambient;
@@ -279,11 +287,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.interpolationStepSize = options.stepSize;
     nextConfig.interpolationUseNearest = options.useNearest;
     nextConfig.interpolationPower = options.power;
-    nextConfig.topDown = topDown;
     nextConfig.zoom = true;
     nextConfig.pan = true;
-    nextConfig.rotate = !topDown;
-    nextConfig.perspective = !topDown;
+    nextConfig.rotate = true;
+    nextConfig.perspective = perspective;
     nextConfig.viewpointHeading = viewpointHeading;
     nextConfig.cameraSelectionView = designer.threeDCameraSelection;
     nextConfig.lastImageCapture = lastCaptureTime;
@@ -311,6 +318,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.bounds,
     configValues.cableCarriers,
     configValues.cableDebug,
+    configValues.cameraFitDebug,
     configValues.ccSupportSize,
     configValues.clouds,
     configValues.columnLength,
@@ -334,6 +342,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.threeAxes,
     configValues.tracks,
     configValues.urlCameraPos,
+    configValues.viewCube,
     configValues.xyDimensions,
     configValues.zAxisLength,
     configValues.zDimension,
@@ -356,7 +365,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     stableGridSize.y,
     sunPositionConfig.azimuth,
     sunPositionConfig.inclination,
-    topDown,
+    perspective,
     vacuum,
     viewpointHeading,
     waterFlow,
@@ -388,12 +397,14 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     getConfigValue: props.getWebAppConfigValue,
     curves: props.curves,
     designer: props.designer,
+    topDownAtStart,
   }), [
     props.curves,
     props.designer,
     props.dispatch,
     props.getWebAppConfigValue,
     stableGridSize,
+    topDownAtStart,
   ]);
 
   return <ThreeDGarden

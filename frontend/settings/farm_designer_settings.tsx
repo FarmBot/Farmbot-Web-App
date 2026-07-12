@@ -124,11 +124,6 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.xy_swap,
     },
     {
-      title: DeviceSetting.topDownView,
-      description: Content.TOP_DOWN_VIEW,
-      setting: BooleanSetting.top_down_view,
-    },
-    {
       title: DeviceSetting.mapOrigin,
       description: Content.MAP_ORIGIN,
       children: <OriginSelector {...settingsProps} />

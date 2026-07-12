@@ -2,6 +2,7 @@ import {
   DesignerState,
   DrawnPointPayl,
   HoveredPlantPayl,
+  ThreeDProfileAxis,
 } from "./interfaces";
 import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
@@ -64,9 +65,14 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
-  threeDTopDownView: undefined,
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
+  threeDPerspective: undefined,
+  threeDProfileOpen: false,
+  threeDProfileAxis: "x",
+  threeDProfileCenter: { x: undefined, y: undefined },
+  threeDProfileWidth: 100,
+  threeDProfileFollowBot: true,
   threeDTime: undefined,
 };
 
@@ -267,16 +273,37 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.distanceIndicator = payload;
     return s;
   })
-  .add<boolean>(Actions.TOGGLE_3D_TOP_DOWN_VIEW, (s, { payload }) => {
-    s.threeDTopDownView = payload;
-    return s;
-  })
   .add<never>(Actions.TOGGLE_3D_CAMERA_SELECTION, (s) => {
     s.threeDCameraSelection = !s.threeDCameraSelection;
     return s;
   })
   .add<boolean>(Actions.TOGGLE_3D_EXAGGERATED_Z, (s, { payload }) => {
     s.threeDExaggeratedZ = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_PROFILE_OPEN, (s, { payload }) => {
+    s.threeDProfileOpen = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_PERSPECTIVE, (s, { payload }) => {
+    s.threeDPerspective = payload;
+    return s;
+  })
+  .add<ThreeDProfileAxis>(Actions.SET_3D_PROFILE_AXIS, (s, { payload }) => {
+    s.threeDProfileAxis = payload;
+    return s;
+  })
+  .add<Record<"x" | "y", number | undefined>>(
+    Actions.SET_3D_PROFILE_CENTER, (s, { payload }) => {
+      s.threeDProfileCenter = payload;
+      return s;
+    })
+  .add<number>(Actions.SET_3D_PROFILE_WIDTH, (s, { payload }) => {
+    s.threeDProfileWidth = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_PROFILE_FOLLOW_BOT, (s, { payload }) => {
+    s.threeDProfileFollowBot = payload;
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {

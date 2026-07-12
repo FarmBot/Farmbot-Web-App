@@ -2,12 +2,22 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { OrbitControls, useGLTF, useTexture } from "@react-three/drei";
+import {
+  OrbitControls, PerspectiveCamera, useGLTF, useTexture,
+} from "@react-three/drei";
 import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
-  GardenModelProps, GardenModel, SMOOTH_XL_CAMERA_BED_SCALE,
-  SMOOTH_XL_CAMERA_HEIGHT_SCALE,
+  cameraAtRadius, cameraRadius,
+  createCameraFitRequest, createStartingCameraSelector,
+  createViewDirectionRequest,
+  FarmDesignerViewPrism,
+  GardenCameraRequest, GardenModelProps, GardenModel,
+  getViewPrismCameraProjection,
+  getViewPrismColors,
+  notifyStartingCameraSaved,
+  retargetCameraRequestFov,
+  VIEW_PRISM_VIEWPORT_SIZE,
 } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
@@ -27,7 +37,7 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
-import { cameraInit } from "../camera";
+import { cameraInit, getCameraFit } from "../camera";
 import * as cameraModule from "../camera";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
@@ -48,10 +58,20 @@ import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
 import { Bed } from "../bed";
 import { Actions } from "../../constants";
+import { PROFILE_CLIPPING_EXEMPT } from "../profile";
+import {
+  ViewPrism, VIEW_PRISM_TOP_CENTER,
+  VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
+} from "../view_prism";
+import { success } from "../../toast/toast";
+import {
+  Group as ThreeGroup, PerspectiveCamera as ThreePerspectiveCamera, Vector3,
+} from "three";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 let useStateSpy: jest.SpyInstance;
+const useStateSetters: jest.Mock[] = [];
 let setCameraUrlParamsSpy: jest.SpyInstance | undefined;
 let resetStoreAfterTest = false;
 const originalPathname = location.pathname;
@@ -62,17 +82,20 @@ describe("<GardenModel />", () => {
     console.log = jest.fn();
     mockIsDesktop = false;
     mockIsMobile = false;
+    useStateSetters.length = 0;
     useStateSpy = jest.spyOn(React, "useState")
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        const setter = jest.fn();
+        useStateSetters.push(setter);
         // eslint-disable-next-line no-null/no-null
         if (initialState === null) {
-          return [{}, jest.fn()];
+          return [{}, setter];
         }
         const value = typeof initialState == "function"
           ? (initialState as () => S)()
           : initialState;
-        return [value, jest.fn()];
+        return [value, setter];
       });
     isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
       .mockImplementation(() => mockIsDesktop);
@@ -120,7 +143,6 @@ describe("<GardenModel />", () => {
     const wrapper = createWrapper(p);
     const controls = () => wrapper.root.findByType(OrbitControls);
     const expectedCamera = cameraInit({
-      topDown: p.config.topDown,
       viewpointHeading: p.config.viewpointHeading,
       bedSize: {
         x: p.config.bedLengthOuter,
@@ -128,7 +150,19 @@ describe("<GardenModel />", () => {
       },
       zoomFactor: p.config.zoomFactor,
     });
-    return { controls, expectedCamera, p, wrapper };
+    const expectedFit = getCameraFit({
+      viewport: { width: 800, height: 600 },
+      bedSize: {
+        x: p.config.bedLengthOuter,
+        y: p.config.bedWidthOuter,
+      },
+    });
+    return {
+      controls,
+      expectedCamera: cameraAtRadius(expectedCamera, expectedFit.cameraRadius),
+      p,
+      wrapper,
+    };
   };
   const waitForCameraUrlSave = () =>
     new Promise<void>(resolve => window.setTimeout(resolve, 200));
@@ -158,7 +192,7 @@ describe("<GardenModel />", () => {
     await waitFor(() =>
       expect(container.innerHTML).toContain("zoom-beacons"));
     expect(container.innerHTML).not.toContain("stats");
-    expect(container.innerHTML).toContain("darkgreen");
+    expect(container.innerHTML).toContain("#ddd");
     expect(container.innerHTML).toContain("bed-load-in");
     expect(container.innerHTML).toContain("grid-load-in");
     expect(container.innerHTML).toContain("zoom-beacons-load-in");
@@ -378,44 +412,167 @@ describe("<GardenModel />", () => {
     expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
   });
 
-  it("renders top down view", () => {
-    mockIsMobile = true;
+  it("keeps the perspective camera unchanged in profile view", () => {
+    const getCameraFromUrlParamsSpy = jest
+      .spyOn(cameraModule, "getCameraFromUrlParams")
+      .mockReturnValue({
+        position: [1, 2, 3],
+        target: [4, 5, 6],
+      });
     const p = fakeProps();
-    p.config.topDown = true;
-    p.config.viewpointHeading = 90;
-    const wrapper = createWrapper(p);
-    const orbitControls = wrapper.root.findByType(OrbitControls);
-    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
-    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
-  });
-
-  it("rounds top down heading up to the nearest 90 degrees", () => {
-    mockIsMobile = true;
-    const p = fakeProps();
-    p.config.topDown = true;
-    p.config.viewpointHeading = 1;
-    const wrapper = createWrapper(p);
-    const orbitControls = wrapper.root.findByType(OrbitControls);
-    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
-    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
-  });
-
-  it("scales top down zoom by bed length", () => {
-    const p = fakeProps();
-    p.config.topDown = true;
-    p.config.bedLengthOuter = 6000;
+    p.config.urlCameraPos = true;
+    p.config.perspective = true;
+    p.config.rotate = false;
+    p.config.pan = true;
+    p.config.zoom = true;
+    p.addPlantProps!.designer.threeDProfileOpen = true;
+    p.addPlantProps!.designer.threeDProfileAxis = "y";
     const wrapper = createWrapper(p);
     const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
-    expect(camera?.props.zoom).toEqual(0.125);
+    const sky = wrapper.root.findAll(node => node.props.name == "sky")[0];
+    const cutFaces = wrapper.root.findAll(node =>
+      node.props.name == "profile-cut-faces")[0];
+    const controls = wrapper.root.findByType(OrbitControls);
+
+    expect(wrapper.root.findAllByType(PerspectiveCamera).length)
+      .toBeGreaterThan(0);
+    expect(camera.props.position).toEqual([1, 2, 3]);
+    expect(camera.props.near).toEqual(10);
+    expect(camera.props.far).toEqual(75000);
+    expect(controls.props.target).toEqual([4, 5, 6]);
+    expect(controls.props.enableRotate).toEqual(false);
+    expect(controls.props.enablePan).toEqual(true);
+    expect(controls.props.enableZoom).toEqual(true);
+    expect(sky.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
+    expect(cutFaces.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
+    getCameraFromUrlParamsSpy.mockRestore();
   });
 
-  it("increases top down zoom for shorter beds", () => {
+  it("handles the product view prism and live orbit changes", () => {
     const p = fakeProps();
-    p.config.topDown = true;
-    p.config.bedLengthOuter = 1500;
+    p.addPlantProps!.designer.threeDProfileOpen = true;
+    p.viewPrismBridgeRef = { current: {} };
     const wrapper = createWrapper(p);
-    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
-    expect(camera?.props.zoom).toEqual(0.5);
+    const cameras = wrapper.root.findAllByType(PerspectiveCamera);
+    const mainCamera = cameras.find(camera => camera.props.name == "camera");
+    expect(mainCamera?.props.fov).toEqual(40);
+    expect(wrapper.root.findAllByType(ViewPrism)).toHaveLength(0);
+    expect(p.viewPrismBridgeRef.current?.selectDirection)
+      .toEqual(expect.any(Function));
+    actRenderer(() => {
+      p.viewPrismBridgeRef?.current?.selectDirection?.([1, 1, 0]);
+      p.viewPrismBridgeRef?.current?.selectDirection?.([0, 0, 1]);
+    });
+    actRenderer(() => wrapper.root.findByType(OrbitControls).props.onChange());
+    expect(wrapper.root.findAllByType(PerspectiveCamera)).toHaveLength(1);
+  });
+
+  it("uses computed theme colors for the product view prism", () => {
+    const element = document.createElement("div");
+    element.style.setProperty("--main-bg", "rgb(1, 2, 3)");
+    element.style.setProperty(
+      "--view-prism-hover-color",
+      "rgb(4, 5, 6)",
+    );
+    element.style.setProperty("--text-color", "rgb(7, 8, 9)");
+    element.style.setProperty("--border-color", "rgb(10, 11, 12)");
+    document.body.appendChild(element);
+    expect(getViewPrismColors(element)).toEqual({
+      color: "rgb(1, 2, 3)",
+      hoverColor: "rgb(4, 5, 6)",
+      textColor: "rgb(7, 8, 9)",
+      strokeColor: "rgb(10, 11, 12)",
+    });
+    expect(getViewPrismColors(undefined)).toEqual({
+      color: "#f0f0f0",
+      hoverColor: "#22a273",
+      textColor: "#333",
+      strokeColor: "#777",
+    });
+    element.remove();
+  });
+
+  it("mirrors the live scene-camera rotation in the view prism", () => {
+    const sourceCamera = new ThreePerspectiveCamera();
+    sourceCamera.fov = 40;
+    sourceCamera.rotation.set(0.1, 0.2, 0.3);
+    const selectDirection = jest.fn();
+    const bridgeRef = {
+      current: { camera: sourceCamera, selectDirection },
+    };
+    const useThreeCallCount = (threeFiber.useThree as jest.Mock).mock.calls.length;
+    const wrapper = createRenderer(
+      <FarmDesignerViewPrism
+        bridgeRef={bridgeRef} />,
+    );
+    mountedWrappers.push(wrapper);
+    const gizmoGroup = wrapper.root.findAll(node => !!node.props.object)
+      .map(node => node.props.object as unknown)
+      .find(object => object instanceof ThreeGroup) as ThreeGroup;
+    expect(gizmoGroup.quaternion.toArray()).toEqual(
+      sourceCamera.quaternion.clone().invert().toArray(),
+    );
+    gizmoGroup.updateMatrixWorld();
+    new Vector3(...VIEW_PRISM_TOP_CENTER)
+      .applyMatrix4(gizmoGroup.matrixWorld)
+      .toArray()
+      .map(value => expect(value).toBeCloseTo(0));
+    const gizmoCamera = (threeFiber.useThree as jest.Mock)
+      .mock.results[useThreeCallCount].value.camera as ThreePerspectiveCamera;
+    expect(gizmoCamera.position.toArray()[0]).toEqual(0);
+    expect(gizmoCamera.position.toArray()[1]).toEqual(0);
+    expect(gizmoCamera.fov).toEqual(40);
+    const gizmo = wrapper.root.findByType(ViewPrism);
+    actRenderer(() => gizmo.props.onDirection([1, 0, 0]));
+    expect(selectDirection).toHaveBeenCalledWith([1, 0, 0]);
+  });
+
+  it("preserves gizmo scale throughout perspective transitions", () => {
+    const normalFov = 40;
+    const narrowFov = 1;
+    const normal = getViewPrismCameraProjection(600, normalFov);
+    const narrow = getViewPrismCameraProjection(600, narrowFov);
+    const visibleHeight = (distance: number, fov: number) =>
+      2 * distance * Math.tan(fov * Math.PI / 360);
+    expect(visibleHeight(normal.distance, normalFov)).toBeCloseTo(600);
+    expect(visibleHeight(narrow.distance, narrowFov)).toBeCloseTo(600);
+    expect(narrow.distance).toBeGreaterThan(normal.distance);
+    expect(normal.near).toBeGreaterThan(0);
+    expect(normal.far).toBeGreaterThan(normal.distance);
+    expect(narrow.near).toBeGreaterThan(normal.far);
+  });
+
+  it("frames the full prism rotation around its top-center target", () => {
+    const projection = getViewPrismCameraProjection(
+      VIEW_PRISM_VIEWPORT_SIZE,
+      40,
+    );
+    const visibleHeight = 2 * projection.distance
+      * Math.tan(40 * Math.PI / 360);
+    expect(visibleHeight)
+      .toBeGreaterThan(VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS * 2);
+  });
+
+  it("centers the perspective viewport camera on the view prism", () => {
+    const width = 100;
+    const height = 100;
+    const fov = 40;
+    const projection = getViewPrismCameraProjection(height, fov);
+    const camera = new ThreePerspectiveCamera(fov, width / height);
+    camera.position.set(0, 0, projection.distance);
+    camera.updateMatrixWorld();
+    const projected = new Vector3(0, 0, 0).project(camera);
+    expect(projected.x).toBeCloseTo(0);
+    expect(projected.y).toBeCloseTo(0);
+  });
+
+  it("respects disabled camera rotation in normal view", () => {
+    mockIsMobile = true;
+    const p = fakeProps();
+    p.config.rotate = false;
+    const wrapper = createWrapper(p);
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.enableRotate).toEqual(false);
   });
 
   it("keeps focused camera coordinates with smooth transitions disabled", () => {
@@ -426,7 +583,6 @@ describe("<GardenModel />", () => {
     const wrapper = createWrapper(p);
     const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
     const defaultCamera = cameraInit({
-      topDown: p.config.topDown,
       viewpointHeading: p.config.viewpointHeading,
       bedSize: { x: p.config.bedLengthOuter, y: p.config.bedWidthOuter },
       zoomFactor: p.config.zoomFactor,
@@ -461,7 +617,7 @@ describe("<GardenModel />", () => {
     getCameraFromUrlParamsSpy.mockRestore();
   });
 
-  it("moves the smooth XL default camera back and higher", () => {
+  it("fits the XL default camera to the viewport", () => {
     const p = fakeProps();
     p.smoothFocusTransitions = true;
     p.config.animate = false;
@@ -470,20 +626,42 @@ describe("<GardenModel />", () => {
     p.config.bedWidthOuter = 2860;
     const wrapper = createWrapper(p);
     const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
-    const expectedCamera = cameraInit({
-      topDown: p.config.topDown,
-      viewpointHeading: p.config.viewpointHeading,
+    const expectedFit = getCameraFit({
+      viewport: { width: 800, height: 600 },
       bedSize: {
-        x: p.config.bedLengthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
-        y: p.config.bedWidthOuter * SMOOTH_XL_CAMERA_BED_SCALE,
+        x: p.config.bedLengthOuter,
+        y: p.config.bedWidthOuter,
       },
-      zoomFactor: p.config.zoomFactor,
     });
-    expect(camera?.props.position).toEqual([
-      expectedCamera.position[0],
-      expectedCamera.position[1],
-      expectedCamera.position[2] * SMOOTH_XL_CAMERA_HEIGHT_SCALE,
-    ]);
+    const position = camera.props.position as [number, number, number];
+    expect(Math.hypot(...position))
+      .toBeCloseTo(expectedFit.cameraRadius);
+  });
+
+  it("retargets the promo camera fit when the bed size changes", () => {
+    const p = fakeProps();
+    p.promo = true;
+    const wrapper = createWrapper(p);
+    const setterCount = useStateSetters.length;
+    p.config = {
+      ...p.config,
+      sizePreset: "Genesis XL",
+      bedLengthOuter: 6000,
+      bedWidthOuter: 2860,
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    const updates = useStateSetters.slice(setterCount).flatMap(setter =>
+      (setter.mock.calls as unknown[][]).map(call => call[0]));
+    const request = updates.find((value): value is GardenCameraRequest =>
+      typeof value == "object" && !!value
+      && "camera" in value && "fov" in value);
+    const expectedFit = getCameraFit({
+      viewport: { width: 800, height: 600 },
+      bedSize: { x: 6000, y: 2860 },
+    });
+    if (!request) { throw new Error("Missing camera-fit request"); }
+    expect(cameraRadius(request.camera))
+      .toBeCloseTo(expectedFit.cameraRadius);
   });
 
   it("renders camera selection view", async () => {
@@ -493,6 +671,139 @@ describe("<GardenModel />", () => {
     const { container } = render(<GardenModel {...p} />);
     await waitFor(() =>
       expect(container.innerHTML).toContain("camera-selection"));
+  });
+
+  it("loads a saved top-down camera with perspective", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    p.config.perspective = true;
+    p.config.viewpointHeading = 90;
+    p.addPlantProps!.topDownAtStart = true;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    expect(camera.props.fov).toEqual(40);
+    expect(camera.props.position[0]).toBeGreaterThan(0);
+    expect(camera.props.position[1]).toEqual(0);
+    expect(cameraRadius({
+      position: camera.props.position,
+      target: [0, 0, 0],
+    })).toBeCloseTo(getCameraFit({
+      viewport: { width: 800, height: 600 },
+      bedSize: {
+        x: p.config.bedLengthOuter,
+        y: p.config.bedWidthOuter,
+      },
+    }).cameraRadius);
+  });
+
+  it("creates top-down and angled starting-camera spring targets", () => {
+    const requests: GardenCameraRequest[] = [];
+    const setCameraRequest = jest.fn((request: GardenCameraRequest) =>
+      requests.push(request));
+    const select = createStartingCameraSelector(
+      setCameraRequest,
+      { x: 3000, y: 1500 },
+      10,
+      500,
+    );
+    select(90, true);
+    select(45, false);
+    const [topDown, angled] = requests;
+    expect(topDown.fov).toEqual(40);
+    expect(cameraRadius(topDown.camera)).toBeCloseTo(500);
+    expect(topDown.camera.position[2]).toBeCloseTo(500);
+    expect(topDown.onRest).toEqual(notifyStartingCameraSaved);
+    expect(angled.fov).toEqual(40);
+    expect(cameraRadius(angled.camera)).toBeCloseTo(500);
+    expect(angled.camera.position[0])
+      .toBeCloseTo(-angled.camera.position[1]);
+    expect(angled.camera.position[0])
+      .toBeCloseTo(angled.camera.position[2]);
+    expect(angled.onRest).toEqual(notifyStartingCameraSaved);
+  });
+
+  it("preserves or retargets active camera projection requests", () => {
+    const active: GardenCameraRequest = {
+      camera: { position: [1, 0, 0], target: [0, 0, 0] },
+      fov: 40,
+      onRest: jest.fn(),
+    };
+    const readCamera = jest.fn(() => ({
+      position: [1000, 0, 0] as [number, number, number],
+      target: [0, 0, 0] as [number, number, number],
+      zoom: 1,
+      fov: 40,
+    }));
+    expect(retargetCameraRequestFov(active, 40, readCamera)).toBe(active);
+    expect(readCamera).not.toHaveBeenCalled();
+    const retargeted = retargetCameraRequestFov(active, 1, readCamera);
+    expect(retargeted.fov).toEqual(1);
+    expect(retargeted.camera.position[0]).toBeGreaterThan(1000);
+    expect(retargeted.camera.target).toEqual([0, 0, 0]);
+    expect(retargeted.onRest).toBeUndefined();
+  });
+
+  it("creates camera-fit spring requests from the live direction", () => {
+    const current = {
+      position: [100, 200, 300] as [number, number, number],
+      target: [10, 20, 30] as [number, number, number],
+      zoom: 1,
+      fov: 40,
+    };
+    const request = createCameraFitRequest(current, 500);
+    expect(request.camera.target).toEqual([0, 0, 0]);
+    expect(cameraRadius(request.camera)).toBeCloseTo(500);
+    expect(request.fov).toEqual(40);
+    expect(createCameraFitRequest({ ...current, fov: 1 }, 500)
+      .camera.position[2]).toBeGreaterThan(request.camera.position[2]);
+  });
+
+  it("resets prism selections to the bootstrap target and zoom", () => {
+    const bootstrap = {
+      position: [300, 400, 0] as [number, number, number],
+      target: [0, 0, 0] as [number, number, number],
+    };
+    const current = {
+      position: [1000, 2000, 3000] as [number, number, number],
+      target: [100, 200, 300] as [number, number, number],
+      zoom: 1,
+      fov: 40,
+    };
+    const request = createViewDirectionRequest(
+      [1, 0, 0],
+      current,
+      cameraRadius(bootstrap),
+    );
+    expect(request.camera.target).toEqual([0, 0, 0]);
+    expect(request.camera.position).toEqual([500, 0, 0]);
+    expect(request.fov).toEqual(40);
+
+    const narrow = createViewDirectionRequest(
+      [0, 1, 0],
+      { ...current, fov: 1 },
+      cameraRadius(bootstrap),
+    );
+    expect(narrow.camera.target).toEqual([0, 0, 0]);
+    expect(narrow.camera.position[1]).toBeGreaterThan(500);
+
+    const top = createViewDirectionRequest(
+      [0, 0, 1],
+      current,
+      cameraRadius(bootstrap),
+      Math.PI / 4,
+      { width: 1200, height: 600 },
+    );
+    expect(top.camera.target).toEqual([0, 0, 0]);
+    expect(top.camera.position[0]).toEqual(0);
+    expect(top.camera.position[1]).toBeLessThan(0);
+  });
+
+  it("notifies when the starting-camera spring completes", () => {
+    notifyStartingCameraSaved();
+    expect(success).toHaveBeenCalledWith(
+      "",
+      { title: "Saved starting camera view" },
+    );
   });
 
   it("renders no user plants", () => {
@@ -792,6 +1103,27 @@ describe("<GardenModel />", () => {
     p.config.moistureDebug = true;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("gray");
+  });
+
+  it("renders the camera-fit debug circle", () => {
+    const p = fakeProps();
+    p.config.cameraFitDebug = true;
+    const wrapper = createWrapper(p);
+    const fit = getCameraFit({
+      viewport: { width: 800, height: 600 },
+      bedSize: {
+        x: p.config.bedLengthOuter,
+        y: p.config.bedWidthOuter,
+      },
+    });
+    const inner = wrapper.root.findByProps({
+      name: "camera-fit-circumscribed-circle",
+    });
+    expect(inner.props.points).toHaveLength(129);
+    expect(inner.props.points[0][0]).toBeCloseTo(fit.circumscribedRadius);
+    expect(wrapper.root.findAllByProps({
+      name: "camera-fit-offset-circle",
+    })).toHaveLength(0);
   });
 
   it("renders without sensor readings", () => {

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Box, Detailed, Extrude, Plane, useHelper,
+  Box, Extrude, Plane, useHelper,
 } from "@react-three/drei";
 import {
   DoubleSide,
@@ -23,7 +23,7 @@ import {
 } from "three";
 import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
-import { Config, detailLevels, SurfaceDebugOption } from "../config";
+import { Config, SurfaceDebugOption } from "../config";
 import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, UtilitiesPost, Packaging } from "./objects";
@@ -64,6 +64,7 @@ import { useTextureVariant } from "../texture_variants";
 import {
   AlignmentIndicatorController,
 } from "./objects/alignment_indicators";
+import { PROFILE_FAR_CLIPPING_EXEMPT } from "../profile";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -174,13 +175,14 @@ const SurfaceHeightMaterial = (props: { children: React.ReactNode }) =>
 
 interface TexturedBedMaterialProps {
   bedColor: string;
+  repeat?: [number, number];
 }
 
 export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
   const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
-    repeat: [0.0003, 0.003],
+    repeat: props.repeat || [0.0003, 0.003],
   });
 
   return <MeshPhongMaterial
@@ -189,7 +191,16 @@ export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
     side={DoubleSide} />;
 };
 
-type BedFramePropsWithoutChildren = Omit<BedFrameProps, "children">;
+interface BedFrameMaterialProps {
+  bedColor: string;
+  lowDetail: boolean;
+}
+
+export const BedFrameMaterial = (props: BedFrameMaterialProps) =>
+  props.lowDetail
+    ? <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+    : <TexturedBedMaterial bedColor={props.bedColor} />;
+
 type SoilLayerPropsWithoutChildren = Omit<SoilLayerProps, "children">;
 
 interface BedSupportInstance {
@@ -338,47 +349,46 @@ const BedSupports = (props: BedSupportsProps) => {
       <BoxGeometry args={[legSize, legSize, legHeight]} />
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
     </InstancedMesh>
-    <InstancedMesh
-      ref={bracketRef}
-      name={"caster-bracket"}
-      args={[bracketGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"silver"} />
-    </InstancedMesh>
-    <InstancedMesh
-      ref={wheelRef}
-      name={"wheel"}
-      args={[wheelGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"#434343"} />
-    </InstancedMesh>
-    <InstancedMesh
-      ref={axleRef}
-      name={"axle"}
-      args={[axleGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"#434343"} />
-    </InstancedMesh>
+    {bedZOffset > 0 && <React.Fragment>
+      <InstancedMesh
+        ref={bracketRef}
+        name={"caster-bracket"}
+        args={[bracketGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"silver"} />
+      </InstancedMesh>
+      <InstancedMesh
+        ref={wheelRef}
+        name={"wheel"}
+        args={[wheelGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"#434343"} />
+      </InstancedMesh>
+      <InstancedMesh
+        ref={axleRef}
+        name={"axle"}
+        args={[axleGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"#434343"} />
+      </InstancedMesh>
+    </React.Fragment>}
   </Group>;
 };
 
-interface LowDetailBedFrameProps {
-  commonBedFrameProps: BedFramePropsWithoutChildren;
+interface DetailedSoilLayerProps {
+  bedProps: BedProps;
+  layerProps: SoilLayerPropsWithoutChildren;
+  soilSurfaceSide: Side;
 }
-
-const LowDetailBedFrame = (props: LowDetailBedFrameProps) =>
-  <BedFrame {...props.commonBedFrameProps}>
-    <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
-  </BedFrame>;
 
 interface LowDetailSoilLayerProps {
   layerProps: SoilLayerPropsWithoutChildren;
@@ -388,12 +398,6 @@ const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
   <SoilLayer {...props.layerProps}>
     <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
   </SoilLayer>;
-
-interface DetailedSoilLayerProps {
-  bedProps: BedProps;
-  layerProps: SoilLayerPropsWithoutChildren;
-  soilSurfaceSide: Side;
-}
 
 const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
   const { bedProps } = props;
@@ -452,6 +456,7 @@ export interface AddPlantProps {
   getConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
   designer: DesignerState;
+  topDownAtStart: boolean;
 }
 
 export interface BedProps {
@@ -757,15 +762,13 @@ const BedBase = (props: BedProps) => {
     botSize,
   };
 
-  return <Group name={"bed-group"}>
-    {props.config.lowDetail
-      ? <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
-      : <Detailed distances={detailLevels(props.config)}>
-        <BedFrame {...commonBedFrameProps}>
-          <TexturedBedMaterial bedColor={bedColor} />
-        </BedFrame>
-        <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
-      </Detailed>}
+  return <Group name={"bed-group"}
+    userData={{ [PROFILE_FAR_CLIPPING_EXEMPT]: true }}>
+    <BedFrame {...commonBedFrameProps}>
+      <BedFrameMaterial
+        bedColor={bedColor}
+        lowDetail={props.config.lowDetail} />
+    </BedFrame>
     <Plane name={"bed-underside"}
       args={[bedLengthOuter, bedWidthOuter]}
       castShadow={true}
@@ -870,13 +873,10 @@ const BedBase = (props: BedProps) => {
     <React.Suspense>
       {props.config.lowDetail
         ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
-        : <Detailed distances={detailLevels(props.config)}>
-          <DetailedSoilLayer
-            bedProps={props}
-            layerProps={commonSoilLayerProps}
-            soilSurfaceSide={soilSurfaceSide} />
-          <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
-        </Detailed>}
+        : <DetailedSoilLayer
+          bedProps={props}
+          layerProps={commonSoilLayerProps}
+          soilSurfaceSide={soilSurfaceSide} />}
     </React.Suspense>
     {props.config.moistureDebug &&
       <MoistureSurface

@@ -3,7 +3,10 @@ import {
   Config, ConfigWithPosition, INITIAL, modifyConfigsFromUrlParams,
   PRESETS,
 } from "../three_d_garden/config";
-import { GardenModel } from "../three_d_garden/garden_model";
+import {
+  GardenModel, ViewPrismBridge,
+} from "../three_d_garden/garden_model";
+import { ViewPrismViewport } from "../three_d_garden";
 import { Canvas } from "@react-three/fiber";
 import {
   PrivateOverlay, PublicOverlay, ToolTip,
@@ -141,6 +144,7 @@ export const Promo = () => {
   const [seasonAnimationPaused, setSeasonAnimationPaused] =
     React.useState(false);
   const [seasonResetKey, setSeasonResetKey] = React.useState(0);
+  const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   const handleThreeDLoadComplete = React.useCallback(() =>
     setThreeDLoaded(true), []);
   const handleSeasonSelect = React.useCallback(() =>
@@ -252,7 +256,8 @@ export const Promo = () => {
               showFarmbotLayerLoadProgress={false}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true}
-              smoothConfigTransitions={true} />
+              smoothConfigTransitions={true}
+              viewPrismBridgeRef={viewPrismBridgeRef} />
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
@@ -275,5 +280,7 @@ export const Promo = () => {
         </span>
       </FocusTransitionProvider>
     </div>
+    {config.viewCube &&
+      <ViewPrismViewport bridgeRef={viewPrismBridgeRef} />}
   </div>;
 };

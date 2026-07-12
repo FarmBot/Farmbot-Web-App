@@ -1,0 +1,144 @@
+@use "../variables" as *;
+
+.three-d-profile-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(12rem, 1fr));
+  align-items: start;
+  gap: 1rem;
+  width: min(45rem, calc(100vw - 4rem));
+  padding: 1rem 2rem;
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(100% + 1rem));
+  background: var(--main-bg);
+  border-radius: 5px;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+  transition:
+  transform 300ms ease,
+  opacity 200ms ease,
+  visibility 0s linear 300ms;
+
+  &.open {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition-delay: 0s;
+  }
+
+  label {
+    margin: 0;
+    align-self: center;
+  }
+
+  .three-d-profile-view,
+  .three-d-profile-follow {
+    align-items: center;
+  }
+
+  .three-d-profile-value {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: 0.5rem;
+
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .three-d-profile-input {
+    position: relative;
+
+    input {
+      padding-right: 2rem;
+    }
+  }
+
+  .three-d-profile-carets {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: grid;
+    width: 2rem;
+    height: 3rem;
+
+    button {
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      color: $dark_gray;
+      background: transparent;
+      line-height: 1;
+
+      i {
+        color: $dark_gray;
+      }
+
+      &:disabled {
+        opacity: 0.35;
+      }
+    }
+  }
+
+  .three-d-profile-slider {
+    grid-column: 1 / -1;
+    height: 1.5rem !important;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+
+    &:active,
+    &:focus {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    &::-webkit-slider-runnable-track {
+      height: 0.4rem;
+      border-radius: 0.2rem;
+      background: var(--text-color);
+    }
+
+    &::-webkit-slider-thumb {
+      width: 1.4rem;
+      height: 1.4rem;
+      margin-top: -0.5rem;
+      appearance: none;
+      border-radius: 50%;
+      background: $green;
+    }
+
+    &::-moz-range-track {
+      height: 0.4rem;
+      border-radius: 0.2rem;
+      background: var(--text-color);
+    }
+
+    &::-moz-range-thumb {
+      width: 1.4rem;
+      height: 1.4rem;
+      border: 0;
+      border-radius: 50%;
+      background: $green;
+    }
+  }
+}
+
+@media screen and (max-width: $mobile_max_width) {
+  .three-d-profile-indicator {
+    bottom: 1rem;
+    grid-template-columns: 1fr 1fr;
+    width: calc(100vw - 2rem);
+    padding: 1rem;
+
+    .three-d-profile-follow {
+      grid-column: auto;
+    }
+  }
+}

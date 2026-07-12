@@ -124,6 +124,16 @@ describe("get3DConfigValueFunction()", () => {
 
     expect(getValue("bedWallThickness")).toEqual(99.5);
     expect(getValue("bedHeight")).toEqual(300);
+    expect(getValue("cameraFitDebug")).toEqual(0);
+    expect(getValue("viewCube")).toEqual(1);
+  });
+
+  it("reads the prefixed camera-fit debug setting", () => {
+    const cameraFitDebug = fakeFarmwareEnv();
+    cameraFitDebug.body.key = namespace3D("cameraFitDebug");
+    cameraFitDebug.body.value = "1";
+    expect(get3DConfigValueFunction([cameraFitDebug])("cameraFitDebug"))
+      .toEqual(1);
   });
 
   it("preserves first matching env behavior", () => {

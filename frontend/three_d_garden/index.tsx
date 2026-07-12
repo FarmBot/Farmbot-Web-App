@@ -1,7 +1,11 @@
 import { Canvas } from "@react-three/fiber";
 import React from "react";
 import { Config, PositionConfig } from "./config";
-import { GardenModel } from "./garden_model";
+import {
+  FarmDesignerViewPrism, GardenModel, getViewPrismCameraProjection,
+  ViewPrismBridge, VIEW_PRISM_VIEWPORT_SIZE,
+} from "./garden_model";
+import { NORMAL_CAMERA_FOV } from "./camera";
 import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
 import {
@@ -59,8 +63,44 @@ export interface ThreeDGardenProps {
   sceneObjects: TaggedSceneObject[];
 }
 
+export const viewPrismViewportClassName = (profileOpen: boolean) => [
+  "view-prism-viewport",
+  profileOpen ? "profile-open" : "",
+].join(" ");
+
+interface ViewPrismViewportProps {
+  bridgeRef: React.RefObject<ViewPrismBridge | null>;
+  profileOpen?: boolean;
+}
+
+export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
+  const viewPrismCamera = getViewPrismCameraProjection(
+    VIEW_PRISM_VIEWPORT_SIZE,
+    NORMAL_CAMERA_FOV,
+  );
+  return <div
+    className={viewPrismViewportClassName(!!props.profileOpen)}
+    style={{
+      width: VIEW_PRISM_VIEWPORT_SIZE,
+      height: VIEW_PRISM_VIEWPORT_SIZE,
+    }}
+    aria-hidden={true}>
+    <Canvas
+      gl={{ alpha: true }}
+      camera={{
+        position: [0, 0, viewPrismCamera.distance],
+        fov: NORMAL_CAMERA_FOV,
+        near: viewPrismCamera.near,
+        far: viewPrismCamera.far,
+      }}>
+      <FarmDesignerViewPrism bridgeRef={props.bridgeRef} />
+    </Canvas>
+  </div>;
+};
+
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   usePerfRenderCount("ThreeDGarden");
+  const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   React.useEffect(() => {
     perfMark("three_d_garden_mounted");
   }, []);
@@ -105,9 +145,14 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           env={props.env}
           set3DConfigValue={props.set3DConfigValue}
           sceneObjects={props.sceneObjects}
+          viewPrismBridgeRef={viewPrismBridgeRef}
           addPlantProps={props.addPlantProps} />
       </Canvas>
     </div>
+    {props.config.viewCube &&
+      <ViewPrismViewport
+        bridgeRef={viewPrismBridgeRef}
+        profileOpen={props.addPlantProps.designer.threeDProfileOpen} />}
   </div>;
 });
 

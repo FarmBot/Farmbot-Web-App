@@ -64,6 +64,7 @@ describe("<Promo />", () => {
     console.error = jest.fn();
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("three-d-garden");
+    expect(container.querySelector(".view-prism-viewport")).toBeFalsy();
     expect(gardenModelSpy.mock.calls[0][0]).toEqual(
       expect.objectContaining({
         plantIconCapacities: expect.any(Object),
@@ -71,6 +72,14 @@ describe("<Promo />", () => {
         smoothFocusTransitions: true,
       }),
     );
+    unmount();
+  });
+
+  it("shows the view prism when viewCube is enabled", () => {
+    window.location.search = "?viewCube=true";
+    const { container, unmount } = render(<Promo />);
+    expect(container.querySelector(".view-prism-viewport")).toBeTruthy();
+    expect(canvasSpy).toHaveBeenCalledTimes(2);
     unmount();
   });
 
@@ -149,17 +158,23 @@ describe("<Promo />", () => {
 
   it("clears active focus on Escape", async () => {
     focusFromUrlParamsSpy.mockReturnValue("What you can grow");
+    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
     const { container, unmount } = render(<Promo />);
     await waitFor(() => expect(gardenModelSpy.mock.calls[0][0])
       .toEqual(expect.objectContaining({ activeFocus: "What you can grow" })));
     const promo = container.querySelector(".promo") as HTMLElement;
     fireEvent.keyDown(promo, { key: "Enter" });
+    const keyDownListener = addEventListenerSpy.mock.calls.find(
+      ([eventName]) => eventName == "keydown",
+    )?.[1] as EventListener;
+    act(() => keyDownListener(new KeyboardEvent("keydown", { key: "Enter" })));
     expect(pushStateSpy).not.toHaveBeenCalled();
-    fireEvent.keyDown(promo, { key: "Escape" });
+    act(() => keyDownListener(new KeyboardEvent("keydown", { key: "Escape" })));
     await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
     const nextUrl = pushStateSpy.mock.calls[0][2] as string;
     expect(nextUrl).not.toContain("focus=");
     unmount();
+    addEventListenerSpy.mockRestore();
   });
 });
 

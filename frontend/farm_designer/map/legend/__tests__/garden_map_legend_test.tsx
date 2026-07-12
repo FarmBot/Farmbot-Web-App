@@ -135,45 +135,28 @@ describe("<GardenMapLegend />", () => {
       BooleanSetting.three_d_garden, true);
   });
 
-  it("disables top down view", () => {
+  it("toggles 3D profile view", () => {
     const p = fakeProps();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
-    p.designer.threeDTopDownView = true;
+    p.designer.threeDProfileOpen = true;
     const { container } = render(<GardenMapLegend {...p} />);
-    const toggle = container.querySelector("button[title='hide Top down']");
-    if (!toggle) { throw new Error("Missing top down toggle"); }
+    const toggle = container.querySelector("button[title='hide PROFILE']");
+    if (!toggle) { throw new Error("Missing profile toggle"); }
     fireEvent.click(toggle);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      type: Actions.SET_3D_PROFILE_OPEN,
       payload: false,
     });
   });
 
-  it("uses saved top down setting", () => {
+  it("only shows profile view in 3D", () => {
     const p = fakeProps();
-    p.getConfigValue = key =>
-      key == BooleanSetting.three_d_garden || key == BooleanSetting.top_down_view;
-    const { container } = render(<GardenMapLegend {...p} />);
-    const toggle = container.querySelector("button[title='hide Top down']");
-    if (!toggle) { throw new Error("Missing top down toggle"); }
-    fireEvent.click(toggle);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: false,
-    });
-  });
-
-  it("enables top down view", () => {
-    const p = fakeProps();
+    const { container, rerender } = render(<GardenMapLegend {...p} />);
+    expect(container.querySelector("button[title='show PROFILE']")).toBeNull();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
-    const { container } = render(<GardenMapLegend {...p} />);
-    const toggle = container.querySelector("button[title='show Top down']");
-    if (!toggle) { throw new Error("Missing top down toggle"); }
-    fireEvent.click(toggle);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: true,
-    });
+    rerender(<GardenMapLegend {...p} />);
+    expect(container.querySelector("button[title='show PROFILE']"))
+      .toBeInTheDocument();
   });
 
   it("disables exaggerated z", () => {
@@ -283,6 +266,17 @@ describe("<FarmbotSubMenu />", () => {
     fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.display_trail, false);
+  });
+
+  it("toggles the 3D laser", () => {
+    const p = fakeProps();
+    p.get3DConfigValue = jest.fn(() => 1);
+    p.set3DConfigValue = jest.fn();
+    const { container } = render(<FarmbotSubMenu {...p} />);
+    const toggleBtn = container.querySelector("button[title='LASER']");
+    if (!toggleBtn) { throw new Error("Missing laser toggle"); }
+    fireEvent.click(toggleBtn);
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("laser", "0");
   });
 });
 

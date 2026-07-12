@@ -20,6 +20,8 @@ import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
+import { ThreeDProfileHUD } from "./three_d_profile";
+import { ThreeDCameraControls } from "./three_d_camera_controls";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
@@ -317,6 +319,17 @@ export class RawFarmDesigner
         && !isMobile()
         && (isDesktop() || !this.props.designer.panelOpen) &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
+
+      {threeDGarden &&
+        <>
+          <ThreeDCameraControls
+            designer={this.props.designer}
+            dispatch={this.props.dispatch} />
+          <ThreeDProfileHUD
+            designer={this.props.designer}
+            dispatch={this.props.dispatch}
+            gardenSize={this.mapTransformProps.gridSize} />
+        </>}
 
       {!threeDGarden &&
         <ProfileViewer

@@ -78,8 +78,8 @@ import React from "react";
 import { useHelper, useTexture } from "@react-three/drei";
 import { INITIAL, SurfaceDebugOption } from "../../config";
 import {
-  Bed, BedProps, getAxleGeometry, getBracketGeometry, getWheelGeometry,
-  TexturedBedMaterial,
+  Bed, BedFrameMaterial, BedProps, getAxleGeometry, getBracketGeometry,
+  getWheelGeometry,
 } from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
@@ -180,6 +180,7 @@ describe("<Bed />", () => {
 
   it("renders bed supports with instanced geometry", () => {
     const p = fakeProps();
+    p.config.bedZOffset = 100;
     const { container } = render(<Bed {...p} />);
     const supports = container.querySelector("[name='bed-supports']");
 
@@ -192,6 +193,21 @@ describe("<Bed />", () => {
       .toEqual(1);
     expect(container.querySelectorAll("instancedmesh[name='axle']").length)
       .toEqual(1);
+  });
+
+  it("hides bed support casters at zero bed Z offset", () => {
+    const p = fakeProps();
+    p.config.bedZOffset = 0;
+    const { container } = render(<Bed {...p} />);
+
+    expect(container.querySelectorAll("instancedmesh[name='bed-leg-wood']").length)
+      .toEqual(1);
+    expect(container.querySelectorAll("instancedmesh[name='caster-bracket']").length)
+      .toEqual(0);
+    expect(container.querySelectorAll("instancedmesh[name='wheel']").length)
+      .toEqual(0);
+    expect(container.querySelectorAll("instancedmesh[name='axle']").length)
+      .toEqual(0);
   });
 
   it("reuses bed support caster geometries by leg size", () => {
@@ -258,7 +274,7 @@ describe("<Bed />", () => {
       sensorReadings={[fakeSensorReading()]} />);
 
     expect(configHelperCalls).toBeGreaterThan(initialHelperCalls);
-    expect(useHelper).toHaveBeenCalledTimes(configHelperCalls + 2);
+    expect(useHelper).toHaveBeenCalledTimes(configHelperCalls + 1);
   });
 
   it("renders bed with extra legs", () => {
@@ -270,19 +286,27 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
-  it("renders low-detail bed without high-detail soil texture", () => {
+  it("renders low-detail bed and soil without the soil texture", () => {
     const p = fakeProps();
     p.config.lowDetail = true;
     const { container } = render(<Bed {...p} />);
     expect(container.querySelectorAll("[name='soil']").length).toEqual(1);
-    expect(container.querySelector(".render-texture")).toBeNull();
     const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
       .map(([url]) => url);
     expect(loadedTextures).not.toContain(ASSETS.textures.soil + "?=soilT");
+    expect(container).toContainHTML("#29231e");
+  });
+
+  it("uses a plain bed material in low-detail mode", () => {
+    const { container } = render(<BedFrameMaterial
+      bedColor={"#abcdef"}
+      lowDetail={true} />);
+    expect(container).toContainHTML("#ad7039");
+    expect(useTexture).not.toHaveBeenCalled();
   });
 
   it("renders textured bed material", () => {
-    render(<TexturedBedMaterial bedColor={"#abcdef"} />);
+    render(<BedFrameMaterial bedColor={"#abcdef"} lowDetail={false} />);
 
     expect(useTexture).toHaveBeenCalledWith(ASSETS.textures.wood);
   });

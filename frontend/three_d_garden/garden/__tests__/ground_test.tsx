@@ -9,6 +9,7 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import { PROFILE_CLIPPING_EXEMPT } from "../../profile";
 
 describe("<Ground />", () => {
   const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
@@ -37,6 +38,7 @@ describe("<Ground />", () => {
     const ground = wrapper.root.findAll(node =>
       node.props.name == "ground Outdoor")[0];
     const color = ground.props.geometry.attributes.color;
+    expect(ground.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
     expect(color.array).toBeInstanceOf(Float32Array);
     expect(color.itemSize).toEqual(3);
   });
@@ -82,7 +84,7 @@ describe("<Ground />", () => {
     expect(useTexture).not.toHaveBeenCalled();
   });
 
-  it("renders low-detail ground without loading high-detail texture", () => {
+  it("renders low-detail ground without loading a texture", () => {
     const p = fakeProps();
     p.config.lowDetail = true;
     const { container } = render(<Ground {...p} />);

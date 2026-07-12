@@ -15,6 +15,7 @@ import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_data";
 import * as threeDGarden from "../../three_d_garden";
 import * as suncalc from "suncalc";
+import { BooleanSetting } from "../../session_keys";
 
 let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
@@ -137,6 +138,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.eventDebug = true;
     expectedConfig.lightsDebug = true;
     expectedConfig.moistureDebug = true;
+    expectedConfig.cameraFitDebug = true;
+    expectedConfig.viewCube = true;
     expectedConfig.surfaceDebug = SurfaceDebugOption.normals;
     expectedConfig.lowDetail = true;
     expectedConfig.solar = true;
@@ -216,6 +219,28 @@ describe("<ThreeDGardenMap />", () => {
     expect(second.addPlantProps).toBe(first.addPlantProps);
     expect(second.configPosition).not.toBe(first.configPosition);
     expect(second.configPosition).toEqual({ x: 2990, y: 1480, z: 30 });
+  });
+
+  it("preserves perspective and enables rotation in profile view", () => {
+    const p = fakeProps();
+    p.designer.threeDProfileOpen = true;
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      perspective: true,
+      rotate: true,
+    }));
+  });
+
+  it("loads a saved top-down camera with perspective on", () => {
+    const p = fakeProps();
+    p.designer.threeDPerspective = undefined;
+    p.getWebAppConfigValue = setting =>
+      setting == BooleanSetting.top_down_view;
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      perspective: true,
+      rotate: true,
+    }));
   });
 
   it("converts props: negative z", () => {

@@ -42,9 +42,9 @@ export interface Config {
   sunAzimuth: number;
   heading: number;
   perspective: boolean;
-  topDown: boolean;
   viewpointHeading: number;
   cameraSelectionView: boolean;
+  cameraFitDebug: boolean;
   bot: boolean;
   laser: boolean;
   tool: string;
@@ -170,9 +170,9 @@ export const INITIAL: ConfigWithPosition = {
   sunAzimuth: 230,
   heading: 0,
   perspective: true,
-  topDown: false,
-  viewpointHeading: 30,
+  viewpointHeading: 45,
   cameraSelectionView: false,
+  cameraFitDebug: false,
   bot: true,
   laser: false,
   tool: "rotaryTool",
@@ -261,7 +261,7 @@ export const NUMBER_KEYS = [
 
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
-  "tracks", "clouds", "perspective", "topDown", "bot", "laser", "cableCarriers",
+  "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
@@ -271,6 +271,7 @@ export const BOOLEAN_KEYS = [
   "urlCameraPos",
   "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
+  "cameraFitDebug",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -459,6 +460,7 @@ export const PRESETS: Record<string, Config> = {
     north: true,
     promoSpread: true,
     cameraView: true,
+    cameraFitDebug: true,
   },
 };
 
@@ -474,7 +476,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
   "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
-  "perspective", "topDown", "bot", "laser", "viewpointHeading",
+  "perspective", "bot", "laser", "viewpointHeading",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate", "zoomFactor",
@@ -488,7 +490,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
-  "mirrorX", "mirrorY", "cameraSelectionView",
+  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug",
 ];
 
 const zAxisLengthFromKitVersion = (
@@ -540,10 +542,6 @@ export const modifyConfig =
     if (update.bedType || (newConfig.bedType != config.bedType)) {
       newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
       newConfig.legsFlush = false;
-    }
-    if (Object.keys(update).includes("topDown")) {
-      newConfig.perspective = !update.topDown;
-      newConfig.rotate = !update.topDown;
     }
     if (update.otherPreset) {
       if (update.otherPreset == "Reset all") {
@@ -649,6 +647,3 @@ export const getSeasonProperties = (
     cloudOpacity: params.cloudOpacity,
   };
 };
-
-export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 50000];

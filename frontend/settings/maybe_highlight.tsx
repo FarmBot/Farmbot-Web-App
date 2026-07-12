@@ -144,7 +144,6 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
   DeviceSetting.mapOrigin,
-  DeviceSetting.topDownView,
   DeviceSetting.setCameraStartingLocation,
   DeviceSetting.cropMapImages,
   DeviceSetting.clipPhotosOutOfBounds,

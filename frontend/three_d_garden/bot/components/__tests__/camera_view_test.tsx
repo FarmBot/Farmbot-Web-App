@@ -7,6 +7,9 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import {
   CameraView, cameraViewPropsEqual, CameraViewProps, getCameraViewPoints,
 } from "../camera_view";
+import {
+  createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
 
 describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
@@ -21,6 +24,11 @@ describe("<CameraView />", () => {
     p.config.cameraView = true;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
+    const wrapper = createRenderer(<CameraView {...p} />);
+    const cameraView = wrapper.root.findAll(node =>
+      node.props.name == "camera-view")[0];
+    expect(cameraView.props.userData).toBeUndefined();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't render", () => {

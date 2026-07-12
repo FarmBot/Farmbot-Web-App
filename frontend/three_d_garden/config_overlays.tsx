@@ -607,10 +607,10 @@ export const PrivateOverlay = (props: OverlayProps) => {
         <Toggle {...common} configKey={"zoom"} />
         <Toggle {...common} configKey={"pan"} />
         <Toggle {...common} configKey={"rotate"} />
-        <Toggle {...common} configKey={"topDown"} />
         <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
         <Slider {...common} configKey={"zoomFactor"} min={1} max={100} />
         <Toggle {...common} configKey={"cameraSelectionView"} />
+        <Toggle {...common} configKey={"cameraFitDebug"} />
         <Toggle {...common} configKey={"lowDetail"} />
       </div>
       <div className={"config-section"}>

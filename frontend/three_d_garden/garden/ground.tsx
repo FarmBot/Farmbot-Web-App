@@ -1,11 +1,13 @@
 import React from "react";
-import { Config, detailLevels } from "../config";
-import { Detailed } from "@react-three/drei";
+import { Config } from "../config";
 import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
-import { CircleGeometry, Float32BufferAttribute, RepeatWrapping } from "three";
+import {
+  CircleGeometry, Float32BufferAttribute, RepeatWrapping, type Side,
+} from "three";
 import { useTextureVariant } from "../texture_variants";
 import { ThreeEvent } from "@react-three/fiber";
+import { PROFILE_CLIPPING_EXEMPT } from "../profile";
 
 export interface GroundProps {
   config: Config;
@@ -24,6 +26,7 @@ interface GroundWrapperProps {
 
 const GroundWrapper = (props: GroundWrapperProps) =>
   <Mesh name={`ground ${props.sceneName}`}
+    userData={{ [PROFILE_CLIPPING_EXEMPT]: true }}
     receiveShadow={true}
     geometry={props.geometry}
     // eslint-disable-next-line no-null/no-null
@@ -92,7 +95,15 @@ const getGroundProperties = (sceneName: string) => {
   }
 };
 
-const GroundMaterial = (props: { sceneName: string }) => {
+interface TexturedGroundMaterialProps {
+  sceneName: string;
+  side?: Side;
+  vertexColors?: boolean;
+}
+
+export const TexturedGroundMaterial = (
+  props: TexturedGroundMaterialProps,
+) => {
   const properties = getGroundProperties(props.sceneName);
   const texture = useTextureVariant(properties.texture, {
     wrapS: RepeatWrapping,
@@ -103,7 +114,8 @@ const GroundMaterial = (props: { sceneName: string }) => {
     map={texture}
     color={properties.color}
     shininess={0}
-    vertexColors={true} />;
+    side={props.side}
+    vertexColors={props.vertexColors} />;
 };
 
 const GroundBase = (props: GroundProps) => {
@@ -130,66 +142,23 @@ export const Ground = React.memo(GroundBase, groundPropsEqual);
 const VisibleGround = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
+  const properties = getGroundProperties(config.scene);
 
-  const groundProperties = getGroundProperties(config.scene);
-  const common = {
-    sceneName: config.scene,
-    groundZ,
-    onClick: props.onClick,
-    onPointerMove: props.onPointerMove,
-  };
-
-  if (config.lowDetail) {
-    return <LowDetailGround
-      {...common}
-      color={groundProperties.lowDetailColor} />;
-  }
-
-  return <DetailedGround
-    {...common}
-    config={config}
-    color={groundProperties.lowDetailColor} />;
-};
-
-interface LowDetailGroundProps {
-  sceneName: string;
-  groundZ: number;
-  color: string;
-  onClick?: (e: ThreeEvent<MouseEvent>) => void;
-  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
-}
-
-const LowDetailGround = (props: LowDetailGroundProps) => {
   return <GroundWrapper
-    sceneName={props.sceneName}
-    groundZ={props.groundZ}
+    sceneName={config.scene}
+    groundZ={groundZ}
     onClick={props.onClick}
     onPointerMove={props.onPointerMove}
-    geometry={getLowDetailGroundGeometry()}>
-    <MeshPhongMaterial
-      color={props.color}
-      shininess={0}
-      vertexColors={true} />
+    geometry={config.lowDetail
+      ? getLowDetailGroundGeometry()
+      : getHighDetailGroundGeometry()}>
+    {config.lowDetail
+      ? <MeshPhongMaterial
+        color={properties.lowDetailColor}
+        shininess={0}
+        vertexColors={true} />
+      : <TexturedGroundMaterial
+        sceneName={config.scene}
+        vertexColors={true} />}
   </GroundWrapper>;
-};
-
-interface DetailedGroundProps extends LowDetailGroundProps {
-  config: Config;
-}
-
-const DetailedGround = (props: DetailedGroundProps) => {
-  const common = {
-    sceneName: props.sceneName,
-    groundZ: props.groundZ,
-    onClick: props.onClick,
-    onPointerMove: props.onPointerMove,
-  };
-
-  return <Detailed distances={detailLevels(props.config)}
-    visible={props.config.ground}>
-    <GroundWrapper {...common} geometry={getHighDetailGroundGeometry()}>
-      <GroundMaterial sceneName={props.config.scene} />
-    </GroundWrapper>
-    <LowDetailGround {...common} color={props.color} />
-  </Detailed>;
 };

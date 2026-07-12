@@ -1,10 +1,9 @@
 import React from "react";
-import { ThreeEvent, useThree } from "@react-three/fiber";
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { useLocation, useNavigate } from "react-router";
 import {
-  GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
-  Stats, OrthographicCamera,
+  Stats,
   Line,
   Sphere,
   StatsGl,
@@ -14,9 +13,10 @@ import {
   BackSide,
   DoubleSide,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
+  Group as ThreeGroup,
   type Object3D,
-  OrthographicCamera as ThreeOrthographicCamera,
   PerspectiveCamera as ThreePerspectiveCamera,
+  Vector3,
 } from "three";
 import {
   AddPlantProps, Bed, getRenderSoilSurfaceGeometry,
@@ -35,13 +35,13 @@ import {
   POINT_PIN_RADIUS,
 } from "./garden";
 import { Config, PositionConfig } from "./config";
-import { useSpring, animated } from "@react-spring/three";
+import { useSpring } from "@react-spring/three";
 import { Lab, Greenhouse } from "./scenes";
-import { getCamera } from "./zoom_beacons_constants";
+import { Camera, getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, Mesh, MeshBasicMaterial,
 } from "./components";
-import { isUndefined, round, uniq } from "lodash";
+import { isUndefined, range, round, uniq } from "lodash";
 import {
   PointType, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
@@ -59,7 +59,11 @@ import { PeripheralValues } from
 import { Actions } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
 import {
-  cameraInit, getCameraFromUrlParams, setCameraUrlParams,
+  applyCameraClippingRange, cameraInit, cameraPositionForFov,
+  CameraViewport, canonicalCamera, distanceForFov, getCameraFit,
+  getCameraFromUrlParams,
+  NARROW_CAMERA_FOV, getCameraClippingRange, nearestCardinalTopViewDirection,
+  NORMAL_CAMERA_FOV, positionForViewDirection, setCameraUrlParams,
 } from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance, HOVER_OBJECT_MODES, RenderOrder } from "./constants";
@@ -79,10 +83,11 @@ import {
 } from "./progressive_load";
 import {
   FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
-  readSmoothCameraState, useSmoothCamera,
+  readSmoothCameraState, SmoothCameraState, useSmoothCamera,
 } from "./focus_transition";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 import { Mode, TaggedPlant } from "../farm_designer/map/interfaces";
+import { DesignerState } from "../farm_designer/interfaces";
 import { getMode } from "../farm_designer/map/util";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
@@ -116,8 +121,254 @@ import { TaggedSceneObject } from "../scene_objects/interfaces";
 import {
   SceneObjects, useSceneObjectPlacement,
 } from "./scene_objects";
+import {
+  getProfileClippingPlanes, getProfileOutsidePlaneConstants,
+  profileNearPlaneIndex,
+  PROFILE_CLIPPING_EXEMPT, useAnimatedProfilePlanes, useProfileClipping,
+} from "./profile";
+import { effectiveProfileCenter } from
+  "../farm_designer/three_d_profile";
+import { ProfileCutFaces } from "./profile_cut_faces";
+import {
+  ViewPrism, VIEW_PRISM_BOUNDING_BOX_HALF_SIZE, ViewPrismDirection,
+  VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
+} from "./view_prism";
+import { success } from "../toast/toast";
+import { t } from "../i18next_wrapper";
 
-const AnimatedGroup = animated(Group);
+const CAMERA_SCENE_RADIUS = BigDistance.sky + 1000;
+
+export const notifyStartingCameraSaved = () => success(
+  "",
+  { title: t("Saved starting camera view") },
+);
+
+export interface GardenCameraRequest {
+  camera: Camera;
+  fov: number;
+  onRest?(): void;
+}
+
+export const cameraAtRadius = (camera: Camera, radius: number): Camera => {
+  const direction = camera.position.map((value, index) =>
+    value - camera.target[index]) as Camera["position"];
+  return {
+    target: camera.target,
+    position: positionForViewDirection(direction, camera.target, radius),
+  };
+};
+
+export const createStartingCameraSelector = (
+  setCameraRequest: (request: GardenCameraRequest) => void,
+  bedSize: { x: number; y: number },
+  zoomFactor: number,
+  bootstrapRadius: number,
+) => (heading: number, topDown: boolean) => {
+  const startingCamera = cameraInit({
+    topDownAtStart: topDown,
+    viewpointHeading: heading,
+    bedSize,
+    zoomFactor,
+  });
+  const camera = cameraAtRadius(startingCamera, bootstrapRadius);
+  setCameraRequest({
+    camera,
+    fov: NORMAL_CAMERA_FOV,
+    onRest: notifyStartingCameraSaved,
+  });
+};
+
+export const retargetCameraRequestFov = (
+  activeRequest: GardenCameraRequest | undefined,
+  desiredFov: number,
+  readCamera: () => SmoothCameraState,
+): GardenCameraRequest => {
+  if (activeRequest?.fov == desiredFov) { return activeRequest; }
+  const current = readCamera();
+  return {
+    camera: {
+      target: current.target,
+      position: cameraPositionForFov(
+        current.position,
+        current.target,
+        current.fov,
+        desiredFov,
+      ),
+    },
+    fov: desiredFov,
+  };
+};
+
+export const createCameraFitRequest = (
+  current: SmoothCameraState,
+  referenceRadius: number,
+): GardenCameraRequest => {
+  const target: Camera["target"] = [0, 0, 0];
+  const direction = current.position.map((value, index) =>
+    value - current.target[index]) as Camera["position"];
+  const radius = distanceForFov(
+    referenceRadius,
+    NORMAL_CAMERA_FOV,
+    current.fov,
+  );
+  return {
+    camera: {
+      target,
+      position: positionForViewDirection(direction, target, radius),
+    },
+    fov: current.fov,
+  };
+};
+
+export const cameraRadius = (camera: Camera) => Math.hypot(
+  camera.position[0] - camera.target[0],
+  camera.position[1] - camera.target[1],
+  camera.position[2] - camera.target[2],
+);
+
+export const createViewDirectionRequest = (
+  direction: ViewPrismDirection,
+  current: SmoothCameraState,
+  bootstrapRadius: number,
+  azimuth?: number,
+  viewport?: CameraViewport,
+): GardenCameraRequest => {
+  const selectedDirection = direction[0] == 0
+    && direction[1] == 0
+    && direction[2] > 0
+    ? nearestCardinalTopViewDirection(
+      current.position,
+      current.target,
+      azimuth,
+      viewport,
+    )
+    : direction;
+  const target: Camera["target"] = [0, 0, 0];
+  const radius = distanceForFov(
+    bootstrapRadius,
+    NORMAL_CAMERA_FOV,
+    current.fov,
+  );
+  return {
+    camera: {
+      target,
+      position: positionForViewDirection(
+        selectedDirection,
+        target,
+        radius,
+      ),
+    },
+    fov: current.fov,
+  };
+};
+
+const VIEW_PRISM_COLOR_FALLBACKS = {
+  color: "#f0f0f0",
+  hoverColor: "#22a273",
+  textColor: "#333",
+  strokeColor: "#777",
+};
+
+export const getViewPrismColors = (element: Element | undefined) => {
+  if (!element) { return VIEW_PRISM_COLOR_FALLBACKS; }
+  const style = window.getComputedStyle(element);
+  const read = (property: string, fallback: string) =>
+    style.getPropertyValue(property).trim() || fallback;
+  return {
+    color: read("--main-bg", VIEW_PRISM_COLOR_FALLBACKS.color),
+    hoverColor: read(
+      "--view-prism-hover-color",
+      VIEW_PRISM_COLOR_FALLBACKS.hoverColor,
+    ),
+    textColor: read("--text-color", VIEW_PRISM_COLOR_FALLBACKS.textColor),
+    strokeColor: read(
+      "--border-color",
+      VIEW_PRISM_COLOR_FALLBACKS.strokeColor,
+    ),
+  };
+};
+
+export const VIEW_PRISM_VIEWPORT_SIZE = Math.ceil(
+  VIEW_PRISM_BOUNDING_BOX_HALF_SIZE * 2 + 4,
+);
+
+export const getViewPrismCameraProjection = (
+  viewportHeight: number,
+  fov: number,
+) => {
+  const framingHeight = Math.max(
+    viewportHeight,
+    VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS * 2 + 4,
+  );
+  const distance = framingHeight
+    / (2 * Math.tan(fov * Math.PI / 360));
+  const clippingDepth = VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS * 1.1;
+  return {
+    distance,
+    near: Math.max(0.1, distance - clippingDepth),
+    far: distance + clippingDepth,
+  };
+};
+
+export interface ViewPrismBridge {
+  camera?: ThreePerspectiveCamera;
+  selectDirection?(direction: ViewPrismDirection): void;
+}
+
+interface FarmDesignerViewPrismProps {
+  bridgeRef: React.RefObject<ViewPrismBridge | null>;
+}
+
+export const updateViewPrismCamera = (
+  camera: ThreePerspectiveCamera,
+  viewportHeight: number,
+  fov: number,
+) => {
+  const projection = getViewPrismCameraProjection(viewportHeight, fov);
+  camera.position.set(0, 0, projection.distance);
+  camera.fov = fov;
+  camera.near = projection.near;
+  camera.far = projection.far;
+  camera.updateProjectionMatrix();
+};
+
+export const FarmDesignerViewPrism = (props: FarmDesignerViewPrismProps) => {
+  const { camera, gl, size } = useThree();
+  const colorElement = typeof Element != "undefined"
+    && gl.domElement instanceof Element
+    ? gl.domElement
+    : undefined;
+  const viewPrismColors = getViewPrismColors(colorElement);
+  const [gizmoGroup] = React.useState(() => new ThreeGroup());
+  const [topCenter] = React.useState(() =>
+    new Vector3(...VIEW_PRISM_TOP_CENTER));
+  const [rotatedTopCenter] = React.useState(() => new Vector3());
+  useFrame(() => {
+    const sourceCamera = props.bridgeRef.current?.camera;
+    if (sourceCamera instanceof ThreePerspectiveCamera) {
+      gizmoGroup.quaternion.copy(sourceCamera.quaternion).invert();
+      gizmoGroup.position.copy(
+        rotatedTopCenter
+          .copy(topCenter)
+          .applyQuaternion(gizmoGroup.quaternion),
+      ).multiplyScalar(-1);
+    }
+    if (camera instanceof ThreePerspectiveCamera) {
+      updateViewPrismCamera(
+        camera,
+        size.height,
+        sourceCamera?.fov ?? NORMAL_CAMERA_FOV,
+      );
+    }
+  });
+  return <primitive object={gizmoGroup}>
+    <ViewPrism
+      {...viewPrismColors}
+      onDirection={direction =>
+        props.bridgeRef.current?.selectDirection?.(direction)} />
+  </primitive>;
+};
+
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
 const GRID_SELECTION_BLOCKED_MODES = [
   ...HOVER_OBJECT_MODES,
@@ -170,8 +421,6 @@ const LazyVisualization = React.lazy(() =>
   import("./visualization").then(module => ({
     default: module.Visualization,
   })));
-export const SMOOTH_XL_CAMERA_BED_SCALE = 1.9;
-export const SMOOTH_XL_CAMERA_HEIGHT_SCALE = 1.45;
 const CAMERA_URL_SAVE_DELAY_MS = 150;
 
 interface ObjectHoverLabelProps {
@@ -355,6 +604,7 @@ export interface GardenModelProps {
   promo?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
+  viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
 }
 
 const EMPTY_GENERIC_POINTERS: TaggedGenericPointer[] = [];
@@ -453,7 +703,6 @@ interface GardenLayerVisibility {
   showSpread: boolean;
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
-  topDownAtStart: boolean;
 }
 
 interface GardenLayerVisibilityParams {
@@ -486,8 +735,6 @@ function getGardenLayerVisibility(
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!getConfigValue?.(
     BooleanSetting.show_sensor_readings);
-  const topDownAtStart = !!getConfigValue?.(
-    BooleanSetting.top_down_view);
   return {
     showPlants,
     plantsVisible,
@@ -497,7 +744,6 @@ function getGardenLayerVisibility(
     showSpread,
     showMoistureMap,
     showMoistureReadings,
-    topDownAtStart,
   };
 }
 
@@ -594,13 +840,16 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markStep={markStep}
       reveal={environmentReveal}
       markName={"three_d_ground_ready"}>
-      <Sky sunPosition={sunPosition(0, 0, 0)} />
-      <Sphere args={[BigDistance.sky, 8, 16]}>
-        <MeshBasicMaterial
-          ref={skyRef}
-          color={skyColor(config.sun)}
-          side={BackSide} />
-      </Sphere>
+      <Group name={"sky"}
+        userData={{ [PROFILE_CLIPPING_EXEMPT]: true }}>
+        <Sky sunPosition={sunPosition(0, 0, 0)} />
+        <Sphere args={[BigDistance.sky, 8, 16]}>
+          <MeshBasicMaterial
+            ref={skyRef}
+            color={skyColor(config.sun)}
+            side={BackSide} />
+        </Sphere>
+      </Group>
       <Sun
         config={config}
         skyRef={skyRef}
@@ -1191,6 +1440,218 @@ const GridHoverCrosshairs = (props: GridHoverCrosshairsProps) => {
   </Group>;
 };
 
+const CAMERA_FIT_DEBUG_SEGMENTS = 128;
+const cameraFitCirclePoints = (radius: number) =>
+  range(0, CAMERA_FIT_DEBUG_SEGMENTS + 1).map(index => {
+    const angle = index / CAMERA_FIT_DEBUG_SEGMENTS * Math.PI * 2;
+    return [
+      Math.cos(angle) * radius,
+      Math.sin(angle) * radius,
+      0,
+    ] as [number, number, number];
+  });
+
+interface CameraFitDebugProps {
+  circumscribedRadius: number;
+}
+
+export const CameraFitDebug = (props: CameraFitDebugProps) =>
+  <Group name={"camera-fit-debug"}>
+    <Line
+      name={"camera-fit-circumscribed-circle"}
+      points={cameraFitCirclePoints(props.circumscribedRadius)}
+      color={"#ff9800"}
+      lineWidth={2}
+      depthTest={false} />
+  </Group>;
+
+interface GardenCameraControllerProps {
+  baseCamera: Camera;
+  desiredFov: number;
+  cameraFitRadius: number;
+  promo: boolean;
+  activeFocus: string;
+  controlsCamera: ThreePerspectiveCamera | null;
+  controls: SmoothCameraControls | null;
+  cameraBedSize: { x: number; y: number };
+  zoomFactor: number;
+  viewportSize: CameraViewport;
+  viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
+}
+
+const useGardenCameraController = (props: GardenCameraControllerProps) => {
+  const [cameraRequest, setCameraRequest] =
+    React.useState<GardenCameraRequest | undefined>(() => ({
+      camera: {
+        target: props.baseCamera.target,
+        position: cameraPositionForFov(
+          props.baseCamera.position,
+          props.baseCamera.target,
+          NORMAL_CAMERA_FOV,
+          props.desiredFov,
+        ),
+      },
+      fov: props.desiredFov,
+    }));
+  const camera = cameraRequest?.camera || props.baseCamera;
+  const cameraFov = cameraRequest?.fov ?? props.desiredFov;
+  const cameraSpringCancelRef =
+    React.useRef<(() => void) | undefined>(undefined);
+  const liveCameraState = React.useCallback(() => readSmoothCameraState({
+    position: camera.position,
+    target: camera.target,
+    zoom: 1,
+    fov: cameraFov,
+  }, props.controlsCamera, props.controls), [
+    camera.position,
+    camera.target,
+    cameraFov,
+    props.controls,
+    props.controlsCamera,
+  ]);
+  const previousPromoFitRadiusRef = React.useRef(props.cameraFitRadius);
+  React.useEffect(() => {
+    if (!props.promo || props.activeFocus
+      || previousPromoFitRadiusRef.current == props.cameraFitRadius) {
+      return;
+    }
+    previousPromoFitRadiusRef.current = props.cameraFitRadius;
+    // Bed-size and viewport changes intentionally retarget the camera spring.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest(createCameraFitRequest(
+      liveCameraState(),
+      props.cameraFitRadius,
+    ));
+  }, [
+    liveCameraState,
+    props.activeFocus,
+    props.cameraFitRadius,
+    props.promo,
+  ]);
+  React.useEffect(() => {
+    // Projection changes intentionally create a new spring target.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest(activeRequest => retargetCameraRequestFov(
+      activeRequest,
+      props.desiredFov,
+      liveCameraState,
+    ));
+  // Retarget only when the projection setting changes. Including the live
+  // camera callback would restart the spring as OrbitControls updates.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.desiredFov]);
+  const selectViewDirection = React.useCallback(
+    (direction: ViewPrismDirection) => {
+      const current = liveCameraState();
+      setCameraRequest(createViewDirectionRequest(
+        direction,
+        current,
+        props.cameraFitRadius,
+        props.controls?.getAzimuthalAngle?.(),
+        props.viewportSize,
+      ));
+    }, [
+      liveCameraState,
+      props.cameraFitRadius,
+      props.controls,
+      props.viewportSize,
+    ]);
+  const selectStartingCamera = React.useMemo(() =>
+    createStartingCameraSelector(
+      setCameraRequest,
+      props.cameraBedSize,
+      props.zoomFactor,
+      props.cameraFitRadius,
+    ), [
+    props.cameraBedSize,
+    props.cameraFitRadius,
+    props.zoomFactor,
+  ]);
+  React.useImperativeHandle(props.viewPrismBridgeRef, () => ({
+    camera: props.controlsCamera || undefined,
+    selectDirection: selectViewDirection,
+  }), [props.controlsCamera, selectViewDirection]);
+  React.useEffect(() => {
+    if (!props.activeFocus) { return; }
+    // A promo focus owns the camera target until the next user request.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest(undefined);
+  }, [props.activeFocus]);
+  return {
+    camera,
+    cameraFov,
+    cameraRequest,
+    cameraSpringCancelRef,
+    selectStartingCamera,
+  };
+};
+
+interface GardenProfileControllerProps {
+  config: Config;
+  designer: DesignerState | undefined;
+  gardenSize: { x: number; y: number };
+  currentBotLocation: BotPosition | undefined;
+  camera: Camera;
+  controlsCamera: ThreePerspectiveCamera | null;
+  modelRoot: Object3D | undefined;
+}
+
+const useGardenProfileController = (
+  props: GardenProfileControllerProps,
+) => {
+  const profileOpen = !!props.designer?.threeDProfileOpen;
+  const axis = props.designer?.threeDProfileAxis;
+  const width = props.designer?.threeDProfileWidth;
+  const center = props.designer
+    ? effectiveProfileCenter(
+      props.designer,
+      props.gardenSize,
+      props.currentBotLocation,
+    )
+    : 0;
+  const basePlanes = React.useMemo(
+    () => axis && width !== undefined
+      ? getProfileClippingPlanes(props.config, axis, center, width)
+      : [],
+    [axis, center, props.config, width],
+  );
+  const outsidePlaneConstants = React.useMemo(
+    () => getProfileOutsidePlaneConstants({
+      bedLengthOuter: props.config.bedLengthOuter,
+      bedWidthOuter: props.config.bedWidthOuter,
+    }),
+    [props.config.bedLengthOuter, props.config.bedWidthOuter],
+  );
+  const [nearIndex, setNearIndex] = React.useState(0);
+  const updateNearIndex = React.useCallback(() => {
+    if (!axis || basePlanes.length < 2) { return; }
+    const position = props.controlsCamera?.position || {
+      x: props.camera.position[0],
+      y: props.camera.position[1],
+    };
+    const next = profileNearPlaneIndex(basePlanes, axis, position);
+    setNearIndex(current => current == next ? current : next);
+  }, [axis, basePlanes, props.camera.position, props.controlsCamera]);
+  // Synchronize the first semantic near plane before controls emit changes.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  React.useEffect(updateNearIndex, [updateNearIndex]);
+  const animated = useAnimatedProfilePlanes(
+    profileOpen,
+    axis || "x",
+    basePlanes,
+    !!props.designer?.threeDProfileFollowBot,
+    outsidePlaneConstants,
+  );
+  const planes = React.useMemo(() => nearIndex == 0
+    ? animated.planes
+    : [animated.planes[1], animated.planes[0]], [
+    animated.planes,
+    nearIndex,
+  ]);
+  useProfileClipping(animated.mounted, props.modelRoot, planes);
+  return { animated, planes, profileOpen, updateNearIndex };
+};
+
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
@@ -1202,6 +1663,7 @@ export const GardenModel = (props: GardenModelProps) => {
     baseConfig,
     props.smoothConfigTransitions,
   );
+  const { size: viewportSize } = useThree();
   const configPosition = props.configPosition;
   const cameraConfig = props.smoothConfigTransitions
     ? baseConfig
@@ -1220,7 +1682,8 @@ export const GardenModel = (props: GardenModelProps) => {
   const images = props.images || EMPTY_IMAGES;
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
-  const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
+  const profileDesigner = addPlantProps?.designer;
+  const topDownAtStart = !!addPlantProps?.topDownAtStart;
   const mode = getMode();
   const selectionPanelOpen = mode == Mode.boxSelect;
   const groupPanelOpen = mode == Mode.editGroup;
@@ -1306,61 +1769,46 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined;
   }, [config.labelsOnHover, getI]);
 
-  const isXL = cameraConfig.sizePreset == "Genesis XL";
-  let modelScale = 1;
-  if (!props.smoothFocusTransitions && isXL) {
-    modelScale = 1.75;
-  }
-  const { scale } = useSpring({
-    scale: modelScale,
-    immediate: props.smoothFocusTransitions && !config.animate,
-    config: {
-      tension: 300,
-      friction: 40,
-    },
-  });
-
-  const baseAngle = 0;
-  const heading = Math.ceil(cameraConfig.viewpointHeading / 90) * 90;
-  const topDownCameraAngle = cameraConfig.topDown
-    ? baseAngle + heading * Math.PI / 180
-    : undefined;
-  const cameraBedScale = props.smoothFocusTransitions && isXL
-    ? SMOOTH_XL_CAMERA_BED_SCALE
-    : 1;
+  const cameraClippingConfig = {
+    sceneRadius: CAMERA_SCENE_RADIUS,
+    minNear: 10,
+    minFar: BigDistance.far,
+    maxCameraScale: 1,
+  };
   const cameraBedSize = React.useMemo(() => ({
-    x: cameraConfig.bedLengthOuter * cameraBedScale,
-    y: cameraConfig.bedWidthOuter * cameraBedScale,
+    x: cameraConfig.bedLengthOuter,
+    y: cameraConfig.bedWidthOuter,
   }), [
     cameraConfig.bedLengthOuter,
     cameraConfig.bedWidthOuter,
-    cameraBedScale,
   ]);
+  const currentCameraFit = React.useMemo(() => getCameraFit({
+    viewport: viewportSize,
+    bedSize: cameraBedSize,
+  }), [cameraBedSize, viewportSize]);
+  const [bootstrapCameraFit] = React.useState(() => currentCameraFit);
+  const activeCameraFit = props.promo
+    ? currentCameraFit
+    : bootstrapCameraFit;
+  const profileGardenSize = React.useMemo(() => ({
+    x: cameraConfig.botSizeX,
+    y: cameraConfig.botSizeY,
+  }), [cameraConfig.botSizeX, cameraConfig.botSizeY]);
   const defaultCamera = React.useMemo(
     () => {
       const nextCamera = cameraInit({
-        topDown: cameraConfig.topDown,
+        topDownAtStart,
         viewpointHeading: cameraConfig.viewpointHeading,
         bedSize: cameraBedSize,
         zoomFactor: config.zoomFactor,
       });
-      return props.smoothFocusTransitions && isXL
-        ? {
-          ...nextCamera,
-          position: [
-            nextCamera.position[0],
-            nextCamera.position[1],
-            nextCamera.position[2] * SMOOTH_XL_CAMERA_HEIGHT_SCALE,
-          ] as typeof nextCamera.position,
-        }
-        : nextCamera;
+      return cameraAtRadius(nextCamera, activeCameraFit.cameraRadius);
     },
     [
       cameraBedSize,
-      cameraConfig.topDown,
       cameraConfig.viewpointHeading,
-      isXL,
-      props.smoothFocusTransitions,
+      activeCameraFit.cameraRadius,
+      topDownAtStart,
       config.zoomFactor,
     ]);
   const urlCamera = React.useMemo(
@@ -1371,7 +1819,7 @@ export const GardenModel = (props: GardenModelProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [baseConfig.urlCameraPos, props.activeFocus],
   );
-  const camera = urlCamera || (props.activeFocus
+  const baseCamera = urlCamera || (props.activeFocus
     ? getCamera(
       cameraConfig,
       props.configPosition,
@@ -1379,12 +1827,52 @@ export const GardenModel = (props: GardenModelProps) => {
       defaultCamera,
     )
     : defaultCamera);
+  const cameraFitRadius = activeCameraFit.cameraRadius;
+  const [modelRoot, setModelRoot] = React.useState<Object3D | undefined>();
+  const setModelRootRef = React.useCallback((value: Object3D | null) => {
+    setModelRoot(value || undefined);
+  }, []);
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
-    React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
+    React.useState<ThreePerspectiveCamera | null>(null);
   const [controls, setControls] =
     // eslint-disable-next-line no-null/no-null
     React.useState<SmoothCameraControls | null>(null);
+  const desiredFov = config.perspective
+    ? NORMAL_CAMERA_FOV
+    : NARROW_CAMERA_FOV;
+  const cameraController = useGardenCameraController({
+    baseCamera,
+    desiredFov,
+    cameraFitRadius,
+    promo: !!props.promo,
+    activeFocus: props.activeFocus,
+    controlsCamera,
+    controls,
+    cameraBedSize,
+    zoomFactor: config.zoomFactor,
+    viewportSize,
+    viewPrismBridgeRef: props.viewPrismBridgeRef,
+  });
+  const {
+    camera, cameraFov, cameraRequest, cameraSpringCancelRef,
+    selectStartingCamera,
+  } = cameraController;
+  const profileController = useGardenProfileController({
+    config,
+    designer: profileDesigner,
+    gardenSize: profileGardenSize,
+    currentBotLocation: props.currentBotLocation,
+    camera,
+    controlsCamera,
+    modelRoot,
+  });
+  const {
+    animated: animatedProfile,
+    planes: profilePlanes,
+    profileOpen,
+    updateNearIndex: updateProfileNearIndex,
+  } = profileController;
   const cameraUrlSaveTimeoutRef = React.useRef<number | undefined>(undefined);
   const cameraUrlInteractionRef =
     React.useRef<"idle" | "active" | "settling">("idle");
@@ -1582,7 +2070,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const {
     plantsVisible, farmbotVisible, showPoints, showWeeds,
     showSpread, showMoistureMap,
-    showMoistureReadings, topDownAtStart,
+    showMoistureReadings,
   } = layerVisibility;
   const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
   const groupIdFromPath = React.useMemo(() => {
@@ -1715,8 +2203,7 @@ export const GardenModel = (props: GardenModelProps) => {
     config.scene == "Lab" || config.scene == "Greenhouse";
   const animatedDetailsLoadIn = sceneDetailsLoadIn || config.zoomBeacons;
 
-  const topDownZoomLevel = 0.25 * 3000 / cameraConfig.bedLengthOuter;
-  const targetZoom = cameraConfig.topDown ? topDownZoomLevel : 1;
+  const targetZoom = 1;
   const clearCameraUrlSaveTimeout = React.useCallback(() => {
     const timeoutId = cameraUrlSaveTimeoutRef.current;
     if (timeoutId === undefined) { return; }
@@ -1724,23 +2211,23 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraUrlSaveTimeoutRef.current = undefined;
   }, []);
   const saveCameraUrl = React.useCallback(() => {
-    if (baseConfig.urlCameraPos && controlsCamera && controls) {
+    if (!profileOpen && baseConfig.urlCameraPos && controlsCamera && controls) {
       const state = readSmoothCameraState({
         position: camera.position,
         target: camera.target,
         zoom: targetZoom,
+        fov: cameraFov,
       }, controlsCamera, controls);
-      setCameraUrlParams({
-        position: state.position,
-        target: state.target,
-      });
+      setCameraUrlParams(canonicalCamera(state, state.fov));
     }
   }, [
     baseConfig.urlCameraPos,
     camera.position,
     camera.target,
+    cameraFov,
     controls,
     controlsCamera,
+    profileOpen,
     targetZoom,
   ]);
   const finishCameraUrlSave = React.useCallback(() => {
@@ -1757,16 +2244,19 @@ export const GardenModel = (props: GardenModelProps) => {
     );
   }, [clearCameraUrlSaveTimeout, finishCameraUrlSave]);
   const handleCameraDragStart = React.useCallback(() => {
+    cameraSpringCancelRef.current?.();
     setSelectableObjectHoverCount(0);
     setHoveredObjectLabel(undefined);
     setCameraDragging(true);
     clearCameraUrlSaveTimeout();
-    cameraUrlInteractionRef.current = baseConfig.urlCameraPos
+    cameraUrlInteractionRef.current = baseConfig.urlCameraPos && !profileOpen
       ? "active"
       : "idle";
   }, [
     baseConfig.urlCameraPos,
+    cameraSpringCancelRef,
     clearCameraUrlSaveTimeout,
+    profileOpen,
   ]);
   const handleCameraDragEnd = React.useCallback(() => {
     setCameraDragging(false);
@@ -1775,6 +2265,20 @@ export const GardenModel = (props: GardenModelProps) => {
     saveCameraUrl();
     scheduleCameraUrlSave();
   }, [saveCameraUrl, scheduleCameraUrlSave]);
+  const handleCameraChange = React.useCallback(() => {
+    applyCameraClippingRange(controlsCamera, {
+      sceneRadius: CAMERA_SCENE_RADIUS,
+      minNear: 10,
+      minFar: BigDistance.far,
+      maxCameraScale: 1,
+    });
+    updateProfileNearIndex();
+    scheduleCameraUrlSave();
+  }, [
+    controlsCamera,
+    scheduleCameraUrlSave,
+    updateProfileNearIndex,
+  ]);
   React.useEffect(() => {
     if (baseConfig.urlCameraPos) { return; }
     cameraUrlInteractionRef.current = "idle";
@@ -1800,10 +2304,13 @@ export const GardenModel = (props: GardenModelProps) => {
   const renderedCamera = useSmoothCamera({
     camera,
     zoom: targetZoom,
-    enabled: focusTransitionsEnabled,
+    fov: cameraFov,
+    enabled: focusTransitionsEnabled || !!addPlantProps,
     cameraObject: controlsCamera,
     controls,
     updateStateDuringTransition: !focusTransitionsEnabled,
+    cancelRef: cameraSpringCancelRef,
+    onRest: cameraRequest?.onRest,
   });
 
   // eslint-disable-next-line no-null/no-null
@@ -1883,41 +2390,52 @@ export const GardenModel = (props: GardenModelProps) => {
     weeds,
   ]);
 
-  let cameraScale: number | typeof scale = scale;
-  if (props.smoothFocusTransitions || props.activeFocus) {
-    cameraScale = 1;
-  }
   const cameraProps = focusTransitionsEnabled
     ? {}
-    : { position: renderedCamera.position, zoom: renderedCamera.zoom };
+    : {
+      position: renderedCamera.position,
+      zoom: renderedCamera.zoom,
+      fov: renderedCamera.fov,
+    };
   const orbitControlProps = focusTransitionsEnabled
     ? {}
     : { target: renderedCamera.target };
+  const cameraDistance = Math.hypot(
+    renderedCamera.position[0] - renderedCamera.target[0],
+    renderedCamera.position[1] - renderedCamera.target[1],
+    renderedCamera.position[2] - renderedCamera.target[2],
+  );
+  const maxCameraDistance = Math.max(BigDistance.zoom, cameraDistance * 1.25);
+  const cameraClippingRange = getCameraClippingRange(
+    renderedCamera.position,
+    cameraClippingConfig,
+  );
 
   return <FocusTransitionProvider enabled={focusTransitionsEnabled}>
     {/* eslint-disable-next-line no-null/no-null */}
     <Group dispose={null}
+      ref={setModelRootRef}
       onPointerMove={handleScenePointerMove}
       onPointerLeave={handleScenePointerLeave}>
       <FPSProbe />
       <PerfMark name={"garden_model_rendered"} />
       <SceneCursor cursor={sceneCursor} />
-      <AnimatedGroup scale={cameraScale}>
-        <Camera
+      <Group>
+        <PerspectiveCamera
           ref={setControlsCamera}
           makeDefault={true}
           name={"camera"}
-          fov={40} near={10} far={BigDistance.far}
+          fov={renderedCamera.fov}
+          near={cameraClippingRange.near}
+          far={cameraClippingRange.far}
           {...cameraProps}
           up={[0, 0, 1]} />
-      </AnimatedGroup>
+      </Group>
       {controlsCamera &&
         <OrbitControls
           ref={setControls}
           camera={controlsCamera}
           maxPolarAngle={Math.PI / 2}
-          minAzimuthAngle={topDownCameraAngle}
-          maxAzimuthAngle={topDownCameraAngle}
           enableRotate={config.rotate}
           enableZoom={config.zoom}
           zoomToCursor={true}
@@ -1925,15 +2443,25 @@ export const GardenModel = (props: GardenModelProps) => {
           dampingFactor={0.2}
           {...orbitControlProps}
           onStart={handleCameraDragStart}
-          onChange={scheduleCameraUrlSave}
+          onChange={handleCameraChange}
           onEnd={handleCameraDragEnd}
           minZoom={config.lightsDebug ? 0 : 0.05}
           maxZoom={10}
           minDistance={config.lightsDebug ? 50 : 500}
-          maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
+          maxDistance={config.lightsDebug
+            ? Math.max(BigDistance.devZoom, maxCameraDistance)
+            : maxCameraDistance} />}
       <ThreeDLoadProgressOverlay
         progress={loadProgress}
         complete={detailsReveal} />
+      {config.cameraFitDebug &&
+        <CameraFitDebug {...activeCameraFit} />}
+      {animatedProfile.mounted && profilePlanes[0] &&
+        <ProfileCutFaces
+          config={config}
+          axis={animatedProfile.axis}
+          nearPlane={profilePlanes[0]}
+          getZ={getZ} />}
       <StaticGardenLayers
         config={config}
         markStep={markLoadStep}
@@ -2075,7 +2603,6 @@ export const GardenModel = (props: GardenModelProps) => {
             reveal={detailsReveal}
             onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
         {config.threeAxes && <AxesHelper args={[5000]} />}
-        {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
         {config.clouds && <Clouds config={config} />}
         {showMoistureMap && config.moistureDebug &&
           <MoistureReadings
@@ -2114,7 +2641,8 @@ export const GardenModel = (props: GardenModelProps) => {
           <CameraSelectionUI
             config={config}
             dispatch={dispatch}
-            topDownAtStart={topDownAtStart} />}
+            topDownAtStart={topDownAtStart}
+            onSelect={selectStartingCamera} />}
         <EnvironmentScenePreloader
           config={config}
           enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}

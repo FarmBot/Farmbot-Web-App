@@ -905,10 +905,15 @@ jest.mock("@react-three/drei", () => {
       <div className={"render-texture"} data-frames={props.frames}>
         {props.children}
       </div>,
-    GizmoHelper: ({ name }: { name: string }) =>
-      <div className={"gizmo-helper"}>{name}</div>,
-    GizmoViewcube: ({ name }: { name: string }) =>
-      <div className={"gizmo-view-cube"}>{name}</div>,
+    GizmoHelper: ({ name, children }: {
+      name: string,
+      children?: ReactNode,
+    }) => <div className={"gizmo-helper"}>{name}{children}</div>,
+    GizmoViewcube: (props: {
+      name?: string,
+      onClick?: Function,
+    }) => <div className={"gizmo-view-cube"}
+      onClick={props.onClick as React.MouseEventHandler}>{props.name}</div>,
     OrbitControls: ({ name }: { name: string }) =>
       <div className={"orbit-controls"}>{name}</div>,
     Circle: ({ name, children }: { name: string, children: ReactNode }) =>

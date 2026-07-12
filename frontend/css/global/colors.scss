@@ -85,6 +85,7 @@ body {
 @mixin light-theme-vars {
   --main-bg: #{$light_bg};
   --secondary-bg: rgba(255, 255, 255, 0.3);
+  --view-prism-hover-color: #{$medium_gray};
   --text-color: #{$dark_gray};
   --border-color: #{$translucent2};
   --box-shadow: inset 0 0 5px 1px rgba(255, 255, 255, 0.25), inset 0 0 2px 1px rgba(255, 255, 255, 0.25), 0 0 5px 2px rgba(0, 0, 0, 0.05);
@@ -94,6 +95,7 @@ body {
 @mixin dark-theme-vars {
   --main-bg: #{$dark_bg};
   --secondary-bg: rgba(255, 255, 255, 0.05);
+  --view-prism-hover-color: rgba(255, 255, 255, 0.05);
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
   --box-shadow: inset 0 0 5px 1px #{$translucent1_white}, inset 0 0 2px 1px #{$translucent2_white}, 0 0 5px 2px #{$translucent1};

@@ -8,4 +8,5 @@ export const fakeAddPlantProps =
     getConfigValue: jest.fn(() => true),
     curves: [],
     designer: fakeDesignerState(),
+    topDownAtStart: false,
   });

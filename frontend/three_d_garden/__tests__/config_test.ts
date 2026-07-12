@@ -1,6 +1,6 @@
 import { clone } from "lodash";
 import {
-  detailLevels, getSeasonProperties, INITIAL, modifyConfig,
+  getSeasonProperties, INITIAL, modifyConfig,
   modifyConfigsFromUrlParams,
 } from "../config";
 
@@ -59,14 +59,6 @@ describe("modifyConfig()", () => {
     expect(result.bedHeight).toEqual(300);
   });
 
-  it("modifies config: top down", () => {
-    const initial = clone(INITIAL);
-    const result = modifyConfig(initial, { topDown: true });
-    expect(result.topDown).toEqual(true);
-    expect(result.perspective).toEqual(false);
-    expect(result.rotate).toEqual(false);
-  });
-
   it("uses the latest geometry for an unknown kit version", () => {
     const initial = clone(INITIAL);
     const result = modifyConfig(initial, { kitVersion: "v1000" });
@@ -94,14 +86,6 @@ describe("modifyConfigsFromUrlParams()", () => {
     expect(result.sizePreset).toEqual("Jr");
     expect(result.x).toEqual(1);
     expect(result.ground).toEqual(true);
-  });
-});
-
-describe("detailLevels()", () => {
-  it("returns detail level", () => {
-    const config = clone(INITIAL);
-    config.lowDetail = true;
-    expect(detailLevels(config)).toEqual([0, 0]);
   });
 });
 

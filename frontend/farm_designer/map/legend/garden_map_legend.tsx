@@ -27,7 +27,6 @@ import {
 } from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
-import { isTopDown } from "../../../three_d_garden/helpers";
 import { isMobile } from "../../../screen_size";
 import type { Config } from "../../../three_d_garden/config";
 
@@ -191,7 +190,7 @@ const LayerToggles = (props: LayerTogglesProps) => {
   };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
-  const topDown = isTopDown(designer, getConfigValue);
+  const profileOpen = designer.threeDProfileOpen;
   const exaggeratedZ = designer.threeDExaggeratedZ;
   const description = (isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
@@ -296,11 +295,11 @@ const LayerToggles = (props: LayerTogglesProps) => {
     </GardenMapLegendToggle>
     {is3D &&
       <GardenMapLegendToggle
-        value={topDown}
-        label={"Top down"}
+        value={profileOpen}
+        label={"PROFILE"}
         onClick={() => dispatch({
-          type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-          payload: !topDown,
+          type: Actions.SET_3D_PROFILE_OPEN,
+          payload: !profileOpen,
         })} />}
     {is3D &&
       <GardenMapLegendToggle

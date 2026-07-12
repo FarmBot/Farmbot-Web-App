@@ -199,11 +199,18 @@ export interface DesignerState {
   cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
-  threeDTopDownView: boolean | undefined;
   threeDCameraSelection: boolean;
   threeDExaggeratedZ: boolean;
+  threeDPerspective: boolean | undefined;
+  threeDProfileOpen: boolean;
+  threeDProfileAxis: ThreeDProfileAxis;
+  threeDProfileCenter: Record<"x" | "y", number | undefined>;
+  threeDProfileWidth: number;
+  threeDProfileFollowBot: boolean;
   threeDTime: string | undefined;
 }
+
+export type ThreeDProfileAxis = "x" | "y";
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
 export type ExecutableQuery =

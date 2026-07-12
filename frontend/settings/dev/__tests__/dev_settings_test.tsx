@@ -257,6 +257,12 @@ describe("<Dev3dDebugSettings />", () => {
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
+  it("shows the prefixed camera-fit debug setting", () => {
+    mockState.resources = buildResourceIndex([]);
+    const { container } = render(<Dev3dDebugSettings />);
+    expect(toggleFor(container, "3D_cameraFitDebug")).toBeDefined();
+  });
+
   it("edits env", () => {
     const env = fakeFarmwareEnv();
     env.body.key = "3D_eventDebug";
