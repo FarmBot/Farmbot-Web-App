@@ -64,7 +64,7 @@ import { useTextureVariant } from "../texture_variants";
 import {
   AlignmentIndicatorController,
 } from "./objects/alignment_indicators";
-import { PROFILE_FAR_CLIPPING_EXEMPT } from "../profile";
+import { SECTION_FAR_CLIPPING_EXEMPT } from "../section";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -178,11 +178,20 @@ interface TexturedBedMaterialProps {
   repeat?: [number, number];
 }
 
+export const BED_TEXTURE_REPEAT_PER_MM: [number, number] = [0.0003, 0.003];
+
+export const getBedTextureRepeat = (
+  size: [number, number],
+): [number, number] => [
+  size[0] * BED_TEXTURE_REPEAT_PER_MM[0],
+  size[1] * BED_TEXTURE_REPEAT_PER_MM[1],
+];
+
 export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
   const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
-    repeat: props.repeat || [0.0003, 0.003],
+    repeat: props.repeat || BED_TEXTURE_REPEAT_PER_MM,
   });
 
   return <MeshPhongMaterial
@@ -763,7 +772,7 @@ const BedBase = (props: BedProps) => {
   };
 
   return <Group name={"bed-group"}
-    userData={{ [PROFILE_FAR_CLIPPING_EXEMPT]: true }}>
+    userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}>
     <BedFrame {...commonBedFrameProps}>
       <BedFrameMaterial
         bedColor={bedColor}

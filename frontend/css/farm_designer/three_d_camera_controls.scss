@@ -53,15 +53,3 @@
     backdrop-filter: var(--blur);
   }
 }
-
-@media screen and (max-width: $mobile_max_width) {
-  .three-d-camera-controls {
-    right: 1rem;
-    bottom: 1rem;
-    transition: bottom 0.25s ease;
-
-    &.profile-open { bottom: 20rem; }
-  }
-
-  .view-prism-viewport.profile-open { bottom: 26rem; }
-}

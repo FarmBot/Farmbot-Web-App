@@ -29,6 +29,7 @@ import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
 import { isMobile } from "../../../screen_size";
 import type { Config } from "../../../three_d_garden/config";
+import { ThreeDSectionSettings } from "../../three_d_section";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -190,7 +191,7 @@ const LayerToggles = (props: LayerTogglesProps) => {
   };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
-  const profileOpen = designer.threeDProfileOpen;
+  const sectionOpen = designer.threeDSectionOpen;
   const exaggeratedZ = designer.threeDExaggeratedZ;
   const description = (isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
@@ -295,12 +296,28 @@ const LayerToggles = (props: LayerTogglesProps) => {
     </GardenMapLegendToggle>
     {is3D &&
       <GardenMapLegendToggle
-        value={profileOpen}
-        label={"PROFILE"}
+        value={sectionOpen}
+        label={"SECTION"}
+        labelClassName={"row half-gap grid-exp-2"}
         onClick={() => dispatch({
-          type: Actions.SET_3D_PROFILE_OPEN,
-          payload: !profileOpen,
-        })} />}
+          type: Actions.SET_3D_SECTION_OPEN,
+          payload: !sectionOpen,
+        })}>
+        <Popover
+          position={Position.BOTTOM_RIGHT}
+          className={"caret-menu-button"}
+          target={<button type={"button"}
+            className={"fb-icon-button invert"}
+            title={t("section settings")}
+            aria-label={t("section settings")}
+            aria-haspopup={"menu"}>
+            <i className={"fa fa-caret-down"} aria-hidden={true} />
+          </button>}
+          content={<ThreeDSectionSettings
+            designer={designer}
+            dispatch={dispatch}
+            gardenSize={props.gardenSize} />} />
+      </GardenMapLegendToggle>}
     {is3D &&
       <GardenMapLegendToggle
         value={exaggeratedZ}

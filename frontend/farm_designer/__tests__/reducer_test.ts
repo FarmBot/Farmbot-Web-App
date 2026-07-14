@@ -16,11 +16,12 @@ import { SceneObjectFormValues } from "../../scene_objects/interfaces";
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
 
-  it("uses 3D profile defaults", () => {
-    expect(initialState.threeDProfileAxis).toEqual("x");
+  it("uses 3D section defaults", () => {
+    expect(initialState.threeDSectionAxis).toEqual("x");
     expect(initialState.threeDPerspective).toBeUndefined();
-    expect(initialState.threeDProfileWidth).toEqual(100);
-    expect(initialState.threeDProfileFollowBot).toEqual(true);
+    expect(initialState.threeDSectionWidth).toEqual(100);
+    expect(initialState.threeDSectionFollowBot).toEqual(true);
+    expect(initialState.threeDSectionCutAll).toEqual(true);
   });
 
   it("sets search query", () => {
@@ -181,35 +182,40 @@ describe("designer reducer", () => {
     expect(newState.threeDExaggeratedZ).toEqual(true);
   });
 
-  it("sets 3D profile open state", () => {
+  it("sets 3D section open state", () => {
     const newState = designer(oldState(), {
-      type: Actions.SET_3D_PROFILE_OPEN,
+      type: Actions.SET_3D_SECTION_OPEN,
       payload: true,
     });
-    expect(newState.threeDProfileOpen).toEqual(true);
+    expect(newState.threeDSectionOpen).toEqual(true);
   });
 
-  it("sets 3D profile settings", () => {
+  it("sets 3D section settings", () => {
     const viewState = designer(oldState(), {
-      type: Actions.SET_3D_PROFILE_AXIS,
+      type: Actions.SET_3D_SECTION_AXIS,
       payload: "y",
     });
     const centerState = designer(viewState, {
-      type: Actions.SET_3D_PROFILE_CENTER,
+      type: Actions.SET_3D_SECTION_CENTER,
       payload: { x: 100, y: 200 },
     });
     const widthState = designer(centerState, {
-      type: Actions.SET_3D_PROFILE_WIDTH,
+      type: Actions.SET_3D_SECTION_WIDTH,
       payload: 700,
     });
     const followState = designer(widthState, {
-      type: Actions.SET_3D_PROFILE_FOLLOW_BOT,
+      type: Actions.SET_3D_SECTION_FOLLOW_BOT,
       payload: true,
     });
-    expect(followState.threeDProfileAxis).toEqual("y");
-    expect(followState.threeDProfileCenter).toEqual({ x: 100, y: 200 });
-    expect(followState.threeDProfileWidth).toEqual(700);
-    expect(followState.threeDProfileFollowBot).toEqual(true);
+    const cutAllState = designer(followState, {
+      type: Actions.SET_3D_SECTION_CUT_ALL,
+      payload: false,
+    });
+    expect(followState.threeDSectionAxis).toEqual("y");
+    expect(followState.threeDSectionCenter).toEqual({ x: 100, y: 200 });
+    expect(followState.threeDSectionWidth).toEqual(700);
+    expect(followState.threeDSectionFollowBot).toEqual(true);
+    expect(cutAllState.threeDSectionCutAll).toEqual(false);
   });
 
   it("sets 3D perspective", () => {

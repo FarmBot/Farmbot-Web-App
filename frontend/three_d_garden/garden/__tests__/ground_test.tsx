@@ -9,7 +9,7 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
-import { PROFILE_CLIPPING_EXEMPT } from "../../profile";
+import { SECTION_CLIPPING_EXEMPT } from "../../section";
 
 describe("<Ground />", () => {
   const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
@@ -38,7 +38,7 @@ describe("<Ground />", () => {
     const ground = wrapper.root.findAll(node =>
       node.props.name == "ground Outdoor")[0];
     const color = ground.props.geometry.attributes.color;
-    expect(ground.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
+    expect(ground.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(color.array).toBeInstanceOf(Float32Array);
     expect(color.itemSize).toEqual(3);
   });

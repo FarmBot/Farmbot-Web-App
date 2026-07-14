@@ -7,7 +7,7 @@ import {
 } from "three";
 import { useTextureVariant } from "../texture_variants";
 import { ThreeEvent } from "@react-three/fiber";
-import { PROFILE_CLIPPING_EXEMPT } from "../profile";
+import { SECTION_CLIPPING_EXEMPT } from "../section";
 
 export interface GroundProps {
   config: Config;
@@ -26,7 +26,7 @@ interface GroundWrapperProps {
 
 const GroundWrapper = (props: GroundWrapperProps) =>
   <Mesh name={`ground ${props.sceneName}`}
-    userData={{ [PROFILE_CLIPPING_EXEMPT]: true }}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}
     receiveShadow={true}
     geometry={props.geometry}
     // eslint-disable-next-line no-null/no-null

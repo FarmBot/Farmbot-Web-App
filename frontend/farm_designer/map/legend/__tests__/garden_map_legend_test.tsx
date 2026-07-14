@@ -73,6 +73,7 @@ describe("<GardenMapLegend />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botLocationData: fakeBotLocationData(),
     botSize: fakeBotSize(),
+    gardenSize: { x: 2900, y: 1400 },
     designer: fakeDesignerState(),
   });
 
@@ -135,27 +136,29 @@ describe("<GardenMapLegend />", () => {
       BooleanSetting.three_d_garden, true);
   });
 
-  it("toggles 3D profile view", () => {
+  it("toggles 3D section view", () => {
     const p = fakeProps();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
-    p.designer.threeDProfileOpen = true;
+    p.designer.threeDSectionOpen = true;
     const { container } = render(<GardenMapLegend {...p} />);
-    const toggle = container.querySelector("button[title='hide PROFILE']");
-    if (!toggle) { throw new Error("Missing profile toggle"); }
+    const toggle = container.querySelector("button[title='hide SECTION']");
+    if (!toggle) { throw new Error("Missing section toggle"); }
+    fireEvent.click(screen.getByLabelText("section settings"));
+    expect(screen.getByText("CUT ALL")).toBeInTheDocument();
     fireEvent.click(toggle);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_3D_PROFILE_OPEN,
+      type: Actions.SET_3D_SECTION_OPEN,
       payload: false,
     });
   });
 
-  it("only shows profile view in 3D", () => {
+  it("only shows section view in 3D", () => {
     const p = fakeProps();
     const { container, rerender } = render(<GardenMapLegend {...p} />);
-    expect(container.querySelector("button[title='show PROFILE']")).toBeNull();
+    expect(container.querySelector("button[title='show SECTION']")).toBeNull();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     rerender(<GardenMapLegend {...p} />);
-    expect(container.querySelector("button[title='show PROFILE']"))
+    expect(container.querySelector("button[title='show SECTION']"))
       .toBeInTheDocument();
   });
 

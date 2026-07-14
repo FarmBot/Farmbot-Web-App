@@ -256,6 +256,7 @@ jest.mock("@react-spring/three", () => ({
         : {};
     const api = {
       start: jest.fn(() => Promise.resolve()),
+      set: jest.fn(),
     };
     return [{ ...springProps, ...springProps.from, ...resolvedTo }, api];
   },

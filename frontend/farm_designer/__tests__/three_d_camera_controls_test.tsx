@@ -33,15 +33,6 @@ describe("<ThreeDCameraControls />", () => {
     expect(button).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("marks the controls when profile is open", () => {
-    const designer = fakeDesignerState();
-    designer.threeDProfileOpen = true;
-    const { container } = render(<ThreeDCameraControls
-      designer={designer}
-      dispatch={jest.fn()} />);
-    expect(container.firstChild).toHaveClass("profile-open");
-  });
-
   it("defaults to perspective on when transient state is unset", () => {
     const designer = fakeDesignerState();
     designer.threeDPerspective = undefined;

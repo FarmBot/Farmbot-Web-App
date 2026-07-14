@@ -202,15 +202,16 @@ export interface DesignerState {
   threeDCameraSelection: boolean;
   threeDExaggeratedZ: boolean;
   threeDPerspective: boolean | undefined;
-  threeDProfileOpen: boolean;
-  threeDProfileAxis: ThreeDProfileAxis;
-  threeDProfileCenter: Record<"x" | "y", number | undefined>;
-  threeDProfileWidth: number;
-  threeDProfileFollowBot: boolean;
+  threeDSectionOpen: boolean;
+  threeDSectionAxis: ThreeDSectionAxis;
+  threeDSectionCenter: Record<"x" | "y", number | undefined>;
+  threeDSectionWidth: number;
+  threeDSectionFollowBot: boolean;
+  threeDSectionCutAll: boolean;
   threeDTime: string | undefined;
 }
 
-export type ThreeDProfileAxis = "x" | "y";
+export type ThreeDSectionAxis = "x" | "y";
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
 export type ExecutableQuery =

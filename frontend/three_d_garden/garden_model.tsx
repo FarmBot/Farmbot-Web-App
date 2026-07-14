@@ -122,13 +122,15 @@ import {
   SceneObjects, useSceneObjectPlacement,
 } from "./scene_objects";
 import {
-  getProfileClippingPlanes, getProfileOutsidePlaneConstants,
-  profileNearPlaneIndex,
-  PROFILE_CLIPPING_EXEMPT, useAnimatedProfilePlanes, useProfileClipping,
-} from "./profile";
-import { effectiveProfileCenter } from
-  "../farm_designer/three_d_profile";
-import { ProfileCutFaces } from "./profile_cut_faces";
+  getSectionClippingPlanes, getSectionOutsidePlaneConstants,
+  sectionNearPlaneIndex,
+  SECTION_CLIPPING_EXEMPT, useAnimatedSectionPlanes, useSectionClipping,
+} from "./section";
+import { effectiveSectionCenter } from
+  "../farm_designer/three_d_section";
+import { SectionCutFaces } from "./section_cut_faces";
+import { SectionGroundOverlays } from "./section_overlays";
+import { SectionControls } from "./section_controls";
 import {
   ViewPrism, VIEW_PRISM_BOUNDING_BOX_HALF_SIZE, ViewPrismDirection,
   VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
@@ -841,7 +843,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       reveal={environmentReveal}
       markName={"three_d_ground_ready"}>
       <Group name={"sky"}
-        userData={{ [PROFILE_CLIPPING_EXEMPT]: true }}>
+        userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
         <Sky sunPosition={sunPosition(0, 0, 0)} />
         <Sphere args={[BigDistance.sky, 8, 16]}>
           <MeshBasicMaterial
@@ -1586,7 +1588,7 @@ const useGardenCameraController = (props: GardenCameraControllerProps) => {
   };
 };
 
-interface GardenProfileControllerProps {
+interface GardenSectionControllerProps {
   config: Config;
   designer: DesignerState | undefined;
   gardenSize: { x: number; y: number };
@@ -1594,16 +1596,17 @@ interface GardenProfileControllerProps {
   camera: Camera;
   controlsCamera: ThreePerspectiveCamera | null;
   modelRoot: Object3D | undefined;
+  immediate: boolean;
 }
 
-const useGardenProfileController = (
-  props: GardenProfileControllerProps,
+const useGardenSectionController = (
+  props: GardenSectionControllerProps,
 ) => {
-  const profileOpen = !!props.designer?.threeDProfileOpen;
-  const axis = props.designer?.threeDProfileAxis;
-  const width = props.designer?.threeDProfileWidth;
+  const sectionOpen = !!props.designer?.threeDSectionOpen;
+  const axis = props.designer?.threeDSectionAxis;
+  const width = props.designer?.threeDSectionWidth;
   const center = props.designer
-    ? effectiveProfileCenter(
+    ? effectiveSectionCenter(
       props.designer,
       props.gardenSize,
       props.currentBotLocation,
@@ -1611,16 +1614,27 @@ const useGardenProfileController = (
     : 0;
   const basePlanes = React.useMemo(
     () => axis && width !== undefined
-      ? getProfileClippingPlanes(props.config, axis, center, width)
+      ? getSectionClippingPlanes(props.config, axis, center, width)
       : [],
     [axis, center, props.config, width],
   );
   const outsidePlaneConstants = React.useMemo(
-    () => getProfileOutsidePlaneConstants({
+    () => getSectionOutsidePlaneConstants({
       bedLengthOuter: props.config.bedLengthOuter,
       bedWidthOuter: props.config.bedWidthOuter,
+      bedXOffset: props.config.bedXOffset,
+      bedYOffset: props.config.bedYOffset,
+      mirrorX: props.config.mirrorX,
+      mirrorY: props.config.mirrorY,
     }),
-    [props.config.bedLengthOuter, props.config.bedWidthOuter],
+    [
+      props.config.bedLengthOuter,
+      props.config.bedWidthOuter,
+      props.config.bedXOffset,
+      props.config.bedYOffset,
+      props.config.mirrorX,
+      props.config.mirrorY,
+    ],
   );
   const [nearIndex, setNearIndex] = React.useState(0);
   const updateNearIndex = React.useCallback(() => {
@@ -1629,27 +1643,53 @@ const useGardenProfileController = (
       x: props.camera.position[0],
       y: props.camera.position[1],
     };
-    const next = profileNearPlaneIndex(basePlanes, axis, position);
+    const next = sectionNearPlaneIndex(basePlanes, axis, position);
     setNearIndex(current => current == next ? current : next);
   }, [axis, basePlanes, props.camera.position, props.controlsCamera]);
   // Synchronize the first semantic near plane before controls emit changes.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   React.useEffect(updateNearIndex, [updateNearIndex]);
-  const animated = useAnimatedProfilePlanes(
-    profileOpen,
+  const animated = useAnimatedSectionPlanes(
+    sectionOpen,
     axis || "x",
     basePlanes,
-    !!props.designer?.threeDProfileFollowBot,
+    !!props.designer?.threeDSectionFollowBot,
     outsidePlaneConstants,
+    props.immediate,
   );
+  const renderedSection = React.useMemo(() => {
+    const renderedAxis = animated.axis;
+    const planePositions = animated.planes.map(plane =>
+      -plane.constant / plane.normal[renderedAxis]);
+    const worldCenter = (planePositions[0] + planePositions[1]) / 2;
+    return {
+      center: getGardenPositionFunc(props.config, false)({
+        x: worldCenter,
+        y: worldCenter,
+      })[renderedAxis],
+      width: Math.abs(planePositions[1] - planePositions[0]),
+    };
+  }, [animated.axis, animated.planes, props.config]);
   const planes = React.useMemo(() => nearIndex == 0
     ? animated.planes
     : [animated.planes[1], animated.planes[0]], [
     animated.planes,
     nearIndex,
   ]);
-  useProfileClipping(animated.mounted, props.modelRoot, planes);
-  return { animated, planes, profileOpen, updateNearIndex };
+  useSectionClipping(
+    animated.mounted,
+    props.modelRoot,
+    planes,
+    !!props.designer?.threeDSectionCutAll,
+  );
+  return {
+    animated,
+    center: renderedSection.center,
+    planes,
+    sectionOpen,
+    updateNearIndex,
+    width: renderedSection.width,
+  };
 };
 
 // eslint-disable-next-line complexity
@@ -1682,7 +1722,9 @@ export const GardenModel = (props: GardenModelProps) => {
   const images = props.images || EMPTY_IMAGES;
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
-  const profileDesigner = addPlantProps?.designer;
+  const sectionDesigner = addPlantProps?.designer;
+  const [sectionControlDragging, setSectionControlDragging] =
+    React.useState(false);
   const topDownAtStart = !!addPlantProps?.topDownAtStart;
   const mode = getMode();
   const selectionPanelOpen = mode == Mode.boxSelect;
@@ -1790,7 +1832,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const activeCameraFit = props.promo
     ? currentCameraFit
     : bootstrapCameraFit;
-  const profileGardenSize = React.useMemo(() => ({
+  const sectionGardenSize = React.useMemo(() => ({
     x: cameraConfig.botSizeX,
     y: cameraConfig.botSizeY,
   }), [cameraConfig.botSizeX, cameraConfig.botSizeY]);
@@ -1858,21 +1900,24 @@ export const GardenModel = (props: GardenModelProps) => {
     camera, cameraFov, cameraRequest, cameraSpringCancelRef,
     selectStartingCamera,
   } = cameraController;
-  const profileController = useGardenProfileController({
+  const sectionController = useGardenSectionController({
     config,
-    designer: profileDesigner,
-    gardenSize: profileGardenSize,
+    designer: sectionDesigner,
+    gardenSize: sectionGardenSize,
     currentBotLocation: props.currentBotLocation,
     camera,
     controlsCamera,
     modelRoot,
+    immediate: sectionControlDragging,
   });
   const {
-    animated: animatedProfile,
-    planes: profilePlanes,
-    profileOpen,
-    updateNearIndex: updateProfileNearIndex,
-  } = profileController;
+    animated: animatedSection,
+    center: sectionCenter,
+    planes: sectionPlanes,
+    sectionOpen,
+    updateNearIndex: updateSectionNearIndex,
+    width: sectionWidth,
+  } = sectionController;
   const cameraUrlSaveTimeoutRef = React.useRef<number | undefined>(undefined);
   const cameraUrlInteractionRef =
     React.useRef<"idle" | "active" | "settling">("idle");
@@ -2211,7 +2256,7 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraUrlSaveTimeoutRef.current = undefined;
   }, []);
   const saveCameraUrl = React.useCallback(() => {
-    if (!profileOpen && baseConfig.urlCameraPos && controlsCamera && controls) {
+    if (!sectionOpen && baseConfig.urlCameraPos && controlsCamera && controls) {
       const state = readSmoothCameraState({
         position: camera.position,
         target: camera.target,
@@ -2227,7 +2272,7 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraFov,
     controls,
     controlsCamera,
-    profileOpen,
+    sectionOpen,
     targetZoom,
   ]);
   const finishCameraUrlSave = React.useCallback(() => {
@@ -2249,14 +2294,14 @@ export const GardenModel = (props: GardenModelProps) => {
     setHoveredObjectLabel(undefined);
     setCameraDragging(true);
     clearCameraUrlSaveTimeout();
-    cameraUrlInteractionRef.current = baseConfig.urlCameraPos && !profileOpen
+    cameraUrlInteractionRef.current = baseConfig.urlCameraPos && !sectionOpen
       ? "active"
       : "idle";
   }, [
     baseConfig.urlCameraPos,
     cameraSpringCancelRef,
     clearCameraUrlSaveTimeout,
-    profileOpen,
+    sectionOpen,
   ]);
   const handleCameraDragEnd = React.useCallback(() => {
     setCameraDragging(false);
@@ -2272,12 +2317,12 @@ export const GardenModel = (props: GardenModelProps) => {
       minFar: BigDistance.far,
       maxCameraScale: 1,
     });
-    updateProfileNearIndex();
+    updateSectionNearIndex();
     scheduleCameraUrlSave();
   }, [
     controlsCamera,
     scheduleCameraUrlSave,
-    updateProfileNearIndex,
+    updateSectionNearIndex,
   ]);
   React.useEffect(() => {
     if (baseConfig.urlCameraPos) { return; }
@@ -2456,12 +2501,38 @@ export const GardenModel = (props: GardenModelProps) => {
         complete={detailsReveal} />
       {config.cameraFitDebug &&
         <CameraFitDebug {...activeCameraFit} />}
-      {animatedProfile.mounted && profilePlanes[0] &&
-        <ProfileCutFaces
+      {animatedSection.mounted && sectionPlanes[0] &&
+        <SectionCutFaces
           config={config}
-          axis={animatedProfile.axis}
-          nearPlane={profilePlanes[0]}
+          axis={animatedSection.axis}
+          nearPlane={sectionPlanes[0]}
+          farPlane={sectionPlanes[1]}
+          cutAll={!!sectionDesigner?.threeDSectionCutAll}
+          opacity={animatedSection.opacity}
           getZ={getZ} />}
+      {animatedSection.mounted &&
+        <SectionGroundOverlays
+          config={config}
+          configPosition={configPosition}
+          sectionOpacity={animatedSection.opacity} />}
+      {animatedSection.mounted && sectionDesigner && dispatch
+        && sectionPlanes[0] && sectionPlanes[1] &&
+        <SectionControls
+          key={animatedSection.axis}
+          config={config}
+          configPosition={configPosition}
+          designer={sectionDesigner}
+          dispatch={dispatch}
+          gardenSize={sectionGardenSize}
+          axis={animatedSection.axis}
+          center={sectionCenter}
+          width={sectionWidth}
+          opacity={animatedSection.opacity}
+          interactive={sectionOpen
+            && animatedSection.axis == sectionDesigner.threeDSectionAxis}
+          nearPlane={sectionPlanes[0]}
+          farPlane={sectionPlanes[1]}
+          onDraggingChange={setSectionControlDragging} />}
       <StaticGardenLayers
         config={config}
         markStep={markLoadStep}

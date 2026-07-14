@@ -58,11 +58,12 @@ export const fakeDesignerState = (): DesignerState => ({
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
   threeDPerspective: true,
-  threeDProfileOpen: false,
-  threeDProfileAxis: "x",
-  threeDProfileCenter: { x: undefined, y: undefined },
-  threeDProfileWidth: 100,
-  threeDProfileFollowBot: true,
+  threeDSectionOpen: false,
+  threeDSectionAxis: "x",
+  threeDSectionCenter: { x: undefined, y: undefined },
+  threeDSectionWidth: 100,
+  threeDSectionFollowBot: true,
+  threeDSectionCutAll: true,
   threeDTime: undefined,
 });
 

@@ -100,7 +100,7 @@ describe("getBotVersion()", () => {
     });
   });
 
-  it("uses the v1.9 profile for unknown versions", () => {
+  it("uses the v1.9 section for unknown versions", () => {
     expect(getBotVersion("v1000")).toBe(getBotVersion("v1.9"));
   });
 });

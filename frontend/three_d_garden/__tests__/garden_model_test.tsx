@@ -58,7 +58,9 @@ import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
 import { Bed } from "../bed";
 import { Actions } from "../../constants";
-import { PROFILE_CLIPPING_EXEMPT } from "../profile";
+import { SECTION_CLIPPING_EXEMPT } from "../section";
+import { SectionGroundOverlays } from "../section_overlays";
+import { SectionControls } from "../section_controls";
 import {
   ViewPrism, VIEW_PRISM_TOP_CENTER,
   VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
@@ -412,7 +414,7 @@ describe("<GardenModel />", () => {
     expect(findPlantInstanceNodes(wrapper).length).toEqual(2);
   });
 
-  it("keeps the perspective camera unchanged in profile view", () => {
+  it("keeps the perspective camera unchanged in section view", () => {
     const getCameraFromUrlParamsSpy = jest
       .spyOn(cameraModule, "getCameraFromUrlParams")
       .mockReturnValue({
@@ -425,13 +427,13 @@ describe("<GardenModel />", () => {
     p.config.rotate = false;
     p.config.pan = true;
     p.config.zoom = true;
-    p.addPlantProps!.designer.threeDProfileOpen = true;
-    p.addPlantProps!.designer.threeDProfileAxis = "y";
+    p.addPlantProps!.designer.threeDSectionOpen = true;
+    p.addPlantProps!.designer.threeDSectionAxis = "y";
     const wrapper = createWrapper(p);
     const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
     const sky = wrapper.root.findAll(node => node.props.name == "sky")[0];
     const cutFaces = wrapper.root.findAll(node =>
-      node.props.name == "profile-cut-faces")[0];
+      node.props.name == "section-cut-faces")[0];
     const controls = wrapper.root.findByType(OrbitControls);
 
     expect(wrapper.root.findAllByType(PerspectiveCamera).length)
@@ -443,14 +445,36 @@ describe("<GardenModel />", () => {
     expect(controls.props.enableRotate).toEqual(false);
     expect(controls.props.enablePan).toEqual(true);
     expect(controls.props.enableZoom).toEqual(true);
-    expect(sky.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
-    expect(cutFaces.props.userData[PROFILE_CLIPPING_EXEMPT]).toEqual(true);
+    expect(sky.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(cutFaces.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(wrapper.root.findAllByType(SectionGroundOverlays)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(SectionControls)).toHaveLength(1);
+    const sectionOverlays = wrapper.root.findByType(SectionGroundOverlays);
+    expect(sectionOverlays.props.sectionOpacity).toEqual(1);
+    const sectionControls = wrapper.root.findByType(SectionControls);
+    expect(sectionControls.props.axis).toEqual("y");
+    expect(sectionControls.props.opacity).toEqual(1);
+    expect(sectionControls.props.interactive).toEqual(true);
+    expect(Number.isFinite(sectionControls.props.center)).toEqual(true);
+    expect(Number.isFinite(sectionControls.props.width)).toEqual(true);
     getCameraFromUrlParamsSpy.mockRestore();
+  });
+
+  it("only renders ground projections in section view", () => {
+    const closed = createWrapper(fakeProps());
+    expect(closed.root.findAllByType(SectionGroundOverlays)).toHaveLength(0);
+    expect(closed.root.findAllByType(SectionControls)).toHaveLength(0);
+
+    const p = fakeProps();
+    p.addPlantProps!.designer.threeDSectionOpen = true;
+    const open = createWrapper(p);
+    expect(open.root.findAllByType(SectionGroundOverlays)).toHaveLength(1);
+    expect(open.root.findAllByType(SectionControls)).toHaveLength(1);
   });
 
   it("handles the product view prism and live orbit changes", () => {
     const p = fakeProps();
-    p.addPlantProps!.designer.threeDProfileOpen = true;
+    p.addPlantProps!.designer.threeDSectionOpen = true;
     p.viewPrismBridgeRef = { current: {} };
     const wrapper = createWrapper(p);
     const cameras = wrapper.root.findAllByType(PerspectiveCamera);

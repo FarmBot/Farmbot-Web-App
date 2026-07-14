@@ -1,8 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import {
-  ThreeDGardenProps, ThreeDGarden, viewPrismViewportClassName,
-} from "../index";
+import { ThreeDGardenProps, ThreeDGarden } from "../index";
 import { VIEW_PRISM_VIEWPORT_SIZE } from "../garden_model";
 import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
@@ -41,7 +39,6 @@ describe("<ThreeDGarden />", () => {
       width: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
       height: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
     });
-    expect(viewport).not.toHaveClass("profile-open");
     expect(canvasSpy).toHaveBeenCalledTimes(2);
     expect(canvasSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -53,11 +50,6 @@ describe("<ThreeDGarden />", () => {
       }),
       undefined,
     );
-  });
-
-  it("marks the view prism viewport when the profile HUD is open", () => {
-    expect(viewPrismViewportClassName(true))
-      .toEqual("view-prism-viewport profile-open");
   });
 
   it("disables canvas shadows in low-detail mode", () => {

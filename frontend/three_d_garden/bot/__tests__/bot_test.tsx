@@ -326,7 +326,7 @@ describe("<Bot />", () => {
     ["v1.7", 500],
     ["v1.8", 500],
     ["v1.9", 450],
-  ])("renders %s columns at the profile length", (kitVersion, depth) => {
+  ])("renders %s columns at the section length", (kitVersion, depth) => {
     const p = fakeProps();
     p.config.kitVersion = kitVersion;
     const wrapper = createRenderer(<Bot {...p} />);

@@ -221,9 +221,9 @@ describe("<ThreeDGardenMap />", () => {
     expect(second.configPosition).toEqual({ x: 2990, y: 1480, z: 30 });
   });
 
-  it("preserves perspective and enables rotation in profile view", () => {
+  it("preserves perspective and enables rotation in section view", () => {
     const p = fakeProps();
-    p.designer.threeDProfileOpen = true;
+    p.designer.threeDSectionOpen = true;
     render(<ThreeDGardenMap {...p} />);
     expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
       perspective: true,

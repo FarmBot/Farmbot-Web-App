@@ -68,6 +68,7 @@ export interface GardenMapLegendProps {
   firmwareConfig: McuParams;
   botLocationData: BotLocationData;
   botSize: BotSize;
+  gardenSize: AxisNumberProperty;
   designer: DesignerState;
 }
 

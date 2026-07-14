@@ -35,7 +35,7 @@ import {
   perfEnabled, usePerfRenderCount,
 } from "../../performance/perf";
 import { Actions } from "../../constants";
-import { PROFILE_FAR_CLIPPING_EXEMPT } from "../profile";
+import { SECTION_FAR_CLIPPING_EXEMPT } from "../section";
 
 export { clearBotShapeCache } from "./bot_shapes";
 
@@ -236,7 +236,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
 
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
     <FocusVisibilityGroup name={"bot"}
-      userData={{ [PROFILE_FAR_CLIPPING_EXEMPT]: true }}
+      userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}
       keepMounted={true}
       preserveDepthWrite={true}
       visible={props.activeFocus != "Planter bed"}>

@@ -1,48 +1,22 @@
 @use "../variables" as *;
 
-.three-d-profile-indicator {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  z-index: 3;
+.three-d-section-settings {
   display: grid;
-  grid-template-columns: repeat(3, minmax(12rem, 1fr));
-  align-items: start;
   gap: 1rem;
-  width: min(45rem, calc(100vw - 4rem));
-  padding: 1rem 2rem;
-  visibility: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, calc(100% + 1rem));
-  background: var(--main-bg);
-  border-radius: 5px;
-  box-shadow: var(--box-shadow);
-  backdrop-filter: var(--blur);
-  transition:
-  transform 300ms ease,
-  opacity 200ms ease,
-  visibility 0s linear 300ms;
-
-  &.open {
-    visibility: visible;
-    pointer-events: auto;
-    opacity: 1;
-    transform: translate(-50%, 0);
-    transition-delay: 0s;
-  }
+  width: 20rem;
 
   label {
     margin: 0;
     align-self: center;
   }
 
-  .three-d-profile-view,
-  .three-d-profile-follow {
+  .three-d-section-view,
+  .three-d-section-follow,
+  .three-d-section-cut-all {
     align-items: center;
   }
 
-  .three-d-profile-value {
+  .three-d-section-value {
     display: grid;
     grid-template-columns: 5rem 1fr;
     gap: 0.5rem;
@@ -52,7 +26,7 @@
     }
   }
 
-  .three-d-profile-input {
+  .three-d-section-input {
     position: relative;
 
     input {
@@ -60,7 +34,7 @@
     }
   }
 
-  .three-d-profile-carets {
+  .three-d-section-carets {
     position: absolute;
     top: 0;
     right: 0;
@@ -86,7 +60,7 @@
     }
   }
 
-  .three-d-profile-slider {
+  .three-d-section-slider {
     grid-column: 1 / -1;
     height: 1.5rem !important;
     padding: 0;
@@ -111,7 +85,7 @@
       margin-top: -0.5rem;
       appearance: none;
       border-radius: 50%;
-      background: $green;
+      background: dodgerblue;
     }
 
     &::-moz-range-track {
@@ -125,20 +99,7 @@
       height: 1.4rem;
       border: 0;
       border-radius: 50%;
-      background: $green;
-    }
-  }
-}
-
-@media screen and (max-width: $mobile_max_width) {
-  .three-d-profile-indicator {
-    bottom: 1rem;
-    grid-template-columns: 1fr 1fr;
-    width: calc(100vw - 2rem);
-    padding: 1rem;
-
-    .three-d-profile-follow {
-      grid-column: auto;
+      background: dodgerblue;
     }
   }
 }

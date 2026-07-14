@@ -63,14 +63,8 @@ export interface ThreeDGardenProps {
   sceneObjects: TaggedSceneObject[];
 }
 
-export const viewPrismViewportClassName = (profileOpen: boolean) => [
-  "view-prism-viewport",
-  profileOpen ? "profile-open" : "",
-].join(" ");
-
 interface ViewPrismViewportProps {
   bridgeRef: React.RefObject<ViewPrismBridge | null>;
-  profileOpen?: boolean;
 }
 
 export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
@@ -79,7 +73,7 @@ export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
     NORMAL_CAMERA_FOV,
   );
   return <div
-    className={viewPrismViewportClassName(!!props.profileOpen)}
+    className={"view-prism-viewport"}
     style={{
       width: VIEW_PRISM_VIEWPORT_SIZE,
       height: VIEW_PRISM_VIEWPORT_SIZE,
@@ -151,8 +145,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
     </div>
     {props.config.viewCube &&
       <ViewPrismViewport
-        bridgeRef={viewPrismBridgeRef}
-        profileOpen={props.addPlantProps.designer.threeDProfileOpen} />}
+        bridgeRef={viewPrismBridgeRef} />}
   </div>;
 });
 

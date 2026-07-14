@@ -2,7 +2,7 @@ import {
   DesignerState,
   DrawnPointPayl,
   HoveredPlantPayl,
-  ThreeDProfileAxis,
+  ThreeDSectionAxis,
 } from "./interfaces";
 import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
@@ -68,11 +68,12 @@ export const initialState: DesignerState = {
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
   threeDPerspective: undefined,
-  threeDProfileOpen: false,
-  threeDProfileAxis: "x",
-  threeDProfileCenter: { x: undefined, y: undefined },
-  threeDProfileWidth: 100,
-  threeDProfileFollowBot: true,
+  threeDSectionOpen: false,
+  threeDSectionAxis: "x",
+  threeDSectionCenter: { x: undefined, y: undefined },
+  threeDSectionWidth: 100,
+  threeDSectionFollowBot: true,
+  threeDSectionCutAll: true,
   threeDTime: undefined,
 };
 
@@ -281,29 +282,33 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDExaggeratedZ = payload;
     return s;
   })
-  .add<boolean>(Actions.SET_3D_PROFILE_OPEN, (s, { payload }) => {
-    s.threeDProfileOpen = payload;
+  .add<boolean>(Actions.SET_3D_SECTION_OPEN, (s, { payload }) => {
+    s.threeDSectionOpen = payload;
     return s;
   })
   .add<boolean>(Actions.SET_3D_PERSPECTIVE, (s, { payload }) => {
     s.threeDPerspective = payload;
     return s;
   })
-  .add<ThreeDProfileAxis>(Actions.SET_3D_PROFILE_AXIS, (s, { payload }) => {
-    s.threeDProfileAxis = payload;
+  .add<ThreeDSectionAxis>(Actions.SET_3D_SECTION_AXIS, (s, { payload }) => {
+    s.threeDSectionAxis = payload;
     return s;
   })
   .add<Record<"x" | "y", number | undefined>>(
-    Actions.SET_3D_PROFILE_CENTER, (s, { payload }) => {
-      s.threeDProfileCenter = payload;
+    Actions.SET_3D_SECTION_CENTER, (s, { payload }) => {
+      s.threeDSectionCenter = payload;
       return s;
     })
-  .add<number>(Actions.SET_3D_PROFILE_WIDTH, (s, { payload }) => {
-    s.threeDProfileWidth = payload;
+  .add<number>(Actions.SET_3D_SECTION_WIDTH, (s, { payload }) => {
+    s.threeDSectionWidth = payload;
     return s;
   })
-  .add<boolean>(Actions.SET_3D_PROFILE_FOLLOW_BOT, (s, { payload }) => {
-    s.threeDProfileFollowBot = payload;
+  .add<boolean>(Actions.SET_3D_SECTION_FOLLOW_BOT, (s, { payload }) => {
+    s.threeDSectionFollowBot = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_SECTION_CUT_ALL, (s, { payload }) => {
+    s.threeDSectionCutAll = payload;
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {

@@ -16,10 +16,7 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
   const perspective = effectiveThreeDPerspective(
     props.designer,
   );
-  return <div className={[
-    "three-d-camera-controls",
-    props.designer.threeDProfileOpen ? "profile-open" : "",
-  ].join(" ")}>
+  return <div className={"three-d-camera-controls"}>
     <button
       type={"button"}
       className={[
