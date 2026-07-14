@@ -13,8 +13,8 @@ import { SECTION_CLIPPING_EXEMPT } from "./section";
 import { getBedTextureRepeat, TexturedBedMaterial } from "./bed";
 import { ASSETS } from "./constants";
 
-export const SECTION_BED_GROUND_OFFSET = 2.5;
-export const SECTION_SOIL_GROUND_OFFSET = 5;
+export const SECTION_BED_BOTTOM_OFFSET = 2.5;
+export const SECTION_SOIL_BOTTOM_OFFSET = 5;
 export const SECTION_GHOST_Z_OFFSET = 5;
 export const SECTION_GHOST_OPACITY = 0.5;
 
@@ -33,9 +33,9 @@ export const getSectionOverlayLayout = (
   config: Config,
   configPosition: PositionConfig,
 ): SectionOverlayLayout => {
-  const groundZ = -config.bedHeight - config.bedZOffset;
-  const bedZ = groundZ + SECTION_BED_GROUND_OFFSET;
-  const soilZ = groundZ + SECTION_SOIL_GROUND_OFFSET;
+  const bottomZ = -config.bedHeight;
+  const bedZ = bottomZ + SECTION_BED_BOTTOM_OFFSET;
+  const soilZ = bottomZ + SECTION_SOIL_BOTTOM_OFFSET;
   const ghostZ = soilZ + SECTION_GHOST_Z_OFFSET;
   const kinematics = getBotKinematics(config, configPosition);
   const version = getBotVersion(config.kitVersion);
@@ -90,6 +90,7 @@ export const SectionGroundOverlays = (
     <Mesh
       name={"section-bed-ground-rectangle"}
       position={[0, 0, layout.bedZ]}
+      receiveShadow={true}
       raycast={noRaycast}>
       <PlaneGeometry args={layout.bedSize} />
       <TexturedBedMaterial
@@ -100,6 +101,7 @@ export const SectionGroundOverlays = (
       name={"section-soil-ground-rectangle"}
       position={[0, 0, layout.soilZ]}
       renderOrder={1}
+      receiveShadow={true}
       raycast={noRaycast}>
       <PlaneGeometry args={layout.soilSize} />
       <MeshPhongMaterial

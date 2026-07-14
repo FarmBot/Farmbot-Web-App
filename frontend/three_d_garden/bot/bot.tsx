@@ -52,6 +52,7 @@ export interface FarmbotModelProps {
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
   onHoverLabel?: ThreeDObjectHoverLabelHandler;
+  positionStore?: BotPositionSnapshotStore;
 }
 
 export const Bot = (props: FarmbotModelProps) =>
@@ -197,6 +198,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
       config.animate,
       springCallbacks,
       springResetKey,
+      props.positionStore,
     );
   React.useLayoutEffect(() => {
     applyPosition(currentPosition.current);

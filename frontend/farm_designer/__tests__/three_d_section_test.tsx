@@ -112,7 +112,7 @@ describe("<ThreeDSectionSettings />", () => {
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_SECTION_WIDTH,
-      payload: 101,
+      payload: 201,
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_SECTION_CENTER,

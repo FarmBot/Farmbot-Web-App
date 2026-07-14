@@ -19,7 +19,7 @@ import { AxisNumberProperty } from "../farm_designer/map/interfaces";
 import { Actions } from "../constants";
 import {
   manualSectionCenter, normalizeSectionValue,
-  sectionWidthMax, SECTION_WIDTH_MIN,
+  sectionWidthMax, SECTION_WIDTH_MIN, toggleSectionAxis,
 } from "../farm_designer/three_d_section";
 import {
   pointerRayPointAtZ, stopSceneObjectMarkerDragEvent,
@@ -77,6 +77,7 @@ export interface SectionControlLayout {
   farLine: [Point, Point];
   followLine: [Point, Point];
   centerHandles: [Point, Point];
+  axisToggleArrowStarts: [Point, Point];
   followHandles: [Point, Point];
   followCenter: number;
   nearWidthArrowStarts: [Point, Point];
@@ -87,8 +88,7 @@ export const getSectionControlLayout = (
   props: SectionControlLayoutProps,
 ): SectionControlLayout => {
   const { config, axis, center, width, cameraDirection } = props;
-  const z = -config.bedHeight - config.bedZOffset
-    + SECTION_CONTROL_Z_OFFSET;
+  const z = -config.bedHeight + SECTION_CONTROL_Z_OFFSET;
   const transverseLength = axis == "x"
     ? config.bedWidthOuter
     : config.bedLengthOuter;
@@ -111,13 +111,22 @@ export const getSectionControlLayout = (
     pointForAxis(axis, axisPosition, -extent, z),
     pointForAxis(axis, axisPosition, extent, z),
   ];
+  const centerHandles = atBothSides(centerPosition);
+  const transverseIndex = axis == "x" ? 1 : 0;
+  const axisToggleArrowStarts = centerHandles.map((handle, index) => {
+    const start = [...handle] as Point;
+    start[transverseIndex] += (index == 0 ? -1 : 1)
+      * SECTION_CONTROL_MARKER_RADIUS;
+    return start;
+  }) as [Point, Point];
   return {
     z,
     centerLine: guideLine(axis, centerPosition, extent, z),
     nearLine: guideLine(axis, nearPosition, extent, z),
     farLine: guideLine(axis, farPosition, extent, z),
     followLine: guideLine(axis, utmAxisPosition, followExtent, z),
-    centerHandles: atBothSides(centerPosition),
+    centerHandles,
+    axisToggleArrowStarts,
     followHandles: [
       pointForAxis(axis, utmAxisPosition, -followExtent, z),
       pointForAxis(axis, utmAxisPosition, followExtent, z),
@@ -244,15 +253,65 @@ const SectionControlSphere = (props: SectionControlSphereProps) => {
   </Sphere>;
 };
 
-interface SectionWidthArrowProps {
+interface SectionArrowShapeProps {
   name: string;
   start: Point;
   axis: ThreeDSectionAxis;
   direction: 1 | -1;
-  value: number;
   hovered: boolean;
   opacity: number;
   interactive: boolean;
+}
+
+const SectionArrowShape = (props: SectionArrowShapeProps) => {
+  const width = SECTION_CONTROL_ARROW_WIDTH * (props.hovered ? 1.25 : 1);
+  const headLength = SECTION_CONTROL_ARROW_WIDTH * 3;
+  const shaftLength = SECTION_CONTROL_ARROW_LENGTH - headLength;
+  const rotation = props.axis == "x"
+    ? [0, 0, props.direction == 1 ? 0 : Math.PI]
+    : [0, 0, props.direction == 1 ? Math.PI / 2 : -Math.PI / 2];
+  return <Group
+    name={`${props.name}-shape`}
+    position={props.start}
+    renderOrder={SECTION_CONTROL_RENDER_ORDER}
+    rotation={rotation as [number, number, number]}>
+    <Cylinder
+      args={[width / 2, width / 2, shaftLength, 16]}
+      position={[shaftLength / 2, 0, 0]}
+      renderOrder={SECTION_CONTROL_RENDER_ORDER}
+      raycast={props.interactive ? undefined : sectionControlNoRaycast}
+      rotation={[0, 0, -Math.PI / 2]}>
+      <MeshBasicMaterial
+        color={props.hovered
+          ? SECTION_CONTROL_HOVER_COLOR
+          : SECTION_CONTROL_COLOR}
+        transparent={true}
+        opacity={props.opacity}
+        depthTest={true}
+        depthWrite={true}
+        toneMapped={false} />
+    </Cylinder>
+    <Cone
+      args={[width, headLength, 16]}
+      position={[shaftLength + headLength / 2, 0, 0]}
+      renderOrder={SECTION_CONTROL_RENDER_ORDER}
+      raycast={props.interactive ? undefined : sectionControlNoRaycast}
+      rotation={[0, 0, -Math.PI / 2]}>
+      <MeshBasicMaterial
+        color={props.hovered
+          ? SECTION_CONTROL_HOVER_COLOR
+          : SECTION_CONTROL_COLOR}
+        transparent={true}
+        opacity={props.opacity}
+        depthTest={true}
+        depthWrite={true}
+        toneMapped={false} />
+    </Cone>
+  </Group>;
+};
+
+interface SectionWidthArrowProps extends SectionArrowShapeProps {
+  value: number;
   onHoverChange(hovered: boolean): void;
   onPointerDown(e: ThreeEvent<PointerEvent>): void;
   onPointerMove(e: ThreeEvent<PointerEvent>): void;
@@ -264,11 +323,6 @@ const SectionWidthArrow = (props: SectionWidthArrowProps) => {
   const dragging = React.useRef(false);
   const [showDragLabel, setShowDragLabel] = React.useState(false);
   const width = SECTION_CONTROL_ARROW_WIDTH * (props.hovered ? 1.25 : 1);
-  const headLength = SECTION_CONTROL_ARROW_WIDTH * 3;
-  const shaftLength = SECTION_CONTROL_ARROW_LENGTH - headLength;
-  const rotation = props.axis == "x"
-    ? [0, 0, props.direction == 1 ? 0 : Math.PI]
-    : [0, 0, props.direction == 1 ? Math.PI / 2 : -Math.PI / 2];
   const labelPosition = [...props.start] as Point;
   labelPosition[props.axis == "x" ? 0 : 1] += props.direction
     * SECTION_CONTROL_ARROW_LENGTH / 2;
@@ -318,44 +372,7 @@ const SectionWidthArrow = (props: SectionWidthArrowProps) => {
       stopSceneObjectMarkerDragEvent(e);
       cancel();
     }}>
-    <Group
-      name={`${props.name}-shape`}
-      position={props.start}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER}
-      rotation={rotation as [number, number, number]}>
-      <Cylinder
-        args={[width / 2, width / 2, shaftLength, 16]}
-        position={[shaftLength / 2, 0, 0]}
-        renderOrder={SECTION_CONTROL_RENDER_ORDER}
-        raycast={props.interactive ? undefined : sectionControlNoRaycast}
-        rotation={[0, 0, -Math.PI / 2]}>
-        <MeshBasicMaterial
-          color={props.hovered
-            ? SECTION_CONTROL_HOVER_COLOR
-            : SECTION_CONTROL_COLOR}
-          transparent={true}
-          opacity={props.opacity}
-          depthTest={true}
-          depthWrite={true}
-          toneMapped={false} />
-      </Cylinder>
-      <Cone
-        args={[width, headLength, 16]}
-        position={[shaftLength + headLength / 2, 0, 0]}
-        renderOrder={SECTION_CONTROL_RENDER_ORDER}
-        raycast={props.interactive ? undefined : sectionControlNoRaycast}
-        rotation={[0, 0, -Math.PI / 2]}>
-        <MeshBasicMaterial
-          color={props.hovered
-            ? SECTION_CONTROL_HOVER_COLOR
-            : SECTION_CONTROL_COLOR}
-          transparent={true}
-          opacity={props.opacity}
-          depthTest={true}
-          depthWrite={true}
-          toneMapped={false} />
-      </Cone>
-    </Group>
+    <SectionArrowShape {...props} />
     {(props.hovered || showDragLabel) &&
       <Billboard follow={true} position={labelPosition}>
         <Text
@@ -371,6 +388,30 @@ const SectionWidthArrow = (props: SectionWidthArrowProps) => {
       </Billboard>}
   </Group>;
 };
+
+interface SectionAxisArrowProps extends SectionArrowShapeProps {
+  onHoverChange(hovered: boolean): void;
+  onClick(): void;
+}
+
+const SectionAxisArrow = (props: SectionAxisArrowProps) =>
+  <Group
+    name={props.name}
+    onPointerOver={e => {
+      stopSceneObjectMarkerEvent(e);
+      props.onHoverChange(true);
+    }}
+    onPointerOut={e => {
+      stopSceneObjectMarkerEvent(e);
+      props.onHoverChange(false);
+    }}
+    onClick={e => {
+      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation();
+      props.onClick();
+    }}>
+    <SectionArrowShape {...props} />
+  </Group>;
 
 const SECTION_CONTROL_SIDES = ["negative", "positive"] as const;
 type SectionControlSide = typeof SECTION_CONTROL_SIDES[number];
@@ -394,6 +435,8 @@ export const SectionControls = (props: SectionControlsProps) => {
     React.useState<number | undefined>(undefined);
   const [centerSnapped, setCenterSnapped] = React.useState(false);
   const [followHovered, setFollowHovered] =
+    React.useState<SectionControlSide | undefined>(undefined);
+  const [axisArrowHovered, setAxisArrowHovered] =
     React.useState<SectionControlSide | undefined>(undefined);
   const [widthHovered, setWidthHovered] =
     React.useState<string | undefined>(undefined);
@@ -486,6 +529,7 @@ export const SectionControls = (props: SectionControlsProps) => {
       direction: -cameraDirection as 1 | -1,
       planeDirection: -1 as const,
     }));
+  const axisArrowAxis = axis == "x" ? "y" : "x";
   React.useEffect(() => {
     const centerSynced = centerPreview !== undefined
       && centerDragging === undefined
@@ -629,6 +673,23 @@ export const SectionControls = (props: SectionControlsProps) => {
             stopCenterDrag();
           }}
           onPointerCancel={stopCenterDrag} />)}
+      {SECTION_CONTROL_SIDES.map((side, index) =>
+        <SectionAxisArrow
+          key={side}
+          name={`section-axis-toggle-${side}`}
+          start={layout.axisToggleArrowStarts[index]}
+          axis={axisArrowAxis}
+          direction={side == "negative" ? -1 : 1}
+          hovered={axisArrowHovered == side}
+          opacity={props.opacity}
+          interactive={props.interactive}
+          onHoverChange={hovered =>
+            setAxisArrowHovered(hovered ? side : undefined)}
+          onClick={() => toggleSectionAxis(
+            designer,
+            props.gardenSize,
+            dispatch,
+          )} />)}
       {centerDragPosition &&
         <Billboard follow={true} position={[
           centerDragPosition[0],

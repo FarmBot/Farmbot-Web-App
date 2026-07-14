@@ -262,11 +262,18 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
           side={DoubleSide} />
       </Mesh>}
     {geometries.bed.map((geometry, index) =>
-      <Mesh key={index} name={"section-bed-cut-face"} geometry={geometry}>
+      <Mesh
+        key={index}
+        name={"section-bed-cut-face"}
+        geometry={geometry}
+        receiveShadow={true}>
         <TexturedBedMaterial bedColor={bedColor} repeat={[1, 1]} />
       </Mesh>)}
     {geometries.soil &&
-      <Mesh name={"section-soil-cut-face"} geometry={geometries.soil}>
+      <Mesh
+        name={"section-soil-cut-face"}
+        geometry={geometries.soil}
+        receiveShadow={true}>
         <MeshPhongMaterial
           map={soilTexture}
           color={soilColor}

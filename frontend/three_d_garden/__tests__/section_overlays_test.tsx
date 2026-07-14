@@ -32,12 +32,12 @@ describe("section ground overlays", () => {
       config(),
       { x: 200, y: 100, z: 0 },
     );
-    expect(layout.bedZ).toEqual(-322.5);
-    expect(layout.soilZ).toEqual(-320);
+    expect(layout.bedZ).toEqual(-297.5);
+    expect(layout.soilZ).toEqual(-295);
     expect(layout.bedSize).toEqual([1000, 600]);
     expect(layout.soilSize).toEqual([920, 520]);
-    expect(layout.gantryPosition).toEqual([-329, 0, -315]);
-    expect(layout.utmPosition).toEqual([-300, -200, -315]);
+    expect(layout.gantryPosition).toEqual([-329, 0, -290]);
+    expect(layout.utmPosition).toEqual([-300, -200, -290]);
   });
 
   it("renders textured bed and soil ground rectangles", () => {
@@ -55,8 +55,8 @@ describe("section ground overlays", () => {
     const soil = wrapper.root.findByProps({
       name: "section-soil-ground-rectangle",
     });
-    expect(bed.props.position).toEqual([0, 0, -322.5]);
-    expect(soil.props.position).toEqual([0, 0, -320]);
+    expect(bed.props.position).toEqual([0, 0, -297.5]);
+    expect(soil.props.position).toEqual([0, 0, -295]);
     expect(bed.findAllByType(TexturedBedMaterial)).toHaveLength(1);
     const bedMaterial = bed.findByType(TexturedBedMaterial);
     expect(bedMaterial.props.bedColor).toEqual("#bbb");
@@ -73,6 +73,8 @@ describe("section ground overlays", () => {
       ASSETS.textures.soil + "?=soilT");
     [bed, soil].map(mesh =>
       expect(mesh.props.raycast()).toBeUndefined());
+    [bed, soil].map(mesh =>
+      expect(mesh.props.receiveShadow).toEqual(true));
 
     const ghostProjections = wrapper.root.findAll(node =>
       `${node.type}` == "mesh"

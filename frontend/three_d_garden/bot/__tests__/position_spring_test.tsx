@@ -167,6 +167,36 @@ describe("useBotPositionSpring()", () => {
     expect(result.current.snapshotStore.getSnapshot()).not.toBe(firstSnapshot);
   });
 
+  it("publishes animated positions to a shared snapshot store", () => {
+    const initial = { x: 0, y: 0, z: 0 };
+    const sharedStore = createBotPositionSnapshotStore(initial);
+    const listener = jest.fn();
+    sharedStore.subscribe(listener);
+    const { result, rerender } = renderHook(
+      ({ target }: { target: PositionConfig }) =>
+        useBotPositionSpring(target, true, {}, 0, sharedStore),
+      { initialProps: { target: initial } },
+    );
+
+    rerender({ target: { x: 100, y: 0, z: 0 } });
+    runFrame();
+
+    expect(result.current.snapshotStore).toBe(sharedStore);
+    expect(sharedStore.getSnapshot().x).toBeGreaterThan(0);
+    expect(sharedStore.getSnapshot().x).toBeLessThan(100);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("synchronizes a shared store when the bot mounts at a new position", () => {
+    const sharedStore = createBotPositionSnapshotStore({ x: 0, y: 0, z: 0 });
+    const target = { x: 100, y: 200, z: -50 };
+    const { result } = renderHook(() =>
+      useBotPositionSpring(target, true, {}, 0, sharedStore));
+
+    expect(result.current.snapshotStore).toBe(sharedStore);
+    expect(sharedStore.getSnapshot()).toEqual(target);
+  });
+
   it("clears velocity immediately when reset", () => {
     const initial = { x: 0, y: 0, z: 0 };
     const { result, rerender } = renderHook(

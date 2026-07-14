@@ -19,7 +19,7 @@ describe("designer reducer", () => {
   it("uses 3D section defaults", () => {
     expect(initialState.threeDSectionAxis).toEqual("x");
     expect(initialState.threeDPerspective).toBeUndefined();
-    expect(initialState.threeDSectionWidth).toEqual(100);
+    expect(initialState.threeDSectionWidth).toEqual(200);
     expect(initialState.threeDSectionFollowBot).toEqual(true);
     expect(initialState.threeDSectionCutAll).toEqual(true);
   });

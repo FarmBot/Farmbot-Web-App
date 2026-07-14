@@ -147,9 +147,16 @@ describe("section cut faces", () => {
       getZ={() => -100} />);
     const group = wrapper.root.findByProps({ name: "section-cut-faces" });
     expect(group.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
-    expect(wrapper.root.findAll(node =>
-      `${node.type}` == "mesh" && node.props.name == "section-bed-cut-face"))
-      .toHaveLength(2);
+    const bedFaces = wrapper.root.findAll(node =>
+      `${node.type}` == "mesh"
+      && node.props.name == "section-bed-cut-face");
+    expect(bedFaces).toHaveLength(2);
+    bedFaces.map(face =>
+      expect(face.props.receiveShadow).toEqual(true));
+    const soilFace = wrapper.root.find(node =>
+      `${node.type}` == "mesh"
+      && node.props.name == "section-soil-cut-face");
+    expect(soilFace.props.receiveShadow).toEqual(true);
     const soilMaterial = wrapper.root.findAll(node =>
       node.props.color == getColorFromBrightness(c.soilBrightness))[0];
     expect(soilMaterial.props.map).toBeDefined();

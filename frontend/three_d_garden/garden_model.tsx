@@ -131,6 +131,11 @@ import { effectiveSectionCenter } from
 import { SectionCutFaces } from "./section_cut_faces";
 import { SectionGroundOverlays } from "./section_overlays";
 import { SectionControls } from "./section_controls";
+import { getBotKinematics } from "./bot/kinematics";
+import {
+  BotPositionSnapshotStore, createBotPositionSnapshotStore,
+  useBotPositionSnapshot,
+} from "./bot/position_spring";
 import {
   ViewPrism, VIEW_PRISM_BOUNDING_BOX_HALF_SIZE, ViewPrismDirection,
   VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
@@ -1126,6 +1131,7 @@ interface FarmbotLoadInProps {
   getZ(x: number, y: number): number;
   loadInComplete: boolean;
   mountedToolName: string | undefined;
+  positionStore: BotPositionSnapshotStore;
   onExitRest?(): void;
   onLoadInComplete(): void;
   reveal: boolean;
@@ -1156,6 +1162,7 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
       trailReady={props.reveal && props.detailsReveal && props.loadInComplete}
       activeFocus={props.activeFocus}
       mountedToolName={props.mountedToolName}
+      positionStore={props.positionStore}
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
       onToolSlotHoverObject={props.onToolSlotHoverObject}
@@ -1204,6 +1211,7 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
         getZ={props.getZ}
         loadInComplete={loadInComplete}
         mountedToolName={props.mountedToolName}
+        positionStore={props.positionStore}
         onExitRest={markFarmbotHidden}
         onLoadInComplete={markFarmbotLoaded}
         onHoverObject={props.onHoverObject}
@@ -1594,7 +1602,7 @@ interface GardenSectionControllerProps {
   gardenSize: { x: number; y: number };
   currentBotLocation: BotPosition | undefined;
   camera: Camera;
-  controlsCamera: ThreePerspectiveCamera | null;
+  controlsCamera: ThreePerspectiveCamera | null | undefined;
   modelRoot: Object3D | undefined;
   immediate: boolean;
 }
@@ -1692,6 +1700,103 @@ const useGardenSectionController = (
   };
 };
 
+export const getRenderedBotLocation = (
+  config: Config,
+  configPosition: PositionConfig,
+): BotPosition => {
+  const utm = getBotKinematics(
+    config,
+    configPosition,
+  ).anchors.utm.worldPosition;
+  const gardenPosition = getGardenPositionFunc(config, false)({
+    x: utm[0],
+    y: utm[1],
+  });
+  return { ...gardenPosition, z: configPosition.z };
+};
+
+interface GardenSectionBridge {
+  updateNearIndex(): void;
+}
+
+interface GardenSectionLayerProps {
+  bridgeRef: React.RefObject<GardenSectionBridge | undefined>;
+  botSpringActive: boolean;
+  botPositionStore: BotPositionSnapshotStore;
+  camera: Camera;
+  config: Config;
+  configPosition: PositionConfig;
+  controlsCamera: ThreePerspectiveCamera | null | undefined;
+  designer: DesignerState | undefined;
+  dispatch: Function | undefined;
+  gardenSize: { x: number; y: number };
+  getZ(x: number, y: number): number;
+  modelRoot: Object3D | undefined;
+}
+
+export const GardenSectionLayer = (props: GardenSectionLayerProps) => {
+  const springPosition = useBotPositionSnapshot(props.botPositionStore);
+  const renderedBotPosition = props.botSpringActive
+    ? springPosition
+    : props.configPosition;
+  const renderedBotLocation = getRenderedBotLocation(
+    props.config,
+    renderedBotPosition,
+  );
+  const [controlDragging, setControlDragging] = React.useState(false);
+  const controller = useGardenSectionController({
+    config: props.config,
+    designer: props.designer,
+    gardenSize: props.gardenSize,
+    currentBotLocation: renderedBotLocation,
+    camera: props.camera,
+    controlsCamera: props.controlsCamera,
+    modelRoot: props.modelRoot,
+    immediate: controlDragging,
+  });
+  const {
+    animated, center, planes, sectionOpen, updateNearIndex, width,
+  } = controller;
+  React.useImperativeHandle(props.bridgeRef, () => ({
+    updateNearIndex,
+  }), [updateNearIndex]);
+
+  return <>
+    {animated.mounted && planes[0] &&
+      <SectionCutFaces
+        config={props.config}
+        axis={animated.axis}
+        nearPlane={planes[0]}
+        farPlane={planes[1]}
+        cutAll={!!props.designer?.threeDSectionCutAll}
+        opacity={animated.opacity}
+        getZ={props.getZ} />}
+    {animated.mounted &&
+      <SectionGroundOverlays
+        config={props.config}
+        configPosition={renderedBotPosition}
+        sectionOpacity={animated.opacity} />}
+    {animated.mounted && props.designer && props.dispatch
+      && planes[0] && planes[1] &&
+      <SectionControls
+        key={animated.axis}
+        config={props.config}
+        configPosition={renderedBotPosition}
+        designer={props.designer}
+        dispatch={props.dispatch}
+        gardenSize={props.gardenSize}
+        axis={animated.axis}
+        center={center}
+        width={width}
+        opacity={animated.opacity}
+        interactive={sectionOpen
+          && animated.axis == props.designer.threeDSectionAxis}
+        nearPlane={planes[0]}
+        farPlane={planes[1]}
+        onDraggingChange={setControlDragging} />}
+  </>;
+};
+
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   usePerfRenderCount("GardenModel");
@@ -1723,8 +1828,14 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
-  const [sectionControlDragging, setSectionControlDragging] =
-    React.useState(false);
+  const [botPositionStore] = React.useState(
+    () => createBotPositionSnapshotStore(
+      props.configPosition,
+    ),
+  );
+  const sectionBridgeRef =
+    React.useRef<GardenSectionBridge | undefined>(undefined);
+  const sectionOpen = !!sectionDesigner?.threeDSectionOpen;
   const topDownAtStart = !!addPlantProps?.topDownAtStart;
   const mode = getMode();
   const selectionPanelOpen = mode == Mode.boxSelect;
@@ -1900,24 +2011,9 @@ export const GardenModel = (props: GardenModelProps) => {
     camera, cameraFov, cameraRequest, cameraSpringCancelRef,
     selectStartingCamera,
   } = cameraController;
-  const sectionController = useGardenSectionController({
-    config,
-    designer: sectionDesigner,
-    gardenSize: sectionGardenSize,
-    currentBotLocation: props.currentBotLocation,
-    camera,
-    controlsCamera,
-    modelRoot,
-    immediate: sectionControlDragging,
-  });
-  const {
-    animated: animatedSection,
-    center: sectionCenter,
-    planes: sectionPlanes,
-    sectionOpen,
-    updateNearIndex: updateSectionNearIndex,
-    width: sectionWidth,
-  } = sectionController;
+  const updateSectionNearIndex = React.useCallback(() => {
+    sectionBridgeRef.current?.updateNearIndex();
+  }, []);
   const cameraUrlSaveTimeoutRef = React.useRef<number | undefined>(undefined);
   const cameraUrlInteractionRef =
     React.useRef<"idle" | "active" | "settling">("idle");
@@ -2501,38 +2597,19 @@ export const GardenModel = (props: GardenModelProps) => {
         complete={detailsReveal} />
       {config.cameraFitDebug &&
         <CameraFitDebug {...activeCameraFit} />}
-      {animatedSection.mounted && sectionPlanes[0] &&
-        <SectionCutFaces
-          config={config}
-          axis={animatedSection.axis}
-          nearPlane={sectionPlanes[0]}
-          farPlane={sectionPlanes[1]}
-          cutAll={!!sectionDesigner?.threeDSectionCutAll}
-          opacity={animatedSection.opacity}
-          getZ={getZ} />}
-      {animatedSection.mounted &&
-        <SectionGroundOverlays
-          config={config}
-          configPosition={configPosition}
-          sectionOpacity={animatedSection.opacity} />}
-      {animatedSection.mounted && sectionDesigner && dispatch
-        && sectionPlanes[0] && sectionPlanes[1] &&
-        <SectionControls
-          key={animatedSection.axis}
-          config={config}
-          configPosition={configPosition}
-          designer={sectionDesigner}
-          dispatch={dispatch}
-          gardenSize={sectionGardenSize}
-          axis={animatedSection.axis}
-          center={sectionCenter}
-          width={sectionWidth}
-          opacity={animatedSection.opacity}
-          interactive={sectionOpen
-            && animatedSection.axis == sectionDesigner.threeDSectionAxis}
-          nearPlane={sectionPlanes[0]}
-          farPlane={sectionPlanes[1]}
-          onDraggingChange={setSectionControlDragging} />}
+      <GardenSectionLayer
+        bridgeRef={sectionBridgeRef}
+        botSpringActive={farmbotVisible}
+        botPositionStore={botPositionStore}
+        camera={camera}
+        config={config}
+        configPosition={configPosition}
+        controlsCamera={controlsCamera}
+        designer={sectionDesigner}
+        dispatch={dispatch}
+        gardenSize={sectionGardenSize}
+        getZ={getZ}
+        modelRoot={modelRoot} />
       <StaticGardenLayers
         config={config}
         markStep={markLoadStep}
@@ -2609,6 +2686,7 @@ export const GardenModel = (props: GardenModelProps) => {
         loadProgress={loadProgress}
         markStep={markLoadStep}
         mountedToolName={props.mountedToolName}
+        positionStore={botPositionStore}
         reveal={farmbotReveal}
         showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
         toolSlots={props.toolSlots}
@@ -2722,13 +2800,16 @@ export const GardenModel = (props: GardenModelProps) => {
           <LoadStepReady
             step={"details"}
             markStep={loadProgress.markStep} />}
-        <SceneObjects
-          config={config}
-          activeFocus={props.activeFocus}
-          dispatch={dispatch}
-          designer={addPlantProps?.designer}
-          hoverSelection={hoverSelection}
-          sceneObjects={props.sceneObjects} />
+        <Group name={"scene-objects"}
+          userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
+          <SceneObjects
+            config={config}
+            activeFocus={props.activeFocus}
+            dispatch={dispatch}
+            designer={addPlantProps?.designer}
+            hoverSelection={hoverSelection}
+            sceneObjects={props.sceneObjects} />
+        </Group>
       </SceneBoundary>
     </Group>
   </FocusTransitionProvider>;

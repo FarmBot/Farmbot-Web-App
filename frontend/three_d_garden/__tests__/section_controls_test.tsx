@@ -30,7 +30,7 @@ describe("section controls", () => {
   };
   const position = { x: 200, y: 100, z: 0 };
   const event = (x: number, y: number, delta = 0) => ({
-    point: new Vector3(x, y, -317.5),
+    point: new Vector3(x, y, -292.5),
     delta,
     pointerId: 1,
     stopPropagation: jest.fn(),
@@ -77,6 +77,12 @@ describe("section controls", () => {
     wrapper.root.find(node =>
       `${node.type}` == "group"
       && node.props.name == name);
+  const axisArrow = (
+    wrapper: ReturnType<typeof createRenderer>,
+    name = "section-axis-toggle-positive",
+  ) => wrapper.root.find(node =>
+    `${node.type}` == "group"
+    && node.props.name == name);
   const sphereColor = (
     wrapper: ReturnType<typeof createRenderer>,
     name: string,
@@ -93,19 +99,20 @@ describe("section controls", () => {
       cameraDirection: 1,
     });
     expect(layout).toEqual({
-      z: -317.5,
-      centerLine: [[0, -500, -317.5], [0, 500, -317.5]],
-      nearLine: [[50, -500, -317.5], [50, 500, -317.5]],
-      farLine: [[-50, -500, -317.5], [-50, 500, -317.5]],
-      followLine: [[-300, -400, -317.5], [-300, 400, -317.5]],
-      centerHandles: [[0, -500, -317.5], [0, 500, -317.5]],
-      followHandles: [[-300, -400, -317.5], [-300, 400, -317.5]],
+      z: -292.5,
+      centerLine: [[0, -500, -292.5], [0, 500, -292.5]],
+      nearLine: [[50, -500, -292.5], [50, 500, -292.5]],
+      farLine: [[-50, -500, -292.5], [-50, 500, -292.5]],
+      followLine: [[-300, -400, -292.5], [-300, 400, -292.5]],
+      centerHandles: [[0, -500, -292.5], [0, 500, -292.5]],
+      axisToggleArrowStarts: [[0, -535, -292.5], [0, 535, -292.5]],
+      followHandles: [[-300, -400, -292.5], [-300, 400, -292.5]],
       followCenter: 200,
       nearWidthArrowStarts: [
-        [50, -500, -317.5], [50, 500, -317.5],
+        [50, -500, -292.5], [50, 500, -292.5],
       ],
       farWidthArrowStarts: [
-        [-50, -500, -317.5], [-50, 500, -317.5],
+        [-50, -500, -292.5], [-50, 500, -292.5],
       ],
     });
   });
@@ -120,29 +127,32 @@ describe("section controls", () => {
       cameraDirection: -1,
     });
     expect(layout.centerLine).toEqual([
-      [-700, 0, -317.5], [700, 0, -317.5],
+      [-700, 0, -292.5], [700, 0, -292.5],
     ]);
     expect(layout.nearLine).toEqual([
-      [-700, -50, -317.5], [700, -50, -317.5],
+      [-700, -50, -292.5], [700, -50, -292.5],
     ]);
     expect(layout.farLine).toEqual([
-      [-700, 50, -317.5], [700, 50, -317.5],
+      [-700, 50, -292.5], [700, 50, -292.5],
     ]);
     expect(layout.centerHandles).toEqual([
-      [-700, 0, -317.5], [700, 0, -317.5],
+      [-700, 0, -292.5], [700, 0, -292.5],
+    ]);
+    expect(layout.axisToggleArrowStarts).toEqual([
+      [-735, 0, -292.5], [735, 0, -292.5],
     ]);
     expect(layout.followLine).toEqual([
-      [-600, -200, -317.5], [600, -200, -317.5],
+      [-600, -200, -292.5], [600, -200, -292.5],
     ]);
     expect(layout.followHandles).toEqual([
-      [-600, -200, -317.5], [600, -200, -317.5],
+      [-600, -200, -292.5], [600, -200, -292.5],
     ]);
     expect(layout.followCenter).toEqual(100);
     expect(layout.nearWidthArrowStarts).toEqual([
-      [-700, -50, -317.5], [700, -50, -317.5],
+      [-700, -50, -292.5], [700, -50, -292.5],
     ]);
     expect(layout.farWidthArrowStarts).toEqual([
-      [-700, 50, -317.5], [700, 50, -317.5],
+      [-700, 50, -292.5], [700, 50, -292.5],
     ]);
   });
 
@@ -204,14 +214,58 @@ describe("section controls", () => {
     const wrapper = createRenderer(<SectionControls {...controlProps} />);
     expect(wrapper.root.findByProps({
       name: "section-width-arrow-near-positive-shape",
-    }).props.position).toEqual([200, 500, -317.5]);
+    }).props.position).toEqual([200, 500, -292.5]);
     expect(wrapper.root.findByProps({
       name: "section-width-arrow-far-positive-shape",
-    }).props.position).toEqual([-200, 500, -317.5]);
+    }).props.position).toEqual([-200, 500, -292.5]);
     expect(sphere(wrapper, "section-center-handle-positive")
       .props.raycast()).toBeUndefined();
     expect(arrow(wrapper).findByProps({ className: "cylinder" })
       .props.raycast()).toBeUndefined();
+    expect(axisArrow(wrapper).findByProps({ className: "cylinder" })
+      .props.raycast()).toBeUndefined();
+    unmountRenderer(wrapper);
+  });
+
+  it("toggles the section axis from either center arrow", () => {
+    const controlProps = props();
+    const wrapper = createRenderer(<SectionControls {...controlProps} />);
+    const pointerEvent = event(0, 0);
+    const negative = axisArrow(wrapper, "section-axis-toggle-negative");
+    expect(negative.findByProps({
+      name: "section-axis-toggle-negative-shape",
+    }).props).toMatchObject({
+      position: [0, -535, -292.5],
+      rotation: [0, 0, -Math.PI / 2],
+    });
+    expect(axisArrow(wrapper).findByProps({
+      name: "section-axis-toggle-positive-shape",
+    }).props).toMatchObject({
+      position: [0, 535, -292.5],
+      rotation: [0, 0, Math.PI / 2],
+    });
+    actRenderer(() => negative.props.onPointerOver(pointerEvent));
+    expect(axisArrow(wrapper, "section-axis-toggle-negative")
+      .findByProps({ className: "cylinder" }).props.args[0]).toEqual(12.5);
+    actRenderer(() => axisArrow(wrapper, "section-axis-toggle-negative")
+      .props.onPointerOut(pointerEvent));
+    ["negative", "positive"].map(side => {
+      const control = axisArrow(wrapper, `section-axis-toggle-${side}`);
+      actRenderer(() => control.props.onClick(pointerEvent));
+    });
+
+    expect(controlProps.dispatch).toHaveBeenCalledTimes(2);
+    expect(controlProps.dispatch).toHaveBeenNthCalledWith(1, {
+      type: Actions.SET_3D_SECTION_AXIS,
+      payload: "y",
+    });
+    expect(controlProps.dispatch).toHaveBeenNthCalledWith(2, {
+      type: Actions.SET_3D_SECTION_AXIS,
+      payload: "y",
+    });
+    expect(pointerEvent.stopPropagation).toHaveBeenCalledTimes(4);
+    expect(pointerEvent.nativeEvent.stopImmediatePropagation)
+      .toHaveBeenCalledTimes(2);
     unmountRenderer(wrapper);
   });
 
@@ -237,6 +291,11 @@ describe("section controls", () => {
       expect(material.props.transparent).toEqual(true);
       expect(material.props.opacity).toEqual(0.4);
     });
+    const axisArrowMaterials = axisArrow(wrapper).findAll(node =>
+      node.type == "div" && !!node.props.color);
+    expect(axisArrowMaterials).toHaveLength(2);
+    axisArrowMaterials.map(material =>
+      expect(material.props.opacity).toEqual(0.4));
     unmountRenderer(wrapper);
   });
 
@@ -377,7 +436,7 @@ describe("section controls", () => {
     expect(sphereColor(wrapper, "section-follow-toggle-positive"))
       .toEqual("orange");
     expect(sphere(wrapper, centerName).props.position)
-      .toEqual([-300, 500, -317.5]);
+      .toEqual([-300, 500, -292.5]);
 
     actRenderer(() => sphere(wrapper, centerName)
       .props.onPointerMove(event(-280, 500)));
@@ -388,7 +447,7 @@ describe("section controls", () => {
     expect(sphereColor(wrapper, "section-follow-toggle-positive"))
       .toEqual("dodgerblue");
     expect(sphere(wrapper, centerName).props.position)
-      .toEqual([-280, 500, -317.5]);
+      .toEqual([-280, 500, -292.5]);
     expect(controlProps.dispatch.mock.calls.filter(([action]) =>
       action.type == Actions.SET_3D_SECTION_FOLLOW_BOT)).toHaveLength(0);
 

@@ -148,6 +148,7 @@ export const useBotPositionSpring = (
   enabled: boolean,
   callbacks: BotPositionSpringCallbacks = {},
   resetKey = 0,
+  sharedSnapshotStore?: BotPositionSnapshotStore,
 ): BotPositionSpringResult => {
   const [initialPosition] = React.useState(() => copyPosition(target));
   const motion = React.useRef(positionState(initialPosition));
@@ -156,10 +157,11 @@ export const useBotPositionSpring = (
   const callbacksRef = React.useRef(callbacks);
   const resetKeyRef = React.useRef(resetKey);
   const currentPosition = React.useRef(initialPosition);
-  const lastSnapshot = React.useRef(initialPosition);
-  const [snapshotStore] = React.useState(
+  const [localSnapshotStore] = React.useState(
     () => createBotPositionSnapshotStore(initialPosition),
   );
+  const snapshotStore = sharedSnapshotStore || localSnapshotStore;
+  const lastSnapshot = React.useRef(snapshotStore.getSnapshot());
   const { x: targetX, y: targetY, z: targetZ } = target;
 
   const publishSnapshot = React.useCallback((position: PositionConfig) => {

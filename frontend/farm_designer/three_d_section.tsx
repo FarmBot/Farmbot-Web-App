@@ -52,6 +52,29 @@ export const effectiveSectionCenter = (
     : Math.max(0, Math.min(gardenSize[axis], position));
 };
 
+export const toggleSectionAxis = (
+  designer: DesignerState,
+  gardenSize: AxisNumberProperty,
+  dispatch: Function,
+) => {
+  const nextAxis = designer.threeDSectionAxis == "x" ? "y" : "x";
+  dispatch({
+    type: Actions.SET_3D_SECTION_AXIS,
+    payload: nextAxis,
+  });
+  const nextWidth = normalizeSectionValue(
+    designer.threeDSectionWidth,
+    SECTION_WIDTH_MIN,
+    sectionWidthMax(gardenSize[nextAxis]),
+  );
+  if (nextWidth != designer.threeDSectionWidth) {
+    dispatch({
+      type: Actions.SET_3D_SECTION_WIDTH,
+      payload: nextWidth,
+    });
+  }
+};
+
 interface SectionValueControlProps {
   label: string;
   value: number;
@@ -119,24 +142,6 @@ export const ThreeDSectionSettings = (
 ) => {
   const { designer, dispatch, gardenSize } = props;
   const axis = designer.threeDSectionAxis;
-  const toggleAxis = () => {
-    const nextAxis = axis == "x" ? "y" : "x";
-    dispatch({
-      type: Actions.SET_3D_SECTION_AXIS,
-      payload: nextAxis,
-    });
-    const nextWidth = normalizeSectionValue(
-      designer.threeDSectionWidth,
-      SECTION_WIDTH_MIN,
-      sectionWidthMax(gardenSize[nextAxis]),
-    );
-    if (nextWidth != designer.threeDSectionWidth) {
-      dispatch({
-        type: Actions.SET_3D_SECTION_WIDTH,
-        payload: nextWidth,
-      });
-    }
-  };
   const center = manualSectionCenter(designer, gardenSize);
   const centerMax = sectionCenterMax(gardenSize[axis]);
   const widthMax = sectionWidthMax(gardenSize[axis]);
@@ -148,7 +153,11 @@ export const ThreeDSectionSettings = (
           title={t("AXIS")}
           toggleValue={axis == "x"}
           customText={{ textTrue: "X", textFalse: "Y" }}
-          toggleAction={toggleAxis} />
+          toggleAction={() => toggleSectionAxis(
+            designer,
+            gardenSize,
+            dispatch,
+          )} />
       </div>
       <div className={"three-d-section-follow row grid-exp-1"}>
         <label>{t("FOLLOW BOT")}</label>

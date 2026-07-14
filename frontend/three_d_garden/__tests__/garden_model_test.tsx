@@ -434,6 +434,8 @@ describe("<GardenModel />", () => {
     const sky = wrapper.root.findAll(node => node.props.name == "sky")[0];
     const cutFaces = wrapper.root.findAll(node =>
       node.props.name == "section-cut-faces")[0];
+    const sceneObjects = wrapper.root.findByProps({ name: "scene-objects" });
+    const bedSupports = wrapper.root.findByProps({ name: "bed-supports" });
     const controls = wrapper.root.findByType(OrbitControls);
 
     expect(wrapper.root.findAllByType(PerspectiveCamera).length)
@@ -447,6 +449,8 @@ describe("<GardenModel />", () => {
     expect(controls.props.enableZoom).toEqual(true);
     expect(sky.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(cutFaces.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(sceneObjects.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(bedSupports.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(wrapper.root.findAllByType(SectionGroundOverlays)).toHaveLength(1);
     expect(wrapper.root.findAllByType(SectionControls)).toHaveLength(1);
     const sectionOverlays = wrapper.root.findByType(SectionGroundOverlays);

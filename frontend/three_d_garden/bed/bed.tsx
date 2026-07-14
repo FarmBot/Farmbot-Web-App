@@ -64,7 +64,9 @@ import { useTextureVariant } from "../texture_variants";
 import {
   AlignmentIndicatorController,
 } from "./objects/alignment_indicators";
-import { SECTION_FAR_CLIPPING_EXEMPT } from "../section";
+import {
+  SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
+} from "../section";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -348,7 +350,8 @@ const BedSupports = (props: BedSupportsProps) => {
     });
   }, [supportMatrices]);
 
-  return <Group name={"bed-supports"}>
+  return <Group name={"bed-supports"}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
     <InstancedMesh
       ref={legRef}
       name={"bed-leg-wood"}

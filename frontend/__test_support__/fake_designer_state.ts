@@ -61,7 +61,7 @@ export const fakeDesignerState = (): DesignerState => ({
   threeDSectionOpen: false,
   threeDSectionAxis: "x",
   threeDSectionCenter: { x: undefined, y: undefined },
-  threeDSectionWidth: 100,
+  threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
   threeDSectionCutAll: true,
   threeDTime: undefined,
