@@ -1,0 +1,408 @@
+@use "../variables" as *;
+
+.command-palette-dialog {
+  width: min(55rem, calc(100vw - 3rem));
+  max-width: 55rem;
+  max-height: min(72vh, 62rem);
+  margin: 12vh auto auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--text-color);
+  background: var(--main-bg);
+  border: 0;
+  border-radius: 0.8rem;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+
+  &::backdrop {
+    background: rgb(0 0 0 / 48%);
+  }
+}
+
+.command-palette-header {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 4.8rem;
+  padding: 0 0.6rem 0 2rem;
+  border-bottom: 1px solid var(--border-color);
+
+  > .fa-search {
+    color: $medium_gray;
+    font-size: 1.4rem;
+  }
+}
+
+.command-palette-search {
+  width: 100%;
+  height: 4.6rem !important;
+  margin: 0 !important;
+  padding: 0 0.8rem !important;
+  font-size: 1.6rem !important;
+  color: var(--text-color) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  caret-color: var(--text-color);
+  text-align: left;
+
+  &::placeholder {
+    color: $medium_gray;
+    opacity: 1;
+  }
+}
+
+.command-palette-hotkeys {
+  color: $medium_gray;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.command-palette-close {
+  width: 2.8rem;
+  height: 2.8rem;
+  font-size: 1.6rem;
+}
+
+.command-palette-list {
+  max-height: calc(min(72vh, 62rem) - 8.4rem);
+  padding: 0.6rem;
+  overflow-y: auto;
+}
+
+.command-palette-group-label {
+  margin: 0.6rem 0.8rem 0.3rem;
+  color: $medium_gray;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+}
+
+.command-palette-option {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr) auto auto;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 4.8rem;
+  padding: 0.5rem 0.8rem;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+
+  &.selected {
+    background: var(--secondary-bg);
+    border-color: var(--border-color);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.command-palette-option-icon {
+  font-size: 1.4rem;
+  text-align: center;
+
+  > i,
+  .command-palette-icon-stack i {
+    color: $black;
+    opacity: 0.8;
+  }
+
+  .command-palette-icon-stack {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+    line-height: 2rem;
+
+    .fa-stack-1x {
+      top: -0.45rem;
+      left: -0.45rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  img {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    margin: 0 auto;
+    object-fit: contain;
+
+    &.theme-aware-icon {
+      filter: brightness(0%);
+      opacity: 0.8;
+    }
+  }
+}
+
+.app.dark .command-palette-option-icon img.theme-aware-icon {
+  filter: brightness(0%) invert(100%);
+}
+
+.app.dark .command-palette-option-icon img.help-header-icon {
+  filter: invert(0.75);
+}
+
+.app.dark .command-palette-option-icon > i,
+.app.dark .command-palette-icon-stack i {
+  color: $white;
+}
+
+.command-palette-option-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.3rem;
+  }
+}
+
+.command-palette-unavailable {
+  overflow: hidden;
+  color: $medium_gray;
+  font-size: 1.2rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-palette-error {
+  align-self: center;
+  margin: 0;
+  color: $red;
+  font-size: 1.1rem;
+}
+
+.command-palette-accessory {
+  .fb-button {
+    margin: 0;
+  }
+}
+
+.command-palette-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+
+  &.command-palette-action-table {
+    display: grid;
+    grid-template-columns: repeat(3, 5.5rem);
+    justify-items: center;
+  }
+
+  > .command-palette-error {
+    grid-column: 1 / -1;
+  }
+}
+
+.command-palette-action-fields {
+  display: flex;
+  gap: 0.4rem;
+
+  &.command-palette-action-table {
+    display: grid;
+    grid-template-columns: repeat(3, 5.5rem);
+    justify-items: center;
+  }
+
+  label {
+    margin: 0;
+    text-align: center;
+
+    span {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 1rem;
+    }
+
+    &.command-palette-axis-label {
+      span {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin: 0 auto 0.2rem;
+        border-radius: 50%;
+        line-height: 1.5rem;
+      }
+
+      &.recent-execution span {
+        color: $white;
+        background: $dark_blue;
+      }
+
+      &.command-palette-toggle-axis span {
+        margin-bottom: 0;
+      }
+
+    }
+  }
+}
+
+.command-palette-toggle-selection-bar {
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  border-radius: 0.2rem;
+
+  &.selected {
+    background: $dark_green;
+  }
+}
+
+.command-palette-action {
+  min-height: 2.6rem;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  color: var(--text-color);
+  background: var(--main-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  box-shadow: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: $dark_green;
+  }
+
+  &.selected {
+    color: $white;
+    background: $dark_green;
+    border-color: $dark_green;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.command-palette-action-option {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
+}
+
+.command-palette-action-recent-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: $dark_blue;
+  border-radius: 50%;
+  opacity: 0;
+
+  &.recent-execution {
+    opacity: 1;
+  }
+}
+
+.command-palette-custom-move-dot {
+  margin: 0 auto 0.2rem;
+}
+
+.command-palette-action-input {
+  width: 5rem !important;
+  height: 2.6rem !important;
+  color: var(--text-color) !important;
+  background: var(--main-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.3rem !important;
+  caret-color: var(--text-color);
+  -webkit-text-fill-color: var(--text-color);
+  text-align: center;
+
+  &[data-has-options="true"] {
+    width: auto !important;
+    min-width: 7rem;
+    padding: 0 2.2rem 0 0.6rem;
+    cursor: pointer;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: $dark_green !important;
+  }
+
+  &.recent-execution {
+    color: $white !important;
+    background: $dark_blue !important;
+    border-color: $dark_blue !important;
+    caret-color: $white;
+    -webkit-text-fill-color: $white;
+  }
+
+  &.selected {
+    color: $white !important;
+    background: $dark_green !important;
+    border-color: $dark_green !important;
+    box-shadow: none !important;
+    caret-color: $white;
+    -webkit-text-fill-color: $white;
+  }
+}
+
+.command-palette-empty {
+  padding: 4rem 2rem;
+  color: $medium_gray;
+  text-align: center;
+}
+
+.command-palette-footer {
+  min-height: 3rem;
+  padding: 0 1rem;
+  color: $medium_gray;
+  background: var(--secondary-bg);
+  border-top: 1px solid var(--border-color);
+  font-size: 1.1rem;
+
+  span:last-child {
+    text-align: right;
+  }
+
+  kbd {
+    display: inline-block;
+    min-width: 2rem;
+    margin-right: 0.3rem;
+    padding: 0.1rem 0.4rem;
+    color: var(--text-color);
+    background: var(--main-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.3rem;
+    text-align: center;
+  }
+}
+
+@media (width <= 600px) {
+  .command-palette-dialog {
+    width: calc(100vw - 1.6rem);
+    max-height: 86vh;
+    margin-top: 4vh;
+  }
+
+  .command-palette-option {
+    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+
+    &.multi-action {
+      grid-template-columns: 2.4rem minmax(0, 1fr);
+    }
+  }
+
+  .command-palette-actions {
+    grid-column: 2 / -1;
+  }
+
+  .command-palette-hotkeys {
+    display: none;
+  }
+
+}

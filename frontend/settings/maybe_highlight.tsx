@@ -316,6 +316,7 @@ CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 MAP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 SEQUENCE_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+SETTING_PANEL_LOOKUP[DeviceSetting.otherSettings] = "other_settings";
 
 const PHOTOS_PANEL_LOOKUP =
   {} as Record<DeviceSetting, (keyof PhotosPanelState)[]>;

@@ -144,7 +144,7 @@ describe("<GardenMapLegend />", () => {
     const toggle = container.querySelector("button[title='hide SECTION']");
     if (!toggle) { throw new Error("Missing section toggle"); }
     fireEvent.click(screen.getByLabelText("section settings"));
-    expect(screen.getByText("CUT ALL")).toBeInTheDocument();
+    expect(screen.getByText("CLIP ALL")).toBeInTheDocument();
     fireEvent.click(toggle);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_SECTION_OPEN,

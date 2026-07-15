@@ -18,6 +18,8 @@ import * as crud from "../../api/crud";
 import { Content } from "../../constants";
 import { error } from "../../toast/toast";
 import { EditFEForm } from "../edit_fe_form";
+import { Path } from "../../internal_urls";
+import { farmEventSchedulePath } from "../navigation";
 
 let initSpy: jest.SpyInstance;
 let destroySpy: jest.SpyInstance;
@@ -25,6 +27,8 @@ let destroyOKSpy: jest.SpyInstance;
 
 describe("<AddFarmEvent />", () => {
   beforeEach(() => {
+    location.pathname = Path.farmEvents("add");
+    location.search = "";
     mockSave.mockClear();
     initSpy = jest.spyOn(crud, "init")
       .mockImplementation(() => ({ payload: { uuid: "fakeUuid" } } as never));
@@ -113,6 +117,23 @@ describe("<AddFarmEvent />", () => {
     });
     expect(initSpy).toHaveBeenCalledWith("FarmEvent",
       expect.objectContaining({ executable_type: "Sequence" }));
+  });
+
+  it("preselects a scheduled executable from the URL", () => {
+    const p = fakeProps();
+    const regimen = fakeRegimen();
+    regimen.body.id = 7;
+    p.findExecutable = () => regimen;
+    location.search = farmEventSchedulePath("Regimen", 7).split("?")[1];
+    expect(window.location.search)
+      .toEqual("executable_type=Regimen&executable_id=7");
+
+    render(<AddFarmEvent {...p} />);
+
+    expect(initSpy).toHaveBeenCalledWith("FarmEvent", expect.objectContaining({
+      executable_type: "Regimen",
+      executable_id: 7,
+    }));
   });
 
   it("doesn't init FarmEvent: missing executable", () => {

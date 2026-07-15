@@ -207,7 +207,11 @@ export interface DesignerState {
   threeDSectionCenter: Record<"x" | "y", number | undefined>;
   threeDSectionWidth: number;
   threeDSectionFollowBot: boolean;
-  threeDSectionCutAll: boolean;
+  threeDSectionClipAll: boolean;
+  threeDViewRequest: {
+    direction: [number, number, number];
+    nonce: number;
+  } | undefined;
   threeDTime: string | undefined;
 }
 

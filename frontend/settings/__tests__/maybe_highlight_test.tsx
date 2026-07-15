@@ -181,6 +181,15 @@ describe("maybeOpenPanel()", () => {
     expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
   });
 
+  it("opens the Other settings subsection from its highlight link", () => {
+    location.search = "?highlight=other";
+
+    maybeOpenPanel()(jest.fn());
+
+    expect(toggleControlPanelSpy).toHaveBeenCalledWith("other_settings");
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
+  });
+
   it("opens all panels", () => {
     location.search = "?search=motors";
     maybeOpenPanel()(jest.fn());

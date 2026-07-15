@@ -25,7 +25,7 @@ import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { ExternalUrl } from "../external_urls";
-import { setupProgressString } from "../wizard/data";
+import { setupProgress } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { useNavigate } from "react-router";
@@ -471,12 +471,13 @@ const DemoAccount = (props: CommonAlertCardProps) =>
 
 const SetupIncomplete = (props: SetupIncompleteProps) => {
   const resources = store.getState().resources.index;
-  const percentComplete = setupProgressString(
+  const progress = setupProgress(
     selectAllWizardStepResults(resources),
     {
       firmwareHardware: validFirmwareHardware(props.apiFirmwareValue),
     });
-  const buttonText = percentComplete != "0% complete"
+  const percentComplete = `${progress}%`;
+  const buttonText = progress > 0
     ? t("Continue setup")
     : t("Get Started");
   const navigate = useNavigate();

@@ -87,7 +87,7 @@ describe("<ThreeDSectionSettings />", () => {
       gardenSize={{ x: 3000, y: 1200 }} />);
     expect(container.textContent).toContain("AXIS");
     expect(container.textContent).toContain("FOLLOW BOT");
-    expect(container.textContent).toContain("CUT ALL");
+    expect(container.textContent).toContain("CLIP ALL");
     expect(container.firstChild).toHaveClass("three-d-section-settings");
     expect(container.querySelector(".three-d-section-toggles"))
       .toHaveClass("grid");
@@ -105,7 +105,7 @@ describe("<ThreeDSectionSettings />", () => {
     fireEvent.click(screen.getByTitle("increase WIDTH"));
     fireEvent.click(screen.getByTitle("decrease CENTER"));
     fireEvent.click(screen.getByTitle("FOLLOW BOT"));
-    fireEvent.click(screen.getByTitle("CUT ALL"));
+    fireEvent.click(screen.getByTitle("CLIP ALL"));
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_SECTION_AXIS,
       payload: "y",
@@ -123,7 +123,7 @@ describe("<ThreeDSectionSettings />", () => {
       payload: true,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_3D_SECTION_CUT_ALL,
+      type: Actions.SET_3D_SECTION_CLIP_ALL,
       payload: false,
     });
   });

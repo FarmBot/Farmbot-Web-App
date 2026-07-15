@@ -63,7 +63,8 @@ export const fakeDesignerState = (): DesignerState => ({
   threeDSectionCenter: { x: undefined, y: undefined },
   threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
-  threeDSectionCutAll: true,
+  threeDSectionClipAll: true,
+  threeDViewRequest: undefined,
   threeDTime: undefined,
 });
 

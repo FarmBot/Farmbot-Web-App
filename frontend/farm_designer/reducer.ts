@@ -73,7 +73,8 @@ export const initialState: DesignerState = {
   threeDSectionCenter: { x: undefined, y: undefined },
   threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
-  threeDSectionCutAll: true,
+  threeDSectionClipAll: true,
+  threeDViewRequest: undefined,
   threeDTime: undefined,
 };
 
@@ -290,6 +291,11 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDPerspective = payload;
     return s;
   })
+  .add<DesignerState["threeDViewRequest"]>(
+    Actions.SET_3D_VIEW, (s, { payload }) => {
+      s.threeDViewRequest = payload;
+      return s;
+    })
   .add<ThreeDSectionAxis>(Actions.SET_3D_SECTION_AXIS, (s, { payload }) => {
     s.threeDSectionAxis = payload;
     return s;
@@ -307,8 +313,8 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDSectionFollowBot = payload;
     return s;
   })
-  .add<boolean>(Actions.SET_3D_SECTION_CUT_ALL, (s, { payload }) => {
-    s.threeDSectionCutAll = payload;
+  .add<boolean>(Actions.SET_3D_SECTION_CLIP_ALL, (s, { payload }) => {
+    s.threeDSectionClipAll = payload;
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {

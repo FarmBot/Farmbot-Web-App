@@ -2,7 +2,7 @@ import { uniq } from "lodash";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import { BooleanSetting } from "../../session_keys";
 import {
-  setupProgressString,
+  setupProgress, setupProgressString,
   WizardStepSlug, WIZARD_SECTIONS, WIZARD_STEPS, WIZARD_STEP_SLUGS,
 } from "../data";
 
@@ -13,11 +13,13 @@ describe("setupProgressString()", () => {
     const result1 = fakeWizardStepResult();
     result1.body.answer = true;
     const results = [result0, result1];
-    const progressSting = setupProgressString(results, {
+    const progressString = setupProgressString(results, {
       firmwareHardware: "arduino",
     });
-    expect(progressSting).toContain("% complete");
-    expect(progressSting).not.toEqual("100% complete");
+    expect(progressString).toMatch(/^\d+%$/);
+    expect(progressString).not.toEqual("100%");
+    expect(setupProgress(results, { firmwareHardware: "arduino" }))
+      .toBeGreaterThan(0);
   });
 });
 

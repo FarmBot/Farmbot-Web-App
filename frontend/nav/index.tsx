@@ -61,6 +61,9 @@ import { filterAlerts } from "../messages/alerts";
 import { BotState } from "../devices/interfaces";
 import { Alert, TaggedTelemetry } from "farmbot";
 import { PingDictionary } from "../devices/connectivity/qos";
+import {
+  commandPaletteShortcut, openCommandPalette,
+} from "../command_palette";
 
 const createCachedSelector =
   <Input, Output>(selector: (input: Input) => Output) => {
@@ -460,6 +463,23 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     </div>;
   };
 
+  CommandPaletteButton = () => {
+    const label = `${t("Commands")} ${commandPaletteShortcut()}`;
+    return <div className={[
+      "nav-popup-button-wrapper",
+      "command-palette-nav-button-wrapper",
+    ].join(" ")}>
+      <button type="button"
+        className="command-palette-nav-button"
+        title={label}
+        aria-label={label}
+        onClick={openCommandPalette}>
+        <i className="fa fa-terminal" aria-hidden={true} />
+        {!isMobile() && <span>{label}</span>}
+      </button>
+    </div>;
+  };
+
   AppNavLinks = () =>
     <div className={"app-nav-links"}>
       <i className={"fa fa-bars mobile-menu-icon"}
@@ -515,6 +535,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
                   <this.TimeTravel />
                   <this.Coordinates />
                   <this.JobsButton />
+                  <this.CommandPaletteButton />
                 </ErrorBoundary>
               </div>
             </div>
