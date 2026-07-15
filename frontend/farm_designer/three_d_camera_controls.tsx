@@ -16,6 +16,9 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
   const perspective = effectiveThreeDPerspective(
     props.designer,
   );
+  const label = perspective
+    ? t("PERSPECTIVE ON")
+    : t("PERSPECTIVE OFF");
   return <div className={"three-d-camera-controls"}>
     <button
       type={"button"}
@@ -23,13 +26,13 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
         "three-d-perspective-control",
         perspective ? "active" : "",
       ].join(" ")}
-      title={t("PERSPECTIVE")}
+      title={label}
       aria-pressed={perspective}
       onClick={() => props.dispatch({
         type: Actions.SET_3D_PERSPECTIVE,
         payload: !perspective,
       })}>
-      {t("PERSPECTIVE")}
+      {label}
     </button>
   </div>;
 };

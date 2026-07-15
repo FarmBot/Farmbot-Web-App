@@ -9,6 +9,7 @@ import {
 import { Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
   BufferGeometry,
+  DoubleSide,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Quaternion,
@@ -175,6 +176,7 @@ export const WeedBase = (props: WeedBaseProps) => {
       position={[0, 0, iconSize / 2]}>
       <MeshPhongMaterial
         color={color}
+        side={DoubleSide}
         depthWrite={false}
         transparent={true}
         opacity={0.5 * alpha} />
@@ -435,6 +437,7 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
       color={bucket.color}
+      side={DoubleSide}
       depthWrite={false}
       transparent={true}
       opacity={0.5} />

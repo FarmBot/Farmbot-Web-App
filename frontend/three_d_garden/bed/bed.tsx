@@ -351,7 +351,8 @@ const BedSupports = (props: BedSupportsProps) => {
   }, [supportMatrices]);
 
   return <Group name={"bed-supports"}
-    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
+    key={bedZOffset > 0 ? "raised" : "grounded"}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: bedZOffset > 0 }}>
     <InstancedMesh
       ref={legRef}
       name={"bed-leg-wood"}

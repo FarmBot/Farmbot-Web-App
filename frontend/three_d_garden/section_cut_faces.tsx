@@ -5,7 +5,7 @@ import {
   BufferGeometry, DoubleSide, Float32BufferAttribute, Plane, RepeatWrapping,
 } from "three";
 import { Config } from "./config";
-import { ASSETS, BigDistance } from "./constants";
+import { ASSETS } from "./constants";
 import {
   get3DPositionFunc, getColorFromBrightness, getGardenPositionFunc, zZero,
 } from "./helpers";
@@ -13,7 +13,6 @@ import { Group, Mesh, MeshPhongMaterial } from "./components";
 import { ThreeDSectionAxis } from "../farm_designer/interfaces";
 import { soilSurfaceExtents } from "./triangles";
 import { SECTION_CLIPPING_EXEMPT } from "./section";
-import { TexturedGroundMaterial } from "./garden/ground";
 import { TexturedBedMaterial } from "./bed";
 import { useTextureVariant } from "./texture_variants";
 
@@ -120,7 +119,6 @@ export interface SectionCutGeometries {
   soil: BufferGeometry | undefined;
   soilLine: Point[];
   bed: BufferGeometry[];
-  ground: BufferGeometry | undefined;
 }
 
 export const getSectionSoilCutLinePoints = (
@@ -198,25 +196,7 @@ export const getSectionCutGeometries = (
     soil = verticalFaceGeometry(axis, fixed, points);
   }
 
-  let ground: BufferGeometry | undefined;
-  if (config.ground && Math.abs(fixed) <= BigDistance.ground) {
-    const halfChord = Math.sqrt(BigDistance.ground ** 2 - fixed ** 2);
-    const top = -config.bedHeight - config.bedZOffset;
-    ground = verticalFaceGeometry(axis, fixed, [
-      {
-        transverse: -halfChord,
-        top,
-        bottom: top - BigDistance.ground,
-      },
-      {
-        transverse: halfChord,
-        top,
-        bottom: top - BigDistance.ground,
-      },
-    ]);
-  }
-
-  return { soil, soilLine, bed, ground };
+  return { soil, soilLine, bed };
 };
 
 interface SectionCutFacesProps extends SectionCutGeometryProps {
@@ -244,7 +224,6 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
   React.useEffect(() => () => {
     geometries.soil?.dispose();
     geometries.bed.map(geometry => geometry.dispose());
-    geometries.ground?.dispose();
   }, [geometries]);
   const soilTexture = useTextureVariant(ASSETS.textures.soil + "?=soilT", {
     wrapS: RepeatWrapping,
@@ -255,12 +234,6 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
   const soilColor = getColorFromBrightness(config.soilBrightness);
   return <Group name={"section-cut-faces"}
     userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
-    {geometries.ground &&
-      <Mesh name={"section-ground-cut-face"} geometry={geometries.ground}>
-        <TexturedGroundMaterial
-          sceneName={config.scene}
-          side={DoubleSide} />
-      </Mesh>}
     {geometries.bed.map((geometry, index) =>
       <Mesh
         key={index}

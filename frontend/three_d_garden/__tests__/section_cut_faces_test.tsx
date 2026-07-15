@@ -11,7 +11,7 @@ import {
   createRenderer, unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { getColorFromBrightness, zZero } from "../helpers";
-import { ASSETS, BigDistance } from "../constants";
+import { ASSETS } from "../constants";
 import { useTexture } from "@react-three/drei";
 
 describe("section cut faces", () => {
@@ -28,7 +28,6 @@ describe("section cut faces", () => {
     result.bedYOffset = 0;
     result.mirrorX = false;
     result.mirrorY = false;
-    result.ground = true;
     return result;
   };
 
@@ -41,7 +40,7 @@ describe("section cut faces", () => {
     )).toEqual(0);
   });
 
-  it("builds terrain, frame, and ground cross-sections", () => {
+  it("builds terrain and frame cross-sections", () => {
     const c = config();
     const nearPlane = getSectionClippingPlanes(c, "x", 500, 200)[0];
     const geometries = getSectionCutGeometries({
@@ -77,17 +76,6 @@ describe("section cut faces", () => {
     expect(geometries.soilLine[geometries.soilLine.length - 1]).toEqual([
       -100, 260, zZero(c) - 100,
     ]);
-
-    const ground = geometries.ground as BufferGeometry;
-    ground.computeBoundingBox();
-    const groundBounds = ground.boundingBox as Box3;
-    const halfChord = Math.sqrt(BigDistance.ground ** 2 - 100 ** 2);
-    expect(groundBounds.min.x).toEqual(-100);
-    expect(groundBounds.min.y).toBeCloseTo(-halfChord);
-    expect(groundBounds.min.z).toEqual(-30325);
-    expect(groundBounds.max.x).toEqual(-100);
-    expect(groundBounds.max.y).toBeCloseTo(halfChord);
-    expect(groundBounds.max.z).toEqual(-325);
   });
 
   it("fills an end board and omits objects outside their extents", () => {
@@ -103,7 +91,6 @@ describe("section cut faces", () => {
     expect(endBoard.bed[0].boundingBox?.min.y).toEqual(-300);
     expect(endBoard.bed[0].boundingBox?.max.y).toEqual(300);
 
-    c.ground = false;
     const outside = getSectionCutGeometries({
       config: c,
       axis: "x",
@@ -114,7 +101,6 @@ describe("section cut faces", () => {
       soil: undefined,
       soilLine: [],
       bed: [],
-      ground: undefined,
     });
   });
 
@@ -134,7 +120,7 @@ describe("section cut faces", () => {
     });
   });
 
-  it("renders textured faces exempt from clipping", () => {
+  it("renders textured cut faces exempt from clipping", () => {
     const c = config();
     const planes = getSectionClippingPlanes(c, "y", 300, 200);
     const wrapper = createRenderer(<SectionCutFaces
@@ -163,14 +149,10 @@ describe("section cut faces", () => {
     const bedMaterial = wrapper.root.findAll(node =>
       node.props.color == getColorFromBrightness(c.bedBrightness))[0];
     expect(bedMaterial.props.map).toBeDefined();
-    const groundMaterial = wrapper.root.findAll(node =>
-      node.props.color == "#ddd")[0];
-    expect(groundMaterial.props.map).toBeDefined();
     const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
       .map(([url]) => url);
     expect(loadedTextures).toContain(ASSETS.textures.wood);
     expect(loadedTextures).toContain(ASSETS.textures.soil + "?=soilT");
-    expect(loadedTextures).toContain(ASSETS.textures.grass);
     ["section-soil-near-cut-line", "section-soil-far-cut-line"]
       .forEach(name => {
         const line = wrapper.root.findByProps({ name });

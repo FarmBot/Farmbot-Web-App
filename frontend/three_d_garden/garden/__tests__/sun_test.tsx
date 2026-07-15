@@ -15,20 +15,34 @@ import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import {
-  calcSunI, getAnimatedSeasonDate, getCycleLength, skyColor, Sun,
+  calcSunI, generateStars, getAnimatedSeasonDate, getCycleLength,
+  getSeasonAnimationElapsed, skyColor, Sun, starShaderModification,
   sunPropsEqual, SunProps,
 } from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
-import { MeshBasicMaterial, Vector3 } from "three";
+import {
+  MeshBasicMaterial, Vector3, WebGLProgramParametersWithUniforms,
+} from "three";
 import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
-import { Points } from "../../components";
+import { Points, PointsMaterial } from "../../components";
+import { SECTION_CLIPPING_EXEMPT } from "../../section";
 
 beforeEach(() => {
   jest.clearAllMocks();
+});
+
+describe("getSeasonAnimationElapsed", () => {
+  it("gets elapsed time from fixed and active season animations", () => {
+    expect(getSeasonAnimationElapsed(false, { current: -12 })).toEqual(12);
+
+    const now = jest.spyOn(performance, "now").mockReturnValue(15_000);
+    expect(getSeasonAnimationElapsed(true, { current: 10 })).toEqual(5);
+    now.mockRestore();
+  });
 });
 
 
@@ -69,6 +83,33 @@ describe("<Sun />", () => {
     const wrapper = createRenderer(<Sun {...p} />);
     mountedWrappers.push(wrapper);
     expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
+    const sun = wrapper.root.findByProps({ name: "sun" });
+    expect(sun.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    const material = wrapper.root.findByType(PointsMaterial);
+    expect(material.props.onBeforeCompile).toBe(starShaderModification);
+  });
+
+  it("clips camera-side stars and applies individual sizes", () => {
+    const shader = {
+      vertexShader: [
+        "#include <common>",
+        "#include <project_vertex>",
+        "gl_PointSize = size;",
+      ].join("\n"),
+    } as WebGLProgramParametersWithUniforms;
+
+    starShaderModification(shader);
+
+    expect(shader.vertexShader).toContain(
+      "dot(starWorldPosition, cameraPosition) > 0.0",
+    );
+    expect(shader.vertexShader).toContain(
+      "gl_Position = vec4(2.0, 2.0, 2.0, 1.0)",
+    );
+    expect(shader.vertexShader).toContain("attribute float starSize;");
+    expect(shader.vertexShader).toContain(
+      "gl_PointSize = size * starSize;",
+    );
   });
 
   it("reuses generated star geometry across night star mounts", () => {
@@ -79,6 +120,7 @@ describe("<Sun />", () => {
     const firstPoints = first.root.findAllByType(Points)[0];
     const firstGeometry = firstPoints.props.geometry;
     const firstPositions = firstGeometry.getAttribute("position").array;
+    const firstSizes = firstGeometry.getAttribute("starSize").array;
     unmountRenderer(first);
 
     const second = createRenderer(<Sun {...p} />);
@@ -86,10 +128,30 @@ describe("<Sun />", () => {
     const secondPoints = second.root.findAllByType(Points)[0];
     const secondGeometry = secondPoints.props.geometry;
     const secondPositions = secondGeometry.getAttribute("position").array;
+    const secondSizes = secondGeometry.getAttribute("starSize").array;
 
     expect(secondGeometry).toBe(firstGeometry);
     expect(secondPositions).toBe(firstPositions);
+    expect(secondSizes).toBe(firstSizes);
     expect(secondPoints.props.dispose).toBeNull();
+  });
+
+  it("generates varied stars down to 7.5 degrees above the horizon", () => {
+    const nearOne = generateStars(() => 0.999999);
+    const radius = Math.hypot(
+      nearOne.positions[0],
+      nearOne.positions[1],
+      nearOne.positions[2],
+    );
+    const elevation = Math.asin(nearOne.positions[2] / radius)
+      * 180 / Math.PI;
+    expect(elevation).toBeCloseTo(7.5, 3);
+
+    const randomValues = [0, 0, 0, 0, 0, 1];
+    const stars = generateStars(() => randomValues.shift() || 0);
+    expect(stars.sizes.slice(0, 2)).toEqual(
+      new Float32Array([0.5, 2]),
+    );
   });
 
   it("skips season animation frame setup by default", () => {

@@ -43,5 +43,9 @@ describe("<Text />", () => {
       ...p,
       depthTest: false,
     })).toBeFalsy();
+    expect(textPropsEqual(p, {
+      ...p,
+      opacity: 0.5,
+    })).toBeFalsy();
   });
 });

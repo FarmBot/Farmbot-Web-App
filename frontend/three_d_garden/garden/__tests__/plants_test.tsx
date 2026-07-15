@@ -18,6 +18,7 @@ import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
+  DoubleSide,
   Quaternion,
   WebGLProgramParametersWithUniforms,
 } from "three";
@@ -235,8 +236,15 @@ describe("<ThreeDPlantSpread />", () => {
     queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = true;
-    const { container } = render(<PlantSpreadInstances {...p} />);
-    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const material = wrapper.root.findAll(node =>
+      node.props.color == "white")[0];
+
+    expect(mesh).toBeDefined();
+    expect(material.props.side).toEqual(DoubleSide);
+    unmountRenderer(wrapper);
   });
 
   it("uses reserved spread capacity while rendering active plants", () => {

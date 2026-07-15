@@ -3,7 +3,8 @@ import { Config } from "../config";
 import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
 import {
-  CircleGeometry, Float32BufferAttribute, RepeatWrapping, type Side,
+  CylinderGeometry, DoubleSide, Float32BufferAttribute, RepeatWrapping,
+  type Side,
 } from "three";
 import { useTextureVariant } from "../texture_variants";
 import { ThreeEvent } from "@react-three/fiber";
@@ -15,10 +16,13 @@ export interface GroundProps {
   onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
 }
 
+const GROUND_DEPTH = 25000;
+const groundFade = 1;
+
 interface GroundWrapperProps {
   sceneName: string;
   groundZ: number;
-  geometry: CircleGeometry;
+  geometry: CylinderGeometry;
   onClick?: (e: ThreeEvent<MouseEvent>) => void;
   onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
   children: React.ReactElement;
@@ -33,19 +37,24 @@ const GroundWrapper = (props: GroundWrapperProps) =>
     dispose={null}
     onClick={props.onClick}
     onPointerMove={props.onPointerMove}
-    position={[0, 0, -props.groundZ]}>
+    position={[0, 0, -props.groundZ - GROUND_DEPTH / 2]}
+    rotation={[Math.PI / 2, 0, 0]}>
     {props.children}
   </Mesh>;
 
-const groundFade = 1;
 const buildGroundGeometry = (radius: number, segments: number) => {
-  const geometry = new CircleGeometry(radius, segments);
+  const geometry = new CylinderGeometry(
+    radius,
+    radius,
+    GROUND_DEPTH,
+    segments,
+  );
   const positions = geometry.attributes.position;
   const colors = new Float32Array(positions.count * 3);
   for (let i = 0; i < positions.count; i++) {
     const x = positions.getX(i);
-    const y = positions.getY(i);
-    const t = Math.min(Math.sqrt(x * x + y * y) / radius, 1);
+    const z = positions.getZ(i);
+    const t = Math.min(Math.sqrt(x * x + z * z) / radius, 1);
     const shade = 1 - t * groundFade;
     const offset = i * 3;
     colors[offset] = shade;
@@ -56,8 +65,8 @@ const buildGroundGeometry = (radius: number, segments: number) => {
   return geometry;
 };
 
-let lowDetailGroundGeometry: CircleGeometry | undefined;
-let highDetailGroundGeometry: CircleGeometry | undefined;
+let lowDetailGroundGeometry: CylinderGeometry | undefined;
+let highDetailGroundGeometry: CylinderGeometry | undefined;
 
 const getLowDetailGroundGeometry = () => {
   lowDetailGroundGeometry ||= buildGroundGeometry(BigDistance.ground, 16);
@@ -156,9 +165,11 @@ const VisibleGround = (props: GroundProps) => {
       ? <MeshPhongMaterial
         color={properties.lowDetailColor}
         shininess={0}
+        side={DoubleSide}
         vertexColors={true} />
       : <TexturedGroundMaterial
         sceneName={config.scene}
+        side={DoubleSide}
         vertexColors={true} />}
   </GroundWrapper>;
 };

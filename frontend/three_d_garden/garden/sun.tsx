@@ -9,6 +9,7 @@ import {
   Material,
   BufferAttribute as ThreeBufferAttribute,
   BufferGeometry as ThreeBufferGeometry,
+  WebGLProgramParametersWithUniforms,
 } from "three";
 import {
   DirectionalLight, Group, MeshBasicMaterial, Points, PointsMaterial,
@@ -22,6 +23,7 @@ import moment from "moment";
 import { Season, SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { ASSETS, BigDistance } from "../constants";
+import { SECTION_CLIPPING_EXEMPT } from "../section";
 
 const shadowBias = -0.0005;
 const shadowRadius = 8;
@@ -52,10 +54,9 @@ export const getSeasonAnimationElapsed = (
   if (startedAt < 0) {
     return -startedAt;
   }
-  if (animateSeasons) {
-    return performance.now() / 1000 - startedAt;
-  }
-  return undefined;
+  return animateSeasons
+    ? performance.now() / 1000 - startedAt
+    : undefined;
 };
 
 interface SunAnimationSample {
@@ -416,7 +417,8 @@ const SunBase = (props: SunProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.animateSeasons, config.sun, props.startTimeRef, renderedSunFactor]);
 
-  return <Group name={"sun"}>
+  return <Group name={"sun"}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
     {props.startTimeRef &&
       <AnimatedSunFrame
         {...props}
@@ -502,40 +504,80 @@ export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
 
 export const Sun = React.memo(SunBase, sunPropsEqual);
 
-const generateOtherSuns = () => {
-  const maxPhi = 80;
+interface StarData {
+  positions: Float32Array;
+  sizes: Float32Array;
+}
+
+export const generateStars = (
+  random = Math.random,
+): StarData => {
+  const maxPhi = 82.5;
+  const minSize = 0.5;
+  const sizeRange = 1.5;
   const r = BigDistance.sunVisual;
-  const points = new Float32Array(1000 * 3);
+  const positions = new Float32Array(1000 * 3);
+  const sizes = new Float32Array(1000);
   for (let i = 0; i < 1000; i++) {
-    const theta = Math.random() * 360;
-    const phi = Math.random() * maxPhi;
+    const theta = random() * 360;
+    const phi = random() * maxPhi;
     const position = polarToCartesian(r, theta, phi);
     const offset = i * 3;
-    points[offset] = position[0];
-    points[offset + 1] = position[1];
-    points[offset + 2] = position[2];
+    positions[offset] = position[0];
+    positions[offset + 1] = position[1];
+    positions[offset + 2] = position[2];
+    sizes[i] = minSize + random() * sizeRange;
   }
-  return points;
+  return { positions, sizes };
 };
 
-let otherSunPositions: Float32Array | undefined;
+let starData: StarData | undefined;
 
-const getOtherSunPositions = () => {
-  otherSunPositions ||= generateOtherSuns();
-  return otherSunPositions;
+const getStarData = () => {
+  starData ||= generateStars();
+  return starData;
 };
 
 let otherSunGeometry: ThreeBufferGeometry | undefined;
 
 const getOtherSunGeometry = () => {
   if (!otherSunGeometry) {
+    const { positions, sizes } = getStarData();
     otherSunGeometry = new ThreeBufferGeometry();
     otherSunGeometry.setAttribute(
       "position",
-      new ThreeBufferAttribute(getOtherSunPositions(), 3),
+      new ThreeBufferAttribute(positions, 3),
+    );
+    otherSunGeometry.setAttribute(
+      "starSize",
+      new ThreeBufferAttribute(sizes, 1),
     );
   }
   return otherSunGeometry;
+};
+
+export const starShaderModification = (
+  shader: WebGLProgramParametersWithUniforms,
+) => {
+  shader.vertexShader = shader.vertexShader
+    .replace(
+      "#include <common>",
+      `#include <common>
+       attribute float starSize;`,
+    )
+    .replace(
+      "#include <project_vertex>",
+      `#include <project_vertex>
+     vec3 starWorldPosition =
+       (modelMatrix * vec4(transformed, 1.0)).xyz;
+     if (dot(starWorldPosition, cameraPosition) > 0.0) {
+       gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+     }`,
+    )
+    .replace(
+      "gl_PointSize = size;",
+      "gl_PointSize = size * starSize;",
+    );
 };
 
 const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> }) => {
@@ -550,6 +592,7 @@ const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> })
       sizeAttenuation={false}
       transparent={true}
       opacity={1}
+      onBeforeCompile={starShaderModification}
       depthWrite={false} />
   </Points>;
 };

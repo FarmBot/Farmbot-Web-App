@@ -450,7 +450,7 @@ describe("<GardenModel />", () => {
     expect(sky.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(cutFaces.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(sceneObjects.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
-    expect(bedSupports.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(bedSupports.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(false);
     expect(wrapper.root.findAllByType(SectionGroundOverlays)).toHaveLength(1);
     expect(wrapper.root.findAllByType(SectionControls)).toHaveLength(1);
     const sectionOverlays = wrapper.root.findByType(SectionGroundOverlays);
@@ -462,6 +462,28 @@ describe("<GardenModel />", () => {
     expect(Number.isFinite(sectionControls.props.center)).toEqual(true);
     expect(Number.isFinite(sectionControls.props.width)).toEqual(true);
     getCameraFromUrlParamsSpy.mockRestore();
+  });
+
+  it("only exempts raised bed supports from section clipping", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const bedSupports = () =>
+      wrapper.root.findByProps({ name: "bed-supports" });
+
+    expect(bedSupports().props.userData[SECTION_CLIPPING_EXEMPT])
+      .toEqual(false);
+
+    p.config = { ...p.config, bedZOffset: 100 };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(bedSupports().props.userData[SECTION_CLIPPING_EXEMPT])
+      .toEqual(true);
+
+    p.config = { ...p.config, bedZOffset: 0 };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(bedSupports().props.userData[SECTION_CLIPPING_EXEMPT])
+      .toEqual(false);
   });
 
   it("only renders ground projections in section view", () => {

@@ -12,6 +12,7 @@ import {
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
+  DoubleSide,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -461,6 +462,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     <SphereGeometry args={[1, ...SPREAD_SPHERE_SEGMENTS]} />
     <MeshPhongMaterial
       color={"white"}
+      side={DoubleSide}
       transparent={true}
       opacity={0.4}
       vertexColors={true}

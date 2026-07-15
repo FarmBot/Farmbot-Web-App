@@ -12,7 +12,7 @@ describe("<ThreeDCameraControls />", () => {
     render(<ThreeDCameraControls
       designer={designer}
       dispatch={dispatch} />);
-    const button = screen.getByRole("button", { name: "PERSPECTIVE" });
+    const button = screen.getByRole("button", { name: "PERSPECTIVE ON" });
     expect(button).toHaveClass("active");
     expect(button).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(button);
@@ -28,7 +28,7 @@ describe("<ThreeDCameraControls />", () => {
     render(<ThreeDCameraControls
       designer={designer}
       dispatch={jest.fn()} />);
-    const button = screen.getByRole("button", { name: "PERSPECTIVE" });
+    const button = screen.getByRole("button", { name: "PERSPECTIVE OFF" });
     expect(button).not.toHaveClass("active");
     expect(button).toHaveAttribute("aria-pressed", "false");
   });
@@ -40,7 +40,7 @@ describe("<ThreeDCameraControls />", () => {
     render(<ThreeDCameraControls
       designer={designer}
       dispatch={dispatch} />);
-    const button = screen.getByRole("button", { name: "PERSPECTIVE" });
+    const button = screen.getByRole("button", { name: "PERSPECTIVE ON" });
     expect(button).toHaveClass("active");
     fireEvent.click(button);
     expect(dispatch).toHaveBeenCalledWith({

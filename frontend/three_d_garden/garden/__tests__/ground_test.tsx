@@ -10,6 +10,7 @@ import {
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
+import { DoubleSide } from "three";
 
 describe("<Ground />", () => {
   const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
@@ -32,13 +33,27 @@ describe("<Ground />", () => {
     expect(container).toContainHTML("ground");
   });
 
-  it("renders detailed ground vertex colors", () => {
-    const wrapper = createRenderer(<Ground {...fakeProps()} />);
+  it("renders the detailed ground cylinder", () => {
+    const p = fakeProps();
+    p.config.bedHeight = 300;
+    p.config.bedZOffset = 25;
+    const wrapper = createRenderer(<Ground {...p} />);
     mountedWrappers.push(wrapper);
     const ground = wrapper.root.findAll(node =>
       node.props.name == "ground Outdoor")[0];
     const color = ground.props.geometry.attributes.color;
     expect(ground.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
+    expect(ground.props.position).toEqual([0, 0, -12825]);
+    expect(ground.props.rotation).toEqual([Math.PI / 2, 0, 0]);
+    expect(ground.props.geometry.parameters).toMatchObject({
+      radiusTop: 30000,
+      radiusBottom: 30000,
+      height: 25000,
+      radialSegments: 64,
+    });
+    const material = wrapper.root.findAll(node =>
+      node.props.color == "#ddd")[0];
+    expect(material.props.side).toEqual(DoubleSide);
     expect(color.array).toBeInstanceOf(Float32Array);
     expect(color.itemSize).toEqual(3);
   });
@@ -87,9 +102,13 @@ describe("<Ground />", () => {
   it("renders low-detail ground without loading a texture", () => {
     const p = fakeProps();
     p.config.lowDetail = true;
-    const { container } = render(<Ground {...p} />);
-    expect(container.querySelectorAll("[name^='ground']").length).toEqual(1);
-    expect(container).toContainHTML("darkgreen");
+    const wrapper = createRenderer(<Ground {...p} />);
+    mountedWrappers.push(wrapper);
+    const material = wrapper.root.findAll(node =>
+      node.props.color == "darkgreen")[0];
+
+    expect(material.props.color).toEqual("darkgreen");
+    expect(material.props.side).toEqual(DoubleSide);
     expect(useTexture).not.toHaveBeenCalled();
   });
 

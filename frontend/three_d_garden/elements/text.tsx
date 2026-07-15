@@ -14,6 +14,7 @@ export interface TextProps {
   renderOrder?: RenderOrder | number;
   thickness?: number;
   depthTest?: boolean;
+  opacity?: number;
 }
 
 const sameVector = (
@@ -33,6 +34,7 @@ export const textPropsEqual = (prev: TextProps, next: TextProps) =>
   prev.renderOrder === next.renderOrder &&
   prev.thickness === next.thickness &&
   prev.depthTest === next.depthTest &&
+  prev.opacity === next.opacity &&
   sameVector(prev.position, next.position) &&
   sameVector(prev.rotation, next.rotation);
 
@@ -50,7 +52,9 @@ const TextBase = (props: TextProps) => {
       {props.children}
       <MeshBasicMaterial
         color={props.color}
-        depthTest={props.depthTest} />
+        depthTest={props.depthTest}
+        transparent={props.opacity !== undefined}
+        opacity={props.opacity} />
     </Text3D>
   </Center>;
 };

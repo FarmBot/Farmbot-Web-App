@@ -542,7 +542,7 @@
   position: fixed;
   top: 7.5rem;
   right: -155px;
-  z-index: 3;
+  z-index: 5;
   transition: all 0.3s ease;
   &.active {
     transform: translateX(-165px);
