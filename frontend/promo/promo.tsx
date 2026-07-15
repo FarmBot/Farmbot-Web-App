@@ -30,6 +30,13 @@ import {
   getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
 } from "./resources";
 import { clearCameraUrlParams } from "../three_d_garden/camera";
+import { StargazingControls } from "../farm_designer/stargazing";
+import {
+  clampStargazingFov, STARGAZING_DEFAULT_FOV,
+} from "../farm_designer/stargazing_constants";
+import { Actions } from "../constants";
+import { getAnimatedSeasonSunCoordinate } from
+  "../three_d_garden/garden/sun";
 
 const PROMO_BED_SIZES = [
   {
@@ -48,6 +55,22 @@ interface PromoPlantCapacities {
   iconCapacities: Record<string, number>;
   plantInstanceCapacity: number;
 }
+
+type PromoViewMode =
+  | { kind: "overview" }
+  | { kind: "focus"; focus: string }
+  | { kind: "stargazing" };
+
+interface StargazingSeasonState {
+  animateSeasons: boolean;
+  elapsedSeconds: number;
+  seasonAnimationPaused: boolean;
+  sunAzimuth: number;
+  sunInclination: number;
+}
+
+const viewModeFromFocus = (focus: string): PromoViewMode =>
+  focus ? { kind: "focus", focus } : { kind: "overview" };
 
 const calcCacheKey = (config: Config): string =>
   `${config.bedLengthOuter}x${config.bedWidthOuter}: ${config.plants}`;
@@ -132,18 +155,115 @@ export const Promo = () => {
     return next;
   });
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocusState] = React.useState(() =>
-    getFocusFromUrlParams());
+  const [viewMode, setViewMode] = React.useState<PromoViewMode>(() =>
+    viewModeFromFocus(getFocusFromUrlParams()));
+  const activeFocus = viewMode.kind == "focus" ? viewMode.focus : "";
+  const stargazing = viewMode.kind == "stargazing";
   const setActiveFocus = React.useCallback((focus: string) => {
     if (focus != activeFocus) {
       clearCameraUrlParams();
     }
-    setActiveFocusState(focus);
+    setViewMode(viewModeFromFocus(focus));
   }, [activeFocus]);
+  const exitViewMode = React.useCallback(() => {
+    setActiveFocus("");
+    if (activeFocus) {
+      setUrlParam("focus", "");
+    }
+  }, [activeFocus, setActiveFocus]);
   const [threeDLoaded, setThreeDLoaded] = React.useState(false);
   const [seasonAnimationPaused, setSeasonAnimationPaused] =
     React.useState(false);
+  const startTimeRef = React.useRef<number>(0);
+  const seasonAnimationElapsedRef =
+    React.useRef<number | undefined>(undefined);
+  const stargazingSeasonStateRef =
+    React.useRef<StargazingSeasonState | undefined>(undefined);
   const [seasonResetKey, setSeasonResetKey] = React.useState(0);
+  const [stargazingFov, setStargazingFov] =
+    React.useState(STARGAZING_DEFAULT_FOV);
+  const restoreSeasonAnimation = React.useCallback(() => {
+    const seasonState = stargazingSeasonStateRef.current;
+    if (!seasonState) { return; }
+    if (seasonState.animateSeasons) {
+      startTimeRef.current = performance.now() / 1000
+        - seasonState.elapsedSeconds;
+    }
+    setConfig(currentConfig => ({
+      ...currentConfig,
+      animateSeasons: seasonState.animateSeasons,
+      sunAzimuth: seasonState.sunAzimuth,
+      sunInclination: seasonState.sunInclination,
+    }));
+    setSeasonAnimationPaused(seasonState.seasonAnimationPaused);
+    stargazingSeasonStateRef.current = undefined;
+  }, []);
+  const stargazingDispatch = React.useCallback((action: {
+    type: Actions;
+    payload: boolean | number;
+  }) => {
+    switch (action.type) {
+      case Actions.SET_3D_STARGAZING_MODE:
+        if (typeof action.payload == "boolean") {
+          if (action.payload) {
+            if (stargazing) { break; }
+            if (activeFocus) {
+              clearCameraUrlParams();
+              setUrlParam("focus", "");
+            }
+            const midnight = getAnimatedSeasonSunCoordinate(
+              config.plants,
+              0,
+            );
+            const now = performance.now() / 1000;
+            stargazingSeasonStateRef.current = {
+              animateSeasons: config.animateSeasons,
+              elapsedSeconds: config.animateSeasons
+                ? Math.max(now - startTimeRef.current, 0)
+                : 0,
+              seasonAnimationPaused,
+              sunAzimuth: config.sunAzimuth,
+              sunInclination: config.sunInclination,
+            };
+            setConfig(currentConfig => ({
+              ...currentConfig,
+              animateSeasons: false,
+              sunAzimuth: midnight.azimuth,
+              sunInclination: midnight.inclination,
+            }));
+            setSeasonAnimationPaused(false);
+            setViewMode({ kind: "stargazing" });
+          } else {
+            restoreSeasonAnimation();
+            exitViewMode();
+          }
+        }
+        break;
+      case Actions.SET_3D_STARGAZING_FOV:
+        if (typeof action.payload == "number") {
+          setStargazingFov(clampStargazingFov(action.payload));
+        }
+        break;
+    }
+  }, [
+    activeFocus,
+    config.animateSeasons,
+    config.plants,
+    config.sunAzimuth,
+    config.sunInclination,
+    exitViewMode,
+    restoreSeasonAnimation,
+    seasonAnimationPaused,
+    stargazing,
+  ]);
+  const previousStargazingRef = React.useRef(stargazing);
+  React.useEffect(() => {
+    const wasStargazing = previousStargazingRef.current;
+    previousStargazingRef.current = stargazing;
+    if (wasStargazing && !stargazing) {
+      restoreSeasonAnimation();
+    }
+  }, [restoreSeasonAnimation, stargazing]);
   const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   const handleThreeDLoadComplete = React.useCallback(() =>
     setThreeDLoaded(true), []);
@@ -162,8 +282,6 @@ export const Promo = () => {
     config.soilSurfaceVariance, config.bedXOffset, config.bedYOffset,
     config.bedWallThickness, config.bedLengthOuter, config.bedWidthOuter,
   ]);
-
-  const startTimeRef = React.useRef<number>(0);
 
   React.useEffect(() => {
     startTimeRef.current = performance.now() / 1000;
@@ -192,20 +310,15 @@ export const Promo = () => {
     return () => clearTimeout(timeout);
   }, [config.plants, config.animateSeasons]);
 
-  const clearActiveFocus = React.useCallback(() => {
-    setActiveFocus("");
-    setUrlParam("focus", "");
-  }, [setActiveFocus]);
-
   React.useEffect(() => {
-    if (!activeFocus) { return; }
+    if (viewMode.kind == "overview") { return; }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key != "Escape") { return; }
-      clearActiveFocus();
+      exitViewMode();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeFocus, clearActiveFocus]);
+  }, [exitViewMode, viewMode.kind]);
 
   const plants = React.useMemo(() => {
     return getPromoResourcePlants() || getCachedPlants(config);
@@ -230,8 +343,7 @@ export const Promo = () => {
       ? { ...config, animateSeasons: true }
       : config, [config, seasonAnimationPaused]);
 
-  return <div className={"three-d-garden promo"}
-    onKeyDown={e => activeFocus && e.key == "Escape" && clearActiveFocus()}>
+  return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <FocusTransitionProvider enabled={config.animate}>
         <MemoryRouter>
@@ -242,6 +354,11 @@ export const Promo = () => {
             }}>
             <GardenModel {...common}
               config={gardenConfig}
+              stargazing={{
+                active: stargazing,
+                fov: stargazingFov,
+                dispatch: stargazingDispatch,
+              }}
               configPosition={{ x: config.x, y: config.y, z: config.z }}
               startTimeRef={startTimeRef}
               threeDPlants={threeDPlants}
@@ -261,8 +378,10 @@ export const Promo = () => {
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
+          publicContentVisible={viewMode.kind == "overview"}
           loadComplete={threeDLoaded}
           startTimeRef={startTimeRef}
+          seasonAnimationElapsedRef={seasonAnimationElapsedRef}
           seasonAnimationPaused={seasonAnimationPaused}
           setSeasonAnimationPaused={setSeasonAnimationPaused}
           onSeasonSelect={handleSeasonSelect} />
@@ -272,6 +391,7 @@ export const Promo = () => {
         {config.config &&
           <PrivateOverlay {...common}
             startTimeRef={startTimeRef}
+            seasonAnimationElapsedRef={seasonAnimationElapsedRef}
             seasonAnimationPaused={seasonAnimationPaused}
             setSeasonAnimationPaused={setSeasonAnimationPaused}
             onSeasonSelect={handleSeasonSelect} />}
@@ -280,6 +400,10 @@ export const Promo = () => {
         </span>
       </FocusTransitionProvider>
     </div>
+    <StargazingControls
+      active={stargazing}
+      fov={stargazingFov}
+      dispatch={stargazingDispatch} />
     {config.viewCube &&
       <ViewPrismViewport bridgeRef={viewPrismBridgeRef} />}
   </div>;

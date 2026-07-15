@@ -22,6 +22,7 @@ describe("designer reducer", () => {
     expect(initialState.threeDSectionWidth).toEqual(200);
     expect(initialState.threeDSectionFollowBot).toEqual(true);
     expect(initialState.threeDSectionCutAll).toEqual(true);
+    expect(initialState.threeDStargazingFov).toEqual(20);
   });
 
   it("sets search query", () => {
@@ -224,6 +225,37 @@ describe("designer reducer", () => {
       payload: false,
     });
     expect(newState.threeDPerspective).toEqual(false);
+  });
+
+  it("opens and closes stargazing mode", () => {
+    const state = oldState();
+    state.panelOpen = true;
+    state.threeDPerspective = true;
+    const activeState = designer(state, {
+      type: Actions.SET_3D_STARGAZING_MODE,
+      payload: true,
+    });
+    expect(activeState.threeDStargazingMode).toEqual(true);
+    expect(activeState.threeDPerspective).toEqual(true);
+    expect(activeState.panelOpen).toEqual(false);
+
+    const inactiveState = designer(activeState, {
+      type: Actions.SET_3D_STARGAZING_MODE,
+      payload: false,
+    });
+    expect(inactiveState.threeDStargazingMode).toEqual(false);
+    expect(inactiveState.threeDPerspective).toEqual(true);
+    expect(inactiveState.panelOpen).toEqual(false);
+  });
+
+  it("sets the stargazing field of view within its limits", () => {
+    const setFov = (payload: number) => designer(oldState(), {
+      type: Actions.SET_3D_STARGAZING_FOV,
+      payload,
+    });
+    expect(setFov(45).threeDStargazingFov).toEqual(45);
+    expect(setFov(1).threeDStargazingFov).toEqual(20);
+    expect(setFov(100).threeDStargazingFov).toEqual(90);
   });
 
   it("sets 3D time", () => {

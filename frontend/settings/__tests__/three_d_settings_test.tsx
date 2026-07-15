@@ -136,6 +136,19 @@ describe("get3DConfigValueFunction()", () => {
       .toEqual(1);
   });
 
+  it("reads boolean constellation custom settings", () => {
+    const constellations = fakeFarmwareEnv();
+    constellations.body.key = namespace3D("constellations");
+    constellations.body.value = "false";
+    const debug = fakeFarmwareEnv();
+    debug.body.key = namespace3D("constellationsDebug");
+    debug.body.value = "true";
+    const getValue = get3DConfigValueFunction([constellations, debug]);
+
+    expect(getValue("constellations")).toEqual(0);
+    expect(getValue("constellationsDebug")).toEqual(1);
+  });
+
   it("preserves first matching env behavior", () => {
     const first = fakeFarmwareEnv();
     first.body.key = namespace3D("grid");

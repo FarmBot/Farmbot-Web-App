@@ -1,4 +1,5 @@
 export * from "./clouds";
+export * from "./constellations";
 export * from "./grid";
 export * from "./ground";
 export * from "./plants";

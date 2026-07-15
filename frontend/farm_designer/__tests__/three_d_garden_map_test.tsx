@@ -135,6 +135,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedBrightness = 1;
     expectedConfig.soilBrightness = 1;
     expectedConfig.cableDebug = true;
+    expectedConfig.constellationsDebug = true;
     expectedConfig.eventDebug = true;
     expectedConfig.lightsDebug = true;
     expectedConfig.moistureDebug = true;
@@ -197,6 +198,20 @@ describe("<ThreeDGardenMap />", () => {
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
+    }));
+  });
+
+  it("applies constellation custom settings", () => {
+    const p = fakeProps();
+    p.get3DConfigValue = key => {
+      if (key == "constellations") { return 0; }
+      if (key == "constellationsDebug") { return 1; }
+      return 1;
+    };
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      constellations: false,
+      constellationsDebug: true,
     }));
   });
 

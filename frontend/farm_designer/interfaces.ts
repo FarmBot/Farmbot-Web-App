@@ -208,6 +208,8 @@ export interface DesignerState {
   threeDSectionWidth: number;
   threeDSectionFollowBot: boolean;
   threeDSectionCutAll: boolean;
+  threeDStargazingMode: boolean;
+  threeDStargazingFov: number;
   threeDTime: string | undefined;
 }
 

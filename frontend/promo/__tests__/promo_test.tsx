@@ -11,6 +11,9 @@ import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
 import * as screenSize from "../../screen_size";
 import { PROMO_RESOURCES_KEY } from "../resources";
+import { Actions } from "../../constants";
+import { getAnimatedSeasonSunCoordinate } from
+  "../../three_d_garden/garden/sun";
 
 type CanvasComponentProps = React.ComponentProps<typeof reactThreeFiber.Canvas>;
 type CanvasCreatedState =
@@ -93,6 +96,91 @@ describe("<Promo />", () => {
     unmount();
   });
 
+  it("opens and closes stargazing", async () => {
+    window.location.search = "?animateSeasons=true";
+    const { container, unmount } = render(<Promo />);
+    const gardenProps = () =>
+      gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1][0];
+
+    expect(gardenProps().stargazing).toEqual(expect.objectContaining({
+      active: false,
+      fov: 20,
+    }));
+    expect(gardenProps().config.animateSeasons).toEqual(true);
+    const initialSunAzimuth = gardenProps().config.sunAzimuth;
+    const initialSunInclination = gardenProps().config.sunInclination;
+    act(() => gardenProps().stargazing.dispatch({
+      type: Actions.SET_3D_STARGAZING_MODE,
+      payload: true,
+    }));
+    expect(gardenProps().stargazing.active).toEqual(true);
+    const midnight = getAnimatedSeasonSunCoordinate(
+      String(gardenProps().config.plants),
+      0,
+    );
+    expect(gardenProps().config).toEqual(expect.objectContaining({
+      animateSeasons: false,
+      sunAzimuth: midnight.azimuth,
+      sunInclination: midnight.inclination,
+    }));
+    expect(container.querySelector(".stargazing-controls"))
+      .toHaveClass("active");
+    expect(container.querySelector(".settings-bar"))
+      .toHaveClass("focus-transition-hidden");
+    expect(container.querySelector(".promo-info"))
+      .toHaveClass("focus-transition-hidden");
+
+    act(() => gardenProps().stargazing.dispatch({
+      type: Actions.SET_3D_STARGAZING_FOV,
+      payload: 55,
+    }));
+    expect(gardenProps().stargazing.fov).toEqual(55);
+
+    fireEvent.click(screen.getByRole("button", { name: "Exit stargazing" }));
+    expect(gardenProps().stargazing.active).toEqual(false);
+    expect(gardenProps().config).toEqual(expect.objectContaining({
+      animateSeasons: true,
+      sunAzimuth: initialSunAzimuth,
+      sunInclination: initialSunInclination,
+    }));
+    await waitFor(() => {
+      expect(container.querySelector(".settings-bar"))
+        .toHaveClass("focus-transition-visible");
+      expect(container.querySelector(".promo-info"))
+        .toHaveClass("focus-transition-visible");
+    });
+    unmount();
+  });
+
+  it("keeps focus and stargazing modes mutually exclusive", () => {
+    focusFromUrlParamsSpy.mockReturnValue("What you can grow");
+    const { unmount } = render(<Promo />);
+    const gardenProps = () =>
+      gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1][0];
+
+    expect(gardenProps()).toEqual(expect.objectContaining({
+      activeFocus: "What you can grow",
+      stargazing: expect.objectContaining({ active: false }),
+    }));
+
+    act(() => gardenProps().stargazing.dispatch({
+      type: Actions.SET_3D_STARGAZING_MODE,
+      payload: true,
+    }));
+    expect(gardenProps()).toEqual(expect.objectContaining({
+      activeFocus: "",
+      stargazing: expect.objectContaining({ active: true }),
+    }));
+    expect(pushStateSpy.mock.calls[0][2]).not.toContain("focus=");
+
+    act(() => gardenProps().setActiveFocus("Included tools"));
+    expect(gardenProps()).toEqual(expect.objectContaining({
+      activeFocus: "Included tools",
+      stargazing: expect.objectContaining({ active: false }),
+    }));
+    unmount();
+  });
+
   it("renders: animated seasons", () => {
     jest.useFakeTimers();
     console.error = jest.fn();
@@ -125,6 +213,19 @@ describe("<Promo />", () => {
     window.location.search = "?promoSpread=true&bedLengthOuter=1234";
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("spread");
+    unmount();
+  });
+
+  it("applies constellation promo configs", () => {
+    window.location.search =
+      "?constellations=false&constellationsDebug=true";
+    const { unmount } = render(<Promo />);
+    expect(gardenModelSpy.mock.calls[0][0].config).toEqual(
+      expect.objectContaining({
+        constellations: false,
+        constellationsDebug: true,
+      }),
+    );
     unmount();
   });
 

@@ -7,6 +7,8 @@ import {
 describe("modifyConfig()", () => {
   it("enables labels on hover by default", () => {
     expect(INITIAL.labelsOnHover).toEqual(true);
+    expect(INITIAL.constellations).toEqual(true);
+    expect(INITIAL.constellationsDebug).toEqual(false);
   });
 
   it("modifies config: lab", () => {
@@ -77,7 +79,9 @@ describe("modifyConfigsFromUrlParams()", () => {
   });
 
   it("sets other config", () => {
-    window.location.search = "?kit=JR&x=1&ground=true";
+    window.location.search =
+      "?kit=JR&x=1&ground=true&constellations=false"
+      + "&constellationsDebug=true";
     const initial = clone(INITIAL);
     initial.sizePreset = "Genesis XL";
     initial.x = 100;
@@ -86,6 +90,8 @@ describe("modifyConfigsFromUrlParams()", () => {
     expect(result.sizePreset).toEqual("Jr");
     expect(result.x).toEqual(1);
     expect(result.ground).toEqual(true);
+    expect(result.constellations).toEqual(false);
+    expect(result.constellationsDebug).toEqual(true);
   });
 });
 

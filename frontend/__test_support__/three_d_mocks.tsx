@@ -130,7 +130,13 @@ jest.mock("../three_d_garden/components", () => ({
   MeshBasicMaterial: (props: THREE.MeshBasicMaterial) => {
     // eslint-disable-next-line max-len
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-    props.onBeforeCompile?.({} as any, {} as any);
+    props.onBeforeCompile?.(
+      // eslint-disable-next-line max-len
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      { uniforms: {}, vertexShader: "", fragmentShader: "" } as any,
+      // eslint-disable-next-line max-len
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      {} as any);
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     return <div {...props} />;
   },

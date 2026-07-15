@@ -1,10 +1,13 @@
 import React from "react";
-import { ConfigWithPosition, modifyConfig } from "./config";
+import {
+  ConfigWithPosition, getSeasonProperties, INITIAL, modifyConfig,
+} from "./config";
 import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
 import { FocusVisibilityDiv } from "./focus_transition";
 import { SEASON_TIMINGS } from "../promo/constants";
 import { clearCameraUrlParams } from "./camera";
+import { getSeasonAnimationElapsedAtSunPosition } from "./garden/sun";
 
 export interface ToolTip {
   timeoutId: number;
@@ -18,8 +21,10 @@ export interface OverlayProps {
   setToolTip(tooltip: ToolTip): void;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  publicContentVisible?: boolean;
   loadComplete?: boolean;
   startTimeRef?: React.RefObject<number>;
+  seasonAnimationElapsedRef?: React.RefObject<number | undefined>;
   seasonAnimationPaused?: boolean;
   setSeasonAnimationPaused?(paused: boolean): void;
   onSeasonSelect?(): void;
@@ -34,6 +39,7 @@ interface SectionProps {
   toolTip: ToolTip;
   setToolTip(tooltip: ToolTip): void;
   startTimeRef?: React.RefObject<number>;
+  seasonAnimationElapsedRef?: React.RefObject<number | undefined>;
   seasonAnimationPaused?: boolean;
   setSeasonAnimationPaused?(paused: boolean): void;
   onSeasonSelect?(): void;
@@ -48,6 +54,30 @@ interface SeasonProgressStyle extends React.CSSProperties {
 
 const seasonTiming = (season: string) =>
   SEASON_TIMINGS.find(timing => timing.season == season);
+
+interface SeasonAnimationClock {
+  elapsedSeconds: number;
+  startedAt: number;
+}
+
+export const setSeasonAnimationRunning = (
+  running: boolean,
+  startTimeRef?: React.RefObject<number>,
+  seasonAnimationElapsedRef?: React.RefObject<number | undefined>,
+): SeasonAnimationClock | undefined => {
+  if (!startTimeRef) { return undefined; }
+  const now = performance.now() / 1000;
+  const elapsedSeconds = seasonAnimationElapsedRef?.current
+    ?? (startTimeRef.current < 0
+      ? -startTimeRef.current
+      : Math.max(now - startTimeRef.current, 0));
+  const startedAt = now - elapsedSeconds;
+  startTimeRef.current = running ? startedAt : -elapsedSeconds;
+  if (seasonAnimationElapsedRef) {
+    seasonAnimationElapsedRef.current = running ? undefined : elapsedSeconds;
+  }
+  return { elapsedSeconds, startedAt };
+};
 
 const seasonProgressStyle = (
   season: string,
@@ -72,8 +102,11 @@ const PublicOverlaySection = (props: SectionProps) => {
   const {
     title, configKey, options, config, setConfig, toolTip, setToolTip,
     startTimeRef, seasonAnimationPaused, setSeasonAnimationPaused,
-    onSeasonSelect, showAnimationControl,
+    onSeasonSelect, seasonAnimationElapsedRef: elapsedRefProp,
+    showAnimationControl,
   } = props;
+  const localElapsedRef = React.useRef<number | undefined>(undefined);
+  const seasonAnimationElapsedRef = elapsedRefProp || localElapsedRef;
   const [seasonAnimationStartedAt, setSeasonAnimationStartedAt] =
     React.useState(() => performance.now() / 1000);
   const clearToolTip = React.useCallback(() => {
@@ -81,31 +114,24 @@ const PublicOverlaySection = (props: SectionProps) => {
     setToolTip({ timeoutId: 0, text: "" });
   }, [setToolTip, toolTip.timeoutId]);
   const handleSeasonAnimationToggle = React.useCallback(() => {
-    const now = performance.now() / 1000;
-    if (startTimeRef) {
-      if (config.animateSeasons) {
-        const elapsedSeconds = Math.max(now - startTimeRef.current, 0);
-        startTimeRef.current = -elapsedSeconds;
-        setSeasonAnimationStartedAt(now - elapsedSeconds);
-        setSeasonAnimationPaused?.(true);
-      } else {
-        const startedAt = startTimeRef.current < 0
-          ? now + startTimeRef.current
-          : now;
-        startTimeRef.current = startedAt;
-        setSeasonAnimationStartedAt(startedAt);
-        setSeasonAnimationPaused?.(false);
-      }
-    }
+    const running = !config.animateSeasons;
+    const clock = setSeasonAnimationRunning(
+      running,
+      startTimeRef,
+      seasonAnimationElapsedRef,
+    );
+    clock && setSeasonAnimationStartedAt(clock.startedAt);
+    setSeasonAnimationPaused?.(!running);
     clearToolTip();
     setConfig(modifyConfig(config, {
-      animateSeasons: !config.animateSeasons,
+      animateSeasons: running,
     }));
   }, [
     clearToolTip,
     config,
     setConfig,
     setSeasonAnimationPaused,
+    seasonAnimationElapsedRef,
     startTimeRef,
   ]);
   const handleSeasonAnimationKeyDown =
@@ -157,9 +183,6 @@ const PublicOverlaySection = (props: SectionProps) => {
             ? seasonProgressStyle(label, seasonAnimationStartedAt)
             : undefined}
           onClick={() => {
-            if (startTimeRef && configKey == "plants") {
-              startTimeRef.current = performance.now() / 1000;
-            }
             clearTimeout(toolTip.timeoutId);
             if (disabled) {
               const text =
@@ -172,6 +195,26 @@ const PublicOverlaySection = (props: SectionProps) => {
               setToolTip({ timeoutId: 0, text: "" });
             }
             if (configKey == "plants") {
+              if (startTimeRef) {
+                const nextConfig = modifyConfig(config, {
+                  [configKey]: label,
+                });
+                const { sunInclination } = getSeasonProperties(
+                  nextConfig,
+                  "Summer",
+                );
+                const targetSunInclination =
+                  nextConfig.sunInclination == INITIAL.sunInclination
+                    ? sunInclination
+                    : nextConfig.sunInclination;
+                seasonAnimationElapsedRef.current =
+                  getSeasonAnimationElapsedAtSunPosition(
+                    label,
+                    targetSunInclination,
+                    nextConfig.sunAzimuth,
+                  );
+                startTimeRef.current = performance.now() / 1000;
+              }
               setSeasonAnimationPaused?.(false);
               label != config[configKey] && onSeasonSelect?.();
             }
@@ -209,6 +252,7 @@ export const PublicOverlay = (props: OverlayProps) => {
     toolTip,
     setToolTip,
     seasonAnimationPaused,
+    seasonAnimationElapsedRef: props.seasonAnimationElapsedRef,
     setSeasonAnimationPaused,
     onSeasonSelect: props.onSeasonSelect,
   };
@@ -216,12 +260,14 @@ export const PublicOverlay = (props: OverlayProps) => {
     "settings-bar",
     props.loadComplete ? "settings-bar-loaded" : "",
   ].join(" ");
+  const publicContentVisible = props.publicContentVisible
+    ?? !props.activeFocus;
 
   return <div className={"overlay"}>
     {config.settingsBar &&
       <FocusVisibilityDiv
         className={settingsBarClassName}
-        visible={!props.activeFocus}>
+        visible={publicContentVisible}>
         <div className={"settings-bar-content"}>
           <PublicOverlaySection
             {...commonSectionProps}
@@ -264,7 +310,7 @@ export const PublicOverlay = (props: OverlayProps) => {
       </FocusVisibilityDiv>}
     <FocusVisibilityDiv
       className={"promo-info"}
-      visible={config.promoInfo && !props.activeFocus}>
+      visible={config.promoInfo && publicContentVisible}>
       <PromoInfo
         isGenesis={config.sizePreset == "Genesis"}
         kitVersion={config.kitVersion} />
@@ -413,6 +459,14 @@ const Toggle = (props: ToggleProps) => {
       onChange={e => {
         const newValue = e.target.checked;
         const update = { [configKey]: newValue };
+        if (configKey == "animateSeasons") {
+          setSeasonAnimationRunning(
+            newValue,
+            props.startTimeRef,
+            props.seasonAnimationElapsedRef,
+          );
+          props.setSeasonAnimationPaused?.(!newValue);
+        }
         setConfig(modifyConfig(config, update));
         if (configKey == "urlCameraPos" && !newValue) {
           clearCameraUrlParams();
@@ -621,6 +675,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         <Toggle {...common} configKey={"utilitiesPost"} />
         <Toggle {...common} configKey={"packaging"} />
         <Toggle {...common} configKey={"clouds"} />
+        <Toggle {...common} configKey={"constellations"} />
         <Toggle {...common} configKey={"solar"} />
         <Toggle {...common} configKey={"people"} />
         <Toggle {...common} configKey={"north"} />
@@ -643,6 +698,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         <Toggle {...common} configKey={"eventDebug"} />
         <Toggle {...common} configKey={"cableDebug"} />
         <Toggle {...common} configKey={"zoomBeaconDebug"} />
+        <Toggle {...common} configKey={"constellationsDebug"} />
         <Toggle {...common} configKey={"config"} />
       </div>
     </ConfigSearchContext.Provider>

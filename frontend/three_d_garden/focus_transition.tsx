@@ -520,11 +520,12 @@ export const interpolateCameraState = (
       value * fromWeight + toDirection[index] * toWeight) as VectorXyz;
   }
   const fov = lerp(from.fov, to.fov);
-  const radius = from.fov == to.fov
-    ? lerp(fromRadius, toRadius)
-    : fromRadius
-      * Math.tan(from.fov * Math.PI / 360)
-      / Math.tan(fov * Math.PI / 360);
+  const fovScale = (value: number) => Math.tan(value * Math.PI / 360);
+  const visibleHalfHeight = lerp(
+    fromRadius * fovScale(from.fov),
+    toRadius * fovScale(to.fov),
+  );
+  const radius = visibleHalfHeight / fovScale(fov);
   return {
     position: direction.map((value, index) =>
       target[index] + value * radius) as VectorXyz,
@@ -602,10 +603,15 @@ export const readSmoothCameraState = (
     : fallback.fov,
 });
 
+interface ApplySmoothCameraStateOptions {
+  emitControlsUpdate?: boolean;
+}
+
 export const applySmoothCameraState = (
   state: SmoothCameraState,
   cameraObject?: SmoothCameraObject | null,
   controls?: SmoothCameraControls | null,
+  options: ApplySmoothCameraStateOptions = {},
 ) => {
   if (cameraObject && typeof cameraObject.position?.set == "function") {
     setVector(cameraObject.position, state.position);
@@ -618,7 +624,7 @@ export const applySmoothCameraState = (
   }
   if (controls && typeof controls.target?.set == "function") {
     setVector(controls.target, state.target);
-    controls.update?.();
+    if (options.emitControlsUpdate !== false) { controls.update?.(); }
   }
 };
 

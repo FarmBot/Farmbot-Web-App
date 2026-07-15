@@ -1,10 +1,10 @@
 import React from "react";
 import { clone } from "lodash";
 import { Box3, BufferGeometry, Plane, Vector3 } from "three";
-import { INITIAL } from "../config";
+import { INITIAL, INITIAL_POSITION } from "../config";
 import {
   getSectionCutGeometries, getSectionNearPosition,
-  getSectionSoilCutLinePoints, SectionCutFaces,
+  getSectionObjectCutGeometries, getSectionSoilCutLinePoints, SectionCutFaces,
 } from "../section_cut_faces";
 import { getSectionClippingPlanes, SECTION_CLIPPING_EXEMPT } from "../section";
 import {
@@ -120,12 +120,79 @@ describe("section cut faces", () => {
     });
   });
 
+  it("builds cable carrier and raised-bed support intersections", () => {
+    const c = config();
+    const position = { ...INITIAL_POSITION, x: 300, y: 700 };
+    const xSections = getSectionObjectCutGeometries(
+      c,
+      position,
+      "x",
+      new Plane(new Vector3(1, 0, 0), 250),
+    );
+    expect(xSections.bedCableCarrierSupports).toHaveLength(1);
+    expect(xSections.cableCarriers).toHaveLength(3);
+    [
+      ...xSections.bedCableCarrierSupports,
+      ...xSections.cableCarriers,
+    ].forEach(geometry => {
+      geometry.computeBoundingBox();
+      expect(geometry.boundingBox?.min.x).toBeCloseTo(-250);
+      expect(geometry.boundingBox?.max.x).toBeCloseTo(-250);
+    });
+
+    const xCarrierDepthSection = getSectionObjectCutGeometries(
+      c,
+      position,
+      "y",
+      new Plane(new Vector3(0, 1, 0), 325),
+    );
+    expect(xCarrierDepthSection.bedCableCarrierSupports).toHaveLength(2);
+    expect(xCarrierDepthSection.cableCarriers).toHaveLength(1);
+
+    const yCarrierLengthSection = getSectionObjectCutGeometries(
+      c,
+      position,
+      "y",
+      new Plane(new Vector3(0, 1, 0), 0),
+    );
+    expect(yCarrierLengthSection.bedCableCarrierSupports).toHaveLength(0);
+    expect(yCarrierLengthSection.cableCarriers).toHaveLength(1);
+  });
+
+  it("omits cable carrier intersections when the layer is hidden", () => {
+    const c = config();
+    c.cableCarriers = false;
+    expect(getSectionObjectCutGeometries(
+      c,
+      INITIAL_POSITION,
+      "x",
+      new Plane(new Vector3(1, 0, 0), 270),
+    )).toEqual({
+      bedCableCarrierSupports: [],
+      cableCarriers: [],
+    });
+  });
+
+  it("only renders bed support intersections when the bot is hidden", () => {
+    const c = config();
+    c.bot = false;
+    const geometries = getSectionObjectCutGeometries(
+      c,
+      INITIAL_POSITION,
+      "x",
+      new Plane(new Vector3(1, 0, 0), 260),
+    );
+    expect(geometries.bedCableCarrierSupports).toHaveLength(1);
+    expect(geometries.cableCarriers).toHaveLength(0);
+  });
+
   it("renders textured cut faces exempt from clipping", () => {
     const c = config();
-    const planes = getSectionClippingPlanes(c, "y", 300, 200);
+    const planes = getSectionClippingPlanes(c, "x", 340, 200);
     const wrapper = createRenderer(<SectionCutFaces
       config={c}
-      axis={"y"}
+      configPosition={INITIAL_POSITION}
+      axis={"x"}
       nearPlane={planes[0]}
       farPlane={planes[1]}
       cutAll={true}
@@ -139,6 +206,14 @@ describe("section cut faces", () => {
     expect(bedFaces).toHaveLength(2);
     bedFaces.map(face =>
       expect(face.props.receiveShadow).toEqual(true));
+    const cableCarrierFaces = wrapper.root.findAll(node =>
+      `${node.type}` == "mesh"
+      && node.props.name == "section-cable-carrier-cut-face");
+    expect(cableCarrierFaces).toHaveLength(2);
+    const supportFaces = wrapper.root.findAll(node =>
+      `${node.type}` == "mesh"
+      && node.props.name == "section-bed-cc-support-cut-face");
+    expect(supportFaces).toHaveLength(1);
     const soilFace = wrapper.root.find(node =>
       `${node.type}` == "mesh"
       && node.props.name == "section-soil-cut-face");
@@ -168,6 +243,7 @@ describe("section cut faces", () => {
     const planes = getSectionClippingPlanes(c, "x", 500, 200);
     const wrapper = createRenderer(<SectionCutFaces
       config={c}
+      configPosition={INITIAL_POSITION}
       axis={"x"}
       nearPlane={planes[0]}
       farPlane={planes[1]}

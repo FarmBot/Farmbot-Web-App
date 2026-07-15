@@ -58,3 +58,8 @@ declare var mockNavigate: jest.Mock;
 declare module 'fengari-web';
 
 declare module "*.css";
+
+declare module "*.bin" {
+  const assetUrl: string;
+  export default assetUrl;
+}

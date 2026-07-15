@@ -82,8 +82,9 @@ import {
   useThreeDLoadProgress,
 } from "./progressive_load";
 import {
-  FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
-  readSmoothCameraState, SmoothCameraState, useSmoothCamera,
+  applySmoothCameraState, FocusTransitionProvider, FocusVisibilityGroup,
+  SmoothCameraControls, readSmoothCameraState, SmoothCameraState,
+  useSmoothCamera,
 } from "./focus_transition";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 import { Mode, TaggedPlant } from "../farm_designer/map/interfaces";
@@ -128,6 +129,9 @@ import {
 } from "./section";
 import { effectiveSectionCenter } from
   "../farm_designer/three_d_section";
+import {
+  getStargazingCamera, Telescope,
+} from "./bed/objects/telescope";
 import { SectionCutFaces } from "./section_cut_faces";
 import { SectionGroundOverlays } from "./section_overlays";
 import { SectionControls } from "./section_controls";
@@ -142,6 +146,11 @@ import {
 } from "./view_prism";
 import { success } from "../toast/toast";
 import { t } from "../i18next_wrapper";
+import { STARGAZING_DEFAULT_FOV } from
+  "../farm_designer/stargazing_constants";
+import {
+  anchorStargazingOrbit, loadStargazingCamera, saveStargazingCamera,
+} from "./stargazing_camera";
 
 const CAMERA_SCENE_RADIUS = BigDistance.sky + 1000;
 
@@ -609,6 +618,11 @@ export interface GardenModelProps {
   preloadEnvironmentScenes?: boolean;
   showFarmbotLayerLoadProgress?: boolean;
   promo?: boolean;
+  stargazing?: {
+    active: boolean;
+    fov: number;
+    dispatch: Function;
+  };
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
@@ -772,6 +786,7 @@ interface StaticGardenLayersProps {
   mapPoints: TaggedGenericPointer[];
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
+  showTelescope: boolean;
   sensors: TaggedSensor[];
   sensorReadings: TaggedSensorReading[];
   addPlantProps: AddPlantProps | undefined;
@@ -784,6 +799,9 @@ interface StaticGardenLayersProps {
   plantIconCapacities: Record<string, number> | undefined;
   startTimeRef: React.RefObject<number> | undefined;
   dispatch: Function | undefined;
+  stargazing: boolean;
+  stargazingCamera: Camera;
+  stargazingDispatch: Function | undefined;
   showSpread: boolean;
   plantInstanceCapacity: number | undefined;
   routeKey: string;
@@ -809,10 +827,11 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     config, markStep, environmentReveal, bedReveal, gridReveal,
     plantsReveal, weedsReveal, pointsReveal, skyRef, activePositionRef,
     soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
-    showMoistureMap, showMoistureReadings, sensors, sensorReadings,
+    showMoistureMap, showMoistureReadings, showTelescope,
+    sensors, sensorReadings,
     addPlantProps, plantLabelNodes, plantsVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
-    dispatch, showSpread,
+    dispatch, stargazing, stargazingCamera, stargazingDispatch, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
@@ -828,6 +847,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
   const plantsLayerReveal = plantsReveal && plantsVisible;
   const weedsLayerReveal = weedsReveal && showWeeds;
   const pointsLayerReveal = pointsReveal && showPoints;
+  const [sunBelowHorizon, setSunBelowHorizon] = React.useState(false);
   const handlePlantPointerEnter = React.useCallback((e: ThreeEvent<PointerEvent>) => {
     setHover(true)?.(e);
     onPlantHoverChange(true);
@@ -860,7 +880,16 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       <Sun
         config={config}
         skyRef={skyRef}
-        startTimeRef={startTimeRef} />
+        stargazing={stargazing}
+        startTimeRef={startTimeRef}
+        onSunBelowHorizonChange={setSunBelowHorizon} />
+      {showTelescope &&
+        <Telescope
+          config={config}
+          sunBelowHorizon={sunBelowHorizon}
+          stargazing={stargazing}
+          camera={stargazingCamera}
+          dispatch={stargazingDispatch} />}
       <AmbientLight intensity={config.ambient / 100} />
       {config.ground &&
         <Ground
@@ -1475,8 +1504,11 @@ export const CameraFitDebug = (props: CameraFitDebugProps) =>
       depthTest={false} />
   </Group>;
 
-interface GardenCameraControllerProps {
+export interface GardenCameraControllerProps {
   baseCamera: Camera;
+  stargazing: boolean;
+  stargazingFov: number;
+  stargazingCamera: Camera;
   desiredFov: number;
   cameraFitRadius: number;
   promo: boolean;
@@ -1489,7 +1521,23 @@ interface GardenCameraControllerProps {
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
 }
 
-const useGardenCameraController = (props: GardenCameraControllerProps) => {
+const STARGAZING_MIN_POLAR_ANGLE = Math.PI / 2;
+export type StargazingCameraPhase = "normal" | "transitioning" | "stargazing";
+
+export const stargazingOrbitPolarLimits = (
+  phase: StargazingCameraPhase,
+) => ({
+  min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
+  max: phase == "normal" ? Math.PI / 2 : Math.PI,
+});
+
+export const useGardenCameraController = (
+  props: GardenCameraControllerProps,
+) => {
+  const [stargazingCameraPhase, setStargazingCameraPhase] =
+    React.useState<StargazingCameraPhase>(
+      props.stargazing ? "stargazing" : "normal",
+    );
   const [cameraRequest, setCameraRequest] =
     React.useState<GardenCameraRequest | undefined>(() => ({
       camera: {
@@ -1526,6 +1574,7 @@ const useGardenCameraController = (props: GardenCameraControllerProps) => {
       return;
     }
     previousPromoFitRadiusRef.current = props.cameraFitRadius;
+    if (props.stargazing) { return; }
     // Bed-size and viewport changes intentionally retarget the camera spring.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCameraRequest(createCameraFitRequest(
@@ -1537,8 +1586,10 @@ const useGardenCameraController = (props: GardenCameraControllerProps) => {
     props.activeFocus,
     props.cameraFitRadius,
     props.promo,
+    props.stargazing,
   ]);
   React.useEffect(() => {
+    if (props.stargazing) { return; }
     // Projection changes intentionally create a new spring target.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCameraRequest(activeRequest => retargetCameraRequestFov(
@@ -1549,7 +1600,74 @@ const useGardenCameraController = (props: GardenCameraControllerProps) => {
   // Retarget only when the projection setting changes. Including the live
   // camera callback would restart the spring as OrbitControls updates.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.desiredFov]);
+  }, [props.desiredFov, props.stargazing]);
+  const previousStargazingFovRef = React.useRef(props.stargazingFov);
+  React.useEffect(() => {
+    const fovChanged = previousStargazingFovRef.current
+      != props.stargazingFov;
+    previousStargazingFovRef.current = props.stargazingFov;
+    if (!props.stargazing || !fovChanged) { return; }
+    const current = liveCameraState();
+    // Stargazing FOV changes preserve the current orbit and spring the lens.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest(activeRequest => ({
+      camera: stargazingCameraPhase == "transitioning" && activeRequest
+        ? activeRequest.camera
+        : {
+          position: current.position,
+          target: current.target,
+        },
+      fov: props.stargazingFov,
+      onRest: stargazingCameraPhase == "transitioning"
+        ? () => setStargazingCameraPhase("stargazing")
+        : undefined,
+    }));
+  // Reading the live callback here is intentional, but depending on it would
+  // restart the spring after every imperative camera update.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.stargazing, props.stargazingFov, stargazingCameraPhase]);
+  const previousStargazingRef = React.useRef(false);
+  React.useEffect(() => {
+    if (previousStargazingRef.current == props.stargazing) { return; }
+    previousStargazingRef.current = props.stargazing;
+    // Keep OrbitControls from clamping either endpoint during the spring.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStargazingCameraPhase("transitioning");
+    const settledPhase = props.stargazing ? "stargazing" : "normal";
+    const current = liveCameraState();
+    if (props.stargazing) {
+      // Stargazing mode intentionally owns the camera until it is closed.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCameraRequest({
+        camera: props.stargazingCamera,
+        fov: props.stargazingFov,
+        onRest: () => setStargazingCameraPhase(settledPhase),
+      });
+    } else {
+      // Closing stargazing intentionally restores the corner camera.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCameraRequest({
+        ...createViewDirectionRequest(
+          [1, -1, 1],
+          { ...current, fov: props.desiredFov },
+          props.cameraFitRadius,
+          props.controls?.getAzimuthalAngle?.(),
+          props.viewportSize,
+        ),
+        fov: props.desiredFov,
+        onRest: () => setStargazingCameraPhase(settledPhase),
+      });
+    }
+  }, [
+    liveCameraState,
+    props.cameraFitRadius,
+    props.controls,
+    props.desiredFov,
+    props.stargazing,
+    props.stargazingFov,
+    props.stargazingCamera,
+    props.viewportSize,
+  ]);
   const selectViewDirection = React.useCallback(
     (direction: ViewPrismDirection) => {
       const current = liveCameraState();
@@ -1593,6 +1711,7 @@ const useGardenCameraController = (props: GardenCameraControllerProps) => {
     cameraRequest,
     cameraSpringCancelRef,
     selectStartingCamera,
+    stargazingCameraPhase,
   };
 };
 
@@ -1765,6 +1884,7 @@ export const GardenSectionLayer = (props: GardenSectionLayerProps) => {
     {animated.mounted && planes[0] &&
       <SectionCutFaces
         config={props.config}
+        configPosition={renderedBotPosition}
         axis={animated.axis}
         nearPlane={planes[0]}
         farPlane={planes[1]}
@@ -1828,6 +1948,12 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
+  const stargazing = props.stargazing?.active
+    ?? !!sectionDesigner?.threeDStargazingMode;
+  const stargazingFov = props.stargazing?.fov
+    ?? sectionDesigner?.threeDStargazingFov
+    ?? STARGAZING_DEFAULT_FOV;
+  const stargazingDispatch = props.stargazing?.dispatch ?? dispatch;
   const [botPositionStore] = React.useState(
     () => createBotPositionSnapshotStore(
       props.configPosition,
@@ -1980,6 +2106,36 @@ export const GardenModel = (props: GardenModelProps) => {
       defaultCamera,
     )
     : defaultCamera);
+  const defaultStargazingCamera = React.useMemo(
+    () => getStargazingCamera(cameraConfig),
+    [cameraConfig],
+  );
+  const storedStargazingCamera = React.useMemo(
+    () => loadStargazingCamera(),
+    [],
+  );
+  const [stargazingCamera, setStargazingCamera] = React.useState(() =>
+    storedStargazingCamera
+      ? anchorStargazingOrbit(
+        storedStargazingCamera,
+        defaultStargazingCamera.position,
+      )
+      : defaultStargazingCamera);
+  const liveStargazingCameraRef = React.useRef(stargazingCamera);
+  const customizedStargazingCameraRef =
+    React.useRef(!!storedStargazingCamera);
+  React.useEffect(() => {
+    const next = customizedStargazingCameraRef.current
+      ? anchorStargazingOrbit(
+        liveStargazingCameraRef.current,
+        defaultStargazingCamera.position,
+      )
+      : defaultStargazingCamera;
+    liveStargazingCameraRef.current = next;
+    // Keep cached orbits anchored to the current telescope eyepiece.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStargazingCamera(next);
+  }, [defaultStargazingCamera]);
   const cameraFitRadius = activeCameraFit.cameraRadius;
   const [modelRoot, setModelRoot] = React.useState<Object3D | undefined>();
   const setModelRootRef = React.useCallback((value: Object3D | null) => {
@@ -1996,6 +2152,9 @@ export const GardenModel = (props: GardenModelProps) => {
     : NARROW_CAMERA_FOV;
   const cameraController = useGardenCameraController({
     baseCamera,
+    stargazing,
+    stargazingFov,
+    stargazingCamera,
     desiredFov,
     cameraFitRadius,
     promo: !!props.promo,
@@ -2009,8 +2168,67 @@ export const GardenModel = (props: GardenModelProps) => {
   });
   const {
     camera, cameraFov, cameraRequest, cameraSpringCancelRef,
-    selectStartingCamera,
+    selectStartingCamera, stargazingCameraPhase,
   } = cameraController;
+  const captureStargazingCamera = React.useCallback((): Camera => {
+    const current = readSmoothCameraState({
+      position: camera.position,
+      target: camera.target,
+      zoom: 1,
+      fov: cameraFov,
+    }, controlsCamera, controls);
+    const next = {
+      position: current.position,
+      target: current.target,
+    };
+    liveStargazingCameraRef.current = next;
+    customizedStargazingCameraRef.current = true;
+    return next;
+  }, [
+    camera.position,
+    camera.target,
+    cameraFov,
+    controls,
+    controlsCamera,
+  ]);
+  const reanchorStargazingOrbit = React.useCallback(() => {
+    if (!controlsCamera || !controls) { return; }
+    const current = readSmoothCameraState({
+      position: camera.position,
+      target: camera.target,
+      zoom: 1,
+      fov: cameraFov,
+    }, controlsCamera, controls);
+    const anchored = anchorStargazingOrbit(
+      current,
+      stargazingCamera.position,
+    );
+    // This runs inside OrbitControls.onChange. Updating the controls here
+    // would emit another change event and recurse.
+    applySmoothCameraState({
+      ...anchored,
+      zoom: current.zoom,
+      fov: current.fov,
+    }, controlsCamera, controls, { emitControlsUpdate: false });
+  }, [
+    camera.position,
+    camera.target,
+    cameraFov,
+    controls,
+    controlsCamera,
+    stargazingCamera.position,
+  ]);
+  const previousStargazingCaptureRef = React.useRef(stargazing);
+  React.useLayoutEffect(() => {
+    const wasStargazing = previousStargazingCaptureRef.current;
+    previousStargazingCaptureRef.current = stargazing;
+    if (!wasStargazing || stargazing) { return; }
+    const next = captureStargazingCamera();
+    saveStargazingCamera(next);
+    // Render the telescope at the captured orbit before it fades back in.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStargazingCamera(next);
+  }, [captureStargazingCamera, stargazing]);
   const updateSectionNearIndex = React.useCallback(() => {
     sectionBridgeRef.current?.updateNearIndex();
   }, []);
@@ -2342,7 +2560,8 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const sceneDetailsLoadIn =
     config.scene == "Lab" || config.scene == "Greenhouse";
-  const animatedDetailsLoadIn = sceneDetailsLoadIn || config.zoomBeacons;
+  const showZoomBeacons = config.zoomBeacons && !stargazing;
+  const animatedDetailsLoadIn = sceneDetailsLoadIn || showZoomBeacons;
 
   const targetZoom = 1;
   const clearCameraUrlSaveTimeout = React.useCallback(() => {
@@ -2390,7 +2609,8 @@ export const GardenModel = (props: GardenModelProps) => {
     setHoveredObjectLabel(undefined);
     setCameraDragging(true);
     clearCameraUrlSaveTimeout();
-    cameraUrlInteractionRef.current = baseConfig.urlCameraPos && !sectionOpen
+    cameraUrlInteractionRef.current = baseConfig.urlCameraPos
+      && !sectionOpen && !stargazing
       ? "active"
       : "idle";
   }, [
@@ -2398,15 +2618,24 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraSpringCancelRef,
     clearCameraUrlSaveTimeout,
     sectionOpen,
+    stargazing,
   ]);
   const handleCameraDragEnd = React.useCallback(() => {
     setCameraDragging(false);
+    if (stargazing) {
+      const next = liveStargazingCameraRef.current;
+      saveStargazingCamera(next);
+      setStargazingCamera(next);
+    }
     if (cameraUrlInteractionRef.current != "active") { return; }
     cameraUrlInteractionRef.current = "settling";
     saveCameraUrl();
     scheduleCameraUrlSave();
-  }, [saveCameraUrl, scheduleCameraUrlSave]);
+  }, [saveCameraUrl, scheduleCameraUrlSave, stargazing]);
   const handleCameraChange = React.useCallback(() => {
+    if (stargazing && stargazingCameraPhase == "stargazing") {
+      reanchorStargazingOrbit();
+    }
     applyCameraClippingRange(controlsCamera, {
       sceneRadius: CAMERA_SCENE_RADIUS,
       minNear: 10,
@@ -2414,10 +2643,17 @@ export const GardenModel = (props: GardenModelProps) => {
       maxCameraScale: 1,
     });
     updateSectionNearIndex();
+    if (stargazing) {
+      captureStargazingCamera();
+    }
     scheduleCameraUrlSave();
   }, [
+    captureStargazingCamera,
     controlsCamera,
+    reanchorStargazingOrbit,
     scheduleCameraUrlSave,
+    stargazing,
+    stargazingCameraPhase,
     updateSectionNearIndex,
   ]);
   React.useEffect(() => {
@@ -2551,6 +2787,11 @@ export const GardenModel = (props: GardenModelProps) => {
     renderedCamera.position,
     cameraClippingConfig,
   );
+  const stargazingCameraSettled =
+    stargazingCameraPhase == "stargazing";
+  const normalCameraSettled = stargazingCameraPhase == "normal";
+  const orbitPolarLimits =
+    stargazingOrbitPolarLimits(stargazingCameraPhase);
 
   return <FocusTransitionProvider enabled={focusTransitionsEnabled}>
     {/* eslint-disable-next-line no-null/no-null */}
@@ -2576,11 +2817,14 @@ export const GardenModel = (props: GardenModelProps) => {
         <OrbitControls
           ref={setControls}
           camera={controlsCamera}
-          maxPolarAngle={Math.PI / 2}
-          enableRotate={config.rotate}
-          enableZoom={config.zoom}
+          minPolarAngle={orbitPolarLimits.min}
+          maxPolarAngle={orbitPolarLimits.max}
+          enableRotate={stargazingCameraSettled
+            ? stargazing
+            : normalCameraSettled && !stargazing && config.rotate}
+          enableZoom={normalCameraSettled && !stargazing && config.zoom}
           zoomToCursor={true}
-          enablePan={config.pan}
+          enablePan={normalCameraSettled && !stargazing && config.pan}
           dampingFactor={0.2}
           {...orbitControlProps}
           onStart={handleCameraDragStart}
@@ -2628,6 +2872,7 @@ export const GardenModel = (props: GardenModelProps) => {
         mapPoints={mapPoints}
         showMoistureMap={showMoistureMap}
         showMoistureReadings={showMoistureReadings}
+        showTelescope={!props.promo || config.scene != "Lab"}
         sensors={sensors}
         sensorReadings={sensorReadings}
         addPlantProps={addPlantProps}
@@ -2639,6 +2884,9 @@ export const GardenModel = (props: GardenModelProps) => {
         plantIconCapacities={props.plantIconCapacities}
         startTimeRef={props.startTimeRef}
         dispatch={dispatch}
+        stargazing={stargazing}
+        stargazingCamera={stargazingCamera}
+        stargazingDispatch={stargazingDispatch}
         showSpread={showSpread}
         plantInstanceCapacity={props.plantInstanceCapacity}
         routeKey={routeKey}
@@ -2743,7 +2991,7 @@ export const GardenModel = (props: GardenModelProps) => {
         markName={"three_d_details_ready"}>
         {config.stats && <StatsGl className={"stats-gl"} />}
         {config.stats && <Stats />}
-        {config.zoomBeacons &&
+        {showZoomBeacons &&
           <ZoomBeaconsLoadIn
             config={config}
             configPosition={props.configPosition}

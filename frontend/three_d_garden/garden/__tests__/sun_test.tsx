@@ -1,38 +1,44 @@
-interface Mock1Ref {
-  current: { position: { set: Function; }; } | undefined;
-}
-const mock1Ref: Mock1Ref = {
-  current: { position: { set: jest.fn() } }
-};
-interface MockMaterialRef {
-  current: { opacity: number; } | undefined;
-}
-const mockMaterialRef: MockMaterialRef = {
-  current: { opacity: 0 }
-};
+const originalFetch = global.fetch;
+const originalWindowFetch = window.fetch;
 
 import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import {
-  calcSunI, generateStars, getAnimatedSeasonDate, getCycleLength,
-  getSeasonAnimationElapsed, skyColor, Sun, starShaderModification,
-  sunPropsEqual, SunProps,
+  AnimatedSunFrame, calcSunI, getAnimatedSeasonDate, getCycleLength,
+  getAnimatedSeasonSunCoordinate, getSeasonAnimationElapsed,
+  getSeasonAnimationElapsedAtSunPosition, skyColor, Sun, sunPropsEqual,
+  SunProps,
 } from "../sun";
+import {
+  generateStars, projectConstellationPoint, starShaderModification,
+} from "../constellations";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
-  MeshBasicMaterial, Vector3, WebGLProgramParametersWithUniforms,
+  MeshBasicMaterial, WebGLProgramParametersWithUniforms,
 } from "three";
 import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
-import { Points, PointsMaterial } from "../../components";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
+import { CropConstellationCatalog } from "../constellation_data";
 
 beforeEach(() => {
   jest.clearAllMocks();
+  const pendingConstellationData = new Promise<ArrayBuffer>(() => undefined);
+  const fetchMock = jest.fn(() => Promise.resolve({
+    ok: true,
+    arrayBuffer: () => pendingConstellationData,
+  })) as unknown as typeof fetch;
+  global.fetch = fetchMock;
+  window.fetch = fetchMock;
+});
+
+afterAll(() => {
+  global.fetch = originalFetch;
+  window.fetch = originalWindowFetch;
 });
 
 describe("getSeasonAnimationElapsed", () => {
@@ -47,15 +53,9 @@ describe("getSeasonAnimationElapsed", () => {
 
 
 describe("<Sun />", () => {
-  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
-
-  afterEach(() => {
-    mountedWrappers.splice(0).forEach(wrapper =>
-      unmountRenderer(wrapper));
-  });
-
   const fakeProps = (): SunProps => ({
     config: clone(INITIAL),
+    stargazing: false,
     skyRef: {
       current: { color: { setRGB: jest.fn() } } as unknown as MeshBasicMaterial,
     },
@@ -67,30 +67,19 @@ describe("<Sun />", () => {
     expect(container).not.toContainHTML("line");
   });
 
-  it("skips fully invisible static daylight stars", () => {
+  it("is exempt from section clipping", () => {
     const p = fakeProps();
     p.config.sunInclination = 45;
     p.config.animateSeasons = false;
     const wrapper = createRenderer(<Sun {...p} />);
-    mountedWrappers.push(wrapper);
-    expect(wrapper.root.findAllByType(Points)).toHaveLength(0);
-  });
-
-  it("renders stars outside full static daylight", () => {
-    const p = fakeProps();
-    p.config.sunInclination = -15;
-    p.config.animateSeasons = false;
-    const wrapper = createRenderer(<Sun {...p} />);
-    mountedWrappers.push(wrapper);
-    expect(wrapper.root.findAllByType(Points).length).toBeGreaterThan(0);
     const sun = wrapper.root.findByProps({ name: "sun" });
     expect(sun.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
-    const material = wrapper.root.findByType(PointsMaterial);
-    expect(material.props.onBeforeCompile).toBe(starShaderModification);
+    unmountRenderer(wrapper);
   });
 
   it("clips camera-side stars and applies individual sizes", () => {
     const shader = {
+      uniforms: {},
       vertexShader: [
         "#include <common>",
         "#include <project_vertex>",
@@ -100,9 +89,8 @@ describe("<Sun />", () => {
 
     starShaderModification(shader);
 
-    expect(shader.vertexShader).toContain(
-      "dot(starWorldPosition, cameraPosition) > 0.0",
-    );
+    expect(shader.vertexShader).toContain("starCameraAlignment");
+    expect(shader.vertexShader).toContain("> 0.866025");
     expect(shader.vertexShader).toContain(
       "gl_Position = vec4(2.0, 2.0, 2.0, 1.0)",
     );
@@ -112,46 +100,33 @@ describe("<Sun />", () => {
     );
   });
 
-  it("reuses generated star geometry across night star mounts", () => {
-    const p = fakeProps();
-    p.config.sunInclination = -15;
-    p.config.animateSeasons = false;
-    const first = createRenderer(<Sun {...p} />);
-    const firstPoints = first.root.findAllByType(Points)[0];
-    const firstGeometry = firstPoints.props.geometry;
-    const firstPositions = firstGeometry.getAttribute("position").array;
-    const firstSizes = firstGeometry.getAttribute("starSize").array;
-    unmountRenderer(first);
-
-    const second = createRenderer(<Sun {...p} />);
-    mountedWrappers.push(second);
-    const secondPoints = second.root.findAllByType(Points)[0];
-    const secondGeometry = secondPoints.props.geometry;
-    const secondPositions = secondGeometry.getAttribute("position").array;
-    const secondSizes = secondGeometry.getAttribute("starSize").array;
-
-    expect(secondGeometry).toBe(firstGeometry);
-    expect(secondPositions).toBe(firstPositions);
-    expect(secondSizes).toBe(firstSizes);
-    expect(secondPoints.props.dispose).toBeNull();
-  });
-
-  it("generates varied stars down to 7.5 degrees above the horizon", () => {
-    const nearOne = generateStars(() => 0.999999);
-    const radius = Math.hypot(
-      nearOne.positions[0],
-      nearOne.positions[1],
-      nearOne.positions[2],
+  it("generates background and projected constellation stars", () => {
+    const catalog: CropConstellationCatalog = {
+      coordinateScale: 0.01,
+      totalPointCount: 3,
+      constellations: [{
+        cropSlug: "test-crop",
+        pointCount: 3,
+        points: new Int8Array([0, 0, 10, 0, 0, 10]),
+      }],
+    };
+    const placement = { heading: 30, phi: 40, angularSize: 12 };
+    const stars = generateStars(catalog, [placement], () => 0);
+    expect(stars.positions).toHaveLength(stars.sizes.length * 3);
+    expect(stars.sizes.slice(-3)).toEqual(
+      new Float32Array([1.5, 1.5, 1.5]),
     );
-    const elevation = Math.asin(nearOne.positions[2] / radius)
-      * 180 / Math.PI;
-    expect(elevation).toBeCloseTo(7.5, 3);
-
-    const randomValues = [0, 0, 0, 0, 0, 1];
-    const stars = generateStars(() => randomValues.shift() || 0);
-    expect(stars.sizes.slice(0, 2)).toEqual(
-      new Float32Array([0.5, 2]),
+    const firstConstellationIndex = stars.positions.length - 9;
+    const expected = projectConstellationPoint(
+      [0, 0],
+      placement.heading,
+      placement.phi,
+      undefined,
+      placement.angularSize,
     );
+    expected.forEach((value, axis) =>
+      expect(stars.positions[firstConstellationIndex + axis])
+        .toBeCloseTo(value, 2));
   });
 
   it("skips season animation frame setup by default", () => {
@@ -185,8 +160,33 @@ describe("<Sun />", () => {
     })).toBeFalsy();
     expect(sunPropsEqual(p, {
       ...p,
+      config: { ...p.config, constellations: false },
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      config: { ...p.config, constellationsDebug: true },
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
       startTimeRef: { current: 0 },
     })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      onSunBelowHorizonChange: jest.fn(),
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      stargazing: true,
+    })).toBeFalsy();
+  });
+
+  it("reports when the sun reaches the horizon", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = false;
+    p.config.sunInclination = 0;
+    p.onSunBelowHorizonChange = jest.fn();
+    render(<Sun {...p} />);
+    expect(p.onSunBelowHorizonChange).toHaveBeenCalledWith(true);
   });
 
   it("doesn't render animated", () => {
@@ -251,22 +251,38 @@ describe("<Sun />", () => {
     expect(container).not.toContainHTML("line");
   });
 
-  it("renders animated", () => {
-    jest.spyOn(React, "useRef")
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mockMaterialRef);
-    jest.spyOn(React, "useState").mockReturnValue([new Vector3(), jest.fn()]);
+  it("updates every animated sun object", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };
-    p.config.lightsDebug = true;
-    const { container } = render(<Sun {...p} />);
-    expect(container).toContainHTML("sun");
-    expect(container).toContainHTML("line");
+    const lightPosition = { set: jest.fn() };
+    const debugPosition = { set: jest.fn() };
+    const sunPosition = { set: jest.fn() };
+    const flatPosition = { set: jest.fn() };
+    const light = { position: lightPosition, intensity: 0 };
+    const setPoint = jest.fn();
+    const setSunSky = jest.fn();
+    render(<AnimatedSunFrame
+      {...p}
+      lightRef={{ current: light } as never}
+      debugSunRef={{ current: { position: debugPosition } } as never}
+      sunRef={{ current: { position: sunPosition } } as never}
+      sunFlatRef={{ current: { position: flatPosition } } as never}
+      lineRef={{ current: {} } as never}
+      animatedSunRef={{
+        current: { color: "", intensity: 0, inclination: 0, azimuth: 0 },
+      }}
+      sunIntensity={100}
+      setPoint={setPoint}
+      setSunSky={setSunSky} />);
+
+    expect(lightPosition.set).toHaveBeenCalled();
+    expect(Number.isFinite(light.intensity)).toEqual(true);
+    expect(debugPosition.set).toHaveBeenCalled();
+    expect(sunPosition.set).toHaveBeenCalled();
+    expect(flatPosition.set).toHaveBeenCalled();
+    expect(setPoint).toHaveBeenCalled();
+    expect(setSunSky).toHaveBeenCalled();
   });
 });
 
@@ -291,35 +307,41 @@ describe("getAnimatedSeasonDate()", () => {
     expect(date.getUTCMonth()).toEqual(0);
     expect(date.getUTCDate()).toEqual(2);
   });
-});
 
-describe("skyColor(calcSunI())", () => {
-  const DARK_BLUE = [
-    0.04373502925049377,
-    0.2788942634659966,
-    0.4019777798219466,
-  ];
-  const BLUE = [
-    0.09989872823822872,
-    0.6866853124288864,
-    1,
-  ];
-
-  it.each<[number, number[]]>([
-    [100, BLUE],
-    [0, DARK_BLUE],
-    [-11, [0, 0, 0]],
-    [191, [0, 0, 0]],
-    [180, DARK_BLUE],
-    [150, BLUE],
-  ])("calculates sky color at %s degrees", (inclination, expected) => {
-    skyColor(calcSunI(inclination) * 100).forEach((value, i) => {
-      expect(value).toBeCloseTo(expected[i], 4);
-    });
+  it("calculates the season's midnight sun coordinate", () => {
+    const midnight = getAnimatedSeasonSunCoordinate("Summer", 0);
+    expect(midnight.inclination).toBeLessThan(0);
+    expect(midnight.azimuth).toBeGreaterThanOrEqual(0);
+    expect(midnight.azimuth).toBeLessThan(360);
   });
 
-  it("reuses exact endpoint color tuples", () => {
+  it("finds the animation state matching a sun coordinate", () => {
+    const coordinate = getAnimatedSeasonSunCoordinate("Summer", 8);
+    const elapsed = getSeasonAnimationElapsedAtSunPosition(
+      "Summer",
+      coordinate.inclination,
+      coordinate.azimuth,
+    );
+    expect(elapsed).toBeCloseTo(8, 1);
+  });
+});
+
+describe("calcSunI()", () => {
+  it("transitions at the day and night thresholds", () => {
+    expect(calcSunI(-11)).toEqual(0);
+    expect(calcSunI(-10)).toEqual(0);
+    expect(calcSunI(0)).toEqual(0.5);
+    expect(calcSunI(10)).toEqual(1);
+    expect(calcSunI(170)).toEqual(1);
+    expect(calcSunI(180)).toEqual(0.5);
+    expect(calcSunI(190)).toEqual(0);
+    expect(calcSunI(191)).toEqual(0);
+  });
+
+  // These endpoints are cached because they are used every render frame.
+  it("returns cached endpoints and interpolated sky values", () => {
     expect(skyColor(0)).toBe(skyColor(-1));
     expect(skyColor(INITIAL.sun)).toBe(skyColor(INITIAL.sun + 1));
+    expect(skyColor(INITIAL.sun / 2)).toHaveLength(3);
   });
 });

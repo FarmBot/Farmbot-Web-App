@@ -38,6 +38,8 @@ export interface Config {
   trail: boolean;
   tracks: boolean;
   clouds: boolean;
+  constellations: boolean;
+  constellationsDebug: boolean;
   sunInclination: number;
   sunAzimuth: number;
   heading: number;
@@ -166,6 +168,8 @@ export const INITIAL: ConfigWithPosition = {
   trail: false,
   tracks: true,
   clouds: true,
+  constellations: true,
+  constellationsDebug: false,
   sunInclination: 140,
   sunAzimuth: 230,
   heading: 0,
@@ -262,6 +266,7 @@ export const NUMBER_KEYS = [
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
+  "constellations", "constellationsDebug",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
@@ -475,7 +480,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedWallThickness", "bedHeight",
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
-  "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
+  "trail", "clouds", "constellations", "constellationsDebug",
+  "sunInclination", "sunAzimuth", "heading",
   "perspective", "bot", "laser", "viewpointHeading",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",

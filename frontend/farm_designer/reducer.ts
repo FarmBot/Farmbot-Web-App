@@ -11,6 +11,9 @@ import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
+import {
+  clampStargazingFov, STARGAZING_DEFAULT_FOV,
+} from "./stargazing_constants";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -74,6 +77,8 @@ export const initialState: DesignerState = {
   threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
   threeDSectionCutAll: true,
+  threeDStargazingMode: false,
+  threeDStargazingFov: STARGAZING_DEFAULT_FOV,
   threeDTime: undefined,
 };
 
@@ -309,6 +314,18 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.SET_3D_SECTION_CUT_ALL, (s, { payload }) => {
     s.threeDSectionCutAll = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_STARGAZING_MODE, (s, { payload }) => {
+    s.threeDStargazingMode = payload;
+    if (payload) {
+      s.threeDPerspective = true;
+      s.panelOpen = false;
+    }
+    return s;
+  })
+  .add<number>(Actions.SET_3D_STARGAZING_FOV, (s, { payload }) => {
+    s.threeDStargazingFov = clampStargazingFov(payload);
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {

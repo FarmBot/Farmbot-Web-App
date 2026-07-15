@@ -32,6 +32,7 @@ import {
 } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
+import { StargazingControls } from "./stargazing";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -177,6 +178,12 @@ export class RawFarmDesigner
       this.props.dispatch, this.props.farmwareEnvs);
 
     return <div className="farm-designer">
+
+      {threeDGarden &&
+        <StargazingControls
+          active={this.props.designer.threeDStargazingMode}
+          fov={this.props.designer.threeDStargazingFov}
+          dispatch={this.props.dispatch} />}
 
       <GardenMapLegend
         className={this.mapPanelClassName}

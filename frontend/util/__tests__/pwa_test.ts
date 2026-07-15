@@ -4,7 +4,8 @@ import {
 
 describe("registerServiceWorker()", () => {
   it("registers service worker", () => {
-    window.addEventListener = jest.fn();
+    jest.spyOn(window, "addEventListener")
+      .mockImplementation(() => undefined);
     const register = jest.fn(() => Promise.resolve());
     Object.defineProperty(navigator, "serviceWorker", {
       value: { register },
@@ -20,7 +21,8 @@ describe("registerServiceWorker()", () => {
   });
 
   it("fails to register", () => {
-    window.addEventListener = jest.fn();
+    jest.spyOn(window, "addEventListener")
+      .mockImplementation(() => undefined);
     const register = jest.fn(() => Promise.reject());
     Object.defineProperty(navigator, "serviceWorker", {
       value: { register },
@@ -35,7 +37,8 @@ describe("registerServiceWorker()", () => {
   });
 
   it("serviceWorker undefined", () => {
-    window.addEventListener = jest.fn();
+    jest.spyOn(window, "addEventListener")
+      .mockImplementation(() => undefined);
 
     const SW = navigator.serviceWorker;
     // Remove the property entirely to simulate the absence of serviceWorker
@@ -71,7 +74,8 @@ beforeAll(() => {
 
 describe("initPWA", () => {
   it("initializes PWA", () => {
-    window.addEventListener = jest.fn();
+    jest.spyOn(window, "addEventListener")
+      .mockImplementation(() => undefined);
     const register = jest.fn(() => Promise.resolve());
     Object.defineProperty(navigator, "serviceWorker", {
       value: { register }, configurable: true,

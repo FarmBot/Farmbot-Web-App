@@ -2,7 +2,7 @@ let mockIsMobile = false;
 
 import React from "react";
 import { fireEvent } from "@testing-library/react";
-import { RawNavBar as NavBar } from "../index";
+import { mapStateToProps, RawNavBar as NavBar } from "../index";
 import { Provider } from "react-redux";
 import { Store, UnknownAction } from "redux";
 import { TaggedResource } from "farmbot";
@@ -32,6 +32,7 @@ import * as guessTimezone from "../../devices/timezones/guess_timezone";
 import { showTimeTravelButton } from "../../three_d_garden/time_travel";
 import * as mustBeOnline from "../../devices/must_be_online";
 import { fakeState } from "../../__test_support__/fake_state";
+import { BooleanSetting } from "../../session_keys";
 
 let isMobileSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
@@ -191,6 +192,12 @@ describe("<NavBar />", () => {
     expect(container.querySelector(".connectivity-button.hover")).toBeTruthy();
     expect(container.querySelector(".nav-coordinates.hover")).toBeTruthy();
     expect(container.querySelector(".jobs-button.hover")).toBeTruthy();
+    expect(document.querySelector(
+      ".connectivity-popover-portal.nav-popover-portal")).toBeTruthy();
+    expect(document.querySelector(
+      ".controls-popover-portal.nav-popover-portal")).toBeTruthy();
+    expect(document.querySelector(
+      ".jobs-panel-portal.nav-popover-portal")).toBeTruthy();
   });
 
   it("displays movement progress", () => {
@@ -243,6 +250,27 @@ describe("<NavBar />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POPUP, payload: "connectivity",
     });
+    fireEvent.click(container.querySelector(".nav-coordinates") as Element);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POPUP, payload: "controls",
+    });
+    fireEvent.click(container.querySelector(".jobs-button") as Element);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POPUP, payload: "jobs",
+    });
+  });
+
+  it("closes the mobile menu from a navigation link", () => {
+    const setStateSpy = jest.spyOn(
+      NavBar.prototype as unknown as { setState: jest.Mock },
+      "setState",
+    );
+    const { container } = renderNavBar();
+    fireEvent.click(container.querySelector(
+      ".top-menu-container .nav-links a",
+    ) as Element);
+    expect(setStateSpy).toHaveBeenCalledWith({ mobileMenuOpen: false });
+    setStateSpy.mockRestore();
   });
 
   it("updates document title", () => {
@@ -365,6 +393,20 @@ describe("<NavBar />", () => {
       == p.bot.hardware.mcu_params);
     expect(callWithMcuParams).toBeTruthy();
     controlsPanelSpy.mockRestore();
+  });
+
+  it("maps and caches connected navigation state", () => {
+    const state = fakeState();
+    const first = mapStateToProps(state);
+    expect(first.dispatch).toBe(state.dispatch);
+    expect(first.resources).toBe(state.resources.index);
+    expect(first.designer).toBe(state.resources.consumers.farm_designer);
+    first.getConfigValue(BooleanSetting.three_d_garden);
+
+    const nextState = { ...state, bot: { ...state.bot } };
+    const second = mapStateToProps(nextState);
+    expect(second.bot).toBe(first.bot);
+    expect(mapStateToProps(nextState).bot).toBe(first.bot);
   });
 
 });

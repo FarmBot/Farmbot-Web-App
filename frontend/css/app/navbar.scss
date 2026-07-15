@@ -23,7 +23,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .nav-load-in {
-    animation: nav-slide-in 320ms ease-out both;
+    animation: nav-slide-in 320ms ease-out backwards;
   }
 }
 

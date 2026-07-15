@@ -31,6 +31,8 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
   bedBrightness: 8,
   soilBrightness: 12,
   clouds: 1,
+  constellations: 1,
+  constellationsDebug: 0,
   laser: 0,
   stats: 0,
   threeAxes: 0,
@@ -87,6 +89,8 @@ export const get3DConfigValueFunction = (envs: TaggedFarmwareEnv[]) => {
   return (key: keyof Config): number => {
     const maybe = configs[namespace3D(key)];
     const raw = isUndefined(maybe) ? DEFAULTS[key] : maybe.body.value;
+    if (raw === true || raw === "true") { return 1; }
+    if (raw === false || raw === "false") { return 0; }
     return parseFloat("" + raw);
   };
 };

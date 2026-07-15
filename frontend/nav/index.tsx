@@ -210,7 +210,7 @@ const ConnectionStatus = (props: ConnectionStatusProps) => {
   return <div className={"connection-status-popover nav-popup-button-wrapper"}>
     <ErrorBoundary>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"connectivity-popover-portal"}
+        portalClassName={"nav-popover-portal connectivity-popover-portal"}
         popoverClassName={"connectivity-popover"}
         isOpen={props.isOpen}
         enforceFocus={false}
@@ -334,6 +334,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     if (!showTimeTravelButton(threeDGarden, common.device)) { return; }
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"nav-popover-portal"}
         isOpen={isOpen}
         enforceFocus={false}
         target={<TimeTravelTarget {...common}
@@ -353,7 +354,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     const remaining = movementPercentRemaining(current, movementState);
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"controls-popover-portal"}
+        portalClassName={"nav-popover-portal controls-popover-portal"}
         popoverClassName={"controls-popover"}
         isOpen={isOpen}
         enforceFocus={false}
@@ -429,7 +430,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     const isOpen = this.props.appState.popups.jobs;
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"jobs-panel-portal"}
+        portalClassName={"nav-popover-portal jobs-panel-portal"}
         popoverClassName={"jobs-panel"}
         isOpen={isOpen}
         enforceFocus={false}

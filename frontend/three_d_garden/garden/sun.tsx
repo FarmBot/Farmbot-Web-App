@@ -3,18 +3,16 @@ import {
   Config, getSeasonProperties, INITIAL, seasonSpringConfig,
 } from "../config";
 import {
-  Vector3, DirectionalLight as ThreeDirectionalLight, Mesh,
+  Vector3, DirectionalLight as ThreeDirectionalLight, Mesh as ThreeMesh,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
-  Material,
-  BufferAttribute as ThreeBufferAttribute,
-  BufferGeometry as ThreeBufferGeometry,
-  WebGLProgramParametersWithUniforms,
 } from "three";
 import {
-  DirectionalLight, Group, MeshBasicMaterial, Points, PointsMaterial,
+  DirectionalLight, Group, MeshBasicMaterial,
 } from "../components";
-import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
+import {
+  Billboard, Line, Sphere, Text3D, Trail,
+} from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useSpring } from "@react-spring/three";
 import SunCalc from "suncalc";
@@ -24,6 +22,10 @@ import { Season, SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { ASSETS, BigDistance } from "../constants";
 import { SECTION_CLIPPING_EXEMPT } from "../section";
+import {
+  Constellations, ConstellationsHandle,
+} from "./constellations";
+import { polarToCartesian } from "./celestial_coordinates";
 
 const shadowBias = -0.0005;
 const shadowRadius = 8;
@@ -66,8 +68,10 @@ interface SunAnimationSample {
 
 export interface SunProps {
   config: Config;
+  stargazing: boolean;
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  onSunBelowHorizonChange?(sunBelowHorizon: boolean): void;
 }
 
 export const calcSunCoordinate = (
@@ -100,6 +104,16 @@ export const getAnimatedSeasonDate = (
   const date = new Date(seasonDayStart.getTime() + sample.sunSeconds * 1000);
   return date;
 };
+
+export const getAnimatedSeasonSunCoordinate = (
+  season: string,
+  elapsedSeconds: number,
+) => calcSunCoordinate(
+  getAnimatedSeasonDate(season, elapsedSeconds),
+  0,
+  35,
+  0,
+);
 
 const findSunAnimationSample = (
   samples: SunAnimationSample[],
@@ -147,20 +161,6 @@ const getSunAnimationSamples = (dayStart: Date): SunAnimationSample[] => {
   return samples;
 };
 
-const toRad = (degrees: number) => degrees * Math.PI / 180;
-const polarToCartesian = (
-  radius: number,
-  thetaDegrees: number,
-  phiDegrees: number,
-): [number, number, number] => {
-  const theta = toRad(thetaDegrees);
-  const phi = toRad(phiDegrees);
-  const x = radius * Math.sin(phi) * Math.cos(theta);
-  const y = radius * Math.sin(phi) * Math.sin(theta);
-  const z = radius * Math.cos(phi);
-  return [x, y, z];
-};
-
 export const sunPosition = (
   sunInclination: number,
   sunAzimuth: number,
@@ -170,6 +170,35 @@ export const sunPosition = (
   const phi = 90 - sunInclination;
   const position = polarToCartesian(distance, theta, phi);
   return new Vector3(...position);
+};
+
+export const getSeasonAnimationElapsedAtSunPosition = (
+  season: string,
+  inclination: number,
+  azimuth: number,
+) => {
+  const dayStart = getSeasonDayStart(season);
+  const samples = getSunAnimationSamples(dayStart);
+  const target = sunPosition(inclination, azimuth, 1);
+  let closestSample = samples[0];
+  let closestDistance = Infinity;
+  samples.map(sample => {
+    const date = new Date(dayStart.getTime() + sample.sunSeconds * 1000);
+    const coordinate = calcSunCoordinate(date, 0, 35, 0);
+    const distance = sunPosition(
+      coordinate.inclination,
+      coordinate.azimuth,
+      1,
+    ).distanceToSquared(target);
+    if (distance < closestDistance) {
+      closestSample = sample;
+      closestDistance = distance;
+    }
+  });
+  const totalAnimationSeconds =
+    samples[samples.length - 1].animationSeconds;
+  return closestSample.animationSeconds / totalAnimationSeconds
+    * getCycleLength(season);
 };
 
 const convertColor =
@@ -218,14 +247,18 @@ export const calcSunI = (inclination: number) => {
 
 interface AnimatedSunFrameProps extends SunProps {
   lightRef: React.RefObject<ThreeDirectionalLight | null>;
-  debugSunRef: React.RefObject<Mesh | null>;
-  sunRef: React.RefObject<Mesh | null>;
-  sunFlatRef: React.RefObject<Mesh | null>;
+  debugSunRef: React.RefObject<ThreeMesh | null>;
+  sunRef: React.RefObject<ThreeMesh | null>;
+  sunFlatRef: React.RefObject<ThreeMesh | null>;
   lineRef: React.RefObject<Line2 | null>;
   animatedSunRef: React.MutableRefObject<SunSpringValues>;
   sunIntensity: number;
   setPoint: React.Dispatch<React.SetStateAction<Vector3>>;
-  setSunSky(sunFactor: number, sunValue: number): void;
+  setSunSky(
+    sunFactor: number,
+    sunValue: number,
+    sunInclination: number,
+  ): void;
 }
 
 interface SunSpringValues {
@@ -235,7 +268,7 @@ interface SunSpringValues {
   azimuth: number;
 }
 
-const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
+export const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
   const {
     config, startTimeRef, lightRef, debugSunRef, sunRef, sunFlatRef, lineRef,
     animatedSunRef, sunIntensity, setPoint, setSunSky,
@@ -244,8 +277,8 @@ const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
     const t = getSeasonAnimationElapsed(config.animateSeasons, startTimeRef);
     if (t == undefined) { return; }
 
-    const date = getAnimatedSeasonDate(config.plants, t);
-    const { azimuth, inclination } = calcSunCoordinate(date, 0, 35, 0);
+    const { azimuth, inclination } =
+      getAnimatedSeasonSunCoordinate(config.plants, t);
     animatedSunRef.current = {
       ...animatedSunRef.current,
       azimuth,
@@ -254,7 +287,7 @@ const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
     const sunFactor = calcSunI(inclination);
     const position = sunPosition(inclination, azimuth, BigDistance.sunActual);
 
-    setSunSky(sunFactor, config.sun);
+    setSunSky(sunFactor, config.sun, inclination);
 
     const light = lightRef.current;
     if (light) {
@@ -306,20 +339,21 @@ const SunBase = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const lightRef = React.useRef<ThreeDirectionalLight>(null);
   // eslint-disable-next-line no-null/no-null
-  const debugSunRef = React.useRef<Mesh>(null);
+  const debugSunRef = React.useRef<ThreeMesh>(null);
   // eslint-disable-next-line no-null/no-null
-  const sunRef = React.useRef<Mesh>(null);
+  const sunRef = React.useRef<ThreeMesh>(null);
   // eslint-disable-next-line no-null/no-null
-  const sunFlatRef = React.useRef<Mesh>(null);
+  const sunFlatRef = React.useRef<ThreeMesh>(null);
   // eslint-disable-next-line no-null/no-null
   const lineRef = React.useRef<Line2>(null);
   const [point, setPoint] = React.useState<Vector3>(sunPos);
   // eslint-disable-next-line no-null/no-null
-  const starsRef = React.useRef<Material>(null);
+  const constellationsRef = React.useRef<ConstellationsHandle>(null);
   const origin = new Vector3(0, 0, 0);
   const renderedSunFactor = calcSunI(renderedSunInclination);
-  const showOtherSuns =
+  const showStarField =
     renderedSunFactor < 1 || !!props.startTimeRef;
+  const sunBelowHorizonRef = React.useRef<boolean | undefined>(undefined);
   const shadowBounds = React.useMemo(() => {
     const bedXBounds = Math.max(
       Math.abs(config.bedXOffset),
@@ -340,12 +374,20 @@ const SunBase = (props: SunProps) => {
     config.botSizeY,
   ]);
 
-  const setSunSky = (sunFactor: number, sunValue: number) => {
+  const setSunSky = (
+    sunFactor: number,
+    sunValue: number,
+    sunInclination: number,
+  ) => {
     props.skyRef.current?.color?.setRGB(
       ...skyColor(sunFactor * sunValue),
     );
-    starsRef.current &&
-      (starsRef.current.opacity = (1 - sunFactor));
+    constellationsRef.current?.setNightFactor(1 - sunFactor);
+    const sunBelowHorizon = sunInclination <= 0;
+    if (sunBelowHorizonRef.current != sunBelowHorizon) {
+      sunBelowHorizonRef.current = sunBelowHorizon;
+      props.onSunBelowHorizonChange?.(sunBelowHorizon);
+    }
   };
 
   const sunSpringTargets = React.useMemo(() => ({
@@ -413,9 +455,15 @@ const SunBase = (props: SunProps) => {
       != undefined) {
       return;
     }
-    setSunSky(renderedSunFactor, config.sun);
+    setSunSky(renderedSunFactor, config.sun, renderedSunInclination);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.animateSeasons, config.sun, props.startTimeRef, renderedSunFactor]);
+  }, [
+    config.animateSeasons,
+    config.sun,
+    props.startTimeRef,
+    renderedSunFactor,
+    renderedSunInclination,
+  ]);
 
   return <Group name={"sun"}
     userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
@@ -469,7 +517,15 @@ const SunBase = (props: SunProps) => {
         BigDistance.sunVisual)}>
       <MeshBasicMaterial color={SUN_COLOR} />
     </Sphere>
-    {showOtherSuns && <OtherSuns starsRef={starsRef} />}
+    {showStarField &&
+      <React.Suspense fallback={undefined}>
+        <Constellations
+          ref={constellationsRef}
+          enabled={config.constellations}
+          debug={config.constellationsDebug}
+          stargazing={props.stargazing}
+          nightFactor={1 - renderedSunFactor} />
+      </React.Suspense>}
     {config.lightsDebug && <SkyGrid config={config} />}
     {config.lightsDebug && <Sphere
       ref={sunFlatRef}
@@ -488,6 +544,8 @@ const SUN_CONFIG_FIELDS: (keyof Config)[] = [
   "bedYOffset",
   "botSizeX",
   "botSizeY",
+  "constellations",
+  "constellationsDebug",
   "lightsDebug",
   "lowDetail",
   "plants",
@@ -498,104 +556,13 @@ const SUN_CONFIG_FIELDS: (keyof Config)[] = [
 
 export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
   prev.skyRef === next.skyRef
+  && prev.stargazing === next.stargazing
   && prev.startTimeRef === next.startTimeRef
+  && prev.onSunBelowHorizonChange === next.onSunBelowHorizonChange
   && SUN_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
 export const Sun = React.memo(SunBase, sunPropsEqual);
-
-interface StarData {
-  positions: Float32Array;
-  sizes: Float32Array;
-}
-
-export const generateStars = (
-  random = Math.random,
-): StarData => {
-  const maxPhi = 82.5;
-  const minSize = 0.5;
-  const sizeRange = 1.5;
-  const r = BigDistance.sunVisual;
-  const positions = new Float32Array(1000 * 3);
-  const sizes = new Float32Array(1000);
-  for (let i = 0; i < 1000; i++) {
-    const theta = random() * 360;
-    const phi = random() * maxPhi;
-    const position = polarToCartesian(r, theta, phi);
-    const offset = i * 3;
-    positions[offset] = position[0];
-    positions[offset + 1] = position[1];
-    positions[offset + 2] = position[2];
-    sizes[i] = minSize + random() * sizeRange;
-  }
-  return { positions, sizes };
-};
-
-let starData: StarData | undefined;
-
-const getStarData = () => {
-  starData ||= generateStars();
-  return starData;
-};
-
-let otherSunGeometry: ThreeBufferGeometry | undefined;
-
-const getOtherSunGeometry = () => {
-  if (!otherSunGeometry) {
-    const { positions, sizes } = getStarData();
-    otherSunGeometry = new ThreeBufferGeometry();
-    otherSunGeometry.setAttribute(
-      "position",
-      new ThreeBufferAttribute(positions, 3),
-    );
-    otherSunGeometry.setAttribute(
-      "starSize",
-      new ThreeBufferAttribute(sizes, 1),
-    );
-  }
-  return otherSunGeometry;
-};
-
-export const starShaderModification = (
-  shader: WebGLProgramParametersWithUniforms,
-) => {
-  shader.vertexShader = shader.vertexShader
-    .replace(
-      "#include <common>",
-      `#include <common>
-       attribute float starSize;`,
-    )
-    .replace(
-      "#include <project_vertex>",
-      `#include <project_vertex>
-     vec3 starWorldPosition =
-       (modelMatrix * vec4(transformed, 1.0)).xyz;
-     if (dot(starWorldPosition, cameraPosition) > 0.0) {
-       gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-     }`,
-    )
-    .replace(
-      "gl_PointSize = size;",
-      "gl_PointSize = size * starSize;",
-    );
-};
-
-const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> }) => {
-  return <Points
-    geometry={getOtherSunGeometry()}
-    // eslint-disable-next-line no-null/no-null
-    dispose={null}>
-    <PointsMaterial
-      ref={starsRef}
-      color={"white"}
-      size={1}
-      sizeAttenuation={false}
-      transparent={true}
-      opacity={1}
-      onBeforeCompile={starShaderModification}
-      depthWrite={false} />
-  </Points>;
-};
 
 interface SkyGridProps {
   config: Config;

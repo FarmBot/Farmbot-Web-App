@@ -125,6 +125,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     bedBrightness: getValue("bedBrightness"),
     soilBrightness: getValue("soilBrightness"),
     clouds: getValue("clouds"),
+    constellations: getValue("constellations"),
+    constellationsDebug: getValue("constellationsDebug"),
     laser: getValue("laser"),
     stats: getValue("stats"),
     threeAxes: getValue("threeAxes"),
@@ -243,6 +245,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.bedBrightness = configValues.bedBrightness;
     nextConfig.soilBrightness = configValues.soilBrightness;
     nextConfig.clouds = !!configValues.clouds;
+    nextConfig.constellations = !!configValues.constellations;
+    nextConfig.constellationsDebug = !!configValues.constellationsDebug;
     nextConfig.laser = !!configValues.laser;
     nextConfig.stats = !!configValues.stats;
     nextConfig.threeAxes = !!configValues.threeAxes;
@@ -322,6 +326,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.ccSupportSize,
     configValues.clouds,
     configValues.columnLength,
+    configValues.constellations,
+    configValues.constellationsDebug,
     configValues.eventDebug,
     configValues.extraLegsX,
     configValues.extraLegsY,

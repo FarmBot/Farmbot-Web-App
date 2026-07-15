@@ -365,6 +365,27 @@ describe("focus transitions", () => {
       .toBeCloseTo(referenceScale);
   });
 
+  it("lands exactly on the requested camera state", () => {
+    const destination = {
+      position: [250, 500, 750] as [number, number, number],
+      target: [10, 20, 30] as [number, number, number],
+      zoom: 2,
+      fov: 90,
+    };
+    const result = interpolateCameraState({
+      position: [1000, 0, 0],
+      target: [0, 0, 0],
+      zoom: 1,
+      fov: 40,
+    }, destination, 1);
+    expect(result.position[0]).toBeCloseTo(destination.position[0]);
+    expect(result.position[1]).toBeCloseTo(destination.position[1]);
+    expect(result.position[2]).toBeCloseTo(destination.position[2]);
+    expect(result.target).toEqual(destination.target);
+    expect(result.zoom).toEqual(destination.zoom);
+    expect(result.fov).toEqual(destination.fov);
+  });
+
   it.each([
     [[1, 0, 0], [-1, 0, 0]],
     [[0, 0, 1], [0, 0, -1]],
@@ -570,6 +591,21 @@ describe("focus transitions", () => {
     expect(camera.updateProjectionMatrix).toHaveBeenCalled();
     expect(controls.target.set).toHaveBeenCalledWith(4, 5, 6);
     expect(controls.update).toHaveBeenCalled();
+  });
+
+  it("applies camera state without emitting a controls update", () => {
+    const controls = {
+      target: { set: jest.fn() },
+      update: jest.fn(),
+    };
+    applySmoothCameraState({
+      position: [1, 2, 3],
+      target: [4, 5, 6],
+      zoom: 2,
+      fov: 20,
+    }, undefined, controls, { emitControlsUpdate: false });
+    expect(controls.target.set).toHaveBeenCalledWith(4, 5, 6);
+    expect(controls.update).not.toHaveBeenCalled();
   });
 
   it("reads live camera and controls state", () => {

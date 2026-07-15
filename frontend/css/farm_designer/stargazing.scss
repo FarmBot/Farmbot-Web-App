@@ -1,0 +1,227 @@
+@use "../variables" as *;
+
+$stargazing-transition: 420ms cubic-bezier(0.22, 1, 0.36, 1);
+
+.nav-wrapper,
+.garden-map-legend,
+.view-prism-viewport,
+.three-d-camera-controls {
+  transition:
+  opacity $stargazing-transition,
+  transform $stargazing-transition;
+}
+
+.nav-popover-portal {
+  transition: opacity $stargazing-transition;
+}
+
+body.stargazing-active {
+  .nav-wrapper {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-110%);
+  }
+
+  .nav-popover-portal {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .garden-map-legend {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%) !important;
+  }
+
+  .view-prism-viewport,
+  .three-d-camera-controls {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(160%);
+  }
+}
+
+.stargazing-controls {
+  @include dark-theme-vars;
+
+  position: fixed;
+  top: 1.5em;
+  right: 1.5em;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  color: var(--text-color);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(100% + 2em));
+  transition:
+  opacity $stargazing-transition,
+  transform $stargazing-transition;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+.promo {
+  .stargazing-controls {
+    font-size: 10px;
+  }
+}
+
+.stargazing-exit-row {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  gap: 0.9em;
+}
+
+.stargazing-exit-key {
+  font-size: 1.2em;
+  font-weight: normal;
+  line-height: 1;
+  text-shadow: 0 0 10px #000;
+  pointer-events: none;
+}
+
+.stargazing-exit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 4em;
+  height: 4em;
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  color: var(--text-color);
+  background: var(--main-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 2em;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+  cursor: pointer;
+  transition:
+  color 160ms ease,
+  background-color 160ms ease;
+
+  &:hover {
+    color: $white;
+    background: $medium_gray;
+  }
+
+  i {
+    font-size: 1.8em;
+    line-height: 1;
+  }
+}
+
+.stargazing-zoom-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: flex-end;
+  gap: 0.6em;
+  width: 4em;
+  font-size: inherit;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.stargazing-zoom-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 4em;
+  height: 16em;
+  padding: 1em 0;
+  background: var(--main-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 2em;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+
+  input[type="range"] {
+    width: 14em;
+    height: 1.6em !important;
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    appearance: none !important;
+    background: $transparent;
+    box-shadow: none;
+    cursor: pointer;
+    transform: rotate(90deg);
+
+    &::-webkit-slider-runnable-track {
+      height: 0.4em;
+      border-radius: 0.2em;
+      background: linear-gradient(
+        to right,
+        var(--text-color) 0,
+        var(--text-color) var(--stargazing-fov-position),
+        dodgerblue var(--stargazing-fov-position),
+        dodgerblue 100%
+      );
+    }
+
+    &::-webkit-slider-thumb {
+      width: 1.4em;
+      height: 1.4em;
+      margin-top: -0.5em;
+      appearance: none;
+      border: 0;
+      border-radius: 50%;
+      background: dodgerblue;
+    }
+
+    &::-moz-range-track {
+      height: 0.4em;
+      border-radius: 0.2em;
+      background: linear-gradient(
+        to right,
+        var(--text-color) 0,
+        var(--text-color) var(--stargazing-fov-position),
+        dodgerblue var(--stargazing-fov-position),
+        dodgerblue 100%
+      );
+    }
+
+    &::-moz-range-progress {
+      background: $transparent;
+    }
+
+    &::-moz-range-thumb {
+      width: 1.4em;
+      height: 1.4em;
+      border: 0;
+      border-radius: 50%;
+      background: dodgerblue;
+    }
+  }
+}
+
+.stargazing-zoom-label {
+  font-size: 1.2em;
+  font-weight: normal;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 0 10px #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-wrapper,
+  .garden-map-legend,
+  .view-prism-viewport,
+  .three-d-camera-controls,
+  .nav-popover-portal,
+  .stargazing-controls,
+  .stargazing-exit {
+    transition: none;
+  }
+}
