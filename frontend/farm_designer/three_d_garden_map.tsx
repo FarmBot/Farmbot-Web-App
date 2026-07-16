@@ -13,6 +13,7 @@ import {
   TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedTool,
   TaggedDevice, TaggedFbosConfig, TaggedSequence, TaggedWeedPointer,
   TaggedPeripheral,
+  TaggedSceneObject,
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -23,13 +24,12 @@ import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
-import { SCENES } from "../settings/three_d_settings";
+import { SCENES, TEXTURES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { MovementState, TimeSettings } from "../interfaces";
-import { TaggedSceneObject } from "../scene_objects/interfaces";
 import { effectiveThreeDPerspective } from "./three_d_camera_controls";
 
 export interface ThreeDGardenMapProps {
@@ -151,6 +151,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     zDimension: getValue("zDimension"),
     urlCameraPos: getValue("urlCameraPos"),
     scene: getValue("scene"),
+    groundTexture: getValue("groundTexture"),
     people: getValue("people"),
     sunAzimuth: getValue("sunAzimuth"),
     sunInclination: getValue("sunInclination"),
@@ -271,6 +272,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     nextConfig.zDimension = !!configValues.zDimension;
     nextConfig.urlCameraPos = !!configValues.urlCameraPos;
     nextConfig.scene = SCENES[configValues.scene];
+    nextConfig.groundTexture = TEXTURES[configValues.groundTexture];
     nextConfig.people = !!configValues.people;
     nextConfig.north = true;
     nextConfig.plants = "";
@@ -340,6 +342,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     configValues.moistureDebug,
     configValues.people,
     configValues.scene,
+    configValues.groundTexture,
     configValues.soilBrightness,
     configValues.solar,
     configValues.stats,

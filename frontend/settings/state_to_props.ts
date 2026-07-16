@@ -9,6 +9,7 @@ import {
   getDeviceAccountSettings, maybeGetTimeSettings, getUserAccountSettings,
   selectAllFarmwareEnvs,
   selectAllWizardStepResults,
+  selectAllSceneObjects,
 } from "../resources/selectors";
 import { saveOrEditFarmwareEnv } from "../farmware/state_to_props";
 import { getAllAlerts } from "../messages/state_to_props";
@@ -34,4 +35,5 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   wizardStepResults: selectAllWizardStepResults(props.resources.index),
   settingsPanelState: props.app.settingsPanelState,
   distanceIndicator: props.resources.consumers.farm_designer.distanceIndicator,
+  sceneObjectUuids: selectAllSceneObjects(props.resources.index).map(so => so.uuid),
 });

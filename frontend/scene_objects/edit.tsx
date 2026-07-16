@@ -15,7 +15,7 @@ import { destroy, edit, save } from "../api/crud";
 import { SceneObjectFormFields, SceneObjectFormValues } from "./form";
 import { ResourceTitle } from "../sequences/panel/editor";
 import {
-  sceneObjectFocusHandler, setUnifiedSceneObjectSize,
+  copySceneObject, sceneObjectFocusHandler, setUnifiedSceneObjectSize,
 } from "./actions";
 
 export const mapStateToProps = (props: Everything): EditSceneObjectProps => {
@@ -44,6 +44,7 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
       texture: sceneObject.body.texture,
       shape: sceneObject.body.shape,
       color: sceneObject.body.color,
+      show: sceneObject.body.show,
       x_center: sceneObject.body.x_center,
       y_center: sceneObject.body.y_center,
       z_base: sceneObject.body.z_base,
@@ -57,12 +58,12 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
     : undefined;
   const onValueChange = (
     field: keyof SceneObjectFormValues,
-    value: string | number,
+    value: string | number | boolean,
   ) => {
     if (!sceneObject) { return; }
     const nextValue = typeof sceneObject.body[field] === "number"
       ? parseInt(value as string)
-      : value as string;
+      : value;
     const resource = sceneObject as unknown as TaggedResource;
     const update = { [field]: nextValue } as Partial<typeof resource.body>;
     props.dispatch(edit(resource, update));
@@ -74,7 +75,11 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
       unified ? sceneObject?.uuid : undefined));
   const navigate = useNavigate();
   const sceneObjectsPath = Path.sceneObjects();
-  !sceneObject && Path.startsWith(sceneObjectsPath) && navigate(sceneObjectsPath);
+  React.useEffect(() => {
+    if (!sceneObject && Path.startsWith(sceneObjectsPath)) {
+      navigate(sceneObjectsPath);
+    }
+  }, [navigate, sceneObject, sceneObjectsPath]);
   return <DesignerPanel panelName={"edit-scene-object"} panel={Panel.SceneObjects}>
     <DesignerPanelHeader
       panelName={"edit-scene-object"}
@@ -87,6 +92,11 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
       backTo={Path.sceneObjects()}
       panel={Panel.SceneObjects}>
       <div className={"panel-header-icon-group"}>
+        {sceneObject &&
+          <i title={t("copy scene object")}
+            className={"fa fa-copy fb-icon-button invert"}
+            onClick={() =>
+              props.dispatch(copySceneObject(sceneObject, navigate))} />}
         {sceneObject &&
           <i title={t("delete")}
             className={"fa fa-trash fb-icon-button invert"}

@@ -27,6 +27,7 @@ describe("<ThreeDSettings />", () => {
       settingsPanelState: state,
       farmwareEnvs: [],
       distanceIndicator: "",
+      sceneObjectUuids: [],
     };
   };
 
@@ -126,6 +127,7 @@ describe("get3DConfigValueFunction()", () => {
     expect(getValue("bedHeight")).toEqual(300);
     expect(getValue("cameraFitDebug")).toEqual(0);
     expect(getValue("viewCube")).toEqual(1);
+    expect(getValue("groundTexture")).toEqual(0);
   });
 
   it("reads the prefixed camera-fit debug setting", () => {

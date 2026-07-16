@@ -192,6 +192,9 @@
     text-overflow: ellipsis;
     overflow: hidden;
   }
+  .my-scene-object-search-item {
+    grid-template-columns: 1fr auto;
+  }
   .plant-search-item-age {
     @extend %panel-item-base;
   }

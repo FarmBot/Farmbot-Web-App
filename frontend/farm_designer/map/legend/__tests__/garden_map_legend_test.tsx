@@ -64,6 +64,7 @@ describe("<GardenMapLegend />", () => {
     showZones: false,
     showSensorReadings: false,
     showMoistureInterpolationMap: false,
+    showSceneObjects: false,
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),

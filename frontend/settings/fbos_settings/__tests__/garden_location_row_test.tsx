@@ -39,7 +39,9 @@ beforeEach(() => {
     .mockImplementation(((props: FBSelectProps) =>
       <button
         onClick={() => props.onChange({ label: "Outdoor", value: 0 })}>
-        mock-scene-select
+        {props.list.some(item => item.label == "Custom")
+          ? "mock-scene-select"
+          : "mock-texture-select"}
       </button>) as never);
 });
 
@@ -60,6 +62,7 @@ describe("<GardenLocationRow />", () => {
     device: fakeDevice(),
     dispatch: jest.fn(),
     farmwareEnvs: [],
+    sceneObjectUuids: [],
   });
 
   it("doesn't have use location button", () => {

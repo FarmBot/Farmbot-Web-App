@@ -13,6 +13,7 @@ export interface FarmbotSettingsProps {
   settingsPanelState: SettingsPanelState;
   showAdvanced: boolean;
   farmwareEnvs: TaggedFarmwareEnv[];
+  sceneObjectUuids: string[];
 }
 
 export interface NameRowProps {
@@ -35,6 +36,7 @@ export interface GardenLocationRowProps {
   dispatch: Function;
   device: TaggedDevice;
   farmwareEnvs: TaggedFarmwareEnv[];
+  sceneObjectUuids: string[];
 }
 
 export interface AutoUpdateRowProps {

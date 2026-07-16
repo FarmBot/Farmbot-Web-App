@@ -94,6 +94,7 @@ export class RawFarmDesigner
       show_sensor_readings: init(BooleanSetting.show_sensor_readings, false),
       show_moisture_interpolation_map:
         init(BooleanSetting.show_moisture_interpolation_map, false),
+      show_scene_objects: init(BooleanSetting.show_scene_objects, true),
       bot_origin_quadrant: this.getBotOriginQuadrant(),
       zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue)),
     };
@@ -161,6 +162,7 @@ export class RawFarmDesigner
       show_zones,
       show_sensor_readings,
       show_moisture_interpolation_map,
+      show_scene_objects,
       zoom_level
     } = this.state;
 
@@ -200,6 +202,7 @@ export class RawFarmDesigner
         showZones={show_zones}
         showSensorReadings={show_sensor_readings}
         showMoistureInterpolationMap={show_moisture_interpolation_map}
+        showSceneObjects={show_scene_objects}
         designer={this.props.designer}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}

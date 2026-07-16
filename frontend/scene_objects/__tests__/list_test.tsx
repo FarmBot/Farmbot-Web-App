@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { mapStateToProps, RawSceneObjects } from "../list";
 import { SceneObjectsProps } from "../interfaces";
 import { Actions } from "../../constants";
@@ -13,7 +13,6 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { TaggedResource } from "farmbot";
 
 describe("<RawSceneObjects />", () => {
   const fakeProps = (): SceneObjectsProps => ({
@@ -69,6 +68,27 @@ describe("<RawSceneObjects />", () => {
       payload: undefined,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.sceneObjects(1));
+  });
+
+  it("toggles visibility for a scene object", () => {
+    const p = fakeProps();
+    const sceneObject = p.sceneObjects[0];
+    sceneObject.body.show = true;
+    const { container } = render(<RawSceneObjects {...p} />);
+    const item = container.querySelector(".scene-object-search-item")!;
+    const eye = item.querySelector(".fa-eye")!;
+
+    fireEvent.click(eye);
+
+    expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.EDIT_RESOURCE,
+      payload: expect.objectContaining({
+        uuid: sceneObject.uuid,
+        update: { show: false },
+      }),
+    }));
+    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("navigates to add a scene object", () => {
@@ -169,7 +189,7 @@ describe("<RawSceneObjects />", () => {
     p.farmwareEnvs = [scene];
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
-    fireEvent.click(getByText("Featured Scene Objects (6)"));
+    fireEvent.click(getByText("Featured Scene Objects (4)"));
     fireEvent.click(container.querySelectorAll("button.fb-button.green")[1]);
 
     expect(initSave).toHaveBeenCalled();
@@ -188,7 +208,7 @@ describe("<RawSceneObjects />", () => {
     p.farmwareEnvs = [scene];
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
-    fireEvent.click(getByText("Featured Scene Objects (6)"));
+    fireEvent.click(getByText("Featured Scene Objects (4)"));
     const firstFeaturedName = container
       .querySelector(".scene-object-search-item-name")
       ?.textContent || "";
@@ -208,10 +228,10 @@ describe("<RawSceneObjects />", () => {
     scene.body.key = "3D_scene";
     scene.body.value = "1";
     p.farmwareEnvs = [scene];
-    p.sceneObjects[0].body.name = "Desk";
+    p.sceneObjects[0].body.name = "Fence";
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
-    fireEvent.click(getByText("Featured Scene Objects (6)"));
+    fireEvent.click(getByText("Featured Scene Objects (4)"));
 
     expect(container.querySelector(
       ".scene-object-search-item input[type='checkbox']:disabled",
@@ -225,7 +245,7 @@ describe("<RawSceneObjects />", () => {
     scene.body.value = "1";
     p.farmwareEnvs = [scene];
     const { container, getByText } = render(<RawSceneObjects {...p} />);
-    fireEvent.click(getByText("Featured Scene Objects (6)"));
+    fireEvent.click(getByText("Featured Scene Objects (4)"));
 
     const featuredItem = container.querySelector(
       ".scene-object-search-item input[type='checkbox']",
@@ -257,7 +277,7 @@ describe("<RawSceneObjects />", () => {
     p.sceneObjects = [];
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
-    fireEvent.click(getByText("Featured Scene Objects (6)"));
+    fireEvent.click(getByText("Featured Scene Objects (4)"));
     const checkboxes = container.querySelectorAll(
       ".scene-object-search-item input[type='checkbox']",
     );
@@ -277,7 +297,7 @@ describe("<RawSceneObjects />", () => {
     initSave.mockRestore();
   });
 
-  it("dispatches scene config changes from the featured header selector", () => {
+  it("dispatches ground texture config changes", () => {
     const p = fakeProps();
     const fbSelectProps: FBSelectProps[] = [];
     const fbSelectSpy = jest.spyOn(ui, "FBSelect")
@@ -291,9 +311,9 @@ describe("<RawSceneObjects />", () => {
     render(<RawSceneObjects {...p} />);
     expect(fbSelectProps.length).toBeGreaterThan(0);
 
-    fbSelectProps[0].onChange({ label: "Lab", value: 1 });
+    fbSelectProps[0].onChange({ label: "bricks", value: 1 });
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
-      key: "3D_scene",
+      key: "3D_groundTexture",
       value: "1",
     });
     expect(p.dispatch).toHaveBeenCalledWith({ type: "init_save" });
@@ -301,13 +321,32 @@ describe("<RawSceneObjects />", () => {
     fbSelectSpy.mockRestore();
     initSave.mockRestore();
   });
+
+  it("changes the featured scene object library", () => {
+    const p = fakeProps();
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<RawSceneObjects {...p} />);
+    expect(fbSelectProps).toHaveLength(2);
+
+    act(() => fbSelectProps[1].onChange({ label: "Lab", value: 1 }));
+
+    expect(fbSelectProps).toHaveLength(4);
+    expect(fbSelectProps[3].selectedItem).toEqual({ label: "Lab", value: 1 });
+    fbSelectSpy.mockRestore();
+  });
 });
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const resource = fakeSceneObject({ id: 1 });
     const state = fakeState();
-    state.resources = buildResourceIndex([resource as TaggedResource]);
+    state.resources = buildResourceIndex([resource]);
 
     expect(mapStateToProps(state).sceneObjects).toEqual([resource]);
   });

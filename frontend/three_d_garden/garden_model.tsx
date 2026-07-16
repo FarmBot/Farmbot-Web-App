@@ -22,7 +22,7 @@ import {
   AddPlantProps, Bed, getRenderSoilSurfaceGeometry,
 } from "./bed";
 import {
-  Sky, Solar, Sun, sunPosition, ZoomBeacons,
+  Sky, LegacySolar, Sun, sunPosition, ZoomBeacons,
   PlantInstances,
   PlantSpreadInstances,
   PointInstances, Grid, Clouds, Ground, WeedInstances,
@@ -33,6 +33,7 @@ import {
   ZoomBeaconsProps,
   POINT_PIN_HEIGHT,
   POINT_PIN_RADIUS,
+  GroundTexturePreloader,
 } from "./garden";
 import { Config, PositionConfig } from "./config";
 import { useSpring } from "@react-spring/three";
@@ -52,6 +53,7 @@ import {
   TaggedTool,
   TaggedWeedPointer,
   TaggedPeripheral,
+  TaggedSceneObject,
 } from "farmbot";
 import { BooleanSetting } from "../session_keys";
 import { PeripheralValues } from
@@ -118,9 +120,8 @@ import { Text } from "./elements";
 import {
   getToolSlotRenderPosition,
 } from "./bot/components/tool_slot_position";
-import { TaggedSceneObject } from "../scene_objects/interfaces";
 import {
-  SceneObjects, useSceneObjectPlacement,
+  SceneObjects, staticSceneObjects, useSceneObjectPlacement,
 } from "./scene_objects";
 import {
   getSectionClippingPlanes, getSectionOutsidePlaneConstants,
@@ -873,7 +874,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         <Sphere args={[BigDistance.sky, 8, 16]}>
           <MeshBasicMaterial
             ref={skyRef}
-            color={skyColor(config.sun)}
+            color={skyColor(config.sun, config.scene)}
             side={BackSide} />
         </Sphere>
       </Group>
@@ -1080,7 +1081,7 @@ const staticGardenLayersPropsEqual = (
 const StaticGardenLayers = React.memo(
   StaticGardenLayersBase, staticGardenLayersPropsEqual);
 
-const ENVIRONMENT_SCENES = ["Outdoor", "Lab", "Greenhouse"] as const;
+const ENVIRONMENT_SCENES = ["Outdoor", "Lab", "Greenhouse", "Mars"] as const;
 type EnvironmentScene = typeof ENVIRONMENT_SCENES[number];
 
 const sceneMatches = (configScene: string, scene: EnvironmentScene) =>
@@ -1120,7 +1121,6 @@ const EnvironmentScenePreloader = (props: EnvironmentScenePreloaderProps) => {
         .map(scene => {
           const config = environmentSceneConfig(props.config, scene);
           return <React.Fragment key={scene}>
-            <Ground config={config} />
             {scene == "Outdoor" && <Clouds config={config} />}
             {scene == "Lab" &&
               <Lab
@@ -1678,7 +1678,8 @@ export const useGardenCameraController = (
         props.controls?.getAzimuthalAngle?.(),
         props.viewportSize,
       ));
-    }, [
+    },
+    [
       liveCameraState,
       props.cameraFitRadius,
       props.controls,
@@ -2471,12 +2472,13 @@ export const GardenModel = (props: GardenModelProps) => {
       mapPoints,
       weeds,
       toolSlots,
-      props.sceneObjects || [],
+      (props.sceneObjects || []).concat(staticSceneObjects(config.scene, true)),
     ), [
     addPlantProps?.designer,
     plants,
     mapPoints,
     props.sceneObjects,
+    config.scene,
     weeds,
     toolSlots,
   ]);
@@ -3020,7 +3022,7 @@ export const GardenModel = (props: GardenModelProps) => {
             config={config}
             configPosition={props.configPosition} />}
         {renderSolar &&
-          <Solar config={config} activeFocus={props.activeFocus} />}
+          <LegacySolar config={config} activeFocus={props.activeFocus} />}
         {config.scene == "Lab" &&
           <Lab
             config={config}
@@ -3044,20 +3046,30 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
           plantIconAtlas={props.plantIconAtlas} />
+        {loadProgress.complete &&
+          <React.Suspense fallback={undefined}>
+            <GroundTexturePreloader config={config} />
+          </React.Suspense>}
         {detailsReveal && !animatedDetailsLoadIn &&
           <LoadStepReady
             step={"details"}
             markStep={loadProgress.markStep} />}
-        <Group name={"scene-objects"}
-          userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
-          <SceneObjects
-            config={config}
-            activeFocus={props.activeFocus}
-            dispatch={dispatch}
-            designer={addPlantProps?.designer}
-            hoverSelection={hoverSelection}
-            sceneObjects={props.sceneObjects} />
-        </Group>
+        <PopInGroup
+          key={`scene-objects-load-in-${config.scene}`}
+          name={"scene-objects-load-in"}
+          reveal={detailsReveal}
+          distance={config.bedHeight + config.bedZOffset}>
+          <Group name={"scene-objects"}
+            userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
+            <SceneObjects
+              config={config}
+              activeFocus={props.activeFocus}
+              dispatch={dispatch}
+              designer={addPlantProps?.designer}
+              hoverSelection={hoverSelection}
+              sceneObjects={props.sceneObjects} />
+          </Group>
+        </PopInGroup>
       </SceneBoundary>
     </Group>
   </FocusTransitionProvider>;

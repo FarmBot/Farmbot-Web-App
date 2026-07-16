@@ -17,6 +17,7 @@ const FARMBOT_PANEL = [
   DeviceSetting.farmbotLocation,
   DeviceSetting.indoor,
   DeviceSetting.environment,
+  DeviceSetting.groundTexture,
   DeviceSetting.heading,
   DeviceSetting.time_zone,
   DeviceSetting.camera,

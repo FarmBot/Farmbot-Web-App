@@ -54,7 +54,7 @@ import {
 } from "../progressive_load";
 import { AxesHelper } from "../components";
 import { Clouds } from "../garden/clouds";
-import { Ground } from "../garden/ground";
+import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
 import { Solar } from "../garden/solar";
 import { configureStore, store } from "../../redux/store";
@@ -274,7 +274,8 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(0);
     expect(wrapper.root.findAllByType(Solar)).toHaveLength(0);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(0);
-    expect(wrapper.root.findAllByType(Ground)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Ground)
+      .filter(node => node.props.config === p.config)).toHaveLength(0);
     expect(wrapper.root.findAllByType(Clouds)).toHaveLength(0);
   });
 
@@ -290,7 +291,8 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(1);
     expect(wrapper.root.findAllByType(Solar)).toHaveLength(1);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(1);
-    expect(wrapper.root.findAllByType(Ground)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Ground)
+      .filter(node => node.props.config === p.config)).toHaveLength(1);
     expect(wrapper.root.findAllByType(Clouds)).toHaveLength(1);
   });
 
@@ -2009,9 +2011,14 @@ describe("<GardenModel />", () => {
     p.config.bot = false;
     p.config.zoomBeacons = false;
     p.onLoadComplete = jest.fn();
+    (useTexture as unknown as jest.Mock).mockClear();
     render(<GardenModel {...p} />);
     await waitFor(() =>
       expect(p.onLoadComplete).toHaveBeenCalled());
+    const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
+      .map(([url]) => url);
+    GROUND_TEXTURE_URLS.forEach(texture =>
+      expect(loadedTextures).toContain(texture));
   });
 
   it("adds a scene object from ground clicks", () => {
@@ -2083,13 +2090,13 @@ describe("<GardenModel />", () => {
   });
 
   it.each<[string, string]>([
-    ["Greenhouse", "ground Greenhouse"],
-    ["Lab", "ground Lab"],
-    ["Outdoor", "ground Outdoor"],
-  ])("renders different ground based on scene: %s %s",
-    (sceneName, expectedClass) => {
+    ["bricks", "ground bricks"],
+    ["concrete", "ground concrete"],
+    ["grass", "ground grass"],
+  ])("renders the selected ground texture: %s %s",
+    (groundTexture, expectedClass) => {
       const p = fakeProps();
-      p.config.scene = sceneName;
+      p.config.groundTexture = groundTexture;
       const { container } = render(<GardenModel {...p} />);
       expect(container.innerHTML).toContain(expectedClass);
     });

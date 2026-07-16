@@ -5,7 +5,7 @@ import { Group } from "../components";
 import { People } from "./props";
 import { PopInGroup } from "../progressive_load";
 import { type PlantIconAtlas } from "../garden/plant_icon_atlas";
-import { SceneObject } from "../../scene_objects/interfaces";
+import { SceneObject } from "farmbot/dist/resources/api_resources";
 
 export interface GreenhouseProps {
   config: Config;
@@ -21,6 +21,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "window",
     color: "#f4f4f4",
+    show: true,
     x_center: -2150,
     y_center: -1600,
     z_base: 0,
@@ -36,6 +37,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "window",
     color: "#f4f4f4",
+    show: true,
     x_center: 2850,
     y_center: 3370,
     z_base: 0,
@@ -51,6 +53,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "plant",
     color: "#ffffff",
+    show: true,
     x_center: -1920,
     y_center: 2200,
     z_base: 0,
@@ -66,6 +69,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "wood",
     shape: "box",
     color: "#aaa",
+    show: true,
     x_center: 2850,
     y_center: 3070,
     z_base: 775,
@@ -81,6 +85,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "tray",
     color: "#ffffff",
+    show: true,
     x_center: -150,
     y_center: 3060,
     z_base: 825,
@@ -96,6 +101,7 @@ export const GREENHOUSE_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "tray",
     color: "#ffffff",
+    show: true,
     x_center: 850,
     y_center: 3060,
     z_base: 825,

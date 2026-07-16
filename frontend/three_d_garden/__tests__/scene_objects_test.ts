@@ -357,6 +357,9 @@ describe("scene object placement helpers", () => {
         fakeSceneObject({ shape: "tray" }),
         fakeSceneObject({ shape: "laptop" }),
         fakeSceneObject({ shape: "desk" }),
+        fakeSceneObject({ shape: "solar" }),
+        fakeSceneObject({ shape: "tree" }),
+        fakeSceneObject({ shape: "fence" }),
         fakeSceneObject({ shape: "cylinder" }),
         fakeSceneObject({ shape: "sphere", texture: "none" }),
         fakeSceneObject({ shape: "window", x_size: 10000, y_size: 10 }),
@@ -365,6 +368,9 @@ describe("scene object placement helpers", () => {
 
     expect(wrapper.root.findAllByProps({ name: "desk" }).length).toBeTruthy();
     expect(wrapper.root.findAllByProps({ name: "laptop" }).length).toBeTruthy();
+    expect(wrapper.root.findAllByProps({ name: "solar" }).length).toBeTruthy();
+    expect(wrapper.root.findAllByProps({ name: "tree" }).length).toBeTruthy();
+    expect(wrapper.root.findAllByProps({ name: "fence" }).length).toBeTruthy();
     expect(wrapper.root.findAll(node =>
       node.props.args?.join(",") == "0.5,0.5,1,32").length)
       .toEqual(2);
@@ -2293,35 +2299,40 @@ describe("scene object placement helpers", () => {
   });
 
   it("renders placement previews for custom scene object shapes", () => {
-    ["plant", "tray", "window", "laptop", "desk", "box"].forEach(shape => {
-      const { result } = renderHook(() => useSceneObjectPlacement({
-        config: clone(INITIAL),
-        enabled: true,
-        dispatch: jest.fn(),
-        drawnSceneObject: fakeSceneObject({ shape }).body,
-      }));
-      const event = {
-        point: new Vector3(0, 0, 0),
-        nativeEvent: { clientY: 100 },
-        stopPropagation: jest.fn(),
-      };
+    [
+      "plant", "tray", "window", "laptop", "desk", "solar", "tree",
+      "fence", "box",
+    ]
+      .forEach(shape => {
+        const { result } = renderHook(() => useSceneObjectPlacement({
+          config: clone(INITIAL),
+          enabled: true,
+          dispatch: jest.fn(),
+          drawnSceneObject: fakeSceneObject({ shape }).body,
+        }));
+        const event = {
+          point: new Vector3(0, 0, 0),
+          nativeEvent: { clientY: 100 },
+          stopPropagation: jest.fn(),
+        };
 
-      act(() => {
-        result.current.onPointerMove(event as never);
-      });
-      act(() => {
-        result.current.onClick(event as never);
-      });
-      act(() => {
-        result.current.onPointerMove({
-          ...event,
-          point: new Vector3(50, 50, 0),
-        } as never);
-      });
+        act(() => {
+          result.current.onPointerMove(event as never);
+        });
+        act(() => {
+          result.current.onClick(event as never);
+        });
+        act(() => {
+          result.current.onPointerMove({
+            ...event,
+            point: new Vector3(50, 50, 0),
+          } as never);
+        });
 
-      const wrapper = createRenderer(result.current.preview as React.ReactElement);
-      expect(wrapper.root).toBeTruthy();
-      unmountRenderer(wrapper);
-    });
+        const wrapper = createRenderer(
+          result.current.preview as React.ReactElement);
+        expect(wrapper.root).toBeTruthy();
+        unmountRenderer(wrapper);
+      });
   });
 });

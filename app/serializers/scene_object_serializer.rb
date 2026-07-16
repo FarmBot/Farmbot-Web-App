@@ -4,6 +4,7 @@ class SceneObjectSerializer < ApplicationSerializer
              :name,
              :texture,
              :color,
+             :show,
              :shape,
              :x_origin,
              :y_origin,

@@ -1615,7 +1615,8 @@ CREATE TABLE public.scene_objects (
     y_size integer NOT NULL,
     z_size integer NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    show boolean DEFAULT true NOT NULL
 );
 
 
@@ -2083,7 +2084,8 @@ CREATE TABLE public.web_app_configs (
     three_d_garden boolean DEFAULT false,
     dark_mode boolean DEFAULT true,
     top_down_view boolean DEFAULT false,
-    viewpoint_heading integer DEFAULT 30
+    viewpoint_heading integer DEFAULT 30,
+    show_scene_objects boolean DEFAULT true
 );
 
 
@@ -3847,6 +3849,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260710222823'),
 ('20260430202719'),
 ('20260422013033'),
 ('20260417190743'),

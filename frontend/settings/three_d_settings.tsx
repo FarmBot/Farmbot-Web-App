@@ -1,7 +1,7 @@
 import React from "react";
 import { ThreeDSettingsProps } from "./interfaces";
 import { Highlight } from "./maybe_highlight";
-import { Actions, DeviceSetting, ToolTips } from "../constants";
+import { Actions, Content, DeviceSetting, ToolTips } from "../constants";
 import { Header } from "./hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
 import {
@@ -10,7 +10,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { TaggedFarmwareEnv } from "farmbot";
 import { isUndefined } from "lodash";
-import { edit, initSave, save } from "../api/crud";
+import { destroy, edit, initSave, save } from "../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "./default_values";
 import { Config, SurfaceDebugOption } from "../three_d_garden/config";
 
@@ -44,6 +44,7 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
   moistureDebug: 0,
   cameraFitDebug: 0,
   viewCube: 1,
+  groundTexture: 0,
   surfaceDebug: SurfaceDebugOption.none,
   ambient: 75,
   sun: 75,
@@ -65,7 +66,37 @@ export const SCENES: Record<number, string> = {
   0: "Outdoor",
   1: "Lab",
   2: "Greenhouse",
+  3: "Custom",
 };
+
+export const TEXTURES: Record<number, string> = {
+  0: "grass",
+  1: "bricks",
+  2: "concrete",
+  3: "water",
+  4: "aluminum",
+  5: "soil",
+  6: "sand",
+  7: "wood",
+};
+
+const GROUND_TEXTURE_FOR_SCENE: Record<string, string> = {
+  Outdoor: "grass",
+  Lab: "concrete",
+  Greenhouse: "bricks",
+  Custom: "grass",
+};
+
+const GROUND_TEXTURE_NUM_FROM_SCENE_NUM: Record<number, number> =
+  Object.entries(GROUND_TEXTURE_FOR_SCENE)
+    .reduce((acc, [sceneName, textureName]) => {
+      const sceneNum = Number(Object.entries(SCENES)
+        .find(([_, name]) => name == sceneName)?.[0]);
+      const textureNum = Number(Object.entries(TEXTURES)
+        .find(([_, name]) => name == textureName)?.[0]);
+      acc[sceneNum] = textureNum;
+      return acc;
+    }, {} as Record<number, number>);
 
 export const namespace3D = (key: string): string => "3D_" + key;
 
@@ -119,6 +150,8 @@ interface ThreeDConfigProps {
   findOrCreate(key: string, value: string): void;
   isToggle?: boolean;
   isScene?: boolean;
+  isTexture?: boolean;
+  sceneObjectUuids: string[];
 }
 
 export const ThreeDConfig = (props: ThreeDConfigProps) => {
@@ -151,8 +184,27 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
         <FBSelect
           list={Object.values(SCENE_DDIS)}
           selectedItem={SCENE_DDIS[value]}
+          onChange={ddi => {
+            if (SCENES[ddi.value as number] != "Custom" && ddi.value != value) {
+              if (props.sceneObjectUuids.length > 0) {
+                if (!confirm(t(Content.CONFIRM_SCENE_CHANGE,
+                  { count: props.sceneObjectUuids.length }))) {
+                  return;
+                }
+              }
+              props.sceneObjectUuids.map(uuid => dispatch(destroy(uuid)));
+              action("" + ddi.value);
+              props.findOrCreate("groundTexture",
+                "" + GROUND_TEXTURE_NUM_FROM_SCENE_NUM[ddi.value as number]);
+            }
+          }} />}
+      {props.isTexture &&
+        <FBSelect
+          key={value}
+          list={Object.values(TEXTURE_DDIS)}
+          selectedItem={TEXTURE_DDIS[value]}
           onChange={ddi => action("" + ddi.value)} />}
-      {!props.isToggle && !props.isScene &&
+      {!props.isToggle && !props.isScene && !props.isTexture &&
         <BlurableInput
           type="number"
           wrapperClassName={modifiedClassName}
@@ -162,17 +214,32 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
   </Highlight>;
 };
 
-export const SCENE_DDIS: Record<number, DropDownItem> = Object.entries(SCENES)
-  .reduce((acc, [key, label]) => {
-    acc[Number(key)] = { label, value: Number(key) };
-    return acc;
-  }, {} as Record<number, DropDownItem>);
+const DDIS = (values: Record<number, string>): Record<number, DropDownItem> =>
+  Object.entries(values)
+    .reduce((acc, [key, label]) => {
+      acc[Number(key)] = { label, value: Number(key) };
+      return acc;
+    }, {} as Record<number, DropDownItem>);
+
+export const SCENE_DDIS = DDIS(SCENES);
+export const TEXTURE_DDIS = DDIS(TEXTURES);
+
+const BY_NAME = (values: Record<number, string>) =>
+  Object.entries(values)
+    .reduce((acc, [key, label]) => {
+      acc[label] = Number(key);
+      return acc;
+    }, {} as Record<string, number>);
+export const SCENE_NUM_FROM_NAME = BY_NAME(SCENES);
 
 export const ThreeDSettings = (props: ThreeDSettingsProps) => {
   const { dispatch, distanceIndicator } = props;
   const getValue = get3DConfigValueFunction(props.farmwareEnvs);
   const findOrCreate = findOrCreate3DConfigFunction(dispatch, props.farmwareEnvs);
-  const common = { dispatch, getValue, findOrCreate, distanceIndicator };
+  const common = {
+    dispatch, getValue, findOrCreate, distanceIndicator,
+    sceneObjectUuids: props.sceneObjectUuids,
+  };
   return <Highlight className={"section"}
     settingName={DeviceSetting.threeDGarden}>
     <Header

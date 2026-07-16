@@ -1,7 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { useTexture } from "@react-three/drei";
-import { Ground, groundPropsEqual, GroundProps } from "../ground";
+import {
+  Ground, groundPropsEqual, GroundProps, GroundTexturePreloader,
+  GROUND_TEXTURE_URLS,
+} from "../ground";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { ASSETS } from "../../constants";
@@ -40,7 +43,7 @@ describe("<Ground />", () => {
     const wrapper = createRenderer(<Ground {...p} />);
     mountedWrappers.push(wrapper);
     const ground = wrapper.root.findAll(node =>
-      node.props.name == "ground Outdoor")[0];
+      node.props.name == "ground grass")[0];
     const color = ground.props.geometry.attributes.color;
     expect(ground.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(ground.props.position).toEqual([0, 0, -12825]);
@@ -65,7 +68,7 @@ describe("<Ground />", () => {
     const wrapper = createRenderer(<Ground {...p} />);
     mountedWrappers.push(wrapper);
     const ground = wrapper.root.findAll(node =>
-      node.props.name == "ground Outdoor")[0];
+      node.props.name == "ground grass")[0];
     const event = {};
 
     ground.props.onClick(event);
@@ -78,14 +81,14 @@ describe("<Ground />", () => {
   it("reuses detailed ground geometry across mounts", () => {
     const first = createRenderer(<Ground {...fakeProps()} />);
     const firstGround = first.root.findAll(node =>
-      node.props.name == "ground Outdoor")[0];
+      node.props.name == "ground grass")[0];
     const firstGeometry = firstGround.props.geometry;
     unmountRenderer(first);
 
     const second = createRenderer(<Ground {...fakeProps()} />);
     mountedWrappers.push(second);
     const secondGround = second.root.findAll(node =>
-      node.props.name == "ground Outdoor")[0];
+      node.props.name == "ground grass")[0];
 
     expect(secondGround.props.geometry).toBe(firstGeometry);
     expect(secondGround.props.dispose).toBeNull();
@@ -124,36 +127,38 @@ describe("<Ground />", () => {
       config: { ...p.config, lowDetail: !p.config.lowDetail },
     })).toBeFalsy();
     expect(groundPropsEqual(p, {
+      config: { ...p.config, groundTexture: "concrete" },
+    })).toBeFalsy();
+    expect(groundPropsEqual(p, {
       ...p,
       onClick: jest.fn(),
     })).toBeFalsy();
   });
 
-  it.each<[string, string, string[]]>([
-    [
-      "Outdoor",
-      ASSETS.textures.grass,
-      [ASSETS.textures.concrete, ASSETS.textures.bricks],
-    ],
-    [
-      "Lab",
-      ASSETS.textures.concrete,
-      [ASSETS.textures.grass, ASSETS.textures.bricks],
-    ],
-    [
-      "Greenhouse",
-      ASSETS.textures.bricks,
-      [ASSETS.textures.grass, ASSETS.textures.concrete],
-    ],
-  ])("loads only the active %s ground texture",
-    (scene, expectedTexture, skippedTextures) => {
+  it.each<[string, string]>([
+    ["grass", ASSETS.textures.grass],
+    ["bricks", ASSETS.textures.bricks],
+    ["concrete", ASSETS.textures.concrete],
+    ["water", ASSETS.textures.water],
+    ["aluminum", ASSETS.textures.aluminum],
+    ["soil", ASSETS.textures.soil],
+    ["sand", ASSETS.textures.sand],
+    ["wood", ASSETS.textures.wood],
+  ])("loads the selected %s ground texture",
+    (groundTexture, expectedTexture) => {
       const p = fakeProps();
-      p.config.scene = scene;
+      p.config.groundTexture = groundTexture;
       render(<Ground {...p} />);
       const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
         .map(([url]) => url);
       expect(loadedTextures).toContain(expectedTexture);
-      skippedTextures.forEach(texture =>
-        expect(loadedTextures).not.toContain(texture));
     });
+
+  it("preloads all selectable ground textures", () => {
+    render(<GroundTexturePreloader config={fakeProps().config} />);
+    const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
+      .map(([url]) => url);
+    expect(loadedTextures).toEqual(GROUND_TEXTURE_URLS);
+    expect(new Set(GROUND_TEXTURE_URLS).size).toEqual(8);
+  });
 });

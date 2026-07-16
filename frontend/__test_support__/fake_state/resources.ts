@@ -29,16 +29,15 @@ import {
   TaggedWizardStepResult,
   TaggedTelemetry,
   TaggedCurve,
+  TaggedSceneObject,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
   ExecutableType, PinBindingType, Folder,
+  SceneObject,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
-import {
-  _SO_RN, SceneObject, TaggedSceneObject,
-} from "../../scene_objects/interfaces";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 const globalAny = globalThis as typeof globalThis & {
@@ -368,6 +367,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_points: true,
     show_soil_interpolation_map: false,
     show_weeds: true,
+    show_scene_objects: true,
     x_axis_inverted: false,
     y_axis_inverted: false,
     z_axis_inverted: true,
@@ -551,12 +551,13 @@ export function fakeFarmwareEnv(): TaggedFarmwareEnv {
 export function fakeSceneObject(
   input: Partial<SceneObject> = {},
 ): TaggedSceneObject {
-  return fakeResource(_SO_RN, {
+  return fakeResource("SceneObject", {
     id: nextFakeId(),
     name: "Scene Object 1",
     texture: "concrete",
     shape: "box",
     color: "#fff",
+    show: true,
     x_center: 50,
     y_center: 50,
     z_base: 0,
@@ -567,7 +568,7 @@ export function fakeSceneObject(
     y_origin: "home",
     z_origin: "world",
     ...input,
-  }) as TaggedSceneObject;
+  });
 }
 
 export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {

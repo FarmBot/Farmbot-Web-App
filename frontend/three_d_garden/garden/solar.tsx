@@ -15,6 +15,11 @@ import { easeInOutCubic, useFocusTransition } from "../focus_transition";
 import { RenderOrder } from "../constants";
 
 export interface SolarProps {
+  size: [number, number, number];
+  opacity?: number | SpringValue<number>;
+}
+
+export interface LegacySolarProps {
   config: Config;
   activeFocus: string;
 }
@@ -25,6 +30,8 @@ const panelDepth = 30;
 const cellDepth = 2;
 const cellZ = panelDepth / 2 + cellDepth + 1;
 const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
+
+export const SOLAR_BOUNDS: [number, number, number] = [540, 2090, 300];
 
 const cell2D = () => {
   const cellSize = 95;
@@ -99,11 +106,15 @@ const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
   return <InstancedMesh
     ref={setRef}
     renderOrder={RenderOrder.one + 1}
+    castShadow={true}
+    receiveShadow={true}
     frustumCulled={false}
     args={[getSolarCellGeometry(), undefined, CELL_POSITIONS.length]}
     // eslint-disable-next-line no-null/no-null
     dispose={null}>
-    <SolarMaterial color={"#131361"} opacity={props.opacity}
+    <SolarMaterial
+      color={"#131361"}
+      opacity={props.opacity}
       side={DoubleSide} />
   </InstancedMesh>;
 };
@@ -111,7 +122,10 @@ const SolarCells = (props: { opacity: SolarMaterialProps["opacity"] }) => {
 const SolarPanel = React.memo(
   (props: { opacity: SolarMaterialProps["opacity"] }) => {
     return <Group rotation={[0, Math.PI / 6, 0]}>
-      <Mesh renderOrder={RenderOrder.one}>
+      <Mesh
+        renderOrder={RenderOrder.one}
+        castShadow={true}
+        receiveShadow={true}>
         <BoxGeometry args={[panelWidth, panelLength, panelDepth]} />
         <SolarMaterial color={"silver"} opacity={props.opacity} />
       </Mesh>
@@ -119,20 +133,23 @@ const SolarPanel = React.memo(
     </Group>;
   });
 
-interface SolarHardwareProps {
+interface SolarPlacementProps {
   bedHeight: number;
   bedLengthOuter: number;
   bedWidthOuter: number;
   bedZOffset: number;
   legSize: number;
-  opacity: SolarMaterialProps["opacity"];
 }
 
-interface SolarWiringProps extends Omit<SolarHardwareProps, "opacity"> {
+interface SolarWiringProps extends SolarPlacementProps {
   visible: boolean;
 }
 
-const SolarArray = React.memo((props: SolarHardwareProps) => {
+interface LegacySolarArrayProps extends SolarPlacementProps {
+  opacity: SolarMaterialProps["opacity"];
+}
+
+const LegacySolarArray = React.memo((props: LegacySolarArrayProps) => {
   const zGround = -props.bedZOffset - props.bedHeight;
   const position: [number, number, number] = React.useMemo(() => [
     threeSpace(props.bedLengthOuter + 2000, props.bedLengthOuter),
@@ -143,12 +160,7 @@ const SolarArray = React.memo((props: SolarHardwareProps) => {
   return <Group name={"solar-array"}
     position={position}
     rotation={[0, 0, Math.PI]}>
-    <Group position={[0, -525, 0]}>
-      <SolarPanel opacity={props.opacity} />
-    </Group>
-    <Group position={[0, 525, 0]}>
-      <SolarPanel opacity={props.opacity} />
-    </Group>
+    <Solar size={SOLAR_BOUNDS} opacity={props.opacity} />
   </Group>;
 });
 
@@ -187,7 +199,33 @@ const SolarWiring = React.memo((props: SolarWiringProps) => {
     lineWidth={5} />;
 });
 
-export const Solar = (props: SolarProps) => {
+export const solarPropsEqual = (prev: SolarProps, next: SolarProps) =>
+  prev.opacity === next.opacity &&
+  prev.size[0] === next.size[0] &&
+  prev.size[1] === next.size[1] &&
+  prev.size[2] === next.size[2];
+
+const SolarBase = (props: SolarProps) => {
+  const scale = React.useMemo(() => [
+    props.size[0] / SOLAR_BOUNDS[0],
+    props.size[1] / SOLAR_BOUNDS[1],
+    props.size[2] / SOLAR_BOUNDS[2],
+  ] as [number, number, number], [props.size]);
+  const opacity = props.opacity ?? 1;
+
+  return <Group name={"solar"} scale={scale}>
+    <Group name={"solar-panel"} position={[0, -525, 0]}>
+      <SolarPanel opacity={opacity} />
+    </Group>
+    <Group name={"solar-panel"} position={[0, 525, 0]}>
+      <SolarPanel opacity={opacity} />
+    </Group>
+  </Group>;
+};
+
+export const Solar = React.memo(SolarBase, solarPropsEqual);
+
+export const LegacySolar = (props: LegacySolarProps) => {
   const { config } = props;
   const transition = useFocusTransition();
   const visible = config.solar || props.activeFocus == "What you need to provide";
@@ -202,20 +240,20 @@ export const Solar = (props: SolarProps) => {
   const rendered = transition.enabled || visible;
   if (!rendered) { return undefined; }
 
-  const placementProps: Omit<SolarHardwareProps, "opacity"> = {
+  const placementProps: SolarPlacementProps = {
     bedHeight: config.bedHeight,
     bedLengthOuter: config.bedLengthOuter,
     bedWidthOuter: config.bedWidthOuter,
     bedZOffset: config.bedZOffset,
     legSize: config.legSize,
   };
-  const hardwareProps: SolarHardwareProps = {
+  const hardwareProps: LegacySolarArrayProps = {
     ...placementProps,
     opacity,
   };
 
-  return <Group name={"solar"} visible={rendered}>
-    <SolarArray {...hardwareProps} />
+  return <Group name={"legacy-solar"} visible={rendered}>
+    <LegacySolarArray {...hardwareProps} />
     <SolarWiring {...placementProps} visible={visible} />
   </Group>;
 };

@@ -5,6 +5,7 @@ export type ThreeDObjectKind =
 export interface ThreeDObjectSelection {
   kind: ThreeDObjectKind;
   id: number;
+  uuid?: string;
 }
 
 export interface ThreeDLocationSelection {

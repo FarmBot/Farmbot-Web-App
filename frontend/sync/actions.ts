@@ -98,7 +98,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("WebcamFeed", API.current.webcamFeedPath),
       get("WizardStepResult", API.current.wizardStepResultsPath),
       get("Telemetry", API.current.telemetryPath),
-      /** @ts-expect-error: todo */
       get("SceneObject", API.current.sceneObjectsPath),
     ]),
   };

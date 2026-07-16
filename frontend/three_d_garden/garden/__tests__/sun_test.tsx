@@ -340,8 +340,8 @@ describe("calcSunI()", () => {
 
   // These endpoints are cached because they are used every render frame.
   it("returns cached endpoints and interpolated sky values", () => {
-    expect(skyColor(0)).toBe(skyColor(-1));
-    expect(skyColor(INITIAL.sun)).toBe(skyColor(INITIAL.sun + 1));
-    expect(skyColor(INITIAL.sun / 2)).toHaveLength(3);
+    expect(skyColor(0, "")).toBe(skyColor(-1, ""));
+    expect(skyColor(INITIAL.sun, "")).toBe(skyColor(INITIAL.sun + 1, ""));
+    expect(skyColor(INITIAL.sun / 2, "")).toHaveLength(3);
   });
 });

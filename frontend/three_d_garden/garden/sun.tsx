@@ -209,19 +209,34 @@ const convertColor =
   };
 
 const BLACK_SKY_COLOR = convertColor(0, 0, 0);
-const DAY_SKY_COLOR = convertColor(89, 216, 255);
+const DEFAULT_DAY_SKY_COLOR_VAL: [number, number, number] = [89, 216, 255];
+const MARS_DAY_SKY_COLOR_VAL: [number, number, number] = [184, 87, 56];
+const DAY_SKY_COLOR_VAL = (scene: string): [number, number, number] => {
+  return scene == "Mars"
+    ? MARS_DAY_SKY_COLOR_VAL
+    : DEFAULT_DAY_SKY_COLOR_VAL;
+};
+const DEFAULT_DAY_SKY_COLOR = convertColor(...DEFAULT_DAY_SKY_COLOR_VAL);
+const MARS_DAY_SKY_COLOR = convertColor(...MARS_DAY_SKY_COLOR_VAL);
+const DAY_SKY_COLOR = (scene: string) => scene == "Mars"
+  ? MARS_DAY_SKY_COLOR
+  : DEFAULT_DAY_SKY_COLOR;
 
-export const skyColor = (sunValue: number): [number, number, number] => {
+export const skyColor = (
+  sunValue: number,
+  scene: string,
+): [number, number, number] => {
   if (sunValue <= 0) {
     return BLACK_SKY_COLOR;
   }
   if (sunValue >= INITIAL.sun) {
-    return DAY_SKY_COLOR;
+    return DAY_SKY_COLOR(scene);
   }
+  const v = DAY_SKY_COLOR_VAL(scene);
   const t = sunValue / INITIAL.sun;
-  const r = Math.round(89 * t);
-  const g = Math.round(216 * t);
-  const b = Math.round(255 * t);
+  const r = Math.round(v[0] * t);
+  const g = Math.round(v[1] * t);
+  const b = Math.round(v[2] * t);
   return convertColor(r, g, b);
 };
 
@@ -380,7 +395,7 @@ const SunBase = (props: SunProps) => {
     sunInclination: number,
   ) => {
     props.skyRef.current?.color?.setRGB(
-      ...skyColor(sunFactor * sunValue),
+      ...skyColor(sunFactor * sunValue, config.scene),
     );
     constellationsRef.current?.setNightFactor(1 - sunFactor);
     const sunBelowHorizon = sunInclination <= 0;

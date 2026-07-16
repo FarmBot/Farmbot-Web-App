@@ -10,6 +10,7 @@ const IGNORE_LIST: ResourceName[] = [
   "Log",
   "PlantTemplate",
   "SavedGarden",
+  "SceneObject",
   "SensorReading",
   "User",
   "WebAppConfig",

@@ -72,6 +72,7 @@ export interface Config {
   packaging: boolean;
   people: boolean;
   scene: string;
+  groundTexture: string;
   lowDetail: boolean;
   eventDebug: boolean;
   cableDebug: boolean;
@@ -202,6 +203,7 @@ export const INITIAL: ConfigWithPosition = {
   packaging: false,
   people: false,
   scene: "Outdoor",
+  groundTexture: "grass",
   lowDetail: false,
   eventDebug: false,
   cableDebug: false,
@@ -248,7 +250,7 @@ export const INITIAL_POSITION: PositionConfig = {
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-  "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin",
+  "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin", "groundTexture",
 ];
 
 export const NUMBER_KEYS = [
@@ -446,7 +448,7 @@ export const PRESETS: Record<string, Config> = {
     utilitiesPost: true,
     packaging: true,
     people: true,
-    scene: "outdoor",
+    scene: "Outdoor",
     lowDetail: false,
     eventDebug: false,
     cableDebug: true,
@@ -486,7 +488,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate", "zoomFactor",
-  "solar", "utilitiesPost", "packaging",
+  "solar", "utilitiesPost", "packaging", "groundTexture",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
@@ -526,6 +528,7 @@ const maybeUpdateZAxisLengthFromKitVersion = (
 };
 
 export const modifyConfig =
+  // eslint-disable-next-line complexity
   (config: ConfigWithPosition, update: Partial<ConfigWithPosition>) => {
     const newConfig: ConfigWithPosition = { ...config, ...update };
     if (update.sizePreset) {
@@ -540,8 +543,22 @@ export const modifyConfig =
     if (update.scene) {
       newConfig.clouds = update.scene == "Outdoor";
       newConfig.people = update.scene != "Outdoor";
+      switch (update.scene) {
+        case "Lab":
+          newConfig.groundTexture = "concrete";
+          break;
+        case "Greenhouse":
+          newConfig.groundTexture = "bricks";
+          break;
+        case "Mars":
+          newConfig.groundTexture = "sand";
+          break;
+        default:
+          newConfig.groundTexture = "grass";
+      }
       newConfig.bedType =
-        (update.scene != "Outdoor" && newConfig.sizePreset != "Genesis XL")
+        (["Lab", "Greenhouse"].includes(update.scene)
+          && newConfig.sizePreset != "Genesis XL")
           ? "Mobile"
           : "Standard";
     }

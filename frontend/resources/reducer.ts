@@ -71,7 +71,6 @@ export const emptyState = (): RestResources => {
         Sensor: {},
         SensorReading: {},
         Sequence: {},
-        /** @ts-expect-error: todo */
         SceneObject: {},
         Tool: {},
         User: {},

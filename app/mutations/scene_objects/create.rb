@@ -8,6 +8,7 @@ module SceneObjects
       string :texture
       string :shape
       string :color
+      boolean :show, default: true
       string :x_origin
       string :y_origin
       string :z_origin

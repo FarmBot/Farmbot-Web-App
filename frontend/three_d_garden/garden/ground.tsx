@@ -19,8 +19,24 @@ export interface GroundProps {
 const GROUND_DEPTH = 25000;
 const groundFade = 1;
 
+export const GROUND_TEXTURE_URLS = [
+  ASSETS.textures.grass,
+  ASSETS.textures.bricks,
+  ASSETS.textures.concrete,
+  ASSETS.textures.water,
+  ASSETS.textures.aluminum,
+  ASSETS.textures.soil,
+  ASSETS.textures.sand,
+  ASSETS.textures.wood,
+];
+
+export const GROUND_TEXTURES = [
+  "grass", "bricks", "concrete", "water",
+  "aluminum", "soil", "sand", "wood",
+];
+
 interface GroundWrapperProps {
-  sceneName: string;
+  groundTexture: string;
   groundZ: number;
   geometry: CylinderGeometry;
   onClick?: (e: ThreeEvent<MouseEvent>) => void;
@@ -29,7 +45,7 @@ interface GroundWrapperProps {
 }
 
 const GroundWrapper = (props: GroundWrapperProps) =>
-  <Mesh name={`ground ${props.sceneName}`}
+  <Mesh name={`ground ${props.groundTexture}`}
     userData={{ [SECTION_CLIPPING_EXEMPT]: true }}
     receiveShadow={true}
     geometry={props.geometry}
@@ -78,22 +94,58 @@ const getHighDetailGroundGeometry = () => {
   return highDetailGroundGeometry;
 };
 
-const getGroundProperties = (sceneName: string) => {
-  switch (sceneName) {
-    case "Greenhouse":
+const getGroundProperties = (groundTexture: string) => {
+  switch (groundTexture) {
+    case "bricks":
       return {
         texture: ASSETS.textures.bricks,
         repeat: [30, 30] as [number, number],
         color: "#999",
         lowDetailColor: "#8c6f64",
       };
-    case "Lab":
+    case "concrete":
       return {
         texture: ASSETS.textures.concrete,
         repeat: [16, 24] as [number, number],
         color: "#aaa",
         lowDetailColor: "gray",
       };
+    case "water":
+      return {
+        texture: ASSETS.textures.water,
+        repeat: [16, 24] as [number, number],
+        color: "#00f",
+        lowDetailColor: "blue",
+      };
+    case "aluminum":
+      return {
+        texture: ASSETS.textures.aluminum,
+        repeat: [16, 24] as [number, number],
+        color: "#aaa",
+        lowDetailColor: "gray",
+      };
+    case "soil":
+      return {
+        texture: ASSETS.textures.soil,
+        repeat: [16, 24] as [number, number],
+        color: "#fff",
+        lowDetailColor: "brown",
+      };
+    case "sand":
+      return {
+        texture: ASSETS.textures.sand,
+        repeat: [16, 24] as [number, number],
+        color: "#fff",
+        lowDetailColor: "tan",
+      };
+    case "wood":
+      return {
+        texture: ASSETS.textures.wood,
+        repeat: [16, 24] as [number, number],
+        color: "#deb887",
+        lowDetailColor: "saddlebrown",
+      };
+    case "grass":
     default:
       return {
         texture: ASSETS.textures.grass,
@@ -105,7 +157,7 @@ const getGroundProperties = (sceneName: string) => {
 };
 
 interface TexturedGroundMaterialProps {
-  sceneName: string;
+  groundTexture: string;
   side?: Side;
   vertexColors?: boolean;
 }
@@ -113,7 +165,7 @@ interface TexturedGroundMaterialProps {
 export const TexturedGroundMaterial = (
   props: TexturedGroundMaterialProps,
 ) => {
-  const properties = getGroundProperties(props.sceneName);
+  const properties = getGroundProperties(props.groundTexture);
   const texture = useTextureVariant(properties.texture, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -138,6 +190,7 @@ const GROUND_CONFIG_FIELDS: (keyof Config)[] = [
   "ground",
   "lowDetail",
   "scene",
+  "groundTexture",
 ];
 
 export const groundPropsEqual = (prev: GroundProps, next: GroundProps) =>
@@ -148,13 +201,26 @@ export const groundPropsEqual = (prev: GroundProps, next: GroundProps) =>
 
 export const Ground = React.memo(GroundBase, groundPropsEqual);
 
+export const GroundTexturePreloader = (props: { config: Config }) =>
+  <group name={"ground-texture-preloader"} visible={false}>
+    {GROUND_TEXTURES.map(groundTexture =>
+      <Ground
+        key={groundTexture}
+        config={{
+          ...props.config,
+          ground: true,
+          groundTexture,
+          lowDetail: false,
+        }} />)}
+  </group>;
+
 const VisibleGround = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
-  const properties = getGroundProperties(config.scene);
+  const properties = getGroundProperties(config.groundTexture);
 
   return <GroundWrapper
-    sceneName={config.scene}
+    groundTexture={config.groundTexture}
     groundZ={groundZ}
     onClick={props.onClick}
     onPointerMove={props.onPointerMove}
@@ -168,7 +234,7 @@ const VisibleGround = (props: GroundProps) => {
         side={DoubleSide}
         vertexColors={true} />
       : <TexturedGroundMaterial
-        sceneName={config.scene}
+        groundTexture={config.groundTexture}
         side={DoubleSide}
         vertexColors={true} />}
   </GroundWrapper>;

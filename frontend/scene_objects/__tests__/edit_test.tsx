@@ -8,8 +8,8 @@ import { fakeState } from "../../__test_support__/fake_state";
 import * as form from "../form";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
-import { TaggedResource } from "farmbot";
 import { Actions } from "../../constants";
+import * as sceneObjectActions from "../actions";
 
 describe("<RawEditSceneObject />", () => {
   const fakeProps = (resource = fakeSceneObject()): EditSceneObjectProps => ({
@@ -17,6 +17,21 @@ describe("<RawEditSceneObject />", () => {
     focusedSceneObjectField: undefined,
     unifiedSceneObjectSize: undefined,
     findSceneObject: () => resource,
+  });
+
+  it("duplicates a scene object", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const resource = fakeSceneObject({ id: 1, name: "Pine tree" });
+    const copySceneObject = jest.spyOn(sceneObjectActions, "copySceneObject")
+      .mockImplementation(() => "copy action" as never);
+    const p = fakeProps(resource);
+    const { container } = render(<RawEditSceneObject {...p} />);
+
+    fireEvent.click(container.querySelector(".fa-copy") as Element);
+
+    expect(copySceneObject).toHaveBeenCalledWith(resource, mockNavigate);
+    expect(p.dispatch).toHaveBeenCalledWith("copy action");
+    copySceneObject.mockRestore();
   });
 
   it("deletes a scene object", async () => {
@@ -121,7 +136,7 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const resource = fakeSceneObject({ id: 1 });
     const state = fakeState();
-    state.resources = buildResourceIndex([resource as TaggedResource]);
+    state.resources = buildResourceIndex([resource]);
 
     expect(mapStateToProps(state).findSceneObject(1)).toEqual(resource);
     expect(mapStateToProps(state).findSceneObject(2)).toEqual(undefined);

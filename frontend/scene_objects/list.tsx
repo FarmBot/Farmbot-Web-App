@@ -16,17 +16,16 @@ import {
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
-import {
-  _SO_RN,
-  SceneObjectsProps, TaggedSceneObject,
-} from "./interfaces";
+import { SceneObjectsProps } from "./interfaces";
 import { PanelSection } from "../plants/plant_inventory";
 import { staticSceneObjects } from "../three_d_garden/scene_objects";
 import {
-  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDIS, SCENES,
+  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDIS, SCENE_NUM_FROM_NAME, SCENES,
+  TEXTURE_DDIS,
 } from "../settings/three_d_settings";
-import { destroy, initSave } from "../api/crud";
+import { destroy, edit, initSave, save } from "../api/crud";
 import { FBSelect } from "../ui";
+import { TaggedSceneObject } from "farmbot";
 
 export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
   dispatch: props.dispatch,
@@ -88,10 +87,20 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       }}
       onMouseEnter={() => hover(true)}
       onMouseLeave={() => hover(false)}
-      className={"scene-object-search-item"}>
+      className={"scene-object-search-item my-scene-object-search-item"}>
       <span className={"scene-object-search-item-name"}>
         {sceneObject.body.name}
       </span>
+      <i
+        className={`fa fb-icon-button ${sceneObject.body.show
+          ? "fa-eye"
+          : "fa-eye-slash"}`}
+        title={sceneObject.body.show ? t("hide") : t("show")}
+        onClick={e => {
+          e.stopPropagation();
+          props.dispatch(edit(sceneObject, { show: !sceneObject.body.show }));
+          props.dispatch(save(sceneObject.uuid));
+        }} />
     </div>;
   };
 
@@ -99,11 +108,13 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const filteredSceneObjects = sceneObjects
     .filter(p => p.body.name.toLowerCase()
       .includes(searchTerm.toLowerCase()));
-  const sceneNum = get3DConfigValueFunction(props.farmwareEnvs)("scene");
-  const scene = SCENES[sceneNum];
+  const [libScene, setLibScene] = React.useState("Outdoor");
   const [featuredOpen, setFeaturedOpen] = React.useState(false);
   const [myOpen, setMyOpen] = React.useState(true);
-  const featuredSceneObjects = React.useMemo(() => staticSceneObjects(scene), [scene]);
+  const featuredSceneObjects = React.useMemo(() =>
+    staticSceneObjects(libScene, true), [libScene]);
+  const groundTextureNum =
+    get3DConfigValueFunction(props.farmwareEnvs)("groundTexture");
   return <DesignerPanel
     panelName={"scene-objects-inventory"}
     panel={Panel.SceneObjects}>
@@ -112,6 +123,12 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         searchTerm={searchTerm}
         placeholder={t("Search your scene objects...")}
         onChange={setSearchTerm} />
+      <FBSelect
+        key={libScene}
+        list={Object.values(TEXTURE_DDIS)}
+        selectedItem={TEXTURE_DDIS[groundTextureNum]}
+        onChange={ddi => findOrCreate3DConfigFunction(
+          props.dispatch, props.farmwareEnvs)("groundTexture", "" + ddi.value)} />
     </DesignerPanelTop>
     <DesignerPanelContent panelName={"scene-objects-inventory"}>
       <PanelSection isOpen={featuredOpen}
@@ -121,11 +138,13 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         extraHeaderContent={
           <div onClick={e => e.stopPropagation()} style={{ width: "10rem" }}>
             <FBSelect
-              key={sceneNum}
-              list={Object.values(SCENE_DDIS)}
-              selectedItem={SCENE_DDIS[sceneNum]}
-              onChange={ddi => findOrCreate3DConfigFunction(
-                props.dispatch, props.farmwareEnvs)("scene", "" + ddi.value)} />
+              key={libScene}
+              list={Object.values(SCENE_DDIS).filter(ddi => ddi.label != "Custom")}
+              selectedItem={SCENE_DDIS[SCENE_NUM_FROM_NAME[libScene]]}
+              onChange={ddi => {
+                setLibScene(SCENES[ddi.value as number]);
+                setFeaturedOpen(true);
+              }} />
           </div>}
         addTitle={t("add new scene object")}
         addClassName={"plus-scene-object"}
@@ -136,7 +155,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
               featuredSceneObjects
                 .filter(so => selected.includes(so.uuid))
                 .map(sceneObject => {
-                  props.dispatch(initSave(_SO_RN, sceneObject.body));
+                  props.dispatch(initSave("SceneObject", sceneObject.body));
                 });
               findOrCreate3DConfigFunction(
                 props.dispatch, props.farmwareEnvs)("scene", "0");
@@ -150,7 +169,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
                   .map(s => s.body.name)
                   .includes(so.body.name))
                 .map(sceneObject => {
-                  props.dispatch(initSave(_SO_RN, sceneObject.body));
+                  props.dispatch(initSave("SceneObject", sceneObject.body));
                 });
               findOrCreate3DConfigFunction(
                 props.dispatch, props.farmwareEnvs)("scene", "0");

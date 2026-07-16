@@ -17,8 +17,25 @@ import type {
   Sphere, Torus, Trail, Tube,
 } from "@react-three/drei";
 
-const GroupForTests = (props: ThreeElements["group"]) =>
-  <group {...props} />;
+const GroupForTests = React.forwardRef<THREE.Group, ThreeElements["group"]>(
+  (props, ref) => {
+    const setRef = React.useCallback((group: THREE.Group | null) => {
+      if (group && typeof group.traverse != "function") {
+        Object.assign(group, {
+          traverse: jest.fn(),
+          position: { set: jest.fn() },
+        });
+      }
+      if (typeof ref == "function") {
+        ref(group);
+      } else if (ref) {
+        ref.current = group;
+      }
+    }, [ref]);
+    return ref
+      ? <group ref={setRef} {...props} />
+      : <group {...props} />;
+  });
 
 let mockInstanceId: number | undefined = undefined;
 export const setMockInstanceId = (id?: number) => { mockInstanceId = id; };
@@ -90,10 +107,10 @@ const AxesHelperForTests = (props: Record<string, unknown>) =>
 jest.mock("../three_d_garden/components", () => ({
   AmbientLight: AmbientLightForTests,
   DirectionalLight: DirectionalLightForTests,
-  Group: (props: ThreeElements["group"]) =>
-    props.visible === false
+  Group: React.forwardRef<THREE.Group, ThreeElements["group"]>(
+    (props, ref) => props.visible === false
       ? <></>
-      : <GroupForTests {...props} />,
+      : <GroupForTests ref={ref} {...props} />),
   Mesh: (props: ThreeElements["mesh"]) => <MeshForTests {...props} />,
   PointLight: PointLightForTests,
   MeshPhongMaterial: (props: THREE.MeshPhongMaterial) => {

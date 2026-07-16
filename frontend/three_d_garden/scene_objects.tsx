@@ -9,9 +9,7 @@ import {
   get3DPositionFunc, getGardenPositionFunc,
   zZero,
 } from "./helpers";
-import {
-  _SO_RN, SceneObject, SceneObjectFormValues, TaggedSceneObject,
-} from "../scene_objects/interfaces";
+import { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { edit, init, save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
@@ -19,18 +17,23 @@ import { ASSETS, BigDistance } from "./constants";
 import { useTextureVariant } from "./texture_variants";
 import { PottedPlant } from "./scenes/props/potted_plant";
 import { StarterTray } from "./scenes/props/starter_tray";
-import { Vector3 } from "three";
-import { TaggedResource } from "farmbot";
+import { Group as ThreeGroup, Material, Object3D, Vector3 } from "three";
+import { SpecialStatus, TaggedResource, TaggedSceneObject } from "farmbot";
 import { ThreeDObjectSelection } from "./selection_types";
-import { GREENHOUSE_SCENE_OBJECTS, LAB_SCENE_OBJECTS } from "./scenes";
-import { newTaggedResource } from "../sync/actions";
+import {
+  GREENHOUSE_SCENE_OBJECTS,
+  LAB_SCENE_OBJECTS,
+  OUTDOOR_SCENE_OBJECTS,
+} from "./scenes";
 import { Actions } from "../constants";
-import { Desk, GreenhouseWall, Laptop } from "./scenes/props";
+import { Desk, Fence, GreenhouseWall, Laptop, Tree } from "./scenes/props";
 import { noop } from "lodash";
 import { Text } from "./elements";
 import { setFocusedSceneObjectField } from "../scene_objects/actions";
 import { round as snapToGrid } from "../farm_designer/map/util";
 import type { DesignerState } from "../farm_designer/interfaces";
+import { SceneObject } from "farmbot/dist/resources/api_resources";
+import { Solar } from "./garden/solar";
 
 const EDGE_LINE_WIDTH = 4;
 const MARKER_RADIUS = 35;
@@ -344,7 +347,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const name = drawnSceneObject.name ||
       nextSceneObjectName(props.sceneObjects, createdNames.current);
     const c = adjustCenter(props.config, drawnSceneObject, draft.center);
-    const action = init(_SO_RN, {
+    const action = init("SceneObject", {
       ...drawnSceneObject,
       name,
       x_center: c.x,
@@ -352,7 +355,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       z_base: c.z,
       ...sizeFromCenterAndCorner(draft.center, draft.corner),
       z_size: Math.max(1, Math.round(height - draft.center.z)),
-    } as TaggedSceneObject["body"]);
+    });
     createdNames.current.push(name);
     dispatch(action);
     dispatch(save(action.payload.uuid))
@@ -475,6 +478,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
             texture: drawnSceneObject?.texture || "concrete",
             shape: drawnSceneObject?.shape || "box",
             color: drawnSceneObject?.color || "#ffffff",
+            show: drawnSceneObject?.show ?? true,
             x_center: adjustedCenter.x,
             y_center: adjustedCenter.y,
             z_base: draft.corner
@@ -646,6 +650,7 @@ interface SceneObjectMoveHandleProps {
   setInteractionLocked(locked: boolean): void;
   onPreview(update: Partial<TaggedSceneObject["body"]>): void;
   onPreviewEnd(): void;
+  onDragStateChange?(dragging: boolean): void;
 }
 
 export const stopSceneObjectMarkerEvent = (
@@ -942,9 +947,9 @@ const SceneObjectSelectionMarkers =
       )}mm`,
       direction: "xyz+" as const,
       gardenPosition: {
-        x: bounds.x1 + markerRadius / 2,
-        y: bounds.y1 + markerRadius / 2,
-        z: bounds.z1 + markerRadius / 2,
+        x: bounds.x1 + markerRadius * 0,
+        y: bounds.y1 + markerRadius * 0,
+        z: bounds.z1 + markerRadius * 0,
       },
     };
     const markers = [
@@ -1158,6 +1163,7 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
     position,
     sceneObject,
     setInteractionLocked,
+    onDragStateChange,
   } = props;
   const dragging = React.useRef(false);
   const dragOffset = React.useRef({ x: 0, y: 0 });
@@ -1185,9 +1191,10 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
   const stopDragging = React.useCallback(() => {
     if (!dragging.current) { return; }
     dragging.current = false;
+    onDragStateChange?.(false);
     setInteractionLocked(false);
     onPreviewEnd();
-  }, [onPreviewEnd, setInteractionLocked]);
+  }, [onDragStateChange, onPreviewEnd, setInteractionLocked]);
 
   React.useEffect(() => {
     window.addEventListener("pointerup", stopDragging);
@@ -1212,6 +1219,7 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
         y: sceneObject.body.y_center - gardenPosition.y,
       };
       dragging.current = true;
+      onDragStateChange?.(true);
       setInteractionLocked(true);
       (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
       onPreview({});
@@ -1225,6 +1233,7 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
       if (!dragging.current) { return; }
       stopSceneObjectMarkerDragEvent(e);
       dragging.current = false;
+      onDragStateChange?.(false);
       setInteractionLocked(false);
       (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
       updateSceneObject(moveUpdate(e));
@@ -1257,6 +1266,7 @@ interface SceneObjectOriginMarkersProps {
   setInteractionLocked(locked: boolean): void;
   onPreview(update: Partial<TaggedSceneObject["body"]>): void;
   onPreviewEnd(): void;
+  bodyDragging?: boolean;
 }
 
 interface ObjectBaseAxesProps extends SceneObjectOriginMarkersProps {
@@ -1267,6 +1277,7 @@ interface OriginAxisIndicatorProps {
   name: string;
   color: string;
   scale: number;
+  axis: AxisName;
   labelVisible?: boolean;
   start: Record<"x" | "y" | "z", number>;
   end: Record<"x" | "y" | "z", number>;
@@ -1281,7 +1292,13 @@ interface OriginMarker {
   arrowEnd?: [number, number, number];
 }
 
-interface SingleAxisIndicatorProps extends OriginAxisIndicatorProps {
+interface SingleAxisIndicatorProps {
+  name: string;
+  color: string;
+  scale: number;
+  start: Record<"x" | "y" | "z", number>;
+  end: Record<"x" | "y" | "z", number>;
+  labelVisible?: boolean;
   label: string;
   hideLabel?: boolean;
   hovered?: boolean;
@@ -1337,7 +1354,12 @@ const sizeLabelVisible = (focusedField: string, direction: Direction) => {
 const sizeFieldFromDirection = (direction: Direction) =>
   `${direction[0]}_size`;
 
-const originLabelVisible = (focusedField: string, axis: AxisName) =>
+const originLabelVisible = (
+  focusedField: string,
+  axis: AxisName,
+  bodyDragging = false,
+) =>
+  (bodyDragging && (axis == "x" || axis == "y")) ||
   focusedField == `${axis}_origin` ||
   focusedField == (axis == "z" ? "z_base" : `${axis}_center`);
 
@@ -1556,6 +1578,7 @@ const SingleAxisIndicator = (props: SingleAxisIndicatorProps) => {
 const OriginAxisIndicator = (props: OriginAxisIndicatorProps) => {
   const { start, end } = props;
   const distance = vectorLength(start, end);
+  const signedDistance = end[props.axis] - start[props.axis];
   if (distance < 1) { return <></>; }
   const midX = (start.x + end.x) / 2;
   const midY = (start.y + end.y) / 2;
@@ -1591,7 +1614,7 @@ const OriginAxisIndicator = (props: OriginAxisIndicatorProps) => {
           renderOrder={ORIGIN_MARKER_RENDER_ORDER}
           rotation={[0, 0, 0]}
           position={[0, 0, 0]}>
-          {`${distance.toFixed(0)}mm`}
+          {`${signedDistance.toFixed(0)}mm`}
         </Text>
       </Billboard>}
   </Group>;
@@ -1860,8 +1883,11 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
           name={`scene-object-${marker.name}-origin-arrow`}
           color={marker.color}
           scale={scale}
+          axis={marker.name as AxisName}
           labelVisible={originLabelVisible(
-            focusedField, marker.name as AxisName) ||
+            focusedField,
+            marker.name as AxisName,
+            props.bodyDragging) ||
             activeAxis == marker.name}
           start={start}
           end={end} />
@@ -1880,11 +1906,69 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
   </>;
 };
 
+interface SceneObjectOpacityProps {
+  show: boolean;
+  visible?: boolean;
+  children: React.ReactNode;
+}
+
+const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
+  const opacity = props.show ? 1 : 0.75;
+  // eslint-disable-next-line no-null/no-null
+  const group = React.useRef<ThreeGroup>(null);
+  const shadowStates = React.useRef(new WeakMap<Object3D, {
+    castShadow: boolean;
+    receiveShadow: boolean;
+  }>());
+  const materialStates = React.useRef(
+    new WeakMap<Object3D, Material | Material[]>());
+  React.useLayoutEffect(() => {
+    group.current?.traverse(object => {
+      if (!shadowStates.current.has(object)) {
+        shadowStates.current.set(object, {
+          castShadow: object.castShadow,
+          receiveShadow: object.receiveShadow,
+        });
+      }
+      const shadowState = shadowStates.current.get(object);
+      object.castShadow = props.show ? !!shadowState?.castShadow : false;
+      object.receiveShadow = props.show ? !!shadowState?.receiveShadow : false;
+      const renderedObject = object as Object3D & {
+        material?: Material | Material[];
+      };
+      if (!renderedObject.material) { return; }
+      if (!materialStates.current.has(object)) {
+        materialStates.current.set(object, renderedObject.material);
+      }
+      const original = materialStates.current.get(object);
+      if (!original) { return; }
+      if (props.show) {
+        renderedObject.material = original;
+      } else {
+        const translucent = (Array.isArray(original) ? original : [original])
+          .map(material => {
+            const clone = material.clone();
+            clone.opacity = material.opacity * opacity;
+            clone.transparent = true;
+            return clone;
+          });
+        renderedObject.material = Array.isArray(original)
+          ? translucent
+          : translucent[0];
+      }
+    });
+  }, [opacity, props.show, props.visible]);
+  return <Group ref={group} visible={props.visible ?? true}>
+    {props.children}
+  </Group>;
+};
+
 export const SceneObjects = (props: SceneObjectsProps) => {
   const selectedSceneObjectId = Number(Path.getSlug(Path.sceneObjects()));
   const hasSelectedSceneObject = !isNaN(selectedSceneObjectId);
   const [dragPreview, setDragPreview] =
     React.useState<SceneObjectDragPreview>();
+  const [bodyDragging, setBodyDragging] = React.useState<string>();
   const interactionLocked = React.useRef(false);
   const getInteractionLocked = React.useCallback(
     () => interactionLocked.current,
@@ -1895,11 +1979,14 @@ export const SceneObjects = (props: SceneObjectsProps) => {
   const sceneObjects = (props.sceneObjects || [])
     .concat(staticSceneObjects(props.config.scene));
   return <>
+    {/* eslint-disable-next-line complexity */}
     {sceneObjects.map(sceneObject => {
       const selected = hasSelectedSceneObject
         && sceneObject.body.id === selectedSceneObjectId;
       const hovered = props.hoverSelection?.kind == "sceneObject"
-        && props.hoverSelection.id == sceneObject.body.id;
+        && (props.hoverSelection.id == sceneObject.body.id
+          || props.hoverSelection.uuid == sceneObject.uuid);
+      const visible = sceneObject.body.show || selected || hovered;
       const previewedSceneObject =
         selected
           ? sceneObjectWithDragPreview(sceneObject, dragPreview)
@@ -1939,7 +2026,9 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           position={handlePosition}
           setInteractionLocked={setInteractionLocked}
           onPreview={preview}
-          onPreviewEnd={endPreview} />;
+          onPreviewEnd={endPreview}
+          onDragStateChange={dragging =>
+            setBodyDragging(dragging ? sceneObject.uuid : undefined)} />;
       const renderSelectionMarkers = () =>
         selected &&
         <>
@@ -1952,7 +2041,8 @@ export const SceneObjects = (props: SceneObjectsProps) => {
             interactionLocked={getInteractionLocked}
             setInteractionLocked={setInteractionLocked}
             onPreview={preview}
-            onPreviewEnd={endPreview} />
+            onPreviewEnd={endPreview}
+            bodyDragging={bodyDragging == sceneObject.uuid} />
           <SceneObjectSelectionMarkers
             focusedField={props.designer?.focusedSceneObjectField || ""}
             config={props.config}
@@ -1969,48 +2059,97 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         </>;
 
       if (shape === "plant") {
-        return <Group key={sceneObject.uuid}>
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
           <Group position={position}>
             <PottedPlant size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
           </Group>
           {renderSelectionMarkers()}
-        </Group>;
+        </SceneObjectOpacity>;
       }
 
       if (shape === "tray") {
-        return <Group key={sceneObject.uuid}>
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
           <Group position={position}>
             <StarterTray size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
           </Group>
           {renderSelectionMarkers()}
-        </Group>;
+        </SceneObjectOpacity>;
       }
 
       if (shape === "laptop") {
-        return <Group key={sceneObject.uuid}>
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
           <Group position={position}>
             <Laptop size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
           </Group>
           {renderSelectionMarkers()}
-        </Group>;
+        </SceneObjectOpacity>;
       }
 
       if (shape === "desk") {
-        return <Group key={sceneObject.uuid}>
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
           <Group position={position}>
             <Desk size={[x_size, y_size, z_size]}
+              texture={texture}
+              color={color}
               activeFocus={props.activeFocus} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
           </Group>
           {renderSelectionMarkers()}
-        </Group>;
+        </SceneObjectOpacity>;
+      }
+
+      if (shape === "solar") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Solar size={size} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
+      }
+
+      if (shape === "tree") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Tree size={size} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
+      }
+
+      if (shape === "fence") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Fence size={size} texture={texture} color={color} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
       }
 
       if (shape === "window") {
@@ -2018,7 +2157,9 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         const wallSize: [number, number, number] = wallAlongY
           ? [y_size, x_size, z_size]
           : [x_size, y_size, z_size];
-        return <Group key={sceneObject.uuid}>
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
           <Group
             position={position}
             rotation={wallAlongY ? [0, 0, Math.PI / 2] : [0, 0, 0]}>
@@ -2027,11 +2168,13 @@ export const SceneObjects = (props: SceneObjectsProps) => {
             {renderHoverEdges([0, 0, 0], wallSize)}
           </Group>
           {renderSelectionMarkers()}
-        </Group>;
+        </SceneObjectOpacity>;
       }
 
       const textureUrl = texture === "none" ? undefined : ASSETS.textures[texture];
-      return <Group key={sceneObject.uuid}>
+      return <SceneObjectOpacity key={sceneObject.uuid}
+        show={previewedSceneObject.body.show}
+        visible={visible}>
         <SceneObjectBox
           config={props.config}
           sceneObject={previewedSceneObject}
@@ -2044,16 +2187,23 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         {renderMoveHandle(position)}
         {renderHoverEdges(position)}
         {renderSelectionMarkers()}
-      </Group>;
+      </SceneObjectOpacity>;
     })}
   </>;
 };
 
-export const staticSceneObjects = (scene: string): TaggedSceneObject[] => {
+export const staticSceneObjects = (scene: string, lib?: boolean): TaggedSceneObject[] => {
   const wrap = (sceneObjects: SceneObject[]): TaggedSceneObject[] =>
-    // @ts-expect-error: temporary
-    newTaggedResource<TaggedSceneObject>("sceneObject", sceneObjects);
+    sceneObjects.map((body, index) => ({
+      kind: "SceneObject",
+      body,
+      uuid: `SceneObject.static.${index}`,
+      specialStatus: SpecialStatus.SAVED,
+    }));
   switch (scene) {
+    case "Outdoor":
+      if (!lib) { return []; }
+      return wrap(OUTDOOR_SCENE_OBJECTS);
     case "Lab":
       return wrap(LAB_SCENE_OBJECTS);
     case "Greenhouse":
@@ -2068,7 +2218,12 @@ interface SceneObjectPreviewProps {
   sceneObject: SceneObject;
 }
 
-const SceneObjectPreview = (props: SceneObjectPreviewProps) => {
+const SceneObjectPreview = (props: SceneObjectPreviewProps) =>
+  <SceneObjectOpacity show={props.sceneObject.show}>
+    <SceneObjectPreviewContent {...props} />
+  </SceneObjectOpacity>;
+
+const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   const { shape, x_size, y_size, z_size, texture, color } = props.sceneObject;
   const sceneObject = {
     uuid: "scene-object-placement-preview-resource",
@@ -2102,7 +2257,30 @@ const SceneObjectPreview = (props: SceneObjectPreviewProps) => {
 
   if (shape === "desk") {
     return <Group position={position}>
-      <Desk size={[x_size, y_size, z_size]} activeFocus={""} />
+      <Desk size={[x_size, y_size, z_size]}
+        texture={texture}
+        color={color}
+        activeFocus={""} />
+    </Group>;
+  }
+
+  if (shape === "solar") {
+    return <Group position={position}>
+      <Solar size={[x_size, y_size, z_size]} />
+    </Group>;
+  }
+
+  if (shape === "tree") {
+    return <Group position={position}>
+      <Tree size={[x_size, y_size, z_size]} />
+    </Group>;
+  }
+
+  if (shape === "fence") {
+    return <Group position={position}>
+      <Fence size={[x_size, y_size, z_size]}
+        texture={texture}
+        color={color} />
     </Group>;
   }
 

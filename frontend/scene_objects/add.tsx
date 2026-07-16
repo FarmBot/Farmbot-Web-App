@@ -1,5 +1,5 @@
 import React from "react";
-import { _SO_RN, AddSceneObjectProps } from "./interfaces";
+import { AddSceneObjectProps } from "./interfaces";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
@@ -28,6 +28,7 @@ export const DEFAULT_SCENE_OBJECT: SceneObjectFormValues = {
   texture: "concrete",
   shape: "box",
   color: "#ffffff",
+  show: true,
   x_center: 0,
   y_center: 0,
   z_base: 0,
@@ -63,7 +64,7 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   }), [props.dispatch]);
   const saveSceneObject = () => {
     if (!props.drawnSceneObject) { return; }
-    props.dispatch(initSave(_SO_RN, props.drawnSceneObject));
+    props.dispatch(initSave("SceneObject", props.drawnSceneObject));
     props.dispatch({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
       payload: undefined,
@@ -72,7 +73,7 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   };
   const onValueChange = (
     field: keyof SceneObjectFormValues,
-    value: string | number,
+    value: string | number | boolean,
   ) => {
     if (!props.drawnSceneObject) { return; }
     props.dispatch({

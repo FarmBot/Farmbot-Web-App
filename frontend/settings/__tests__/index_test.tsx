@@ -76,6 +76,7 @@ describe("<DesignerSettings />", () => {
     wizardStepResults: [],
     settingsPanelState: fakePanelState,
     distanceIndicator: "",
+    sceneObjectUuids: [],
   });
 
   it("renders settings", () => {

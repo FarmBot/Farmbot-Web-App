@@ -22,6 +22,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     grass: "/3D/textures/grass.avif",
     wood: "/3D/textures/wood.avif",
     soil: "/3D/textures/soil.avif",
+    sand: "/3D/textures/sand.avif",
     aluminum: "/3D/textures/aluminum.avif",
     concrete: "/3D/textures/concrete.avif",
     screen: "/3D/textures/screen.avif",

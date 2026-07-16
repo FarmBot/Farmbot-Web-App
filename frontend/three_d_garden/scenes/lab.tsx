@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { People } from "./props";
 import { Group } from "../components";
 import { PopInGroup } from "../progressive_load";
-import { SceneObject } from "../../scene_objects/interfaces";
+import { SceneObject } from "farmbot/dist/resources/api_resources";
 
 export interface LabProps {
   config: Config;
@@ -19,6 +19,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "box",
     color: "#f4f4f4",
+    show: true,
     x_center: -2250,
     y_center: -1600,
     z_base: 0,
@@ -34,6 +35,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "box",
     color: "#f4f4f4",
+    show: true,
     x_center: 2750,
     y_center: 3470,
     z_base: 0,
@@ -49,6 +51,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "wood",
     shape: "box",
     color: "#999",
+    show: true,
     x_center: 2850,
     y_center: 3270,
     z_base: 810,
@@ -64,6 +67,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "wood",
     shape: "box",
     color: "#999",
+    show: true,
     x_center: 2850,
     y_center: 3270,
     z_base: 1230,
@@ -79,6 +83,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "wood",
     shape: "desk",
     color: "#666",
+    show: true,
     x_center: 850,
     y_center: 0,
     z_base: 0,
@@ -94,6 +99,7 @@ export const LAB_SCENE_OBJECTS: SceneObject[] = [
     texture: "none",
     shape: "laptop",
     color: "#fff",
+    show: true,
     x_center: 800,
     y_center: 0,
     z_base: 600,

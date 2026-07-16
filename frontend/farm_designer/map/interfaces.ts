@@ -55,6 +55,7 @@ export interface GardenMapLegendProps {
   showZones: boolean;
   showSensorReadings: boolean;
   showMoistureInterpolationMap: boolean;
+  showSceneObjects: boolean;
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;

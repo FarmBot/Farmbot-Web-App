@@ -51,6 +51,7 @@ describe("<FarmBotSettings />", () => {
     settingsPanelState: settingsPanelState(),
     showAdvanced: true,
     farmwareEnvs: [],
+    sceneObjectUuids: [],
   });
 
   it("displays boot sequence selector", () => {

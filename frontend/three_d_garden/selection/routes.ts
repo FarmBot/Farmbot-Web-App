@@ -1,5 +1,5 @@
 import {
-  PointType, TaggedGenericPointer, TaggedWeedPointer,
+  PointType, TaggedGenericPointer, TaggedSceneObject, TaggedWeedPointer,
 } from "farmbot";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
@@ -8,15 +8,15 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
-import { TaggedSceneObject } from "../../scene_objects/interfaces";
 
 const POINT_TYPE_BY_SELECTION_KIND:
-  Partial<Record<ThreeDObjectSelection["kind"], PointType>> = {
-    plant: "Plant",
-    point: "GenericPointer",
-    weed: "Weed",
-    slot: "ToolSlot",
-  };
+  Partial<Record<ThreeDObjectSelection["kind"], PointType>> =
+{
+  plant: "Plant",
+  point: "GenericPointer",
+  weed: "Weed",
+  slot: "ToolSlot",
+};
 
 export const pointTypeForSelectionKind = (
   kind: ThreeDObjectSelection["kind"],
@@ -67,9 +67,8 @@ export const createSelectionLookup = (props: SelectionLookupProps) => {
   props.weeds.forEach(weed => weed.body.id && addLookupSelection(
     lookup, weed.uuid, { kind: "weed", id: weed.body.id }));
   props.toolSlots.forEach(slot => slot.toolSlot.body.id && addLookupSelection(
-    lookup, slot.toolSlot.uuid, {
-      kind: "slot", id: slot.toolSlot.body.id,
-    }));
+    lookup, slot.toolSlot.uuid,
+    { kind: "slot", id: slot.toolSlot.body.id }));
   props.sceneObjects.forEach(sceneObject => sceneObject.body.id
     && addLookupSelection(lookup, sceneObject.uuid, {
       kind: "sceneObject", id: sceneObject.body.id,
@@ -137,6 +136,7 @@ export const hoverSelectionFromDesigner = (
   weeds: TaggedWeedPointer[],
   toolSlots: SlotWithTool[],
   sceneObjects: TaggedSceneObject[] = [],
+  // eslint-disable-next-line complexity
 ): ThreeDObjectSelection | undefined => {
   const hoveredPlantUuid =
     designer?.hoveredPlant.plantUUID || designer?.hoveredPlantListItem;
@@ -157,7 +157,13 @@ export const hoverSelectionFromDesigner = (
 
   const sceneObject = sceneObjects.filter(resource =>
     resource.uuid == designer?.hoveredSceneObject)[0];
-  return selectionFromResource("sceneObject", sceneObject);
+  const sceneObjectSelection = selectionFromResource("sceneObject", sceneObject);
+  if (sceneObjectSelection) { return sceneObjectSelection; }
+  const staticSceneObject = sceneObjects.filter(resource =>
+    resource.uuid == designer?.hoveredSceneObject)[0];
+  return staticSceneObject
+    ? { kind: "sceneObject", id: 0, uuid: staticSceneObject.uuid }
+    : undefined;
 };
 
 export const pathForThreeDSelection = (

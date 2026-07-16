@@ -152,6 +152,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.sunAzimuth = 1;
     expectedConfig.sunInclination = 1;
     expectedConfig.scene = "Lab";
+    expectedConfig.groundTexture = "bricks";
     expectedConfig.plants = "";
     expectedConfig.axes = true;
     expectedConfig.people = true;

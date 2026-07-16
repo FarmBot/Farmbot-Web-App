@@ -78,14 +78,16 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenCalledWith("z_base", 200);
   });
 
-  it("resets z base", () => {
+  it("resets center coordinates", () => {
     const onValueChange = jest.fn();
-    const { container } = render(<SceneObjectFormFields
+    const { getAllByTitle } = render(<SceneObjectFormFields
       values={values()}
       onValueChange={onValueChange} />);
 
-    fireEvent.click(container.querySelector("button[title='Reset Z']")!);
+    getAllByTitle("Reset").forEach(button => fireEvent.click(button));
 
+    expect(onValueChange).toHaveBeenCalledWith("x_center", 0);
+    expect(onValueChange).toHaveBeenCalledWith("y_center", 0);
     expect(onValueChange).toHaveBeenCalledWith("z_base", 0);
   });
 
@@ -183,6 +185,9 @@ describe("<SceneObjectFormFields />", () => {
       onValueChange={onValueChange} />);
 
     expect(fbSelectProps[0].selectedItem?.value).toEqual("box");
+    expect(fbSelectProps[0].list.map(item => item.value)).toContain("solar");
+    expect(fbSelectProps[0].list.map(item => item.value)).toContain("tree");
+    expect(fbSelectProps[0].list.map(item => item.value)).toContain("fence");
     fbSelectProps[0].onChange({ label: "Sphere", value: "sphere" });
     fbSelectProps[1].onChange({ label: "max", value: "max" });
     fbSelectProps[2].onChange({ label: "world", value: "world" });
@@ -216,11 +221,11 @@ describe("<SceneObjectFormFields />", () => {
   it("edits unified cube size", () => {
     const onValueChange = jest.fn();
     const onUnifiedSizeChange = jest.fn();
-    const { container, rerender } = render(<SceneObjectFormFields
+    const { container, getByLabelText, rerender } = render(<SceneObjectFormFields
       values={values()}
       onUnifiedSizeChange={onUnifiedSizeChange}
       onValueChange={onValueChange} />);
-    const cube = container.querySelector("input[type='checkbox']")!;
+    const cube = getByLabelText("Cube");
 
     fireEvent.click(cube);
 

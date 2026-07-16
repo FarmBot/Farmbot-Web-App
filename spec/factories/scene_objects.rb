@@ -4,6 +4,7 @@ FactoryBot.define do
     texture { "none" }
     shape { "box" }
     color { "#fff" }
+    show { true }
     x_origin { "home" }
     y_origin { "home" }
     z_origin { "world" }

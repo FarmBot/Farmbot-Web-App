@@ -653,6 +653,9 @@ export namespace ToolTips {
   export const THREE_D_ENVIRONMENT =
     trim(`3D Scene. (default: "Outdoor")`);
 
+  export const THREE_D_GROUND_TEXTURE =
+    trim(`Ground texture. (default: "Grass")`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -1266,6 +1269,10 @@ export namespace Content {
     trim(`The tool currently mounted to the UTM can be set here or by using
     a MARK AS step in a sequence. Use the verify button or read the tool
     verification pin in a sequence to verify that a tool is attached.`);
+
+  export const CONFIRM_SCENE_CHANGE =
+    trim(`"Changing the scene will remove all {{ count }} objects from the
+    garden. Are you sure?"`);
 
   // Farm Events
   export const NOTHING_SCHEDULED =
@@ -2290,6 +2297,7 @@ export enum DeviceSetting {
   grid = `Grid`,
   heading = `Heading`,
   environment = `Environment`,
+  groundTexture = `Ground Texture`,
 
   // Map
   showPlants = `Plants`,

@@ -10,7 +10,7 @@ export interface SceneObjectFormFieldsProps {
   values: SceneObjectFormValues;
   onValueChange: (
     field: keyof SceneObjectFormValues,
-    value: string | number,
+    value: string | number | boolean,
   ) => void;
   focusedField?: string;
   showUnifiedSize?: boolean;
@@ -21,8 +21,8 @@ export interface SceneObjectFormFieldsProps {
 
 type SceneObjectNumberField = Exclude<
   keyof SceneObjectFormValues,
-  "name" | "texture" | "shape" | "color"
-  | "x_origin" | "y_origin" | "z_origin"
+  "name" | "texture" | "shape" | "color" | "show"
+  | "x_origin" | "y_origin" | "z_origin" | "id" | "created_at" | "updated_at"
 >;
 type SceneObjectOriginField = "x_origin" | "y_origin" | "z_origin";
 
@@ -41,9 +41,12 @@ const shapeChoices: DropDownItem[] = [
   { label: t("Window"), value: "window" },
   { label: t("Laptop"), value: "laptop" },
   { label: t("Desk"), value: "desk" },
+  { label: t("Solar Panel"), value: "solar" },
+  { label: t("Tree"), value: "tree" },
+  { label: t("Fence"), value: "fence" },
 ];
 
-const shapesWithTexture = ["box", "cylinder", "sphere"];
+const shapesWithTexture = ["box", "cylinder", "sphere", "fence", "desk"];
 const DEFAULT_COLOR = "#434343";
 
 const validHexColor = (color: string) =>
@@ -129,12 +132,12 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
     {field.label &&
       <div className={"scene-object-field-label"}>
         <label htmlFor={field.id}>{field.label}</label>
-        {field.field == "z_base" &&
+        {["z_base", "y_center", "x_center"].includes(field.field) &&
           <button
             type={"button"}
             className={"fb-button gray scene-object-reset-z"}
-            title={t("Reset Z")}
-            onClick={() => onValueChange("z_base", 0)}>
+            title={t("Reset")}
+            onClick={() => onValueChange(field.field, 0)}>
             <i className={"fa fa-undo"} />
           </button>}
       </div>}
@@ -190,15 +193,24 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
             onChange={item => onValueChange("texture", item.value)}
             extraClass="fb-select" />
         </div>}
+      {showTexture &&
+        <div className={"grid half-gap"}>
+          <label htmlFor={"color"}>{t("Color")}</label>
+          <div className={"row half-gap grid-exp-1"}>
+            <input id={"color"}
+              name={"color"}
+              type={"color"}
+              value={validHexColor(values.color)}
+              onChange={e => onValueChange("color", e.currentTarget.value)} />
+          </div>
+        </div>}
       <div className={"grid half-gap"}>
-        <label htmlFor={"color"}>{t("Color")}</label>
-        <div className={"row half-gap grid-exp-1"}>
-          <input id={"color"}
-            name={"color"}
-            type={"color"}
-            value={validHexColor(values.color)}
-            onChange={e => onValueChange("color", e.currentTarget.value)} />
-        </div>
+        <label htmlFor={"show"}>{t("Show")}</label>
+        <input id={"show"}
+          name={"show"}
+          type={"checkbox"}
+          checked={values.show}
+          onChange={e => onValueChange("show", e.currentTarget.checked)} />
       </div>
     </div>
     {fieldRows.map(row => {
@@ -209,7 +221,7 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
         key={row.id}>
         <div className={"row"} style={{ alignItems: "center" }}>
           <label>{row.label}</label>
-          {row.id === "size" && <label
+          {row.id === "size" && <label htmlFor={"cube"}
             style={{
               marginLeft: "auto",
               display: "flex",
@@ -217,7 +229,8 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
               gap: "0.5rem",
               fontWeight: 400,
             }}>
-            <input type="checkbox"
+            <input id={"cube"}
+              type="checkbox"
               checked={showUnifiedSize}
               onChange={e => {
                 const checked = e.currentTarget.checked;

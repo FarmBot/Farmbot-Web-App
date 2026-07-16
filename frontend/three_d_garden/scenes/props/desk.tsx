@@ -5,20 +5,24 @@ import { ASSETS } from "../../constants";
 import { Group, MeshPhongMaterial } from "../../components";
 import { FocusVisibilityGroup } from "../../focus_transition";
 import { useTextureVariant } from "../../texture_variants";
+import { SceneObject } from "farmbot/dist/resources/api_resources";
 
 export interface DeskProps {
   activeFocus: string;
   size: [number, number, number];
+  color: string;
+  texture: SceneObject["texture"];
 }
 
 const deskWidth = 1000;
 const deskDepth = 500;
 const deskHeight = 550;
 const deskLegWidth = 50;
-const deskWoodDarkness = "#666";
 
 export const deskPropsEqual = (prev: DeskProps, next: DeskProps) =>
   prev.activeFocus === next.activeFocus &&
+  prev.color === next.color &&
+  prev.texture === next.texture &&
   prev.size[0] === next.size[0] &&
   prev.size[1] === next.size[1] &&
   prev.size[2] === next.size[2];
@@ -30,7 +34,10 @@ const DESK_BOUNDS = {
 };
 
 const DeskBase = (props: DeskProps) => {
-  const deskWoodTexture = useTextureVariant(ASSETS.textures.wood, {
+  const textureUrl = props.texture === "none"
+    ? ASSETS.textures.wood
+    : ASSETS.textures[props.texture];
+  const deskTexture = useTextureVariant(textureUrl, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
     repeat: [0.3, 0.3],
@@ -53,7 +60,9 @@ const DeskBase = (props: DeskProps) => {
           receiveShadow={true}
           args={[deskDepth, deskWidth, 50]}
           position={[0, 0, deskHeight + 25]}>
-          <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
+          <MeshPhongMaterial
+            map={props.texture === "none" ? undefined : deskTexture}
+            color={props.color} />
         </Box>
         <Group name={"desk-legs"}>
           {[
@@ -69,7 +78,9 @@ const DeskBase = (props: DeskProps) => {
               receiveShadow={true}
               args={[deskLegWidth, deskLegWidth, deskHeight]}
               position={[xOffset, yOffset, deskHeight / 2]}>
-              <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
+              <MeshPhongMaterial
+                map={props.texture === "none" ? undefined : deskTexture}
+                color={props.color} />
             </Box>)}
         </Group>
       </Group>

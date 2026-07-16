@@ -25,6 +25,7 @@ import type {
   PlantStage,
   TaggedDevice,
   TaggedPeripheral,
+  TaggedSceneObject,
 } from "farmbot";
 import type { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import type {
@@ -34,7 +35,7 @@ import { isNumber } from "lodash";
 import type {
   AxisNumberProperty, BotSize, MapTransformProps, TaggedPlant,
 } from "./map/interfaces";
-import type { SceneObjectFormValues, TaggedSceneObject } from "../scene_objects/interfaces";
+import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import type { SelectionBoxData } from "./map/background";
 import type { GetWebAppConfigValue } from "../config_storage/actions";
 import type {
@@ -76,6 +77,7 @@ export interface State extends TypeCheckerHint {
   show_zones: boolean;
   show_sensor_readings: boolean;
   show_moisture_interpolation_map: boolean;
+  show_scene_objects: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }

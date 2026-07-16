@@ -18,6 +18,7 @@ import {
   TaggedTool,
   TaggedWeedPointer,
   TaggedPeripheral,
+  TaggedSceneObject,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
@@ -25,7 +26,6 @@ import { ThreeDGardenPlant } from "./garden";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
-import { TaggedSceneObject } from "../scene_objects/interfaces";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 

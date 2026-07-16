@@ -670,8 +670,11 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <div className={"config-section"}>
         <label>{"Environment"}</label>
         <Radio {...common} configKey={"scene"}
-          options={["Outdoor", "Lab", "Greenhouse"]} />
+          options={["Outdoor", "Lab", "Greenhouse", "Mars"]} />
         <Toggle {...common} configKey={"ground"} />
+        <Radio {...common} configKey={"groundTexture"}
+          options={["grass", "bricks", "concrete", "water", "aluminum",
+            "soil", "sand", "wood"]} />
         <Toggle {...common} configKey={"utilitiesPost"} />
         <Toggle {...common} configKey={"packaging"} />
         <Toggle {...common} configKey={"clouds"} />
