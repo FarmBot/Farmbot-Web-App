@@ -21,6 +21,18 @@ export const sceneObjectFocusHandler = (dispatch: Function) =>
   (field: string | undefined) =>
     dispatch(setFocusedSceneObjectField(field));
 
+export const availableSceneObjectName = (
+  existingNames: string[],
+  requestedName: string,
+) => {
+  if (!existingNames.includes(requestedName)) { return requestedName; }
+  const match = requestedName.match(/^(.*?)(?: (\d+))?$/);
+  const baseName = match?.[1] || requestedName;
+  let number = match?.[2] ? parseInt(match[2]) + 1 : 2;
+  while (existingNames.includes(`${baseName} ${number}`)) { number++; }
+  return `${baseName} ${number}`;
+};
+
 export const duplicateSceneObjectName = (
   sceneObjects: TaggedSceneObject[],
   sceneObject: TaggedSceneObject,

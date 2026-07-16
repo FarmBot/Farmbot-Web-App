@@ -911,6 +911,7 @@ jest.mock("@react-three/drei", () => {
           wrapT: "",
           rotation: 0,
           repeat: { set: jest.fn() },
+          offset: { set: jest.fn() },
           image: url == "mock_load_error"
             ? undefined
             : { height: 2, width: 2 },

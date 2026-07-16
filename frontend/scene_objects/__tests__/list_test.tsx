@@ -97,7 +97,7 @@ describe("<RawSceneObjects />", () => {
 
     fireEvent.click(container.querySelector(".plus-scene-object") as Element);
 
-    expect(mockNavigate).toHaveBeenCalledWith(Path.sceneObjects("add"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sceneObjects("catalog"));
   });
 
   it("toggles inventory sections", () => {

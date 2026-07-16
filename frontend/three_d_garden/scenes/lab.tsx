@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { People } from "./props";
 import { Group } from "../components";
 import { PopInGroup } from "../progressive_load";
-import { SceneObject } from "farmbot/dist/resources/api_resources";
+export { LAB_SCENE_OBJECTS } from "./scene_object_data";
 
 export interface LabProps {
   config: Config;
@@ -12,105 +12,6 @@ export interface LabProps {
   reveal?: boolean;
   onDetailsLoadInRest?(): void;
 }
-
-export const LAB_SCENE_OBJECTS: SceneObject[] = [
-  {
-    name: "Wall Y",
-    texture: "none",
-    shape: "box",
-    color: "#f4f4f4",
-    show: true,
-    x_center: -2250,
-    y_center: -1600,
-    z_base: 0,
-    x_size: 200,
-    y_size: 10000,
-    z_size: 2500,
-    x_origin: "home",
-    y_origin: "home",
-    z_origin: "world",
-  },
-  {
-    name: "Wall X",
-    texture: "none",
-    shape: "box",
-    color: "#f4f4f4",
-    show: true,
-    x_center: 2750,
-    y_center: 3470,
-    z_base: 0,
-    x_size: 10200,
-    y_size: 200,
-    z_size: 2500,
-    x_origin: "home",
-    y_origin: "home",
-    z_origin: "world",
-  },
-  {
-    name: "Lower Shelf",
-    texture: "wood",
-    shape: "box",
-    color: "#999",
-    show: true,
-    x_center: 2850,
-    y_center: 3270,
-    z_base: 810,
-    x_size: 10000,
-    y_size: 200,
-    z_size: 50,
-    x_origin: "home",
-    y_origin: "home",
-    z_origin: "world",
-  },
-  {
-    name: "Upper Shelf",
-    texture: "wood",
-    shape: "box",
-    color: "#999",
-    show: true,
-    x_center: 2850,
-    y_center: 3270,
-    z_base: 1230,
-    x_size: 10000,
-    y_size: 200,
-    z_size: 50,
-    x_origin: "home",
-    y_origin: "home",
-    z_origin: "world",
-  },
-  {
-    name: "Desk",
-    texture: "wood",
-    shape: "desk",
-    color: "#666",
-    show: true,
-    x_center: 850,
-    y_center: 0,
-    z_base: 0,
-    x_size: 500,
-    y_size: 1000,
-    z_size: 600,
-    x_origin: "max",
-    y_origin: "world",
-    z_origin: "world",
-  },
-  {
-    name: "Laptop",
-    texture: "none",
-    shape: "laptop",
-    color: "#fff",
-    show: true,
-    x_center: 800,
-    y_center: 0,
-    z_base: 600,
-    x_size: 300,
-    y_size: 300,
-    z_size: 200,
-    x_origin: "max",
-    y_origin: "world",
-    z_origin: "world",
-  },
-];
 
 const LabBase = (props: LabProps) => {
   if (props.config.scene != "Lab") { return <></>; }

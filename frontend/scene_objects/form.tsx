@@ -3,6 +3,9 @@ import { t } from "../i18next_wrapper";
 import { ASSETS } from "../three_d_garden/constants";
 import { FBSelect, DropDownItem, BlurableInput } from "../ui";
 import type { SceneObjectFormValues } from "./interfaces";
+import type {
+  SceneObjectAxis,
+} from "../three_d_garden/scenes/scene_object_data";
 
 export type { SceneObjectFormValues };
 
@@ -15,14 +18,19 @@ export interface SceneObjectFormFieldsProps {
   focusedField?: string;
   showUnifiedSize?: boolean;
   onUnifiedSizeChange?(unified: boolean): void;
+  onPreserveAxesChange?(axes: SceneObjectAxis[]): void;
+  onSwapXAndY?(): void;
   onFocusChange?(field: string | undefined): void;
   showNameField?: boolean;
+  showPreserveAxes?: boolean;
+  hideCubeControl?: boolean;
 }
 
 type SceneObjectNumberField = Exclude<
   keyof SceneObjectFormValues,
   "name" | "texture" | "shape" | "color" | "show"
   | "x_origin" | "y_origin" | "z_origin" | "id" | "created_at" | "updated_at"
+  | "preserve_axes"
 >;
 type SceneObjectOriginField = "x_origin" | "y_origin" | "z_origin";
 
@@ -97,7 +105,24 @@ const originChoices = [
   { label: t("World"), value: "world" },
 ];
 
+const sceneObjectAxes: SceneObjectAxis[] = ["x", "y", "z"];
+const swappedSceneObjectAxes: Record<SceneObjectAxis, SceneObjectAxis> = {
+  x: "y",
+  y: "x",
+  z: "z",
+};
+
+export const swapSceneObjectXAndY = (values: SceneObjectFormValues) => ({
+  x_size: values.y_size,
+  y_size: values.x_size,
+  preserve_axes: sceneObjectAxes.filter(axis => {
+    const sourceAxis = swappedSceneObjectAxes[axis];
+    return values.preserve_axes?.includes(sourceAxis);
+  }),
+});
+
 interface SceneObjectFieldInputProps {
+  disabled?: boolean;
   field: SceneObjectFormField;
   focusedField?: string;
   values: SceneObjectFormValues;
@@ -115,6 +140,7 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
     name={field.id}
     type={"number"}
     className={highlighted ? "scene-object-field-highlight" : ""}
+    disabled={props.disabled}
     allowEmpty={true}
     onFocus={() => onFocusChange?.(field.id)}
     onBlur={() => onFocusChange?.(undefined)}
@@ -159,8 +185,30 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
 
 export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
   const { focusedField, values, onValueChange } = props;
+  const [collapsedRows, setCollapsedRows] = React.useState<string[]>([]);
   const showUnifiedSize = !!props.showUnifiedSize;
   const showTexture = shapesWithTexture.includes(values.shape);
+  const preservedAxes: SceneObjectAxis[] = values.preserve_axes || [];
+  const togglePreservedAxis = (axis: SceneObjectAxis) => {
+    const nextAxes: SceneObjectAxis[] = preservedAxes.includes(axis)
+      ? preservedAxes.filter(item => item != axis)
+      : [...preservedAxes, axis];
+    props.onPreserveAxesChange?.(nextAxes);
+  };
+  const toggleRow = (row: string) => setCollapsedRows(current =>
+    current.includes(row)
+      ? current.filter(item => item != row)
+      : [...current, row]);
+  const swapXAndY = () => {
+    if (props.onSwapXAndY) {
+      props.onSwapXAndY();
+      return;
+    }
+    onValueChange("x_size", values.y_size);
+    onValueChange("y_size", values.x_size);
+    props.onPreserveAxesChange?.(
+      swapSceneObjectXAndY(values).preserve_axes);
+  };
 
   return <div className={"grid half-gap scene-object-form-fields"}>
     {props.showNameField && (
@@ -217,46 +265,74 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
       const rowFields = row.id === "size" && showUnifiedSize
         ? [combinedSizeField]
         : row.fields;
+      const collapsed = collapsedRows.includes(row.id);
       return <div className={"grid half-gap info-box"}
         key={row.id}>
-        <div className={"row"} style={{ alignItems: "center" }}>
-          <label>{row.label}</label>
-          {row.id === "size" && <label htmlFor={"cube"}
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              fontWeight: 400,
-            }}>
-            <input id={"cube"}
-              type="checkbox"
-              checked={showUnifiedSize}
-              onChange={e => {
-                const checked = e.currentTarget.checked;
-                props.onUnifiedSizeChange?.(checked);
-                if (checked) {
-                  onValueChange("y_size", values.x_size);
-                  onValueChange("z_size", values.x_size);
-                }
-              }} />
-            <span>{t("Cube")}</span>
-          </label>}
+        <div className={"row scene-object-section-header"}>
+          <button type={"button"}
+            className={"scene-object-section-toggle"}
+            aria-expanded={!collapsed}
+            onClick={() => toggleRow(row.id)}>
+            <i className={`fa fa-caret-${collapsed ? "right" : "down"}`} />
+            <span>{row.label}</span>
+          </button>
+          {row.id === "size" &&
+            <div className={"row scene-object-size-actions"}>
+              <button type={"button"}
+                className={"fb-button gray scene-object-swap-size"}
+                onClick={swapXAndY}>
+                {t("Swap X & Y")}
+              </button>
+              {!props.hideCubeControl && <label htmlFor={"cube"}>
+                <input id={"cube"}
+                  type={"checkbox"}
+                  disabled={preservedAxes.length > 0}
+                  checked={showUnifiedSize}
+                  onChange={e => {
+                    const checked = e.currentTarget.checked;
+                    props.onUnifiedSizeChange?.(checked);
+                    if (checked) {
+                      onValueChange("y_size", values.x_size);
+                      onValueChange("z_size", values.x_size);
+                    }
+                  }} />
+                <span>{t("Cube")}</span>
+              </label>}
+            </div>}
         </div>
-        <div className={
+        {!collapsed && <div className={
           row.id === "center"
             ? "grid half-gap plant-info-field-data"
             : "row grid-3-col plant-info-field-data"
         }>
-          {rowFields.map(field =>
-            <SceneObjectFieldInput
+          {rowFields.map(field => {
+            const axis = field.id.replace("_size", "") as SceneObjectAxis;
+            return <SceneObjectFieldInput
               key={field.id}
+              disabled={row.id === "size" && (field.id === "size"
+                ? preservedAxes.length > 0
+                : preservedAxes.includes(axis))}
               field={field}
               focusedField={focusedField}
               values={values}
               onFocusChange={props.onFocusChange}
-              onValueChange={onValueChange} />)}
-        </div>
+              onValueChange={onValueChange} />;
+          })}
+        </div>}
+        {!collapsed && !showUnifiedSize
+          && row.id === "size" && props.showPreserveAxes &&
+          <div className={"row grid-3-col scene-object-preserve-axes"}>
+            {sceneObjectAxes.map(axis =>
+              <label key={axis} htmlFor={`preserve-${axis}`}>
+                <input
+                  id={`preserve-${axis}`}
+                  aria-label={`${t("Fixed")} ${axis.toUpperCase()}`}
+                  type={"checkbox"}
+                  checked={preservedAxes.includes(axis)}
+                  onChange={() => togglePreservedAxis(axis)} />
+                <span>{t("Fixed")}</span>
+              </label>)}
+          </div>}
       </div>;
     })}
   </div>;

@@ -771,6 +771,53 @@
     padding: 0;
     line-height: 1;
   }
+
+  .scene-object-preserve-axes {
+    margin-top: 0.75rem;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: normal;
+    }
+  }
+
+  .scene-object-section-header {
+    align-items: center;
+  }
+
+  .scene-object-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .scene-object-size-actions {
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      font-weight: normal;
+    }
+  }
+
+  .scene-object-swap-size {
+    margin: 0;
+  }
 }
 
 .desktop-hide {

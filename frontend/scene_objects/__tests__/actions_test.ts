@@ -4,6 +4,7 @@ import {
   setUnifiedSceneObjectSize,
   copySceneObject,
   duplicateSceneObjectName,
+  availableSceneObjectName,
 } from "../actions";
 import { Actions } from "../../constants";
 import { fakeSceneObject } from
@@ -47,6 +48,15 @@ describe("scene object actions", () => {
 
     expect(duplicateSceneObjectName(sceneObjects, resource))
       .toEqual("Tree copy 2");
+  });
+
+  it("generates an available incremented name", () => {
+    expect(availableSceneObjectName(["Tree", "Tree 2"], "Tree"))
+      .toEqual("Tree 3");
+    expect(availableSceneObjectName(["Tree 4"], "Tree 4"))
+      .toEqual("Tree 5");
+    expect(availableSceneObjectName(["Fence"], "Tree"))
+      .toEqual("Tree");
   });
 
   it("copies and opens a scene object", async () => {

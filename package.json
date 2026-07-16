@@ -26,6 +26,7 @@
     "sass-lint": "bun scripts/run.js bunx sass-lint -c .sass-lint.yml -v -q && bun scripts/run.js bunx stylelint \"frontend/css/**/*.scss\"",
     "sass-fix": "bunx stylelint --fix \"frontend/css/**/*.scss\"",
     "sass-check": "bun scripts/run.js bunx sass --no-source-map --load-path=node_modules frontend/css/_index.scss:sass_index.log",
+    "render-scene-object-thumbnails": "bun scripts/render_scene_object_thumbnails.ts",
     "translation-check": "bun scripts/run.js bunx jshint --config public/app-resources/languages/.config public/app-resources/languages/*.json",
     "linters": "X=0;bun run typecheck;X=$(($X+$?));bun run dev-typecheck;X=$(($X+$?));bun run eslint;X=$(($X+$?));bun run sass-lint;X=$(($X+$?));bun run sass-check;X=$(($X+$?));bun run translation-check;X=$(($X+$?));[ $X = 0 ]"
   },
