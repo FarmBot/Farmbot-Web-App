@@ -95,7 +95,8 @@ valid_scene_metrics() {
 
 scripts/ci/generate-storage-states "$STORAGE_STATES_DIR" /tmp
 
-while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
+while IFS=$'\034' read -r -u 3 \
+  name mode url actions state roi wait_for_3d zoom; do
   screenshot_path="/tmp/${SCREENSHOT_NAME}_${name}.png"
   fps_samples_path="/tmp/${FPS_SAMPLES_NAME}_${name}.csv"
   scene_metrics_path="/tmp/${SCENE_METRICS_NAME}_${name}.csv"
@@ -110,6 +111,8 @@ while IFS=$'\034' read -r -u 3 name mode url actions state roi; do
     [ -n "$actions" ] && fps_args+=(--actions "$actions")
     [ -n "$state" ] && fps_args+=(--state "$state")
     [ -n "$roi" ] && fps_args+=(--roi "$roi")
+    [ "$wait_for_3d" = "true" ] && fps_args+=(--wait-for-3d)
+    [ -n "$zoom" ] && fps_args+=(--zoom "$zoom")
 
     echo -e "\n\n\n"
     if [ "$mode" = "screenshot" ]; then

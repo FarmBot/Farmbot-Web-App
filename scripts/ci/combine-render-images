@@ -86,6 +86,11 @@ const rowSets = {
             screenshotCell('outdoor'),
         ],
         [
+            screenshotCell('featured_scene_objects_action_1'),
+            screenshotCell('featured_scene_objects_action_2'),
+            screenshotCell('featured_scene_objects_action_3'),
+        ],
+        [
             screenshotCell('points'),
             [],
             [],

@@ -79,6 +79,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       });
     return <div
       key={sceneObject.uuid}
+      title={sceneObject.body.name}
       onClick={() => {
         props.dispatch({
           type: Actions.HOVER_SCENE_OBJECT,
@@ -174,6 +175,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
             {t("Import selected")}
           </button>
           <button className={"fb-button green"}
+            title={t("Import all")}
             onClick={() => {
               featuredSceneObjects
                 .filter(so => !sceneObjects

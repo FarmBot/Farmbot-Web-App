@@ -265,7 +265,9 @@ export const PanelSection = (props: PanelSectionProps) => {
   return <div className={`panel-section ${isOpen ? "open" : ""}`}>
     <div className={"section-header"}
       onClick={props.toggleOpen}>
-      <label>{`${props.title} (${props.itemCount})`}</label>
+      <label title={props.title}>
+        {`${props.title} (${props.itemCount})`}
+      </label>
       {props.extraHeaderTitle}
       <div className="row">
         {props.extraHeaderContent}
