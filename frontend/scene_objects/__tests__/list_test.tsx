@@ -320,9 +320,10 @@ describe("<RawSceneObjects />", () => {
 
     render(<RawSceneObjects {...p} />);
     const textureSelect = fbSelectProps.find(props =>
-      props.list.some(item => item.label == "bricks"))!;
+      props.list.some(item => item.value == 1))!;
+    const bricks = textureSelect.list.find(item => item.value == 1)!;
 
-    textureSelect.onChange({ label: "bricks", value: 1 });
+    textureSelect.onChange(bricks);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "3D_groundTexture",
       value: "1",

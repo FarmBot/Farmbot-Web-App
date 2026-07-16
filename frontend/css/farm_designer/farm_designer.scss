@@ -207,13 +207,11 @@
   }
   .scene-object-catalog-tile {
     position: relative;
-    display: grid;
-    grid-template-rows: 10rem auto auto;
     min-width: 0;
-    padding: 0 0 0.75rem;
+    padding: 0;
     overflow: hidden;
     cursor: pointer;
-    color: inherit;
+    text-align: center;
     border: 0;
     border-radius: 5px;
     background: var(--secondary-bg);
@@ -229,21 +227,26 @@
       object-fit: cover;
     }
   }
-  .scene-object-catalog-name,
-  .scene-object-catalog-scene {
-    padding: 0 0.75rem;
-    overflow: hidden;
-    text-align: left;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .scene-object-catalog-label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 3rem 0.6rem 0.6rem;
+    color: $white;
+    background: linear-gradient(transparent, $translucent15 50%, $translucent4);
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    text-transform: uppercase;
   }
   .scene-object-catalog-name {
-    padding-top: 0.75rem;
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-weight: bold;
-  }
-  .scene-object-catalog-scene {
-    color: $medium_gray;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .plant-search-item-age {
     @extend %panel-item-base;

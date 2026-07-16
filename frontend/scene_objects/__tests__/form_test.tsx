@@ -161,10 +161,9 @@ describe("<SceneObjectFormFields />", () => {
       .toHaveValue("#434343");
   });
 
-  it("can hide the name field", () => {
+  it("doesn't include a dedicated name field", () => {
     const { container } = render(<SceneObjectFormFields
       values={values()}
-      showNameField={false}
       onValueChange={jest.fn()} />);
 
     expect(container.querySelector("input[name='sceneObjectName']"))

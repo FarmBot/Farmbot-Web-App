@@ -9,20 +9,21 @@ import {
 import { Path } from "../internal_urls";
 import { t } from "../i18next_wrapper";
 import { SaveBtn } from "../ui";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedPoint } from "farmbot";
 import { destroy, initSave } from "../api/crud";
 import { useNavigate } from "react-router";
 import {
   SceneObjectFormFields, SceneObjectFormValues, swapSceneObjectXAndY,
 } from "./form";
 import { Actions } from "../constants";
-import { sceneObjectFocusHandler } from "./actions";
+import { availableSceneObjectName, sceneObjectFocusHandler } from "./actions";
 import {
   DEFAULT_SCENE_OBJECT,
   SceneObjectAxis,
 } from "../three_d_garden/scenes/scene_object_data";
 import type { SceneObject } from "farmbot/dist/resources/api_resources";
 import { selectAllSceneObjects } from "../resources/selectors";
+import { ResourceTitle } from "../sequences/panel/editor";
 
 export { DEFAULT_SCENE_OBJECT } from
   "../three_d_garden/scenes/scene_object_data";
@@ -47,9 +48,13 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   React.useEffect(() => {
     if (!initialized.current && !props.drawnSceneObject) {
       initialized.current = true;
+      const name = availableSceneObjectName(
+        props.sceneObjects.map(sceneObject => sceneObject.body.name),
+        "Custom Scene Object",
+      );
       props.dispatch({
         type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
-        payload: DEFAULT_SCENE_OBJECT,
+        payload: { ...DEFAULT_SCENE_OBJECT, name },
       });
     }
     if (props.drawnSceneObject) {
@@ -113,7 +118,14 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   return <DesignerPanel panelName={"add-scene-object"} panel={Panel.SceneObjects}>
     <DesignerPanelHeader
       panelName={"add-scene-object"}
-      title={t("Add new scene object")}
+      titleElement={<ResourceTitle
+        key={props.drawnSceneObject?.name}
+        resource={props.drawnSceneObject
+          ? { body: props.drawnSceneObject } as unknown as TaggedPoint
+          : undefined}
+        fallback={t("Add new scene object")}
+        dispatch={props.dispatch}
+        onChange={name => onValueChange("name", name)} />}
       backTo={Path.sceneObjects()}
       onBack={discardFailedSceneObjects}
       panel={Panel.SceneObjects}>
@@ -131,7 +143,6 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
           showUnifiedSize={showUnifiedSize}
           showPreserveAxes={true}
           hideCubeControl={true}
-          showNameField={true}
           onFocusChange={onFocusChange}
           onPreserveAxesChange={onPreserveAxesChange}
           onSwapXAndY={onSwapXAndY}

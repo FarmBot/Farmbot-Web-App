@@ -36,6 +36,7 @@ import { round as snapToGrid } from "../farm_designer/map/util";
 import type { DesignerState } from "../farm_designer/interfaces";
 import { SceneObject } from "farmbot/dist/resources/api_resources";
 import { Solar } from "./garden/solar";
+import { clickWasDragged } from "./click_event";
 
 const EDGE_LINE_WIDTH = 4;
 const PREVIEW_MARKER_RADIUS = 75;
@@ -406,7 +407,9 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
 
   const onClick = React.useCallback((e: ThreeEvent<MouseEvent>) => {
     const drawnSceneObject = drawnSceneObjectRef.current;
-    if (!enabled || !cursor || !drawnSceneObject) { return; }
+    if (!enabled || !cursor || !drawnSceneObject || clickWasDragged(e)) {
+      return;
+    }
     e.stopPropagation();
     if (!draft.center) {
       const zCenter = reCenter(props.config, {

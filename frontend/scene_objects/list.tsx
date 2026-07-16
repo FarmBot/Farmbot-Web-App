@@ -93,7 +93,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         {sceneObject.body.name}
       </span>
       <i
-        className={`fa fb-icon-button ${sceneObject.body.show
+        className={`fa fb-icon-button invert ${sceneObject.body.show
           ? "fa-eye"
           : "fa-eye-slash"}`}
         title={sceneObject.body.show ? t("hide") : t("show")}

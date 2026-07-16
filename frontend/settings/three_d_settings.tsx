@@ -69,6 +69,13 @@ export const SCENES: Record<number, string> = {
   3: "Custom",
 };
 
+export const SCENE_LABELS: Record<string, string> = {
+  Outdoor: t("Outdoor"),
+  Lab: t("Lab"),
+  Greenhouse: t("Greenhouse"),
+  Custom: t("Custom"),
+};
+
 export const TEXTURES: Record<number, string> = {
   0: "grass",
   1: "bricks",
@@ -78,6 +85,17 @@ export const TEXTURES: Record<number, string> = {
   5: "soil",
   6: "sand",
   7: "wood",
+};
+
+export const TEXTURE_LABELS: Record<string, string> = {
+  grass: t("Grass"),
+  bricks: t("Bricks"),
+  concrete: t("Concrete"),
+  water: t("Water"),
+  aluminum: t("Aluminum"),
+  soil: t("Soil"),
+  sand: t("Sand"),
+  wood: t("Wood"),
 };
 
 const GROUND_TEXTURE_FOR_SCENE: Record<string, string> = {
@@ -214,15 +232,21 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
   </Highlight>;
 };
 
-const DDIS = (values: Record<number, string>): Record<number, DropDownItem> =>
+const DDIS = (
+  values: Record<number, string>,
+  labels?: Record<string, string>,
+): Record<number, DropDownItem> =>
   Object.entries(values)
-    .reduce((acc, [key, label]) => {
-      acc[Number(key)] = { label, value: Number(key) };
+    .reduce((acc, [key, filename]) => {
+      acc[Number(key)] = {
+        label: labels?.[filename] || filename,
+        value: Number(key),
+      };
       return acc;
     }, {} as Record<number, DropDownItem>);
 
-export const SCENE_DDIS = DDIS(SCENES);
-export const TEXTURE_DDIS = DDIS(TEXTURES);
+export const SCENE_DDIS = DDIS(SCENES, SCENE_LABELS);
+export const TEXTURE_DDIS = DDIS(TEXTURES, TEXTURE_LABELS);
 
 const BY_NAME = (values: Record<number, string>) =>
   Object.entries(values)

@@ -142,6 +142,7 @@ export interface ResourceTitleProps {
   readOnly?: boolean;
   fallback: string;
   save?: boolean;
+  onChange?(name: string): void;
 }
 
 export const ResourceTitle = (props: ResourceTitleProps) => {
@@ -153,8 +154,15 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
       autoFocus={true}
       onBlur={() => {
         setIsEditing(false);
-        props.resource && props.dispatch(edit(props.resource, { name: nameValue }));
-        props.save && props.resource && props.dispatch(save(props.resource.uuid));
+        if (props.onChange) {
+          props.onChange(nameValue || "");
+        } else {
+          props.resource && props.dispatch(edit(props.resource, {
+            name: nameValue,
+          }));
+          props.save && props.resource &&
+            props.dispatch(save(props.resource.uuid));
+        }
       }}
       onChange={e => {
         setNameValue(e.currentTarget.value);

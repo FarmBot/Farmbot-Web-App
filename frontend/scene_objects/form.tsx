@@ -21,7 +21,6 @@ export interface SceneObjectFormFieldsProps {
   onPreserveAxesChange?(axes: SceneObjectAxis[]): void;
   onSwapXAndY?(): void;
   onFocusChange?(field: string | undefined): void;
-  showNameField?: boolean;
   showPreserveAxes?: boolean;
   hideCubeControl?: boolean;
 }
@@ -211,17 +210,6 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
   };
 
   return <div className={"grid half-gap scene-object-form-fields"}>
-    {props.showNameField && (
-      <div className={"row half-gap info-box"}>
-        <div className={"grid half-gap"}>
-          <label htmlFor={"sceneObjectName"}>{t("Name")}</label>
-          <BlurableInput id={"sceneObjectName"}
-            value={values.name}
-            name={"sceneObjectName"}
-            onCommit={e => onValueChange("name", e.currentTarget.value)} />
-        </div>
-      </div>
-    )}
     <div className={"row grid-3-col info-box"}>
       <div className={"grid half-gap"}>
         <label htmlFor={"shape"}>{t("Shape")}</label>

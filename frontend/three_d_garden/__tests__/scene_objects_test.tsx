@@ -1971,6 +1971,32 @@ describe("scene object placement helpers", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  it("ignores placement clicks caused by orbit control movement", () => {
+    const dispatch = jest.fn();
+    const event = {
+      point: new Vector3(100, 200, 0),
+      delta: 10,
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(100, 200, 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      dispatch,
+      drawnSceneObject: fakeSceneObject().body,
+    }));
+
+    act(() => result.current.onPointerMove(event as never));
+    act(() => result.current.onClick(event as never));
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(event.stopPropagation).not.toHaveBeenCalled();
+  });
+
   it("shows the prefilled object at low opacity until the second click", () => {
     const drawnSceneObject = fakeSceneObject({
       name: "Potted Plant",
