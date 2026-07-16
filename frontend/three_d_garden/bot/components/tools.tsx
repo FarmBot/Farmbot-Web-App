@@ -32,6 +32,7 @@ import { PROMO_TOOLS } from "../../../promo/tools";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
 import { SuctionAnimations } from "./suction_animation";
+import { Highlight } from "../../elements";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
   ThreeDObjectSelection,
@@ -366,7 +367,9 @@ const OpacityFilter = (props: OpacityFilterProps) => {
       appliedOpacityRef.current = props.opacity;
     }
   }, [props.opacity]);
-  return <Group ref={groupRef}>{props.children}</Group>;
+  return <Group name={"opacity-filter"} ref={groupRef}>
+    {props.children}
+  </Group>;
 };
 
 const displayedPulloutDirection = (
@@ -472,6 +475,14 @@ const useToolSlotClick = (props: ToolbaySlotProps) => {
 const TOOLBAY_SLOT_Z_OFFSET = -9;
 const SEED_TROUGH_SLOT_Z_OFFSET = -40;
 
+const UtmToolHighlight = (props: {
+  children: React.ReactElement;
+  inToolbay: boolean;
+}) =>
+  props.inToolbay
+    ? props.children
+    : <Highlight highlightName={"utm"}>{props.children}</Highlight>;
+
 const ToolbaySlot = (props: ToolbaySlotProps) => {
   const { position, children, toolPulloutDirection, mounted } = props;
   const selectable = !!props.id || !props.inToolbay;
@@ -485,32 +496,34 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
       props.config.mirrorX,
       props.config.mirrorY));
   const onClick = useToolSlotClick(props);
-  return <Group name={props.inToolbay ? "slot" : "utm-tool"}
-    position={[
-      position.x,
-      position.y,
-      position.z + TOOLBAY_SLOT_Z_OFFSET,
-    ]}
-    onClick={onClick}
-    onPointerOver={() => {
-      if (!selectable) { return; }
-      props.onHoverObject?.(true);
-      props.onHoverLabel?.(selection);
-    }}
-    onPointerOut={() => {
-      if (!selectable) { return; }
-      props.onHoverObject?.(false);
-      props.onHoverLabel?.(undefined);
-    }}>
-    {rotationMultiplier &&
-      <Group name={"bay"}
-        rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
-        <Toolbay1Model />
-      </Group>}
-    <OpacityFilter opacity={mounted ? 0.25 : 1}>
-      {children}
-    </OpacityFilter>
-  </Group>;
+  return <UtmToolHighlight inToolbay={props.inToolbay}>
+    <Group name={props.inToolbay ? "slot" : "utm-tool"}
+      position={[
+        position.x,
+        position.y,
+        position.z + TOOLBAY_SLOT_Z_OFFSET,
+      ]}
+      onClick={onClick}
+      onPointerOver={() => {
+        if (!selectable) { return; }
+        props.onHoverObject?.(true);
+        props.onHoverLabel?.(selection);
+      }}
+      onPointerOut={() => {
+        if (!selectable) { return; }
+        props.onHoverObject?.(false);
+        props.onHoverLabel?.(undefined);
+      }}>
+      {rotationMultiplier &&
+        <Group name={"bay"}
+          rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
+          <Toolbay1Model />
+        </Group>}
+      <OpacityFilter opacity={mounted ? 0.25 : 1}>
+        {children}
+      </OpacityFilter>
+    </Group>
+  </UtmToolHighlight>;
 };
 
 interface ToolProps extends ThreeDTool {
@@ -706,26 +719,28 @@ const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
   const selection: ThreeDObjectSelection | undefined = props.id
     ? { kind: "slot", id: props.id }
     : undefined;
-  return <Group
-    position={[
-      props.position.x - 19,
-      props.position.y + 5,
-      props.position.z + SEED_TROUGH_SLOT_Z_OFFSET,
-    ]}
-    rotation={[0, 0, Math.PI / 2]}
-    onClick={onClick}
-    onPointerOver={() => {
-      if (!selectable) { return; }
-      props.onHoverObject?.(true);
-      props.onHoverLabel?.(selection);
-    }}
-    onPointerOut={() => {
-      if (!selectable) { return; }
-      props.onHoverObject?.(false);
-      props.onHoverLabel?.(undefined);
-    }}>
-    <SeedTroughToolModel firstTrough={props.firstTrough} />
-  </Group>;
+  return <UtmToolHighlight inToolbay={props.inToolbay}>
+    <Group
+      position={[
+        props.position.x - 19,
+        props.position.y + 5,
+        props.position.z + SEED_TROUGH_SLOT_Z_OFFSET,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}
+      onClick={onClick}
+      onPointerOver={() => {
+        if (!selectable) { return; }
+        props.onHoverObject?.(true);
+        props.onHoverLabel?.(selection);
+      }}
+      onPointerOut={() => {
+        if (!selectable) { return; }
+        props.onHoverObject?.(false);
+        props.onHoverLabel?.(undefined);
+      }}>
+      <SeedTroughToolModel firstTrough={props.firstTrough} />
+    </Group>
+  </UtmToolHighlight>;
 };
 
 interface ActiveRotaryToolSlotProps extends ToolbaySlotProps {

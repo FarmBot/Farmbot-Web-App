@@ -158,6 +158,7 @@ export interface DesignerState {
   hoveredSpread: number | undefined;
   hoveredPlantListItem: string | undefined;
   hoveredSceneObject: string | undefined;
+  highlighted3DObject: string | undefined;
   hoveredToolSlot: string | undefined;
   hoveredSensorReading: string | undefined;
   hoveredImage: string | undefined;

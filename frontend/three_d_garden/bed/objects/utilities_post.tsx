@@ -23,6 +23,8 @@ import { clickWasDragged } from "../../click_event";
 import {
   getUtilitiesPostWorldPosition, WIFI_ROUTER_LOCAL_Z,
 } from "./utilities_post_position";
+import { Highlight } from "../../elements";
+import { t } from "../../../i18next_wrapper";
 
 const AnimatedGroup = animated(Group);
 const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
@@ -269,17 +271,22 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
       position={[-legSize / 2 - outletDepth / 2, 0, 85]}>
       <MeshPhongMaterial color={"gray"} />
     </Box>
-    <Group name={"wifi-router"}
-      onClick={selectConnectivity}
-      position={[0, 0, WIFI_ROUTER_LOCAL_Z]}>
-      <RoundedBox name={"router-base"}
-        castShadow={true}
-        receiveShadow={true}
-        radius={8}
-        args={[legSize, 60, 30]}>
-        <MeshPhongMaterial color={"lightgray"} />
-      </RoundedBox>
-    </Group>
+    <Highlight
+      highlightName={"connectivity"}
+      label={t("Connectivity")}
+      labelPosition={[0, 0, WIFI_ROUTER_LOCAL_Z + 60]}>
+      <Group name={"wifi-router"}
+        onClick={selectConnectivity}
+        position={[0, 0, WIFI_ROUTER_LOCAL_Z]}>
+        <RoundedBox name={"router-base"}
+          castShadow={true}
+          receiveShadow={true}
+          radius={8}
+          args={[legSize, 60, 30]}>
+          <MeshPhongMaterial color={"lightgray"} />
+        </RoundedBox>
+      </Group>
+    </Highlight>
     <Mesh name={"utilities-solid-hardware"}
       castShadow={true}
       receiveShadow={true}

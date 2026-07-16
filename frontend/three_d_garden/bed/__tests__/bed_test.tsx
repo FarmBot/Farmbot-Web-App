@@ -178,6 +178,16 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("renders object highlight wrappers", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelector("[name='connectivity-highlight']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='soil-surface-highlight']"))
+      .toBeTruthy();
+  });
+
   it("renders bed supports with instanced geometry", () => {
     const p = fakeProps();
     p.config.bedZOffset = 100;

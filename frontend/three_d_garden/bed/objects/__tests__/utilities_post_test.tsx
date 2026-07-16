@@ -38,6 +38,19 @@ describe("<UtilitiesPost />", () => {
     });
   });
 
+  it("wraps connectivity for highlighting", () => {
+    const p = fakeProps();
+    const { container } = render(<UtilitiesPost {...p} />);
+    expect(container.textContent).toContain("router-base");
+    const highlight = container.querySelector(
+      "[name='connectivity-highlight']");
+    const selection = highlight?.querySelector(
+      "[name='connectivity-highlight-selection']");
+    expect(selection?.querySelector("[name='wifi-router']")).toBeTruthy();
+    expect(selection?.querySelector("[name='connectivity-label']")).toBeNull();
+    expect(highlight?.querySelector("[name='connectivity-label']")).toBeNull();
+  });
+
   it("merges solid hardware into one colored geometry", () => {
     const geometry = makeUtilitiesPostGeometry({
       legSize: 100,

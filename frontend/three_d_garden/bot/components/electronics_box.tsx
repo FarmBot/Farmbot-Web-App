@@ -19,6 +19,8 @@ import { getMode } from "../../../farm_designer/map/util";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
 import { frontSideMaterial } from "../../geometry_batching";
+import { Highlight } from "../../elements";
+import { t } from "../../../i18next_wrapper";
 
 type Box = GLTF & {
   nodes: {
@@ -157,13 +159,11 @@ const ButtonInstances = (props: {
     [props.kitVersion],
   );
   const housingAttributes = React.useMemo(() =>
-    makeHardwareInstanceAttributes(buttonInstances, -30, 1000),
-  [buttonInstances]);
+    makeHardwareInstanceAttributes(buttonInstances, -30, 1000), [buttonInstances]);
   const buttonAttributes = React.useMemo(() =>
     makeHardwareInstanceAttributes(
       buttonInstances, -30, 1, [Math.PI / 2, 0, 0],
-    ),
-  [buttonInstances]);
+    ), [buttonInstances]);
   return <Group name={"buttons"} position={[0, 0, 130]}>
     <InstancedMesh name={"button-housings"}
       args={[
@@ -251,11 +251,15 @@ const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
     ? getBotKinematics(config, configPosition).anchors.electronics.localPosition
     : getElectronicsBoxPosition(config, configPosition);
   return <Group name={"electronics-box"} position={position}>
-    <ElectronicsBoxModel
-      kitVersion={config.kitVersion}
-      onClick={selectElectronics}
-      onPointerOver={onPointerOver}
-      onPointerOut={onPointerOut} />
+    <Highlight highlightName={"electronics"}
+      label={t("Electronics Box")}
+      labelPosition={[0, 0, 220]}>
+      <ElectronicsBoxModel
+        kitVersion={config.kitVersion}
+        onClick={selectElectronics}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut} />
+    </Highlight>
   </Group>;
 };
 

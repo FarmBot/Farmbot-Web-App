@@ -58,6 +58,8 @@ describe("<ElectronicsBox />", () => {
   it("renders box", () => {
     const { container } = render(<ElectronicsBox {...fakeProps()} />);
     expect(container).toContainHTML("electronics-box");
+    expect(container.querySelector("[name='electronics-highlight']"))
+      .toBeTruthy();
     expect(container.querySelector("[name='button-housings']"))
       .toBeTruthy();
     expect(container.querySelectorAll("[name^='button-']"))

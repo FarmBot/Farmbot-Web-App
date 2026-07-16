@@ -32,6 +32,7 @@ import { Bounds } from "../components/bounds";
 import { WaterFlowTextureProvider } from "../components/water_stream";
 import * as demoMovement from "../../../demo/lua_runner/movement";
 import { getBotKinematics } from "../kinematics";
+import { HighlightProvider } from "../../elements";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -360,6 +361,21 @@ describe("<Bot />", () => {
       .toBeTruthy();
     expect(container.querySelector("[name='bot-z-axis'] [name='utm-tool']"))
       .toBeTruthy();
+  });
+
+  it("highlights all clickable FarmBot objects with one UTM label", () => {
+    const wrapper = createRenderer(
+      <HighlightProvider highlighted3DObject={"all"}>
+        <Bot {...fakeProps()} />
+      </HighlightProvider>,
+    );
+    const named = (name: string) => wrapper.root.findAll(node =>
+      typeof node.type == "string" && node.props.name == name);
+    expect(named("electronics-label")).toHaveLength(1);
+    expect(named("camera-label")).toHaveLength(1);
+    expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
+    expect(named("utm-label")).toHaveLength(1);
+    unmountRenderer(wrapper);
   });
 
   it("selects the UTM", () => {

@@ -309,9 +309,10 @@ describe("<RawSceneObjects />", () => {
       .mockReturnValue({ type: "init_save" } as never);
 
     render(<RawSceneObjects {...p} />);
-    expect(fbSelectProps.length).toBeGreaterThan(0);
+    const textureSelect = fbSelectProps.find(props =>
+      props.list.some(item => item.label == "bricks"))!;
 
-    fbSelectProps[0].onChange({ label: "bricks", value: 1 });
+    textureSelect.onChange({ label: "bricks", value: 1 });
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "3D_groundTexture",
       value: "1",
@@ -332,12 +333,15 @@ describe("<RawSceneObjects />", () => {
       }) as never);
 
     render(<RawSceneObjects {...p} />);
-    expect(fbSelectProps).toHaveLength(2);
+    const sceneSelect = fbSelectProps.find(props =>
+      props.list.some(item => item.label == "Lab"))!;
 
-    act(() => fbSelectProps[1].onChange({ label: "Lab", value: 1 }));
+    act(() => sceneSelect.onChange({ label: "Lab", value: 1 }));
 
-    expect(fbSelectProps).toHaveLength(4);
-    expect(fbSelectProps[3].selectedItem).toEqual({ label: "Lab", value: 1 });
+    const sceneSelects = fbSelectProps.filter(props =>
+      props.list.some(item => item.label == "Lab"));
+    expect(sceneSelects[sceneSelects.length - 1].selectedItem)
+      .toEqual({ label: "Lab", value: 1 });
     fbSelectSpy.mockRestore();
   });
 });

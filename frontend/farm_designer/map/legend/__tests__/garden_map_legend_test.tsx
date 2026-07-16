@@ -98,6 +98,23 @@ describe("<GardenMapLegend />", () => {
       .not.toBeInTheDocument();
   });
 
+  it("highlights clickable objects while hovering over help", () => {
+    const p = fakeProps();
+    render(<GardenMapLegend {...p} />);
+    const help = screen.getByTitle("Highlight clickable objects in the map");
+    expect(help.style.fontSize).toEqual("2rem");
+    fireEvent.mouseEnter(help);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_HIGHLIGHT,
+      payload: "all",
+    });
+    fireEvent.mouseLeave(help);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_HIGHLIGHT,
+      payload: undefined,
+    });
+  });
+
   it("renders with readings", () => {
     const p = fakeProps();
     const { container } = render(<GardenMapLegend {...p} />);

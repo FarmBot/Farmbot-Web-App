@@ -74,6 +74,17 @@ describe("designer reducer", () => {
     expect(newState.hoveredSpread).toEqual(100);
   });
 
+  it("sets the highlighted 3D object", () => {
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_3D_HIGHLIGHT,
+      payload: "connectivity",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.highlighted3DObject).toEqual("connectivity");
+    const allState = designer(newState, { ...action, payload: "all" });
+    expect(allState.highlighted3DObject).toEqual("all");
+  });
+
   it("sets crop water curve id", () => {
     const action: ReduxAction<number | undefined> = {
       type: Actions.SET_CROP_WATER_CURVE_ID,

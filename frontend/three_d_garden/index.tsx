@@ -28,6 +28,7 @@ import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
+import { HighlightProvider } from "./elements";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -106,41 +107,44 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           gl.localClippingEnabled = true;
           perfMark("canvas_created");
         }}>
-        <GardenModel
-          config={props.config}
-          configPosition={props.configPosition}
-          threeDPlants={props.threeDPlants}
-          plants={props.plants}
-          activeFocus={""}
-          setActiveFocus={noop}
-          mapPoints={props.mapPoints}
-          weeds={props.weeds}
-          toolSlots={props.toolSlots}
-          tools={props.tools}
-          sequences={props.sequences}
-          fbosConfig={props.fbosConfig}
-          timeSettings={props.timeSettings}
-          botOnline={props.botOnline}
-          arduinoBusy={props.arduinoBusy}
-          currentBotLocation={props.currentBotLocation}
-          movementState={props.movementState}
-          defaultAxes={props.defaultAxes}
-          noUTM={props.noUTM}
-          deviceAccount={props.deviceAccount}
-          bot={props.bot}
-          mountedToolName={props.mountedToolName}
-          allPoints={props.allPoints}
-          groups={props.groups}
-          images={props.images}
-          sensorReadings={props.sensorReadings}
-          sensors={props.sensors}
-          peripherals={props.peripherals}
-          peripheralValues={props.peripheralValues}
-          env={props.env}
-          set3DConfigValue={props.set3DConfigValue}
-          sceneObjects={props.sceneObjects}
-          viewPrismBridgeRef={viewPrismBridgeRef}
-          addPlantProps={props.addPlantProps} />
+        <HighlightProvider highlighted3DObject={
+          props.addPlantProps.designer.highlighted3DObject}>
+          <GardenModel
+            config={props.config}
+            configPosition={props.configPosition}
+            threeDPlants={props.threeDPlants}
+            plants={props.plants}
+            activeFocus={""}
+            setActiveFocus={noop}
+            mapPoints={props.mapPoints}
+            weeds={props.weeds}
+            toolSlots={props.toolSlots}
+            tools={props.tools}
+            sequences={props.sequences}
+            fbosConfig={props.fbosConfig}
+            timeSettings={props.timeSettings}
+            botOnline={props.botOnline}
+            arduinoBusy={props.arduinoBusy}
+            currentBotLocation={props.currentBotLocation}
+            movementState={props.movementState}
+            defaultAxes={props.defaultAxes}
+            noUTM={props.noUTM}
+            deviceAccount={props.deviceAccount}
+            bot={props.bot}
+            mountedToolName={props.mountedToolName}
+            allPoints={props.allPoints}
+            groups={props.groups}
+            images={props.images}
+            sensorReadings={props.sensorReadings}
+            sensors={props.sensors}
+            peripherals={props.peripherals}
+            peripheralValues={props.peripheralValues}
+            env={props.env}
+            set3DConfigValue={props.set3DConfigValue}
+            sceneObjects={props.sceneObjects}
+            viewPrismBridgeRef={viewPrismBridgeRef}
+            addPlantProps={props.addPlantProps} />
+        </HighlightProvider>
       </Canvas>
     </div>
     {props.config.viewCube &&

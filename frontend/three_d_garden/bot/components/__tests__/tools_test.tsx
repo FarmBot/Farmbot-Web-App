@@ -159,7 +159,9 @@ describe("<Tools />", () => {
     metrics: OpacityMetrics,
   ) => (node: React.ReactElement) => {
     if (node.type == "mesh") { return new THREE.Mesh(); }
-    if (node.type != "group") { return {}; }
+    if (node.type != "group" || node.props.name != "opacity-filter") {
+      return {};
+    }
     const meshCount = meshCounts.shift() || 0;
     const meshes = Array.from({ length: meshCount }, () => {
       const mesh = new THREE.Mesh();

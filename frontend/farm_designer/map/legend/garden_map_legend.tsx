@@ -401,6 +401,17 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
+        <i className="fa fa-question-circle"
+          style={{ fontSize: "2rem" }}
+          title={t("Highlight clickable objects in the map")}
+          onMouseEnter={() => props.dispatch({
+            type: Actions.SET_3D_HIGHLIGHT,
+            payload: "all",
+          })}
+          onMouseLeave={() => props.dispatch({
+            type: Actions.SET_3D_HIGHLIGHT,
+            payload: undefined,
+          })} />
         <BugsControls />
       </div>
       {zDisplayOpen &&

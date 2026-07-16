@@ -25,7 +25,7 @@ import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
 import { Config, SurfaceDebugOption } from "../config";
 import { ASSETS } from "../constants";
-import { DistanceIndicator } from "../elements";
+import { DistanceIndicator, Highlight } from "../elements";
 import { FarmbotAxes, UtilitiesPost, Packaging } from "./objects";
 import {
   Group, InstancedMesh, Mesh, MeshNormalMaterial, MeshPhongMaterial,
@@ -67,6 +67,7 @@ import {
 import {
   SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
 } from "../section";
+import { t } from "../../i18next_wrapper";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -884,12 +885,20 @@ const BedBase = (props: BedProps) => {
           getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>
-      {props.config.lowDetail
-        ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
-        : <DetailedSoilLayer
-          bedProps={props}
-          layerProps={commonSoilLayerProps}
-          soilSurfaceSide={soilSurfaceSide} />}
+      <Highlight highlightName={"soil-surface"}
+        label={t("Garden")}
+        labelPosition={[
+          bedXOffset,
+          bedYOffset,
+          zZero(props.config) + 100,
+        ]}>
+        {props.config.lowDetail
+          ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+          : <DetailedSoilLayer
+            bedProps={props}
+            layerProps={commonSoilLayerProps}
+            soilSurfaceSide={soilSurfaceSide} />}
+      </Highlight>
     </React.Suspense>
     {props.config.moistureDebug &&
       <MoistureSurface

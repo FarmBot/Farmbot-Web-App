@@ -23,6 +23,8 @@ import { clickWasDragged } from "../../click_event";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { EXTRUSION_WIDTH, UTM_RADIUS } from "./constants";
+import { Highlight } from "../../elements";
+import { t } from "../../../i18next_wrapper";
 
 type ZStop = GLTF & {
   nodes: { [PartName.zStop]: THREE.Mesh };
@@ -132,28 +134,32 @@ const ZAxisCamera = (props: ZAxisCameraProps) => {
     ASSETS.models.cameraMountHalf,
     LIB_DIR,
   ) as unknown as CameraMountHalf;
-  return <Group name={"camera"}
-    onClick={props.onClick}
-    onPointerOver={() => props.onHoverObject?.(true)}
-    onPointerOut={() => props.onHoverObject?.(false)}
-    rotation={[Math.PI, 0, 0]}
-    position={[12, 35, props.zGantryOffset - 120]}>
-    <Group name={"cameraModel"} position={[0, -28, 1]}>
-      <Camera kitVersion={props.version.number} />
+  return <Highlight highlightName={"camera"}
+    label={t("Camera")}
+    labelPosition={[12, 35, props.zGantryOffset - 20]}>
+    <Group name={"camera"}
+      onClick={props.onClick}
+      onPointerOver={() => props.onHoverObject?.(true)}
+      onPointerOut={() => props.onHoverObject?.(false)}
+      rotation={[Math.PI, 0, 0]}
+      position={[12, 35, props.zGantryOffset - 120]}>
+      <Group name={"cameraModel"} position={[0, -28, 1]}>
+        <Camera kitVersion={props.version.number} />
+      </Group>
+      <Mesh name={"cameraMount"}
+        position={[0, 0, -40]}
+        scale={1000}
+        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
+      <Mesh name={"cameraMount"}
+        rotation={[0, Math.PI, 0]}
+        scale={1000}
+        geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>
     </Group>
-    <Mesh name={"cameraMount"}
-      position={[0, 0, -40]}
-      scale={1000}
-      geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"cameraMount"}
-      rotation={[0, Math.PI, 0]}
-      scale={1000}
-      geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-  </Group>;
+  </Highlight>;
 };
 
 const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
@@ -197,32 +203,37 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     name: string,
     position: [number, number, number],
     lower = false,
-  ) => version.number == "v1.9"
-    ? <MountedIdlerPulleyModel
-      model={zStop as unknown as MountedIdlerPulleyFull}
-      name={name}
-      position={[position[0], position[1], position[2] - 20]}
-      rotation={[0, 0, -Math.PI / 2]}
-      lower={lower} />
-    : <Mesh name={name}
-      position={position}
-      rotation={[0, Math.PI / 2, 0]}
-      scale={1000}
-      geometry={(zStop as unknown as ZStop).nodes[PartName.zStop].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>;
-  const utmComponent = <Group name={"UTM"}
-    rotation={[0, 0, Math.PI / 2]}>
-    <Mesh
-      geometry={utm.nodes.M5_Barb.geometry}
-      material={utm.materials.PaletteMaterial001}
-      position={[15, 9, 36]}
-      scale={1000}
-      onClick={selectUtm}
-      onPointerOver={() => props.onHoverObject?.(true)}
-      onPointerOut={() => props.onHoverObject?.(false)}
-      rotation={[0, 0, 2.094]} />
-  </Group>;
+  ) =>
+    version.number == "v1.9"
+      ? <MountedIdlerPulleyModel
+        model={zStop as unknown as MountedIdlerPulleyFull}
+        name={name}
+        position={[position[0], position[1], position[2] - 20]}
+        rotation={[0, 0, -Math.PI / 2]}
+        lower={lower} />
+      : <Mesh name={name}
+        position={position}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1000}
+        geometry={(zStop as unknown as ZStop).nodes[PartName.zStop].geometry}>
+        <MeshPhongMaterial color={"silver"} />
+      </Mesh>;
+  const utmComponent = <Highlight highlightName={"utm"}
+    label={t("UTM")}
+    labelPosition={[0, 0, 120]}>
+    <Group name={"UTM"}
+      rotation={[0, 0, Math.PI / 2]}>
+      <Mesh
+        geometry={utm.nodes.M5_Barb.geometry}
+        material={utm.materials.PaletteMaterial001}
+        position={[15, 9, 36]}
+        scale={1000}
+        onClick={selectUtm}
+        onPointerOver={() => props.onHoverObject?.(true)}
+        onPointerOut={() => props.onHoverObject?.(false)}
+        rotation={[0, 0, 2.094]} />
+    </Group>
+  </Highlight>;
 
   return <Group name={"z-axis-assembly"}>
     <Extrude name={"z-axis"}
