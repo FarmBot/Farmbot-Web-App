@@ -61,11 +61,12 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
     value: string | number | boolean,
   ) => {
     if (!sceneObject) { return; }
+    if (field == "preserve_axes") { return; }
     const nextValue = typeof sceneObject.body[field] === "number"
       ? parseInt(value as string)
       : value;
     const resource = sceneObject as unknown as TaggedResource;
-    const update = { [field]: nextValue } as Partial<typeof resource.body>;
+    const update = { [field]: nextValue };
     props.dispatch(edit(resource, update));
     props.dispatch(save(sceneObject.uuid));
   };
@@ -73,6 +74,14 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
   const onUnifiedSizeChange = (unified: boolean) =>
     props.dispatch(setUnifiedSceneObjectSize(
       unified ? sceneObject?.uuid : undefined));
+  const onSwapXAndY = () => {
+    if (!sceneObject) { return; }
+    props.dispatch(edit(sceneObject, {
+      x_size: sceneObject.body.y_size,
+      y_size: sceneObject.body.x_size,
+    }));
+    props.dispatch(save(sceneObject.uuid));
+  };
   const navigate = useNavigate();
   const sceneObjectsPath = Path.sceneObjects();
   React.useEffect(() => {
@@ -113,6 +122,7 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
           showUnifiedSize={props.unifiedSceneObjectSize == sceneObject.uuid}
           onFocusChange={onFocusChange}
           onUnifiedSizeChange={onUnifiedSizeChange}
+          onSwapXAndY={onSwapXAndY}
           onValueChange={onValueChange} />
         : <span>{t("Redirecting")}...</span>}
     </DesignerPanelContent>

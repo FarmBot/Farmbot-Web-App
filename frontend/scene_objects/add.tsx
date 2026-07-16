@@ -1,5 +1,5 @@
 import React from "react";
-import { AddSceneObjectProps } from "./interfaces";
+import { AddSceneObjectProps, sceneObjectBody } from "./interfaces";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
@@ -10,39 +10,39 @@ import { Path } from "../internal_urls";
 import { t } from "../i18next_wrapper";
 import { SaveBtn } from "../ui";
 import { SpecialStatus } from "farmbot";
-import { initSave } from "../api/crud";
+import { destroy, initSave } from "../api/crud";
 import { useNavigate } from "react-router";
-import { SceneObjectFormFields, SceneObjectFormValues } from "./form";
+import {
+  SceneObjectFormFields, SceneObjectFormValues, swapSceneObjectXAndY,
+} from "./form";
 import { Actions } from "../constants";
 import { sceneObjectFocusHandler } from "./actions";
+import {
+  DEFAULT_SCENE_OBJECT,
+  SceneObjectAxis,
+} from "../three_d_garden/scenes/scene_object_data";
+import type { SceneObject } from "farmbot/dist/resources/api_resources";
+import { selectAllSceneObjects } from "../resources/selectors";
+
+export { DEFAULT_SCENE_OBJECT } from
+  "../three_d_garden/scenes/scene_object_data";
 
 export const mapStateToProps = (props: Everything): AddSceneObjectProps => ({
   dispatch: props.dispatch,
+  sceneObjects: selectAllSceneObjects(props.resources.index),
   drawnSceneObject: props.resources.consumers.farm_designer.drawnSceneObject,
   focusedSceneObjectField:
     props.resources.consumers.farm_designer.focusedSceneObjectField,
 });
 
-export const DEFAULT_SCENE_OBJECT: SceneObjectFormValues = {
-  name: "",
-  texture: "concrete",
-  shape: "box",
-  color: "#ffffff",
-  show: true,
-  x_center: 0,
-  y_center: 0,
-  z_base: 0,
-  x_size: 100,
-  y_size: 100,
-  z_size: 100,
-  x_origin: "home",
-  y_origin: "home",
-  z_origin: "world",
-};
-
 export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   const navigate = useNavigate();
   const initialized = React.useRef(false);
+  const initialUuids: string[] = props.sceneObjects
+    .map(sceneObject => sceneObject.uuid);
+  const initialSceneObjectUuids = React.useRef<Set<string>>(
+    new Set<string>(initialUuids),
+  );
   const [showUnifiedSize, setShowUnifiedSize] = React.useState(false);
   React.useEffect(() => {
     if (!initialized.current && !props.drawnSceneObject) {
@@ -64,7 +64,8 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
   }), [props.dispatch]);
   const saveSceneObject = () => {
     if (!props.drawnSceneObject) { return; }
-    props.dispatch(initSave("SceneObject", props.drawnSceneObject));
+    const body: SceneObject = sceneObjectBody(props.drawnSceneObject);
+    props.dispatch(initSave("SceneObject", body));
     props.dispatch({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
       payload: undefined,
@@ -82,12 +83,39 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
     });
   };
   const onFocusChange = sceneObjectFocusHandler(props.dispatch);
+  const onPreserveAxesChange = (preserveAxes: SceneObjectAxis[]) => {
+    if (!props.drawnSceneObject) { return; }
+    props.dispatch({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: {
+        ...props.drawnSceneObject,
+        preserve_axes: preserveAxes,
+      },
+    });
+  };
+  const onSwapXAndY = () => {
+    if (!props.drawnSceneObject) { return; }
+    props.dispatch({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: {
+        ...props.drawnSceneObject,
+        ...swapSceneObjectXAndY(props.drawnSceneObject),
+      },
+    });
+  };
+  const discardFailedSceneObjects = () => props.sceneObjects
+    .filter(sceneObject =>
+      !initialSceneObjectUuids.current.has(sceneObject.uuid)
+      && !sceneObject.body.id
+      && sceneObject.specialStatus == SpecialStatus.DIRTY)
+    .forEach(sceneObject => props.dispatch(destroy(sceneObject.uuid, true)));
 
   return <DesignerPanel panelName={"add-scene-object"} panel={Panel.SceneObjects}>
     <DesignerPanelHeader
       panelName={"add-scene-object"}
       title={t("Add new scene object")}
       backTo={Path.sceneObjects()}
+      onBack={discardFailedSceneObjects}
       panel={Panel.SceneObjects}>
       <div className={"scene-objects-action-btn-group"}>
         <SaveBtn
@@ -101,8 +129,12 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
           values={props.drawnSceneObject}
           focusedField={props.focusedSceneObjectField}
           showUnifiedSize={showUnifiedSize}
+          showPreserveAxes={true}
+          hideCubeControl={true}
           showNameField={true}
           onFocusChange={onFocusChange}
+          onPreserveAxesChange={onPreserveAxesChange}
+          onSwapXAndY={onSwapXAndY}
           onUnifiedSizeChange={setShowUnifiedSize}
           onValueChange={onValueChange} />}
     </DesignerPanelContent>

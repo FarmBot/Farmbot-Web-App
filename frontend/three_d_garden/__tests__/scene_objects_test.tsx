@@ -9,6 +9,8 @@ import {
   stopSceneObjectMarkerEvent, SceneObjects,
   staticSceneObjects, useSceneObjectPlacement, heightFromPointerRay,
   sceneObjectTopResizeUpdate, topResizeMarkerHandlers,
+  greenhouseWallRenderProps, placementAxisSize, SceneObjectPreview,
+  sceneObjectAppearanceKey,
 } from "../scene_objects";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
@@ -21,6 +23,8 @@ import {
 import { Path } from "../../internal_urls";
 import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
+import { SceneObjectFormValues } from "../../scene_objects/interfaces";
+import { MeshPhongMaterial } from "../components";
 
 const positionArray = (position: unknown): [number, number, number] => {
   if (!Array.isArray(position)) { throw new Error("Expected position array."); }
@@ -45,6 +49,49 @@ describe("scene object placement helpers", () => {
     jest.spyOn(threeFiber, "useFrame").mockImplementation(() => null);
   });
 
+  it("orients greenhouse walls before rendering", () => {
+    expect(greenhouseWallRenderProps(10, 10000, 2500)).toEqual({
+      size: [10000, 10, 2500],
+      rotation: [0, 0, Math.PI / 2],
+    });
+    expect(greenhouseWallRenderProps(10000, 10, 2500)).toEqual({
+      size: [10000, 10, 2500],
+      rotation: [0, 0, 0],
+    });
+  });
+
+  it("changes the appearance key when the material changes", () => {
+    const sceneObject = fakeSceneObject({
+      shape: "box",
+      texture: "concrete",
+      color: "#ffffff",
+    }).body;
+
+    expect(sceneObjectAppearanceKey(sceneObject)).not.toEqual(
+      sceneObjectAppearanceKey({ ...sceneObject, texture: "wood" }));
+    expect(sceneObjectAppearanceKey(sceneObject)).not.toEqual(
+      sceneObjectAppearanceKey({ ...sceneObject, color: "#000000" }));
+    expect(sceneObjectAppearanceKey(sceneObject)).not.toEqual(
+      sceneObjectAppearanceKey({ ...sceneObject, shape: "sphere" }));
+  });
+
+  it("keeps bricks horizontal on every vertical box face", () => {
+    const wrapper = createRenderer(<SceneObjectPreview
+      config={clone(INITIAL)}
+      sceneObject={fakeSceneObject({
+        shape: "box",
+        texture: "bricks",
+      }).body} />);
+    const materials = wrapper.root.findAllByType(MeshPhongMaterial);
+
+    expect(materials).toHaveLength(6);
+    expect(materials.slice(0, 2).map(material => material.props.map.rotation))
+      .toEqual([Math.PI / 2, Math.PI / 2]);
+    expect(materials.slice(2).map(material => material.props.map.rotation))
+      .toEqual([0, 0, 0, 0]);
+    unmountRenderer(wrapper);
+  });
+
   it("calculates box bounds from a center and corner", () => {
     expect(sceneObjectCornersFromCenter(
       { x: 100, y: 200, z: 0 },
@@ -66,6 +113,63 @@ describe("scene object placement helpers", () => {
     ])).toEqual("Scene Object 4");
     expect(nextSceneObjectName(undefined, [])).toEqual("Scene Object 1");
   });
+
+  it("preserves configured placement axes", () => {
+    const sceneObject: SceneObjectFormValues = {
+      ...fakeSceneObject({ x_size: 500, y_size: 600, z_size: 700 }).body,
+      preserve_axes: ["x", "z"],
+    };
+
+    expect(placementAxisSize(sceneObject, "x", 100)).toEqual(500);
+    expect(placementAxisSize(sceneObject, "y", 100)).toEqual(100);
+    expect(placementAxisSize(sceneObject, "z", 100)).toEqual(700);
+  });
+
+  it.each([
+    { axes: ["z"], clicks: 2 },
+    { axes: ["x", "y"], clicks: 2 },
+    { axes: ["x", "y", "z"], clicks: 1 },
+  ] as { axes: ("x" | "y" | "z")[], clicks: number }[])(
+    "skips preserved placement steps: $axes",
+    ({ axes, clicks }) => {
+      const dispatch = jest.fn((action: unknown) => Promise.resolve(action));
+      const drawnSceneObject: SceneObjectFormValues = {
+        ...fakeSceneObject({
+          x_size: 500,
+          y_size: 600,
+          z_size: 700,
+        }).body,
+        preserve_axes: axes,
+      };
+      const event = (index: number) => ({
+        point: new Vector3(index * 50, index * 50, index * 50),
+        nativeEvent: { clientY: 100 - index * 10 },
+        stopPropagation: jest.fn(),
+        ray: new Ray(
+          new Vector3(index * 50, index * 50, 100),
+          new Vector3(0, 0, -1),
+        ),
+      });
+      const { result } = renderHook(() => useSceneObjectPlacement({
+        config: clone(INITIAL),
+        enabled: true,
+        dispatch,
+        drawnSceneObject,
+      }));
+
+      for (let index = 0; index < clicks; index++) {
+        act(() => result.current.onPointerMove(event(index) as never));
+        act(() => result.current.onClick(event(index) as never));
+        const creates = dispatch.mock.calls.filter(([action]) =>
+          (action as { type?: string }).type == "INIT_RESOURCE");
+        expect(creates).toHaveLength(index == clicks - 1 ? 1 : 0);
+      }
+      const create = dispatch.mock.calls.find(
+        ([action]) => (action as { type?: string }).type == "INIT_RESOURCE",
+      )?.[0] as { payload: { body: SceneObjectFormValues } };
+      expect(create.payload.body).not.toHaveProperty("preserve_axes");
+    },
+  );
 
   it("positions scene objects above the ground", () => {
     const config = clone(INITIAL);
@@ -1782,6 +1886,65 @@ describe("scene object placement helpers", () => {
 
     expect(result.current.preview).toBeUndefined();
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("shows the prefilled object at low opacity until the second click", () => {
+    const drawnSceneObject = fakeSceneObject({
+      name: "Potted Plant",
+      shape: "plant",
+      x_size: 500,
+      y_size: 600,
+      z_size: 700,
+    }).body;
+    const event = {
+      point: new Vector3(100, 200, 0),
+      nativeEvent: { clientY: 100 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(100, 200, 100),
+        new Vector3(0, 0, -1),
+      ),
+    };
+    const { result } = renderHook(() => useSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject,
+    }));
+
+    act(() => result.current.onPointerMove(event as never));
+    let wrapper = createRenderer(
+      result.current.preview as React.ReactElement);
+    let preview = wrapper.root.findByType(SceneObjectPreview);
+    expect(preview.props.opacity).toEqual(0.5);
+    expect(preview.props.sceneObject).toEqual(expect.objectContaining({
+      name: "Potted Plant",
+      shape: "plant",
+      x_size: 500,
+      y_size: 600,
+      z_size: 700,
+    }));
+    unmountRenderer(wrapper);
+
+    act(() => result.current.onClick(event as never));
+    wrapper = createRenderer(result.current.preview as React.ReactElement);
+    const previews = wrapper.root.findAllByType(SceneObjectPreview);
+    expect(previews).toHaveLength(2);
+    expect(previews.map(item => item.props.opacity)).toEqual([
+      0.5,
+      undefined,
+    ]);
+    unmountRenderer(wrapper);
+
+    act(() => result.current.onPointerMove({
+      ...event,
+      point: new Vector3(200, 300, 0),
+    } as never));
+    act(() => result.current.onClick(event as never));
+    wrapper = createRenderer(result.current.preview as React.ReactElement);
+    preview = wrapper.root.findByType(SceneObjectPreview);
+    expect(preview.props.opacity).toBeUndefined();
+    unmountRenderer(wrapper);
   });
 
   it("handles placement preview without drawn scene object data", () => {

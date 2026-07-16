@@ -245,4 +245,73 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenCalledWith("y_size", 123.4);
     expect(onValueChange).toHaveBeenCalledWith("z_size", 123.4);
   });
+
+  it("edits preserved placement axes when shown", () => {
+    const onPreserveAxesChange = jest.fn();
+    const { container, getByLabelText, queryByLabelText, rerender } = render(
+      <SceneObjectFormFields
+        values={{ ...values(), preserve_axes: ["x"] }}
+        showPreserveAxes={true}
+        onPreserveAxesChange={onPreserveAxesChange}
+        onValueChange={jest.fn()} />,
+    );
+
+    expect(getByLabelText("Fixed X")).toBeChecked();
+    expect(getByLabelText("Fixed Y")).not.toBeChecked();
+    expect(getByLabelText("Fixed Z")).not.toBeChecked();
+    expect(container.querySelector("input[name='x_size']")).toBeDisabled();
+    expect(container.querySelector("input[name='y_size']"))
+      .not.toBeDisabled();
+    fireEvent.click(getByLabelText("Fixed X"));
+    fireEvent.click(getByLabelText("Fixed Y"));
+    expect(onPreserveAxesChange).toHaveBeenNthCalledWith(1, []);
+    expect(onPreserveAxesChange).toHaveBeenNthCalledWith(2, ["x", "y"]);
+
+    rerender(<SceneObjectFormFields
+      values={values()}
+      onValueChange={jest.fn()} />);
+    expect(queryByLabelText("Fixed X")).not.toBeInTheDocument();
+
+    rerender(<SceneObjectFormFields
+      values={values()}
+      showPreserveAxes={true}
+      showUnifiedSize={true}
+      onValueChange={jest.fn()} />);
+    expect(queryByLabelText("Fixed X")).not.toBeInTheDocument();
+  });
+
+  it("swaps X and Y sizes", () => {
+    const onValueChange = jest.fn();
+    const onPreserveAxesChange = jest.fn();
+    const { getByRole } = render(<SceneObjectFormFields
+      values={{ ...values(), preserve_axes: ["x", "z"] }}
+      onPreserveAxesChange={onPreserveAxesChange}
+      onValueChange={onValueChange} />);
+
+    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
+
+    expect(onValueChange).toHaveBeenNthCalledWith(1, "x_size", 200);
+    expect(onValueChange).toHaveBeenNthCalledWith(2, "y_size", 100);
+    expect(onPreserveAxesChange).toHaveBeenCalledWith(["y", "z"]);
+  });
+
+  it("collapses center and size sections", () => {
+    const { container, getByRole } = render(<SceneObjectFormFields
+      values={values()}
+      onValueChange={jest.fn()} />);
+    const centerToggle = getByRole("button", { name: "Center" });
+    const sizeToggle = getByRole("button", { name: "Size" });
+
+    fireEvent.click(centerToggle);
+    expect(centerToggle).toHaveAttribute("aria-expanded", "false");
+    expect(container.querySelector("input[name='x_center']"))
+      .not.toBeInTheDocument();
+    expect(container.querySelector("input[name='x_size']"))
+      .toBeInTheDocument();
+
+    fireEvent.click(sizeToggle);
+    expect(sizeToggle).toHaveAttribute("aria-expanded", "false");
+    expect(container.querySelector("input[name='x_size']"))
+      .not.toBeInTheDocument();
+  });
 });

@@ -9,7 +9,9 @@ import {
   get3DPositionFunc, getGardenPositionFunc,
   zZero,
 } from "./helpers";
-import { SceneObjectFormValues } from "../scene_objects/interfaces";
+import {
+  sceneObjectBody, SceneObjectFormValues,
+} from "../scene_objects/interfaces";
 import { edit, init, save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
@@ -27,7 +29,7 @@ import {
 } from "./scenes";
 import { Actions } from "../constants";
 import { Desk, Fence, GreenhouseWall, Laptop, Tree } from "./scenes/props";
-import { noop } from "lodash";
+import { noop, range } from "lodash";
 import { Text } from "./elements";
 import { setFocusedSceneObjectField } from "../scene_objects/actions";
 import { round as snapToGrid } from "../farm_designer/map/util";
@@ -36,6 +38,7 @@ import { SceneObject } from "farmbot/dist/resources/api_resources";
 import { Solar } from "./garden/solar";
 
 const EDGE_LINE_WIDTH = 4;
+const PREVIEW_MARKER_RADIUS = 75;
 const MARKER_RADIUS = 35;
 const ORIGIN_MARKER_RADIUS = 20;
 const ORIGIN_ARROW_WIDTH = 10;
@@ -101,6 +104,29 @@ const unifiedSizeUpdate = (
   unified
     ? { x_size: size, y_size: size, z_size: size }
     : {};
+
+const sceneObjectSizeFields = {
+  x: "x_size",
+  y: "y_size",
+  z: "z_size",
+} as const;
+
+export const placementAxisSize = (
+  sceneObject: SceneObjectFormValues,
+  axis: "x" | "y" | "z",
+  placementSize: number,
+): number => sceneObject.preserve_axes?.includes(axis)
+  ? sceneObject[sceneObjectSizeFields[axis]]
+  : placementSize;
+
+const preservesPlacementAxis = (
+  sceneObject: SceneObjectFormValues,
+  axis: "x" | "y" | "z",
+) => !!sceneObject.preserve_axes?.includes(axis);
+
+const preservesFootprint = (sceneObject: SceneObjectFormValues) =>
+  preservesPlacementAxis(sceneObject, "x")
+  && preservesPlacementAxis(sceneObject, "y");
 
 export const heightFromPointerRay = (
   e: ThreeEvent<MouseEvent | PointerEvent>,
@@ -340,22 +366,32 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       payload: { ...drawnSceneObject, ...update },
     });
   }, [dispatch]);
-  const saveSceneObject = React.useCallback((height: number) => {
-    if (!draft.center || !draft.corner || !dispatch) { return; }
+  const saveSceneObject = React.useCallback((
+    center: SceneObjectCursor,
+    corner: SceneObjectCursor,
+    height: number,
+  ) => {
+    if (!dispatch) { return; }
     const drawnSceneObject = drawnSceneObjectRef.current;
     if (!drawnSceneObject) { return; }
     const name = drawnSceneObject.name ||
       nextSceneObjectName(props.sceneObjects, createdNames.current);
-    const c = adjustCenter(props.config, drawnSceneObject, draft.center);
-    const action = init("SceneObject", {
-      ...drawnSceneObject,
+    const c = adjustCenter(props.config, drawnSceneObject, center);
+    const footprint = sizeFromCenterAndCorner(center, corner);
+    const body: SceneObject = {
+      ...sceneObjectBody(drawnSceneObject),
       name,
       x_center: c.x,
       y_center: c.y,
       z_base: c.z,
-      ...sizeFromCenterAndCorner(draft.center, draft.corner),
-      z_size: Math.max(1, Math.round(height - draft.center.z)),
-    });
+      x_size: placementAxisSize(
+        drawnSceneObject, "x", footprint.x_size),
+      y_size: placementAxisSize(
+        drawnSceneObject, "y", footprint.y_size),
+      z_size: placementAxisSize(drawnSceneObject, "z",
+        Math.max(1, Math.round(height - center.z))),
+    };
+    const action = init("SceneObject", body);
     createdNames.current.push(name);
     dispatch(action);
     dispatch(save(action.payload.uuid))
@@ -363,8 +399,6 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       .catch(noop);
   }, [
     dispatch,
-    draft.center,
-    draft.corner,
     navigate,
     props.sceneObjects,
     props.config,
@@ -379,32 +413,53 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
         body: { ...drawnSceneObject, x_center: 0, y_center: 0 },
       } as TaggedSceneObject).z;
       const center = { ...cursor, z: zCenter };
-      setDraft({ center });
       const c = adjustCenter(props.config, drawnSceneObject, center);
       updateDrawnSceneObject({
         x_center: cursor.x,
         y_center: cursor.y,
         z_base: c.z,
       });
+      if (preservesFootprint(drawnSceneObject)) {
+        if (preservesPlacementAxis(drawnSceneObject, "z")) {
+          saveSceneObject(center, center, center.z);
+          resetPlacement();
+        } else {
+          setDraft({
+            center,
+            corner: center,
+            heightStartY: eventScreenY(e),
+          });
+        }
+      } else {
+        setDraft({ center });
+      }
       return;
     }
     if (!draft.corner) {
       const bounds = sceneObjectCornersFromCenter(draft.center, cursor);
-      setDraft({ ...draft, corner: cursor, heightStartY: eventScreenY(e) });
       const c = adjustCenter(props.config, drawnSceneObject, draft.center);
       updateDrawnSceneObject({
         x_center: c.x,
         y_center: c.y,
         z_base: c.z,
-        x_size: bounds.x_1 - bounds.x_0,
-        y_size: bounds.y_1 - bounds.y_0,
+        x_size: placementAxisSize(drawnSceneObject, "x",
+          bounds.x_1 - bounds.x_0),
+        y_size: placementAxisSize(drawnSceneObject, "y",
+          bounds.y_1 - bounds.y_0),
       });
+      if (preservesPlacementAxis(drawnSceneObject, "z")) {
+        saveSceneObject(draft.center, cursor, cursor.z);
+        resetPlacement();
+      } else {
+        setDraft({ ...draft, corner: cursor, heightStartY: eventScreenY(e) });
+      }
       return;
     }
     updateDrawnSceneObject({
-      z_size: Math.max(1, Math.round(cursor.z - draft.center.z)),
+      z_size: placementAxisSize(drawnSceneObject, "z",
+        Math.max(1, Math.round(cursor.z - draft.center.z))),
     });
-    saveSceneObject(cursor.z);
+    saveSceneObject(draft.center, draft.corner, cursor.z);
     resetPlacement();
   }, [
     cursor,
@@ -444,6 +499,10 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const adjustedCenter = drawnSceneObject
       ? adjustCenter(props.config, drawnSceneObject, center)
       : center;
+    const showGhost = drawnSceneObject
+      && (!draft.corner
+        || (preservesFootprint(drawnSceneObject)
+          && !preservesPlacementAxis(drawnSceneObject, "z")));
     return <Group name={"scene-object-placement-preview"}>
       {showOriginPlane && <Box
         name={"scene-object-origin-plane"}
@@ -463,13 +522,23 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
           opacity={0.16}
           depthWrite={false} />
       </Box>}
-      <Sphere args={[25, 16, 16]} position={[
+      <Sphere args={[PREVIEW_MARKER_RADIUS, 16, 16]} position={[
         spherePosition.x,
         spherePosition.y,
         groundZ + cursorPosition.z + 25,
       ]}>
         <MeshBasicMaterial color={"dodgerblue"} />
       </Sphere>
+      {showGhost && drawnSceneObject &&
+        <SceneObjectPreview
+          config={props.config}
+          opacity={0.5}
+          sceneObject={{
+            ...drawnSceneObject,
+            x_center: adjustedCenter.x,
+            y_center: adjustedCenter.y,
+            z_base: adjustedCenter.z,
+          }} />}
       {draft.center &&
         <SceneObjectPreview
           config={props.config}
@@ -484,13 +553,15 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
             z_base: draft.corner
               ? (drawnSceneObject?.z_base ?? adjustedCenter.z)
               : adjustedCenter.z,
-            x_size: draft.corner
-              ? (drawnSceneObject?.x_size ?? dragXSize)
+            x_size: drawnSceneObject
+              ? placementAxisSize(drawnSceneObject, "x", dragXSize)
               : dragXSize,
-            y_size: draft.corner
-              ? (drawnSceneObject?.y_size ?? dragYSize)
+            y_size: drawnSceneObject
+              ? placementAxisSize(drawnSceneObject, "y", dragYSize)
               : dragYSize,
-            z_size: height,
+            z_size: drawnSceneObject
+              ? placementAxisSize(drawnSceneObject, "z", height)
+              : height,
             x_origin: drawnSceneObject?.x_origin || "home",
             y_origin: drawnSceneObject?.y_origin || "home",
             z_origin: drawnSceneObject?.z_origin || "world",
@@ -1908,12 +1979,14 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
 
 interface SceneObjectOpacityProps {
   show: boolean;
+  opacity?: number;
   visible?: boolean;
   children: React.ReactNode;
 }
 
 const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
-  const opacity = props.show ? 1 : 0.75;
+  const opacity = props.opacity ?? (props.show ? 1 : 0.75);
+  const opaque = props.show && opacity >= 1;
   // eslint-disable-next-line no-null/no-null
   const group = React.useRef<ThreeGroup>(null);
   const shadowStates = React.useRef(new WeakMap<Object3D, {
@@ -1931,8 +2004,8 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
         });
       }
       const shadowState = shadowStates.current.get(object);
-      object.castShadow = props.show ? !!shadowState?.castShadow : false;
-      object.receiveShadow = props.show ? !!shadowState?.receiveShadow : false;
+      object.castShadow = opaque ? !!shadowState?.castShadow : false;
+      object.receiveShadow = opaque ? !!shadowState?.receiveShadow : false;
       const renderedObject = object as Object3D & {
         material?: Material | Material[];
       };
@@ -1942,7 +2015,7 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
       }
       const original = materialStates.current.get(object);
       if (!original) { return; }
-      if (props.show) {
+      if (opaque) {
         renderedObject.material = original;
       } else {
         const translucent = (Array.isArray(original) ? original : [original])
@@ -1957,7 +2030,7 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
           : translucent[0];
       }
     });
-  }, [opacity, props.show, props.visible]);
+  }, [opaque, opacity, props.visible]);
   return <Group ref={group} visible={props.visible ?? true}>
     {props.children}
   </Group>;
@@ -2153,19 +2226,16 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       }
 
       if (shape === "window") {
-        const wallAlongY = y_size > x_size;
-        const wallSize: [number, number, number] = wallAlongY
-          ? [y_size, x_size, z_size]
-          : [x_size, y_size, z_size];
+        const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
         return <SceneObjectOpacity key={sceneObject.uuid}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group
             position={position}
-            rotation={wallAlongY ? [0, 0, Math.PI / 2] : [0, 0, 0]}>
-            <GreenhouseWall size={wallSize} />
-            {renderMoveHandle([0, 0, 0], wallSize)}
-            {renderHoverEdges([0, 0, 0], wallSize)}
+            rotation={wall.rotation}>
+            <GreenhouseWall size={wall.size} />
+            {renderMoveHandle([0, 0, 0], wall.size)}
+            {renderHoverEdges([0, 0, 0], wall.size)}
           </Group>
           {renderSelectionMarkers()}
         </SceneObjectOpacity>;
@@ -2192,7 +2262,10 @@ export const SceneObjects = (props: SceneObjectsProps) => {
   </>;
 };
 
-export const staticSceneObjects = (scene: string, lib?: boolean): TaggedSceneObject[] => {
+export const staticSceneObjects = (
+  scene: string,
+  lib?: boolean,
+): TaggedSceneObject[] => {
   const wrap = (sceneObjects: SceneObject[]): TaggedSceneObject[] =>
     sceneObjects.map((body, index) => ({
       kind: "SceneObject",
@@ -2215,11 +2288,34 @@ export const staticSceneObjects = (scene: string, lib?: boolean): TaggedSceneObj
 
 interface SceneObjectPreviewProps {
   config: Config;
+  opacity?: number;
   sceneObject: SceneObject;
 }
 
-const SceneObjectPreview = (props: SceneObjectPreviewProps) =>
-  <SceneObjectOpacity show={props.sceneObject.show}>
+export const sceneObjectAppearanceKey = (sceneObject: SceneObject) =>
+  [sceneObject.shape, sceneObject.texture, sceneObject.color].join("-");
+
+export const greenhouseWallRenderProps = (
+  xSize: number,
+  ySize: number,
+  zSize: number,
+): { size: [number, number, number]; rotation: [number, number, number] } => {
+  const alongY = ySize > xSize;
+  return {
+    size: (alongY
+      ? [ySize, xSize, zSize]
+      : [xSize, ySize, zSize]),
+    rotation: (alongY
+      ? [0, 0, Math.PI / 2]
+      : [0, 0, 0]),
+  };
+};
+
+export const SceneObjectPreview = (props: SceneObjectPreviewProps) =>
+  <SceneObjectOpacity
+    key={sceneObjectAppearanceKey(props.sceneObject)}
+    show={props.sceneObject.show}
+    opacity={props.opacity}>
     <SceneObjectPreviewContent {...props} />
   </SceneObjectOpacity>;
 
@@ -2244,8 +2340,9 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   }
 
   if (shape === "window") {
-    return <Group position={position}>
-      <GreenhouseWall size={[x_size, y_size, z_size]} />
+    const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
+    return <Group position={position} rotation={wall.rotation}>
+      <GreenhouseWall size={wall.size} />
     </Group>;
   }
 
@@ -2309,6 +2406,10 @@ interface SceneObjectBoxProps {
 const SceneObjectBox = (props: SceneObjectBoxProps) => {
   const url = props.textureUrl || ASSETS.textures.concrete;
   const texture = useTextureVariant(url, {});
+  const rotatedTexture = useTextureVariant(url, {
+    rotation: Math.PI / 2,
+    offset: [0, 1],
+  });
   const position = sceneObjectPosition(props.config, props.sceneObject);
   const materialKey = props.textureUrl || "none";
   const materialProps = {
@@ -2337,6 +2438,21 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
       args={[0.5, 32, 32]}>
       <MeshPhongMaterial key={materialKey} {...materialProps} />
     </Sphere>;
+  }
+
+  if (props.textureUrl === ASSETS.textures.bricks) {
+    return <Box
+      castShadow={true}
+      receiveShadow={true}
+      position={position}
+      args={[props.width, props.depth, props.height]}>
+      {range(6).map(faceIndex =>
+        <MeshPhongMaterial
+          attach={`material-${faceIndex}`}
+          key={`${materialKey}-${faceIndex}`}
+          map={faceIndex < 2 ? rotatedTexture : texture}
+          color={props.color} />)}
+    </Box>;
   }
 
   return <Box

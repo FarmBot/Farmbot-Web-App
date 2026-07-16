@@ -20,8 +20,8 @@ import { SceneObjectsProps } from "./interfaces";
 import { PanelSection } from "../plants/plant_inventory";
 import { staticSceneObjects } from "../three_d_garden/scene_objects";
 import {
-  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDIS, SCENE_NUM_FROM_NAME, SCENES,
-  TEXTURE_DDIS,
+  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDIS,
+  SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { FBSelect } from "../ui";
@@ -183,8 +183,8 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         panel={Panel.SceneObjects}
         toggleOpen={() => setMyOpen(!myOpen)}
         itemCount={filteredSceneObjects.length}
-        addNew={() => { navigate(Path.sceneObjects("add")); }}
-        extraHeaderContent={filteredSceneObjects.length > 0 &&
+        addNew={() => { navigate(Path.sceneObjects("catalog")); }}
+        extraHeaderContent={filteredSceneObjects.length > 0 && myOpen &&
           <button className={"fb-button red delete"}
             title={t("delete all")}
             onClick={e => {
