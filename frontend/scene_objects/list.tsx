@@ -35,6 +35,7 @@ export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
 });
 
 export const RawSceneObjects = (props: SceneObjectsProps) => {
+  const { dispatch } = props;
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const navigate = useNavigate();
@@ -114,15 +115,15 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const featuredSceneObjects = React.useMemo(() =>
     staticSceneObjects(libScene, true), [libScene]);
   React.useEffect(() => {
-    props.dispatch({
+    dispatch({
       type: Actions.SET_FEATURED_SCENE,
       payload: featuredOpen ? libScene : undefined,
     });
-    return () => props.dispatch({
+    return () => dispatch({
       type: Actions.SET_FEATURED_SCENE,
       payload: undefined,
     });
-  }, [featuredOpen, libScene, props.dispatch]);
+  }, [dispatch, featuredOpen, libScene]);
   const groundTextureNum =
     get3DConfigValueFunction(props.farmwareEnvs)("groundTexture");
   return <DesignerPanel

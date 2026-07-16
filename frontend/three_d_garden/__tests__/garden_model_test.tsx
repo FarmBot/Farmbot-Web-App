@@ -56,7 +56,7 @@ import { AxesHelper } from "../components";
 import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
-import { Solar } from "../garden/solar";
+import { LegacySolar, Solar } from "../garden/solar";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";

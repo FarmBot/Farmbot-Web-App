@@ -97,7 +97,7 @@ const eventScreenY = (e: ThreeEvent<MouseEvent | PointerEvent>) =>
 const snapSceneObjectSize = (value: number) =>
   Math.max(1, snapToGrid(value));
 
-const unifiedSizeUpdate = (
+export const unifiedSizeUpdate = (
   unified: boolean | undefined,
   size: number,
 ) =>
@@ -962,7 +962,7 @@ const SceneObjectSelectionMarkers =
       config,
       center,
       sceneObject,
-      onPreview: update => onPreview(expandSizeUpdate(update)),
+      onPreview,
       updateSceneObject: update => updateSceneObject(expandSizeUpdate(update)),
       onPreviewEnd,
     });
@@ -1985,52 +1985,69 @@ interface SceneObjectOpacityProps {
   children: React.ReactNode;
 }
 
+interface SceneObjectShadowState {
+  castShadow: boolean;
+  receiveShadow: boolean;
+}
+
+export const applySceneObjectOpacity = (
+  shadowStates: WeakMap<Object3D, SceneObjectShadowState>,
+  materialStates: WeakMap<Object3D, Material | Material[]>,
+  opaque: boolean,
+  opacity: number,
+  object: Object3D,
+) => {
+  if (!shadowStates.has(object)) {
+    shadowStates.set(object, {
+      castShadow: object.castShadow,
+      receiveShadow: object.receiveShadow,
+    });
+  }
+  const shadowState = shadowStates.get(object);
+  object.castShadow = opaque ? !!shadowState?.castShadow : false;
+  object.receiveShadow = opaque ? !!shadowState?.receiveShadow : false;
+  const renderedObject = object as Object3D & {
+    material?: Material | Material[];
+  };
+  if (!renderedObject.material) { return; }
+  if (!materialStates.has(object)) {
+    materialStates.set(object, renderedObject.material);
+  }
+  const original = materialStates.get(object);
+  if (!original) { return; }
+  if (opaque) {
+    renderedObject.material = original;
+  } else {
+    const translucent = (Array.isArray(original) ? original : [original])
+      .map(material => {
+        const clone = material.clone();
+        clone.opacity = material.opacity * opacity;
+        clone.transparent = true;
+        return clone;
+      });
+    renderedObject.material = Array.isArray(original)
+      ? translucent
+      : translucent[0];
+  }
+};
+
 const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
   const opacity = props.opacity ?? (props.show ? 1 : 0.75);
   const opaque = props.show && opacity >= 1;
   // eslint-disable-next-line no-null/no-null
   const group = React.useRef<ThreeGroup>(null);
-  const shadowStates = React.useRef(new WeakMap<Object3D, {
-    castShadow: boolean;
-    receiveShadow: boolean;
-  }>());
+  const shadowStates = React.useRef(
+    new WeakMap<Object3D, SceneObjectShadowState>());
   const materialStates = React.useRef(
     new WeakMap<Object3D, Material | Material[]>());
   React.useLayoutEffect(() => {
-    group.current?.traverse(object => {
-      if (!shadowStates.current.has(object)) {
-        shadowStates.current.set(object, {
-          castShadow: object.castShadow,
-          receiveShadow: object.receiveShadow,
-        });
-      }
-      const shadowState = shadowStates.current.get(object);
-      object.castShadow = opaque ? !!shadowState?.castShadow : false;
-      object.receiveShadow = opaque ? !!shadowState?.receiveShadow : false;
-      const renderedObject = object as Object3D & {
-        material?: Material | Material[];
-      };
-      if (!renderedObject.material) { return; }
-      if (!materialStates.current.has(object)) {
-        materialStates.current.set(object, renderedObject.material);
-      }
-      const original = materialStates.current.get(object);
-      if (!original) { return; }
-      if (opaque) {
-        renderedObject.material = original;
-      } else {
-        const translucent = (Array.isArray(original) ? original : [original])
-          .map(material => {
-            const clone = material.clone();
-            clone.opacity = material.opacity * opacity;
-            clone.transparent = true;
-            return clone;
-          });
-        renderedObject.material = Array.isArray(original)
-          ? translucent
-          : translucent[0];
-      }
-    });
+    group.current?.traverse(applySceneObjectOpacity.bind(
+      undefined,
+      shadowStates.current,
+      materialStates.current,
+      opaque,
+      opacity,
+    ));
   }, [opaque, opacity, props.visible]);
   return <Group ref={group} visible={props.visible ?? true}>
     {props.children}

@@ -10,13 +10,16 @@ import {
   staticSceneObjects, useSceneObjectPlacement, heightFromPointerRay,
   sceneObjectTopResizeUpdate, topResizeMarkerHandlers,
   greenhouseWallRenderProps, placementAxisSize, SceneObjectPreview,
-  sceneObjectAppearanceKey,
+  sceneObjectAppearanceKey, applySceneObjectOpacity, unifiedSizeUpdate,
 } from "../scene_objects";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { BigDistance } from "../constants";
 import { zZero } from "../helpers";
-import { Ray, Vector3 } from "three";
+import {
+  type Material, MeshBasicMaterial as ThreeMeshBasicMaterial,
+  Object3D, Ray, Vector3,
+} from "three";
 import {
   createRenderer, unmountRenderer,
 } from "../../__test_support__/test_renderer";
@@ -73,6 +76,49 @@ describe("scene object placement helpers", () => {
       sceneObjectAppearanceKey({ ...sceneObject, color: "#000000" }));
     expect(sceneObjectAppearanceKey(sceneObject)).not.toEqual(
       sceneObjectAppearanceKey({ ...sceneObject, shape: "sphere" }));
+  });
+
+  it("builds unified size updates", () => {
+    expect(unifiedSizeUpdate(true, 123)).toEqual({
+      x_size: 123,
+      y_size: 123,
+      z_size: 123,
+    });
+    expect(unifiedSizeUpdate(false, 123)).toEqual({});
+  });
+
+  it("applies scene object opacity and restores materials", () => {
+    const first = new ThreeMeshBasicMaterial({ opacity: 0.8 });
+    const second = new ThreeMeshBasicMaterial({ opacity: 0.6 });
+    const object = new Object3D() as Object3D & {
+      material: ThreeMeshBasicMaterial[];
+    };
+    object.castShadow = true;
+    object.receiveShadow = true;
+    object.material = [first, second];
+    const shadowStates = new WeakMap<Object3D, {
+      castShadow: boolean;
+      receiveShadow: boolean;
+    }>();
+    const materialStates =
+      new WeakMap<Object3D, Material | Material[]>();
+
+    applySceneObjectOpacity(
+      shadowStates, materialStates, false, 0.5, object);
+
+    expect(object.castShadow).toEqual(false);
+    expect(object.receiveShadow).toEqual(false);
+    expect(object.material.map(material => material.opacity))
+      .toEqual([0.4, 0.3]);
+    expect(object.material.every(material => material.transparent))
+      .toEqual(true);
+
+    applySceneObjectOpacity(
+      shadowStates, materialStates, true, 1, object);
+
+    expect(object.castShadow).toEqual(true);
+    expect(object.receiveShadow).toEqual(true);
+    expect(object.material).toEqual([first, second]);
   });
 
   it("keeps bricks horizontal on every vertical box face", () => {
@@ -1002,13 +1048,11 @@ describe("scene object placement helpers", () => {
     expect(findSelectionMarker(
       wrapper, "scene-object-selection-marker-0")).toBeTruthy();
     expect(findSelectionMarker(
-      wrapper, "scene-object-selection-marker-0").findByProps({
-      color: "dodgerblue",
-    }).props.depthTest).toBeTruthy();
+      wrapper, "scene-object-selection-marker-0")
+      .findByProps({ color: "dodgerblue" }).props.depthTest).toBeTruthy();
     expect(findSelectionMarker(
-      wrapper, "scene-object-selection-marker-0").findByProps({
-      color: "dodgerblue",
-    }).props.depthWrite).toBeTruthy();
+      wrapper, "scene-object-selection-marker-0")
+      .findByProps({ color: "dodgerblue" }).props.depthWrite).toBeTruthy();
     expect(wrapper.root.findByProps({
       name: "scene-object-face-size-arrow-0-arrow",
     }).findAllByProps({
@@ -1164,8 +1208,12 @@ describe("scene object placement helpers", () => {
     act(() => {
       topMarker.props.onPointerDown(event);
     });
+    act(() => {
+      findSelectionMarker(wrapper, "scene-object-selection-marker-4")
+        .props.onPointerCancel(event);
+    });
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(3);
+    expect(event.stopPropagation).toHaveBeenCalledTimes(4);
     unmountRenderer(wrapper);
   });
 
@@ -1415,6 +1463,12 @@ describe("scene object placement helpers", () => {
       wrapper.root.findAll(node =>
         node.type == "group" as ElementType &&
         node.props.name == "scene-object-face-size-arrow-5")[0]
+        .props.onPointerMove(event(75));
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-5")[0]
         .props.onPointerUp(event(150));
     });
     const update = dispatch.mock.calls.find(call =>
@@ -1424,6 +1478,12 @@ describe("scene object placement helpers", () => {
       x_size: 200,
       y_size: 400,
       z_size: 600,
+    });
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-5")[0]
+        .props.onPointerCancel(event(150));
     });
     unmountRenderer(wrapper);
   });

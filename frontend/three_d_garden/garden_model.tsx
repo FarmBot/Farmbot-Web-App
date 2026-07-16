@@ -2465,24 +2465,25 @@ export const GardenModel = (props: GardenModelProps) => {
       routeLocation.pathname,
       routeLocation.search,
     ), [routeLocation.pathname, routeLocation.search]);
+  const hoverDesigner = addPlantProps?.designer;
+  const hoverScene: string = hoverDesigner?.featuredScene || config.scene;
   const hoverSelection = React.useMemo(() =>
     hoverSelectionFromDesigner(
-      addPlantProps?.designer,
+      hoverDesigner,
       plants,
       mapPoints,
       weeds,
       toolSlots,
       (props.sceneObjects || []).concat(staticSceneObjects(
-        addPlantProps?.designer.featuredScene || config.scene,
+        hoverScene,
         true,
       )),
     ), [
-    addPlantProps?.designer,
-    addPlantProps?.designer.featuredScene,
+    hoverDesigner,
+    hoverScene,
     plants,
     mapPoints,
     props.sceneObjects,
-    config.scene,
     weeds,
     toolSlots,
   ]);
