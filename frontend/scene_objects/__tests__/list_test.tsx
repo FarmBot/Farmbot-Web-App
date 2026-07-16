@@ -107,6 +107,16 @@ describe("<RawSceneObjects />", () => {
     fireEvent.click(getByText(/Featured Scene Objects/));
 
     expect(getByText("Import selected")).toBeTruthy();
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: "Outdoor",
+    });
+
+    fireEvent.click(getByText(/Featured Scene Objects/));
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
   });
 
   it("toggles the my scene objects section", () => {
@@ -255,11 +265,11 @@ describe("<RawSceneObjects />", () => {
     fireEvent.mouseEnter(featuredItem as Element);
     fireEvent.mouseLeave(featuredItem as Element);
 
-    expect(p.dispatch).toHaveBeenNthCalledWith(1, {
+    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: expect.any(String),
     });
-    expect(p.dispatch).toHaveBeenNthCalledWith(2, {
+    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: undefined,
     });

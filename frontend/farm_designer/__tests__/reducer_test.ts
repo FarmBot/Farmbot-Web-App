@@ -334,6 +334,15 @@ describe("designer reducer", () => {
     expect(newState.hoveredSceneObject).toEqual("sceneObjectUuid");
   });
 
+  it("sets featured scene", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.SET_FEATURED_SCENE,
+      payload: "Lab"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.featuredScene).toEqual("Lab");
+  });
+
   it("sets hovered tool slot", () => {
     const action: ReduxAction<string> = {
       type: Actions.HOVER_TOOL_SLOT,

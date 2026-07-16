@@ -37,6 +37,23 @@ describe("<Solar />", () => {
     expect(container).toContainHTML("solar-wiring");
   });
 
+  it("disables shadows", () => {
+    const p = fakeProps();
+    p.config.solar = true;
+    p.shadows = false;
+    const wrapper = createRenderer(<LegacySolar {...p} />);
+    const shadowCasters = wrapper.root.findAll(node =>
+      (node.type as string) == "mesh"
+      || (node.type as string) == "instancedMesh");
+
+    expect(shadowCasters.length).toBeGreaterThan(0);
+    shadowCasters.forEach(node => {
+      expect(node.props.castShadow).toEqual(false);
+      expect(node.props.receiveShadow).toEqual(false);
+    });
+    unmountRenderer(wrapper);
+  });
+
   it("doesn't cull instanced solar cells", () => {
     const p = fakeProps();
     p.config.solar = true;
@@ -172,5 +189,6 @@ describe("<Solar />", () => {
     expect(solarPropsEqual(p, { ...p, size: [541, 2090, 300] }))
       .toBeFalsy();
     expect(solarPropsEqual(p, { ...p, opacity: 1 })).toBeFalsy();
+    expect(solarPropsEqual(p, { ...p, shadows: false })).toBeFalsy();
   });
 });

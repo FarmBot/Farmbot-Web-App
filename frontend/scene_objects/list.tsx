@@ -113,6 +113,16 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const [myOpen, setMyOpen] = React.useState(true);
   const featuredSceneObjects = React.useMemo(() =>
     staticSceneObjects(libScene, true), [libScene]);
+  React.useEffect(() => {
+    props.dispatch({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: featuredOpen ? libScene : undefined,
+    });
+    return () => props.dispatch({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
+  }, [featuredOpen, libScene, props.dispatch]);
   const groundTextureNum =
     get3DConfigValueFunction(props.farmwareEnvs)("groundTexture");
   return <DesignerPanel

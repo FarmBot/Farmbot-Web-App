@@ -28,6 +28,7 @@ export const initialState: DesignerState = {
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
   hoveredSceneObject: undefined,
+  featuredScene: undefined,
   highlighted3DObject: undefined,
   cropSearchQuery: "",
   companionIndex: undefined,
@@ -147,6 +148,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.HOVER_SCENE_OBJECT, (s, { payload }) => {
     s.hoveredSceneObject = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_FEATURED_SCENE, (s, { payload }) => {
+    s.featuredScene = payload;
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_HIGHLIGHT, (s, { payload }) => {

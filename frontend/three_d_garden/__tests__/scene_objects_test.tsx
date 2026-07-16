@@ -488,6 +488,29 @@ describe("scene object placement helpers", () => {
     expect(staticSceneObjects("Lab").length).toBeGreaterThan(0);
     expect(staticSceneObjects("Greenhouse").length).toBeGreaterThan(0);
     expect(staticSceneObjects("Outdoor")).toEqual([]);
+    expect(staticSceneObjects("Lab")[0].uuid)
+      .not.toEqual(staticSceneObjects("Greenhouse")[0].uuid);
+  });
+
+  it("renders all featured scene objects at 50% opacity", () => {
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      designer: {
+        featuredScene: "Outdoor",
+        focusedSceneObjectField: undefined,
+        unifiedSceneObjectSize: undefined,
+      },
+    }));
+    const featuredObjects = staticSceneObjects("Outdoor", true);
+    const translucentObjects = wrapper.root.findAll(node =>
+      node.props.opacity === 0.5 && node.props.show === true);
+
+    expect(translucentObjects).toHaveLength(featuredObjects.length);
+    translucentObjects.forEach(object => {
+      expect(object.props.visible).toEqual(true);
+    });
+    unmountRenderer(wrapper);
   });
 
   it("drags selected scene object handles", () => {

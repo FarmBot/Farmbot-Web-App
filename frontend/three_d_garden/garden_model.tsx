@@ -2472,9 +2472,13 @@ export const GardenModel = (props: GardenModelProps) => {
       mapPoints,
       weeds,
       toolSlots,
-      (props.sceneObjects || []).concat(staticSceneObjects(config.scene, true)),
+      (props.sceneObjects || []).concat(staticSceneObjects(
+        addPlantProps?.designer.featuredScene || config.scene,
+        true,
+      )),
     ), [
     addPlantProps?.designer,
+    addPlantProps?.designer.featuredScene,
     plants,
     mapPoints,
     props.sceneObjects,
@@ -3022,7 +3026,10 @@ export const GardenModel = (props: GardenModelProps) => {
             config={config}
             configPosition={props.configPosition} />}
         {renderSolar &&
-          <LegacySolar config={config} activeFocus={props.activeFocus} />}
+          <LegacySolar
+            config={config}
+            activeFocus={props.activeFocus}
+            shadows={!props.promo} />}
         {config.scene == "Lab" &&
           <Lab
             config={config}
