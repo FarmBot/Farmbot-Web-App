@@ -12,6 +12,7 @@ import { EXTRUSION_WIDTH, UTM_RADIUS } from "./bot/assemblies/constants";
 import { SECTION_CLIPPING_EXEMPT } from "./section";
 import { getBedTextureRepeat, TexturedBedMaterial } from "./bed";
 import { ASSETS } from "./constants";
+import { ThreeDBugs } from "./garden/bugs";
 
 export const SECTION_BED_BOTTOM_OFFSET = 2.5;
 export const SECTION_SOIL_BOTTOM_OFFSET = 5;
@@ -41,13 +42,13 @@ export const getSectionOverlayLayout = (
   const version = getBotVersion(config.kitVersion);
   const gantryPosition: Point = [
     kinematics.machineOrigin[0]
-      + kinematics.gantryPosition[0]
-      - 39
-      + EXTRUSION_WIDTH / 2,
+    + kinematics.gantryPosition[0]
+    - 39
+    + EXTRUSION_WIDTH / 2,
     kinematics.machineOrigin[1]
-      + kinematics.gantryPosition[1]
-      + config.beamLength / 2
-      - version.beamEndOffset,
+    + kinematics.gantryPosition[1]
+    + config.beamLength / 2
+    - version.beamEndOffset,
     ghostZ,
   ];
   const utmPosition: Point = [
@@ -112,6 +113,7 @@ export const SectionGroundOverlays = (
         polygonOffset={true}
         polygonOffsetFactor={-1}
         polygonOffsetUnits={-1} />
+      <ThreeDBugs size={layout.soilSize} />
     </Mesh>
     <Mesh
       name={"section-gantry-ground-projection"}

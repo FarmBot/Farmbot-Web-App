@@ -1,4 +1,5 @@
 import { Canvas } from "@react-three/fiber";
+import * as ReactThreeFiber from "@react-three/fiber";
 import React from "react";
 import { Config, PositionConfig } from "./config";
 import {
@@ -29,6 +30,12 @@ import { MovementState, TimeSettings } from "../interfaces";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { HighlightProvider } from "./elements";
+import { filterSectionIntersections } from "./section";
+
+const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
+  ...ReactThreeFiber.events(store),
+  filter: filterSectionIntersections,
+});
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -102,6 +109,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas
+        events={sectionAwareEvents}
         shadows={props.config.lowDetail ? false : "variance"}
         onCreated={({ gl }) => {
           gl.localClippingEnabled = true;

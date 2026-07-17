@@ -40,6 +40,7 @@ describe("<ThreeDGarden />", () => {
       height: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
     });
     expect(canvasSpy).toHaveBeenCalledTimes(2);
+    expect(canvasSpy.mock.calls[0][0].events).toEqual(expect.any(Function));
     expect(canvasSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         gl: { alpha: true },

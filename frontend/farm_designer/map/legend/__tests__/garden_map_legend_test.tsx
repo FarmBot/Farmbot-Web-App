@@ -24,6 +24,7 @@ import {
 import { fakeDesignerState } from "../../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../../constants";
 import * as screenSize from "../../../../screen_size";
+import { EggKeys } from "../../easter_eggs/status";
 
 let atMaxZoomSpy: jest.SpyInstance;
 let atMinZoomSpy: jest.SpyInstance;
@@ -100,6 +101,7 @@ describe("<GardenMapLegend />", () => {
 
   it("highlights clickable objects while hovering over help", () => {
     const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     render(<GardenMapLegend {...p} />);
     const help = screen.getByTitle("Highlight clickable objects in the map");
     expect(help.style.fontSize).toEqual("2rem");
@@ -113,6 +115,12 @@ describe("<GardenMapLegend />", () => {
       type: Actions.SET_3D_HIGHLIGHT,
       payload: undefined,
     });
+  });
+
+  it("hides clickable object help in 2D", () => {
+    render(<GardenMapLegend {...fakeProps()} />);
+    expect(screen.queryByTitle("Highlight clickable objects in the map"))
+      .not.toBeInTheDocument();
   });
 
   it("renders with readings", () => {
@@ -152,6 +160,19 @@ describe("<GardenMapLegend />", () => {
     fireEvent.click(toggle);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.three_d_garden, true);
+  });
+
+  it("disables bugs when disabling 3D view", () => {
+    localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "true");
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='hide 3D beta']");
+    if (!toggle) { throw new Error("Missing 3D beta toggle"); }
+    fireEvent.click(toggle);
+    expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      BooleanSetting.three_d_garden, false);
   });
 
   it("toggles 3D section view", () => {

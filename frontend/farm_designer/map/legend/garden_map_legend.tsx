@@ -5,7 +5,7 @@ import { atMaxZoom, atMinZoom } from "../zoom";
 import {
   ImageFilterMenu,
 } from "../../../photos/photo_filter_settings/image_filter_menu";
-import { BugsControls } from "../easter_eggs/bugs";
+import { BugsControls, disableBugs } from "../easter_eggs/bugs";
 import { MoveModeLink } from "../../move_to";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
@@ -283,8 +283,10 @@ const LayerToggles = (props: LayerTogglesProps) => {
       value={!!is3D}
       label={DeviceSetting.show3DMap}
       labelClassName={"row half-gap grid-exp-2"}
-      onClick={() => dispatch(setWebAppConfigValue(
-        BooleanSetting.three_d_garden, !is3D))}>
+      onClick={() => {
+        if (is3D) { disableBugs(); }
+        dispatch(setWebAppConfigValue(BooleanSetting.three_d_garden, !is3D));
+      }}>
       {is3D &&
         <Help
           text={description}
@@ -401,17 +403,18 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
-        <i className="fa fa-question-circle"
-          style={{ fontSize: "2rem" }}
-          title={t("Highlight clickable objects in the map")}
-          onMouseEnter={() => props.dispatch({
-            type: Actions.SET_3D_HIGHLIGHT,
-            payload: "all",
-          })}
-          onMouseLeave={() => props.dispatch({
-            type: Actions.SET_3D_HIGHLIGHT,
-            payload: undefined,
-          })} />
+        {is3D &&
+          <i className="fa fa-question-circle"
+            style={{ fontSize: "2rem" }}
+            title={t("Highlight clickable objects in the map")}
+            onMouseEnter={() => props.dispatch({
+              type: Actions.SET_3D_HIGHLIGHT,
+              payload: "all",
+            })}
+            onMouseLeave={() => props.dispatch({
+              type: Actions.SET_3D_HIGHLIGHT,
+              payload: undefined,
+            })} />}
         <BugsControls />
       </div>
       {zDisplayOpen &&

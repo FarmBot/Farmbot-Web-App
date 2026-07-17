@@ -1,5 +1,7 @@
 import React from "react";
-import { Material, Object3D, Plane, Vector3 } from "three";
+import {
+  type Intersection, Material, Object3D, Plane, Vector3,
+} from "three";
 import { useSpring } from "@react-spring/three";
 import { Config } from "./config";
 import { ThreeDSectionAxis } from "../farm_designer/interfaces";
@@ -10,6 +12,20 @@ export const SECTION_CLIPPING_EXEMPT = "sectionClippingExempt";
 export const SECTION_FAR_CLIPPING_EXEMPT = "sectionFarClippingExempt";
 export const SECTION_AXIS_EXIT_SPRING_CONFIG = { duration: 200 };
 export const SECTION_PLANE_OUTSIDE_OFFSET = 1000;
+
+export const sectionIntersectionVisible = (intersection: Intersection) => {
+  const owner = intersection.object as Object3D & {
+    material?: Material | Material[],
+  };
+  const material = Array.isArray(owner.material)
+    ? owner.material[intersection.face?.materialIndex || 0]
+    : owner.material;
+  return !material?.clippingPlanes?.some(plane =>
+    plane.distanceToPoint(intersection.point) < 0);
+};
+
+export const filterSectionIntersections = (intersections: Intersection[]) =>
+  intersections.filter(sectionIntersectionVisible);
 
 type SectionPlaneConfig = Pick<Config,
   "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" | "bedYOffset"
