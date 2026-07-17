@@ -54,7 +54,7 @@
     cursor: grab;
     touch-action: none;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: $tablet_max_width) {
       width: 100vw;
     }
   }
@@ -374,7 +374,7 @@
         }
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: $tablet_max_width) {
         justify-content: left;
         pointer-events: all;
       }
@@ -536,7 +536,7 @@
     backdrop-filter: blur(5px);
     box-shadow: $translucent2 0px 0px 5px;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: $tablet_max_width) {
       margin: 0 1rem;
     }
   }
@@ -922,7 +922,7 @@
     transform-origin: 50% 50%;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: $tablet_max_width) {
     .beacon-info-wrapper {
       display: grid;
       position: absolute;

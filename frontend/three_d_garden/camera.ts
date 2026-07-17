@@ -16,6 +16,8 @@ export interface CameraFitParams {
   viewport: CameraViewport;
   bedSize: AxisNumberProperty;
   fov?: number;
+  margin?: number;
+  marginRatio?: number;
 }
 
 export interface CameraFit {
@@ -23,18 +25,82 @@ export interface CameraFit {
   cameraRadius: number;
 }
 
+export interface ViewportFramingTangents {
+  horizontal: number;
+  vertical: number;
+}
+
+export const getViewportFramingTangents = (
+  viewport: CameraViewport,
+  fov = NORMAL_CAMERA_FOV,
+  margin = 0,
+  marginRatio = 0,
+): ViewportFramingTangents => {
+  const width = Math.max(1, viewport.width);
+  const height = Math.max(1, viewport.height);
+  const safeMargin = Math.max(0, margin);
+  const safeMarginRatio = Math.max(0, marginRatio);
+  const horizontalMargin = Math.min(
+    width / 2 - 0.5,
+    safeMargin + width * safeMarginRatio,
+  );
+  const verticalMargin = Math.min(
+    height / 2 - 0.5,
+    safeMargin + height * safeMarginRatio,
+  );
+  const halfVerticalFovTangent = Math.tan(radians(fov) / 2);
+  return {
+    horizontal: (width - 2 * horizontalMargin) / height
+      * halfVerticalFovTangent,
+    vertical: (height - 2 * verticalMargin) / height
+      * halfVerticalFovTangent,
+  };
+};
+
 export const getCameraFit = (params: CameraFitParams): CameraFit => {
   const circumscribedRadius = Math.hypot(
     params.bedSize.x / 2,
     params.bedSize.y / 2,
   );
-  const width = Math.max(1, params.viewport.width);
-  const height = Math.max(1, params.viewport.height);
-  const limitingAspect = Math.min(1, width / height);
-  const halfVerticalFov = radians(params.fov ?? NORMAL_CAMERA_FOV) / 2;
+  const framing = getViewportFramingTangents(
+    params.viewport,
+    params.fov,
+    params.margin,
+    params.marginRatio,
+  );
   const cameraRadius = circumscribedRadius
-    / (Math.tan(halfVerticalFov) * limitingAspect);
+    / Math.min(framing.horizontal, framing.vertical);
   return { circumscribedRadius, cameraRadius };
+};
+
+export interface SphereCameraFitParams {
+  viewport: CameraViewport;
+  radius: number;
+  fov?: number;
+  margin?: number;
+  marginRatio?: number;
+}
+
+export interface SphereCameraFit {
+  centerDepth: number;
+  centerVerticalOffset: number;
+}
+
+export const getSphereCameraFit = (
+  params: SphereCameraFitParams,
+): SphereCameraFit => {
+  const framing = getViewportFramingTangents(
+    params.viewport,
+    params.fov,
+    params.margin,
+    params.marginRatio,
+  );
+  const centerDepth = params.radius * Math.sqrt(
+    1 + 1 / framing.horizontal ** 2,
+  );
+  const centerVerticalOffset = framing.vertical * centerDepth
+    - params.radius * Math.sqrt(1 + framing.vertical ** 2);
+  return { centerDepth, centerVerticalOffset };
 };
 
 export interface CameraClippingConfig {

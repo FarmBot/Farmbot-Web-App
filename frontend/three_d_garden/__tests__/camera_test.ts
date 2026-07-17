@@ -6,7 +6,8 @@ import {
   cameraInit, CameraInitProps, clearCameraUrlParams,
   cameraPositionForFov, canonicalCamera, distanceForFov,
   getCameraClippingRange, getCameraFromUrlParams, getDefaultCameraPosition,
-  getCameraFit, GetDefaultCameraPositionProps, nearestCardinalHeading,
+  getCameraFit, getSphereCameraFit, getViewportFramingTangents,
+  GetDefaultCameraPositionProps, nearestCardinalHeading,
   nearestCardinalTopViewDirection, nearestViewPrismHeading,
   positionForViewDirection, setCameraUrlParams, viewPrismDirectionForHeading,
 } from "../camera";
@@ -243,6 +244,66 @@ describe("perspective camera framing", () => {
       fov: 20,
     }).cameraRadius).toEqual(0);
   });
+
+  it("reserves viewport margin when fitting a camera", () => {
+    const viewport = { width: 800, height: 600 };
+    const withoutMargin = getCameraFit({
+      viewport,
+      bedSize: { x: 3000, y: 4000 },
+    });
+    const withMargin = getCameraFit({
+      viewport,
+      bedSize: { x: 3000, y: 4000 },
+      margin: 16,
+    });
+    expect(withMargin.cameraRadius).toBeGreaterThan(
+      withoutMargin.cameraRadius,
+    );
+  });
+
+  it("reserves percentage margins relative to each viewport axis", () => {
+    const viewport = { width: 1000, height: 500 };
+    const fov = 60;
+    const framing = getViewportFramingTangents(
+      viewport,
+      fov,
+      0,
+      0.05,
+    );
+    const verticalTangent = Math.tan(fov * Math.PI / 360);
+
+    expect(framing.horizontal).toBeCloseTo(
+      0.9 * viewport.width / viewport.height * verticalTangent,
+    );
+    expect(framing.vertical).toBeCloseTo(0.9 * verticalTangent);
+  });
+
+  it.each([
+    { width: 1200, height: 600 },
+    { width: 375, height: 667 },
+  ])("fits a sphere to the side and top margins in $width x $height",
+    viewport => {
+      const radius = 40000;
+      const fov = 60;
+      const margin = 16;
+      const framing = getViewportFramingTangents(viewport, fov, margin);
+      const fit = getSphereCameraFit({
+        viewport,
+        radius,
+        fov,
+        margin,
+      });
+      const depthSquared = fit.centerDepth ** 2 - radius ** 2;
+      const horizontalTangent = radius / Math.sqrt(depthSquared);
+      const topTangent = (
+        fit.centerVerticalOffset * fit.centerDepth
+        + radius * Math.sqrt(
+          fit.centerVerticalOffset ** 2 + depthSquared,
+        )
+      ) / depthSquared;
+      expect(horizontalTangent).toBeCloseTo(framing.horizontal);
+      expect(topTangent).toBeCloseTo(framing.vertical);
+    });
 
   it.each([
     [[1, 0, 0], [100, 0, 0]],

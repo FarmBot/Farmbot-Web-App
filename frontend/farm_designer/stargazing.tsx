@@ -57,9 +57,37 @@ export interface StargazingHudProps {
   foundConstellations: string[];
 }
 
-export const StargazingHud = (props: StargazingHudProps) =>
-  <div
-    className={`stargazing-hud ${props.active ? "active" : ""}`}
+interface StargazingHudLabel {
+  name: string;
+  left: number;
+  top: number;
+}
+
+export const StargazingHud = (props: StargazingHudProps) => {
+  // eslint-disable-next-line no-null/no-null
+  const hudRef = React.useRef<HTMLDivElement>(null);
+  const [hoverLabel, setHoverLabel] =
+    React.useState<StargazingHudLabel | undefined>(undefined);
+  const showHoverLabel = React.useCallback((
+    name: string,
+    icon: HTMLElement,
+  ) => {
+    const iconRect = icon.getBoundingClientRect();
+    const hudRect = hudRef.current!.getBoundingClientRect();
+    setHoverLabel({
+      name,
+      left: iconRect.left + iconRect.width / 2 - hudRect.left,
+      top: iconRect.top - hudRect.top,
+    });
+  }, []);
+  const hideHoverLabel = React.useCallback(
+    () => setHoverLabel(undefined),
+    [],
+  );
+
+  return <div
+    ref={hudRef}
+    className={`stargazing-hud grid ${props.active ? "active" : ""}`}
     aria-hidden={!props.active}>
     <div className={"stargazing-hud-counter"} aria-live={"polite"}>
       {t("Crop constellations found: {{found}} of {{total}}", {
@@ -68,23 +96,42 @@ export const StargazingHud = (props: StargazingHudProps) =>
       })}
     </div>
     {props.foundConstellations.length > 0 &&
-      <div className={"stargazing-hud-icons"} role={"list"}>
+      <div className={"stargazing-hud-icons"}
+        role={"list"}
+        onScroll={hideHoverLabel}>
         {props.foundConstellations.map(cropSlug => {
           const crop = findCropMetadata(cropSlug);
-          return <span
+          return <img
             className={"stargazing-hud-icon"}
             role={"listitem"}
             aria-label={crop.name}
+            src={findCropIcon(cropSlug)}
+            alt={""}
             tabIndex={props.active ? 0 : -1}
-            key={cropSlug}>
-            <span className={"stargazing-hud-icon-label"} aria-hidden={true}>
-              {crop.name}
-            </span>
-            <img src={findCropIcon(cropSlug)} alt={""} />
-          </span>;
+            onPointerEnter={event =>
+              showHoverLabel(crop.name, event.currentTarget)}
+            onPointerLeave={hideHoverLabel}
+            onFocus={event =>
+              showHoverLabel(crop.name, event.currentTarget)}
+            onBlur={hideHoverLabel}
+            key={cropSlug} />;
         })}
       </div>}
+    <span
+      className={[
+        "stargazing-hud-icon-label",
+        hoverLabel ? "visible" : "",
+      ].join(" ")}
+      style={{
+        left: hoverLabel?.left,
+        top: hoverLabel?.top,
+      }}
+      aria-hidden={true}>
+      {hoverLabel?.name}
+    </span>
+    <div className={"stargazing-hud-bottom-overlay"} aria-hidden={true} />
   </div>;
+};
 
 export const StargazingControls = (props: StargazingControlsProps) => {
   const { dispatch, mode } = props;
@@ -166,7 +213,10 @@ export const StargazingControls = (props: StargazingControlsProps) => {
   React.useEffect(() => {
     if (!active || spaceflight || zoomUnlockedFraction == 0) { return; }
     const handleWheel = (event: WheelEvent) => {
-      if (event.deltaY == 0) { return; }
+      const target = event.target;
+      const scrollingHud = target instanceof Element
+        && target.closest(".stargazing-hud-icons");
+      if (event.deltaY == 0 || scrollingHud) { return; }
       event.preventDefault();
       updateFov(
         fovRef.current

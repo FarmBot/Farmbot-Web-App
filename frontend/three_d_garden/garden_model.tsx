@@ -63,7 +63,7 @@ import { SlotWithTool } from "../resources/interfaces";
 import {
   applyCameraClippingRange, cameraInit, cameraPositionForFov,
   CameraViewport, canonicalCamera, distanceForFov, getCameraFit,
-  getCameraFromUrlParams,
+  getCameraFromUrlParams, getSphereCameraFit,
   NARROW_CAMERA_FOV, getCameraClippingRange, nearestCardinalTopViewDirection,
   NORMAL_CAMERA_FOV, positionForViewDirection, setCameraUrlParams,
 } from "./camera";
@@ -167,34 +167,90 @@ export interface GardenCameraRequest {
   onRest?(): void;
 }
 
-export const SPACEFLIGHT_CAMERA: Camera = {
-  position: [50000, 0, 10000],
-  target: [0, 0, 12000],
-};
 export const SPACEFLIGHT_FOV = 60;
-const SPACEFLIGHT_ORBIT_SPEED = Math.PI / 60;
-const SPACEFLIGHT_ORBIT_RADIUS = 50000;
-const SPACEFLIGHT_POLAR_ANGLE = Math.atan2(
-  SPACEFLIGHT_ORBIT_RADIUS,
-  SPACEFLIGHT_CAMERA.position[2] - SPACEFLIGHT_CAMERA.target[2],
+export const SPACEFLIGHT_VIEWPORT_MARGIN_RATIO = 0.05;
+const SPACEFLIGHT_CAMERA_ELEVATION = Math.atan2(10000, 50000);
+const DEFAULT_SPACEFLIGHT_VIEWPORT = { width: 800, height: 600 };
+
+export const getVisibleSpaceflightViewport = (
+  canvasViewport: CameraViewport,
+  browserViewport: CameraViewport,
+): CameraViewport => ({
+  width: Math.min(canvasViewport.width, browserViewport.width),
+  height: Math.min(canvasViewport.height, browserViewport.height),
+});
+
+export const getSpaceflightCamera = (
+  viewport: CameraViewport,
+): Camera => {
+  const fit = getSphereCameraFit({
+    viewport,
+    radius: BigDistance.sunVisual,
+    fov: SPACEFLIGHT_FOV,
+    marginRatio: SPACEFLIGHT_VIEWPORT_MARGIN_RATIO,
+  });
+  const centerDistance = Math.hypot(
+    fit.centerDepth,
+    fit.centerVerticalOffset,
+  );
+  const orbitRadius = centerDistance
+    * Math.cos(SPACEFLIGHT_CAMERA_ELEVATION);
+  const cameraZ = centerDistance
+    * Math.sin(SPACEFLIGHT_CAMERA_ELEVATION);
+  const centerAngle = Math.atan2(
+    fit.centerVerticalOffset,
+    fit.centerDepth,
+  );
+  const cameraAngle = -SPACEFLIGHT_CAMERA_ELEVATION - centerAngle;
+  const targetZ = cameraZ + orbitRadius * Math.tan(cameraAngle);
+  return {
+    position: [orbitRadius, 0, cameraZ],
+    target: [0, 0, targetZ],
+  };
+};
+
+export const SPACEFLIGHT_CAMERA = getSpaceflightCamera(
+  DEFAULT_SPACEFLIGHT_VIEWPORT,
 );
+
+const SPACEFLIGHT_ORBIT_SPEED = Math.PI / 60;
 
 export const advanceSpaceflightOrbit = (
   camera: Camera,
   deltaSeconds: number,
 ): Camera => {
   const angle = Math.atan2(
-    camera.position[1] - SPACEFLIGHT_CAMERA.target[1],
-    camera.position[0] - SPACEFLIGHT_CAMERA.target[0],
+    camera.position[1] - camera.target[1],
+    camera.position[0] - camera.target[0],
   ) + SPACEFLIGHT_ORBIT_SPEED * deltaSeconds;
+  const orbitRadius = Math.hypot(
+    camera.position[0] - camera.target[0],
+    camera.position[1] - camera.target[1],
+  );
   return {
-    target: SPACEFLIGHT_CAMERA.target,
+    target: camera.target,
     position: [
-      SPACEFLIGHT_CAMERA.target[0]
-      + Math.cos(angle) * SPACEFLIGHT_ORBIT_RADIUS,
-      SPACEFLIGHT_CAMERA.target[1]
-      + Math.sin(angle) * SPACEFLIGHT_ORBIT_RADIUS,
-      SPACEFLIGHT_CAMERA.position[2],
+      camera.target[0] + Math.cos(angle) * orbitRadius,
+      camera.target[1] + Math.sin(angle) * orbitRadius,
+      camera.position[2],
+    ],
+  };
+};
+
+const spaceflightCameraAtAngle = (
+  camera: Camera,
+  angle: number,
+): Camera => {
+  const orbitRadius = Math.hypot(
+    camera.position[0] - camera.target[0],
+    camera.position[1] - camera.target[1],
+  );
+  return {
+    target: camera.target,
+    position: [
+      camera.target[0] + Math.cos(angle) * orbitRadius,
+      camera.target[1] + Math.sin(angle) * orbitRadius,
+      camera.position[2],
     ],
   };
 };
@@ -273,6 +329,14 @@ export const createCameraFitRequest = (
 export const cameraRadius = (camera: Camera) => Math.hypot(
   camera.position[0] - camera.target[0],
   camera.position[1] - camera.target[1],
+  camera.position[2] - camera.target[2],
+);
+
+const cameraPolarAngle = (camera: Camera) => Math.atan2(
+  Math.hypot(
+    camera.position[0] - camera.target[0],
+    camera.position[1] - camera.target[1],
+  ),
   camera.position[2] - camera.target[2],
 );
 
@@ -1559,6 +1623,7 @@ export interface GardenCameraControllerProps {
   cameraBedSize: { x: number; y: number };
   zoomFactor: number;
   viewportSize: CameraViewport;
+  spaceflightViewportSize: CameraViewport;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
 }
 
@@ -1568,10 +1633,11 @@ export type GardenCameraPhase =
 
 export const stargazingOrbitPolarLimits = (
   phase: GardenCameraPhase,
+  spaceflightCamera = SPACEFLIGHT_CAMERA,
 ) => phase == "spaceflight"
   ? {
-    min: SPACEFLIGHT_POLAR_ANGLE,
-    max: SPACEFLIGHT_POLAR_ANGLE,
+    min: cameraPolarAngle(spaceflightCamera),
+    max: cameraPolarAngle(spaceflightCamera),
   }
   : {
     min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
@@ -1590,6 +1656,19 @@ export const constellationDiscoveryEnabled = (
 export const useGardenCameraController = (
   props: GardenCameraControllerProps,
 ) => {
+  const {
+    width: spaceflightViewportWidth,
+    height: spaceflightViewportHeight,
+  } = props.spaceflightViewportSize;
+  const spaceflightCamera = React.useMemo(() => {
+    return spaceflightViewportWidth == DEFAULT_SPACEFLIGHT_VIEWPORT.width
+      && spaceflightViewportHeight == DEFAULT_SPACEFLIGHT_VIEWPORT.height
+      ? SPACEFLIGHT_CAMERA
+      : getSpaceflightCamera({
+        width: spaceflightViewportWidth,
+        height: spaceflightViewportHeight,
+      });
+  }, [spaceflightViewportHeight, spaceflightViewportWidth]);
   const [cameraPhase, setCameraPhase] =
     React.useState<GardenCameraPhase>(() => {
       return props.viewMode;
@@ -1715,7 +1794,7 @@ export const useGardenCameraController = (
     if (props.viewMode == "spaceflight") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCameraRequest({
-        camera: SPACEFLIGHT_CAMERA,
+        camera: spaceflightCamera,
         fov: SPACEFLIGHT_FOV,
         interpolation: previousMode == "stargazing"
           ? "linear"
@@ -1749,6 +1828,35 @@ export const useGardenCameraController = (
     props.stargazingCamera,
     props.stargazingFov,
     props.viewMode,
+    spaceflightCamera,
+  ]);
+  const previousSpaceflightCameraRef = React.useRef(spaceflightCamera);
+  React.useLayoutEffect(() => {
+    const previous = previousSpaceflightCameraRef.current;
+    previousSpaceflightCameraRef.current = spaceflightCamera;
+    if (previous == spaceflightCamera
+      || props.viewMode != "spaceflight") {
+      return;
+    }
+    const current = liveCameraState();
+    const angle = Math.atan2(
+      current.position[1] - current.target[1],
+      current.position[0] - current.target[0],
+    );
+    // Viewport changes intentionally retarget the spaceflight camera.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraPhase("transitioning");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest({
+      camera: spaceflightCameraAtAngle(spaceflightCamera, angle),
+      fov: SPACEFLIGHT_FOV,
+      interpolation: "linear",
+      onRest: () => setCameraPhase("spaceflight"),
+    });
+  }, [
+    liveCameraState,
+    props.viewMode,
+    spaceflightCamera,
   ]);
   const selectViewDirection = React.useCallback(
     (direction: ViewPrismDirection) => {
@@ -1795,6 +1903,7 @@ export const useGardenCameraController = (
     cameraSpringCancelRef,
     selectStartingCamera,
     cameraPhase,
+    spaceflightCamera,
   };
 };
 
@@ -2012,6 +2121,10 @@ export const GardenModel = (props: GardenModelProps) => {
     props.smoothConfigTransitions,
   );
   const { size: viewportSize } = useThree();
+  const spaceflightViewportSize = getVisibleSpaceflightViewport(
+    viewportSize,
+    { width: window.innerWidth, height: window.innerHeight },
+  );
   const configPosition = props.configPosition;
   const cameraConfig = props.smoothConfigTransitions
     ? baseConfig
@@ -2223,11 +2336,12 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraBedSize,
     zoomFactor: config.zoomFactor,
     viewportSize,
+    spaceflightViewportSize,
     viewPrismBridgeRef: props.viewPrismBridgeRef,
   });
   const {
     camera, cameraFov, cameraRequest, cameraSpringCancelRef,
-    selectStartingCamera, cameraPhase,
+    selectStartingCamera, cameraPhase, spaceflightCamera,
   } = cameraController;
   const updateSectionNearIndex = React.useCallback(() => {
     sectionBridgeRef.current?.updateNearIndex();
@@ -2688,8 +2802,8 @@ export const GardenModel = (props: GardenModelProps) => {
       return;
     }
     const current = readSmoothCameraState({
-      position: SPACEFLIGHT_CAMERA.position,
-      target: SPACEFLIGHT_CAMERA.target,
+      position: spaceflightCamera.position,
+      target: spaceflightCamera.target,
       zoom: targetZoom,
       fov: SPACEFLIGHT_FOV,
     }, controlsCamera, controls);
@@ -2804,7 +2918,7 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraPhase == "spaceflight";
   const normalCameraSettled = cameraPhase == "normal";
   const orbitPolarLimits =
-    stargazingOrbitPolarLimits(cameraPhase);
+    stargazingOrbitPolarLimits(cameraPhase, spaceflightCamera);
   const orbitRotationEnabled =
     spaceflightCameraSettled && viewMode == "spaceflight"
     || stargazingCameraSettled && viewMode == "stargazing"

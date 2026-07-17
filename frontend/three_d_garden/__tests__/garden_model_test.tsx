@@ -16,6 +16,8 @@ import {
   createViewDirectionRequest,
   FarmDesignerViewPrism,
   GardenCameraRequest, GardenModelProps, GardenModel,
+  getSpaceflightCamera,
+  getVisibleSpaceflightViewport,
   getViewPrismCameraProjection,
   getViewPrismColors,
   notifyStartingCameraSaved,
@@ -25,6 +27,7 @@ import {
   useGardenCameraController,
   SPACEFLIGHT_CAMERA,
   SPACEFLIGHT_FOV,
+  SPACEFLIGHT_VIEWPORT_MARGIN_RATIO,
   VIEW_PRISM_VIEWPORT_SIZE,
 } from "../garden_model";
 import { clone } from "lodash";
@@ -47,8 +50,11 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
-import { cameraInit, getCameraFit } from "../camera";
+import {
+  cameraInit, getCameraFit, getSphereCameraFit,
+} from "../camera";
 import * as cameraModule from "../camera";
+import { BigDistance } from "../constants";
 import { getCamera } from "../zoom_beacons_constants";
 import { BooleanSetting } from "../../session_keys";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -559,11 +565,53 @@ describe("<GardenModel />", () => {
   it("advances the spaceflight orbit at fixed radius and elevation", () => {
     const next = advanceSpaceflightOrbit(SPACEFLIGHT_CAMERA, 1);
 
-    expect(next.target).toEqual([0, 0, 12000]);
-    expect(next.position[2]).toEqual(10000);
-    expect(Math.hypot(next.position[0], next.position[1]))
-      .toBeCloseTo(50000);
+    expect(next.target).toEqual(SPACEFLIGHT_CAMERA.target);
+    expect(next.position[2]).toEqual(SPACEFLIGHT_CAMERA.position[2]);
+    expect(Math.hypot(
+      next.position[0] - next.target[0],
+      next.position[1] - next.target[1],
+    )).toBeCloseTo(Math.hypot(
+      SPACEFLIGHT_CAMERA.position[0] - SPACEFLIGHT_CAMERA.target[0],
+      SPACEFLIGHT_CAMERA.position[1] - SPACEFLIGHT_CAMERA.target[1],
+    ));
     expect(next.position).not.toEqual(SPACEFLIGHT_CAMERA.position);
+  });
+
+  it("moves the spaceflight camera out for a narrow viewport", () => {
+    const wide = getSpaceflightCamera({ width: 1200, height: 600 });
+    const narrow = getSpaceflightCamera({ width: 375, height: 667 });
+
+    expect(cameraRadius(narrow)).toBeGreaterThan(cameraRadius(wide));
+    expect(narrow.target[2]).toBeLessThan(wide.target[2]);
+  });
+
+  it("fits spaceflight to the browser-visible canvas area", () => {
+    const canvasViewport = { width: 1650, height: 600 };
+    const visibleViewport = getVisibleSpaceflightViewport(
+      canvasViewport,
+      { width: 1200, height: 800 },
+    );
+
+    expect(visibleViewport).toEqual({ width: 1200, height: 600 });
+    expect(cameraRadius(getSpaceflightCamera(visibleViewport)))
+      .toBeGreaterThan(cameraRadius(getSpaceflightCamera(canvasViewport)));
+  });
+
+  it("fits the spaceflight camera to the stars sphere", () => {
+    const viewport = { width: 1200, height: 600 };
+    const camera = getSpaceflightCamera(viewport);
+    const fit = getSphereCameraFit({
+      viewport,
+      radius: BigDistance.sunVisual,
+      fov: SPACEFLIGHT_FOV,
+      marginRatio: 0.05,
+    });
+
+    expect(SPACEFLIGHT_VIEWPORT_MARGIN_RATIO).toEqual(0.05);
+    expect(Math.hypot(...camera.position)).toBeCloseTo(Math.hypot(
+      fit.centerDepth,
+      fit.centerVerticalOffset,
+    ));
   });
 
   it("hides focus beacons while stargazing", () => {
@@ -675,7 +723,7 @@ describe("<GardenModel />", () => {
     const limits = stargazingOrbitPolarLimits("spaceflight");
 
     expect(limits.min).toEqual(limits.max);
-    expect(limits.min).toBeGreaterThan(Math.PI / 2);
+    expect(limits.min).toBeGreaterThan(0);
     expect(limits.max).toBeLessThan(Math.PI);
   });
 
@@ -2220,6 +2268,7 @@ describe("useGardenCameraController()", () => {
     cameraBedSize: { x: 1000, y: 500 },
     zoomFactor: 1,
     viewportSize: { width: 800, height: 600 },
+    spaceflightViewportSize: { width: 800, height: 600 },
   });
 
   it("settles stargazing entry, FOV changes, and exit", async () => {
@@ -2395,6 +2444,68 @@ describe("useGardenCameraController()", () => {
     act(() => result.current.cameraRequest?.onRest?.());
     await waitFor(() =>
       expect(result.current.cameraPhase).toEqual("stargazing"));
+  });
+
+  it("retargets the settled spaceflight camera after a resize", async () => {
+    const controlsCamera = new ThreePerspectiveCamera();
+    controlsCamera.position.set(...SPACEFLIGHT_CAMERA.position);
+    controlsCamera.fov = SPACEFLIGHT_FOV;
+    const controls = {
+      target: new Vector3(...SPACEFLIGHT_CAMERA.target),
+      update: jest.fn(),
+    } as NonNullable<GardenCameraControllerProps["controls"]>;
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      controlsCamera,
+      controls,
+    };
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+    const spaceflightProps = {
+      ...props,
+      viewMode: "spaceflight" as const,
+    };
+
+    rerender(spaceflightProps);
+    await waitFor(() =>
+      expect(result.current.cameraRequest?.camera)
+        .toBe(SPACEFLIGHT_CAMERA));
+    act(() => result.current.cameraRequest?.onRest?.());
+    await waitFor(() =>
+      expect(result.current.cameraPhase).toEqual("spaceflight"));
+
+    const settledRequest = result.current.cameraRequest;
+    rerender({
+      ...spaceflightProps,
+      viewportSize: { ...spaceflightProps.viewportSize },
+      spaceflightViewportSize: {
+        ...spaceflightProps.spaceflightViewportSize,
+      },
+    });
+    expect(result.current.cameraPhase).toEqual("spaceflight");
+    expect(result.current.cameraRequest).toBe(settledRequest);
+
+    const canvasViewportSize = { width: 825, height: 667 };
+    const spaceflightViewportSize = { width: 375, height: 667 };
+    rerender({
+      ...spaceflightProps,
+      viewportSize: canvasViewportSize,
+      spaceflightViewportSize,
+    });
+
+    await waitFor(() => {
+      expect(result.current.cameraPhase).toEqual("transitioning");
+      expect(result.current.cameraRequest?.camera)
+        .toEqual(getSpaceflightCamera(spaceflightViewportSize));
+      expect(result.current.cameraRequest?.interpolation)
+        .toEqual("linear");
+    });
+    act(() => result.current.cameraRequest?.onRest?.());
+    await waitFor(() =>
+      expect(result.current.cameraPhase).toEqual("spaceflight"));
   });
 
   it("starts every stargazing session at its entry camera", async () => {

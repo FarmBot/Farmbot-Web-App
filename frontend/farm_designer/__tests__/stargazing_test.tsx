@@ -1,5 +1,7 @@
 import React from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act, createEvent, fireEvent, render, screen,
+} from "@testing-library/react";
 import {
   setSpaceflightMode, setStargazingFov, setStargazingMode,
   StargazingControls,
@@ -39,6 +41,9 @@ describe("<StargazingControls />", () => {
     expect(hud).toHaveTextContent(
       `Crop constellations found: 0 of ${CROP_SLUGS.length}`,
     );
+    expect(hud).toHaveClass("grid");
+    expect(hud?.querySelector(".stargazing-hud-bottom-overlay"))
+      .toHaveAttribute("aria-hidden", "true");
     expect(document.body).not.toHaveClass("stargazing-active");
 
     rerender(<StargazingControls mode={"stargazing"} fov={90}
@@ -128,6 +133,16 @@ describe("<StargazingControls />", () => {
 
     fireEvent.wheel(window, { deltaY: 100 });
     expect(dispatch).toHaveBeenLastCalledWith(setStargazingFov(48));
+
+    dispatch.mockClear();
+    const scrollEvent = createEvent.wheel(screen.getByRole("list"), {
+      bubbles: true,
+      cancelable: true,
+      deltaY: 100,
+    });
+    fireEvent(screen.getByRole("list"), scrollEvent);
+    expect(scrollEvent.defaultPrevented).toEqual(false);
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
   it("sets the stargazing field of view", () => {
@@ -267,16 +282,47 @@ describe("<StargazingControls />", () => {
       STARGAZING_PROGRESS_STORAGE_KEY,
       JSON.stringify(["beet", "apple"]),
     );
-    render(<StargazingControls
+    const { container } = render(<StargazingControls
       mode={"spaceflight"} fov={20} dispatch={jest.fn()} />);
 
     const items = screen.getAllByRole("listitem");
     expect(items.map(item => item.getAttribute("aria-label")))
       .toEqual(["Beet", "Apple"]);
-    expect(items[0].querySelector("img"))
+    expect(items[0])
       .toHaveAttribute("src", "/crops/icons/beet.avif");
-    expect(items[0].querySelector(".stargazing-hud-icon-label"))
-      .toHaveTextContent("Beet");
+    const hud = container.querySelector(".stargazing-hud") as HTMLElement;
+    const list = screen.getByRole("list");
+    jest.spyOn(hud, "getBoundingClientRect").mockReturnValue({
+      left: 10,
+      top: 100,
+    } as DOMRect);
+    jest.spyOn(items[0], "getBoundingClientRect").mockReturnValue({
+      left: 110,
+      top: 140,
+      width: 25,
+    } as DOMRect);
+    const label = container.querySelector(
+      ".stargazing-hud-icon-label",
+    );
+
+    fireEvent.pointerEnter(items[0]);
+    expect(label).toHaveTextContent("Beet");
+    expect(label).toHaveClass("visible");
+    expect(label).toHaveStyle({
+      left: "112.5px",
+      top: "40px",
+    });
+    fireEvent.pointerLeave(items[0]);
+    expect(label).not.toHaveClass("visible");
+
+    fireEvent.focus(items[1]);
+    expect(label).toHaveTextContent("Apple");
+    fireEvent.blur(items[1]);
+    expect(label).not.toHaveClass("visible");
+
+    fireEvent.pointerEnter(items[0]);
+    fireEvent.scroll(list);
+    expect(label).not.toHaveClass("visible");
   });
 
   it("builds a stargazing action", () => {

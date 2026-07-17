@@ -841,7 +841,7 @@
   }
 }
 
-@media screen and (min-width: $mobile_max_width) {
+@media screen and (min-width: ($tablet_max_width + 1px)) {
   .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
     animation: panel-hide-shift-3d 0.3s ease forwards;
   }

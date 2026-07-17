@@ -14,6 +14,7 @@ $stargazing-transition: 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-wrapper,
+.panel-nav,
 .garden-map-legend,
 .view-prism-viewport,
 .three-d-camera-controls {
@@ -31,6 +32,12 @@ body.stargazing-active {
     opacity: 0;
     pointer-events: none;
     transform: translateY(-110%);
+  }
+
+  .panel-nav {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(-100% - 8.5rem));
   }
 
   .nav-popover-portal {
@@ -66,6 +73,7 @@ body.stargazing-active {
   color: var(--text-color);
   opacity: 0;
   pointer-events: none;
+  -webkit-tap-highlight-color: $transparent;
   transform: translateX(calc(100% + 2em));
   transition:
   opacity $stargazing-transition,
@@ -96,7 +104,7 @@ body.stargazing-active {
   width: 100%;
   min-height: 75px;
   max-height: 42vh;
-  padding: 1em;
+  gap: 1rem;
   color: var(--text-color);
   text-align: center;
   pointer-events: none;
@@ -131,62 +139,63 @@ body.stargazing-active {
   gap: 2px;
   align-items: center;
   justify-content: center;
-  max-height: min(32vh, 24em);
-  margin-top: -3em;
-  padding: 4em 5em 1em;
+  max-height: 142px;
+  padding: 0 5em;
+  padding-bottom: 1rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.stargazing-hud-bottom-overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 1rem;
+  pointer-events: none;
+  background: linear-gradient(0deg, $black, $transparent);
 }
 
 .stargazing-hud-icon {
-  position: relative;
-  display: flex;
+  display: block;
   flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
   width: 25px;
   height: 25px;
+  object-fit: contain;
   border-radius: 0.5em;
   outline: none;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
   &:focus-visible {
     box-shadow: 0 0 0 2px dodgerblue;
-  }
-
-  &:hover,
-  &:focus-visible {
-    .stargazing-hud-icon-label {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
   }
 }
 
 .stargazing-hud-icon-label {
   position: absolute;
-  bottom: calc(100% + 0.4em);
-  left: 50%;
-  z-index: 3;
+  z-index: 4;
   max-width: 18em;
   padding: 0.35em 0.6em;
   overflow: hidden;
-  color: $white;
+  color: var(--text-color);
   font-size: 1.5rem;
   text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
   background: rgba($black, 0.82);
   border-radius: 0.35em;
+  box-shadow: var(--box-shadow);
   backdrop-filter: var(--blur);
   opacity: 0;
-  transform: translate(-50%, 0.35em);
+  transform: translate(-50%, calc(-100% + 0.35em));
   transition:
   opacity 120ms ease,
   transform 120ms ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 0.4em));
+  }
 }
 
 .stargazing-exit-row {
@@ -290,6 +299,7 @@ body.stargazing-active {
   border-radius: 2em;
   box-shadow: var(--box-shadow);
   backdrop-filter: var(--blur);
+  touch-action: none;
 
   .stargazing-zoom-lock {
     position: absolute;
@@ -327,6 +337,10 @@ body.stargazing-active {
     box-shadow: none;
     cursor: pointer;
     transform: rotate(90deg);
+
+    &:disabled {
+      background: $transparent !important;
+    }
 
     &::-webkit-slider-runnable-track {
       height: 0.4em;
@@ -391,6 +405,7 @@ body.stargazing-active {
 
 @media (prefers-reduced-motion: reduce) {
   .nav-wrapper,
+  .panel-nav,
   .garden-map-legend,
   .view-prism-viewport,
   .three-d-camera-controls,
