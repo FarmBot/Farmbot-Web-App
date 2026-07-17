@@ -18,7 +18,6 @@ import { Camera } from "../../zoom_beacons_constants";
 import { setStargazingMode } from "../../../farm_designer/stargazing";
 import { getUtilitiesPostWorldPosition } from "./utilities_post_position";
 import { RenderOrder } from "../../constants";
-import { ToggleButton } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { Actions } from "../../../constants";
 
@@ -114,6 +113,8 @@ type TelescopeConfig = Pick<Config,
   | "bedZOffset" | "legSize">;
 
 const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
+const AnimatedMeshBasicMaterial = animated(MeshBasicMaterial);
+const AnimatedPointsMaterial = animated(PointsMaterial);
 const AnimatedGroup = animated(Group);
 
 const telescopeBodyZ = (config: TelescopeConfig) =>
@@ -226,32 +227,23 @@ export const getTelescopeState = (
 
 interface TelescopeSpringValues {
   groupOffset: number;
+  sphereOpacity: number;
   telescopeOpacity: number;
 }
 
 export const telescopeSpringTargets = (
-  state: TelescopeState,
+  enabledRequested: boolean,
+  stargazing: boolean,
   sphereZ: number,
-): TelescopeSpringValues => {
-  switch (state) {
-    case "enabled":
-      return {
-        groupOffset: 0,
-        telescopeOpacity: 1,
-      };
-    case "disabled":
-      return {
-        groupOffset: -sphereZ,
-        telescopeOpacity: 0,
-      };
-  }
-};
+): TelescopeSpringValues => ({
+  groupOffset: enabledRequested ? 0 : -sphereZ,
+  sphereOpacity: stargazing ? 0 : 1,
+  telescopeOpacity: enabledRequested && !stargazing ? 1 : 0,
+});
 
 interface TelescopePopupProps {
   position: [number, number, number];
-  enabled: boolean;
   onClose(): void;
-  onToggle(): void;
 }
 
 const stopPopupEvent = (event: React.SyntheticEvent) => {
@@ -282,14 +274,9 @@ const TelescopePopup = (props: TelescopePopupProps) =>
         </div>
       </div>
       <div className={"object-popup-content telescope-popup-content grid"}>
-        <p>{t("How many crop constellations can you find?")}</p>
-        {props.enabled &&
-          <div className={"telescope-popup-toggle row grid-exp-2"}>
-            <label>{t("SHOW TELESCOPE")}</label>
-            <ToggleButton
-              toggleValue={props.enabled}
-              toggleAction={props.onToggle} />
-          </div>}
+        <p>{t(
+          "Click the telescope to see how many crop constellations you can find!",
+        )}</p>
       </div>
     </div>
   </Html>;
@@ -316,12 +303,18 @@ export const Telescope = (props: TelescopeProps) => {
   const bodyZ = telescopeBodyZ(config);
   const sphereZ = bodyZ + TELESCOPE_SPHERE_HEIGHT;
   const tripodTopLength = bodyZ - TRIPOD_TOP_BASE_Z;
-  const targets = telescopeSpringTargets(state, sphereZ);
+  const targets = telescopeSpringTargets(
+    enabledRequested,
+    stargazing,
+    sphereZ,
+  );
   const [telescopeMounted, setTelescopeMounted] =
     React.useState(state == "enabled");
+  const [sphereMounted, setSphereMounted] = React.useState(!stargazing);
   const handleSpringRest = React.useCallback(() => {
     setTelescopeMounted(state == "enabled");
-  }, [state]);
+    setSphereMounted(!stargazing);
+  }, [stargazing, state]);
   const [spring] = useSpring(() => ({
     to: targets,
     immediate: !config.animate,
@@ -331,9 +324,11 @@ export const Telescope = (props: TelescopeProps) => {
     config.animate,
     handleSpringRest,
     targets.groupOffset,
+    targets.sphereOpacity,
     targets.telescopeOpacity,
   ]);
   const renderTelescope = state == "enabled" || telescopeMounted;
+  const renderSphere = !stargazing || sphereMounted;
   useFrame((_frameState, delta) => {
     rotateTelescopeSphere(
       sphereRotationRef.current,
@@ -354,16 +349,12 @@ export const Telescope = (props: TelescopeProps) => {
       });
     }
   };
-  const togglePopup = (event: ThreeEvent<MouseEvent>) => {
+  const toggleTelescope = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
-    if (popupOpen) {
-      setPopupOpen(false);
-      return;
-    }
-    if (!stargazing) {
-      setEnabledRequested(true);
-      setPopupOpen(true);
-    }
+    if (stargazing) { return; }
+    const nextEnabled = state != "enabled";
+    setEnabledRequested(nextEnabled);
+    setPopupOpen(nextEnabled);
   };
   const showPointerCursor = () => {
     if (!stargazing) { document.body.style.cursor = "pointer"; }
@@ -392,46 +383,46 @@ export const Telescope = (props: TelescopeProps) => {
     <AnimatedGroup
       name={"visibility-offset"}
       position-z={spring.groupOffset}>
-      <Group name={"celestial-sphere-rotation"} ref={sphereRotationRef}>
-        <Sphere
-          name={"telescope-sphere"}
-          args={[TELESCOPE_SPHERE_RADIUS, 24, 24]}
-          position={[0, 0, sphereZ]}
-          renderOrder={TELESCOPE_RENDER_ORDER}
-          onPointerEnter={showPointerCursor}
-          onPointerLeave={resetPointerCursor}
-          onClick={togglePopup}>
-          <MeshBasicMaterial
-            color={"#000000"}
-            depthWrite={true} />
-        </Sphere>
-        <Points
-          name={"celestial-sphere-stars"}
-          geometry={telescopeStarGeometry}
-          position={[0, 0, sphereZ]}
-          renderOrder={TELESCOPE_RENDER_ORDER + 0.01}
-          onPointerEnter={showPointerCursor}
-          onPointerLeave={resetPointerCursor}
-          onClick={togglePopup}
-          // eslint-disable-next-line no-null/no-null
-          dispose={null}>
-          <PointsMaterial
-            color={"white"}
-            size={1}
-            sizeAttenuation={true}
-            onBeforeCompile={telescopeStarShaderModification}
-            depthWrite={false} />
-        </Points>
-      </Group>
+      {renderSphere &&
+        <Group name={"celestial-sphere-rotation"} ref={sphereRotationRef}>
+          <Sphere
+            name={"telescope-sphere"}
+            args={[TELESCOPE_SPHERE_RADIUS, 24, 24]}
+            position={[0, 0, sphereZ]}
+            renderOrder={TELESCOPE_RENDER_ORDER}
+            onPointerEnter={showPointerCursor}
+            onPointerLeave={resetPointerCursor}
+            onClick={toggleTelescope}>
+            <AnimatedMeshBasicMaterial
+              color={"#000000"}
+              opacity={spring.sphereOpacity}
+              transparent={true}
+              depthWrite={true} />
+          </Sphere>
+          <Points
+            name={"celestial-sphere-stars"}
+            geometry={telescopeStarGeometry}
+            position={[0, 0, sphereZ]}
+            renderOrder={TELESCOPE_RENDER_ORDER + 0.01}
+            onPointerEnter={showPointerCursor}
+            onPointerLeave={resetPointerCursor}
+            onClick={toggleTelescope}
+            // eslint-disable-next-line no-null/no-null
+            dispose={null}>
+            <AnimatedPointsMaterial
+              color={"white"}
+              opacity={spring.sphereOpacity}
+              size={1}
+              sizeAttenuation={true}
+              transparent={true}
+              onBeforeCompile={telescopeStarShaderModification}
+              depthWrite={false} />
+          </Points>
+        </Group>}
       {popupOpen && !stargazing &&
         <TelescopePopup
           position={[0, 0, telescopePopupZ(sphereZ)]}
-          enabled={state == "enabled"}
-          onClose={() => setPopupOpen(false)}
-          onToggle={() => {
-            setEnabledRequested(false);
-            setPopupOpen(false);
-          }} />}
+          onClose={() => setPopupOpen(false)} />}
       {renderTelescope && <Group
         name={"telescope-model"}
         onClick={openStargazing}>

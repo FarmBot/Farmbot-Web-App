@@ -2,16 +2,18 @@ const originalFetch = global.fetch;
 const originalWindowFetch = window.fetch;
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
+import * as reactSpring from "@react-spring/three";
 import {
   AnimatedSunFrame, calcSunI, getAnimatedSeasonDate, getCycleLength,
   getAnimatedSeasonSunCoordinate, getSeasonAnimationElapsed,
-  getSeasonAnimationElapsedAtSunPosition, isSkyFullyBlack, skyColor,
-  Sun, sunPropsEqual, SunProps,
+  getSeasonAnimationElapsedAtSunPosition, isSkyFullyBlack,
+  nearestEquivalentAngle, skyColor, Sun, sunPropsEqual, SunProps,
 } from "../sun";
 import {
-  generateStars, projectConstellationPoint, starShaderModification,
+  Constellations, generateStars, projectConstellationPoint,
+  starShaderModification,
 } from "../constellations";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -51,6 +53,14 @@ describe("getSeasonAnimationElapsed", () => {
   });
 });
 
+describe("nearestEquivalentAngle()", () => {
+  it("keeps angle changes on the shortest path", () => {
+    expect(nearestEquivalentAngle(359.86, 1.28)).toBeCloseTo(361.28);
+    expect(nearestEquivalentAngle(1.28, 359.86)).toBeCloseTo(-0.14);
+    expect(nearestEquivalentAngle(361.28, 2.7)).toBeCloseTo(362.7);
+    expect(nearestEquivalentAngle(10, 20)).toEqual(20);
+  });
+});
 
 describe("<Sun />", () => {
   const fakeProps = (): SunProps => ({
@@ -67,6 +77,48 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("springs across the azimuth wrap using the shortest path", () => {
+    const start = jest.fn();
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(props => {
+        const values = typeof props == "function" ? props() : props;
+        return [values, {
+          start,
+          set: jest.fn(),
+        }] as unknown as ReturnType<typeof reactSpring.useSpring>;
+      });
+    const p = fakeProps();
+    p.config.animate = true;
+    p.config.sunAzimuth = 359.86;
+    try {
+      const { rerender } = render(<Sun {...p} />);
+      start.mockClear();
+      p.config = { ...p.config, sunAzimuth: 1.28 };
+      rerender(<Sun {...p} />);
+      expect(start).toHaveBeenCalledWith(expect.objectContaining({
+        to: expect.objectContaining({ azimuth: 361.28 }),
+      }));
+      const update = start.mock.calls[start.mock.calls.length - 1][0];
+      act(() => {
+        update.onChange({ value: update.to });
+        update.onRest();
+      });
+    } finally {
+      springSpy.mockRestore();
+    }
+  });
+
+  it("forces constellations on during celestial discovery", () => {
+    const p = fakeProps();
+    p.config.constellations = false;
+    p.config.sunInclination = -10;
+    p.constellationDiscoveryEnabled = true;
+    const wrapper = createRenderer(<Sun {...p} />);
+    expect(wrapper.root.findByType(Constellations).props.enabled)
+      .toEqual(true);
+    unmountRenderer(wrapper);
   });
 
   it("hides the sun visual and light", () => {

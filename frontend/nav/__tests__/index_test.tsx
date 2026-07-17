@@ -29,7 +29,6 @@ import { renderWithContext } from "../../__test_support__/mount_with_context";
 import * as controlsPanelModule from "../../controls/controls";
 import * as screenSize from "../../screen_size";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
-import { showTimeTravelButton } from "../../three_d_garden/time_travel";
 import * as mustBeOnline from "../../devices/must_be_online";
 import { fakeState } from "../../__test_support__/fake_state";
 import { BooleanSetting } from "../../session_keys";
@@ -344,12 +343,13 @@ describe("<NavBar />", () => {
     expect(container.querySelector(".setup-button")).toBeNull();
   });
 
-  it("displays time travel button", () => {
+  it("displays time travel button without device coordinates", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
-    p.device.body.lat = 1;
-    p.device.body.lng = 1;
-    expect(showTimeTravelButton(true, p.device.body)).toBeTruthy();
+    p.device.body.lat = undefined;
+    p.device.body.lng = undefined;
+    const { container } = renderNavBar(p);
+    expect(container.querySelector(".time-travel-button")).toBeTruthy();
   });
 
   it("displays navbar visual warning for support tokens", () => {

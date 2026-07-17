@@ -8,11 +8,15 @@ import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { formatTime } from "../util";
 import { TimeSettings } from "../interfaces";
 
+const FALLBACK_LATITUDE = 35;
+const FALLBACK_LONGITUDE = -120;
+
 export const latLng = (device: DeviceAccountSettings) => {
   const latitude = parseFloat("" + device.lat);
   const longitude = parseFloat("" + device.lng);
-  const valid = isFinite(latitude) && isFinite(longitude);
-  return { latitude, longitude, valid };
+  return isFinite(latitude) && isFinite(longitude)
+    ? { latitude, longitude }
+    : { latitude: FALLBACK_LATITUDE, longitude: FALLBACK_LONGITUDE };
 };
 
 export const get3DTime = (threeDTime: string | undefined) => {
@@ -22,11 +26,7 @@ export const get3DTime = (threeDTime: string | undefined) => {
 const calc3DTime = (threeDTime: string | undefined, offset: number) =>
   get3DTime(threeDTime).add(offset, "hour").format("HH:mm");
 
-export const showTimeTravelButton = (
-  threeDGarden: boolean,
-  device: DeviceAccountSettings,
-) =>
-  threeDGarden && latLng(device).valid;
+export const showTimeTravelButton = (threeDGarden: boolean) => threeDGarden;
 
 export interface TimeTravelTargetProps {
   isOpen: boolean;

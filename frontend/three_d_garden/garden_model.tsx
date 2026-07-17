@@ -657,13 +657,6 @@ export interface GardenModelProps {
   preloadEnvironmentScenes?: boolean;
   showFarmbotLayerLoadProgress?: boolean;
   promo?: boolean;
-  threeDTime?: string;
-  timeTravelDispatch?: Function;
-  celestialView?: {
-    mode: ThreeDViewMode;
-    fov: number;
-    dispatch: Function;
-  };
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
@@ -844,9 +837,6 @@ interface StaticGardenLayersProps {
   spaceflight: boolean;
   cameraSideStarClipEnabled: boolean;
   constellationDiscoveryEnabled: boolean;
-  stargazingDispatch: Function | undefined;
-  threeDTime: string | undefined;
-  timeTravelDispatch: Function | undefined;
   showSpread: boolean;
   plantInstanceCapacity: number | undefined;
   routeKey: string;
@@ -877,7 +867,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     addPlantProps, plantLabelNodes, plantsVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
     dispatch, stargazing, spaceflight, cameraSideStarClipEnabled,
-    constellationDiscoveryEnabled, stargazingDispatch, showSpread,
+    constellationDiscoveryEnabled, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
@@ -940,9 +930,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           config={config}
           sunIsSet={sunIsSet}
           stargazing={stargazing}
-          dispatch={stargazingDispatch}
-          timeTravelDispatch={props.timeTravelDispatch
-            ?? dispatch} />}
+          dispatch={dispatch}
+          timeTravelDispatch={dispatch} />}
       <AmbientLight intensity={config.ambient / 100} />
       {config.ground &&
         <Ground
@@ -2042,15 +2031,11 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
-  const viewMode = props.celestialView?.mode
-    ?? sectionDesigner?.threeDViewMode
-    ?? "normal";
+  const viewMode = sectionDesigner?.threeDViewMode ?? "normal";
   const celestialViewActive = viewMode != "normal";
   const spaceflight = viewMode == "spaceflight";
-  const stargazingFov = props.celestialView?.fov
-    ?? sectionDesigner?.threeDStargazingFov
+  const stargazingFov = sectionDesigner?.threeDStargazingFov
     ?? STARGAZING_DEFAULT_FOV;
-  const stargazingDispatch = props.celestialView?.dispatch ?? dispatch;
   const [botPositionStore] = React.useState(
     () => createBotPositionSnapshotStore(
       props.configPosition,
@@ -2923,9 +2908,6 @@ export const GardenModel = (props: GardenModelProps) => {
           viewMode,
           cameraPhase,
         )}
-        stargazingDispatch={stargazingDispatch}
-        threeDTime={props.threeDTime}
-        timeTravelDispatch={props.timeTravelDispatch}
         showSpread={showSpread}
         plantInstanceCapacity={props.plantInstanceCapacity}
         routeKey={routeKey}

@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
+  latLng, showTimeTravelButton,
   TimeTravelContent, TimeTravelContentProps, TimeTravelControls,
   TimeTravelTarget, TimeTravelTargetProps,
 } from "../time_travel";
@@ -15,6 +16,31 @@ beforeEach(() => {
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(jest.fn());
+});
+
+describe("latLng()", () => {
+  it("uses device coordinates when provided", () => {
+    const device = fakeDevice().body;
+    device.lat = 45;
+    device.lng = -90;
+    expect(latLng(device)).toEqual({ latitude: 45, longitude: -90 });
+  });
+
+  it.each([
+    [undefined, undefined],
+    [45, undefined],
+    [undefined, -90],
+  ])("uses fallback coordinates for an incomplete location", (lat, lng) => {
+    const device = fakeDevice().body;
+    device.lat = lat;
+    device.lng = lng;
+    expect(latLng(device)).toEqual({ latitude: 35, longitude: -120 });
+  });
+
+  it("shows time travel without device coordinates", () => {
+    expect(showTimeTravelButton(true)).toBeTruthy();
+    expect(showTimeTravelButton(false)).toBeFalsy();
+  });
 });
 
 describe("<TimeTravelTarget />", () => {

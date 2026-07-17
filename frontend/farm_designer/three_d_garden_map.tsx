@@ -176,7 +176,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   );
   const viewpointHeading = parseInt(
     "" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
-  const { latitude, longitude, valid } = latLng(props.device);
+  const { latitude, longitude } = latLng(props.device);
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
   const waterFlow = isPeripheralActive("water");
   const light = isPeripheralActive("light");
@@ -198,16 +198,11 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   const lastCaptureTime = React.useMemo(
     () => lastImageCaptureTime(props.logs),
     [props.logs]);
-  const sunPositionConfig = valid
-    ? calcSunCoordinate(
-      get3DTime(props.designer.threeDTime).toDate(),
-      configValues.heading,
-      latitude,
-      longitude)
-    : {
-      azimuth: configValues.sunAzimuth,
-      inclination: configValues.sunInclination,
-    };
+  const sunPositionConfig = calcSunCoordinate(
+    get3DTime(props.designer.threeDTime).toDate(),
+    configValues.heading,
+    latitude,
+    longitude);
   const stableGridSize = React.useMemo(
     () => ({ x: gridSize.x, y: gridSize.y }),
     [gridSize.x, gridSize.y]);

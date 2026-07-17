@@ -583,31 +583,6 @@ describe("<GardenModel />", () => {
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
   });
 
-  it("accepts stargazing state without Farm Designer props", () => {
-    const p = fakeProps();
-    const dispatch = jest.fn();
-    p.addPlantProps = undefined;
-    p.celestialView = { mode: "stargazing", fov: 45, dispatch };
-    const wrapper = createWrapper(p);
-
-    const controls = wrapper.root.findByType(OrbitControls);
-    expect(controls.props.enableRotate).toEqual(true);
-    expect(controls.props.enablePan).toEqual(false);
-    expect(wrapper.root.findByType(Telescope).props).toEqual(
-      expect.objectContaining({
-        stargazing: true,
-        dispatch,
-      }),
-    );
-    const cameraRequests = useStateSetters.flatMap(setter =>
-      (setter.mock.calls as unknown[][])
-        .map(call => call[0])
-        .filter((value): value is GardenCameraRequest =>
-          typeof value == "object" && !!value
-          && "camera" in value && "fov" in value));
-    expect(cameraRequests.some(request => request.fov == 45)).toEqual(true);
-  });
-
   it("routes telescope time travel through the main app dispatch", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);

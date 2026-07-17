@@ -331,7 +331,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
       threeDGarden,
       designer: this.props.designer,
     };
-    if (!showTimeTravelButton(threeDGarden, common.device)) { return; }
+    if (!showTimeTravelButton(threeDGarden)) { return; }
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
         portalClassName={"nav-popover-portal"}

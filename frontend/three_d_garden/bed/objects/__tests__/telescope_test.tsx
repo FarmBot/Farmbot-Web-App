@@ -33,14 +33,14 @@ describe("<Telescope />", () => {
     };
   };
 
-  const openPopup = (container: HTMLElement) => {
+  const clickSphere = (container: HTMLElement) => {
     const sphere = container.querySelector("[name='telescope-sphere']");
     sphere && fireEvent.click(sphere);
   };
 
-  const showTelescope = (container: HTMLElement) => openPopup(container);
+  const showTelescope = (container: HTMLElement) => clickSphere(container);
 
-  it("renders disabled and enables from the sphere popup", () => {
+  it("enables and disables the telescope from the sphere", () => {
     const props = fakeProps();
     const { container, unmount } = render(<Telescope {...props} />);
     const sphere = container.querySelector("[name='telescope-sphere']");
@@ -65,18 +65,21 @@ describe("<Telescope />", () => {
     expect(document.body.style.cursor).toEqual("pointer");
     sphere && fireEvent.pointerLeave(sphere);
     expect(document.body.style.cursor).toEqual("default");
-    openPopup(container);
+    clickSphere(container);
     expect(screen.getByText("Stargaze")).toBeTruthy();
     expect(container.querySelector(".telescope-popup")).toHaveClass("half-gap");
     expect(screen.getByText(
-      "How many crop constellations can you find?",
+      "Click the telescope to see how many crop constellations you can find!",
     )).toBeTruthy();
     expect(screen.queryByText("TIME TRAVEL")).toBeNull();
-    expect(screen.getByText("SHOW TELESCOPE")).toBeTruthy();
+    expect(screen.queryByText("SHOW TELESCOPE")).toBeNull();
+    expect(container.querySelector(".telescope-popup .fb-toggle-button"))
+      .toBeNull();
     expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
-    openPopup(container);
+    clickSphere(container);
     expect(container.querySelector(".telescope-popup")).toBeNull();
-    openPopup(container);
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
+    clickSphere(container);
     expect(container.querySelector(".telescope-popup")).toBeTruthy();
 
     const popup = container.querySelector(".telescope-popup");
@@ -84,20 +87,21 @@ describe("<Telescope />", () => {
     popup && fireEvent.contextMenu(popup);
     popup && fireEvent.wheel(popup);
     popup && fireEvent.click(popup);
-    const toggle = container.querySelector(
-      ".telescope-popup .fb-toggle-button",
-    );
-    toggle && fireEvent.click(toggle);
-    expect(container.querySelector(".telescope-popup")).toBeNull();
-    expect(container.querySelector("[name='telescope-model']")).toBeNull();
-    openPopup(container);
-    expect(screen.getByText("SHOW TELESCOPE")).toBeTruthy();
     fireEvent.keyDown(window, { key: "Escape" });
     expect(container.querySelector(".telescope-popup")).toBeNull();
-    openPopup(container);
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
+    clickSphere(container);
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
+
+    clickSphere(container);
     const close = container.querySelector("[title='close']");
     close && fireEvent.click(close);
     expect(container.querySelector(".telescope-popup")).toBeNull();
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
+
+    clickSphere(container);
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
 
     document.body.style.cursor = "pointer";
     unmount();
@@ -203,10 +207,7 @@ describe("<Telescope />", () => {
       expect(container.querySelector("[name='telescope-model']"))
         .toBeTruthy();
 
-      const toggle = container.querySelector(
-        ".telescope-popup .fb-toggle-button",
-      );
-      toggle && fireEvent.click(toggle);
+      clickSphere(container);
       const outgoingModel = container.querySelector(
         "[name='telescope-model']",
       );
@@ -223,7 +224,7 @@ describe("<Telescope />", () => {
     }
   });
 
-  it("disables while in a celestial view", async () => {
+  it("fades without moving during celestial view transitions", async () => {
     const props = fakeProps();
     const { container, rerender } = render(<Telescope {...props} />);
     expect(container.querySelector("[name='telescope-sphere']"))
@@ -231,25 +232,48 @@ describe("<Telescope />", () => {
     showTelescope(container);
     expect(container.querySelector("[name='telescope-model']"))
       .toBeTruthy();
+    const visibilityOffset = () => container.querySelector(
+      "[name='visibility-offset']",
+    );
+    expect(visibilityOffset()?.getAttribute("position-z")).toEqual("0");
     props.stargazing = true;
     rerender(<Telescope {...props} />);
     await waitFor(() =>
       expect(container.querySelector("[name='telescope-model']")).toBeNull());
+    expect(visibilityOffset()?.getAttribute("position-z")).toEqual("0");
+    expect(container.querySelector("[name='telescope-sphere']")).toBeNull();
+
+    props.stargazing = false;
+    rerender(<Telescope {...props} />);
+    expect(visibilityOffset()?.getAttribute("position-z")).toEqual("0");
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
     expect(container.querySelector("[name='telescope-sphere']"))
       .toBeTruthy();
   });
 
-  it("defines the disabled and enabled targets", () => {
+  it("defines position and visibility targets", () => {
     expect(getTelescopeState(false, false)).toEqual("disabled");
     expect(getTelescopeState(true, true)).toEqual("disabled");
     expect(getTelescopeState(false, true)).toEqual("enabled");
-    expect(telescopeSpringTargets("disabled", 100)).toEqual({
+    expect(telescopeSpringTargets(false, false, 100)).toEqual({
       groupOffset: -100,
+      sphereOpacity: 1,
       telescopeOpacity: 0,
     });
-    expect(telescopeSpringTargets("enabled", 100)).toEqual({
+    expect(telescopeSpringTargets(true, false, 100)).toEqual({
       groupOffset: 0,
+      sphereOpacity: 1,
       telescopeOpacity: 1,
+    });
+    expect(telescopeSpringTargets(true, true, 100)).toEqual({
+      groupOffset: 0,
+      sphereOpacity: 0,
+      telescopeOpacity: 0,
+    });
+    expect(telescopeSpringTargets(false, true, 100)).toEqual({
+      groupOffset: -100,
+      sphereOpacity: 0,
+      telescopeOpacity: 0,
     });
   });
 

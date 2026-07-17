@@ -179,6 +179,11 @@ export const sunPosition = (
   return new Vector3(...position);
 };
 
+export const nearestEquivalentAngle = (
+  current: number,
+  target: number,
+) => target + 360 * Math.round((current - target) / 360);
+
 export const getSeasonAnimationElapsedAtSunPosition = (
   season: string,
   inclination: number,
@@ -351,6 +356,7 @@ const SunBase = (props: SunProps) => {
     React.useState(targetSunInclination);
   const [renderedSunAzimuth, setRenderedSunAzimuth] =
     React.useState(targetSunAzimuth);
+  const renderedSunAzimuthRef = React.useRef(targetSunAzimuth);
 
   const sunPos = sunPosition(
     renderedSunInclination,
@@ -427,8 +433,10 @@ const SunBase = (props: SunProps) => {
       setRenderedSunIntensity(value.intensity);
     typeof value.inclination == "number" &&
       setRenderedSunInclination(value.inclination);
-    typeof value.azimuth == "number" &&
+    if (typeof value.azimuth == "number") {
+      renderedSunAzimuthRef.current = value.azimuth;
       setRenderedSunAzimuth(value.azimuth);
+    }
   }, []);
   const [, sunSpringApi] = useSpring(() => sunSpringTargets);
 
@@ -442,20 +450,22 @@ const SunBase = (props: SunProps) => {
         : undefined;
     lastSeasonAnimationActive.current = seasonAnimationActive;
     fromAnimatedSun && setSunSpringValues(fromAnimatedSun);
+    const continuousSunSpringTargets = {
+      ...sunSpringTargets,
+      azimuth: nearestEquivalentAngle(
+        fromAnimatedSun?.azimuth ?? renderedSunAzimuthRef.current,
+        targetSunAzimuth,
+      ),
+    };
     sunSpringApi.start({
       from: fromAnimatedSun,
-      to: sunSpringTargets,
+      to: continuousSunSpringTargets,
       immediate: !config.animate,
       onChange: result => {
         const value = result.value as Partial<SunSpringValues>;
         setSunSpringValues(value);
       },
-      onRest: () => {
-        lightRef.current?.color?.set(sunColor);
-        setRenderedSunIntensity(sunIntensity);
-        setRenderedSunInclination(targetSunInclination);
-        setRenderedSunAzimuth(targetSunAzimuth);
-      },
+      onRest: () => setSunSpringValues(continuousSunSpringTargets),
       config: seasonSpringConfig,
     });
   }, [
@@ -552,7 +562,8 @@ const SunBase = (props: SunProps) => {
       <React.Suspense fallback={undefined}>
         <Constellations
           ref={constellationsRef}
-          enabled={config.constellations}
+          enabled={config.constellations
+            || props.constellationDiscoveryEnabled}
           debug={config.constellationsDebug}
           cameraSideClipEnabled={props.cameraSideClipEnabled}
           discoveryEnabled={props.constellationDiscoveryEnabled}

@@ -30,17 +30,6 @@ import {
   getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
 } from "./resources";
 import { clearCameraUrlParams } from "../three_d_garden/camera";
-import { StargazingControls } from "../farm_designer/stargazing";
-import {
-  clampStargazingFov, STARGAZING_DEFAULT_FOV,
-} from "../farm_designer/stargazing_constants";
-import { Actions } from "../constants";
-import {
-  calcSunCoordinate, getAnimatedSeasonSunCoordinate,
-} from
-  "../three_d_garden/garden/sun";
-import { ThreeDViewMode } from "../farm_designer/interfaces";
-import { get3DTime } from "../three_d_garden/time_travel";
 
 const PROMO_BED_SIZES = [
   {
@@ -59,23 +48,6 @@ interface PromoPlantCapacities {
   iconCapacities: Record<string, number>;
   plantInstanceCapacity: number;
 }
-
-type PromoViewMode =
-  | { kind: "overview" }
-  | { kind: "focus"; focus: string }
-  | { kind: "stargazing" }
-  | { kind: "spaceflight" };
-
-interface StargazingSeasonState {
-  animateSeasons: boolean;
-  elapsedSeconds: number;
-  seasonAnimationPaused: boolean;
-  sunAzimuth: number;
-  sunInclination: number;
-}
-
-const viewModeFromFocus = (focus: string): PromoViewMode =>
-  focus ? { kind: "focus", focus } : { kind: "overview" };
 
 const calcCacheKey = (config: Config): string =>
   `${config.bedLengthOuter}x${config.bedWidthOuter}: ${config.plants}`;
@@ -160,21 +132,15 @@ export const Promo = () => {
     return next;
   });
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [viewMode, setViewMode] = React.useState<PromoViewMode>(() =>
-    viewModeFromFocus(getFocusFromUrlParams()));
-  const activeFocus = viewMode.kind == "focus" ? viewMode.focus : "";
-  const celestialViewMode: ThreeDViewMode =
-    viewMode.kind == "stargazing" || viewMode.kind == "spaceflight"
-      ? viewMode.kind
-      : "normal";
-  const celestialViewActive = celestialViewMode != "normal";
+  const [activeFocus, setActiveFocusState] = React.useState(
+    () => getFocusFromUrlParams());
   const setActiveFocus = React.useCallback((focus: string) => {
     if (focus != activeFocus) {
       clearCameraUrlParams();
     }
-    setViewMode(viewModeFromFocus(focus));
+    setActiveFocusState(focus);
   }, [activeFocus]);
-  const exitViewMode = React.useCallback(() => {
+  const exitFocus = React.useCallback(() => {
     setActiveFocus("");
     if (activeFocus) {
       setUrlParam("focus", "");
@@ -186,119 +152,7 @@ export const Promo = () => {
   const startTimeRef = React.useRef<number>(0);
   const seasonAnimationElapsedRef =
     React.useRef<number | undefined>(undefined);
-  const stargazingSeasonStateRef =
-    React.useRef<StargazingSeasonState | undefined>(undefined);
   const [seasonResetKey, setSeasonResetKey] = React.useState(0);
-  const [stargazingFov, setStargazingFov] =
-    React.useState(STARGAZING_DEFAULT_FOV);
-  const [threeDTime, setThreeDTime] =
-    React.useState<string | undefined>(undefined);
-  const restoreSeasonAnimation = React.useCallback(() => {
-    const seasonState = stargazingSeasonStateRef.current;
-    if (!seasonState) { return; }
-    if (seasonState.animateSeasons) {
-      startTimeRef.current = performance.now() / 1000
-        - seasonState.elapsedSeconds;
-    }
-    setConfig(currentConfig => ({
-      ...currentConfig,
-      animateSeasons: seasonState.animateSeasons,
-      sunAzimuth: seasonState.sunAzimuth,
-      sunInclination: seasonState.sunInclination,
-    }));
-    setSeasonAnimationPaused(seasonState.seasonAnimationPaused);
-    stargazingSeasonStateRef.current = undefined;
-  }, []);
-  const stargazingDispatch = React.useCallback((action: {
-    type: Actions;
-    payload: ThreeDViewMode | number | undefined;
-  }) => {
-    switch (action.type) {
-      case Actions.SET_3D_VIEW_MODE:
-        if (typeof action.payload == "string") {
-          if (action.payload != "normal") {
-            if (celestialViewActive) {
-              setViewMode({ kind: action.payload });
-              break;
-            }
-            if (activeFocus) {
-              clearCameraUrlParams();
-              setUrlParam("focus", "");
-            }
-            const midnight = getAnimatedSeasonSunCoordinate(
-              config.plants,
-              0,
-            );
-            const now = performance.now() / 1000;
-            stargazingSeasonStateRef.current = {
-              animateSeasons: config.animateSeasons,
-              elapsedSeconds: config.animateSeasons
-                ? Math.max(now - startTimeRef.current, 0)
-                : 0,
-              seasonAnimationPaused,
-              sunAzimuth: config.sunAzimuth,
-              sunInclination: config.sunInclination,
-            };
-            setConfig(currentConfig => ({
-              ...currentConfig,
-              animateSeasons: false,
-              sunAzimuth: midnight.azimuth,
-              sunInclination: midnight.inclination,
-            }));
-            setSeasonAnimationPaused(false);
-            setViewMode({ kind: action.payload });
-          } else {
-            restoreSeasonAnimation();
-            exitViewMode();
-          }
-        }
-        break;
-      case Actions.SET_3D_STARGAZING_FOV:
-        if (typeof action.payload == "number") {
-          setStargazingFov(clampStargazingFov(action.payload));
-        }
-        break;
-      case Actions.SET_3D_TIME:
-        if (typeof action.payload == "string"
-          || action.payload == undefined) {
-          const time = typeof action.payload == "string"
-            ? action.payload
-            : undefined;
-          const sun = calcSunCoordinate(
-            get3DTime(time).toDate(),
-            0,
-            35,
-            0,
-          );
-          setThreeDTime(time);
-          setConfig(currentConfig => ({
-            ...currentConfig,
-            animateSeasons: false,
-            sunAzimuth: sun.azimuth,
-            sunInclination: sun.inclination,
-          }));
-        }
-        break;
-    }
-  }, [
-    activeFocus,
-    config.animateSeasons,
-    config.plants,
-    config.sunAzimuth,
-    config.sunInclination,
-    exitViewMode,
-    restoreSeasonAnimation,
-    seasonAnimationPaused,
-    celestialViewActive,
-  ]);
-  const previousCelestialViewRef = React.useRef(celestialViewActive);
-  React.useEffect(() => {
-    const wasCelestial = previousCelestialViewRef.current;
-    previousCelestialViewRef.current = celestialViewActive;
-    if (wasCelestial && !celestialViewActive) {
-      restoreSeasonAnimation();
-    }
-  }, [celestialViewActive, restoreSeasonAnimation]);
   const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   const handleThreeDLoadComplete = React.useCallback(() =>
     setThreeDLoaded(true), []);
@@ -346,14 +200,14 @@ export const Promo = () => {
   }, [config.plants, config.animateSeasons]);
 
   React.useEffect(() => {
-    if (viewMode.kind == "overview") { return; }
+    if (!activeFocus) { return; }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key != "Escape") { return; }
-      exitViewMode();
+      exitFocus();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [exitViewMode, viewMode.kind]);
+  }, [activeFocus, exitFocus]);
 
   const plants = React.useMemo(() => {
     return getPromoResourcePlants() || getCachedPlants(config);
@@ -389,13 +243,6 @@ export const Promo = () => {
             }}>
             <GardenModel {...common}
               config={gardenConfig}
-              celestialView={{
-                mode: celestialViewMode,
-                fov: stargazingFov,
-                dispatch: stargazingDispatch,
-              }}
-              threeDTime={threeDTime}
-              timeTravelDispatch={stargazingDispatch}
               configPosition={{ x: config.x, y: config.y, z: config.z }}
               startTimeRef={startTimeRef}
               threeDPlants={threeDPlants}
@@ -415,7 +262,7 @@ export const Promo = () => {
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
-          publicContentVisible={viewMode.kind == "overview"}
+          publicContentVisible={!activeFocus}
           loadComplete={threeDLoaded}
           startTimeRef={startTimeRef}
           seasonAnimationElapsedRef={seasonAnimationElapsedRef}
@@ -437,10 +284,6 @@ export const Promo = () => {
         </span>
       </FocusTransitionProvider>
     </div>
-    <StargazingControls
-      mode={celestialViewMode}
-      fov={stargazingFov}
-      dispatch={stargazingDispatch} />
     {config.viewCube &&
       <ViewPrismViewport bridgeRef={viewPrismBridgeRef} />}
   </div>;

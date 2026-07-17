@@ -14,7 +14,7 @@ import { CROPS } from "../../crops/constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_data";
 import * as threeDGarden from "../../three_d_garden";
-import * as suncalc from "suncalc";
+import SunCalc from "suncalc";
 import { BooleanSetting } from "../../session_keys";
 
 let threeDGardenSpy: jest.SpyInstance;
@@ -25,7 +25,7 @@ beforeEach(() => {
   delete window.__fbPerf;
   threeDGardenSpy = jest.spyOn(threeDGarden, "ThreeDGarden")
     .mockImplementation(jest.fn(() => <div />) as never);
-  getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
+  getPositionSpy = jest.spyOn(SunCalc, "getPosition").mockReturnValue({
     altitude: 0.5,
     azimuth: 1.0,
   });
@@ -150,8 +150,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.north = true;
     expectedConfig.laser = true;
     expectedConfig.threeAxes = true;
-    expectedConfig.sunAzimuth = 1;
-    expectedConfig.sunInclination = 1;
+    expectedConfig.sunAzimuth = (180 / Math.PI - 1 - 90 + 360) % 360;
+    expectedConfig.sunInclination = 0.5 * 180 / Math.PI;
     expectedConfig.scene = "Lab";
     expectedConfig.groundTexture = "bricks";
     expectedConfig.plants = "";
@@ -304,23 +304,13 @@ describe("<ThreeDGardenMap />", () => {
     expect(callArgs.config.sunAzimuth).toBeLessThanOrEqual(360);
   });
 
-  it("converts props: night", () => {
+  it("uses fallback coordinates when device location is unavailable", () => {
     const p = fakeProps();
-    p.designer.threeDTime = undefined;
-    p.get3DConfigValue = () => -1;
-    p.plants = [];
+    p.device.lat = undefined;
+    p.device.lng = undefined;
     render(<ThreeDGardenMap {...p} />);
-    const call = lastThreeDGardenProps();
-    expect(call).toEqual(expect.objectContaining({
-      config: expect.objectContaining({
-        sunInclination: -1,
-        sunAzimuth: -1,
-        sun: -1,
-      }),
-      threeDPlants: [],
-      addPlantProps: expect.any(Object),
-      ...EMPTY_PROPS,
-    }));
+    expect(getPositionSpy).toHaveBeenCalledWith(
+      expect.any(Date), 35, -120);
   });
 
   it("converts props: logs", () => {
