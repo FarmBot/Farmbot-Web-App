@@ -263,7 +263,7 @@ describe Api::DevicesController do
       device.farmware_envs.find_by(key: "3D_beamLength")&.value
     end
 
-    def settings_3d_z_axis?(device)
+    def settings_3d_z_axis_length?(device)
       device.farmware_envs.find_by(key: "3D_zAxisLength")&.value
     end
 
@@ -880,7 +880,7 @@ describe Api::DevicesController do
       expect(settings_firmware?(device)).to eq("farmduino_k19")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(settings_3d?(device)).to_not be
-      expect(settings_3d_z_axis?(device)).to eq("800")
+      expect(settings_3d_z_axis_length?(device)).to eq("800")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -1263,7 +1263,7 @@ describe Api::DevicesController do
       expect(settings_firmware?(device)).to eq("farmduino_k19")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(settings_3d?(device)).to eq("3000")
-      expect(settings_3d_z_axis?(device)).to eq("800")
+      expect(settings_3d_z_axis_length?(device)).to eq("800")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")

@@ -32,14 +32,12 @@ describe("<RawSceneObjectCatalog />", () => {
       .toBeInTheDocument();
     expect(container.querySelectorAll(".scene-object-catalog-tile"))
       .toHaveLength(expectedCount);
+    expect(container.querySelectorAll(".scene-object-catalog-label"))
+      .toHaveLength(expectedCount);
     expect(SCENE_OBJECT_CATALOG).toHaveLength(expectedCount);
-    expect(screen.getAllByText("Greenhouse")).toHaveLength(
-      SCENE_OBJECT_CATALOG_SCENES.greenhouse.length,
-    );
-    expect(screen.getAllByText("Lab"))
-      .toHaveLength(SCENE_OBJECT_CATALOG_SCENES.lab.length);
-    expect(screen.getAllByText("Outdoor"))
-      .toHaveLength(SCENE_OBJECT_CATALOG_SCENES.outdoor.length);
+    expect(screen.queryByText("Greenhouse")).not.toBeInTheDocument();
+    expect(screen.queryByText("Lab")).not.toBeInTheDocument();
+    expect(screen.queryByText("Outdoor")).not.toBeInTheDocument();
     expect(screen.getByText("Starter Tray")).toBeInTheDocument();
     expect(screen.queryByText("Starter Tray 2")).not.toBeInTheDocument();
     expect(screen.getAllByText("Shelf")).toHaveLength(1);
@@ -48,7 +46,7 @@ describe("<RawSceneObjectCatalog />", () => {
   });
 
   it("filters by name and scene", () => {
-    render(<RawSceneObjectCatalog {...fakeProps()} />);
+    const { container } = render(<RawSceneObjectCatalog {...fakeProps()} />);
     const search = screen.getByPlaceholderText("Search scene objects...");
 
     fireEvent.change(search, { target: { value: "solar panel" } });
@@ -56,8 +54,9 @@ describe("<RawSceneObjectCatalog />", () => {
     expect(screen.queryByText("Tree")).not.toBeInTheDocument();
 
     fireEvent.change(search, { target: { value: "Lab" } });
-    expect(screen.getAllByText("Lab")).toHaveLength(LAB_SCENE_OBJECTS.length - 2);
-    expect(screen.queryByText("Outdoor")).not.toBeInTheDocument();
+    expect(container.querySelectorAll(".scene-object-catalog-tile"))
+      .toHaveLength(LAB_SCENE_OBJECTS.length - 2);
+    expect(screen.queryByText("Lab")).not.toBeInTheDocument();
   });
 
   it("shows no results", () => {
@@ -74,7 +73,7 @@ describe("<RawSceneObjectCatalog />", () => {
     const p = fakeProps();
     render(<RawSceneObjectCatalog {...p} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Tree Outdoor" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tree" }));
 
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
@@ -91,7 +90,7 @@ describe("<RawSceneObjectCatalog />", () => {
     ];
     render(<RawSceneObjectCatalog {...p} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Tree Outdoor" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tree" }));
 
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
@@ -104,7 +103,7 @@ describe("<RawSceneObjectCatalog />", () => {
     render(<RawSceneObjectCatalog {...p} />);
 
     fireEvent.click(screen.getByRole("button", {
-      name: "Custom Scene Object Custom",
+      name: "Custom Scene Object",
     }));
 
     expect(p.dispatch).toHaveBeenCalledWith({

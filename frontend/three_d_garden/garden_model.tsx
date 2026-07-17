@@ -243,6 +243,11 @@ export const cameraRadius = (camera: Camera) => Math.hypot(
   camera.position[2] - camera.target[2],
 );
 
+export const cameraFitRadiusForZoom = (
+  radius: number,
+  zoomFactor: number,
+) => radius * 10 / zoomFactor;
+
 export const createViewDirectionRequest = (
   direction: ViewPrismDirection,
   current: SmoothCameraState,
@@ -2070,6 +2075,10 @@ export const GardenModel = (props: GardenModelProps) => {
   const activeCameraFit = props.promo
     ? currentCameraFit
     : bootstrapCameraFit;
+  const cameraFitRadius = cameraFitRadiusForZoom(
+    activeCameraFit.cameraRadius,
+    config.zoomFactor,
+  );
   const sectionGardenSize = React.useMemo(() => ({
     x: cameraConfig.botSizeX,
     y: cameraConfig.botSizeY,
@@ -2082,12 +2091,12 @@ export const GardenModel = (props: GardenModelProps) => {
         bedSize: cameraBedSize,
         zoomFactor: config.zoomFactor,
       });
-      return cameraAtRadius(nextCamera, activeCameraFit.cameraRadius);
+      return cameraAtRadius(nextCamera, cameraFitRadius);
     },
     [
       cameraBedSize,
       cameraConfig.viewpointHeading,
-      activeCameraFit.cameraRadius,
+      cameraFitRadius,
       topDownAtStart,
       config.zoomFactor,
     ]);
@@ -2137,7 +2146,6 @@ export const GardenModel = (props: GardenModelProps) => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStargazingCamera(next);
   }, [defaultStargazingCamera]);
-  const cameraFitRadius = activeCameraFit.cameraRadius;
   const [modelRoot, setModelRoot] = React.useState<Object3D | undefined>();
   const setModelRootRef = React.useCallback((value: Object3D | null) => {
     setModelRoot(value || undefined);
@@ -2465,20 +2473,25 @@ export const GardenModel = (props: GardenModelProps) => {
       routeLocation.pathname,
       routeLocation.search,
     ), [routeLocation.pathname, routeLocation.search]);
+  const hoverDesigner = addPlantProps?.designer;
+  const hoverScene: string = hoverDesigner?.featuredScene || config.scene;
   const hoverSelection = React.useMemo(() =>
     hoverSelectionFromDesigner(
-      addPlantProps?.designer,
+      hoverDesigner,
       plants,
       mapPoints,
       weeds,
       toolSlots,
-      (props.sceneObjects || []).concat(staticSceneObjects(config.scene, true)),
+      (props.sceneObjects || []).concat(staticSceneObjects(
+        hoverScene,
+        true,
+      )),
     ), [
-    addPlantProps?.designer,
+    hoverDesigner,
+    hoverScene,
     plants,
     mapPoints,
     props.sceneObjects,
-    config.scene,
     weeds,
     toolSlots,
   ]);
@@ -3022,7 +3035,10 @@ export const GardenModel = (props: GardenModelProps) => {
             config={config}
             configPosition={props.configPosition} />}
         {renderSolar &&
-          <LegacySolar config={config} activeFocus={props.activeFocus} />}
+          <LegacySolar
+            config={config}
+            activeFocus={props.activeFocus}
+            shadows={!props.promo} />}
         {config.scene == "Lab" &&
           <Lab
             config={config}

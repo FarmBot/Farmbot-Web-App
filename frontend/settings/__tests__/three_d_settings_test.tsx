@@ -1,6 +1,7 @@
 import React from "react";
 import {
-  get3DConfigValueFunction, namespace3D, ThreeDSettings,
+  get3DConfigValueFunction, namespace3D, SCENE_DDIS, TEXTURE_DDIS,
+  ThreeDSettings,
 } from "../three_d_settings";
 import { ThreeDSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../__test_support__/panel_state";
@@ -162,5 +163,31 @@ describe("get3DConfigValueFunction()", () => {
     const getValue = get3DConfigValueFunction([first, second]);
 
     expect(getValue("grid")).toEqual(1);
+  });
+});
+
+describe("TEXTURE_DDIS", () => {
+  it("uses display labels and preserves stored values", () => {
+    expect(TEXTURE_DDIS).toEqual({
+      0: { label: "Grass", value: 0 },
+      1: { label: "Bricks", value: 1 },
+      2: { label: "Concrete", value: 2 },
+      3: { label: "Water", value: 3 },
+      4: { label: "Aluminum", value: 4 },
+      5: { label: "Soil", value: 5 },
+      6: { label: "Sand", value: 6 },
+      7: { label: "Wood", value: 7 },
+    });
+  });
+});
+
+describe("SCENE_DDIS", () => {
+  it("uses display labels and preserves stored values", () => {
+    expect(SCENE_DDIS).toEqual({
+      0: { label: "Outdoor", value: 0 },
+      1: { label: "Lab", value: 1 },
+      2: { label: "Greenhouse", value: 2 },
+      3: { label: "Custom", value: 3 },
+    });
   });
 });

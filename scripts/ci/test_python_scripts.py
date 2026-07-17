@@ -152,16 +152,18 @@ class CiPythonScriptTest(unittest.TestCase):
             "promo\034fps\034http://localhost:3000/promo\034"
             "[{\"click\":{\"title\":\"Run\"}},"
             "{\"fill\":{\"placeholder\":\"Filter...\",\"value\":\"Genesis\"}},"
-            "{\"hover\":{\"classname\":\"item\"}}]\034app\034\n")
+            "{\"hover\":{\"classname\":\"item\"}}]\034app\034\034\034\n")
         self.assertEqual(stderr, "")
 
-    def test_render_url_records_outputs_roi_when_present(self):
+    def test_render_url_records_outputs_optional_fields_when_present(self):
         with tempfile.NamedTemporaryFile("w", delete=False) as file:
             json.dump([{
                 "name": "dropdown",
                 "mode": "screenshot",
                 "url": "http://localhost:3000/demo",
                 "roi": {"x": 1, "y": 2, "width": 3, "height": 4},
+                "waitFor3d": True,
+                "zoom": 200,
             }], file)
             file_path = file.name
         try:
@@ -174,7 +176,8 @@ class CiPythonScriptTest(unittest.TestCase):
         self.assertEqual(
             stdout,
             "dropdown\034screenshot\034http://localhost:3000/demo\034\034\034"
-            "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}\n")
+            "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}"
+            "\034true\034200\n")
         self.assertEqual(stderr, "")
 
     def test_generate_storage_states(self):

@@ -9,6 +9,7 @@ import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
   cameraAtRadius, cameraRadius,
+  cameraFitRadiusForZoom,
   createCameraFitRequest, createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
@@ -56,7 +57,7 @@ import { AxesHelper } from "../components";
 import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
-import { Solar } from "../garden/solar";
+import { LegacySolar, Solar } from "../garden/solar";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
@@ -79,6 +80,7 @@ import { success } from "../../toast/toast";
 import {
   Group as ThreeGroup, PerspectiveCamera as ThreePerspectiveCamera, Vector3,
 } from "three";
+import { SceneObjects, staticSceneObjects } from "../scene_objects";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -477,6 +479,22 @@ describe("<GardenModel />", () => {
     getCameraFromUrlParamsSpy.mockRestore();
   });
 
+  it("finds hovered objects in the featured scene", () => {
+    const p = fakeProps();
+    p.config.scene = "Lab";
+    p.addPlantProps!.designer.featuredScene = "Outdoor";
+    const featuredObject = staticSceneObjects("Outdoor", true)[0];
+    p.addPlantProps!.designer.hoveredSceneObject = featuredObject.uuid;
+    const wrapper = createWrapper(p);
+    const sceneObjects = wrapper.root.findByType(SceneObjects);
+
+    expect(sceneObjects.props.hoverSelection).toEqual({
+      kind: "sceneObject",
+      id: 0,
+      uuid: featuredObject.uuid,
+    });
+  });
+
   it("enters stargazing with the requested FOV and constrained orbit", () => {
     const p = fakeProps();
     p.addPlantProps!.designer.threeDStargazingMode = true;
@@ -594,6 +612,16 @@ describe("<GardenModel />", () => {
     p.config.scene = "Lab";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
     expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
+  });
+
+  it("disables legacy solar shadows in the promo", () => {
+    const p = fakeProps();
+    p.promo = true;
+    p.config.solar = true;
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(LegacySolar).props.shadows)
+      .toEqual(false);
   });
 
   it("returns to the top corner after stargazing", () => {
@@ -968,6 +996,11 @@ describe("<GardenModel />", () => {
     expect(request.fov).toEqual(40);
     expect(createCameraFitRequest({ ...current, fov: 1 }, 500)
       .camera.position[2]).toBeGreaterThan(request.camera.position[2]);
+  });
+
+  it("scales the camera-fit radius with the zoom factor", () => {
+    expect(cameraFitRadiusForZoom(600, 10)).toEqual(600);
+    expect(cameraFitRadiusForZoom(600, 3)).toEqual(2000);
   });
 
   it("resets prism selections to the bootstrap target and zoom", () => {

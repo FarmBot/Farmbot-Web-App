@@ -35,6 +35,7 @@ export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
 });
 
 export const RawSceneObjects = (props: SceneObjectsProps) => {
+  const { dispatch } = props;
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       });
     return <div
       key={sceneObject.uuid}
+      title={sceneObject.body.name}
       onClick={() => {
         props.dispatch({
           type: Actions.HOVER_SCENE_OBJECT,
@@ -92,7 +94,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         {sceneObject.body.name}
       </span>
       <i
-        className={`fa fb-icon-button ${sceneObject.body.show
+        className={`fa fb-icon-button invert ${sceneObject.body.show
           ? "fa-eye"
           : "fa-eye-slash"}`}
         title={sceneObject.body.show ? t("hide") : t("show")}
@@ -113,6 +115,16 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const [myOpen, setMyOpen] = React.useState(true);
   const featuredSceneObjects = React.useMemo(() =>
     staticSceneObjects(libScene, true), [libScene]);
+  React.useEffect(() => {
+    dispatch({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: featuredOpen ? libScene : undefined,
+    });
+    return () => dispatch({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
+  }, [dispatch, featuredOpen, libScene]);
   const groundTextureNum =
     get3DConfigValueFunction(props.farmwareEnvs)("groundTexture");
   return <DesignerPanel
@@ -163,6 +175,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
             {t("Import selected")}
           </button>
           <button className={"fb-button green"}
+            title={t("Import all")}
             onClick={() => {
               featuredSceneObjects
                 .filter(so => !sceneObjects

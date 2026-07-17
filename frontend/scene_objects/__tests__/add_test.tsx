@@ -43,7 +43,8 @@ describe("<RawAddSceneObject />", () => {
   it("updates the drawn scene object state", () => {
     const p = fakeProps();
     const { container } = render(<RawAddSceneObject {...p} />);
-    const input = container.querySelector("input[name='sceneObjectName']")!;
+    fireEvent.click(container.querySelector(".panel-title .title") as Element);
+    const input = container.querySelector(".panel-title input")!;
 
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: "Updated object" } });
@@ -54,6 +55,8 @@ describe("<RawAddSceneObject />", () => {
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
       payload: { ...p.drawnSceneObject, name: "Updated object" },
     });
+    expect(container.querySelector("input[name='sceneObjectName']"))
+      .not.toBeInTheDocument();
   });
 
   it("updates preserved placement axes", () => {
@@ -125,7 +128,7 @@ describe("<RawAddSceneObject />", () => {
 
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
-      payload: DEFAULT_SCENE_OBJECT,
+      payload: { ...DEFAULT_SCENE_OBJECT, name: "Custom Scene Object" },
     });
 
     unmount();
@@ -133,6 +136,22 @@ describe("<RawAddSceneObject />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
       payload: undefined,
+    });
+  });
+
+  it("increments the default custom object name", () => {
+    const p = fakeProps();
+    p.drawnSceneObject = undefined;
+    p.sceneObjects = [
+      fakeSceneObject({ name: "Custom Scene Object" }),
+      fakeSceneObject({ name: "Custom Scene Object 2" }),
+    ];
+
+    render(<RawAddSceneObject {...p} />);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: { ...DEFAULT_SCENE_OBJECT, name: "Custom Scene Object 3" },
     });
   });
 

@@ -119,11 +119,10 @@ export const RawSceneObjectCatalog = (props: SceneObjectCatalogProps) => {
                 key={entry.key}
                 onClick={() => select(entry)}>
                 <img src={entry.thumbnail} alt={""} />
-                <span className={"scene-object-catalog-name"}>
-                  {entry.name}
-                </span>
-                <span className={"scene-object-catalog-scene"}>
-                  {entry.scene}
+                <span className={"scene-object-catalog-label"}>
+                  <span className={"scene-object-catalog-name"}>
+                    {entry.name}
+                  </span>
                 </span>
               </button>)}
           </div>

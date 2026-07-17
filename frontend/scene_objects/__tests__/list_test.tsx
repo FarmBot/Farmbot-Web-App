@@ -107,6 +107,16 @@ describe("<RawSceneObjects />", () => {
     fireEvent.click(getByText(/Featured Scene Objects/));
 
     expect(getByText("Import selected")).toBeTruthy();
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: "Outdoor",
+    });
+
+    fireEvent.click(getByText(/Featured Scene Objects/));
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
   });
 
   it("toggles the my scene objects section", () => {
@@ -255,11 +265,11 @@ describe("<RawSceneObjects />", () => {
     fireEvent.mouseEnter(featuredItem as Element);
     fireEvent.mouseLeave(featuredItem as Element);
 
-    expect(p.dispatch).toHaveBeenNthCalledWith(1, {
+    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: expect.any(String),
     });
-    expect(p.dispatch).toHaveBeenNthCalledWith(2, {
+    expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: undefined,
     });
@@ -310,9 +320,10 @@ describe("<RawSceneObjects />", () => {
 
     render(<RawSceneObjects {...p} />);
     const textureSelect = fbSelectProps.find(props =>
-      props.list.some(item => item.label == "bricks"))!;
+      props.list.some(item => item.value == 1))!;
+    const bricks = textureSelect.list.find(item => item.value == 1)!;
 
-    textureSelect.onChange({ label: "bricks", value: 1 });
+    textureSelect.onChange(bricks);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "3D_groundTexture",
       value: "1",

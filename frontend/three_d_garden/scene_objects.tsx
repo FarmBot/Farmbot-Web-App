@@ -36,6 +36,7 @@ import { round as snapToGrid } from "../farm_designer/map/util";
 import type { DesignerState } from "../farm_designer/interfaces";
 import { SceneObject } from "farmbot/dist/resources/api_resources";
 import { Solar } from "./garden/solar";
+import { clickWasDragged } from "./click_event";
 
 const EDGE_LINE_WIDTH = 4;
 const PREVIEW_MARKER_RADIUS = 75;
@@ -97,7 +98,7 @@ const eventScreenY = (e: ThreeEvent<MouseEvent | PointerEvent>) =>
 const snapSceneObjectSize = (value: number) =>
   Math.max(1, snapToGrid(value));
 
-const unifiedSizeUpdate = (
+export const unifiedSizeUpdate = (
   unified: boolean | undefined,
   size: number,
 ) =>
@@ -406,7 +407,9 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
 
   const onClick = React.useCallback((e: ThreeEvent<MouseEvent>) => {
     const drawnSceneObject = drawnSceneObjectRef.current;
-    if (!enabled || !cursor || !drawnSceneObject) { return; }
+    if (!enabled || !cursor || !drawnSceneObject || clickWasDragged(e)) {
+      return;
+    }
     e.stopPropagation();
     if (!draft.center) {
       const zCenter = reCenter(props.config, {
@@ -587,7 +590,8 @@ interface SceneObjectsProps {
   hoverSelection?: ThreeDObjectSelection;
   activeFocus: string;
   designer?: Pick<DesignerState,
-    "focusedSceneObjectField" | "unifiedSceneObjectSize">;
+    "focusedSceneObjectField" | "unifiedSceneObjectSize">
+    & Partial<Pick<DesignerState, "featuredScene">>;
 }
 
 export interface SceneObjectDragPreview {
@@ -961,7 +965,7 @@ const SceneObjectSelectionMarkers =
       config,
       center,
       sceneObject,
-      onPreview: update => onPreview(expandSizeUpdate(update)),
+      onPreview,
       updateSceneObject: update => updateSceneObject(expandSizeUpdate(update)),
       onPreviewEnd,
     });
@@ -1984,52 +1988,69 @@ interface SceneObjectOpacityProps {
   children: React.ReactNode;
 }
 
+interface SceneObjectShadowState {
+  castShadow: boolean;
+  receiveShadow: boolean;
+}
+
+export const applySceneObjectOpacity = (
+  shadowStates: WeakMap<Object3D, SceneObjectShadowState>,
+  materialStates: WeakMap<Object3D, Material | Material[]>,
+  opaque: boolean,
+  opacity: number,
+  object: Object3D,
+) => {
+  if (!shadowStates.has(object)) {
+    shadowStates.set(object, {
+      castShadow: object.castShadow,
+      receiveShadow: object.receiveShadow,
+    });
+  }
+  const shadowState = shadowStates.get(object);
+  object.castShadow = opaque ? !!shadowState?.castShadow : false;
+  object.receiveShadow = opaque ? !!shadowState?.receiveShadow : false;
+  const renderedObject = object as Object3D & {
+    material?: Material | Material[];
+  };
+  if (!renderedObject.material) { return; }
+  if (!materialStates.has(object)) {
+    materialStates.set(object, renderedObject.material);
+  }
+  const original = materialStates.get(object);
+  if (!original) { return; }
+  if (opaque) {
+    renderedObject.material = original;
+  } else {
+    const translucent = (Array.isArray(original) ? original : [original])
+      .map(material => {
+        const clone = material.clone();
+        clone.opacity = material.opacity * opacity;
+        clone.transparent = true;
+        return clone;
+      });
+    renderedObject.material = Array.isArray(original)
+      ? translucent
+      : translucent[0];
+  }
+};
+
 const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
   const opacity = props.opacity ?? (props.show ? 1 : 0.75);
   const opaque = props.show && opacity >= 1;
   // eslint-disable-next-line no-null/no-null
   const group = React.useRef<ThreeGroup>(null);
-  const shadowStates = React.useRef(new WeakMap<Object3D, {
-    castShadow: boolean;
-    receiveShadow: boolean;
-  }>());
+  const shadowStates = React.useRef(
+    new WeakMap<Object3D, SceneObjectShadowState>());
   const materialStates = React.useRef(
     new WeakMap<Object3D, Material | Material[]>());
   React.useLayoutEffect(() => {
-    group.current?.traverse(object => {
-      if (!shadowStates.current.has(object)) {
-        shadowStates.current.set(object, {
-          castShadow: object.castShadow,
-          receiveShadow: object.receiveShadow,
-        });
-      }
-      const shadowState = shadowStates.current.get(object);
-      object.castShadow = opaque ? !!shadowState?.castShadow : false;
-      object.receiveShadow = opaque ? !!shadowState?.receiveShadow : false;
-      const renderedObject = object as Object3D & {
-        material?: Material | Material[];
-      };
-      if (!renderedObject.material) { return; }
-      if (!materialStates.current.has(object)) {
-        materialStates.current.set(object, renderedObject.material);
-      }
-      const original = materialStates.current.get(object);
-      if (!original) { return; }
-      if (opaque) {
-        renderedObject.material = original;
-      } else {
-        const translucent = (Array.isArray(original) ? original : [original])
-          .map(material => {
-            const clone = material.clone();
-            clone.opacity = material.opacity * opacity;
-            clone.transparent = true;
-            return clone;
-          });
-        renderedObject.material = Array.isArray(original)
-          ? translucent
-          : translucent[0];
-      }
-    });
+    group.current?.traverse(applySceneObjectOpacity.bind(
+      undefined,
+      shadowStates.current,
+      materialStates.current,
+      opaque,
+      opacity,
+    ));
   }, [opaque, opacity, props.visible]);
   return <Group ref={group} visible={props.visible ?? true}>
     {props.children}
@@ -2049,8 +2070,12 @@ export const SceneObjects = (props: SceneObjectsProps) => {
   const setInteractionLocked = React.useCallback((locked: boolean) => {
     interactionLocked.current = locked;
   }, []);
-  const sceneObjects = (props.sceneObjects || [])
-    .concat(staticSceneObjects(props.config.scene));
+  const featuredSceneObjects = props.designer?.featuredScene
+    ? staticSceneObjects(props.designer.featuredScene, true)
+    : undefined;
+  const featuredUuids = new Set(featuredSceneObjects?.map(({ uuid }) => uuid));
+  const sceneObjects = (props.sceneObjects || []).concat(
+    featuredSceneObjects || staticSceneObjects(props.config.scene));
   return <>
     {/* eslint-disable-next-line complexity */}
     {sceneObjects.map(sceneObject => {
@@ -2060,6 +2085,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         && (props.hoverSelection.id == sceneObject.body.id
           || props.hoverSelection.uuid == sceneObject.uuid);
       const visible = sceneObject.body.show || selected || hovered;
+      const opacity = featuredUuids.has(sceneObject.uuid) ? 0.5 : undefined;
       const previewedSceneObject =
         selected
           ? sceneObjectWithDragPreview(sceneObject, dragPreview)
@@ -2133,6 +2159,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "plant") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2146,6 +2173,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "tray") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2159,6 +2187,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "laptop") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2172,6 +2201,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "desk") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2188,6 +2218,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "solar") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2201,6 +2232,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "tree") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2214,6 +2246,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "fence") {
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group position={position}>
@@ -2228,6 +2261,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "window") {
         const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
         return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
           show={previewedSceneObject.body.show}
           visible={visible}>
           <Group
@@ -2243,6 +2277,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       const textureUrl = texture === "none" ? undefined : ASSETS.textures[texture];
       return <SceneObjectOpacity key={sceneObject.uuid}
+        opacity={opacity}
         show={previewedSceneObject.body.show}
         visible={visible}>
         <SceneObjectBox
@@ -2270,7 +2305,7 @@ export const staticSceneObjects = (
     sceneObjects.map((body, index) => ({
       kind: "SceneObject",
       body,
-      uuid: `SceneObject.static.${index}`,
+      uuid: `SceneObject.static.${scene}.${index}`,
       specialStatus: SpecialStatus.SAVED,
     }));
   switch (scene) {

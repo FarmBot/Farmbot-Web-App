@@ -11,6 +11,7 @@ export const fakeDesignerState = (): DesignerState => ({
   hoveredPoint: undefined,
   hoveredPlantListItem: undefined,
   hoveredSceneObject: undefined,
+  featuredScene: undefined,
   highlighted3DObject: undefined,
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
