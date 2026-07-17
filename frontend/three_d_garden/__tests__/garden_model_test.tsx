@@ -959,7 +959,7 @@ describe("<GardenModel />", () => {
 
   it("keeps the projection under manual camera control", () => {
     const p = fakeProps();
-    p.panelOpen = true;
+    p.panelCamera = true;
     const wrapper = createWrapper(p);
     const camera = () => wrapper.root.findByType(PerspectiveCamera);
     expect(camera().props.manual)

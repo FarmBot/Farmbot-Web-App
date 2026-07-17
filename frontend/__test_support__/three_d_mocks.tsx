@@ -245,23 +245,26 @@ jest.mock("@react-three/fiber", () => ({
       intersectObjects: jest.fn(() => []),
     },
   })),
-  useThree: jest.fn(() => ({
-    invalidate: jest.fn(),
-    gl: {
-      info: {
-        render: { calls: 0, triangles: 0, points: 0, lines: 0 },
-        memory: { geometries: 0, textures: 0 },
+  useThree: jest.fn((selector?: (state: unknown) => unknown) => {
+    const state = {
+      invalidate: jest.fn(),
+      gl: {
+        info: {
+          render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+          memory: { geometries: 0, textures: 0 },
+        },
       },
-    },
-    scene: { traverse: jest.fn() },
-    pointer: { x: 0, y: 0 },
-    camera: new THREE.PerspectiveCamera(),
-    raycaster: {
-      setFromCamera: jest.fn(),
-      intersectObjects: jest.fn(() => []),
-    },
-    size: { width: 800, height: 600 },
-  })),
+      scene: { traverse: jest.fn() },
+      pointer: { x: 0, y: 0 },
+      camera: new THREE.PerspectiveCamera(),
+      raycaster: {
+        setFromCamera: jest.fn(),
+        intersectObjects: jest.fn(() => []),
+      },
+      size: { width: 800, height: 600 },
+    };
+    return selector ? selector(state) : state;
+  }),
   extend: jest.fn(),
 }));
 

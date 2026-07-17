@@ -1,16 +1,22 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { ThreeDGardenProps, ThreeDGarden } from "../index";
 import { VIEW_PRISM_VIEWPORT_SIZE } from "../garden_model";
 import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { createPanelCameraStore } from "../panel_camera";
+
+const useThreeImplementation =
+  (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.spyOn(reactThreeFiber, "useThree")
+    .mockImplementation(useThreeImplementation);
 });
 
 afterEach(() => {
@@ -23,7 +29,7 @@ describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: { ...clone(INITIAL), viewCube: true },
     configPosition: clone(INITIAL_POSITION),
-    panelOpen: true,
+    panelCameraStore: createPanelCameraStore(true),
     addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],
@@ -85,6 +91,17 @@ describe("<ThreeDGarden />", () => {
     const p = fakeProps();
     const { rerender } = render(<ThreeDGarden {...p} />);
     rerender(<ThreeDGarden {...p} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
+  });
+
+  it("isolates panel camera store updates", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    render(<ThreeDGarden {...p} />);
+
+    act(() => p.panelCameraStore.setOpen(false));
+
+    expect(p.panelCameraStore.getSnapshot()).toBeFalsy();
     expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
   });
 });

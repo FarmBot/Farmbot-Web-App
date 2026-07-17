@@ -29,11 +29,14 @@ import { MovementState, TimeSettings } from "../interfaces";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { HighlightProvider } from "./elements";
+import {
+  PanelCameraController, PanelCameraStore,
+} from "./panel_camera";
 
 export interface ThreeDGardenProps {
   config: Config;
   configPosition: PositionConfig;
-  panelOpen: boolean;
+  panelCameraStore: PanelCameraStore;
   threeDPlants: ThreeDGardenPlant[];
   plants?: TaggedPlant[];
   addPlantProps: AddPlantProps;
@@ -113,7 +116,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           <GardenModel
             config={props.config}
             configPosition={props.configPosition}
-            panelOpen={props.panelOpen}
+            panelCamera={true}
             threeDPlants={props.threeDPlants}
             plants={props.plants}
             activeFocus={""}
@@ -147,6 +150,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             viewPrismBridgeRef={viewPrismBridgeRef}
             addPlantProps={props.addPlantProps} />
         </HighlightProvider>
+        <PanelCameraController store={props.panelCameraStore} />
       </Canvas>
     </div>
     {props.config.viewCube &&

@@ -173,7 +173,11 @@ describe("<ThreeDGardenMap />", () => {
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
       configPosition: { x: 2999, y: 1498, z: 3 },
-      panelOpen: p.designer.panelOpen,
+      panelCameraStore: expect.objectContaining({
+        getSnapshot: expect.any(Function),
+        setOpen: expect.any(Function),
+        subscribe: expect.any(Function),
+      }),
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
@@ -223,6 +227,30 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...fakeProps()} />);
     expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
     expect(window.__fbPerf?.marks.three_d_map_mounted.length).toEqual(1);
+  });
+
+  it("isolates panel updates from the garden scene", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    const firstGardenProps = lastThreeDGardenProps();
+    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeTruthy();
+
+    p.designer = { ...p.designer, panelOpen: false };
+    rerender(<ThreeDGardenMap {...p} />);
+
+    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeFalsy();
+    expect(threeDGardenSpy).toHaveBeenCalledTimes(1);
+    expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
+
+    p.designer = {
+      ...p.designer,
+      threeDExaggeratedZ: !p.designer.threeDExaggeratedZ,
+    };
+    rerender(<ThreeDGardenMap {...p} />);
+
+    expect(threeDGardenSpy).toHaveBeenCalledTimes(2);
+    expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(2);
   });
 
   it("keeps garden config stable across bot position updates", () => {

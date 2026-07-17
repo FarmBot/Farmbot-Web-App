@@ -163,7 +163,7 @@ export const notifyStartingCameraSaved = () => success(
 );
 
 export const usePanelCameraViewOffset = (
-  camera: ThreePerspectiveCamera | null,
+  camera: ThreePerspectiveCamera | null | undefined,
   view: CameraViewOffset,
   invalidate: () => void,
 ) => {
@@ -770,7 +770,7 @@ export interface GardenModelProps {
   preloadEnvironmentScenes?: boolean;
   showFarmbotLayerLoadProgress?: boolean;
   promo?: boolean;
-  panelOpen?: boolean;
+  panelCamera?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
@@ -2170,13 +2170,13 @@ export const GardenModel = (props: GardenModelProps) => {
     baseConfig,
     props.smoothConfigTransitions,
   );
-  const { invalidate, size: canvasViewportSize } = useThree();
+  const { size: canvasViewportSize } = useThree();
   const panelCameraView = React.useMemo(
     () => getPanelCameraViewOffset(
       canvasViewportSize,
-      props.panelOpen,
+      props.panelCamera ? true : undefined,
     ),
-    [canvasViewportSize, props.panelOpen],
+    [canvasViewportSize, props.panelCamera],
   );
   const viewportSize = React.useMemo(() => ({
     width: panelCameraView.fullWidth,
@@ -2380,11 +2380,6 @@ export const GardenModel = (props: GardenModelProps) => {
   const [controls, setControls] =
     // eslint-disable-next-line no-null/no-null
     React.useState<SmoothCameraControls | null>(null);
-  usePanelCameraViewOffset(
-    controlsCamera,
-    panelCameraView,
-    invalidate,
-  );
   const desiredFov = config.perspective
     ? NORMAL_CAMERA_FOV
     : NARROW_CAMERA_FOV;

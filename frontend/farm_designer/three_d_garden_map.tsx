@@ -31,6 +31,9 @@ import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { MovementState, TimeSettings } from "../interfaces";
 import { effectiveThreeDPerspective } from "./three_d_camera_controls";
+import {
+  createPanelCameraStore, PanelCameraStore,
+} from "../three_d_garden/panel_camera";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -98,7 +101,11 @@ export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
   return latest;
 };
 
-export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
+interface ThreeDGardenMapSceneProps extends ThreeDGardenMapProps {
+  panelCameraStore: PanelCameraStore;
+}
+
+const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   usePerfRenderCount("ThreeDGardenMap");
   React.useEffect(() => {
     perfMark("three_d_map_mounted");
@@ -414,7 +421,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   return <ThreeDGarden
     config={config}
     configPosition={position}
-    panelOpen={designer.panelOpen}
+    panelCameraStore={props.panelCameraStore}
     threeDPlants={threeDPlants}
     plants={props.plants}
     mapPoints={props.mapPoints}
@@ -444,6 +451,51 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     set3DConfigValue={props.set3DConfigValue}
     sceneObjects={props.sceneObjects}
     addPlantProps={addPlantProps} />;
+};
+
+export const designerEqualExceptPanelOpen = (
+  prev: DesignerState,
+  next: DesignerState,
+) => {
+  const prevKeys = Object.keys(prev) as (keyof DesignerState)[];
+  const nextKeys = Object.keys(next) as (keyof DesignerState)[];
+  return prevKeys.length == nextKeys.length
+    && prevKeys.every(key =>
+      key == "panelOpen" || prev[key] === next[key]);
+};
+
+const threeDGardenMapScenePropsEqual = (
+  prev: ThreeDGardenMapSceneProps,
+  next: ThreeDGardenMapSceneProps,
+) => {
+  const prevKeys =
+    Object.keys(prev) as (keyof ThreeDGardenMapSceneProps)[];
+  const nextKeys =
+    Object.keys(next) as (keyof ThreeDGardenMapSceneProps)[];
+  return prevKeys.length == nextKeys.length
+    && prevKeys.every(key =>
+      key == "designer"
+        ? designerEqualExceptPanelOpen(prev.designer, next.designer)
+        : prev[key] === next[key]);
+};
+
+const ThreeDGardenMapScene = React.memo(
+  ThreeDGardenMapSceneBase,
+  threeDGardenMapScenePropsEqual,
+);
+
+ThreeDGardenMapScene.displayName = "ThreeDGardenMapScene";
+
+export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
+  const [panelCameraStore] = React.useState(
+    () => createPanelCameraStore(props.designer.panelOpen),
+  );
+  React.useLayoutEffect(() => {
+    panelCameraStore.setOpen(props.designer.panelOpen);
+  }, [panelCameraStore, props.designer.panelOpen]);
+  return <ThreeDGardenMapScene
+    {...props}
+    panelCameraStore={panelCameraStore} />;
 };
 
 const convertPlantResources = (plants: TaggedPlant[]): ThreeDGardenPlant[] =>
