@@ -8,8 +8,10 @@ import {
 import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
-  cameraAtRadius, cameraRadius,
+  advanceSpaceflightOrbit, cameraAtRadius, cameraRadius,
   cameraFitRadiusForZoom,
+  cameraSideStarClipEnabled,
+  constellationDiscoveryEnabled,
   createCameraFitRequest, createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
@@ -21,6 +23,8 @@ import {
   stargazingOrbitPolarLimits,
   GardenCameraControllerProps,
   useGardenCameraController,
+  SPACEFLIGHT_CAMERA,
+  SPACEFLIGHT_FOV,
   VIEW_PRISM_VIEWPORT_SIZE,
 } from "../garden_model";
 import { clone } from "lodash";
@@ -58,16 +62,13 @@ import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
 import { LegacySolar, Solar } from "../garden/solar";
+import { Sun } from "../garden/sun";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
 import { Bed } from "../bed";
 import { getStargazingCamera, Telescope } from "../bed/objects/telescope";
-import {
-  anchorStargazingOrbit, saveStargazingCamera,
-  STARGAZING_CAMERA_SESSION_KEY,
-} from "../stargazing_camera";
 import { Actions } from "../../constants";
 import { SECTION_CLIPPING_EXEMPT } from "../section";
 import { SectionGroundOverlays } from "../section_overlays";
@@ -131,7 +132,6 @@ describe("<GardenModel />", () => {
     location.pathname = originalPathname;
     setCameraUrlParamsSpy?.mockRestore();
     setCameraUrlParamsSpy = undefined;
-    sessionStorage.removeItem(STARGAZING_CAMERA_SESSION_KEY);
   });
 
   const fakeProps = (): GardenModelProps => ({
@@ -497,7 +497,7 @@ describe("<GardenModel />", () => {
 
   it("enters stargazing with the requested FOV and constrained orbit", () => {
     const p = fakeProps();
-    p.addPlantProps!.designer.threeDStargazingMode = true;
+    p.addPlantProps!.designer.threeDViewMode = "stargazing";
     p.addPlantProps!.designer.threeDStargazingFov = 35;
     const wrapper = createWrapper(p);
     const controls = wrapper.root.findByType(OrbitControls);
@@ -506,6 +506,12 @@ describe("<GardenModel />", () => {
     expect(controls.props.enableZoom).toEqual(false);
     expect(controls.props.minPolarAngle).toEqual(Math.PI / 2);
     expect(controls.props.maxPolarAngle).toEqual(Math.PI);
+    expect(wrapper.root.findByType(Sun).props.showSun).toEqual(true);
+    expect(wrapper.root.findByType(Sun).props.cameraSideClipEnabled)
+      .toEqual(false);
+    expect(wrapper.root.findByType(Sun).props.constellationDiscoveryEnabled)
+      .toEqual(true);
+    expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(1);
 
     const cameraRequests = useStateSetters.flatMap(setter =>
       (setter.mock.calls as unknown[][])
@@ -516,12 +522,48 @@ describe("<GardenModel />", () => {
     const stargazingRequest = cameraRequests.find(request =>
       request.fov == 35);
     expect(stargazingRequest).toBeTruthy();
-    expect(stargazingRequest?.camera.target[2])
-      .toBeGreaterThan(stargazingRequest?.camera.position[2] || 0);
+    expect(stargazingRequest?.camera)
+      .toEqual(getStargazingCamera(p.config));
     actRenderer(() => controls.props.onChange());
     actRenderer(() => controls.props.onEnd());
-    expect(sessionStorage.getItem(STARGAZING_CAMERA_SESSION_KEY))
-      .not.toBeNull();
+  });
+
+  it("enters spaceflight with z-axis orbit controls", () => {
+    const p = fakeProps();
+    p.addPlantProps!.designer.threeDViewMode = "spaceflight";
+    const wrapper = createWrapper(p);
+    const controls = wrapper.root.findByType(OrbitControls);
+
+    expect(controls.props.enableRotate).toEqual(true);
+    expect(controls.props.enablePan).toEqual(false);
+    expect(controls.props.enableZoom).toEqual(false);
+    expect(controls.props.minPolarAngle)
+      .toEqual(controls.props.maxPolarAngle);
+    const cameraRequests = useStateSetters.flatMap(setter =>
+      (setter.mock.calls as unknown[][])
+        .map(call => call[0])
+        .filter((value): value is GardenCameraRequest =>
+          typeof value == "object" && !!value
+          && "camera" in value && "fov" in value));
+    expect(cameraRequests).toContainEqual(expect.objectContaining({
+      camera: SPACEFLIGHT_CAMERA,
+      fov: SPACEFLIGHT_FOV,
+    }));
+    const sun = wrapper.root.findByType(Sun);
+    expect(sun.props.cameraSideClipEnabled).toEqual(true);
+    expect(sun.props.constellationDiscoveryEnabled).toEqual(true);
+    expect(sun.props.showSun).toEqual(false);
+    expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(0);
+  });
+
+  it("advances the spaceflight orbit at fixed radius and elevation", () => {
+    const next = advanceSpaceflightOrbit(SPACEFLIGHT_CAMERA, 1);
+
+    expect(next.target).toEqual([0, 0, 12000]);
+    expect(next.position[2]).toEqual(10000);
+    expect(Math.hypot(next.position[0], next.position[1]))
+      .toBeCloseTo(50000);
+    expect(next.position).not.toEqual(SPACEFLIGHT_CAMERA.position);
   });
 
   it("hides focus beacons while stargazing", () => {
@@ -532,11 +574,11 @@ describe("<GardenModel />", () => {
     const wrapper = createWrapper(p);
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
 
-    p.addPlantProps!.designer.threeDStargazingMode = true;
+    p.addPlantProps!.designer.threeDViewMode = "stargazing";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
     expect(beaconLoadIn(wrapper)).toHaveLength(0);
 
-    p.addPlantProps!.designer.threeDStargazingMode = false;
+    p.addPlantProps!.designer.threeDViewMode = "normal";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
   });
@@ -545,7 +587,7 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.addPlantProps = undefined;
-    p.stargazing = { active: true, fov: 45, dispatch };
+    p.celestialView = { mode: "stargazing", fov: 45, dispatch };
     const wrapper = createWrapper(p);
 
     const controls = wrapper.root.findByType(OrbitControls);
@@ -566,34 +608,14 @@ describe("<GardenModel />", () => {
     expect(cameraRequests.some(request => request.fov == 45)).toEqual(true);
   });
 
-  it("restores the cached orbit at the current telescope", () => {
-    const cachedCamera = {
-      position: [111, 222, 333] as [number, number, number],
-      target: [444, 555, 666] as [number, number, number],
-    };
-    saveStargazingCamera(cachedCamera);
+  it("routes telescope time travel through the main app dispatch", () => {
     const p = fakeProps();
-    p.addPlantProps!.designer.threeDStargazingMode = true;
     const wrapper = createWrapper(p);
-    const expectedCamera = anchorStargazingOrbit(
-      cachedCamera,
-      getStargazingCamera(p.config).position,
-    );
-
-    expect(wrapper.root.findByType(Telescope).props.camera)
-      .toEqual(expectedCamera);
-    const cameraRequests = useStateSetters.flatMap(setter =>
-      (setter.mock.calls as unknown[][])
-        .map(call => call[0])
-        .filter((value): value is GardenCameraRequest =>
-          typeof value == "object" && !!value
-          && "camera" in value && "fov" in value));
-    expect(cameraRequests).toContainEqual(expect.objectContaining({
-      camera: expectedCamera,
-    }));
+    expect(wrapper.root.findByType(Telescope).props.timeTravelDispatch)
+      .toBe(p.addPlantProps?.dispatch);
   });
 
-  it("hides the promo telescope only in the lab", () => {
+  it("hides the telescope throughout the promo", () => {
     const p = fakeProps();
     p.promo = true;
     p.config.scene = "Lab";
@@ -602,11 +624,11 @@ describe("<GardenModel />", () => {
 
     p.config.scene = "Outdoor";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
-    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(0);
 
     p.config.scene = "Greenhouse";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
-    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(0);
 
     p.promo = false;
     p.config.scene = "Lab";
@@ -626,10 +648,10 @@ describe("<GardenModel />", () => {
 
   it("returns to the top corner after stargazing", () => {
     const p = fakeProps();
-    p.addPlantProps!.designer.threeDStargazingMode = true;
+    p.addPlantProps!.designer.threeDViewMode = "stargazing";
     const wrapper = createWrapper(p);
 
-    p.addPlantProps!.designer.threeDStargazingMode = false;
+    p.addPlantProps!.designer.threeDViewMode = "normal";
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
 
     const cameraRequests = useStateSetters.flatMap(setter =>
@@ -652,6 +674,34 @@ describe("<GardenModel />", () => {
       min: 0,
       max: Math.PI,
     });
+  });
+
+  it("disables camera-side star clipping after stargazing settles", () => {
+    expect(cameraSideStarClipEnabled("normal")).toEqual(true);
+    expect(cameraSideStarClipEnabled("spaceflight")).toEqual(true);
+    expect(cameraSideStarClipEnabled("transitioning")).toEqual(true);
+    expect(cameraSideStarClipEnabled("stargazing")).toEqual(false);
+  });
+
+  it("discovers constellations only in settled celestial modes", () => {
+    expect(constellationDiscoveryEnabled("normal", "normal"))
+      .toEqual(false);
+    expect(constellationDiscoveryEnabled("stargazing", "transitioning"))
+      .toEqual(false);
+    expect(constellationDiscoveryEnabled("spaceflight", "transitioning"))
+      .toEqual(false);
+    expect(constellationDiscoveryEnabled("stargazing", "stargazing"))
+      .toEqual(true);
+    expect(constellationDiscoveryEnabled("spaceflight", "spaceflight"))
+      .toEqual(true);
+  });
+
+  it("locks the spaceflight polar angle", () => {
+    const limits = stargazingOrbitPolarLimits("spaceflight");
+
+    expect(limits.min).toEqual(limits.max);
+    expect(limits.min).toBeGreaterThan(Math.PI / 2);
+    expect(limits.max).toBeLessThan(Math.PI);
   });
 
   it("only exempts raised bed supports from section clipping", () => {
@@ -2178,7 +2228,7 @@ describe("useGardenCameraController()", () => {
       position: [1000, -1000, 1000],
       target: [0, 0, 0],
     },
-    stargazing: false,
+    viewMode: "normal",
     stargazingFov: 20,
     stargazingCamera: {
       position: [100, 200, 300],
@@ -2204,37 +2254,42 @@ describe("useGardenCameraController()", () => {
         useGardenCameraController(controllerProps),
       { initialProps: props },
     );
-    expect(result.current.stargazingCameraPhase).toEqual("normal");
+    expect(result.current.cameraPhase).toEqual("normal");
 
-    const enteringProps = { ...props, stargazing: true };
+    const enteringProps = { ...props, viewMode: "stargazing" as const };
     rerender(enteringProps);
     await waitFor(() => {
-      expect(result.current.stargazingCameraPhase).toEqual("transitioning");
+      expect(result.current.cameraPhase).toEqual("transitioning");
       expect(result.current.cameraRequest?.camera)
         .toBe(props.stargazingCamera);
     });
     act(() => result.current.cameraRequest?.onRest?.());
     await waitFor(() =>
-      expect(result.current.stargazingCameraPhase).toEqual("stargazing"));
+      expect(result.current.cameraPhase).toEqual("stargazing"));
 
     rerender({ ...enteringProps, stargazingFov: 45 });
     await waitFor(() => {
       expect(result.current.cameraRequest).toEqual({
         camera: props.stargazingCamera,
         fov: 45,
+        interpolation: "linear",
         onRest: undefined,
       });
     });
 
-    rerender({ ...enteringProps, stargazing: false });
+    rerender({ ...enteringProps, viewMode: "normal" });
     await waitFor(() => {
-      expect(result.current.stargazingCameraPhase).toEqual("transitioning");
+      expect(result.current.cameraPhase).toEqual("transitioning");
       expect(result.current.cameraRequest?.fov).toEqual(props.desiredFov);
+      expect(result.current.cameraRequest?.camera.target)
+        .toEqual(props.baseCamera.target);
+      result.current.cameraRequest?.camera.position.forEach((value, index) =>
+        expect(value).toBeCloseTo(props.baseCamera.position[index]));
       expect(result.current.cameraRequest?.onRest).toBeDefined();
     });
     act(() => result.current.cameraRequest?.onRest?.());
     await waitFor(() =>
-      expect(result.current.stargazingCameraPhase).toEqual("normal"));
+      expect(result.current.cameraPhase).toEqual("normal"));
   });
 
   it("retargets FOV while the stargazing camera is transitioning", async () => {
@@ -2244,38 +2299,180 @@ describe("useGardenCameraController()", () => {
         useGardenCameraController(controllerProps),
       { initialProps: props },
     );
-    const enteringProps = { ...props, stargazing: true };
+    const enteringProps = { ...props, viewMode: "stargazing" as const };
     rerender(enteringProps);
     await waitFor(() =>
-      expect(result.current.stargazingCameraPhase).toEqual("transitioning"));
+      expect(result.current.cameraPhase).toEqual("transitioning"));
 
     rerender({ ...enteringProps, stargazingFov: 35 });
     await waitFor(() => {
       expect(result.current.cameraRequest?.fov).toEqual(35);
       expect(result.current.cameraRequest?.camera)
         .toBe(props.stargazingCamera);
+      expect(result.current.cameraRequest?.interpolation).toEqual("orbit");
       expect(result.current.cameraRequest?.onRest).toBeDefined();
     });
     act(() => result.current.cameraRequest?.onRest?.());
     await waitFor(() =>
-      expect(result.current.stargazingCameraPhase).toEqual("stargazing"));
+      expect(result.current.cameraPhase).toEqual("stargazing"));
   });
 
-  it("keeps the telescope camera when the promo viewport changes", async () => {
+  it("retargets the camera when the normal projection changes", async () => {
+    const props = fakeControllerProps();
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({ ...props, desiredFov: 1 });
+
+    await waitFor(() => {
+      expect(result.current.cameraRequest?.fov).toEqual(1);
+      expect(cameraRadius(result.current.cameraRequest!.camera))
+        .toBeGreaterThan(cameraRadius(props.baseCamera));
+    });
+  });
+
+  it("restores the exact normal camera session after stargazing", async () => {
+    const controlsCamera = new ThreePerspectiveCamera();
+    controlsCamera.position.set(321, -654, 987);
+    controlsCamera.fov = 35;
+    const controls = {
+      target: new Vector3(12, 34, 56),
+      update: jest.fn(),
+    } as NonNullable<GardenCameraControllerProps["controls"]>;
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      controlsCamera,
+      controls,
+    };
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({ ...props, viewMode: "stargazing" });
+    await waitFor(() =>
+      expect(result.current.cameraRequest?.camera)
+        .toBe(props.stargazingCamera));
+
+    controlsCamera.position.set(100, 200, 300);
+    controlsCamera.fov = props.stargazingFov;
+    controls.target.set(-100, 200, 500);
+    rerender({ ...props, viewMode: "normal" });
+
+    await waitFor(() => {
+      expect(result.current.cameraRequest?.camera).toEqual({
+        position: [321, -654, 987],
+        target: [12, 34, 56],
+      });
+      expect(result.current.cameraRequest?.fov).toEqual(35);
+    });
+  });
+
+  it("resets stargazing after spaceflight", async () => {
+    const controlsCamera = new ThreePerspectiveCamera();
+    controlsCamera.position.set(321, -654, 987);
+    controlsCamera.fov = 35;
+    const controls = {
+      target: new Vector3(12, 34, 56),
+      update: jest.fn(),
+    } as NonNullable<GardenCameraControllerProps["controls"]>;
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      viewMode: "stargazing",
+      controlsCamera,
+      controls,
+    };
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({ ...props, viewMode: "spaceflight" });
+    await waitFor(() => {
+      expect(result.current.cameraPhase).toEqual("transitioning");
+      expect(result.current.cameraRequest?.camera)
+        .toBe(SPACEFLIGHT_CAMERA);
+      expect(result.current.cameraRequest?.fov).toEqual(SPACEFLIGHT_FOV);
+      expect(result.current.cameraRequest?.interpolation)
+        .toEqual("linear");
+    });
+    act(() => result.current.cameraRequest?.onRest?.());
+    await waitFor(() =>
+      expect(result.current.cameraPhase).toEqual("spaceflight"));
+
+    controlsCamera.position.set(...SPACEFLIGHT_CAMERA.position);
+    controls.target.set(...SPACEFLIGHT_CAMERA.target);
+    rerender({ ...props, viewMode: "stargazing" });
+    await waitFor(() => {
+      expect(result.current.cameraPhase).toEqual("transitioning");
+      expect(result.current.cameraRequest?.camera)
+        .toBe(props.stargazingCamera);
+      expect(result.current.cameraRequest?.fov)
+        .toEqual(props.stargazingFov);
+      expect(result.current.cameraRequest?.interpolation)
+        .toEqual("linear");
+    });
+    act(() => result.current.cameraRequest?.onRest?.());
+    await waitFor(() =>
+      expect(result.current.cameraPhase).toEqual("stargazing"));
+  });
+
+  it("starts every stargazing session at its entry camera", async () => {
+    const props = fakeControllerProps();
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({ ...props, viewMode: "stargazing" });
+    await waitFor(() =>
+      expect(result.current.cameraRequest?.camera)
+        .toBe(props.stargazingCamera));
+    rerender({ ...props, viewMode: "spaceflight" });
+    await waitFor(() =>
+      expect(result.current.cameraRequest?.camera)
+        .toBe(SPACEFLIGHT_CAMERA));
+
+    rerender({ ...props, viewMode: "normal" });
+    await waitFor(() => {
+      expect(result.current.cameraRequest?.camera)
+        .not.toBe(SPACEFLIGHT_CAMERA);
+      expect(result.current.cameraRequest?.fov).toEqual(props.desiredFov);
+    });
+    act(() => result.current.cameraRequest?.onRest?.());
+    await waitFor(() =>
+      expect(result.current.cameraPhase).toEqual("normal"));
+
+    rerender({ ...props, viewMode: "stargazing" });
+    await waitFor(() =>
+      expect(result.current.cameraRequest?.camera)
+        .toBe(props.stargazingCamera));
+  });
+
+  it("keeps the stargazing entry camera when the viewport changes", async () => {
     const props = { ...fakeControllerProps(), promo: true };
     const { result, rerender } = renderHook(
       (controllerProps: GardenCameraControllerProps) =>
         useGardenCameraController(controllerProps),
       { initialProps: props },
     );
-    const stargazingProps = { ...props, stargazing: true };
+    const stargazingProps = {
+      ...props,
+      viewMode: "stargazing" as const,
+    };
     rerender(stargazingProps);
     await waitFor(() =>
       expect(result.current.cameraRequest?.camera)
         .toBe(props.stargazingCamera));
     act(() => result.current.cameraRequest?.onRest?.());
     await waitFor(() =>
-      expect(result.current.stargazingCameraPhase).toEqual("stargazing"));
+      expect(result.current.cameraPhase).toEqual("stargazing"));
     const stargazingRequest = result.current.cameraRequest;
 
     rerender({ ...stargazingProps, cameraFitRadius: 3000 });

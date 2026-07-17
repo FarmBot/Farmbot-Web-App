@@ -7,8 +7,8 @@ import * as threeFiber from "@react-three/fiber";
 import {
   AnimatedSunFrame, calcSunI, getAnimatedSeasonDate, getCycleLength,
   getAnimatedSeasonSunCoordinate, getSeasonAnimationElapsed,
-  getSeasonAnimationElapsedAtSunPosition, skyColor, Sun, sunPropsEqual,
-  SunProps,
+  getSeasonAnimationElapsedAtSunPosition, isSkyFullyBlack, skyColor,
+  Sun, sunPropsEqual, SunProps,
 } from "../sun";
 import {
   generateStars, projectConstellationPoint, starShaderModification,
@@ -55,7 +55,9 @@ describe("getSeasonAnimationElapsed", () => {
 describe("<Sun />", () => {
   const fakeProps = (): SunProps => ({
     config: clone(INITIAL),
-    stargazing: false,
+    cameraSideClipEnabled: true,
+    constellationDiscoveryEnabled: false,
+    showSun: true,
     skyRef: {
       current: { color: { setRGB: jest.fn() } } as unknown as MeshBasicMaterial,
     },
@@ -65,6 +67,17 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("hides the sun visual and light", () => {
+    const p = fakeProps();
+    p.showSun = false;
+    p.config.sunInclination = 0;
+    const wrapper = createRenderer(<Sun {...p} />);
+    expect(wrapper.root.findByProps({ name: "sun-visuals" }).props.visible)
+      .toEqual(false);
+    expect(wrapper.root.findByProps({ name: "sun" })).toBeTruthy();
+    unmountRenderer(wrapper);
   });
 
   it("is exempt from section clipping", () => {
@@ -90,7 +103,7 @@ describe("<Sun />", () => {
     starShaderModification(shader);
 
     expect(shader.vertexShader).toContain("starCameraAlignment");
-    expect(shader.vertexShader).toContain("> 0.866025");
+    expect(shader.vertexShader).toContain("> 0.707107");
     expect(shader.vertexShader).toContain(
       "gl_Position = vec4(2.0, 2.0, 2.0, 1.0)",
     );
@@ -160,7 +173,7 @@ describe("<Sun />", () => {
     })).toBeFalsy();
     expect(sunPropsEqual(p, {
       ...p,
-      config: { ...p.config, constellations: false },
+      config: { ...p.config, constellations: true },
     })).toBeFalsy();
     expect(sunPropsEqual(p, {
       ...p,
@@ -172,21 +185,48 @@ describe("<Sun />", () => {
     })).toBeFalsy();
     expect(sunPropsEqual(p, {
       ...p,
-      onSunBelowHorizonChange: jest.fn(),
+      onSunSetChange: jest.fn(),
     })).toBeFalsy();
     expect(sunPropsEqual(p, {
       ...p,
-      stargazing: true,
+      cameraSideClipEnabled: false,
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      constellationDiscoveryEnabled: true,
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      onConstellationFound: jest.fn(),
+    })).toBeFalsy();
+    expect(sunPropsEqual(p, {
+      ...p,
+      showSun: false,
     })).toBeFalsy();
   });
 
-  it("reports when the sun reaches the horizon", () => {
+  it("reports that nighttime has not begun during the sky fade", () => {
     const p = fakeProps();
     p.config.animateSeasons = false;
-    p.config.sunInclination = 0;
-    p.onSunBelowHorizonChange = jest.fn();
+    p.config.sunInclination = -9.9;
+    p.onSunSetChange = jest.fn();
     render(<Sun {...p} />);
-    expect(p.onSunBelowHorizonChange).toHaveBeenCalledWith(true);
+    expect(p.onSunSetChange).toHaveBeenCalledWith(false);
+  });
+
+  it("reports nighttime when the sky reaches full black", () => {
+    const p = fakeProps();
+    p.config.animateSeasons = false;
+    p.config.sunInclination = -10;
+    p.onSunSetChange = jest.fn();
+    render(<Sun {...p} />);
+    expect(p.onSunSetChange).toHaveBeenCalledWith(true);
+  });
+
+  it("uses the same black boundary as the sky color", () => {
+    expect(isSkyFullyBlack(calcSunI(-10), INITIAL.sun)).toEqual(true);
+    expect(isSkyFullyBlack(calcSunI(-9.9), INITIAL.sun)).toEqual(false);
+    expect(isSkyFullyBlack(1, 0)).toEqual(true);
   });
 
   it("doesn't render animated", () => {

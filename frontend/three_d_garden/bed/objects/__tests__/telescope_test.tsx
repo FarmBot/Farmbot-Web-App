@@ -1,32 +1,114 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import {
+  act, fireEvent, render, screen, waitFor,
+} from "@testing-library/react";
+import * as reactSpring from "@react-spring/three";
 import { clone } from "lodash";
 import { INITIAL } from "../../../config";
 import { Actions } from "../../../../constants";
 import {
-  getStargazingCamera, getTelescopeGroundPosition, getTelescopeRotation,
-  Telescope,
-  TelescopeProps,
+  generateTelescopeStars, getStargazingCamera, getTelescopeGroundPosition,
+  getTelescopeState, rotateTelescopeSphere, Telescope, telescopePopupZ,
+  telescopeSpringTargets, telescopeStarShaderModification, TelescopeProps,
 } from "../telescope";
 import { getUtilitiesPostWorldPosition } from
   "../utilities_post_position";
 import { RenderOrder } from "../../../constants";
+import { Group as ThreeGroup } from "three";
 
 describe("<Telescope />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    document.body.style.cursor = "default";
+  });
+
   const fakeProps = (): TelescopeProps => {
     const config = { ...clone(INITIAL), animate: false };
     return {
       config,
-      sunBelowHorizon: true,
+      sunIsSet: true,
       stargazing: false,
-      camera: getStargazingCamera(config),
       dispatch: jest.fn(),
+      timeTravelDispatch: jest.fn(),
     };
   };
 
-  it("renders the body and tripod and opens stargazing", () => {
+  const openPopup = (container: HTMLElement) => {
+    const sphere = container.querySelector("[name='telescope-sphere']");
+    sphere && fireEvent.click(sphere);
+  };
+
+  const showTelescope = (container: HTMLElement) => openPopup(container);
+
+  it("renders disabled and enables from the sphere popup", () => {
+    const props = fakeProps();
+    const { container, unmount } = render(<Telescope {...props} />);
+    const sphere = container.querySelector("[name='telescope-sphere']");
+    const offset = container.querySelector("[name='visibility-offset']");
+    const sphereZ = Number(
+      sphere?.getAttribute("position")?.split(",")[2],
+    );
+
+    expect(sphere).toBeTruthy();
+    expect(offset?.getAttribute("position-z")).toEqual(String(-sphereZ));
+    expect(sphere?.querySelector("[color='#000000']")
+      ?.getAttribute("color")).toEqual("#000000");
+    expect(container.querySelector("[name='celestial-sphere-stars']"))
+      .toBeTruthy();
+    expect(container.querySelector(
+      "[name='celestial-sphere-stars'] [color='white']",
+    )).toBeTruthy();
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
+    expect(container.textContent).not.toContain("Hide");
+
+    sphere && fireEvent.pointerEnter(sphere);
+    expect(document.body.style.cursor).toEqual("pointer");
+    sphere && fireEvent.pointerLeave(sphere);
+    expect(document.body.style.cursor).toEqual("default");
+    openPopup(container);
+    expect(screen.getByText("Stargaze")).toBeTruthy();
+    expect(container.querySelector(".telescope-popup")).toHaveClass("half-gap");
+    expect(screen.getByText(
+      "How many crop constellations can you find?",
+    )).toBeTruthy();
+    expect(screen.queryByText("TIME TRAVEL")).toBeNull();
+    expect(screen.getByText("SHOW TELESCOPE")).toBeTruthy();
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
+    openPopup(container);
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    openPopup(container);
+    expect(container.querySelector(".telescope-popup")).toBeTruthy();
+
+    const popup = container.querySelector(".telescope-popup");
+    popup && fireEvent.pointerDown(popup);
+    popup && fireEvent.contextMenu(popup);
+    popup && fireEvent.wheel(popup);
+    popup && fireEvent.click(popup);
+    const toggle = container.querySelector(
+      ".telescope-popup .fb-toggle-button",
+    );
+    toggle && fireEvent.click(toggle);
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
+    openPopup(container);
+    expect(screen.getByText("SHOW TELESCOPE")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    openPopup(container);
+    const close = container.querySelector("[title='close']");
+    close && fireEvent.click(close);
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+
+    document.body.style.cursor = "pointer";
+    unmount();
+    expect(document.body.style.cursor).toEqual("default");
+  });
+
+  it("springs enabled and opens stargazing from the telescope", () => {
     const props = fakeProps();
     const { container } = render(<Telescope {...props} />);
+    showTelescope(container);
+
     expect(container.querySelector("[name='telescope-body-narrow']"))
       .toBeTruthy();
     expect(container.querySelector("[name='telescope-body-middle']"))
@@ -35,45 +117,182 @@ describe("<Telescope />", () => {
       .toBeTruthy();
     expect(container.querySelector("[name='telescope-eyepiece']")
       ?.getAttribute("args")).toEqual("22,22,35,24");
+    expect(container.querySelector("[name='telescope-eyepiece']")
+      ?.getAttribute("position")).toEqual("-415,0,0");
     expect(container.querySelectorAll("[name^='telescope-tripod-leg-']"))
       .toHaveLength(3);
     const meshes = container.querySelectorAll(
       "[name^='telescope-']:not([name='telescope-body'])"
-      + ":not([name='telescope-body-tilt'])",
+      + ":not([name='telescope-body-tilt'])"
+      + ":not([name='telescope-model'])"
+      + ":not([name='telescope-sphere'])",
     );
     expect(meshes).toHaveLength(10);
     meshes.forEach(mesh =>
       expect(Number(mesh.getAttribute("renderOrder")))
         .toEqual(RenderOrder.plants + 0.5));
+    expect(Number(container.querySelector("[name='telescope-sphere']")
+      ?.getAttribute("renderOrder")))
+      .toEqual(RenderOrder.plants + 0.5);
     const depthSortedMaterials = container.querySelectorAll("[alphatest]");
     expect(depthSortedMaterials).toHaveLength(10);
     depthSortedMaterials.forEach(material =>
       expect(Number(material.getAttribute("alphatest"))).toBeGreaterThan(0));
-    const telescope = container.querySelector("[name='telescope']");
     const body = container.querySelector("[name='telescope-body']");
     const bodyTilt = container.querySelector("[name='telescope-body-tilt']");
     expect(bodyTilt?.parentElement).toBe(body);
     expect(Number(body?.getAttribute("rotation-z")))
       .toBeCloseTo(Math.PI);
     expect(Number(bodyTilt?.getAttribute("rotation-y")))
-      .toBeCloseTo(-40 * Math.PI / 180);
-    telescope && fireEvent.click(telescope);
+      .toBeCloseTo(-20 * Math.PI / 180);
+    expect(container.querySelector("[name='visibility-offset']")
+      ?.getAttribute("position-z")).toEqual("0");
+
+    const telescopeModel = container.querySelector(
+      "[name='telescope-model']",
+    );
+    telescopeModel && fireEvent.click(telescopeModel);
     expect(props.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_3D_STARGAZING_MODE,
-      payload: true,
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "stargazing",
+    });
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+  });
+
+  it("opens main nav time travel instead of stargazing during daytime", () => {
+    const props = fakeProps();
+    props.sunIsSet = false;
+    const { container } = render(<Telescope {...props} />);
+    showTelescope(container);
+    const close = container.querySelector("[title='close']");
+    close && fireEvent.click(close);
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+
+    const telescopeModel = container.querySelector(
+      "[name='telescope-model']",
+    );
+    telescopeModel && fireEvent.click(telescopeModel);
+
+    expect(props.dispatch).not.toHaveBeenCalled();
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    expect(props.timeTravelDispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_POPUP,
+      payload: "timeTravel",
     });
   });
 
-  it("only opens stargazing when the sun is below the horizon", () => {
+  it("removes outgoing objects only after their spring completes", () => {
+    let finishSpring: (() => void) | undefined;
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(props => {
+        const values = typeof props == "function" ? props() : props;
+        finishSpring = values.onRest as (() => void) | undefined;
+        return [{
+          ...values,
+          ...(typeof values.to == "object" ? values.to : {}),
+        }, {
+          start: jest.fn(),
+          set: jest.fn(),
+        }] as unknown as ReturnType<typeof reactSpring.useSpring>;
+      });
     const props = fakeProps();
-    props.sunBelowHorizon = false;
-    const { container } = render(<Telescope {...props} />);
-    const telescope = container.querySelector("[name='telescope']");
-    telescope && fireEvent.click(telescope);
-    expect(props.dispatch).not.toHaveBeenCalled();
+    try {
+      const { container } = render(<Telescope {...props} />);
+      showTelescope(container);
+      act(() => finishSpring?.());
+      expect(container.querySelector("[name='telescope-model']"))
+        .toBeTruthy();
+
+      const toggle = container.querySelector(
+        ".telescope-popup .fb-toggle-button",
+      );
+      toggle && fireEvent.click(toggle);
+      const outgoingModel = container.querySelector(
+        "[name='telescope-model']",
+      );
+      expect(outgoingModel).toBeTruthy();
+      outgoingModel && fireEvent.click(outgoingModel);
+      expect(props.dispatch).not.toHaveBeenCalled();
+      act(() => finishSpring?.());
+      expect(container.querySelector("[name='telescope-model']")).toBeNull();
+
+      expect(container.querySelector("[name='telescope-sphere']"))
+        .toBeTruthy();
+    } finally {
+      springSpy.mockRestore();
+    }
   });
 
-  it("uses 1.5x the utilities post clearance and aims upward", () => {
+  it("disables while in a celestial view", async () => {
+    const props = fakeProps();
+    const { container, rerender } = render(<Telescope {...props} />);
+    expect(container.querySelector("[name='telescope-sphere']"))
+      .toBeTruthy();
+    showTelescope(container);
+    expect(container.querySelector("[name='telescope-model']"))
+      .toBeTruthy();
+    props.stargazing = true;
+    rerender(<Telescope {...props} />);
+    await waitFor(() =>
+      expect(container.querySelector("[name='telescope-model']")).toBeNull());
+    expect(container.querySelector("[name='telescope-sphere']"))
+      .toBeTruthy();
+  });
+
+  it("defines the disabled and enabled targets", () => {
+    expect(getTelescopeState(false, false)).toEqual("disabled");
+    expect(getTelescopeState(true, true)).toEqual("disabled");
+    expect(getTelescopeState(false, true)).toEqual("enabled");
+    expect(telescopeSpringTargets("disabled", 100)).toEqual({
+      groupOffset: -100,
+      telescopeOpacity: 0,
+    });
+    expect(telescopeSpringTargets("enabled", 100)).toEqual({
+      groupOffset: 0,
+      telescopeOpacity: 1,
+    });
+  });
+
+  it("generates 150 variably sized stars on the sphere surface", () => {
+    let randomValue = 0;
+    const stars = generateTelescopeStars(() => {
+      randomValue = (randomValue + 0.37) % 1;
+      return randomValue;
+    });
+    expect(stars.positions).toHaveLength(450);
+    expect(stars.sizes).toHaveLength(150);
+    const firstRadius = Math.hypot(...stars.positions.slice(0, 3));
+    stars.sizes.forEach((_size, index) => {
+      const offset = index * 3;
+      expect(Math.hypot(...stars.positions.slice(offset, offset + 3)))
+        .toBeCloseTo(firstRadius);
+    });
+    expect(Math.min(...stars.sizes)).toBeGreaterThanOrEqual(0.5);
+    expect(Math.max(...stars.sizes)).toBeLessThanOrEqual(3);
+    expect(Math.min(...stars.sizes)).toBeLessThan(Math.max(...stars.sizes));
+  });
+
+  it("applies each telescope star's individual size", () => {
+    const shader = {
+      vertexShader: "#include <common>\ngl_PointSize = size;",
+    } as Parameters<typeof telescopeStarShaderModification>[0];
+    telescopeStarShaderModification(shader);
+    expect(shader.vertexShader).toContain("attribute float starSize");
+    expect(shader.vertexShader).toContain("size * starSize");
+  });
+
+  it("positions the popup nearby and rotates only while enabled", () => {
+    expect(telescopePopupZ(1000)).toEqual(1130);
+    const sphere = new ThreeGroup();
+    rotateTelescopeSphere(sphere, false, 30);
+    expect(sphere.rotation.z).toEqual(0);
+    // eslint-disable-next-line no-null/no-null
+    rotateTelescopeSphere(null, true, 30);
+    rotateTelescopeSphere(sphere, true, 30);
+    expect(sphere.rotation.z).toBeCloseTo(1.5 * Math.PI);
+  });
+
+  it("uses 1.5x the utilities post clearance and aims at the body", () => {
     const props = fakeProps();
     const post = getUtilitiesPostWorldPosition(props.config);
     const position = getTelescopeGroundPosition(props.config);
@@ -84,16 +303,19 @@ describe("<Telescope />", () => {
     expect(position[2]).toBeLessThan(post[2]);
 
     const camera = getStargazingCamera(props.config);
+    expect(camera.target).toEqual([
+      position[0],
+      position[1],
+      position[2] + 760 + props.config.bedZOffset,
+    ]);
     expect(camera.target[0]).toBeLessThan(camera.position[0]);
     expect(camera.target[1]).toBeCloseTo(camera.position[1]);
     expect(camera.target[2]).toBeGreaterThan(camera.position[2]);
-    const horizontalDistance = Math.hypot(
+    expect(Math.hypot(
       camera.target[0] - camera.position[0],
       camera.target[1] - camera.position[1],
-    );
-    const deltaZ = camera.target[2] - camera.position[2];
-    expect(Math.atan2(deltaZ, horizontalDistance) * 180 / Math.PI)
-      .toBeCloseTo(40);
+      camera.target[2] - camera.position[2],
+    )).toBeCloseTo(460);
   });
 
   it("extends above the grounded tripod with the bed Z offset", () => {
@@ -101,8 +323,10 @@ describe("<Telescope />", () => {
     const baseCamera = getStargazingCamera(props.config);
     const baseGround = getTelescopeGroundPosition(props.config);
     props.config.bedZOffset = 500;
-    props.camera = getStargazingCamera(props.config);
     const { container } = render(<Telescope {...props} />);
+    const sphere = container.querySelector("[name='telescope-sphere']");
+    expect(sphere?.getAttribute("position")).toEqual("0,0,1560");
+    showTelescope(container);
     const telescope = container.querySelector("[name='telescope']");
     const tripodTop = container.querySelector(
       "[name='telescope-tripod-top']",
@@ -126,12 +350,12 @@ describe("<Telescope />", () => {
     const props = fakeProps();
     props.config.animate = true;
     const { container, rerender } = render(<Telescope {...props} />);
+    showTelescope(container);
     const initialBody = container.querySelector("[name='telescope-body']");
     const initialBodyWorldZ = getTelescopeGroundPosition(props.config)[2]
       + Number(initialBody?.getAttribute("position")?.split(",")[2]);
 
     props.config = { ...props.config, bedZOffset: 500 };
-    props.camera = getStargazingCamera(props.config);
     rerender(<Telescope {...props} />);
     const telescope = container.querySelector("[name='telescope']");
     const visibilityOffset = container.querySelector(
@@ -146,28 +370,5 @@ describe("<Telescope />", () => {
       .toEqual(groundPosition[2]);
     expect(visibilityOffset?.parentElement).toBe(telescope);
     expect(bodyWorldZ).toEqual(initialBodyWorldZ);
-  });
-
-  it("aims the body along the stargazing camera orbit", () => {
-    const props = fakeProps();
-    props.camera = {
-      position: [0, 0, 0],
-      target: [0, 1, 1],
-    };
-    const { container } = render(<Telescope {...props} />);
-    const body = container.querySelector("[name='telescope-body']");
-    const bodyTilt = container.querySelector("[name='telescope-body-tilt']");
-    expect(bodyTilt?.parentElement).toBe(body);
-    expect(Number(body?.getAttribute("rotation-z")))
-      .toBeCloseTo(Math.PI / 2);
-    expect(Number(bodyTilt?.getAttribute("rotation-y")))
-      .toBeCloseTo(-Math.PI / 4);
-    expect(getTelescopeRotation({
-      position: [1, 1, 1],
-      target: [1, 1, 1],
-    })).toEqual({
-      heading: Math.PI,
-      tilt: -40 * Math.PI / 180,
-    });
   });
 });

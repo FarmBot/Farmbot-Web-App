@@ -1,29 +1,113 @@
 import React from "react";
-import { Cylinder } from "@react-three/drei";
+import { Cylinder, Html, Sphere } from "@react-three/drei";
 import { animated, useSpring } from "@react-spring/three";
 import { SpringValue } from "@react-spring/core";
-import { ThreeEvent } from "@react-three/fiber";
-import { Quaternion, Vector3 } from "three";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import {
+  BufferAttribute as ThreeBufferAttribute,
+  BufferGeometry as ThreeBufferGeometry,
+  Group as ThreeGroup, Quaternion, Vector3,
+  WebGLProgramParametersWithUniforms,
+} from "three";
 import { Config } from "../../config";
-import { Group, MeshPhongMaterial } from "../../components";
+import {
+  Group, MeshBasicMaterial, MeshPhongMaterial, Points, PointsMaterial,
+} from "../../components";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
 import { Camera } from "../../zoom_beacons_constants";
 import { setStargazingMode } from "../../../farm_designer/stargazing";
 import { getUtilitiesPostWorldPosition } from "./utilities_post_position";
 import { RenderOrder } from "../../constants";
+import { ToggleButton } from "../../../ui";
+import { t } from "../../../i18next_wrapper";
+import { Actions } from "../../../constants";
 
 const OFF_WHITE = "#f2efe6";
 const BLACK = "#111111";
 const UTILITIES_POST_HEIGHT = 300;
 const BED_OUTER_DISTANCE_MULTIPLIER = 1.5;
-const DEFAULT_TELESCOPE_TILT = -40 * Math.PI / 180;
+const DEFAULT_TELESCOPE_TILT = -20 * Math.PI / 180;
 const DEFAULT_TELESCOPE_HEADING = Math.PI;
-const HIDDEN_DISTANCE = 1200;
+const BODY_PIVOT_LOCAL_X = 0;
 const BODY_PIVOT_Z = 760;
 const TRIPOD_TOP_BASE_Z = 470;
-const CAMERA_LOCAL_X = -480;
+const EYEPIECE_LOCAL_X = -415;
+const CAMERA_EYE_RELIEF = 45;
+const CAMERA_LOCAL_X = EYEPIECE_LOCAL_X - CAMERA_EYE_RELIEF;
 const LENS_LOCAL_X = 466;
 const TELESCOPE_RENDER_ORDER = RenderOrder.plants + 0.5;
+const TELESCOPE_SPHERE_RADIUS = 60;
+const TELESCOPE_STAR_RADIUS = TELESCOPE_SPHERE_RADIUS + 0.5;
+const TELESCOPE_STAR_COUNT = 150;
+const TELESCOPE_STAR_MIN_SIZE = 0.5;
+const TELESCOPE_STAR_SIZE_RANGE = 2.5;
+const TELESCOPE_SPHERE_HEIGHT = 300;
+const TELESCOPE_POPUP_OFFSET = 130;
+const TELESCOPE_SPHERE_ROTATION_SPEED = Math.PI / 20;
+
+export const generateTelescopeStars = (random = Math.random) => {
+  const positions = new Float32Array(TELESCOPE_STAR_COUNT * 3);
+  const sizes = new Float32Array(TELESCOPE_STAR_COUNT);
+  for (let index = 0; index < TELESCOPE_STAR_COUNT; index++) {
+    const z = 2 * random() - 1;
+    const heading = 2 * Math.PI * random();
+    const radialDistance = Math.sqrt(1 - z * z);
+    const offset = index * 3;
+    positions[offset] = TELESCOPE_STAR_RADIUS
+      * radialDistance * Math.cos(heading);
+    positions[offset + 1] = TELESCOPE_STAR_RADIUS
+      * radialDistance * Math.sin(heading);
+    positions[offset + 2] = TELESCOPE_STAR_RADIUS * z;
+    sizes[index] = TELESCOPE_STAR_MIN_SIZE
+      + random() * TELESCOPE_STAR_SIZE_RANGE;
+  }
+  return { positions, sizes };
+};
+
+const createTelescopeStarGeometry = () => {
+  const { positions, sizes } = generateTelescopeStars();
+  const geometry = new ThreeBufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new ThreeBufferAttribute(positions, 3),
+  );
+  geometry.setAttribute(
+    "starSize",
+    new ThreeBufferAttribute(sizes, 1),
+  );
+  return geometry;
+};
+
+const telescopeStarGeometry = createTelescopeStarGeometry();
+
+export const telescopeStarShaderModification = (
+  shader: WebGLProgramParametersWithUniforms,
+) => {
+  shader.vertexShader = shader.vertexShader
+    .replace(
+      "#include <common>",
+      `#include <common>
+       attribute float starSize;`,
+    )
+    .replace(
+      "gl_PointSize = size;",
+      "gl_PointSize = size * starSize;",
+    );
+};
+
+export const telescopePopupZ = (sphereZ: number) =>
+  sphereZ + TELESCOPE_POPUP_OFFSET;
+
+export const rotateTelescopeSphere = (
+  sphere: ThreeGroup | null,
+  enabled: boolean,
+  delta: number,
+) => {
+  const rotation = sphere?.rotation;
+  if (enabled && rotation) {
+    rotation.z += delta * TELESCOPE_SPHERE_ROTATION_SPEED;
+  }
+};
 
 type TelescopeConfig = Pick<Config,
   "animate" | "bedHeight" | "bedLengthOuter" | "bedWidthOuter"
@@ -124,124 +208,286 @@ const telescopeBodyPoint = (
   ];
 };
 
-export const getStargazingCamera = (config: TelescopeConfig): Camera => ({
-  position: telescopeBodyPoint(config, CAMERA_LOCAL_X),
-  target: telescopeBodyPoint(config, LENS_LOCAL_X),
-});
-
-export const getTelescopeRotation = (camera: Camera) => {
-  const deltaX = camera.target[0] - camera.position[0];
-  const deltaY = camera.target[1] - camera.position[1];
-  const deltaZ = camera.target[2] - camera.position[2];
-  const horizontalDistance = Math.hypot(deltaX, deltaY);
-  if (horizontalDistance == 0 && deltaZ == 0) {
-    return {
-      heading: DEFAULT_TELESCOPE_HEADING,
-      tilt: DEFAULT_TELESCOPE_TILT,
-    };
-  }
+export const getStargazingCamera = (config: TelescopeConfig): Camera => {
   return {
-    heading: Math.atan2(deltaY, deltaX),
-    tilt: -Math.atan2(deltaZ, horizontalDistance),
+    position: telescopeBodyPoint(config, CAMERA_LOCAL_X),
+    target: telescopeBodyPoint(config, BODY_PIVOT_LOCAL_X),
   };
 };
 
+export type TelescopeState = "disabled" | "enabled";
+
+export const getTelescopeState = (
+  stargazing: boolean,
+  enabledRequested: boolean,
+): TelescopeState => {
+  return enabledRequested && !stargazing ? "enabled" : "disabled";
+};
+
+interface TelescopeSpringValues {
+  groupOffset: number;
+  telescopeOpacity: number;
+}
+
+export const telescopeSpringTargets = (
+  state: TelescopeState,
+  sphereZ: number,
+): TelescopeSpringValues => {
+  switch (state) {
+    case "enabled":
+      return {
+        groupOffset: 0,
+        telescopeOpacity: 1,
+      };
+    case "disabled":
+      return {
+        groupOffset: -sphereZ,
+        telescopeOpacity: 0,
+      };
+  }
+};
+
+interface TelescopePopupProps {
+  position: [number, number, number];
+  enabled: boolean;
+  onClose(): void;
+  onToggle(): void;
+}
+
+const stopPopupEvent = (event: React.SyntheticEvent) => {
+  event.stopPropagation();
+};
+
+const TelescopePopup = (props: TelescopePopupProps) =>
+  <Html
+    name={"telescope-popup"}
+    wrapperClass={"three-d-object-popup-wrapper"}
+    center={true}
+    position={props.position}>
+    <div
+      className={
+        "three-d-object-popup telescope-popup grid half-gap visible"}
+      onPointerDown={stopPopupEvent}
+      onContextMenu={stopPopupEvent}
+      onWheel={stopPopupEvent}
+      onClick={stopPopupEvent}>
+      <div className={"object-popup-header row grid-exp-2"}>
+        <h3>{t("Stargaze")}</h3>
+        <div className={"object-popup-button-cluster row no-gap"}>
+          <button
+            type={"button"}
+            className={"fa fa-times fb-icon-button invert"}
+            title={t("close")}
+            onClick={props.onClose} />
+        </div>
+      </div>
+      <div className={"object-popup-content telescope-popup-content grid"}>
+        <p>{t("How many crop constellations can you find?")}</p>
+        {props.enabled &&
+          <div className={"telescope-popup-toggle row grid-exp-2"}>
+            <label>{t("SHOW TELESCOPE")}</label>
+            <ToggleButton
+              toggleValue={props.enabled}
+              toggleAction={props.onToggle} />
+          </div>}
+      </div>
+    </div>
+  </Html>;
+
 export interface TelescopeProps {
   config: TelescopeConfig;
-  sunBelowHorizon: boolean;
+  sunIsSet: boolean | undefined;
   stargazing: boolean;
-  camera: Camera;
   dispatch: Function | undefined;
+  timeTravelDispatch?: Function | undefined;
 }
 
 export const Telescope = (props: TelescopeProps) => {
-  const { config, dispatch, sunBelowHorizon, stargazing } = props;
-  const visible = sunBelowHorizon && !stargazing;
+  const { config, dispatch, stargazing, sunIsSet } = props;
+  const [enabledRequested, setEnabledRequested] = React.useState(false);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  // eslint-disable-next-line no-null/no-null
+  const sphereRotationRef = React.useRef<ThreeGroup>(null);
+  const state = getTelescopeState(
+    stargazing,
+    enabledRequested,
+  );
   const groundPosition = getTelescopeGroundPosition(config);
   const bodyZ = telescopeBodyZ(config);
+  const sphereZ = bodyZ + TELESCOPE_SPHERE_HEIGHT;
   const tripodTopLength = bodyZ - TRIPOD_TOP_BASE_Z;
-  const rotation = getTelescopeRotation(props.camera);
+  const targets = telescopeSpringTargets(state, sphereZ);
+  const [telescopeMounted, setTelescopeMounted] =
+    React.useState(state == "enabled");
+  const handleSpringRest = React.useCallback(() => {
+    setTelescopeMounted(state == "enabled");
+  }, [state]);
   const [spring] = useSpring(() => ({
-    hideOffset: sunBelowHorizon ? 0 : -HIDDEN_DISTANCE,
-    opacity: visible ? 1 : 0,
-    heading: rotation.heading,
-    tilt: rotation.tilt,
+    to: targets,
     immediate: !config.animate,
     config: { tension: 120, friction: 20 },
+    onRest: handleSpringRest,
   }), [
     config.animate,
-    sunBelowHorizon,
-    rotation.heading,
-    rotation.tilt,
-    visible,
+    handleSpringRest,
+    targets.groupOffset,
+    targets.telescopeOpacity,
   ]);
+  const renderTelescope = state == "enabled" || telescopeMounted;
+  useFrame((_frameState, delta) => {
+    rotateTelescopeSphere(
+      sphereRotationRef.current,
+      state == "enabled",
+      delta,
+    );
+  });
   const openStargazing = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
-    if (visible) {
+    if (state == "enabled" && sunIsSet) {
+      setPopupOpen(false);
       dispatch?.(setStargazingMode(true));
+    } else if (state == "enabled") {
+      setPopupOpen(false);
+      props.timeTravelDispatch?.({
+        type: Actions.OPEN_POPUP,
+        payload: "timeTravel",
+      });
     }
   };
+  const togglePopup = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    if (popupOpen) {
+      setPopupOpen(false);
+      return;
+    }
+    if (!stargazing) {
+      setEnabledRequested(true);
+      setPopupOpen(true);
+    }
+  };
+  const showPointerCursor = () => {
+    if (!stargazing) { document.body.style.cursor = "pointer"; }
+  };
+  const resetPointerCursor = () => {
+    document.body.style.cursor = "default";
+  };
+  React.useEffect(() => () => {
+    document.body.style.cursor = "default";
+  }, []);
+  React.useEffect(() => {
+    if (!popupOpen) { return; }
+    const closePopup = (event: KeyboardEvent) => {
+      if (event.key == "Escape") { setPopupOpen(false); }
+    };
+    window.addEventListener("keydown", closePopup);
+    return () => window.removeEventListener("keydown", closePopup);
+  }, [popupOpen]);
 
   return <Group
     name={"telescope"}
     position-x={groundPosition[0]}
     position-y={groundPosition[1]}
     position-z={groundPosition[2]}
-    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}
-    onClick={openStargazing}>
+    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
     <AnimatedGroup
       name={"visibility-offset"}
-      position-z={spring.hideOffset}>
-      <TripodLeg name={"telescope-tripod-leg-1"}
-        end={[260, 0, 12]} opacity={spring.opacity} />
-      <TripodLeg name={"telescope-tripod-leg-2"}
-        end={[-130, 225, 12]} opacity={spring.opacity} />
-      <TripodLeg name={"telescope-tripod-leg-3"}
-        end={[-130, -225, 12]} opacity={spring.opacity} />
-      <Cylinder
-        name={"telescope-tripod-middle"}
-        args={[60, 60, 50, 24]}
-        position={[0, 0, 445]}
-        rotation={[Math.PI / 2, 0, 0]}
-        renderOrder={TELESCOPE_RENDER_ORDER}
-        castShadow={true}
-        receiveShadow={true}>
-        <TelescopeMaterial color={BLACK} opacity={spring.opacity} />
-      </Cylinder>
-      <Cylinder
-        name={"telescope-tripod-top"}
-        args={[30, 30, tripodTopLength, 24]}
-        position={[0, 0, TRIPOD_TOP_BASE_Z + tripodTopLength / 2]}
-        rotation={[Math.PI / 2, 0, 0]}
-        renderOrder={TELESCOPE_RENDER_ORDER}
-        castShadow={true}
-        receiveShadow={true}>
-        <TelescopeMaterial color={BLACK} opacity={spring.opacity} />
-      </Cylinder>
-      <AnimatedGroup
-        name={"telescope-body"}
-        position={[0, 0, bodyZ]}
-        rotation-z={spring.heading}>
-        <AnimatedGroup
-          name={"telescope-body-tilt"}
-          rotation-y={spring.tilt}>
-          <TelescopeCylinder name={"telescope-body-narrow"}
-            radius={35} length={240} position={[-280, 0, 0]}
-            opacity={spring.opacity} />
-          <TelescopeCylinder name={"telescope-body-middle"}
-            radius={50} length={320} position={[0, 0, 0]}
-            opacity={spring.opacity} />
-          <TelescopeCylinder name={"telescope-body-wide"}
-            radius={70} length={300} position={[310, 0, 0]}
-            opacity={spring.opacity} />
-          <TelescopeCylinder name={"telescope-eyepiece"}
-            radius={22} length={35} position={[-435, 0, 0]}
-            color={BLACK} opacity={spring.opacity} />
-          <TelescopeCylinder name={"telescope-lens"}
-            radius={64} length={3} position={[LENS_LOCAL_X, 0, 0]}
-            color={BLACK} opacity={spring.opacity} />
-        </AnimatedGroup>
-      </AnimatedGroup>
+      position-z={spring.groupOffset}>
+      <Group name={"celestial-sphere-rotation"} ref={sphereRotationRef}>
+        <Sphere
+          name={"telescope-sphere"}
+          args={[TELESCOPE_SPHERE_RADIUS, 24, 24]}
+          position={[0, 0, sphereZ]}
+          renderOrder={TELESCOPE_RENDER_ORDER}
+          onPointerEnter={showPointerCursor}
+          onPointerLeave={resetPointerCursor}
+          onClick={togglePopup}>
+          <MeshBasicMaterial
+            color={"#000000"}
+            depthWrite={true} />
+        </Sphere>
+        <Points
+          name={"celestial-sphere-stars"}
+          geometry={telescopeStarGeometry}
+          position={[0, 0, sphereZ]}
+          renderOrder={TELESCOPE_RENDER_ORDER + 0.01}
+          onPointerEnter={showPointerCursor}
+          onPointerLeave={resetPointerCursor}
+          onClick={togglePopup}
+          // eslint-disable-next-line no-null/no-null
+          dispose={null}>
+          <PointsMaterial
+            color={"white"}
+            size={1}
+            sizeAttenuation={true}
+            onBeforeCompile={telescopeStarShaderModification}
+            depthWrite={false} />
+        </Points>
+      </Group>
+      {popupOpen && !stargazing &&
+        <TelescopePopup
+          position={[0, 0, telescopePopupZ(sphereZ)]}
+          enabled={state == "enabled"}
+          onClose={() => setPopupOpen(false)}
+          onToggle={() => {
+            setEnabledRequested(false);
+            setPopupOpen(false);
+          }} />}
+      {renderTelescope && <Group
+        name={"telescope-model"}
+        onClick={openStargazing}>
+        <TripodLeg name={"telescope-tripod-leg-1"}
+          end={[260, 0, 12]} opacity={spring.telescopeOpacity} />
+        <TripodLeg name={"telescope-tripod-leg-2"}
+          end={[-130, 225, 12]} opacity={spring.telescopeOpacity} />
+        <TripodLeg name={"telescope-tripod-leg-3"}
+          end={[-130, -225, 12]} opacity={spring.telescopeOpacity} />
+        <Cylinder
+          name={"telescope-tripod-middle"}
+          args={[60, 60, 50, 24]}
+          position={[0, 0, 445]}
+          rotation={[Math.PI / 2, 0, 0]}
+          renderOrder={TELESCOPE_RENDER_ORDER}
+          castShadow={true}
+          receiveShadow={true}>
+          <TelescopeMaterial color={BLACK}
+            opacity={spring.telescopeOpacity} />
+        </Cylinder>
+        <Cylinder
+          name={"telescope-tripod-top"}
+          args={[30, 30, tripodTopLength, 24]}
+          position={[0, 0, TRIPOD_TOP_BASE_Z + tripodTopLength / 2]}
+          rotation={[Math.PI / 2, 0, 0]}
+          renderOrder={TELESCOPE_RENDER_ORDER}
+          castShadow={true}
+          receiveShadow={true}>
+          <TelescopeMaterial color={BLACK}
+            opacity={spring.telescopeOpacity} />
+        </Cylinder>
+        <Group
+          name={"telescope-body"}
+          position={[0, 0, bodyZ]}
+          rotation-z={DEFAULT_TELESCOPE_HEADING}>
+          <Group
+            name={"telescope-body-tilt"}
+            rotation-y={DEFAULT_TELESCOPE_TILT}>
+            <TelescopeCylinder name={"telescope-body-narrow"}
+              radius={35} length={240} position={[-280, 0, 0]}
+              opacity={spring.telescopeOpacity} />
+            <TelescopeCylinder name={"telescope-body-middle"}
+              radius={50} length={320} position={[0, 0, 0]}
+              opacity={spring.telescopeOpacity} />
+            <TelescopeCylinder name={"telescope-body-wide"}
+              radius={70} length={300} position={[310, 0, 0]}
+              opacity={spring.telescopeOpacity} />
+            <TelescopeCylinder name={"telescope-eyepiece"}
+              radius={22} length={35} position={[EYEPIECE_LOCAL_X, 0, 0]}
+              color={BLACK} opacity={spring.telescopeOpacity} />
+            <TelescopeCylinder name={"telescope-lens"}
+              radius={64} length={3} position={[LENS_LOCAL_X, 0, 0]}
+              color={BLACK} opacity={spring.telescopeOpacity} />
+          </Group>
+        </Group>
+      </Group>}
     </AnimatedGroup>
   </Group>;
 };

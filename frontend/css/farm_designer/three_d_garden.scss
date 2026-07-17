@@ -66,6 +66,7 @@
   .three-d-object-popup {
     width: min(30rem, calc(100vw - 2rem));
     padding: 1rem;
+    padding-top: 0.8rem;
     color: var(--text-color);
     cursor: default;
     pointer-events: auto;
@@ -95,7 +96,7 @@
         font-family: $inknut;
         font-size: 2rem;
         font-weight: bold;
-        line-height: 1.2;
+        line-height: 1.4;
         text-overflow: ellipsis;
         white-space: nowrap;
 
@@ -258,6 +259,30 @@
         button:not(.bp6-button) {
           margin: 0;
           float: none;
+          justify-self: end;
+        }
+      }
+    }
+
+    &.telescope-popup {
+      .telescope-popup-content {
+        gap: 1rem;
+
+        p {
+          margin: 0;
+          font-size: 1.2rem;
+          line-height: 1.4;
+        }
+      }
+
+      .telescope-popup-toggle {
+        align-items: center;
+
+        label {
+          font-weight: bold;
+        }
+
+        .fb-toggle-button {
           justify-self: end;
         }
       }

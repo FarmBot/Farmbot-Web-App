@@ -404,6 +404,8 @@ export interface SmoothCameraState extends Camera {
   fov: number;
 }
 
+export type CameraInterpolation = "orbit" | "linear";
+
 export const CAMERA_SPRING_CONFIG = {
   mass: 1,
   tension: 160,
@@ -535,6 +537,27 @@ export const interpolateCameraState = (
   };
 };
 
+export const interpolateLinearCameraState = (
+  from: SmoothCameraState,
+  to: SmoothCameraState,
+  progress: number,
+): SmoothCameraState => {
+  const clampedProgress = Math.max(0, Math.min(1, progress));
+  const lerp = (start: number, end: number) =>
+    start + (end - start) * clampedProgress;
+  const interpolateVector = (
+    start: VectorXyz,
+    end: VectorXyz,
+  ): VectorXyz => start.map((value, index) =>
+    lerp(value, end[index])) as VectorXyz;
+  return {
+    position: interpolateVector(from.position, to.position),
+    target: interpolateVector(from.target, to.target),
+    zoom: lerp(from.zoom, to.zoom),
+    fov: lerp(from.fov, to.fov),
+  };
+};
+
 const cameraKey = (state: SmoothCameraState) =>
   [
     ...state.position,
@@ -636,6 +659,7 @@ export interface UseSmoothCameraProps {
   cameraObject?: SmoothCameraObject | null;
   controls?: SmoothCameraControls | null;
   updateStateDuringTransition?: boolean;
+  interpolation?: CameraInterpolation;
   cancelRef?: React.MutableRefObject<(() => void) | undefined>;
   onRest?(): void;
 }
@@ -709,7 +733,10 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
       config: CAMERA_SPRING_CONFIG,
       onChange: result => {
         const value = result.value as { progress?: number };
-        const next = interpolateCameraState(
+        const interpolate = props.interpolation == "linear"
+          ? interpolateLinearCameraState
+          : interpolateCameraState;
+        const next = interpolate(
           from,
           target,
           value.progress ?? 1,
@@ -732,6 +759,7 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
     props.cameraObject,
     props.controls,
     props.enabled,
+    props.interpolation,
     onRest,
     target,
     props.updateStateDuringTransition,

@@ -13,9 +13,11 @@ import {
   FocusVisibilityDiv,
   FocusVisibilityGroup,
   interpolateCameraState,
+  interpolateLinearCameraState,
   interpolateZUpSphericalDirection,
   readSmoothCameraState,
   shouldUnmountFocusVisibilityGroup,
+  SmoothCameraState,
   useSmoothCamera,
 } from "../focus_transition";
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
@@ -344,6 +346,30 @@ describe("focus transitions", () => {
       zoom: 2,
       fov: 40,
     });
+  });
+
+  it("linearly interpolates camera position and clamps overshoot", () => {
+    const from = {
+      position: [0, 10, 20] as [number, number, number],
+      target: [30, 40, 50] as [number, number, number],
+      zoom: 1,
+      fov: 60,
+    };
+    const to = {
+      position: [100, 110, 120] as [number, number, number],
+      target: [130, 140, 150] as [number, number, number],
+      zoom: 3,
+      fov: 20,
+    };
+
+    expect(interpolateLinearCameraState(from, to, 0.5)).toEqual({
+      position: [50, 60, 70],
+      target: [80, 90, 100],
+      zoom: 2,
+      fov: 40,
+    });
+    expect(interpolateLinearCameraState(from, to, 1.1)).toEqual(to);
+    expect(interpolateLinearCameraState(from, to, -0.1)).toEqual(from);
   });
 
   it("preserves apparent scale during FOV interpolation", () => {
@@ -711,6 +737,73 @@ describe("focus transitions", () => {
       window.cancelAnimationFrame = originalCancelAnimationFrame;
       nowSpy.mockRestore();
     }
+  });
+
+  it("applies linear camera interpolation during a transition", () => {
+    let springProps: {
+      onChange(result: { value: { progress?: number } }): void;
+    } | undefined;
+    const api = {
+      start: jest.fn(props => {
+        springProps = props as typeof springProps;
+      }),
+      stop: jest.fn(),
+    };
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(() => [{}, api] as never);
+    const cameraObject = {
+      position: {
+        set: jest.fn(),
+        toArray: () => [0, 10, 20],
+      },
+      zoom: 1,
+      fov: 60,
+      lookAt: jest.fn(),
+      updateProjectionMatrix: jest.fn(),
+    };
+    const controls = {
+      target: {
+        set: jest.fn(),
+        toArray: () => [30, 40, 50],
+      },
+      update: jest.fn(),
+    };
+    const CameraConsumer = (props: {
+      camera: SmoothCameraState;
+    }) => {
+      useSmoothCamera({
+        camera: props.camera,
+        zoom: props.camera.zoom,
+        fov: props.camera.fov,
+        enabled: true,
+        cameraObject,
+        controls,
+        interpolation: "linear",
+      });
+      return <div />;
+    };
+    const from: SmoothCameraState = {
+      position: [0, 10, 20],
+      target: [30, 40, 50],
+      zoom: 1,
+      fov: 60,
+    };
+    const to: SmoothCameraState = {
+      position: [100, 110, 120],
+      target: [130, 140, 150],
+      zoom: 3,
+      fov: 20,
+    };
+    const view = render(<CameraConsumer camera={from} />);
+    view.rerender(<CameraConsumer camera={to} />);
+    cameraObject.position.set.mockClear();
+    controls.target.set.mockClear();
+
+    act(() => springProps?.onChange({ value: { progress: 0.5 } }));
+
+    expect(cameraObject.position.set).toHaveBeenCalledWith(50, 60, 70);
+    expect(controls.target.set).toHaveBeenCalledWith(80, 90, 100);
+    useSpringSpy.mockImplementation(originalUseSpring as never);
   });
 
   it("calls the camera completion callback only after a completed spring", () => {

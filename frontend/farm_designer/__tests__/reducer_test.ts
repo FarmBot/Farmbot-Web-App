@@ -22,6 +22,7 @@ describe("designer reducer", () => {
     expect(initialState.threeDSectionWidth).toEqual(200);
     expect(initialState.threeDSectionFollowBot).toEqual(true);
     expect(initialState.threeDSectionCutAll).toEqual(true);
+    expect(initialState.threeDViewMode).toEqual("normal");
     expect(initialState.threeDStargazingFov).toEqual(20);
   });
 
@@ -238,23 +239,29 @@ describe("designer reducer", () => {
     expect(newState.threeDPerspective).toEqual(false);
   });
 
-  it("opens and closes stargazing mode", () => {
+  it("changes between explicit 3D view modes", () => {
     const state = oldState();
     state.panelOpen = true;
     state.threeDPerspective = true;
     const activeState = designer(state, {
-      type: Actions.SET_3D_STARGAZING_MODE,
-      payload: true,
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "stargazing",
     });
-    expect(activeState.threeDStargazingMode).toEqual(true);
+    expect(activeState.threeDViewMode).toEqual("stargazing");
     expect(activeState.threeDPerspective).toEqual(true);
     expect(activeState.panelOpen).toEqual(false);
 
-    const inactiveState = designer(activeState, {
-      type: Actions.SET_3D_STARGAZING_MODE,
-      payload: false,
+    const spaceflightState = designer(activeState, {
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "spaceflight",
     });
-    expect(inactiveState.threeDStargazingMode).toEqual(false);
+    expect(spaceflightState.threeDViewMode).toEqual("spaceflight");
+
+    const inactiveState = designer(spaceflightState, {
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "normal",
+    });
+    expect(inactiveState.threeDViewMode).toEqual("normal");
     expect(inactiveState.threeDPerspective).toEqual(true);
     expect(inactiveState.panelOpen).toEqual(false);
   });

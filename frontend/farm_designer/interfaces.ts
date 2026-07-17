@@ -212,12 +212,13 @@ export interface DesignerState {
   threeDSectionWidth: number;
   threeDSectionFollowBot: boolean;
   threeDSectionCutAll: boolean;
-  threeDStargazingMode: boolean;
+  threeDViewMode: ThreeDViewMode;
   threeDStargazingFov: number;
   threeDTime: string | undefined;
 }
 
 export type ThreeDSectionAxis = "x" | "y";
+export type ThreeDViewMode = "normal" | "stargazing" | "spaceflight";
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
 export type ExecutableQuery =

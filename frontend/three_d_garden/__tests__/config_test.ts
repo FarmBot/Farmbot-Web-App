@@ -7,7 +7,7 @@ import {
 describe("modifyConfig()", () => {
   it("enables labels on hover by default", () => {
     expect(INITIAL.labelsOnHover).toEqual(true);
-    expect(INITIAL.constellations).toEqual(true);
+    expect(INITIAL.constellations).toEqual(false);
     expect(INITIAL.constellationsDebug).toEqual(false);
   });
 
@@ -30,6 +30,13 @@ describe("modifyConfig()", () => {
     });
     expect(initial.bedType).toEqual("Standard");
     expect(result.bedType).toEqual("Standard");
+  });
+
+  it("uses scene-specific ground textures", () => {
+    expect(modifyConfig(clone(INITIAL), { scene: "Greenhouse" }).groundTexture)
+      .toEqual("bricks");
+    expect(modifyConfig(clone(INITIAL), { scene: "Mars" }).groundTexture)
+      .toEqual("sand");
   });
 
   it("modifies config: Jr", () => {
@@ -80,7 +87,7 @@ describe("modifyConfigsFromUrlParams()", () => {
 
   it("sets other config", () => {
     window.location.search =
-      "?kit=JR&x=1&ground=true&constellations=false"
+      "?kit=JR&x=1&ground=true&constellations=true"
       + "&constellationsDebug=true";
     const initial = clone(INITIAL);
     initial.sizePreset = "Genesis XL";
@@ -90,7 +97,7 @@ describe("modifyConfigsFromUrlParams()", () => {
     expect(result.sizePreset).toEqual("Jr");
     expect(result.x).toEqual(1);
     expect(result.ground).toEqual(true);
-    expect(result.constellations).toEqual(false);
+    expect(result.constellations).toEqual(true);
     expect(result.constellationsDebug).toEqual(true);
   });
 });

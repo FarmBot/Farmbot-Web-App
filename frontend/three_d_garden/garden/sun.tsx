@@ -36,6 +36,10 @@ const DAY_SECONDS = 24 * 60 * 60;
 const SUN_TIME_STEP_SECONDS = 60;
 const BELOW_HORIZON_SUN_SPEED = 10;
 const BELOW_HORIZON_SPEED_INCLINATION = -10;
+export const isSkyFullyBlack = (
+  sunFactor: number,
+  sunValue: number,
+): boolean => sunFactor * sunValue <= 0;
 const sunAnimationCache: Record<string, SunAnimationSample[]> = {};
 const SEASON_SUN_DATES: Record<string, [number, number]> = {
   [Season.Spring]: [2, 20],
@@ -68,10 +72,13 @@ interface SunAnimationSample {
 
 export interface SunProps {
   config: Config;
-  stargazing: boolean;
+  cameraSideClipEnabled: boolean;
+  constellationDiscoveryEnabled: boolean;
+  showSun: boolean;
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
-  onSunBelowHorizonChange?(sunBelowHorizon: boolean): void;
+  onSunSetChange?(sunIsSet: boolean): void;
+  onConstellationFound?(cropSlug: string): void;
 }
 
 export const calcSunCoordinate = (
@@ -272,7 +279,6 @@ interface AnimatedSunFrameProps extends SunProps {
   setSunSky(
     sunFactor: number,
     sunValue: number,
-    sunInclination: number,
   ): void;
 }
 
@@ -302,7 +308,7 @@ export const AnimatedSunFrame = (props: AnimatedSunFrameProps) => {
     const sunFactor = calcSunI(inclination);
     const position = sunPosition(inclination, azimuth, BigDistance.sunActual);
 
-    setSunSky(sunFactor, config.sun, inclination);
+    setSunSky(sunFactor, config.sun);
 
     const light = lightRef.current;
     if (light) {
@@ -368,7 +374,7 @@ const SunBase = (props: SunProps) => {
   const renderedSunFactor = calcSunI(renderedSunInclination);
   const showStarField =
     renderedSunFactor < 1 || !!props.startTimeRef;
-  const sunBelowHorizonRef = React.useRef<boolean | undefined>(undefined);
+  const sunIsSetRef = React.useRef<boolean | undefined>(undefined);
   const shadowBounds = React.useMemo(() => {
     const bedXBounds = Math.max(
       Math.abs(config.bedXOffset),
@@ -392,16 +398,16 @@ const SunBase = (props: SunProps) => {
   const setSunSky = (
     sunFactor: number,
     sunValue: number,
-    sunInclination: number,
   ) => {
+    const skySunValue = sunFactor * sunValue;
     props.skyRef.current?.color?.setRGB(
-      ...skyColor(sunFactor * sunValue, config.scene),
+      ...skyColor(skySunValue, config.scene),
     );
     constellationsRef.current?.setNightFactor(1 - sunFactor);
-    const sunBelowHorizon = sunInclination <= 0;
-    if (sunBelowHorizonRef.current != sunBelowHorizon) {
-      sunBelowHorizonRef.current = sunBelowHorizon;
-      props.onSunBelowHorizonChange?.(sunBelowHorizon);
+    const nextSunIsSet = isSkyFullyBlack(sunFactor, sunValue);
+    if (sunIsSetRef.current != nextSunIsSet) {
+      sunIsSetRef.current = nextSunIsSet;
+      props.onSunSetChange?.(nextSunIsSet);
     }
   };
 
@@ -470,7 +476,7 @@ const SunBase = (props: SunProps) => {
       != undefined) {
       return;
     }
-    setSunSky(renderedSunFactor, config.sun, renderedSunInclination);
+    setSunSky(renderedSunFactor, config.sun);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config.animateSeasons,
@@ -494,60 +500,65 @@ const SunBase = (props: SunProps) => {
         sunIntensity={renderedSunIntensity}
         setPoint={setPoint}
         setSunSky={setSunSky} />}
-    <DirectionalLight
-      ref={lightRef}
-      intensity={renderedSunIntensity * config.sun / 100 * renderedSunFactor}
-      color={initialSunColor}
-      castShadow={!config.lowDetail}
-      shadow-bias={shadowBias}
-      shadow-radius={shadowRadius}
-      shadow-blurSamples={shadowBlurSamples}
-      shadow-mapSize-width={1024}
-      shadow-mapSize-height={1024}
-      shadow-camera-near={1}
-      shadow-camera-far={BigDistance.sunAffect}
-      shadow-camera-left={-shadowBounds}
-      shadow-camera-right={shadowBounds}
-      shadow-camera-top={shadowBounds}
-      shadow-camera-bottom={-shadowBounds}
-      position={sunPos}
-    />
-    {config.lightsDebug &&
-      <Line ref={lineRef} points={[point, origin]} color={SUN_COLOR} />}
-    {config.lightsDebug &&
-      <Trail width={1000} color={"yellow"} length={100} attenuation={t => t}>
-        <Sphere
-          ref={debugSunRef}
-          args={[500, 16, 16]}
-          position={sunPos}>
-          <MeshBasicMaterial color={SUN_COLOR} />
-        </Sphere>
-      </Trail>}
-    <Sphere
-      ref={sunRef}
-      args={[1000, 32, 32]}
-      position={sunPosition(
-        renderedSunInclination,
-        renderedSunAzimuth,
-        BigDistance.sunVisual)}>
-      <MeshBasicMaterial color={SUN_COLOR} />
-    </Sphere>
+    <Group name={"sun-visuals"} visible={props.showSun}>
+      <DirectionalLight
+        ref={lightRef}
+        intensity={renderedSunIntensity * config.sun / 100 * renderedSunFactor}
+        color={initialSunColor}
+        castShadow={!config.lowDetail}
+        shadow-bias={shadowBias}
+        shadow-radius={shadowRadius}
+        shadow-blurSamples={shadowBlurSamples}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-near={1}
+        shadow-camera-far={BigDistance.sunAffect}
+        shadow-camera-left={-shadowBounds}
+        shadow-camera-right={shadowBounds}
+        shadow-camera-top={shadowBounds}
+        shadow-camera-bottom={-shadowBounds}
+        position={sunPos}
+      />
+      {config.lightsDebug &&
+        <Line ref={lineRef} points={[point, origin]} color={SUN_COLOR} />}
+      {config.lightsDebug &&
+        <Trail width={1000} color={"yellow"} length={100} attenuation={t => t}>
+          <Sphere
+            ref={debugSunRef}
+            args={[500, 16, 16]}
+            position={sunPos}>
+            <MeshBasicMaterial color={SUN_COLOR} />
+          </Sphere>
+        </Trail>}
+      <Sphere
+        name={"sun-visual"}
+        ref={sunRef}
+        args={[1000, 32, 32]}
+        position={sunPosition(
+          renderedSunInclination,
+          renderedSunAzimuth,
+          BigDistance.sunVisual)}>
+        <MeshBasicMaterial color={SUN_COLOR} />
+      </Sphere>
+      {config.lightsDebug && <SkyGrid config={config} />}
+      {config.lightsDebug && <Sphere
+        ref={sunFlatRef}
+        args={[500, 8, 8]}
+        position={sunPosition(0, renderedSunAzimuth, BigDistance.ground)}>
+        <MeshBasicMaterial color={SUN_COLOR} />
+      </Sphere>}
+    </Group>
     {showStarField &&
       <React.Suspense fallback={undefined}>
         <Constellations
           ref={constellationsRef}
           enabled={config.constellations}
           debug={config.constellationsDebug}
-          stargazing={props.stargazing}
+          cameraSideClipEnabled={props.cameraSideClipEnabled}
+          discoveryEnabled={props.constellationDiscoveryEnabled}
+          onConstellationFound={props.onConstellationFound}
           nightFactor={1 - renderedSunFactor} />
       </React.Suspense>}
-    {config.lightsDebug && <SkyGrid config={config} />}
-    {config.lightsDebug && <Sphere
-      ref={sunFlatRef}
-      args={[500, 8, 8]}
-      position={sunPosition(0, renderedSunAzimuth, BigDistance.ground)}>
-      <MeshBasicMaterial color={SUN_COLOR} />
-    </Sphere>}
   </Group>;
 };
 
@@ -571,9 +582,13 @@ const SUN_CONFIG_FIELDS: (keyof Config)[] = [
 
 export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
   prev.skyRef === next.skyRef
-  && prev.stargazing === next.stargazing
+  && prev.cameraSideClipEnabled === next.cameraSideClipEnabled
+  && prev.constellationDiscoveryEnabled
+  === next.constellationDiscoveryEnabled
+  && prev.showSun === next.showSun
   && prev.startTimeRef === next.startTimeRef
-  && prev.onSunBelowHorizonChange === next.onSunBelowHorizonChange
+  && prev.onSunSetChange === next.onSunSetChange
+  && prev.onConstellationFound === next.onConstellationFound
   && SUN_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 

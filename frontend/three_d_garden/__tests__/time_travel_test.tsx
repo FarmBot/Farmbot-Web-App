@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  TimeTravelContent, TimeTravelContentProps,
+  TimeTravelContent, TimeTravelContentProps, TimeTravelControls,
   TimeTravelTarget, TimeTravelTargetProps,
 } from "../time_travel";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -122,5 +122,16 @@ describe("<TimeTravelContent />", () => {
       type: Actions.SET_3D_TIME,
       payload: undefined,
     });
+  });
+
+  it("renders safely without a dispatch function", () => {
+    render(<TimeTravelControls
+      dispatch={undefined}
+      threeDTime={"12:00"}
+      label={"TIME TRAVEL"} />);
+    fireEvent.click(screen.getByTitle("minus hour"));
+    fireEvent.click(screen.getByTitle("reset hour"));
+    fireEvent.click(screen.getByTitle("plus hour"));
+    expect(screen.getByText("TIME TRAVEL")).toBeTruthy();
   });
 });

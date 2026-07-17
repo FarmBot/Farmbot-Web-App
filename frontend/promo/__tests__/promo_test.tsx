@@ -14,6 +14,9 @@ import { PROMO_RESOURCES_KEY } from "../resources";
 import { Actions } from "../../constants";
 import { getAnimatedSeasonSunCoordinate } from
   "../../three_d_garden/garden/sun";
+import { CROP_SLUGS } from "../../crops/metadata";
+import { STARGAZING_PROGRESS_STORAGE_KEY } from
+  "../../farm_designer/stargazing_progress_key";
 
 type CanvasComponentProps = React.ComponentProps<typeof reactThreeFiber.Canvas>;
 type CanvasCreatedState =
@@ -98,22 +101,26 @@ describe("<Promo />", () => {
 
   it("opens and closes stargazing", async () => {
     window.location.search = "?animateSeasons=true";
+    localStorage.setItem(
+      STARGAZING_PROGRESS_STORAGE_KEY,
+      JSON.stringify(CROP_SLUGS.slice(0, 50)),
+    );
     const { container, unmount } = render(<Promo />);
     const gardenProps = () =>
       gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1][0];
 
-    expect(gardenProps().stargazing).toEqual(expect.objectContaining({
-      active: false,
+    expect(gardenProps().celestialView).toEqual(expect.objectContaining({
+      mode: "normal",
       fov: 20,
     }));
     expect(gardenProps().config.animateSeasons).toEqual(true);
     const initialSunAzimuth = gardenProps().config.sunAzimuth;
     const initialSunInclination = gardenProps().config.sunInclination;
-    act(() => gardenProps().stargazing.dispatch({
-      type: Actions.SET_3D_STARGAZING_MODE,
-      payload: true,
+    act(() => gardenProps().celestialView.dispatch({
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "stargazing",
     }));
-    expect(gardenProps().stargazing.active).toEqual(true);
+    expect(gardenProps().celestialView.mode).toEqual("stargazing");
     const midnight = getAnimatedSeasonSunCoordinate(
       String(gardenProps().config.plants),
       0,
@@ -130,14 +137,21 @@ describe("<Promo />", () => {
     expect(container.querySelector(".promo-info"))
       .toHaveClass("focus-transition-hidden");
 
-    act(() => gardenProps().stargazing.dispatch({
+    fireEvent.click(screen.getByRole("button", { name: "Spaceflight" }));
+    expect(gardenProps().celestialView.mode).toEqual("spaceflight");
+    fireEvent.click(screen.getByRole("button", {
+      name: "Return to stargazing",
+    }));
+    expect(gardenProps().celestialView.mode).toEqual("stargazing");
+
+    act(() => gardenProps().celestialView.dispatch({
       type: Actions.SET_3D_STARGAZING_FOV,
       payload: 55,
     }));
-    expect(gardenProps().stargazing.fov).toEqual(55);
+    expect(gardenProps().celestialView.fov).toEqual(55);
 
     fireEvent.click(screen.getByRole("button", { name: "Exit stargazing" }));
-    expect(gardenProps().stargazing.active).toEqual(false);
+    expect(gardenProps().celestialView.mode).toEqual("normal");
     expect(gardenProps().config).toEqual(expect.objectContaining({
       animateSeasons: true,
       sunAzimuth: initialSunAzimuth,
@@ -152,6 +166,28 @@ describe("<Promo />", () => {
     unmount();
   });
 
+  it("updates the promo sun from telescope time travel", () => {
+    const { unmount } = render(<Promo />);
+    const gardenProps = () =>
+      gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1][0];
+
+    act(() => gardenProps().timeTravelDispatch({
+      type: Actions.SET_3D_TIME,
+      payload: "12:00",
+    }));
+    expect(gardenProps()).toEqual(expect.objectContaining({
+      threeDTime: "12:00",
+      config: expect.objectContaining({ animateSeasons: false }),
+    }));
+
+    act(() => gardenProps().timeTravelDispatch({
+      type: Actions.SET_3D_TIME,
+      payload: undefined,
+    }));
+    expect(gardenProps().threeDTime).toBeUndefined();
+    unmount();
+  });
+
   it("keeps focus and stargazing modes mutually exclusive", () => {
     focusFromUrlParamsSpy.mockReturnValue("What you can grow");
     const { unmount } = render(<Promo />);
@@ -160,23 +196,23 @@ describe("<Promo />", () => {
 
     expect(gardenProps()).toEqual(expect.objectContaining({
       activeFocus: "What you can grow",
-      stargazing: expect.objectContaining({ active: false }),
+      celestialView: expect.objectContaining({ mode: "normal" }),
     }));
 
-    act(() => gardenProps().stargazing.dispatch({
-      type: Actions.SET_3D_STARGAZING_MODE,
-      payload: true,
+    act(() => gardenProps().celestialView.dispatch({
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "stargazing",
     }));
     expect(gardenProps()).toEqual(expect.objectContaining({
       activeFocus: "",
-      stargazing: expect.objectContaining({ active: true }),
+      celestialView: expect.objectContaining({ mode: "stargazing" }),
     }));
     expect(pushStateSpy.mock.calls[0][2]).not.toContain("focus=");
 
     act(() => gardenProps().setActiveFocus("Included tools"));
     expect(gardenProps()).toEqual(expect.objectContaining({
       activeFocus: "Included tools",
-      stargazing: expect.objectContaining({ active: false }),
+      celestialView: expect.objectContaining({ mode: "normal" }),
     }));
     unmount();
   });
@@ -218,11 +254,11 @@ describe("<Promo />", () => {
 
   it("applies constellation promo configs", () => {
     window.location.search =
-      "?constellations=false&constellationsDebug=true";
+      "?constellations=true&constellationsDebug=true";
     const { unmount } = render(<Promo />);
     expect(gardenModelSpy.mock.calls[0][0].config).toEqual(
       expect.objectContaining({
-        constellations: false,
+        constellations: true,
         constellationsDebug: true,
       }),
     );

@@ -8,7 +8,9 @@ import {
   Constellations,
   ConstellationsHandle,
   createConstellationAnimationState,
+  createConstellationDiscoveryState,
   createConstellationPlacements,
+  discoverConstellationsInView,
   generateStars,
   getBackgroundStarGeometry,
   getConstellationImageGeometry,
@@ -17,6 +19,8 @@ import {
   getConstellationStarGeometry,
   getStarData,
   headingDistance,
+  isConstellationAnimationActive,
+  isConstellationCameraSideClipped,
   LoadedConstellations,
   projectConstellationPoint,
   resetConstellationAnimation,
@@ -33,7 +37,7 @@ import {
 } from "../../components";
 import {
   BufferAttribute, BufferGeometry, Material,
-  WebGLProgramParametersWithUniforms,
+  PerspectiveCamera, Vector3, WebGLProgramParametersWithUniforms,
 } from "three";
 import {
   actRenderer, createRenderer, unmountRenderer,
@@ -181,13 +185,13 @@ describe("constellation animation", () => {
 
     advanceConstellationAnimation(runtime, state, 0, () => 0);
     expect(state.startTimes[0]).toEqual(0);
-    expect(state.nextStartTime).toEqual(1);
+    expect(state.nextStartTime).toEqual(0.75);
 
     advanceConstellationAnimation(runtime, state, 0.5, () => 0);
-    expect(state.nextStartTime).toEqual(1);
+    expect(state.nextStartTime).toEqual(0.75);
 
-    advanceConstellationAnimation(runtime, state, 1, () => 0);
-    expect(state.startTimes[1]).toEqual(1);
+    advanceConstellationAnimation(runtime, state, 0.75, () => 0);
+    expect(state.startTimes[1]).toEqual(0.75);
 
     resetConstellationAnimation(runtime, state);
     expect(state).toEqual({
@@ -208,7 +212,55 @@ describe("constellation animation", () => {
 
     advanceConstellationAnimation(runtime, state, 1, () => 0);
     expect(state.startTimes).toEqual([0]);
-    expect(state.nextStartTime).toEqual(2);
+    expect(state.nextStartTime).toEqual(1.75);
+  });
+
+  it("finds active constellation centers in the camera frustum once", () => {
+    const runtime = getConstellationRuntime(fakeCatalog());
+    runtime.centers = [
+      new Vector3(0, 0, -10),
+      new Vector3(20, 0, -10),
+    ];
+    const animationState: ConstellationAnimationState = {
+      nextStartTime: 1,
+      startTimes: [0, 0],
+    };
+    const discoveryState = createConstellationDiscoveryState();
+    const camera = new PerspectiveCamera(60, 1, 1, 100);
+    camera.updateMatrixWorld();
+    const onConstellationFound = jest.fn();
+    const discover = () => discoverConstellationsInView({
+      runtime,
+      animationState,
+      discoveryState,
+      camera,
+      now: 3.01,
+      cameraSideClipEnabled: false,
+      onConstellationFound,
+    });
+
+    discover();
+    discover();
+
+    expect(onConstellationFound).toHaveBeenCalledTimes(1);
+    expect(onConstellationFound).toHaveBeenCalledWith("california-poppy");
+  });
+
+  it("is active only while the crop image is visible", () => {
+    expect(isConstellationAnimationActive(1, 3.99)).toEqual(false);
+    expect(isConstellationAnimationActive(1, 4)).toEqual(false);
+    expect(isConstellationAnimationActive(1, 4.01)).toEqual(true);
+    expect(isConstellationAnimationActive(1, 7.99)).toEqual(true);
+    expect(isConstellationAnimationActive(1, 8)).toEqual(false);
+
+    const camera = new PerspectiveCamera(60, 1, 1, 100);
+    camera.position.set(0, 0, 10);
+    expect(isConstellationCameraSideClipped(
+      new Vector3(0, 0, 5), camera.position,
+    )).toEqual(true);
+    expect(isConstellationCameraSideClipped(
+      new Vector3(0, 0, -5), camera.position,
+    )).toEqual(false);
   });
 });
 
@@ -248,7 +300,9 @@ describe("constellation materials", () => {
       catalog={fakeCatalog()}
       enabled={true}
       debug={false}
-      stargazing={false}
+      cameraSideClipEnabled={true}
+      discoveryEnabled={true}
+      onConstellationFound={jest.fn()}
       nightFactor={0.5} />);
     expect(wrapper.root.findAllByType(Mesh)).toHaveLength(1);
     expect(wrapper.root.findAllByType(LineSegments).length).toBeGreaterThan(0);
@@ -263,7 +317,8 @@ describe("constellation materials", () => {
     const wrapper = createRenderer(<Constellations
       enabled={false}
       debug={false}
-      stargazing={false}
+      cameraSideClipEnabled={true}
+      discoveryEnabled={false}
       nightFactor={1} />);
     expect(wrapper.root.findAllByType(Mesh)).toHaveLength(0);
     const points = wrapper.root.findAllByType(Points);
@@ -285,7 +340,8 @@ describe("constellation materials", () => {
     const wrapper = createRenderer(<Constellations
       enabled={true}
       debug={false}
-      stargazing={false}
+      cameraSideClipEnabled={true}
+      discoveryEnabled={false}
       nightFactor={1} />);
     const points = wrapper.root.findAllByType(Points);
     expect(points).toHaveLength(1);
@@ -296,12 +352,13 @@ describe("constellation materials", () => {
     consoleError.mockRestore();
   });
 
-  it("disables camera-side clipping while stargazing", () => {
-    const scene = (stargazing: boolean) => <LoadedConstellations
+  it("updates camera-side clipping", () => {
+    const scene = (cameraSideClipEnabled: boolean) => <LoadedConstellations
       catalog={fakeCatalog()}
       enabled={true}
       debug={false}
-      stargazing={stargazing}
+      cameraSideClipEnabled={cameraSideClipEnabled}
+      discoveryEnabled={false}
       nightFactor={1} />;
     const wrapper = createRenderer(scene(false));
     const cameraSideClipValues = () => wrapper.root.findAll(node =>
@@ -312,11 +369,11 @@ describe("constellation materials", () => {
         node.props.onBeforeCompile(modified);
         return modified.uniforms.cameraSideClipEnabled.value;
       });
-    expect(cameraSideClipValues()).toEqual([1, 1, 1, 1]);
+    expect(cameraSideClipValues()).toEqual([0, 0, 0, 0]);
 
     actRenderer(() => wrapper.update(scene(true)));
 
-    expect(cameraSideClipValues()).toEqual([0, 0, 0, 0]);
+    expect(cameraSideClipValues()).toEqual([1, 1, 1, 1]);
     unmountRenderer(wrapper);
   });
 
@@ -328,7 +385,8 @@ describe("constellation materials", () => {
     const scene = (debug: boolean) => <Constellations
       enabled={false}
       debug={debug}
-      stargazing={false}
+      cameraSideClipEnabled={true}
+      discoveryEnabled={false}
       nightFactor={1} />;
     const wrapper = createRenderer(scene(true));
     const debugValues = () => wrapper.root.findAll(node =>
@@ -360,7 +418,7 @@ describe("constellation shaders", () => {
     const modified = shader();
     cameraSideShaderModification(modified);
     expect(modified.vertexShader).toContain("starCameraAlignment");
-    expect(modified.vertexShader).toContain("0.866025");
+    expect(modified.vertexShader).toContain("0.707107");
     expect(modified.uniforms.cameraSideClipEnabled.value).toEqual(1);
   });
 

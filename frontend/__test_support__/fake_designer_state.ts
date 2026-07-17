@@ -66,7 +66,7 @@ export const fakeDesignerState = (): DesignerState => ({
   threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
   threeDSectionCutAll: true,
-  threeDStargazingMode: false,
+  threeDViewMode: "normal",
   threeDStargazingFov: 20,
   threeDTime: undefined,
 });

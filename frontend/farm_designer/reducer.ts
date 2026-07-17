@@ -3,6 +3,7 @@ import {
   DrawnPointPayl,
   HoveredPlantPayl,
   ThreeDSectionAxis,
+  ThreeDViewMode,
 } from "./interfaces";
 import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
@@ -79,7 +80,7 @@ export const initialState: DesignerState = {
   threeDSectionWidth: 200,
   threeDSectionFollowBot: true,
   threeDSectionCutAll: true,
-  threeDStargazingMode: false,
+  threeDViewMode: "normal",
   threeDStargazingFov: STARGAZING_DEFAULT_FOV,
   threeDTime: undefined,
 };
@@ -326,9 +327,9 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDSectionCutAll = payload;
     return s;
   })
-  .add<boolean>(Actions.SET_3D_STARGAZING_MODE, (s, { payload }) => {
-    s.threeDStargazingMode = payload;
-    if (payload) {
+  .add<ThreeDViewMode>(Actions.SET_3D_VIEW_MODE, (s, { payload }) => {
+    s.threeDViewMode = payload;
+    if (payload != "normal") {
       s.threeDPerspective = true;
       s.panelOpen = false;
     }

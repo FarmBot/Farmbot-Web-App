@@ -2,7 +2,8 @@ import React from "react";
 import {
   BufferAttribute as ThreeBufferAttribute,
   BufferGeometry as ThreeBufferGeometry,
-  DynamicDrawUsage, Material, WebGLProgramParametersWithUniforms,
+  Camera as ThreeCamera, DynamicDrawUsage, Frustum, Material, Matrix4,
+  Vector3, WebGLProgramParametersWithUniforms,
 } from "three";
 import {
   LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, Points,
@@ -32,7 +33,7 @@ const MIN_CONSTELLATION_PHI = 20;
 const MAX_CONSTELLATION_PHI = 90;
 const MIN_CONSTELLATION_ANGULAR_SIZE = 10;
 const MAX_CONSTELLATION_ANGULAR_SIZE = 25;
-const CAMERA_SIDE_CLIP_DEGREES = 60;
+const CAMERA_SIDE_CLIP_DEGREES = 90;
 const CAMERA_SIDE_CLIP_ALIGNMENT =
   Math.cos(toRad(CAMERA_SIDE_CLIP_DEGREES / 2));
 const CONSTELLATION_LINE_OPACITY = 0.6;
@@ -40,7 +41,7 @@ const CONSTELLATION_IMAGE_OPACITY = 0.8;
 const CONSTELLATION_IMAGE_FADE_IN_SECONDS = 0.15;
 const CONSTELLATION_IMAGE_FADE_SECONDS = 4;
 const CONSTELLATION_IMAGE_GRID_DIVISIONS = 8;
-const CONSTELLATION_START_INTERVAL_SECONDS = 1;
+const CONSTELLATION_START_INTERVAL_SECONDS = 0.75;
 const CONSTELLATION_DRAW_SECONDS = 3;
 const CONSTELLATION_HOLD_SECONDS = 3.5;
 const CONSTELLATION_FADE_SECONDS = 2;
@@ -187,6 +188,7 @@ export interface ConstellationVertexRange {
 export interface ConstellationRuntime {
   catalog: CropConstellationCatalog;
   placements: ConstellationPlacement[];
+  centers: Vector3[];
   starData?: StarData;
   backgroundStarGeometry?: ThreeBufferGeometry;
   constellationStarGeometry?: ThreeBufferGeometry;
@@ -202,9 +204,15 @@ const constellationRuntimes =
 export const getConstellationRuntime = (catalog: CropConstellationCatalog) => {
   let runtime = constellationRuntimes.get(catalog);
   if (!runtime) {
+    const placements = createConstellationPlacements(catalog);
     runtime = {
       catalog,
-      placements: createConstellationPlacements(catalog),
+      placements,
+      centers: placements.map(placement => new Vector3(...polarToCartesian(
+        BigDistance.sunVisual,
+        placement.heading,
+        placement.phi,
+      ))),
       lineVertexRanges: [],
       imageVertexRanges: [],
     };
@@ -518,6 +526,81 @@ export const resetConstellationAnimation = (
   state.nextStartTime = 0;
 };
 
+export const isConstellationAnimationActive = (
+  startTime: number,
+  now: number,
+): boolean => {
+  const imageTime = now - startTime - CONSTELLATION_DRAW_SECONDS;
+  return imageTime > 0
+    && imageTime < CONSTELLATION_IMAGE_FADE_SECONDS;
+};
+
+export const isConstellationCameraSideClipped = (
+  center: Vector3,
+  cameraPosition: Vector3,
+): boolean => {
+  const magnitude = center.length() * cameraPosition.length();
+  return magnitude > 0
+    && center.dot(cameraPosition) / magnitude
+    > CAMERA_SIDE_CLIP_ALIGNMENT;
+};
+
+export interface ConstellationDiscoveryState {
+  projectionMatrix: Matrix4;
+  frustum: Frustum;
+  cameraPosition: Vector3;
+  reportedIndices: Set<number>;
+}
+
+export const createConstellationDiscoveryState =
+  (): ConstellationDiscoveryState => ({
+    projectionMatrix: new Matrix4(),
+    frustum: new Frustum(),
+    cameraPosition: new Vector3(),
+    reportedIndices: new Set<number>(),
+  });
+
+export interface DiscoverConstellationsInViewProps {
+  runtime: ConstellationRuntime;
+  animationState: ConstellationAnimationState;
+  discoveryState: ConstellationDiscoveryState;
+  camera: ThreeCamera;
+  now: number;
+  cameraSideClipEnabled: boolean;
+  onConstellationFound(cropSlug: string): void;
+}
+
+export const discoverConstellationsInView = (
+  props: DiscoverConstellationsInViewProps,
+) => {
+  const projectionMatrix = props.discoveryState.projectionMatrix
+    .multiplyMatrices(
+      props.camera.projectionMatrix,
+      props.camera.matrixWorldInverse,
+    );
+  const frustum = props.discoveryState.frustum.setFromProjectionMatrix(
+    projectionMatrix,
+  );
+  props.camera.getWorldPosition(props.discoveryState.cameraPosition);
+  props.animationState.startTimes.forEach((startTime, index) => {
+    if (props.discoveryState.reportedIndices.has(index)
+      || !isConstellationAnimationActive(startTime, props.now)) {
+      return;
+    }
+    const center = props.runtime.centers[index];
+    const clipped = props.cameraSideClipEnabled
+      && isConstellationCameraSideClipped(
+        center,
+        props.discoveryState.cameraPosition,
+      );
+    if (clipped || !frustum.containsPoint(center)) { return; }
+    props.discoveryState.reportedIndices.add(index);
+    props.onConstellationFound(
+      props.runtime.catalog.constellations[index].cropSlug,
+    );
+  });
+};
+
 export const advanceConstellationAnimation = (
   runtime: ConstellationRuntime,
   state: ConstellationAnimationState,
@@ -772,7 +855,9 @@ export interface ConstellationsProps {
   enabled: boolean;
   debug: boolean;
   nightFactor: number;
-  stargazing: boolean;
+  cameraSideClipEnabled: boolean;
+  discoveryEnabled: boolean;
+  onConstellationFound?(cropSlug: string): void;
 }
 
 export interface ConstellationsHandle {
@@ -841,14 +926,27 @@ interface LoadedConstellationsProps extends ConstellationsProps {
 interface ConstellationAnimatorProps {
   runtime: ConstellationRuntime;
   state: ConstellationAnimationState;
+  cameraSideClipEnabled: boolean;
+  discoveryEnabled: boolean;
+  onConstellationFound?(cropSlug: string): void;
 }
 
 const ConstellationAnimator = (props: ConstellationAnimatorProps) => {
-  useFrame(state => advanceConstellationAnimation(
-    props.runtime,
-    props.state,
-    state.clock.elapsedTime,
-  ));
+  const discoveryStateRef = React.useRef(createConstellationDiscoveryState());
+  useFrame(frameState => {
+    const now = frameState.clock.elapsedTime;
+    advanceConstellationAnimation(props.runtime, props.state, now);
+    if (!props.discoveryEnabled || !props.onConstellationFound) { return; }
+    discoverConstellationsInView({
+      runtime: props.runtime,
+      animationState: props.state,
+      discoveryState: discoveryStateRef.current,
+      camera: frameState.camera,
+      now,
+      cameraSideClipEnabled: props.cameraSideClipEnabled,
+      onConstellationFound: props.onConstellationFound,
+    });
+  });
   return <></>;
 };
 
@@ -871,14 +969,15 @@ export const LoadedConstellations = React.forwardRef<
     [catalog],
   );
   const cameraSideClipUniformRef = React.useRef({
-    value: props.stargazing ? 0 : 1,
+    value: props.cameraSideClipEnabled ? 1 : 0,
   });
   const constellationDebugUniformRef = React.useRef({
     value: props.debug ? 1 : 0,
   });
   React.useLayoutEffect(() => {
-    cameraSideClipUniformRef.current.value = props.stargazing ? 0 : 1;
-  }, [props.stargazing]);
+    cameraSideClipUniformRef.current.value =
+      props.cameraSideClipEnabled ? 1 : 0;
+  }, [props.cameraSideClipEnabled]);
   const modifyConstellationImageShader = React.useCallback(
     (shader: WebGLProgramParametersWithUniforms) =>
       constellationImageShaderModification(
@@ -923,7 +1022,10 @@ export const LoadedConstellations = React.forwardRef<
   return <>
     {props.enabled && !props.debug && <ConstellationAnimator
       runtime={runtime}
-      state={animationState} />}
+      state={animationState}
+      cameraSideClipEnabled={props.cameraSideClipEnabled}
+      discoveryEnabled={props.discoveryEnabled}
+      onConstellationFound={props.onConstellationFound} />}
     {showConstellations && <>
       <React.Suspense fallback={undefined}>
         <ConstellationImages

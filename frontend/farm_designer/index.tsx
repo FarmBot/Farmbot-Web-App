@@ -183,7 +183,7 @@ export class RawFarmDesigner
 
       {threeDGarden &&
         <StargazingControls
-          active={this.props.designer.threeDStargazingMode}
+          mode={this.props.designer.threeDViewMode}
           fov={this.props.designer.threeDStargazingFov}
           dispatch={this.props.dispatch} />}
 

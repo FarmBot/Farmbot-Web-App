@@ -169,7 +169,7 @@ export const INITIAL: ConfigWithPosition = {
   trail: false,
   tracks: true,
   clouds: true,
-  constellations: true,
+  constellations: false,
   constellationsDebug: false,
   sunInclination: 140,
   sunAzimuth: 230,

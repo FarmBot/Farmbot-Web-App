@@ -135,6 +135,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedBrightness = 1;
     expectedConfig.soilBrightness = 1;
     expectedConfig.cableDebug = true;
+    expectedConfig.constellations = true;
     expectedConfig.constellationsDebug = true;
     expectedConfig.eventDebug = true;
     expectedConfig.lightsDebug = true;

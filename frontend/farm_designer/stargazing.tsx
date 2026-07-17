@@ -1,48 +1,130 @@
 import React from "react";
 import { Actions } from "../constants";
+import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { t } from "../i18next_wrapper";
+import { ThreeDViewMode } from "./interfaces";
 import {
   clampStargazingFov, STARGAZING_MAX_FOV, STARGAZING_MIN_FOV,
 } from "./stargazing_constants";
+import {
+  getStargazingMaxFov, getStargazingZoomUnlockedFraction,
+  isSpaceflightUnlocked, SPACEFLIGHT_UNLOCK_COUNT,
+  STARGAZING_TOTAL_CONSTELLATIONS, useFoundConstellations,
+} from "./stargazing_progress";
 
 const STARGAZING_KEYBOARD_FOV_STEP = 10;
 const STARGAZING_WHEEL_FOV_STEP = 2;
 
-export const setStargazingMode = (payload: boolean) => ({
-  type: Actions.SET_3D_STARGAZING_MODE,
+const useUnlockPulse = (unlockLevel: number) => {
+  const previousUnlockLevel = React.useRef(unlockLevel);
+  const [pulse, setPulse] = React.useState(false);
+  React.useEffect(() => {
+    const newlyUnlocked = unlockLevel > previousUnlockLevel.current;
+    previousUnlockLevel.current = unlockLevel;
+    if (!newlyUnlocked) { return; }
+    // Unlock changes intentionally begin a transient CSS animation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPulse(true);
+  }, [unlockLevel]);
+  const endPulse = React.useCallback(() => setPulse(false), []);
+  return { pulse, endPulse };
+};
+
+export const setThreeDViewMode = (payload: ThreeDViewMode) => ({
+  type: Actions.SET_3D_VIEW_MODE,
   payload,
 });
+
+export const setStargazingMode = (payload: boolean) =>
+  setThreeDViewMode(payload ? "stargazing" : "normal");
 
 export const setStargazingFov = (payload: number) => ({
   type: Actions.SET_3D_STARGAZING_FOV,
   payload,
 });
 
+export const setSpaceflightMode = (payload: boolean) =>
+  setThreeDViewMode(payload ? "spaceflight" : "stargazing");
+
 export interface StargazingControlsProps {
-  active: boolean;
+  mode: ThreeDViewMode;
   fov: number;
   dispatch: Function;
 }
 
+export interface StargazingHudProps {
+  active: boolean;
+  foundConstellations: string[];
+}
+
+export const StargazingHud = (props: StargazingHudProps) =>
+  <div
+    className={`stargazing-hud ${props.active ? "active" : ""}`}
+    aria-hidden={!props.active}>
+    <div className={"stargazing-hud-counter"} aria-live={"polite"}>
+      {t("Crop constellations found: {{found}} of {{total}}", {
+        found: props.foundConstellations.length,
+        total: STARGAZING_TOTAL_CONSTELLATIONS,
+      })}
+    </div>
+    {props.foundConstellations.length > 0 &&
+      <div className={"stargazing-hud-icons"} role={"list"}>
+        {props.foundConstellations.map(cropSlug => {
+          const crop = findCropMetadata(cropSlug);
+          return <span
+            className={"stargazing-hud-icon"}
+            role={"listitem"}
+            aria-label={crop.name}
+            tabIndex={props.active ? 0 : -1}
+            key={cropSlug}>
+            <span className={"stargazing-hud-icon-label"} aria-hidden={true}>
+              {crop.name}
+            </span>
+            <img src={findCropIcon(cropSlug)} alt={""} />
+          </span>;
+        })}
+      </div>}
+  </div>;
+
 export const StargazingControls = (props: StargazingControlsProps) => {
-  const { active, dispatch } = props;
-  const fovRef = React.useRef(clampStargazingFov(props.fov));
+  const { dispatch, mode } = props;
+  const active = mode != "normal";
+  const spaceflight = mode == "spaceflight";
+  const foundConstellations = useFoundConstellations();
+  const foundCount = foundConstellations.length;
+  const zoomUnlockedFraction =
+    getStargazingZoomUnlockedFraction(foundCount);
+  const maxFov = getStargazingMaxFov(foundCount);
+  const spaceflightUnlocked = isSpaceflightUnlocked(foundCount);
+  const zoomPulse = useUnlockPulse(zoomUnlockedFraction);
+  const spaceflightPulse = useUnlockPulse(Number(spaceflightUnlocked));
+  const displayedFov = Math.min(clampStargazingFov(props.fov), maxFov);
+  const fovRef = React.useRef(displayedFov);
   const fovPosition = 100 * (
-    clampStargazingFov(props.fov) - STARGAZING_MIN_FOV
+    displayedFov - STARGAZING_MIN_FOV
   ) / (STARGAZING_MAX_FOV - STARGAZING_MIN_FOV);
+  const lockThumbClearance = zoomUnlockedFraction > 0 ? 0.7 : 0;
   const sliderStyle = {
     "--stargazing-fov-position": `${fovPosition}%`,
+    "--stargazing-lock-start": zoomUnlockedFraction == 0
+      ? "0"
+      : `${1 + 14 * zoomUnlockedFraction + lockThumbClearance}em`,
   } as React.CSSProperties;
   const exit = React.useCallback(() => {
     dispatch(setStargazingMode(false));
   }, [dispatch]);
+  const toggleSpaceflight = React.useCallback(() => {
+    if (!spaceflight && !spaceflightUnlocked) { return; }
+    dispatch(setSpaceflightMode(!spaceflight));
+  }, [dispatch, spaceflight, spaceflightUnlocked]);
   const updateFov = React.useCallback((fov: number) => {
     if (Number.isFinite(fov)) {
-      const nextFov = clampStargazingFov(fov);
+      const nextFov = Math.min(clampStargazingFov(fov), maxFov);
+      if (nextFov == fovRef.current) { return; }
       fovRef.current = nextFov;
       dispatch(setStargazingFov(nextFov));
     }
-  }, [dispatch]);
+  }, [dispatch, maxFov]);
   const setFov = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       updateFov(Number(event.target.value));
@@ -54,8 +136,11 @@ export const StargazingControls = (props: StargazingControlsProps) => {
   }, [active]);
 
   React.useEffect(() => {
-    fovRef.current = clampStargazingFov(props.fov);
-  }, [props.fov]);
+    fovRef.current = displayedFov;
+    if (active && displayedFov != props.fov) {
+      dispatch(setStargazingFov(displayedFov));
+    }
+  }, [active, dispatch, displayedFov, props.fov]);
 
   React.useEffect(() => {
     if (!active) { return; }
@@ -64,7 +149,10 @@ export const StargazingControls = (props: StargazingControlsProps) => {
         exit();
         return;
       }
-      if (event.key != "ArrowUp" && event.key != "ArrowDown") { return; }
+      if (spaceflight || zoomUnlockedFraction == 0
+        || (event.key != "ArrowUp" && event.key != "ArrowDown")) {
+        return;
+      }
       const fovDelta = event.key == "ArrowUp"
         ? -STARGAZING_KEYBOARD_FOV_STEP
         : STARGAZING_KEYBOARD_FOV_STEP;
@@ -73,10 +161,10 @@ export const StargazingControls = (props: StargazingControlsProps) => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [active, exit, updateFov]);
+  }, [active, exit, spaceflight, updateFov, zoomUnlockedFraction]);
 
   React.useEffect(() => {
-    if (!active) { return; }
+    if (!active || spaceflight || zoomUnlockedFraction == 0) { return; }
     const handleWheel = (event: WheelEvent) => {
       if (event.deltaY == 0) { return; }
       event.preventDefault();
@@ -87,37 +175,94 @@ export const StargazingControls = (props: StargazingControlsProps) => {
     };
     window.addEventListener("wheel", handleWheel, { passive: false });
     return () => window.removeEventListener("wheel", handleWheel);
-  }, [active, updateFov]);
+  }, [active, spaceflight, updateFov, zoomUnlockedFraction]);
 
-  return <div
-    className={`stargazing-controls ${active ? "active" : ""}`}
-    aria-hidden={!active}>
-    <div className={"stargazing-exit-row"}>
-      <span className={"stargazing-exit-key"}>{t("Esc")}</span>
-      <button
-        className={"stargazing-exit"}
-        type={"button"}
-        title={t("Exit stargazing")}
-        aria-label={t("Exit stargazing")}
-        tabIndex={active ? 0 : -1}
-        onClick={exit}>
-        <i className={"fa fa-times"} />
-      </button>
-    </div>
-    <label className={"stargazing-zoom-control"}>
-      <span className={"stargazing-zoom-slider"}>
-        <input
-          type={"range"}
-          min={STARGAZING_MIN_FOV}
-          max={STARGAZING_MAX_FOV}
-          step={1}
-          value={props.fov}
-          style={sliderStyle}
+  const spaceflightLocked = !spaceflight && !spaceflightUnlocked;
+  const getSpaceflightLabel = () => {
+    if (spaceflight) { return t("Return to stargazing"); }
+    if (spaceflightLocked) {
+      return t("Spaceflight locked: find {{remaining}} more constellations", {
+        remaining: SPACEFLIGHT_UNLOCK_COUNT - foundCount,
+      });
+    }
+    return t("Spaceflight");
+  };
+  const spaceflightLabel = getSpaceflightLabel();
+  const getSpaceflightIcon = () => {
+    if (spaceflight) { return "fa-globe"; }
+    if (spaceflightLocked) { return "fa-lock"; }
+    return "fa-rocket";
+  };
+  const spaceflightIcon = getSpaceflightIcon();
+
+  return <>
+    <div
+      className={[
+        "stargazing-controls",
+        active ? "active" : "",
+        spaceflight ? "spaceflight" : "",
+      ].join(" ")}
+      aria-hidden={!active}>
+      <div className={"stargazing-exit-row"}>
+        <span className={"stargazing-exit-key"}>{t("Esc")}</span>
+        <button
+          className={"stargazing-exit"}
+          type={"button"}
+          title={t("Exit stargazing")}
+          aria-label={t("Exit stargazing")}
           tabIndex={active ? 0 : -1}
-          title={`${t("Field of view")}: ${props.fov}°`}
-          onChange={setFov} />
-      </span>
-      <span className={"stargazing-zoom-label"}>{t("Zoom")}</span>
-    </label>
-  </div>;
+          onClick={exit}>
+          <i className={"fa fa-times"} />
+        </button>
+      </div>
+      <button
+        className={[
+          "stargazing-spaceflight",
+          spaceflightPulse.pulse ? "pulse" : "",
+        ].join(" ")}
+        type={"button"}
+        title={spaceflightLabel}
+        aria-label={spaceflightLabel}
+        aria-pressed={spaceflight}
+        disabled={spaceflightLocked}
+        tabIndex={active ? 0 : -1}
+        onAnimationEnd={spaceflightPulse.endPulse}
+        onClick={toggleSpaceflight}>
+        <i className={`fa ${spaceflightIcon}`} />
+      </button>
+      <label className={"stargazing-zoom-control"}>
+        <span
+          className={[
+            "stargazing-zoom-slider",
+            zoomPulse.pulse ? "pulse" : "",
+          ].join(" ")}
+          onAnimationEnd={zoomPulse.endPulse}>
+          <input
+            type={"range"}
+            min={STARGAZING_MIN_FOV}
+            max={STARGAZING_MAX_FOV}
+            step={0.5}
+            value={displayedFov}
+            disabled={spaceflight || zoomUnlockedFraction == 0}
+            style={sliderStyle}
+            tabIndex={active ? 0 : -1}
+            title={`${t("Field of view")}: ${displayedFov}°. ${
+              t("Maximum unlocked field of view")}: ${maxFov}°`}
+            onChange={setFov} />
+          {zoomUnlockedFraction < 1 &&
+          <span className={[
+            "stargazing-zoom-lock",
+            zoomUnlockedFraction == 0 ? "fully-locked" : "",
+          ].join(" ")} aria-hidden={true}
+          style={sliderStyle}>
+            <i className={"fa fa-lock"} />
+          </span>}
+        </span>
+        <span className={"stargazing-zoom-label"}>{t("Zoom")}</span>
+      </label>
+    </div>
+    <StargazingHud
+      active={active}
+      foundConstellations={foundConstellations} />
+  </>;
 };
