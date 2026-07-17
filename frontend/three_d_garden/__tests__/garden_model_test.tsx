@@ -9,6 +9,7 @@ import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
   cameraAtRadius, cameraRadius,
+  cameraFitRadiusForZoom,
   createCameraFitRequest, createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
@@ -995,6 +996,11 @@ describe("<GardenModel />", () => {
     expect(request.fov).toEqual(40);
     expect(createCameraFitRequest({ ...current, fov: 1 }, 500)
       .camera.position[2]).toBeGreaterThan(request.camera.position[2]);
+  });
+
+  it("scales the camera-fit radius with the zoom factor", () => {
+    expect(cameraFitRadiusForZoom(600, 10)).toEqual(600);
+    expect(cameraFitRadiusForZoom(600, 3)).toEqual(2000);
   });
 
   it("resets prism selections to the bootstrap target and zoom", () => {
