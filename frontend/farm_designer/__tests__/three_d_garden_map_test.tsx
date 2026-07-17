@@ -173,6 +173,7 @@ describe("<ThreeDGardenMap />", () => {
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
       configPosition: { x: 2999, y: 1498, z: 3 },
+      panelOpen: p.designer.panelOpen,
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),

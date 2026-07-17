@@ -3,6 +3,8 @@
 @use "../global/fonts" as *;
 
 .farm-designer-panels {
+  --panel-horizontal-margin: 2rem;
+
   position: absolute;
   top: 7.5rem;
   width: 45rem;
@@ -12,6 +14,8 @@
   border-radius: 1rem;
 
   @media screen and (max-width: $mobile_max_width) {
+    --panel-horizontal-margin: 0rem;
+
     top: 13rem;
     width: 100vw;
     margin: 0;
@@ -88,13 +92,14 @@
 
 .farm-designer-panels {
   bottom: 0;
-  z-index: 1;
+  z-index: 5;
   animation: panel-show 0.3s ease forwards;
   pointer-events: none;
   &.panel-closed-mobile,
   &.panel-closed {
     animation: panel-hide 0.3s ease forwards;
   }
+
   .panel-container {
     width: 100%;
     border-radius: 1rem;

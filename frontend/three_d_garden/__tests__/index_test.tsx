@@ -23,6 +23,7 @@ describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: { ...clone(INITIAL), viewCube: true },
     configPosition: clone(INITIAL_POSITION),
+    panelOpen: true,
     addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],

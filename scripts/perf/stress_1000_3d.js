@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { execFileSync } = require("child_process");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
@@ -104,6 +105,36 @@ const summary = runs => {
     coreReadyMs: metric("coreReadyMs"),
     fullReadyMs: metric("fullReadyMs"),
     fpsMedian: metric("fpsMedian"),
+    idleFpsAverage: metric("idleFpsAverage"),
+    idleFpsMax: metric("idleFpsMax"),
+    idleFrameP95Ms: metric("idleFrameP95Ms"),
+    idleCpuTotalMs: metric("idleCpuTotalMs"),
+    idleCpuPercent: metric("idleCpuPercent"),
+    idleRendererCpuMs: metric("idleRendererCpuMs"),
+    idleGpuProcessCpuMs: metric("idleGpuProcessCpuMs"),
+    idleMainThreadTaskMs: metric("idleMainThreadTaskMs"),
+    idlePeakRendererGpuRssBytes:
+      metric("idlePeakRendererGpuRssBytes"),
+    panelFpsAverage: metric("panelFpsAverage"),
+    panelFpsMax: metric("panelFpsMax"),
+    panelFrameP95Ms: metric("panelFrameP95Ms"),
+    panelCpuTotalMs: metric("panelCpuTotalMs"),
+    panelCpuPercent: metric("panelCpuPercent"),
+    panelRendererCpuMs: metric("panelRendererCpuMs"),
+    panelGpuProcessCpuMs: metric("panelGpuProcessCpuMs"),
+    panelMainThreadTaskMs: metric("panelMainThreadTaskMs"),
+    panelPeakRendererGpuRssBytes:
+      metric("panelPeakRendererGpuRssBytes"),
+    panelClickToCameraMedianMs: metric("panelClickToCameraMedianMs"),
+    panelClickToCameraP95Ms: metric("panelClickToCameraP95Ms"),
+    panelClickToNextPaintMedianMs:
+      metric("panelClickToNextPaintMedianMs"),
+    panelClickToNextPaintP95Ms:
+      metric("panelClickToNextPaintP95Ms"),
+    panelEventDurationMedianMs: metric("panelEventDurationMedianMs"),
+    panelEventDurationP95Ms: metric("panelEventDurationP95Ms"),
+    panelInputDelayP95Ms: metric("panelInputDelayP95Ms"),
+    panelProcessingP95Ms: metric("panelProcessingP95Ms"),
     frameP95Ms: metric("frameP95Ms"),
     navPlantMs: metric("navPlantMs"),
     navPointMs: metric("navPointMs"),
@@ -131,6 +162,8 @@ const summary = runs => {
     sceneMeshes: metric("sceneMeshes"),
     sceneInstancedMeshes: metric("sceneInstancedMeshes"),
     usedJSHeapSize: metric("usedJSHeapSize"),
+    totalJSHeapSize: metric("totalJSHeapSize"),
+    postGcUsedJSHeapSize: metric("postGcUsedJSHeapSize"),
     getZBatchMs: metric("getZBatchMs"),
     getZCalls: metric("getZCalls"),
     getZIndexMs: metric("getZIndexMs"),
@@ -264,6 +297,333 @@ const runtimeSummary = async page => page.evaluate(() => {
     jsHeapSizeLimit: memory.jsHeapSizeLimit,
   };
 });
+
+const performanceMetrics = async session => {
+  const { metrics } = await session.send("Performance.getMetrics");
+  return Object.fromEntries(metrics.map(metric => [metric.name, metric.value]));
+};
+
+const processInfo = async session => {
+  const { processInfo: processes } =
+    await session.send("SystemInfo.getProcessInfo");
+  return processes;
+};
+
+const processCpuSnapshot = async session =>
+  Object.fromEntries((await processInfo(session)).map(process => [
+    process.id,
+    { type: process.type, cpuTime: process.cpuTime },
+  ]));
+
+const processCpuDelta = (before, after) => {
+  const byType = {};
+  for (const [id, process] of Object.entries(after)) {
+    const previous = before[id];
+    if (!previous || previous.type != process.type) { continue; }
+    const deltaMs = Math.max(0, process.cpuTime - previous.cpuTime) * 1_000;
+    byType[process.type] = (byType[process.type] || 0) + deltaMs;
+  }
+  return {
+    byType,
+    totalMs: Object.values(byType).reduce((sum, value) => sum + value, 0),
+    rendererMs: Object.entries(byType)
+      .filter(([type]) => type.toLowerCase().includes("renderer"))
+      .reduce((sum, [, value]) => sum + value, 0),
+    gpuMs: Object.entries(byType)
+      .filter(([type]) => type.toLowerCase().includes("gpu"))
+      .reduce((sum, [, value]) => sum + value, 0),
+  };
+};
+
+const processRssSnapshot = async session => {
+  const processes = await processInfo(session);
+  const ids = processes.map(process => String(process.id));
+  if (ids.length == 0) { return {}; }
+  let output;
+  try {
+    output = execFileSync(
+      "ps",
+      ["-o", "pid=,rss=", "-p", ids.join(",")],
+      { encoding: "utf8" },
+    );
+  } catch {
+    return {};
+  }
+  const rssById = Object.fromEntries(output.trim().split("\n")
+    .map(line => line.trim().split(/\s+/).map(Number))
+    .filter(([id, rssKb]) => Number.isFinite(id) && Number.isFinite(rssKb))
+    .map(([id, rssKb]) => [id, rssKb * 1_024]));
+  const byType = {};
+  for (const process of processes) {
+    const rssBytes = rssById[process.id];
+    if (!Number.isFinite(rssBytes)) { continue; }
+    byType[process.type] = (byType[process.type] || 0) + rssBytes;
+  }
+  return byType;
+};
+
+const maxByProcessType = samples => {
+  const result = {};
+  for (const sample of samples) {
+    for (const [type, value] of Object.entries(sample)) {
+      result[type] = Math.max(result[type] || 0, value);
+    }
+  }
+  return result;
+};
+
+const rendererGpuRss = byType => Object.entries(byType)
+  .filter(([type]) => {
+    const lower = type.toLowerCase();
+    return lower.includes("renderer") || lower.includes("gpu");
+  })
+  .reduce((sum, [, value]) => sum + value, 0);
+
+const startFrameMeasurement = page => page.evaluate(() => {
+  window.__cpuGpuBenchmarkFrames = { active: true, timestamps: [] };
+  const collect = timestamp => {
+    const measurement = window.__cpuGpuBenchmarkFrames;
+    if (!measurement?.active) { return; }
+    measurement.timestamps.push(timestamp);
+    requestAnimationFrame(collect);
+  };
+  requestAnimationFrame(collect);
+});
+
+const stopFrameMeasurement = page => page.evaluate(() => {
+  const measurement = window.__cpuGpuBenchmarkFrames;
+  if (!measurement) { return {}; }
+  measurement.active = false;
+  const timestamps = measurement.timestamps;
+  const frameTimes = timestamps.slice(1)
+    .map((timestamp, index) => timestamp - timestamps[index]);
+  const sortedFrameTimes = [...frameTimes].sort((a, b) => a - b);
+  const p95Index = Math.ceil(sortedFrameTimes.length * 0.95) - 1;
+  const elapsedMs = timestamps.length > 1
+    ? timestamps.at(-1) - timestamps[0]
+    : 0;
+  let left = 0;
+  let maxFramesPerSecond = 0;
+  timestamps.forEach((timestamp, right) => {
+    while (timestamp - timestamps[left] > 1_000) { left++; }
+    maxFramesPerSecond = Math.max(maxFramesPerSecond, right - left + 1);
+  });
+  return {
+    elapsedMs,
+    fpsAverage: elapsedMs > 0
+      ? (timestamps.length - 1) * 1_000 / elapsedMs
+      : undefined,
+    fpsMax: maxFramesPerSecond,
+    frameP95Ms: sortedFrameTimes[p95Index],
+    frameCount: timestamps.length,
+  };
+});
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const measureCpuFramesAndMemory = async (browser, page, runWork) => {
+  const browserSession = await browser.newBrowserCDPSession();
+  const pageSession = await page.context().newCDPSession(page);
+  await pageSession.send("Performance.enable");
+  const cpuBefore = await processCpuSnapshot(browserSession);
+  const metricsBefore = await performanceMetrics(pageSession);
+  const rssSamples = [];
+  let sampleMemory = true;
+  const memorySampler = (async () => {
+    while (sampleMemory) {
+      rssSamples.push(await processRssSnapshot(browserSession));
+      await delay(100);
+    }
+  })();
+  await startFrameMeasurement(page);
+  const wallStartedAt = performance.now();
+  try {
+    await runWork();
+  } finally {
+    sampleMemory = false;
+    await memorySampler;
+  }
+  const wallElapsedMs = performance.now() - wallStartedAt;
+  const frames = await stopFrameMeasurement(page);
+  const metricsAfter = await performanceMetrics(pageSession);
+  const cpuAfter = await processCpuSnapshot(browserSession);
+  const cpu = processCpuDelta(cpuBefore, cpuAfter);
+  const peakRssByType = maxByProcessType(rssSamples);
+  await pageSession.detach();
+  await browserSession.detach();
+  return {
+    ...frames,
+    wallElapsedMs,
+    cpuTotalMs: cpu.totalMs,
+    cpuPercent: 100 * cpu.totalMs / wallElapsedMs,
+    rendererCpuMs: cpu.rendererMs,
+    gpuProcessCpuMs: cpu.gpuMs,
+    mainThreadTaskMs: Math.max(
+      0,
+      (metricsAfter.TaskDuration - metricsBefore.TaskDuration) * 1_000,
+    ),
+    cpuByType: cpu.byType,
+    peakRssByType,
+    peakRendererGpuRssBytes: Math.max(
+      0,
+      ...rssSamples.map(rendererGpuRss),
+    ),
+  };
+};
+
+const webglInfo = page => page.evaluate(() => {
+  const canvas = document.querySelector(".garden-bed-3d-model canvas");
+  const gl = canvas?.getContext("webgl2") || canvas?.getContext("webgl");
+  if (!gl) { return { status: "unavailable" }; }
+  const info = gl.getExtension("WEBGL_debug_renderer_info");
+  return {
+    status: "available",
+    vendor: info
+      ? gl.getParameter(info.UNMASKED_VENDOR_WEBGL)
+      : gl.getParameter(gl.VENDOR),
+    renderer: info
+      ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL)
+      : gl.getParameter(gl.RENDERER),
+  };
+});
+
+const setupPanelClickMeasurement = page => page.evaluate(() => {
+  window.__panelClickBenchmark = { clicks: [], events: [] };
+  const target = document.querySelector("#plants");
+  if (!target) { return; }
+  const benchmarkButton = document.createElement("button");
+  benchmarkButton.id = "fb-panel-benchmark-toggle";
+  benchmarkButton.style.cssText = [
+    "position:fixed",
+    "inset:0 auto auto 0",
+    "width:20px",
+    "height:20px",
+    "z-index:2147483647",
+  ].join(";");
+  benchmarkButton.addEventListener("click", () => target.click());
+  document.body.appendChild(benchmarkButton);
+  document.addEventListener("click", event => {
+    const clickTarget = event.target;
+    if (!(clickTarget instanceof Element)
+      || !clickTarget.closest("#fb-panel-benchmark-toggle")) {
+      return;
+    }
+    const startedAt = performance.now();
+    const sample = { startedAt };
+    window.__panelClickBenchmark?.clicks.push(sample);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      sample.nextPaintMs = performance.now() - startedAt;
+    }));
+  }, true);
+  if (!PerformanceObserver.supportedEntryTypes.includes("event")) { return; }
+  const observer = new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) {
+      if (entry.name != "click") { continue; }
+      window.__panelClickBenchmark?.events.push({
+        startTime: entry.startTime,
+        duration: entry.duration,
+        processingStart: entry.processingStart,
+        processingEnd: entry.processingEnd,
+        interactionId: entry.interactionId,
+      });
+    }
+  });
+  observer.observe({
+    type: "event",
+    buffered: true,
+    durationThreshold: 16,
+  });
+});
+
+const measureTrustedPanelClick = async (page, plantsTab) => {
+  const before = await page.evaluate(() => ({
+    clicks: window.__panelClickBenchmark?.clicks.length || 0,
+    marks:
+      window.__fbPerf?.marks?.panel_camera_first_frame?.length || 0,
+  }));
+  await plantsTab.click();
+  try {
+    await page.waitForFunction(value => {
+      const click = window.__panelClickBenchmark?.clicks[value.clicks];
+      const markCount =
+        window.__fbPerf?.marks?.panel_camera_first_frame?.length || 0;
+      return Number.isFinite(click?.nextPaintMs) && markCount > value.marks;
+    }, before, { timeout: 10_000 });
+  } catch (error) {
+    const diagnostics = await page.evaluate(value => ({
+      click: window.__panelClickBenchmark?.clicks[value.clicks],
+      marks: window.__fbPerf?.marks?.panel_camera_first_frame,
+      path: window.location.pathname,
+    }), before);
+    throw new Error(
+      `Panel click produced no camera frame: ${JSON.stringify(diagnostics)}`,
+      { cause: error },
+    );
+  }
+  await page.waitForTimeout(50);
+  return page.evaluate(value => {
+    const benchmark = window.__panelClickBenchmark;
+    const click = benchmark?.clicks[value.clicks];
+    const store = window.__fbPerf;
+    const cameraMark =
+      store?.marks?.panel_camera_first_frame?.[value.marks];
+    const event = benchmark?.events
+      .filter(entry => Math.abs(entry.startTime - click.startedAt) < 100)
+      .at(-1);
+    return {
+      cameraResponseMs: Number.isFinite(cameraMark)
+        ? store.startedAt + cameraMark - click.startedAt
+        : undefined,
+      nextPaintMs: click.nextPaintMs,
+      eventDurationMs: event?.duration,
+      inputDelayMs: event
+        ? event.processingStart - event.startTime
+        : undefined,
+      processingMs: event
+        ? event.processingEnd - event.processingStart
+        : undefined,
+    };
+  }, before);
+};
+
+const panelClickSummary = samples => {
+  const values = key => samples.map(sample => sample[key]);
+  return {
+    clickSamples: samples,
+    clickToCameraMedianMs: median(values("cameraResponseMs")),
+    clickToCameraP95Ms: percentile(values("cameraResponseMs"), 95),
+    clickToNextPaintMedianMs: median(values("nextPaintMs")),
+    clickToNextPaintP95Ms: percentile(values("nextPaintMs"), 95),
+    eventDurationMedianMs: median(values("eventDurationMs")),
+    eventDurationP95Ms: percentile(values("eventDurationMs"), 95),
+    inputDelayP95Ms: percentile(values("inputDelayMs"), 95),
+    processingP95Ms: percentile(values("processingMs"), 95),
+  };
+};
+
+const measurePanelTransitions = async (
+  browser,
+  page,
+  panelCycles,
+) => {
+  await setupPanelClickMeasurement(page);
+  const plantsTab = page.locator("#fb-panel-benchmark-toggle");
+  if (await plantsTab.count() == 0) { return {}; }
+  const clickSamples = [];
+  const performance = await measureCpuFramesAndMemory(
+    browser,
+    page,
+    async () => {
+      for (let cycle = 0; cycle < panelCycles; cycle++) {
+        clickSamples.push(await measureTrustedPanelClick(page, plantsTab));
+        await page.waitForTimeout(350);
+        clickSamples.push(await measureTrustedPanelClick(page, plantsTab));
+        await page.waitForTimeout(350);
+      }
+    },
+  );
+  return { ...performance, ...panelClickSummary(clickSamples) };
+};
 
 const createDemoSession = async (
   browser,
@@ -568,7 +928,12 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   }
   await nextPaint(page);
   const resources = await resourceSummary(page);
-  await page.waitForTimeout(options.sampleMs);
+  const renderer = await webglInfo(page);
+  const idlePerformance = await measureCpuFramesAndMemory(
+    browser,
+    page,
+    () => page.waitForTimeout(options.sampleMs),
+  );
   const runtime = await runtimeSummary(page);
   const perf = await page.evaluate(() => window.__fbPerf);
   const marks = perf?.marks || {};
@@ -586,6 +951,13 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const spreadFrameUpdateSamples = samples.spreadFrameUpdateMs || [];
   const moistureSurfaceSamples = samples.moistureSurfaceMs || [];
   const moistureInstanceNodeSamples = samples.moistureInstanceNodesMs || [];
+  const panelPerformance = await measurePanelTransitions(
+    browser,
+    page,
+    options.panelCycles,
+  );
+  await page.requestGC();
+  const postGcRuntime = await runtimeSummary(page);
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
   const togglePointsMs = await measureLayerToggle(page, "Points");
   const toggleWeedsMs = await measureLayerToggle(page, "Weeds");
@@ -613,6 +985,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   await context.close();
   return {
     runIndex,
+    renderer,
     pageReadyMs: firstMark(
       marks,
       "three_d_map_mounted",
@@ -639,6 +1012,45 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
       "three_d_weeds_ready",
     ]) || marks.garden_model_mounted?.[0],
     fpsMedian: median(fpsSamples),
+    idleFpsAverage: idlePerformance.fpsAverage,
+    idleFpsMax: idlePerformance.fpsMax,
+    idleFrameP95Ms: idlePerformance.frameP95Ms,
+    idleCpuTotalMs: idlePerformance.cpuTotalMs,
+    idleCpuPercent: idlePerformance.cpuPercent,
+    idleRendererCpuMs: idlePerformance.rendererCpuMs,
+    idleGpuProcessCpuMs: idlePerformance.gpuProcessCpuMs,
+    idleMainThreadTaskMs: idlePerformance.mainThreadTaskMs,
+    idleCpuByType: idlePerformance.cpuByType,
+    idlePeakRssByType: idlePerformance.peakRssByType,
+    idlePeakRendererGpuRssBytes:
+      idlePerformance.peakRendererGpuRssBytes,
+    panelFpsAverage: panelPerformance.fpsAverage,
+    panelFpsMax: panelPerformance.fpsMax,
+    panelFrameP95Ms: panelPerformance.frameP95Ms,
+    panelCpuTotalMs: panelPerformance.cpuTotalMs,
+    panelCpuPercent: panelPerformance.cpuPercent,
+    panelRendererCpuMs: panelPerformance.rendererCpuMs,
+    panelGpuProcessCpuMs: panelPerformance.gpuProcessCpuMs,
+    panelMainThreadTaskMs: panelPerformance.mainThreadTaskMs,
+    panelCpuByType: panelPerformance.cpuByType,
+    panelPeakRssByType: panelPerformance.peakRssByType,
+    panelPeakRendererGpuRssBytes:
+      panelPerformance.peakRendererGpuRssBytes,
+    panelClickSamples: panelPerformance.clickSamples,
+    panelClickToCameraMedianMs:
+      panelPerformance.clickToCameraMedianMs,
+    panelClickToCameraP95Ms:
+      panelPerformance.clickToCameraP95Ms,
+    panelClickToNextPaintMedianMs:
+      panelPerformance.clickToNextPaintMedianMs,
+    panelClickToNextPaintP95Ms:
+      panelPerformance.clickToNextPaintP95Ms,
+    panelEventDurationMedianMs:
+      panelPerformance.eventDurationMedianMs,
+    panelEventDurationP95Ms:
+      panelPerformance.eventDurationP95Ms,
+    panelInputDelayP95Ms: panelPerformance.inputDelayP95Ms,
+    panelProcessingP95Ms: panelPerformance.processingP95Ms,
     frameP95Ms: percentile(frameSamples, 95),
     getZBatchMs: getZSamples.reduce((total, value) => total + value, 0),
     getZCalls: getZSamples.length,
@@ -673,6 +1085,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     toggleFarmbotMs,
     ...resources,
     ...runtime,
+    postGcUsedJSHeapSize: postGcRuntime.usedJSHeapSize,
     threeDGardenMapRenders: counts["render.ThreeDGardenMap"],
     gardenModelRenders: counts["render.GardenModel"],
     threeDGardenRenders: counts["render.ThreeDGarden"],
@@ -831,14 +1244,18 @@ const runBenchmark = async args => {
     height: Number(args.height || DEFAULT_VIEWPORT.height),
   };
   const sampleMs = Number(args["sample-ms"] || DEFAULT_SAMPLE_MS);
+  const panelCycles = Number(args["panel-cycles"] || 10);
+  const uncapped = !["0", "false"].includes(args.uncapped);
   const browser = await chromium.launch({
     headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
-      "--disable-frame-rate-limit",
-      "--disable-gpu-vsync",
+      ...(uncapped ? [
+        "--disable-frame-rate-limit",
+        "--disable-gpu-vsync",
+      ] : []),
       "--enable-gpu",
     ],
   });
@@ -861,6 +1278,7 @@ const runBenchmark = async args => {
       const run = await collectRun(browser, baseUrl, session, i, {
         viewport,
         sampleMs,
+        panelCycles,
         moistureMap: ["1", "true"].includes(args["moisture-map"]),
       });
       console.log(`${i < warmups ? "warmup" : "run"} ${i + 1}`, run);
@@ -871,6 +1289,9 @@ const runBenchmark = async args => {
       createdAt: new Date().toISOString(),
       viewport,
       sampleMs,
+      panelCycles,
+      uncapped,
+      renderer: measuredRuns[0]?.renderer,
       runs: measuredRuns,
       summary: summary(measuredRuns),
     };

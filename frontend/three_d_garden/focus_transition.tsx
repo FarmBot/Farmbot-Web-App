@@ -11,6 +11,45 @@ export const easeInOutCubic = (t: number) =>
     ? 4 * t * t * t
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
+const cubicBezierPoint = (
+  t: number,
+  controlPoint1: number,
+  controlPoint2: number,
+) => {
+  const inverse = 1 - t;
+  return 3 * inverse * inverse * t * controlPoint1
+    + 3 * inverse * t * t * controlPoint2
+    + t * t * t;
+};
+
+const cubicBezierSlope = (
+  t: number,
+  controlPoint1: number,
+  controlPoint2: number,
+) => {
+  const inverse = 1 - t;
+  return 3 * inverse * inverse * controlPoint1
+    + 6 * inverse * t * (controlPoint2 - controlPoint1)
+    + 3 * t * t * (1 - controlPoint2);
+};
+
+/** Equivalent to CSS `ease`, or cubic-bezier(0.25, 0.1, 0.25, 1). */
+export const cssEase = (progress: number) => {
+  const clampedProgress = Math.min(1, Math.max(0, progress));
+  let curveTime = clampedProgress;
+  for (let iteration = 0; iteration < 5; iteration++) {
+    const slope = cubicBezierSlope(curveTime, 0.25, 0.25);
+    if (slope == 0) {
+      break;
+    }
+    curveTime -=
+      (cubicBezierPoint(curveTime, 0.25, 0.25) - clampedProgress)
+      / slope;
+    curveTime = Math.min(1, Math.max(0, curveTime));
+  }
+  return cubicBezierPoint(curveTime, 0.1, 1);
+};
+
 interface FocusTransitionContextValue {
   enabled: boolean;
   duration: number;

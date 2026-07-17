@@ -33,6 +33,7 @@ import { HighlightProvider } from "./elements";
 export interface ThreeDGardenProps {
   config: Config;
   configPosition: PositionConfig;
+  panelOpen: boolean;
   threeDPlants: ThreeDGardenPlant[];
   plants?: TaggedPlant[];
   addPlantProps: AddPlantProps;
@@ -112,6 +113,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           <GardenModel
             config={props.config}
             configPosition={props.configPosition}
+            panelOpen={props.panelOpen}
             threeDPlants={props.threeDPlants}
             plants={props.plants}
             activeFocus={""}

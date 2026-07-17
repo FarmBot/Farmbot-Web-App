@@ -12,6 +12,76 @@ export interface CameraViewport {
   height: number;
 }
 
+export const FARM_DESIGNER_PANEL_WIDTH = 450;
+export const FARM_DESIGNER_PANEL_MARGIN = 10;
+export const FARM_DESIGNER_PANEL_OUTER_WIDTH =
+  FARM_DESIGNER_PANEL_WIDTH + 2 * FARM_DESIGNER_PANEL_MARGIN;
+export const FARM_DESIGNER_DESKTOP_MIN_WIDTH = 769;
+
+export interface CameraViewOffset {
+  enabled: boolean;
+  fullWidth: number;
+  fullHeight: number;
+  offsetX: number;
+  offsetY: number;
+  width: number;
+  height: number;
+}
+
+export const getPanelCameraViewOffset = (
+  viewport: CameraViewport,
+  panelOpen: boolean | undefined,
+): CameraViewOffset => {
+  const width = Math.max(1, viewport.width);
+  const height = Math.max(1, viewport.height);
+  const enabled = panelOpen !== undefined
+    && width >= FARM_DESIGNER_DESKTOP_MIN_WIDTH;
+  const panelWidth = enabled ? FARM_DESIGNER_PANEL_OUTER_WIDTH : 0;
+  return {
+    enabled,
+    fullWidth: width + panelWidth,
+    fullHeight: height,
+    offsetX: enabled && !panelOpen ? panelWidth / 2 : 0,
+    offsetY: 0,
+    width,
+    height,
+  };
+};
+
+interface CameraViewOffsetTarget {
+  aspect: number;
+  clearViewOffset(): void;
+  setViewOffset(
+    fullWidth: number,
+    fullHeight: number,
+    offsetX: number,
+    offsetY: number,
+    width: number,
+    height: number,
+  ): void;
+}
+
+export const applyCameraViewOffset = (
+  camera: CameraViewOffsetTarget | null | undefined,
+  view: CameraViewOffset,
+  offsetX = view.offsetX,
+) => {
+  if (!camera) { return; }
+  if (view.enabled) {
+    camera.setViewOffset(
+      view.fullWidth,
+      view.fullHeight,
+      offsetX,
+      view.offsetY,
+      view.width,
+      view.height,
+    );
+    return;
+  }
+  camera.aspect = view.width / view.height;
+  camera.clearViewOffset();
+};
+
 export interface CameraFitParams {
   viewport: CameraViewport;
   bedSize: AxisNumberProperty;

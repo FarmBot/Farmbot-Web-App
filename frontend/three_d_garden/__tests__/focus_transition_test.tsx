@@ -7,6 +7,7 @@ import {
   applySmoothCameraState,
   cameraTransitionValue,
   createFocusMaterialBinding,
+  cssEase,
   easeInOutCubic,
   FOCUS_TRANSITION_MS,
   FocusTransitionProvider,
@@ -30,6 +31,14 @@ describe("focus transitions", () => {
     expect(easeInOutCubic(0.25)).toEqual(0.0625);
     expect(easeInOutCubic(0.75)).toEqual(0.9375);
     expect(easeInOutCubic(1)).toEqual(1);
+  });
+
+  it("matches the CSS ease timing function", () => {
+    expect(cssEase(-1)).toEqual(0);
+    expect(cssEase(0.25)).toBeCloseTo(0.4085106);
+    expect(cssEase(0.5)).toBeCloseTo(0.8024034);
+    expect(cssEase(0.75)).toBeCloseTo(0.960459);
+    expect(cssEase(2)).toEqual(1);
   });
 
   it("keeps exiting DOM content mounted until the fade completes", () => {

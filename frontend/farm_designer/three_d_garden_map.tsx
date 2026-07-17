@@ -414,6 +414,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   return <ThreeDGarden
     config={config}
     configPosition={position}
+    panelOpen={designer.panelOpen}
     threeDPlants={threeDPlants}
     plants={props.plants}
     mapPoints={props.mapPoints}

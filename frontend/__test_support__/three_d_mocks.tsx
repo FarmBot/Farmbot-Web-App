@@ -246,6 +246,7 @@ jest.mock("@react-three/fiber", () => ({
     },
   })),
   useThree: jest.fn(() => ({
+    invalidate: jest.fn(),
     gl: {
       info: {
         render: { calls: 0, triangles: 0, points: 0, lines: 0 },

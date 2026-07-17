@@ -3,10 +3,13 @@ let mockIsDesktop = true;
 
 import {
   alignCameraPositionToViewPrism, applyCameraClippingRange,
-  cameraInit, CameraInitProps, clearCameraUrlParams,
+  applyCameraViewOffset, cameraInit, CameraInitProps, clearCameraUrlParams,
   cameraPositionForFov, canonicalCamera, distanceForFov,
+  FARM_DESIGNER_DESKTOP_MIN_WIDTH, FARM_DESIGNER_PANEL_MARGIN,
+  FARM_DESIGNER_PANEL_OUTER_WIDTH, FARM_DESIGNER_PANEL_WIDTH,
   getCameraClippingRange, getCameraFromUrlParams, getDefaultCameraPosition,
-  getCameraFit, getSphereCameraFit, getViewportFramingTangents,
+  getCameraFit, getPanelCameraViewOffset, getSphereCameraFit,
+  getViewportFramingTangents,
   GetDefaultCameraPositionProps, nearestCardinalHeading,
   nearestCardinalTopViewDirection, nearestViewPrismHeading,
   positionForViewDirection, setCameraUrlParams, viewPrismDirectionForHeading,
@@ -380,6 +383,94 @@ describe("perspective camera framing", () => {
     expect(camera.far).toEqual(141000);
     expect(camera.updateProjectionMatrix).toHaveBeenCalled();
     expect(() => applyCameraClippingRange(undefined, clippingConfig))
+      .not.toThrow();
+  });
+});
+
+describe("farm designer camera view offset", () => {
+  it("uses a virtual desktop viewport around the panel", () => {
+    const open = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      true,
+    );
+    const closed = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+
+    expect(FARM_DESIGNER_PANEL_WIDTH).toEqual(450);
+    expect(FARM_DESIGNER_PANEL_MARGIN).toEqual(10);
+    expect(FARM_DESIGNER_PANEL_OUTER_WIDTH).toEqual(470);
+    expect(FARM_DESIGNER_DESKTOP_MIN_WIDTH).toEqual(769);
+    expect(open).toEqual({
+      enabled: true,
+      fullWidth: 1670,
+      fullHeight: 600,
+      offsetX: 0,
+      offsetY: 0,
+      width: 1200,
+      height: 600,
+    });
+    expect(closed).toEqual({
+      ...open,
+      offsetX: 235,
+    });
+  });
+
+  it("uses the actual viewport outside the desktop designer", () => {
+    expect(getPanelCameraViewOffset(
+      { width: 768, height: 600 },
+      false,
+    )).toEqual({
+      enabled: false,
+      fullWidth: 768,
+      fullHeight: 600,
+      offsetX: 0,
+      offsetY: 0,
+      width: 768,
+      height: 600,
+    });
+    expect(getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      undefined,
+    ).enabled).toBeFalsy();
+    expect(getPanelCameraViewOffset(
+      { width: 0, height: 0 },
+      undefined,
+    )).toEqual(expect.objectContaining({
+      fullWidth: 1,
+      fullHeight: 1,
+      width: 1,
+      height: 1,
+    }));
+  });
+
+  it("applies and clears the camera projection crop", () => {
+    const camera = {
+      aspect: 1,
+      clearViewOffset: jest.fn(),
+      setViewOffset: jest.fn(),
+    };
+    const desktopView = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+    applyCameraViewOffset(camera, desktopView);
+    expect(camera.setViewOffset)
+      .toHaveBeenCalledWith(1670, 600, 235, 0, 1200, 600);
+
+    applyCameraViewOffset(camera, desktopView, 100);
+    expect(camera.setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 100, 0, 1200, 600);
+
+    const mobileView = getPanelCameraViewOffset(
+      { width: 600, height: 800 },
+      false,
+    );
+    applyCameraViewOffset(camera, mobileView);
+    expect(camera.aspect).toEqual(0.75);
+    expect(camera.clearViewOffset).toHaveBeenCalled();
+    expect(() => applyCameraViewOffset(undefined, desktopView))
       .not.toThrow();
   });
 });

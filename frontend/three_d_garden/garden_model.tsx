@@ -61,9 +61,10 @@ import { PeripheralValues } from
 import { Actions } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
 import {
-  applyCameraClippingRange, cameraInit, cameraPositionForFov,
-  CameraViewport, canonicalCamera, distanceForFov, getCameraFit,
-  getCameraFromUrlParams, getSphereCameraFit,
+  applyCameraClippingRange, applyCameraViewOffset, cameraInit,
+  cameraPositionForFov, CameraViewOffset, CameraViewport, canonicalCamera,
+  distanceForFov, getCameraFit, getCameraFromUrlParams,
+  getPanelCameraViewOffset, getSphereCameraFit,
   NARROW_CAMERA_FOV, getCameraClippingRange, nearestCardinalTopViewDirection,
   NORMAL_CAMERA_FOV, positionForViewDirection, setCameraUrlParams,
 } from "./camera";
@@ -84,9 +85,9 @@ import {
   useThreeDLoadProgress,
 } from "./progressive_load";
 import {
-  applySmoothCameraState, CameraInterpolation, FocusTransitionProvider,
-  FocusVisibilityGroup, SmoothCameraControls, readSmoothCameraState,
-  SmoothCameraState,
+  applySmoothCameraState, CameraInterpolation, cssEase,
+  FocusTransitionProvider, FocusVisibilityGroup, SmoothCameraControls,
+  readSmoothCameraState, SmoothCameraState,
   useSmoothCamera,
 } from "./focus_transition";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
@@ -154,11 +155,59 @@ import { markConstellationFound } from
   "../farm_designer/stargazing_progress";
 
 const CAMERA_SCENE_RADIUS = BigDistance.sky + 1000;
+export const PANEL_CAMERA_TRANSITION_MS = 300;
 
 export const notifyStartingCameraSaved = () => success(
   "",
   { title: t("Saved starting camera view") },
 );
+
+export const usePanelCameraViewOffset = (
+  camera: ThreePerspectiveCamera | null,
+  view: CameraViewOffset,
+  invalidate: () => void,
+) => {
+  const currentOffsetRef = React.useRef(view.offsetX);
+  const pendingFirstFrameRef = React.useRef(false);
+  const applyOffset = React.useCallback((offsetX: number) => {
+    if (!(camera instanceof ThreePerspectiveCamera)) {
+      return;
+    }
+    applyCameraViewOffset(camera, view, offsetX);
+    invalidate();
+  }, [camera, invalidate, view]);
+  const applyOffsetRef = React.useRef(applyOffset);
+  const [, spring] = useSpring(() => ({ offsetX: view.offsetX }));
+
+  React.useLayoutEffect(() => {
+    applyOffsetRef.current = applyOffset;
+    applyOffset(currentOffsetRef.current);
+  }, [applyOffset]);
+
+  React.useEffect(() => {
+    pendingFirstFrameRef.current = true;
+    spring.start({
+      to: { offsetX: view.offsetX },
+      config: {
+        duration: PANEL_CAMERA_TRANSITION_MS,
+        easing: cssEase,
+      },
+      onChange: result => {
+        const offsetX = result.value.offsetX ?? view.offsetX;
+        currentOffsetRef.current = offsetX;
+        applyOffsetRef.current(offsetX);
+        if (pendingFirstFrameRef.current) {
+          pendingFirstFrameRef.current = false;
+          perfMark("panel_camera_first_frame");
+        }
+      },
+      onRest: () => {
+        currentOffsetRef.current = view.offsetX;
+        applyOffsetRef.current(view.offsetX);
+      },
+    });
+  }, [spring, view.offsetX]);
+};
 
 export interface GardenCameraRequest {
   camera: Camera;
@@ -721,6 +770,7 @@ export interface GardenModelProps {
   preloadEnvironmentScenes?: boolean;
   showFarmbotLayerLoadProgress?: boolean;
   promo?: boolean;
+  panelOpen?: boolean;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
@@ -2120,9 +2170,20 @@ export const GardenModel = (props: GardenModelProps) => {
     baseConfig,
     props.smoothConfigTransitions,
   );
-  const { size: viewportSize } = useThree();
+  const { invalidate, size: canvasViewportSize } = useThree();
+  const panelCameraView = React.useMemo(
+    () => getPanelCameraViewOffset(
+      canvasViewportSize,
+      props.panelOpen,
+    ),
+    [canvasViewportSize, props.panelOpen],
+  );
+  const viewportSize = React.useMemo(() => ({
+    width: panelCameraView.fullWidth,
+    height: panelCameraView.fullHeight,
+  }), [panelCameraView.fullHeight, panelCameraView.fullWidth]);
   const spaceflightViewportSize = getVisibleSpaceflightViewport(
-    viewportSize,
+    canvasViewportSize,
     { width: window.innerWidth, height: window.innerHeight },
   );
   const configPosition = props.configPosition;
@@ -2319,6 +2380,11 @@ export const GardenModel = (props: GardenModelProps) => {
   const [controls, setControls] =
     // eslint-disable-next-line no-null/no-null
     React.useState<SmoothCameraControls | null>(null);
+  usePanelCameraViewOffset(
+    controlsCamera,
+    panelCameraView,
+    invalidate,
+  );
   const desiredFov = config.perspective
     ? NORMAL_CAMERA_FOV
     : NARROW_CAMERA_FOV;
@@ -2937,6 +3003,8 @@ export const GardenModel = (props: GardenModelProps) => {
         <PerspectiveCamera
           ref={setControlsCamera}
           makeDefault={true}
+          manual={true}
+          aspect={panelCameraView.fullWidth / panelCameraView.fullHeight}
           name={"camera"}
           fov={renderedCamera.fov}
           near={cameraClippingRange.near}

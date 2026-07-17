@@ -21,10 +21,12 @@ import {
   getViewPrismCameraProjection,
   getViewPrismColors,
   notifyStartingCameraSaved,
+  PANEL_CAMERA_TRANSITION_MS,
   retargetCameraRequestFov,
   stargazingOrbitPolarLimits,
   GardenCameraControllerProps,
   useGardenCameraController,
+  usePanelCameraViewOffset,
   SPACEFLIGHT_CAMERA,
   SPACEFLIGHT_FOV,
   SPACEFLIGHT_VIEWPORT_MARGIN_RATIO,
@@ -51,7 +53,7 @@ import {
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import {
-  cameraInit, getCameraFit, getSphereCameraFit,
+  cameraInit, getCameraFit, getPanelCameraViewOffset, getSphereCameraFit,
 } from "../camera";
 import * as cameraModule from "../camera";
 import { BigDistance } from "../constants";
@@ -551,8 +553,12 @@ describe("<GardenModel />", () => {
         .filter((value): value is GardenCameraRequest =>
           typeof value == "object" && !!value
           && "camera" in value && "fov" in value));
+    const visibleViewport = getVisibleSpaceflightViewport(
+      { width: 800, height: 600 },
+      { width: window.innerWidth, height: window.innerHeight },
+    );
     expect(cameraRequests).toContainEqual(expect.objectContaining({
-      camera: SPACEFLIGHT_CAMERA,
+      camera: getSpaceflightCamera(visibleViewport),
       fov: SPACEFLIGHT_FOV,
     }));
     const sun = wrapper.root.findByType(Sun);
@@ -949,6 +955,16 @@ describe("<GardenModel />", () => {
     const position = camera.props.position as [number, number, number];
     expect(Math.hypot(...position))
       .toBeCloseTo(expectedFit.cameraRadius);
+  });
+
+  it("keeps the projection under manual camera control", () => {
+    const p = fakeProps();
+    p.panelOpen = true;
+    const wrapper = createWrapper(p);
+    const camera = () => wrapper.root.findByType(PerspectiveCamera);
+    expect(camera().props.manual)
+      .toBeTruthy();
+    expect(camera().props.aspect).toEqual(1270 / 600);
   });
 
   it("retargets the promo camera fit when the bed size changes", () => {
@@ -2242,6 +2258,170 @@ describe("<GardenModel />", () => {
     p.config.sun = 0;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("color=\"0,0,0\"");
+  });
+});
+
+describe("usePanelCameraViewOffset()", () => {
+  interface PanelSpringUpdate {
+    to: { offsetX: number };
+    config: {
+      duration: number;
+      easing(progress: number): number;
+    };
+    onChange(result: { value: { offsetX?: number } }): void;
+    onRest(): void;
+  }
+
+  const mockPanelSpring = () => {
+    let update: PanelSpringUpdate | undefined;
+    const start = jest.fn((nextUpdate: PanelSpringUpdate) => {
+      update = nextUpdate;
+      return Promise.resolve();
+    });
+    const api = { start };
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(
+        (props: Parameters<typeof reactSpring.useSpring>[0]) => {
+          const resolved = typeof props == "function" ? props() : props;
+          return [resolved, api] as unknown as
+            ReturnType<typeof reactSpring.useSpring>;
+        });
+    const getUpdate = () => {
+      if (!update) {
+        throw new Error("Panel spring did not start.");
+      }
+      return update;
+    };
+    return { getUpdate, springSpy, start };
+  };
+
+  it("matches the CSS panel transition timing", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    // eslint-disable-next-line no-undefined
+    window.__fbPerf = undefined;
+    const panelCameraMarks = () => (
+      Reflect.get(window, "__fbPerf") as
+      { marks: Record<string, number[]> } | undefined
+    )?.marks.panel_camera_first_frame;
+    const { getUpdate, springSpy, start } = mockPanelSpring();
+    const invalidate = jest.fn();
+    const camera = new ThreePerspectiveCamera();
+    const setViewOffset = jest.spyOn(camera, "setViewOffset");
+    const openView = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      true,
+    );
+    const closedView = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+    interface HookProps {
+      camera: ThreePerspectiveCamera | null;
+      view: typeof openView;
+    }
+    const initialProps: HookProps = {
+      // eslint-disable-next-line no-null/no-null
+      camera: null,
+      view: openView,
+    };
+    const { rerender, unmount } = renderHook(
+      (props: HookProps) => usePanelCameraViewOffset(
+        props.camera,
+        props.view,
+        invalidate,
+      ),
+      { initialProps },
+    );
+    expect(setViewOffset).not.toHaveBeenCalled();
+
+    rerender({ camera, view: openView });
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 0, 0, 1200, 600);
+
+    rerender({ camera, view: closedView });
+    expect(start).toHaveBeenCalled();
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 0, 0, 1200, 600);
+    expect(getUpdate().to).toEqual({ offsetX: 235 });
+    expect(getUpdate().config.duration)
+      .toEqual(PANEL_CAMERA_TRANSITION_MS);
+    expect(getUpdate().config.easing(0.5)).toBeCloseTo(0.8024034);
+    act(() => getUpdate().onChange({
+      value: { offsetX: 188.5647961 },
+    }));
+    expect(setViewOffset.mock.calls[setViewOffset.mock.calls.length - 1][2])
+      .toBeCloseTo(188.5647961);
+    expect(panelCameraMarks()).toHaveLength(1);
+    act(() => getUpdate().onRest());
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 235, 0, 1200, 600);
+    expect(panelCameraMarks()).toHaveLength(1);
+
+    rerender({ camera, view: openView });
+    expect(getUpdate().to).toEqual({ offsetX: 0 });
+    act(() => getUpdate().onChange({
+      value: { offsetX: 46.4352039 },
+    }));
+    expect(setViewOffset.mock.calls[setViewOffset.mock.calls.length - 1][2])
+      .toBeCloseTo(46.4352039);
+    expect(panelCameraMarks()).toHaveLength(2);
+    act(() => getUpdate().onRest());
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 0, 0, 1200, 600);
+    expect(invalidate).toHaveBeenCalled();
+
+    unmount();
+    springSpy.mockRestore();
+    window.localStorage.removeItem("FB_PERF_BENCHMARK");
+    // eslint-disable-next-line no-undefined
+    window.__fbPerf = undefined;
+  });
+
+  it("updates resized projections without starting an idle transition", () => {
+    const { getUpdate, springSpy } = mockPanelSpring();
+    const invalidate = jest.fn();
+    const camera = new ThreePerspectiveCamera();
+    const clearViewOffset = jest.spyOn(camera, "clearViewOffset");
+    const setViewOffset = jest.spyOn(camera, "setViewOffset");
+    const view = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+    const { rerender, unmount } = renderHook(
+      ({ nextView }) =>
+        usePanelCameraViewOffset(camera, nextView, invalidate),
+      { initialProps: { nextView: view } },
+    );
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 235, 0, 1200, 600);
+
+    const resizedView = getPanelCameraViewOffset(
+      { width: 1400, height: 700 },
+      false,
+    );
+    rerender({ nextView: resizedView });
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1870, 700, 235, 0, 1400, 700);
+
+    const noPanelView = getPanelCameraViewOffset(
+      { width: 1400, height: 700 },
+      undefined,
+    );
+    rerender({ nextView: noPanelView });
+    expect(clearViewOffset).toHaveBeenCalled();
+    expect(camera.view?.enabled).toBeFalsy();
+    act(() => getUpdate().onRest());
+    rerender({
+      nextView: getPanelCameraViewOffset(
+        { width: 1400, height: 700 },
+        true,
+      ),
+    });
+    expect(setViewOffset)
+      .toHaveBeenLastCalledWith(1870, 700, 0, 0, 1400, 700);
+
+    unmount();
+    springSpy.mockRestore();
   });
 });
 

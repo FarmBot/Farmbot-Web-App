@@ -23,10 +23,6 @@
 
 .promo {
   &.three-d-garden {
-    .garden-bed-3d-model {
-      width: 100vw;
-    }
-
     .overlay {
       .settings-bar {
         button {
@@ -48,15 +44,11 @@
   }
 
   .garden-bed-3d-model {
-    width: calc(100vw + 45rem);
+    width: 100vw;
     position: relative;
     height: 100vh;
     cursor: grab;
     touch-action: none;
-
-    @media screen and (max-width: $tablet_max_width) {
-      width: 100vw;
-    }
   }
 
   .three-d-object-popup-wrapper {
