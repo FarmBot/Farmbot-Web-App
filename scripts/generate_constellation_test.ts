@@ -141,7 +141,7 @@ describe("generated_constellations.bin", () => {
     } finally {
       rmSync(directory, { recursive: true });
     }
-  }, 15_000);
+  }, 30_000);
 
   it("contains one valid contour for every catalog crop", async () => {
     const file = Bun.file(

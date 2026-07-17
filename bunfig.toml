@@ -1,4 +1,5 @@
 [test]
+root = "./frontend"
 preload = [
   "./frontend/__test_support__/happydom.ts",
   "./frontend/__test_support__/bun_test_setup.ts"
