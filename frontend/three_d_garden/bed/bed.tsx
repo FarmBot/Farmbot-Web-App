@@ -185,10 +185,11 @@ export const BED_TEXTURE_REPEAT_PER_MM: [number, number] = [0.0003, 0.003];
 
 export const getBedTextureRepeat = (
   size: [number, number],
-): [number, number] => [
-  size[0] * BED_TEXTURE_REPEAT_PER_MM[0],
-  size[1] * BED_TEXTURE_REPEAT_PER_MM[1],
-];
+): [number, number] =>
+  [
+    size[0] * BED_TEXTURE_REPEAT_PER_MM[0],
+    size[1] * BED_TEXTURE_REPEAT_PER_MM[1],
+  ];
 
 export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
   const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
@@ -408,6 +409,21 @@ interface LowDetailSoilLayerProps {
   layerProps: SoilLayerPropsWithoutChildren;
 }
 
+export type DetailedSoilMaterialType =
+  "default" | "height" | "normals" | "savedGarden";
+
+export const getDetailedSoilMaterialType = (
+  surfaceDebug: SurfaceDebugOption,
+  isSavedGarden: boolean,
+): DetailedSoilMaterialType => {
+  if (surfaceDebug == SurfaceDebugOption.normals) { return "normals"; }
+  if (surfaceDebug == SurfaceDebugOption.height) { return "height"; }
+  if (isSavedGarden && surfaceDebug == SurfaceDebugOption.none) {
+    return "savedGarden";
+  }
+  return "default";
+};
+
 const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
   <SoilLayer {...props.layerProps}>
     <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
@@ -438,21 +454,23 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
       bedProps.showMoistureReadings,
       bedProps.showMoistureMap,
     ]);
+  const isSavedGarden = !!bedProps.addPlantProps?.designer.openedSavedGarden;
+  const materialType = getDetailedSoilMaterialType(
+    bedProps.config.surfaceDebug, isSavedGarden);
 
   return <SoilLayer {...props.layerProps}>
     <>
-      {bedProps.config.surfaceDebug == SurfaceDebugOption.normals &&
+      {materialType == "normals" &&
         <MeshNormalMaterial
           flatShading={true}
           side={props.soilSurfaceSide}>
           {soilTexture}
         </MeshNormalMaterial>}
-      {bedProps.config.surfaceDebug == SurfaceDebugOption.height &&
+      {materialType == "height" &&
         <SurfaceHeightMaterial>
           {soilTexture}
         </SurfaceHeightMaterial>}
-      {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
-        .includes(bedProps.config.surfaceDebug) &&
+      {materialType == "default" &&
         <MeshPhongMaterial
           flatShading={true}
           side={props.soilSurfaceSide}
@@ -460,6 +478,12 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
           color={getColorFromBrightness(bedProps.config.soilBrightness)}>
           {soilTexture}
         </MeshPhongMaterial>}
+      {materialType == "savedGarden" &&
+        <MeshPhongMaterial
+          color={"blue"}
+          flatShading={true}
+          side={DoubleSide}
+          shininess={0} />}
     </>
   </SoilLayer>;
 };

@@ -17,6 +17,9 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { store } from "../../../redux/store";
+import * as ui from "../../../ui";
+import { type FBSelectProps } from "../../../ui";
+import { SurfaceDebugOption } from "../../../three_d_garden/config";
 
 const mockState = fakeState();
 let setWebAppConfigValueSpy: jest.SpyInstance;
@@ -287,5 +290,64 @@ describe("<Dev3dDebugSettings />", () => {
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 0 });
     expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+  });
+
+  it("adds the surface debug env from a dropdown", () => {
+    mockState.resources = buildResourceIndex([]);
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<Dev3dDebugSettings />);
+    const surfaceDebugSelect = fbSelectProps[0];
+    expect(surfaceDebugSelect.list).toEqual([
+      { label: "None", value: SurfaceDebugOption.none },
+      { label: "Normals", value: SurfaceDebugOption.normals },
+      { label: "Height", value: SurfaceDebugOption.height },
+      { label: "Blank", value: SurfaceDebugOption.blank },
+    ]);
+    expect(surfaceDebugSelect.selectedItem)
+      .toEqual({ label: "None", value: SurfaceDebugOption.none });
+
+    surfaceDebugSelect.onChange({
+      label: "Normals",
+      value: SurfaceDebugOption.normals,
+    });
+    expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "3D_surfaceDebug",
+      value: SurfaceDebugOption.normals,
+    });
+    fbSelectSpy.mockRestore();
+  });
+
+  it("edits the surface debug env from a dropdown", () => {
+    const env = fakeFarmwareEnv();
+    env.body.key = "3D_surfaceDebug";
+    env.body.value = SurfaceDebugOption.blank;
+    mockState.resources = buildResourceIndex([env]);
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<Dev3dDebugSettings />);
+    const surfaceDebugSelect = fbSelectProps[0];
+    expect(surfaceDebugSelect.selectedItem)
+      .toEqual({ label: "Blank", value: SurfaceDebugOption.blank });
+    surfaceDebugSelect.onChange({
+      label: "Height",
+      value: SurfaceDebugOption.height,
+    });
+
+    expect(editSpy).toHaveBeenCalledWith(env, {
+      value: SurfaceDebugOption.height,
+    });
+    expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+    fbSelectSpy.mockRestore();
   });
 });

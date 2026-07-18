@@ -4,6 +4,7 @@ import { SceneObjectFormFields, SceneObjectFormValues } from "../form";
 import * as ui from "../../ui";
 import { type FBSelectProps } from "../../ui";
 import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("<SceneObjectFormFields />", () => {
   const values = (): SceneObjectFormValues => fakeSceneObject({
@@ -182,6 +183,9 @@ describe("<SceneObjectFormFields />", () => {
   });
 
   it("edits select fields", () => {
+    const futureFeaturesEnabled =
+      jest.spyOn(DevSettings, "futureFeaturesEnabled")
+        .mockReturnValue(false);
     const onValueChange = jest.fn();
     const fbSelectProps: FBSelectProps[] = [];
     const fbSelectSpy = jest.spyOn(ui, "FBSelect")
@@ -198,6 +202,8 @@ describe("<SceneObjectFormFields />", () => {
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("solar");
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("tree");
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("fence");
+    expect(fbSelectProps[0].list.map(item => item.value))
+      .not.toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
     fbSelectProps[0].onChange({ label: "Sphere", value: "sphere" });
     fbSelectProps[1].onChange({ label: "max", value: "max" });
     fbSelectProps[2].onChange({ label: "world", value: "world" });
@@ -206,6 +212,28 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenCalledWith("x_origin", "max");
     expect(onValueChange).toHaveBeenCalledWith("y_origin", "world");
     fbSelectSpy.mockRestore();
+    futureFeaturesEnabled.mockRestore();
+  });
+
+  it("shows future shape choices", () => {
+    const futureFeaturesEnabled =
+      jest.spyOn(DevSettings, "futureFeaturesEnabled")
+        .mockReturnValue(true);
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<SceneObjectFormFields
+      values={values()}
+      onValueChange={jest.fn()} />);
+
+    expect(fbSelectProps[0].list.map(item => item.value))
+      .toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
+    fbSelectSpy.mockRestore();
+    futureFeaturesEnabled.mockRestore();
   });
 
   it("edits texture fields", () => {

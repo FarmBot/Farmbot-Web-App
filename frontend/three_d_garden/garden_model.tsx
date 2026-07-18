@@ -872,6 +872,7 @@ interface GardenLayerVisibility {
   showSpread: boolean;
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
+  showSceneObjects: boolean;
 }
 
 interface GardenLayerVisibilityParams {
@@ -904,6 +905,8 @@ function getGardenLayerVisibility(
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!getConfigValue?.(
     BooleanSetting.show_sensor_readings);
+  const showSceneObjects = !!getConfigValue?.(
+    BooleanSetting.show_scene_objects);
   return {
     showPlants,
     plantsVisible,
@@ -913,6 +916,7 @@ function getGardenLayerVisibility(
     showSpread,
     showMoistureMap,
     showMoistureReadings,
+    showSceneObjects,
   };
 }
 
@@ -2627,7 +2631,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const {
     plantsVisible, farmbotVisible, showPoints, showWeeds,
     showSpread, showMoistureMap,
-    showMoistureReadings,
+    showMoistureReadings, showSceneObjects,
   } = layerVisibility;
   const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
   const groupIdFromPath = React.useMemo(() => {
@@ -3285,6 +3289,7 @@ export const GardenModel = (props: GardenModelProps) => {
               config={config}
               activeFocus={props.activeFocus}
               isPromo={props.promo}
+              visible={showSceneObjects}
               dispatch={dispatch}
               designer={addPlantProps?.designer}
               hoverSelection={hoverSelection}

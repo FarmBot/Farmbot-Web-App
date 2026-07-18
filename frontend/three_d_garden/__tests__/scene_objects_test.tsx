@@ -8,6 +8,7 @@ import {
   sceneObjectWithDragPreview, stopSceneObjectMarkerDragEvent,
   stopSceneObjectMarkerEvent, SceneObjects,
   staticSceneObjects, useSceneObjectPlacement, heightFromPointerRay,
+  HOVER_ALL_SCENE_OBJECTS,
   sceneObjectTopResizeUpdate, topResizeMarkerHandlers,
   greenhouseWallRenderProps, placementAxisSize, SceneObjectPreview,
   sceneObjectAppearanceKey, applySceneObjectOpacity, unifiedSizeUpdate,
@@ -462,6 +463,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       sceneObjects: [sceneObject],
       hoverSelection: { kind: "sceneObject", id: 1 },
+      visible: true,
     }));
 
     expect(wrapper.root.findAllByProps({ className: "edges" }).length)
@@ -480,6 +482,7 @@ describe("scene object placement helpers", () => {
         z_size: 2500,
       })],
       hoverSelection: { kind: "sceneObject", id: 1 },
+      visible: true,
     }));
     const wallGeometry = wrapper.root.findAll(node =>
       node.props.args?.join(",") == "1227.5,10,600")[0];
@@ -517,6 +520,7 @@ describe("scene object placement helpers", () => {
         fakeSceneObject({ shape: "sphere", texture: "none" }),
         fakeSceneObject({ shape: "window", x_size: 10000, y_size: 10 }),
       ],
+      visible: true,
     }));
 
     expect(wrapper.root.findAllByProps({ name: "desk" }).length).toBeTruthy();
@@ -547,10 +551,12 @@ describe("scene object placement helpers", () => {
     const wrapper = createRenderer(React.createElement(SceneObjects, {
       config: clone(INITIAL),
       activeFocus: "",
+      visible: true,
       designer: {
         featuredScene: "Outdoor",
         focusedSceneObjectField: undefined,
         unifiedSceneObjectSize: undefined,
+        hoveredSceneObject: undefined,
       },
     }));
     const featuredObjects = staticSceneObjects("Outdoor");
@@ -561,6 +567,43 @@ describe("scene object placement helpers", () => {
     translucentObjects.forEach(object => {
       expect(object.props.visible).toEqual(true);
     });
+    unmountRenderer(wrapper);
+  });
+
+  it("fades a selected scene object when the layer is hidden", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject({ show: true });
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      visible: false,
+      sceneObjects: [sceneObject],
+    }));
+    const fadedObjects = wrapper.root.findAll(node =>
+      node.props.show === false && node.props.visible === true);
+
+    expect(fadedObjects).toHaveLength(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("fades all user scene objects when their hidden layer is hovered", () => {
+    const sceneObjects = [fakeSceneObject(), fakeSceneObject()];
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      visible: false,
+      designer: {
+        focusedSceneObjectField: undefined,
+        hoveredSceneObject: HOVER_ALL_SCENE_OBJECTS,
+        unifiedSceneObjectSize: undefined,
+      },
+      sceneObjects,
+    }));
+    const fadedObjects = wrapper.root.findAll(node =>
+      node.props.show === false && node.props.visible === true);
+
+    expect(fadedObjects).toHaveLength(sceneObjects.length);
     unmountRenderer(wrapper);
   });
 
@@ -575,6 +618,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const event = {
       point: new Vector3(0, 0, 0),
@@ -690,6 +734,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const baseZ = sceneObject.body.z_base;
     const [baseX, baseY] = sceneObjectPoint(config, {
@@ -740,6 +785,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const [targetX, targetY] = sceneObjectPoint(config, {
       x: 200,
@@ -799,6 +845,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const [targetX, targetY] = sceneObjectPoint(config, {
       x: sceneObject.body.x_center,
@@ -856,6 +903,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const xMaxMarker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-1");
@@ -904,8 +952,10 @@ describe("scene object placement helpers", () => {
       designer: {
         focusedSceneObjectField: "z_base",
         unifiedSceneObjectSize: undefined,
+        hoveredSceneObject: undefined,
       },
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const markers = [0, 1, 2, 3].map(index =>
       findSelectionMarker(wrapper, `scene-object-selection-marker-${index}`));
@@ -945,6 +995,7 @@ describe("scene object placement helpers", () => {
       config,
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const midpoint = (
       start: number[],
@@ -1038,6 +1089,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
 
     [0, 1, 2, 3, 4].map(index =>
@@ -1166,8 +1218,10 @@ describe("scene object placement helpers", () => {
       designer: {
         focusedSceneObjectField: "x_size",
         unifiedSceneObjectSize: undefined,
+        hoveredSceneObject: undefined,
       },
       sceneObjects: [sceneObject],
+      visible: true,
     }));
 
     expect(wrapper.root.findByProps({
@@ -1193,6 +1247,7 @@ describe("scene object placement helpers", () => {
       config: clone(INITIAL),
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const topMarker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-4");
@@ -1243,6 +1298,7 @@ describe("scene object placement helpers", () => {
       config: clone(INITIAL),
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     act(() => {
       frameCallbacks.map(callback => callback());
@@ -1287,6 +1343,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const arrow = wrapper.root.findAll(node =>
       node.type == "group" as ElementType &&
@@ -1359,7 +1416,9 @@ describe("scene object placement helpers", () => {
       designer: {
         focusedSceneObjectField: undefined,
         unifiedSceneObjectSize: sceneObject.uuid,
+        hoveredSceneObject: undefined,
       },
+      visible: true,
     }));
     expect(wrapper.root.findAllByProps({
       name: "scene-object-face-size-arrow-1",
@@ -1429,6 +1488,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const arrow = wrapper.root.findAll(node =>
       node.type == "group" as ElementType &&
@@ -1500,6 +1560,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const arrow = wrapper.root.findAll(node =>
       node.type == "group" as ElementType &&
@@ -1558,6 +1619,7 @@ describe("scene object placement helpers", () => {
       config,
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const xMaxMarker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-1");
@@ -1620,6 +1682,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const basePoint = sceneObjectPoint(config, {
       x: sceneObject.body.x_center,
@@ -1679,6 +1742,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const basePoint = sceneObjectPoint(config, {
       x: sceneObject.body.x_center,
@@ -1764,6 +1828,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       dispatch,
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const point = sceneObjectPoint(config, {
       x: sceneObject.body.x_center,
@@ -1858,6 +1923,7 @@ describe("scene object placement helpers", () => {
       config: clone(INITIAL),
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const marker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-0");
@@ -1888,6 +1954,7 @@ describe("scene object placement helpers", () => {
       config: clone(INITIAL),
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const marker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-0");
@@ -1924,6 +1991,7 @@ describe("scene object placement helpers", () => {
       config: clone(INITIAL),
       activeFocus: "",
       sceneObjects: [sceneObject],
+      visible: true,
     }));
     const moveHandle = wrapper.root.findAll(node =>
       node.props.renderOrder == 999)[0];
@@ -2103,6 +2171,7 @@ describe("scene object placement helpers", () => {
     const wrapper = createRenderer(React.createElement(SceneObjects, {
       config: clone(INITIAL),
       activeFocus: "",
+      visible: true,
     }));
 
     expect(wrapper.root).toBeTruthy();
@@ -2118,6 +2187,7 @@ describe("scene object placement helpers", () => {
       activeFocus: "",
       sceneObjects: [sceneObject],
       hoverSelection: { kind: "sceneObject", id: 1 },
+      visible: true,
     }));
 
     expect(wrapper.root.findAllByProps({ className: "edges" }).length)

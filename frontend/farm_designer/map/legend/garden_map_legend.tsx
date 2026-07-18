@@ -278,6 +278,12 @@ const LayerToggles = (props: LayerTogglesProps) => {
       value={props.showMoistureInterpolationMap}
       label={DeviceSetting.showMoisture}
       onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />
+    {is3D &&
+      <LayerToggle
+        settingName={BooleanSetting.show_scene_objects}
+        value={props.showSceneObjects}
+        label={DeviceSetting.showObjects}
+        onClick={toggle(BooleanSetting.show_scene_objects)} />}
     <GardenMapLegendToggle
       settingName={BooleanSetting.three_d_garden}
       value={!!is3D}

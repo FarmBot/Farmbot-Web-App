@@ -258,12 +258,16 @@ export interface PanelSectionProps {
   children: React.ReactNode | React.ReactNode[];
   extraHeaderContent?: React.ReactNode | false;
   extraHeaderTitle?: React.ReactNode | false;
+  onMouseEnter?(): void;
+  onMouseLeave?(): void;
 }
 
 export const PanelSection = (props: PanelSectionProps) => {
   const { isOpen, addNew } = props;
   return <div className={`panel-section ${isOpen ? "open" : ""}`}>
     <div className={"section-header"}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
       onClick={props.toggleOpen}>
       <label title={props.title}>
         {`${props.title} (${props.itemCount})`}

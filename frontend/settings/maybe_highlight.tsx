@@ -190,6 +190,7 @@ const MAP_SETTINGS = [
   DeviceSetting.showAreasMapLayer,
   DeviceSetting.showReadingsMapLayer,
   DeviceSetting.showMoistureInterpolationMapLayer,
+  DeviceSetting.showSceneObjectsMapLayer,
   DeviceSetting.show3DMap,
 ];
 const CONTROLS_SETTINGS = [

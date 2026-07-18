@@ -79,7 +79,7 @@ import { useHelper, useTexture } from "@react-three/drei";
 import { INITIAL, SurfaceDebugOption } from "../../config";
 import {
   Bed, BedFrameMaterial, BedProps, getAxleGeometry, getBracketGeometry,
-  getWheelGeometry,
+  getDetailedSoilMaterialType, getWheelGeometry,
 } from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
@@ -327,6 +327,19 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
 
     expect(container.querySelector("[name='soil']")).not.toBeNull();
+  });
+
+  it.each([
+    [SurfaceDebugOption.none, true, "savedGarden"],
+    [SurfaceDebugOption.none, false, "default"],
+    [SurfaceDebugOption.blank, true, "default"],
+    [SurfaceDebugOption.normals, true, "normals"],
+    [SurfaceDebugOption.height, true, "height"],
+  ] as const)("selects soil material %s %s", (
+    surfaceDebug, isSavedGarden, expected,
+  ) => {
+    expect(getDetailedSoilMaterialType(surfaceDebug, isSavedGarden))
+      .toEqual(expected);
   });
 
   it("hides cable carrier support rails with the carrier layer", () => {
