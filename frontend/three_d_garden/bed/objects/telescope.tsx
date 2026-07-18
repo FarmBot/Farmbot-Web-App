@@ -1,5 +1,5 @@
 import React from "react";
-import { Cylinder, Html, Sphere } from "@react-three/drei";
+import { Cylinder, Sphere } from "@react-three/drei";
 import { animated, useSpring } from "@react-spring/three";
 import { SpringValue } from "@react-spring/core";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
@@ -20,6 +20,9 @@ import { getUtilitiesPostWorldPosition } from "./utilities_post_position";
 import { RenderOrder } from "../../constants";
 import { t } from "../../../i18next_wrapper";
 import { Actions } from "../../../constants";
+import {
+  ControlHandle, ControlPointerEvent, ThreeDPopup,
+} from "../../controls";
 
 const OFF_WHITE = "#f2efe6";
 const BLACK = "#111111";
@@ -246,40 +249,18 @@ interface TelescopePopupProps {
   onClose(): void;
 }
 
-const stopPopupEvent = (event: React.SyntheticEvent) => {
-  event.stopPropagation();
-};
-
 const TelescopePopup = (props: TelescopePopupProps) =>
-  <Html
+  <ThreeDPopup
     name={"telescope-popup"}
-    wrapperClass={"three-d-object-popup-wrapper"}
-    center={true}
-    position={props.position}>
-    <div
-      className={
-        "three-d-object-popup telescope-popup grid half-gap visible"}
-      onPointerDown={stopPopupEvent}
-      onContextMenu={stopPopupEvent}
-      onWheel={stopPopupEvent}
-      onClick={stopPopupEvent}>
-      <div className={"object-popup-header row grid-exp-2"}>
-        <h3>{t("Stargaze")}</h3>
-        <div className={"object-popup-button-cluster row no-gap"}>
-          <button
-            type={"button"}
-            className={"fa fa-times fb-icon-button invert"}
-            title={t("close")}
-            onClick={props.onClose} />
-        </div>
-      </div>
-      <div className={"object-popup-content telescope-popup-content grid"}>
-        <p>{t(
-          "Click the telescope to see how many crop constellations you can find!",
-        )}</p>
-      </div>
-    </div>
-  </Html>;
+    position={props.position}
+    title={t("Stargaze")}
+    className={"telescope-popup half-gap"}
+    contentClassName={"telescope-popup-content"}
+    onClose={props.onClose}>
+    <p>{t(
+      "Click the telescope to see how many crop constellations you can find!",
+    )}</p>
+  </ThreeDPopup>;
 
 export interface TelescopeProps {
   config: TelescopeConfig;
@@ -349,22 +330,13 @@ export const Telescope = (props: TelescopeProps) => {
       });
     }
   };
-  const toggleTelescope = (event: ThreeEvent<MouseEvent>) => {
+  const toggleTelescope = (event: ControlPointerEvent) => {
     event.stopPropagation();
     if (stargazing) { return; }
     const nextEnabled = state != "enabled";
     setEnabledRequested(nextEnabled);
     setPopupOpen(nextEnabled);
   };
-  const showPointerCursor = () => {
-    if (!stargazing) { document.body.style.cursor = "pointer"; }
-  };
-  const resetPointerCursor = () => {
-    document.body.style.cursor = "default";
-  };
-  React.useEffect(() => () => {
-    document.body.style.cursor = "default";
-  }, []);
   React.useEffect(() => {
     if (!popupOpen) { return; }
     const closePopup = (event: KeyboardEvent) => {
@@ -385,39 +357,38 @@ export const Telescope = (props: TelescopeProps) => {
       position-z={spring.groupOffset}>
       {renderSphere &&
         <Group name={"celestial-sphere-rotation"} ref={sphereRotationRef}>
-          <Sphere
-            name={"telescope-sphere"}
-            args={[TELESCOPE_SPHERE_RADIUS, 24, 24]}
-            position={[0, 0, sphereZ]}
-            renderOrder={TELESCOPE_RENDER_ORDER}
-            onPointerEnter={showPointerCursor}
-            onPointerLeave={resetPointerCursor}
-            onClick={toggleTelescope}>
-            <AnimatedMeshBasicMaterial
-              color={"#000000"}
-              opacity={spring.sphereOpacity}
-              transparent={true}
-              depthWrite={true} />
-          </Sphere>
-          <Points
-            name={"celestial-sphere-stars"}
-            geometry={telescopeStarGeometry}
-            position={[0, 0, sphereZ]}
-            renderOrder={TELESCOPE_RENDER_ORDER + 0.01}
-            onPointerEnter={showPointerCursor}
-            onPointerLeave={resetPointerCursor}
-            onClick={toggleTelescope}
-            // eslint-disable-next-line no-null/no-null
-            dispose={null}>
-            <AnimatedPointsMaterial
-              color={"white"}
-              opacity={spring.sphereOpacity}
-              size={1}
-              sizeAttenuation={true}
-              transparent={true}
-              onBeforeCompile={telescopeStarShaderModification}
-              depthWrite={false} />
-          </Points>
+          <ControlHandle
+            name={"telescope-sphere-control"}
+            enabled={!stargazing}
+            onActivate={toggleTelescope}>
+            <Sphere
+              name={"telescope-sphere"}
+              args={[TELESCOPE_SPHERE_RADIUS, 24, 24]}
+              position={[0, 0, sphereZ]}
+              renderOrder={TELESCOPE_RENDER_ORDER}>
+              <AnimatedMeshBasicMaterial
+                color={"#000000"}
+                opacity={spring.sphereOpacity}
+                transparent={true}
+                depthWrite={true} />
+            </Sphere>
+            <Points
+              name={"celestial-sphere-stars"}
+              geometry={telescopeStarGeometry}
+              position={[0, 0, sphereZ]}
+              renderOrder={TELESCOPE_RENDER_ORDER + 0.01}
+              // eslint-disable-next-line no-null/no-null
+              dispose={null}>
+              <AnimatedPointsMaterial
+                color={"white"}
+                opacity={spring.sphereOpacity}
+                size={1}
+                sizeAttenuation={true}
+                transparent={true}
+                onBeforeCompile={telescopeStarShaderModification}
+                depthWrite={false} />
+            </Points>
+          </ControlHandle>
         </Group>}
       {popupOpen && !stargazing &&
         <TelescopePopup

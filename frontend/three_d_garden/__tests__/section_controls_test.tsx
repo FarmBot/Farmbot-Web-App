@@ -77,7 +77,10 @@ describe("section controls", () => {
   ) => {
     const control = sphere(wrapper, name);
     return `${control.type}` == "group"
-      ? control.findByProps({ name: `${name}-sphere` })
+      ? control.find(node =>
+        node.type == "div"
+        && node.props.name == `${name}-sphere`
+        && Array.isArray(node.props.args))
       : control;
   };
   const arrow = (
@@ -96,13 +99,23 @@ describe("section controls", () => {
   const pillBody = (
     wrapper: ReturnType<typeof createRenderer>,
     name: string,
-  ) => sphere(wrapper, name).findByProps({ name: `${name}-body` });
+  ) => sphere(wrapper, name).findByProps({
+    "data-extrude-name": `${name}-body`,
+  });
+  const expectPillSize = (
+    wrapper: ReturnType<typeof createRenderer>,
+    name: string,
+  ) => expect(pillBody(wrapper, name).props.userData).toEqual({
+    length: 280,
+    width: 80,
+    thickness: 10,
+  });
   const sphereColor = (
     wrapper: ReturnType<typeof createRenderer>,
     name: string,
   ) => {
     const pillBodies = sphere(wrapper, name).findAllByProps({
-      name: `${name}-body`,
+      "data-extrude-name": `${name}-body`,
     });
     const control = pillBodies[0] ?? controlSphere(wrapper, name);
     return control.find(node =>
@@ -197,7 +210,10 @@ describe("section controls", () => {
       && `${node.props.name}`.startsWith("section-width-arrow-")
       && `${node.props.name}`.endsWith("-base"));
     expect(widthBases).toHaveLength(2);
-    expect(widthBases.map(node => node.props.position)).toEqual([
+    expect([
+      arrow(wrapper, "section-width-arrow-near").props.position,
+      arrow(wrapper, "section-width-arrow-far").props.position,
+    ]).toEqual([
       [51, 0, -292.5],
       [-51, 0, -292.5],
     ]);
@@ -212,16 +228,21 @@ describe("section controls", () => {
     const center = sphere(wrapper, "section-center-handle-positive");
     expect(`${center.type}`).toEqual("group");
     expect(controlSphere(wrapper, "section-center-handle-positive")
-      .props.position).toEqual([0, 0, 0]);
+      .props.position).toBeUndefined();
     const centerArrows = center.findAll(node =>
       `${node.type}` == "group"
       && `${node.props.name}`.startsWith(
         "section-center-handle-positive-arrow-")
       && `${node.props.name}`.endsWith("-shape"));
     expect(centerArrows).toHaveLength(2);
-    expect(centerArrows.map(node => node.props.rotation)).toEqual([
-      [0, 0, Math.PI],
-      [0, 0, 0],
+    const centerArrowEnds = ["negative", "positive"].map(direction =>
+      center.find(node =>
+        node.props.name ==
+        `section-center-handle-positive-arrow-${direction}` &&
+        Array.isArray(node.props.end)).props.end);
+    expect(centerArrowEnds).toEqual([
+      [-250, 0, 0],
+      [250, 0, 0],
     ]);
     centerArrows.map(node => {
       expect(node.props.position).toEqual([0, 0, 0]);
@@ -238,15 +259,15 @@ describe("section controls", () => {
     expect(followNames.map(name => sphere(wrapper, name).props.rotation))
       .toEqual([[0, 0, 0], [0, 0, Math.PI]]);
     followNames.map(name => {
-      expect(pillBody(wrapper, name).props.args).toEqual([200, 80]);
+      expectPillSize(wrapper, name);
       expect(sphere(wrapper, name).findByProps({ className: "text" }).children)
-        .toContain("FOLLOW BOT");
+        .toContain("Follow Bot");
     });
     const hoverEvent = event(0, 0);
     actRenderer(() => sphere(wrapper, followNames[0])
       .props.onPointerOver(hoverEvent));
     expect(document.body.style.cursor).toEqual("pointer");
-    expect(pillBody(wrapper, followNames[0]).props.args).toEqual([200, 80]);
+    expectPillSize(wrapper, followNames[0]);
     expect(sphereColor(wrapper, followNames[0])).toEqual("gray");
     expect(sphereColor(wrapper, followNames[1])).toEqual("dimgray");
     actRenderer(() => sphere(wrapper, followNames[0])
@@ -268,24 +289,24 @@ describe("section controls", () => {
     controlProps.width = 400;
     controlProps.interactive = false;
     const wrapper = createRenderer(<SectionControls {...controlProps} />);
-    expect(wrapper.root.findByProps({
-      name: "section-width-arrow-near-shape",
-    }).props.position).toEqual([201, 0, -292.5]);
-    expect(wrapper.root.findByProps({
-      name: "section-width-arrow-far-shape",
-    }).props.position).toEqual([-201, 0, -292.5]);
+    expect(arrow(wrapper).props.position).toEqual([201, 0, -292.5]);
+    expect(arrow(wrapper, "section-width-arrow-far").props.position)
+      .toEqual([-201, 0, -292.5]);
     expect(controlSphere(wrapper, "section-center-handle-positive")
       .props.raycast()).toBeUndefined();
     expect(pillBody(wrapper, "section-follow-toggle-positive")
       .props.raycast()).toBeUndefined();
     expect(arrow(wrapper).findByProps({ className: "cylinder" })
       .props.raycast()).toBeUndefined();
-    expect(arrow(wrapper).findByProps({
-      name: "section-width-arrow-near-base",
-    }).props.raycast()).toBeUndefined();
-    expect(axisToggle(wrapper).findByProps({
-      name: "section-axis-toggle-positive-body",
-    })
+    expect(arrow(wrapper).find(node =>
+      node.type == "div" &&
+      node.props.name == "section-width-arrow-near-base" &&
+      Array.isArray(node.props.args)).props.raycast()).toBeUndefined();
+    expect(axisToggle(wrapper).find(node =>
+      node.type == "div" &&
+      node.props["data-extrude-name"] ==
+        "section-axis-toggle-positive-body" &&
+      Array.isArray(node.props.args))
       .props.raycast()).toBeUndefined();
     const pointerEvent = event(0, 0);
     actRenderer(() => axisToggle(wrapper).props.onPointerOver(pointerEvent));
@@ -309,27 +330,22 @@ describe("section controls", () => {
       rotation: [0, 0, Math.PI],
     });
     expect(negative.findByProps({
-      name: "section-axis-toggle-negative-body",
+      "data-extrude-name": "section-axis-toggle-negative-body",
     }).props).toMatchObject({
-      args: [200, 80],
+      userData: { length: 280, width: 80, thickness: 10 },
     });
     expect(negative.findAll(node =>
-      node.type == "div"
-      && `${node.props.className}`.startsWith(
-        "circlesection-axis-toggle-negative-end-")))
-      .toHaveLength(2);
+      `${node.props.name}`.startsWith(
+        "section-axis-toggle-negative-end-"))).toHaveLength(0);
     expect(negative.findByProps({ className: "text" }).children)
-      .toContain("SWITCH AXIS");
+      .toContain("Switch Axis");
     expect(sphereColor(wrapper, "section-axis-toggle-negative"))
       .toEqual("dimgray");
     actRenderer(() => negative.props.onPointerOver(pointerEvent));
     expect(document.body.style.cursor).toEqual("pointer");
     expect(sphereColor(wrapper, "section-axis-toggle-negative"))
       .toEqual("gray");
-    expect(axisToggle(wrapper, "section-axis-toggle-negative")
-      .findByProps({
-        name: "section-axis-toggle-negative-body",
-      }).props.args).toEqual([200, 80]);
+    expectPillSize(wrapper, "section-axis-toggle-negative");
     actRenderer(() => axisToggle(wrapper, "section-axis-toggle-negative")
       .props.onPointerOut(pointerEvent));
     expect(document.body.style.cursor).toEqual("default");
@@ -389,14 +405,14 @@ describe("section controls", () => {
     });
     const axisToggleMaterials = axisToggle(wrapper).findAll(node =>
       node.type == "div" && node.props.transparent);
-    expect(axisToggleMaterials).toHaveLength(4);
+    expect(axisToggleMaterials).toHaveLength(2);
     axisToggleMaterials.map(material =>
       expect(material.props.opacity).toEqual(0.4));
     const followMaterials = sphere(
       wrapper,
       "section-follow-toggle-positive",
     ).findAll(node => node.type == "div" && node.props.transparent);
-    expect(followMaterials).toHaveLength(4);
+    expect(followMaterials).toHaveLength(2);
     followMaterials.map(material =>
       expect(material.props.opacity).toEqual(0.4));
     const axisToggleTextMaterial = axisToggle(wrapper)
@@ -709,9 +725,10 @@ describe("section controls", () => {
     expect(document.body.style.cursor).toEqual("default");
 
     actRenderer(() => arrow(wrapper).props.onPointerOver(pointerEvent));
-    expect(arrow(wrapper).findByProps({
-      name: "section-width-arrow-near-base",
-    }).props.args[0]).toEqual(43.75);
+    expect(arrow(wrapper).find(node =>
+      node.type == "div"
+      && node.props.name == "section-width-arrow-near-base"
+      && Array.isArray(node.props.args)).props.args[0]).toEqual(43.75);
     expect(wrapper.root.findByProps({
       name: "section-width-arrow-near-label",
     })).toBeTruthy();
@@ -765,7 +782,7 @@ describe("section controls", () => {
     const centerName = "section-center-handle-positive";
     actRenderer(() => sphere(wrapper, centerName)
       .props.onPointerOver(hoverEvent));
-    expect(sphereColor(wrapper, centerName)).toEqual("orange");
+    expect(sphereColor(wrapper, centerName)).toEqual("darkorange");
     actRenderer(() => sphere(wrapper, centerName)
       .props.onPointerOut(hoverEvent));
     expect(sphereColor(wrapper, centerName)).toEqual("orange");

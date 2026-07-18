@@ -152,6 +152,36 @@ describe("<CommandPalette />", () => {
     expect(mapStateToCommandPaletteProps(state)).toEqual({ appState: state });
   });
 
+  it("uses the search field as the upward navigation boundary", () => {
+    const { container, getByLabelText } = setup();
+    const search = getByLabelText("Search commands");
+    const selectedOptions = () => container.querySelectorAll(
+      ".command-palette-option.selected");
+
+    expect(selectedOptions()).toHaveLength(1);
+    fireEvent.keyDown(search, { key: "ArrowUp" });
+    expect(search).toHaveClass("selected");
+    expect(search).toHaveFocus();
+    expect(selectedOptions()).toHaveLength(0);
+
+    fireEvent.keyDown(search, { key: "ArrowUp" });
+    expect(search).toHaveClass("selected");
+    expect(selectedOptions()).toHaveLength(0);
+
+    fireEvent.change(search, { target: { value: "plant" } });
+    expect(search).not.toHaveClass("selected");
+    fireEvent.keyDown(search, { key: "ArrowUp" });
+    expect(search).toHaveClass("selected");
+    expect(selectedOptions()).toHaveLength(0);
+    const filteredOptions = container.querySelectorAll(
+      ".command-palette-option");
+    fireEvent.keyDown(search, { key: "ArrowUp" });
+    expect(search).not.toHaveClass("selected");
+    expect(selectedOptions()).toHaveLength(1);
+    expect(filteredOptions[filteredOptions.length - 1])
+      .toHaveClass("selected");
+  });
+
   it("opens from the application event", () => {
     const buildCommands = jest.spyOn(commandsModule, "buildCommands");
     const { container } = render(<MemoryRouter>
@@ -206,6 +236,8 @@ describe("<CommandPalette />", () => {
     const secondAction = commands[0].querySelectorAll(
       ".command-palette-action-option")[1];
     fireEvent.mouseMove(secondAction);
+    fireEvent.mouseMove(secondAction.querySelector(
+      ".command-palette-action") as Element);
     expect(commands[0]).toHaveAttribute("aria-selected", "true");
     expect(commands[0].querySelectorAll(".command-palette-action")[1])
       .toHaveClass("selected");
@@ -385,6 +417,7 @@ describe("<CommandPalette />", () => {
       .toContain("Actions");
     fireEvent.keyDown(search, { key: "ArrowRight" });
     expect(input).toEqual(document.activeElement);
+    fireEvent.click(input);
     fireEvent.keyDown(input, { key: "Enter" });
     expect(container.textContent).toContain("Enter a valid number.");
     fireEvent.change(input, { target: { value: "3" } });

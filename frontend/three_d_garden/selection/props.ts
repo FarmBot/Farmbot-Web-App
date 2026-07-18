@@ -13,11 +13,14 @@ import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
 import { MovementState, TimeSettings } from "../../interfaces";
 import { PeripheralValues } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
+import type { PanelCameraStore } from "../panel_camera";
 
 export interface ThreeDObjectSelectionLayerProps {
   config: Config;
   configPosition: PositionConfig;
   selection: ThreeDObjectSelection | undefined;
+  panelSelection?: ThreeDObjectSelection;
+  panelCameraStore?: PanelCameraStore;
   selectedObjects?: ThreeDObjectSelection[];
   popupSelection: ThreeDObjectSelection | undefined;
   locationSelection: ThreeDLocationSelection | undefined;

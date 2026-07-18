@@ -4,8 +4,26 @@ import { PlantGridData, PlantGridKey } from "./interfaces";
 import { vectorGrid } from "./generate_grid";
 
 export const MAX_GRID_PLANTS = 200;
+export const GRID_SPACING_STEP = 10;
+export const DEFAULT_POINT_GRID_RADIUS = 0;
+export const DEFAULT_POINT_GRID_SPACING = 100;
 
-export const gridInputStep = (_key: PlantGridKey) => 1;
+const isSpacingKey = (key: PlantGridKey) =>
+  key == "spacingH" || key == "spacingV";
+
+export const gridInputStep = (key: PlantGridKey) =>
+  isSpacingKey(key) ? GRID_SPACING_STEP : 1;
+
+export const quantizeGridInputValue = (
+  key: PlantGridKey,
+  value: number,
+) => {
+  if (!isSpacingKey(key) || value == 0) { return value; }
+  return Math.sign(value) * Math.max(
+    GRID_SPACING_STEP,
+    Math.round(Math.abs(value) / GRID_SPACING_STEP) * GRID_SPACING_STEP,
+  );
+};
 
 export const initialPlantGrid = (
   start: AxisNumberProperty,
@@ -76,7 +94,6 @@ export interface GridExtentProps {
   pointer: AxisNumberProperty;
   spacing: AxisNumberProperty;
   previousSpacing: AxisNumberProperty;
-  baseCounts?: AxisNumberProperty;
   gridSize: AxisNumberProperty;
 }
 
@@ -86,47 +103,20 @@ const extentForAxis = (
   spacing: number,
   previousSpacing: number,
   limit: number,
-  baseCount = 1,
 ) => {
   const magnitude = Math.max(1, Math.abs(spacing));
   const delta = pointer - start;
   const distance = Math.abs(delta);
   const pointerDirection = Math.sign(delta);
   const initialDirection = Math.sign(previousSpacing) || 1;
-  const initialCount = Math.max(1, Math.floor(baseCount));
-  const reversingInitialExtent =
-    initialCount > 1
-    && pointerDirection != 0
-    && pointerDirection != initialDirection;
-  if (reversingInitialExtent && distance < magnitude) {
-    const count = distance < magnitude / 2 ? initialCount : 1;
-    const available = initialDirection > 0 ? limit - start : start;
-    const maxCount = Math.max(
-      initialCount,
-      Math.floor(available / magnitude) + 1,
-    );
-    return {
-      count: Math.min(count, maxCount),
-      spacing: initialDirection * magnitude,
-    };
-  }
-  const direction = pointerDirection == 0
-    ? Math.sign(previousSpacing) || 1
+  const nearestIndex = Math.floor(distance / magnitude + 0.5);
+  const direction = nearestIndex == 0 || pointerDirection == 0
+    ? initialDirection
     : pointerDirection;
   const available = direction > 0 ? limit - start : start;
   const maxIndex = Math.max(0, Math.floor(available / magnitude));
-  const maxCount = direction == initialDirection
-    ? Math.max(initialCount, maxIndex + 1)
-    : maxIndex + 1;
-  const index = clamp(
-    Math.floor(distance / magnitude), 0, maxIndex);
-  const countFromPointer = index + (
-    pointerDirection == 0 || direction == initialDirection
-      ? initialCount
-      : 1
-  );
   return {
-    count: Math.min(countFromPointer, maxCount),
+    count: clamp(nearestIndex, 0, maxIndex) + 1,
     spacing: direction * magnitude,
   };
 };
@@ -138,7 +128,6 @@ export const gridFromExtent = (props: GridExtentProps): PlantGridData => {
     props.spacing.x,
     props.previousSpacing.x,
     props.gridSize.x,
-    props.baseCounts?.x,
   );
   const y = extentForAxis(
     props.start.y,
@@ -146,7 +135,6 @@ export const gridFromExtent = (props: GridExtentProps): PlantGridData => {
     props.spacing.y,
     props.previousSpacing.y,
     props.gridSize.y,
-    props.baseCounts?.y,
   );
   const numPlantsH = Math.min(x.count, MAX_GRID_PLANTS);
   const numPlantsV = Math.min(
@@ -195,6 +183,7 @@ export const clampGridStart = (
   offsetPacking: boolean,
   requested: AxisNumberProperty,
   gridSize: AxisNumberProperty,
+  step = 1,
 ): AxisNumberProperty => {
   const requestedGrid = {
     ...grid,
@@ -208,9 +197,25 @@ export const clampGridStart = (
   if (bounds.maxX > gridSize.x) { x -= bounds.maxX - gridSize.x; }
   if (bounds.minY < 0) { y -= bounds.minY; }
   if (bounds.maxY > gridSize.y) { y -= bounds.maxY - gridSize.y; }
+  const snapWithinBounds = (
+    value: number,
+    min: number,
+    max: number,
+  ) => {
+    if (step <= 1 || min > max) { return value; }
+    const snappedMin = Math.ceil(min / step) * step;
+    const snappedMax = Math.floor(max / step) * step;
+    return snappedMin <= snappedMax
+      ? clamp(Math.round(value / step) * step, snappedMin, snappedMax)
+      : value;
+  };
+  const minX = requested.x - bounds.minX;
+  const maxX = requested.x + gridSize.x - bounds.maxX;
+  const minY = requested.y - bounds.minY;
+  const maxY = requested.y + gridSize.y - bounds.maxY;
   return {
-    x: clamp(Math.round(x), 0, gridSize.x),
-    y: clamp(Math.round(y), 0, gridSize.y),
+    x: clamp(Math.round(snapWithinBounds(x, minX, maxX)), 0, gridSize.x),
+    y: clamp(Math.round(snapWithinBounds(y, minY, maxY)), 0, gridSize.y),
   };
 };
 
@@ -220,14 +225,37 @@ export const countForAxisDrag = (
   spacing: number,
   otherCount: number,
   limit: number,
+) => gridAxisFromDrag(
+  start,
+  pointer,
+  spacing,
+  otherCount,
+  limit,
+).count;
+
+export const gridAxisFromDrag = (
+  start: number,
+  pointer: number,
+  spacing: number,
+  otherCount: number,
+  limit: number,
 ) => {
-  if (spacing == 0) { return 1; }
-  const direction = Math.sign(spacing);
+  if (spacing == 0) { return { count: 1, spacing: 0 }; }
+  const magnitude = Math.abs(spacing);
+  const previousDirection = Math.sign(spacing);
+  const delta = pointer - start;
+  const nearestIndex = Math.floor(Math.abs(delta) / magnitude + 0.5);
+  const pointerDirection = Math.sign(delta);
+  const direction = nearestIndex > 0 && pointerDirection != 0
+    ? pointerDirection
+    : previousDirection;
   const available = direction > 0 ? limit - start : start;
-  const boundaryCount = Math.floor(available / Math.abs(spacing)) + 1;
-  const pointerCount =
-    Math.floor(Math.abs(pointer - start) / Math.abs(spacing)) + 1;
+  const boundaryCount = Math.floor(available / magnitude) + 1;
+  const pointerCount = nearestIndex + 1;
   const totalCount = Math.max(1, Math.floor(
     MAX_GRID_PLANTS / Math.max(1, otherCount)));
-  return clamp(pointerCount, 1, Math.min(boundaryCount, totalCount));
+  return {
+    count: clamp(pointerCount, 1, Math.min(boundaryCount, totalCount)),
+    spacing: direction * magnitude,
+  };
 };

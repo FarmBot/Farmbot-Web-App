@@ -15,7 +15,8 @@ describe("<FarmbotAxes />", () => {
     const p = fakeProps();
     p.config.axes = true;
     const { container } = render(<FarmbotAxes {...p} />);
-    expect(container.innerHTML).toContain("extrude");
+    expect(container.querySelectorAll(".cone")).toHaveLength(3);
+    expect(container.querySelectorAll(".cylinder")).toHaveLength(3);
   });
 
   it("skips disabled axes", () => {

@@ -4,13 +4,13 @@ import {
   alignCameraPositionToViewPrism, getDefaultCameraPosition,
   nearestCardinalHeading, nearestViewPrismHeading,
 } from "./camera";
-import { ThreeEvent } from "@react-three/fiber";
-import { Cylinder, Line, Sphere } from "@react-three/drei";
+import { Cylinder, Line } from "@react-three/drei";
 import { Group, MeshPhongMaterial } from "./components";
 import { debounce } from "lodash";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Actions } from "../constants";
+import { ControlHandle, ControlSphere } from "./controls";
 
 export interface CameraSelectionUIProps {
   config: Config;
@@ -187,42 +187,35 @@ const CameraLocation = React.memo((props: CameraLocationProps) => {
     [hoveredData, setHoveredMarker]);
   const onPointerOut = React.useCallback(() => setHoveredMarker(undefined),
     [setHoveredMarker]);
-  const onClick = React.useCallback((e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
-    click();
-  }, [click]);
   return <Group>
-    <Group position={markerPosition.scaledPosition}>
-      <Sphere
-        userData={{ hovered: hoveredData }}
-        name={"head"}
-        args={[150, 32, 32]}
-        onPointerOver={onPointerMove}
-        onPointerMove={onPointerMove}
-        onPointerOut={onPointerOut}
-        onClick={onClick}>
-        <MeshPhongMaterial
-          transparent={true}
-          opacity={1}
-          color={color} />
-      </Sphere>
-      {!topDown && lightsDebug &&
+    <ControlHandle
+      name={`camera-location-${topDown ? "top" : "angled"}-${angle}`}
+      position={markerPosition.scaledPosition}
+      userData={{ hovered: hoveredData }}
+      onHoverChange={next => next ? onPointerMove() : onPointerOut()}
+      onActivate={click}>
+      {state => <>
+        <ControlSphere
+          name={"head"}
+          radius={150}
+          segments={32}
+          color={baseColor}
+          hoverColor={"cyan"}
+          hovered={state.hovered || hovered} />
+        {!topDown && lightsDebug &&
         <Cylinder
           userData={{ hovered: hoveredData }}
           name={"body"}
           args={[50, 125, markerPosition.height]}
           position={[0, 0, -markerPosition.height / 2]}
-          rotation={[Math.PI / 2, 0, 0]}
-          onPointerOver={onPointerMove}
-          onPointerMove={onPointerMove}
-          onPointerOut={onPointerOut}
-          onClick={onClick}>
+          rotation={[Math.PI / 2, 0, 0]}>
           <MeshPhongMaterial
             transparent={true}
             opacity={0.9}
             color={color} />
         </Cylinder>}
-    </Group>
+      </>}
+    </ControlHandle>
     {debug &&
       <Line points={[markerPosition.position, [0, 0, 0]]} color={color} />}
   </Group>;

@@ -113,13 +113,15 @@ export const initPlantGrid =
   (p: PlantGridInitOption): PlantGridResourceBody[] => {
     const meta: Record<string, string> = { gridId: p.gridId, ...p.meta };
     const savedGardenId = p.designer?.openedSavedGarden;
-    const mapper: (vec: [number, number]) => PlantGridResourceBody =
-      p.openfarm_slug && isNumber(savedGardenId)
-        ? createPlantTemplateGridMapper(
-          p.openfarm_slug, p.itemName, savedGardenId)
-        : p.openfarm_slug
-          ? createPlantGridMapper(
-            p.openfarm_slug, p.itemName, meta, p.designer)
-          : createPointGridMapper(p.radius, p.z, p.itemName, meta);
+    let mapper: (vec: [number, number]) => PlantGridResourceBody;
+    if (p.openfarm_slug && isNumber(savedGardenId)) {
+      mapper = createPlantTemplateGridMapper(
+        p.openfarm_slug, p.itemName, savedGardenId);
+    } else if (p.openfarm_slug) {
+      mapper = createPlantGridMapper(
+        p.openfarm_slug, p.itemName, meta, p.designer);
+    } else {
+      mapper = createPointGridMapper(p.radius, p.z, p.itemName, meta);
+    }
     return vectorGrid(p.grid, p.offsetPacking).map(mapper);
   };

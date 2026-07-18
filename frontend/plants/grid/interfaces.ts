@@ -37,6 +37,7 @@ export interface PlantGridProps {
   meta?: Record<string, string | undefined>;
   designer?: DesignerState;
   collapsible?: boolean;
+  open?: boolean;
 }
 
 export interface PlantGridInitOption {

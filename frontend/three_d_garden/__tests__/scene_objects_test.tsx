@@ -1,7 +1,6 @@
 import React, { ElementType } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { Cone, Cylinder, Sphere } from "@react-three/drei";
-import * as threeFiber from "@react-three/fiber";
 import {
   nextSceneObjectName, sceneObjectCornersFromCenter, sceneObjectPoint,
   sceneObjectMoveUpdate, sceneObjectPosition, pointerRayPointAtZ,
@@ -51,17 +50,41 @@ const positionArray = (position: unknown): [number, number, number] => {
 const findSelectionMarker = (
   wrapper: ReturnType<typeof createRenderer>,
   name: string,
-) => wrapper.root.findAll(node =>
+) => {
+  const handle = wrapper.root.find(node =>
+    node.type == "group" as ElementType &&
+    node.props.name == `${name}-control` &&
+    typeof node.props.onPointerDown == "function");
+  const visual = wrapper.root.find(node =>
+    node.props.name == name &&
+    Array.isArray(node.props.args));
+  const visualComponent = wrapper.root.find(node =>
+    node.props.name == name &&
+    typeof node.props.radius == "number");
+  return new Proxy(handle, {
+    get: (target, property) => property == "props"
+      ? { ...target.props, ...visual.props, ...visualComponent.props }
+      : Reflect.get(target, property),
+  });
+};
+
+const findControlHandle = (
+  wrapper: ReturnType<typeof createRenderer>,
+  name: string,
+) => wrapper.root.find(node =>
+  node.type == "group" as ElementType &&
   node.props.name == name &&
-  Array.isArray(node.props.args) &&
-  typeof node.props.onPointerDown == "function")[0];
+  typeof node.props.onPointerDown == "function");
+
+const findControlArrow = (
+  wrapper: ReturnType<typeof createRenderer>,
+  name: string,
+) => wrapper.root.find(node =>
+  node.props.name == name &&
+  Array.isArray(node.props.start) &&
+  Array.isArray(node.props.end));
 
 describe("scene object placement helpers", () => {
-  beforeEach(() => {
-    // eslint-disable-next-line no-null/no-null
-    jest.spyOn(threeFiber, "useFrame").mockImplementation(() => null);
-  });
-
   it("orients greenhouse walls before rendering", () => {
     expect(greenhouseWallRenderProps(10, 10000, 2500)).toEqual({
       size: [10000, 10, 2500],
@@ -307,7 +330,7 @@ describe("scene object placement helpers", () => {
         new Vector3(10, 20, 100),
         new Vector3(0, 0, -1),
       ),
-    } as never, 40);
+    }, 40);
 
     expect(point.toArray()).toEqual([10, 20, 40]);
     expect(pointerRayPointAtZ({ point: new Vector3(1, 2, 3) } as never, 40)
@@ -315,7 +338,7 @@ describe("scene object placement helpers", () => {
     expect(pointerRayPointAtZ({
       point: new Vector3(1, 2, 3),
       ray: new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, 1)),
-    } as never, -1).toArray()).toEqual([1, 2, 3]);
+    }, -1).toArray()).toEqual([1, 2, 3]);
   });
 
   it("calculates height from a pointer ray", () => {
@@ -640,8 +663,8 @@ describe("scene object placement helpers", () => {
       },
       ray: new Ray(new Vector3(0, 0, 100), new Vector3(1, 1, -1)),
     };
-    const moveHandle = wrapper.root.findAll(node =>
-      node.props.renderOrder == 999)[0];
+    const moveHandle = findControlHandle(
+      wrapper, "scene-object-move-handle");
     const axisObject = {
       name: "",
       parent: { name: "scene-object-base-x-axis-arrow" },
@@ -653,29 +676,31 @@ describe("scene object placement helpers", () => {
     const faceMarkerObject = {
       name: "scene-object-selection-marker-1",
     };
+    const interactionEvent = (object: object) => ({
+      ...event,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+      intersections: [{ object }],
+    });
+    const blockedEvents = [
+      interactionEvent(axisObject),
+      interactionEvent(faceArrowObject),
+      interactionEvent(faceMarkerObject),
+    ];
+    const unrelatedEvent = interactionEvent({
+      name: "scene-object-base-x",
+      parent: { name: "not-an-axis-arrow" },
+    });
 
     act(() => {
-      moveHandle.props.onPointerDown({
-        ...event,
-        intersections: [{ object: axisObject }],
-      });
-      moveHandle.props.onPointerDown({
-        ...event,
-        intersections: [{ object: faceArrowObject }],
-      });
-      moveHandle.props.onPointerDown({
-        ...event,
-        intersections: [{ object: faceMarkerObject }],
-      });
-      moveHandle.props.onPointerDown({
-        ...event,
-        intersections: [{
-          object: {
-            name: "scene-object-base-x",
-            parent: { name: "not-an-axis-arrow" },
-          },
-        }],
-      });
+      blockedEvents.map(blockedEvent =>
+        moveHandle.props.onPointerDown(blockedEvent));
+      moveHandle.props.onPointerDown(unrelatedEvent);
+      moveHandle.props.onPointerCancel(unrelatedEvent);
       moveHandle.props.onPointerDown(event);
       moveHandle.props.onPointerMove(event);
       moveHandle.props.onPointerUp(event);
@@ -686,7 +711,13 @@ describe("scene object placement helpers", () => {
     });
 
     expect(dispatch).toHaveBeenCalled();
-    expect(event.stopPropagation).toHaveBeenCalledTimes(8);
+    expect(event.stopPropagation).toHaveBeenCalled();
+    blockedEvents.map(blockedEvent => {
+      expect(blockedEvent.stopPropagation).not.toHaveBeenCalled();
+      expect(blockedEvent.nativeEvent.stopImmediatePropagation)
+        .not.toHaveBeenCalled();
+      expect(blockedEvent.target.setPointerCapture).not.toHaveBeenCalled();
+    });
 
     const marker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-0");
@@ -1006,10 +1037,6 @@ describe("scene object placement helpers", () => {
       sceneObjects: [sceneObject],
       visible: true,
     }));
-    const midpoint = (
-      start: number[],
-      end: number[],
-    ) => start.map((value, index) => (value + end[index]) / 2);
     const objectBase = sceneObjectPoint(config, center);
     const zOrigin = sceneObjectPoint(config, {
       x: center.x,
@@ -1056,35 +1083,50 @@ describe("scene object placement helpers", () => {
     }).props.position).toEqual(objectBase);
     expect(wrapper.root.findByProps({
       name: "scene-object-base-marker",
-    }).props.renderOrder).toEqual(998);
+    }).props.renderOrder).toEqual(1001);
     ["x", "y", "z"].map(axis =>
       expect(wrapper.root.findByProps({
-        name: `scene-object-base-${axis}-axis-arrow`,
-      }).props.renderOrder).toEqual(1000));
+        name: `scene-object-base-${axis}-axis-arrow-shape`,
+      }).props.renderOrder).toEqual(1003));
+    ["x", "y", "z"].map(axis => {
+      const arrow = findControlArrow(
+        wrapper, `scene-object-base-${axis}-axis-arrow-shape`);
+      expect(arrow.props.renderOnTop).toEqual(true);
+    });
+    const baseMarker = wrapper.root.find(node =>
+      node.props.name == "scene-object-base-marker"
+      && typeof node.props.radius == "number");
+    expect(baseMarker.props.renderOnTop).toEqual(true);
+    expect(findControlArrow(
+      wrapper, "scene-object-z-origin-arrow").props.start).toEqual(zOrigin);
+    expect(findControlArrow(
+      wrapper, "scene-object-z-origin-arrow").props.end).toEqual(objectBase);
     expect(wrapper.root.findAll(node =>
       node.props.name == "scene-object-z-origin-arrow" &&
-      Array.isArray(node.props.position))[0].props.position)
-      .toEqual(midpoint(zOrigin, objectBase));
-    expect(wrapper.root.findAll(node =>
-      node.props.name == "scene-object-z-origin-arrow" &&
-      node.props.renderOrder == 999)[0]).toBeTruthy();
-    expect(wrapper.root.findAll(node =>
-      node.props.name == "scene-object-y-origin-arrow" &&
-      Array.isArray(node.props.position))[0].props.position)
-      .toEqual(midpoint(yOrigin, yOriginArrowEnd));
-    expect(wrapper.root.findAll(node =>
-      node.props.name == "scene-object-x-origin-arrow" &&
-      Array.isArray(node.props.position))[0].props.position)
-      .toEqual(midpoint(xOriginArrowStart, xOriginArrowEnd));
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-z-origin-arrow-label",
-    })).toEqual([]);
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-y-origin-arrow-label",
-    })).toEqual([]);
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-x-origin-arrow-label",
-    })).toEqual([]);
+      node.props.renderOrder == 1002)[0]).toBeTruthy();
+    expect(findControlArrow(
+      wrapper, "scene-object-y-origin-arrow").props.start).toEqual(yOrigin);
+    expect(findControlArrow(
+      wrapper, "scene-object-y-origin-arrow").props.end)
+      .toEqual(yOriginArrowEnd);
+    expect(findControlArrow(
+      wrapper, "scene-object-x-origin-arrow").props.start)
+      .toEqual(xOriginArrowStart);
+    expect(findControlArrow(
+      wrapper, "scene-object-x-origin-arrow").props.end)
+      .toEqual(xOriginArrowEnd);
+    ["x", "y", "z"].map(axis => {
+      const arrow = findControlArrow(
+        wrapper, `scene-object-${axis}-origin-arrow`);
+      expect(arrow.props.labelVisible).toEqual(false);
+      expect(arrow.props.renderOnTop).toEqual(true);
+      expect(arrow.props.labelDepthTest).toEqual(false);
+      expect(arrow.props.labelDepthWrite).toEqual(false);
+    });
+    const originMarker = wrapper.root.find(node =>
+      node.props.name == "scene-object-x-origin-marker"
+      && typeof node.props.radius == "number");
+    expect(originMarker.props.renderOnTop).toEqual(true);
     unmountRenderer(wrapper);
   });
 
@@ -1110,30 +1152,34 @@ describe("scene object placement helpers", () => {
     }).props.renderOrder).toBeUndefined();
     expect(wrapper.root.findByProps({
       name: "scene-object-face-size-arrow-0-arrow",
-    }).props.renderOrder).toEqual(1001);
+    }).props.renderOrder).toEqual(1004);
     expect(findSelectionMarker(
       wrapper, "scene-object-selection-marker-0")).toBeTruthy();
     expect(findSelectionMarker(
       wrapper, "scene-object-selection-marker-0")
-      .findByProps({ color: "dodgerblue" }).props.depthTest).toBeTruthy();
-    expect(findSelectionMarker(
-      wrapper, "scene-object-selection-marker-0")
-      .findByProps({ color: "dodgerblue" }).props.depthWrite).toBeTruthy();
+      .findAll(node =>
+        node.props.color == "dodgerblue"
+        && node.props.depthTest == true
+        && node.props.depthWrite == true).length).toBeGreaterThan(0);
     expect(wrapper.root.findByProps({
       name: "scene-object-face-size-arrow-0-arrow",
     }).findAllByProps({
       depthTest: true,
       depthWrite: true,
     }).length).toBeGreaterThan(0);
-    expect(wrapper.root.findByProps({
+    const negativeXArrow = wrapper.root.findByProps({
       name: "scene-object-face-size-arrow-0-arrow",
-    }).props.rotation).toEqual([0, -0, Math.PI]);
-    expect(wrapper.root.findByProps({
+    }).props;
+    const positiveXArrow = wrapper.root.findByProps({
       name: "scene-object-face-size-arrow-1-arrow",
-    }).props.rotation).toEqual([0, -0, 0]);
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-face-size-arrow-0-label",
-    })).toEqual([]);
+    }).props;
+    expect(positionArray(negativeXArrow.end)[0])
+      .toBeLessThan(positionArray(negativeXArrow.start)[0]);
+    expect(positionArray(positiveXArrow.end)[0])
+      .toBeGreaterThan(positionArray(positiveXArrow.start)[0]);
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-0-arrow")
+      .props.labelVisible).toEqual(false);
     act(() => {
       wrapper.root.findAll(node =>
         node.type == "group" as ElementType &&
@@ -1141,9 +1187,9 @@ describe("scene object placement helpers", () => {
         typeof node.props.onPointerOver == "function")[0]
         .props.onPointerOver({ stopPropagation: jest.fn() });
     });
-    expect(wrapper.root.findByProps({
-      name: "scene-object-face-size-arrow-1-label",
-    }).props.rotation).toEqual([0, 0, 0]);
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-1-arrow")
+      .props.labelVisible).toEqual(true);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
       payload: "x_size",
@@ -1164,9 +1210,8 @@ describe("scene object placement helpers", () => {
     });
     dispatch.mockClear();
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerOver({ stopPropagation: jest.fn() });
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerOver({ stopPropagation: jest.fn() });
       expect(dispatch).not.toHaveBeenCalledWith({
         type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
         payload: "x_center",
@@ -1205,9 +1250,9 @@ describe("scene object placement helpers", () => {
         typeof node.props.onPointerOut == "function")[0]
         .props.onPointerOut({ stopPropagation: jest.fn() });
     });
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-face-size-arrow-1-label",
-    })).toEqual([]);
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-1-arrow")
+      .props.labelVisible).toEqual(false);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
       payload: undefined,
@@ -1233,18 +1278,18 @@ describe("scene object placement helpers", () => {
       visible: true,
     }));
 
-    expect(wrapper.root.findByProps({
+    expect(findControlHandle(
+      wrapper, "scene-object-face-size-arrow-0").findAllByProps({
       name: "scene-object-face-size-arrow-0-label",
-    })).toBeTruthy();
-    expect(wrapper.root.findByProps({
+    }).length).toBeGreaterThan(0);
+    expect(findControlHandle(
+      wrapper, "scene-object-face-size-arrow-1").findAllByProps({
       name: "scene-object-face-size-arrow-1-label",
-    })).toBeTruthy();
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-face-size-arrow-2-label",
-    })).toEqual([]);
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-z-origin-arrow-label",
-    })).toEqual([]);
+    }).length).toBeGreaterThan(0);
+    expect(findControlHandle(
+      wrapper, "scene-object-face-size-arrow-2").findByProps({
+      name: "scene-object-face-size-arrow-2-arrow",
+    }).props.labelVisible).toEqual(false);
     unmountRenderer(wrapper);
   });
 
@@ -1286,19 +1331,7 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
   });
 
-  it("scales selected scene object markers with camera distance", () => {
-    const frameCallbacks: (() => void)[] = [];
-    const previousUseThree = (threeFiber.useThree as jest.Mock)
-      .getMockImplementation();
-    (threeFiber.useFrame as jest.Mock).mockImplementation((
-      callback: () => void,
-    ) => {
-      frameCallbacks.push(callback);
-      return undefined;
-    });
-    (threeFiber.useThree as jest.Mock).mockReturnValue({
-      camera: { position: { x: 14000, y: 0, z: 0 } },
-    });
+  it("uses fixed world sizing for selected scene object controls", () => {
     location.pathname = Path.mock(Path.sceneObjects(1));
     const sceneObject = fakeSceneObject();
     sceneObject.body.id = 1;
@@ -1309,36 +1342,32 @@ describe("scene object placement helpers", () => {
       sceneObjects: [sceneObject],
       visible: true,
     }));
-    act(() => {
-      frameCallbacks.map(callback => callback());
-    });
-    act(() => {
-      frameCallbacks.map(callback => callback());
-    });
 
     expect(findSelectionMarker(
       wrapper, "scene-object-selection-marker-0").props.args[0])
-      .toBeGreaterThan(35);
-    expect(wrapper.root.findByProps({
-      name: "scene-object-base-x-axis-arrow",
-    }).findAllByProps({
-      color: "#ff3333",
-    })).toEqual([]);
+      .toEqual(35);
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-0-arrow").props.width)
+      .toEqual(20);
+    expect(findControlArrow(
+      wrapper, "scene-object-base-x-axis-arrow-shape").props.width)
+      .toEqual(10);
+    expect(findControlArrow(
+      wrapper, "scene-object-x-origin-arrow").props.width)
+      .toEqual(10);
+    const sizeArrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-0-arrow").props;
+    expect(Math.abs(sizeArrow.end[0] - sizeArrow.start[0])).toEqual(250);
+    const markerEvent = {
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+    };
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerOver({
-        stopPropagation: jest.fn(),
-        nativeEvent: { stopImmediatePropagation: jest.fn() },
-      });
+      findControlHandle(wrapper, "scene-object-base-marker-control")
+        .props.onPointerDown(markerEvent);
     });
-    expect(wrapper.root.findByProps({
-      name: "scene-object-base-x-axis-arrow",
-    }).findAllByProps({
-      color: "#ff3333",
-    }).length).toBeGreaterThan(0);
+    expect(markerEvent.stopPropagation).not.toHaveBeenCalled();
     unmountRenderer(wrapper);
-    (threeFiber.useThree as jest.Mock).mockImplementation(previousUseThree);
   });
 
   it("drags a selected scene object face size arrow", () => {
@@ -1505,9 +1534,9 @@ describe("scene object placement helpers", () => {
     act(() => {
       arrow.props.onPointerOver({ stopPropagation: jest.fn() });
     });
-    expect(wrapper.root.findAllByProps({
-      name: "scene-object-face-size-arrow-5-label",
-    })).toEqual([]);
+    expect(arrow.findByProps({
+      name: "scene-object-face-size-arrow-5-arrow",
+    }).props.labelVisible).toEqual(false);
     const marker = findSelectionMarker(
       wrapper, "scene-object-selection-marker-5");
     const [markerX, markerY, markerZ] = positionArray(marker.props.position);
@@ -1550,10 +1579,11 @@ describe("scene object placement helpers", () => {
       z_size: 600,
     });
     act(() => {
-      wrapper.root.findAll(node =>
+      const currentArrow = wrapper.root.findAll(node =>
         node.type == "group" as ElementType &&
-        node.props.name == "scene-object-face-size-arrow-5")[0]
-        .props.onPointerCancel(event(150));
+        node.props.name == "scene-object-face-size-arrow-5")[0];
+      currentArrow.props.onPointerDown(event(0));
+      currentArrow.props.onPointerCancel(event(150));
     });
     unmountRenderer(wrapper);
   });
@@ -1597,13 +1627,22 @@ describe("scene object placement helpers", () => {
     });
 
     act(() => {
-      arrow.props.onPointerDown(event(100));
+      arrow.props.onPointerDown(event(50));
     });
     act(() => {
       wrapper.root.findAll(node =>
         node.type == "group" as ElementType &&
         node.props.name == "scene-object-face-size-arrow-4")[0]
-        .props.onPointerUp(event(120));
+        .props.onPointerMove(event(50));
+    });
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-4-arrow")
+      .props.label).toEqual("100mm");
+    act(() => {
+      wrapper.root.findAll(node =>
+        node.type == "group" as ElementType &&
+        node.props.name == "scene-object-face-size-arrow-4")[0]
+        .props.onPointerUp(event(70));
     });
     const update = dispatch.mock.calls.find(call =>
       call[0].type == "EDIT_RESOURCE")?.[0].payload.update;
@@ -1616,6 +1655,25 @@ describe("scene object placement helpers", () => {
     }));
     expect(update.x_center).toBeUndefined();
     expect(update.y_center).toBeUndefined();
+    const externallyUpdatedSceneObject = {
+      ...sceneObject,
+      body: {
+        ...sceneObject.body,
+        z_size: 180,
+      },
+    };
+    act(() => {
+      wrapper.update(React.createElement(SceneObjects, {
+        config,
+        activeFocus: "",
+        dispatch,
+        sceneObjects: [externallyUpdatedSceneObject],
+        visible: true,
+      }));
+    });
+    expect(findControlArrow(
+      wrapper, "scene-object-face-size-arrow-4-arrow")
+      .props.label).toEqual("180mm");
     unmountRenderer(wrapper);
   });
 
@@ -1719,14 +1777,12 @@ describe("scene object placement helpers", () => {
     });
 
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerDown(event(basePoint));
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerDown(event(basePoint));
     });
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-x-axis-arrow");
       arrow.props.onPointerMove(event(targetPoint));
       arrow.props.onPointerUp(event(targetPoint));
     });
@@ -1787,26 +1843,22 @@ describe("scene object placement helpers", () => {
     });
 
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-y-axis-arrow",
-      }).props.onPointerDown(event(basePoint));
+      findControlHandle(wrapper, "scene-object-base-y-axis-arrow")
+        .props.onPointerDown(event(basePoint));
     });
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-y-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-y-axis-arrow");
       arrow.props.onPointerMove(event(yTargetPoint));
       arrow.props.onPointerUp(event(yTargetPoint));
     });
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-z-axis-arrow",
-      }).props.onPointerDown(event(basePoint, 200));
+      findControlHandle(wrapper, "scene-object-base-z-axis-arrow")
+        .props.onPointerDown(event(basePoint, 200));
     });
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-z-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-z-axis-arrow");
       arrow.props.onPointerMove(event(zTargetPoint));
       arrow.props.onPointerUp(event(zTargetPoint));
     });
@@ -1860,9 +1912,8 @@ describe("scene object placement helpers", () => {
     };
 
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-x-axis-arrow");
       arrow.props.onPointerOver(event);
     });
     expect(wrapper.root.findByProps({
@@ -1873,30 +1924,26 @@ describe("scene object placement helpers", () => {
       payload: "x_center",
     });
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-x-axis-arrow");
       arrow.props.onPointerDown(event);
     });
     dispatch.mockClear();
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerOut(event);
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerOut(event);
       expect(dispatch).not.toHaveBeenCalledWith({
         type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
         payload: undefined,
       });
     });
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerCancel(event);
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerCancel(event);
     });
     act(() => {
-      const arrow = wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      });
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-x-axis-arrow");
       arrow.props.onPointerOut(event);
       arrow.props.onPointerMove(event);
       arrow.props.onPointerUp(event);
@@ -1905,19 +1952,16 @@ describe("scene object placement helpers", () => {
       arrow.props.onPointerDown(event);
     });
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerCancel(event);
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerCancel(event);
     });
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onPointerDown(event);
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onPointerDown(event);
     });
     act(() => {
-      wrapper.root.findByProps({
-        name: "scene-object-base-x-axis-arrow",
-      }).props.onLostPointerCapture(event);
+      findControlHandle(wrapper, "scene-object-base-x-axis-arrow")
+        .props.onLostPointerCapture(event);
     });
 
     expect(event.stopPropagation).toHaveBeenCalled();
@@ -2002,8 +2046,8 @@ describe("scene object placement helpers", () => {
       sceneObjects: [sceneObject],
       visible: true,
     }));
-    const moveHandle = wrapper.root.findAll(node =>
-      node.props.renderOrder == 999)[0];
+    const moveHandle = findControlHandle(
+      wrapper, "scene-object-move-handle");
     const event = {
       point: new Vector3(0, 0, 0),
       pointerId: 1,

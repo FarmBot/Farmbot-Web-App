@@ -1,8 +1,8 @@
 import React from "react";
 import { Box } from "@react-three/drei";
-import { Arrow } from "./arrow";
 import { Group, MeshPhongMaterial } from "../components";
 import { Text } from "./text";
+import { ControlArrow } from "../controls";
 
 enum BoxDimension {
   width = 300,
@@ -61,8 +61,15 @@ const DistanceIndicatorBase = (props: DistanceIndicatorProps) => {
   return <Group visible={props.visible}
     position={[midX, midY, midZ]}
     rotation={[0, -angleY, angleZ]}>
-    <Arrow length={distance / 2} width={25} />
-    <Arrow length={distance / 2} width={25} rotation={[0, 0, Math.PI]} />
+    <ControlArrow name={"distance-arrow"}
+      start={[-distance / 2, 0, 0]}
+      end={[distance / 2, 0, 0]}
+      width={25}
+      heads={"both"}
+      color={"#ccc"}
+      enabled={false}
+      depthTest={true}
+      depthWrite={true} />
     <Group rotation={[Math.PI / 6, 0, 0]}>
       <Box
         args={[BoxDimension.width, BoxDimension.height, BoxDimension.depth]}

@@ -133,6 +133,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             config={props.config}
             configPosition={props.configPosition}
             panelCamera={true}
+            panelCameraStore={props.panelCameraStore}
             threeDPlants={props.threeDPlants}
             plants={props.plants}
             activeFocus={""}

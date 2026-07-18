@@ -44,6 +44,8 @@ export const fakeDesignerState = (): DesignerState => ({
   gridIds: [],
   gridStart: { x: 100, y: 100 },
   gridPlanting: undefined,
+  legacyGridPlantingCrop: undefined,
+  legacyPointGrid: false,
   soilHeightLabels: false,
   profileOpen: false,
   profileAxis: "x",

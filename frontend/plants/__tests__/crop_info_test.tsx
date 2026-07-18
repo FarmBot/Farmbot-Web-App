@@ -116,6 +116,21 @@ describe("<CropInfo />", () => {
     expect(screen.getByText("Add Grid or Row")).toBeInTheDocument();
   });
 
+  it("opens a legacy grid request from the command palette", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.designer.legacyGridPlantingCrop = "mint";
+
+    render(<CropInfo {...p} />);
+
+    expect(screen.getByText("Add Grid or Row")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /grid/i }));
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: undefined,
+    });
+  });
+
   it("activates 3D grid planting without opening the legacy popup", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
@@ -135,6 +150,7 @@ describe("<CropInfo />", () => {
     expect(action.payload).toEqual({
       token: expect.any(String),
       gridId: action.payload.token,
+      gridType: "plant",
       cropSlug: "mint",
       itemName: "Mint",
       defaultSpacing: expect.any(Number),
@@ -163,6 +179,85 @@ describe("<CropInfo />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_GRID_PLANTING,
       payload: undefined,
+    });
+  });
+
+  it("toggles from individual to grid planting with the G key", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.three_d_garden);
+    const { container } = render(<CropInfo {...p} />);
+
+    fireEvent.keyDown(window, { key: "g" });
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: expect.objectContaining({
+        cropSlug: "mint",
+        itemName: "Mint",
+      }),
+    });
+    (p.dispatch as jest.Mock).mockClear();
+    fireEvent.keyDown(rowInput(container, "radius"), { key: "g" });
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("toggles from grid to individual planting with the G key", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.three_d_garden);
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    render(<CropInfo {...p} />);
+
+    fireEvent.keyDown(window, { key: "G" });
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    });
+  });
+
+  it("does not clear a replacement grid request during rerender", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.three_d_garden);
+    p.designer.gridPlanting = {
+      token: "first-grid-token",
+      gridId: "first-grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const { rerender, unmount } = render(<CropInfo {...p} />);
+    (p.dispatch as jest.Mock).mockClear();
+
+    p.designer = {
+      ...p.designer,
+      gridPlanting: {
+        token: "replacement-grid-token",
+        gridId: "replacement-grid-token",
+        cropSlug: "mint",
+        itemName: "Mint",
+        defaultSpacing: 300,
+      },
+    };
+    rerender(<CropInfo {...p} />);
+
+    expect(p.dispatch).not.toHaveBeenCalled();
+
+    unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "replacement-grid-token",
     });
   });
 

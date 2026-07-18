@@ -1,4 +1,5 @@
 import React from "react";
+import * as threeFiber from "@react-three/fiber";
 import {
   actRenderer, createRenderer, unmountRenderer,
 } from "../../__test_support__/test_renderer";
@@ -8,6 +9,7 @@ import {
   VIEW_PRISM_SCALE, VIEW_PRISM_TARGETS, VIEW_PRISM_TEXTURE_ANISOTROPY,
   VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
 } from "../view_prism";
+import { ControlCursorProvider } from "../controls";
 
 const COLORS = {
   color: "#111",
@@ -132,9 +134,17 @@ describe("<ViewPrism />", () => {
   });
 
   it("shows and clears the hover overlay", () => {
-    const wrapper = createRenderer(<ViewPrism
-      {...COLORS}
-      onDirection={jest.fn()} />);
+    const canvas = document.createElement("canvas");
+    canvas.style.cursor = "grab";
+    (threeFiber.useThree as jest.Mock).mockReturnValue({
+      gl: { domElement: canvas },
+      events: { connected: canvas },
+    });
+    const wrapper = createRenderer(
+      <ControlCursorProvider baseCursor={"grab"}>
+        <ViewPrism {...COLORS} onDirection={jest.fn()} />
+      </ControlCursorProvider>,
+    );
     const target = wrapper.root.findByProps({
       name: "view-prism-target-corner-top-positive-x-positive-y",
     });
@@ -143,8 +153,6 @@ describe("<ViewPrism />", () => {
     });
     expect(getMaterial().props.opacity).toEqual(0);
     const stopPropagation = jest.fn();
-    const canvas = document.createElement("canvas");
-    canvas.style.cursor = "grab";
     const event = {
       nativeEvent: { target: canvas },
       stopPropagation,
@@ -159,13 +167,19 @@ describe("<ViewPrism />", () => {
   });
 
   it("keeps the canvas pointer while moving between targets", () => {
-    const wrapper = createRenderer(<ViewPrism
-      {...COLORS}
-      onDirection={jest.fn()} />);
-    const targets = wrapper.root.findAll(node =>
-      node.props.userData?.viewPrismTarget).slice(0, 2);
     const canvas = document.createElement("canvas");
     canvas.style.cursor = "crosshair";
+    (threeFiber.useThree as jest.Mock).mockReturnValue({
+      gl: { domElement: canvas },
+      events: { connected: canvas },
+    });
+    const wrapper = createRenderer(
+      <ControlCursorProvider baseCursor={"crosshair"}>
+        <ViewPrism {...COLORS} onDirection={jest.fn()} />
+      </ControlCursorProvider>,
+    );
+    const targets = wrapper.root.findAll(node =>
+      node.props.userData?.viewPrismTarget).slice(0, 2);
     const event = {
       nativeEvent: { target: canvas },
       stopPropagation: jest.fn(),
@@ -185,13 +199,19 @@ describe("<ViewPrism />", () => {
   });
 
   it("restores the canvas cursor when unmounted during hover", () => {
-    const wrapper = createRenderer(<ViewPrism
-      {...COLORS}
-      onDirection={jest.fn()} />);
-    const target = wrapper.root.findAll(node =>
-      node.props.userData?.viewPrismTarget)[0];
     const canvas = document.createElement("canvas");
     canvas.style.cursor = "grab";
+    (threeFiber.useThree as jest.Mock).mockReturnValue({
+      gl: { domElement: canvas },
+      events: { connected: canvas },
+    });
+    const wrapper = createRenderer(
+      <ControlCursorProvider baseCursor={"grab"}>
+        <ViewPrism {...COLORS} onDirection={jest.fn()} />
+      </ControlCursorProvider>,
+    );
+    const target = wrapper.root.findAll(node =>
+      node.props.userData?.viewPrismTarget)[0];
     actRenderer(() => target.props.onPointerOver({
       nativeEvent: { target: canvas },
       stopPropagation: jest.fn(),

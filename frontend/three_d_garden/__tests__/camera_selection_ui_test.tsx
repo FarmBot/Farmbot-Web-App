@@ -36,12 +36,19 @@ describe("<CameraSelectionUI />", () => {
     topDownAtStart: false,
     onSelect: jest.fn(),
   });
+  const cameraMarkers = (
+    wrapper: ReturnType<typeof createRenderer>,
+  ) => wrapper.root.findAll(node =>
+    `${node.type}` == "group" &&
+    `${node.props.name}`.startsWith("camera-location-") &&
+    typeof node.props.onPointerOver == "function" &&
+    !!node.props.userData?.hovered);
 
   it("renders four top-down and eight angled camera markers", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    const heads = wrapper.root.findAll(node => node.props.name == "head");
+    const heads = cameraMarkers(wrapper);
     const topDownAngles = heads
       .filter(head => head.props.userData.hovered.topDown)
       .map(head => head.props.userData.hovered.angle);
@@ -58,26 +65,33 @@ describe("<CameraSelectionUI />", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    const head = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 45
-      && node.props.userData?.hovered?.topDown === false)[0];
+    const head = cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 45
+      && node.props.userData?.hovered?.topDown === false)!;
     expect(head).toBeTruthy();
-    const markerColor = () => wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 45
-      && node.props.userData?.hovered?.topDown === false)[0]
-      .findAll(node => node.props.color !== undefined)[0].props.color;
+    const markerColor = () => cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 45
+      && node.props.userData?.hovered?.topDown === false)!
+      .findAll(node =>
+        node.props.color !== undefined &&
+        node.props.hoverColor === undefined)[0].props.color;
     expect(markerColor()).toEqual("blue");
-    actRenderer(() => head.props.onPointerOver());
+    const stopPropagation = jest.fn();
+    const pointerEvent = {
+      delta: 0,
+      stopPropagation,
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+    };
+    actRenderer(() => head.props.onPointerOver(pointerEvent));
+    expect(markerColor()).toEqual("cyan");
+    actRenderer(() => head.props.onPointerOver(pointerEvent));
     expect(markerColor()).toEqual("cyan");
     actRenderer(() => head.props.onPointerMove());
     expect(markerColor()).toEqual("cyan");
-    actRenderer(() => head.props.onPointerOut());
+    actRenderer(() => head.props.onPointerOut(pointerEvent));
     expect(markerColor()).toEqual("blue");
-    const stopPropagation = jest.fn();
-    actRenderer(() => head.props.onClick({ stopPropagation }));
-    expect(stopPropagation).toHaveBeenCalledTimes(1);
+    actRenderer(() => head.props.onClick(pointerEvent));
+    expect(stopPropagation).toHaveBeenCalled();
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.viewpoint_heading,
       45,
@@ -98,7 +112,7 @@ describe("<CameraSelectionUI />", () => {
     const noDispatchWrapper = createRenderer(<CameraSelectionUI {...p} />);
     const clickable = noDispatchWrapper.root.findAll(node =>
       node.props.onClick)[0];
-    actRenderer(() => clickable.props.onClick({ stopPropagation: jest.fn() }));
+    actRenderer(() => clickable.props.onClick(pointerEvent));
     expect(p.onSelect).not.toHaveBeenCalled();
     unmountRenderer(noDispatchWrapper);
   });
@@ -108,10 +122,9 @@ describe("<CameraSelectionUI />", () => {
     p.config.cameraSelectionView = true;
     p.config.viewpointHeading = 30;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    const selected = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.topDown === false
-      && node.props.children?.props?.color == "blue");
+    const selected = cameraMarkers(wrapper).filter(node =>
+      node.props.userData.hovered.topDown === false
+      && node.findAll(item => item.props.color == "blue").length > 0);
     expect(selected.length).toBeGreaterThan(0);
     expect([...new Set(selected.map(node =>
       node.props.userData.hovered.angle))]).toEqual([45]);
@@ -124,10 +137,9 @@ describe("<CameraSelectionUI />", () => {
     p.config.viewpointHeading = 30;
     p.topDownAtStart = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    const selected = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.topDown === true
-      && node.props.children?.props?.color == "blue");
+    const selected = cameraMarkers(wrapper).filter(node =>
+      node.props.userData.hovered.topDown === true
+      && node.findAll(item => item.props.color == "blue").length > 0);
     expect([...new Set(selected.map(node =>
       node.props.userData.hovered.angle))]).toEqual([0]);
     unmountRenderer(wrapper);
@@ -137,12 +149,15 @@ describe("<CameraSelectionUI />", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    const head = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 90
-      && node.props.userData?.hovered?.topDown === true)[0];
+    const head = cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 90
+      && node.props.userData?.hovered?.topDown === true)!;
     actRenderer(() =>
-      head.props.onClick({ stopPropagation: jest.fn() }));
+      head.props.onClick({
+        delta: 0,
+        stopPropagation: jest.fn(),
+        nativeEvent: { stopImmediatePropagation: jest.fn() },
+      }));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.viewpoint_heading,
       90,

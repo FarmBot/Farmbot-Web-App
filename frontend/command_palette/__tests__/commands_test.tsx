@@ -36,6 +36,7 @@ import { DevSettings } from "../../settings/dev/dev_support";
 import * as threeDSettings from "../../settings/three_d_settings";
 import { findCropIcon } from "../../crops/metadata";
 import { Command } from "../interfaces";
+import { getWebAppConfig } from "../../resources/getters";
 
 const firstInputOptions = (command: Command | undefined) =>
   command?.actions?.[0].input?.fields[0].options || [];
@@ -115,6 +116,7 @@ describe("buildCommands()", () => {
     });
   });
 
+  // eslint-disable-next-line complexity
   it("builds a comprehensive registry with stable unique ids", () => {
     const state = fakeState();
     const commands = buildCommands({
@@ -145,6 +147,7 @@ describe("buildCommands()", () => {
     expect(ids).toContain("section:photos:measure");
     expect(ids).toContain("section:connectivity:history");
     expect(ids).toContain("section-view");
+    expect(ids).toContain("select");
     expect(ids).toContain("setting:legend_menu_open:toggle");
     expect(ids).toContain("settings-section:axis_settings");
     expect(ids).toContain("setting:show_plants:toggle");
@@ -234,7 +237,16 @@ describe("buildCommands()", () => {
     });
     expect(commands.find(command =>
       command.id == "add:crop:bishops-crown-pepper")?.name)
-      .toEqual("Bishop's Crown Pepper > Add new");
+      .toEqual("Bishop's Crown Pepper");
+    expect(commands.find(command =>
+      command.id == "add:crop:bishops-crown-pepper")
+      ?.actions?.map(action => action.name))
+      .toEqual(["Add new", "Add grid", "Add at current location"]);
+    expect(commands.find(command => command.id == "add:point"))
+      .toMatchObject({ name: "Points" });
+    expect(commands.find(command => command.id == "add:point")
+      ?.actions?.map(action => action.name))
+      .toEqual(["Add new", "Add grid", "Add at current location"]);
   });
 
   it("uses concise safety command names and emergency aliases", () => {
@@ -823,9 +835,10 @@ describe("buildCommands()", () => {
     expect(command).toMatchObject({
       name: "Section View",
       aliases: expect.arrayContaining(["Profile view"]),
+      icon: "scissors",
       actions: [
         { id: "toggle", name: "Toggle On/Off" },
-        { id: "axis", name: "Toggle Axis" },
+        { id: "axis", name: "Switch Axis" },
         { id: "follow-bot", name: "Follow Bot" },
         { id: "clip-all", name: "Clip All" },
       ],
@@ -837,6 +850,97 @@ describe("buildCommands()", () => {
       { type: Actions.SET_3D_SECTION_FOLLOW_BOT, payload: false },
       { type: Actions.SET_3D_SECTION_CLIP_ALL, payload: false },
     ]);
+  });
+
+  it("selects resources and manages the selection panel", () => {
+    const state = stateWithResources();
+    const setPanel = jest.fn();
+    const dispatch = jest.fn((action: Function) =>
+      typeof action == "function" ? action(setPanel) : action);
+    const navigate = jest.fn();
+    location.pathname = Path.designer();
+    const command = buildCommands({ state, dispatch, navigate })
+      .find(item => item.id == "select");
+
+    expect(command).toMatchObject({
+      name: "Select",
+      icon: "mouse-pointer",
+      actions: [
+        { id: "all-plants", name: "All Plants" },
+        { id: "all-weeds", name: "All Weeds" },
+        { id: "all-points", name: "All Points" },
+        { id: "custom", name: "Custom" },
+        { id: "none", name: "None" },
+      ],
+    });
+    const index = state.resources.index;
+    const cases = [
+      ["all-plants", "Plant",
+        selectAllPlantPointers(index).map(point => point.uuid)],
+      ["all-weeds", "Weed",
+        selectAllWeedPointers(index).map(point => point.uuid)],
+      ["all-points", "GenericPointer",
+        selectAllGenericPointers(index).map(point => point.uuid)],
+    ] as const;
+    cases.map(([id, pointerType, uuids]) => {
+      dispatch.mockClear();
+      setPanel.mockClear();
+      navigate.mockClear();
+      command?.actions?.find(action => action.id == id)?.execute();
+      expect(dispatch).toHaveBeenCalledWith({
+        type: Actions.SET_SELECTION_POINT_TYPE,
+        payload: [pointerType],
+      });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: Actions.SELECT_POINT,
+        payload: uuids,
+      });
+      expect(setPanel).toHaveBeenCalledWith({
+        type: Actions.SET_PANEL_OPEN,
+        payload: true,
+      });
+      expect(navigate).toHaveBeenCalledWith(Path.plants("select"));
+    });
+
+    dispatch.mockClear();
+    setPanel.mockClear();
+    navigate.mockClear();
+    command?.actions?.find(action => action.id == "custom")?.execute();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(setPanel).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
+    expect(navigate).toHaveBeenCalledWith(Path.plants("select"));
+
+    dispatch.mockClear();
+    setPanel.mockClear();
+    navigate.mockClear();
+    state.resources.consumers.farm_designer.panelOpen = true;
+    location.pathname = Path.plants("select");
+    command?.actions?.find(action => action.id == "none")?.execute();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: undefined,
+    });
+    expect(setPanel).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: false,
+    });
+    expect(navigate).toHaveBeenCalledWith(Path.designer());
+
+    dispatch.mockClear();
+    setPanel.mockClear();
+    navigate.mockClear();
+    state.resources.consumers.farm_designer.panelOpen = false;
+    location.pathname = Path.designer();
+    command?.actions?.find(action => action.id == "none")?.execute();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: undefined,
+    });
+    expect(setPanel).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("navigates to top-level Photos subsections", () => {
@@ -989,18 +1093,145 @@ describe("buildCommands()", () => {
     });
     expect(commands.find(command =>
       command.id == "add:crop:api-only-crop")?.name)
-      .toEqual("Api Only Crop > Add new");
+      .toEqual("Api Only Crop");
     commands.find(command => command.id == "add:crop:carrot")?.execute();
     commands.find(command => command.id == "add:crop:api-only-crop")
       ?.execute();
+    commands.find(command => command.id == "add:plant")?.execute();
     expect(navigate.mock.calls).toEqual([
       [Path.cropSearch("carrot")],
       [Path.cropSearch("api-only-crop")],
+      [Path.cropSearch()],
     ]);
     expect(setPanel.mock.calls.map(call => call[0])).toEqual([
       { type: Actions.SET_PANEL_OPEN, payload: true },
       { type: Actions.SET_PANEL_OPEN, payload: true },
+      { type: Actions.SET_PANEL_OPEN, payload: true },
     ]);
+  });
+
+  // eslint-disable-next-line complexity
+  it("adds crop and point grids or resources from inline actions", () => {
+    const state = stateWithResources();
+    const config = getWebAppConfig(state.resources.index);
+    if (!config) { throw new Error("Web app config not found."); }
+    config.body.three_d_garden = true;
+    state.bot.hardware.location_data.position = {
+      x: 123.4,
+      y: 456.6,
+      z: 12,
+    };
+    state.resources.consumers.farm_designer.drawnPoint = {
+      name: "Palette Point",
+      cx: undefined,
+      cy: undefined,
+      z: 7,
+      r: 40,
+      color: "blue",
+      at_soil_level: true,
+    };
+    const initSave = jest.spyOn(crud, "initSave")
+      .mockReturnValue({ type: Actions.INIT_RESOURCE } as never);
+    const dispatch = jest.fn();
+    dispatch.mockImplementation((action: unknown): unknown =>
+      typeof action == "function"
+        ? (action as (
+          dispatch: Function,
+          getState: () => typeof state,
+        ) => unknown)(dispatch, () => state)
+        : action);
+    const navigate = jest.fn();
+    const commands = buildCommands({ state, dispatch, navigate });
+    const crop = commands.find(command =>
+      command.id == "add:crop:carrot");
+    const point = commands.find(command => command.id == "add:point");
+
+    crop?.actions?.find(action => action.id == "add-grid")?.execute();
+    crop?.actions?.find(action => action.id == "add-current")?.execute();
+    point?.actions?.find(action => action.id == "add-new")?.execute();
+    point?.actions?.find(action => action.id == "add-grid")?.execute();
+    point?.actions?.find(action => action.id == "add-current")?.execute();
+
+    const gridRequests = dispatch.mock.calls
+      .map((call: unknown[]) =>
+        call[0] as { type?: string; payload?: object })
+      .filter(action => action.type == Actions.SET_GRID_PLANTING);
+    expect(gridRequests).toHaveLength(2);
+    expect(gridRequests[0]?.payload).toEqual(expect.objectContaining({
+      gridType: "plant",
+      cropSlug: "carrot",
+      itemName: "Carrot",
+    }));
+    expect(gridRequests[1]?.payload).toEqual(expect.objectContaining({
+      gridType: "point",
+      itemName: "Palette Point",
+      defaultSpacing: 100,
+      radius: 0,
+      z: 7,
+      meta: {
+        color: "blue",
+        at_soil_level: "true",
+      },
+    }));
+    expect(initSave).toHaveBeenNthCalledWith(1, "Point",
+      expect.objectContaining({
+        x: 120,
+        y: 460,
+        openfarm_slug: "carrot",
+      }));
+    expect(initSave).toHaveBeenNthCalledWith(2, "Point", {
+      pointer_type: "GenericPointer",
+      name: "Palette Point",
+      meta: {
+        color: "blue",
+        created_by: "farm-designer",
+        type: "point",
+        at_soil_level: "true",
+      },
+      x: 123.4,
+      y: 456.6,
+      z: 12,
+      radius: 40,
+    });
+    expect(navigate).toHaveBeenCalledWith(Path.cropSearch("carrot"));
+    expect(navigate).toHaveBeenCalledWith(Path.points("add"));
+    initSave.mockRestore();
+  });
+
+  // eslint-disable-next-line complexity
+  it("opens 2D grid editors and disables unknown current locations", () => {
+    const state = stateWithResources();
+    const dispatch = jest.fn();
+    const navigate = jest.fn();
+    const commands = buildCommands({ state, dispatch, navigate });
+    const crop = commands.find(command =>
+      command.id == "add:crop:carrot");
+    const point = commands.find(command => command.id == "add:point");
+    const cropCurrent = crop?.actions?.find(action =>
+      action.id == "add-current");
+    const pointCurrent = point?.actions?.find(action =>
+      action.id == "add-current");
+
+    crop?.actions?.find(action => action.id == "add-grid")?.execute();
+    point?.actions?.find(action => action.id == "add-grid")?.execute();
+    cropCurrent?.execute();
+    pointCurrent?.execute();
+
+    expect(cropCurrent?.unavailable).toEqual("FarmBot position unknown.");
+    expect(pointCurrent?.unavailable).toEqual("FarmBot position unknown.");
+    expect(navigate).toHaveBeenCalledWith(Path.cropSearch("carrot"));
+    expect(navigate).toHaveBeenCalledWith(Path.points("add"));
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: "carrot",
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: true,
+    });
+    expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.SET_GRID_PLANTING,
+    }));
   });
 
   // eslint-disable-next-line complexity

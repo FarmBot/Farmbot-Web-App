@@ -59,6 +59,8 @@ export const initialState: DesignerState = {
   gridIds: [],
   gridStart: { x: 100, y: 100 },
   gridPlanting: undefined,
+  legacyGridPlantingCrop: undefined,
+  legacyPointGrid: false,
   soilHeightLabels: false,
   profileOpen: false,
   profileAxis: "x",
@@ -290,6 +292,28 @@ export const designer = generateReducer<DesignerState>(initialState)
       s.gridPlanting = payload;
       return s;
     })
+  .add<string>(Actions.CLEAR_GRID_PLANTING, (s, { payload }) => {
+    if (s.gridPlanting?.token == payload) {
+      s.gridPlanting = undefined;
+    }
+    return s;
+  })
+  .add<string | undefined>(
+    Actions.SET_LEGACY_GRID_PLANTING_CROP, (s, { payload }) => {
+      s.legacyGridPlantingCrop = payload;
+      return s;
+    })
+  .add<string>(
+    Actions.CLEAR_LEGACY_GRID_PLANTING_CROP, (s, { payload }) => {
+      if (s.legacyGridPlantingCrop == payload) {
+        s.legacyGridPlantingCrop = undefined;
+      }
+      return s;
+    })
+  .add<boolean>(Actions.SET_LEGACY_POINT_GRID, (s, { payload }) => {
+    s.legacyPointGrid = payload;
+    return s;
+  })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
     return s;

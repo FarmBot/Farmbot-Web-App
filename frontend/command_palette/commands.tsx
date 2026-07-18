@@ -1,7 +1,9 @@
 import React from "react";
-import { startCase } from "lodash";
+import { isNumber, startCase } from "lodash";
 import { NavigateFunction } from "react-router";
-import { ALLOWED_PIN_MODES, ANALOG, Xyz } from "farmbot";
+import {
+  ALLOWED_PIN_MODES, ANALOG, TaggedGenericPointer, uuid, Xyz,
+} from "farmbot";
 import { Axis } from "../devices/interfaces";
 import {
   ControlsState, Everything, PopupsState, SettingsPanelState,
@@ -75,8 +77,17 @@ import {
   findOrCreate3DConfigFunction, get3DConfigValueFunction,
 } from "../settings/three_d_settings";
 import { toggleSectionAxis } from "../farm_designer/three_d_section";
+import { unselectPlant } from "../farm_designer/map/actions";
 import { getAxisOrderOptions } from
   "../sequences/step_tiles/tile_computed_move/axis_order";
+import { createPlant } from
+  "../farm_designer/map/layers/plants/plant_actions";
+import { round } from "../farm_designer/map/util";
+import { DEFAULT_PLANT_RADIUS } from "../farm_designer/plant";
+import {
+  DEFAULT_POINT_GRID_RADIUS,
+  DEFAULT_POINT_GRID_SPACING,
+} from "../plants/grid/grid_math";
 
 interface BuildCommandProps {
   state: Everything;
@@ -452,7 +463,7 @@ const sectionViewCommand = (props: BuildCommandProps): Command => {
     },
     {
       id: "axis",
-      ...localized("Toggle Axis"),
+      ...localized("Switch Axis"),
       execute: () => toggleSectionAxis(designer, {
         x: Number(getValue(NumericSetting.map_size_x))
           || designer.threeDSectionWidth,
@@ -484,6 +495,80 @@ const sectionViewCommand = (props: BuildCommandProps): Command => {
       "3D section", "Profile view", "section", "clipping", "cross section",
     ],
     group: "map",
+    icon: "scissors",
+    actions,
+    execute: actions[0].execute,
+  };
+};
+
+const selectionCommand = (props: BuildCommandProps): Command => {
+  const index = props.state.resources.index;
+  const open = () => {
+    props.dispatch(setPanelOpen(true));
+    props.navigate(Path.plants("select"));
+  };
+  const select = (
+    pointerType: "Plant" | "Weed" | "GenericPointer",
+    uuids: string[],
+  ) => () => {
+    props.dispatch({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: [pointerType],
+    });
+    props.dispatch({ type: Actions.SELECT_POINT, payload: uuids });
+    open();
+  };
+  const none = () => {
+    unselectPlant(props.dispatch)();
+    const designer = props.state.resources.consumers.farm_designer;
+    const selectionPanelOpen = designer.panelOpen
+      && Path.getSlug(Path.plants()) == "select";
+    if (selectionPanelOpen) {
+      props.dispatch(setPanelOpen(false));
+      props.navigate(Path.designer());
+    }
+  };
+  const actions: CommandAction[] = [
+    {
+      id: "all-plants",
+      ...localized("All Plants"),
+      aliases: ["select every plant"],
+      execute: select("Plant",
+        selectAllPlantPointers(index).map(point => point.uuid)),
+    },
+    {
+      id: "all-weeds",
+      ...localized("All Weeds"),
+      aliases: ["select every weed"],
+      execute: select("Weed",
+        selectAllWeedPointers(index).map(point => point.uuid)),
+    },
+    {
+      id: "all-points",
+      ...localized("All Points"),
+      aliases: ["select every point"],
+      execute: select("GenericPointer",
+        selectAllGenericPointers(index).map(point => point.uuid)),
+    },
+    {
+      id: "custom",
+      ...localized("Custom"),
+      aliases: ["box select", "manual selection"],
+      execute: open,
+    },
+    {
+      id: "none",
+      ...localized("None"),
+      aliases: ["deselect all", "clear selection"],
+      execute: none,
+    },
+  ];
+  return {
+    id: "select",
+    ...localized("Select"),
+    aliases: ["selection", "box select", "deselect"],
+    group: "map",
+    icon: "mouse-pointer",
     actions,
     execute: actions[0].execute,
   };
@@ -1597,9 +1682,27 @@ const createCurve = (type: CurveType, navigate: NavigateFunction) =>
 
 const addCommands = (props: BuildCommandProps): Command[] => {
   const index = props.state.resources.index;
+  const designer = props.state.resources.consumers.farm_designer;
+  const getConfigValue = getWebAppConfigValueFromResources(index);
+  const threeDGrid =
+    !!getConfigValue(BooleanSetting.three_d_garden);
+  const botPosition = validBotLocationData(
+    props.state.bot.hardware.location_data).position;
+  const botXY = isNumber(botPosition.x) && isNumber(botPosition.y)
+    ? { x: round(botPosition.x), y: round(botPosition.y) }
+    : undefined;
+  const botXYZ = isNumber(botPosition.x)
+    && isNumber(botPosition.y)
+    && isNumber(botPosition.z)
+    ? { x: botPosition.x, y: botPosition.y, z: botPosition.z }
+    : undefined;
+  const locationUnavailable = t("FarmBot position unknown.");
+  const openAddPage = (path: string) => {
+    props.dispatch(setPanelOpen(true));
+    props.navigate(path);
+  };
   const routes: [string, Panel, string, string, string, string][] = [
     ["plant", Panel.Plants, "Plants", "plant", "Add new", Path.cropSearch()],
-    ["point", Panel.Points, "Points", "point", "Add new", Path.points("add")],
     ["weed", Panel.Weeds, "Weeds", "weed", "Add new", Path.weeds("add")],
     ["event", Panel.FarmEvents, "Events", "farm event", "Add new",
       Path.farmEvents("add")],
@@ -1638,11 +1741,100 @@ const addCommands = (props: BuildCommandProps): Command[] => {
     group: "resources",
     imageIcon: TAB_ICON[panel],
     themeAwareImageIcon: true,
-    execute: () => {
-      props.dispatch(setPanelOpen(true));
-      props.navigate(path);
-    },
+    execute: () => openAddPage(path),
   }));
+  const point = designer.drawnPoint || {
+    name: t("Created Point"),
+    cx: undefined,
+    cy: undefined,
+    z: 0,
+    r: 0,
+    color: "green",
+    at_soil_level: false,
+  };
+  const pointActions: CommandAction[] = [
+    {
+      id: "add-new",
+      ...localized("Add new"),
+      aliases: ["new point", "create point"],
+      execute: () => openAddPage(Path.points("add")),
+    },
+    {
+      id: "add-grid",
+      ...localized("Add grid"),
+      aliases: ["point grid", "grid of points", "point row"],
+      execute: () => {
+        openAddPage(Path.points("add"));
+        if (!threeDGrid) {
+          props.dispatch({
+            type: Actions.SET_LEGACY_POINT_GRID,
+            payload: true,
+          });
+          return;
+        }
+        const token = uuid();
+        props.dispatch({
+          type: Actions.SET_DRAWN_POINT_DATA,
+          payload: point,
+        });
+        props.dispatch({
+          type: Actions.SET_GRID_PLANTING,
+          payload: {
+            token,
+            gridId: token,
+            gridType: "point",
+            itemName: point.name,
+            defaultSpacing: DEFAULT_POINT_GRID_SPACING,
+            radius: DEFAULT_POINT_GRID_RADIUS,
+            z: point.z,
+            meta: {
+              color: point.color,
+              at_soil_level: "" + point.at_soil_level,
+            },
+          },
+        });
+      },
+    },
+    {
+      id: "add-current",
+      ...localized("Add at current location"),
+      aliases: ["point here", "point at FarmBot", "current position"],
+      unavailable: botXYZ ? undefined : locationUnavailable,
+      execute: () => {
+        if (!botXYZ) { return; }
+        props.dispatch(crud.initSave<TaggedGenericPointer>("Point", {
+          pointer_type: "GenericPointer",
+          name: point.name || t("Created Point"),
+          meta: {
+            color: point.color,
+            created_by: "farm-designer",
+            type: "point",
+            ...(point.at_soil_level
+              ? { at_soil_level: "true" }
+              : {}),
+          },
+          x: botXYZ.x,
+          y: botXYZ.y,
+          z: botXYZ.z,
+          radius: point.r,
+        }));
+        props.dispatch({
+          type: Actions.SET_DRAWN_POINT_DATA,
+          payload: undefined,
+        });
+      },
+    },
+  ];
+  staticCommands.push({
+    id: "add:point",
+    ...localized("Points"),
+    aliases: ["add point", "new point", "create point"],
+    group: "resources",
+    imageIcon: TAB_ICON[Panel.Points],
+    themeAwareImageIcon: true,
+    actions: pointActions,
+    execute: pointActions[0].execute,
+  });
   ([CurveType.water, CurveType.spread, CurveType.height] as const)
     .map(type => staticCommands.push({
       id: `add:curve:${type}`,
@@ -1688,46 +1880,94 @@ const addCommands = (props: BuildCommandProps): Command[] => {
   const cropCommandText = (cropName: string) => {
     const name = decodeHtmlEntities(cropName);
     return {
-      name: `${name} > ${t("Add new")}`,
-      englishName: `${name} > Add new`,
+      name,
+      englishName: name,
       plantAlias: decodeHtmlEntities(
         t("Plant {{ crop }}", { crop: cropName })),
     };
   };
   const openCrop = (slug: string) => {
-    props.dispatch(setPanelOpen(true));
-    props.navigate(Path.cropSearch(slug));
+    openAddPage(Path.cropSearch(slug));
   };
-  const cropCommands = CROP_SLUGS.map(slug => {
+  const cropCommand = (slug: string): Command => {
     const crop = findCropMetadata(slug);
     const text = cropCommandText(crop.name);
+    const actions: CommandAction[] = [
+      {
+        id: "add-new",
+        ...localized("Add new"),
+        aliases: ["new plant", "create plant"],
+        execute: () => openCrop(slug),
+      },
+      {
+        id: "add-grid",
+        ...localized("Add grid"),
+        aliases: [
+          `${crop.name} grid`,
+          `grid of ${crop.name}`,
+          `${crop.name} row`,
+        ],
+        execute: () => {
+          openCrop(slug);
+          if (!threeDGrid) {
+            props.dispatch({
+              type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+              payload: slug,
+            });
+            return;
+          }
+          const token = uuid();
+          props.dispatch({
+            type: Actions.SET_GRID_PLANTING,
+            payload: {
+              token,
+              gridId: token,
+              gridType: "plant",
+              cropSlug: slug,
+              itemName: crop.name,
+              defaultSpacing:
+                (crop.spread || DEFAULT_PLANT_RADIUS) * 10,
+            },
+          });
+        },
+      },
+      {
+        id: "add-current",
+        ...localized("Add at current location"),
+        aliases: [
+          `plant ${crop.name} here`,
+          `${crop.name} at FarmBot`,
+          `${crop.name} at current position`,
+        ],
+        unavailable: botXY ? undefined : locationUnavailable,
+        execute: () => botXY && createPlant({
+          cropName: crop.name,
+          slug,
+          gardenCoords: botXY,
+          gridSize: undefined,
+          dispatch: props.dispatch,
+          openedSavedGarden: designer.openedSavedGarden,
+          depth: parseInt("" +
+            getConfigValue(NumericSetting.default_plant_depth)),
+          designer,
+        }),
+      },
+    ];
     return {
       id: `add:crop:${slug}`,
       name: text.name,
       englishName: text.englishName,
       aliases: ["add", "new", "create", "crop", slug, text.plantAlias],
-      group: "resources" as const,
+      group: "resources",
       imageIcon: crop.icon,
-      execute: () => openCrop(slug),
+      actions,
+      execute: actions[0].execute,
     };
-  });
+  };
+  const cropCommands = CROP_SLUGS.map(cropCommand);
   const apiCrops = selectAllCrops(index)
     .filter(crop => !CROP_SLUGS.includes(crop.body.slug))
-    .map(crop => {
-      const metadata = findCropMetadata(crop.body.slug);
-      const text = cropCommandText(metadata.name);
-      return {
-        id: `add:crop:${crop.body.slug}`,
-        name: text.name,
-        englishName: text.englishName,
-        aliases: [
-          "add", "new", "create", "crop", crop.body.slug, text.plantAlias,
-        ],
-        group: "resources" as const,
-        imageIcon: metadata.icon,
-        execute: () => openCrop(crop.body.slug),
-      };
-    });
+    .map(crop => cropCommand(crop.body.slug));
   return [...staticCommands, ...cropCommands, ...apiCrops];
 };
 
@@ -2103,6 +2343,7 @@ export const buildCommands = (props: BuildCommandProps): Command[] => [
   ...metricSectionCommands(props),
   ...profileCommands(props),
   sectionViewCommand(props),
+  selectionCommand(props),
   laserCommand(props),
   ...settingsSectionCommands(props),
   setupWizardCommand(props),

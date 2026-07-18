@@ -247,6 +247,42 @@ describe("<ThreeDPlantSpread />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("forces preview spread spheres to remain white", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.spreadVisible = true;
+    p.forceWhite = true;
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    allRefs[0].current = buildMeshRef();
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    const mesh = allRefs[0].current;
+    const colors = (mesh?.setColorAt as jest.Mock).mock.calls
+      .map(call => call[1]);
+    const material = wrapper.root.find(node =>
+      typeof node.props.onBeforeCompile == "function");
+    const shader = {
+      vertexShader: [
+        "#include <common>",
+        "#include <color_vertex>",
+        "#include <worldpos_vertex>",
+      ].join("\n"),
+      fragmentShader: [
+        "#include <common>",
+        "#include <color_fragment>",
+      ].join("\n"),
+      uniforms: {},
+    } as unknown as WebGLProgramParametersWithUniforms;
+
+    material.props.onBeforeCompile(shader);
+
+    expect(colors).toHaveLength(2);
+    colors.forEach(color =>
+      expect(color.getHexString()).toEqual("ffffff"));
+    expect(shader.uniforms.uOutside.value.getHexString()).toEqual("ffffff");
+    unmountRenderer(wrapper);
+  });
+
   it("uses reserved spread capacity while rendering active plants", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     queueMeshRef();

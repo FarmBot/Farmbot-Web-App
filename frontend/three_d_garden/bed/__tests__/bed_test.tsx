@@ -77,6 +77,9 @@ const mockYCrosshairRef: MockYCrosshairRef = { current: undefined };
 const mockAlignmentRef: MockAlignmentRef = {
   current: { update: jest.fn() },
 };
+const mockPlacementCoordinateLabelRef = {
+  current: { update: jest.fn() },
+};
 const mockInstancesRef: MockInstancesRef =
   { current: { geometry: { setAttribute: jest.fn() } } };
 
@@ -131,6 +134,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
     mockAlignmentRef.current = { update: jest.fn() };
+    mockPlacementCoordinateLabelRef.current = { update: jest.fn() };
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     jest.spyOn(plantActions, "dropPlant3D")
       .mockImplementation(jest.fn());
@@ -151,6 +155,7 @@ describe("<Bed />", () => {
       .mockImplementationOnce(() => mockXCrosshairRef)
       .mockImplementationOnce(() => mockYCrosshairRef)
       .mockImplementationOnce(() => mockAlignmentRef)
+      .mockImplementationOnce(() => mockPlacementCoordinateLabelRef)
       .mockImplementationOnce(() => mockInstancesRef)
       .mockImplementation(actualUseRef);
   });
@@ -456,12 +461,18 @@ describe("<Bed />", () => {
     fireEvent.click(soil);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { ...point, cx: 1350, cy: 660, z: 0 },
+      payload: {
+        ...point,
+        cx: 1350,
+        cy: 660,
+        z: 0,
+        placementPhase: "radius",
+      },
     });
     expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it("adds a drawn point: radius", () => {
+  it("finalizes a drawn point radius before saving", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
     location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
@@ -477,10 +488,15 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.click(soil);
-    expect(p.addPlantProps.dispatch).toHaveBeenCalled();
-    expect((p.addPlantProps.dispatch as jest.Mock).mock.calls[0]?.[0])
-      .toBeDefined();
-    expect(innerDispatch.mock.calls.length).toBeGreaterThanOrEqual(0);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        ...point,
+        r: 1480,
+        placementPhase: "finalize",
+      },
+    });
+    expect(innerDispatch).not.toHaveBeenCalled();
   });
 
   it("updates pointer plant position", () => {
@@ -586,7 +602,7 @@ describe("<Bed />", () => {
     expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
-  it("updates pointer point radius", () => {
+  it("updates pointer point radius around the center", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
@@ -653,6 +669,7 @@ describe("<Bed />", () => {
     point.cx = 1;
     point.cy = 1;
     point.r = 100;
+    point.placementPhase = "finalize";
     p.addPlantProps.designer.drawnPoint = point;
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);

@@ -5,7 +5,9 @@ import {
 import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { UseCurrentLocation } from "../../tools/tool_slot_edit_components";
-import { gridInputStep } from "./grid_math";
+import {
+  gridInputStep, quantizeGridInputValue,
+} from "./grid_math";
 
 export const getLabel = (
   gridKey: PlantGridKey,
@@ -46,16 +48,19 @@ export function InputCell(props: InputCellProps) {
     setValue(nextValue);
     if (!/^-?\d+$/.test(nextValue)) { return; }
     const number = parseInt(nextValue, 10);
-    validValue(number) && onChange(gridKey, number);
+    const quantized = quantizeGridInputValue(gridKey, number);
+    validValue(quantized) && onChange(gridKey, quantized);
   };
   const step = (direction: 1 | -1) => {
     const parsed = /^-?\d+$/.test(value) ? parseInt(value, 10) : committedValue;
-    let next = parsed + direction * gridInputStep(gridKey);
+    const increment = gridInputStep(gridKey);
+    let next = quantizeGridInputValue(gridKey, parsed)
+      + direction * increment;
     if ((gridKey == "numPlantsH" || gridKey == "numPlantsV") && next < 1) {
       next = 1;
     }
     if ((gridKey == "spacingH" || gridKey == "spacingV") && next == 0) {
-      next = direction;
+      next = direction * increment;
     }
     emit("" + next);
   };
@@ -74,7 +79,9 @@ export function InputCell(props: InputCellProps) {
           ? parseInt(value, 10)
           : NaN;
         if (!isNaN(number) && validValue(number)) {
-          onChange(gridKey, number);
+          const quantized = quantizeGridInputValue(gridKey, number);
+          setValue("" + quantized);
+          onChange(gridKey, quantized);
         } else {
           setValue("" + committedValue);
         }

@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { clone } from "lodash";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
@@ -46,6 +46,7 @@ import {
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
 import { bot as fakeBot } from "../../../__test_support__/fake_state/bot";
+import { createPanelCameraStore } from "../../panel_camera";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -586,6 +587,24 @@ describe("selection overlay and popups", () => {
     rerender(<ThreeDObjectSelectionLayer {...p} />);
     await waitFor(() =>
       expect(container).not.toContainHTML("three-d-object-popup"));
+  });
+
+  it("hides route selection overlays when the panel closes", () => {
+    const p = layerProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.plants = [plant];
+    p.panelSelection = { kind: "plant", id: 1 };
+    p.panelCameraStore = createPanelCameraStore(true);
+    const { container } = render(<ThreeDObjectSelectionLayer {...p} />);
+
+    expect(container).toContainHTML("selected-object-overlay");
+    expect(container).toContainHTML("selected-object-x-crosshair");
+
+    act(() => p.panelCameraStore?.setOpen(false));
+
+    expect(container).not.toContainHTML("selected-object-overlay");
+    expect(container).not.toContainHTML("selected-object-x-crosshair");
   });
 
   it("clears pending selection layer animation work", () => {

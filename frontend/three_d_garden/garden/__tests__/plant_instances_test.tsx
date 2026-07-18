@@ -146,6 +146,23 @@ describe("<PlantInstances />", () => {
       ...p,
       config: { ...p.config, mirrorX: !p.config.mirrorX },
     })).toBeFalsy();
+    expect(plantInstancesPropsEqual(p, {
+      ...p,
+      opacity: 0.5,
+    })).toBeFalsy();
+  });
+
+  it("applies shared opacity to preview plant icons", () => {
+    const p = fakeProps();
+    p.opacity = 0.5;
+    const wrapper = createRenderer(<PlantInstances {...p} />);
+    const materials = wrapper.root.findAll(node =>
+      node.props.alphaTest == 0.1);
+
+    expect(materials.length).toBeGreaterThan(0);
+    materials.forEach(material =>
+      expect(material.props.opacity).toEqual(0.5));
+    unmountRenderer(wrapper);
   });
 
   it("keeps reserved capacities for multiple active icon buckets", () => {
@@ -192,11 +209,43 @@ describe("<PlantInstances />", () => {
   });
 
   it("shares plant icon geometry across icon buckets", () => {
-    const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
+    const p = fakeProps();
+    p.plants = p.plants.map((plant, index) => ({
+      ...plant,
+      icon: `https://example.com/non-atlas-${index}.avif`,
+    }));
+    const wrapper = createRenderer(<PlantInstances {...p} />);
     const meshes = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
     expect(meshes.length).toEqual(2);
     expect(meshes[0].props.args[0]).toBe(meshes[1].props.args[0]);
+    unmountRenderer(wrapper);
+  });
+
+  it("owns atlas geometry per plant instance layer", () => {
+    const p = fakeProps();
+    PLANT_ICON_ATLAS[p.plants[0].icon] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    const plants = [p.plants[0]];
+    const wrapper = createRenderer(<>
+      <PlantInstances {...p} plants={plants} />
+      <PlantInstances {...p} plants={plants} />
+    </>);
+    const meshes = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh");
+    const geometries = wrapper.root.findAll(node =>
+      (node.type as string) == "planeGeometry");
+
+    expect(meshes).toHaveLength(2);
+    expect(meshes.every(mesh => mesh.props.args[0] === undefined)).toBeTruthy();
+    expect(geometries).toHaveLength(2);
     unmountRenderer(wrapper);
   });
 

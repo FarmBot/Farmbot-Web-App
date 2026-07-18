@@ -1,10 +1,16 @@
 import {
   clampGridStart,
   countForAxisDrag,
+  DEFAULT_POINT_GRID_RADIUS,
+  DEFAULT_POINT_GRID_SPACING,
+  gridAxisFromDrag,
   gridBounds,
   gridFromExtent,
+  gridInputStep,
+  GRID_SPACING_STEP,
   initialPlantGrid,
   MAX_GRID_PLANTS,
+  quantizeGridInputValue,
   validatePlantGrid,
 } from "../grid_math";
 import { PlantGridData } from "../interfaces";
@@ -22,6 +28,22 @@ const grid = (
 });
 
 describe("grid planting math", () => {
+  it("quantizes spacing inputs to 10 millimeters", () => {
+    expect(GRID_SPACING_STEP).toEqual(10);
+    expect(gridInputStep("spacingH")).toEqual(10);
+    expect(gridInputStep("startX")).toEqual(1);
+    expect(quantizeGridInputValue("spacingH", 127)).toEqual(130);
+    expect(quantizeGridInputValue("spacingV", -124)).toEqual(-120);
+    expect(quantizeGridInputValue("spacingH", 1)).toEqual(10);
+    expect(quantizeGridInputValue("spacingH", 0)).toEqual(0);
+    expect(quantizeGridInputValue("startX", 127)).toEqual(127);
+  });
+
+  it("provides point grid workflow defaults", () => {
+    expect(DEFAULT_POINT_GRID_RADIUS).toEqual(0);
+    expect(DEFAULT_POINT_GRID_SPACING).toEqual(100);
+  });
+
   it("creates a grid at the requested starting point", () => {
     expect(initialPlantGrid({ x: 10, y: 20 }, 75)).toEqual({
       startX: 10,
@@ -114,40 +136,30 @@ describe("grid planting math", () => {
     });
   });
 
-  it("preserves an initial 2x2 grid until full spacing boundaries", () => {
+  it("rounds extents at half-grid boundaries", () => {
     const common = {
       start: { x: 100, y: 100 },
       spacing: { x: 100, y: 100 },
       previousSpacing: { x: 100, y: 100 },
-      baseCounts: { x: 2, y: 2 },
       gridSize: { x: 1000, y: 1000 },
     };
     expect(gridFromExtent({
       ...common,
       pointer: { x: 101, y: 199 },
     })).toEqual(expect.objectContaining({
-      numPlantsH: 2,
+      numPlantsH: 1,
       numPlantsV: 2,
     }));
     expect(gridFromExtent({
       ...common,
       pointer: { x: 200, y: 200 },
     })).toEqual(expect.objectContaining({
-      numPlantsH: 3,
-      numPlantsV: 3,
-    }));
-    expect(gridFromExtent({
-      ...common,
-      pointer: { x: 99, y: 99 },
-    })).toEqual(expect.objectContaining({
-      spacingH: 100,
-      spacingV: 100,
       numPlantsH: 2,
       numPlantsV: 2,
     }));
     expect(gridFromExtent({
       ...common,
-      pointer: { x: 40, y: 40 },
+      pointer: { x: 99, y: 99 },
     })).toEqual(expect.objectContaining({
       spacingH: 100,
       spacingV: 100,
@@ -156,12 +168,35 @@ describe("grid planting math", () => {
     }));
     expect(gridFromExtent({
       ...common,
-      pointer: { x: 0, y: 0 },
+      pointer: { x: 51, y: 51 },
+    })).toEqual(expect.objectContaining({
+      spacingH: 100,
+      spacingV: 100,
+      numPlantsH: 1,
+      numPlantsV: 1,
+    }));
+    expect(gridFromExtent({
+      ...common,
+      pointer: { x: 50, y: 50 },
     })).toEqual(expect.objectContaining({
       spacingH: -100,
       spacingV: -100,
       numPlantsH: 2,
       numPlantsV: 2,
+    }));
+    expect(gridFromExtent({
+      ...common,
+      pointer: { x: 249, y: 249 },
+    })).toEqual(expect.objectContaining({
+      numPlantsH: 2,
+      numPlantsV: 2,
+    }));
+    expect(gridFromExtent({
+      ...common,
+      pointer: { x: 250, y: 250 },
+    })).toEqual(expect.objectContaining({
+      numPlantsH: 3,
+      numPlantsV: 3,
     }));
   });
 
@@ -191,6 +226,20 @@ describe("grid planting math", () => {
       { x: 10, y: 20 },
       { x: 1000, y: 1000 },
     )).toEqual({ x: 200, y: 200 });
+    expect(clampGridStart(
+      grid({
+        startX: 0,
+        startY: 0,
+        spacingH: -87,
+        spacingV: -87,
+        numPlantsH: 3,
+        numPlantsV: 3,
+      }),
+      false,
+      { x: 10, y: 20 },
+      { x: 1000, y: 1000 },
+      10,
+    )).toEqual({ x: 180, y: 180 });
   });
 
   it("calculates packed bounds without expanding the point array", () => {
@@ -215,9 +264,28 @@ describe("grid planting math", () => {
   it("converts axis drags into bounded plant counts", () => {
     expect(countForAxisDrag(100, 400, 100, 2, 1000)).toEqual(4);
     expect(countForAxisDrag(500, 200, -100, 2, 1000)).toEqual(4);
-    expect(countForAxisDrag(100, 299, 100, 2, 1000)).toEqual(2);
+    expect(countForAxisDrag(100, 249, 100, 2, 1000)).toEqual(2);
+    expect(countForAxisDrag(100, 250, 100, 2, 1000)).toEqual(3);
+    expect(countForAxisDrag(100, 299, 100, 2, 1000)).toEqual(3);
     expect(countForAxisDrag(100, 300, 100, 2, 1000)).toEqual(3);
+    expect(countForAxisDrag(500, 351, -100, 2, 1000)).toEqual(2);
+    expect(countForAxisDrag(500, 350, -100, 2, 1000)).toEqual(3);
     expect(countForAxisDrag(0, 10000, 1, 10, 10000))
       .toBeLessThanOrEqual(MAX_GRID_PLANTS / 10);
+  });
+
+  it("reverses signed spacing after dragging through the start", () => {
+    expect(gridAxisFromDrag(500, 300, 100, 2, 1000)).toEqual({
+      count: 3,
+      spacing: -100,
+    });
+    expect(gridAxisFromDrag(500, 451, 100, 2, 1000)).toEqual({
+      count: 1,
+      spacing: 100,
+    });
+    expect(gridAxisFromDrag(500, 300, 0, 2, 1000)).toEqual({
+      count: 1,
+      spacing: 0,
+    });
   });
 });

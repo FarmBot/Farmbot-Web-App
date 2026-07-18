@@ -105,7 +105,7 @@ describe("<Telescope />", () => {
 
     document.body.style.cursor = "pointer";
     unmount();
-    expect(document.body.style.cursor).toEqual("default");
+    expect(document.body.style.cursor).toEqual("pointer");
   });
 
   it("springs enabled and opens stargazing from the telescope", () => {
@@ -129,7 +129,8 @@ describe("<Telescope />", () => {
       "[name^='telescope-']:not([name='telescope-body'])"
       + ":not([name='telescope-body-tilt'])"
       + ":not([name='telescope-model'])"
-      + ":not([name='telescope-sphere'])",
+      + ":not([name='telescope-sphere'])"
+      + ":not([name='telescope-sphere-control'])",
     );
     expect(meshes).toHaveLength(10);
     meshes.forEach(mesh =>

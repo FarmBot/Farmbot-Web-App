@@ -14,10 +14,9 @@ import { GridInput } from "./grid_input";
 import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
 import { ToggleButton } from "../../ui";
 import { Actions } from "../../constants";
-import { round } from "lodash";
 import { Collapse } from "@blueprintjs/core";
 import {
-  initialPlantGrid, MAX_GRID_PLANTS,
+  initialPlantGrid, MAX_GRID_PLANTS, quantizeGridInputValue,
 } from "./grid_math";
 
 export const MAX_N = MAX_GRID_PLANTS;
@@ -32,7 +31,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     cameraView: false,
     previous: "",
     autoPreview: true,
-    isOpen: false,
+    isOpen: !!this.props.open,
   };
 
   get initGridState() {
@@ -80,7 +79,14 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   get dirty() { return this.state.status === "dirty"; }
 
   componentDidMount() {
-    !this.props.collapsible && this.performPreview()();
+    (!this.props.collapsible || this.props.open) && this.performPreview()();
+  }
+
+  componentDidUpdate(prevProps: PlantGridProps) {
+    if (!prevProps.open && this.props.open && !this.state.isOpen) {
+      this.performPreview()();
+      this.setState({ isOpen: true });
+    }
   }
 
   unmount = () => {
@@ -218,7 +224,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
             grid: {
               ...this.state.grid,
               spacingH: !this.state.offsetPacking
-                ? round(0.866 * this.state.grid.spacingV)
+                ? quantizeGridInputValue(
+                  "spacingH",
+                  0.866 * this.state.grid.spacingV,
+                )
                 : this.state.grid.spacingH,
             },
           }, this.performPreview())} />

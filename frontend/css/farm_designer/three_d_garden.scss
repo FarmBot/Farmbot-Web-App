@@ -55,6 +55,89 @@
     pointer-events: none;
   }
 
+  .grid-action-controls-wrapper {
+    pointer-events: none;
+  }
+
+  .grid-action-controls {
+    display: flex;
+    gap: 1rem;
+    pointer-events: auto;
+
+    .grid-point-color-picker {
+      display: flex;
+      position: relative;
+    }
+
+    .grid-point-color-menu {
+      position: absolute;
+      bottom: 4.5rem;
+      left: 50%;
+      width: 13rem;
+      padding: 0.4rem;
+      background: var(--main-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.4rem;
+      box-shadow: var(--box-shadow);
+      backdrop-filter: var(--blur);
+      transform: translateX(-50%);
+
+      .color-picker-cluster,
+      .color-picker-item-wrapper {
+        display: inline-block;
+      }
+    }
+
+    .grid-action-button {
+      display: grid;
+      width: 3.5rem;
+      height: 3.5rem;
+      margin: 0;
+      padding: 0;
+      float: none;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      color: $off_white;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow:
+      inset 0 -1px 0 $translucent2,
+      0 0 0.5rem $translucent15;
+      transition:
+      filter 120ms ease,
+      transform 120ms ease;
+
+      &:hover:not(:disabled) {
+        filter: brightness(1.1);
+        transform: scale(1.08);
+      }
+
+      &:active:not(:disabled) {
+        filter: brightness(0.95);
+        transform: scale(0.94);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      &.grid-action-cancel {
+        background: $red;
+      }
+
+      &.grid-action-save {
+        background: $green;
+      }
+
+      &.grid-action-color {
+        text-shadow: 0 1px 2px $translucent5;
+      }
+    }
+  }
+
   .three-d-object-popup {
     width: min(30rem, calc(100vw - 2rem));
     padding: 1rem;
@@ -252,75 +335,6 @@
           margin: 0;
           float: none;
           justify-self: end;
-        }
-      }
-    }
-
-    &.grid-planting-popup {
-      width: min(32rem, calc(100vw - 2rem));
-
-      .object-popup-content {
-        gap: 0.8rem;
-      }
-
-      .grid-input-cell {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 1.5rem;
-        gap: 0.2rem;
-
-        input {
-          min-width: 0;
-          padding-right: 0.2rem;
-          padding-left: 0.4rem;
-        }
-      }
-
-      .grid-input-stepper {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        gap: 0.1rem;
-
-        button {
-          width: 1.5rem;
-          min-height: 0;
-          padding: 0;
-          margin: 0;
-          color: $dark_gray;
-          background: $translucent8_white;
-          border: 0;
-          border-radius: 2px;
-          line-height: 1;
-          cursor: pointer;
-        }
-      }
-
-      .grid-packing-row {
-        align-items: center;
-
-        .fb-toggle-button {
-          float: none;
-          justify-self: end;
-        }
-      }
-
-      .grid-planting-errors {
-        padding: 0.5rem 0.75rem;
-        color: $red;
-        background: $translucent2;
-        border-radius: 0.3rem;
-
-        p {
-          margin: 0;
-        }
-      }
-
-      .grid-planting-popup-buttons {
-        justify-content: end;
-        gap: 0.5rem;
-
-        button {
-          margin: 0;
-          float: none;
         }
       }
     }

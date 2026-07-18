@@ -9,6 +9,36 @@ import { LocationPopup, ObjectPopup } from "./popups";
 import { ThreeDObjectSelection } from "../selection_types";
 
 const POPUP_FADE_MS = 180;
+const panelAlwaysOpen = () => true;
+const subscribeToNothing = () => () => undefined;
+const alwaysOpenPanelStore = {
+  getSnapshot: panelAlwaysOpen,
+  subscribe: subscribeToNothing,
+};
+
+const usePanelOpen = (
+  store: ThreeDObjectSelectionLayerProps["panelCameraStore"],
+) => {
+  const activeStore = store || alwaysOpenPanelStore;
+  return React.useSyncExternalStore(
+    activeStore.subscribe,
+    activeStore.getSnapshot,
+    activeStore.getSnapshot,
+  );
+};
+
+const panelOverlayObject = (
+  panelOpen: boolean,
+  selectedObject: ResolvedPopupObject | undefined,
+  selectedLocation: ResolvedPopupObject | undefined,
+) => panelOpen ? selectedObject || selectedLocation : undefined;
+
+function visiblePanelRings<T>(
+  panelOpen: boolean,
+  rings: T[],
+) {
+  return panelOpen ? rings : [];
+}
 
 const selectionKey = (selection: ThreeDObjectSelection | undefined) =>
   selection ? `${selection.kind}-${selection.id}` : "";
@@ -40,6 +70,7 @@ export const clearPendingSelectionLayerAnimation = (
 export const ThreeDObjectSelectionLayer = (
   props: ThreeDObjectSelectionLayerProps,
 ) => {
+  const panelOpen = usePanelOpen(props.panelCameraStore);
   const resolverProps = React.useMemo((): ResolveSelectedObjectProps => ({
     config: props.config,
     configPosition: props.configPosition,
@@ -64,6 +95,9 @@ export const ThreeDObjectSelectionLayer = (
   const selectedObject = React.useMemo(
     () => resolveSelectedObject(resolverProps, props.selection),
     [props.selection, resolverProps]);
+  const panelSelectedObject = React.useMemo(
+    () => resolveSelectedObject(resolverProps, props.panelSelection),
+    [props.panelSelection, resolverProps]);
   const selectedOverlayObjects = React.useMemo(() => {
     const objects = [] as NonNullable<typeof selectedObject>[];
     props.selectedObjects?.forEach(selection => {
@@ -85,7 +119,10 @@ export const ThreeDObjectSelectionLayer = (
     [props.selectedLocation, resolverProps]);
   const activePopupObject = popupObject || locationObject;
   const selectedOverlayObject =
-    locationObject || selectedObject || selectedLocationObject;
+    locationObject
+    || selectedObject
+    || panelOverlayObject(
+      panelOpen, panelSelectedObject, selectedLocationObject);
   const overlayObject = objectHasSelectionOverlay(selectedOverlayObject)
     ? selectedOverlayObject
     : undefined;
@@ -146,7 +183,8 @@ export const ThreeDObjectSelectionLayer = (
   ]);
 
   return <>
-    <SelectedObjectRingBatch objects={selectedRings} />
+    <SelectedObjectRingBatch
+      objects={visiblePanelRings(panelOpen, selectedRings)} />
     {overlayObject &&
       <SelectedObjectOverlay
         object={overlayObject}

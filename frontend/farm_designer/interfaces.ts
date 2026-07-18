@@ -190,6 +190,8 @@ export interface DesignerState {
   gridIds: string[];
   gridStart: Record<"x" | "y", number>;
   gridPlanting: GridPlantingRequest | undefined;
+  legacyGridPlantingCrop: string | undefined;
+  legacyPointGrid: boolean;
   soilHeightLabels: boolean;
   profileOpen: boolean;
   profileAxis: "x" | "y";
@@ -373,9 +375,13 @@ export interface HoveredPlantPayl {
 export interface GridPlantingRequest {
   token: string;
   gridId: string;
-  cropSlug: string;
+  gridType?: "plant" | "point";
+  cropSlug?: string;
   itemName: string;
   defaultSpacing: number;
+  radius?: number;
+  z?: number;
+  meta?: Record<string, string | undefined>;
 }
 
 export interface CropCatalogProps {
@@ -413,6 +419,8 @@ export interface CameraCalibrationData {
   calibrationZ: string | undefined;
 }
 
+export type PointPlacementPhase = "position" | "radius" | "finalize";
+
 export interface DrawnPointPayl {
   name: string;
   cx: number | undefined;
@@ -421,4 +429,5 @@ export interface DrawnPointPayl {
   r: number;
   color: string;
   at_soil_level: boolean;
+  placementPhase?: PointPlacementPhase;
 }

@@ -1,8 +1,6 @@
 import React from "react";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
-import {
-  Billboard, Box, Cone, Cylinder, Edges, Sphere,
-} from "@react-three/drei";
+import { ThreeEvent } from "@react-three/fiber";
+import { Box, Cylinder, Edges, Sphere } from "@react-three/drei";
 import { Group, MeshBasicMaterial, MeshPhongMaterial } from "./components";
 import { Config } from "./config";
 import {
@@ -31,7 +29,6 @@ import {
 import { Actions } from "../constants";
 import { Astronaut, Desk, Fence, GreenhouseWall, Hab, Laptop, Rover, Tree } from "./scenes/props";
 import { noop, range } from "lodash";
-import { Text } from "./elements";
 import { setFocusedSceneObjectField } from "../scene_objects/actions";
 import { round as snapToGrid } from "../farm_designer/map/util";
 import type { DesignerState } from "../farm_designer/interfaces";
@@ -39,31 +36,28 @@ import { SceneObject } from "farmbot/dist/resources/api_resources";
 import { Solar } from "./garden/solar";
 import { clickWasDragged } from "./click_event";
 import { MARS_SCENE_OBJECTS } from "./scenes/scene_object_data";
+import {
+  axisConstraint, ControlArrow, ControlDragEvent, ControlHandle,
+  CONTROL_ARROW_WIDTH, CONTROL_RENDER_ORDER, CONTROL_SIZE_ARROW_WIDTH,
+  ControlSphere, planeConstraint,
+  pointerRayPointAtZ as controlPointerRayPointAtZ,
+  stopControlDragEvent, stopControlEvent,
+} from "./controls";
 
 const EDGE_LINE_WIDTH = 4;
 const PREVIEW_MARKER_RADIUS = 75;
 const MARKER_RADIUS = 35;
 const ORIGIN_MARKER_RADIUS = 20;
-const ORIGIN_ARROW_WIDTH = 10;
 const ORIGIN_LABEL_SIZE = 32;
 const ORIGIN_PLANE_THICKNESS = 2;
-const ORIGIN_MARKER_RENDER_ORDER = 999;
-const ORIGIN_SPHERE_RENDER_ORDER = ORIGIN_MARKER_RENDER_ORDER - 1;
+const ORIGIN_SPHERE_RENDER_ORDER = CONTROL_RENDER_ORDER;
+const ORIGIN_MARKER_RENDER_ORDER = ORIGIN_SPHERE_RENDER_ORDER + 1;
 const OBJECT_AXIS_RENDER_ORDER = ORIGIN_MARKER_RENDER_ORDER + 1;
 const FACE_SIZE_RENDER_ORDER = OBJECT_AXIS_RENDER_ORDER + 1;
 const FACE_MARKER_RENDER_ORDER = FACE_SIZE_RENDER_ORDER + 1;
 const FACE_SIZE_ARROW_LENGTH = 250;
-const FACE_SIZE_ARROW_WIDTH = 20;
 const FACE_SIZE_LABEL_SIZE = ORIGIN_LABEL_SIZE;
 const OBJECT_AXIS_ARROW_LENGTH = 125;
-const OBJECT_AXIS_ARROW_WIDTH = 12;
-const AXIS_COLORS = {
-  x: "#ff0000",
-  y: "#39ff14",
-  z: "#0000ff",
-};
-const BASE_OBJECT_MARKER_CAMERA_DISTANCE = 3500;
-const MAX_OBJECT_MARKER_SCALE = 4;
 
 interface SceneObjectCursor {
   x: number;
@@ -154,24 +148,38 @@ export const heightFromPointerRay = (
     origin.z + direction.z * rayDistance - base.z));
 };
 
-export const sceneObjectTopResizeUpdate = (
+const sceneObjectTopResizeHeight = (
   e: ThreeEvent<PointerEvent>,
   config: Config,
   center: { x: number, y: number },
   sceneObject: TaggedSceneObject,
 ) => {
-  e.stopPropagation();
   const basePosition = get3DPositionFunc(config)(center);
   const groundZ = -config.bedZOffset - config.bedHeight;
   const objectCenter = reCenter(config, sceneObject);
-  const height = heightFromPointerRay(e, {
+  return heightFromPointerRay(e, {
     x: basePosition.x,
     y: basePosition.y,
     z: groundZ + objectCenter.z,
   });
+};
+
+export const sceneObjectTopResizeUpdate = (
+  e: ThreeEvent<PointerEvent>,
+  config: Config,
+  center: { x: number, y: number },
+  sceneObject: TaggedSceneObject,
+  pointerOffset = 0,
+) => {
+  e.stopPropagation();
+  const height = sceneObjectTopResizeHeight(
+    e, config, center, sceneObject);
+  const adjustedHeight = height === undefined
+    ? undefined
+    : height + pointerOffset;
   return {
-    z_size: height
-      ? snapSceneObjectSize(height)
+    z_size: adjustedHeight !== undefined
+      ? snapSceneObjectSize(Math.max(1, adjustedHeight))
       : sceneObject.body.z_size,
   };
 };
@@ -198,16 +206,7 @@ export const topResizeMarkerHandlers = (
   },
 });
 
-export const pointerRayPointAtZ = (
-  e: ThreeEvent<MouseEvent | PointerEvent>,
-  z: number,
-) => {
-  if (!e.ray || Math.abs(e.ray.direction.z) < 0.000001) { return e.point; }
-  const rayDistance = (z - e.ray.origin.z) / e.ray.direction.z;
-  if (rayDistance < 0) { return e.point; }
-  return e.ray.origin.clone().add(
-    e.ray.direction.clone().multiplyScalar(rayDistance));
-};
+export const pointerRayPointAtZ = controlPointerRayPointAtZ;
 
 const XYZ_UNIT = new Vector3(1, 1, 1).normalize();
 
@@ -710,7 +709,6 @@ interface SceneObjectSelectionMarkerProps {
   name: string;
   position: [number, number, number];
   hovered?: boolean;
-  scale: number;
   onHoverChange?(hovered: boolean): void;
   onPointerDown(e: ThreeEvent<PointerEvent>): void;
   onPointerMove(e: ThreeEvent<PointerEvent>): void;
@@ -740,14 +738,13 @@ interface SceneObjectMoveHandleProps {
 export const stopSceneObjectMarkerEvent = (
   e: ThreeEvent<PointerEvent>,
 ) => {
-  e.stopPropagation();
+  stopControlEvent(e);
 };
 
 export const stopSceneObjectMarkerDragEvent = (
   e: ThreeEvent<PointerEvent>,
 ) => {
-  stopSceneObjectMarkerEvent(e);
-  e.nativeEvent.stopImmediatePropagation();
+  stopControlDragEvent(e);
 };
 
 const hasAncestorName = (
@@ -772,71 +769,24 @@ const eventHitsSceneObjectInteraction = (e: ThreeEvent<PointerEvent>) =>
 
 const SceneObjectSelectionMarker =
   (props: SceneObjectSelectionMarkerProps) => {
-    const dragging = React.useRef(false);
-    const { onPointerCancel } = props;
-    React.useEffect(() => {
-      const d = dragging;
-      const cancel = onPointerCancel;
-      const stopDragging = () => d.current && (d.current = false, cancel());
-      window.addEventListener("pointerup", stopDragging);
-      window.addEventListener("pointercancel", stopDragging);
-      return () => {
-        window.removeEventListener("pointerup", stopDragging);
-        window.removeEventListener("pointercancel", stopDragging);
-      };
-    }, [onPointerCancel]);
-    return <Sphere
-      name={props.name}
-      args={[
-        (props.hovered ? 1.25 : 1) * MARKER_RADIUS * props.scale, 16, 16,
-      ]}
-      renderOrder={FACE_MARKER_RENDER_ORDER}
-      position={props.position}
-      onPointerOver={e => {
-        stopSceneObjectMarkerEvent(e);
-        if (dragging.current) { return; }
-        props.onHoverChange?.(true);
-      }}
-      onPointerOut={e => {
-        stopSceneObjectMarkerEvent(e);
-        if (dragging.current) { return; }
-        props.onHoverChange?.(false);
-      }}
-      onPointerMove={e => {
-        if (!dragging.current) { return; }
-        stopSceneObjectMarkerDragEvent(e);
-        props.onPointerMove(e);
-      }}
-      onPointerDown={e => {
-        stopSceneObjectMarkerDragEvent(e);
-        dragging.current = true;
-        (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
-        props.onPointerDown(e);
-      }}
-      onPointerUp={e => {
-        if (!dragging.current) { return; }
-        stopSceneObjectMarkerDragEvent(e);
-        dragging.current = false;
-        (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-        props.onPointerUp(e);
-      }}
-      onPointerCancel={e => {
-        if (!dragging.current) { return; }
-        stopSceneObjectMarkerDragEvent(e);
-        dragging.current = false;
-        props.onPointerCancel();
-      }}
-      onLostPointerCapture={e => {
-        if (!dragging.current) { return; }
-        stopSceneObjectMarkerDragEvent(e);
-        dragging.current = false;
-        props.onPointerCancel();
-      }}>
-      <MeshBasicMaterial
-        color={props.hovered ? "deepskyblue" : "dodgerblue"}
+    return <ControlHandle
+      name={`${props.name}-control`}
+      onHoverChange={props.onHoverChange}
+      onDragStart={({ event }) => props.onPointerDown(event)}
+      onDrag={({ event }) => props.onPointerMove(event)}
+      onDragEnd={({ event }) => props.onPointerUp(event)}
+      onDragCancel={props.onPointerCancel}>
+      {state => <ControlSphere
+        name={props.name}
+        position={props.position}
+        radius={MARKER_RADIUS}
+        color={"dodgerblue"}
+        hoverColor={"deepskyblue"}
+        hovered={state.hovered || props.hovered}
         depthTest={true}
-        depthWrite={true} />
-    </Sphere>;
+        depthWrite={true}
+        renderOrder={FACE_MARKER_RENDER_ORDER} />}
+    </ControlHandle>;
   };
 
 const SceneObjectSelectionMarkers =
@@ -962,8 +912,7 @@ const SceneObjectSelectionMarkers =
       updateSceneObject,
       onPreviewEnd,
     });
-    const scale = useObjectMarkerScale(sceneObjectPoint(config, center));
-    const markerRadius = MARKER_RADIUS * scale;
+    const markerRadius = MARKER_RADIUS;
     const faceMarkers = [
       {
         field: "x0" as const,
@@ -1076,7 +1025,10 @@ const SceneObjectSelectionMarkers =
               dispatch,
               hovered ? "z_size" : undefined);
           },
-          onPointerDown: (_e: ThreeEvent<PointerEvent>) => {
+          onPointerDown: (e: ThreeEvent<PointerEvent>) => {
+            const pointerHeight = sceneObjectTopResizeHeight(
+              e, config, center, sceneObject)
+              ?? sceneObject.body.z_size;
             props.setInteractionLocked(true);
             setFaceDragging(true);
             setZSizeDrag({
@@ -1084,6 +1036,7 @@ const SceneObjectSelectionMarkers =
                 ...sceneObject,
                 body: { ...sceneObject.body },
               },
+              pointerOffset: sceneObject.body.z_size - pointerHeight,
             });
             setSceneObjectFieldFocus(dispatch, "z_size");
             onPreview({});
@@ -1091,12 +1044,23 @@ const SceneObjectSelectionMarkers =
           onPointerMove: (e: ThreeEvent<PointerEvent>) => {
             if (!zSizeDrag) { return; }
             onPreview(sceneObjectTopResizeUpdate(
-              e, config, center, zSizeDrag.sceneObject));
+              e,
+              config,
+              center,
+              zSizeDrag.sceneObject,
+              zSizeDrag.pointerOffset,
+            ));
           },
           onPointerUp: (e: ThreeEvent<PointerEvent>) => {
             if (zSizeDrag) {
               updateSceneObject(sceneObjectTopResizeUpdate(
-                e, config, center, zSizeDrag.sceneObject));
+                e,
+                config,
+                center,
+                zSizeDrag.sceneObject,
+                zSizeDrag.pointerOffset,
+              ));
+              onPreviewEnd();
             } else {
               topResizeHandlers.onPointerUp(e);
             }
@@ -1193,9 +1157,8 @@ const SceneObjectSelectionMarkers =
         color={"dodgerblue"}
         hovered={marker.hovered}
         onHoverChange={marker.onHoverChange}
-        scale={scale}
         start={start}
-        end={faceArrowEnd(start, indicator.direction, scale)}
+        end={faceArrowEnd(start, indicator.direction)}
         label={indicator.label}
         hideLabel={indicator.direction == "xyz+" && !props.unifiedSize}
         labelVisible={sizeLabelVisible(focusedField, indicator.direction)}
@@ -1212,7 +1175,6 @@ const SceneObjectSelectionMarkers =
           name={`scene-object-selection-marker-${index}`}
           position={marker.position}
           hovered={marker.hovered}
-          scale={scale}
           onHoverChange={marker.onHoverChange}
           onPointerDown={marker.onPointerDown}
           onPointerMove={marker.onPointerMove}
@@ -1243,11 +1205,10 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
     y: sceneObject.body.y_center,
     z: reCenter(config, sceneObject).z,
   })[2];
-  const moveUpdate = React.useCallback((e: ThreeEvent<PointerEvent>) => {
-    const point = pointerRayPointAtZ(e, groundPlaneZ);
+  const moveUpdate = React.useCallback((point: Vector3) => {
     const gardenPosition = getGardenPosition(point);
     return sceneObjectMoveUpdate(gardenPosition, dragOffset.current);
-  }, [getGardenPosition, groundPlaneZ]);
+  }, [getGardenPosition]);
   const updateSceneObject = React.useCallback((
     update: Partial<TaggedSceneObject["body"]>,
   ) => {
@@ -1264,23 +1225,12 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
     onPreviewEnd();
   }, [onDragStateChange, onPreviewEnd, setInteractionLocked]);
 
-  React.useEffect(() => {
-    window.addEventListener("pointerup", stopDragging);
-    window.addEventListener("pointercancel", stopDragging);
-    return () => {
-      window.removeEventListener("pointerup", stopDragging);
-      window.removeEventListener("pointercancel", stopDragging);
-    };
-  }, [stopDragging]);
-
-  return <Box
-    args={args}
+  return <ControlHandle
+    name={"scene-object-move-handle"}
     position={position}
-    renderOrder={999}
-    onPointerDown={e => {
-      if (eventHitsSceneObjectInteraction(e)) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      const point = pointerRayPointAtZ(e, groundPlaneZ);
+    constraint={planeConstraint("xy", [0, 0, groundPlaneZ])}
+    canStart={event => !eventHitsSceneObjectInteraction(event)}
+    onDragStart={({ point }) => {
       const gardenPosition = getGardenPosition(point);
       dragOffset.current = {
         x: sceneObject.body.x_center - gardenPosition.x,
@@ -1289,39 +1239,30 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
       dragging.current = true;
       onDragStateChange?.(true);
       setInteractionLocked(true);
-      (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
       onPreview({});
     }}
-    onPointerMove={e => {
+    onDrag={({ point }) => {
       if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      onPreview(moveUpdate(e));
+      onPreview(moveUpdate(point));
     }}
-    onPointerUp={e => {
+    onDragEnd={({ point }) => {
       if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
       dragging.current = false;
       onDragStateChange?.(false);
       setInteractionLocked(false);
-      (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-      updateSceneObject(moveUpdate(e));
+      updateSceneObject(moveUpdate(point));
       onPreviewEnd();
     }}
-    onPointerCancel={e => {
-      stopSceneObjectMarkerDragEvent(e);
-      stopDragging();
-    }}
-    onLostPointerCapture={e => {
-      stopSceneObjectMarkerDragEvent(e);
-      stopDragging();
-    }}>
-    <MeshBasicMaterial
-      color={"white"}
-      transparent={true}
-      opacity={0}
-      depthTest={false} />
-    <Edges color={"white"} lineWidth={EDGE_LINE_WIDTH} />
-  </Box>;
+    onDragCancel={stopDragging}>
+    <Box args={args} renderOrder={999}>
+      <MeshBasicMaterial
+        color={"white"}
+        transparent={true}
+        opacity={0}
+        depthTest={false} />
+      <Edges color={"white"} lineWidth={EDGE_LINE_WIDTH} />
+    </Box>
+  </ControlHandle>;
 };
 
 interface SceneObjectOriginMarkersProps {
@@ -1343,8 +1284,6 @@ interface ObjectBaseAxesProps extends SceneObjectOriginMarkersProps {
 
 interface OriginAxisIndicatorProps {
   name: string;
-  color: string;
-  scale: number;
   axis: AxisName;
   labelVisible?: boolean;
   start: Record<"x" | "y" | "z", number>;
@@ -1353,8 +1292,7 @@ interface OriginAxisIndicatorProps {
 
 interface OriginMarker {
   name: string;
-  color: string;
-  sphereColor?: string;
+  showSphere?: boolean;
   position: [number, number, number];
   arrowStart?: [number, number, number];
   arrowEnd?: [number, number, number];
@@ -1363,7 +1301,6 @@ interface OriginMarker {
 interface SingleAxisIndicatorProps {
   name: string;
   color: string;
-  scale: number;
   start: Record<"x" | "y" | "z", number>;
   end: Record<"x" | "y" | "z", number>;
   labelVisible?: boolean;
@@ -1377,30 +1314,19 @@ interface SingleAxisIndicatorProps {
   onPointerCancel?(): void;
 }
 
-interface CylindricalArrowProps {
-  color: string;
-  length: number;
-  width: number;
-  depthTest?: boolean;
-  depthWrite?: boolean;
-  hovered?: boolean;
-  renderOrder?: number;
-  rotation?: [number, number, number];
-}
-
 type XYZRecord = Record<"x" | "y" | "z", number>;
 type Direction = "x-" | "x+" | "y-" | "y+" | "z+" | "xyz+";
 type AxisName = "x" | "y" | "z";
 interface AxisDragState {
   axis: AxisName;
   offset: number;
-  linePoint: XYZRecord;
   startParameter: number;
   startZ: number;
 }
 
 interface ZSizeDragState {
   sceneObject: TaggedSceneObject;
+  pointerOffset: number;
 }
 
 interface UniformSizeDragState {
@@ -1439,46 +1365,12 @@ const setSceneObjectFieldFocus = (
   field: string | undefined,
 ) => dispatch?.(setFocusedSceneObjectField(field));
 
-const eventTargetHasPointerCapture = (e: ThreeEvent<PointerEvent>) =>
-  (e.target as HTMLElement | null)?.hasPointerCapture?.(e.pointerId);
-
-const objectMarkerScale = (distance: number) =>
-  Math.min(
-    MAX_OBJECT_MARKER_SCALE,
-    Math.max(1, distance / BASE_OBJECT_MARKER_CAMERA_DISTANCE),
-  );
-
-const useObjectMarkerScale = (position: [number, number, number]) => {
-  const { camera } = useThree();
-  const [scale, setScale] = React.useState(1);
-  useFrame(() => {
-    const dx = camera.position.x - position[0];
-    const dy = camera.position.y - position[1];
-    const dz = camera.position.z - position[2];
-    const next = objectMarkerScale(Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2));
-    setScale(current => Math.abs(current - next) > 0.05 ? next : current);
-  });
-  return scale;
-};
-
-const lightenHex = (color: string, amount: number) => {
-  const hex = color.startsWith("#") ? color.slice(1) : color;
-  const channels = [0, 2, 4].map(index =>
-    parseInt(hex.slice(index, index + 2), 16));
-  const lighter = channels.map(channel =>
-    Math.round(channel + (255 - channel) * amount)
-      .toString(16)
-      .padStart(2, "0"));
-  return `#${lighter.join("")}`;
-};
-
 const faceArrowEnd = (
   start: XYZRecord,
   direction: Direction,
-  scale: number,
 ): XYZRecord => {
   const end = { ...start };
-  const length = FACE_SIZE_ARROW_LENGTH * scale;
+  const length = FACE_SIZE_ARROW_LENGTH;
   const diagonal = length / Math.sqrt(3);
   switch (direction) {
     case "x-": end.x -= length; break;
@@ -1505,142 +1397,40 @@ const vectorLength = (
   return Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
 };
 
-const vectorRotation = (
-  start: XYZRecord,
-  end: XYZRecord,
-): [number, number, number] => {
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  const dz = end.z - start.z;
-  const horizontal = Math.sqrt(dx ** 2 + dy ** 2);
-  return [0, -Math.atan2(dz, horizontal), Math.atan2(dy, dx)];
-};
-
-const CylindricalArrow = (props: CylindricalArrowProps) => {
-  const width = props.width * (props.hovered ? 1.25 : 1);
-  const headLength = Math.min(props.length, props.width * 3);
-  const shaftLength = Math.max(1, props.length - headLength);
-  return <Group
-    renderOrder={props.renderOrder}
-    rotation={props.rotation}>
-    <Cylinder
-      args={[width / 2, width / 2, shaftLength, 16]}
-      position={[shaftLength / 2, 0, 0]}
-      renderOrder={props.renderOrder}
-      rotation={[0, 0, -Math.PI / 2]}>
-      <MeshBasicMaterial
-        color={props.color}
-        depthTest={props.depthTest}
-        depthWrite={props.depthWrite}
-        toneMapped={false} />
-    </Cylinder>
-    <Cone
-      args={[width, headLength, 16]}
-      position={[shaftLength + headLength / 2, 0, 0]}
-      renderOrder={props.renderOrder}
-      rotation={[0, 0, -Math.PI / 2]}>
-      <MeshBasicMaterial
-        color={props.color}
-        depthTest={props.depthTest}
-        depthWrite={props.depthWrite}
-        toneMapped={false} />
-    </Cone>
-  </Group>;
-};
-
 const SingleAxisIndicator = (props: SingleAxisIndicatorProps) => {
-  const dragging = React.useRef(false);
-  const [draggingLabel, setDraggingLabel] = React.useState(false);
   const { start, end } = props;
   const distance = vectorLength(start, end);
   if (distance < 1) { return <></>; }
-  const midX = (start.x + end.x) / 2;
-  const midY = (start.y + end.y) / 2;
-  const midZ = (start.z + end.z) / 2;
-  const width = FACE_SIZE_ARROW_WIDTH * props.scale;
-  const labelSize = FACE_SIZE_LABEL_SIZE * props.scale;
-  const color = props.hovered ? "deepskyblue" : props.color;
   const interactive = !!props.onPointerDown;
-  const labelVisible = !props.hideLabel
-    && (props.labelVisible || props.hovered || draggingLabel);
-  return <Group name={props.name}
-    onPointerOver={e => {
-      if (!interactive) { return; }
-      stopSceneObjectMarkerEvent(e);
-      if (dragging.current) { return; }
-      props.onHoverChange?.(true);
-    }}
-    onPointerOut={e => {
-      if (!interactive) { return; }
-      stopSceneObjectMarkerEvent(e);
-      if (dragging.current) { return; }
-      props.onHoverChange?.(false);
-    }}
-    onPointerMove={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      props.onPointerMove?.(e);
-    }}
-    onPointerDown={e => {
-      if (!props.onPointerDown) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = true;
-      setDraggingLabel(true);
-      (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
-      props.onPointerDown(e);
-    }}
-    onPointerUp={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = false;
-      setDraggingLabel(false);
-      (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-      props.onPointerUp?.(e);
-    }}
-    onPointerCancel={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = false;
-      setDraggingLabel(false);
-      props.onPointerCancel?.();
-    }}
-    onLostPointerCapture={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = false;
-      setDraggingLabel(false);
-      props.onPointerCancel?.();
-    }}>
-    <Group
+  return <ControlHandle
+    name={props.name}
+    enabled={interactive}
+    onHoverChange={props.onHoverChange}
+    onDragStart={({ event }) => props.onPointerDown?.(event)}
+    onDrag={({ event }) => props.onPointerMove?.(event)}
+    onDragEnd={({ event }) => props.onPointerUp?.(event)}
+    onDragCancel={props.onPointerCancel}>
+    {state => <ControlArrow
       name={`${props.name}-arrow`}
-      position={[start.x, start.y, start.z]}
+      start={[start.x, start.y, start.z]}
+      end={[end.x, end.y, end.z]}
+      width={CONTROL_SIZE_ARROW_WIDTH}
+      color={props.color}
+      hoverColor={"deepskyblue"}
+      hovered={state.hovered || props.hovered}
+      enabled={interactive}
+      depthTest={true}
+      depthWrite={true}
       renderOrder={FACE_SIZE_RENDER_ORDER}
-      rotation={vectorRotation(start, end)}>
-      <CylindricalArrow
-        color={color}
-        depthTest={true}
-        depthWrite={true}
-        hovered={props.hovered}
-        length={distance}
-        renderOrder={FACE_SIZE_RENDER_ORDER}
-        width={width} />
-    </Group>
-    {labelVisible &&
-      <Billboard
-        follow={true}
-        position={[midX, midY, midZ + width * 2]}>
-        <Text
-          name={`${props.name}-label`}
-          fontSize={labelSize}
-          color={props.color}
-          depthTest={true}
-          renderOrder={FACE_SIZE_RENDER_ORDER}
-          rotation={[0, 0, 0]}
-          position={[0, 0, 0]}>
-          {props.label}
-        </Text>
-      </Billboard>}
-  </Group>;
+      label={props.label}
+      labelName={`${props.name}-label`}
+      labelSize={FACE_SIZE_LABEL_SIZE}
+      labelVisible={!props.hideLabel
+        && (props.labelVisible
+          || props.hovered
+          || state.hovered
+          || state.dragging)} />}
+  </ControlHandle>;
 };
 
 const OriginAxisIndicator = (props: OriginAxisIndicatorProps) => {
@@ -1648,44 +1438,22 @@ const OriginAxisIndicator = (props: OriginAxisIndicatorProps) => {
   const distance = vectorLength(start, end);
   const signedDistance = end[props.axis] - start[props.axis];
   if (distance < 1) { return <></>; }
-  const midX = (start.x + end.x) / 2;
-  const midY = (start.y + end.y) / 2;
-  const midZ = (start.z + end.z) / 2;
-  const width = ORIGIN_ARROW_WIDTH * props.scale;
-  const labelSize = ORIGIN_LABEL_SIZE * props.scale;
-  return <Group name={props.name}
-    position={[midX, midY, midZ]}
+  return <ControlArrow
+    name={props.name}
+    start={[start.x, start.y, start.z]}
+    end={[end.x, end.y, end.z]}
+    heads={"both"}
+    colorType={props.axis}
+    width={CONTROL_ARROW_WIDTH}
+    renderOnTop={true}
     renderOrder={ORIGIN_MARKER_RENDER_ORDER}
-    rotation={vectorRotation(start, end)}>
-    <CylindricalArrow
-      color={props.color}
-      depthTest={false}
-      length={distance / 2}
-      renderOrder={ORIGIN_MARKER_RENDER_ORDER}
-      width={width} />
-    <CylindricalArrow
-      color={props.color}
-      depthTest={false}
-      length={distance / 2}
-      renderOrder={ORIGIN_MARKER_RENDER_ORDER}
-      width={width}
-      rotation={[0, 0, Math.PI]} />
-    {props.labelVisible &&
-      <Billboard
-        follow={true}
-        position={[0, 0, width * 2]}>
-        <Text
-          name={`${props.name}-label`}
-          fontSize={labelSize}
-          color={props.color}
-          depthTest={false}
-          renderOrder={ORIGIN_MARKER_RENDER_ORDER}
-          rotation={[0, 0, 0]}
-          position={[0, 0, 0]}>
-          {`${signedDistance.toFixed(0)}mm`}
-        </Text>
-      </Billboard>}
-  </Group>;
+    label={`${signedDistance.toFixed(0)}mm`}
+    labelName={`${props.name}-label`}
+    labelSize={ORIGIN_LABEL_SIZE}
+    labelDepthTest={false}
+    labelDepthWrite={false}
+    labelRenderOrder={ORIGIN_MARKER_RENDER_ORDER}
+    labelVisible={props.labelVisible} />;
 };
 
 const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
@@ -1698,11 +1466,8 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
     [config]);
   const position = sceneObjectPoint(config, center);
   const start = pointToRecord(position);
-  const basePlaneZ = position[2];
-  const scale = useObjectMarkerScale(position);
-  const markerRadius = ORIGIN_MARKER_RADIUS * scale;
-  const arrowLength = OBJECT_AXIS_ARROW_LENGTH * scale;
-  const arrowWidth = OBJECT_AXIS_ARROW_WIDTH * scale;
+  const markerRadius = ORIGIN_MARKER_RADIUS;
+  const arrowLength = OBJECT_AXIS_ARROW_LENGTH;
   const updateSceneObject = React.useCallback((
     update: Partial<TaggedSceneObject["body"]>,
   ) => {
@@ -1712,21 +1477,18 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
     dispatch(save(sceneObject.uuid));
   }, [dispatch, sceneObject]);
   const axisMoveUpdate = (
-    e: ThreeEvent<PointerEvent>,
+    e: ControlDragEvent,
   ): Partial<TaggedSceneObject["body"]> => {
     if (!axisDrag) { return {}; }
     if (axisDrag.axis == "z") {
-      const parameter = pointerRayParameterOnLine(
-        e, axisDrag.linePoint, new Vector3(0, 0, 1));
       const z = axisDrag.startZ
-        + parameter - axisDrag.startParameter;
+        + e.point.z - axisDrag.startParameter;
       return {
         z_base: snapToGrid(adjustCenter(
           config, sceneObject.body, { ...center, z }).z)
       };
     }
-    const point = pointerRayPointAtZ(e, basePlaneZ);
-    const gardenPosition = getGardenPosition(point);
+    const gardenPosition = getGardenPosition(e.point);
     if (axisDrag.axis == "x") {
       const x = gardenPosition.x + axisDrag.offset;
       return {
@@ -1743,7 +1505,6 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
   const axes = [
     {
       name: "x",
-      color: AXIS_COLORS.x,
       start: { ...start, x: start.x + markerRadius },
       end: {
         ...start,
@@ -1752,7 +1513,6 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
     },
     {
       name: "y",
-      color: AXIS_COLORS.y,
       start: { ...start, y: start.y + markerRadius },
       end: {
         ...start,
@@ -1761,7 +1521,6 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
     },
     {
       name: "z",
-      color: AXIS_COLORS.z,
       start: { ...start, z: start.z + markerRadius },
       end: {
         ...start,
@@ -1772,111 +1531,85 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
   return <Group
     name={"scene-object-base-axes"}
     renderOrder={ORIGIN_MARKER_RENDER_ORDER}>
-    <Sphere
-      name={"scene-object-base-marker"}
-      args={[markerRadius, 16, 16]}
-      renderOrder={ORIGIN_SPHERE_RENDER_ORDER}
-      position={position}>
-      <MeshBasicMaterial
-        color={"white"}
-        depthTest={false}
-        depthWrite={false} />
-    </Sphere>
+    <ControlHandle
+      name={"scene-object-base-marker-control"}
+      canStart={() => false}>
+      {state => <ControlSphere
+        name={"scene-object-base-marker"}
+        radius={markerRadius}
+        colorType={"origin"}
+        hovered={state.hovered}
+        renderOnTop={true}
+        renderOrder={ORIGIN_SPHERE_RENDER_ORDER}
+        position={position} />}
+    </ControlHandle>
     {axes.map(axis =>
-      <Group
+      <ControlHandle
         key={axis.name}
         name={`scene-object-base-${axis.name}-axis-arrow`}
-        position={[axis.start.x, axis.start.y, axis.start.z]}
-        renderOrder={OBJECT_AXIS_RENDER_ORDER}
-        rotation={vectorRotation(axis.start, axis.end)}
-        onPointerOver={e => {
+        constraint={axisConstraint(
+          axis.name as AxisName,
+          [axis.start.x, axis.start.y, axis.start.z],
+        )}
+        onHoverChange={hovered => {
           const field = centerFieldFromAxis(axis.name as AxisName);
-          stopSceneObjectMarkerEvent(e);
           if (props.interactionLocked()) { return; }
-          if (eventTargetHasPointerCapture(e)) { return; }
           if (axisDrag) { return; }
-          setHoveredAxis(axis.name as AxisName);
-          props.onActiveAxisChange(axis.name as AxisName);
-          setSceneObjectFieldFocus(dispatch, field);
+          setHoveredAxis(hovered ? axis.name as AxisName : undefined);
+          props.onActiveAxisChange(
+            hovered ? axis.name as AxisName : undefined,
+          );
+          setSceneObjectFieldFocus(dispatch, hovered ? field : undefined);
         }}
-        onPointerOut={e => {
-          stopSceneObjectMarkerEvent(e);
-          if (props.interactionLocked()) { return; }
-          if (eventTargetHasPointerCapture(e)) { return; }
-          if (axisDrag) { return; }
-          setHoveredAxis(undefined);
-          if (!axisDrag) { props.onActiveAxisChange(undefined); }
-          if (!axisDrag) { setSceneObjectFieldFocus(dispatch, undefined); }
-        }}
-        onPointerDown={e => {
+        onDragStart={event => {
           const field = centerFieldFromAxis(axis.name as AxisName);
-          stopSceneObjectMarkerDragEvent(e);
-          const point = pointerRayPointAtZ(e, basePlaneZ);
-          const gardenPosition = getGardenPosition(point);
-          const linePoint = axis.name == "z"
-            ? axis.start
-            : start;
+          const gardenPosition = getGardenPosition(event.point);
           setAxisDrag({
             axis: axis.name as AxisName,
             offset: axis.name == "x"
               ? center.x - gardenPosition.x
               : center.y - gardenPosition.y,
-            linePoint,
             startParameter: axis.name == "z"
-              ? pointerRayParameterOnLine(e, linePoint, new Vector3(0, 0, 1))
+              ? event.point.z
               : 0,
             startZ: center.z,
           });
           props.setInteractionLocked(true);
           props.onActiveAxisChange(axis.name as AxisName);
           setSceneObjectFieldFocus(dispatch, field);
-          (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
           onPreview({});
         }}
-        onPointerMove={e => {
+        onDrag={event => {
           if (!axisDrag || axisDrag.axis != axis.name) { return; }
-          stopSceneObjectMarkerDragEvent(e);
-          onPreview(axisMoveUpdate(e));
+          onPreview(axisMoveUpdate(event));
         }}
-        onPointerUp={e => {
+        onDragEnd={event => {
           if (!axisDrag || axisDrag.axis != axis.name) { return; }
-          stopSceneObjectMarkerDragEvent(e);
-          updateSceneObject(axisMoveUpdate(e));
-          setAxisDrag(undefined);
-          props.setInteractionLocked(false);
-          props.onActiveAxisChange(undefined);
-          setSceneObjectFieldFocus(dispatch, undefined);
-          (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-          onPreviewEnd();
-        }}
-        onPointerCancel={e => {
-          if (!axisDrag || axisDrag.axis != axis.name) { return; }
-          stopSceneObjectMarkerDragEvent(e);
+          updateSceneObject(axisMoveUpdate(event));
           setAxisDrag(undefined);
           props.setInteractionLocked(false);
           props.onActiveAxisChange(undefined);
           setSceneObjectFieldFocus(dispatch, undefined);
           onPreviewEnd();
         }}
-        onLostPointerCapture={e => {
+        onDragCancel={() => {
           if (!axisDrag || axisDrag.axis != axis.name) { return; }
-          stopSceneObjectMarkerDragEvent(e);
           setAxisDrag(undefined);
           props.setInteractionLocked(false);
           props.onActiveAxisChange(undefined);
           setSceneObjectFieldFocus(dispatch, undefined);
           onPreviewEnd();
         }}>
-        <CylindricalArrow
-          color={hoveredAxis == axis.name
-            ? lightenHex(axis.color, 0.2)
-            : axis.color}
-          depthTest={false}
-          hovered={hoveredAxis == axis.name}
-          length={arrowLength}
+        {state => <ControlArrow
+          name={`scene-object-base-${axis.name}-axis-arrow-shape`}
+          start={[axis.start.x, axis.start.y, axis.start.z]}
+          end={[axis.end.x, axis.end.y, axis.end.z]}
+          colorType={axis.name as AxisName}
+          renderOnTop={true}
+          hovered={state.hovered || hoveredAxis == axis.name}
           renderOrder={OBJECT_AXIS_RENDER_ORDER}
-          width={arrowWidth} />
-      </Group>)}
+          width={CONTROL_ARROW_WIDTH} />}
+      </ControlHandle>)}
   </Group>;
 };
 
@@ -1888,11 +1621,9 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
   const yOrigin = originY(config, y_origin);
   const zOrigin = originZ(config, z_origin);
   const objectBase = sceneObjectPoint(config, center);
-  const scale = useObjectMarkerScale(objectBase);
   const markers: OriginMarker[] = [
     {
       name: "z",
-      color: AXIS_COLORS.z,
       position: sceneObjectPoint(config, {
         x: center.x,
         y: center.y,
@@ -1901,7 +1632,6 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
     },
     {
       name: "y",
-      color: AXIS_COLORS.y,
       position: sceneObjectPoint(config, {
         x: center.x,
         y: yOrigin,
@@ -1920,8 +1650,7 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
     },
     {
       name: "x",
-      color: AXIS_COLORS.x,
-      sphereColor: "white",
+      showSphere: true,
       position: sceneObjectPoint(config, {
         x: xOrigin,
         y: yOrigin,
@@ -1946,11 +1675,9 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
       const [endX, endY, endZ] = marker.arrowEnd || objectBase;
       const start = { x, y, z };
       const end = { x: endX, y: endY, z: endZ };
-      return <React.Fragment key={marker.color}>
+      return <React.Fragment key={marker.name}>
         <OriginAxisIndicator
           name={`scene-object-${marker.name}-origin-arrow`}
-          color={marker.color}
-          scale={scale}
           axis={marker.name as AxisName}
           labelVisible={originLabelVisible(
             focusedField,
@@ -1959,16 +1686,14 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
             activeAxis == marker.name}
           start={start}
           end={end} />
-        {marker.sphereColor &&
-          <Sphere
+        {marker.showSphere &&
+          <ControlSphere
             name={`scene-object-${marker.name}-origin-marker`}
-            args={[ORIGIN_MARKER_RADIUS * scale, 16, 16]}
+            radius={ORIGIN_MARKER_RADIUS}
+            colorType={"origin"}
+            renderOnTop={true}
             renderOrder={ORIGIN_SPHERE_RENDER_ORDER}
-            position={marker.position}>
-            <MeshBasicMaterial
-              color={marker.sphereColor}
-              depthTest={false} />
-          </Sphere>}
+            position={marker.position} />}
       </React.Fragment>;
     })}
   </>;

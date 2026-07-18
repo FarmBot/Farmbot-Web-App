@@ -46,7 +46,9 @@ import {
   ActivePositionRef,
   BillboardRef,
   ImageRef,
+  PlacementCoordinateLabelRef,
   PointerObjects, PointerPlantRef, RadiusRef, soilClick, soilPointerMove,
+  SinglePointRadiusControlRef,
   TorusRef,
   XCrosshairRef,
   YCrosshairRef,
@@ -726,6 +728,13 @@ const BedBase = (props: BedProps) => {
     // eslint-disable-next-line no-null/no-null
     React.useRef<AlignmentIndicatorController>(null);
 
+  const placementCoordinateLabelRef: PlacementCoordinateLabelRef =
+    React.useRef(null); // eslint-disable-line no-null/no-null
+
+  const singlePointRadiusRef =
+    // eslint-disable-next-line no-null/no-null
+    React.useRef<SinglePointRadiusControlRef>(null);
+
   const navigate = useNavigate();
 
   const mirroredAxesCount = Number(mirrorX) + Number(mirrorY);
@@ -793,6 +802,8 @@ const BedBase = (props: BedProps) => {
           xCrosshairRef,
           yCrosshairRef,
           alignmentIndicatorRef,
+          placementCoordinateLabelRef,
+          singlePointRadiusRef,
           activePositionRef: props.activePositionRef,
           getZ: props.getZ,
         });
@@ -918,7 +929,10 @@ const BedBase = (props: BedProps) => {
           xCrosshairRef={xCrosshairRef}
           yCrosshairRef={yCrosshairRef}
           alignmentIndicatorRef={alignmentIndicatorRef}
+          placementCoordinateLabelRef={placementCoordinateLabelRef}
+          singlePointRadiusRef={singlePointRadiusRef}
           activePositionRef={props.activePositionRef}
+          navigate={navigate}
           config={props.config}
           addPlantProps={props.addPlantProps}
           mapPoints={props.mapPoints}
@@ -934,6 +948,14 @@ const BedBase = (props: BedProps) => {
           ref={gridPlantingRef}
           config={props.config}
           addPlantProps={props.addPlantProps}
+          mapPoints={props.mapPoints}
+          plants={props.plants}
+          weeds={props.weeds}
+          showPlants={props.showPlants}
+          showPoints={props.showPoints}
+          showWeeds={props.showWeeds}
+          activePositionRef={props.activePositionRef}
+          navigate={navigate}
           getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>

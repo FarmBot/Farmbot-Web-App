@@ -1,11 +1,8 @@
 import React from "react";
-import { ThreeEvent } from "@react-three/fiber";
-import {
-  Billboard, Circle, Cone, Cylinder, Line, Plane as DreiPlane, Sphere,
-} from "@react-three/drei";
+import { Billboard, Line } from "@react-three/drei";
 import { Plane } from "three";
 import { Config, PositionConfig } from "./config";
-import { Group, MeshBasicMaterial } from "./components";
+import { Group } from "./components";
 import { Text } from "./elements";
 import {
   get3DPositionFunc, getGardenPositionFunc,
@@ -22,10 +19,11 @@ import {
   sectionWidthMax, SECTION_WIDTH_MIN, toggleSectionAxis,
 } from "../farm_designer/three_d_section";
 import {
-  pointerRayPointAtZ, stopSceneObjectMarkerDragEvent,
-  stopSceneObjectMarkerEvent,
-} from "./scene_objects";
+  ControlArrow, ControlDragEvent, ControlHandle, ControlPillButton,
+  ControlSphere, CONTROL_SIZE_ARROW_WIDTH, noControlRaycast, planeConstraint,
+} from "./controls";
 import { clickWasDragged } from "./click_event";
+import { t } from "../i18next_wrapper";
 
 export const SECTION_FOLLOW_SNAP_THRESHOLD = 10;
 export const SECTION_CONTROL_OFFSET = 200;
@@ -39,7 +37,7 @@ export const SECTION_CONTROL_ACTIVE_HOVER_COLOR = "darkorange";
 export const SECTION_CONTROL_LABEL_SIZE = 32;
 export const SECTION_CONTROL_MARKER_RADIUS = 35;
 export const SECTION_CONTROL_ARROW_LENGTH = 250;
-export const SECTION_CONTROL_ARROW_WIDTH = 20;
+export const SECTION_CONTROL_ARROW_WIDTH = CONTROL_SIZE_ARROW_WIDTH;
 export const SECTION_CONTROL_PILL_LENGTH = 280;
 export const SECTION_CONTROL_PILL_WIDTH = 80;
 export const SECTION_CONTROL_PILL_LABEL_SIZE = 26;
@@ -179,7 +177,7 @@ export interface SectionControlsProps {
   onDraggingChange(dragging: boolean): void;
 }
 
-export const sectionControlNoRaycast = () => undefined;
+export const sectionControlNoRaycast = noControlRaycast;
 
 interface WidthDrag {
   pointerPosition: number;
@@ -203,115 +201,64 @@ interface SectionCenterControlProps {
   opacity: number;
   interactive: boolean;
   onHoverChange(hovered: boolean): void;
-  onPointerDown(e: ThreeEvent<PointerEvent>): void;
-  onPointerMove(e: ThreeEvent<PointerEvent>): void;
-  onPointerUp(e: ThreeEvent<PointerEvent>): void;
+  onPointerDown(e: ControlDragEvent): void;
+  onPointerMove(e: ControlDragEvent): void;
+  onPointerUp(e: ControlDragEvent): void;
   onPointerCancel(): void;
 }
 
 const SectionCenterControl = (props: SectionCenterControlProps) => {
-  const dragging = React.useRef(false);
-  const pointerInside = React.useRef(false);
-  let color = SECTION_CONTROL_COLOR;
-  if (props.hovered) { color = SECTION_CONTROL_HOVER_COLOR; }
-  if (props.active) { color = SECTION_CONTROL_ACTIVE_COLOR; }
-  const onPointerOver = (e: ThreeEvent<PointerEvent>) => {
-    stopSceneObjectMarkerEvent(e);
-    pointerInside.current = true;
-    if (!dragging.current) {
-      props.onHoverChange(true);
-      document.body.style.cursor = "pointer";
-    }
-  };
-  const onPointerOut = (e: ThreeEvent<PointerEvent>) => {
-    stopSceneObjectMarkerEvent(e);
-    pointerInside.current = false;
-    if (!dragging.current) {
-      document.body.style.cursor = "default";
-      props.onHoverChange(false);
-    }
-  };
-  const onPointerMove = (e: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) { return; }
-    stopSceneObjectMarkerDragEvent(e);
-    props.onPointerMove(e);
-  };
-  const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
-    stopSceneObjectMarkerDragEvent(e);
-    dragging.current = true;
-    document.body.style.cursor = "grabbing";
-    (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
-    props.onPointerDown(e);
-  };
-  const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) { return; }
-    stopSceneObjectMarkerDragEvent(e);
-    dragging.current = false;
-    document.body.style.cursor = pointerInside.current
-      ? "pointer"
-      : "default";
-    if (!pointerInside.current) { props.onHoverChange(false); }
-    (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-    props.onPointerUp(e);
-  };
-  const onPointerCancel = (e: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) { return; }
-    stopSceneObjectMarkerDragEvent(e);
-    dragging.current = false;
-    document.body.style.cursor = "default";
-    props.onPointerCancel();
-  };
-  const onLostPointerCapture = (e: ThreeEvent<PointerEvent>) => {
-    if (!dragging.current) { return; }
-    stopSceneObjectMarkerDragEvent(e);
-    dragging.current = false;
-    document.body.style.cursor = "default";
-    props.onPointerCancel();
-  };
-  const sphere = <Sphere
-    name={`${props.name}-sphere`}
-    args={[
-      SECTION_CONTROL_MARKER_RADIUS * (props.hovered ? 1.25 : 1),
-      16,
-      16,
-    ]}
-    raycast={props.interactive ? undefined : sectionControlNoRaycast}
-    renderOrder={SECTION_CONTROL_RENDER_ORDER + 1}
-    position={[0, 0, 0]}>
-    <MeshBasicMaterial
-      color={color}
-      transparent={true}
-      opacity={props.opacity}
-      depthTest={true}
-      depthWrite={true} />
-  </Sphere>;
-  return <Group
+  const arrowEnd = (direction: 1 | -1): Point =>
+    props.axis == "x"
+      ? [direction * SECTION_CONTROL_ARROW_LENGTH, 0, 0]
+      : [0, direction * SECTION_CONTROL_ARROW_LENGTH, 0];
+  return <ControlHandle
     name={props.name}
     position={props.position}
-    onPointerOver={onPointerOver}
-    onPointerOut={onPointerOut}
-    onPointerMove={onPointerMove}
-    onPointerDown={onPointerDown}
-    onPointerUp={onPointerUp}
-    onPointerCancel={onPointerCancel}
-    onLostPointerCapture={onLostPointerCapture}>
-    {sphere}
-    {([-1, 1] as const).map(direction =>
-      <SectionArrowShape
-        key={direction}
-        name={`${props.name}-arrow-${direction == -1
-          ? "negative"
-          : "positive"}`}
-        start={[0, 0, 0]}
-        axis={props.axis}
-        direction={direction}
-        hovered={props.hovered}
+    enabled={props.interactive}
+    constraint={planeConstraint("xy", [0, 0, props.position[2]])}
+    onHoverChange={props.onHoverChange}
+    onDragStart={props.onPointerDown}
+    onDrag={props.onPointerMove}
+    onDragEnd={props.onPointerUp}
+    onDragCancel={props.onPointerCancel}>
+    {state => <>
+      <ControlSphere
+        name={`${props.name}-sphere`}
+        radius={SECTION_CONTROL_MARKER_RADIUS}
+        color={SECTION_CONTROL_COLOR}
+        hoverColor={SECTION_CONTROL_HOVER_COLOR}
+        activeColor={SECTION_CONTROL_ACTIVE_COLOR}
+        activeHoverColor={SECTION_CONTROL_ACTIVE_HOVER_COLOR}
+        hovered={state.hovered || props.hovered}
+        active={props.active}
+        enabled={props.interactive}
         opacity={props.opacity}
-        interactive={props.interactive} />)}
-  </Group>;
+        depthTest={true}
+        depthWrite={true}
+        renderOrder={SECTION_CONTROL_RENDER_ORDER + 1} />
+      {([-1, 1] as const).map(direction =>
+        <ControlArrow
+          key={direction}
+          name={`${props.name}-arrow-${direction == -1
+            ? "negative"
+            : "positive"}`}
+          start={[0, 0, 0]}
+          end={arrowEnd(direction)}
+          width={SECTION_CONTROL_ARROW_WIDTH}
+          color={SECTION_CONTROL_COLOR}
+          hoverColor={SECTION_CONTROL_HOVER_COLOR}
+          hovered={state.hovered || props.hovered}
+          enabled={props.interactive}
+          opacity={props.opacity}
+          depthTest={true}
+          depthWrite={true}
+          renderOrder={SECTION_CONTROL_RENDER_ORDER} />)}
+    </>}
+  </ControlHandle>;
 };
 
-interface SectionArrowShapeProps {
+interface SectionWidthArrowProps {
   name: string;
   start: Point;
   axis: ThreeDSectionAxis;
@@ -319,153 +266,59 @@ interface SectionArrowShapeProps {
   hovered: boolean;
   opacity: number;
   interactive: boolean;
-}
-
-const SectionArrowShape = (props: SectionArrowShapeProps) => {
-  const width = SECTION_CONTROL_ARROW_WIDTH * (props.hovered ? 1.25 : 1);
-  const headLength = SECTION_CONTROL_ARROW_WIDTH * 3;
-  const shaftLength = SECTION_CONTROL_ARROW_LENGTH - headLength;
-  const color = props.hovered
-    ? SECTION_CONTROL_HOVER_COLOR
-    : SECTION_CONTROL_COLOR;
-  const rotation = props.axis == "x"
-    ? [0, 0, props.direction == 1 ? 0 : Math.PI]
-    : [0, 0, props.direction == 1 ? Math.PI / 2 : -Math.PI / 2];
-  return <Group
-    name={`${props.name}-shape`}
-    position={props.start}
-    renderOrder={SECTION_CONTROL_RENDER_ORDER}
-    rotation={rotation as [number, number, number]}>
-    <Cylinder
-      args={[width / 2, width / 2, shaftLength, 16]}
-      position={[shaftLength / 2, 0, 0]}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER}
-      raycast={props.interactive ? undefined : sectionControlNoRaycast}
-      rotation={[0, 0, -Math.PI / 2]}>
-      <MeshBasicMaterial
-        color={color}
-        transparent={true}
-        opacity={props.opacity}
-        depthTest={true}
-        depthWrite={true}
-        toneMapped={false} />
-    </Cylinder>
-    <Cone
-      args={[width, headLength, 16]}
-      position={[shaftLength + headLength / 2, 0, 0]}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER}
-      raycast={props.interactive ? undefined : sectionControlNoRaycast}
-      rotation={[0, 0, -Math.PI / 2]}>
-      <MeshBasicMaterial
-        color={color}
-        transparent={true}
-        opacity={props.opacity}
-        depthTest={true}
-        depthWrite={true}
-        toneMapped={false} />
-    </Cone>
-  </Group>;
-};
-
-interface SectionWidthArrowProps extends SectionArrowShapeProps {
   value: number;
   onHoverChange(hovered: boolean): void;
-  onPointerDown(e: ThreeEvent<PointerEvent>): void;
-  onPointerMove(e: ThreeEvent<PointerEvent>): void;
-  onPointerUp(e: ThreeEvent<PointerEvent>): void;
+  onPointerDown(e: ControlDragEvent): void;
+  onPointerMove(e: ControlDragEvent): void;
+  onPointerUp(e: ControlDragEvent): void;
   onPointerCancel(): void;
 }
 
 const SectionWidthArrow = (props: SectionWidthArrowProps) => {
-  const dragging = React.useRef(false);
-  const [showDragLabel, setShowDragLabel] = React.useState(false);
-  const width = SECTION_CONTROL_ARROW_WIDTH * (props.hovered ? 1.25 : 1);
-  const labelPosition = [...props.start] as Point;
-  labelPosition[props.axis == "x" ? 0 : 1] += props.direction
-    * SECTION_CONTROL_ARROW_LENGTH / 2;
-  labelPosition[2] += width * 2;
-  const cancel = () => {
-    dragging.current = false;
-    document.body.style.cursor = "default";
-    setShowDragLabel(false);
-    props.onPointerCancel();
-  };
-  return <Group
+  const end: Point = props.axis == "x"
+    ? [props.direction * SECTION_CONTROL_ARROW_LENGTH, 0, 0]
+    : [0, props.direction * SECTION_CONTROL_ARROW_LENGTH, 0];
+  return <ControlHandle
     name={props.name}
-    onPointerOver={e => {
-      stopSceneObjectMarkerEvent(e);
-      if (!dragging.current) { props.onHoverChange(true); }
-    }}
-    onPointerOut={e => {
-      stopSceneObjectMarkerEvent(e);
-      if (!dragging.current) { props.onHoverChange(false); }
-    }}
-    onPointerMove={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      props.onPointerMove(e);
-    }}
-    onPointerDown={e => {
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = true;
-      document.body.style.cursor = "grabbing";
-      setShowDragLabel(true);
-      (e.target as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
-      props.onPointerDown(e);
-    }}
-    onPointerUp={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      dragging.current = false;
-      document.body.style.cursor = "default";
-      setShowDragLabel(false);
-      (e.target as HTMLElement | null)?.releasePointerCapture?.(e.pointerId);
-      props.onPointerUp(e);
-    }}
-    onPointerCancel={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      cancel();
-    }}
-    onLostPointerCapture={e => {
-      if (!dragging.current) { return; }
-      stopSceneObjectMarkerDragEvent(e);
-      cancel();
-    }}>
-    <Sphere
-      name={`${props.name}-base`}
-      args={[
-        SECTION_CONTROL_MARKER_RADIUS * (props.hovered ? 1.25 : 1),
-        16,
-        16,
-      ]}
-      position={props.start}
-      raycast={props.interactive ? undefined : sectionControlNoRaycast}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER + 1}>
-      <MeshBasicMaterial
-        color={props.hovered
-          ? SECTION_CONTROL_HOVER_COLOR
-          : SECTION_CONTROL_COLOR}
-        transparent={true}
+    position={props.start}
+    enabled={props.interactive}
+    constraint={planeConstraint("xy", [0, 0, props.start[2]])}
+    onHoverChange={props.onHoverChange}
+    onDragStart={props.onPointerDown}
+    onDrag={props.onPointerMove}
+    onDragEnd={props.onPointerUp}
+    onDragCancel={props.onPointerCancel}>
+    {state => <>
+      <ControlSphere
+        name={`${props.name}-base`}
+        radius={SECTION_CONTROL_MARKER_RADIUS}
+        color={SECTION_CONTROL_COLOR}
+        hoverColor={SECTION_CONTROL_HOVER_COLOR}
+        hovered={state.hovered || props.hovered}
+        enabled={props.interactive}
         opacity={props.opacity}
         depthTest={true}
-        depthWrite={true} />
-    </Sphere>
-    <SectionArrowShape {...props} />
-    {(props.hovered || showDragLabel) &&
-      <Billboard follow={true} position={labelPosition}>
-        <Text
-          name={`${props.name}-label`}
-          fontSize={SECTION_CONTROL_LABEL_SIZE}
-          color={SECTION_CONTROL_COLOR}
-          depthTest={true}
-          renderOrder={SECTION_CONTROL_RENDER_ORDER}
-          rotation={[0, 0, 0]}
-          position={[0, 0, 0]}>
-          {`${props.value.toFixed(0)}mm`}
-        </Text>
-      </Billboard>}
-  </Group>;
+        depthWrite={true}
+        renderOrder={SECTION_CONTROL_RENDER_ORDER + 1} />
+      <ControlArrow
+        name={`${props.name}-arrow`}
+        start={[0, 0, 0]}
+        end={end}
+        width={SECTION_CONTROL_ARROW_WIDTH}
+        color={SECTION_CONTROL_COLOR}
+        hoverColor={SECTION_CONTROL_HOVER_COLOR}
+        hovered={state.hovered || props.hovered}
+        enabled={props.interactive}
+        opacity={props.opacity}
+        depthTest={true}
+        depthWrite={true}
+        renderOrder={SECTION_CONTROL_RENDER_ORDER}
+        label={`${props.value.toFixed(0)}mm`}
+        labelName={`${props.name}-label`}
+        labelSize={SECTION_CONTROL_LABEL_SIZE}
+        labelVisible={state.hovered || state.dragging || props.hovered} />
+    </>}
+  </ControlHandle>;
 };
 
 interface SectionPillProps {
@@ -473,90 +326,31 @@ interface SectionPillProps {
   position: Point;
   rotation: number;
   label: string;
-  hovered: boolean;
   active?: boolean;
   opacity: number;
   interactive: boolean;
-  onHoverChange(hovered: boolean): void;
   onClick(): void;
 }
 
 const SectionPill = (props: SectionPillProps) => {
-  const bodyLength = SECTION_CONTROL_PILL_LENGTH - SECTION_CONTROL_PILL_WIDTH;
-  let color = props.hovered
-    ? SECTION_CONTROL_PILL_HOVER_COLOR
-    : SECTION_CONTROL_PILL_COLOR;
-  if (props.active) {
-    color = props.hovered
-      ? SECTION_CONTROL_ACTIVE_HOVER_COLOR
-      : SECTION_CONTROL_ACTIVE_COLOR;
-  }
-  const raycast = props.interactive ? undefined : sectionControlNoRaycast;
-  return <Group
+  return <ControlPillButton
     name={props.name}
     position={props.position}
     rotation={[0, 0, props.rotation]}
+    label={props.label}
+    length={SECTION_CONTROL_PILL_LENGTH}
+    width={SECTION_CONTROL_PILL_WIDTH}
+    thickness={10}
+    labelSize={SECTION_CONTROL_PILL_LABEL_SIZE}
+    color={SECTION_CONTROL_PILL_COLOR}
+    hoverColor={SECTION_CONTROL_PILL_HOVER_COLOR}
+    activeColor={SECTION_CONTROL_ACTIVE_COLOR}
+    activeHoverColor={SECTION_CONTROL_ACTIVE_HOVER_COLOR}
+    active={props.active}
+    enabled={props.interactive}
+    opacity={props.opacity}
     renderOrder={SECTION_CONTROL_RENDER_ORDER}
-    onPointerOver={e => {
-      stopSceneObjectMarkerEvent(e);
-      if (props.interactive) {
-        props.onHoverChange(true);
-        document.body.style.cursor = "pointer";
-      }
-    }}
-    onPointerOut={e => {
-      stopSceneObjectMarkerEvent(e);
-      document.body.style.cursor = "default";
-      if (props.interactive) { props.onHoverChange(false); }
-    }}
-    onClick={e => {
-      e.stopPropagation();
-      e.nativeEvent.stopImmediatePropagation();
-      if (props.interactive) { props.onClick(); }
-    }}>
-    <DreiPlane
-      name={`${props.name}-body`}
-      args={[bodyLength, SECTION_CONTROL_PILL_WIDTH]}
-      raycast={raycast}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER}>
-      <MeshBasicMaterial
-        color={color}
-        transparent={true}
-        opacity={props.opacity}
-        depthTest={true}
-        depthWrite={true}
-        toneMapped={!!props.active} />
-    </DreiPlane>
-    {([-1, 1] as const).map(direction => {
-      const side = direction == -1 ? "negative" : "positive";
-      return <Circle
-        key={direction}
-        name={`${props.name}-end-${side}`}
-        args={[SECTION_CONTROL_PILL_WIDTH / 2, 32]}
-        position={[direction * bodyLength / 2, 0, 0]}
-        raycast={raycast}
-        renderOrder={SECTION_CONTROL_RENDER_ORDER}>
-        <MeshBasicMaterial
-          color={color}
-          transparent={true}
-          opacity={props.opacity}
-          depthTest={true}
-          depthWrite={true}
-          toneMapped={!!props.active} />
-      </Circle>;
-    })}
-    <Text
-      name={`${props.name}-label`}
-      fontSize={SECTION_CONTROL_PILL_LABEL_SIZE}
-      color={props.active ? SECTION_CONTROL_PILL_COLOR : "white"}
-      depthTest={true}
-      opacity={props.opacity}
-      renderOrder={SECTION_CONTROL_RENDER_ORDER + 1}
-      rotation={[0, 0, 0]}
-      position={[0, 0, 1]}>
-      {props.label}
-    </Text>
-  </Group>;
+    onClick={props.onClick} />;
 };
 
 const SECTION_CONTROL_SIDES = ["negative", "positive"] as const;
@@ -580,10 +374,6 @@ export const SectionControls = (props: SectionControlsProps) => {
   const [centerPreview, setCenterPreview] =
     React.useState<number | undefined>(undefined);
   const [centerSnapped, setCenterSnapped] = React.useState(false);
-  const [followHovered, setFollowHovered] =
-    React.useState<SectionControlSide | undefined>(undefined);
-  const [axisToggleHovered, setAxisToggleHovered] =
-    React.useState<SectionControlSide | undefined>(undefined);
   const [widthHovered, setWidthHovered] =
     React.useState<string | undefined>(undefined);
   const [widthDragging, setWidthDragging] = React.useState(false);
@@ -606,13 +396,13 @@ export const SectionControls = (props: SectionControlsProps) => {
     cameraDirection,
   });
   const getGardenPosition = getGardenPositionFunc(config, false);
-  const centerFromEvent = (e: ThreeEvent<PointerEvent>) => {
-    const point = pointerRayPointAtZ(e, layout.z).clone();
+  const centerFromEvent = (e: ControlDragEvent) => {
+    const point = e.point.clone();
     point[axis] -= centerDragOffset.current;
     const value = getGardenPosition(point)[axis];
     return Math.round(Math.max(0, Math.min(props.gardenSize[axis], value)));
   };
-  const updateCenter = (e: ThreeEvent<PointerEvent>) => {
+  const updateCenter = (e: ControlDragEvent) => {
     const pointerCenter = centerFromEvent(e);
     const snapped = Math.abs(pointerCenter - layout.followCenter)
       <= SECTION_FOLLOW_SNAP_THRESHOLD;
@@ -639,9 +429,8 @@ export const SectionControls = (props: SectionControlsProps) => {
     setCenterDragging(undefined);
     setCenterSnapped(false);
   };
-  const pointerAxisPosition = (e: ThreeEvent<PointerEvent>) =>
-    pointerRayPointAtZ(e, layout.z)[axis];
-  const widthFromEvent = (e: ThreeEvent<PointerEvent>) => {
+  const pointerAxisPosition = (e: ControlDragEvent) => e.point[axis];
+  const widthFromEvent = (e: ControlDragEvent) => {
     const drag = widthDrag.current;
     if (!drag) { return width; }
     const delta = drag.planeDirection * cameraDirection
@@ -652,7 +441,7 @@ export const SectionControls = (props: SectionControlsProps) => {
       widthMax,
     );
   };
-  const updateWidth = (e: ThreeEvent<PointerEvent>) => {
+  const updateWidth = (e: ControlDragEvent) => {
     const value = widthFromEvent(e);
     setWidthPreview(value);
     dispatch({ type: Actions.SET_3D_SECTION_WIDTH, payload: value });
@@ -747,13 +536,10 @@ export const SectionControls = (props: SectionControlsProps) => {
           name={`section-follow-toggle-${side}`}
           position={layout.followHandles[index]}
           rotation={followToggleRotation + index * Math.PI}
-          label={"FOLLOW BOT"}
-          hovered={followHovered == side}
+          label={t("Follow Bot")}
           active={designer.threeDSectionFollowBot || centerSnapped}
           opacity={props.opacity}
           interactive={props.interactive}
-          onHoverChange={hovered =>
-            setFollowHovered(hovered ? side : undefined)}
           onClick={() => dispatch({
             type: Actions.SET_3D_SECTION_FOLLOW_BOT,
             payload: !designer.threeDSectionFollowBot,
@@ -797,7 +583,7 @@ export const SectionControls = (props: SectionControlsProps) => {
             updateCenter(e);
           }}
           onPointerUp={e => {
-            if (!centerWasDragged.current && !clickWasDragged(e)) {
+            if (!centerWasDragged.current && !clickWasDragged(e.event)) {
               dispatch({
                 type: Actions.SET_3D_SECTION_FOLLOW_BOT,
                 payload: !designer.threeDSectionFollowBot,
@@ -830,12 +616,9 @@ export const SectionControls = (props: SectionControlsProps) => {
           name={`section-axis-toggle-${side}`}
           position={layout.axisTogglePositions[index]}
           rotation={axisToggleRotation + index * Math.PI}
-          label={"SWITCH AXIS"}
-          hovered={axisToggleHovered == side}
+          label={t("Switch Axis")}
           opacity={props.opacity}
           interactive={props.interactive}
-          onHoverChange={hovered =>
-            setAxisToggleHovered(hovered ? side : undefined)}
           onClick={() => toggleSectionAxis(
             designer,
             props.gardenSize,

@@ -654,6 +654,63 @@ describe("designer reducer", () => {
     }).gridPlanting).toBeUndefined();
   });
 
+  it("only clears the matching 3D grid planting request", () => {
+    const replacement: GridPlantingRequest = {
+      token: "replacement-token",
+      gridId: "replacement-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const state = oldState();
+    state.gridPlanting = replacement;
+    expect(designer(state, {
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "outgoing-token",
+    }).gridPlanting).toEqual(replacement);
+    expect(designer(state, {
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: replacement.token,
+    }).gridPlanting).toBeUndefined();
+  });
+
+  it("sets the requested legacy crop grid editor", () => {
+    const newState = designer(oldState(), {
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: "mint",
+    });
+    expect(newState.legacyGridPlantingCrop).toEqual("mint");
+    expect(designer(newState, {
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: undefined,
+    }).legacyGridPlantingCrop).toBeUndefined();
+  });
+
+  it("only clears the matching legacy crop grid editor", () => {
+    const state = oldState();
+    state.legacyGridPlantingCrop = "mint";
+    expect(designer(state, {
+      type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+      payload: "beet",
+    }).legacyGridPlantingCrop).toEqual("mint");
+    expect(designer(state, {
+      type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+      payload: "mint",
+    }).legacyGridPlantingCrop).toBeUndefined();
+  });
+
+  it("sets the requested legacy point grid editor", () => {
+    const state = designer(oldState(), {
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: true,
+    });
+    expect(state.legacyPointGrid).toBeTruthy();
+    expect(designer(state, {
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: false,
+    }).legacyPointGrid).toBeFalsy();
+  });
+
   it("toggle soil height labels", () => {
     const state = oldState();
     state.soilHeightLabels = false;

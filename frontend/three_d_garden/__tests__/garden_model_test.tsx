@@ -412,6 +412,45 @@ describe("<GardenModel />", () => {
     expect(bedProps.showWeeds).toBeTruthy();
   });
 
+  it("keeps the existing plant layer visible during grid placement", () => {
+    const p = fakeProps();
+    p.activeFocus = "Planter bed";
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.addPlantProps.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const wrapper = createWrapper(p);
+    const plantLoadIn = wrapper.root.findAllByType(PopInGroup)
+      .find(node => node.props.name == "plants-load-in");
+
+    expect(wrapper.root.findByType(Bed).props.showPlants).toBeTruthy();
+    expect(plantLoadIn?.props.reveal).toBeTruthy();
+  });
+
+  it("keeps the existing point layer visible during point grid placement",
+    () => {
+      const p = fakeProps();
+      p.addPlantProps = fakeAddPlantProps();
+      p.addPlantProps.getConfigValue = jest.fn(() => false);
+      p.addPlantProps.designer.gridPlanting = {
+        token: "point-grid-token",
+        gridId: "point-grid-token",
+        gridType: "point",
+        itemName: "Point",
+        defaultSpacing: 60,
+        radius: 30,
+      };
+      const wrapper = createWrapper(p);
+
+      expect(wrapper.root.findByType(Bed).props.showPoints).toBeTruthy();
+    });
+
   it("reuses soil surface geometry across unrelated config updates", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
@@ -645,13 +684,15 @@ describe("<GardenModel />", () => {
     springSpy.mockRestore();
   });
 
-  it("finds hovered objects in the featured scene", () => {
+  it("finds hovered objects in the featured scene", async () => {
     const p = fakeProps();
     p.config.scene = "Lab";
     p.addPlantProps!.designer.featuredScene = "Outdoor";
     const featuredObject = staticSceneObjects("Outdoor")[0];
     p.addPlantProps!.designer.hoveredSceneObject = featuredObject.uuid;
     const wrapper = createWrapper(p);
+    await waitFor(() =>
+      expect(wrapper.root.findAllByType(SceneObjects)).toHaveLength(1));
     const sceneObjects = wrapper.root.findByType(SceneObjects);
 
     expect(sceneObjects.props.hoverSelection).toEqual({
@@ -2072,6 +2113,11 @@ describe("<GardenModel />", () => {
     const staticLayers = wrapper.root.findAll(node =>
       typeof node.props.onSelectObject == "function"
       && typeof node.props.onPlantHoverChange == "function")[0];
+    const selectionLayer =
+      wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    expect(selectionLayer.props.panelSelection)
+      .toEqual({ kind: "plant", id: 1 });
+    expect(selectionLayer.props.selection).toBeUndefined();
     const selectObject = staticLayers.props.onSelectObject;
     const keydownHandler = addEventSpy.mock.calls
       .find(call => call[0] == "keydown")?.[1] as

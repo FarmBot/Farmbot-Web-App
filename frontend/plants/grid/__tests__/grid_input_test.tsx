@@ -56,6 +56,8 @@ describe("<GridInput/>", () => {
     render(<GridInput {...fakeProps()} />);
     expect(screen.getAllByLabelText(/^Increase/)).toHaveLength(6);
     expect(screen.getAllByLabelText(/^Decrease/)).toHaveLength(6);
+    expect(screen.getByLabelText("Spacing (MM) X"))
+      .toHaveAttribute("step", "10");
   });
 });
 
@@ -153,10 +155,25 @@ describe("<InputCell/>", () => {
     const input = screen.getByRole<HTMLInputElement>("spinbutton");
 
     fireEvent.keyDown(input, { key: "ArrowDown" });
-    expect(p.onChange).toHaveBeenCalledWith("spacingV", -1);
-    expect(input).toHaveValue(-1);
+    expect(p.onChange).toHaveBeenCalledWith("spacingV", -10);
+    expect(input).toHaveValue(-10);
     fireEvent.change(input, { target: { value: "0" } });
     expect(p.onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("quantizes manually entered spacing to 10 millimeters", () => {
+    const p = fakeProps();
+    p.gridKey = "spacingH";
+    p.grid.spacingH = 100;
+    render(<InputCell {...p} />);
+    const input = screen.getByRole<HTMLInputElement>("spinbutton");
+
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "127" } });
+    expect(p.onChange).toHaveBeenLastCalledWith("spacingH", 130);
+    expect(input).toHaveValue(127);
+    fireEvent.blur(input);
+    expect(input).toHaveValue(130);
   });
 
   it("accepts signed starting positions", () => {

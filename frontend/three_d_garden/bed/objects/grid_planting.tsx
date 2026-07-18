@@ -1,28 +1,30 @@
 import React from "react";
-import {
-  Billboard, Cone, Cylinder, Html, Line, Sphere,
-} from "@react-three/drei";
+import { Billboard, Html, Line } from "@react-three/drei";
 import { ThreeEvent } from "@react-three/fiber";
-import { useSpring } from "@react-spring/three";
-import { Vector3 } from "three";
-import { clamp, isNumber, round as mathRound } from "lodash";
+import { clamp, range } from "lodash";
 import { Config } from "../../config";
 import {
-  get3DPositionFunc, getGardenPositionFunc, zZero,
+  extents as extentsFunc,
+  get3DPositionFunc, getGardenPositionFunc,
+  zero as zeroFunc,
+  zZero,
 } from "../../helpers";
-import { Group, MeshBasicMaterial } from "../../components";
+import { Group } from "../../components";
 import type { AddPlantProps } from "../bed";
 import {
   PlantGridData, PlantGridKey,
 } from "../../../plants/grid/interfaces";
-import { GridInput } from "../../../plants/grid/grid_input";
 import {
   clampGridStart,
-  countForAxisDrag,
+  DEFAULT_POINT_GRID_RADIUS,
+  DEFAULT_POINT_GRID_SPACING,
+  gridAxisFromDrag,
   gridFromExtent,
   gridPlantCount,
+  GRID_SPACING_STEP,
   initialPlantGrid,
   PlantGridValidation,
+  quantizeGridInputValue,
   validatePlantGrid,
 } from "../../../plants/grid/grid_math";
 import {
@@ -31,34 +33,73 @@ import {
 import {
   findCropIcon, findCropMetadata, DEFAULT_PLANT_RADIUS,
 } from "../../../crops/metadata";
-import { PlantInstances, ThreeDGardenPlant } from "../../garden";
 import {
-  pointerRayPointAtZ,
-  stopSceneObjectMarkerDragEvent,
-  stopSceneObjectMarkerEvent,
-} from "../../scene_objects";
+  PlantInstances, PlantSpreadInstances, PointInstances,
+  POINT_PIN_HEIGHT, ThreeDGardenPlant,
+} from "../../garden";
 import { clickWasDragged } from "../../click_event";
-import { ToggleButton } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { batchInitDirty } from "../../../api/crud";
 import { saveGrid, stashGrid } from "../../../plants/grid/thunks";
 import { Actions } from "../../../constants";
 import { error, success } from "../../../toast/toast";
-import { BooleanSetting } from "../../../session_keys";
 import { Text } from "../../elements";
 import { GridPlantingRequest } from "../../../farm_designer/interfaces";
-import { TaggedResource } from "farmbot";
+import {
+  TaggedGenericPointer, TaggedResource, TaggedWeedPointer,
+  uuid,
+} from "farmbot";
+import { ResourceColor } from "../../../interfaces";
+import { ColorPickerCluster } from "../../../ui";
+import {
+  ControlArrow, ControlDragEvent, ControlHandle, ControlLabel,
+  ControlSphere, CONTROL_ARROW_WIDTH, CONTROL_COLORS, CONTROL_RENDER_ORDER,
+  noControlRaycast, planeConstraint, stopThreeDPopupEvent,
+} from "../../controls";
+import {
+  AlignmentIndicatorController, AlignmentIndicators,
+} from "./alignment_indicators";
+import {
+  ActivePositionRef, PlantPlacementSphere,
+} from "./pointer_objects";
+import {
+  PlacementCoordinateLabel,
+} from "./placement_coordinate_label";
+import { NavigateFunction } from "react-router";
+import { Path } from "../../../internal_urls";
 
-export type GridPlantingPhase = "pick-start" | "pick-extent" | "edit";
+export type GridPlantingPhase =
+  | "pick-start"
+  | "pick-extent"
+  | "edit";
 type GridAxis = "x" | "y";
+
+const GRID_CONTROL_FOREGROUND_PROPS = {
+  transparent: true,
+  depthTest: false,
+  depthWrite: false,
+  renderOrder: CONTROL_RENDER_ORDER,
+} as const;
+
+const GRID_CONTROL_OBJECT_PROPS = {
+  transparent: true,
+  depthTest: true,
+  depthWrite: true,
+  renderOrder: CONTROL_RENDER_ORDER,
+} as const;
+
+const gridStartHelpersVisible = (
+  phase: GridPlantingPhase,
+  adjustingStart: boolean,
+) =>
+  phase == "pick-start" || (phase == "edit" && adjustingStart);
 type GridDragKind =
   | "start"
   | "start-x"
   | "start-y"
   | "spacing-x"
   | "spacing-y"
-  | "count-x"
-  | "count-y";
+  | "extent";
 
 export interface GridPlantingController {
   onPointerMove(event: ThreeEvent<MouseEvent>): void;
@@ -68,7 +109,15 @@ export interface GridPlantingController {
 export interface GridPlantingProps {
   config: Config;
   addPlantProps: AddPlantProps;
+  mapPoints: TaggedGenericPointer[];
+  plants: ThreeDGardenPlant[];
+  weeds: TaggedWeedPointer[];
+  showPlants: boolean;
+  showPoints: boolean;
+  showWeeds: boolean;
+  activePositionRef: ActivePositionRef;
   getZ(x: number, y: number): number;
+  navigate: NavigateFunction;
 }
 
 interface GridDragState {
@@ -83,35 +132,41 @@ interface Point3 {
   z: number;
 }
 
-const GRID_CONTROL_COLOR = "dodgerblue";
-const GRID_CONTROL_HOVER_COLOR = "deepskyblue";
-const GRID_X_COLOR = "#ff5555";
-const GRID_Y_COLOR = "#55dd55";
-const GRID_CONTROL_Z = 125;
-const GRID_POPUP_Z = 360;
+const GRID_START_CONTROL_Z = 125;
+const GRID_EXTENT_CONTROL_Z = 150;
+const GRID_SPACING_CONTROL_Z = 20;
+const GRID_ACTION_Z = 200;
+const GRID_SPACING_OFFSET = 100;
 const GRID_MARKER_RADIUS = 28;
-const GRID_ARROW_WIDTH = 12;
 const GRID_START_ARROW_LENGTH = 130;
-
-const stopPopupEvent = (event: React.SyntheticEvent) => {
-  event.stopPropagation();
-};
+const POINT_RADIUS_STEP = 10;
+const POINT_RADIUS_CONTROL_Z = 20;
+const POINT_RADIUS_ARROW_LENGTH = 100;
 
 const roundPosition = (
   position: { x: number, y: number },
   gridSize: { x: number, y: number },
 ) => ({
-  x: clamp(Math.round(position.x), 0, gridSize.x),
-  y: clamp(Math.round(position.y), 0, gridSize.y),
+  x: clamp(Math.round(position.x / 10) * 10, 0, gridSize.x),
+  y: clamp(Math.round(position.y / 10) * 10, 0, gridSize.y),
 });
+
+export const isPointGridRequest = (
+  request: GridPlantingRequest | undefined,
+) => request?.gridType == "point";
+
+export const quantizePointRadius = (radius: number) =>
+  Math.max(
+    0,
+    Math.round(radius / POINT_RADIUS_STEP) * POINT_RADIUS_STEP,
+  );
 
 const axisGridKey = (
   axis: GridAxis,
-  kind: "start" | "spacing" | "count",
+  kind: "start" | "spacing",
 ): PlantGridKey => {
   if (kind == "start") { return axis == "x" ? "startX" : "startY"; }
-  if (kind == "spacing") { return axis == "x" ? "spacingH" : "spacingV"; }
-  return axis == "x" ? "numPlantsH" : "numPlantsV";
+  return axis == "x" ? "spacingH" : "spacingV";
 };
 
 const gardenStart = (grid: PlantGridData) => ({
@@ -119,24 +174,44 @@ const gardenStart = (grid: PlantGridData) => ({
   y: grid.startY,
 });
 
-const secondGardenPoint = (grid: PlantGridData, axis: GridAxis) => ({
-  x: grid.startX + (axis == "x" ? grid.spacingH : 0),
-  y: grid.startY + (axis == "y" ? grid.spacingV : 0),
-});
-
-const lastGardenPoint = (grid: PlantGridData, axis: GridAxis) => ({
-  x: grid.startX + (axis == "x"
-    ? grid.spacingH * (grid.numPlantsH - 1)
-    : 0),
-  y: grid.startY + (axis == "y"
-    ? grid.spacingV * (grid.numPlantsV - 1)
-    : 0),
-});
+export const gridActionControlPosition = (
+  config: Config,
+  grid: PlantGridData,
+  getZ: (x: number, y: number) => number,
+): [number, number, number] => {
+  const start = gardenStart(grid);
+  const world = get3DPositionFunc(config)(start);
+  return [
+    world.x,
+    world.y,
+    zZero(config) + getZ(start.x, start.y) + GRID_ACTION_Z,
+  ];
+};
 
 const terminalGardenPoint = (grid: PlantGridData) => ({
   x: grid.startX + grid.spacingH * (grid.numPlantsH - 1),
   y: grid.startY + grid.spacingV * (grid.numPlantsV - 1),
 });
+
+const spacingControlSoilZ = (
+  grid: PlantGridData,
+  getZ: (x: number, y: number) => number,
+) => {
+  let highestZ = getZ(grid.startX, grid.startY);
+  const include = (xIndex: number, yIndex: number) => {
+    highestZ = Math.max(highestZ, getZ(
+      grid.startX + grid.spacingH * xIndex,
+      grid.startY + grid.spacingV * yIndex,
+    ));
+  };
+  range(Math.min(2, grid.numPlantsH)).forEach(xIndex =>
+    range(grid.numPlantsV).forEach(yIndex =>
+      include(xIndex, yIndex)));
+  range(Math.min(2, grid.numPlantsV)).forEach(yIndex =>
+    range(grid.numPlantsH).forEach(xIndex =>
+      include(xIndex, yIndex)));
+  return highestZ;
+};
 
 const initialAxis = (
   start: number,
@@ -176,44 +251,20 @@ const gridAtStart = (
 const gridAtExtent = (
   baseGrid: PlantGridData,
   pointer: { x: number, y: number },
-  spacing: number,
   gridSize: { x: number, y: number },
 ) => gridFromExtent({
   start: { x: baseGrid.startX, y: baseGrid.startY },
   pointer,
-  spacing: { x: Math.abs(spacing), y: Math.abs(spacing) },
+  spacing: {
+    x: Math.abs(baseGrid.spacingH),
+    y: Math.abs(baseGrid.spacingV),
+  },
   previousSpacing: {
     x: baseGrid.spacingH,
     y: baseGrid.spacingV,
   },
-  baseCounts: {
-    x: baseGrid.numPlantsH,
-    y: baseGrid.numPlantsV,
-  },
   gridSize,
 });
-
-const countArrowEndValue = (grid: PlantGridData, axis: GridAxis) => {
-  const start = axis == "x" ? grid.startX : grid.startY;
-  const spacing = axis == "x" ? grid.spacingH : grid.spacingV;
-  const count = axis == "x" ? grid.numPlantsH : grid.numPlantsV;
-  return start + spacing * Math.max(2, count - 1);
-};
-
-const axisGridValues = (grid: PlantGridData, axis: GridAxis) =>
-  axis == "x"
-    ? {
-      start: grid.startX,
-      spacing: grid.spacingH,
-      count: grid.numPlantsH,
-      otherCount: grid.numPlantsV,
-    }
-    : {
-      start: grid.startY,
-      spacing: grid.spacingV,
-      count: grid.numPlantsV,
-      otherCount: grid.numPlantsH,
-    };
 
 const axisGardenPoint = (
   start: { x: number, y: number },
@@ -223,127 +274,16 @@ const axisGardenPoint = (
   ? { x: start.x + distance, y: start.y }
   : { x: start.x, y: start.y + distance };
 
-const vectorRotation = (start: Point3, end: Point3) =>
-  Math.atan2(end.y - start.y, end.x - start.x) - Math.PI / 2;
-
-interface InteractiveArrowProps {
-  name: string;
-  start: Point3;
-  end: Point3;
-  color: string;
-  doubleSided?: boolean;
-  label?: string;
-  hovered?: boolean;
-  onPointerOver?(event: ThreeEvent<PointerEvent>): void;
-  onPointerOut?(event: ThreeEvent<PointerEvent>): void;
-  onPointerDown?(event: ThreeEvent<PointerEvent>): void;
-  onPointerMove?(event: ThreeEvent<PointerEvent>): void;
-  onPointerUp?(event: ThreeEvent<PointerEvent>): void;
-  onPointerCancel?(event: ThreeEvent<PointerEvent>): void;
-}
-
-const InteractiveArrow = (props: InteractiveArrowProps) => {
-  const start = new Vector3(props.start.x, props.start.y, props.start.z);
-  const end = new Vector3(props.end.x, props.end.y, props.end.z);
-  const distance = start.distanceTo(end);
-  if (distance < 1) { return <></>; }
-  const middle = start.clone().lerp(end, 0.5);
-  const rotation = vectorRotation(props.start, props.end);
-  const color = props.hovered ? GRID_CONTROL_HOVER_COLOR : props.color;
-  const headLength = Math.min(40, distance / 3);
-  const conePosition = end.clone().lerp(start, headLength / 2 / distance);
-  const startConePosition =
-    start.clone().lerp(end, headLength / 2 / distance);
-  return <Group
-    name={props.name}
-    onPointerOver={props.onPointerOver}
-    onPointerOut={props.onPointerOut}
-    onPointerDown={props.onPointerDown}
-    onPointerMove={props.onPointerMove}
-    onPointerUp={props.onPointerUp}
-    onPointerCancel={props.onPointerCancel}
-    onLostPointerCapture={props.onPointerCancel}>
-    <Line
-      points={[start, end]}
-      color={color}
-      lineWidth={props.hovered ? 6 : 4}
-      depthTest={false} />
-    <Cylinder
-      args={[GRID_ARROW_WIDTH, GRID_ARROW_WIDTH, distance, 12]}
-      position={middle}
-      rotation={[0, 0, rotation]}>
-      <MeshBasicMaterial
-        color={color}
-        transparent={true}
-        opacity={0.01}
-        depthTest={false} />
-    </Cylinder>
-    <Cone
-      args={[GRID_ARROW_WIDTH * 1.7, headLength, 16]}
-      position={conePosition}
-      rotation={[0, 0, rotation]}>
-      <MeshBasicMaterial color={color} depthTest={false} />
-    </Cone>
-    {props.doubleSided &&
-      <Cone
-        args={[GRID_ARROW_WIDTH * 1.7, headLength, 16]}
-        position={startConePosition}
-        rotation={[0, 0, rotation + Math.PI]}>
-        <MeshBasicMaterial color={color} depthTest={false} />
-      </Cone>}
-    {props.label &&
-      <Billboard
-        follow={true}
-        position={[middle.x, middle.y, middle.z + 25]}>
-        <Text
-          position={[0, 0, 0]}
-          rotation={[0, 0, 0]}
-          fontSize={28}
-          color={color}>
-          {props.label}
-        </Text>
-      </Billboard>}
-  </Group>;
-};
-
-interface DragSphereProps {
-  name: string;
-  position: Point3;
-  hovered: boolean;
-  onPointerOver(event: ThreeEvent<PointerEvent>): void;
-  onPointerOut(event: ThreeEvent<PointerEvent>): void;
-  onPointerDown(event: ThreeEvent<PointerEvent>): void;
-  onPointerMove(event: ThreeEvent<PointerEvent>): void;
-  onPointerUp(event: ThreeEvent<PointerEvent>): void;
-  onPointerCancel(event: ThreeEvent<PointerEvent>): void;
-}
-
-const DragSphere = (props: DragSphereProps) =>
-  <Sphere
-    name={props.name}
-    args={[props.hovered ? GRID_MARKER_RADIUS * 1.25 : GRID_MARKER_RADIUS, 16, 16]}
-    position={[props.position.x, props.position.y, props.position.z]}
-    onPointerOver={props.onPointerOver}
-    onPointerOut={props.onPointerOut}
-    onPointerDown={props.onPointerDown}
-    onPointerMove={props.onPointerMove}
-    onPointerUp={props.onPointerUp}
-    onPointerCancel={props.onPointerCancel}
-    onLostPointerCapture={props.onPointerCancel}>
-    <MeshBasicMaterial
-      color={props.hovered
-        ? GRID_CONTROL_HOVER_COLOR
-        : GRID_CONTROL_COLOR}
-      depthTest={false} />
-  </Sphere>;
-
 interface GridPlantingControlsProps {
   config: Config;
   grid: PlantGridData;
-  offsetPacking: boolean;
   gridSize: { x: number, y: number };
   getZ(x: number, y: number): number;
   onChange(grid: PlantGridData): void;
+  pointRadius?: number;
+  pointColor?: ResourceColor;
+  onPointRadiusChange?(radius: number): void;
+  onStartInteractionChange?(active: boolean): void;
 }
 
 interface GridDragUpdateProps {
@@ -351,11 +291,6 @@ interface GridDragUpdateProps {
   point: { x: number, y: number };
   gridSize: { x: number, y: number };
   offsetPacking: boolean;
-}
-
-interface CountDragTip {
-  axis: GridAxis;
-  value: number;
 }
 
 const startDragUpdate = (props: GridDragUpdateProps) => {
@@ -373,8 +308,13 @@ const startDragUpdate = (props: GridDragUpdateProps) => {
     props.offsetPacking,
     requested,
     props.gridSize,
+    10,
   );
-  return { ...drag.startGrid, startX: start.x, startY: start.y };
+  return {
+    ...drag.startGrid,
+    startX: drag.kind == "start-y" ? drag.startGrid.startX : start.x,
+    startY: drag.kind == "start-x" ? drag.startGrid.startY : start.y,
+  };
 };
 
 const spacingDragUpdate = (
@@ -388,52 +328,69 @@ const spacingDragUpdate = (
   const startValue = axis == "x"
     ? startGrid.startX
     : startGrid.startY;
-  const pointerValue = props.point[axis];
-  const available = pointerValue >= startValue
+  const pointerValue = props.point[axis] + props.drag.offset[axis];
+  const previousSpacing = axis == "x"
+    ? startGrid.spacingH
+    : startGrid.spacingV;
+  const quantized = quantizeGridInputValue(
+    axisGridKey(axis, "spacing"),
+    Math.round(pointerValue - startValue),
+  );
+  const direction = Math.sign(quantized)
+    || Math.sign(previousSpacing)
+    || 1;
+  const available = direction > 0
     ? props.gridSize[axis] - startValue
     : startValue;
-  const maxSpacing = count > 1
-    ? Math.max(1, Math.floor(available / (count - 1)))
+  const intervals = Math.max(0, count - 1);
+  if (intervals > 0 &&
+    available < GRID_SPACING_STEP * intervals) {
+    return startGrid;
+  }
+  const availableSpacing = count > 1
+    ? Math.floor(available / intervals)
     : props.gridSize[axis];
-  let spacing = clamp(
-    Math.round(pointerValue - startValue),
-    -maxSpacing,
+  const maxSpacing = Math.max(
+    GRID_SPACING_STEP,
+    Math.floor(availableSpacing / GRID_SPACING_STEP) * GRID_SPACING_STEP,
+  );
+  const spacing = direction * clamp(
+    Math.abs(quantized) || GRID_SPACING_STEP,
+    GRID_SPACING_STEP,
     maxSpacing,
   );
-  if (spacing == 0) {
-    spacing = Math.sign(axis == "x"
-      ? startGrid.spacingH
-      : startGrid.spacingV) || 1;
-  }
   return {
     ...startGrid,
     [axisGridKey(axis, "spacing")]: spacing,
   };
 };
 
-const countDragUpdate = (
-  props: GridDragUpdateProps,
-  axis: GridAxis,
-) => {
+const extentDragUpdate = (props: GridDragUpdateProps) => {
   const { startGrid } = props.drag;
-  const startValue = axis == "x"
-    ? startGrid.startX
-    : startGrid.startY;
-  const spacing = axis == "x"
-    ? startGrid.spacingH
-    : startGrid.spacingV;
-  const otherCount = axis == "x"
-    ? startGrid.numPlantsV
-    : startGrid.numPlantsH;
+  const pointer = {
+    x: props.point.x + props.drag.offset.x,
+    y: props.point.y + props.drag.offset.y,
+  };
+  const x = gridAxisFromDrag(
+    startGrid.startX,
+    pointer.x,
+    startGrid.spacingH,
+    1,
+    props.gridSize.x,
+  );
+  const y = gridAxisFromDrag(
+    startGrid.startY,
+    pointer.y,
+    startGrid.spacingV,
+    x.count,
+    props.gridSize.y,
+  );
   return {
     ...startGrid,
-    [axisGridKey(axis, "count")]: countForAxisDrag(
-      startValue,
-      props.point[axis],
-      spacing,
-      otherCount,
-      props.gridSize[axis],
-    ),
+    spacingH: x.spacing,
+    spacingV: y.spacing,
+    numPlantsH: x.count,
+    numPlantsV: y.count,
   };
 };
 
@@ -445,309 +402,531 @@ export const gridDragUpdate = (props: GridDragUpdateProps) => {
   if (kind == "spacing-x" || kind == "spacing-y") {
     return spacingDragUpdate(props, kind.endsWith("x") ? "x" : "y");
   }
-  return countDragUpdate(props, kind.endsWith("x") ? "x" : "y");
+  return extentDragUpdate(props);
 };
 
 interface GridControlHandlerProps extends GridPlantingControlsProps {
-  controlZ: number;
+  startControlZ: number;
+  extentControlZ: number;
+  spacingZ: number;
 }
 
+const isStartDragKind = (kind: GridDragKind) =>
+  kind == "start" || kind == "start-x" || kind == "start-y";
+
 export const useGridControlHandlers = (props: GridControlHandlerProps) => {
-  const [hovered, setHovered] = React.useState<string>();
-  const [drag, setDrag] = React.useState<GridDragState>();
-  const [countDragTip, setCountDragTip] = React.useState<CountDragTip>();
-  const [, countTipSpring] = useSpring(() => ({ tip: 0 }));
+  const drag =
+    React.useRef<GridDragState | undefined>(undefined);
+  const lastGrid =
+    React.useRef<PlantGridData | undefined>(undefined);
   const getGardenPosition = React.useMemo(
     () => getGardenPositionFunc(props.config, false),
     [props.config],
   );
-  const pointFromEvent = (event: ThreeEvent<PointerEvent>) =>
-    getGardenPosition(pointerRayPointAtZ(event, props.controlZ));
+  const pointFromEvent = (event: ControlDragEvent) =>
+    getGardenPosition(event.point);
   const startDrag = (
     kind: GridDragKind,
-    event: ThreeEvent<PointerEvent>,
+    event: ControlDragEvent,
   ) => {
-    stopSceneObjectMarkerDragEvent(event);
     const point = pointFromEvent(event);
-    setDrag({
+    const anchor = {
+      x: props.grid.startX,
+      y: props.grid.startY,
+    };
+    if (kind == "spacing-x") {
+      anchor.x += props.grid.spacingH;
+    }
+    if (kind == "spacing-y") {
+      anchor.y += props.grid.spacingV;
+    }
+    if (kind == "extent") {
+      const terminal = terminalGardenPoint(props.grid);
+      anchor.x = terminal.x;
+      anchor.y = terminal.y;
+    }
+    drag.current = {
       kind,
       startGrid: props.grid,
       offset: {
-        x: props.grid.startX - point.x,
-        y: props.grid.startY - point.y,
+        x: anchor.x - point.x,
+        y: anchor.y - point.y,
       },
-    });
-    (event.target as HTMLElement | null)?.setPointerCapture?.(event.pointerId);
+    };
+    lastGrid.current = undefined;
+    isStartDragKind(kind) && props.onStartInteractionChange?.(true);
   };
-  const updateDrag = (event: ThreeEvent<PointerEvent>) => {
-    if (!drag) { return; }
-    stopSceneObjectMarkerDragEvent(event);
+  const updateDrag = (event: ControlDragEvent) => {
+    const activeDrag = drag.current;
+    if (!activeDrag) { return; }
     const point = pointFromEvent(event);
     const next = gridDragUpdate({
-      drag,
+      drag: activeDrag,
       point,
       gridSize: props.gridSize,
-      offsetPacking: props.offsetPacking,
+      offsetPacking: false,
     });
-    if (drag.kind == "count-x" || drag.kind == "count-y") {
-      const axis: GridAxis = drag.kind.endsWith("x") ? "x" : "y";
-      setCountDragTip({ axis, value: point[axis] });
+    const previousGrid = lastGrid.current;
+    if (previousGrid
+      && Object.entries(next).every(([key, value]) =>
+        previousGrid[key as PlantGridKey] == value)) {
+      return;
     }
+    lastGrid.current = next;
     props.onChange(next);
   };
-  const snapCountTip = (axis: GridAxis) => {
-    if (countDragTip?.axis != axis) { return; }
-    const target = countArrowEndValue(props.grid, axis);
-    countTipSpring.start({
-      from: { tip: countDragTip.value },
-      to: { tip: target },
-      config: { tension: 320, friction: 22 },
-      onChange: result => {
-        const value = result.value.tip;
-        isNumber(value) && setCountDragTip({ axis, value });
-      },
-      onRest: () => setCountDragTip(undefined),
-    });
+  const finishDrag = () => {
+    const activeDrag = drag.current;
+    if (!activeDrag) { return; }
+    isStartDragKind(activeDrag.kind)
+      && props.onStartInteractionChange?.(false);
+    drag.current = undefined;
+    lastGrid.current = undefined;
   };
-  const finishDrag = (event: ThreeEvent<PointerEvent>) => {
-    if (!drag) { return; }
-    stopSceneObjectMarkerDragEvent(event);
-    const dragged = clickWasDragged(event);
-    if (!dragged &&
-      (drag.kind == "count-x" || drag.kind == "count-y")) {
-      const axis: GridAxis = drag.kind.endsWith("x") ? "x" : "y";
-      const values = axisGridValues(props.grid, axis);
-      const pointer = values.start + values.spacing * values.count;
-      props.onChange({
-        ...props.grid,
-        [axisGridKey(axis, "count")]: countForAxisDrag(
-          values.start,
-          pointer,
-          values.spacing,
-          values.otherCount,
-          props.gridSize[axis],
-        ),
-      });
-    }
-    if (dragged &&
-      (drag.kind == "count-x" || drag.kind == "count-y")) {
-      snapCountTip(drag.kind.endsWith("x") ? "x" : "y");
-    }
-    (event.target as HTMLElement | null)
-      ?.releasePointerCapture?.(event.pointerId);
-    setDrag(undefined);
+  const cancelDrag = () => {
+    const activeDrag = drag.current;
+    if (!activeDrag) { return; }
+    isStartDragKind(activeDrag.kind)
+      && props.onStartInteractionChange?.(false);
+    drag.current = undefined;
+    lastGrid.current = undefined;
   };
-  const cancelDrag = (event: ThreeEvent<PointerEvent>) => {
-    if (!drag) { return; }
-    stopSceneObjectMarkerDragEvent(event);
-    if (drag.kind == "count-x" || drag.kind == "count-y") {
-      snapCountTip(drag.kind.endsWith("x") ? "x" : "y");
+  const handlers = (kind: GridDragKind) => {
+    let controlZ = props.startControlZ;
+    if (kind == "spacing-x" || kind == "spacing-y") {
+      controlZ = props.spacingZ;
+    } else if (kind == "extent") {
+      controlZ = props.extentControlZ;
     }
-    setDrag(undefined);
+    return {
+      constraint: planeConstraint("xy", [0, 0, controlZ]),
+      onDragStart: (event: ControlDragEvent) =>
+        startDrag(kind, event),
+      onDrag: (event: ControlDragEvent) =>
+        updateDrag(event),
+      onDragEnd: (_event: ControlDragEvent) => finishDrag(),
+      onDragCancel: cancelDrag,
+    };
   };
-  const handlers = (name: string, kind: GridDragKind) => ({
-    hovered: hovered == name,
-    onPointerOver: (event: ThreeEvent<PointerEvent>) => {
-      stopSceneObjectMarkerEvent(event);
-      !drag && setHovered(name);
-    },
-    onPointerOut: (event: ThreeEvent<PointerEvent>) => {
-      stopSceneObjectMarkerEvent(event);
-      !drag && setHovered(undefined);
-    },
-    onPointerDown: (event: ThreeEvent<PointerEvent>) =>
-      startDrag(kind, event),
-    onPointerMove: updateDrag,
-    onPointerUp: finishDrag,
-    onPointerCancel: cancelDrag,
+  return { handlers };
+};
+
+interface PointRadiusControlProps {
+  config: Config;
+  grid: PlantGridData;
+  radius: number;
+  color: ResourceColor;
+  z: number;
+  showLabel?: boolean;
+  onChange(radius: number): void;
+}
+
+const pointRadiusDirection = (grid: PlantGridData) => ({
+  x: -(Math.sign(grid.spacingH) || 1) / Math.sqrt(2),
+  y: -(Math.sign(grid.spacingV) || 1) / Math.sqrt(2),
+});
+
+const pointRadiusEnd = (
+  grid: PlantGridData,
+  radius: number,
+) => {
+  const direction = pointRadiusDirection(grid);
+  return {
+    x: grid.startX + direction.x * radius,
+    y: grid.startY + direction.y * radius,
+  };
+};
+
+export const PointRadiusControl = (props: PointRadiusControlProps) => {
+  const dragStart = React.useRef({
+    radius: props.radius,
+    projection: 0,
   });
-  return { countDragTip, handlers };
+  const getGardenPosition = React.useMemo(
+    () => getGardenPositionFunc(props.config, false),
+    [props.config],
+  );
+  const get3DPosition = React.useMemo(
+    () => get3DPositionFunc(props.config),
+    [props.config],
+  );
+  const startGarden = gardenStart(props.grid);
+  const direction = pointRadiusDirection(props.grid);
+  const endGarden = pointRadiusEnd(props.grid, props.radius);
+  const arrowStartGarden = pointRadiusEnd(
+    props.grid,
+    props.radius + POINT_RADIUS_ARROW_LENGTH,
+  );
+  const start = { ...get3DPosition(arrowStartGarden), z: props.z };
+  const end = { ...get3DPosition(endGarden), z: props.z };
+  const projection = (point: { x: number, y: number }) =>
+    (point.x - startGarden.x) * direction.x
+    + (point.y - startGarden.y) * direction.y;
+  const update = (event: ControlDragEvent) => {
+    const pointer = getGardenPosition(event.point);
+    props.onChange(quantizePointRadius(
+      dragStart.current.radius
+      + projection(pointer)
+      - dragStart.current.projection,
+    ));
+  };
+  return <ControlHandle
+    name={"grid-point-radius-control"}
+    constraint={planeConstraint("xy", [0, 0, props.z])}
+    onDragStart={event => {
+      const pointer = getGardenPosition(event.point);
+      dragStart.current = {
+        radius: props.radius,
+        projection: projection(pointer),
+      };
+    }}
+    onDrag={update}
+    onDragEnd={update}>
+    {state =>
+      <ControlArrow
+        name={"grid-point-radius-arrow"}
+        start={[start.x, start.y, start.z]}
+        end={[end.x, end.y, end.z]}
+        width={CONTROL_ARROW_WIDTH}
+        color={props.color}
+        hoverColor={props.color}
+        hovered={state.hovered}
+        heads={"end"}
+        headLength={40}
+        headWidthScale={1.7}
+        label={props.showLabel === false
+          ? undefined
+          : `r${props.radius}`}
+        labelVisible={state.hovered || state.dragging}
+        labelDepthTest={false}
+        labelDepthWrite={false}
+        labelRenderOrder={CONTROL_RENDER_ORDER}
+        {...GRID_CONTROL_OBJECT_PROPS} />}
+  </ControlHandle>;
 };
 
 // eslint-disable-next-line complexity
-const GridPlantingControls = (props: GridPlantingControlsProps) => {
+export const GridPlantingControls = (props: GridPlantingControlsProps) => {
+  const point = (value: Point3): [number, number, number] =>
+    [value.x, value.y, value.z];
   const get3DPosition = React.useMemo(
     () => get3DPositionFunc(props.config),
     [props.config],
   );
   const startGarden = gardenStart(props.grid);
   const startXY = get3DPosition(startGarden);
-  const controlZ = zZero(props.config)
-    + props.getZ(startGarden.x, startGarden.y)
-    + GRID_CONTROL_Z;
-  const start: Point3 = { ...startXY, z: controlZ };
-  const worldPoint = (garden: { x: number, y: number }): Point3 => {
-    const point = get3DPosition(garden);
-    return {
-      ...point,
-      z: zZero(props.config) + props.getZ(garden.x, garden.y)
-        + GRID_CONTROL_Z,
-    };
-  };
-  const { countDragTip, handlers } = useGridControlHandlers({
-    ...props,
-    controlZ,
+  const startPlantZ = zZero(props.config)
+    + props.getZ(startGarden.x, startGarden.y);
+  const startControlZ = startPlantZ + GRID_START_CONTROL_Z;
+  const extentControlZ = startPlantZ + GRID_EXTENT_CONTROL_Z;
+  const spacingZ = zZero(props.config)
+    + spacingControlSoilZ(props.grid, props.getZ)
+    + GRID_SPACING_CONTROL_Z;
+  const start: Point3 = { ...startXY, z: startControlZ };
+  const worldPoint = (garden: { x: number, y: number }): Point3 => ({
+    ...get3DPosition(garden),
+    z: startControlZ,
   });
-  const startSphereHandlers = handlers("grid-start-marker", "start");
+  const { handlers } = useGridControlHandlers({
+    ...props,
+    startControlZ,
+    extentControlZ,
+    spacingZ,
+  });
+  const startCoordinateLabel = () =>
+    <PlacementCoordinateLabel
+      coordinates={{
+        x: startGarden.x,
+        y: startGarden.y,
+        z: props.getZ(startGarden.x, startGarden.y),
+      }}
+      position={[
+        start.x,
+        start.y,
+        start.z + GRID_MARKER_RADIUS + 30,
+      ]} />;
+  const startSphereHandlers = handlers("start");
   const axisControls = (["x", "y"] as GridAxis[]).map(axis => {
-    const color = axis == "x" ? GRID_X_COLOR : GRID_Y_COLOR;
     const axisStartGarden =
       axisGardenPoint(startGarden, axis, GRID_MARKER_RADIUS);
     const axisEndGarden =
       axisGardenPoint(startGarden, axis, GRID_START_ARROW_LENGTH);
-    const axisStart = { ...worldPoint(axisStartGarden), z: controlZ + 55 };
-    const axisEnd = { ...worldPoint(axisEndGarden), z: controlZ + 55 };
-    const startHandlers =
-      handlers(`grid-start-${axis}-arrow`, `start-${axis}`);
-    const secondGarden = secondGardenPoint(props.grid, axis);
-    const second = worldPoint(secondGarden);
-    const spacingHandlers =
-      handlers(`grid-spacing-${axis}-marker`, `spacing-${axis}`);
-    const {
-      count,
-      spacing,
-      start: axisStartValue,
-    } = axisGridValues(props.grid, axis);
-    const lastGarden = lastGardenPoint(props.grid, axis);
-    const countEndValue = countDragTip?.axis == axis
-      ? countDragTip.value
-      : countArrowEndValue(props.grid, axis);
-    const countEndGarden = axisGardenPoint(
+    const axisStart = worldPoint(axisStartGarden);
+    const axisEnd = worldPoint(axisEndGarden);
+    const startHandlers = handlers(`start-${axis}`);
+    const perpendicularAxis = axis == "x" ? "y" : "x";
+    const perpendicularSpacing = axis == "x"
+      ? props.grid.spacingV
+      : props.grid.spacingH;
+    const spacingStartGarden = axisGardenPoint(
       startGarden,
-      axis,
-      countEndValue - axisStartValue,
+      perpendicularAxis,
+      -Math.sign(perpendicularSpacing || 1) * GRID_SPACING_OFFSET,
     );
-    const countEnd = worldPoint(countEndGarden);
-    const last = worldPoint(lastGarden);
-    const settledCountEnd = count > 2 ? last : countEnd;
-    const displayedCountEnd =
-      countDragTip?.axis == axis ? countEnd : settledCountEnd;
-    const countHandlers =
-      handlers(`grid-count-${axis}-arrow`, `count-${axis}`);
+    const spacing = axis == "x"
+      ? props.grid.spacingH
+      : props.grid.spacingV;
+    const axisCount = axis == "x"
+      ? props.grid.numPlantsH
+      : props.grid.numPlantsV;
+    const secondGarden = axisGardenPoint(
+      spacingStartGarden, axis, spacing);
+    const spacingStart = {
+      ...worldPoint(spacingStartGarden),
+      z: spacingZ,
+    };
+    const second = {
+      ...worldPoint(secondGarden),
+      z: spacingZ,
+    };
+    const perpendicularCount = axis == "x"
+      ? props.grid.numPlantsV
+      : props.grid.numPlantsH;
+    const perpendicularExtent =
+      perpendicularSpacing * (perpendicularCount - 1);
+    const firstRowEndGarden = axisGardenPoint(
+      startGarden, perpendicularAxis, perpendicularExtent);
+    const secondRowStartGarden = axisGardenPoint(
+      startGarden, axis, spacing);
+    const secondRowEndGarden = axisGardenPoint(
+      secondRowStartGarden, perpendicularAxis, perpendicularExtent);
+    const firstRowEnd = {
+      ...get3DPosition(firstRowEndGarden),
+      z: spacingZ,
+    };
+    const secondRowEnd = {
+      ...get3DPosition(secondRowEndGarden),
+      z: spacingZ,
+    };
+    const spacingHandlers = handlers(`spacing-${axis}`);
     return <React.Fragment key={axis}>
-      <InteractiveArrow
+      <ControlHandle
         name={`grid-start-${axis}-arrow`}
-        start={axisStart}
-        end={axisEnd}
-        color={color}
-        label={axis.toUpperCase()}
-        {...startHandlers} />
-      <InteractiveArrow
-        name={`grid-spacing-${axis}-arrow`}
-        start={{ ...start, z: controlZ - 15 }}
-        end={{ ...second, z: second.z - 15 }}
-        color={GRID_CONTROL_COLOR}
-        doubleSided={true}
-        label={`${Math.abs(spacing)}mm`}
-        {...spacingHandlers} />
-      <DragSphere
-        name={`grid-spacing-${axis}-marker`}
-        position={second}
-        {...spacingHandlers} />
-      <InteractiveArrow
-        name={`grid-count-${axis}-arrow`}
-        start={second}
-        end={displayedCountEnd}
-        color={GRID_CONTROL_COLOR}
-        label={`${count}`}
-        {...countHandlers} />
+        onHoverChange={props.onStartInteractionChange}
+        {...startHandlers}>
+        {state => <>
+          <ControlArrow
+            name={`grid-start-${axis}-arrow-shape`}
+            start={point(axisStart)}
+            end={point(axisEnd)}
+            width={CONTROL_ARROW_WIDTH}
+            colorType={axis}
+            hovered={state.hovered}
+            headLength={40}
+            headWidthScale={1.7}
+            {...GRID_CONTROL_OBJECT_PROPS} />
+          {(state.hovered || state.dragging) && startCoordinateLabel()}
+        </>}
+      </ControlHandle>
+      {axisCount > 1 &&
+        <ControlHandle
+          name={`grid-spacing-${axis}-control`}
+          {...spacingHandlers}>
+          {state => <>
+            {(state.hovered || state.dragging) &&
+              <>
+                <Line
+                  name={`grid-spacing-${axis}-first-row-guide`}
+                  points={[point(spacingStart), point(firstRowEnd)]}
+                  color={CONTROL_COLORS.primary}
+                  lineWidth={2}
+                  raycast={noControlRaycast}
+                  {...GRID_CONTROL_OBJECT_PROPS} />
+                <Line
+                  name={`grid-spacing-${axis}-second-row-guide`}
+                  points={[point(second), point(secondRowEnd)]}
+                  color={CONTROL_COLORS.primary}
+                  lineWidth={2}
+                  raycast={noControlRaycast}
+                  {...GRID_CONTROL_OBJECT_PROPS} />
+              </>}
+            <ControlArrow
+              name={`grid-spacing-${axis}-arrow`}
+              start={point(spacingStart)}
+              end={point(second)}
+              width={CONTROL_ARROW_WIDTH}
+              colorType={"primary"}
+              hovered={state.hovered}
+              heads={"end"}
+              headLength={40}
+              headWidthScale={1.7}
+              {...GRID_CONTROL_OBJECT_PROPS}
+              label={`${Math.abs(spacing)}mm`}
+              labelDepthTest={false}
+              labelDepthWrite={false}
+              labelRenderOrder={CONTROL_RENDER_ORDER}
+              labelVisible={state.hovered || state.dragging} />
+          </>}
+        </ControlHandle>}
     </React.Fragment>;
   });
+  const terminalGarden = terminalGardenPoint(props.grid);
+  const terminalWorld = {
+    ...get3DPosition(terminalGarden),
+    z: zZero(props.config)
+      + props.getZ(terminalGarden.x, terminalGarden.y)
+      + GRID_EXTENT_CONTROL_Z,
+  };
   return <Group name={"grid-planting-controls"}>
-    <DragSphere
-      name={"grid-start-marker"}
-      position={start}
-      {...startSphereHandlers} />
+    {props.pointRadius !== undefined && props.onPointRadiusChange &&
+      <PointRadiusControl
+        config={props.config}
+        grid={props.grid}
+        radius={props.pointRadius}
+        color={props.pointColor || "green"}
+        z={startPlantZ + POINT_RADIUS_CONTROL_Z}
+        onChange={props.onPointRadiusChange} />}
+    <ControlHandle
+      name={"grid-start-marker-control"}
+      onHoverChange={props.onStartInteractionChange}
+      {...startSphereHandlers}>
+      {state => <>
+        <ControlSphere
+          name={"grid-start-marker"}
+          position={point(start)}
+          radius={GRID_MARKER_RADIUS}
+          colorType={"origin"}
+          hovered={state.hovered}
+          {...GRID_CONTROL_OBJECT_PROPS} />
+        {(state.hovered || state.dragging) && startCoordinateLabel()}
+      </>}
+    </ControlHandle>
     {axisControls}
+    <ControlHandle
+      name={"grid-extent-marker-control"}
+      {...handlers("extent")}>
+      {state => <>
+        <ControlSphere
+          name={"grid-extent-marker"}
+          position={point(terminalWorld)}
+          radius={GRID_MARKER_RADIUS}
+          colorType={"primary"}
+          hovered={state.hovered}
+          {...GRID_CONTROL_OBJECT_PROPS} />
+        <ControlLabel
+          name={"grid-extent-label"}
+          position={point({
+            ...terminalWorld,
+            z: terminalWorld.z + GRID_MARKER_RADIUS + 30,
+          })}
+          fontSize={34}
+          color={"white"}
+          visible={state.hovered || state.dragging}
+          {...GRID_CONTROL_FOREGROUND_PROPS}>
+          {`${props.grid.numPlantsH} x ${props.grid.numPlantsV}`}
+        </ControlLabel>
+      </>}
+    </ControlHandle>
   </Group>;
 };
 
-interface GridPlantingPopupProps {
+interface GridFinalAdjustmentProps extends GridPlantingControlsProps {
+  phase: GridPlantingPhase;
   position: [number, number, number];
-  grid: PlantGridData;
-  offsetPacking: boolean;
-  disabled: boolean;
-  errors: string[];
-  addPlantProps: AddPlantProps;
-  onChange(key: PlantGridKey, value: number): void;
-  onUseCurrentPosition(position: Record<"x" | "y", number>): void;
-  onTogglePacking(): void;
-  onSave(): void;
+  saving: boolean;
+  pointColor?: ResourceColor;
+  onPointColorChange?(color: ResourceColor): void;
   onCancel(): void;
+  onSave(): void;
 }
 
-const GridPlantingPopup = (props: GridPlantingPopupProps) =>
-  <Html
-    name={"grid-planting-popup"}
-    wrapperClass={"three-d-object-popup-wrapper"}
-    center={true}
-    position={props.position}>
-    <div
-      className={"three-d-object-popup grid grid-planting-popup visible"}
-      onPointerDown={stopPopupEvent}
-      onContextMenu={stopPopupEvent}
-      onWheel={stopPopupEvent}
-      onClick={stopPopupEvent}>
-      <div className={"object-popup-header row grid-exp-2"}>
-        <h3>{t("Add Grid or Row")}</h3>
+const GridFinalAdjustment = (props: GridFinalAdjustmentProps) => {
+  const { onSave, phase } = props;
+  const [colorPickerOpen, setColorPickerOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (phase != "edit") { return; }
+    const saveOnEnter = (event: KeyboardEvent) => {
+      if (event.key != "Enter") { return; }
+      event.preventDefault();
+      onSave();
+    };
+    window.addEventListener("keydown", saveOnEnter);
+    return () => window.removeEventListener("keydown", saveOnEnter);
+  }, [onSave, phase]);
+  if (phase != "edit") { return <></>; }
+  return <>
+    <GridPlantingControls
+      config={props.config}
+      grid={props.grid}
+      gridSize={props.gridSize}
+      getZ={props.getZ}
+      onChange={props.onChange}
+      pointRadius={props.pointRadius}
+      pointColor={props.pointColor}
+      onPointRadiusChange={props.onPointRadiusChange}
+      onStartInteractionChange={props.onStartInteractionChange} />
+    <Html
+      name={"grid-action-controls"}
+      wrapperClass={"grid-action-controls-wrapper"}
+      center={true}
+      position={props.position}>
+      <div
+        data-testid={"grid-action-controls"}
+        className={"grid-action-controls"}
+        onPointerDown={stopThreeDPopupEvent}
+        onContextMenu={stopThreeDPopupEvent}
+        onWheel={stopThreeDPopupEvent}
+        onClick={stopThreeDPopupEvent}>
         <button
           type={"button"}
-          className={"fa fa-times fb-icon-button invert"}
-          title={t("close")}
-          disabled={props.disabled}
+          name={"grid-cancel-control"}
+          className={
+            "grid-action-button grid-action-cancel fa fa-times"}
+          title={t("Cancel")}
+          aria-label={t("Cancel")}
+          disabled={props.saving}
           onClick={props.onCancel} />
-      </div>
-      <div className={"object-popup-content grid"}>
-        <GridInput
-          itemType={"plants"}
-          xy_swap={!!props.addPlantProps.getConfigValue(
-            BooleanSetting.xy_swap)}
-          disabled={props.disabled}
-          grid={props.grid}
-          botPosition={props.addPlantProps.botPosition}
-          onChange={props.onChange}
-          onUseCurrentPosition={props.onUseCurrentPosition} />
-        <div className={"row grid-exp-1 grid-packing-row"}>
-          <label>{t("hexagonal packing")}</label>
-          <ToggleButton
-            toggleValue={props.offsetPacking}
-            toggleAction={props.onTogglePacking}
-            title={t("toggle packing method")}
-            customText={{ textFalse: t("off"), textTrue: t("on") }} />
-        </div>
-        {props.errors.length > 0 &&
-          <div className={"grid-planting-errors"}>
-            {props.errors.map(message =>
-              <p key={message}>{message}</p>)}
+        {props.pointColor && props.onPointColorChange &&
+          <div className={"grid-point-color-picker"}>
+            <button
+              type={"button"}
+              name={"grid-point-color-control"}
+              className={[
+                "grid-action-button",
+                "grid-action-color",
+                "fa",
+                "fa-paint-brush",
+                props.pointColor,
+              ].join(" ")}
+              title={t("Select color")}
+              aria-label={t("Select color")}
+              disabled={props.saving}
+              onClick={() => setColorPickerOpen(!colorPickerOpen)} />
+            {colorPickerOpen &&
+              <div className={"grid-point-color-menu colorpicker-menu"}>
+                <ColorPickerCluster
+                  current={props.pointColor}
+                  onChange={color => {
+                    props.onPointColorChange?.(color);
+                    setColorPickerOpen(false);
+                  }} />
+              </div>}
           </div>}
-        <div className={"row grid-exp-2 grid-planting-popup-buttons"}>
-          <button
-            type={"button"}
-            className={"fb-button gray"}
-            disabled={props.disabled}
-            onClick={props.onCancel}>
-            {t("Cancel")}
-          </button>
-          <button
-            type={"button"}
-            className={"fb-button green"}
-            disabled={props.disabled || props.errors.length > 0}
-            onClick={props.onSave}>
-            {props.disabled ? t("Saving...") : t("Save")}
-          </button>
-        </div>
+        <button
+          type={"button"}
+          name={"grid-save-control"}
+          className={
+            "grid-action-button grid-action-save fa fa-check"}
+          title={t("Save")}
+          aria-label={t("Save")}
+          disabled={props.saving}
+          onClick={props.onSave} />
       </div>
-    </div>
-  </Html>;
+    </Html>
+  </>;
+};
 
 interface SaveGridPlantingProps {
   validation: PlantGridValidation;
   saving: boolean;
   grid: PlantGridData;
   request: GridPlantingRequest;
+  pointRadius?: number;
+  pointColor?: ResourceColor;
   offsetPacking: boolean;
   addPlantProps: AddPlantProps;
   setSaving(value: boolean): void;
+  onSuccess(): void;
 }
 
 export const saveGridPlanting = async (props: SaveGridPlantingProps) => {
@@ -765,6 +944,12 @@ export const saveGridPlanting = async (props: SaveGridPlantingProps) => {
       itemName: props.request.itemName,
       gridId: props.request.gridId,
       offsetPacking: props.offsetPacking,
+      radius: props.pointRadius,
+      z: props.request.z,
+      meta: {
+        ...props.request.meta,
+        ...(props.pointColor ? { color: props.pointColor } : {}),
+      },
       designer: props.addPlantProps.designer,
     };
     const plants = initPlantGrid(initOptions);
@@ -775,49 +960,83 @@ export const saveGridPlanting = async (props: SaveGridPlantingProps) => {
     props.addPlantProps.dispatch(batchAction);
     await props.addPlantProps.dispatch(saveGrid(
       props.request.gridId, resourceUuids));
-    success(t("{{ count }} plants added.", {
+    const pointGrid = isPointGridRequest(props.request);
+    success(t("{{ count }} {{ itemType }} added.", {
       count: gridPlantCount(props.grid),
+      itemType: pointGrid ? t("points") : t("plants"),
     }));
     props.addPlantProps.dispatch({
       type: Actions.SET_GRID_START,
       payload: { x: props.grid.startX, y: props.grid.startY },
     });
-    props.addPlantProps.dispatch({
+    !pointGrid && props.addPlantProps.dispatch({
       type: Actions.SET_COMPANION_INDEX,
       payload: undefined,
     });
     props.addPlantProps.dispatch({
       type: Actions.SET_GRID_PLANTING,
-      payload: undefined,
+      payload: pointGrid
+        ? undefined
+        : {
+          ...props.request,
+          gridId: uuid(),
+        },
     });
   } catch {
     await props.addPlantProps.dispatch(stashGrid(
       props.request.gridId, resourceUuids));
     error(t("Unable to save the grid."));
     props.setSaving(false);
+    return;
   }
+  props.setSaving(false);
+  props.onSuccess();
 };
 
 export const GridPlanting = React.forwardRef<
   GridPlantingController,
   GridPlantingProps
+  // eslint-disable-next-line complexity
 >((props, ref) => {
+  const { activePositionRef } = props;
   const request = props.addPlantProps.designer.gridPlanting;
+  const pointGrid = isPointGridRequest(request);
+  /* eslint-disable react-hooks/refs */
+  const [initialStart] = React.useState(() => {
+    const activePosition = activePositionRef.current;
+    return roundPosition(
+      activePosition
+        ? getGardenPositionFunc(props.config, false)(activePosition)
+        : props.addPlantProps.designer.gridStart,
+      props.addPlantProps.gridSize,
+    );
+  });
+  /* eslint-enable react-hooks/refs */
   const [phase, setPhase] =
     React.useState<GridPlantingPhase>("pick-start");
   const [grid, setGrid] = React.useState(() => initialPlantGrid(
-    props.addPlantProps.designer.gridStart,
-    request?.defaultSpacing || 250,
+    initialStart,
+    pointGrid
+      ? DEFAULT_POINT_GRID_SPACING
+      : request?.defaultSpacing || 250,
     { x: 2, y: 2 },
   ));
-  const [hover, setHover] = React.useState(
-    props.addPlantProps.designer.gridStart);
-  const [offsetPacking, setOffsetPacking] = React.useState(false);
+  const [hover, setHover] = React.useState(initialStart);
   const [saving, setSaving] = React.useState(false);
+  const [adjustingStart, setAdjustingStart] = React.useState(false);
+  const [pointRadius, setPointRadius] =
+    React.useState(DEFAULT_POINT_GRID_RADIUS);
+  const pointColor =
+    (request?.meta?.color || "green") as ResourceColor;
   const extentBaseGrid = React.useRef(grid);
   const pendingHover =
     React.useRef<{ x: number, y: number } | undefined>(undefined);
   const hoverFrame = React.useRef<number | undefined>(undefined);
+  const alignmentIndicatorRef =
+    React.useRef<AlignmentIndicatorController>(
+      // eslint-disable-next-line no-null/no-null
+      null);
+  const previewSpreadPositionRef = React.useRef({ x: 0, y: 0 });
   const getGardenPosition = React.useMemo(
     () => getGardenPositionFunc(props.config, false),
     [props.config],
@@ -829,10 +1048,12 @@ export const GridPlanting = React.forwardRef<
   const updateHover = React.useCallback((
     event: ThreeEvent<MouseEvent>,
   ) => {
-    pendingHover.current = roundPosition(
+    const nextPosition = roundPosition(
       getGardenPosition(event.point),
       props.addPlantProps.gridSize,
     );
+    pendingHover.current = nextPosition;
+    activePositionRef.current = get3DPosition(nextPosition);
     if (hoverFrame.current) { return; }
     hoverFrame.current = requestAnimationFrame(() => {
       hoverFrame.current = undefined;
@@ -842,7 +1063,6 @@ export const GridPlanting = React.forwardRef<
         const nextGrid = gridAtExtent(
           extentBaseGrid.current,
           next,
-          request?.defaultSpacing || 250,
           props.addPlantProps.gridSize,
         );
         setGrid(nextGrid);
@@ -852,10 +1072,11 @@ export const GridPlanting = React.forwardRef<
       }
     });
   }, [
+    get3DPosition,
     getGardenPosition,
     phase,
+    activePositionRef,
     props.addPlantProps.gridSize,
-    request?.defaultSpacing,
   ]);
   const onClick = React.useCallback((
     event: ThreeEvent<MouseEvent>,
@@ -868,10 +1089,13 @@ export const GridPlanting = React.forwardRef<
       props.addPlantProps.gridSize,
     );
     if (phase == "pick-start") {
+      const spacing = pointGrid
+        ? DEFAULT_POINT_GRID_SPACING
+        : request?.defaultSpacing || 250;
       const nextGrid = gridAtStart(
         grid,
         position,
-        request?.defaultSpacing || 250,
+        spacing,
         props.addPlantProps.gridSize,
       );
       extentBaseGrid.current = nextGrid;
@@ -883,7 +1107,6 @@ export const GridPlanting = React.forwardRef<
     const nextGrid = gridAtExtent(
       extentBaseGrid.current,
       position,
-      request?.defaultSpacing || 250,
       props.addPlantProps.gridSize,
     );
     setGrid(nextGrid);
@@ -893,6 +1116,7 @@ export const GridPlanting = React.forwardRef<
     getGardenPosition,
     grid,
     phase,
+    pointGrid,
     props.addPlantProps.gridSize,
     request?.defaultSpacing,
     saving,
@@ -904,43 +1128,165 @@ export const GridPlanting = React.forwardRef<
   React.useEffect(() => () => {
     hoverFrame.current && cancelAnimationFrame(hoverFrame.current);
   }, []);
+  const validation = React.useMemo(() => validatePlantGrid(
+    grid,
+    false,
+    props.addPlantProps.gridSize,
+  ), [grid, props.addPlantProps.gridSize]);
+  const restartAt = React.useCallback((position: { x: number, y: number }) => {
+    const nextHover = roundPosition(
+      position,
+      props.addPlantProps.gridSize,
+    );
+    const nextGrid = initialPlantGrid(
+      nextHover,
+      pointGrid
+        ? DEFAULT_POINT_GRID_SPACING
+        : request?.defaultSpacing || 250,
+      { x: 2, y: 2 },
+    );
+    if (hoverFrame.current) {
+      cancelAnimationFrame(hoverFrame.current);
+      hoverFrame.current = undefined;
+    }
+    pendingHover.current = undefined;
+    extentBaseGrid.current = nextGrid;
+    setAdjustingStart(false);
+    setGrid(nextGrid);
+    setHover(nextHover);
+    if (pointGrid) {
+      setPointRadius(DEFAULT_POINT_GRID_RADIUS);
+      const drawnPoint = props.addPlantProps.designer.drawnPoint;
+      drawnPoint && props.addPlantProps.dispatch({
+        type: Actions.SET_DRAWN_POINT_DATA,
+        payload: {
+          ...drawnPoint,
+          r: DEFAULT_POINT_GRID_RADIUS,
+        },
+      });
+    }
+    setPhase("pick-start");
+  }, [
+    props.addPlantProps,
+    pointGrid,
+    request?.defaultSpacing,
+  ]);
+  const restart = React.useCallback(() => {
+    restartAt(props.addPlantProps.designer.gridStart);
+  }, [
+    props.addPlantProps.designer.gridStart,
+    restartAt,
+  ]);
+  const showStartHelpers = gridStartHelpersVisible(phase, adjustingStart);
+  const alignmentPosition = phase == "pick-start"
+    ? hover
+    : gardenStart(grid);
+  React.useLayoutEffect(() => {
+    if (request && showStartHelpers) {
+      alignmentIndicatorRef.current?.update(alignmentPosition);
+    }
+  }, [
+    alignmentPosition,
+    request,
+    showStartHelpers,
+  ]);
   React.useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key == "Escape" && !saving) {
-        props.addPlantProps.dispatch({
-          type: Actions.SET_GRID_PLANTING,
-          payload: undefined,
-        });
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key != "Escape") { return; }
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      if (saving) { return; }
+      setAdjustingStart(false);
+      if (phase == "edit") {
+        extentBaseGrid.current = grid;
+        setHover(terminalGardenPoint(grid));
+        setPhase("pick-extent");
+        return;
       }
+      if (phase == "pick-extent") {
+        setHover(gardenStart(grid));
+        setPhase("pick-start");
+        return;
+      }
+      props.addPlantProps.dispatch({
+        type: Actions.SET_GRID_PLANTING,
+        payload: undefined,
+      });
     };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [props.addPlantProps, saving]);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [
+    grid,
+    phase,
+    props.addPlantProps,
+    saving,
+  ]);
   if (!request) { return <></>; }
+  const updatePointRadius = (radius: number) => {
+    const nextRadius = quantizePointRadius(radius);
+    setPointRadius(nextRadius);
+    const drawnPoint = props.addPlantProps.designer.drawnPoint;
+    drawnPoint && props.addPlantProps.dispatch({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...drawnPoint, r: nextRadius },
+    });
+  };
+  const updatePointColor = (color: ResourceColor) => {
+    props.addPlantProps.dispatch({
+      type: Actions.SET_GRID_PLANTING,
+      payload: {
+        ...request,
+        meta: { ...request.meta, color },
+      },
+    });
+    const drawnPoint = props.addPlantProps.designer.drawnPoint;
+    drawnPoint && props.addPlantProps.dispatch({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...drawnPoint, color },
+    });
+  };
+  const save = () => {
+    void saveGridPlanting({
+      validation,
+      saving,
+      grid,
+      request,
+      pointRadius: pointGrid ? pointRadius : undefined,
+      pointColor: pointGrid ? pointColor : undefined,
+      offsetPacking: false,
+      addPlantProps: props.addPlantProps,
+      setSaving,
+      onSuccess: () => {
+        if (pointGrid) {
+          props.navigate(Path.points());
+          return;
+        }
+        restartAt(gardenStart(grid));
+      },
+    });
+  };
   const previewGrid = phase == "pick-start"
     ? gridAtStart(
       grid,
       hover,
-      request.defaultSpacing,
+      pointGrid ? DEFAULT_POINT_GRID_SPACING : request.defaultSpacing,
       props.addPlantProps.gridSize,
     )
     : grid;
-  const validation = validatePlantGrid(
-    grid,
-    offsetPacking,
-    props.addPlantProps.gridSize,
-  );
   const previewValidation = validatePlantGrid(
     previewGrid,
-    offsetPacking,
+    false,
     props.addPlantProps.gridSize,
   );
-  const metadata = findCropMetadata(request.cropSlug);
-  const icon = findCropIcon(request.cropSlug);
+  const cropSlug = request.cropSlug || "";
+  const metadata = findCropMetadata(cropSlug);
+  const icon = findCropIcon(cropSlug);
   const size =
     (props.addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
-  const previewPlants: ThreeDGardenPlant[] =
-    previewValidation.points
+  const previewPlants: ThreeDGardenPlant[] = pointGrid
+    ? []
+    : previewValidation.points
       .map(([x, y], index) => ({
         id: undefined,
         label: request.itemName,
@@ -952,53 +1298,134 @@ export const GridPlanting = React.forwardRef<
         key: `grid-preview-${index}`,
         seed: 0,
       }));
-  const startWorld = get3DPosition(gardenStart(grid));
-  const popupPosition: [number, number, number] = [
-    startWorld.x,
-    startWorld.y,
-    zZero(props.config) + props.getZ(grid.startX, grid.startY)
-      + GRID_POPUP_Z,
-  ];
-  const cancel = () => !saving && props.addPlantProps.dispatch({
-    type: Actions.SET_GRID_PLANTING,
-    payload: undefined,
-  });
-  const useCurrentPosition = (position: Record<"x" | "y", number>) => {
-    if (!isNumber(position.x) || !isNumber(position.y)) { return; }
-    const start = clampGridStart(
-      grid,
-      offsetPacking,
-      position,
-      props.addPlantProps.gridSize,
-    );
-    setGrid(current => ({
-      ...current,
-      startX: start.x,
-      startY: start.y,
-    }));
-  };
+  const previewPointBodies = pointGrid
+    ? initPlantGrid({
+      grid: previewGrid,
+      gridId: request.gridId,
+      offsetPacking: false,
+      itemName: request.itemName,
+      radius: pointRadius,
+      z: request.z,
+      meta: {
+        ...request.meta,
+        color: pointColor,
+      },
+    }) as TaggedGenericPointer["body"][]
+    : [];
+  const previewPoints = pointGrid
+    ? batchInitDirty<TaggedGenericPointer>(
+      "Point", previewPointBodies).payload
+    : [];
+  const previewStart = gardenStart(previewGrid);
+  const primaryPreviewPlants = phase == "pick-start"
+    ? previewPlants.filter(plant =>
+      plant.x == previewStart.x && plant.y == previewStart.y)
+    : previewPlants;
+  const extraPreviewPlants = phase == "pick-start"
+    ? previewPlants.filter(plant =>
+      plant.x != previewStart.x || plant.y != previewStart.y)
+    : [];
+  const previewStartWorld = get3DPosition(previewStart);
+  const previewStartZ = zZero(props.config)
+    + props.getZ(previewStart.x, previewStart.y);
+  const zero = zeroFunc(props.config);
+  const extents = extentsFunc(props.config);
+  const actionPosition = gridActionControlPosition(
+    props.config,
+    grid,
+    props.getZ,
+  );
   return <Group name={"grid-planting"}>
-    <PlantInstances
-      plants={previewPlants}
-      config={props.config}
-      getZ={props.getZ}
-      visible={true} />
-    {phase == "pick-start" &&
-      <Billboard
-        follow={true}
-        position={[
-          get3DPosition(hover).x,
-          get3DPosition(hover).y,
-          zZero(props.config) + props.getZ(hover.x, hover.y) + size + 45,
-        ]}>
-        <Text
-          position={[0, 0, 0]}
-          rotation={[0, 0, 0]}
-          fontSize={34}
-          color={"white"}>
-          {t("Click to set grid start")}
-        </Text>
-      </Billboard>}
+    {pointGrid
+      ? <PointInstances
+        points={previewPoints}
+        config={props.config}
+        getZ={props.getZ}
+        visible={true} />
+      : <PlantInstances
+        plants={primaryPreviewPlants}
+        config={props.config}
+        getZ={props.getZ}
+        visible={true} />}
+    {!pointGrid && extraPreviewPlants.length > 0 &&
+      <PlantInstances
+        plants={extraPreviewPlants}
+        config={props.config}
+        getZ={props.getZ}
+        visible={true}
+        opacity={0.5} />}
+    {!pointGrid && phase != "pick-start" &&
+      <PlantSpreadInstances
+        plants={previewPlants}
+        config={props.config}
+        getZ={props.getZ}
+        visible={true}
+        spreadVisible={true}
+        forceWhite={true}
+        activePositionRef={previewSpreadPositionRef} />}
+    {showStartHelpers &&
+      <Group name={"grid-start-helpers"}>
+        <Line
+          name={"grid-x-crosshair"}
+          position={[0, previewStartWorld.y, previewStartZ]}
+          color={"white"}
+          transparent={true}
+          opacity={0.9}
+          lineWidth={2}
+          points={[
+            [zero.x, 0, 0],
+            [extents.x, 0, 0],
+          ]} />
+        <Line
+          name={"grid-y-crosshair"}
+          position={[previewStartWorld.x, 0, previewStartZ]}
+          color={"white"}
+          transparent={true}
+          opacity={0.9}
+          lineWidth={2}
+          points={[
+            [0, zero.y, 0],
+            [0, extents.y, 0],
+          ]} />
+        <AlignmentIndicators
+          ref={alignmentIndicatorRef}
+          config={props.config}
+          plants={props.plants}
+          weeds={props.weeds}
+          points={props.mapPoints}
+          showPlants={props.showPlants}
+          showPoints={props.showPoints}
+          showWeeds={props.showWeeds}
+          getZ={props.getZ} />
+        {phase == "pick-start" &&
+          <>
+            {!pointGrid &&
+              <Group
+                name={"grid-start-spread-sphere"}
+                position={[
+                  previewStartWorld.x,
+                  previewStartWorld.y,
+                  previewStartZ,
+                ]}>
+                <PlantPlacementSphere
+                  config={props.config}
+                  spread={metadata.spread} />
+              </Group>}
+            <PlacementCoordinateLabel
+              coordinates={{
+                x: previewStart.x,
+                y: previewStart.y,
+                z: props.getZ(previewStart.x, previewStart.y),
+              }}
+              position={[
+                previewStartWorld.x,
+                previewStartWorld.y,
+                previewStartZ
+                  + (pointGrid ? POINT_PIN_HEIGHT : size)
+                  + 45,
+              ]} />
+          </>}
+      </Group>}
     {phase == "pick-extent" &&
       <Billboard
         follow={true}
@@ -1011,49 +1438,27 @@ export const GridPlanting = React.forwardRef<
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
           fontSize={34}
-          color={"white"}>
-          {t("Click to set grid size")}
+          color={"white"}
+          {...GRID_CONTROL_FOREGROUND_PROPS}>
+          {`${grid.numPlantsH} x ${grid.numPlantsV}`}
         </Text>
       </Billboard>}
-    {phase == "edit" &&
-      <>
-        <GridPlantingControls
-          config={props.config}
-          grid={grid}
-          offsetPacking={offsetPacking}
-          gridSize={props.addPlantProps.gridSize}
-          getZ={props.getZ}
-          onChange={setGrid} />
-        <GridPlantingPopup
-          position={popupPosition}
-          grid={grid}
-          offsetPacking={offsetPacking}
-          disabled={saving}
-          errors={validation.errors}
-          addPlantProps={props.addPlantProps}
-          onChange={(key, value) =>
-            setGrid(current => ({ ...current, [key]: value }))}
-          onUseCurrentPosition={useCurrentPosition}
-          onTogglePacking={() => {
-            setOffsetPacking(current => !current);
-            !offsetPacking && setGrid(current => ({
-              ...current,
-              spacingH: mathRound(0.866 * current.spacingV),
-            }));
-          }}
-          onSave={() => {
-            void saveGridPlanting({
-              validation,
-              saving,
-              grid,
-              request,
-              offsetPacking,
-              addPlantProps: props.addPlantProps,
-              setSaving,
-            });
-          }}
-          onCancel={cancel} />
-      </>}
+    <GridFinalAdjustment
+      phase={phase}
+      position={actionPosition}
+      config={props.config}
+      grid={grid}
+      gridSize={props.addPlantProps.gridSize}
+      getZ={props.getZ}
+      onChange={setGrid}
+      pointRadius={pointGrid ? pointRadius : undefined}
+      onPointRadiusChange={pointGrid ? updatePointRadius : undefined}
+      onStartInteractionChange={setAdjustingStart}
+      saving={saving}
+      pointColor={pointGrid ? pointColor : undefined}
+      onPointColorChange={pointGrid ? updatePointColor : undefined}
+      onCancel={restart}
+      onSave={save} />
   </Group>;
 });
 

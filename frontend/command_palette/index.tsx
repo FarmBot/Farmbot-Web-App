@@ -478,7 +478,20 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
 
   const moveSelection = (offset: number) => {
     if (!results.length) { return; }
-    const next = (selected + offset + results.length) % results.length;
+    if (offset < 0 && selected == 0) {
+      setSelected(-1);
+      setSelectedAction(0);
+      searchRef.current?.focus();
+      return;
+    }
+    if (offset < 0 && selected < 0 && !query) {
+      searchRef.current?.focus();
+      return;
+    }
+    let next = (selected + offset + results.length) % results.length;
+    if (selected < 0) {
+      next = offset > 0 ? 0 : results.length - 1;
+    }
     const actionIndex = defaultActionIndex(results[next]);
     setSelectedAction(actionIndex);
     setSelected(next);
@@ -738,12 +751,17 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
       <i className="fa fa-search" aria-hidden={true} />
       <input
         ref={searchRef}
-        className="command-palette-search"
+        className={[
+          "command-palette-search",
+          selected < 0 ? "selected" : "",
+        ].join(" ")}
         value={query}
         placeholder={t("Search commands, settings, and navigations...")}
         aria-label={t("Search commands")}
         aria-controls="command-palette-list"
-        aria-activedescendant={`command-palette-option-${selected}`}
+        aria-activedescendant={selected < 0
+          ? undefined
+          : `command-palette-option-${selected}`}
         onChange={event => {
           setQuery(event.currentTarget.value);
           setSelected(0);

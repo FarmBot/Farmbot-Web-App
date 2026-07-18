@@ -1,6 +1,7 @@
 import React from "react";
 import { ThreeEvent } from "@react-three/fiber";
 import { CanvasTexture } from "three";
+import { useControlCursor } from "./controls";
 
 export type ViewPrismDirection = [number, number, number];
 
@@ -307,26 +308,17 @@ interface ViewPrismTargetMeshProps {
   target: ViewPrismTarget;
   hoverColor: string;
   onDirection(direction: ViewPrismDirection): void;
-  onHover(
-    targetId: string,
-    hovered: boolean,
-    element: EventTarget | null,
-  ): void;
 }
 
 const ViewPrismTargetMesh = (props: ViewPrismTargetMeshProps) => {
   const [hovered, setHovered] = React.useState(false);
+  useControlCursor(hovered, "pointer");
   const stopAndSetHover = (
     hoveredState: boolean,
     event: ThreeEvent<PointerEvent>,
   ) => {
     event.stopPropagation();
     setHovered(hoveredState);
-    props.onHover(
-      props.target.id,
-      hoveredState,
-      event.nativeEvent.target,
-    );
   };
   const click = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
@@ -363,44 +355,9 @@ export const ViewPrism = (props: ViewPrismProps) => {
   }), [props.color, props.hoverColor, props.textColor, props.strokeColor]);
   const textures = React.useMemo(() => FACE_DEFINITIONS.map(face =>
     makeFaceTexture(face, colors, borderWidth)), [borderWidth, colors]);
-  const hoveredTargets = React.useRef(new Set<string>());
-  const cursorState = React.useRef<{
-    element: HTMLElement;
-    previousCursor: string;
-  } | undefined>(undefined);
-  const setTargetHover = React.useCallback((
-    targetId: string,
-    hovered: boolean,
-    target: EventTarget | null,
-  ) => {
-    if (!(target instanceof HTMLElement)) { return; }
-    if (hovered) {
-      hoveredTargets.current.add(targetId);
-      if (!cursorState.current) {
-        cursorState.current = {
-          element: target,
-          previousCursor: target.style.cursor,
-        };
-      }
-      target.style.cursor = "pointer";
-    } else {
-      hoveredTargets.current.delete(targetId);
-      if (hoveredTargets.current.size == 0 && cursorState.current) {
-        cursorState.current.element.style.cursor =
-          cursorState.current.previousCursor;
-        cursorState.current = undefined;
-      }
-    }
-  }, []);
   React.useEffect(() => () => {
     textures.forEach(texture => texture.dispose());
   }, [textures]);
-  React.useEffect(() => () => {
-    if (cursorState.current) {
-      cursorState.current.element.style.cursor =
-        cursorState.current.previousCursor;
-    }
-  }, []);
   return <group
     name={"view-prism-bounds"}
     scale={VIEW_PRISM_SCALE}>
@@ -419,7 +376,6 @@ export const ViewPrism = (props: ViewPrismProps) => {
         key={target.id}
         target={target}
         hoverColor={props.hoverColor}
-        onDirection={props.onDirection}
-        onHover={setTargetHover} />)}
+        onDirection={props.onDirection} />)}
   </group>;
 };

@@ -268,7 +268,7 @@ describe("<PlantGrid />", () => {
     expect(ref.current?.state.offsetPacking).toBeFalsy();
     fireEvent.click(getToggleButtonByLabel("hexagonal packing"));
     expect(ref.current?.state.offsetPacking).toBeTruthy();
-    expect(ref.current?.state.grid.spacingH).toEqual(217);
+    expect(ref.current?.state.grid.spacingH).toEqual(220);
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
@@ -332,5 +332,29 @@ describe("<PlantGrid />", () => {
     expect(chevronUp).toBeInTheDocument();
     fireEvent.click(chevronUp as Element);
     expect(ref.current?.state.isOpen).toBeFalsy();
+  });
+
+  it("opens a collapsible grid when requested", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.open = true;
+    const { container, ref } = renderGrid(p);
+
+    expect(ref.current?.state.isOpen).toBeTruthy();
+    expect(container.querySelector(".fa-chevron-up")).toBeInTheDocument();
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
+  });
+
+  it("opens an already-mounted collapsible grid when requested", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    const ref = React.createRef<PlantGrid>();
+    const view = render(<PlantGrid ref={ref} {...p} />);
+    expect(ref.current?.state.isOpen).toBeFalsy();
+
+    view.rerender(<PlantGrid ref={ref} {...p} open={true} />);
+
+    expect(ref.current?.state.isOpen).toBeTruthy();
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 });

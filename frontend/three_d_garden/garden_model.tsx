@@ -113,6 +113,7 @@ import {
   ThreeDObjectSelectionHandler,
 } from "./selection_types";
 import { setPanelOpen3D } from "./panel_actions";
+import type { PanelCameraStore } from "./panel_camera";
 import {
   get3DPositionFunc, getGardenPositionFunc, getWorldPositionFunc, threeSpace,
   zero as zeroFunc, zZero as zZeroFunc,
@@ -156,6 +157,7 @@ import { STARGAZING_DEFAULT_FOV } from
   "../farm_designer/stargazing_constants";
 import { markConstellationFound } from
   "../farm_designer/stargazing_progress";
+import { ControlCursorProvider } from "./controls";
 
 const CAMERA_SCENE_RADIUS = BigDistance.sky + 1000;
 export const PANEL_CAMERA_TRANSITION_MS = 300;
@@ -534,12 +536,14 @@ export const FarmDesignerViewPrism = (props: FarmDesignerViewPrismProps) => {
       );
     }
   });
-  return <primitive object={gizmoGroup}>
-    <ViewPrism
-      {...viewPrismColors}
-      onDirection={direction =>
-        props.bridgeRef.current?.selectDirection?.(direction)} />
-  </primitive>;
+  return <ControlCursorProvider>
+    <primitive object={gizmoGroup}>
+      <ViewPrism
+        {...viewPrismColors}
+        onDirection={direction =>
+          props.bridgeRef.current?.selectDirection?.(direction)} />
+    </primitive>
+  </ControlCursorProvider>;
 };
 
 const GRID_HOVER_TARGET_Z_OFFSET = 1;
@@ -776,6 +780,7 @@ export interface GardenModelProps {
   showFarmbotLayerLoadProgress?: boolean;
   promo?: boolean;
   panelCamera?: boolean;
+  panelCameraStore?: PanelCameraStore;
   onDetailsRevealStart?(): void;
   onLoadComplete?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
@@ -892,16 +897,24 @@ function getGardenLayerVisibility(
   params: GardenLayerVisibilityParams,
 ): GardenLayerVisibility {
   const getConfigValue = params.addPlantProps?.getConfigValue;
-  const showPlants = !params.addPlantProps
+  const gridPlantingRequest =
+    params.addPlantProps?.designer.gridPlanting;
+  const gridPlanting = !!gridPlantingRequest;
+  const pointGridPlanting =
+    gridPlantingRequest?.gridType == "point";
+  const showPlants = gridPlanting
+    || !params.addPlantProps
     || !!getConfigValue?.(BooleanSetting.show_plants);
-  const plantsVisible = params.activeFocus != "Planter bed" && showPlants;
+  const plantsVisible = gridPlanting
+    || (params.activeFocus != "Planter bed" && showPlants);
   const showFarmbot = !params.addPlantProps
     || !!getConfigValue?.(BooleanSetting.show_farmbot);
   const farmbotVisible =
     params.activeFocus != "Planter bed"
     && showFarmbot
     && params.botVisibleInConfig;
-  const showPoints = params.showSoilPoints
+  const showPoints = pointGridPlanting
+    || params.showSoilPoints
     || !!getConfigValue?.(BooleanSetting.show_points);
   const showWeeds = !params.addPlantProps
     || !!getConfigValue?.(BooleanSetting.show_weeds);
@@ -1444,35 +1457,6 @@ const OptionalFarmbotLayer = (props: OptionalFarmbotLayerProps) => {
 };
 
 type SceneCursorValue = "grab" | "grabbing" | "pointer" | "crosshair";
-
-interface SceneCursorProps {
-  cursor: SceneCursorValue;
-}
-
-const SceneCursor = (props: SceneCursorProps) => {
-  const state = useThree();
-  React.useEffect(() => {
-    const targets: HTMLElement[] = [];
-    const addTarget = (target: EventTarget | undefined) => {
-      if (target instanceof HTMLElement && !targets.includes(target)) {
-        targets.push(target);
-      }
-    };
-    const canvas = state.gl.domElement as HTMLElement | undefined;
-    addTarget(state.events?.connected as EventTarget | undefined);
-    addTarget(canvas);
-    addTarget(canvas?.closest<HTMLElement>(".garden-bed-3d-model") || undefined);
-    const previousCursors = targets.map(target => ({
-      target,
-      cursor: target.style.cursor,
-    }));
-    targets.forEach(target => { target.style.cursor = props.cursor; });
-    return () => previousCursors.forEach(({ target, cursor }) => {
-      target.style.cursor = cursor;
-    });
-  }, [state, props.cursor]);
-  return <></>;
-};
 
 interface GridHoverPosition {
   x: number;
@@ -2980,8 +2964,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     weeds,
     toolSlots,
   ]);
-  const visualSelection =
-    activePopupSelection || hoverSelection || routeSelection;
+  const visualSelection = activePopupSelection;
+  const panelVisualSelection = hoverSelection || routeSelection;
   const gridHoverEnabled =
     !spaceflight
     && !props.promo
@@ -3260,287 +3244,290 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     weeds,
   ]);
 
-  return <FocusTransitionProvider enabled={focusTransitionsEnabled}>
-    <GardenSceneBackground
-      backgroundColor={backgroundColor}
-      ready={environmentLoaded} />
-    {/* eslint-disable-next-line no-null/no-null */}
-    <Group dispose={null}
-      ref={setModelRootRef}
-      onPointerMove={handleScenePointerMove}
-      onPointerLeave={handleScenePointerLeave}>
-      <FPSProbe />
-      <PerfMark name={"garden_model_rendered"} />
-      <SceneCursor cursor={sceneCursor} />
-      <GardenCameraRig
-        camera={camera}
-        zoom={targetZoom}
-        fov={cameraFov}
-        smooth={focusTransitionsEnabled || !!addPlantProps}
-        interpolation={cameraRequest?.interpolation}
-        cancelRef={cameraSpringCancelRef}
-        onRest={cameraRequest?.onRest}
-        controlsCamera={controlsCamera}
-        setControlsCamera={setControlsCamera}
-        controls={controls}
-        setControls={setControls}
-        panelCameraView={panelCameraView}
-        cameraPhase={cameraPhase}
-        spaceflightCamera={spaceflightCamera}
-        viewMode={viewMode}
-        rotate={config.rotate}
-        zoomEnabled={config.zoom}
-        pan={config.pan}
-        lightsDebug={config.lightsDebug}
-        onStart={handleCameraDragStart}
-        onChange={handleCameraChange}
-        onEnd={handleCameraDragEnd} />
-      <ThreeDLoadProgressOverlay
-        progress={loadProgress}
-        complete={detailsReveal} />
-      {config.cameraFitDebug &&
-        <CameraFitDebug {...activeCameraFit} />}
-      <GardenSectionLayer
-        bridgeRef={sectionBridgeRef}
-        botSpringActive={farmbotVisible}
-        botPositionStore={botPositionStore}
-        camera={camera}
-        config={config}
-        configPosition={configPosition}
-        controlsCamera={controlsCamera}
-        designer={sectionDesigner}
-        dispatch={dispatch}
-        gardenSize={sectionGardenSize}
-        getZ={getZ}
-        modelRoot={modelRoot} />
-      <StaticGardenLayers
-        config={config}
-        sceneObjects={shadowSceneObjects}
-        markStep={markLoadStep}
-        environmentReveal={environmentReveal}
-        bedReveal={bedReveal}
-        gridReveal={gridReveal}
-        plantsReveal={plantsReveal}
-        weedsReveal={weedsReveal}
-        pointsReveal={pointsReveal}
+  return <ControlCursorProvider baseCursor={sceneCursor}>
+    <FocusTransitionProvider enabled={focusTransitionsEnabled}>
+      <GardenSceneBackground
         backgroundColor={backgroundColor}
-        activePositionRef={activePositionRef}
-        soilSurfaceGeometry={soilSurface.geometry}
-        getZ={getZ}
-        images={images}
-        activeFocus={props.activeFocus}
-        mapPoints={mapPoints}
-        showMoistureMap={showMoistureMap}
-        showMoistureReadings={showMoistureReadings}
-        showTelescope={
-          (!props.promo || props.config.telescope) && !sectionOpen}
-        sensors={sensors}
-        sensorReadings={sensorReadings}
-        addPlantProps={addPlantProps}
-        plantLabelNodes={plantLabelNodes}
-        plantsVisible={plantsVisible}
-        plantIconAtlas={props.plantIconAtlas}
-        setHover={setHover}
-        threeDPlants={threeDPlants}
-        plantIconCapacities={props.plantIconCapacities}
-        startTimeRef={props.startTimeRef}
-        dispatch={dispatch}
-        stargazing={celestialViewActive}
-        spaceflight={spaceflight}
-        cameraSideStarClipEnabled={cameraSideStarClipEnabled(cameraPhase)}
-        constellationDiscoveryEnabled={constellationDiscoveryEnabled(
-          viewMode,
-          cameraPhase,
-        )}
-        showSpread={showSpread}
-        plantInstanceCapacity={props.plantInstanceCapacity}
-        routeKey={routeKey}
-        seasonResetKey={props.seasonResetKey}
-        showWeeds={showWeeds}
-        weeds={weeds}
-        plantsSelectable={plantsSelectable}
-        pointsSelectable={pointsSelectable}
-        weedsSelectable={weedsSelectable}
-        onSelectObject={onSelectObject}
-        onHoverObject={setSelectableObjectHover}
-        onHoverLabel={config.labelsOnHover ? setObjectHoverLabel : undefined}
-        onPlantHoverChange={setPlantIntersected}
-        showPoints={showPoints}
-        sceneObjectClick={addingSceneObject
-          ? sceneObjectPlacement.onClick
-          : undefined}
-        sceneObjectPointerMove={addingSceneObject && !editingSceneObject
-          ? sceneObjectPlacement.onPointerMove
-          : undefined}
-        sceneObjectPreview={addingSceneObject
-          ? sceneObjectPlacement.preview
-          : undefined} />
-      {objectHoverLabelNode}
-      {gridHoverEnabled &&
-        <GridHoverTarget
+        ready={environmentLoaded} />
+      {/* eslint-disable-next-line no-null/no-null */}
+      <Group dispose={null}
+        ref={setModelRootRef}
+        onPointerMove={handleScenePointerMove}
+        onPointerLeave={handleScenePointerLeave}>
+        <FPSProbe />
+        <PerfMark name={"garden_model_rendered"} />
+        <GardenCameraRig
+          camera={camera}
+          zoom={targetZoom}
+          fov={cameraFov}
+          smooth={focusTransitionsEnabled || !!addPlantProps}
+          interpolation={cameraRequest?.interpolation}
+          cancelRef={cameraSpringCancelRef}
+          onRest={cameraRequest?.onRest}
+          controlsCamera={controlsCamera}
+          setControlsCamera={setControlsCamera}
+          controls={controls}
+          setControls={setControls}
+          panelCameraView={panelCameraView}
+          cameraPhase={cameraPhase}
+          spaceflightCamera={spaceflightCamera}
+          viewMode={viewMode}
+          rotate={config.rotate}
+          zoomEnabled={config.zoom}
+          pan={config.pan}
+          lightsDebug={config.lightsDebug}
+          onStart={handleCameraDragStart}
+          onChange={handleCameraChange}
+          onEnd={handleCameraDragEnd} />
+        <ThreeDLoadProgressOverlay
+          progress={loadProgress}
+          complete={detailsReveal} />
+        {config.cameraFitDebug &&
+      <CameraFitDebug {...activeCameraFit} />}
+        <GardenSectionLayer
+          bridgeRef={sectionBridgeRef}
+          botSpringActive={farmbotVisible}
+          botPositionStore={botPositionStore}
+          camera={camera}
           config={config}
-          enabled={gridHoverEnabled}
+          configPosition={configPosition}
+          controlsCamera={controlsCamera}
+          designer={sectionDesigner}
+          dispatch={dispatch}
+          gardenSize={sectionGardenSize}
           getZ={getZ}
+          modelRoot={modelRoot} />
+        <StaticGardenLayers
+          config={config}
+          sceneObjects={shadowSceneObjects}
+          markStep={markLoadStep}
+          environmentReveal={environmentReveal}
+          bedReveal={bedReveal}
+          gridReveal={gridReveal}
+          plantsReveal={plantsReveal}
+          weedsReveal={weedsReveal}
+          pointsReveal={pointsReveal}
+          backgroundColor={backgroundColor}
+          activePositionRef={activePositionRef}
           soilSurfaceGeometry={soilSurface.geometry}
-          onLocationSelect={onSelectLocation}
-          onHoverPositionChange={setGridHoverPosition} />}
-      {showGridHoverCrosshairs && activeGridHoverPosition &&
-        <GridHoverCrosshairs
-          config={config}
           getZ={getZ}
-          position={activeGridHoverPosition} />}
-      <OptionalFarmbotLayer
-        activeFocus={props.activeFocus}
+          images={images}
+          activeFocus={props.activeFocus}
+          mapPoints={mapPoints}
+          showMoistureMap={showMoistureMap}
+          showMoistureReadings={showMoistureReadings}
+          showTelescope={
+            (!props.promo || props.config.telescope) && !sectionOpen}
+          sensors={sensors}
+          sensorReadings={sensorReadings}
+          addPlantProps={addPlantProps}
+          plantLabelNodes={plantLabelNodes}
+          plantsVisible={plantsVisible}
+          plantIconAtlas={props.plantIconAtlas}
+          setHover={setHover}
+          threeDPlants={threeDPlants}
+          plantIconCapacities={props.plantIconCapacities}
+          startTimeRef={props.startTimeRef}
+          dispatch={dispatch}
+          stargazing={celestialViewActive}
+          spaceflight={spaceflight}
+          cameraSideStarClipEnabled={cameraSideStarClipEnabled(cameraPhase)}
+          constellationDiscoveryEnabled={constellationDiscoveryEnabled(
+            viewMode,
+            cameraPhase,
+          )}
+          showSpread={showSpread}
+          plantInstanceCapacity={props.plantInstanceCapacity}
+          routeKey={routeKey}
+          seasonResetKey={props.seasonResetKey}
+          showWeeds={showWeeds}
+          weeds={weeds}
+          plantsSelectable={plantsSelectable}
+          pointsSelectable={pointsSelectable}
+          weedsSelectable={weedsSelectable}
+          onSelectObject={onSelectObject}
+          onHoverObject={setSelectableObjectHover}
+          onHoverLabel={config.labelsOnHover ? setObjectHoverLabel : undefined}
+          onPlantHoverChange={setPlantIntersected}
+          showPoints={showPoints}
+          sceneObjectClick={addingSceneObject
+            ? sceneObjectPlacement.onClick
+            : undefined}
+          sceneObjectPointerMove={addingSceneObject && !editingSceneObject
+            ? sceneObjectPlacement.onPointerMove
+            : undefined}
+          sceneObjectPreview={addingSceneObject
+            ? sceneObjectPlacement.preview
+            : undefined} />
+        {objectHoverLabelNode}
+        {gridHoverEnabled &&
+      <GridHoverTarget
         config={config}
-        configPosition={props.configPosition}
-        detailsReveal={detailsReveal}
-        dispatch={objectSelectionMode ? undefined : dispatch}
+        enabled={gridHoverEnabled}
         getZ={getZ}
-        loadProgress={loadProgress}
-        markStep={markLoadStep}
-        mountedToolName={props.mountedToolName}
-        positionStore={botPositionStore}
-        reveal={farmbotReveal}
-        showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
-        toolSlots={props.toolSlots}
-        onSelectObject={slotsSelectable ? onSelectObject : undefined}
-        onHoverObject={objectSelectionMode ? undefined : setSelectableObjectHover}
-        onToolSlotHoverObject={objectSelectionMode && slotsSelectable
-          ? setSelectableObjectHover
-          : undefined}
-        onHoverLabel={config.labelsOnHover && slotsSelectable
-          ? setObjectHoverLabel
-          : undefined}
-        visible={farmbotVisible} />
-      <ThreeDObjectSelectionLayer
+        soilSurfaceGeometry={soilSurface.geometry}
+        onLocationSelect={onSelectLocation}
+        onHoverPositionChange={setGridHoverPosition} />}
+        {showGridHoverCrosshairs && activeGridHoverPosition &&
+      <GridHoverCrosshairs
         config={config}
-        configPosition={props.configPosition}
-        selection={visualSelection}
-        selectedObjects={selectedObjectSelections}
-        popupSelection={activePopupSelection}
-        locationSelection={activeLocationSelection}
-        selectedLocation={selectedLocation}
-        onClosePopup={closePopup}
-        onOpenPanel={openSelectedObjectPanel}
-        onOpenLocationPanel={openSelectedLocationPanel}
-        onUpdateLocationSelection={updateLocationSelection}
-        plants={plants}
-        points={mapPoints}
-        weeds={weeds}
-        toolSlots={toolSlots}
-        tools={tools}
-        sequences={sequences}
-        sensors={sensors}
-        peripherals={props.peripherals || []}
-        peripheralValues={props.peripheralValues || []}
-        fbosConfig={props.fbosConfig}
-        timeSettings={props.timeSettings}
-        botOnline={!!props.botOnline}
-        arduinoBusy={!!props.arduinoBusy}
-        currentBotLocation={props.currentBotLocation || EMPTY_BOT_POSITION}
-        movementState={props.movementState || EMPTY_MOVEMENT_STATE}
-        defaultAxes={props.defaultAxes || "XY"}
-        noUTM={!!props.noUTM}
-        deviceAccount={props.deviceAccount}
-        bot={props.bot}
-        env={props.env || EMPTY_ENV}
-        set3DConfigValue={props.set3DConfigValue}
-        dispatch={dispatch}
-        gridLoaded={gridLoaded}
-        getZ={getZ} />
-      <SceneBoundary
-        loadStep={"details"}
-        loadProgress={loadProgress}
-        reveal={detailsReveal}
-        markReadyOnMount={false}
-        markName={"three_d_details_ready"}>
-        {config.stats && <StatsGl className={"stats-gl"} />}
-        {config.stats && <Stats />}
-        {showZoomBeacons &&
-          <ZoomBeaconsLoadIn
-            config={config}
-            configPosition={props.configPosition}
-            activeFocus={props.activeFocus}
-            setActiveFocus={props.setActiveFocus}
-            reveal={detailsReveal}
-            onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
-        {config.threeAxes && <AxesHelper args={[5000]} />}
-        {config.clouds && <Clouds config={config} />}
-        {showMoistureMap && config.moistureDebug &&
-          <MoistureReadings
-            color={"green"}
-            radius={50}
-            applyOffset={true}
-            config={config}
-            readings={sensorReadings} />}
-        <GroupOrderVisual
-          allPoints={allPoints}
-          groups={groups}
+        getZ={getZ}
+        position={activeGridHoverPosition} />}
+        <OptionalFarmbotLayer
+          activeFocus={props.activeFocus}
           config={config}
-          tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
+          configPosition={props.configPosition}
+          detailsReveal={detailsReveal}
+          dispatch={objectSelectionMode ? undefined : dispatch}
+          getZ={getZ}
+          loadProgress={loadProgress}
+          markStep={markLoadStep}
+          mountedToolName={props.mountedToolName}
+          positionStore={botPositionStore}
+          reveal={farmbotReveal}
+          showLoadProgress={props.showFarmbotLayerLoadProgress !== false}
+          toolSlots={props.toolSlots}
+          onSelectObject={slotsSelectable ? onSelectObject : undefined}
+          onHoverObject={objectSelectionMode ? undefined : setSelectableObjectHover}
+          onToolSlotHoverObject={objectSelectionMode && slotsSelectable
+            ? setSelectableObjectHover
+            : undefined}
+          onHoverLabel={config.labelsOnHover && slotsSelectable
+            ? setObjectHoverLabel
+            : undefined}
+          visible={farmbotVisible} />
+        <ThreeDObjectSelectionLayer
+          config={config}
+          configPosition={props.configPosition}
+          selection={visualSelection}
+          panelSelection={panelVisualSelection}
+          panelCameraStore={props.panelCameraStore}
+          selectedObjects={selectedObjectSelections}
+          popupSelection={activePopupSelection}
+          locationSelection={activeLocationSelection}
+          selectedLocation={selectedLocation}
+          onClosePopup={closePopup}
+          onOpenPanel={openSelectedObjectPanel}
+          onOpenLocationPanel={openSelectedLocationPanel}
+          onUpdateLocationSelection={updateLocationSelection}
+          plants={plants}
+          points={mapPoints}
+          weeds={weeds}
+          toolSlots={toolSlots}
+          tools={tools}
+          sequences={sequences}
+          sensors={sensors}
+          peripherals={props.peripherals || []}
+          peripheralValues={props.peripheralValues || []}
+          fbosConfig={props.fbosConfig}
+          timeSettings={props.timeSettings}
+          botOnline={!!props.botOnline}
+          arduinoBusy={!!props.arduinoBusy}
+          currentBotLocation={props.currentBotLocation || EMPTY_BOT_POSITION}
+          movementState={props.movementState || EMPTY_MOVEMENT_STATE}
+          defaultAxes={props.defaultAxes || "XY"}
+          noUTM={!!props.noUTM}
+          deviceAccount={props.deviceAccount}
+          bot={props.bot}
+          env={props.env || EMPTY_ENV}
+          set3DConfigValue={props.set3DConfigValue}
+          dispatch={dispatch}
+          gridLoaded={gridLoaded}
           getZ={getZ} />
-        {props.addPlantProps?.designer.visualizedSequence &&
-          <LazyVisualization
-            visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-            config={config}
-            configPosition={props.configPosition} />}
-        {renderSolar &&
-          <LegacySolar
-            config={config}
-            activeFocus={props.activeFocus}
-            shadows={!props.promo} />}
-        {config.scene == "Lab" &&
-          <Lab
-            config={config}
-            activeFocus={props.activeFocus}
-            reveal={detailsReveal}
-            onDetailsLoadInRest={markDetailsLoaded} />}
-        {config.scene == "Greenhouse" &&
-          <Greenhouse
-            config={config}
-            activeFocus={props.activeFocus}
-            plantIconAtlas={props.plantIconAtlas}
-            reveal={detailsReveal}
-            onDetailsLoadInRest={markDetailsLoaded} />}
-        {config.cameraSelectionView &&
-          <CameraSelectionUI
-            config={config}
-            dispatch={dispatch}
-            topDownAtStart={topDownAtStart}
-            onSelect={selectStartingCamera} />}
-        <EnvironmentScenePreloader
-          config={config}
-          enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
-          plantIconAtlas={props.plantIconAtlas} />
-        {loadProgress.complete &&
-          <React.Suspense fallback={undefined}>
-            <GroundTexturePreloader config={config} />
-          </React.Suspense>}
-        {detailsReveal && !animatedDetailsLoadIn &&
-          <LoadStepReady
-            step={"details"}
-            markStep={loadProgress.markStep} />}
-        <PopInGroup
-          key={`scene-objects-load-in-${config.scene}`}
-          name={"scene-objects-load-in"}
+        <SceneBoundary
+          loadStep={"details"}
+          loadProgress={loadProgress}
           reveal={detailsReveal}
-          distance={config.bedHeight + config.bedZOffset}>
-          <Group name={"scene-objects"}
-            userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
-            <SceneObjects
-              config={config}
-              activeFocus={props.activeFocus}
-              isPromo={props.promo}
-              visible={showSceneObjects}
-              dispatch={dispatch}
-              designer={addPlantProps?.designer}
-              hoverSelection={hoverSelection}
-              sceneObjects={props.sceneObjects} />
-          </Group>
-        </PopInGroup>
-      </SceneBoundary>
-    </Group>
-  </FocusTransitionProvider>;
+          markReadyOnMount={false}
+          markName={"three_d_details_ready"}>
+          {config.stats && <StatsGl className={"stats-gl"} />}
+          {config.stats && <Stats />}
+          {showZoomBeacons &&
+        <ZoomBeaconsLoadIn
+          config={config}
+          configPosition={props.configPosition}
+          activeFocus={props.activeFocus}
+          setActiveFocus={props.setActiveFocus}
+          reveal={detailsReveal}
+          onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
+          {config.threeAxes && <AxesHelper args={[5000]} />}
+          {config.clouds && <Clouds config={config} />}
+          {showMoistureMap && config.moistureDebug &&
+        <MoistureReadings
+          color={"green"}
+          radius={50}
+          applyOffset={true}
+          config={config}
+          readings={sensorReadings} />}
+          <GroupOrderVisual
+            allPoints={allPoints}
+            groups={groups}
+            config={config}
+            tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
+            getZ={getZ} />
+          {props.addPlantProps?.designer.visualizedSequence &&
+        <LazyVisualization
+          visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+          config={config}
+          configPosition={props.configPosition} />}
+          {renderSolar &&
+        <LegacySolar
+          config={config}
+          activeFocus={props.activeFocus}
+          shadows={!props.promo} />}
+          {config.scene == "Lab" &&
+        <Lab
+          config={config}
+          activeFocus={props.activeFocus}
+          reveal={detailsReveal}
+          onDetailsLoadInRest={markDetailsLoaded} />}
+          {config.scene == "Greenhouse" &&
+        <Greenhouse
+          config={config}
+          activeFocus={props.activeFocus}
+          plantIconAtlas={props.plantIconAtlas}
+          reveal={detailsReveal}
+          onDetailsLoadInRest={markDetailsLoaded} />}
+          {config.cameraSelectionView &&
+        <CameraSelectionUI
+          config={config}
+          dispatch={dispatch}
+          topDownAtStart={topDownAtStart}
+          onSelect={selectStartingCamera} />}
+          <EnvironmentScenePreloader
+            config={config}
+            enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
+            plantIconAtlas={props.plantIconAtlas} />
+          {loadProgress.complete &&
+        <React.Suspense fallback={undefined}>
+          <GroundTexturePreloader config={config} />
+        </React.Suspense>}
+          {detailsReveal && !animatedDetailsLoadIn &&
+        <LoadStepReady
+          step={"details"}
+          markStep={loadProgress.markStep} />}
+          <PopInGroup
+            key={`scene-objects-load-in-${config.scene}`}
+            name={"scene-objects-load-in"}
+            reveal={detailsReveal}
+            distance={config.bedHeight + config.bedZOffset}>
+            <Group name={"scene-objects"}
+              userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
+              <SceneObjects
+                config={config}
+                activeFocus={props.activeFocus}
+                isPromo={props.promo}
+                visible={showSceneObjects}
+                dispatch={dispatch}
+                designer={addPlantProps?.designer}
+                hoverSelection={hoverSelection}
+                sceneObjects={props.sceneObjects} />
+            </Group>
+          </PopInGroup>
+        </SceneBoundary>
+      </Group>
+    </FocusTransitionProvider>
+  </ControlCursorProvider>;
 };
 
 const gardenModelScenePropsEqual = (

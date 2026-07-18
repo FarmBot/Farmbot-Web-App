@@ -272,9 +272,6 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 }
 
 export const RawCropInfo = (props: CropInfoProps) => {
-  const [gridOpen, setGridOpen] = React.useState(false);
-  const toggleOpen = () => setGridOpen(!gridOpen);
-
   const selectMostUsedCurves = (slug: string) => {
     const findCurve = findMostUsedCurveForCrop({
       plants: props.plants,
@@ -297,11 +294,24 @@ export const RawCropInfo = (props: CropInfoProps) => {
   const image = findImage(slug);
   const panelName = "crop-info";
   const threeDGrid = !!props.getConfigValue(BooleanSetting.three_d_garden);
-  const activeGridRequest = designer.gridPlanting?.cropSlug == slug
-    ? designer.gridPlanting
-    : undefined;
+  const legacyGridRequested =
+    designer.legacyGridPlantingCrop == slug;
+  const [localGridOpen, setLocalGridOpen] = React.useState(false);
+  const gridOpen = localGridOpen || legacyGridRequested;
+  const toggleOpen = () => {
+    legacyGridRequested && dispatch({
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: undefined,
+    });
+    setLocalGridOpen(!gridOpen);
+  };
+  const activeGridRequest =
+    designer.gridPlanting?.gridType != "point"
+      && designer.gridPlanting?.cropSlug == slug
+      ? designer.gridPlanting
+      : undefined;
   const activeGridToken = activeGridRequest?.token;
-  const toggleThreeDGrid = () => {
+  const toggleThreeDGrid = React.useCallback(() => {
     if (activeGridRequest) {
       dispatch({ type: Actions.SET_GRID_PLANTING, payload: undefined });
       return;
@@ -312,17 +322,56 @@ export const RawCropInfo = (props: CropInfoProps) => {
       payload: {
         token,
         gridId: token,
+        gridType: "plant",
         cropSlug: slug,
         itemName: crop.name,
         defaultSpacing:
           (crop.spread || DEFAULT_PLANT_RADIUS) * 10,
       },
     });
-  };
+  }, [activeGridRequest, crop.name, crop.spread, dispatch, slug]);
+  React.useEffect(() => {
+    if (!threeDGrid) { return; }
+    const toggleGridWithKeyboard = (event: KeyboardEvent) => {
+      const target = event.target;
+      const enteringText = target instanceof HTMLElement
+        && (target.matches("input, textarea, select")
+          || target.isContentEditable);
+      if (event.repeat
+        || event.defaultPrevented
+        || event.ctrlKey
+        || event.metaKey
+        || event.altKey
+        || enteringText
+        || event.key.toLowerCase() != "g") {
+        return;
+      }
+      event.preventDefault();
+      toggleThreeDGrid();
+    };
+    window.addEventListener("keydown", toggleGridWithKeyboard);
+    return () =>
+      window.removeEventListener("keydown", toggleGridWithKeyboard);
+  }, [threeDGrid, toggleThreeDGrid]);
+  const activeGridTokenRef = React.useRef(activeGridToken);
+  const legacyGridCropRef = React.useRef(
+    legacyGridRequested ? slug : undefined);
+  React.useEffect(() => {
+    activeGridTokenRef.current = activeGridToken;
+    legacyGridCropRef.current =
+      legacyGridRequested ? slug : undefined;
+  }, [activeGridToken, legacyGridRequested, slug]);
   React.useEffect(() => () => {
-    activeGridToken &&
-      dispatch({ type: Actions.SET_GRID_PLANTING, payload: undefined });
-  }, [activeGridToken, dispatch]);
+    activeGridTokenRef.current &&
+      dispatch({
+        type: Actions.CLEAR_GRID_PLANTING,
+        payload: activeGridTokenRef.current,
+      });
+    legacyGridCropRef.current && dispatch({
+      type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+      payload: legacyGridCropRef.current,
+    });
+  }, [dispatch]);
   return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
     <DesignerPanelHeader
       panelName={panelName}

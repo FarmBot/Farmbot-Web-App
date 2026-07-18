@@ -13,8 +13,8 @@ import React, { type ReactNode } from "react";
 import type { UseSpringProps } from "@react-spring/three";
 import type { ThreeElements, ThreeEvent } from "@react-three/fiber";
 import type {
-  Billboard, Cloud, Clouds, Cone, Cylinder, Image, Instance, Instances, Plane,
-  Sphere, Torus, Trail, Tube,
+  Billboard, Cloud, Clouds, Cone, Cylinder, Extrude, Image, Instance,
+  Instances, Plane, Sphere, Torus, Trail, Tube,
 } from "@react-three/drei";
 
 const GroupForTests = React.forwardRef<THREE.Group, ThreeElements["group"]>(
@@ -900,8 +900,19 @@ jest.mock("@react-three/drei", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
-    Extrude: ({ name }: { name: string }) =>
-      <div className={"extrude"}>{name}</div>,
+    Extrude: ({
+      name,
+      children,
+      ...props
+    }: React.ComponentProps<typeof Extrude>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div
+        className={"extrude"}
+        data-extrude-name={name}
+        {...props}>
+        {name}
+        {children}
+      </div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
     Edges: ({ name }: { name: string }) =>

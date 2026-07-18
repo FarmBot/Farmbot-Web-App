@@ -48,7 +48,7 @@ describe("saveGrid", () => {
     const dispatch: jest.Mock = jest.fn();
     dispatch.mockImplementation((action: unknown) =>
       typeof action == "function"
-        ? (action as Function)(dispatch)
+        ? action(dispatch)
         : action);
     const state = fakeState();
     state.resources = buildResourceIndex([PLANT_TEMPLATE]);

@@ -14,9 +14,10 @@ describe("<DistanceIndicator />", () => {
     const { container } = render(<DistanceIndicator {...fakeProps()} />);
     expect(container.innerHTML).toContain("box");
     expect(container.innerHTML).toContain("text");
-    expect(container.innerHTML).toContain("arrow");
+    expect(container.innerHTML).toContain("distance-arrow");
     expect(container.innerHTML).toContain("100mm");
-    expect(container.innerHTML).toContain("extrude");
+    expect(container.querySelectorAll(".cone")).toHaveLength(2);
+    expect(container.querySelectorAll(".cylinder")).toHaveLength(1);
   });
 
   it("compares distance-indicator geometry inputs", () => {
