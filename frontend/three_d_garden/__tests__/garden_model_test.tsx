@@ -16,6 +16,7 @@ import {
   createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
+  GardenCameraRig,
   GardenSceneBackground,
   GardenCameraRequest, GardenModelProps, GardenModel,
   getSpaceflightCamera,
@@ -56,7 +57,8 @@ import {
 } from "../../__test_support__/test_renderer";
 import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 import {
-  cameraInit, getCameraFit, getPanelCameraViewOffset, getSphereCameraFit,
+  cameraInit, distanceForFov, getCameraFit, getPanelCameraViewOffset,
+  getSphereCameraFit,
 } from "../camera";
 import * as cameraModule from "../camera";
 import { BigDistance } from "../constants";
@@ -553,6 +555,94 @@ describe("<GardenModel />", () => {
     expect(Number.isFinite(sectionControls.props.center)).toEqual(true);
     expect(Number.isFinite(sectionControls.props.width)).toEqual(true);
     getCameraFromUrlParamsSpy.mockRestore();
+  });
+
+  it("keeps the live camera within orbit limits during FOV changes", () => {
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+    interface CameraSpringUpdate {
+      onRest(result?: { cancelled?: boolean }): void;
+    }
+    let springUpdate: CameraSpringUpdate | undefined;
+    const springApi = {
+      start: jest.fn((update: CameraSpringUpdate) => {
+        springUpdate = update;
+        return Promise.resolve();
+      }),
+      stop: jest.fn(),
+    };
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(props => {
+        const resolved = typeof props == "function" ? props() : props;
+        return [resolved, springApi] as unknown as
+          ReturnType<typeof reactSpring.useSpring>;
+      });
+    const normalDistance = 5000;
+    const narrowDistance = distanceForFov(normalDistance, 40, 1);
+    const target: [number, number, number] = [0, 0, 0];
+    const narrowCamera = {
+      position: [narrowDistance, 0, 0] as [number, number, number],
+      target,
+    };
+    const normalCamera = {
+      position: [normalDistance, 0, 0] as [number, number, number],
+      target,
+    };
+    const controlsCamera = new ThreePerspectiveCamera(1);
+    controlsCamera.position.set(...narrowCamera.position);
+    const controls = {
+      target: new Vector3(...target),
+      update: jest.fn(),
+    };
+    const rigProps: React.ComponentProps<typeof GardenCameraRig> = {
+      camera: narrowCamera,
+      zoom: 1,
+      fov: 1,
+      smooth: true,
+      interpolation: undefined,
+      cancelRef: { current: undefined },
+      onRest: undefined,
+      controlsCamera,
+      setControlsCamera: jest.fn(),
+      controls,
+      setControls: jest.fn(),
+      panelCameraView: getPanelCameraViewOffset(
+        { width: 800, height: 600 },
+        undefined,
+      ),
+      cameraPhase: "normal",
+      spaceflightCamera: SPACEFLIGHT_CAMERA,
+      viewMode: "normal",
+      rotate: true,
+      zoomEnabled: true,
+      pan: true,
+      lightsDebug: false,
+      onStart: jest.fn(),
+      onChange: jest.fn(),
+      onEnd: jest.fn(),
+    };
+    const wrapper = createRenderer(<GardenCameraRig {...rigProps} />);
+    mountedWrappers.push(wrapper);
+    const orbitControls = () => wrapper.root.findByType(OrbitControls);
+
+    expect(orbitControls().props.maxDistance)
+      .toBeCloseTo(narrowDistance * 1.25);
+
+    actRenderer(() => wrapper.update(<GardenCameraRig
+      {...rigProps}
+      camera={normalCamera}
+      fov={40} />));
+
+    expect(orbitControls().props.maxDistance)
+      .toBeCloseTo(narrowDistance * 1.25);
+
+    actRenderer(() => springUpdate?.onRest({ cancelled: false }));
+
+    expect(orbitControls().props.maxDistance).toEqual(BigDistance.zoom);
+    springSpy.mockRestore();
   });
 
   it("finds hovered objects in the featured scene", () => {

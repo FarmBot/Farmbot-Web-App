@@ -2347,9 +2347,51 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
     targetCamera.position[1] - targetCamera.target[1],
     targetCamera.position[2] - targetCamera.target[2],
   );
+  const previousRequestKeyRef = React.useRef(requestKey);
+  const [cameraDistanceTransition, setCameraDistanceTransition] =
+    React.useState<{
+      requestKey: string;
+      maxDistance: number;
+    } | undefined>();
+  React.useLayoutEffect(() => {
+    if (previousRequestKeyRef.current == requestKey) { return; }
+    previousRequestKeyRef.current = requestKey;
+    if (!smooth) { return; }
+    const liveCamera = readSmoothCameraState(
+      targetCamera,
+      controlsCamera,
+      controls,
+    );
+    // Camera request boundaries intentionally expand controls before paint.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraDistanceTransition({
+      requestKey,
+      maxDistance: Math.max(
+        cameraRadius(liveCamera),
+        cameraDistance,
+      ) * 1.25,
+    });
+  }, [
+    cameraDistance,
+    controls,
+    controlsCamera,
+    requestKey,
+    smooth,
+    targetCamera,
+  ]);
+  const handleCameraRest = React.useCallback(() => {
+    setCameraDistanceTransition(current =>
+      current?.requestKey == requestKey ? undefined : current);
+    onRest?.();
+  }, [onRest, requestKey]);
+  const transitionMaxDistance =
+    cameraDistanceTransition?.requestKey == requestKey
+      ? cameraDistanceTransition.maxDistance
+      : 0;
   const maxCameraDistance = Math.max(
     BigDistance.zoom,
     cameraDistance * 1.25,
+    transitionMaxDistance,
   );
   const cameraClippingRange = getCameraClippingRange(
     targetCamera.position,
@@ -2380,7 +2422,7 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
       smooth={smooth}
       interpolation={interpolation}
       cancelRef={cancelRef}
-      onRest={onRest}
+      onRest={handleCameraRest}
       controlsCamera={controlsCamera}
       controls={controls}
       requestKey={requestKey} />
