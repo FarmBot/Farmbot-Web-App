@@ -18,7 +18,21 @@ const globalAny = globalThis as typeof globalThis & {
 };
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
+const originalWindowAddEventListener = window.addEventListener;
+const originalWindowRemoveEventListener = window.removeEventListener;
 const originalSyntaxError = globalThis.SyntaxError;
+const restoreWindowEventMethods = () => {
+  Object.defineProperty(window, "addEventListener", {
+    value: originalWindowAddEventListener,
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(window, "removeEventListener", {
+    value: originalWindowRemoveEventListener,
+    configurable: true,
+    writable: true,
+  });
+};
 const ensureSyntaxError = () => {
   const assign = (target: Record<string, unknown> | undefined) => {
     if (!target) { return; }
@@ -267,6 +281,7 @@ const resetThreeFiberHookMocks = () => {
 
 beforeEach(() => {
   bunJest.clearAllMocks();
+  restoreWindowEventMethods();
   resetThreeFiberHookMocks();
   location.search = "";
   resetMutableFixture(auth, authBaseline);
@@ -305,6 +320,7 @@ afterEach(() => {
     configurable: true,
   });
   ensureSyntaxError();
+  restoreWindowEventMethods();
   bunJest.restoreAllMocks?.();
   bunJest.useRealTimers?.();
   cleanup();

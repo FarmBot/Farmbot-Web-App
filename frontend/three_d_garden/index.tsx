@@ -34,6 +34,7 @@ import {
   PanelCameraController, PanelCameraStore,
 } from "./panel_camera";
 import { filterSectionIntersections } from "./section";
+import { Actions } from "../constants";
 
 const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
   ...ReactThreeFiber.events(store),
@@ -110,6 +111,11 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   React.useEffect(() => {
     perfMark("three_d_garden_mounted");
   }, []);
+  const viewRequest = props.addPlantProps.designer.threeDViewRequest;
+  React.useEffect(() => {
+    consumeViewRequest(
+      viewPrismBridgeRef, viewRequest, props.addPlantProps.dispatch);
+  }, [props.addPlantProps.dispatch, viewRequest]);
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas
@@ -170,3 +176,22 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
 });
 
 ThreeDGarden.displayName = "ThreeDGarden";
+
+export const applyViewRequest = (
+  bridgeRef: React.RefObject<ViewPrismBridge | null>,
+  request: ThreeDGardenProps["addPlantProps"]["designer"]["threeDViewRequest"],
+) => {
+  if (!request || !bridgeRef.current?.selectDirection) { return false; }
+  bridgeRef.current.selectDirection(request.direction);
+  return true;
+};
+
+export const consumeViewRequest = (
+  bridgeRef: React.RefObject<ViewPrismBridge | null>,
+  request: ThreeDGardenProps["addPlantProps"]["designer"]["threeDViewRequest"],
+  dispatch: Function,
+) => {
+  if (!applyViewRequest(bridgeRef, request)) { return false; }
+  dispatch({ type: Actions.SET_3D_VIEW, payload: undefined });
+  return true;
+};

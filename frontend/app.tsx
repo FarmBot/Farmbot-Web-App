@@ -9,6 +9,7 @@ import {
   ResourceName, Xyz,
 } from "farmbot";
 import { HotKeys } from "./hotkeys";
+import { CommandPalette } from "./command_palette";
 import { Content } from "./constants";
 import { BooleanSetting, StringSetting } from "./session_keys";
 import {
@@ -42,6 +43,7 @@ export interface AppProps {
   apiFirmwareValue: FirmwareHardware | undefined;
   appState: AppState;
   designer: DesignerState;
+  commandPalette?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -135,6 +137,7 @@ export class RawApp extends React.Component<AppProps, {}> {
         <Navigate to={landingPagePath(landingPage)} />}
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} designer={this.props.designer} />
+      {syncLoaded && (this.props.commandPalette ?? <CommandPalette />)}
       {syncLoaded && <NavBar />}
       <main id="main-content" tabIndex={-1}>
         {syncLoaded && this.props.children}

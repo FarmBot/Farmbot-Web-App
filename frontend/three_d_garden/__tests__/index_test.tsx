@@ -1,6 +1,8 @@
 import React from "react";
 import { act, render } from "@testing-library/react";
-import { ThreeDGardenProps, ThreeDGarden } from "../index";
+import {
+  applyViewRequest, consumeViewRequest, ThreeDGardenProps, ThreeDGarden,
+} from "../index";
 import { VIEW_PRISM_VIEWPORT_SIZE } from "../garden_model";
 import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
@@ -8,6 +10,7 @@ import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { createPanelCameraStore } from "../panel_camera";
 import { filterSectionIntersections } from "../section";
+import { Actions } from "../../constants";
 
 const useThreeImplementation =
   (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
@@ -36,6 +39,35 @@ describe("<ThreeDGarden />", () => {
     weeds: [],
     threeDPlants: [],
     sceneObjects: [],
+  });
+
+  it("applies palette camera requests through the view prism bridge", () => {
+    const selectDirection = jest.fn();
+    const bridgeRef = { current: { selectDirection } };
+    expect(applyViewRequest(
+      bridgeRef, { direction: [1, 0, 1], nonce: 1 })).toEqual(true);
+    expect(selectDirection).toHaveBeenCalledWith([1, 0, 1]);
+    expect(applyViewRequest(bridgeRef, undefined)).toEqual(false);
+    expect(applyViewRequest({ current: {} }, {
+      direction: [1, 0, 1], nonce: 2,
+    })).toEqual(false);
+    expect(selectDirection).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears palette camera requests after applying them", () => {
+    const dispatch = jest.fn();
+    const selectDirection = jest.fn();
+    const bridgeRef = { current: { selectDirection } };
+    expect(consumeViewRequest(bridgeRef, {
+      direction: [-1, 1, 1], nonce: 1,
+    }, dispatch)).toEqual(true);
+    expect(selectDirection).toHaveBeenCalledWith([-1, 1, 1]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_VIEW,
+      payload: undefined,
+    });
+    expect(consumeViewRequest(bridgeRef, undefined, dispatch)).toEqual(false);
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("renders", () => {

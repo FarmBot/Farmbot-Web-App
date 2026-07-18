@@ -820,13 +820,13 @@ describe("useSectionClipping()", () => {
     enabled: boolean;
     root: Group;
     planes: Plane[];
-    cutAll?: boolean;
+    clipAll?: boolean;
   }) => {
     useSectionClipping(
       props.enabled,
       props.root,
       props.planes,
-      props.cutAll,
+      props.clipAll,
     );
     return <></>;
   };
@@ -847,7 +847,7 @@ describe("useSectionClipping()", () => {
 
     root.userData[SECTION_FAR_CLIPPING_EXEMPT] = true;
     view.rerender(<Harness enabled={true} root={root}
-      planes={second} cutAll={true} />);
+      planes={second} clipAll={true} />);
     expect(material.clippingPlanes).toEqual(second);
 
     view.unmount();

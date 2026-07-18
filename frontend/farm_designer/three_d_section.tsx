@@ -170,14 +170,14 @@ export const ThreeDSectionSettings = (
             payload: !designer.threeDSectionFollowBot,
           })} />
       </div>
-      <div className={"three-d-section-cut-all row grid-exp-1"}>
-        <label>{t("CUT ALL")}</label>
+      <div className={"three-d-section-clip-all row grid-exp-1"}>
+        <label>{t("CLIP ALL")}</label>
         <ToggleButton
-          title={t("CUT ALL")}
-          toggleValue={designer.threeDSectionCutAll}
+          title={t("CLIP ALL")}
+          toggleValue={designer.threeDSectionClipAll}
           toggleAction={() => dispatch({
-            type: Actions.SET_3D_SECTION_CUT_ALL,
-            payload: !designer.threeDSectionCutAll,
+            type: Actions.SET_3D_SECTION_CLIP_ALL,
+            payload: !designer.threeDSectionClipAll,
           })} />
       </div>
     </div>

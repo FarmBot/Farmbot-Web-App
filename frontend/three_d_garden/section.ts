@@ -422,7 +422,7 @@ interface BeforeRenderRecord {
 
 export const createSectionClippingBinding = (
   root: Object3D,
-  cutAll = false,
+  clipAll = false,
 ): SectionClippingBinding => {
   const states = new Map<Material, MaterialState>();
   const farExemptMaterials = new Set<Material>();
@@ -431,7 +431,7 @@ export const createSectionClippingBinding = (
   let sectionPlanes: Plane[] = [];
 
   const sectionPlaneCount = (material: Material) =>
-    farExemptMaterials.has(material) && !cutAll
+    farExemptMaterials.has(material) && !clipAll
       ? Math.min(1, sectionPlanes.length)
       : sectionPlanes.length;
 
@@ -556,13 +556,13 @@ export const useSectionClipping = (
   enabled: boolean,
   root: Object3D | undefined,
   planes: Plane[],
-  cutAll = false,
+  clipAll = false,
 ) => {
   const bindingRef =
     React.useRef<SectionClippingBinding | undefined>(undefined);
   React.useLayoutEffect(() => {
     if (!enabled || !root) { return; }
-    const binding = createSectionClippingBinding(root, cutAll);
+    const binding = createSectionClippingBinding(root, clipAll);
     bindingRef.current = binding;
     return () => {
       binding.restore();
@@ -570,8 +570,8 @@ export const useSectionClipping = (
         bindingRef.current = undefined;
       }
     };
-  }, [cutAll, enabled, root]);
+  }, [clipAll, enabled, root]);
   React.useLayoutEffect(() => {
     bindingRef.current?.update(planes);
-  }, [cutAll, enabled, planes, root]);
+  }, [clipAll, enabled, planes, root]);
 };

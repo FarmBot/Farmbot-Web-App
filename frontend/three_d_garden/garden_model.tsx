@@ -2049,7 +2049,7 @@ const useGardenSectionController = (
     animated.mounted,
     props.modelRoot,
     planes,
-    !!props.designer?.threeDSectionCutAll,
+    !!props.designer?.threeDSectionClipAll,
   );
   return {
     animated,
@@ -2130,7 +2130,7 @@ export const GardenSectionLayer = (props: GardenSectionLayerProps) => {
         axis={animated.axis}
         nearPlane={planes[0]}
         farPlane={planes[1]}
-        cutAll={!!props.designer?.threeDSectionCutAll}
+        clipAll={!!props.designer?.threeDSectionClipAll}
         opacity={animated.opacity}
         getZ={props.getZ} />}
     {animated.mounted &&

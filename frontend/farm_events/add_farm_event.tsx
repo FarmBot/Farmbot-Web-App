@@ -23,6 +23,7 @@ import { Content } from "../constants";
 import { error } from "../toast/toast";
 import { DropDownItem, SaveBtn } from "../ui";
 import { noop } from "lodash";
+import { readFarmEventScheduleTarget } from "./navigation";
 
 interface State {
   uuid: string;
@@ -46,6 +47,15 @@ export class RawAddFarmEvent
   };
 
   state: State = { uuid: "", temporaryValues: this.temporaryValueDefaults() };
+
+  componentDidMount() {
+    const target = readFarmEventScheduleTarget();
+    target && this.initFarmEvent({
+      label: "",
+      value: target.executableId,
+      headingId: target.executableType,
+    });
+  }
 
   initFarmEvent = (ddi: DropDownItem) => {
     const executable = this.props.findExecutable(

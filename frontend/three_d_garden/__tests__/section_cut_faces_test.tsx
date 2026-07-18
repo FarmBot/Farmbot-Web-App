@@ -195,7 +195,7 @@ describe("section cut faces", () => {
       axis={"x"}
       nearPlane={planes[0]}
       farPlane={planes[1]}
-      cutAll={true}
+      clipAll={true}
       opacity={0.4}
       getZ={() => -100} />);
     const group = wrapper.root.findByProps({ name: "section-cut-faces" });
@@ -238,7 +238,7 @@ describe("section cut faces", () => {
     unmountRenderer(wrapper);
   });
 
-  it("omits the far soil line when CUT ALL is off", () => {
+  it("omits the far soil line when CLIP ALL is off", () => {
     const c = config();
     const planes = getSectionClippingPlanes(c, "x", 500, 200);
     const wrapper = createRenderer(<SectionCutFaces
@@ -247,7 +247,7 @@ describe("section cut faces", () => {
       axis={"x"}
       nearPlane={planes[0]}
       farPlane={planes[1]}
-      cutAll={false}
+      clipAll={false}
       opacity={1}
       getZ={() => -100} />);
     expect(wrapper.root.findAllByProps({

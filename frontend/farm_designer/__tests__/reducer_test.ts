@@ -21,9 +21,10 @@ describe("designer reducer", () => {
     expect(initialState.threeDPerspective).toBeUndefined();
     expect(initialState.threeDSectionWidth).toEqual(200);
     expect(initialState.threeDSectionFollowBot).toEqual(true);
-    expect(initialState.threeDSectionCutAll).toEqual(true);
+    expect(initialState.threeDSectionClipAll).toEqual(true);
     expect(initialState.threeDViewMode).toEqual("normal");
     expect(initialState.threeDStargazingFov).toEqual(20);
+    expect(initialState.threeDViewRequest).toBeUndefined();
   });
 
   it("sets search query", () => {
@@ -220,15 +221,15 @@ describe("designer reducer", () => {
       type: Actions.SET_3D_SECTION_FOLLOW_BOT,
       payload: true,
     });
-    const cutAllState = designer(followState, {
-      type: Actions.SET_3D_SECTION_CUT_ALL,
+    const clipAllState = designer(followState, {
+      type: Actions.SET_3D_SECTION_CLIP_ALL,
       payload: false,
     });
     expect(followState.threeDSectionAxis).toEqual("y");
     expect(followState.threeDSectionCenter).toEqual({ x: 100, y: 200 });
     expect(followState.threeDSectionWidth).toEqual(700);
     expect(followState.threeDSectionFollowBot).toEqual(true);
-    expect(cutAllState.threeDSectionCutAll).toEqual(false);
+    expect(clipAllState.threeDSectionClipAll).toEqual(false);
   });
 
   it("sets 3D perspective", () => {
@@ -274,6 +275,23 @@ describe("designer reducer", () => {
     expect(setFov(45).threeDStargazingFov).toEqual(45);
     expect(setFov(1).threeDStargazingFov).toEqual(20);
     expect(setFov(100).threeDStargazingFov).toEqual(90);
+  });
+
+  it("requests a 3D view", () => {
+    const payload = {
+      direction: [1, 0, 1] as [number, number, number],
+      nonce: 1,
+    };
+    const newState = designer(oldState(), {
+      type: Actions.SET_3D_VIEW,
+      payload,
+    });
+    expect(newState.threeDViewRequest).toEqual(payload);
+    const clearedState = designer(newState, {
+      type: Actions.SET_3D_VIEW,
+      payload: undefined,
+    });
+    expect(clearedState.threeDViewRequest).toBeUndefined();
   });
 
   it("sets 3D time", () => {

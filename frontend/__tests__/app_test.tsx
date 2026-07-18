@@ -41,6 +41,7 @@ const fakeProps = (): AppProps => ({
   apiFirmwareValue: undefined,
   appState: fakeApp(),
   designer: fakeDesignerState(),
+  commandPalette: <div />,
 });
 
 let hotKeysSpy: jest.SpyInstance;
@@ -67,6 +68,23 @@ describe("<App />: Loading", () => {
   it("MUST_LOADs not loaded", () => {
     render(<App {...fakeProps()} />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  it("mounts the command palette once application data is loaded", () => {
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    p.commandPalette = <div>command palette</div>;
+    render(<App {...p} />);
+    expect(screen.getByText("command palette")).toBeInTheDocument();
+  });
+
+  it("keeps the command palette mounted through application updates", () => {
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    p.commandPalette = <div>command palette</div>;
+    const { rerender } = render(<App {...p} />);
+    rerender(<App {...p} animate={true} />);
+    expect(screen.getByText("command palette")).toBeInTheDocument();
   });
 
   it("MUST_LOADs partially loaded", () => {

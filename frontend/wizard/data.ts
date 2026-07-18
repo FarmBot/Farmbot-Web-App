@@ -63,14 +63,19 @@ const motorCurrentProps = ({
   fromInput: motorCurrentPercentToMa,
 });
 
-export const setupProgressString = (
+export const setupProgress = (
   results: TaggedWizardStepResult[],
   stepDataProps: WizardStepDataProps,
 ) => {
   const completed = results.filter(result => result.body.answer).length;
   const total = WIZARD_STEPS(stepDataProps).length;
-  return `${round(completed / total * 100)}% ${t("complete")}`;
+  return round(completed / total * 100);
 };
+
+export const setupProgressString = (
+  results: TaggedWizardStepResult[],
+  stepDataProps: WizardStepDataProps,
+) => `${setupProgress(results, stepDataProps)}%`;
 
 export enum WizardSectionSlug {
   intro = "intro",

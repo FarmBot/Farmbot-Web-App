@@ -195,6 +195,7 @@ nav {
   .time-travel-button,
   .nav-coordinates,
   .jobs-button,
+  .command-palette-nav-button,
   .setup-button,
   .connectivity-button {
     margin: 0;
@@ -282,6 +283,27 @@ nav {
   .connection-status-popover {
     display: inline;
   }
+  .command-palette-nav-button-wrapper {
+    transition: all 0.2s ease;
+    color: $gray;
+    cursor: pointer;
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+
+    &:hover {
+      color: $white;
+      font-weight: bold;
+    }
+  }
+  .command-palette-nav-button {
+    font-size: 1.1rem !important;
+    white-space: nowrap;
+
+    i {
+      margin-right: 0;
+    }
+  }
   a {
     font-weight: normal;
     color: $black;
@@ -300,6 +322,7 @@ body:has(.app.light) {
     .time-travel-button,
     .nav-coordinates,
     .jobs-button,
+    .command-palette-nav-button,
     .setup-button,
     .connectivity-button {
       &.hover {

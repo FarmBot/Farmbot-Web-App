@@ -454,7 +454,7 @@ export const getSectionCutGeometries = (
 interface SectionCutFacesProps extends SectionCutGeometryProps {
   configPosition: PositionConfig;
   farPlane: Plane;
-  cutAll: boolean;
+  clipAll: boolean;
   opacity: number;
 }
 
@@ -475,14 +475,14 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
     ),
     [axis, config, nearPlane, props.configPosition],
   );
-  const farSoilLine = React.useMemo(() => props.cutAll
+  const farSoilLine = React.useMemo(() => props.clipAll
     ? getSectionSoilCutLinePoints({
       config,
       getZ,
       nearPlane: props.farPlane,
       axis,
     })
-    : [], [axis, config, getZ, props.cutAll, props.farPlane]);
+    : [], [axis, config, getZ, props.clipAll, props.farPlane]);
   React.useEffect(() => () => {
     geometries.soil?.dispose();
     geometries.bed.map(geometry => geometry.dispose());
