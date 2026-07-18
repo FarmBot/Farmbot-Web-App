@@ -95,7 +95,7 @@ body {
 @mixin dark-theme-vars {
   --main-bg: #{$dark_bg};
   --secondary-bg: rgba(255, 255, 255, 0.05);
-  --view-prism-hover-color: rgba(255, 255, 255, 0.05);
+  --view-prism-hover-color: #{$white};
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
   --box-shadow: inset 0 0 5px 1px #{$translucent1_white}, inset 0 0 2px 1px #{$translucent2_white}, 0 0 5px 2px #{$translucent1};
