@@ -10,7 +10,7 @@ import {
   act, cleanup, createEvent, fireEvent, render,
 } from "@testing-library/react";
 import { GardenMapProps } from "../../interfaces";
-import { setEggStatus, EggKeys } from "../easter_eggs/status";
+import { setEggStatus, EggKeys, toggleEggStatus } from "../easter_eggs/status";
 import * as mapActions from "../actions";
 import * as plantActions from "../layers/plants/plant_actions";
 import * as selectionBoxActions from "../background/selection_box_actions";
@@ -739,7 +739,7 @@ describe("<GardenMap/>", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().Bugs()).toEqual(<g />);
-    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
+    toggleEggStatus(EggKeys.BRING_ON_THE_BUGS);
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     expect(wrapper.instance().Bugs()).not.toEqual(<g />);
   });

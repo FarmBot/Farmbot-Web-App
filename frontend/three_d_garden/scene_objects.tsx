@@ -594,10 +594,14 @@ interface SceneObjectsProps {
   dispatch?: Function;
   hoverSelection?: ThreeDObjectSelection;
   activeFocus: string;
+  visible: boolean;
   designer?: Pick<DesignerState,
-    "focusedSceneObjectField" | "unifiedSceneObjectSize">
+    "focusedSceneObjectField" | "hoveredSceneObject"
+    | "unifiedSceneObjectSize">
   & Partial<Pick<DesignerState, "featuredScene">>;
 }
+
+export const HOVER_ALL_SCENE_OBJECTS = "all-user-scene-objects";
 
 export interface SceneObjectDragPreview {
   uuid: string;
@@ -2063,6 +2067,10 @@ export const SceneObjects = (props: SceneObjectsProps) => {
     ? staticSceneObjects(props.designer.featuredScene)
     : undefined;
   const featuredUuids = new Set(featuredSceneObjects?.map(({ uuid }) => uuid));
+  const userSceneObjectUuids = new Set(
+    props.sceneObjects?.map(({ uuid }) => uuid));
+  const hoverAllUserSceneObjects = props.designer?.hoveredSceneObject
+    == HOVER_ALL_SCENE_OBJECTS;
   const sceneObjects = (props.sceneObjects || []).concat(
     featuredSceneObjects
     || staticSceneObjects(props.config.scene,
@@ -2072,15 +2080,19 @@ export const SceneObjects = (props: SceneObjectsProps) => {
     {sceneObjects.map(sceneObject => {
       const selected = hasSelectedSceneObject
         && sceneObject.body.id === selectedSceneObjectId;
-      const hovered = props.hoverSelection?.kind == "sceneObject"
-        && (props.hoverSelection.id == sceneObject.body.id
-          || props.hoverSelection.uuid == sceneObject.uuid);
-      const visible = sceneObject.body.show || selected || hovered;
+      const hovered = (hoverAllUserSceneObjects
+        && userSceneObjectUuids.has(sceneObject.uuid))
+        || (props.hoverSelection?.kind == "sceneObject"
+          && (props.hoverSelection.id == sceneObject.body.id
+            || props.hoverSelection.uuid == sceneObject.uuid));
+      const visible = (props.visible && sceneObject.body.show)
+        || selected || hovered;
       const opacity = featuredUuids.has(sceneObject.uuid) ? 0.5 : undefined;
       const previewedSceneObject =
         selected
           ? sceneObjectWithDragPreview(sceneObject, dragPreview)
           : sceneObject;
+      const show = props.visible && previewedSceneObject.body.show;
       const { texture, shape } = previewedSceneObject.body;
       const { x_size, y_size, z_size, color } = previewedSceneObject.body;
       const bounds = boundsFromSceneObject(previewedSceneObject, props.config);
@@ -2151,7 +2163,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "plant") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <PottedPlant size={[x_size, y_size, z_size]} />
@@ -2165,7 +2177,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "tray") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <StarterTray size={[x_size, y_size, z_size]} />
@@ -2179,7 +2191,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "laptop") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Laptop size={[x_size, y_size, z_size]} />
@@ -2193,7 +2205,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "desk") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Desk size={[x_size, y_size, z_size]}
@@ -2210,7 +2222,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "solar") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Solar size={size} />
@@ -2224,7 +2236,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "tree") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Tree size={size} />
@@ -2238,7 +2250,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "fence") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Fence size={size} texture={texture} color={color} />
@@ -2252,7 +2264,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "astronaut") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Astronaut size={size} texture={texture} color={color} />
@@ -2266,7 +2278,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "rover") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Rover size={size} texture={texture} color={color} />
@@ -2280,7 +2292,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "hab") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group position={position}>
             <Hab size={size} texture={texture} color={color} />
@@ -2295,7 +2307,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
-          show={previewedSceneObject.body.show}
+          show={show}
           visible={visible}>
           <Group
             position={position}
@@ -2311,7 +2323,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       const textureUrl = texture === "none" ? undefined : ASSETS.textures[texture];
       return <SceneObjectOpacity key={sceneObject.uuid}
         opacity={opacity}
-        show={previewedSceneObject.body.show}
+        show={show}
         visible={visible}>
         <SceneObjectBox
           config={props.config}

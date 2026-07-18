@@ -7,7 +7,7 @@ import {
   extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
   ImageTexture, ImageTextureProps, splitFilteredImages,
 } from "../images";
-import { INITIAL } from "../../config";
+import { INITIAL, SurfaceDebugOption } from "../../config";
 import { clone } from "lodash";
 import {
   fakeImage, fakeSensor, fakeSensorReading, fakeWebAppConfig,
@@ -198,6 +198,15 @@ describe("<ImageTexture />", () => {
     const p = fakeProps();
     const key = getImageTextureKey(p);
     p.showMoistureMap = false;
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key from blank to normal surface rendering", () => {
+    const p = fakeProps();
+    p.config.surfaceDebug = SurfaceDebugOption.blank;
+    const key = getImageTextureKey(p);
+    p.config.surfaceDebug = SurfaceDebugOption.none;
+
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 

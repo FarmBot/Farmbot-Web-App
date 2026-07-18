@@ -175,6 +175,7 @@ export const getImageTextureKey = (props: ImageTextureProps) => {
   return [
     extents.x.min, extents.x.max,
     extents.y.min, extents.y.max,
+    props.config.surfaceDebug,
     props.showMoistureMap,
     props.showMoistureReadings,
     moistureVisible && getSensorKey(props.sensors),

@@ -13,12 +13,17 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { HOVER_ALL_SCENE_OBJECTS } from
+  "../../three_d_garden/scene_objects";
+import * as configStorageActions from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<RawSceneObjects />", () => {
   const fakeProps = (): SceneObjectsProps => ({
     dispatch: jest.fn(),
     sceneObjects: [fakeSceneObject()],
     farmwareEnvs: [],
+    showSceneObjects: true,
   });
 
   it("sets hovered scene object", () => {
@@ -137,6 +142,25 @@ describe("<RawSceneObjects />", () => {
     panelSection.mockRestore();
   });
 
+  it("hovers all scene objects from the hidden layer section", () => {
+    const p = fakeProps();
+    p.showSceneObjects = false;
+    const { container } = render(<RawSceneObjects {...p} />);
+    const mySceneObjectsHeader = container.querySelectorAll(
+      ".section-header")[1];
+
+    fireEvent.mouseEnter(mySceneObjectsHeader);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: HOVER_ALL_SCENE_OBJECTS,
+    });
+    fireEvent.mouseLeave(mySceneObjectsHeader);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: undefined,
+    });
+  });
+
   it("filters my scene objects", () => {
     const p = fakeProps();
     const hidden = fakeSceneObject();
@@ -152,6 +176,31 @@ describe("<RawSceneObjects />", () => {
 
     expect(queryByText("Scene Object 1")).toBeFalsy();
     expect(queryByText("Hidden Object")).toBeTruthy();
+  });
+
+  it("places layer controls beside the search field", () => {
+    const { container } = render(<RawSceneObjects {...fakeProps()} />);
+    const panelTop = container.querySelector(".panel-top");
+    const search = panelTop?.querySelector(".thin-search-wrapper");
+    const controls = panelTop?.querySelector(".scene-object-layer-controls");
+
+    expect(search?.nextElementSibling).toBe(controls);
+    expect(controls?.children).toHaveLength(2);
+  });
+
+  it.each([true, false])("toggles the scene object layer from %s", show => {
+    const setWebAppConfigValue = jest.spyOn(
+      configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.showSceneObjects = show;
+    const { getByTitle } = render(<RawSceneObjects {...p} />);
+
+    fireEvent.click(getByTitle("show scene objects map layer"));
+
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.show_scene_objects, !show);
+    setWebAppConfigValue.mockRestore();
   });
 
   it("deletes filtered scene objects with confirmation", () => {
@@ -197,10 +246,10 @@ describe("<RawSceneObjects />", () => {
     scene.body.key = "3D_scene";
     scene.body.value = "1";
     p.farmwareEnvs = [scene];
-    const { container, getByText } = render(<RawSceneObjects {...p} />);
+    const { getByText, getByTitle } = render(<RawSceneObjects {...p} />);
 
     fireEvent.click(getByText("Featured Scene Objects (4)"));
-    fireEvent.click(container.querySelectorAll("button.fb-button.green")[1]);
+    fireEvent.click(getByTitle("Import all"));
 
     expect(initSave).toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith(expect.stringMatching(/^save /));
@@ -216,14 +265,15 @@ describe("<RawSceneObjects />", () => {
     scene.body.key = "3D_scene";
     scene.body.value = "1";
     p.farmwareEnvs = [scene];
-    const { container, getByText } = render(<RawSceneObjects {...p} />);
+    const { container, getByText, getByTitle } =
+      render(<RawSceneObjects {...p} />);
 
     fireEvent.click(getByText("Featured Scene Objects (4)"));
     const firstFeaturedName = container
       .querySelector(".scene-object-search-item-name")
       ?.textContent || "";
     p.sceneObjects[0].body.name = firstFeaturedName;
-    fireEvent.click(container.querySelectorAll("button.fb-button.green")[1]);
+    fireEvent.click(getByTitle("Import all"));
 
     expect(initSave).not.toHaveBeenCalledWith(
       "SceneObject",

@@ -6,6 +6,7 @@ import type { SceneObjectFormValues } from "./interfaces";
 import type {
   SceneObjectAxis,
 } from "../three_d_garden/scenes/scene_object_data";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export type { SceneObjectFormValues };
 
@@ -39,7 +40,7 @@ const textureChoices: DropDownItem[] = Object.keys(ASSETS.textures)
   .map(textureType => ({ label: textureType, value: textureType }),
   );
 
-const shapeChoices: DropDownItem[] = [
+const shapeChoices = (): DropDownItem[] => [
   { label: t("Box"), value: "box" },
   { label: t("Cylinder"), value: "cylinder" },
   { label: t("Plant"), value: "plant" },
@@ -51,9 +52,13 @@ const shapeChoices: DropDownItem[] = [
   { label: t("Solar Panel"), value: "solar" },
   { label: t("Tree"), value: "tree" },
   { label: t("Fence"), value: "fence" },
-  { label: t("Astronaut"), value: "astronaut" },
-  { label: t("HAB"), value: "hab" },
-  { label: t("Rover"), value: "rover" },
+  ...(DevSettings.futureFeaturesEnabled()
+    ? [
+      { label: t("Astronaut"), value: "astronaut" },
+      { label: t("HAB"), value: "hab" },
+      { label: t("Rover"), value: "rover" },
+    ]
+    : []),
 ];
 
 const shapesWithTexture = [
@@ -191,6 +196,7 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
 
 export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
   const { focusedField, values, onValueChange } = props;
+  const shapes = shapeChoices();
   const [collapsedRows, setCollapsedRows] = React.useState<string[]>([]);
   const showUnifiedSize = !!props.showUnifiedSize;
   const showTexture = shapesWithTexture.includes(values.shape);
@@ -221,9 +227,9 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
       <div className={"grid half-gap"}>
         <label htmlFor={"shape"}>{t("Shape")}</label>
         <FBSelect
-          list={shapeChoices}
-          selectedItem={shapeChoices.find(item => item.value === values.shape)
-            || shapeChoices[0]}
+          list={shapes}
+          selectedItem={shapes.find(item => item.value === values.shape)
+            || shapes[0]}
           onChange={item => onValueChange("shape", item.value)} />
       </div>
       {showTexture &&

@@ -137,6 +137,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.show_moisture_interpolation_map,
   },
   {
+    title: DeviceSetting.showSceneObjectsMapLayer,
+    description: "",
+    setting: BooleanSetting.show_scene_objects,
+  },
+  {
     title: DeviceSetting.invertXAxisJogButton,
     description: "",
     setting: BooleanSetting.x_axis_inverted,

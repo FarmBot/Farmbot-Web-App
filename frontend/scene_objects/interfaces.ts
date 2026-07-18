@@ -18,6 +18,7 @@ export interface SceneObjectsProps {
   sceneObjects: TaggedSceneObject[];
   dispatch: Function;
   farmwareEnvs: TaggedFarmwareEnv[];
+  showSceneObjects: boolean;
 }
 
 export interface AddSceneObjectProps {

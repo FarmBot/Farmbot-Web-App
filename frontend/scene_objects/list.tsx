@@ -18,20 +18,26 @@ import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
 import { SceneObjectsProps } from "./interfaces";
 import { PanelSection } from "../plants/plant_inventory";
-import { staticSceneObjects } from "../three_d_garden/scene_objects";
+import {
+  HOVER_ALL_SCENE_OBJECTS, staticSceneObjects,
+} from "../three_d_garden/scene_objects";
 import {
   findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDI_LIST, SCENE_DDIS,
   SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
-import { FBSelect } from "../ui";
+import { FBSelect, ToggleButton } from "../ui";
 import { TaggedSceneObject } from "farmbot";
+import { getWebAppConfigValue, setWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
   dispatch: props.dispatch,
   sceneObjects: selectAllSceneObjects(props.resources.index)
     .filter(scene_object => scene_object.body.id),
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
+  showSceneObjects: !!getWebAppConfigValue(() => props)(
+    BooleanSetting.show_scene_objects),
 });
 
 export const RawSceneObjects = (props: SceneObjectsProps) => {
@@ -135,12 +141,19 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         searchTerm={searchTerm}
         placeholder={t("Search your scene objects...")}
         onChange={setSearchTerm} />
-      <FBSelect
-        key={libScene}
-        list={Object.values(TEXTURE_DDIS())}
-        selectedItem={TEXTURE_DDIS()[groundTextureNum]}
-        onChange={ddi => findOrCreate3DConfigFunction(
-          props.dispatch, props.farmwareEnvs)("groundTexture", "" + ddi.value)} />
+      <div className={"scene-object-layer-controls"}>
+        <ToggleButton
+          title={t("show scene objects map layer")}
+          toggleValue={props.showSceneObjects}
+          toggleAction={() => dispatch(setWebAppConfigValue(
+            BooleanSetting.show_scene_objects, !props.showSceneObjects))} />
+        <FBSelect
+          key={libScene}
+          list={Object.values(TEXTURE_DDIS())}
+          selectedItem={TEXTURE_DDIS()[groundTextureNum]}
+          onChange={ddi => findOrCreate3DConfigFunction(
+            props.dispatch, props.farmwareEnvs)("groundTexture", "" + ddi.value)} />
+      </div>
     </DesignerPanelTop>
     <DesignerPanelContent panelName={"scene-objects-inventory"}>
       <PanelSection isOpen={featuredOpen}
@@ -198,6 +211,18 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       <PanelSection isOpen={myOpen}
         panel={Panel.SceneObjects}
         toggleOpen={() => setMyOpen(!myOpen)}
+        onMouseEnter={() => {
+          dispatch({
+            type: Actions.HOVER_SCENE_OBJECT,
+            payload: HOVER_ALL_SCENE_OBJECTS,
+          });
+        }}
+        onMouseLeave={() => {
+          dispatch({
+            type: Actions.HOVER_SCENE_OBJECT,
+            payload: undefined,
+          });
+        }}
         itemCount={filteredSceneObjects.length}
         addNew={() => { navigate(Path.sceneObjects("catalog")); }}
         extraHeaderContent={filteredSceneObjects.length > 0 && myOpen &&
