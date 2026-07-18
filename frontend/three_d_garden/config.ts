@@ -109,6 +109,7 @@ export interface Config {
   lastImageCapture: number;
   mirrorX: boolean;
   mirrorY: boolean;
+  telescope: boolean;
 }
 
 export interface PositionConfig {
@@ -240,6 +241,7 @@ export const INITIAL: ConfigWithPosition = {
   lastImageCapture: 0,
   mirrorX: false,
   mirrorY: false,
+  telescope: false,
 };
 
 export const INITIAL_POSITION: PositionConfig = {
@@ -278,7 +280,7 @@ export const BOOLEAN_KEYS = [
   "urlCameraPos",
   "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
-  "cameraFitDebug",
+  "cameraFitDebug", "telescope",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -468,6 +470,7 @@ export const PRESETS: Record<string, Config> = {
     promoSpread: true,
     cameraView: true,
     cameraFitDebug: true,
+    telescope: true,
   },
 };
 
@@ -498,7 +501,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
-  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug",
+  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug", "telescope",
 ];
 
 const zAxisLengthFromKitVersion = (

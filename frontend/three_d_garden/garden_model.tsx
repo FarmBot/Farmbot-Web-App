@@ -3085,7 +3085,7 @@ export const GardenModel = (props: GardenModelProps) => {
         mapPoints={mapPoints}
         showMoistureMap={showMoistureMap}
         showMoistureReadings={showMoistureReadings}
-        showTelescope={!props.promo}
+        showTelescope={!props.promo || props.config.telescope}
         sensors={sensors}
         sensorReadings={sensorReadings}
         addPlantProps={addPlantProps}
