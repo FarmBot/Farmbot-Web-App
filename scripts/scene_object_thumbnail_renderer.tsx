@@ -18,6 +18,7 @@ const SCENES: Record<string, SceneObject[]> = {
 const params = new URLSearchParams(window.location.search);
 const scene = params.get("scene") || "custom";
 const index = Number(params.get("index") || 0);
+const rotation = Number(params.get("rotation") || 0) * Math.PI / 180;
 const selected = scene == "custom"
   ? DEFAULT_SCENE_OBJECT
   : SCENES[scene]?.[index];
@@ -50,7 +51,9 @@ const ThumbnailContent = () => {
     <directionalLight position={[-4, 2, -3]} intensity={0.75} />
     <Bounds fit={true} clip={true} observe={true} margin={1.3}>
       <Center cacheKey={centerKey}>
-        <SceneObjectPreview config={INITIAL} sceneObject={previewObject} />
+        <group rotation={[0, 0, rotation]}>
+          <SceneObjectPreview config={INITIAL} sceneObject={previewObject} />
+        </group>
       </Center>
     </Bounds>
   </>;

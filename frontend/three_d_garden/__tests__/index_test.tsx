@@ -6,6 +6,7 @@ import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { filterSectionIntersections } from "../section";
 
 beforeEach(() => {
   console.log = jest.fn();
@@ -42,6 +43,12 @@ describe("<ThreeDGarden />", () => {
     });
     expect(canvasSpy).toHaveBeenCalledTimes(2);
     expect(canvasSpy.mock.calls[0][0].events).toEqual(expect.any(Function));
+    const store = {} as never;
+    expect(canvasSpy.mock.calls[0][0].events?.(store)).toEqual({
+      enabled: true,
+      filter: filterSectionIntersections,
+    });
+    expect(reactThreeFiber.events).toHaveBeenCalledWith(store);
     expect(canvasSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         gl: { alpha: true },

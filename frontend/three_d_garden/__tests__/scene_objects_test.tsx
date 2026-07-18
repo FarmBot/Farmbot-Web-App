@@ -510,6 +510,9 @@ describe("scene object placement helpers", () => {
         fakeSceneObject({ shape: "solar" }),
         fakeSceneObject({ shape: "tree" }),
         fakeSceneObject({ shape: "fence" }),
+        fakeSceneObject({ shape: "astronaut" }),
+        fakeSceneObject({ shape: "hab" }),
+        fakeSceneObject({ shape: "rover" }),
         fakeSceneObject({ shape: "cylinder" }),
         fakeSceneObject({ shape: "sphere", texture: "none" }),
         fakeSceneObject({ shape: "window", x_size: 10000, y_size: 10 }),
@@ -533,7 +536,9 @@ describe("scene object placement helpers", () => {
   it("renders static scene objects by scene", () => {
     expect(staticSceneObjects("Lab").length).toBeGreaterThan(0);
     expect(staticSceneObjects("Greenhouse").length).toBeGreaterThan(0);
-    expect(staticSceneObjects("Outdoor")).toEqual([]);
+    expect(staticSceneObjects("Outdoor").length).toBeGreaterThan(0);
+    expect(staticSceneObjects("Mars").length).toBeGreaterThan(0);
+    expect(staticSceneObjects("Outdoor", true)).toEqual([]);
     expect(staticSceneObjects("Lab")[0].uuid)
       .not.toEqual(staticSceneObjects("Greenhouse")[0].uuid);
   });
@@ -548,7 +553,7 @@ describe("scene object placement helpers", () => {
         unifiedSceneObjectSize: undefined,
       },
     }));
-    const featuredObjects = staticSceneObjects("Outdoor", true);
+    const featuredObjects = staticSceneObjects("Outdoor");
     const translucentObjects = wrapper.root.findAll(node =>
       node.props.opacity === 0.5 && node.props.show === true);
 
@@ -1380,10 +1385,6 @@ describe("scene object placement helpers", () => {
         setPointerCapture: jest.fn(),
         releasePointerCapture: jest.fn(),
       },
-      ray: new Ray(
-        new Vector3(markerX + delta, markerY + delta, markerZ + delta + 100),
-        new Vector3(0, 0, -1),
-      ),
     });
 
     act(() => {
@@ -2573,7 +2574,7 @@ describe("scene object placement helpers", () => {
   it("renders placement previews for custom scene object shapes", () => {
     [
       "plant", "tray", "window", "laptop", "desk", "solar", "tree",
-      "fence", "box",
+      "fence", "astronaut", "hab", "rover", "box",
     ]
       .forEach(shape => {
         const { result } = renderHook(() => useSceneObjectPlacement({

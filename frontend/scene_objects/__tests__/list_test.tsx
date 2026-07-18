@@ -352,7 +352,7 @@ describe("<RawSceneObjects />", () => {
     const sceneSelects = fbSelectProps.filter(props =>
       props.list.some(item => item.label == "Lab"));
     expect(sceneSelects[sceneSelects.length - 1].selectedItem)
-      .toEqual({ label: "Lab", value: 1 });
+      .toEqual({ label: "Outdoor", value: 1 });
     fbSelectSpy.mockRestore();
   });
 });

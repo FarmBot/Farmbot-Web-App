@@ -968,6 +968,7 @@ interface StaticGardenLayersProps {
   sceneObjectClick?: (e: ThreeEvent<MouseEvent>) => void;
   sceneObjectPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
   sceneObjectPreview?: React.ReactNode;
+  sceneObjects: TaggedSceneObject[];
 }
 
 // eslint-disable-next-line complexity
@@ -1032,6 +1033,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       </Group>
       <Sun
         config={config}
+        sceneObjects={props.sceneObjects}
         skyRef={skyRef}
         cameraSideClipEnabled={cameraSideStarClipEnabled}
         constellationDiscoveryEnabled={constellationDiscoveryEnabled}
@@ -1047,11 +1049,10 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           dispatch={dispatch}
           timeTravelDispatch={dispatch} />}
       <AmbientLight intensity={config.ambient / 100} />
-      {config.ground &&
-        <Ground
-          config={config}
-          onClick={sceneObjectClick}
-          onPointerMove={sceneObjectPointerMove} />}
+      <Ground
+        config={config}
+        onClick={sceneObjectClick}
+        onPointerMove={sceneObjectPointerMove} />
       {sceneObjectPreview}
     </SceneBoundary>
     <SceneBoundary
@@ -1686,15 +1687,16 @@ export type GardenCameraPhase =
 export const stargazingOrbitPolarLimits = (
   phase: GardenCameraPhase,
   spaceflightCamera = SPACEFLIGHT_CAMERA,
-) => phase == "spaceflight"
-  ? {
-    min: cameraPolarAngle(spaceflightCamera),
-    max: cameraPolarAngle(spaceflightCamera),
-  }
-  : {
-    min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
-    max: phase == "normal" ? Math.PI / 2 : Math.PI,
-  };
+) =>
+  phase == "spaceflight"
+    ? {
+      min: cameraPolarAngle(spaceflightCamera),
+      max: cameraPolarAngle(spaceflightCamera),
+    }
+    : {
+      min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
+      max: phase == "normal" ? Math.PI / 2 : Math.PI,
+    };
 
 export const cameraSideStarClipEnabled = (
   phase: GardenCameraPhase,
@@ -1787,9 +1789,9 @@ export const useGardenCameraController = (
       props.desiredFov,
       liveCameraState,
     ));
-  // Retarget only when the projection setting changes. Including the live
-  // camera callback would restart the spring as OrbitControls updates.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Retarget only when the projection setting changes. Including the live
+    // camera callback would restart the spring as OrbitControls updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.desiredFov, props.viewMode]);
   const previousStargazingFovRef = React.useRef(props.stargazingFov);
   React.useEffect(() => {
@@ -1815,9 +1817,9 @@ export const useGardenCameraController = (
         ? () => setCameraPhase("stargazing")
         : undefined,
     }));
-  // Reading the live callback here is intentional, but depending on it would
-  // restart the spring after every imperative camera update.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Reading the live callback here is intentional, but depending on it would
+    // restart the spring after every imperative camera update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.stargazingFov,
     props.viewMode,
@@ -2207,6 +2209,18 @@ export const GardenModel = (props: GardenModelProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
+  const shadowSceneObjects = React.useMemo(() => {
+    const featuredScene = sectionDesigner?.featuredScene;
+    const sceneObjects = featuredScene
+      ? staticSceneObjects(featuredScene)
+      : staticSceneObjects(config.scene, props.promo);
+    return (props.sceneObjects || []).concat(sceneObjects);
+  }, [
+    config.scene,
+    props.promo,
+    props.sceneObjects,
+    sectionDesigner?.featuredScene,
+  ]);
   const viewMode = sectionDesigner?.threeDViewMode ?? "normal";
   const celestialViewActive = viewMode != "normal";
   const spaceflight = viewMode == "spaceflight";
@@ -2655,10 +2669,7 @@ export const GardenModel = (props: GardenModelProps) => {
       mapPoints,
       weeds,
       toolSlots,
-      (props.sceneObjects || []).concat(staticSceneObjects(
-        hoverScene,
-        true,
-      )),
+      (props.sceneObjects || []).concat(staticSceneObjects(hoverScene)),
     ), [
     hoverDesigner,
     hoverScene,
@@ -3057,6 +3068,7 @@ export const GardenModel = (props: GardenModelProps) => {
         modelRoot={modelRoot} />
       <StaticGardenLayers
         config={config}
+        sceneObjects={shadowSceneObjects}
         markStep={markLoadStep}
         environmentReveal={environmentReveal}
         bedReveal={bedReveal}
@@ -3270,6 +3282,7 @@ export const GardenModel = (props: GardenModelProps) => {
             <SceneObjects
               config={config}
               activeFocus={props.activeFocus}
+              isPromo={props.promo}
               dispatch={dispatch}
               designer={addPlantProps?.designer}
               hoverSelection={hoverSelection}

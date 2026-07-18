@@ -21,6 +21,7 @@ import { TaggedSceneObject } from "farmbot";
 import { selectAllSceneObjects } from "../resources/selectors";
 import { availableSceneObjectName } from "./actions";
 import { SceneObjectFormValues } from "./interfaces";
+import { DevSettings } from "../settings/dev/dev_support";
 
 export interface SceneObjectCatalogProps {
   dispatch: Function;
@@ -60,7 +61,33 @@ export const SCENE_OBJECT_CATALOG: SceneObjectCatalogEntry[] = [
   ...catalogEntries("Greenhouse", SCENE_OBJECT_CATALOG_SCENES.greenhouse),
   ...catalogEntries("Lab", SCENE_OBJECT_CATALOG_SCENES.lab),
   ...catalogEntries("Outdoor", SCENE_OBJECT_CATALOG_SCENES.outdoor),
+  ...(DevSettings.futureFeaturesEnabled()
+    ? catalogEntries("Mars", SCENE_OBJECT_CATALOG_SCENES.mars)
+    : []),
 ];
+
+const MARS_SEARCH_TERMS = [
+  "mars", "astronaut", "rover", "hab", "moon", "space",
+];
+
+export const filterSceneObjectCatalog = (
+  searchTerm: string,
+  catalog = SCENE_OBJECT_CATALOG,
+) => {
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const showMars = MARS_SEARCH_TERMS.includes(normalizedSearchTerm);
+  const completeCatalog = showMars && !catalog.some(
+    entry => entry.scene == "Mars")
+    ? [
+      ...catalog,
+      ...catalogEntries("Mars", SCENE_OBJECT_CATALOG_SCENES.mars),
+    ]
+    : catalog;
+  return completeCatalog.filter(entry =>
+    (showMars && entry.scene == "Mars")
+    || `${entry.name} ${entry.scene}`.toLowerCase()
+      .includes(normalizedSearchTerm));
+};
 
 export const mapStateToProps = (props: Everything): SceneObjectCatalogProps => ({
   dispatch: props.dispatch,
@@ -70,9 +97,7 @@ export const mapStateToProps = (props: Everything): SceneObjectCatalogProps => (
 export const RawSceneObjectCatalog = (props: SceneObjectCatalogProps) => {
   const [searchTerm, setSearchTerm] = React.useState("");
   const navigate = useNavigate();
-  const filteredEntries = SCENE_OBJECT_CATALOG.filter(entry =>
-    `${entry.name} ${entry.scene}`.toLowerCase()
-      .includes(searchTerm.toLowerCase()));
+  const filteredEntries = filterSceneObjectCatalog(searchTerm);
   const select = (entry: SceneObjectCatalogEntry) => {
     const payload = entry.sceneObject
       ? {

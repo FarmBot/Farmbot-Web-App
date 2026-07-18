@@ -26,6 +26,7 @@ import {
   Constellations, ConstellationsHandle,
 } from "./constellations";
 import { polarToCartesian } from "./celestial_coordinates";
+import { TaggedSceneObject } from "farmbot";
 
 const shadowBias = -0.0005;
 const shadowRadius = 8;
@@ -75,11 +76,29 @@ export interface SunProps {
   cameraSideClipEnabled: boolean;
   constellationDiscoveryEnabled: boolean;
   showSun: boolean;
+  sceneObjects: TaggedSceneObject[];
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
   onSunSetChange?(sunIsSet: boolean): void;
   onConstellationFound?(cropSlug: string): void;
 }
+
+export const sceneObjectShadowBounds = (
+  sceneObjects: TaggedSceneObject[],
+) => sceneObjects.reduce((bounds, sceneObject) => {
+  const body = sceneObject.body;
+  const xExtent = Math.abs(body.x_center) + 1000;
+  const yExtent = Math.abs(body.y_center) + 1000;
+  return Math.max(bounds, xExtent, yExtent);
+}, 0);
+
+export const refreshDirectionalLightShadow = (
+  light: ThreeDirectionalLight | null,
+) => {
+  if (!light) { return; }
+  light.shadow.camera.updateProjectionMatrix();
+  light.shadow.needsUpdate = true;
+};
 
 export const calcSunCoordinate = (
   date: Date,
@@ -391,7 +410,14 @@ const SunBase = (props: SunProps) => {
       Math.abs(config.bedWidthOuter - config.bedYOffset),
     );
     const bedBounds = Math.max(bedXBounds, bedYBounds) + shadowBuffer;
-    return Math.max(bedBounds, config.botSizeX, config.botSizeY);
+    const sceneObjectBounds = sceneObjectShadowBounds(props.sceneObjects)
+      + shadowBuffer;
+    return Math.max(
+      bedBounds,
+      sceneObjectBounds,
+      config.botSizeX,
+      config.botSizeY,
+    );
   }, [
     config.bedXOffset,
     config.bedLengthOuter,
@@ -399,7 +425,11 @@ const SunBase = (props: SunProps) => {
     config.bedWidthOuter,
     config.botSizeX,
     config.botSizeY,
+    props.sceneObjects,
   ]);
+  React.useLayoutEffect(() => {
+    refreshDirectionalLightShadow(lightRef.current);
+  }, [shadowBounds]);
 
   const setSunSky = (
     sunFactor: number,
@@ -593,6 +623,7 @@ const SUN_CONFIG_FIELDS: (keyof Config)[] = [
 
 export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
   prev.skyRef === next.skyRef
+  && prev.sceneObjects === next.sceneObjects
   && prev.cameraSideClipEnabled === next.cameraSideClipEnabled
   && prev.constellationDiscoveryEnabled
   === next.constellationDiscoveryEnabled

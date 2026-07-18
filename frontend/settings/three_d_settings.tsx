@@ -13,6 +13,7 @@ import { isUndefined } from "lodash";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "./default_values";
 import { Config, SurfaceDebugOption } from "../three_d_garden/config";
+import { DevSettings } from "./dev/dev_support";
 
 const DEFAULTS: Partial<Record<keyof Config, number>> = {
   bedWallThickness: 40,
@@ -44,6 +45,7 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
   moistureDebug: 0,
   cameraFitDebug: 0,
   viewCube: 1,
+  ground: 1,
   groundTexture: 0,
   surfaceDebug: SurfaceDebugOption.none,
   ambient: 75,
@@ -63,18 +65,20 @@ const DEFAULTS: Partial<Record<keyof Config, number>> = {
 };
 
 export const SCENES: Record<number, string> = {
-  0: "Outdoor",
-  1: "Lab",
-  2: "Greenhouse",
-  3: "Custom",
+  0: "Custom",
+  1: "Outdoor",
+  2: "Lab",
+  3: "Greenhouse",
+  4: "Mars",
 };
 
-export const SCENE_LABELS: Record<string, string> = {
+export const SCENE_LABELS = (): Record<string, string> => ({
   Outdoor: t("Outdoor"),
   Lab: t("Lab"),
   Greenhouse: t("Greenhouse"),
   Custom: t("Custom"),
-};
+  Mars: t("Mars"),
+});
 
 export const TEXTURES: Record<number, string> = {
   0: "grass",
@@ -87,7 +91,7 @@ export const TEXTURES: Record<number, string> = {
   7: "wood",
 };
 
-export const TEXTURE_LABELS: Record<string, string> = {
+export const TEXTURE_LABELS = (): Record<string, string> => ({
   grass: t("Grass"),
   bricks: t("Bricks"),
   concrete: t("Concrete"),
@@ -96,13 +100,14 @@ export const TEXTURE_LABELS: Record<string, string> = {
   soil: t("Soil"),
   sand: t("Sand"),
   wood: t("Wood"),
-};
+});
 
 const GROUND_TEXTURE_FOR_SCENE: Record<string, string> = {
   Outdoor: "grass",
   Lab: "concrete",
   Greenhouse: "bricks",
   Custom: "grass",
+  Mars: "sand",
 };
 
 const GROUND_TEXTURE_NUM_FROM_SCENE_NUM: Record<number, number> =
@@ -200,10 +205,12 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
           toggleAction={() => action(value ? "0" : "1")} />}
       {props.isScene &&
         <FBSelect
-          list={Object.values(SCENE_DDIS)}
-          selectedItem={SCENE_DDIS[value]}
+          key={value + props.sceneObjectUuids.join(",")}
+          list={SCENE_DDI_LIST()}
+          selectedItem={SCENE_DDIS()[value]}
           onChange={ddi => {
-            if (SCENES[ddi.value as number] != "Custom" && ddi.value != value) {
+            if (ddi.value == value) { return; }
+            if (SCENES[ddi.value as number] != "Custom") {
               if (props.sceneObjectUuids.length > 0) {
                 if (!confirm(t(Content.CONFIRM_SCENE_CHANGE,
                   { count: props.sceneObjectUuids.length }))) {
@@ -211,16 +218,16 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
                 }
               }
               props.sceneObjectUuids.map(uuid => dispatch(destroy(uuid)));
-              action("" + ddi.value);
-              props.findOrCreate("groundTexture",
-                "" + GROUND_TEXTURE_NUM_FROM_SCENE_NUM[ddi.value as number]);
             }
+            action("" + ddi.value);
+            props.findOrCreate("groundTexture",
+              "" + GROUND_TEXTURE_NUM_FROM_SCENE_NUM[ddi.value as number]);
           }} />}
       {props.isTexture &&
         <FBSelect
           key={value}
-          list={Object.values(TEXTURE_DDIS)}
-          selectedItem={TEXTURE_DDIS[value]}
+          list={Object.values(TEXTURE_DDIS())}
+          selectedItem={TEXTURE_DDIS()[value]}
           onChange={ddi => action("" + ddi.value)} />}
       {!props.isToggle && !props.isScene && !props.isTexture &&
         <BlurableInput
@@ -234,19 +241,25 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
 
 const DDIS = (
   values: Record<number, string>,
-  labels?: Record<string, string>,
+  labels: Record<string, string>,
 ): Record<number, DropDownItem> =>
   Object.entries(values)
-    .reduce((acc, [key, filename]) => {
+    .reduce((acc, [key, value]) => {
       acc[Number(key)] = {
-        label: labels?.[filename] || filename,
+        label: labels[value] || value,
         value: Number(key),
       };
       return acc;
     }, {} as Record<number, DropDownItem>);
 
-export const SCENE_DDIS = DDIS(SCENES, SCENE_LABELS);
-export const TEXTURE_DDIS = DDIS(TEXTURES, TEXTURE_LABELS);
+export const SCENE_DDIS = () => DDIS(SCENES, SCENE_LABELS());
+export const SCENE_DDI_LIST = () => Object.values(SCENE_DDIS())
+  .filter(ddi => ![
+    DevSettings.futureFeaturesEnabled()
+      ? undefined
+      : SCENE_NUM_FROM_NAME["Mars"],
+  ].filter((v): v is number => !!v).includes(ddi.value as number));
+export const TEXTURE_DDIS = () => DDIS(TEXTURES, TEXTURE_LABELS());
 
 const BY_NAME = (values: Record<number, string>) =>
   Object.entries(values)

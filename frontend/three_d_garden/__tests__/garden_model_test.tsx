@@ -69,7 +69,7 @@ import { AxesHelper } from "../components";
 import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
-import { LegacySolar, Solar } from "../garden/solar";
+import { LegacySolar } from "../garden/solar";
 import { Sun } from "../garden/sun";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
@@ -195,7 +195,10 @@ describe("<GardenModel />", () => {
     || setting == BooleanSetting.show_points
     || setting == BooleanSetting.show_weeds
     || setting == BooleanSetting.show_farmbot;
-  const bedSupportNames = ["bed-leg-wood", "caster-bracket", "wheel", "axle"];
+  const plantInstanceNames = [
+    "plant-icon-instances",
+    "plant-spread-instances",
+  ];
   const findPlantInstanceNodes =
     (wrapper: ReturnType<typeof createRenderer>) =>
       wrapper.root.findAll(node => {
@@ -203,11 +206,12 @@ describe("<GardenModel />", () => {
           ? node.props.name
           : "";
         return `${node.type}` == "instancedMesh" &&
-          !bedSupportNames.includes(nodeName);
+          plantInstanceNames.includes(nodeName);
       });
   const plantInstanceCount = (container: HTMLElement) =>
     [...container.querySelectorAll("instancedmesh")]
-      .filter(node => !bedSupportNames.includes(node.getAttribute("name") || ""))
+      .filter(node =>
+        plantInstanceNames.includes(node.getAttribute("name") || ""))
       .length;
 
   it("renders", async () => {
@@ -282,10 +286,10 @@ describe("<GardenModel />", () => {
     p.config.clouds = false;
     const wrapper = createWrapper(p);
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(0);
-    expect(wrapper.root.findAllByType(Solar)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(LegacySolar)).toHaveLength(0);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(0);
     expect(wrapper.root.findAllByType(Ground)
-      .filter(node => node.props.config === p.config)).toHaveLength(0);
+      .filter(node => node.props.config === p.config)).toHaveLength(1);
     expect(wrapper.root.findAllByType(Clouds)).toHaveLength(0);
   });
 
@@ -299,7 +303,7 @@ describe("<GardenModel />", () => {
     p.config.clouds = true;
     const wrapper = createWrapper(p);
     expect(wrapper.root.findAllByType(NorthArrow)).toHaveLength(1);
-    expect(wrapper.root.findAllByType(Solar)).toHaveLength(1);
+    expect(wrapper.root.findAllByType(LegacySolar)).toHaveLength(1);
     expect(wrapper.root.findAllByType(AxesHelper)).toHaveLength(1);
     expect(wrapper.root.findAllByType(Ground)
       .filter(node => node.props.config === p.config)).toHaveLength(1);
@@ -491,7 +495,7 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     p.config.scene = "Lab";
     p.addPlantProps!.designer.featuredScene = "Outdoor";
-    const featuredObject = staticSceneObjects("Outdoor", true)[0];
+    const featuredObject = staticSceneObjects("Outdoor")[0];
     p.addPlantProps!.designer.hoveredSceneObject = featuredObject.uuid;
     const wrapper = createWrapper(p);
     const sceneObjects = wrapper.root.findByType(SceneObjects);

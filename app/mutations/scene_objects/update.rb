@@ -18,12 +18,12 @@ module SceneObjects
       string :x_origin
       string :y_origin
       string :z_origin
-      integer :x_center
-      integer :y_center
-      integer :z_base
-      integer :x_size
-      integer :y_size
-      integer :z_size
+      integer :x_center, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
+      integer :y_center, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
+      integer :z_base, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
+      integer :x_size, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
+      integer :y_size, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
+      integer :z_size, min: -Helpers::INTEGER_LIMIT, max: Helpers::INTEGER_LIMIT
     end
 
     def validate

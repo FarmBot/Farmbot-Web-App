@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  get3DConfigValueFunction, namespace3D, SCENE_DDIS, TEXTURE_DDIS,
-  ThreeDSettings,
+  get3DConfigValueFunction, namespace3D, SCENE_DDI_LIST, SCENE_DDIS,
+  TEXTURE_DDIS, ThreeDConfig, ThreeDSettings,
 } from "../three_d_settings";
 import { ThreeDSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../__test_support__/panel_state";
@@ -9,6 +9,10 @@ import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 import * as crud from "../../api/crud";
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { fireEvent, render, within } from "@testing-library/react";
+import * as ui from "../../ui";
+import type { FBSelectProps } from "../../ui";
+import { DeviceSetting } from "../../constants";
+import { DevSettings } from "../dev/dev_support";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -168,7 +172,7 @@ describe("get3DConfigValueFunction()", () => {
 
 describe("TEXTURE_DDIS", () => {
   it("uses display labels and preserves stored values", () => {
-    expect(TEXTURE_DDIS).toEqual({
+    expect(TEXTURE_DDIS()).toEqual({
       0: { label: "Grass", value: 0 },
       1: { label: "Bricks", value: 1 },
       2: { label: "Concrete", value: 2 },
@@ -183,11 +187,99 @@ describe("TEXTURE_DDIS", () => {
 
 describe("SCENE_DDIS", () => {
   it("uses display labels and preserves stored values", () => {
-    expect(SCENE_DDIS).toEqual({
-      0: { label: "Outdoor", value: 0 },
-      1: { label: "Lab", value: 1 },
-      2: { label: "Greenhouse", value: 2 },
-      3: { label: "Custom", value: 3 },
+    expect(SCENE_DDIS()).toEqual({
+      0: { label: "Custom", value: 0 },
+      1: { label: "Outdoor", value: 1 },
+      2: { label: "Lab", value: 2 },
+      3: { label: "Greenhouse", value: 3 },
+      4: { label: "Mars", value: 4 },
     });
+  });
+
+  it("hides Mars when future features are disabled", () => {
+    const enabled = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+      .mockReturnValue(false);
+
+    expect(SCENE_DDI_LIST().map(item => item.label))
+      .toEqual(["Custom", "Outdoor", "Lab", "Greenhouse"]);
+    enabled.mockRestore();
+  });
+
+  it("shows Mars when future features are enabled", () => {
+    const enabled = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+      .mockReturnValue(true);
+
+    expect(SCENE_DDI_LIST().map(item => item.label))
+      .toEqual(["Custom", "Outdoor", "Lab", "Greenhouse", "Mars"]);
+    enabled.mockRestore();
+  });
+});
+
+describe("<ThreeDConfig /> scene selection", () => {
+  it("changes to Custom without deleting saved scene objects", () => {
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+    const dispatch = jest.fn();
+    const findOrCreate = jest.fn();
+    render(<ThreeDConfig
+      dispatch={dispatch}
+      setting={DeviceSetting.environment}
+      configKey={"scene"}
+      tooltip={""}
+      getValue={() => 2}
+      findOrCreate={findOrCreate}
+      isScene={true}
+      sceneObjectUuids={["SceneObject.1.1"]} />);
+
+    fbSelectProps[0].onChange({ label: "Custom", value: 0 });
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(findOrCreate).toHaveBeenCalledWith("scene", "0");
+    expect(findOrCreate).toHaveBeenCalledWith("groundTexture", "0");
+    fbSelectSpy.mockRestore();
+  });
+
+  it("confirms before replacing saved scene objects", () => {
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+    const destroy = jest.spyOn(crud, "destroy")
+      .mockImplementation(uuid => `destroy ${uuid}` as never);
+    const confirm = jest.spyOn(window, "confirm")
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    const dispatch = jest.fn();
+    const findOrCreate = jest.fn();
+    render(<ThreeDConfig
+      dispatch={dispatch}
+      setting={DeviceSetting.environment}
+      configKey={"scene"}
+      tooltip={""}
+      getValue={() => 0}
+      findOrCreate={findOrCreate}
+      isScene={true}
+      sceneObjectUuids={["SceneObject.1.1", "SceneObject.2.2"]} />);
+
+    fbSelectProps[0].onChange({ label: "Outdoor", value: 1 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(findOrCreate).not.toHaveBeenCalled();
+
+    fbSelectProps[0].onChange({ label: "Outdoor", value: 1 });
+    expect(destroy).toHaveBeenCalledWith("SceneObject.1.1");
+    expect(destroy).toHaveBeenCalledWith("SceneObject.2.2");
+    expect(dispatch).toHaveBeenCalledWith("destroy SceneObject.1.1");
+    expect(dispatch).toHaveBeenCalledWith("destroy SceneObject.2.2");
+    expect(findOrCreate).toHaveBeenCalledWith("scene", "1");
+    expect(findOrCreate).toHaveBeenCalledWith("groundTexture", "0");
+    confirm.mockRestore();
+    destroy.mockRestore();
+    fbSelectSpy.mockRestore();
   });
 });

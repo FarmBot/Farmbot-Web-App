@@ -1,8 +1,8 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  mapStateToProps, RawSceneObjectCatalog, SCENE_OBJECT_CATALOG,
-  SceneObjectCatalogProps,
+  filterSceneObjectCatalog, mapStateToProps, RawSceneObjectCatalog,
+  SCENE_OBJECT_CATALOG, SceneObjectCatalogProps,
 } from "../catalog";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
@@ -13,6 +13,7 @@ import {
 } from "../../three_d_garden/scenes/scene_object_data";
 import { fakeSceneObject } from
   "../../__test_support__/fake_state/resources";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("<RawSceneObjectCatalog />", () => {
   const fakeProps = (): SceneObjectCatalogProps => ({
@@ -25,6 +26,9 @@ describe("<RawSceneObjectCatalog />", () => {
     const expectedCount = SCENE_OBJECT_CATALOG_SCENES.greenhouse.length
       + SCENE_OBJECT_CATALOG_SCENES.lab.length
       + SCENE_OBJECT_CATALOG_SCENES.outdoor.length
+      + (DevSettings.futureFeaturesEnabled()
+        ? SCENE_OBJECT_CATALOG_SCENES.mars.length
+        : 0)
       + 1;
 
     expect(screen.getByText("Choose a scene object")).toBeInTheDocument();
@@ -45,6 +49,15 @@ describe("<RawSceneObjectCatalog />", () => {
     expect(screen.queryByText("Upper Shelf")).not.toBeInTheDocument();
   });
 
+  it("matches Mars presets to the future-features setting", () => {
+    const marsEntries = SCENE_OBJECT_CATALOG.filter(
+      entry => entry.scene == "Mars");
+
+    expect(marsEntries).toHaveLength(DevSettings.futureFeaturesEnabled()
+      ? SCENE_OBJECT_CATALOG_SCENES.mars.length
+      : 0);
+  });
+
   it("filters by name and scene", () => {
     const { container } = render(<RawSceneObjectCatalog {...fakeProps()} />);
     const search = screen.getByPlaceholderText("Search scene objects...");
@@ -57,6 +70,31 @@ describe("<RawSceneObjectCatalog />", () => {
     expect(container.querySelectorAll(".scene-object-catalog-tile"))
       .toHaveLength(LAB_SCENE_OBJECTS.length - 2);
     expect(screen.queryByText("Lab")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    "mars", "astronaut", "rover", "hab", "moon", "space",
+  ])("shows every Mars object when searching for %s", searchTerm => {
+    const { container } = render(<RawSceneObjectCatalog {...fakeProps()} />);
+    fireEvent.change(screen.getByPlaceholderText("Search scene objects..."), {
+      target: { value: searchTerm },
+    });
+
+    expect(container.querySelectorAll(".scene-object-catalog-tile"))
+      .toHaveLength(SCENE_OBJECT_CATALOG_SCENES.mars.length);
+    expect(screen.getByText("Astronaut")).toBeInTheDocument();
+    expect(screen.getByText("Rover")).toBeInTheDocument();
+    expect(screen.getByText("Hab")).toBeInTheDocument();
+  });
+
+  it("adds Mars results to the future-features-disabled catalog", () => {
+    const catalogWithoutMars = SCENE_OBJECT_CATALOG.filter(
+      entry => entry.scene != "Mars");
+    const entries = filterSceneObjectCatalog("space", catalogWithoutMars);
+
+    expect(entries).toHaveLength(SCENE_OBJECT_CATALOG_SCENES.mars.length);
+    expect(entries.map(entry => entry.name))
+      .toEqual(["Astronaut", "Rover", "Hab"]);
   });
 
   it("shows no results", () => {

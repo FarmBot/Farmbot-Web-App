@@ -94,12 +94,20 @@ describe("<Ground />", () => {
     expect(secondGround.props.dispose).toBeNull();
   });
 
-  it("skips hidden ground setup", () => {
+  it("renders hidden ground without a texture", () => {
     const p = fakeProps();
     p.config.ground = false;
-    const { container } = render(<Ground {...p} />);
-    expect(container).not.toContainHTML("ground");
-    expect(useTexture).not.toHaveBeenCalled();
+    const wrapper = createRenderer(<Ground {...p} />);
+    mountedWrappers.push(wrapper);
+    const ground = wrapper.root.findAll(node =>
+      node.props.name == "ground grass")[0];
+    const material = wrapper.root.findAll(node =>
+      node.props.color == "#ddd")[0];
+
+    expect(ground.props.receiveShadow).toEqual(false);
+    expect(material.props.map).toBeUndefined();
+    expect(material.props.transparent).toEqual(true);
+    expect(material.props.opacity).toEqual(0);
   });
 
   it("renders low-detail ground without loading a texture", () => {
