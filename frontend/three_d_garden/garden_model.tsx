@@ -2213,11 +2213,13 @@ export const GardenModel = (props: GardenModelProps) => {
     const featuredScene = sectionDesigner?.featuredScene;
     const sceneObjects = featuredScene
       ? staticSceneObjects(featuredScene)
-      : staticSceneObjects(config.scene, props.promo);
+      : staticSceneObjects(config.scene,
+        props.promo && !config.outdoorObjects);
     return (props.sceneObjects || []).concat(sceneObjects);
   }, [
     config.scene,
     props.promo,
+    config.outdoorObjects,
     props.sceneObjects,
     sectionDesigner?.featuredScene,
   ]);

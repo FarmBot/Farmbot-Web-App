@@ -2065,7 +2065,8 @@ export const SceneObjects = (props: SceneObjectsProps) => {
   const featuredUuids = new Set(featuredSceneObjects?.map(({ uuid }) => uuid));
   const sceneObjects = (props.sceneObjects || []).concat(
     featuredSceneObjects
-    || staticSceneObjects(props.config.scene, props.isPromo));
+    || staticSceneObjects(props.config.scene,
+      props.isPromo && !props.config.outdoorObjects));
   return <>
     {/* eslint-disable-next-line complexity */}
     {sceneObjects.map(sceneObject => {
@@ -2331,7 +2332,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
 export const staticSceneObjects = (
   scene: string,
-  isPromo?: boolean,
+  hideOutdoorObjects?: boolean,
 ): TaggedSceneObject[] => {
   const wrap = (sceneObjects: SceneObject[]): TaggedSceneObject[] =>
     sceneObjects.map((body, index) => ({
@@ -2342,7 +2343,7 @@ export const staticSceneObjects = (
     }));
   switch (scene) {
     case "Outdoor":
-      if (isPromo) { return []; }
+      if (hideOutdoorObjects) { return []; }
       return wrap(OUTDOOR_SCENE_OBJECTS);
     case "Lab":
       return wrap(LAB_SCENE_OBJECTS);
