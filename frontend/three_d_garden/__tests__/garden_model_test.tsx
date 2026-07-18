@@ -16,6 +16,7 @@ import {
   createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
+  GardenSceneBackground,
   GardenCameraRequest, GardenModelProps, GardenModel,
   getSpaceflightCamera,
   getVisibleSpaceflightViewport,
@@ -67,7 +68,7 @@ import * as mapUtil from "../../farm_designer/map/util";
 import {
   FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
 } from "../progressive_load";
-import { AxesHelper } from "../components";
+import { AxesHelper, Primitive } from "../components";
 import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
@@ -89,7 +90,8 @@ import {
 } from "../view_prism";
 import { success } from "../../toast/toast";
 import {
-  Group as ThreeGroup, PerspectiveCamera as ThreePerspectiveCamera, Vector3,
+  Color, Group as ThreeGroup,
+  PerspectiveCamera as ThreePerspectiveCamera, Vector3,
 } from "three";
 import { SceneObjects, staticSceneObjects } from "../scene_objects";
 
@@ -522,7 +524,6 @@ describe("<GardenModel />", () => {
     p.addPlantProps!.designer.threeDSectionAxis = "y";
     const wrapper = createWrapper(p);
     const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
-    const sky = wrapper.root.findAll(node => node.props.name == "sky")[0];
     const cutFaces = wrapper.root.findAll(node =>
       node.props.name == "section-cut-faces")[0];
     const sceneObjects = wrapper.root.findByProps({ name: "scene-objects" });
@@ -538,7 +539,6 @@ describe("<GardenModel />", () => {
     expect(controls.props.enableRotate).toEqual(false);
     expect(controls.props.enablePan).toEqual(true);
     expect(controls.props.enableZoom).toEqual(true);
-    expect(sky.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(cutFaces.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(sceneObjects.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(true);
     expect(bedSupports.props.userData[SECTION_CLIPPING_EXEMPT]).toEqual(false);
@@ -686,6 +686,34 @@ describe("<GardenModel />", () => {
       fit.centerDepth,
       fit.centerVerticalOffset,
     ));
+  });
+
+  it("renders the sky through the scene background", () => {
+    const wrapper = createWrapper(fakeProps());
+    const backgroundColor =
+      wrapper.root.findByType(Sun).props.backgroundColor;
+    const background = wrapper.root.findAllByType(Primitive)
+      .find(node => node.props.attach == "background");
+
+    expect(backgroundColor).toBeInstanceOf(Color);
+    expect(background?.props.object).toBe(backgroundColor);
+    expect(wrapper.root.findAll(node => node.props.name == "sky"))
+      .toHaveLength(0);
+  });
+
+  it("holds the scene background until the environment is ready", () => {
+    const backgroundColor = new Color("#2c362f");
+    const wrapper = createRenderer(<GardenSceneBackground
+      backgroundColor={backgroundColor}
+      ready={false} />);
+    mountedWrappers.push(wrapper);
+    expect(wrapper.root.findAllByType(Primitive)).toHaveLength(0);
+
+    actRenderer(() => wrapper.update(<GardenSceneBackground
+      backgroundColor={backgroundColor}
+      ready={true} />));
+    expect(wrapper.root.findByType(Primitive).props.object)
+      .toBe(backgroundColor);
   });
 
   it("hides focus beacons while stargazing", () => {
@@ -2376,8 +2404,11 @@ describe("<GardenModel />", () => {
   it("shows night sky", () => {
     const p = fakeProps();
     p.config.sun = 0;
-    const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("color=\"0,0,0\"");
+    const wrapper = createWrapper(p);
+    const backgroundColor = wrapper.root
+      .findByType(Sun).props.backgroundColor as Color;
+
+    expect(backgroundColor.getHex()).toEqual(0);
   });
 });
 

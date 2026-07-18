@@ -114,6 +114,8 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
     <div className={"garden-bed-3d-model"}>
       <Canvas
         events={sectionAwareEvents}
+        gl={{ alpha: true }}
+        style={{ backgroundColor: "#2c362f" }}
         shadows={props.config.lowDetail ? false : "variance"}
         onCreated={({ gl }) => {
           gl.localClippingEnabled = true;

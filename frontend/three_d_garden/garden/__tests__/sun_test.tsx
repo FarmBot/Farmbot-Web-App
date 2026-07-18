@@ -19,7 +19,7 @@ import {
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
-  DirectionalLight as ThreeDirectionalLight, MeshBasicMaterial,
+  Color, DirectionalLight as ThreeDirectionalLight,
   WebGLProgramParametersWithUniforms,
 } from "three";
 import {
@@ -73,15 +73,28 @@ describe("<Sun />", () => {
     constellationDiscoveryEnabled: false,
     sceneObjects: [],
     showSun: true,
-    skyRef: {
-      current: { color: { setRGB: jest.fn() } } as unknown as MeshBasicMaterial,
-    },
+    backgroundColor: { setRGB: jest.fn() } as unknown as Color,
   });
 
   it("renders", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("updates the scene background from day to night", () => {
+    const p = fakeProps();
+    const backgroundColor = new Color();
+    p.backgroundColor = backgroundColor;
+    p.config.sunInclination = 90;
+    const { rerender } = render(<Sun {...p} />);
+    expect(backgroundColor.toArray())
+      .toEqual(skyColor(p.config.sun, p.config.scene));
+
+    p.config = { ...p.config, sun: 0 };
+    rerender(<Sun {...p} />);
+    expect(backgroundColor.toArray())
+      .toEqual(skyColor(0, p.config.scene));
   });
 
   it("refreshes the directional light shadow projection", () => {
@@ -367,12 +380,10 @@ describe("<Sun />", () => {
     expect(light?.getAttribute("castshadow")).not.toEqual("true");
   });
 
-  it("renders animated without ref", () => {
+  it("renders animated", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };
-    // eslint-disable-next-line no-null/no-null
-    p.skyRef = { current: null };
     const { container } = render(<Sun {...p} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");

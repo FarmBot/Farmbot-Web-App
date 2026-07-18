@@ -7,14 +7,12 @@ import {
   OrbitControls, PerspectiveCamera,
   Stats,
   Line,
-  Sphere,
   StatsGl,
   Billboard,
 } from "@react-three/drei";
 import {
-  BackSide,
+  Color,
   DoubleSide,
-  MeshBasicMaterial as ThreeMeshBasicMaterial,
   Group as ThreeGroup,
   type Object3D,
   PerspectiveCamera as ThreePerspectiveCamera,
@@ -24,7 +22,7 @@ import {
   AddPlantProps, Bed, getRenderSoilSurfaceGeometry,
 } from "./bed";
 import {
-  Sky, LegacySolar, Sun, sunPosition, ZoomBeacons,
+  LegacySolar, Sun, ZoomBeacons,
   PlantInstances,
   PlantSpreadInstances,
   PointInstances, Grid, Clouds, Ground, WeedInstances,
@@ -43,6 +41,7 @@ import { Lab, Greenhouse } from "./scenes";
 import { Camera, getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, Mesh, MeshBasicMaterial,
+  Primitive,
 } from "./components";
 import { isUndefined, kebabCase, range, round, uniq } from "lodash";
 import {
@@ -931,7 +930,7 @@ interface StaticGardenLayersProps {
   plantsReveal: boolean;
   weedsReveal: boolean;
   pointsReveal: boolean;
-  skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  backgroundColor: Color;
   activePositionRef: React.RefObject<{ x: number, y: number } | null>;
   soilSurfaceGeometry: ReturnType<typeof getSurface>["geometry"];
   getZ(x: number, y: number): number;
@@ -981,7 +980,8 @@ interface StaticGardenLayersProps {
 const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
   const {
     config, markStep, environmentReveal, bedReveal, gridReveal,
-    plantsReveal, weedsReveal, pointsReveal, skyRef, activePositionRef,
+    plantsReveal, weedsReveal, pointsReveal, backgroundColor,
+    activePositionRef,
     soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
     showMoistureMap, showMoistureReadings, showTelescope,
     sensors, sensorReadings,
@@ -1027,20 +1027,10 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       markStep={markStep}
       reveal={environmentReveal}
       markName={"three_d_ground_ready"}>
-      <Group name={"sky"}
-        userData={{ [SECTION_CLIPPING_EXEMPT]: true }}>
-        <Sky sunPosition={sunPosition(0, 0, 0)} />
-        <Sphere args={[BigDistance.sky, 8, 16]}>
-          <MeshBasicMaterial
-            ref={skyRef}
-            color={skyColor(config.sun, config.scene)}
-            side={BackSide} />
-        </Sphere>
-      </Group>
       <Sun
         config={config}
         sceneObjects={props.sceneObjects}
-        skyRef={skyRef}
+        backgroundColor={backgroundColor}
         cameraSideClipEnabled={cameraSideStarClipEnabled}
         constellationDiscoveryEnabled={constellationDiscoveryEnabled}
         showSun={!spaceflight}
@@ -2247,6 +2237,17 @@ export const selectGardenViewportHeight =
   (state: RootState) => state.size.height;
 const selectGardenInvalidate = (state: RootState) => state.invalidate;
 
+interface GardenSceneBackgroundProps {
+  backgroundColor: Color;
+  ready: boolean;
+}
+
+export const GardenSceneBackground = (
+  props: GardenSceneBackgroundProps,
+) => props.ready
+  ? <Primitive object={props.backgroundColor} attach={"background"} />
+  : undefined;
+
 interface GardenModelSceneProps extends GardenModelProps {
   route: GardenRouteSnapshot;
   viewport: GardenViewportSnapshot;
@@ -2702,6 +2703,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const pointsReveal = loadProgress.isStepAllowed("points");
   const farmbotReveal = loadProgress.isStepAllowed("farmbot");
   const detailsReveal = loadProgress.isStepAllowed("details");
+  const environmentLoaded =
+    loadProgress.readyStepTimes.environment !== undefined;
   const gridLoaded = loadProgress.readyStepTimes.grid !== undefined;
   const detailsRevealNotified = React.useRef(false);
   const loadCompleteNotified = React.useRef(false);
@@ -3133,8 +3136,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     }, controlsCamera, controls);
   });
 
-  // eslint-disable-next-line no-null/no-null
-  const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const backgroundColor = React.useMemo(() => new Color(
+    ...skyColor(config.sun, config.scene),
+  ), [config.scene, config.sun]);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
@@ -3211,6 +3215,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   ]);
 
   return <FocusTransitionProvider enabled={focusTransitionsEnabled}>
+    <GardenSceneBackground
+      backgroundColor={backgroundColor}
+      ready={environmentLoaded} />
     {/* eslint-disable-next-line no-null/no-null */}
     <Group dispose={null}
       ref={setModelRootRef}
@@ -3270,7 +3277,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         plantsReveal={plantsReveal}
         weedsReveal={weedsReveal}
         pointsReveal={pointsReveal}
-        skyRef={skyRef}
+        backgroundColor={backgroundColor}
         activePositionRef={activePositionRef}
         soilSurfaceGeometry={soilSurface.geometry}
         getZ={getZ}

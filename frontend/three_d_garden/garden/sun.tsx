@@ -4,7 +4,6 @@ import {
 } from "../config";
 import {
   Vector3, DirectionalLight as ThreeDirectionalLight, Mesh as ThreeMesh,
-  MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
 } from "three";
 import {
@@ -78,7 +77,7 @@ export interface SunProps {
   showSun: boolean;
   sceneObjects: TaggedSceneObject[];
   startTimeRef?: React.RefObject<number>;
-  skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  backgroundColor: Color;
   onSunSetChange?(sunIsSet: boolean): void;
   onConstellationFound?(cropSlug: string): void;
 }
@@ -436,7 +435,7 @@ const SunBase = (props: SunProps) => {
     sunValue: number,
   ) => {
     const skySunValue = sunFactor * sunValue;
-    props.skyRef.current?.color?.setRGB(
+    props.backgroundColor.setRGB(
       ...skyColor(skySunValue, config.scene),
     );
     constellationsRef.current?.setNightFactor(1 - sunFactor);
@@ -622,7 +621,7 @@ const SUN_CONFIG_FIELDS: (keyof Config)[] = [
 ];
 
 export const sunPropsEqual = (prev: SunProps, next: SunProps) =>
-  prev.skyRef === next.skyRef
+  prev.backgroundColor === next.backgroundColor
   && prev.sceneObjects === next.sceneObjects
   && prev.cameraSideClipEnabled === next.cameraSideClipEnabled
   && prev.constellationDiscoveryEnabled

@@ -5,7 +5,6 @@ export * from "./ground";
 export * from "./plants";
 export * from "./plant_instances";
 export * from "./point";
-export * from "./sky";
 export * from "./solar";
 export * from "./sun";
 export * from "./weed";

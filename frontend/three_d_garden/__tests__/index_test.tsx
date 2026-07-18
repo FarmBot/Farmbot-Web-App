@@ -55,6 +55,10 @@ describe("<ThreeDGarden />", () => {
       filter: filterSectionIntersections,
     });
     expect(reactThreeFiber.events).toHaveBeenCalledWith(store);
+    expect(canvasSpy.mock.calls[0][0]).toEqual(expect.objectContaining({
+      gl: { alpha: true },
+      style: { backgroundColor: "#2c362f" },
+    }));
     expect(canvasSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         gl: { alpha: true },
