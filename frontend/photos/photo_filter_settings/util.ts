@@ -100,7 +100,11 @@ export const getImageTypeLabel = (image: TaggedImage | undefined): string => {
   }
 };
 
-export const filterImagesByType = (designer: DesignerState) =>
+type ImageTypeVisibility = Pick<DesignerState,
+  "showPhotoImages" | "showCalibrationImages"
+  | "showDetectionImages" | "showHeightImages">;
+
+export const filterImagesByType = (designer: ImageTypeVisibility) =>
   (img: TaggedImage | undefined) => {
     const {
       showPhotoImages, showCalibrationImages, showDetectionImages, showHeightImages,

@@ -12,7 +12,8 @@ import {
   cameraFitRadiusForZoom,
   cameraSideStarClipEnabled,
   constellationDiscoveryEnabled,
-  createCameraFitRequest, createStartingCameraSelector,
+  createCameraFitRequest, createGardenRouteSnapshot,
+  createStartingCameraSelector,
   createViewDirectionRequest,
   FarmDesignerViewPrism,
   GardenCameraRequest, GardenModelProps, GardenModel,
@@ -23,6 +24,7 @@ import {
   notifyStartingCameraSaved,
   PANEL_CAMERA_TRANSITION_MS,
   retargetCameraRequestFov,
+  selectGardenViewportHeight, selectGardenViewportWidth,
   stargazingOrbitPolarLimits,
   GardenCameraControllerProps,
   useGardenCameraController,
@@ -221,6 +223,68 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("zoom-beacons-load-in");
     expect(container.innerHTML).toContain("farmbot-scene-boundary");
     expect(container.innerHTML).toContain("details-scene-boundary");
+  });
+
+  it("isolates generic panel routes from the heavy scene", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    const initialRenders =
+      window.__fbPerf?.counts["render.GardenModel"];
+
+    location.pathname = Path.mock(Path.designer());
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(window.__fbPerf?.counts["render.GardenModel"])
+      .toEqual(initialRenders);
+
+    location.pathname = Path.mock(Path.plants(1));
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(window.__fbPerf?.counts["render.GardenModel"])
+      .toBeGreaterThan(initialRenders || 0);
+  });
+
+  it("distinguishes scene-relevant routes", () => {
+    const setRoute = (route: string) => {
+      const [pathname, search = ""] = Path.mock(route).split("?");
+      location.pathname = pathname;
+      location.search = search ? `?${search}` : "";
+      return createGardenRouteSnapshot(
+        location.pathname,
+        location.search,
+      );
+    };
+    const generic = setRoute(Path.plants());
+    expect(setRoute(Path.designer()).key).toEqual(generic.key);
+
+    const plant = setRoute(Path.plants(1));
+    expect(plant.selection).toEqual({ kind: "plant", id: 1 });
+    expect(plant.key).not.toEqual(generic.key);
+
+    const point = setRoute(Path.points(2));
+    expect(point.selection).toEqual({ kind: "point", id: 2 });
+
+    const group = setRoute(Path.groups(3));
+    expect(group.groupId).toEqual(3);
+
+    const selectedLocation = setRoute(
+      Path.location({ x: 10, y: 20, z: 30 }),
+    );
+    expect(selectedLocation.locationSelection).toEqual({
+      kind: "location",
+      x: 10,
+      y: 20,
+      z: 30,
+    });
+
+    const sceneObject = setRoute(Path.sceneObjects("add"));
+    expect(sceneObject.addingSceneObject).toBeTruthy();
+  });
+
+  it("selects primitive canvas viewport dimensions", () => {
+    const size = { width: 800, height: 600 };
+    expect(selectGardenViewportWidth({ size } as never)).toEqual(800);
+    expect(selectGardenViewportHeight({ size } as never)).toEqual(600);
   });
 
   it("notifies when the progressive reveal completes", async () => {
@@ -628,11 +692,23 @@ describe("<GardenModel />", () => {
     const wrapper = createWrapper(p);
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
 
-    p.addPlantProps!.designer.threeDViewMode = "stargazing";
+    p.addPlantProps = {
+      ...p.addPlantProps!,
+      designer: {
+        ...p.addPlantProps!.designer,
+        threeDViewMode: "stargazing",
+      },
+    };
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
     expect(beaconLoadIn(wrapper)).toHaveLength(0);
 
-    p.addPlantProps!.designer.threeDViewMode = "normal";
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        threeDViewMode: "normal",
+      },
+    };
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
   });
@@ -680,7 +756,13 @@ describe("<GardenModel />", () => {
     p.addPlantProps!.designer.threeDViewMode = "stargazing";
     const wrapper = createWrapper(p);
 
-    p.addPlantProps!.designer.threeDViewMode = "normal";
+    p.addPlantProps = {
+      ...p.addPlantProps!,
+      designer: {
+        ...p.addPlantProps!.designer,
+        threeDViewMode: "normal",
+      },
+    };
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
 
     const cameraRequests = useStateSetters.flatMap(setter =>
@@ -691,7 +773,7 @@ describe("<GardenModel />", () => {
           && "camera" in value && "fov" in value));
     const restored = cameraRequests[cameraRequests.length - 1];
     expect(restored.fov).not.toEqual(
-      p.addPlantProps!.designer.threeDStargazingFov,
+      p.addPlantProps.designer.threeDStargazingFov,
     );
     expect(restored.camera.position[0]).toBeGreaterThan(0);
     expect(restored.camera.position[1]).toBeLessThan(0);
@@ -1983,13 +2065,15 @@ describe("<GardenModel />", () => {
       },
       size: { width: 800, height: 600 },
     };
-    jest.spyOn(threeFiber, "useThree")
-      .mockImplementation(() => state);
+    const useThreeSpy = jest.spyOn(threeFiber, "useThree")
+      .mockImplementation(selector =>
+        selector ? selector(state as never) : state);
     const wrapper = createWrapper(fakeProps());
     expect(canvas.style.cursor).toEqual("grab");
     unmountRenderer(wrapper);
     mountedWrappers.pop();
     expect(canvas.style.cursor).toEqual("");
+    useThreeSpy.mockRestore();
   });
 
   const mockSceneCursorTarget = () => {
@@ -2017,7 +2101,8 @@ describe("<GardenModel />", () => {
       size: { width: 800, height: 600 },
     };
     const useThreeSpy = jest.spyOn(threeFiber, "useThree")
-      .mockImplementation(() => state);
+      .mockImplementation(selector =>
+        selector ? selector(state as never) : state);
     return { canvas, useThreeSpy };
   };
 

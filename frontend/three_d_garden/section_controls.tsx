@@ -13,7 +13,7 @@ import {
 import { getBotKinematics } from "./bot/kinematics";
 import { SECTION_CLIPPING_EXEMPT } from "./section";
 import { getSectionNearPosition } from "./section_cut_faces";
-import { DesignerState, ThreeDSectionAxis } from
+import { ThreeDDesignerState, ThreeDSectionAxis } from
   "../farm_designer/interfaces";
 import { AxisNumberProperty } from "../farm_designer/map/interfaces";
 import { Actions } from "../constants";
@@ -166,7 +166,7 @@ export const sectionCameraDirection = (
 export interface SectionControlsProps {
   config: Config;
   configPosition: PositionConfig;
-  designer: DesignerState;
+  designer: ThreeDDesignerState;
   dispatch: Function;
   gardenSize: AxisNumberProperty;
   axis: ThreeDSectionAxis;

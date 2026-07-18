@@ -1,8 +1,9 @@
 import React from "react";
-import { act, renderHook } from "@testing-library/react";
+import { act, render, renderHook } from "@testing-library/react";
 import {
-  createPanelCameraStore, selectPanelCamera, selectPanelInvalidate,
-  selectPanelViewport,
+  createPanelCameraStore, PanelCameraController, selectPanelCamera,
+  selectPanelInvalidate, selectPanelViewportHeight,
+  selectPanelViewportWidth,
 } from "../panel_camera";
 import { PerspectiveCamera } from "three";
 import { RootState } from "@react-three/fiber";
@@ -20,7 +21,8 @@ describe("panel camera store", () => {
 
     expect(selectPanelCamera(state)).toBe(camera);
     expect(selectPanelInvalidate(state)).toBe(invalidate);
-    expect(selectPanelViewport(state)).toBe(size);
+    expect(selectPanelViewportWidth(state)).toEqual(1200);
+    expect(selectPanelViewportHeight(state)).toEqual(600);
   });
 
   it("notifies only when the panel state changes", () => {
@@ -52,5 +54,25 @@ describe("panel camera store", () => {
 
     act(() => store.setOpen(false));
     expect(result.current).toBeFalsy();
+  });
+
+  it("renders once for each panel state change", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const store = createPanelCameraStore(true);
+    const view = render(<PanelCameraController store={store} />);
+    expect(window.__fbPerf?.counts["render.PanelCameraController"])
+      .toEqual(1);
+
+    view.rerender(<PanelCameraController store={store} />);
+    act(() => store.setOpen(true));
+    expect(window.__fbPerf?.counts["render.PanelCameraController"])
+      .toEqual(1);
+
+    for (let cycle = 0; cycle < 10; cycle++) {
+      act(() => store.setOpen(false));
+      act(() => store.setOpen(true));
+    }
+    expect(window.__fbPerf?.counts["render.PanelCameraController"])
+      .toEqual(21);
   });
 });

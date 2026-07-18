@@ -5,7 +5,7 @@ import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
-import { DesignerState } from "../../farm_designer/interfaces";
+import { ThreeDDesignerState } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
 
@@ -130,7 +130,7 @@ const selectionFromResource = (
   resource?.body.id ? { kind, id: resource.body.id } : undefined;
 
 export const hoverSelectionFromDesigner = (
-  designer: DesignerState | undefined,
+  designer: ThreeDDesignerState | undefined,
   plants: TaggedPlant[],
   points: TaggedGenericPointer[],
   weeds: TaggedWeedPointer[],

@@ -9,7 +9,7 @@ export interface ThreeDCameraControlsProps {
 }
 
 export const effectiveThreeDPerspective = (
-  designer: DesignerState,
+  designer: Pick<DesignerState, "threeDPerspective">,
 ) => designer.threeDPerspective ?? true;
 
 export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {

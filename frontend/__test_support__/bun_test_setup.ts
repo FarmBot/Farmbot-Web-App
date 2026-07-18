@@ -218,6 +218,7 @@ const globalConfigBaseline = cloneForReset(globalAny.globalConfig ?? {});
 const defaultThreeFiberState = () => ({
   clock: { getElapsedTime: jest.fn(() => 0) },
   camera: new THREE.PerspectiveCamera(),
+  invalidate: jest.fn(),
   gl: {
     info: {
       render: { calls: 0, triangles: 0, points: 0, lines: 0 },
@@ -260,7 +261,8 @@ const resetThreeFiberHookMocks = () => {
   asMockLike<
     Parameters<typeof threeFiber.useThree>,
     ReturnType<typeof threeFiber.useThree>
-  >(threeFiber.useThree)?.mockImplementation(() => state);
+  >(threeFiber.useThree)?.mockImplementation((selector) =>
+    selector ? selector(state as unknown as RootState) : state);
 };
 
 beforeEach(() => {

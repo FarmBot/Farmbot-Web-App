@@ -29,6 +29,15 @@ import { Actions } from "../../constants";
 import { SceneObjectFormValues } from "../../scene_objects/interfaces";
 import { MeshPhongMaterial } from "../components";
 
+type TestSceneObjectPlacementProps = Omit<
+  Parameters<typeof useSceneObjectPlacement>[0],
+  "navigate"
+>;
+
+const useTestSceneObjectPlacement = (
+  props: TestSceneObjectPlacementProps,
+) => useSceneObjectPlacement({ ...props, navigate: mockNavigate });
+
 const positionArray = (position: unknown): [number, number, number] => {
   if (!Array.isArray(position)) { throw new Error("Expected position array."); }
   const [x, y, z] = position;
@@ -196,7 +205,7 @@ describe("scene object placement helpers", () => {
           new Vector3(0, 0, -1),
         ),
       });
-      const { result } = renderHook(() => useSceneObjectPlacement({
+      const { result } = renderHook(() => useTestSceneObjectPlacement({
         config: clone(INITIAL),
         enabled: true,
         dispatch,
@@ -1951,7 +1960,7 @@ describe("scene object placement helpers", () => {
 
   it("ignores placement events when disabled", () => {
     const dispatch = jest.fn();
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: false,
       dispatch,
@@ -1983,7 +1992,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     };
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: true,
       dispatch,
@@ -2014,7 +2023,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     };
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: true,
       dispatch: jest.fn(),
@@ -2068,7 +2077,7 @@ describe("scene object placement helpers", () => {
       ),
     };
     const { result, rerender } = renderHook(
-      ({ drawnSceneObject }) => useSceneObjectPlacement({
+      ({ drawnSceneObject }) => useTestSceneObjectPlacement({
         config,
         enabled: true,
         dispatch: jest.fn(),
@@ -2134,7 +2143,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     });
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: true,
       drawnSceneObject: fakeSceneObject().body,
@@ -2174,7 +2183,7 @@ describe("scene object placement helpers", () => {
       x_origin: undefined,
       y_origin: undefined,
     };
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: true,
       dispatch: jest.fn(),
@@ -2216,7 +2225,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     });
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config: clone(INITIAL),
       enabled: true,
       dispatch,
@@ -2273,7 +2282,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     });
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch,
@@ -2332,7 +2341,7 @@ describe("scene object placement helpers", () => {
       ),
     };
     const { result, rerender } = renderHook(
-      ({ drawnSceneObject }) => useSceneObjectPlacement({
+      ({ drawnSceneObject }) => useTestSceneObjectPlacement({
         config,
         enabled: true,
         dispatch,
@@ -2374,7 +2383,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     };
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch,
@@ -2401,7 +2410,7 @@ describe("scene object placement helpers", () => {
       nativeEvent: { clientY: 100 },
       stopPropagation: jest.fn(),
     };
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch: jest.fn(),
@@ -2432,7 +2441,7 @@ describe("scene object placement helpers", () => {
   it("doesn't show the origin plane for world origin scene objects", () => {
     const config = clone(INITIAL);
     const body = fakeSceneObject({ z_origin: "world" }).body;
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch: jest.fn(),
@@ -2458,7 +2467,7 @@ describe("scene object placement helpers", () => {
   it("projects new scene object cursor onto the selected home origin plane", () => {
     const config = clone(INITIAL);
     const body = fakeSceneObject({ z_origin: "home" }).body;
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch: jest.fn(),
@@ -2500,7 +2509,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     });
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch,
@@ -2548,7 +2557,7 @@ describe("scene object placement helpers", () => {
         new Vector3(0, 0, -1),
       ),
     });
-    const { result } = renderHook(() => useSceneObjectPlacement({
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
       config,
       enabled: true,
       dispatch: jest.fn(),
@@ -2576,7 +2585,7 @@ describe("scene object placement helpers", () => {
       "fence", "box",
     ]
       .forEach(shape => {
-        const { result } = renderHook(() => useSceneObjectPlacement({
+        const { result } = renderHook(() => useTestSceneObjectPlacement({
           config: clone(INITIAL),
           enabled: true,
           dispatch: jest.fn(),

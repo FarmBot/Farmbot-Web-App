@@ -3,6 +3,7 @@ import { RootState, useThree } from "@react-three/fiber";
 import { PerspectiveCamera } from "three";
 import { getPanelCameraViewOffset } from "./camera";
 import { usePanelCameraViewOffset } from "./garden_model";
+import { perfCount, usePerfRenderCount } from "../performance/perf";
 
 type PanelCameraListener = () => void;
 
@@ -37,11 +38,15 @@ export interface PanelCameraControllerProps {
 
 export const selectPanelCamera = (state: RootState) => state.camera;
 export const selectPanelInvalidate = (state: RootState) => state.invalidate;
-export const selectPanelViewport = (state: RootState) => state.size;
+export const selectPanelViewportWidth =
+  (state: RootState) => state.size.width;
+export const selectPanelViewportHeight =
+  (state: RootState) => state.size.height;
 
-export const PanelCameraController = (
+const PanelCameraControllerBase = (
   props: PanelCameraControllerProps,
 ) => {
+  usePerfRenderCount("PanelCameraController");
   const panelOpen = React.useSyncExternalStore(
     props.store.subscribe,
     props.store.getSnapshot,
@@ -49,11 +54,18 @@ export const PanelCameraController = (
   );
   const camera = useThree(selectPanelCamera);
   const invalidate = useThree(selectPanelInvalidate);
-  const size = useThree(selectPanelViewport);
+  const width = useThree(selectPanelViewportWidth);
+  const height = useThree(selectPanelViewportHeight);
   const view = React.useMemo(
-    () => getPanelCameraViewOffset(size, panelOpen),
-    [panelOpen, size],
+    () => getPanelCameraViewOffset({ width, height }, panelOpen),
+    [height, panelOpen, width],
   );
+  React.useEffect(() => {
+    perfCount("change.PanelCameraController.panelOpen");
+  }, [panelOpen]);
+  React.useEffect(() => {
+    perfCount("change.PanelCameraController.viewport");
+  }, [height, width]);
   usePanelCameraViewOffset(
     camera instanceof PerspectiveCamera ? camera : undefined,
     view,
@@ -61,3 +73,9 @@ export const PanelCameraController = (
   );
   return <></>;
 };
+
+export const PanelCameraController = React.memo(
+  PanelCameraControllerBase,
+);
+
+PanelCameraController.displayName = "PanelCameraController";

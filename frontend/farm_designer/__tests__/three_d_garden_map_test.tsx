@@ -3,12 +3,15 @@ import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants, lastImageCaptureTime,
 } from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
-import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
-import { fakeLog, fakePlant } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFarmwareEnv, fakeLog, fakePlant,
+} from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
-import { clone } from "lodash";
-import { INITIAL, SurfaceDebugOption } from "../../three_d_garden/config";
+import { clone, cloneDeep } from "lodash";
+import {
+  Config, INITIAL, SurfaceDebugOption,
+} from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
@@ -16,6 +19,7 @@ import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_da
 import * as threeDGarden from "../../three_d_garden";
 import SunCalc from "suncalc";
 import { BooleanSetting } from "../../session_keys";
+import { namespace3D } from "../../settings/three_d_settings";
 
 let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
@@ -64,6 +68,14 @@ const otherLog = (localId: number) => {
   return log;
 };
 
+const fake3DConfigValues = () =>
+  (Object.keys(INITIAL) as (keyof Config)[]).map(key => {
+    const env = fakeFarmwareEnv();
+    env.body.key = namespace3D(key);
+    env.body.value = "1";
+    return env;
+  });
+
 describe("<ThreeDGardenMap />", () => {
   const lastThreeDGardenProps = () => {
     const calls = (threeDGarden.ThreeDGarden as unknown as jest.Mock)
@@ -72,12 +84,11 @@ describe("<ThreeDGardenMap />", () => {
   };
 
   const fakeProps = (): ThreeDGardenMapProps => ({
-    mapTransformProps: fakeMapTransformProps(),
+    gardenSize: fakeMapTransformProps().gridSize,
     device: fakeDevice().body,
-    botSize: fakeBotSize(),
-    gridOffset: { x: 10, y: 10 },
-    get3DConfigValue: () => 1,
-    sourceFbosConfig: () => ({ value: 0, consistent: true }),
+    firmwareHardware: 0,
+    gantryHeight: 0,
+    soilHeight: 0,
     designer: fakeDesignerState(),
     plants: [fakePlant()],
     dispatch: jest.fn(),
@@ -98,7 +109,7 @@ describe("<ThreeDGardenMap />", () => {
     sceneObjects: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
     env: {},
-    farmwareEnvs: [],
+    farmwareEnvs: fake3DConfigValues(),
     logs: [],
   });
 
@@ -210,11 +221,9 @@ describe("<ThreeDGardenMap />", () => {
 
   it("applies constellation custom settings", () => {
     const p = fakeProps();
-    p.get3DConfigValue = key => {
-      if (key == "constellations") { return 0; }
-      if (key == "constellationsDebug") { return 1; }
-      return 1;
-    };
+    const constellation = p.farmwareEnvs.find(env =>
+      env.body.key == namespace3D("constellations"));
+    if (constellation) { constellation.body.value = "0"; }
     render(<ThreeDGardenMap {...p} />);
     expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
       constellations: false,
@@ -232,22 +241,33 @@ describe("<ThreeDGardenMap />", () => {
   it("isolates panel updates from the garden scene", () => {
     window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
     const p = fakeProps();
+    p.currentBotLocation = { x: 1, y: 2, z: 3 };
     const { rerender } = render(<ThreeDGardenMap {...p} />);
     const firstGardenProps = lastThreeDGardenProps();
     expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeTruthy();
+    expect(firstGardenProps.addPlantProps.designer)
+      .not.toHaveProperty("panelOpen");
 
-    p.designer = { ...p.designer, panelOpen: false };
-    rerender(<ThreeDGardenMap {...p} />);
+    let equivalentProps = cloneDeep(p);
+    for (let cycle = 0; cycle < 10; cycle++) {
+      equivalentProps = cloneDeep(equivalentProps);
+      equivalentProps.designer.panelOpen = false;
+      rerender(<ThreeDGardenMap {...equivalentProps} />);
+      equivalentProps = cloneDeep(equivalentProps);
+      equivalentProps.designer.panelOpen = true;
+      rerender(<ThreeDGardenMap {...equivalentProps} />);
+    }
 
-    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeFalsy();
+    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeTruthy();
     expect(threeDGardenSpy).toHaveBeenCalledTimes(1);
     expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
 
-    p.designer = {
-      ...p.designer,
-      threeDExaggeratedZ: !p.designer.threeDExaggeratedZ,
+    equivalentProps.designer = {
+      ...equivalentProps.designer,
+      threeDExaggeratedZ:
+        !equivalentProps.designer.threeDExaggeratedZ,
     };
-    rerender(<ThreeDGardenMap {...p} />);
+    rerender(<ThreeDGardenMap {...equivalentProps} />);
 
     expect(threeDGardenSpy).toHaveBeenCalledTimes(2);
     expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(2);
@@ -390,7 +410,7 @@ describe("<ThreeDGardenMap />", () => {
   ])("converts props: kitVersion", (firmwareHardware, kitVersion) => {
     const p = fakeProps();
     p.plants = [];
-    p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
+    p.firmwareHardware = firmwareHardware;
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({

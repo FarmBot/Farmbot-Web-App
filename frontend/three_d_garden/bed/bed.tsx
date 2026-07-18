@@ -40,7 +40,7 @@ import {
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
-import { DesignerState } from "../../farm_designer/interfaces";
+import { ThreeDDesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
 import {
   ActivePositionRef,
@@ -469,7 +469,7 @@ export interface AddPlantProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
-  designer: DesignerState;
+  designer: ThreeDDesignerState;
   topDownAtStart: boolean;
 }
 

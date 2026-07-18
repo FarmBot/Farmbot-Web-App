@@ -1,6 +1,8 @@
 import React from "react";
 import { MapTransformProps } from "../../interfaces";
-import { CameraCalibrationData, DesignerState } from "../../../interfaces";
+import {
+  CameraCalibrationData, DesignerState, ThreeDDesignerState,
+} from "../../../interfaces";
 import { TaggedImage } from "farmbot";
 import { cameraZCheck, MapImage } from "./map_image";
 import { some } from "lodash";
@@ -15,7 +17,7 @@ import {
 export interface FilterImagesProps {
   visible: boolean;
   images: TaggedImage[] | undefined;
-  designer: DesignerState | undefined;
+  designer: ThreeDDesignerState | undefined;
   getConfigValue: GetWebAppConfigValue | undefined;
   calibrationZ: string | undefined;
 }

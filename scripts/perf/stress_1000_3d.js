@@ -3,6 +3,16 @@ const { execFileSync } = require("child_process");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const {
+  PANEL_CAUSE_PREFIXES,
+  countDeltas,
+  median,
+  panelRenderMetrics,
+  renderCountDeltas,
+  renderCounts,
+  sourceProvenance,
+  summary,
+} = require("./stress_1000_3d_metrics");
 
 const DEFAULT_URL = "http://localhost:3000";
 const PRODUCT_LINE = "genesis_xl_1.8_stress_1000";
@@ -86,99 +96,10 @@ const parseArgs = () => {
   return args;
 };
 
-const median = values => {
-  const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
-  if (sorted.length == 0) { return undefined; }
-  return sorted[Math.floor(sorted.length / 2)];
-};
-
 const percentile = (values, p) => {
   const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
   if (sorted.length == 0) { return undefined; }
   return sorted[Math.ceil((p / 100) * sorted.length) - 1];
-};
-
-const summary = runs => {
-  const metric = key => median(runs.map(run => run[key]));
-  return {
-    pageReadyMs: metric("pageReadyMs"),
-    coreReadyMs: metric("coreReadyMs"),
-    fullReadyMs: metric("fullReadyMs"),
-    fpsMedian: metric("fpsMedian"),
-    idleFpsAverage: metric("idleFpsAverage"),
-    idleFpsMax: metric("idleFpsMax"),
-    idleFrameP95Ms: metric("idleFrameP95Ms"),
-    idleCpuTotalMs: metric("idleCpuTotalMs"),
-    idleCpuPercent: metric("idleCpuPercent"),
-    idleRendererCpuMs: metric("idleRendererCpuMs"),
-    idleGpuProcessCpuMs: metric("idleGpuProcessCpuMs"),
-    idleMainThreadTaskMs: metric("idleMainThreadTaskMs"),
-    idlePeakRendererGpuRssBytes:
-      metric("idlePeakRendererGpuRssBytes"),
-    panelFpsAverage: metric("panelFpsAverage"),
-    panelFpsMax: metric("panelFpsMax"),
-    panelFrameP95Ms: metric("panelFrameP95Ms"),
-    panelCpuTotalMs: metric("panelCpuTotalMs"),
-    panelCpuPercent: metric("panelCpuPercent"),
-    panelRendererCpuMs: metric("panelRendererCpuMs"),
-    panelGpuProcessCpuMs: metric("panelGpuProcessCpuMs"),
-    panelMainThreadTaskMs: metric("panelMainThreadTaskMs"),
-    panelPeakRendererGpuRssBytes:
-      metric("panelPeakRendererGpuRssBytes"),
-    panelClickToCameraMedianMs: metric("panelClickToCameraMedianMs"),
-    panelClickToCameraP95Ms: metric("panelClickToCameraP95Ms"),
-    panelClickToNextPaintMedianMs:
-      metric("panelClickToNextPaintMedianMs"),
-    panelClickToNextPaintP95Ms:
-      metric("panelClickToNextPaintP95Ms"),
-    panelEventDurationMedianMs: metric("panelEventDurationMedianMs"),
-    panelEventDurationP95Ms: metric("panelEventDurationP95Ms"),
-    panelInputDelayP95Ms: metric("panelInputDelayP95Ms"),
-    panelProcessingP95Ms: metric("panelProcessingP95Ms"),
-    frameP95Ms: metric("frameP95Ms"),
-    navPlantMs: metric("navPlantMs"),
-    navPointMs: metric("navPointMs"),
-    navWeedMs: metric("navWeedMs"),
-    togglePlantsMs: metric("togglePlantsMs"),
-    togglePointsMs: metric("togglePointsMs"),
-    toggleWeedsMs: metric("toggleWeedsMs"),
-    toggleSpreadMs: metric("toggleSpreadMs"),
-    toggleFarmbotMs: metric("toggleFarmbotMs"),
-    jsEncodedBytes: metric("jsEncodedBytes"),
-    jsTransferBytes: metric("jsTransferBytes"),
-    jsResourceCount: metric("jsResourceCount"),
-    modelEncodedBytes: metric("modelEncodedBytes"),
-    modelTransferBytes: metric("modelTransferBytes"),
-    modelResourceCount: metric("modelResourceCount"),
-    threeDGardenMapRenders: metric("threeDGardenMapRenders"),
-    gardenModelRenders: metric("gardenModelRenders"),
-    threeDGardenRenders: metric("threeDGardenRenders"),
-    plantInventoryItemRenders: metric("plantInventoryItemRenders"),
-    drawCalls: metric("drawCalls"),
-    triangles: metric("triangles"),
-    webglGeometries: metric("webglGeometries"),
-    webglTextures: metric("webglTextures"),
-    sceneObjects: metric("sceneObjects"),
-    sceneMeshes: metric("sceneMeshes"),
-    sceneInstancedMeshes: metric("sceneInstancedMeshes"),
-    usedJSHeapSize: metric("usedJSHeapSize"),
-    totalJSHeapSize: metric("totalJSHeapSize"),
-    postGcUsedJSHeapSize: metric("postGcUsedJSHeapSize"),
-    getZBatchMs: metric("getZBatchMs"),
-    getZCalls: metric("getZCalls"),
-    getZIndexMs: metric("getZIndexMs"),
-    getZP95Ms: metric("getZP95Ms"),
-    soilPointFilterMs: metric("soilPointFilterMs"),
-    soilSurfaceMs: metric("soilSurfaceMs"),
-    soilStorageMs: metric("soilStorageMs"),
-    soilStorageCalls: metric("soilStorageCalls"),
-    imageTextureSetupMs: metric("imageTextureSetupMs"),
-    imageWrapperSetupMs: metric("imageWrapperSetupMs"),
-    soilTextureRenders: metric("soilTextureRenders"),
-    spreadFrameUpdateMs: metric("spreadFrameUpdateMs"),
-    moistureSurfaceMs: metric("moistureSurfaceMs"),
-    moistureInstanceNodesMs: metric("moistureInstanceNodesMs"),
-  };
 };
 
 const movementSummary = runs => {
@@ -601,6 +522,9 @@ const panelClickSummary = samples => {
   };
 };
 
+const perfCountSnapshot = page => page.evaluate(() =>
+  ({ ...(window.__fbPerf?.counts || {}) }));
+
 const measurePanelTransitions = async (
   browser,
   page,
@@ -609,20 +533,58 @@ const measurePanelTransitions = async (
   await setupPanelClickMeasurement(page);
   const plantsTab = page.locator("#fb-panel-benchmark-toggle");
   if (await plantsTab.count() == 0) { return {}; }
+  const before = await page.evaluate(() => ({
+    counts: { ...(window.__fbPerf?.counts || {}) },
+    cameraMarks:
+      window.__fbPerf?.marks?.panel_camera_first_frame?.length || 0,
+  }));
   const clickSamples = [];
   const performance = await measureCpuFramesAndMemory(
     browser,
     page,
     async () => {
       for (let cycle = 0; cycle < panelCycles; cycle++) {
-        clickSamples.push(await measureTrustedPanelClick(page, plantsTab));
+        let clickBefore = await perfCountSnapshot(page);
+        let sample = await measureTrustedPanelClick(page, plantsTab);
         await page.waitForTimeout(350);
-        clickSamples.push(await measureTrustedPanelClick(page, plantsTab));
+        let clickAfter = await perfCountSnapshot(page);
+        sample.renderDeltas = renderCountDeltas(clickBefore, clickAfter);
+        sample.causeDeltas = countDeltas(
+          clickBefore,
+          clickAfter,
+          PANEL_CAUSE_PREFIXES,
+        );
+        clickSamples.push(sample);
+        clickBefore = clickAfter;
+        sample = await measureTrustedPanelClick(page, plantsTab);
         await page.waitForTimeout(350);
+        clickAfter = await perfCountSnapshot(page);
+        sample.renderDeltas = renderCountDeltas(clickBefore, clickAfter);
+        sample.causeDeltas = countDeltas(
+          clickBefore,
+          clickAfter,
+          PANEL_CAUSE_PREFIXES,
+        );
+        clickSamples.push(sample);
       }
     },
   );
-  return { ...performance, ...panelClickSummary(clickSamples) };
+  const after = await page.evaluate(() => ({
+    counts: { ...(window.__fbPerf?.counts || {}) },
+    cameraMarks:
+      window.__fbPerf?.marks?.panel_camera_first_frame?.length || 0,
+  }));
+  return {
+    ...performance,
+    ...panelClickSummary(clickSamples),
+    renderDeltas: renderCountDeltas(before.counts, after.counts),
+    causeDeltas: countDeltas(
+      before.counts,
+      after.counts,
+      PANEL_CAUSE_PREFIXES,
+    ),
+    cameraFirstFrameMarks: after.cameraMarks - before.cameraMarks,
+  };
 };
 
 const createDemoSession = async (
@@ -715,6 +677,36 @@ const waitFor3D = async page => {
   }, { timeout: TIMEOUT });
   await page.waitForFunction(() => typeof window.__fps == "number", {
     timeout: TIMEOUT,
+  });
+  await page.waitForFunction(() =>
+    (window.__fbPerf?.marks?.three_d_full_ready?.length || 0) > 0, {
+    timeout: TIMEOUT,
+  });
+  await page.waitForFunction(() =>
+    (window.__fbPerf?.marks?.garden_camera_settled?.length || 0) > 0, {
+    timeout: TIMEOUT,
+  });
+  await page.evaluate(async () => {
+    const snapshot = () => JSON.stringify(
+      Object.entries(window.__fbPerf?.counts || {})
+        .filter(([key]) => key.startsWith("render.")
+          || key == "gardenCamera.springFrame"),
+    );
+    const quietMs = 500;
+    const timeoutMs = 30_000;
+    const startedAt = performance.now();
+    let quietStartedAt = startedAt;
+    let previous = snapshot();
+    while (performance.now() - startedAt < timeoutMs) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const current = snapshot();
+      if (current != previous) {
+        previous = current;
+        quietStartedAt = performance.now();
+      }
+      if (performance.now() - quietStartedAt >= quietMs) { return; }
+    }
+    throw new Error("3D render counters did not reach quiescence.");
   });
 };
 
@@ -927,6 +919,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     await ensureLayerVisible(page, "Moisture");
   }
   await nextPaint(page);
+  const readyCounts = await page.evaluate(() =>
+    ({ ...(window.__fbPerf?.counts || {}) }));
   const resources = await resourceSummary(page);
   const renderer = await webglInfo(page);
   const idlePerformance = await measureCpuFramesAndMemory(
@@ -934,6 +928,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     page,
     () => page.waitForTimeout(options.sampleMs),
   );
+  const idleCounts = await page.evaluate(() =>
+    ({ ...(window.__fbPerf?.counts || {}) }));
   const runtime = await runtimeSummary(page);
   const perf = await page.evaluate(() => window.__fbPerf);
   const marks = perf?.marks || {};
@@ -956,6 +952,9 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     page,
     options.panelCycles,
   );
+  const readyRenders = renderCounts(readyCounts);
+  const idleRenders = renderCountDeltas(readyCounts, idleCounts);
+  const panelMetrics = panelRenderMetrics(panelPerformance);
   await page.requestGC();
   const postGcRuntime = await runtimeSummary(page);
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
@@ -1051,6 +1050,8 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
       panelPerformance.eventDurationP95Ms,
     panelInputDelayP95Ms: panelPerformance.inputDelayP95Ms,
     panelProcessingP95Ms: panelPerformance.processingP95Ms,
+    panelCameraFirstFrameMarks:
+      panelPerformance.cameraFirstFrameMarks,
     frameP95Ms: percentile(frameSamples, 95),
     getZBatchMs: getZSamples.reduce((total, value) => total + value, 0),
     getZCalls: getZSamples.length,
@@ -1086,9 +1087,19 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     ...resources,
     ...runtime,
     postGcUsedJSHeapSize: postGcRuntime.usedJSHeapSize,
-    threeDGardenMapRenders: counts["render.ThreeDGardenMap"],
-    gardenModelRenders: counts["render.GardenModel"],
-    threeDGardenRenders: counts["render.ThreeDGarden"],
+    readyThreeDGardenMapRenders: readyRenders.ThreeDGardenMap,
+    readyGardenModelRenders: readyRenders.GardenModel,
+    readyThreeDGardenRenders: readyRenders.ThreeDGarden,
+    readyGardenCameraRigRenders: readyRenders.GardenCameraRig,
+    readyPanelCameraControllerRenders:
+      readyRenders.PanelCameraController,
+    idleThreeDGardenMapRenders: idleRenders.ThreeDGardenMap,
+    idleGardenModelRenders: idleRenders.GardenModel,
+    idleThreeDGardenRenders: idleRenders.ThreeDGarden,
+    idleGardenCameraRigRenders: idleRenders.GardenCameraRig,
+    idlePanelCameraControllerRenders:
+      idleRenders.PanelCameraController,
+    ...panelMetrics,
     plantInventoryItemRenders: counts["render.PlantInventoryItem"],
   };
 };
@@ -1216,6 +1227,7 @@ const runMovementBenchmark = async args => {
     const result = {
       productLine,
       createdAt: new Date().toISOString(),
+      source: sourceProvenance(),
       viewport,
       runs: measuredRuns,
       summary: movementSummary(measuredRuns),
@@ -1287,6 +1299,7 @@ const runBenchmark = async args => {
     const result = {
       productLine: PRODUCT_LINE,
       createdAt: new Date().toISOString(),
+      source: sourceProvenance(),
       viewport,
       sampleMs,
       panelCycles,
@@ -1467,7 +1480,9 @@ const main = async () => {
   }
 };
 
-main().catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}

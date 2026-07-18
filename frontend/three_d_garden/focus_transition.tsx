@@ -3,6 +3,7 @@ import { useSpring } from "@react-spring/three";
 import { Material, Object3D } from "three";
 import { Group } from "./components";
 import { Camera, VectorXyz } from "./zoom_beacons_constants";
+import { perfCount, perfMark } from "../performance/perf";
 
 export const FOCUS_TRANSITION_MS = 750;
 
@@ -697,14 +698,17 @@ export interface UseSmoothCameraProps {
   enabled: boolean;
   cameraObject?: SmoothCameraObject | null;
   controls?: SmoothCameraControls | null;
-  updateStateDuringTransition?: boolean;
   interpolation?: CameraInterpolation;
   cancelRef?: React.MutableRefObject<(() => void) | undefined>;
+  onFrame?(): void;
   onRest?(): void;
 }
 
 export const useSmoothCamera = (props: UseSmoothCameraProps) => {
-  const { onRest } = props;
+  const {
+    cameraObject, cancelRef, controls, enabled, interpolation,
+    onFrame, onRest,
+  } = props;
   const [positionX, positionY, positionZ] = props.camera.position;
   const [targetX, targetY, targetZ] = props.camera.target;
   const target = React.useMemo<SmoothCameraState>(() => ({
@@ -722,49 +726,44 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
     targetY,
     targetZ,
   ]);
-  const [displayCamera, setDisplayCamera] = React.useState(target);
-  const displayRef = React.useRef(displayCamera);
+  const displayRef = React.useRef(target);
   const key = cameraKey(target);
   const [, api] = useSpring(() => ({
     progress: 1,
     immediate: true,
   }));
 
-  React.useEffect(() => {
-    displayRef.current = displayCamera;
-  }, [displayCamera]);
-
-  const appliedCamera = props.enabled ? displayCamera : target;
   React.useLayoutEffect(() => {
     applySmoothCameraState(
-      appliedCamera,
-      props.cameraObject,
-      props.controls,
+      displayRef.current,
+      cameraObject,
+      controls,
     );
+    onFrame?.();
   }, [
-    appliedCamera,
-    props.cameraObject,
-    props.controls,
+    cameraObject,
+    controls,
+    onFrame,
   ]);
 
   React.useEffect(() => {
-    if (!props.enabled) {
+    if (!enabled) {
       displayRef.current = target;
       applySmoothCameraState(
         target,
-        props.cameraObject,
-        props.controls,
+        cameraObject,
+        controls,
       );
+      onFrame?.();
+      perfMark("garden_camera_settled");
       onRest?.();
       return;
     }
     const from = readSmoothCameraState(
       displayRef.current,
-      props.cameraObject,
-      props.controls,
+      cameraObject,
+      controls,
     );
-    const updateStateDuringTransition =
-      props.updateStateDuringTransition ?? true;
     api.start({
       from: { progress: 0 },
       progress: 1,
@@ -772,7 +771,7 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
       config: CAMERA_SPRING_CONFIG,
       onChange: result => {
         const value = result.value as { progress?: number };
-        const interpolate = props.interpolation == "linear"
+        const interpolate = interpolation == "linear"
           ? interpolateLinearCameraState
           : interpolateCameraState;
         const next = interpolate(
@@ -781,42 +780,46 @@ export const useSmoothCamera = (props: UseSmoothCameraProps) => {
           value.progress ?? 1,
         );
         displayRef.current = next;
-        if (updateStateDuringTransition) { setDisplayCamera(next); }
-        applySmoothCameraState(next, props.cameraObject, props.controls);
+        applySmoothCameraState(next, cameraObject, controls);
+        onFrame?.();
+        perfCount("gardenCamera.springFrame");
+        perfMark("garden_camera_spring_frame");
       },
       onRest: result => {
         displayRef.current = target;
-        if (updateStateDuringTransition) { setDisplayCamera(target); }
-        applySmoothCameraState(target, props.cameraObject, props.controls);
-        if (!result?.cancelled) { onRest?.(); }
+        applySmoothCameraState(target, cameraObject, controls);
+        onFrame?.();
+        if (!result?.cancelled) {
+          perfMark("garden_camera_settled");
+          onRest?.();
+        }
       },
     });
     return () => { api.stop?.(); };
   }, [
     api,
     key,
-    props.cameraObject,
-    props.controls,
-    props.enabled,
-    props.interpolation,
+    cameraObject,
+    controls,
+    enabled,
+    interpolation,
+    onFrame,
     onRest,
     target,
-    props.updateStateDuringTransition,
   ]);
 
   React.useLayoutEffect(() => {
-    if (props.cancelRef) {
+    if (cancelRef) {
       // The caller owns this imperative handle; assigning it is the ref API.
       // eslint-disable-next-line react-hooks/immutability
-      props.cancelRef.current = () => api.stop?.();
+      cancelRef.current = () => api.stop?.();
     }
     return () => {
-      if (props.cancelRef) {
+      if (cancelRef) {
         // eslint-disable-next-line react-hooks/immutability
-        props.cancelRef.current = undefined;
+        cancelRef.current = undefined;
       }
     };
-  }, [api, props.cancelRef]);
+  }, [api, cancelRef]);
 
-  return props.enabled ? displayCamera : target;
 };

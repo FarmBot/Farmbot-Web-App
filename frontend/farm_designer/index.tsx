@@ -239,13 +239,14 @@ export class RawFarmDesigner
           deviceAccount={this.props.deviceAccount}
           bot={this.props.bot}
           plants={this.props.plants}
-          get3DConfigValue={get3DConfigValue}
-          set3DConfigValue={set3DConfigValue}
-          sourceFbosConfig={this.props.sourceFbosConfig}
+          gardenSize={this.mapTransformProps.gridSize}
+          firmwareHardware={
+            this.props.sourceFbosConfig("firmware_hardware").value}
+          gantryHeight={
+            this.props.sourceFbosConfig("gantry_height").value as number}
+          soilHeight={
+            this.props.sourceFbosConfig("soil_height").value as number}
           negativeZ={!!this.props.botMcuParams.movement_home_up_z}
-          gridOffset={gridOffset}
-          mapTransformProps={this.mapTransformProps}
-          botSize={this.props.botSize}
           dispatch={this.props.dispatch}
           curves={this.props.curves}
           mapPoints={this.props.genericPoints}

@@ -14,7 +14,6 @@ import {
 } from "../scene_objects/interfaces";
 import { edit, init, save } from "../api/crud";
 import { Path } from "../internal_urls";
-import { useNavigate } from "react-router";
 import { ASSETS, BigDistance } from "./constants";
 import { useTextureVariant } from "./texture_variants";
 import { PottedPlant } from "./scenes/props/potted_plant";
@@ -87,6 +86,7 @@ interface SceneObjectDraft {
 interface SceneObjectPlacementProps {
   config: Config;
   enabled: boolean;
+  navigate(path: string): void;
   dispatch?: Function;
   sceneObjects?: TaggedSceneObject[];
   drawnSceneObject?: SceneObjectFormValues;
@@ -285,7 +285,7 @@ export const nextSceneObjectName = (
 };
 
 export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
-  const navigate = useNavigate();
+  const navigate = props.navigate;
   const [cursor, setCursor] = React.useState<SceneObjectCursor>();
   const [draft, setDraft] = React.useState<SceneObjectDraft>({});
   const wasEnabled = React.useRef(false);

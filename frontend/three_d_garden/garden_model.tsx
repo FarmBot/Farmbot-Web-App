@@ -1,5 +1,7 @@
 import React from "react";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import {
+  RootState, ThreeEvent, useFrame, useThree,
+} from "@react-three/fiber";
 import { useLocation, useNavigate } from "react-router";
 import {
   OrbitControls, PerspectiveCamera,
@@ -42,7 +44,7 @@ import { Camera, getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, Mesh, MeshBasicMaterial,
 } from "./components";
-import { isUndefined, range, round, uniq } from "lodash";
+import { isUndefined, kebabCase, range, round, uniq } from "lodash";
 import {
   PointType, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
@@ -76,7 +78,7 @@ import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
 import { CameraSelectionUI } from "./camera_selection_ui";
 import {
-  PerfMark, perfMark, perfMeasure, usePerfRenderCount,
+  PerfMark, perfCount, perfMark, perfMeasure, usePerfRenderCount,
 } from "../performance/perf";
 import {
   botLoadInConfig, FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
@@ -92,7 +94,9 @@ import {
 } from "./focus_transition";
 import { type PlantIconAtlas } from "./garden/plant_icon_atlas";
 import { Mode, TaggedPlant } from "../farm_designer/map/interfaces";
-import { DesignerState, ThreeDViewMode } from "../farm_designer/interfaces";
+import {
+  ThreeDDesignerState, ThreeDViewMode,
+} from "../farm_designer/interfaces";
 import { getMode } from "../farm_designer/map/util";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
@@ -196,6 +200,8 @@ export const usePanelCameraViewOffset = (
         const offsetX = result.value.offsetX ?? view.offsetX;
         currentOffsetRef.current = offsetX;
         applyOffsetRef.current(offsetX);
+        perfCount("panelCamera.springFrame");
+        perfMark("panel_camera_spring_frame");
         if (pendingFirstFrameRef.current) {
           pendingFirstFrameRef.current = false;
           perfMark("panel_camera_first_frame");
@@ -1959,7 +1965,7 @@ export const useGardenCameraController = (
 
 interface GardenSectionControllerProps {
   config: Config;
-  designer: DesignerState | undefined;
+  designer: ThreeDDesignerState | undefined;
   gardenSize: { x: number; y: number };
   currentBotLocation: BotPosition | undefined;
   camera: Camera;
@@ -2088,7 +2094,7 @@ interface GardenSectionLayerProps {
   config: Config;
   configPosition: PositionConfig;
   controlsCamera: ThreePerspectiveCamera | null | undefined;
-  designer: DesignerState | undefined;
+  designer: ThreeDDesignerState | undefined;
   dispatch: Function | undefined;
   gardenSize: { x: number; y: number };
   getZ(x: number, y: number): number;
@@ -2159,9 +2165,274 @@ export const GardenSectionLayer = (props: GardenSectionLayerProps) => {
   </>;
 };
 
+export interface GardenRouteSnapshot {
+  key: string;
+  mode: Mode;
+  selection: ThreeDObjectSelection | undefined;
+  locationSelection: ThreeDLocationSelection | undefined;
+  groupId: number | undefined;
+  addingSceneObject: boolean;
+  editingSceneObject: boolean;
+}
+
+const routeSelectionKey = (
+  selection: ThreeDObjectSelection | undefined,
+) => selection
+  ? `${selection.kind}:${selection.id}:${selection.uuid || ""}`
+  : "";
+
+const routeLocationKey = (
+  selection: ThreeDLocationSelection | undefined,
+) => selection
+  ? `${selection.x}:${selection.y}:${selection.z}`
+  : "";
+
+export const createGardenRouteSnapshot = (
+  pathname: string,
+  search: string,
+): GardenRouteSnapshot => {
+  const mode = getMode();
+  const pathParts = pathname.split("/").filter(Boolean);
+  const designerIndex = pathParts.indexOf("designer");
+  const panel = pathParts[designerIndex + 1];
+  const panelItem = pathParts[designerIndex + 2];
+  const cropSlug = panel == "plants" && panelItem == "crop_search"
+    ? kebabCase(pathParts[designerIndex + 3] || "")
+    : "";
+  const selection = routeSelectionFromPath(pathname);
+  const locationSelection =
+    routeLocationSelectionFromPath(pathname, search);
+  const lastPathPart =
+    pathname.split("/").filter(Boolean).pop() || "";
+  const parsedGroupId = parseInt(lastPathPart);
+  const groupId = mode == Mode.editGroup && isFinite(parsedGroupId)
+    ? parsedGroupId
+    : undefined;
+  const addingSceneObject = pathname == Path.sceneObjects("add");
+  const editingSceneObject = panel == "scene_objects"
+    && !addingSceneObject
+    && !!panelItem;
+  const key = [
+    mode,
+    routeSelectionKey(selection),
+    routeLocationKey(locationSelection),
+    groupId,
+    cropSlug,
+    addingSceneObject,
+    editingSceneObject,
+  ].join("|");
+  return {
+    key,
+    mode,
+    selection,
+    locationSelection,
+    groupId,
+    addingSceneObject,
+    editingSceneObject,
+  };
+};
+
+export interface GardenViewportSnapshot {
+  width: number;
+  height: number;
+}
+
+export const selectGardenViewportWidth =
+  (state: RootState) => state.size.width;
+export const selectGardenViewportHeight =
+  (state: RootState) => state.size.height;
+const selectGardenInvalidate = (state: RootState) => state.invalidate;
+
+interface GardenModelSceneProps extends GardenModelProps {
+  route: GardenRouteSnapshot;
+  viewport: GardenViewportSnapshot;
+  navigate(path: string): void;
+}
+
+interface GardenCameraRigProps {
+  camera: Camera;
+  zoom: number;
+  fov: number;
+  smooth: boolean;
+  interpolation: CameraInterpolation | undefined;
+  cancelRef: React.MutableRefObject<(() => void) | undefined>;
+  onRest: (() => void) | undefined;
+  controlsCamera: ThreePerspectiveCamera | null;
+  setControlsCamera(camera: ThreePerspectiveCamera | null): void;
+  controls: SmoothCameraControls | null;
+  setControls(controls: SmoothCameraControls | null): void;
+  panelCameraView: CameraViewOffset;
+  cameraPhase: GardenCameraPhase;
+  spaceflightCamera: Camera;
+  viewMode: ThreeDViewMode;
+  rotate: boolean;
+  zoomEnabled: boolean;
+  pan: boolean;
+  lightsDebug: boolean;
+  onStart(): void;
+  onChange(): void;
+  onEnd(): void;
+}
+
+const gardenCameraKey = (camera: Camera, zoom: number, fov: number) => [
+  ...camera.position,
+  ...camera.target,
+  zoom,
+  fov,
+].join(",");
+
+interface GardenCameraSpringProps {
+  camera: Camera;
+  zoom: number;
+  fov: number;
+  smooth: boolean;
+  interpolation: CameraInterpolation | undefined;
+  cancelRef: React.MutableRefObject<(() => void) | undefined>;
+  onRest: (() => void) | undefined;
+  controlsCamera: ThreePerspectiveCamera | null;
+  controls: SmoothCameraControls | null;
+  requestKey: string;
+}
+
+const GardenCameraSpring = (props: GardenCameraSpringProps) => {
+  const invalidate = useThree(selectGardenInvalidate);
+  React.useEffect(() => {
+    perfCount("change.GardenCameraRig.cameraRequest");
+  }, [props.requestKey]);
+  useSmoothCamera({
+    camera: props.camera,
+    zoom: props.zoom,
+    fov: props.fov,
+    enabled: props.smooth,
+    cameraObject: props.controlsCamera,
+    controls: props.controls,
+    interpolation: props.interpolation,
+    cancelRef: props.cancelRef,
+    onFrame: invalidate,
+    onRest: props.onRest,
+  });
+  return <></>;
+};
+
 // eslint-disable-next-line complexity
-export const GardenModel = (props: GardenModelProps) => {
+const GardenCameraRigBase = (props: GardenCameraRigProps) => {
+  usePerfRenderCount("GardenCameraRig");
+  const {
+    camera, zoom, fov, smooth, interpolation, cancelRef, onRest,
+    controlsCamera, setControlsCamera, controls, setControls,
+    panelCameraView, cameraPhase, spaceflightCamera, viewMode, rotate,
+    zoomEnabled, pan, lightsDebug, onStart, onChange, onEnd,
+  } = props;
+  const requestKey = gardenCameraKey(camera, zoom, fov);
+  const targetCamera = React.useMemo<SmoothCameraState>(() => ({
+    position: camera.position,
+    target: camera.target,
+    zoom,
+    fov,
+  }), [
+    camera.position,
+    camera.target,
+    fov,
+    zoom,
+  ]);
+  const [initialCamera] = React.useState(() => targetCamera);
+  const renderedCamera = smooth ? initialCamera : targetCamera;
+  const cameraDistance = Math.hypot(
+    targetCamera.position[0] - targetCamera.target[0],
+    targetCamera.position[1] - targetCamera.target[1],
+    targetCamera.position[2] - targetCamera.target[2],
+  );
+  const maxCameraDistance = Math.max(
+    BigDistance.zoom,
+    cameraDistance * 1.25,
+  );
+  const cameraClippingRange = getCameraClippingRange(
+    targetCamera.position,
+    {
+      sceneRadius: CAMERA_SCENE_RADIUS,
+      minNear: 10,
+      minFar: BigDistance.far,
+      maxCameraScale: 1,
+    },
+  );
+  const stargazingCameraSettled = cameraPhase == "stargazing";
+  const spaceflightCameraSettled = cameraPhase == "spaceflight";
+  const normalCameraSettled = cameraPhase == "normal";
+  const orbitPolarLimits = stargazingOrbitPolarLimits(
+    cameraPhase,
+    spaceflightCamera,
+  );
+  const orbitRotationEnabled =
+    spaceflightCameraSettled && viewMode == "spaceflight"
+    || stargazingCameraSettled && viewMode == "stargazing"
+    || normalCameraSettled && viewMode == "normal" && rotate;
+
+  return <>
+    <GardenCameraSpring
+      camera={camera}
+      zoom={zoom}
+      fov={fov}
+      smooth={smooth}
+      interpolation={interpolation}
+      cancelRef={cancelRef}
+      onRest={onRest}
+      controlsCamera={controlsCamera}
+      controls={controls}
+      requestKey={requestKey} />
+    <Group>
+      <PerspectiveCamera
+        ref={setControlsCamera}
+        makeDefault={true}
+        manual={true}
+        aspect={panelCameraView.fullWidth
+          / panelCameraView.fullHeight}
+        name={"camera"}
+        position={renderedCamera.position}
+        zoom={renderedCamera.zoom}
+        fov={renderedCamera.fov}
+        near={cameraClippingRange.near}
+        far={cameraClippingRange.far}
+        up={[0, 0, 1]} />
+    </Group>
+    {controlsCamera &&
+      <OrbitControls
+        ref={setControls}
+        camera={controlsCamera}
+        target={renderedCamera.target}
+        minPolarAngle={orbitPolarLimits.min}
+        maxPolarAngle={orbitPolarLimits.max}
+        enableRotate={orbitRotationEnabled}
+        enableZoom={normalCameraSettled
+          && viewMode == "normal" && zoomEnabled}
+        zoomToCursor={true}
+        enablePan={normalCameraSettled
+          && viewMode == "normal" && pan}
+        dampingFactor={0.2}
+        onStart={onStart}
+        onChange={onChange}
+        onEnd={onEnd}
+        minZoom={lightsDebug ? 0 : 0.05}
+        maxZoom={10}
+        minDistance={lightsDebug ? 50 : 500}
+        maxDistance={lightsDebug
+          ? Math.max(BigDistance.devZoom, maxCameraDistance)
+          : maxCameraDistance} />}
+  </>;
+};
+
+export const GardenCameraRig = React.memo(GardenCameraRigBase);
+
+GardenCameraRig.displayName = "GardenCameraRig";
+
+// eslint-disable-next-line complexity
+const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   usePerfRenderCount("GardenModel");
+  React.useEffect(() => {
+    perfCount("change.GardenModel.route");
+  }, [props.route.key]);
+  React.useEffect(() => {
+    perfCount("change.GardenModel.viewport");
+  }, [props.viewport.height, props.viewport.width]);
   const {
     config: baseConfig, addPlantProps, onDetailsRevealStart, onLoadComplete,
     threeDPlants,
@@ -2170,7 +2441,7 @@ export const GardenModel = (props: GardenModelProps) => {
     baseConfig,
     props.smoothConfigTransitions,
   );
-  const { size: canvasViewportSize } = useThree();
+  const canvasViewportSize = props.viewport;
   const panelCameraView = React.useMemo(
     () => getPanelCameraViewOffset(
       canvasViewportSize,
@@ -2191,8 +2462,7 @@ export const GardenModel = (props: GardenModelProps) => {
     ? baseConfig
     : config;
   const dispatch = addPlantProps?.dispatch;
-  const routeLocation = useLocation();
-  const navigate = useNavigate();
+  const navigate = props.navigate;
   const mapPoints = props.mapPoints || EMPTY_GENERIC_POINTERS;
   const weeds = props.weeds || EMPTY_WEEDS;
   const allPoints = props.allPoints || EMPTY_POINTS;
@@ -2219,7 +2489,7 @@ export const GardenModel = (props: GardenModelProps) => {
     React.useRef<GardenSectionBridge | undefined>(undefined);
   const sectionOpen = !!sectionDesigner?.threeDSectionOpen;
   const topDownAtStart = !!addPlantProps?.topDownAtStart;
-  const mode = getMode();
+  const mode = props.route.mode;
   const selectionPanelOpen = mode == Mode.boxSelect;
   const groupPanelOpen = mode == Mode.editGroup;
   const objectSelectionMode = selectionPanelOpen || groupPanelOpen;
@@ -2304,12 +2574,6 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined;
   }, [config.labelsOnHover, getI]);
 
-  const cameraClippingConfig = {
-    sceneRadius: CAMERA_SCENE_RADIUS,
-    minNear: 10,
-    minFar: BigDistance.far,
-    maxCameraScale: 1,
-  };
   const cameraBedSize = React.useMemo(() => ({
     x: cameraConfig.bedLengthOuter,
     y: cameraConfig.bedWidthOuter,
@@ -2431,9 +2695,7 @@ export const GardenModel = (props: GardenModelProps) => {
     React.useState<ThreeDObjectSelection | undefined>(undefined);
   const [locationSelection, setLocationSelection] =
     React.useState<ThreeDLocationSelection | undefined>(undefined);
-  const routeSelection = React.useMemo(
-    () => routeSelectionFromPath(routeLocation.pathname),
-    [routeLocation.pathname]);
+  const routeSelection = props.route.selection;
   const activePopupSelection = objectSelectionMode ? undefined : popupSelection;
   const activeLocationSelection =
     objectSelectionMode ? undefined : locationSelection;
@@ -2587,6 +2849,7 @@ export const GardenModel = (props: GardenModelProps) => {
   React.useEffect(() => {
     if (!loadProgress.complete || loadCompleteNotified.current) { return; }
     loadCompleteNotified.current = true;
+    perfMark("three_d_full_ready");
     onLoadComplete?.();
   }, [loadProgress.complete, onLoadComplete]);
 
@@ -2606,12 +2869,8 @@ export const GardenModel = (props: GardenModelProps) => {
     showSpread, showMoistureMap,
     showMoistureReadings,
   } = layerVisibility;
-  const routeKey = `${routeLocation.pathname}?${routeLocation.search}`;
-  const groupIdFromPath = React.useMemo(() => {
-    const groupId = parseInt(
-      routeLocation.pathname.split("/").filter(Boolean).pop() || "");
-    return isFinite(groupId) ? groupId : undefined;
-  }, [routeLocation.pathname]);
+  const routeKey = props.route.key;
+  const groupIdFromPath = props.route.groupId;
   const groupSelectedPoints = React.useMemo(() => {
     if (!groupPanelOpen || groupIdFromPath == undefined) { return undefined; }
     const group = groups.filter(group => group.body.id == groupIdFromPath)[0];
@@ -2634,11 +2893,7 @@ export const GardenModel = (props: GardenModelProps) => {
     selectionLookup,
     selectionPanelOpen,
   ]);
-  const selectedLocation = React.useMemo(
-    () => routeLocationSelectionFromPath(
-      routeLocation.pathname,
-      routeLocation.search,
-    ), [routeLocation.pathname, routeLocation.search]);
+  const selectedLocation = props.route.locationSelection;
   const hoverDesigner = addPlantProps?.designer;
   const hoverScene: string = hoverDesigner?.featuredScene || config.scene;
   const hoverSelection = React.useMemo(() =>
@@ -2728,13 +2983,12 @@ export const GardenModel = (props: GardenModelProps) => {
   const getZ = React.useMemo(
     () => getZFunc(soilSurface.triangles, -config.soilHeight),
     [soilSurface.triangles, config.soilHeight]);
-  const addingSceneObject = location.pathname == Path.sceneObjects("add");
-  const editingSceneObject = Path.startsWith(Path.sceneObjects())
-    && !addingSceneObject
-    && !!Path.getSlug(Path.sceneObjects());
+  const addingSceneObject = props.route.addingSceneObject;
+  const editingSceneObject = props.route.editingSceneObject;
   const sceneObjectPlacement = useSceneObjectPlacement({
     config,
     enabled: addingSceneObject,
+    navigate,
     dispatch,
     sceneObjects: props.sceneObjects,
     drawnSceneObject: props.addPlantProps?.designer.drawnSceneObject,
@@ -2845,18 +3099,6 @@ export const GardenModel = (props: GardenModelProps) => {
   const solarVisible =
     config.solar || props.activeFocus == "What you need to provide";
   const renderSolar = focusTransitionsEnabled || solarVisible;
-  const renderedCamera = useSmoothCamera({
-    camera,
-    zoom: targetZoom,
-    fov: cameraFov,
-    enabled: focusTransitionsEnabled || !!addPlantProps,
-    cameraObject: controlsCamera,
-    controls,
-    updateStateDuringTransition: !focusTransitionsEnabled,
-    interpolation: cameraRequest?.interpolation,
-    cancelRef: cameraSpringCancelRef,
-    onRest: cameraRequest?.onRest,
-  });
   useFrame((_state, deltaSeconds) => {
     if (!spaceflight || cameraPhase != "spaceflight"
       || !controlsCamera || !controls) {
@@ -2953,38 +3195,6 @@ export const GardenModel = (props: GardenModelProps) => {
     weeds,
   ]);
 
-  const cameraProps = focusTransitionsEnabled
-    ? {}
-    : {
-      position: renderedCamera.position,
-      zoom: renderedCamera.zoom,
-      fov: renderedCamera.fov,
-    };
-  const orbitControlProps = focusTransitionsEnabled
-    ? {}
-    : { target: renderedCamera.target };
-  const cameraDistance = Math.hypot(
-    renderedCamera.position[0] - renderedCamera.target[0],
-    renderedCamera.position[1] - renderedCamera.target[1],
-    renderedCamera.position[2] - renderedCamera.target[2],
-  );
-  const maxCameraDistance = Math.max(BigDistance.zoom, cameraDistance * 1.25);
-  const cameraClippingRange = getCameraClippingRange(
-    renderedCamera.position,
-    cameraClippingConfig,
-  );
-  const stargazingCameraSettled =
-    cameraPhase == "stargazing";
-  const spaceflightCameraSettled =
-    cameraPhase == "spaceflight";
-  const normalCameraSettled = cameraPhase == "normal";
-  const orbitPolarLimits =
-    stargazingOrbitPolarLimits(cameraPhase, spaceflightCamera);
-  const orbitRotationEnabled =
-    spaceflightCameraSettled && viewMode == "spaceflight"
-    || stargazingCameraSettled && viewMode == "stargazing"
-    || normalCameraSettled && viewMode == "normal" && config.rotate;
-
   return <FocusTransitionProvider enabled={focusTransitionsEnabled}>
     {/* eslint-disable-next-line no-null/no-null */}
     <Group dispose={null}
@@ -2994,42 +3204,29 @@ export const GardenModel = (props: GardenModelProps) => {
       <FPSProbe />
       <PerfMark name={"garden_model_rendered"} />
       <SceneCursor cursor={sceneCursor} />
-      <Group>
-        <PerspectiveCamera
-          ref={setControlsCamera}
-          makeDefault={true}
-          manual={true}
-          aspect={panelCameraView.fullWidth / panelCameraView.fullHeight}
-          name={"camera"}
-          fov={renderedCamera.fov}
-          near={cameraClippingRange.near}
-          far={cameraClippingRange.far}
-          {...cameraProps}
-          up={[0, 0, 1]} />
-      </Group>
-      {controlsCamera &&
-        <OrbitControls
-          ref={setControls}
-          camera={controlsCamera}
-          minPolarAngle={orbitPolarLimits.min}
-          maxPolarAngle={orbitPolarLimits.max}
-          enableRotate={orbitRotationEnabled}
-          enableZoom={normalCameraSettled
-            && viewMode == "normal" && config.zoom}
-          zoomToCursor={true}
-          enablePan={normalCameraSettled
-            && viewMode == "normal" && config.pan}
-          dampingFactor={0.2}
-          {...orbitControlProps}
-          onStart={handleCameraDragStart}
-          onChange={handleCameraChange}
-          onEnd={handleCameraDragEnd}
-          minZoom={config.lightsDebug ? 0 : 0.05}
-          maxZoom={10}
-          minDistance={config.lightsDebug ? 50 : 500}
-          maxDistance={config.lightsDebug
-            ? Math.max(BigDistance.devZoom, maxCameraDistance)
-            : maxCameraDistance} />}
+      <GardenCameraRig
+        camera={camera}
+        zoom={targetZoom}
+        fov={cameraFov}
+        smooth={focusTransitionsEnabled || !!addPlantProps}
+        interpolation={cameraRequest?.interpolation}
+        cancelRef={cameraSpringCancelRef}
+        onRest={cameraRequest?.onRest}
+        controlsCamera={controlsCamera}
+        setControlsCamera={setControlsCamera}
+        controls={controls}
+        setControls={setControls}
+        panelCameraView={panelCameraView}
+        cameraPhase={cameraPhase}
+        spaceflightCamera={spaceflightCamera}
+        viewMode={viewMode}
+        rotate={config.rotate}
+        zoomEnabled={config.zoom}
+        pan={config.pan}
+        lightsDebug={config.lightsDebug}
+        onStart={handleCameraDragStart}
+        onChange={handleCameraChange}
+        onEnd={handleCameraDragEnd} />
       <ThreeDLoadProgressOverlay
         progress={loadProgress}
         complete={detailsReveal} />
@@ -3272,4 +3469,66 @@ export const GardenModel = (props: GardenModelProps) => {
       </SceneBoundary>
     </Group>
   </FocusTransitionProvider>;
+};
+
+const gardenModelScenePropsEqual = (
+  prev: GardenModelSceneProps,
+  next: GardenModelSceneProps,
+) => {
+  const prevKeys = Object.keys(prev) as (keyof GardenModelSceneProps)[];
+  const nextKeys = Object.keys(next) as (keyof GardenModelSceneProps)[];
+  return prevKeys.length == nextKeys.length
+    && prevKeys.every(key => {
+      if (key == "route") {
+        return prev.route.key == next.route.key;
+      }
+      if (key == "viewport") {
+        return prev.viewport.width == next.viewport.width
+          && prev.viewport.height == next.viewport.height;
+      }
+      return prev[key] === next[key];
+    });
+};
+
+const MemoizedGardenModelScene = React.memo(
+  GardenModelSceneBase,
+  gardenModelScenePropsEqual,
+);
+
+MemoizedGardenModelScene.displayName = "MemoizedGardenModelScene";
+
+export const GardenModel = (props: GardenModelProps) => {
+  const routeLocation = useLocation();
+  const navigate = useNavigate();
+  const viewportWidth = useThree(selectGardenViewportWidth);
+  const viewportHeight = useThree(selectGardenViewportHeight);
+  const viewport = React.useMemo<GardenViewportSnapshot>(() => ({
+    width: viewportWidth,
+    height: viewportHeight,
+  }), [viewportHeight, viewportWidth]);
+  React.useEffect(() => {
+    perfCount("change.GardenModelAdapter.route");
+  }, [routeLocation.pathname, routeLocation.search]);
+  React.useEffect(() => {
+    perfCount("change.GardenModelAdapter.viewport");
+  }, [viewportHeight, viewportWidth]);
+  const navigateRef = React.useRef(navigate);
+  React.useLayoutEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
+  const stableNavigate = React.useCallback(
+    (path: string) => {
+      void navigateRef.current(path);
+    },
+    [],
+  );
+  const route = createGardenRouteSnapshot(
+    routeLocation.pathname,
+    routeLocation.search,
+  );
+  return <MemoizedGardenModelScene
+    {...props}
+    route={route}
+    viewport={viewport}
+    navigate={stableNavigate} />;
 };

@@ -217,6 +217,8 @@ export interface DesignerState {
   threeDTime: string | undefined;
 }
 
+export type ThreeDDesignerState = Omit<DesignerState, "panelOpen">;
+
 export type ThreeDSectionAxis = "x" | "y";
 export type ThreeDViewMode = "normal" | "stargazing" | "spaceflight";
 

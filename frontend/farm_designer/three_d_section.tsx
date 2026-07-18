@@ -4,7 +4,7 @@ import { t } from "../i18next_wrapper";
 import { BlurableInput, ToggleButton } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { AxisNumberProperty } from "./map/interfaces";
-import { DesignerState } from "./interfaces";
+import { DesignerState, ThreeDDesignerState } from "./interfaces";
 
 export const SECTION_STEP = 1;
 export const SECTION_WIDTH_MIN = 1;
@@ -25,7 +25,7 @@ export const normalizeSectionValue = (
 };
 
 export const manualSectionCenter = (
-  designer: DesignerState,
+  designer: ThreeDDesignerState,
   gardenSize: AxisNumberProperty,
 ): number => {
   const axis = designer.threeDSectionAxis;
@@ -39,7 +39,7 @@ export const manualSectionCenter = (
 };
 
 export const effectiveSectionCenter = (
-  designer: DesignerState,
+  designer: ThreeDDesignerState,
   gardenSize: AxisNumberProperty,
   botPosition: BotPosition | undefined,
 ): number => {
@@ -53,7 +53,7 @@ export const effectiveSectionCenter = (
 };
 
 export const toggleSectionAxis = (
-  designer: DesignerState,
+  designer: ThreeDDesignerState,
   gardenSize: AxisNumberProperty,
   dispatch: Function,
 ) => {

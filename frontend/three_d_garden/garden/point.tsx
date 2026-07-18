@@ -25,7 +25,9 @@ import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined, round } from "lodash";
 import { setPanelOpen3D } from "../panel_actions";
-import { DesignerState } from "../../farm_designer/interfaces";
+import {
+  DesignerState, ThreeDDesignerState,
+} from "../../farm_designer/interfaces";
 import { getMode } from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { WeedBase } from ".";
@@ -386,7 +388,7 @@ const VisiblePointInstances = (props: PointInstancesProps) => {
 };
 
 export interface DrawnPointProps {
-  designer: DesignerState;
+  designer: ThreeDDesignerState;
   usePosition: boolean;
   config: Config;
   radiusRef?: RadiusRef;

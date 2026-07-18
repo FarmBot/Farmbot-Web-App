@@ -1,12 +1,8 @@
 import React from "react";
 import { ThreeDGarden } from "../three_d_garden";
 import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
-import {
-  BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
-} from "./map/interfaces";
-import {
-  BotPosition, BotState, SourceFbosConfig, UserEnv,
-} from "../devices/interfaces";
+import { AxisNumberProperty, TaggedPlant } from "./map/interfaces";
+import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import {
   TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedImage, TaggedLog, TaggedPoint,
@@ -15,7 +11,9 @@ import {
   TaggedPeripheral,
   TaggedSceneObject,
 } from "farmbot";
-import { CameraCalibrationData, DesignerState } from "./interfaces";
+import {
+  CameraCalibrationData, DesignerState, ThreeDDesignerState,
+} from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
@@ -24,24 +22,27 @@ import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
-import { SCENES, TEXTURES } from "../settings/three_d_settings";
+import {
+  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENES, TEXTURES,
+} from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
-import { perfMark, usePerfRenderCount } from "../performance/perf";
+import {
+  perfCount, perfMark, usePerfRenderCount,
+} from "../performance/perf";
 import { MovementState, TimeSettings } from "../interfaces";
 import { effectiveThreeDPerspective } from "./three_d_camera_controls";
 import {
   createPanelCameraStore, PanelCameraStore,
 } from "../three_d_garden/panel_camera";
+import { isEqual } from "lodash";
 
 export interface ThreeDGardenMapProps {
-  botSize: BotSize;
-  mapTransformProps: MapTransformProps;
-  gridOffset: AxisNumberProperty;
-  get3DConfigValue(key: keyof Config): number;
-  set3DConfigValue?(key: keyof Config, value: string): void;
-  sourceFbosConfig: SourceFbosConfig;
+  gardenSize: AxisNumberProperty;
+  firmwareHardware: unknown;
+  gantryHeight: number;
+  soilHeight: number;
   negativeZ: boolean;
   designer: DesignerState;
   plants: TaggedPlant[];
@@ -101,7 +102,9 @@ export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
   return latest;
 };
 
-interface ThreeDGardenMapSceneProps extends ThreeDGardenMapProps {
+interface ThreeDGardenMapSceneProps extends
+  Omit<ThreeDGardenMapProps, "designer"> {
+  designer: ThreeDDesignerState;
   panelCameraStore: PanelCameraStore;
 }
 
@@ -110,8 +113,18 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   React.useEffect(() => {
     perfMark("three_d_map_mounted");
   }, []);
-  const { gridSize } = props.mapTransformProps;
-  const getValue = props.get3DConfigValue;
+  const gridSize = props.gardenSize;
+  const getValue = React.useMemo(
+    () => get3DConfigValueFunction(props.farmwareEnvs),
+    [props.farmwareEnvs],
+  );
+  const set3DConfigValue = React.useMemo(
+    () => findOrCreate3DConfigFunction(
+      props.dispatch,
+      props.farmwareEnvs,
+    ),
+    [props.dispatch, props.farmwareEnvs],
+  );
   const { designer } = props;
   const configValues = {
     mirrorX: getValue("mirrorX"),
@@ -165,11 +178,9 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   };
   const mirrorX = !!configValues.mirrorX;
   const mirrorY = !!configValues.mirrorY;
-  const firmwareHardware = props.sourceFbosConfig("firmware_hardware").value;
-  const zGantryOffset =
-    props.sourceFbosConfig("gantry_height").value as number;
-  const soilHeight =
-    Math.abs(props.sourceFbosConfig("soil_height").value as number);
+  const firmwareHardware = props.firmwareHardware;
+  const zGantryOffset = props.gantryHeight;
+  const soilHeight = Math.abs(props.soilHeight);
   const displayTrail =
     !!props.getWebAppConfigValue(BooleanSetting.display_trail);
   const animate =
@@ -448,43 +459,52 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     peripherals={props.peripherals}
     peripheralValues={props.peripheralValues}
     env={props.env}
-    set3DConfigValue={props.set3DConfigValue}
+    set3DConfigValue={set3DConfigValue}
     sceneObjects={props.sceneObjects}
     addPlantProps={addPlantProps} />;
 };
 
-export const designerEqualExceptPanelOpen = (
-  prev: DesignerState,
-  next: DesignerState,
-) => {
-  const prevKeys = Object.keys(prev) as (keyof DesignerState)[];
-  const nextKeys = Object.keys(next) as (keyof DesignerState)[];
-  return prevKeys.length == nextKeys.length
-    && prevKeys.every(key =>
-      key == "panelOpen" || prev[key] === next[key]);
-};
-
-const threeDGardenMapScenePropsEqual = (
-  prev: ThreeDGardenMapSceneProps,
-  next: ThreeDGardenMapSceneProps,
-) => {
-  const prevKeys =
-    Object.keys(prev) as (keyof ThreeDGardenMapSceneProps)[];
-  const nextKeys =
-    Object.keys(next) as (keyof ThreeDGardenMapSceneProps)[];
-  return prevKeys.length == nextKeys.length
-    && prevKeys.every(key =>
-      key == "designer"
-        ? designerEqualExceptPanelOpen(prev.designer, next.designer)
-        : prev[key] === next[key]);
-};
-
-const ThreeDGardenMapScene = React.memo(
-  ThreeDGardenMapSceneBase,
-  threeDGardenMapScenePropsEqual,
-);
+const ThreeDGardenMapScene = React.memo(ThreeDGardenMapSceneBase);
 
 ThreeDGardenMapScene.displayName = "ThreeDGardenMapScene";
+
+const threeDDesignerState = (
+  designer: DesignerState,
+): ThreeDDesignerState => {
+  const result: Partial<DesignerState> = { ...designer };
+  delete result.panelOpen;
+  return result as ThreeDDesignerState;
+};
+
+const reconcileSceneProps = (
+  previous: ThreeDGardenMapSceneProps,
+  next: ThreeDGardenMapSceneProps,
+) => {
+  const keys = Object.keys(next) as (keyof ThreeDGardenMapSceneProps)[];
+  let changed = keys.length != Object.keys(previous).length;
+  const entries = keys.map(key => {
+    if (isEqual(previous[key], next[key])) {
+      return [key, previous[key]];
+    }
+    perfCount(`change.ThreeDGardenMap.${key}`);
+    changed = true;
+    return [key, next[key]];
+  });
+  return changed
+    ? Object.fromEntries(entries) as unknown as ThreeDGardenMapSceneProps
+    : previous;
+};
+
+const useStableSceneProps = (
+  value: ThreeDGardenMapSceneProps,
+) => {
+  const [stableValue, setStableValue] = React.useState(value);
+  const reconciled = reconcileSceneProps(stableValue, value);
+  if (reconciled != stableValue) {
+    setStableValue(reconciled);
+  }
+  return reconciled;
+};
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   const [panelCameraStore] = React.useState(
@@ -493,9 +513,12 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   React.useLayoutEffect(() => {
     panelCameraStore.setOpen(props.designer.panelOpen);
   }, [panelCameraStore, props.designer.panelOpen]);
-  return <ThreeDGardenMapScene
-    {...props}
-    panelCameraStore={panelCameraStore} />;
+  const sceneProps = useStableSceneProps({
+    ...props,
+    designer: threeDDesignerState(props.designer),
+    panelCameraStore,
+  });
+  return <ThreeDGardenMapScene {...sceneProps} />;
 };
 
 const convertPlantResources = (plants: TaggedPlant[]): ThreeDGardenPlant[] =>

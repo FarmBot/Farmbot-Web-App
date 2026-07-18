@@ -723,7 +723,6 @@ describe("focus transitions", () => {
         enabled: true,
         cameraObject,
         controls,
-        updateStateDuringTransition: false,
       });
       return <div />;
     };
@@ -852,7 +851,7 @@ describe("focus transitions", () => {
     useSpringSpy.mockImplementation(originalUseSpring as never);
   });
 
-  it("updates React camera state during smooth camera transitions", () => {
+  it("keeps smooth camera frames out of React state", () => {
     const nowSpy = jest.spyOn(performance, "now");
     const originalRequestAnimationFrame = window.requestAnimationFrame;
     const originalCancelAnimationFrame = window.cancelAnimationFrame;
