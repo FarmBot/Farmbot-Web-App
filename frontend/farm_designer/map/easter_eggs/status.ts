@@ -11,3 +11,8 @@ export function getEggStatus(key: EggKeys): string {
 export function setEggStatus(key: EggKeys, value: string): void {
   localStorage.setItem(key, value);
 }
+
+export function toggleEggStatus(key: EggKeys): void {
+  const current = getEggStatus(key);
+  setEggStatus(key, current === "true" ? "" : "true");
+}

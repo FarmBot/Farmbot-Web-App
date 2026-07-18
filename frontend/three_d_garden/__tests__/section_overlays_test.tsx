@@ -11,6 +11,7 @@ import {
 import { SECTION_CLIPPING_EXEMPT } from "../section";
 import { TexturedBedMaterial } from "../bed";
 import { ASSETS } from "../constants";
+import { ThreeDBugs } from "../garden/bugs";
 
 describe("section ground overlays", () => {
   const config = () => {
@@ -57,6 +58,7 @@ describe("section ground overlays", () => {
     });
     expect(bed.props.position).toEqual([0, 0, -297.5]);
     expect(soil.props.position).toEqual([0, 0, -295]);
+    expect(soil.findAllByType(ThreeDBugs)).toHaveLength(1);
     expect(bed.findAllByType(TexturedBedMaterial)).toHaveLength(1);
     const bedMaterial = bed.findByType(TexturedBedMaterial);
     expect(bedMaterial.props.bedColor).toEqual("#bbb");

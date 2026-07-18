@@ -5,6 +5,7 @@ import { BlurableInput, ToggleButton } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { AxisNumberProperty } from "./map/interfaces";
 import { DesignerState } from "./interfaces";
+import { BugsButton } from "./map/easter_eggs/bugs";
 
 export const SECTION_STEP = 1;
 export const SECTION_WIDTH_MIN = 1;
@@ -199,5 +200,6 @@ export const ThreeDSectionSettings = (
         type: Actions.SET_3D_SECTION_CENTER,
         payload: { ...designer.threeDSectionCenter, [axis]: value },
       })} />
+    <BugsButton />
   </div>;
 };

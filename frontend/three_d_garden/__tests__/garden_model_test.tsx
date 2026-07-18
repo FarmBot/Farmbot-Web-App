@@ -1722,6 +1722,11 @@ describe("<GardenModel />", () => {
     const locationSelection = { kind: "location", x: 100, y: 100, z: -500 };
     actRenderer(() => hoverTarget.props.onClick(event));
     expect(getSelectionLayer().locationSelection).toEqual(locationSelection);
+    actRenderer(() => hoverTarget.props.onClick({
+      ...event,
+      intersections: [{ object: { name: "bug-0" } }],
+    }));
+    expect(getSelectionLayer().locationSelection).toEqual(locationSelection);
     actRenderer(() => hoverTarget.props.onClick(event));
     expect(getSelectionLayer().locationSelection).toBeUndefined();
   });

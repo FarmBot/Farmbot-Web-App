@@ -97,6 +97,7 @@ describe("<ThreeDSectionSettings />", () => {
       .toHaveClass("grid-exp-1");
     expect(container.querySelectorAll(".three-d-section-value.info-box"))
       .toHaveLength(2);
+    expect(container.querySelector(".bugs-button")).toBeTruthy();
     expect(container.querySelector("input[type='range']"))
       .toHaveAttribute("min", "1");
     expect(screen.getByLabelText("WIDTH slider"))

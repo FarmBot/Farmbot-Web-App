@@ -1567,6 +1567,8 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
   const selectLocation = React.useCallback((event: ThreeEvent<MouseEvent>) => {
     if (!enabled || clickWasDragged(event)) { return; }
     if (!gridSelectionAllowed()) { return; }
+    if (event.intersections?.some(({ object }) =>
+      object.name.startsWith("bug-"))) { return; }
     const position = getGridPosition(event.point);
     if (!position) { return; }
     event.stopPropagation?.();
