@@ -18,7 +18,9 @@ import { ASSETS, BigDistance } from "./constants";
 import { useTextureVariant } from "./texture_variants";
 import { PottedPlant } from "./scenes/props/potted_plant";
 import { StarterTray } from "./scenes/props/starter_tray";
-import { Group as ThreeGroup, Material, Object3D, Vector3 } from "three";
+import {
+  Group as ThreeGroup, Material, Object3D, Vector3, DoubleSide,
+} from "three";
 import { SpecialStatus, TaggedResource, TaggedSceneObject } from "farmbot";
 import { ThreeDObjectSelection } from "./selection_types";
 import {
@@ -27,7 +29,7 @@ import {
   OUTDOOR_SCENE_OBJECTS,
 } from "./scenes";
 import { Actions } from "../constants";
-import { Desk, Fence, GreenhouseWall, Laptop, Tree } from "./scenes/props";
+import { Astronaut, Desk, Fence, GreenhouseWall, Hab, Laptop, Rover, Tree } from "./scenes/props";
 import { noop, range } from "lodash";
 import { Text } from "./elements";
 import { setFocusedSceneObjectField } from "../scene_objects/actions";
@@ -36,6 +38,7 @@ import type { DesignerState } from "../farm_designer/interfaces";
 import { SceneObject } from "farmbot/dist/resources/api_resources";
 import { Solar } from "./garden/solar";
 import { clickWasDragged } from "./click_event";
+import { MARS_SCENE_OBJECTS } from "./scenes/scene_object_data";
 
 const EDGE_LINE_WIDTH = 4;
 const PREVIEW_MARKER_RADIUS = 75;
@@ -116,9 +119,10 @@ export const placementAxisSize = (
   sceneObject: SceneObjectFormValues,
   axis: "x" | "y" | "z",
   placementSize: number,
-): number => sceneObject.preserve_axes?.includes(axis)
-  ? sceneObject[sceneObjectSizeFields[axis]]
-  : placementSize;
+): number =>
+  sceneObject.preserve_axes?.includes(axis)
+    ? sceneObject[sceneObjectSizeFields[axis]]
+    : placementSize;
 
 const preservesPlacementAxis = (
   sceneObject: SceneObjectFormValues,
@@ -586,12 +590,13 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
 interface SceneObjectsProps {
   config: Config;
   sceneObjects?: TaggedSceneObject[];
+  isPromo?: boolean;
   dispatch?: Function;
   hoverSelection?: ThreeDObjectSelection;
   activeFocus: string;
   designer?: Pick<DesignerState,
     "focusedSceneObjectField" | "unifiedSceneObjectSize">
-    & Partial<Pick<DesignerState, "featuredScene">>;
+  & Partial<Pick<DesignerState, "featuredScene">>;
 }
 
 export interface SceneObjectDragPreview {
@@ -887,9 +892,6 @@ const SceneObjectSelectionMarkers =
         const x = (resizedX + fixedX) / 2;
         const c = adjustCenter(config, dragBody, { ...dragCenter, x });
         const xSize = snapSceneObjectSize(Math.abs(resizedX - fixedX));
-        if (props.unifiedSize) {
-          return unifiedSizeUpdate(props.unifiedSize, xSize);
-        }
         return {
           x_center: snapToGrid(c.x),
           x_size: xSize,
@@ -902,9 +904,6 @@ const SceneObjectSelectionMarkers =
       const y = (resizedY + fixedY) / 2;
       const c = adjustCenter(config, dragBody, { ...dragCenter, y });
       const ySize = snapSceneObjectSize(Math.abs(resizedY - fixedY));
-      if (props.unifiedSize) {
-        return unifiedSizeUpdate(props.unifiedSize, ySize);
-      }
       return {
         y_center: snapToGrid(c.y),
         y_size: ySize,
@@ -916,7 +915,6 @@ const SceneObjectSelectionMarkers =
       faceDragOffset,
       faceSizeDrag,
       getGardenPosition,
-      props.unifiedSize,
       sceneObject,
     ]);
     const faceResizePointerDown = React.useCallback((
@@ -938,15 +936,6 @@ const SceneObjectSelectionMarkers =
       });
       onPreview({});
     }, [bounds, center, getGardenPosition, onPreview, sceneObject.body]);
-    const expandSizeUpdate = React.useCallback((
-      update: Partial<TaggedSceneObject["body"]>,
-    ) => {
-      if (!props.unifiedSize || update.z_size == undefined) { return update; }
-      return {
-        ...update,
-        ...unifiedSizeUpdate(props.unifiedSize, update.z_size),
-      };
-    }, [props.unifiedSize]);
     const uniformSizeUpdate = React.useCallback((
       e: ThreeEvent<PointerEvent>,
       drag: UniformSizeDragState,
@@ -966,7 +955,7 @@ const SceneObjectSelectionMarkers =
       center,
       sceneObject,
       onPreview,
-      updateSceneObject: update => updateSceneObject(expandSizeUpdate(update)),
+      updateSceneObject,
       onPreviewEnd,
     });
     const scale = useObjectMarkerScale(sceneObjectPoint(config, center));
@@ -1097,13 +1086,13 @@ const SceneObjectSelectionMarkers =
           },
           onPointerMove: (e: ThreeEvent<PointerEvent>) => {
             if (!zSizeDrag) { return; }
-            onPreview(expandSizeUpdate(sceneObjectTopResizeUpdate(
-              e, config, center, zSizeDrag.sceneObject)));
+            onPreview(sceneObjectTopResizeUpdate(
+              e, config, center, zSizeDrag.sceneObject));
           },
           onPointerUp: (e: ThreeEvent<PointerEvent>) => {
             if (zSizeDrag) {
-              updateSceneObject(expandSizeUpdate(sceneObjectTopResizeUpdate(
-                e, config, center, zSizeDrag.sceneObject)));
+              updateSceneObject(sceneObjectTopResizeUpdate(
+                e, config, center, zSizeDrag.sceneObject));
             } else {
               topResizeHandlers.onPointerUp(e);
             }
@@ -2071,11 +2060,13 @@ export const SceneObjects = (props: SceneObjectsProps) => {
     interactionLocked.current = locked;
   }, []);
   const featuredSceneObjects = props.designer?.featuredScene
-    ? staticSceneObjects(props.designer.featuredScene, true)
+    ? staticSceneObjects(props.designer.featuredScene)
     : undefined;
   const featuredUuids = new Set(featuredSceneObjects?.map(({ uuid }) => uuid));
   const sceneObjects = (props.sceneObjects || []).concat(
-    featuredSceneObjects || staticSceneObjects(props.config.scene));
+    featuredSceneObjects
+    || staticSceneObjects(props.config.scene,
+      props.isPromo && !props.config.outdoorObjects));
   return <>
     {/* eslint-disable-next-line complexity */}
     {sceneObjects.map(sceneObject => {
@@ -2258,6 +2249,48 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         </SceneObjectOpacity>;
       }
 
+      if (shape === "astronaut") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Astronaut size={size} texture={texture} color={color} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
+      }
+
+      if (shape === "rover") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Rover size={size} texture={texture} color={color} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
+      }
+
+      if (shape === "hab") {
+        return <SceneObjectOpacity key={sceneObject.uuid}
+          opacity={opacity}
+          show={previewedSceneObject.body.show}
+          visible={visible}>
+          <Group position={position}>
+            <Hab size={size} texture={texture} color={color} />
+            {renderMoveHandle([0, 0, 0])}
+            {renderHoverEdges([0, 0, 0])}
+          </Group>
+          {renderSelectionMarkers()}
+        </SceneObjectOpacity>;
+      }
+
       if (shape === "window") {
         const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
         return <SceneObjectOpacity key={sceneObject.uuid}
@@ -2299,7 +2332,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
 export const staticSceneObjects = (
   scene: string,
-  lib?: boolean,
+  hideOutdoorObjects?: boolean,
 ): TaggedSceneObject[] => {
   const wrap = (sceneObjects: SceneObject[]): TaggedSceneObject[] =>
     sceneObjects.map((body, index) => ({
@@ -2310,12 +2343,14 @@ export const staticSceneObjects = (
     }));
   switch (scene) {
     case "Outdoor":
-      if (!lib) { return []; }
+      if (hideOutdoorObjects) { return []; }
       return wrap(OUTDOOR_SCENE_OBJECTS);
     case "Lab":
       return wrap(LAB_SCENE_OBJECTS);
     case "Greenhouse":
       return wrap(GREENHOUSE_SCENE_OBJECTS);
+    case "Mars":
+      return wrap(MARS_SCENE_OBJECTS);
     default:
       return [];
   }
@@ -2416,6 +2451,30 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
     </Group>;
   }
 
+  if (shape === "astronaut") {
+    return <Group position={position}>
+      <Astronaut size={[x_size, y_size, z_size]}
+        texture={texture}
+        color={color} />
+    </Group>;
+  }
+
+  if (shape === "hab") {
+    return <Group position={position}>
+      <Hab size={[x_size, y_size, z_size]}
+        texture={texture}
+        color={color} />
+    </Group>;
+  }
+
+  if (shape === "rover") {
+    return <Group position={position}>
+      <Rover size={[x_size, y_size, z_size]}
+        texture={texture}
+        color={color} />
+    </Group>;
+  }
+
   return <SceneObjectBox
     config={props.config}
     sceneObject={sceneObject}
@@ -2450,6 +2509,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
   const materialProps = {
     map: props.textureUrl ? texture : undefined,
     color: props.color,
+    side: DoubleSide,
   };
 
   if (props.shape === "cylinder") {

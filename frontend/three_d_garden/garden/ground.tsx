@@ -36,6 +36,7 @@ export const GROUND_TEXTURES = [
 ];
 
 interface GroundWrapperProps {
+  ground: boolean;
   groundTexture: string;
   groundZ: number;
   geometry: CylinderGeometry;
@@ -47,7 +48,7 @@ interface GroundWrapperProps {
 const GroundWrapper = (props: GroundWrapperProps) =>
   <Mesh name={`ground ${props.groundTexture}`}
     userData={{ [SECTION_CLIPPING_EXEMPT]: true }}
-    receiveShadow={true}
+    receiveShadow={props.ground}
     geometry={props.geometry}
     // eslint-disable-next-line no-null/no-null
     dispose={null}
@@ -157,6 +158,7 @@ const getGroundProperties = (groundTexture: string) => {
 };
 
 interface TexturedGroundMaterialProps {
+  ground: boolean;
   groundTexture: string;
   side?: Side;
   vertexColors?: boolean;
@@ -172,7 +174,9 @@ export const TexturedGroundMaterial = (
     repeat: properties.repeat,
   });
   return <MeshPhongMaterial
-    map={texture}
+    map={props.ground ? texture : undefined}
+    transparent={!props.ground}
+    opacity={props.ground ? 1 : 0}
     color={properties.color}
     shininess={0}
     side={props.side}
@@ -180,7 +184,6 @@ export const TexturedGroundMaterial = (
 };
 
 const GroundBase = (props: GroundProps) => {
-  if (!props.config.ground) { return <></>; }
   return <VisibleGround {...props} />;
 };
 
@@ -220,6 +223,7 @@ const VisibleGround = (props: GroundProps) => {
   const properties = getGroundProperties(config.groundTexture);
 
   return <GroundWrapper
+    ground={config.ground}
     groundTexture={config.groundTexture}
     groundZ={groundZ}
     onClick={props.onClick}
@@ -234,6 +238,7 @@ const VisibleGround = (props: GroundProps) => {
         side={DoubleSide}
         vertexColors={true} />
       : <TexturedGroundMaterial
+        ground={config.ground}
         groundTexture={config.groundTexture}
         side={DoubleSide}
         vertexColors={true} />}

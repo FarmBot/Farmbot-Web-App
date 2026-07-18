@@ -974,6 +974,7 @@ interface StaticGardenLayersProps {
   sceneObjectClick?: (e: ThreeEvent<MouseEvent>) => void;
   sceneObjectPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
   sceneObjectPreview?: React.ReactNode;
+  sceneObjects: TaggedSceneObject[];
 }
 
 // eslint-disable-next-line complexity
@@ -1038,6 +1039,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       </Group>
       <Sun
         config={config}
+        sceneObjects={props.sceneObjects}
         skyRef={skyRef}
         cameraSideClipEnabled={cameraSideStarClipEnabled}
         constellationDiscoveryEnabled={constellationDiscoveryEnabled}
@@ -1053,11 +1055,10 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           dispatch={dispatch}
           timeTravelDispatch={dispatch} />}
       <AmbientLight intensity={config.ambient / 100} />
-      {config.ground &&
-        <Ground
-          config={config}
-          onClick={sceneObjectClick}
-          onPointerMove={sceneObjectPointerMove} />}
+      <Ground
+        config={config}
+        onClick={sceneObjectClick}
+        onPointerMove={sceneObjectPointerMove} />
       {sceneObjectPreview}
     </SceneBoundary>
     <SceneBoundary
@@ -1573,6 +1574,8 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
   const selectLocation = React.useCallback((event: ThreeEvent<MouseEvent>) => {
     if (!enabled || clickWasDragged(event)) { return; }
     if (!gridSelectionAllowed()) { return; }
+    if (event.intersections?.some(({ object }) =>
+      object.name.startsWith("bug-"))) { return; }
     const position = getGridPosition(event.point);
     if (!position) { return; }
     event.stopPropagation?.();
@@ -1690,15 +1693,16 @@ export type GardenCameraPhase =
 export const stargazingOrbitPolarLimits = (
   phase: GardenCameraPhase,
   spaceflightCamera = SPACEFLIGHT_CAMERA,
-) => phase == "spaceflight"
-  ? {
-    min: cameraPolarAngle(spaceflightCamera),
-    max: cameraPolarAngle(spaceflightCamera),
-  }
-  : {
-    min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
-    max: phase == "normal" ? Math.PI / 2 : Math.PI,
-  };
+) =>
+  phase == "spaceflight"
+    ? {
+      min: cameraPolarAngle(spaceflightCamera),
+      max: cameraPolarAngle(spaceflightCamera),
+    }
+    : {
+      min: phase == "stargazing" ? STARGAZING_MIN_POLAR_ANGLE : 0,
+      max: phase == "normal" ? Math.PI / 2 : Math.PI,
+    };
 
 export const cameraSideStarClipEnabled = (
   phase: GardenCameraPhase,
@@ -1791,9 +1795,9 @@ export const useGardenCameraController = (
       props.desiredFov,
       liveCameraState,
     ));
-  // Retarget only when the projection setting changes. Including the live
-  // camera callback would restart the spring as OrbitControls updates.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Retarget only when the projection setting changes. Including the live
+    // camera callback would restart the spring as OrbitControls updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.desiredFov, props.viewMode]);
   const previousStargazingFovRef = React.useRef(props.stargazingFov);
   React.useEffect(() => {
@@ -1819,9 +1823,9 @@ export const useGardenCameraController = (
         ? () => setCameraPhase("stargazing")
         : undefined,
     }));
-  // Reading the live callback here is intentional, but depending on it would
-  // restart the spring after every imperative camera update.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Reading the live callback here is intentional, but depending on it would
+    // restart the spring after every imperative camera update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.stargazingFov,
     props.viewMode,
@@ -2475,6 +2479,20 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
+  const shadowSceneObjects = React.useMemo(() => {
+    const featuredScene = sectionDesigner?.featuredScene;
+    const sceneObjects = featuredScene
+      ? staticSceneObjects(featuredScene)
+      : staticSceneObjects(config.scene,
+        props.promo && !config.outdoorObjects);
+    return (props.sceneObjects || []).concat(sceneObjects);
+  }, [
+    config.scene,
+    props.promo,
+    config.outdoorObjects,
+    props.sceneObjects,
+    sectionDesigner?.featuredScene,
+  ]);
   const viewMode = sectionDesigner?.threeDViewMode ?? "normal";
   const celestialViewActive = viewMode != "normal";
   const spaceflight = viewMode == "spaceflight";
@@ -2903,10 +2921,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       mapPoints,
       weeds,
       toolSlots,
-      (props.sceneObjects || []).concat(staticSceneObjects(
-        hoverScene,
-        true,
-      )),
+      (props.sceneObjects || []).concat(staticSceneObjects(hoverScene)),
     ), [
     hoverDesigner,
     hoverScene,
@@ -3247,6 +3262,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         modelRoot={modelRoot} />
       <StaticGardenLayers
         config={config}
+        sceneObjects={shadowSceneObjects}
         markStep={markLoadStep}
         environmentReveal={environmentReveal}
         bedReveal={bedReveal}
@@ -3263,7 +3279,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         mapPoints={mapPoints}
         showMoistureMap={showMoistureMap}
         showMoistureReadings={showMoistureReadings}
-        showTelescope={!props.promo}
+        showTelescope={!props.promo || props.config.telescope}
         sensors={sensors}
         sensorReadings={sensorReadings}
         addPlantProps={addPlantProps}
@@ -3460,6 +3476,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
             <SceneObjects
               config={config}
               activeFocus={props.activeFocus}
+              isPromo={props.promo}
               dispatch={dispatch}
               designer={addPlantProps?.designer}
               hoverSelection={hoverSelection}

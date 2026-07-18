@@ -421,6 +421,25 @@
   }
 }
 
+.bugs-button {
+  padding: 0;
+  margin: auto;
+  .fa-stack {
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    vertical-align: middle;
+    .fa-stack-1x,
+    .fa-stack-2x {
+      top: 50%;
+      left: 50%;
+      width: auto;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
 .soil-cloud {
   transform-origin: center;
   transform-box: fill-box;

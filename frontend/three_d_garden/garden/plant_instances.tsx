@@ -375,6 +375,7 @@ const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
     usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
+    name={"plant-icon-instances"}
     ref={instancedRef}
     args={[getPlantIconGeometry(), undefined, props.capacity]}
     // eslint-disable-next-line no-null/no-null
@@ -426,6 +427,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
+    name={"plant-icon-instances"}
     ref={instancedRef}
     args={[getPlantIconGeometry(), undefined, props.capacity]}
     // eslint-disable-next-line no-null/no-null

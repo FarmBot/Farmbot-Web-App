@@ -10,6 +10,7 @@ import {
   getAnimatedSeasonSunCoordinate, getSeasonAnimationElapsed,
   getSeasonAnimationElapsedAtSunPosition, isSkyFullyBlack,
   nearestEquivalentAngle, skyColor, Sun, sunPropsEqual, SunProps,
+  sceneObjectShadowBounds, refreshDirectionalLightShadow,
 } from "../sun";
 import {
   Constellations, generateStars, projectConstellationPoint,
@@ -18,7 +19,8 @@ import {
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
-  MeshBasicMaterial, WebGLProgramParametersWithUniforms,
+  DirectionalLight as ThreeDirectionalLight, MeshBasicMaterial,
+  WebGLProgramParametersWithUniforms,
 } from "three";
 import {
   createRenderer,
@@ -26,6 +28,8 @@ import {
 } from "../../../__test_support__/test_renderer";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
 import { CropConstellationCatalog } from "../constellation_data";
+import { fakeSceneObject } from
+  "../../../__test_support__/fake_state/resources";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -67,6 +71,7 @@ describe("<Sun />", () => {
     config: clone(INITIAL),
     cameraSideClipEnabled: true,
     constellationDiscoveryEnabled: false,
+    sceneObjects: [],
     showSun: true,
     skyRef: {
       current: { color: { setRGB: jest.fn() } } as unknown as MeshBasicMaterial,
@@ -77,6 +82,18 @@ describe("<Sun />", () => {
     const { container } = render(<Sun {...fakeProps()} />);
     expect(container).toContainHTML("sun");
     expect(container).not.toContainHTML("line");
+  });
+
+  it("refreshes the directional light shadow projection", () => {
+    const light = new ThreeDirectionalLight();
+    light.shadow.camera.updateProjectionMatrix = jest.fn();
+
+    refreshDirectionalLightShadow(light);
+    // eslint-disable-next-line no-null/no-null
+    refreshDirectionalLightShadow(null);
+
+    expect(light.shadow.camera.updateProjectionMatrix).toHaveBeenCalled();
+    expect(light.shadow.needsUpdate).toEqual(true);
   });
 
   it("springs across the azimuth wrap using the shortest path", () => {
@@ -322,6 +339,24 @@ describe("<Sun />", () => {
     );
     expect(right).toBeGreaterThanOrEqual(minBound);
     expect(left).toBeLessThanOrEqual(-minBound);
+  });
+
+  it("expands shadow bounds around scene objects", () => {
+    const p = fakeProps();
+    p.sceneObjects = [fakeSceneObject({
+      x_center: 5000,
+      x_size: 2000,
+      y_center: -8000,
+      y_size: 4000,
+    })];
+    const { container } = render(<Sun {...p} />);
+    const light = container.querySelector("directionallight");
+    const right = Number(light?.getAttribute("shadow-camera-right"));
+    const left = Number(light?.getAttribute("shadow-camera-left"));
+
+    expect(sceneObjectShadowBounds(p.sceneObjects)).toEqual(9000);
+    expect(right).toBeGreaterThanOrEqual(10000);
+    expect(left).toBeLessThanOrEqual(-10000);
   });
 
   it("disables shadows in low-detail mode", () => {

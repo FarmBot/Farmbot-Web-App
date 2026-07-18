@@ -452,6 +452,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   if (!spreadInstancesVisible) { return <></>; }
 
   return <InstancedMesh
+    name={"plant-spread-instances"}
     key={`plant-spread-${instanceCapacity}`}
     ref={instancedRef}
     args={[undefined, undefined, instanceCapacity]}

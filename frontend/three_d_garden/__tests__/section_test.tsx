@@ -3,6 +3,7 @@ import {
 } from "three";
 import {
   createSectionClippingBinding,
+  filterSectionIntersections,
   getSectionClippingPlanes, getSectionOutsidePlaneConstants,
   SECTION_CLIPPING_EXEMPT,
   SECTION_FAR_CLIPPING_EXEMPT, SectionOutsidePlaneConstants,
@@ -55,6 +56,29 @@ describe("getSectionClippingPlanes()", () => {
       mirrorX: true,
       mirrorY: true,
     })).toEqual({ x: [1500, 1500], y: [1300, 1300] });
+  });
+});
+
+describe("filterSectionIntersections()", () => {
+  it("removes intersections hidden by material clipping planes", () => {
+    const material = new MeshBasicMaterial();
+    material.clippingPlanes = [new Plane(new Vector3(1, 0, 0), 0)];
+    const mesh = new Mesh(undefined, material);
+    const intersections = [
+      { object: mesh, point: new Vector3(-1, 0, 0) },
+      { instanceId: 2, object: mesh, point: new Vector3(1, 0, 0) },
+    ] as never;
+    const visible = filterSectionIntersections(intersections);
+    expect(visible).toHaveLength(1);
+    expect(visible[0].instanceId).toEqual(2);
+  });
+
+  it("keeps intersections without clipping planes", () => {
+    const mesh = new Mesh(undefined, new MeshBasicMaterial());
+    const intersections = [
+      { object: mesh, point: new Vector3(-1, 0, 0) },
+    ] as never;
+    expect(filterSectionIntersections(intersections)).toEqual(intersections);
   });
 });
 

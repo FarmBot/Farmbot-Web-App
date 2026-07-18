@@ -7,6 +7,7 @@ import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { createPanelCameraStore } from "../panel_camera";
+import { filterSectionIntersections } from "../section";
 
 const useThreeImplementation =
   (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
@@ -47,6 +48,13 @@ describe("<ThreeDGarden />", () => {
       height: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
     });
     expect(canvasSpy).toHaveBeenCalledTimes(2);
+    expect(canvasSpy.mock.calls[0][0].events).toEqual(expect.any(Function));
+    const store = {} as never;
+    expect(canvasSpy.mock.calls[0][0].events?.(store)).toEqual({
+      enabled: true,
+      filter: filterSectionIntersections,
+    });
+    expect(reactThreeFiber.events).toHaveBeenCalledWith(store);
     expect(canvasSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
         gl: { alpha: true },

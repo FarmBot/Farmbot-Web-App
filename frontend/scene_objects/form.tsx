@@ -51,9 +51,14 @@ const shapeChoices: DropDownItem[] = [
   { label: t("Solar Panel"), value: "solar" },
   { label: t("Tree"), value: "tree" },
   { label: t("Fence"), value: "fence" },
+  { label: t("Astronaut"), value: "astronaut" },
+  { label: t("HAB"), value: "hab" },
+  { label: t("Rover"), value: "rover" },
 ];
 
-const shapesWithTexture = ["box", "cylinder", "sphere", "fence", "desk"];
+const shapesWithTexture = [
+  "box", "cylinder", "sphere", "fence", "desk", "astronaut", "hab", "rover",
+];
 const DEFAULT_COLOR = "#434343";
 
 const validHexColor = (color: string) =>
@@ -141,6 +146,8 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
     className={highlighted ? "scene-object-field-highlight" : ""}
     disabled={props.disabled}
     allowEmpty={true}
+    min={-100000}
+    max={100000}
     onFocus={() => onFocusChange?.(field.id)}
     onBlur={() => onFocusChange?.(undefined)}
     onCommit={e => {

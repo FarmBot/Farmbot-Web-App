@@ -20,7 +20,7 @@ import { SceneObjectsProps } from "./interfaces";
 import { PanelSection } from "../plants/plant_inventory";
 import { staticSceneObjects } from "../three_d_garden/scene_objects";
 import {
-  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDIS,
+  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDI_LIST, SCENE_DDIS,
   SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
@@ -114,7 +114,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const [featuredOpen, setFeaturedOpen] = React.useState(false);
   const [myOpen, setMyOpen] = React.useState(true);
   const featuredSceneObjects = React.useMemo(() =>
-    staticSceneObjects(libScene, true), [libScene]);
+    staticSceneObjects(libScene), [libScene]);
   React.useEffect(() => {
     dispatch({
       type: Actions.SET_FEATURED_SCENE,
@@ -137,8 +137,8 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         onChange={setSearchTerm} />
       <FBSelect
         key={libScene}
-        list={Object.values(TEXTURE_DDIS)}
-        selectedItem={TEXTURE_DDIS[groundTextureNum]}
+        list={Object.values(TEXTURE_DDIS())}
+        selectedItem={TEXTURE_DDIS()[groundTextureNum]}
         onChange={ddi => findOrCreate3DConfigFunction(
           props.dispatch, props.farmwareEnvs)("groundTexture", "" + ddi.value)} />
     </DesignerPanelTop>
@@ -151,8 +151,8 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
           <div onClick={e => e.stopPropagation()} style={{ width: "10rem" }}>
             <FBSelect
               key={libScene}
-              list={Object.values(SCENE_DDIS).filter(ddi => ddi.label != "Custom")}
-              selectedItem={SCENE_DDIS[SCENE_NUM_FROM_NAME[libScene]]}
+              list={SCENE_DDI_LIST().filter(ddi => !["Custom"].includes(ddi.label))}
+              selectedItem={SCENE_DDIS()[SCENE_NUM_FROM_NAME[libScene]]}
               onChange={ddi => {
                 setLibScene(SCENES[ddi.value as number]);
                 setFeaturedOpen(true);
@@ -169,8 +169,10 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
                 .map(sceneObject => {
                   props.dispatch(initSave("SceneObject", sceneObject.body));
                 });
-              findOrCreate3DConfigFunction(
-                props.dispatch, props.farmwareEnvs)("scene", "0");
+              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
+                "scene",
+                SCENE_NUM_FROM_NAME["Custom"] + "",
+              );
             }}>
             {t("Import selected")}
           </button>
@@ -184,8 +186,9 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
                 .map(sceneObject => {
                   props.dispatch(initSave("SceneObject", sceneObject.body));
                 });
-              findOrCreate3DConfigFunction(
-                props.dispatch, props.farmwareEnvs)("scene", "0");
+              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
+                "scene",
+                SCENE_NUM_FROM_NAME["Custom"] + "");
             }}>
             {t("Import all")}
           </button>

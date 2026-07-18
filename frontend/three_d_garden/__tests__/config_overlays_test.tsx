@@ -177,6 +177,22 @@ describe("<PrivateOverlay />", () => {
     expect(document.activeElement).toEqual(getByPlaceholderText("Search configs"));
   });
 
+  it("expands and collapses the configs", () => {
+    const { container, queryByPlaceholderText } =
+      render(<PrivateOverlay {...fakeProps()} />);
+    const title = container.querySelector(".config-title");
+
+    title && fireEvent.click(title);
+    expect(queryByPlaceholderText("Search configs")).toBeNull();
+    expect(container.querySelector(".config-expand-toggle i"))
+      .toHaveClass("fa-caret-right");
+
+    title && fireEvent.click(title);
+    expect(queryByPlaceholderText("Search configs")).toBeTruthy();
+    expect(container.querySelector(".config-expand-toggle i"))
+      .toHaveClass("fa-caret-down");
+  });
+
   it("filters configs", () => {
     const { container, getByPlaceholderText } =
       render(<PrivateOverlay {...fakeProps()} />);
@@ -186,6 +202,19 @@ describe("<PrivateOverlay />", () => {
     expect(container).toContainHTML("promoInfo");
     expect(container).toContainHTML("promoSpread");
     expect(container).not.toContainHTML("settingsBar");
+  });
+
+  it("clears the config search", () => {
+    const { getByLabelText, getByPlaceholderText, queryByLabelText } =
+      render(<PrivateOverlay {...fakeProps()} />);
+    const input = getByPlaceholderText("Search configs");
+    fireEvent.change(input, { target: { value: "promo" } });
+
+    fireEvent.click(getByLabelText("Clear search"));
+
+    expect(input).toHaveValue("");
+    expect(document.activeElement).toEqual(input);
+    expect(queryByLabelText("Clear search")).toBeNull();
   });
 
   it("includes constellation promo configs", () => {

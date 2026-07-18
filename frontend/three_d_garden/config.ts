@@ -109,6 +109,8 @@ export interface Config {
   lastImageCapture: number;
   mirrorX: boolean;
   mirrorY: boolean;
+  telescope: boolean;
+  outdoorObjects: boolean;
 }
 
 export interface PositionConfig {
@@ -240,6 +242,8 @@ export const INITIAL: ConfigWithPosition = {
   lastImageCapture: 0,
   mirrorX: false,
   mirrorY: false,
+  telescope: false,
+  outdoorObjects: false,
 };
 
 export const INITIAL_POSITION: PositionConfig = {
@@ -278,7 +282,7 @@ export const BOOLEAN_KEYS = [
   "urlCameraPos",
   "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
-  "cameraFitDebug",
+  "cameraFitDebug", "telescope", "outdoorObjects",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -468,6 +472,8 @@ export const PRESETS: Record<string, Config> = {
     promoSpread: true,
     cameraView: true,
     cameraFitDebug: true,
+    telescope: true,
+    outdoorObjects: true,
   },
 };
 
@@ -492,13 +498,13 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "light", "vacuum", "rotary", "animateSeasons",
+  "light", "vacuum", "rotary", "animateSeasons", "outdoorObjects",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
   "showSoilPoints", "urlParamAutoAdd", "urlCameraPos", "north",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
-  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug",
+  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug", "telescope",
 ];
 
 const zAxisLengthFromKitVersion = (

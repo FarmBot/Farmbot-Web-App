@@ -1,5 +1,7 @@
 module SceneObjects
   module Helpers
+    INTEGER_LIMIT = 100_000
+
     def validate_texture
       if texture
         bad_texture! unless valid_texture?

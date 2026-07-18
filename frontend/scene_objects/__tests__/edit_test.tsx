@@ -125,6 +125,12 @@ describe("<RawEditSceneObject />", () => {
           <button
             data-testid={"update-preserve-axes"}
             onClick={() => props.onValueChange("preserve_axes", true)} />
+          <button
+            data-testid={"enable-unified-size"}
+            onClick={() => props.onUnifiedSizeChange?.(true)} />
+          <button
+            data-testid={"disable-unified-size"}
+            onClick={() => props.onUnifiedSizeChange?.(false)} />
         </>);
     const resource = fakeSceneObject();
     const p = fakeProps(resource);
@@ -133,6 +139,8 @@ describe("<RawEditSceneObject />", () => {
     fireEvent.click(getByTestId("update-shape"));
     fireEvent.click(getByTestId("focus-field"));
     fireEvent.click(getByTestId("update-preserve-axes"));
+    fireEvent.click(getByTestId("enable-unified-size"));
+    fireEvent.click(getByTestId("disable-unified-size"));
 
     expect(edit).toHaveBeenCalledWith(resource, { shape: "sphere" });
     expect(edit).toHaveBeenCalledTimes(1);
@@ -140,6 +148,14 @@ describe("<RawEditSceneObject />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
       payload: "x_size",
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_UNIFIED_SCENE_OBJECT_SIZE,
+      payload: resource.uuid,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_UNIFIED_SCENE_OBJECT_SIZE,
+      payload: undefined,
     });
     formSpy.mockRestore();
     edit.mockRestore();

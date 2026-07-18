@@ -11,6 +11,8 @@ const ROOT = resolve(import.meta.dir, "..");
 const PUBLIC = join(ROOT, "public");
 const OUTPUT = join(PUBLIC, "app-resources", "img", "scene_objects");
 const ENTRYPOINT = join(import.meta.dir, "scene_object_thumbnail_renderer.tsx");
+const ROTATED_SHAPES = new Set(["astronaut", "hab", "rover"]);
+const requestedThumbnail = process.argv[2]?.toLowerCase().replace(/\.png$/, "");
 
 const targets = [
   {
@@ -23,6 +25,7 @@ const targets = [
   },
   { scene: "lab", sceneObjects: SCENE_OBJECT_CATALOG_SCENES.lab },
   { scene: "outdoor", sceneObjects: SCENE_OBJECT_CATALOG_SCENES.outdoor },
+  { scene: "mars", sceneObjects: SCENE_OBJECT_CATALOG_SCENES.mars },
 ];
 
 const filenames = targets.flatMap(target =>
@@ -30,6 +33,22 @@ const filenames = targets.flatMap(target =>
     sceneObjectThumbnailFilename(sceneObject.name)));
 if (new Set(filenames).size != filenames.length) {
   throw new Error("Scene object names must produce unique thumbnail filenames.");
+}
+
+const renderTargets = targets.flatMap(target =>
+  target.sceneObjects.map((sceneObject, index) => ({
+    index,
+    scene: target.scene,
+    sceneObject,
+    filename: sceneObjectThumbnailFilename(sceneObject.name),
+  })))
+  .filter(target => !requestedThumbnail || [
+    target.sceneObject.name.toLowerCase(),
+    target.filename.toLowerCase().replace(/\.png$/, ""),
+  ].includes(requestedThumbnail));
+
+if (renderTargets.length == 0) {
+  throw new Error(`Unknown scene object thumbnail: ${process.argv[2]}`);
 }
 
 const temporaryDirectory = await mkdtemp(join(tmpdir(), "scene-object-renderer-"));
@@ -90,9 +109,11 @@ const server = Bun.serve({
   },
 });
 
-await rm(OUTPUT, { recursive: true, force: true });
+if (!requestedThumbnail) {
+  await rm(OUTPUT, { recursive: true, force: true });
+}
 await mkdir(OUTPUT, { recursive: true });
-process.stdout.write(`Rendering ${filenames[0]}...`);
+process.stdout.write(`Rendering ${renderTargets[0].filename}...`);
 const browser = await chromium.launch({
   headless: false,
   args: ["--enable-webgl", "--use-gl=swiftshader"],
@@ -101,26 +122,26 @@ const page = await browser.newPage({ viewport: { width: 512, height: 512 } });
 
 try {
   let first = true;
-  for (const target of targets) {
-    for (const [index, sceneObject] of target.sceneObjects.entries()) {
-      const filename = sceneObjectThumbnailFilename(sceneObject.name);
-      if (!first) {
-        process.stdout.write(`Rendering ${filename}...`);
-      }
-      first = false;
-      const query = new URLSearchParams({
-        scene: target.scene,
-        index: `${index}`,
-      });
-      await page.goto(`http://localhost:${server.port}/?${query}`, {
-        waitUntil: "networkidle",
-      });
-      const canvas = page.locator("canvas");
-      await canvas.waitFor({ state: "visible" });
-      await page.waitForTimeout(250);
-      await canvas.screenshot({ path: join(OUTPUT, filename) });
-      console.log("done");
+  for (const target of renderTargets) {
+    if (!first) {
+      process.stdout.write(`Rendering ${target.filename}...`);
     }
+    first = false;
+    const query = new URLSearchParams({
+      scene: target.scene,
+      index: `${target.index}`,
+    });
+    if (ROTATED_SHAPES.has(target.sceneObject.shape)) {
+      query.set("rotation", "180");
+    }
+    await page.goto(`http://localhost:${server.port}/?${query}`, {
+      waitUntil: "networkidle",
+    });
+    const canvas = page.locator("canvas");
+    await canvas.waitFor({ state: "visible" });
+    await page.waitForTimeout(250);
+    await canvas.screenshot({ path: join(OUTPUT, target.filename) });
+    console.log("done");
   }
 } finally {
   await page.close();

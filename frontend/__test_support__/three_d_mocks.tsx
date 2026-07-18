@@ -88,9 +88,25 @@ const AmbientLightForTests = (props: Record<string, unknown>) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <ambientlight {...props} />;
 const DirectionalLightForTests = React.forwardRef(
-  (props: Record<string, unknown>, ref) =>
+  (props: Record<string, unknown>, ref) => {
+    const setRef = React.useCallback((light: HTMLElement | null) => {
+      if (light) {
+        Object.assign(light, {
+          shadow: {
+            camera: { updateProjectionMatrix: jest.fn() },
+            needsUpdate: false,
+          },
+        });
+      }
+      if (typeof ref == "function") {
+        ref(light);
+      } else if (ref) {
+        ref.current = light;
+      }
+    }, [ref]);
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-    <directionallight ref={ref} {...props} />,
+    return <directionallight ref={setRef} {...props} />;
+  },
 );
 const PointLightForTests = React.forwardRef(
   (props: Record<string, unknown>, ref) =>
@@ -226,6 +242,7 @@ jest.mock("@react-three/fiber", () => ({
     props.onCreated?.({ gl: { localClippingEnabled: false } });
     return <div>{props.children}</div>;
   },
+  events: jest.fn(() => ({ enabled: true })),
   addEffect: jest.fn(),
   applyProps: jest.fn(),
   useFrame: jest.fn(x => x({

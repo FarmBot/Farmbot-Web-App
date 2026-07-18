@@ -12,7 +12,7 @@ export interface BugsProps {
   botSize: BotSize;
 }
 
-type Bug = {
+export type Bug = {
   id: number,
   x: number,
   y: number,
@@ -22,30 +22,62 @@ type Bug = {
   slug: BugSlug,
 };
 
-interface BugsState {
+export interface BugsState {
   bugs: Bug[];
   startTime: number;
 }
 
-export function showBugResetButton() {
-  return getEggStatus(EggKeys.BRING_ON_THE_BUGS) === "true" &&
-    getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE) === "false";
-}
-
-export function showBugs() {
-  return getEggStatus(EggKeys.BRING_ON_THE_BUGS) === "true" &&
-    getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE) !== "false";
-}
-
-export function resetBugs() {
+const bugsEnabled = () => getEggStatus(EggKeys.BRING_ON_THE_BUGS) === "true";
+const bugsAlive = () => getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE) !== "false";
+export const showBugResetButton = () => bugsEnabled() && !bugsAlive();
+export const showBugs = () => bugsEnabled() && bugsAlive();
+const bugStatusListeners = new Set<() => void>();
+const notifyBugStatusListeners = () => bugStatusListeners.forEach(callback =>
+  callback());
+const subscribeToBugStatus = (callback: () => void) => {
+  bugStatusListeners.add(callback);
+  return () => { bugStatusListeners.delete(callback); };
+};
+const setBugsEnabled = (enabled: boolean) => {
+  setEggStatus(EggKeys.BRING_ON_THE_BUGS, enabled ? "true" : "");
+  notifyBugStatusListeners();
+};
+const toggleBugs = () => setBugsEnabled(!bugsEnabled());
+export const disableBugs = () => setBugsEnabled(false);
+export const resetBugs = () => {
   setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "true");
-}
+  notifyBugStatusListeners();
+};
+export const useShowBugs = () => React.useSyncExternalStore(
+  subscribeToBugStatus,
+  showBugs,
+  showBugs,
+);
+const useBugsEnabled = () => React.useSyncExternalStore(
+  subscribeToBugStatus,
+  bugsEnabled,
+  bugsEnabled,
+);
+const getBugTime = () => getEggStatus(EggKeys.LAST_BUG_TIME);
 
-function getBugTime() {
-  return getEggStatus(EggKeys.LAST_BUG_TIME);
-}
+export const BugsButton = () => {
+  const on = useBugsEnabled();
+  return <button
+    type={"button"}
+    className={"bugs-button fb-icon-button invert"}
+    title={t(on ? "hide bugs" : "show bugs")}
+    aria-label={t(on ? "hide bugs" : "show bugs")}
+    onClick={toggleBugs}>
+    {on
+      ? <i className={"fa fa-bug"} aria-hidden={true} />
+      : <span className={"fa-stack"} aria-hidden={true}>
+        <i className={"fa fa-bug fa-stack-1x"} />
+        <i className={"fa fa-ban fa-stack-2x"} />
+      </span>}
+  </button>;
+};
 
-export class Bugs extends React.Component<BugsProps, BugsState> {
+export abstract class BugAttack<P> extends React.Component<P, BugsState> {
   state: BugsState = { bugs: [], startTime: NaN };
 
   componentDidMount() {
@@ -88,6 +120,11 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
     this.forceUpdate();
   };
 
+  abstract get xMax(): number;
+  abstract get yMax(): number;
+}
+
+export class Bugs extends BugAttack<BugsProps> {
   get xMax() { return this.props.botSize.x.value; }
   get yMax() { return this.props.botSize.y.value; }
 
@@ -126,7 +163,7 @@ export const BugsControls = () =>
         {t("more bugs!")}
       </button>
       {getBugTime() &&
-        <p>
+        <p style={{ textAlign: "center" }}>
           {t("{{seconds}} seconds!", { seconds: getBugTime() })}
         </p>}
     </div>
@@ -134,26 +171,22 @@ export const BugsControls = () =>
 
 interface SettingProps {
   title: string;
-  storageKey: string;
-  value: string;
 }
 
 const Setting = (props: SettingProps) => {
-  const { title, storageKey, value } = props;
-  const on = localStorage.getItem(storageKey) == value;
+  const { title } = props;
+  const on = useBugsEnabled();
   return <Row className={"setting grid-exp-1"}>
     <label>{title}</label>
     <ToggleButton
       toggleValue={on}
-      toggleAction={() => localStorage.setItem(storageKey, on ? "" : value)} />
+      toggleAction={toggleBugs} />
   </Row>;
 };
 
 export const BugsSettings = () => {
   return <div className={"settings"}>
     <Setting
-      title={"Bug Attack"}
-      storageKey={EggKeys.BRING_ON_THE_BUGS}
-      value={"true"} />
+      title={"Bug Attack"} />
   </div>;
 };

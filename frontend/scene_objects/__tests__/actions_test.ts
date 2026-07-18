@@ -91,4 +91,26 @@ describe("scene object actions", () => {
     init.mockRestore();
     save.mockRestore();
   });
+
+  it("handles a scene object copy save failure", async () => {
+    const resource = fakeSceneObject({ id: 1, name: "Tree" });
+    const copy = fakeSceneObject({ name: "Tree copy 1" });
+    const init = jest.spyOn(crud, "init").mockReturnValue({
+      type: Actions.INIT_RESOURCE,
+      payload: copy,
+    });
+    const save = jest.spyOn(crud, "save")
+      .mockReturnValue("save action" as never);
+    const dispatch = jest.fn((action: unknown) =>
+      action == "save action" ? Promise.reject() : undefined);
+    const state = fakeState();
+    state.resources = buildResourceIndex([resource]);
+    const navigate = jest.fn();
+
+    await copySceneObject(resource, navigate)(dispatch, () => state);
+
+    expect(navigate).not.toHaveBeenCalled();
+    init.mockRestore();
+    save.mockRestore();
+  });
 });

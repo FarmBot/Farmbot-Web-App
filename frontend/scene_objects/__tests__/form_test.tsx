@@ -152,6 +152,17 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenCalledWith("color", "#999999");
   });
 
+  it("toggles scene object visibility", () => {
+    const onValueChange = jest.fn();
+    const { getByLabelText } = render(<SceneObjectFormFields
+      values={{ ...values(), show: true }}
+      onValueChange={onValueChange} />);
+
+    fireEvent.click(getByLabelText("Show"));
+
+    expect(onValueChange).toHaveBeenCalledWith("show", false);
+  });
+
   it("falls back to a valid color input value", () => {
     const { container } = render(<SceneObjectFormFields
       values={{ ...values(), color: "not a color" }}
