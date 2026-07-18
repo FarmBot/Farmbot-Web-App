@@ -108,8 +108,26 @@ interface ThreeDGardenMapSceneProps extends
   panelCameraStore: PanelCameraStore;
 }
 
+const createLiveBotPosition = (initial: BotPosition) => {
+  let current = initial;
+  return {
+    value: {
+      get x() { return current.x; },
+      get y() { return current.y; },
+      get z() { return current.z; },
+    } as BotPosition,
+    update: (next: BotPosition) => { current = next; },
+  };
+};
+
 const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   usePerfRenderCount("ThreeDGardenMap");
+  const [botPositionStore] = React.useState(
+    () => createLiveBotPosition(props.botPosition),
+  );
+  React.useLayoutEffect(() => {
+    botPositionStore.update(props.botPosition);
+  }, [botPositionStore, props.botPosition]);
   React.useEffect(() => {
     perfMark("three_d_map_mounted");
   }, []);
@@ -418,6 +436,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     convertPlantResources(props.plants), [props.plants]);
   const addPlantProps = React.useMemo(() => ({
     gridSize: stableGridSize,
+    botPosition: botPositionStore.value,
     dispatch: props.dispatch,
     getConfigValue: props.getWebAppConfigValue,
     curves: props.curves,
@@ -428,6 +447,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     props.designer,
     props.dispatch,
     props.getWebAppConfigValue,
+    botPositionStore.value,
     stableGridSize,
     topDownAtStart,
   ]);

@@ -420,6 +420,40 @@
   .fa-arrows-h, .fa-arrows-v {
     margin-left: 0.5rem;
   }
+  .grid-input-cell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.4rem;
+    gap: 0.2rem;
+    input {
+      min-width: 0;
+      padding-right: 0.2rem;
+      padding-left: 0.4rem;
+    }
+  }
+  .grid-input-stepper {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.1rem;
+    button {
+      width: 1.4rem;
+      min-height: 0;
+      padding: 0;
+      margin: 0;
+      color: $dark_gray;
+      background: $translucent8_white;
+      border: 0;
+      border-radius: 2px;
+      line-height: 1;
+      cursor: pointer;
+      &:hover {
+        background: $white;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
   .use-current-location {
     display: flex;
     align-items: center;

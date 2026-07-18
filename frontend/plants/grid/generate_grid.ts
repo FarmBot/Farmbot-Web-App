@@ -1,9 +1,11 @@
 import {
-  PlantPointer, GenericPointer,
+  GenericPointer, PlantPointer, PlantTemplate,
 } from "farmbot/dist/resources/api_resources";
-import { range } from "lodash";
+import { isNumber, range } from "lodash";
 import { PlantGridData, PlantGridInitOption } from "./interfaces";
-import { DesignerState } from "../../farm_designer/interfaces";
+import {
+  DesignerState, ThreeDDesignerState,
+} from "../../farm_designer/interfaces";
 import { verifiedCropSlug, DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
 
 const generateXs =
@@ -38,7 +40,7 @@ const createPlantGridMapper = (
   cropSlug: string,
   cropName: string,
   meta: Record<string, string | undefined>,
-  designer: DesignerState | undefined,
+  designer: DesignerState | ThreeDDesignerState | undefined,
 ) =>
   (vec: [number, number]): PlantPointer => {
     const [x, y] = vec;
@@ -57,6 +59,24 @@ const createPlantGridMapper = (
       water_curve_id: designer?.cropWaterCurveId,
       spread_curve_id: designer?.cropSpreadCurveId,
       height_curve_id: designer?.cropHeightCurveId,
+    };
+  };
+
+const createPlantTemplateGridMapper = (
+  cropSlug: string,
+  cropName: string,
+  savedGardenId: number,
+) =>
+  (vec: [number, number]): PlantTemplate => {
+    const [x, y] = vec;
+    return {
+      saved_garden_id: savedGardenId,
+      radius: DEFAULT_PLANT_RADIUS,
+      x,
+      y,
+      z: 0,
+      name: cropName,
+      openfarm_slug: verifiedCropSlug(cropSlug),
     };
   };
 
@@ -79,12 +99,27 @@ const createPointGridMapper = (
     };
   };
 
+export const gridResourceKind = (
+  p: Pick<PlantGridInitOption, "designer" | "openfarm_slug">,
+): "Point" | "PlantTemplate" =>
+  p.openfarm_slug && isNumber(p.designer?.openedSavedGarden)
+    ? "PlantTemplate"
+    : "Point";
+
+export type PlantGridResourceBody =
+  GenericPointer | PlantPointer | PlantTemplate;
+
 export const initPlantGrid =
-  (p: PlantGridInitOption): (GenericPointer | PlantPointer)[] => {
+  (p: PlantGridInitOption): PlantGridResourceBody[] => {
     const meta: Record<string, string> = { gridId: p.gridId, ...p.meta };
-    const mapper: (vec: [number, number]) => GenericPointer | PlantPointer =
-      !p.openfarm_slug
-        ? createPointGridMapper(p.radius, p.z, p.itemName, meta)
-        : createPlantGridMapper(p.openfarm_slug, p.itemName, meta, p.designer);
+    const savedGardenId = p.designer?.openedSavedGarden;
+    const mapper: (vec: [number, number]) => PlantGridResourceBody =
+      p.openfarm_slug && isNumber(savedGardenId)
+        ? createPlantTemplateGridMapper(
+          p.openfarm_slug, p.itemName, savedGardenId)
+        : p.openfarm_slug
+          ? createPlantGridMapper(
+            p.openfarm_slug, p.itemName, meta, p.designer)
+          : createPointGridMapper(p.radius, p.z, p.itemName, meta);
     return vectorGrid(p.grid, p.offsetPacking).map(mapper);
   };

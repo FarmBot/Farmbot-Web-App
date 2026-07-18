@@ -1,6 +1,7 @@
 import {
   DesignerState,
   DrawnPointPayl,
+  GridPlantingRequest,
   HoveredPlantPayl,
   ThreeDSectionAxis,
   ThreeDViewMode,
@@ -57,6 +58,7 @@ export const initialState: DesignerState = {
   cameraViewGridId: undefined,
   gridIds: [],
   gridStart: { x: 100, y: 100 },
+  gridPlanting: undefined,
   soilHeightLabels: false,
   profileOpen: false,
   profileAxis: "x",
@@ -283,6 +285,11 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.gridStart = payload;
     return s;
   })
+  .add<GridPlantingRequest | undefined>(
+    Actions.SET_GRID_PLANTING, (s, { payload }) => {
+      s.gridPlanting = payload;
+      return s;
+    })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
     return s;

@@ -22,6 +22,7 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import * as ui from "../../ui";
 import { FBSelectProps } from "../../ui/new_fb_select";
 import { BIProps } from "../../ui/blurable_input";
+import { BooleanSetting } from "../../session_keys";
 
 let initSaveSpy: jest.SpyInstance;
 let initSpy: jest.SpyInstance;
@@ -103,6 +104,66 @@ describe("<CropInfo />", () => {
     expect(screen.getByText("Row Spacing")).toBeInTheDocument();
     expect(container.querySelector("img.crop-drag-info-image"))
       .toHaveAttribute("src", "/crops/icons/mint.avif");
+  });
+
+  it("opens the legacy grid popup outside 3D mode", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    render(<CropInfo {...p} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /grid/i }));
+
+    expect(screen.getByText("Add Grid or Row")).toBeInTheDocument();
+  });
+
+  it("activates 3D grid planting without opening the legacy popup", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.three_d_garden);
+    const { container } = render(<CropInfo {...p} />);
+    const button = screen.getByRole("button", { name: /grid/i });
+    expect(container.querySelector(".grid-mode-button-wrapper"))
+      .toContainElement(button);
+    expect(container.querySelector(".grid-popup-content")).toBeNull();
+
+    fireEvent.click(button);
+
+    const action = (p.dispatch as jest.Mock).mock.calls
+      .map(call => call[0])
+      .find(action => action.type == Actions.SET_GRID_PLANTING);
+    expect(action.payload).toEqual({
+      token: expect.any(String),
+      gridId: action.payload.token,
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: expect.any(Number),
+    });
+  });
+
+  it("shows and exits the active 3D grid mode", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.three_d_garden);
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    render(<CropInfo {...p} />);
+    const button = screen.getByRole("button", { name: /grid/i });
+    expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(button).toHaveClass("grid-mode-active");
+
+    fireEvent.click(button);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    });
   });
 
   it("returns to crop search", () => {

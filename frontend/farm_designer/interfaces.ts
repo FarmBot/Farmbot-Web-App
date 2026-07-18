@@ -189,6 +189,7 @@ export interface DesignerState {
   cameraViewGridId: string | undefined;
   gridIds: string[];
   gridStart: Record<"x" | "y", number>;
+  gridPlanting: GridPlantingRequest | undefined;
   soilHeightLabels: boolean;
   profileOpen: boolean;
   profileAxis: "x" | "y";
@@ -367,6 +368,14 @@ export interface DraggableEvent {
 
 export interface HoveredPlantPayl {
   plantUUID: string | undefined;
+}
+
+export interface GridPlantingRequest {
+  token: string;
+  gridId: string;
+  cropSlug: string;
+  itemName: string;
+  defaultSpacing: number;
 }
 
 export interface CropCatalogProps {

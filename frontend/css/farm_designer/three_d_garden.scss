@@ -256,6 +256,75 @@
       }
     }
 
+    &.grid-planting-popup {
+      width: min(32rem, calc(100vw - 2rem));
+
+      .object-popup-content {
+        gap: 0.8rem;
+      }
+
+      .grid-input-cell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 1.5rem;
+        gap: 0.2rem;
+
+        input {
+          min-width: 0;
+          padding-right: 0.2rem;
+          padding-left: 0.4rem;
+        }
+      }
+
+      .grid-input-stepper {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.1rem;
+
+        button {
+          width: 1.5rem;
+          min-height: 0;
+          padding: 0;
+          margin: 0;
+          color: $dark_gray;
+          background: $translucent8_white;
+          border: 0;
+          border-radius: 2px;
+          line-height: 1;
+          cursor: pointer;
+        }
+      }
+
+      .grid-packing-row {
+        align-items: center;
+
+        .fb-toggle-button {
+          float: none;
+          justify-self: end;
+        }
+      }
+
+      .grid-planting-errors {
+        padding: 0.5rem 0.75rem;
+        color: $red;
+        background: $translucent2;
+        border-radius: 0.3rem;
+
+        p {
+          margin: 0;
+        }
+      }
+
+      .grid-planting-popup-buttons {
+        justify-content: end;
+        gap: 0.5rem;
+
+        button {
+          margin: 0;
+          float: none;
+        }
+      }
+    }
+
     &.telescope-popup {
       .telescope-popup-content {
         gap: 1rem;

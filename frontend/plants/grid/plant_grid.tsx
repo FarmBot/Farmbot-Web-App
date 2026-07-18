@@ -4,9 +4,9 @@ import {
   PlantGridProps,
   PlantGridState,
 } from "./interfaces";
-import { initPlantGrid } from "./generate_grid";
+import { gridResourceKind, initPlantGrid } from "./generate_grid";
 import { batchInitDirty } from "../../api/crud";
-import { uuid } from "farmbot";
+import { TaggedResource, uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
 import { error, success } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
@@ -16,13 +16,17 @@ import { ToggleButton } from "../../ui";
 import { Actions } from "../../constants";
 import { round } from "lodash";
 import { Collapse } from "@blueprintjs/core";
+import {
+  initialPlantGrid, MAX_GRID_PLANTS,
+} from "./grid_math";
 
-export const MAX_N = 200;
+export const MAX_N = MAX_GRID_PLANTS;
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
     grid: this.initGridState,
     gridId: uuid(),
+    gridUuids: [],
     status: "clean",
     offsetPacking: false,
     cameraView: false,
@@ -34,14 +38,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   get initGridState() {
     const spread = (this.props.spread || DEFAULT_PLANT_RADIUS) * 10;
     const gridStart = this.props.designer?.gridStart || { x: 100, y: 100 };
-    return {
-      startX: gridStart.x,
-      startY: gridStart.y,
-      spacingH: spread,
-      spacingV: spread,
-      numPlantsH: 2,
-      numPlantsV: 3,
-    };
+    return initialPlantGrid(gridStart, spread);
   }
 
   get plantCount() {
@@ -88,7 +85,8 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   unmount = () => {
     this.dirty &&
-      this.props.dispatch(stashGrid(this.state.gridId));
+      this.props.dispatch(stashGrid(
+        this.state.gridId, this.state.gridUuids));
     this.props.dispatch(showCameraViewPoints(undefined));
   };
 
@@ -126,18 +124,30 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     });
     this.consoleLog("Generated", startInitPlantGrid);
     const startDispatch = performance.now();
-    this.props.dispatch(batchInitDirty("Point", plants));
+    const resourceKind = gridResourceKind({
+      designer: this.props.designer,
+      openfarm_slug: this.props.openfarm_slug,
+    });
+    const batchAction =
+      batchInitDirty<TaggedResource>(resourceKind, plants);
+    this.props.dispatch(batchAction);
     this.consoleLog("Dispatched", startDispatch);
-    this.setState({ status: "dirty", previous: this.getKey() });
+    this.setState({
+      gridUuids: batchAction.payload.map(resource => resource.uuid),
+      status: "dirty",
+      previous: this.getKey(),
+    });
   };
 
   revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>
-    this.props.dispatch(stashGrid(this.state.gridId))
+    this.props.dispatch(stashGrid(
+      this.state.gridId, this.state.gridUuids))
       .then(() => setStatus &&
         this.setState({ status: "clean" }, this.props.close));
 
   saveGrid = () =>
-    this.props.dispatch(saveGrid(this.state.gridId))
+    this.props.dispatch(saveGrid(
+      this.state.gridId, this.state.gridUuids))
       .then(() => {
         success(t("{{ count }} {{ pointType }} added.", {
           count: this.plantCount,
@@ -146,9 +156,11 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         this.setState({
           grid: this.initGridState,
           gridId: uuid(),
+          gridUuids: [],
           status: "clean",
         }, this.props.close);
-      });
+      })
+      .catch(() => error(t("Unable to save the grid.")));
 
   Buttons = () => {
     switch (this.state.status) {
@@ -193,10 +205,9 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       <h3>{t("Add Grid or Row")}</h3>
       <Collapse isOpen={this.props.collapsible ? this.state.isOpen : true}>
         <GridInput
-          key={JSON.stringify(this.state.grid)}
           itemType={this.props.openfarm_slug ? "plants" : "points"}
           xy_swap={this.props.xy_swap}
-          disabled={this.dirty}
+          disabled={false}
           grid={this.state.grid}
           botPosition={this.props.botPosition}
           onChange={this.onChange}

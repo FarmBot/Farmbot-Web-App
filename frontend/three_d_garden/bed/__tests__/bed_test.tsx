@@ -62,6 +62,12 @@ interface MockInstancesRef {
   current: MockInstancesRefCurrent | undefined;
 }
 const mockPlantRef: MockPlantRef = { current: undefined };
+const mockGridPlantingRef: {
+  current: {
+    onClick: jest.Mock;
+    onPointerMove: jest.Mock;
+  } | undefined;
+} = { current: undefined };
 const mockRadiusRef: MockRadiusRef = { current: undefined };
 const mockTorusRef: MockTorusRef = { current: undefined };
 const mockBillboardRef: MockBillboardRef = { current: undefined };
@@ -137,6 +143,7 @@ describe("<Bed />", () => {
       });
     jest.spyOn(React, "useRef")
       .mockImplementationOnce(() => mockPlantRef)
+      .mockImplementationOnce(() => mockGridPlantingRef)
       .mockImplementationOnce(() => mockRadiusRef)
       .mockImplementationOnce(() => mockTorusRef)
       .mockImplementationOnce(() => mockBillboardRef)
@@ -186,6 +193,32 @@ describe("<Bed />", () => {
       .toBeTruthy();
     expect(container.querySelector("[name='soil-surface-highlight']"))
       .toBeTruthy();
+  });
+
+  it("replaces the single-plant pointer with the active grid preview", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const { container } = render(<Bed {...p} />);
+
+    expect(container.querySelector("[name='grid-planting']")).toBeTruthy();
+    expect(container.querySelector("[name='pointerPlant']")).toBeNull();
+
+    const controller = {
+      onClick: jest.fn(),
+      onPointerMove: jest.fn(),
+    };
+    mockGridPlantingRef.current = controller;
+    fireEvent.click(soilMesh(container));
+    fireEvent.pointerMove(soilMesh(container));
+    expect(controller.onClick).toHaveBeenCalled();
+    expect(controller.onPointerMove).toHaveBeenCalled();
   });
 
   it("renders bed supports with instanced geometry", () => {

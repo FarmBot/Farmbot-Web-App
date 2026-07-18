@@ -40,6 +40,7 @@ import { Position } from "@blueprintjs/core";
 import { findCrop, findIcon, findImage } from "../crops/find";
 import { Crop } from "../crops/interfaces";
 import { DEFAULT_PLANT_RADIUS } from "../farm_designer/plant";
+import { uuid } from "farmbot";
 
 interface InfoFieldProps {
   title: string;
@@ -295,6 +296,33 @@ export const RawCropInfo = (props: CropInfoProps) => {
   const crop = findCrop(slug);
   const image = findImage(slug);
   const panelName = "crop-info";
+  const threeDGrid = !!props.getConfigValue(BooleanSetting.three_d_garden);
+  const activeGridRequest = designer.gridPlanting?.cropSlug == slug
+    ? designer.gridPlanting
+    : undefined;
+  const activeGridToken = activeGridRequest?.token;
+  const toggleThreeDGrid = () => {
+    if (activeGridRequest) {
+      dispatch({ type: Actions.SET_GRID_PLANTING, payload: undefined });
+      return;
+    }
+    const token = uuid();
+    dispatch({
+      type: Actions.SET_GRID_PLANTING,
+      payload: {
+        token,
+        gridId: token,
+        cropSlug: slug,
+        itemName: crop.name,
+        defaultSpacing:
+          (crop.spread || DEFAULT_PLANT_RADIUS) * 10,
+      },
+    });
+  };
+  React.useEffect(() => () => {
+    activeGridToken &&
+      dispatch({ type: Actions.SET_GRID_PLANTING, payload: undefined });
+  }, [activeGridToken, dispatch]);
   return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
     <DesignerPanelHeader
       panelName={panelName}
@@ -311,25 +339,40 @@ export const RawCropInfo = (props: CropInfoProps) => {
       }}
       description={crop.description}>
       <CropDragInfoTile slug={slug} />
-      <Popover portalClassName={"dark-portal"}
-        position={Position.BOTTOM_RIGHT}
-        isOpen={gridOpen}
-        target={<button
-          className={"plus-grid-btn fb-button clear"}
-          onClick={toggleOpen}>
-          + {t("grid")}
-        </button>}
-        content={<div className={"grid-popup-content"}>
-          <PlantGrid
-            xy_swap={props.xySwap}
-            dispatch={dispatch}
-            openfarm_slug={slug}
-            spread={crop.spread}
-            botPosition={props.botPosition}
-            designer={designer}
-            close={toggleOpen}
-            itemName={crop.name} />
-        </div>} />
+      {threeDGrid
+        ? <span className={"grid-mode-button-wrapper"}>
+          <button
+            type={"button"}
+            aria-pressed={!!activeGridRequest}
+            className={[
+              "plus-grid-btn",
+              "fb-button",
+              "clear",
+              activeGridRequest ? "grid-mode-active" : "",
+            ].join(" ")}
+            onClick={toggleThreeDGrid}>
+            + {t("grid")}
+          </button>
+        </span>
+        : <Popover portalClassName={"dark-portal"}
+          position={Position.BOTTOM_RIGHT}
+          isOpen={gridOpen}
+          target={<button
+            className={"plus-grid-btn fb-button clear"}
+            onClick={toggleOpen}>
+            + {t("grid")}
+          </button>}
+          content={<div className={"grid-popup-content"}>
+            <PlantGrid
+              xy_swap={props.xySwap}
+              dispatch={dispatch}
+              openfarm_slug={slug}
+              spread={crop.spread}
+              botPosition={props.botPosition}
+              designer={designer}
+              close={toggleOpen}
+              itemName={crop.name} />
+          </div>} />}
     </DesignerPanelHeader>
     <DesignerPanelContent panelName={panelName} className="grid">
       <AddPlantHereButton

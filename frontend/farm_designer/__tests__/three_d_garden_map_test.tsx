@@ -283,6 +283,8 @@ describe("<ThreeDGardenMap />", () => {
     expect(second.config).toBe(first.config);
     expect(second.threeDPlants).toBe(first.threeDPlants);
     expect(second.addPlantProps).toBe(first.addPlantProps);
+    expect(second.addPlantProps.botPosition)
+      .toEqual({ x: 10, y: 20, z: 30 });
     expect(second.configPosition).not.toBe(first.configPosition);
     expect(second.configPosition).toEqual({ x: 2990, y: 1480, z: 30 });
   });

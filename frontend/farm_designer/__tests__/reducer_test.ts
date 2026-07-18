@@ -1,7 +1,9 @@
 import { designer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import { HoveredPlantPayl, DrawnPointPayl } from "../interfaces";
+import {
+  DrawnPointPayl, GridPlantingRequest, HoveredPlantPayl,
+} from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import {
   fakeDesignerState, fakeDrawnPoint,
@@ -631,6 +633,25 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.gridStart).toEqual({ x: 200, y: 300 });
+  });
+
+  it("sets the active 3D grid planting request", () => {
+    const request: GridPlantingRequest = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const newState = designer(oldState(), {
+      type: Actions.SET_GRID_PLANTING,
+      payload: request,
+    });
+    expect(newState.gridPlanting).toEqual(request);
+    expect(designer(newState, {
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    }).gridPlanting).toBeUndefined();
   });
 
   it("toggle soil height labels", () => {

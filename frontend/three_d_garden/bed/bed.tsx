@@ -51,7 +51,7 @@ import {
   XCrosshairRef,
   YCrosshairRef,
 } from "./objects/pointer_objects";
-import { ThreeElements } from "@react-three/fiber";
+import { ThreeElements, ThreeEvent } from "@react-three/fiber";
 import { ImageTexture, ThreeDGardenPlant } from "../garden";
 import {
   VertexNormalsHelper,
@@ -65,9 +65,13 @@ import {
   AlignmentIndicatorController,
 } from "./objects/alignment_indicators";
 import {
+  GridPlanting, GridPlantingController,
+} from "./objects/grid_planting";
+import {
   SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
 } from "../section";
 import { t } from "../../i18next_wrapper";
+import { BotPosition } from "../../devices/interfaces";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -490,6 +494,7 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
 
 export interface AddPlantProps {
   gridSize: AxisNumberProperty;
+  botPosition: BotPosition;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
@@ -697,6 +702,9 @@ const BedBase = (props: BedProps) => {
   const pointerPlantRef: PointerPlantRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
+  const gridPlantingRef = React.useRef<GridPlantingController>(null);
+
+  // eslint-disable-next-line no-null/no-null
   const radiusRef: RadiusRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
@@ -750,21 +758,31 @@ const BedBase = (props: BedProps) => {
     threeSpace(0, bedWidthOuter) + bedYOffset,
     zZero(props.config),
   ];
-  const onSoilClick = props.addPlantProps
+  const gridPlantingRequest =
+    props.addPlantProps?.designer.gridPlanting;
+  let onSoilClick;
+  if (gridPlantingRequest) {
+    onSoilClick = (event: ThreeEvent<MouseEvent>) =>
+      gridPlantingRef.current?.onClick(event);
+  } else if (props.addPlantProps) {
     // eslint-disable-next-line react-hooks/refs
-    ? soilClick({
+    onSoilClick = soilClick({
       config: props.config,
       addPlantProps: props.addPlantProps,
       pointerPlantRef,
       navigate,
       getZ: props.getZ,
-    })
-    : undefined;
+    });
+  }
   const onSoilPointerMove = React.useMemo(
-    () =>
-      props.addPlantProps
+    () => {
+      if (gridPlantingRequest) {
+        return (event: ThreeEvent<MouseEvent>) =>
+          gridPlantingRef.current?.onPointerMove(event);
+      }
+      if (props.addPlantProps) {
         // eslint-disable-next-line react-hooks/refs
-        ? soilPointerMove({
+        return soilPointerMove({
           addPlantProps: props.addPlantProps,
           config: props.config,
           pointerPlantRef,
@@ -777,13 +795,16 @@ const BedBase = (props: BedProps) => {
           alignmentIndicatorRef,
           activePositionRef: props.activePositionRef,
           getZ: props.getZ,
-        })
-        : undefined,
+        });
+      }
+      return undefined;
+    },
     [
       props.addPlantProps,
       props.config,
       props.activePositionRef,
       props.getZ,
+      gridPlantingRequest,
     ]);
   const commonSoilLayerProps = {
     config: props.config,
@@ -887,7 +908,7 @@ const BedBase = (props: BedProps) => {
         </Box>
       </>}
     <React.Suspense fallback={undefined}>
-      {props.addPlantProps &&
+      {props.addPlantProps && !gridPlantingRequest &&
         <PointerObjects
           pointerPlantRef={pointerPlantRef}
           radiusRef={radiusRef}
@@ -906,6 +927,13 @@ const BedBase = (props: BedProps) => {
           showPlants={props.showPlants}
           showPoints={props.showPoints}
           showWeeds={props.showWeeds}
+          getZ={props.getZ} />}
+      {props.addPlantProps && gridPlantingRequest &&
+        <GridPlanting
+          key={gridPlantingRequest.token}
+          ref={gridPlantingRef}
+          config={props.config}
+          addPlantProps={props.addPlantProps}
           getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>
