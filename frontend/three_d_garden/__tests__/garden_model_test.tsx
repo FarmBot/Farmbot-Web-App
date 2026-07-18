@@ -745,6 +745,32 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
   });
 
+  it("hides the telescope and sphere in section view", () => {
+    const p = fakeProps();
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
+
+    p.addPlantProps = {
+      ...p.addPlantProps!,
+      designer: {
+        ...p.addPlantProps!.designer,
+        threeDSectionOpen: true,
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(0);
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        threeDSectionOpen: false,
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(wrapper.root.findAllByType(Telescope)).toHaveLength(1);
+  });
+
   it("disables legacy solar shadows in the promo", () => {
     const p = fakeProps();
     p.promo = true;

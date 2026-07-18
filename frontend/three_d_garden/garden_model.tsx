@@ -3279,7 +3279,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         mapPoints={mapPoints}
         showMoistureMap={showMoistureMap}
         showMoistureReadings={showMoistureReadings}
-        showTelescope={!props.promo || props.config.telescope}
+        showTelescope={
+          (!props.promo || props.config.telescope) && !sectionOpen}
         sensors={sensors}
         sensorReadings={sensorReadings}
         addPlantProps={addPlantProps}
