@@ -30,7 +30,7 @@ export class ThreeDBugAttack extends BugAttack<ThreeDBugsProps> {
             key={Object.values(bug).join("-")}
             name={`bug-${bug.id}`}
             ref={keepBugAboveSoil}
-            url={FilePath.bug(bug.slug)}
+            url={FilePath.bug3d(bug.slug)}
             position={[
               bug.x - this.xMax / 2,
               bug.y - this.yMax / 2,

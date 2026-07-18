@@ -12,7 +12,6 @@ import {
 } from "../../../farm_designer/map/easter_eggs/status";
 import { BugsButton } from
   "../../../farm_designer/map/easter_eggs/bugs";
-import { FilePath } from "../../../internal_urls";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -50,7 +49,7 @@ describe("<ThreeDBugs />", () => {
     const bugs = wrapper.root.findAllByType(Image);
     expect(bugs).toHaveLength(10);
     bugs.map(bug => {
-      expect(bug.props.url).toContain(FilePath.bug());
+      expect(bug.props.url).toMatch(/^\/3D\/icons\/.+\.avif$/);
       expect(bug.props.position[0]).toBeGreaterThanOrEqual(-500);
       expect(bug.props.position[0]).toBeLessThanOrEqual(500);
       expect(bug.props.position[1]).toBeGreaterThanOrEqual(-300);
