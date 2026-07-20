@@ -132,6 +132,16 @@
         background: $green;
       }
 
+      &.grid-action-packing {
+        background: $medium_gray;
+
+        .grid-packing-icon {
+          width: 2rem;
+          height: 2rem;
+          fill: currentcolor;
+        }
+      }
+
       &.grid-action-color {
         text-shadow: 0 1px 2px $translucent5;
       }
@@ -224,6 +234,24 @@
         }
       }
 
+      .object-popup-bed-table {
+        width: 100%;
+        border-spacing: 0 0.5rem;
+
+        th {
+          padding-right: 1rem;
+          text-align: left;
+        }
+
+        td {
+          width: 8rem;
+        }
+
+        input {
+          width: 100%;
+        }
+      }
+
       .point-color-input {
         align-self: end;
       }
@@ -286,6 +314,7 @@
       .object-popup-trail-row,
       .object-popup-laser-row,
       .object-popup-camera-row,
+      .object-popup-scene-object-row,
       .object-popup-home-row,
       .object-popup-tool-action-row {
         align-items: center;

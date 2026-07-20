@@ -9,10 +9,12 @@ import {
   FARM_DESIGNER_PANEL_OUTER_WIDTH, FARM_DESIGNER_PANEL_WIDTH,
   getCameraClippingRange, getCameraFromUrlParams, getDefaultCameraPosition,
   getCameraFit, getPanelCameraViewOffset, getSphereCameraFit,
-  getViewportFramingTangents,
+  getViewPrismKeyboardPreset, getViewportFramingTangents,
   GetDefaultCameraPositionProps, nearestCardinalHeading,
   nearestCardinalTopViewDirection, nearestViewPrismHeading,
+  nextViewPrismKeyboardPreset,
   positionForViewDirection, setCameraUrlParams, viewPrismDirectionForHeading,
+  ViewPrismKeyboardPreset, ViewPrismLayer,
 } from "../camera";
 import * as devSupport from "../../settings/dev/dev_support";
 import * as screenSize from "../../screen_size";
@@ -557,5 +559,198 @@ describe("top view heading", () => {
       Math.PI / 4,
       { width: 600, height: 600 },
     )).toEqual([1, 0, 5000]);
+  });
+});
+
+describe("view prism keyboard navigation", () => {
+  const cameraForPreset = (
+    layer: ViewPrismLayer,
+    heading: number,
+  ) => {
+    const direction = viewPrismDirectionForHeading(heading);
+    if (layer == "side") {
+      direction[2] = 0;
+    }
+    if (layer == "top") {
+      direction[0] /= 5000;
+      direction[1] /= 5000;
+      direction[2] = 1;
+    }
+    return {
+      position: direction,
+      target: [0, 0, 0] as [number, number, number],
+    };
+  };
+
+  const preset = (
+    layer: ViewPrismLayer,
+    heading: number,
+  ): ViewPrismKeyboardPreset => ({
+    layer,
+    heading,
+    direction: layer == "top"
+      ? [0, 0, 1]
+      : cameraForPreset(layer, heading).position,
+    azimuth: layer == "top" ? heading * Math.PI / 180 : undefined,
+  });
+
+  it.each([
+    ["side", 0, "side"],
+    ["angled", 45, "angled"],
+    ["top", 90, "top"],
+  ] as const)(
+    "classifies a %s camera at %s degrees",
+    (layer, heading, expectedLayer) => {
+      const result = getViewPrismKeyboardPreset(
+        cameraForPreset(layer, heading),
+      );
+      expect(result.layer).toEqual(expectedLayer);
+      expect(result.heading).toEqual(heading);
+    },
+  );
+
+  it.each([
+    ["side", 45],
+    ["angled", 45],
+    ["top", 90],
+  ] as const)(
+    "orbits every %s preset by %s degrees and wraps",
+    (layer, step) => {
+      const headings = layer == "top"
+        ? [0, 90, 180, 270]
+        : [0, 45, 90, 135, 180, 225, 270, 315];
+      headings.map(heading => {
+        const current = preset(layer, heading);
+        expect(nextViewPrismKeyboardPreset(
+          current,
+          "ArrowRight",
+        )?.heading).toEqual((heading + step) % 360);
+        expect(nextViewPrismKeyboardPreset(
+          current,
+          "ArrowLeft",
+        )?.heading).toEqual((heading - step + 360) % 360);
+      });
+    },
+  );
+
+  it.each([
+    ["side", 0, [315, 45]],
+    ["side", 20, [0, 45]],
+    ["angled", 44, [0, 45]],
+    ["angled", 46, [45, 90]],
+    ["top", 89, [0, 90]],
+    ["top", 91, [90, 180]],
+  ] as const)(
+    "snaps a free %s orbit at %s degrees directionally",
+    (layer, heading, expected) => {
+      const angle = heading * Math.PI / 180;
+      let z = 1;
+      if (layer == "side") { z = 0; }
+      if (layer == "top") { z = 100; }
+      const camera = {
+        position: [
+          Math.sin(angle),
+          -Math.cos(angle),
+          z,
+        ] as [number, number, number],
+        target: [0, 0, 0] as [number, number, number],
+      };
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowLeft",
+      )?.heading).toEqual(expected[0]);
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowRight",
+      )?.heading).toEqual(expected[1]);
+    },
+  );
+
+  it.each([
+    [{ width: 1200, height: 600 }, [0, 0, 90, 180, 180, 180, 270, 0]],
+    [{ width: 600, height: 1200 }, [0, 90, 90, 90, 180, 270, 270, 270]],
+    [{ width: 600, height: 600 }, [0, 90, 90, 180, 180, 270, 270, 0]],
+  ])("moves up through all prism layers for viewport %s",
+    (viewport, expectedTopHeadings) => {
+      const headings = [0, 45, 90, 135, 180, 225, 270, 315];
+      headings.map((heading, index) => {
+        const angled = nextViewPrismKeyboardPreset(
+          preset("side", heading),
+          "ArrowUp",
+          viewport,
+        );
+        expect(angled).toMatchObject({ layer: "angled", heading });
+        expect(nextViewPrismKeyboardPreset(
+          angled!,
+          "ArrowUp",
+          viewport,
+        )).toMatchObject({
+          layer: "top",
+          heading: expectedTopHeadings[index],
+          direction: [0, 0, 1],
+        });
+      });
+    });
+
+  it("moves down through the layers and stops at their boundaries", () => {
+    [0, 90, 180, 270].map(heading => {
+      const angled = nextViewPrismKeyboardPreset(
+        preset("top", heading),
+        "ArrowDown",
+      );
+      expect(angled).toMatchObject({ layer: "angled", heading });
+      expect(nextViewPrismKeyboardPreset(
+        angled!,
+        "ArrowDown",
+      )).toMatchObject({ layer: "side", heading });
+    });
+    expect(nextViewPrismKeyboardPreset(
+      preset("top", 0),
+      "ArrowUp",
+    )).toBeUndefined();
+    expect(nextViewPrismKeyboardPreset(
+      preset("side", 0),
+      "ArrowDown",
+    )).toBeUndefined();
+  });
+
+  it.each([
+    [10, "side", "angled"],
+    [35, "side", "angled"],
+    [55, "angled", "top"],
+    [80, "angled", "top"],
+  ] as const)(
+    "snaps a free orbit at %s degrees elevation directionally",
+    (elevation, downLayer, upLayer) => {
+      const angle = elevation * Math.PI / 180;
+      const camera = {
+        position: [
+          0,
+          -Math.cos(angle),
+          Math.sin(angle),
+        ] as [number, number, number],
+        target: [0, 0, 0] as [number, number, number],
+      };
+
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowDown",
+      )?.layer).toEqual(downLayer);
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowUp",
+      )?.layer).toEqual(upLayer);
+    },
+  );
+
+  it("preserves target-relative headings and handles an empty offset", () => {
+    expect(getViewPrismKeyboardPreset({
+      position: [110, 200, 300],
+      target: [100, 200, 300],
+    })).toMatchObject({ layer: "side", heading: 90 });
+    expect(getViewPrismKeyboardPreset({
+      position: [1, 2, 3],
+      target: [1, 2, 3],
+    })).toMatchObject({ layer: "side", heading: 0 });
   });
 });

@@ -28,8 +28,8 @@ describe("<Telescope />", () => {
       config,
       sunIsSet: true,
       stargazing: false,
+      spaceflight: false,
       dispatch: jest.fn(),
-      timeTravelDispatch: jest.fn(),
     };
   };
 
@@ -164,26 +164,42 @@ describe("<Telescope />", () => {
     expect(container.querySelector(".telescope-popup")).toBeNull();
   });
 
-  it("opens main nav time travel instead of stargazing during daytime", () => {
+  it("hides the telescope and sphere during daytime", () => {
     const props = fakeProps();
+    const { container, rerender } = render(<Telescope {...props} />);
+    showTelescope(container);
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
+
+    props.sunIsSet = false;
+    rerender(<Telescope {...props} />);
+    expect(container.querySelector("[name='telescope-sphere']")).toBeNull();
+    expect(container.querySelector("[name='telescope-model']")).toBeNull();
+    expect(container.querySelector(".telescope-popup")).toBeNull();
+    expect(props.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("shows the telescope without the sphere during spaceflight", () => {
+    const props = fakeProps();
+    props.spaceflight = true;
     props.sunIsSet = false;
     const { container } = render(<Telescope {...props} />);
-    showTelescope(container);
-    const close = container.querySelector("[title='close']");
-    close && fireEvent.click(close);
-    expect(container.querySelector(".telescope-popup")).toBeNull();
 
-    const telescopeModel = container.querySelector(
-      "[name='telescope-model']",
-    );
-    telescopeModel && fireEvent.click(telescopeModel);
+    expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
+    expect(container.querySelector("[name='telescope-sphere']")).toBeNull();
+  });
 
-    expect(props.dispatch).not.toHaveBeenCalled();
-    expect(container.querySelector(".telescope-popup")).toBeNull();
-    expect(props.timeTravelDispatch).toHaveBeenCalledWith({
-      type: Actions.OPEN_POPUP,
-      payload: "timeTravel",
-    });
+  it("only mounts the telescope sphere after night begins", () => {
+    const props = fakeProps();
+    props.sunIsSet = undefined;
+    const { container, rerender } = render(<Telescope {...props} />);
+
+    expect(container.querySelector("[name='telescope-sphere']")).toBeNull();
+    props.sunIsSet = false;
+    rerender(<Telescope {...props} />);
+    expect(container.querySelector("[name='telescope-sphere']")).toBeNull();
+    props.sunIsSet = true;
+    rerender(<Telescope {...props} />);
+    expect(container.querySelector("[name='telescope-sphere']")).toBeTruthy();
   });
 
   it("removes outgoing objects only after their spring completes", () => {
@@ -275,6 +291,11 @@ describe("<Telescope />", () => {
       groupOffset: -100,
       sphereOpacity: 0,
       telescopeOpacity: 0,
+    });
+    expect(telescopeSpringTargets(false, false, 100, true)).toEqual({
+      groupOffset: 0,
+      sphereOpacity: 0,
+      telescopeOpacity: 1,
     });
   });
 

@@ -711,7 +711,7 @@
     "FarmBot is offline": "FarmBot 离线",
     "FarmBot Kit": "FarmBot 套件",
     "FarmBot model": "FarmBot 型号",
-    "FarmBot motor load": "FarmBot 电机负载",
+    "Motor load": "电机负载",
     "FarmBot Network Requirements": "FarmBot 网络需求",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "FarmBot 原点（家点）在图像中的位置。如果原点不对应图像角落，请旋转相机直到对应。（默认：{{ defaultOrigin }}）",
     "Farmbot OS": "Farmbot 操作系统",

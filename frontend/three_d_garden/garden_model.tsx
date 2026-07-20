@@ -67,7 +67,9 @@ import {
   distanceForFov, getCameraFit, getCameraFromUrlParams,
   getPanelCameraViewOffset, getSphereCameraFit,
   NARROW_CAMERA_FOV, getCameraClippingRange, nearestCardinalTopViewDirection,
-  NORMAL_CAMERA_FOV, positionForViewDirection, setCameraUrlParams,
+  nextViewPrismKeyboardPreset, NORMAL_CAMERA_FOV,
+  positionForViewDirection, setCameraUrlParams, ViewPrismKeyboardKey,
+  ViewPrismKeyboardPreset,
 } from "./camera";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance, HOVER_OBJECT_MODES, RenderOrder } from "./constants";
@@ -129,6 +131,7 @@ import {
 import {
   SceneObjects, staticSceneObjects, useSceneObjectPlacement,
 } from "./scene_objects";
+import { copySceneObject } from "../scene_objects/actions";
 import {
   getSectionClippingPlanes, getSectionOutsidePlaneConstants,
   sectionNearPlaneIndex,
@@ -1059,8 +1062,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           config={config}
           sunIsSet={sunIsSet}
           stargazing={stargazing}
-          dispatch={dispatch}
-          timeTravelDispatch={dispatch} />}
+          spaceflight={spaceflight}
+          dispatch={dispatch} />}
       <AmbientLight intensity={config.ambient / 100} />
       <Ground
         config={config}
@@ -1691,6 +1694,22 @@ export const constellationDiscoveryEnabled = (
   phase: GardenCameraPhase,
 ) => viewMode != "normal" && phase == viewMode;
 
+const isViewPrismKeyboardKey = (
+  key: string,
+): key is ViewPrismKeyboardKey =>
+  key == "ArrowLeft"
+  || key == "ArrowRight"
+  || key == "ArrowUp"
+  || key == "ArrowDown";
+
+const viewPrismKeyboardTargetIsEditable = (
+  target: EventTarget | null,
+) => target instanceof Element
+  && !!target.closest("input, textarea, select, [contenteditable]");
+
+const commandPaletteIsOpen = () =>
+  !!document.querySelector(".command-palette-dialog[open]");
+
 export const useGardenCameraController = (
   props: GardenCameraControllerProps,
 ) => {
@@ -1728,6 +1747,11 @@ export const useGardenCameraController = (
   const cameraFov = cameraRequest?.fov ?? props.desiredFov;
   const cameraSpringCancelRef =
     React.useRef<(() => void) | undefined>(undefined);
+  const viewPrismKeyboardPresetRef =
+    React.useRef<ViewPrismKeyboardPreset | undefined>(undefined);
+  const resetViewPrismKeyboardNavigation = React.useCallback(() => {
+    viewPrismKeyboardPresetRef.current = undefined;
+  }, []);
   const liveCameraState = React.useCallback(() => readSmoothCameraState({
     position: camera.position,
     target: camera.target,
@@ -1740,6 +1764,17 @@ export const useGardenCameraController = (
     props.controls,
     props.controlsCamera,
   ]);
+  const synchronizeCameraRequest = React.useCallback(() => {
+    resetViewPrismKeyboardNavigation();
+    const current = liveCameraState();
+    setCameraRequest({
+      camera: {
+        position: current.position,
+        target: current.target,
+      },
+      fov: current.fov,
+    });
+  }, [liveCameraState, resetViewPrismKeyboardNavigation]);
   const previousPromoFitRadiusRef = React.useRef(props.cameraFitRadius);
   React.useEffect(() => {
     if (!props.promo || props.activeFocus
@@ -1823,6 +1858,7 @@ export const useGardenCameraController = (
     const previousMode = previousViewModeRef.current;
     if (previousMode == props.viewMode) { return; }
     previousViewModeRef.current = props.viewMode;
+    resetViewPrismKeyboardNavigation();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCameraPhase("transitioning");
     const current = liveCameraState();
@@ -1866,6 +1902,7 @@ export const useGardenCameraController = (
     props.stargazingCamera,
     props.stargazingFov,
     props.viewMode,
+    resetViewPrismKeyboardNavigation,
     spaceflightCamera,
   ]);
   const previousSpaceflightCameraRef = React.useRef(spaceflightCamera);
@@ -1898,6 +1935,7 @@ export const useGardenCameraController = (
   ]);
   const selectViewDirection = React.useCallback(
     (direction: ViewPrismDirection) => {
+      resetViewPrismKeyboardNavigation();
       const current = liveCameraState();
       setCameraRequest(createViewDirectionRequest(
         direction,
@@ -1912,8 +1950,9 @@ export const useGardenCameraController = (
       props.cameraFitRadius,
       props.controls,
       props.viewportSize,
+      resetViewPrismKeyboardNavigation,
     ]);
-  const selectStartingCamera = React.useMemo(() =>
+  const startingCameraSelector = React.useMemo(() =>
     createStartingCameraSelector(
       setCameraRequest,
       props.cameraBedSize,
@@ -1924,22 +1963,81 @@ export const useGardenCameraController = (
     props.cameraFitRadius,
     props.zoomFactor,
   ]);
+  const selectStartingCamera = React.useCallback((
+    heading: number,
+    topDown: boolean,
+  ) => {
+    resetViewPrismKeyboardNavigation();
+    startingCameraSelector(heading, topDown);
+  }, [resetViewPrismKeyboardNavigation, startingCameraSelector]);
+  React.useEffect(() => {
+    if (!props.viewPrismBridgeRef
+      || props.promo
+      || props.viewMode != "normal"
+      || cameraPhase != "normal") {
+      return;
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isViewPrismKeyboardKey(event.key)
+        || event.altKey
+        || event.ctrlKey
+        || event.metaKey
+        || event.shiftKey
+        || event.repeat
+        || viewPrismKeyboardTargetIsEditable(event.target)
+        || commandPaletteIsOpen()) {
+        return;
+      }
+      event.preventDefault();
+      const current = liveCameraState();
+      const nextPreset = nextViewPrismKeyboardPreset(
+        viewPrismKeyboardPresetRef.current || {
+          position: current.position,
+          target: current.target,
+        },
+        event.key,
+        props.viewportSize,
+      );
+      if (!nextPreset) { return; }
+      viewPrismKeyboardPresetRef.current = nextPreset;
+      setCameraRequest(createViewDirectionRequest(
+        nextPreset.direction,
+        current,
+        props.cameraFitRadius,
+        nextPreset.azimuth,
+        props.viewportSize,
+      ));
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    cameraPhase,
+    liveCameraState,
+    props.cameraFitRadius,
+    props.promo,
+    props.viewMode,
+    props.viewPrismBridgeRef,
+    props.viewportSize,
+  ]);
   React.useImperativeHandle(props.viewPrismBridgeRef, () => ({
     camera: props.controlsCamera || undefined,
     selectDirection: selectViewDirection,
   }), [props.controlsCamera, selectViewDirection]);
   React.useEffect(() => {
+    resetViewPrismKeyboardNavigation();
     if (!props.activeFocus) { return; }
     // A promo focus owns the camera target until the next user request.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCameraRequest(undefined);
-  }, [props.activeFocus]);
+  }, [props.activeFocus, resetViewPrismKeyboardNavigation]);
   return {
     camera,
     cameraFov,
     cameraRequest,
     cameraSpringCancelRef,
     selectStartingCamera,
+    resetViewPrismKeyboardNavigation,
+    synchronizeCameraRequest,
     cameraPhase,
     spaceflightCamera,
   };
@@ -2715,7 +2813,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   });
   const {
     camera, cameraFov, cameraRequest, cameraSpringCancelRef,
-    selectStartingCamera, cameraPhase, spaceflightCamera,
+    selectStartingCamera, resetViewPrismKeyboardNavigation,
+    synchronizeCameraRequest, cameraPhase, spaceflightCamera,
   } = cameraController;
   const updateSectionNearIndex = React.useCallback(() => {
     sectionBridgeRef.current?.updateNearIndex();
@@ -2868,6 +2967,13 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     }
     dispatch?.(setPanelOpen3D(true));
     navigate(pathForThreeDSelection(selection));
+    closePopup();
+  }, [closePopup, dispatch, navigate]);
+  const copySelectedSceneObject = React.useCallback((
+    sceneObject: TaggedSceneObject,
+  ) => {
+    if (!dispatch) { return; }
+    dispatch(copySceneObject(sceneObject, navigate));
     closePopup();
   }, [closePopup, dispatch, navigate]);
   const openSelectedLocationPanel = React.useCallback((
@@ -3088,6 +3194,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     );
   }, [clearCameraUrlSaveTimeout, finishCameraUrlSave]);
   const handleCameraDragStart = React.useCallback(() => {
+    resetViewPrismKeyboardNavigation();
     cameraSpringCancelRef.current?.();
     setSelectableObjectHoverCount(0);
     setHoveredObjectLabel(undefined);
@@ -3101,16 +3208,22 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     baseConfig.urlCameraPos,
     cameraSpringCancelRef,
     clearCameraUrlSaveTimeout,
+    resetViewPrismKeyboardNavigation,
     sectionOpen,
     celestialViewActive,
   ]);
   const handleCameraDragEnd = React.useCallback(() => {
+    synchronizeCameraRequest();
     setCameraDragging(false);
     if (cameraUrlInteractionRef.current != "active") { return; }
     cameraUrlInteractionRef.current = "settling";
     saveCameraUrl();
     scheduleCameraUrlSave();
-  }, [saveCameraUrl, scheduleCameraUrlSave]);
+  }, [
+    saveCameraUrl,
+    scheduleCameraUrlSave,
+    synchronizeCameraRequest,
+  ]);
   const handleCameraChange = React.useCallback(() => {
     applyCameraClippingRange(controlsCamera, {
       sceneRadius: CAMERA_SCENE_RADIUS,
@@ -3329,7 +3442,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           plantIconCapacities={props.plantIconCapacities}
           startTimeRef={props.startTimeRef}
           dispatch={dispatch}
-          stargazing={celestialViewActive}
+          stargazing={viewMode == "stargazing"}
           spaceflight={spaceflight}
           cameraSideStarClipEnabled={cameraSideStarClipEnabled(cameraPhase)}
           constellationDiscoveryEnabled={constellationDiscoveryEnabled(
@@ -3407,11 +3520,13 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           locationSelection={activeLocationSelection}
           selectedLocation={selectedLocation}
           onClosePopup={closePopup}
+          onCopySceneObject={copySelectedSceneObject}
           onOpenPanel={openSelectedObjectPanel}
           onOpenLocationPanel={openSelectedLocationPanel}
           onUpdateLocationSelection={updateLocationSelection}
           plants={plants}
           points={mapPoints}
+          sceneObjects={props.sceneObjects || []}
           weeds={weeds}
           toolSlots={toolSlots}
           tools={tools}
@@ -3521,6 +3636,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
                 dispatch={dispatch}
                 designer={addPlantProps?.designer}
                 hoverSelection={hoverSelection}
+                onSelectObject={onSelectObject}
                 sceneObjects={props.sceneObjects} />
             </Group>
           </PopInGroup>

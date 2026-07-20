@@ -74,6 +74,7 @@ import {
 } from "../section";
 import { t } from "../../i18next_wrapper";
 import { BotPosition } from "../../devices/interfaces";
+import { clickWasDragged } from "../click_event";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -134,6 +135,7 @@ interface BedFrameProps {
   bedHeight: number;
   bedStartZ: number;
   botSize: Record<"x" | "y" | "z" | "thickness", number>;
+  onClick?(event: ThreeEvent<MouseEvent>): void;
   children: React.ReactElement;
 }
 
@@ -141,6 +143,7 @@ const BedFrame = (props: BedFrameProps) =>
   <Extrude name={"bed"}
     castShadow={true}
     receiveShadow={true}
+    onClick={props.onClick}
     args={[
       bedStructure2D(props.botSize),
       { steps: 1, depth: props.bedHeight, bevelEnabled: false },
@@ -525,6 +528,15 @@ export interface BedProps {
   onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
+export const selectBed = (
+  onSelectObject: ThreeDObjectSelectionHandler | undefined,
+  event: ThreeEvent<MouseEvent>,
+) => {
+  if (!onSelectObject || clickWasDragged(event)) { return; }
+  onSelectObject({ kind: "bed", id: 0 }) !== false
+    && event.stopPropagation?.();
+};
+
 const BED_CONFIG_FIELDS: (keyof Config)[] = [
   "axes",
   "bedBrightness",
@@ -830,6 +842,8 @@ const BedBase = (props: BedProps) => {
     bedHeight,
     bedStartZ,
     botSize,
+    onClick: (event: ThreeEvent<MouseEvent>) =>
+      selectBed(props.onSelectObject, event),
   };
 
   return <Group name={"bed-group"}

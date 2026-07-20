@@ -29,9 +29,32 @@ describe("<RawEditSceneObject />", () => {
 
     fireEvent.click(container.querySelector(".fa-copy") as Element);
 
-    expect(copySceneObject).toHaveBeenCalledWith(resource, mockNavigate);
+    expect(copySceneObject).toHaveBeenCalledWith(
+      resource,
+      expect.any(Function),
+    );
+    copySceneObject.mock.calls[0][1](Path.sceneObjects(2));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sceneObjects(2));
     expect(p.dispatch).toHaveBeenCalledWith("copy action");
     copySceneObject.mockRestore();
+  });
+
+  it("toggles visibility from the panel header", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const resource = fakeSceneObject({ id: 1, show: true });
+    const toggleVisibility = jest.spyOn(
+      sceneObjectActions,
+      "toggleSceneObjectVisibility",
+    ).mockImplementation(jest.fn());
+    const p = fakeProps(resource);
+    const { container, queryByLabelText } =
+      render(<RawEditSceneObject {...p} />);
+
+    expect(queryByLabelText("Show")).toBeNull();
+    fireEvent.click(container.querySelector(".fa-eye") as Element);
+
+    expect(toggleVisibility).toHaveBeenCalledWith(p.dispatch, resource);
+    toggleVisibility.mockRestore();
   });
 
   it("deletes a scene object", async () => {

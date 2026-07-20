@@ -1,9 +1,8 @@
 import { Actions } from "../constants";
 import { TaggedSceneObject } from "farmbot";
-import { NavigateFunction } from "react-router";
 import { GetState } from "../redux/interfaces";
 import { selectAllSceneObjects } from "../resources/selectors";
-import { init, save } from "../api/crud";
+import { edit, init, save } from "../api/crud";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 
@@ -20,6 +19,14 @@ export const setUnifiedSceneObjectSize = (uuid: string | undefined) => ({
 export const sceneObjectFocusHandler = (dispatch: Function) =>
   (field: string | undefined) =>
     dispatch(setFocusedSceneObjectField(field));
+
+export const toggleSceneObjectVisibility = (
+  dispatch: Function,
+  sceneObject: TaggedSceneObject,
+) => {
+  dispatch(edit(sceneObject, { show: !sceneObject.body.show }));
+  dispatch(save(sceneObject.uuid));
+};
 
 export const availableSceneObjectName = (
   existingNames: string[],
@@ -47,7 +54,7 @@ export const duplicateSceneObjectName = (
 
 export const copySceneObject = (
   sceneObject: TaggedSceneObject,
-  navigate: NavigateFunction,
+  navigate: (path: string) => void,
 ) =>
   (dispatch: Function, getState: GetState) => {
     const sceneObjects = selectAllSceneObjects(getState().resources.index);

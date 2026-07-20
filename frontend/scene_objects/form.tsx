@@ -1,12 +1,16 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { ASSETS } from "../three_d_garden/constants";
 import { FBSelect, DropDownItem, BlurableInput } from "../ui";
 import type { SceneObjectFormValues } from "./interfaces";
 import type {
   SceneObjectAxis,
 } from "../three_d_garden/scenes/scene_object_data";
 import { DevSettings } from "../settings/dev/dev_support";
+import {
+  sceneObjectShowsTextureAndColor,
+  sceneObjectTextureChoices,
+  validSceneObjectColor,
+} from "./appearance";
 
 export type { SceneObjectFormValues };
 
@@ -24,6 +28,7 @@ export interface SceneObjectFormFieldsProps {
   onFocusChange?(field: string | undefined): void;
   showPreserveAxes?: boolean;
   hideCubeControl?: boolean;
+  hideVisibilityControl?: boolean;
 }
 
 type SceneObjectNumberField = Exclude<
@@ -33,12 +38,6 @@ type SceneObjectNumberField = Exclude<
   | "preserve_axes"
 >;
 type SceneObjectOriginField = "x_origin" | "y_origin" | "z_origin";
-
-const textureChoices: DropDownItem[] = Object.keys(ASSETS.textures)
-  .filter(textureType => !["screen", "cloud"].includes(textureType))
-  .concat(["none"])
-  .map(textureType => ({ label: textureType, value: textureType }),
-  );
 
 const shapeChoices = (): DropDownItem[] => [
   { label: t("Box"), value: "box" },
@@ -61,14 +60,6 @@ const shapeChoices = (): DropDownItem[] => [
     : []),
 ];
 
-const shapesWithTexture = [
-  "box", "cylinder", "sphere", "fence", "desk", "astronaut", "hab", "rover",
-];
-const DEFAULT_COLOR = "#434343";
-
-const validHexColor = (color: string) =>
-  /^#[0-9a-f]{6}$/i.test(color) ? color : DEFAULT_COLOR;
-
 interface SceneObjectFormField {
   id: string;
   label?: string;
@@ -81,13 +72,13 @@ interface SceneObjectFormField {
   ) => void;
 }
 
-const centerFields: SceneObjectFormField[] = [
+const centerFields = (): SceneObjectFormField[] => [
   { id: "x_center", label: t("X"), field: "x_center", originField: "x_origin" },
   { id: "y_center", label: t("Y"), field: "y_center", originField: "y_origin" },
   { id: "z_base", label: t("Z"), field: "z_base", originField: "z_origin" },
 ];
 
-const sizeFields: SceneObjectFormField[] = [
+const sizeFields = (): SceneObjectFormField[] => [
   { id: "x_size", label: t("X"), field: "x_size" },
   { id: "y_size", label: t("Y"), field: "y_size" },
   { id: "z_size", label: t("Z"), field: "z_size" },
@@ -103,12 +94,12 @@ const combinedSizeField: SceneObjectFormField = {
   },
 };
 
-const fieldRows = [
-  { id: "center", label: t("Center"), fields: centerFields },
-  { id: "size", label: t("Size"), fields: sizeFields },
+const fieldRows = () => [
+  { id: "center", label: t("Center"), fields: centerFields() },
+  { id: "size", label: t("Size"), fields: sizeFields() },
 ];
 
-const originChoices = [
+const originChoices = () => [
   { label: t("Home"), value: "home" },
   { label: t("Max"), value: "max" },
   { label: t("World"), value: "world" },
@@ -143,6 +134,7 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
   const { field, focusedField, values, onFocusChange, onValueChange } = props;
   const hasOrigin = !!field.originField;
   const origin = field.originField ? values[field.originField] : undefined;
+  const datumChoices = originChoices();
   const highlighted = focusedField == field.id;
   const input = <BlurableInput id={field.id}
     value={values[field.field]}
@@ -182,9 +174,9 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
       ? <div className={"row half-gap grid-2-col"}>
         {input}
         <FBSelect
-          list={originChoices}
-          selectedItem={originChoices.find(item => item.value === origin)
-            || originChoices[0]}
+          list={datumChoices}
+          selectedItem={datumChoices.find(item => item.value === origin)
+            || datumChoices[0]}
           onChange={item => field.originField &&
             onValueChange(field.originField, item.value)} />
       </div>
@@ -197,9 +189,10 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
 export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
   const { focusedField, values, onValueChange } = props;
   const shapes = shapeChoices();
+  const rows = fieldRows();
   const [collapsedRows, setCollapsedRows] = React.useState<string[]>([]);
   const showUnifiedSize = !!props.showUnifiedSize;
-  const showTexture = shapesWithTexture.includes(values.shape);
+  const showAppearance = sceneObjectShowsTextureAndColor(values.shape);
   const preservedAxes: SceneObjectAxis[] = values.preserve_axes || [];
   const togglePreservedAxis = (axis: SceneObjectAxis) => {
     const nextAxes: SceneObjectAxis[] = preservedAxes.includes(axis)
@@ -232,37 +225,39 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
             || shapes[0]}
           onChange={item => onValueChange("shape", item.value)} />
       </div>
-      {showTexture &&
+      {showAppearance &&
         <div className={"grid half-gap"}>
           <label htmlFor={"texture"}>{t("Texture")}</label>
           <FBSelect
-            list={textureChoices}
-            selectedItem={textureChoices.find(item => item.value === values.texture)
-              || textureChoices[0]}
+            list={sceneObjectTextureChoices}
+            selectedItem={sceneObjectTextureChoices.find(item =>
+              item.value === values.texture)
+              || sceneObjectTextureChoices[0]}
             onChange={item => onValueChange("texture", item.value)}
             extraClass="fb-select" />
         </div>}
-      {showTexture &&
+      {showAppearance &&
         <div className={"grid half-gap"}>
           <label htmlFor={"color"}>{t("Color")}</label>
           <div className={"row half-gap grid-exp-1"}>
             <input id={"color"}
               name={"color"}
               type={"color"}
-              value={validHexColor(values.color)}
+              value={validSceneObjectColor(values.color)}
               onChange={e => onValueChange("color", e.currentTarget.value)} />
           </div>
         </div>}
-      <div className={"grid half-gap"}>
-        <label htmlFor={"show"}>{t("Show")}</label>
-        <input id={"show"}
-          name={"show"}
-          type={"checkbox"}
-          checked={values.show}
-          onChange={e => onValueChange("show", e.currentTarget.checked)} />
-      </div>
+      {!props.hideVisibilityControl &&
+        <div className={"grid half-gap"}>
+          <label htmlFor={"show"}>{t("Show")}</label>
+          <input id={"show"}
+            name={"show"}
+            type={"checkbox"}
+            checked={values.show}
+            onChange={e => onValueChange("show", e.currentTarget.checked)} />
+        </div>}
     </div>
-    {fieldRows.map(row => {
+    {rows.map(row => {
       const rowFields = row.id === "size" && showUnifiedSize
         ? [combinedSizeField]
         : row.fields;

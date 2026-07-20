@@ -397,7 +397,7 @@
     "FarmBot is not connected.": "FarmBot no está conectado.",
     "FarmBot is offline": "FarmBot está desconectado",
     "FarmBot Kit": "Kit de FarmBot",
-    "FarmBot motor load": "Cargo de motor de FarmBot",
+    "Motor load": "Cargo de motor",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "Ubicación del origen de Farmbot en imágenes. Si el origen no corresponde a una esquina del imagen, rota la cámara hasta que concuerde. (por defecto: {{ defaultOrigin }})",
     "Farmbot OS": "Farmbot OS",
     "FarmBot OS": "SO FarmBot",

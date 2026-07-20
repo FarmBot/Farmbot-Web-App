@@ -356,12 +356,19 @@ describe("<Sun />", () => {
 
   it("expands shadow bounds around scene objects", () => {
     const p = fakeProps();
-    p.sceneObjects = [fakeSceneObject({
-      x_center: 5000,
-      x_size: 2000,
-      y_center: -8000,
-      y_size: 4000,
-    })];
+    p.sceneObjects = [
+      fakeSceneObject({
+        x_center: 5000,
+        x_size: 2000,
+        y_center: -8000,
+        y_size: 4000,
+      }),
+      fakeSceneObject({
+        x_center: 50000,
+        y_center: 50000,
+        show: false,
+      }),
+    ];
     const { container } = render(<Sun {...p} />);
     const light = container.querySelector("directionallight");
     const right = Number(light?.getAttribute("shadow-camera-right"));

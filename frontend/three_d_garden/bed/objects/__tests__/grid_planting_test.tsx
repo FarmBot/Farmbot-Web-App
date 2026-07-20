@@ -10,6 +10,7 @@ import {
   PointRadiusControl,
   gridActionControlPosition,
   gridDragUpdate,
+  gridForPackingChange,
   quantizePointRadius,
   saveGridPlanting,
   useGridControlHandlers,
@@ -350,6 +351,16 @@ describe("3D grid planting", () => {
       .toHaveClass("grid-action-save", "fa-check");
     expect(container.querySelector("[name='grid-save-control']"))
       .toHaveAttribute("title", "Save");
+    const packingButton = container.querySelector(
+      "[name='grid-packing-control']");
+    expect(packingButton).toHaveClass("grid-action-packing");
+    expect(packingButton).toHaveAttribute("aria-pressed", "false");
+    expect(packingButton).toHaveAttribute(
+      "aria-label", "Use hexagonal packing");
+    expect(packingButton?.querySelectorAll("circle")).toHaveLength(9);
+    const packingCircles = packingButton?.querySelectorAll("circle");
+    expect(packingCircles?.[0].getAttribute("cy"))
+      .not.toEqual(packingCircles?.[3].getAttribute("cy"));
     expect(actionControls?.textContent).toEqual("");
     const startMarker =
       container.querySelector("[name='grid-start-marker']");
@@ -400,6 +411,23 @@ describe("3D grid planting", () => {
     expect(container.querySelector("[name='grid-count-x-arrow']"))
       .not.toBeInTheDocument();
 
+    fireEvent.click(packingButton as Element);
+    expect(packingButton).toHaveAttribute("aria-pressed", "true");
+    expect(packingButton).toHaveAttribute(
+      "aria-label", "Use square packing");
+    expect(packingCircles?.[0].getAttribute("cy"))
+      .toEqual(packingCircles?.[3].getAttribute("cy"));
+    fireEvent.pointerOver(spacingControl as Element);
+    expect(screen.getByText("90mm")).toBeInTheDocument();
+    fireEvent.pointerOut(spacingControl as Element);
+    fireEvent.click(packingButton as Element);
+    expect(packingButton).toHaveAttribute("aria-pressed", "false");
+    fireEvent.pointerOver(spacingControl as Element);
+    expect(screen.getByText("100mm")).toBeInTheDocument();
+    fireEvent.pointerOut(spacingControl as Element);
+    fireEvent.click(packingButton as Element);
+    expect(packingButton).toHaveAttribute("aria-pressed", "true");
+
     await act(async () => {
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
       await Promise.resolve();
@@ -409,6 +437,11 @@ describe("3D grid planting", () => {
       .mock.calls.map(call => call[0])
       .find(action => action.type == Actions.BATCH_INIT);
     expect(batchAction.payload).toHaveLength(16);
+    const plantPositions = batchAction.payload.map(
+      (plant: { body: { x: number, y: number } }) =>
+        [plant.body.x, plant.body.y]);
+    expect(plantPositions).toContainEqual([190, 250]);
+    expect(plantPositions).not.toContainEqual([190, 200]);
     expect(props.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_GRID_START,
       payload: { x: 100, y: 200 },
@@ -457,6 +490,11 @@ describe("3D grid planting", () => {
       "[name='grid-point-color-control']") as HTMLButtonElement;
     expect(colorButton).toHaveClass(
       "grid-action-color", "fa-paint-brush", "green");
+    const packingButton = container.querySelector(
+      "[name='grid-packing-control']") as HTMLButtonElement;
+    expect(packingButton).toBeInTheDocument();
+    fireEvent.click(packingButton);
+    expect(packingButton).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(colorButton);
     expect(container.querySelectorAll(
       ".grid-point-color-menu .saucer")).toHaveLength(8);
@@ -755,6 +793,43 @@ describe("3D grid planting", () => {
     expect(quantizePointRadius(0)).toEqual(0);
     expect(quantizePointRadius(34)).toEqual(30);
     expect(quantizePointRadius(35)).toEqual(40);
+  });
+
+  it("adjusts the current x spacing when changing packing", () => {
+    const grid: PlantGridData = {
+      startX: 100,
+      startY: 200,
+      spacingH: 200,
+      spacingV: 400,
+      numPlantsH: 3,
+      numPlantsV: 3,
+    };
+
+    const hexGrid = gridForPackingChange(grid, true);
+    expect(hexGrid.spacingH).toEqual(170);
+    expect(hexGrid.spacingV).toEqual(400);
+    expect(gridForPackingChange(hexGrid, false).spacingH).toEqual(200);
+  });
+
+  it("passes packing mode to the finalized drag controls", () => {
+    const props = fakeProps();
+    const ref = React.createRef<GridPlantingController>();
+    const wrapper = createRenderer(<GridPlanting ref={ref} {...props} />);
+    actRenderer(() =>
+      ref.current?.onClick(eventAt(props, { x: 100, y: 200 })));
+    actRenderer(() =>
+      ref.current?.onClick(eventAt(props, { x: 300, y: 400 })));
+
+    expect(wrapper.root.findByType(GridPlantingControls).props.offsetPacking)
+      .toEqual(false);
+    const packingButton = wrapper.root.findByProps({
+      name: "grid-packing-control",
+    });
+    actRenderer(() => packingButton.props.onClick());
+
+    expect(wrapper.root.findByType(GridPlantingControls).props.offsetPacking)
+      .toEqual(true);
+    unmountRenderer(wrapper);
   });
 
   it("rounds extents to the nearest grid point", () => {
@@ -1191,6 +1266,23 @@ describe("useGridControlHandlers()", () => {
     expect(onChange).toHaveBeenLastCalledWith({
       ...grid,
       startX: 850,
+    });
+    act(() => current().onDragCancel());
+  });
+
+  it("keeps staggered rows within the planting boundary", () => {
+    const props = { ...fakeProps(), offsetPacking: true };
+    const { result } = renderHook(() => useGridControlHandlers(props));
+    const current = () => result.current.handlers("start");
+
+    act(() => current()
+      .onDragStart(dragEvent(event({ x: 100, y: 100 }))));
+    act(() => current()
+      .onDrag(dragEvent(event({ x: 100, y: 1000 }, 2))));
+
+    expect(props.onChange).toHaveBeenLastCalledWith({
+      ...grid,
+      startY: 850,
     });
     act(() => current().onDragCancel());
   });

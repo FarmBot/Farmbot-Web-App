@@ -1,5 +1,6 @@
 import {
-  TaggedDevice, TaggedGenericPointer, TaggedWeedPointer, Vector3,
+  TaggedDevice, TaggedGenericPointer, TaggedSceneObject, TaggedWeedPointer,
+  Vector3,
 } from "farmbot";
 import { round } from "lodash";
 import { Config, PositionConfig } from "../config";
@@ -25,6 +26,7 @@ import { BotPosition } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
 import { getWifiRouterWorldPosition } from
   "../bed/objects/utilities_post_position";
+import { sceneObjectPosition } from "../scene_objects";
 
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
@@ -76,6 +78,15 @@ interface ResolvedConnectivityObject extends ResolvedThreeDObjectBase {
   kind: "connectivity";
 }
 
+interface ResolvedSceneObject extends ResolvedThreeDObjectBase {
+  kind: "sceneObject";
+  sceneObject: TaggedSceneObject;
+}
+
+interface ResolvedBedObject extends ResolvedThreeDObjectBase {
+  kind: "bed";
+}
+
 export type ResolvedThreeDObject =
   | ResolvedPlantObject
   | ResolvedPointObject
@@ -84,7 +95,9 @@ export type ResolvedThreeDObject =
   | ResolvedUtmObject
   | ResolvedElectronicsObject
   | ResolvedCameraObject
-  | ResolvedConnectivityObject;
+  | ResolvedConnectivityObject
+  | ResolvedSceneObject
+  | ResolvedBedObject;
 
 export interface ResolvedLocationObject {
   kind: "location";
@@ -106,7 +119,9 @@ export const objectHasSelectionOverlay = (
   && object.kind != "utm"
   && object.kind != "electronics"
   && object.kind != "camera"
-  && object.kind != "connectivity";
+  && object.kind != "connectivity"
+  && object.kind != "sceneObject"
+  && object.kind != "bed";
 
 const objectName = (
   resource: { body: { name?: string, id?: number } },
@@ -124,6 +139,7 @@ export interface ResolveSelectedObjectProps {
   points: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   toolSlots: SlotWithTool[];
+  sceneObjects: TaggedSceneObject[];
   currentBotLocation: BotPosition;
   deviceAccount: TaggedDevice | undefined;
   getZ(x: number, y: number): number;
@@ -331,6 +347,56 @@ const resolveConnectivityObject = (
   };
 };
 
+const resolveSceneObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedSceneObject | undefined => {
+  const sceneObject = props.sceneObjects.find(resource =>
+    resource.body.id == selection.id
+    || resource.uuid == selection.uuid);
+  if (!sceneObject) { return undefined; }
+  const worldPosition = sceneObjectPosition(props.config, sceneObject);
+  const { x_size, y_size, z_size } = sceneObject.body;
+  return {
+    kind: "sceneObject",
+    selection,
+    sceneObject,
+    name: sceneObject.body.name,
+    worldPosition,
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
+      worldPosition[2] + z_size / 2 + POPUP_Z_PADDING,
+    ],
+    ringRadius: Math.max(Math.hypot(x_size, y_size) / 2, MIN_RING_RADIUS),
+    locationCoordinate: {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    },
+  };
+};
+
+const resolveBedObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedBedObject => {
+  const { bedHeight, bedLengthOuter, bedWidthOuter } = props.config;
+  return {
+    kind: "bed",
+    selection,
+    name: t("Bed"),
+    worldPosition: [0, 0, -bedHeight / 2],
+    popupPosition: [0, 0, FIXED_POPUP_Z_OFFSET],
+    ringRadius: Math.hypot(bedLengthOuter, bedWidthOuter) / 2,
+    locationCoordinate: {
+      x: bedLengthOuter / 2,
+      y: bedWidthOuter / 2,
+      z: 0,
+    },
+  };
+};
+
 export const resolveSelectedObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection | undefined,
@@ -345,6 +411,8 @@ export const resolveSelectedObject = (
     case "electronics": return resolveElectronicsObject(props, selection);
     case "camera": return resolveCameraObject(props, selection);
     case "connectivity": return resolveConnectivityObject(props, selection);
+    case "sceneObject": return resolveSceneObject(props, selection);
+    case "bed": return resolveBedObject(props, selection);
   }
 };
 

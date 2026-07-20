@@ -3,6 +3,7 @@ import { isDesktop } from "../screen_size";
 import { DevSettings } from "../settings/dev/dev_support";
 import { Camera } from "./zoom_beacons_constants";
 import { AxisNumberProperty } from "../farm_designer/map/interfaces";
+import type { ViewPrismDirection } from "./view_prism";
 
 export const NORMAL_CAMERA_FOV = 40;
 export const NARROW_CAMERA_FOV = 1;
@@ -303,7 +304,10 @@ const nearestCardinalHeadingRadians = (
   ) < CARDINAL_TIE_TOLERANCE;
   if (!exactlyBetweenCardinals || !viewport
     || viewport.width == viewport.height) {
-    return Math.round(cardinalPosition) * CARDINAL_HEADING_STEP;
+    const nearestCardinal = exactlyBetweenCardinals
+      ? lowerCardinal + 1
+      : Math.round(cardinalPosition);
+    return nearestCardinal * CARDINAL_HEADING_STEP;
   }
   const preferredParity = viewport.width > viewport.height ? 0 : 1;
   const cardinal = lowerCardinal % 2 == preferredParity
@@ -328,6 +332,199 @@ export const nearestCardinalTopViewDirection = (
     Math.round(-Math.cos(cardinalHeading)) || 0,
     TOP_VIEW_VERTICAL_COMPONENT,
   ];
+};
+
+export type ViewPrismLayer = "side" | "angled" | "top";
+export type ViewPrismKeyboardKey =
+  "ArrowLeft" | "ArrowRight" | "ArrowUp" | "ArrowDown";
+
+export interface ViewPrismKeyboardPreset {
+  layer: ViewPrismLayer;
+  heading: number;
+  direction: ViewPrismDirection;
+  azimuth?: number;
+}
+
+const FULL_HEADING = 360;
+const VIEW_PRISM_HEADING_STEP = 45;
+const TOP_VIEW_HEADING_STEP = 90;
+const VIEW_PRISM_HEADING_TOLERANCE = 1e-6;
+const VIEW_PRISM_ELEVATION_TOLERANCE = 0.1;
+const VIEW_PRISM_LAYERS = ["side", "angled", "top"] as const;
+
+const normalizedHeading = (heading: number) =>
+  ((heading % FULL_HEADING) + FULL_HEADING) % FULL_HEADING;
+
+const cameraHeading = (camera: Camera) => normalizedHeading(
+  Math.atan2(
+    camera.position[0] - camera.target[0],
+    camera.target[1] - camera.position[1],
+  ) * 180 / Math.PI,
+);
+
+const cameraElevation = (camera: Camera) => {
+  const offset = camera.position.map((value, index) =>
+    value - camera.target[index]) as Camera["position"];
+  return Math.max(0, Math.min(90, Math.atan2(
+    offset[2],
+    Math.hypot(offset[0], offset[1]),
+  ) * 180 / Math.PI));
+};
+
+const directionScore = (
+  offset: Camera["position"],
+  direction: Camera["position"],
+) => {
+  const offsetLength = Math.hypot(...offset);
+  const directionLength = Math.hypot(...direction);
+  if (!offsetLength || !directionLength) { return -Infinity; }
+  return offset.reduce(
+    (sum, value, index) => sum + value * direction[index],
+    0,
+  ) / offsetLength / directionLength;
+};
+
+const nearestViewPrismLayer = (
+  camera: Camera,
+  heading: number,
+): ViewPrismLayer => {
+  const offset = camera.position.map((value, index) =>
+    value - camera.target[index]) as Camera["position"];
+  const angled = viewPrismDirectionForHeading(heading);
+  const side: Camera["position"] = [angled[0], angled[1], 0];
+  const scores: [ViewPrismLayer, number][] = [
+    ["side", directionScore(offset, side)],
+    ["angled", directionScore(offset, angled)],
+    ["top", directionScore(offset, [0, 0, 1])],
+  ];
+  return scores.reduce((nearest, candidate) =>
+    candidate[1] > nearest[1] ? candidate : nearest)[0];
+};
+
+const headingForDirection = (direction: Camera["position"]) =>
+  normalizedHeading(
+    Math.atan2(direction[0], -direction[1]) * 180 / Math.PI,
+  );
+
+const viewPrismKeyboardPreset = (
+  layer: ViewPrismLayer,
+  heading: number,
+): ViewPrismKeyboardPreset => {
+  const step = layer == "top"
+    ? TOP_VIEW_HEADING_STEP
+    : VIEW_PRISM_HEADING_STEP;
+  const snappedHeading = normalizedHeading(Math.round(heading / step) * step);
+  const angled = viewPrismDirectionForHeading(snappedHeading);
+  if (layer == "top") {
+    return {
+      layer,
+      heading: snappedHeading,
+      direction: [0, 0, 1],
+      azimuth: radians(snappedHeading),
+    };
+  }
+  return {
+    layer,
+    heading: snappedHeading,
+    direction: layer == "side"
+      ? [angled[0], angled[1], 0]
+      : angled,
+  };
+};
+
+export const getViewPrismKeyboardPreset = (
+  camera: Camera,
+): ViewPrismKeyboardPreset => {
+  const heading = cameraHeading(camera);
+  const layer = nearestViewPrismLayer(camera, heading);
+  return viewPrismKeyboardPreset(layer, heading);
+};
+
+const directionalHeading = (
+  heading: number,
+  step: number,
+  direction: -1 | 1,
+) => {
+  const position = normalizedHeading(heading) / step;
+  const nearest = Math.round(position);
+  const onPreset = Math.abs(position - nearest)
+    < VIEW_PRISM_HEADING_TOLERANCE;
+  let next = nearest + direction;
+  if (!onPreset) {
+    next = direction == 1 ? Math.ceil(position) : Math.floor(position);
+  }
+  return normalizedHeading(next * step);
+};
+
+const directionalLayer = (
+  source: Camera | ViewPrismKeyboardPreset,
+  direction: -1 | 1,
+): ViewPrismLayer | undefined => {
+  if ("layer" in source) {
+    const next = VIEW_PRISM_LAYERS.indexOf(source.layer) + direction;
+    return VIEW_PRISM_LAYERS[next];
+  }
+  const position = cameraElevation(source) / VIEW_PRISM_HEADING_STEP;
+  const nearest = Math.round(position);
+  const onPreset = Math.abs(position - nearest)
+    < VIEW_PRISM_ELEVATION_TOLERANCE / VIEW_PRISM_HEADING_STEP;
+  let next = nearest + direction;
+  if (!onPreset) {
+    next = direction == 1 ? Math.ceil(position) : Math.floor(position);
+  }
+  return VIEW_PRISM_LAYERS[next];
+};
+
+const topPresetForHeading = (
+  heading: number,
+  viewport?: CameraViewport,
+) => {
+  const direction = nearestCardinalTopViewDirection(
+    [0, 0, 0],
+    [0, 0, 0],
+    radians(heading),
+    viewport,
+  );
+  return viewPrismKeyboardPreset("top", headingForDirection(direction));
+};
+
+export const nextViewPrismKeyboardPreset = (
+  source: Camera | ViewPrismKeyboardPreset,
+  key: ViewPrismKeyboardKey,
+  viewport?: CameraViewport,
+): ViewPrismKeyboardPreset | undefined => {
+  const isPreset = "layer" in source;
+  const current = isPreset
+    ? source
+    : getViewPrismKeyboardPreset(source);
+  const heading = isPreset ? source.heading : cameraHeading(source);
+  if (key == "ArrowLeft" || key == "ArrowRight") {
+    const step = current.layer == "top"
+      ? TOP_VIEW_HEADING_STEP
+      : VIEW_PRISM_HEADING_STEP;
+    return viewPrismKeyboardPreset(
+      current.layer,
+      directionalHeading(heading, step, key == "ArrowRight" ? 1 : -1),
+    );
+  }
+  const nextLayer = directionalLayer(
+    source,
+    key == "ArrowUp" ? 1 : -1,
+  );
+  if (!nextLayer) { return undefined; }
+  if (nextLayer == "top") {
+    return topPresetForHeading(
+      nearestViewPrismHeading(heading),
+      viewport,
+    );
+  }
+  const prismHeading = current.layer == "top"
+    ? nearestCardinalHeading(heading)
+    : nearestViewPrismHeading(heading);
+  return viewPrismKeyboardPreset(
+    nextLayer,
+    prismHeading,
+  );
 };
 
 export const canonicalCamera = (

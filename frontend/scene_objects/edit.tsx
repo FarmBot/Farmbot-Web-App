@@ -16,6 +16,7 @@ import { SceneObjectFormFields, SceneObjectFormValues } from "./form";
 import { ResourceTitle } from "../sequences/panel/editor";
 import {
   copySceneObject, sceneObjectFocusHandler, setUnifiedSceneObjectSize,
+  toggleSceneObjectVisibility,
 } from "./actions";
 
 export const mapStateToProps = (props: Everything): EditSceneObjectProps => {
@@ -83,6 +84,9 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
     props.dispatch(save(sceneObject.uuid));
   };
   const navigate = useNavigate();
+  const navigateToPath = (path: string) => {
+    void navigate(path);
+  };
   const sceneObjectsPath = Path.sceneObjects();
   React.useEffect(() => {
     if (!sceneObject && Path.startsWith(sceneObjectsPath)) {
@@ -102,10 +106,23 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
       panel={Panel.SceneObjects}>
       <div className={"panel-header-icon-group"}>
         {sceneObject &&
+          <button
+            type={"button"}
+            title={sceneObject.body.show ? t("hide") : t("show")}
+            className={[
+              "fa",
+              sceneObject.body.show ? "fa-eye" : "fa-eye-slash",
+              "fb-icon-button",
+              "invert",
+            ].join(" ")}
+            onClick={() =>
+              toggleSceneObjectVisibility(props.dispatch, sceneObject)} />}
+        {sceneObject &&
           <i title={t("copy scene object")}
             className={"fa fa-copy fb-icon-button invert"}
-            onClick={() =>
-              props.dispatch(copySceneObject(sceneObject, navigate))} />}
+            onClick={() => {
+              props.dispatch(copySceneObject(sceneObject, navigateToPath));
+            }} />}
         {sceneObject &&
           <i title={t("delete")}
             className={"fa fa-trash fb-icon-button invert"}
@@ -120,6 +137,7 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
           values={formValues!}
           focusedField={props.focusedSceneObjectField}
           showUnifiedSize={props.unifiedSceneObjectSize == sceneObject.uuid}
+          hideVisibilityControl={true}
           onFocusChange={onFocusChange}
           onUnifiedSizeChange={onUnifiedSizeChange}
           onSwapXAndY={onSwapXAndY}

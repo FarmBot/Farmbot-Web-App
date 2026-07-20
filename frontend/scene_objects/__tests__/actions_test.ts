@@ -5,6 +5,7 @@ import {
   copySceneObject,
   duplicateSceneObjectName,
   availableSceneObjectName,
+  toggleSceneObjectVisibility,
 } from "../actions";
 import { Actions } from "../../constants";
 import { fakeSceneObject } from
@@ -36,6 +37,24 @@ describe("scene object actions", () => {
       type: Actions.SET_UNIFIED_SCENE_OBJECT_SIZE,
       payload: "SceneObject.1.2",
     });
+  });
+
+  it("toggles scene object visibility", () => {
+    const resource = fakeSceneObject({ show: true });
+    const edit = jest.spyOn(crud, "edit")
+      .mockReturnValue("edit action" as never);
+    const save = jest.spyOn(crud, "save")
+      .mockReturnValue("save action" as never);
+    const dispatch = jest.fn();
+
+    toggleSceneObjectVisibility(dispatch, resource);
+
+    expect(edit).toHaveBeenCalledWith(resource, { show: false });
+    expect(save).toHaveBeenCalledWith(resource.uuid);
+    expect(dispatch).toHaveBeenCalledWith("edit action");
+    expect(dispatch).toHaveBeenCalledWith("save action");
+    edit.mockRestore();
+    save.mockRestore();
   });
 
   it("generates an available duplicate name", () => {

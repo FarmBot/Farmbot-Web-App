@@ -34,6 +34,7 @@ import {
   SPACEFLIGHT_CAMERA,
   SPACEFLIGHT_FOV,
   SPACEFLIGHT_VIEWPORT_MARGIN_RATIO,
+  ViewPrismBridge,
   VIEW_PRISM_VIEWPORT_SIZE,
 } from "../garden_model";
 import { clone } from "lodash";
@@ -43,7 +44,7 @@ import {
 } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakePointGroup, fakeSensor, fakeSensorReading,
-  fakeSequence, fakeTool, fakeToolSlot, fakeWeed,
+  fakeSceneObject, fakeSequence, fakeTool, fakeToolSlot, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { Path } from "../../internal_urls";
@@ -96,6 +97,7 @@ import {
   PerspectiveCamera as ThreePerspectiveCamera, Vector3,
 } from "three";
 import { SceneObjects, staticSceneObjects } from "../scene_objects";
+import * as sceneObjectActions from "../../scene_objects/actions";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -876,11 +878,12 @@ describe("<GardenModel />", () => {
     expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
   });
 
-  it("routes telescope time travel through the main app dispatch", () => {
+  it("passes spaceflight state to the telescope", () => {
     const p = fakeProps();
+    p.addPlantProps!.designer.threeDViewMode = "spaceflight";
     const wrapper = createWrapper(p);
-    expect(wrapper.root.findByType(Telescope).props.timeTravelDispatch)
-      .toBe(p.addPlantProps?.dispatch);
+    expect(wrapper.root.findByType(Telescope).props.spaceflight).toEqual(true);
+    expect(wrapper.root.findByType(Telescope).props.stargazing).toEqual(false);
   });
 
   it("hides the telescope throughout the promo", () => {
@@ -2021,8 +2024,13 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     p.peripheralValues = [{ label: "Vacuum", value: true }];
     p.addPlantProps = fakeAddPlantProps();
+    const sceneObject = fakeSceneObject({ id: 42 });
+    p.sceneObjects = [sceneObject];
     const dispatch = jest.fn();
     p.addPlantProps.dispatch = dispatch;
+    const copySceneObjectSpy = jest
+      .spyOn(sceneObjectActions, "copySceneObject")
+      .mockReturnValue("copy scene object" as never);
     const wrapper = createWrapper(p);
     const staticLayers = wrapper.root.findAll(node =>
       typeof node.props.onSelectObject == "function"
@@ -2036,6 +2044,7 @@ describe("<GardenModel />", () => {
       selectionLayer.props.onOpenPanel({ kind: "plant", id: 1 });
       selectionLayer.props.onOpenPanel({ kind: "connectivity", id: 0 });
       selectionLayer.props.onOpenLocationPanel(location);
+      selectionLayer.props.onCopySceneObject(sceneObject);
       selectionLayer.props.onClosePopup();
       staticLayers.props.onHoverObject(true);
       staticLayers.props.onHoverObject(false);
@@ -2049,7 +2058,11 @@ describe("<GardenModel />", () => {
       type: Actions.OPEN_POPUP,
       payload: "connectivity",
     });
+    expect(copySceneObjectSpy).toHaveBeenCalledWith(
+      sceneObject, expect.any(Function));
+    expect(dispatch).toHaveBeenCalledWith("copy scene object");
     expect(mockNavigate).toHaveBeenCalled();
+    copySceneObjectSpy.mockRestore();
   });
 
   it("updates object selections in selection modes", () => {
@@ -2738,6 +2751,21 @@ describe("useGardenCameraController()", () => {
     spaceflightViewportSize: { width: 800, height: 600 },
   });
 
+  const dispatchKeyboardEvent = (
+    key: string,
+    init: KeyboardEventInit = {},
+    target: Window | Element = window,
+  ) => {
+    const event = new KeyboardEvent("keydown", {
+      key,
+      bubbles: true,
+      cancelable: true,
+      ...init,
+    });
+    act(() => target.dispatchEvent(event));
+    return event;
+  };
+
   it("settles stargazing entry, FOV changes, and exit", async () => {
     const props = fakeControllerProps();
     const { result, rerender } = renderHook(
@@ -3033,5 +3061,237 @@ describe("useGardenCameraController()", () => {
     expect(result.current.cameraRequest).toBe(stargazingRequest);
     expect(result.current.cameraRequest?.camera)
       .toBe(props.stargazingCamera);
+  });
+
+  it("navigates prism presets and chains rapid arrow presses", () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      baseCamera: {
+        position: [0, -1000, 1000],
+        target: [0, 0, 0],
+      },
+      viewPrismBridgeRef,
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+
+    const firstEvent = dispatchKeyboardEvent("ArrowRight");
+    expect(firstEvent.defaultPrevented).toBeTruthy();
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeLessThan(0);
+
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeCloseTo(0);
+
+    dispatchKeyboardEvent("ArrowUp");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeCloseTo(0);
+    expect(result.current.cameraRequest?.camera.position[2])
+      .toBeCloseTo(props.cameraFitRadius);
+    expect(result.current.cameraRequest?.fov).toEqual(props.desiredFov);
+  });
+
+  it("rotates TOP view by 90 degrees and consumes layer boundaries", () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      baseCamera: {
+        position: [0, -1, 5000],
+        target: [0, 0, 0],
+      },
+      viewPrismBridgeRef,
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+
+    const initialRequest = result.current.cameraRequest;
+    const boundaryEvent = dispatchKeyboardEvent("ArrowUp");
+    expect(boundaryEvent.defaultPrevented).toBeTruthy();
+    expect(result.current.cameraRequest).toBe(initialRequest);
+
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeCloseTo(0);
+  });
+
+  it("resets chained navigation after a non-keyboard interaction", () => {
+    const controlsCamera = new ThreePerspectiveCamera();
+    controlsCamera.position.set(0, -1000, 1000);
+    const controls = {
+      target: new Vector3(),
+      update: jest.fn(),
+    } as NonNullable<GardenCameraControllerProps["controls"]>;
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      controlsCamera,
+      controls,
+      viewPrismBridgeRef: React.createRef<ViewPrismBridge>(),
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+
+    dispatchKeyboardEvent("ArrowRight");
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeCloseTo(0);
+
+    act(() => result.current.resetViewPrismKeyboardNavigation());
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeLessThan(0);
+
+    act(() => props.viewPrismBridgeRef?.current?.selectDirection?.(
+      [0, -1, 1],
+    ));
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeLessThan(0);
+
+    act(() => result.current.selectStartingCamera(180, true));
+    expect(result.current.cameraRequest?.camera.position[2])
+      .toBeGreaterThan(0);
+    dispatchKeyboardEvent("ArrowRight");
+    expect(result.current.cameraRequest?.camera.position[0])
+      .toBeGreaterThan(0);
+    expect(result.current.cameraRequest?.camera.position[1])
+      .toBeLessThan(0);
+  });
+
+  it("synchronizes the request after a free camera orbit", () => {
+    const controlsCamera = new ThreePerspectiveCamera();
+    controlsCamera.position.set(500, -1000, 1000);
+    const controls = {
+      target: new Vector3(),
+      update: jest.fn(),
+    } as NonNullable<GardenCameraControllerProps["controls"]>;
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      baseCamera: {
+        position: [0, -1000, 1000],
+        target: [0, 0, 0],
+      },
+      controlsCamera,
+      controls,
+      viewPrismBridgeRef: React.createRef<ViewPrismBridge>(),
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+
+    act(() => result.current.synchronizeCameraRequest());
+    expect(result.current.cameraRequest?.camera.position)
+      .toEqual([500, -1000, 1000]);
+
+    dispatchKeyboardEvent("ArrowLeft");
+    expect(result.current.cameraRequest?.camera.position[0]).toBeCloseTo(0);
+    expect(result.current.cameraRequest?.camera.position[1]).toBeLessThan(0);
+  });
+
+  it("ignores arrow keys reserved for focused UI", () => {
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      viewPrismBridgeRef: React.createRef<ViewPrismBridge>(),
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+    const initialRequest = result.current.cameraRequest;
+
+    [
+      ["KeyA", {}],
+      ["ArrowRight", { altKey: true }],
+      ["ArrowRight", { ctrlKey: true }],
+      ["ArrowRight", { metaKey: true }],
+      ["ArrowRight", { shiftKey: true }],
+      ["ArrowRight", { repeat: true }],
+    ].map(([key, init]) => {
+      const event = dispatchKeyboardEvent(
+        key as string,
+        init as KeyboardEventInit,
+      );
+      expect(event.defaultPrevented).toBeFalsy();
+    });
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+      {},
+      input,
+    ).defaultPrevented).toBeFalsy();
+    input.remove();
+
+    const editable = document.createElement("div");
+    editable.setAttribute("contenteditable", "true");
+    document.body.appendChild(editable);
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+      {},
+      editable,
+    ).defaultPrevented).toBeFalsy();
+    editable.remove();
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "command-palette-dialog";
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
+    dialog.remove();
+
+    expect(result.current.cameraRequest).toBe(initialRequest);
+  });
+
+  it("only enables prism keys in the normal product scene", () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      viewPrismBridgeRef,
+    };
+    const { result, rerender, unmount } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({ ...props, promo: true });
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
+
+    rerender({ ...props, viewMode: "stargazing" });
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
+
+    rerender({ ...props, viewMode: "normal" });
+    expect(result.current.cameraPhase).toEqual("transitioning");
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
+
+    act(() => result.current.cameraRequest?.onRest?.());
+    rerender({ ...props, viewPrismBridgeRef: undefined });
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
+
+    unmount();
+    expect(dispatchKeyboardEvent(
+      "ArrowRight",
+    ).defaultPrevented).toBeFalsy();
   });
 });

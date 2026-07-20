@@ -88,6 +88,8 @@ describe("<GardenMapLegend />", () => {
     expect(container.querySelector("button[title='zoom in']"))
       .toBeInTheDocument();
     expect(container.innerHTML).not.toContain("-100");
+    expect(container.querySelector("button[title='show Spread']"))
+      .not.toBeInTheDocument();
     expect((container.textContent || "").toLowerCase()).not.toContain("3d map");
   });
 
@@ -129,6 +131,27 @@ describe("<GardenMapLegend />", () => {
     expect((container.textContent || "").toLowerCase()).toContain("readings");
   });
 
+  it("shows spread in the plants extras menu", () => {
+    render(<GardenMapLegend {...fakeProps()} />);
+
+    fireEvent.click(screen.getAllByLabelText("extras")[0]);
+
+    expect(screen.getByTitle("Spread")).toBeInTheDocument();
+  });
+
+  it("shows grid and bounds in the FarmBot extras menu in 3D", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    p.get3DConfigValue = jest.fn(() => 1);
+    p.set3DConfigValue = jest.fn();
+    render(<GardenMapLegend {...p} />);
+
+    fireEvent.click(screen.getAllByLabelText("extras")[2]);
+
+    expect(screen.getByTitle("Grid")).toBeInTheDocument();
+    expect(screen.getByTitle("Bounds")).toBeInTheDocument();
+  });
+
   it("renders z display", () => {
     const { container } = render(<GardenMapLegend {...fakeProps()} />);
     const beforeHasZDisplay =
@@ -144,6 +167,23 @@ describe("<GardenMapLegend />", () => {
       !!container.querySelector(".z-display") || container.innerHTML.includes("-100");
     const mockToggleOnly = !!container.querySelector(".mock-toggle-button");
     expect(afterHasZDisplay || mockToggleOnly).toBeTruthy();
+  });
+
+  it("hides z info and an open z display in 3D", () => {
+    const p = fakeProps();
+    const { container, rerender } = render(<GardenMapLegend {...p} />);
+    const toggle = container.querySelector("button[title='show Z info']");
+    if (!toggle) { throw new Error("Missing Z info toggle"); }
+    fireEvent.click(toggle);
+    expect(container.querySelector(".z-display")).toBeInTheDocument();
+
+    p.getConfigValue = setting =>
+      setting == BooleanSetting.three_d_garden;
+    rerender(<GardenMapLegend {...p} />);
+
+    expect(container.querySelector("button[title='hide Z info']"))
+      .not.toBeInTheDocument();
+    expect(container.querySelector(".z-display")).not.toBeInTheDocument();
   });
 
   it("renders 3D controls off", () => {
@@ -289,13 +329,31 @@ describe("<PointsSubMenu />", () => {
 
 describe("<PlantsSubMenu />", () => {
   it("shows plants settings", () => {
-    const { container } = render(<PlantsSubMenu {...fakeProps()} />);
-    const toggleBtn = container.querySelector("button");
+    const { container } = render(<PlantsSubMenu
+      {...fakeProps()}
+      showSpread={false}
+      toggle={jest.fn()} />);
+    const toggleBtn =
+      container.querySelector("button[title='Plant animations']");
     if (!toggleBtn) { throw new Error("Missing plants submenu toggle"); }
     expect(["no", "false"]).toContain((toggleBtn.textContent || "").toLowerCase());
     fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.disable_animations, false);
+  });
+
+  it("toggles spread", () => {
+    const toggleAction = jest.fn();
+    const toggle = jest.fn(() => toggleAction);
+    render(<PlantsSubMenu
+      {...fakeProps()}
+      showSpread={true}
+      toggle={toggle} />);
+
+    fireEvent.click(screen.getByTitle("Spread"));
+
+    expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_spread);
+    expect(toggleAction).toHaveBeenCalled();
   });
 });
 
@@ -319,6 +377,31 @@ describe("<FarmbotSubMenu />", () => {
     if (!toggleBtn) { throw new Error("Missing laser toggle"); }
     fireEvent.click(toggleBtn);
     expect(p.set3DConfigValue).toHaveBeenCalledWith("laser", "0");
+  });
+
+  it("toggles the 3D grid and bounds", () => {
+    const p = fakeProps();
+    p.get3DConfigValue = jest.fn(key => key == "grid" ? 1 : 0);
+    p.set3DConfigValue = jest.fn();
+    render(<FarmbotSubMenu {...p} />);
+
+    fireEvent.click(screen.getByTitle("Grid"));
+    fireEvent.click(screen.getByTitle("Bounds"));
+
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("grid", "0");
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("bounds", "1");
+  });
+
+  it("hides 3D controls when the 3D view is disabled", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => false;
+    p.get3DConfigValue = jest.fn(() => 1);
+    p.set3DConfigValue = jest.fn();
+    render(<FarmbotSubMenu {...p} />);
+
+    expect(screen.queryByTitle("LASER")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("Grid")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("Bounds")).not.toBeInTheDocument();
   });
 });
 

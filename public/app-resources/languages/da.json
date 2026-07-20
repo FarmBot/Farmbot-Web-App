@@ -709,7 +709,7 @@
     "FarmBot is offline": "FarmBot is offline",
     "FarmBot Kit": "FarmBot Kit",
     "FarmBot model": "FarmBot model",
-    "FarmBot motor load": "FarmBot motor load",
+    "Motor load": "Motor load",
     "FarmBot Network Requirements": "FarmBot Network Requirements",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})",
     "Farmbot OS": "Farmbot OS",

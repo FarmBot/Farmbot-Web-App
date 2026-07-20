@@ -179,5 +179,6 @@ export const pathForThreeDSelection = (
     case "camera": return Path.photos();
     case "connectivity": return Path.designer();
     case "sceneObject": return Path.sceneObjects(selection.id);
+    case "bed": return Path.settings("3d_garden");
   }
 };

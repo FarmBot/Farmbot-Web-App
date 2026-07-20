@@ -93,13 +93,17 @@ describe("<SceneObjectFormFields />", () => {
   });
 
   it("groups coordinate fields", () => {
-    const { container } = render(<SceneObjectFormFields
-      values={values()}
-      onValueChange={jest.fn()} />);
+    const { container, getAllByText, getByText } =
+      render(<SceneObjectFormFields
+        values={values()}
+        onValueChange={jest.fn()} />);
 
     expect(container.querySelectorAll(".info-box").length).toEqual(3);
-    expect(container).toContainHTML("Center");
-    expect(container).toContainHTML("Size");
+    expect(getByText("Center")).toBeInTheDocument();
+    expect(getByText("Size")).toBeInTheDocument();
+    expect(getAllByText("X")).toHaveLength(2);
+    expect(getAllByText("Y")).toHaveLength(2);
+    expect(getAllByText("Z")).toHaveLength(2);
     const fieldGroups = container.querySelectorAll(".plant-info-field-data");
     expect(fieldGroups[0]).toHaveClass("grid");
     expect(fieldGroups[0]).not.toHaveClass("row");
@@ -155,13 +159,19 @@ describe("<SceneObjectFormFields />", () => {
 
   it("toggles scene object visibility", () => {
     const onValueChange = jest.fn();
-    const { getByLabelText } = render(<SceneObjectFormFields
-      values={{ ...values(), show: true }}
-      onValueChange={onValueChange} />);
+    const { getByLabelText, queryByLabelText, rerender } =
+      render(<SceneObjectFormFields
+        values={{ ...values(), show: true }}
+        onValueChange={onValueChange} />);
 
     fireEvent.click(getByLabelText("Show"));
 
     expect(onValueChange).toHaveBeenCalledWith("show", false);
+    rerender(<SceneObjectFormFields
+      values={{ ...values(), show: true }}
+      hideVisibilityControl={true}
+      onValueChange={onValueChange} />);
+    expect(queryByLabelText("Show")).toBeNull();
   });
 
   it("falls back to a valid color input value", () => {
@@ -204,6 +214,13 @@ describe("<SceneObjectFormFields />", () => {
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("fence");
     expect(fbSelectProps[0].list.map(item => item.value))
       .not.toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
+    fbSelectProps.slice(1).forEach(selectProps => {
+      expect(selectProps.list).toEqual([
+        { label: "Home", value: "home" },
+        { label: "Max", value: "max" },
+        { label: "World", value: "world" },
+      ]);
+    });
     fbSelectProps[0].onChange({ label: "Sphere", value: "sphere" });
     fbSelectProps[1].onChange({ label: "max", value: "max" });
     fbSelectProps[2].onChange({ label: "world", value: "world" });
@@ -321,7 +338,8 @@ describe("<SceneObjectFormFields />", () => {
   it("swaps X and Y sizes", () => {
     const onValueChange = jest.fn();
     const onPreserveAxesChange = jest.fn();
-    const { getByRole } = render(<SceneObjectFormFields
+    const onSwapXAndY = jest.fn();
+    const { getByRole, rerender } = render(<SceneObjectFormFields
       values={{ ...values(), preserve_axes: ["x", "z"] }}
       onPreserveAxesChange={onPreserveAxesChange}
       onValueChange={onValueChange} />);
@@ -331,6 +349,13 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenNthCalledWith(1, "x_size", 200);
     expect(onValueChange).toHaveBeenNthCalledWith(2, "y_size", 100);
     expect(onPreserveAxesChange).toHaveBeenCalledWith(["y", "z"]);
+
+    rerender(<SceneObjectFormFields
+      values={values()}
+      onSwapXAndY={onSwapXAndY}
+      onValueChange={onValueChange} />);
+    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
+    expect(onSwapXAndY).toHaveBeenCalled();
   });
 
   it("collapses center and size sections", () => {
@@ -345,6 +370,10 @@ describe("<SceneObjectFormFields />", () => {
     expect(container.querySelector("input[name='x_center']"))
       .not.toBeInTheDocument();
     expect(container.querySelector("input[name='x_size']"))
+      .toBeInTheDocument();
+    fireEvent.click(centerToggle);
+    expect(centerToggle).toHaveAttribute("aria-expanded", "true");
+    expect(container.querySelector("input[name='x_center']"))
       .toBeInTheDocument();
 
     fireEvent.click(sizeToggle);

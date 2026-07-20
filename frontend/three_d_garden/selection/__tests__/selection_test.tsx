@@ -21,7 +21,8 @@ import {
   uuidForSelection,
 } from "../routes";
 import {
-  ObjectPopupControls, ObjectPopupDeleteButton, ObjectPopupHeaderColor,
+  ObjectPopupControls, ObjectPopupCopyButton, ObjectPopupDeleteButton,
+  ObjectPopupHeaderColor, ObjectPopupVisibilityButton,
   PopupObjectLocationRow, PopupSelectedLocationRow,
 } from "../popup_controls";
 import { LocationPopup, ObjectPopup } from "../popups";
@@ -47,6 +48,7 @@ import {
 } from "../../../__test_support__/test_renderer";
 import { bot as fakeBot } from "../../../__test_support__/fake_state/bot";
 import { createPanelCameraStore } from "../../panel_camera";
+import * as crud from "../../../api/crud";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -56,12 +58,14 @@ const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   locationSelection: undefined,
   selectedLocation: undefined,
   onClosePopup: jest.fn(),
+  onCopySceneObject: jest.fn(),
   onOpenPanel: jest.fn(),
   onOpenLocationPanel: jest.fn(),
   onUpdateLocationSelection: jest.fn(),
   plants: [],
   points: [],
   weeds: [],
+  sceneObjects: [],
   toolSlots: [],
   tools: [],
   sequences: [],
@@ -111,12 +115,23 @@ const resolveProps = (): ResolveSelectedObjectProps => {
   gantrySlot.body.x = 0;
   gantrySlot.body.y = 300;
   gantrySlot.body.z = 40;
+  const sceneObject = fakeSceneObject({
+    id: 7,
+    name: "Workbench",
+    x_center: 100,
+    y_center: 200,
+    z_base: 30,
+    x_size: 400,
+    y_size: 200,
+    z_size: 100,
+  });
   return {
     config: clone(INITIAL),
     configPosition: clone(INITIAL_POSITION),
     plants: [plant],
     points: [point],
     weeds: [weed],
+    sceneObjects: [sceneObject],
     toolSlots: [
       { toolSlot: staticSlot, tool: undefined },
       { toolSlot: gantrySlot, tool },
@@ -200,6 +215,31 @@ const cameraObject = (): ResolvedThreeDObject => ({
   kind: "camera",
   ...objectBase({ kind: "camera", id: 0 }),
 });
+
+const bedObject = (): ResolvedThreeDObject => ({
+  ...objectBase({ kind: "bed", id: 0 }),
+  kind: "bed",
+  name: "Bed",
+});
+
+const sceneObjectObject = (): Extract<
+  ResolvedThreeDObject,
+  { kind: "sceneObject" }
+> => {
+  const sceneObject = fakeSceneObject({
+    id: 7,
+    name: "Workbench",
+    texture: "concrete",
+    color: "#434343",
+    show: true,
+  });
+  return {
+    ...objectBase({ kind: "sceneObject", id: 7 }),
+    kind: "sceneObject",
+    sceneObject,
+    name: sceneObject.body.name,
+  };
+};
 
 const blurable = (wrapper: ReturnType<typeof createRenderer>, name: string) =>
   wrapper.root.findAll(node =>
@@ -306,6 +346,14 @@ describe("selection routes", () => {
     expect(hoverSelectionFromDesigner(
       designer, [], [], [], [], [sceneObject],
     )).toEqual({ kind: "sceneObject", id: 1 });
+    sceneObject.body.id = undefined;
+    expect(hoverSelectionFromDesigner(
+      designer, [], [], [], [], [sceneObject],
+    )).toEqual({
+      kind: "sceneObject",
+      id: 0,
+      uuid: sceneObject.uuid,
+    });
     designer.hoveredSceneObject = undefined;
     slot.body.id = undefined;
     expect(hoverSelectionFromDesigner(
@@ -357,6 +405,8 @@ describe("selection routes", () => {
       .toEqual(Path.designer());
     expect(pathForThreeDSelection({ kind: "sceneObject", id: 5 }))
       .toEqual(Path.sceneObjects(5));
+    expect(pathForThreeDSelection({ kind: "bed", id: 0 }))
+      .toEqual(Path.settings("3d_garden"));
   });
 });
 
@@ -371,6 +421,8 @@ describe("selection resolve", () => {
     expect(resolveSelectedObject(props, { kind: "weed", id: 999 }))
       .toBeUndefined();
     expect(resolveSelectedObject(props, { kind: "slot", id: 999 }))
+      .toBeUndefined();
+    expect(resolveSelectedObject(props, { kind: "sceneObject", id: 999 }))
       .toBeUndefined();
   });
 
@@ -426,6 +478,41 @@ describe("selection resolve", () => {
     const camera = resolveSelectedObject(props, { kind: "camera", id: 0 });
     expect(camera?.worldPosition).toEqual([-1150, 39, 589.5]);
     expect(camera?.locationCoordinate).toEqual({ x: 200, y: 699, z: -200 });
+  });
+
+  it("resolves scene objects", () => {
+    const sceneObject = resolveSelectedObject(
+      resolveProps(),
+      { kind: "sceneObject", id: 7 },
+    );
+
+    expect(sceneObject).toEqual(expect.objectContaining({
+      kind: "sceneObject",
+      name: "Workbench",
+      ringRadius: Math.hypot(400, 200) / 2,
+      locationCoordinate: { x: 100, y: 200, z: 30 },
+    }));
+    expect(sceneObject?.popupPosition[2])
+      .toBeGreaterThan(sceneObject?.worldPosition[2] || 0);
+    expect(objectHasSelectionOverlay(sceneObject)).toBeFalsy();
+  });
+
+  it("resolves the bed", () => {
+    const props = resolveProps();
+    const bed = resolveSelectedObject(props, { kind: "bed", id: 0 });
+
+    expect(bed).toEqual(expect.objectContaining({
+      kind: "bed",
+      name: "Bed",
+      worldPosition: [0, 0, -props.config.bedHeight / 2],
+      popupPosition: [0, 0, 75],
+      locationCoordinate: {
+        x: props.config.bedLengthOuter / 2,
+        y: props.config.bedWidthOuter / 2,
+        z: 0,
+      },
+    }));
+    expect(objectHasSelectionOverlay(bed)).toBeFalsy();
   });
 
   it("resolves selected locations and overlay eligibility", () => {
@@ -537,6 +624,46 @@ describe("selection overlay and popups", () => {
     expect(container.querySelector(".object-popup-location-row")).toBeNull();
   });
 
+  it("renders scene object popup actions", () => {
+    const p = layerProps();
+    const object = sceneObjectObject();
+    const { container } = render(<ObjectPopup
+      {...p}
+      object={object}
+      visible={true} />);
+
+    expect(container.querySelector("h3")).toHaveTextContent("Workbench");
+    expect(container.querySelector(".object-popup-location-row")).toBeNull();
+    fireEvent.click(container.querySelector(".fa-eye") as Element);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    fireEvent.click(container.querySelector(".fa-copy") as Element);
+    fireEvent.click(container.querySelector(".fa-external-link") as Element);
+
+    expect(p.dispatch).toHaveBeenCalled();
+    expect(p.onCopySceneObject).toHaveBeenCalledWith(object.sceneObject);
+    expect(p.onOpenPanel).toHaveBeenCalledWith({
+      kind: "sceneObject",
+      id: 7,
+    });
+    expect(p.onClosePopup).toHaveBeenCalled();
+  });
+
+  it("renders the bed popup", () => {
+    const p = layerProps();
+    p.set3DConfigValue = jest.fn();
+    const { container } = render(<ObjectPopup
+      {...p}
+      object={bedObject()}
+      visible={true} />);
+
+    expect(container.querySelector("h3")).toHaveTextContent("Bed");
+    expect(container.querySelector(".object-popup-bed-table"))
+      .toBeInTheDocument();
+    expect(container.querySelector(".object-popup-location-row")).toBeNull();
+    fireEvent.click(container.querySelector(".fa-external-link") as Element);
+    expect(p.onOpenPanel).toHaveBeenCalledWith({ kind: "bed", id: 0 });
+  });
+
   it("handles location popup actions", () => {
     const p = layerProps();
     const onWheel = jest.fn();
@@ -604,6 +731,28 @@ describe("selection overlay and popups", () => {
     act(() => p.panelCameraStore?.setOpen(false));
 
     expect(container).not.toContainHTML("selected-object-overlay");
+    expect(container).not.toContainHTML("selected-object-x-crosshair");
+  });
+
+  it("doesn't render scene object selection overlays", () => {
+    const p = layerProps();
+    const sceneObject = fakeSceneObject({ id: 7 });
+    p.sceneObjects = [sceneObject];
+    const selection = { kind: "sceneObject" as const, id: 7 };
+    const { container, rerender } = render(
+      <ThreeDObjectSelectionLayer {...p} selection={selection} />,
+    );
+
+    expect(container).not.toContainHTML("selected-object-overlay");
+    expect(container).not.toContainHTML("selected-object-ring");
+    expect(container).not.toContainHTML("selected-object-x-crosshair");
+
+    rerender(<ThreeDObjectSelectionLayer
+      {...p}
+      selection={undefined}
+      panelSelection={selection} />);
+    expect(container).not.toContainHTML("selected-object-overlay");
+    expect(container).not.toContainHTML("selected-object-ring");
     expect(container).not.toContainHTML("selected-object-x-crosshair");
   });
 
@@ -692,6 +841,73 @@ describe("selection popup controls", () => {
       expect(container).not.toBeEmptyDOMElement();
       unmount();
     });
+  });
+
+  it("updates scene object texture and color", () => {
+    const edit = jest.spyOn(crud, "edit")
+      .mockImplementation(() => "edit action" as never);
+    const save = jest.spyOn(crud, "save")
+      .mockImplementation(() => "save action" as never);
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button
+          data-testid={"scene-object-texture"}
+          onClick={() => props.onChange({
+            label: "wood",
+            value: "wood",
+          })} />) as never);
+    const p = layerProps();
+    const object = sceneObjectObject();
+    const controls = render(<ObjectPopupControls
+      {...p}
+      object={object} />);
+
+    fireEvent.click(controls.getByTestId("scene-object-texture"));
+    fireEvent.change(controls.getByLabelText("Color"), {
+      target: { value: "#999999" },
+    });
+
+    expect(edit).toHaveBeenCalledWith(
+      object.sceneObject,
+      { texture: "wood" },
+    );
+    expect(edit).toHaveBeenCalledWith(
+      object.sceneObject,
+      { color: "#999999" },
+    );
+    expect(save).toHaveBeenCalledWith(object.sceneObject.uuid);
+    object.sceneObject.body.shape = "plant";
+    controls.rerender(<ObjectPopupControls
+      {...p}
+      object={object} />);
+    expect(controls.queryByText("Texture")).not.toBeInTheDocument();
+    expect(controls.queryByLabelText("Color")).not.toBeInTheDocument();
+    controls.unmount();
+    fbSelectSpy.mockRestore();
+    edit.mockRestore();
+    save.mockRestore();
+  });
+
+  it("updates bed settings", () => {
+    const p = layerProps();
+    p.set3DConfigValue = jest.fn();
+    const wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      object={bedObject()} />);
+
+    commit(wrapper, "bedWallThickness", "55");
+    commit(wrapper, "bedHeight", "350");
+    commit(wrapper, "bedZOffset", "500");
+    commit(wrapper, "ccSupportSize", "60");
+    commit(wrapper, "legSize", "110");
+
+    expect(p.set3DConfigValue).toHaveBeenCalledWith(
+      "bedWallThickness", "55");
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("bedHeight", "350");
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("bedZOffset", "500");
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("ccSupportSize", "60");
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("legSize", "110");
+    unmountRenderer(wrapper);
   });
 
   it("updates plant values", () => {
@@ -972,6 +1188,7 @@ describe("selection popup controls", () => {
       pointObject(),
       weedObject(),
       slotObject(),
+      sceneObjectObject(),
     ].forEach(object => {
       const p = layerProps();
       const wrapper = createRenderer(<ObjectPopupDeleteButton
@@ -991,12 +1208,47 @@ describe("selection popup controls", () => {
     expect(createRenderer(<ObjectPopupDeleteButton
       {...layerProps()}
       object={cameraObject()} />).toJSON()).toBeNull();
+    expect(createRenderer(<ObjectPopupDeleteButton
+      {...layerProps()}
+      object={bedObject()} />).toJSON()).toBeNull();
+  });
+
+  it("renders scene object visibility and copy buttons", () => {
+    const p = layerProps();
+    const object = sceneObjectObject();
+    const visibility = createRenderer(<ObjectPopupVisibilityButton
+      {...p}
+      object={object} />);
+    visibility.root.findByType("button").props.onClick();
+    expect(p.dispatch).toHaveBeenCalled();
+    unmountRenderer(visibility);
+
+    const copy = createRenderer(<ObjectPopupCopyButton
+      {...p}
+      object={object} />);
+    copy.root.findByType("button").props.onClick();
+    expect(p.onCopySceneObject).toHaveBeenCalledWith(object.sceneObject);
+    unmountRenderer(copy);
+
+    expect(createRenderer(<ObjectPopupVisibilityButton
+      {...p}
+      dispatch={undefined}
+      object={object} />).toJSON()).toBeNull();
+    expect(createRenderer(<ObjectPopupCopyButton
+      {...p}
+      object={plantObject()} />).toJSON()).toBeNull();
   });
 
   it("skips controls for mismatched object kinds without dispatch", () => {
     const p = layerProps();
     p.dispatch = undefined;
-    [plantObject(), pointObject(), weedObject(), slotObject()].forEach(object => {
+    [
+      plantObject(),
+      pointObject(),
+      weedObject(),
+      slotObject(),
+      sceneObjectObject(),
+    ].forEach(object => {
       const wrapper = createRenderer(<ObjectPopupControls
         {...p}
         object={object} />);

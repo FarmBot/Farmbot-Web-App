@@ -88,7 +88,7 @@ import { useHelper, useTexture } from "@react-three/drei";
 import { INITIAL, SurfaceDebugOption } from "../../config";
 import {
   Bed, BedFrameMaterial, BedProps, getAxleGeometry, getBracketGeometry,
-  getDetailedSoilMaterialType, getWheelGeometry,
+  getDetailedSoilMaterialType, getWheelGeometry, selectBed,
 } from "../bed";
 import { clone } from "lodash";
 import { fireEvent, render } from "@testing-library/react";
@@ -188,6 +188,37 @@ describe("<Bed />", () => {
     p.config.extraLegsX = 0;
     const { container } = render(<Bed {...p} />);
     expect(container).toContainHTML("bed-group");
+  });
+
+  it("selects the bed when its frame is clicked", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn(() => true);
+    const { container } = render(<Bed {...p} />);
+    const bed = container.querySelector("[data-extrude-name='bed']");
+    if (!bed) { throw new Error("Bed frame not found"); }
+
+    fireEvent.click(bed);
+
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "bed",
+      id: 0,
+    });
+  });
+
+  it("ignores dragged and unavailable bed selections", () => {
+    const onSelectObject = jest.fn();
+    const stopPropagation = jest.fn();
+    const event = {
+      delta: 2,
+      stopPropagation,
+    };
+
+    selectBed(onSelectObject, event as never);
+    selectBed(undefined, { ...event, delta: 0 } as never);
+    selectBed(jest.fn(() => false), { ...event, delta: 0 } as never);
+
+    expect(onSelectObject).not.toHaveBeenCalled();
+    expect(stopPropagation).not.toHaveBeenCalled();
   });
 
   it("renders object highlight wrappers", () => {

@@ -4,7 +4,8 @@ import {
   ResolvedLocationObject, ResolvedThreeDObject,
 } from "./resolve";
 import {
-  ObjectPopupControls, ObjectPopupDeleteButton, ObjectPopupHeaderColor,
+  ObjectPopupControls, ObjectPopupCopyButton, ObjectPopupDeleteButton,
+  ObjectPopupHeaderColor, ObjectPopupVisibilityButton,
   PopupObjectLocationRow, PopupSelectedLocationRow,
 } from "./popup_controls";
 import { t } from "../../i18next_wrapper";
@@ -64,7 +65,9 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
     headerActions={
       <>
         <ObjectPopupHeaderColor {...props} />
+        <ObjectPopupVisibilityButton {...props} />
         <ObjectPopupDeleteButton {...props} />
+        <ObjectPopupCopyButton {...props} />
         <button
           type={"button"}
           className={"fa fa-external-link fb-icon-button invert"}
@@ -75,7 +78,9 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
     {props.object.kind != "utm"
       && props.object.kind != "electronics"
       && props.object.kind != "camera"
-      && props.object.kind != "connectivity" &&
+      && props.object.kind != "connectivity"
+      && props.object.kind != "sceneObject"
+      && props.object.kind != "bed" &&
       <PopupObjectLocationRow {...props} />}
     {popupContent}
   </ThreeDPopup>;

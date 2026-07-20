@@ -675,7 +675,7 @@
     "FarmBot is offline": "FarmBot è offline",
     "FarmBot Kit": "Kit di FarmBot",
     "FarmBot model": "modello FarmBot",
-    "FarmBot motor load": "Carico motore FarmBot",
+    "Motor load": "Carico motore",
     "FarmBot Network Requirements": "Requisiti di rete di FarmBot",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "Posizione dell'origine (casa) di FarmBot nelle immagini. Se l'origine non corrisponde a un angolo dell'immagine, ruota la fotocamera finché non ne corrisponde uno. (predefinito: {{ defaultOrigin }})",
     "Farmbot OS": "Farmbot OS",

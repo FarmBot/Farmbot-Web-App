@@ -79,6 +79,7 @@ export const ThreeDObjectSelectionLayer = (
     getZ: props.getZ,
     plants: props.plants,
     points: props.points,
+    sceneObjects: props.sceneObjects,
     toolSlots: props.toolSlots,
     weeds: props.weeds,
   }), [
@@ -89,6 +90,7 @@ export const ThreeDObjectSelectionLayer = (
     props.getZ,
     props.plants,
     props.points,
+    props.sceneObjects,
     props.toolSlots,
     props.weeds,
   ]);

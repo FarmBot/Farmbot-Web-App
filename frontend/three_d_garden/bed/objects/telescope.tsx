@@ -19,7 +19,6 @@ import { setStargazingMode } from "../../../farm_designer/stargazing";
 import { getUtilitiesPostWorldPosition } from "./utilities_post_position";
 import { RenderOrder } from "../../constants";
 import { t } from "../../../i18next_wrapper";
-import { Actions } from "../../../constants";
 import {
   ControlHandle, ControlPointerEvent, ThreeDPopup,
 } from "../../controls";
@@ -238,10 +237,12 @@ export const telescopeSpringTargets = (
   enabledRequested: boolean,
   stargazing: boolean,
   sphereZ: number,
+  spaceflight = false,
 ): TelescopeSpringValues => ({
-  groupOffset: enabledRequested ? 0 : -sphereZ,
-  sphereOpacity: stargazing ? 0 : 1,
-  telescopeOpacity: enabledRequested && !stargazing ? 1 : 0,
+  groupOffset: enabledRequested || spaceflight ? 0 : -sphereZ,
+  sphereOpacity: stargazing || spaceflight ? 0 : 1,
+  telescopeOpacity:
+    (enabledRequested || spaceflight) && !stargazing ? 1 : 0,
 });
 
 interface TelescopePopupProps {
@@ -266,12 +267,13 @@ export interface TelescopeProps {
   config: TelescopeConfig;
   sunIsSet: boolean | undefined;
   stargazing: boolean;
+  spaceflight: boolean;
   dispatch: Function | undefined;
-  timeTravelDispatch?: Function | undefined;
 }
 
 export const Telescope = (props: TelescopeProps) => {
-  const { config, dispatch, stargazing, sunIsSet } = props;
+  const { config, dispatch, spaceflight, stargazing, sunIsSet } = props;
+  const celestialView = stargazing || spaceflight;
   const [enabledRequested, setEnabledRequested] = React.useState(false);
   const [popupOpen, setPopupOpen] = React.useState(false);
   // eslint-disable-next-line no-null/no-null
@@ -288,14 +290,15 @@ export const Telescope = (props: TelescopeProps) => {
     enabledRequested,
     stargazing,
     sphereZ,
+    spaceflight,
   );
   const [telescopeMounted, setTelescopeMounted] =
-    React.useState(state == "enabled");
-  const [sphereMounted, setSphereMounted] = React.useState(!stargazing);
+    React.useState(state == "enabled" || spaceflight);
+  const [sphereMounted, setSphereMounted] = React.useState(!celestialView);
   const handleSpringRest = React.useCallback(() => {
-    setTelescopeMounted(state == "enabled");
-    setSphereMounted(!stargazing);
-  }, [stargazing, state]);
+    setTelescopeMounted(state == "enabled" || spaceflight);
+    setSphereMounted(!celestialView);
+  }, [celestialView, spaceflight, state]);
   const [spring] = useSpring(() => ({
     to: targets,
     immediate: !config.animate,
@@ -308,8 +311,11 @@ export const Telescope = (props: TelescopeProps) => {
     targets.sphereOpacity,
     targets.telescopeOpacity,
   ]);
-  const renderTelescope = state == "enabled" || telescopeMounted;
-  const renderSphere = !stargazing || sphereMounted;
+  const showAtCurrentTime = !!sunIsSet || spaceflight;
+  const renderTelescope = showAtCurrentTime
+    && (spaceflight || state == "enabled" || telescopeMounted);
+  const renderSphere = !!sunIsSet
+    && (!celestialView || sphereMounted);
   useFrame((_frameState, delta) => {
     rotateTelescopeSphere(
       sphereRotationRef.current,
@@ -322,17 +328,11 @@ export const Telescope = (props: TelescopeProps) => {
     if (state == "enabled" && sunIsSet) {
       setPopupOpen(false);
       dispatch?.(setStargazingMode(true));
-    } else if (state == "enabled") {
-      setPopupOpen(false);
-      props.timeTravelDispatch?.({
-        type: Actions.OPEN_POPUP,
-        payload: "timeTravel",
-      });
     }
   };
   const toggleTelescope = (event: ControlPointerEvent) => {
     event.stopPropagation();
-    if (stargazing) { return; }
+    if (celestialView) { return; }
     const nextEnabled = state != "enabled";
     setEnabledRequested(nextEnabled);
     setPopupOpen(nextEnabled);
@@ -390,7 +390,7 @@ export const Telescope = (props: TelescopeProps) => {
             </Points>
           </ControlHandle>
         </Group>}
-      {popupOpen && !stargazing &&
+      {popupOpen && !!sunIsSet && !celestialView &&
         <TelescopePopup
           position={[0, 0, telescopePopupZ(sphereZ)]}
           onClose={() => setPopupOpen(false)} />}

@@ -534,7 +534,7 @@
     "FarmBot is not connected.": "FarmBot ist nicht verbunden.",
     "FarmBot is offline": "FarmBot ist Offline",
     "FarmBot model": "FarmBot Modell",
-    "FarmBot motor load": "FarmBot Motorlast",
+    "Motor load": "Motorlast",
     "FarmBot Network Requirements": "FarmBot Netzwerkanforderungen",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "Richtung zum Farmbot Nullpunkt (Home) in den Bildern. Wenn die Richtung zwischen den Ecken ist, muss die Kamera gedreht werden. (Standard: {{ defaultOrigin }})",
     "FarmBot OS action.": "FarmBot OS aktion.",

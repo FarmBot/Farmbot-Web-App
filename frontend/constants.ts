@@ -2254,7 +2254,7 @@ export enum DeviceSetting {
   farmDesigner = `Farm Designer`,
   animations = `Plant animations`,
   trail = `Trail`,
-  mapMissedSteps = `FarmBot motor load`,
+  mapMissedSteps = `Motor load`,
   dynamicMap = `Dynamic map size`,
   mapSize = `Map size`,
   rotateMap = `Rotate map`,

@@ -1,6 +1,6 @@
 import {
   TaggedDevice, TaggedFbosConfig, TaggedGenericPointer, TaggedSensor,
-  TaggedSequence, TaggedTool, TaggedWeedPointer,
+  TaggedSceneObject, TaggedSequence, TaggedTool, TaggedWeedPointer,
   TaggedPeripheral,
 } from "farmbot";
 import { Config, PositionConfig } from "../config";
@@ -26,12 +26,14 @@ export interface ThreeDObjectSelectionLayerProps {
   locationSelection: ThreeDLocationSelection | undefined;
   selectedLocation: ThreeDLocationSelection | undefined;
   onClosePopup(): void;
+  onCopySceneObject(sceneObject: TaggedSceneObject): void;
   onOpenPanel(selection: ThreeDObjectSelection): void;
   onOpenLocationPanel(selection: ThreeDLocationSelection): void;
   onUpdateLocationSelection(selection: ThreeDLocationSelection): void;
   plants: TaggedPlant[];
   points: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
+  sceneObjects: TaggedSceneObject[];
   toolSlots: SlotWithTool[];
   tools: TaggedTool[];
   sequences: TaggedSequence[];

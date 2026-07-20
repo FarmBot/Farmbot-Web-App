@@ -31,6 +31,8 @@ describe("<PlainDesignerSettings />", () => {
       {PlainDesignerSettings(fakeProps(), firmwareConfig)}
     </div>);
     expect(container.textContent?.toLowerCase()).toContain("plant animations");
+    expect(container.textContent).toContain("Motor load");
+    expect(container.textContent).not.toContain("FarmBot motor load");
   });
 
   it("doesn't call callback", () => {

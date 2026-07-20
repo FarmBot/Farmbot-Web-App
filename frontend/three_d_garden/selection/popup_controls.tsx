@@ -1,7 +1,7 @@
 import React from "react";
 import {
   FirmwareHardware, TaggedFbosConfig, TaggedPlantPointer, TaggedSequence,
-  Vector3, Xyz,
+  TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
 import { isUndefined, round } from "lodash";
@@ -48,6 +48,11 @@ import { getFwHardwareValue } from
 import { cameraBtnProps } from
   "../../photos/capture_settings/camera_selection";
 import { ToolActionRow } from "../../tools/tool_action_row";
+import {
+  sceneObjectShowsTextureAndColor, sceneObjectTextureChoices,
+  validSceneObjectColor,
+} from "../../scene_objects/appearance";
+import { toggleSceneObjectVisibility } from "../../scene_objects/actions";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -479,6 +484,104 @@ const ElectronicsPopupControls = (props: PopupControlProps) => {
   </div>;
 };
 
+const updateSceneObject = (
+  dispatch: Function,
+  sceneObject: TaggedSceneObject,
+  update: Partial<TaggedSceneObject["body"]>,
+) => {
+  dispatch(edit(sceneObject, update));
+  dispatch(save(sceneObject.uuid));
+};
+
+const SceneObjectPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "sceneObject" || !props.dispatch) {
+    return undefined;
+  }
+  const dispatch = props.dispatch;
+  const { sceneObject } = props.object;
+  if (!sceneObjectShowsTextureAndColor(sceneObject.body.shape)) {
+    return undefined;
+  }
+  const texture = sceneObjectTextureChoices.find(item =>
+    item.value == sceneObject.body.texture)
+    || sceneObjectTextureChoices[0];
+  return <>
+    <div className={"object-popup-scene-object-row row grid-2-col"}>
+      <label>{t("Texture")}</label>
+      <FBSelect
+        usePortal={false}
+        list={sceneObjectTextureChoices}
+        selectedItem={texture}
+        onChange={item => updateSceneObject(
+          dispatch,
+          sceneObject,
+          { texture: "" + item.value },
+        )} />
+    </div>
+    <div className={"object-popup-scene-object-row row grid-2-col"}>
+      <label htmlFor={"scene-object-popup-color"}>{t("Color")}</label>
+      <input
+        id={"scene-object-popup-color"}
+        name={"color"}
+        type={"color"}
+        value={validSceneObjectColor(sceneObject.body.color)}
+        onChange={event => updateSceneObject(
+          dispatch,
+          sceneObject,
+          { color: event.currentTarget.value },
+        )} />
+    </div>
+  </>;
+};
+
+const BED_POPUP_FIELDS = [
+  {
+    configKey: "bedWallThickness",
+    label: DeviceSetting.bedWallThickness,
+  },
+  {
+    configKey: "bedHeight",
+    label: DeviceSetting.bedHeight,
+  },
+  {
+    configKey: "bedZOffset",
+    label: DeviceSetting.bedZOffset,
+  },
+  {
+    configKey: "ccSupportSize",
+    label: DeviceSetting.ccSupportSize,
+  },
+  {
+    configKey: "legSize",
+    label: DeviceSetting.legSize,
+  },
+] as const;
+
+const BedPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "bed") { return undefined; }
+  return <table className={"object-popup-bed-table"}>
+    <tbody>
+      {BED_POPUP_FIELDS.map(({ configKey, label }) =>
+        <tr key={configKey}>
+          <th>
+            <label htmlFor={`bed-popup-${configKey}`}>{t(label)}</label>
+          </th>
+          <td>
+            <BlurableInput
+              id={`bed-popup-${configKey}`}
+              name={configKey}
+              type={"number"}
+              min={0}
+              disabled={!props.set3DConfigValue}
+              value={props.config[configKey]}
+              onCommit={event => props.set3DConfigValue?.(
+                configKey, event.currentTarget.value)} />
+          </td>
+        </tr>)}
+    </tbody>
+  </table>;
+};
+
 export const ObjectPopupControls = (props: PopupControlProps) => {
   switch (props.object.kind) {
     case "plant": return <PlantPopupControls {...props} />;
@@ -489,6 +592,8 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "electronics": return <ElectronicsPopupControls {...props} />;
     case "camera": return <CameraPopupControls {...props} />;
     case "connectivity": return <></>;
+    case "sceneObject": return <SceneObjectPopupControls {...props} />;
+    case "bed": return <BedPopupControls {...props} />;
   }
 };
 
@@ -508,10 +613,39 @@ export const ObjectPopupHeaderColor = (props: PopupControlProps) => {
     updatePoint={update} />;
 };
 
+export const ObjectPopupVisibilityButton = (props: PopupControlProps) => {
+  if (!props.dispatch || props.object.kind != "sceneObject") {
+    return undefined;
+  }
+  const dispatch = props.dispatch;
+  const { sceneObject } = props.object;
+  return <button
+    type={"button"}
+    className={[
+      "fa",
+      sceneObject.body.show ? "fa-eye" : "fa-eye-slash",
+      "fb-icon-button",
+      "invert",
+    ].join(" ")}
+    title={sceneObject.body.show ? t("hide") : t("show")}
+    onClick={() =>
+      toggleSceneObjectVisibility(dispatch, sceneObject)} />;
+};
+
+export const ObjectPopupCopyButton = (props: PopupControlProps) => {
+  if (props.object.kind != "sceneObject") { return undefined; }
+  const { sceneObject } = props.object;
+  return <button
+    type={"button"}
+    className={"fa fa-copy fb-icon-button invert"}
+    title={t("copy scene object")}
+    onClick={() => props.onCopySceneObject(sceneObject)} />;
+};
+
 type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
-  | { kind: "connectivity" }
+  | { kind: "connectivity" } | { kind: "bed" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -520,6 +654,7 @@ const objectUuid = (object: DeletableResolvedThreeDObject) => {
     case "point": return object.point.uuid;
     case "weed": return object.weed.uuid;
     case "slot": return object.slot.toolSlot.uuid;
+    case "sceneObject": return object.sceneObject.uuid;
   }
 };
 
@@ -529,7 +664,8 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
     || object.kind == "utm"
     || object.kind == "electronics"
     || object.kind == "camera"
-    || object.kind == "connectivity") {
+    || object.kind == "connectivity"
+    || object.kind == "bed") {
     return undefined;
   }
   return <button

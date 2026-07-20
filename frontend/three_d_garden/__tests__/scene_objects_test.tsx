@@ -1,5 +1,7 @@
 import React, { ElementType } from "react";
-import { act, renderHook } from "@testing-library/react";
+import {
+  act, fireEvent, render, renderHook,
+} from "@testing-library/react";
 import { Cone, Cylinder, Sphere } from "@react-three/drei";
 import {
   nextSceneObjectName, sceneObjectCornersFromCenter, sceneObjectPoint,
@@ -567,6 +569,59 @@ describe("scene object placement helpers", () => {
       node.props.args?.join(",") == "0.5,32,32").length)
       .toEqual(2);
     unmountRenderer(wrapper);
+  });
+
+  it("selects scene objects when clicked", () => {
+    const onSelectObject = jest.fn();
+    const sceneObject = fakeSceneObject({ id: 7 });
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      onSelectObject,
+      visible: true,
+    }));
+    const clickable = wrapper.root.findAll(node =>
+      node.props.visible === true
+      && typeof node.props.onClick == "function")[0];
+    const event = {
+      delta: 0,
+      stopPropagation: jest.fn(),
+    };
+
+    act(() => clickable.props.onClick(event));
+    act(() => clickable.props.onClick({ ...event, delta: 2 }));
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(onSelectObject).toHaveBeenCalledTimes(1);
+    expect(onSelectObject).toHaveBeenCalledWith({
+      kind: "sceneObject",
+      id: 7,
+    });
+    unmountRenderer(wrapper);
+  });
+
+  it("does not mount or select individually hidden scene objects", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const onSelectObject = jest.fn();
+    const hiddenObject = fakeSceneObject({ id: 1, show: false });
+    const shownObject = fakeSceneObject({ id: 2, show: true });
+    const { container } = render(<SceneObjects
+      config={{ ...clone(INITIAL), scene: "none" }}
+      activeFocus={""}
+      sceneObjects={[hiddenObject, shownObject]}
+      hoverSelection={{ kind: "sceneObject", id: 1 }}
+      onSelectObject={onSelectObject}
+      visible={true} />);
+
+    const renderedObjects = container.querySelectorAll(
+      "[name='scene-object-opacity']");
+    expect(renderedObjects).toHaveLength(1);
+    fireEvent.click(renderedObjects[0]);
+    expect(onSelectObject).toHaveBeenCalledWith({
+      kind: "sceneObject",
+      id: 2,
+    });
   });
 
   it("renders static scene objects by scene", () => {

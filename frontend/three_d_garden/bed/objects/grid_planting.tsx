@@ -142,6 +142,27 @@ const GRID_START_ARROW_LENGTH = 130;
 const POINT_RADIUS_STEP = 10;
 const POINT_RADIUS_CONTROL_Z = 20;
 const POINT_RADIUS_ARROW_LENGTH = 100;
+const HEX_PACKING_X_RATIO = Math.sqrt(3) / 2;
+
+export const gridForPackingChange = (
+  grid: PlantGridData,
+  nextOffsetPacking: boolean,
+): PlantGridData => ({
+  ...grid,
+  spacingH: quantizeGridInputValue(
+    "spacingH",
+    grid.spacingH * (nextOffsetPacking
+      ? HEX_PACKING_X_RATIO
+      : 1 / HEX_PACKING_X_RATIO),
+  ),
+});
+
+const withPackingSpacing = (
+  grid: PlantGridData,
+  offsetPacking: boolean,
+) => offsetPacking
+  ? gridForPackingChange(grid, true)
+  : grid;
 
 const roundPosition = (
   position: { x: number, y: number },
@@ -278,6 +299,7 @@ interface GridPlantingControlsProps {
   config: Config;
   grid: PlantGridData;
   gridSize: { x: number, y: number };
+  offsetPacking?: boolean;
   getZ(x: number, y: number): number;
   onChange(grid: PlantGridData): void;
   pointRadius?: number;
@@ -464,7 +486,7 @@ export const useGridControlHandlers = (props: GridControlHandlerProps) => {
       drag: activeDrag,
       point,
       gridSize: props.gridSize,
-      offsetPacking: false,
+      offsetPacking: !!props.offsetPacking,
     });
     const previousGrid = lastGrid.current;
     if (previousGrid
@@ -824,11 +846,29 @@ interface GridFinalAdjustmentProps extends GridPlantingControlsProps {
   phase: GridPlantingPhase;
   position: [number, number, number];
   saving: boolean;
+  offsetPacking: boolean;
   pointColor?: ResourceColor;
   onPointColorChange?(color: ResourceColor): void;
+  onOffsetPackingChange(offsetPacking: boolean): void;
   onCancel(): void;
   onSave(): void;
 }
+
+const PackingPatternIcon = (props: { offsetPacking: boolean }) =>
+  <svg
+    className={"grid-packing-icon"}
+    viewBox={"0 0 24 28"}
+    aria-hidden={true}>
+    {range(3).flatMap(xIndex =>
+      range(3).map(yIndex => {
+        const offset = props.offsetPacking && xIndex % 2 == 1 ? 3.5 : 0;
+        return <circle
+          key={`${xIndex}-${yIndex}`}
+          cx={5 + xIndex * 7}
+          cy={5.25 + yIndex * 7 + offset}
+          r={2.25} />;
+      }))}
+  </svg>;
 
 const GridFinalAdjustment = (props: GridFinalAdjustmentProps) => {
   const { onSave, phase } = props;
@@ -849,6 +889,7 @@ const GridFinalAdjustment = (props: GridFinalAdjustmentProps) => {
       config={props.config}
       grid={props.grid}
       gridSize={props.gridSize}
+      offsetPacking={props.offsetPacking}
       getZ={props.getZ}
       onChange={props.onChange}
       pointRadius={props.pointRadius}
@@ -902,6 +943,22 @@ const GridFinalAdjustment = (props: GridFinalAdjustmentProps) => {
                   }} />
               </div>}
           </div>}
+        <button
+          type={"button"}
+          name={"grid-packing-control"}
+          className={"grid-action-button grid-action-packing"}
+          title={props.offsetPacking
+            ? t("Use square packing")
+            : t("Use hexagonal packing")}
+          aria-label={props.offsetPacking
+            ? t("Use square packing")
+            : t("Use hexagonal packing")}
+          aria-pressed={props.offsetPacking}
+          disabled={props.saving}
+          onClick={() =>
+            props.onOffsetPackingChange(!props.offsetPacking)}>
+          <PackingPatternIcon offsetPacking={!props.offsetPacking} />
+        </button>
         <button
           type={"button"}
           name={"grid-save-control"}
@@ -1024,6 +1081,7 @@ export const GridPlanting = React.forwardRef<
   const [hover, setHover] = React.useState(initialStart);
   const [saving, setSaving] = React.useState(false);
   const [adjustingStart, setAdjustingStart] = React.useState(false);
+  const [offsetPacking, setOffsetPacking] = React.useState(false);
   const [pointRadius, setPointRadius] =
     React.useState(DEFAULT_POINT_GRID_RADIUS);
   const pointColor =
@@ -1092,11 +1150,14 @@ export const GridPlanting = React.forwardRef<
       const spacing = pointGrid
         ? DEFAULT_POINT_GRID_SPACING
         : request?.defaultSpacing || 250;
-      const nextGrid = gridAtStart(
-        grid,
-        position,
-        spacing,
-        props.addPlantProps.gridSize,
+      const nextGrid = withPackingSpacing(
+        gridAtStart(
+          grid,
+          position,
+          spacing,
+          props.addPlantProps.gridSize,
+        ),
+        offsetPacking,
       );
       extentBaseGrid.current = nextGrid;
       setGrid(nextGrid);
@@ -1117,6 +1178,7 @@ export const GridPlanting = React.forwardRef<
     grid,
     phase,
     pointGrid,
+    offsetPacking,
     props.addPlantProps.gridSize,
     request?.defaultSpacing,
     saving,
@@ -1130,20 +1192,23 @@ export const GridPlanting = React.forwardRef<
   }, []);
   const validation = React.useMemo(() => validatePlantGrid(
     grid,
-    false,
+    offsetPacking,
     props.addPlantProps.gridSize,
-  ), [grid, props.addPlantProps.gridSize]);
+  ), [grid, offsetPacking, props.addPlantProps.gridSize]);
   const restartAt = React.useCallback((position: { x: number, y: number }) => {
     const nextHover = roundPosition(
       position,
       props.addPlantProps.gridSize,
     );
-    const nextGrid = initialPlantGrid(
-      nextHover,
-      pointGrid
-        ? DEFAULT_POINT_GRID_SPACING
-        : request?.defaultSpacing || 250,
-      { x: 2, y: 2 },
+    const nextGrid = withPackingSpacing(
+      initialPlantGrid(
+        nextHover,
+        pointGrid
+          ? DEFAULT_POINT_GRID_SPACING
+          : request?.defaultSpacing || 250,
+        { x: 2, y: 2 },
+      ),
+      offsetPacking,
     );
     if (hoverFrame.current) {
       cancelAnimationFrame(hoverFrame.current);
@@ -1169,6 +1234,7 @@ export const GridPlanting = React.forwardRef<
   }, [
     props.addPlantProps,
     pointGrid,
+    offsetPacking,
     request?.defaultSpacing,
   ]);
   const restart = React.useCallback(() => {
@@ -1246,6 +1312,22 @@ export const GridPlanting = React.forwardRef<
       payload: { ...drawnPoint, color },
     });
   };
+  const updateOffsetPacking = (nextOffsetPacking: boolean) => {
+    setOffsetPacking(nextOffsetPacking);
+    const nextGrid = gridForPackingChange(grid, nextOffsetPacking);
+    const start = clampGridStart(
+      nextGrid,
+      nextOffsetPacking,
+      gardenStart(nextGrid),
+      props.addPlantProps.gridSize,
+      10,
+    );
+    setGrid({
+      ...nextGrid,
+      startX: start.x,
+      startY: start.y,
+    });
+  };
   const save = () => {
     void saveGridPlanting({
       validation,
@@ -1254,7 +1336,7 @@ export const GridPlanting = React.forwardRef<
       request,
       pointRadius: pointGrid ? pointRadius : undefined,
       pointColor: pointGrid ? pointColor : undefined,
-      offsetPacking: false,
+      offsetPacking,
       addPlantProps: props.addPlantProps,
       setSaving,
       onSuccess: () => {
@@ -1267,16 +1349,19 @@ export const GridPlanting = React.forwardRef<
     });
   };
   const previewGrid = phase == "pick-start"
-    ? gridAtStart(
-      grid,
-      hover,
-      pointGrid ? DEFAULT_POINT_GRID_SPACING : request.defaultSpacing,
-      props.addPlantProps.gridSize,
+    ? withPackingSpacing(
+      gridAtStart(
+        grid,
+        hover,
+        pointGrid ? DEFAULT_POINT_GRID_SPACING : request.defaultSpacing,
+        props.addPlantProps.gridSize,
+      ),
+      offsetPacking,
     )
     : grid;
   const previewValidation = validatePlantGrid(
     previewGrid,
-    false,
+    offsetPacking,
     props.addPlantProps.gridSize,
   );
   const cropSlug = request.cropSlug || "";
@@ -1302,7 +1387,7 @@ export const GridPlanting = React.forwardRef<
     ? initPlantGrid({
       grid: previewGrid,
       gridId: request.gridId,
-      offsetPacking: false,
+      offsetPacking,
       itemName: request.itemName,
       radius: pointRadius,
       z: request.z,
@@ -1449,6 +1534,7 @@ export const GridPlanting = React.forwardRef<
       config={props.config}
       grid={grid}
       gridSize={props.addPlantProps.gridSize}
+      offsetPacking={offsetPacking}
       getZ={props.getZ}
       onChange={setGrid}
       pointRadius={pointGrid ? pointRadius : undefined}
@@ -1457,6 +1543,7 @@ export const GridPlanting = React.forwardRef<
       saving={saving}
       pointColor={pointGrid ? pointColor : undefined}
       onPointColorChange={pointGrid ? updatePointColor : undefined}
+      onOffsetPackingChange={updateOffsetPacking}
       onCancel={restart}
       onSave={save} />
   </Group>;

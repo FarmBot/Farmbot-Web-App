@@ -592,6 +592,7 @@ interface SceneObjectsProps {
   isPromo?: boolean;
   dispatch?: Function;
   hoverSelection?: ThreeDObjectSelection;
+  onSelectObject?(selection: ThreeDObjectSelection): boolean | void;
   activeFocus: string;
   visible: boolean;
   designer?: Pick<DesignerState,
@@ -1703,6 +1704,7 @@ interface SceneObjectOpacityProps {
   show: boolean;
   opacity?: number;
   visible?: boolean;
+  onClick?(e: ThreeEvent<MouseEvent>): void;
   children: React.ReactNode;
 }
 
@@ -1770,7 +1772,11 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
       opacity,
     ));
   }, [opaque, opacity, props.visible]);
-  return <Group ref={group} visible={props.visible ?? true}>
+  return <Group
+    name={"scene-object-opacity"}
+    ref={group}
+    visible={props.visible ?? true}
+    onClick={props.onClick}>
     {props.children}
   </Group>;
 };
@@ -1800,9 +1806,11 @@ export const SceneObjects = (props: SceneObjectsProps) => {
     featuredSceneObjects
     || staticSceneObjects(props.config.scene,
       props.isPromo && !props.config.outdoorObjects));
+  const shownSceneObjects = sceneObjects.filter(
+    sceneObject => sceneObject.body.show);
   return <>
     {/* eslint-disable-next-line complexity */}
-    {sceneObjects.map(sceneObject => {
+    {shownSceneObjects.map(sceneObject => {
       const selected = hasSelectedSceneObject
         && sceneObject.body.id === selectedSceneObjectId;
       const hovered = (hoverAllUserSceneObjects
@@ -1827,6 +1835,18 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         setDragPreview({ uuid: sceneObject.uuid, update });
       const size: [number, number, number] = [x_size, y_size, z_size];
       const endPreview = () => setDragPreview(undefined);
+      const selectSceneObject = (event: ThreeEvent<MouseEvent>) => {
+        if (!props.onSelectObject
+          || !sceneObject.body.id
+          || clickWasDragged(event)) {
+          return;
+        }
+        event.stopPropagation();
+        props.onSelectObject({
+          kind: "sceneObject",
+          id: sceneObject.body.id,
+        });
+      };
       const renderHoverEdges = (
         edgePosition: [number, number, number],
         edgeSize = size,
@@ -1888,6 +1908,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "plant") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1902,6 +1923,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "tray") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1916,6 +1938,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "laptop") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1930,6 +1953,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "desk") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1947,6 +1971,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "solar") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1961,6 +1986,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "tree") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1975,6 +2001,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "fence") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -1989,6 +2016,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "astronaut") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -2003,6 +2031,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "rover") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -2017,6 +2046,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       if (shape === "hab") {
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group position={position}>
@@ -2032,6 +2062,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
         const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
+          onClick={selectSceneObject}
           show={show}
           visible={visible}>
           <Group
@@ -2048,6 +2079,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       const textureUrl = texture === "none" ? undefined : ASSETS.textures[texture];
       return <SceneObjectOpacity key={sceneObject.uuid}
         opacity={opacity}
+        onClick={selectSceneObject}
         show={show}
         visible={visible}>
         <SceneObjectBox

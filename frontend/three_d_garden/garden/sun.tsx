@@ -85,6 +85,7 @@ export interface SunProps {
 export const sceneObjectShadowBounds = (
   sceneObjects: TaggedSceneObject[],
 ) => sceneObjects.reduce((bounds, sceneObject) => {
+  if (!sceneObject.body.show) { return bounds; }
   const body = sceneObject.body;
   const xExtent = Math.abs(body.x_center) + 1000;
   const yExtent = Math.abs(body.y_center) + 1000;
