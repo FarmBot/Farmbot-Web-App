@@ -49,6 +49,7 @@ import {
 import { bot as fakeBot } from "../../../__test_support__/fake_state/bot";
 import { createPanelCameraStore } from "../../panel_camera";
 import * as crud from "../../../api/crud";
+import { Actions } from "../../../constants";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -83,6 +84,7 @@ const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   deviceAccount: fakeDevice(),
   bot: undefined,
   env: {},
+  cameraFollow: false,
   dispatch: jest.fn(),
   gridLoaded: true,
   getZ: jest.fn(() => 5),
@@ -991,12 +993,17 @@ describe("selection popup controls", () => {
       object={cameraObject()} />);
     const takePhotoButton = controls.container
       .querySelector("button[title='Take a photo']");
-    const cameraViewToggle = controls.container
-      .querySelector(".fb-toggle-button");
+    const cameraToggles = controls.container
+      .querySelectorAll(".fb-toggle-button");
     takePhotoButton && fireEvent.click(takePhotoButton);
-    cameraViewToggle && fireEvent.click(cameraViewToggle);
+    fireEvent.click(cameraToggles[0]);
+    fireEvent.click(cameraToggles[1]);
     expect(takePhotoSpy).toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: true,
+    });
     controls.unmount();
 
     p.env = { camera: "NONE" };

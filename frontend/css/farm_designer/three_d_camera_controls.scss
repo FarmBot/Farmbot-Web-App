@@ -5,8 +5,8 @@
   right: 1rem;
   bottom: 1rem;
   z-index: 4;
-  display: grid;
-  justify-items: center;
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -21,7 +21,8 @@
   transition: bottom 0.25s ease;
 }
 
-.three-d-perspective-control {
+.three-d-perspective-control,
+.three-d-camera-follow-control {
   position: relative;
   display: flex;
   align-items: center;
@@ -51,5 +52,21 @@
     background: var(--main-bg);
     box-shadow: var(--box-shadow);
     backdrop-filter: var(--blur);
+  }
+}
+
+.three-d-camera-follow-control {
+  justify-content: center;
+  width: 2.9rem;
+  padding: 0;
+
+  img {
+    width: 1.8rem;
+    height: 1.8rem;
+    filter: brightness(0%) invert(100%);
+  }
+
+  .fa {
+    font-size: 1.5rem;
   }
 }

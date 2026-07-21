@@ -2,7 +2,9 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { buildCommands, validNumberInput } from "../commands";
 import { fakeState } from "../../__test_support__/fake_state";
-import { Actions, Content } from "../../constants";
+import {
+  Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED, Content,
+} from "../../constants";
 import {
   fakeFbosConfig, fakeFirmwareConfig, fakePeripheral, fakePlant, fakePoint,
   fakeCurve, fakePointGroup, fakeRegimen, fakeSavedGarden, fakeSceneObject,
@@ -41,6 +43,7 @@ import { Command } from "../interfaces";
 import { getWebAppConfig } from "../../resources/getters";
 import * as photoActions from "../../photos/actions";
 import * as screenSize from "../../screen_size";
+import * as toast from "../../toast/toast";
 
 const firstInputOptions = (command: Command | undefined) =>
   command?.actions?.[0].input?.fields[0].options || [];
@@ -1526,6 +1529,13 @@ describe("buildCommands()", () => {
       { type: Actions.SET_3D_PERSPECTIVE, payload: false },
       { type: Actions.SET_3D_PERSPECTIVE, payload: true },
     ]);
+
+    const info = jest.spyOn(toast, "info").mockImplementation(jest.fn());
+    state.resources.consumers.farm_designer.threeDCameraFollow = true;
+    command()?.execute();
+    expect(info).toHaveBeenCalledWith(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    info.mockRestore();
   });
 
   it("labels orbit commands by surface and direction", () => {

@@ -161,6 +161,7 @@ import { STARGAZING_DEFAULT_FOV } from
 import { markConstellationFound } from
   "../farm_designer/stargazing_progress";
 import { ControlCursorProvider } from "./controls";
+import { CameraFollowController } from "./camera_follow";
 
 const CAMERA_SCENE_RADIUS = BigDistance.sky + 1000;
 export const PANEL_CAMERA_TRANSITION_MS = 300;
@@ -1651,6 +1652,8 @@ export const CameraFitDebug = (props: CameraFitDebugProps) =>
 
 export interface GardenCameraControllerProps {
   baseCamera: Camera;
+  startingCamera: Camera;
+  cameraFollow: boolean;
   viewMode: ThreeDViewMode;
   stargazingFov: number;
   stargazingCamera: Camera;
@@ -1664,6 +1667,7 @@ export interface GardenCameraControllerProps {
   zoomFactor: number;
   viewportSize: CameraViewport;
   spaceflightViewportSize: CameraViewport;
+  stopCameraFollow?(): void;
   viewPrismBridgeRef?: React.RefObject<ViewPrismBridge | null>;
 }
 
@@ -1744,7 +1748,9 @@ export const useGardenCameraController = (
       fov: props.desiredFov,
     }));
   const camera = cameraRequest?.camera || props.baseCamera;
-  const cameraFov = cameraRequest?.fov ?? props.desiredFov;
+  const cameraFov = props.cameraFollow
+    ? props.desiredFov
+    : cameraRequest?.fov ?? props.desiredFov;
   const cameraSpringCancelRef =
     React.useRef<(() => void) | undefined>(undefined);
   const viewPrismKeyboardPresetRef =
@@ -1775,6 +1781,49 @@ export const useGardenCameraController = (
       fov: current.fov,
     });
   }, [liveCameraState, resetViewPrismKeyboardNavigation]);
+  const previousCameraFollowRef = React.useRef(props.cameraFollow);
+  const followModeReturnStateRef =
+    React.useRef<SmoothCameraState | undefined>(undefined);
+  React.useLayoutEffect(() => {
+    const previousCameraFollow = previousCameraFollowRef.current;
+    previousCameraFollowRef.current = props.cameraFollow;
+    if (previousCameraFollow == props.cameraFollow) { return; }
+    resetViewPrismKeyboardNavigation();
+    cameraSpringCancelRef.current?.();
+    if (props.cameraFollow) { return; }
+    const startingCamera = props.startingCamera;
+    const resetState: SmoothCameraState = {
+      target: startingCamera.target,
+      position: cameraPositionForFov(
+        startingCamera.position,
+        startingCamera.target,
+        NORMAL_CAMERA_FOV,
+        props.desiredFov,
+      ),
+      zoom: 1,
+      fov: props.desiredFov,
+    };
+    if (props.viewMode != "normal") {
+      followModeReturnStateRef.current = resetState;
+      return;
+    }
+    followModeReturnStateRef.current = undefined;
+    // Leaving follow mode intentionally resets the user's starting view.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCameraRequest({
+      camera: {
+        target: resetState.target,
+        position: resetState.position,
+      },
+      fov: resetState.fov,
+    });
+  }, [
+    props.cameraFollow,
+    props.desiredFov,
+    props.startingCamera,
+    props.viewMode,
+    resetViewPrismKeyboardNavigation,
+  ]);
   const previousPromoFitRadiusRef = React.useRef(props.cameraFitRadius);
   React.useEffect(() => {
     if (!props.promo || props.activeFocus
@@ -1800,7 +1849,9 @@ export const useGardenCameraController = (
   React.useEffect(() => {
     const fovChanged = previousDesiredFovRef.current != props.desiredFov;
     previousDesiredFovRef.current = props.desiredFov;
-    if (props.viewMode != "normal" || !fovChanged) { return; }
+    if (props.cameraFollow
+      || props.viewMode != "normal"
+      || !fovChanged) { return; }
     // Projection changes intentionally create a new spring target.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCameraRequest(activeRequest => retargetCameraRequestFov(
@@ -1811,7 +1862,7 @@ export const useGardenCameraController = (
     // Retarget only when the projection setting changes. Including the live
     // camera callback would restart the spring as OrbitControls updates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.desiredFov, props.viewMode]);
+  }, [props.cameraFollow, props.desiredFov, props.viewMode]);
   const previousStargazingFovRef = React.useRef(props.stargazingFov);
   React.useEffect(() => {
     const fovChanged = previousStargazingFovRef.current
@@ -1863,7 +1914,9 @@ export const useGardenCameraController = (
     setCameraPhase("transitioning");
     const current = liveCameraState();
     if (previousMode == "normal") {
-      normalReturnStateRef.current = current;
+      normalReturnStateRef.current =
+        followModeReturnStateRef.current || current;
+      followModeReturnStateRef.current = undefined;
     }
     if (props.viewMode == "spaceflight") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -1935,6 +1988,7 @@ export const useGardenCameraController = (
   ]);
   const selectViewDirection = React.useCallback(
     (direction: ViewPrismDirection) => {
+      if (props.cameraFollow) { return; }
       resetViewPrismKeyboardNavigation();
       const current = liveCameraState();
       setCameraRequest(createViewDirectionRequest(
@@ -1948,6 +2002,7 @@ export const useGardenCameraController = (
     [
       liveCameraState,
       props.cameraFitRadius,
+      props.cameraFollow,
       props.controls,
       props.viewportSize,
       resetViewPrismKeyboardNavigation,
@@ -1973,6 +2028,7 @@ export const useGardenCameraController = (
   React.useEffect(() => {
     if (!props.viewPrismBridgeRef
       || props.promo
+      || props.cameraFollow
       || props.viewMode != "normal"
       || cameraPhase != "normal") {
       return;
@@ -2014,15 +2070,24 @@ export const useGardenCameraController = (
     cameraPhase,
     liveCameraState,
     props.cameraFitRadius,
+    props.cameraFollow,
     props.promo,
     props.viewMode,
     props.viewPrismBridgeRef,
     props.viewportSize,
   ]);
+  const stopCameraFollow = props.stopCameraFollow;
   React.useImperativeHandle(props.viewPrismBridgeRef, () => ({
     camera: props.controlsCamera || undefined,
-    selectDirection: selectViewDirection,
-  }), [props.controlsCamera, selectViewDirection]);
+    selectDirection: props.cameraFollow
+      ? () => stopCameraFollow?.()
+      : selectViewDirection,
+  }), [
+    props.cameraFollow,
+    props.controlsCamera,
+    selectViewDirection,
+    stopCameraFollow,
+  ]);
   React.useEffect(() => {
     resetViewPrismKeyboardNavigation();
     if (!props.activeFocus) { return; }
@@ -2356,6 +2421,7 @@ interface GardenCameraRigProps {
   cameraPhase: GardenCameraPhase;
   spaceflightCamera: Camera;
   viewMode: ThreeDViewMode;
+  cameraFollow: boolean;
   rotate: boolean;
   zoomEnabled: boolean;
   pan: boolean;
@@ -2412,7 +2478,7 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
     camera, zoom, fov, smooth, interpolation, cancelRef, onRest,
     controlsCamera, setControlsCamera, controls, setControls,
     panelCameraView, cameraPhase, spaceflightCamera, viewMode, rotate,
-    zoomEnabled, pan, lightsDebug, onStart, onChange, onEnd,
+    cameraFollow, zoomEnabled, pan, lightsDebug, onStart, onChange, onEnd,
   } = props;
   const requestKey = gardenCameraKey(camera, zoom, fov);
   const targetCamera = React.useMemo<SmoothCameraState>(() => ({
@@ -2479,6 +2545,16 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
     cameraDistance * 1.25,
     transitionMaxDistance,
   );
+  const normalMinCameraDistance = lightsDebug ? 50 : 500;
+  const normalMaxCameraDistance = lightsDebug
+    ? Math.max(BigDistance.devZoom, maxCameraDistance)
+    : maxCameraDistance;
+  const orbitMinCameraDistance = cameraFollow
+    ? 0
+    : normalMinCameraDistance;
+  const orbitMaxCameraDistance = cameraFollow
+    ? Infinity
+    : normalMaxCameraDistance;
   const cameraClippingRange = getCameraClippingRange(
     targetCamera.position,
     {
@@ -2496,22 +2572,24 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
     spaceflightCamera,
   );
   const orbitRotationEnabled =
-    spaceflightCameraSettled && viewMode == "spaceflight"
+    !cameraFollow && (
+      spaceflightCameraSettled && viewMode == "spaceflight"
     || stargazingCameraSettled && viewMode == "stargazing"
-    || normalCameraSettled && viewMode == "normal" && rotate;
+    || normalCameraSettled && viewMode == "normal" && rotate);
 
   return <>
-    <GardenCameraSpring
-      camera={camera}
-      zoom={zoom}
-      fov={fov}
-      smooth={smooth}
-      interpolation={interpolation}
-      cancelRef={cancelRef}
-      onRest={handleCameraRest}
-      controlsCamera={controlsCamera}
-      controls={controls}
-      requestKey={requestKey} />
+    {!cameraFollow &&
+      <GardenCameraSpring
+        camera={camera}
+        zoom={zoom}
+        fov={fov}
+        smooth={smooth}
+        interpolation={interpolation}
+        cancelRef={cancelRef}
+        onRest={handleCameraRest}
+        controlsCamera={controlsCamera}
+        controls={controls}
+        requestKey={requestKey} />}
     <Group>
       <PerspectiveCamera
         ref={setControlsCamera}
@@ -2536,20 +2614,18 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
         maxPolarAngle={orbitPolarLimits.max}
         enableRotate={orbitRotationEnabled}
         enableZoom={normalCameraSettled
-          && viewMode == "normal" && zoomEnabled}
+          && viewMode == "normal" && !cameraFollow && zoomEnabled}
         zoomToCursor={true}
         enablePan={normalCameraSettled
-          && viewMode == "normal" && pan}
+          && viewMode == "normal" && !cameraFollow && pan}
         dampingFactor={0.2}
         onStart={onStart}
         onChange={onChange}
         onEnd={onEnd}
         minZoom={lightsDebug ? 0 : 0.05}
         maxZoom={10}
-        minDistance={lightsDebug ? 50 : 500}
-        maxDistance={lightsDebug
-          ? Math.max(BigDistance.devZoom, maxCameraDistance)
-          : maxCameraDistance} />}
+        minDistance={orbitMinCameraDistance}
+        maxDistance={orbitMaxCameraDistance} />}
   </>;
 };
 
@@ -2624,6 +2700,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   ]);
   const viewMode = sectionDesigner?.threeDViewMode ?? "normal";
   const celestialViewActive = viewMode != "normal";
+  const cameraFollow = !!sectionDesigner?.threeDCameraFollow
+    && !celestialViewActive;
   const spaceflight = viewMode == "spaceflight";
   const stargazingFov = sectionDesigner?.threeDStargazingFov
     ?? STARGAZING_DEFAULT_FOV;
@@ -2794,8 +2872,14 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const desiredFov = config.perspective
     ? NORMAL_CAMERA_FOV
     : NARROW_CAMERA_FOV;
+  const stopCameraFollow = React.useCallback(() => dispatch?.({
+    type: Actions.SET_3D_CAMERA_FOLLOW,
+    payload: false,
+  }), [dispatch]);
   const cameraController = useGardenCameraController({
     baseCamera,
+    startingCamera: defaultCamera,
+    cameraFollow,
     viewMode,
     stargazingFov,
     stargazingCamera,
@@ -2809,6 +2893,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     zoomFactor: config.zoomFactor,
     viewportSize,
     spaceflightViewportSize,
+    stopCameraFollow,
     viewPrismBridgeRef: props.viewPrismBridgeRef,
   });
   const {
@@ -3161,7 +3246,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     cameraUrlSaveTimeoutRef.current = undefined;
   }, []);
   const saveCameraUrl = React.useCallback(() => {
-    if (!sectionOpen && baseConfig.urlCameraPos && controlsCamera && controls) {
+    if (!cameraFollow && !sectionOpen
+      && baseConfig.urlCameraPos && controlsCamera && controls) {
       const state = readSmoothCameraState({
         position: camera.position,
         target: camera.target,
@@ -3172,6 +3258,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     }
   }, [
     baseConfig.urlCameraPos,
+    cameraFollow,
     camera.position,
     camera.target,
     cameraFov,
@@ -3385,6 +3472,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           cameraPhase={cameraPhase}
           spaceflightCamera={spaceflightCamera}
           viewMode={viewMode}
+          cameraFollow={cameraFollow}
           rotate={config.rotate}
           zoomEnabled={config.zoom}
           pan={config.pan}
@@ -3392,6 +3480,18 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           onStart={handleCameraDragStart}
           onChange={handleCameraChange}
           onEnd={handleCameraDragEnd} />
+        <CameraFollowController
+          enabled={cameraFollow}
+          botSpringActive={farmbotVisible}
+          botPositionStore={botPositionStore}
+          config={config}
+          position={configPosition}
+          getZ={getZ}
+          viewport={viewportSize}
+          cameraView={panelCameraView}
+          panelCameraStore={props.panelCameraStore}
+          controlsCamera={controlsCamera}
+          controls={controls} />
         <ThreeDLoadProgressOverlay
           progress={loadProgress}
           complete={detailsReveal} />
@@ -3545,6 +3645,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           deviceAccount={props.deviceAccount}
           bot={props.bot}
           env={props.env || EMPTY_ENV}
+          cameraFollow={cameraFollow}
           set3DConfigValue={props.set3DConfigValue}
           dispatch={dispatch}
           gridLoaded={gridLoaded}
@@ -3603,7 +3704,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           plantIconAtlas={props.plantIconAtlas}
           reveal={detailsReveal}
           onDetailsLoadInRest={markDetailsLoaded} />}
-          {config.cameraSelectionView &&
+          {config.cameraSelectionView && !cameraFollow &&
         <CameraSelectionUI
           config={config}
           dispatch={dispatch}

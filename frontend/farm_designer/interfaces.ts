@@ -206,6 +206,7 @@ export interface DesignerState {
   cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
+  threeDCameraFollow: boolean;
   threeDCameraSelection: boolean;
   threeDExaggeratedZ: boolean;
   threeDPerspective: boolean | undefined;

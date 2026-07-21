@@ -20,6 +20,7 @@ describe("designer reducer", () => {
 
   it("uses 3D section defaults", () => {
     expect(initialState.threeDSectionAxis).toEqual("x");
+    expect(initialState.threeDCameraFollow).toEqual(false);
     expect(initialState.threeDPerspective).toBeUndefined();
     expect(initialState.threeDSectionWidth).toEqual(200);
     expect(initialState.threeDSectionFollowBot).toEqual(true);
@@ -240,11 +241,38 @@ describe("designer reducer", () => {
       payload: false,
     });
     expect(newState.threeDPerspective).toEqual(false);
+
+    newState.threeDCameraFollow = true;
+    const followingState = designer(newState, {
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+    expect(followingState.threeDPerspective).toEqual(true);
+  });
+
+  it("sets 3D camera follow mode", () => {
+    const state = oldState();
+    state.threeDCameraSelection = true;
+    state.threeDPerspective = false;
+    const followingState = designer(state, {
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: true,
+    });
+    expect(followingState.threeDCameraFollow).toEqual(true);
+    expect(followingState.threeDCameraSelection).toEqual(false);
+    expect(followingState.threeDPerspective).toEqual(true);
+
+    const inactiveState = designer(followingState, {
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+    expect(inactiveState.threeDCameraFollow).toEqual(false);
   });
 
   it("changes between explicit 3D view modes", () => {
     const state = oldState();
     state.panelOpen = true;
+    state.threeDCameraFollow = true;
     state.threeDPerspective = true;
     const activeState = designer(state, {
       type: Actions.SET_3D_VIEW_MODE,
@@ -252,6 +280,7 @@ describe("designer reducer", () => {
     });
     expect(activeState.threeDViewMode).toEqual("stargazing");
     expect(activeState.threeDPerspective).toEqual(true);
+    expect(activeState.threeDCameraFollow).toEqual(false);
     expect(activeState.panelOpen).toEqual(false);
 
     const spaceflightState = designer(activeState, {

@@ -10,7 +10,9 @@ import {
 } from "../interfaces";
 import { Command, CommandAction } from "./interfaces";
 import { t } from "../i18next_wrapper";
-import { Actions, Content, DeviceSetting } from "../constants";
+import {
+  Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED, Content, DeviceSetting,
+} from "../constants";
 import {
   Panel, PANEL_SLUG, PANEL_TITLE, getPanelPath, setPanelOpen,
   TAB_ICON,
@@ -58,6 +60,7 @@ import {
 } from "../curves/templates";
 import { scaleData } from "../curves/data_actions";
 import * as crud from "../api/crud";
+import { info } from "../toast/toast";
 import { GetState } from "../redux/interfaces";
 import {
   isBooleanMcuParam,
@@ -2282,10 +2285,14 @@ const cameraCommands = (props: BuildCommandProps): Command[] => {
   const unavailable = is3D ? undefined : t("Enable the 3D Garden setting first.");
   const perspective = props.state.resources.consumers.farm_designer
     .threeDPerspective ?? true;
-  const execute = () => props.dispatch({
-    type: Actions.SET_3D_PERSPECTIVE,
-    payload: !perspective,
-  });
+  const cameraFollow = props.state.resources.consumers.farm_designer
+    .threeDCameraFollow;
+  const execute = () => cameraFollow
+    ? info(t(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
+    : props.dispatch({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: !perspective,
+    });
   const result: Command[] = [{
     id: "camera:perspective-view",
     ...localized("Perspective View"),

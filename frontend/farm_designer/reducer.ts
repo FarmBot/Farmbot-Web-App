@@ -75,6 +75,7 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
+  threeDCameraFollow: false,
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
   threeDPerspective: undefined,
@@ -326,6 +327,14 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDCameraSelection = !s.threeDCameraSelection;
     return s;
   })
+  .add<boolean>(Actions.SET_3D_CAMERA_FOLLOW, (s, { payload }) => {
+    s.threeDCameraFollow = payload;
+    if (payload) {
+      s.threeDCameraSelection = false;
+      s.threeDPerspective = true;
+    }
+    return s;
+  })
   .add<boolean>(Actions.TOGGLE_3D_EXAGGERATED_Z, (s, { payload }) => {
     s.threeDExaggeratedZ = payload;
     return s;
@@ -335,7 +344,7 @@ export const designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<boolean>(Actions.SET_3D_PERSPECTIVE, (s, { payload }) => {
-    s.threeDPerspective = payload;
+    s.threeDPerspective = s.threeDCameraFollow ? true : payload;
     return s;
   })
   .add<DesignerState["threeDViewRequest"]>(
@@ -367,6 +376,7 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<ThreeDViewMode>(Actions.SET_3D_VIEW_MODE, (s, { payload }) => {
     s.threeDViewMode = payload;
     if (payload != "normal") {
+      s.threeDCameraFollow = false;
       s.threeDPerspective = true;
       s.panelOpen = false;
     }

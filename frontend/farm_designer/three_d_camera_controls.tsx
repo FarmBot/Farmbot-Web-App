@@ -1,7 +1,11 @@
 import React from "react";
-import { Actions } from "../constants";
+import {
+  Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED,
+} from "../constants";
 import { t } from "../i18next_wrapper";
 import { DesignerState } from "./interfaces";
+import { Panel, TAB_ICON } from "./panel_header";
+import { info } from "../toast/toast";
 
 export interface ThreeDCameraControlsProps {
   designer: DesignerState;
@@ -16,10 +20,32 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
   const perspective = effectiveThreeDPerspective(
     props.designer,
   );
+  const cameraFollow = props.designer.threeDCameraFollow;
   const label = perspective
     ? t("PERSPECTIVE ON")
     : t("PERSPECTIVE OFF");
   return <div className={"three-d-camera-controls"}>
+    <button
+      type={"button"}
+      className={[
+        "three-d-camera-follow-control",
+        cameraFollow ? "active" : "",
+      ].join(" ")}
+      title={cameraFollow
+        ? t("STOP FOLLOWING CAMERA VIEW")
+        : t("FOLLOW CAMERA VIEW")}
+      aria-label={cameraFollow
+        ? t("STOP FOLLOWING CAMERA VIEW")
+        : t("FOLLOW CAMERA VIEW")}
+      aria-pressed={cameraFollow}
+      onClick={() => props.dispatch({
+        type: Actions.SET_3D_CAMERA_FOLLOW,
+        payload: !cameraFollow,
+      })}>
+      {cameraFollow
+        ? <i className={"fa fa-times"} />
+        : <img src={TAB_ICON[Panel.Photos]} alt={""} />}
+    </button>
     <button
       type={"button"}
       className={[
@@ -28,10 +54,12 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
       ].join(" ")}
       title={label}
       aria-pressed={perspective}
-      onClick={() => props.dispatch({
-        type: Actions.SET_3D_PERSPECTIVE,
-        payload: !perspective,
-      })}>
+      onClick={() => cameraFollow
+        ? info(t(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
+        : props.dispatch({
+          type: Actions.SET_3D_PERSPECTIVE,
+          payload: !perspective,
+        })}>
       {label}
     </button>
   </div>;

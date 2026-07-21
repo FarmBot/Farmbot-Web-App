@@ -13,7 +13,7 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { PlantOptions } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { t } from "../../i18next_wrapper";
-import { Content, DeviceSetting } from "../../constants";
+import { Actions, Content, DeviceSetting } from "../../constants";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
@@ -378,6 +378,18 @@ const CameraPopupControls = (props: PopupControlProps) => {
           BooleanSetting.show_camera_view_area, !props.config.cameraView))}
         disabled={!props.dispatch}
         title={`${t("toggle")} ${t(DeviceSetting.cameraView)}`}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("FOLLOW CAMERA VIEW")}</label>
+      <ToggleButton
+        toggleValue={props.cameraFollow}
+        toggleAction={() => props.dispatch?.({
+          type: Actions.SET_3D_CAMERA_FOLLOW,
+          payload: !props.cameraFollow,
+        })}
+        disabled={!props.dispatch}
+        title={`${t("toggle")} ${t("FOLLOW CAMERA VIEW")}`}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
   </>;

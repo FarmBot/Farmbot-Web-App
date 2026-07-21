@@ -598,7 +598,7 @@ describe("<GardenModel />", () => {
     getCameraFromUrlParamsSpy.mockRestore();
   });
 
-  it("keeps the live camera within orbit limits during FOV changes", () => {
+  it("suspends camera springs while following during FOV changes", () => {
     useStateSpy.mockRestore();
     const actualUseState = jest.requireActual("react")
       .useState as typeof React.useState;
@@ -657,6 +657,7 @@ describe("<GardenModel />", () => {
       cameraPhase: "normal",
       spaceflightCamera: SPACEFLIGHT_CAMERA,
       viewMode: "normal",
+      cameraFollow: false,
       rotate: true,
       zoomEnabled: true,
       pan: true,
@@ -671,14 +672,40 @@ describe("<GardenModel />", () => {
 
     expect(orbitControls().props.maxDistance)
       .toBeCloseTo(narrowDistance * 1.25);
+    const initialSpringStarts = springApi.start.mock.calls.length;
+    const initialSpringHooks = springSpy.mock.calls.length;
+
+    actRenderer(() => wrapper.update(<GardenCameraRig
+      {...rigProps}
+      cameraFollow={true} />));
+    expect(orbitControls().props.enableRotate).toEqual(false);
+    expect(orbitControls().props.enablePan).toEqual(false);
+    expect(orbitControls().props.enableZoom).toEqual(false);
+    expect(orbitControls().props.minDistance).toEqual(0);
+    expect(orbitControls().props.maxDistance).toEqual(Infinity);
+    expect(springApi.stop).toHaveBeenCalled();
 
     actRenderer(() => wrapper.update(<GardenCameraRig
       {...rigProps}
       camera={normalCamera}
-      fov={40} />));
+      fov={40}
+      cameraFollow={true} />));
+
+    expect(springApi.start).toHaveBeenCalledTimes(initialSpringStarts);
+    expect(springSpy).toHaveBeenCalledTimes(initialSpringHooks);
+    expect(orbitControls().props.maxDistance).toEqual(Infinity);
+
+    actRenderer(() => wrapper.update(<GardenCameraRig
+      {...rigProps}
+      camera={normalCamera}
+      fov={40}
+      cameraFollow={false} />));
 
     expect(orbitControls().props.maxDistance)
       .toBeCloseTo(narrowDistance * 1.25);
+    expect(springSpy).toHaveBeenCalledTimes(initialSpringHooks + 1);
+    expect(springApi.start.mock.calls.length)
+      .toBeGreaterThan(initialSpringStarts);
 
     actRenderer(() => springUpdate?.onRest({ cancelled: false }));
 
@@ -1058,6 +1085,21 @@ describe("<GardenModel />", () => {
     });
     actRenderer(() => wrapper.root.findByType(OrbitControls).props.onChange());
     expect(wrapper.root.findAllByType(PerspectiveCamera)).toHaveLength(1);
+  });
+
+  it("exits camera follow from the product view prism", () => {
+    const p = fakeProps();
+    p.addPlantProps!.designer.threeDCameraFollow = true;
+    p.viewPrismBridgeRef = { current: {} };
+    createWrapper(p);
+
+    actRenderer(() =>
+      p.viewPrismBridgeRef?.current?.selectDirection?.([0, 0, 1]));
+
+    expect(p.addPlantProps?.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
   });
 
   it("uses computed theme colors for the product view prism", () => {
@@ -2731,6 +2773,11 @@ describe("useGardenCameraController()", () => {
       position: [1000, -1000, 1000],
       target: [0, 0, 0],
     },
+    startingCamera: {
+      position: [2000, -2000, 2000],
+      target: [0, 0, 0],
+    },
+    cameraFollow: false,
     viewMode: "normal",
     stargazingFov: 20,
     stargazingCamera: {
@@ -3293,5 +3340,78 @@ describe("useGardenCameraController()", () => {
     expect(dispatchKeyboardEvent(
       "ArrowRight",
     ).defaultPrevented).toBeFalsy();
+  });
+
+  it("exits follow from the prism and resets on exit", async () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const stopCameraFollow = jest.fn();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      cameraFollow: true,
+      stopCameraFollow,
+      viewPrismBridgeRef,
+    };
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+    const cancel = jest.fn();
+    result.current.cameraSpringCancelRef.current = cancel;
+    const activeRequest = result.current.cameraRequest;
+
+    expect(viewPrismBridgeRef.current?.selectDirection).toBeDefined();
+    act(() => viewPrismBridgeRef.current?.selectDirection?.([0, 0, 1]));
+    expect(stopCameraFollow).toHaveBeenCalled();
+    expect(dispatchKeyboardEvent("ArrowRight").defaultPrevented)
+      .toBeFalsy();
+    rerender({ ...props, desiredFov: 1 });
+    expect(result.current.cameraFov).toEqual(1);
+    expect(result.current.cameraRequest).toBe(activeRequest);
+
+    rerender({ ...props, cameraFollow: false, desiredFov: 1 });
+    await waitFor(() => {
+      expect(cancel).toHaveBeenCalled();
+      expect(result.current.cameraRequest?.camera.target)
+        .toEqual(props.startingCamera.target);
+      expect(result.current.cameraRequest?.camera.position[2])
+        .toBeGreaterThan(props.startingCamera.position[2]);
+      expect(result.current.cameraRequest?.fov).toEqual(1);
+      expect(viewPrismBridgeRef.current?.selectDirection).toBeDefined();
+    });
+  });
+
+  it("returns to the starting view when stargazing stops follow", async () => {
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      cameraFollow: true,
+    };
+    const { result, rerender } = renderHook(
+      (controllerProps: GardenCameraControllerProps) =>
+        useGardenCameraController(controllerProps),
+      { initialProps: props },
+    );
+
+    rerender({
+      ...props,
+      cameraFollow: false,
+      viewMode: "stargazing",
+    });
+    await waitFor(() => expect(result.current.cameraRequest?.camera)
+      .toBe(props.stargazingCamera));
+    act(() => result.current.cameraRequest?.onRest?.());
+
+    rerender({
+      ...props,
+      cameraFollow: false,
+      viewMode: "normal",
+    });
+    await waitFor(() => {
+      expect(result.current.cameraRequest?.camera.target)
+        .toEqual(props.startingCamera.target);
+      result.current.cameraRequest?.camera.position.forEach((value, index) =>
+        expect(value).toBeCloseTo(props.startingCamera.position[index]));
+      expect(result.current.cameraRequest?.fov).toEqual(props.desiredFov);
+    });
   });
 });
