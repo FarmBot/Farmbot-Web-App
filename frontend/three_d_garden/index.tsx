@@ -10,7 +10,7 @@ import { NORMAL_CAMERA_FOV } from "./camera";
 import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
 import {
-  TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
+  McuParams, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
   TaggedSensorReading,
   TaggedDevice,
@@ -35,6 +35,8 @@ import {
 } from "./panel_camera";
 import { filterSectionIntersections } from "./section";
 import { Actions } from "../constants";
+import type { NativeJogEncoderVisibility } from
+  "./bot/native_jog_controls";
 
 const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
   ...ReactThreeFiber.events(store),
@@ -63,6 +65,8 @@ export interface ThreeDGardenProps {
   noUTM?: boolean;
   deviceAccount?: TaggedDevice;
   bot?: BotState;
+  firmwareSettings?: McuParams;
+  encoderVisibility?: NativeJogEncoderVisibility;
   mountedToolName?: string;
   allPoints?: TaggedPoint[];
   groups?: TaggedPointGroup[];
@@ -153,6 +157,8 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             noUTM={props.noUTM}
             deviceAccount={props.deviceAccount}
             bot={props.bot}
+            firmwareSettings={props.firmwareSettings}
+            encoderVisibility={props.encoderVisibility}
             mountedToolName={props.mountedToolName}
             allPoints={props.allPoints}
             groups={props.groups}

@@ -104,6 +104,7 @@ import { SceneObjects, staticSceneObjects } from "../scene_objects";
 import * as sceneObjectActions from "../../scene_objects/actions";
 import * as pointGroupActions from "../../point_groups/actions";
 import * as crud from "../../api/crud";
+import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -162,6 +163,7 @@ describe("<GardenModel />", () => {
     activeFocus: "",
     setActiveFocus: jest.fn(),
     addPlantProps: fakeAddPlantProps(),
+    firmwareSettings: fakeBot.hardware.mcu_params,
     threeDPlants: [],
   });
 

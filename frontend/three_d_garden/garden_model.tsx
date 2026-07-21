@@ -48,7 +48,7 @@ import {
 import { isUndefined, kebabCase, range, round, uniq } from "lodash";
 import {
   PointType, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
-  TaggedSensor,
+  McuParams, TaggedSensor,
   TaggedSensorReading,
   TaggedDevice,
   TaggedFbosConfig,
@@ -118,6 +118,10 @@ import {
 } from "./selection_types";
 import { setPanelOpen3D } from "./panel_actions";
 import type { PanelCameraStore } from "./panel_camera";
+import type {
+  NativeJogAxisActionsContext, NativeJogEncoderData,
+  NativeJogEncoderVisibility,
+} from "./bot/native_jog_controls";
 import {
   get3DPositionFunc, getGardenPositionFunc, getWorldPositionFunc, threeSpace,
   zero as zeroFunc, zZero as zZeroFunc,
@@ -824,6 +828,8 @@ export interface GardenModelProps {
   noUTM?: boolean;
   deviceAccount?: TaggedDevice;
   bot?: BotState;
+  firmwareSettings?: McuParams;
+  encoderVisibility?: NativeJogEncoderVisibility;
   mountedToolName?: string | undefined;
   startTimeRef?: React.RefObject<number>;
   allPoints?: TaggedPoint[];
@@ -1388,10 +1394,13 @@ const farmbotLayerLoadProgress: ThreeDLoadProgress = {
 
 interface FarmbotLoadInProps {
   activeFocus: string;
+  axisActions: NativeJogAxisActionsContext | undefined;
   config: Config;
   configPosition: PositionConfig;
   detailsReveal: boolean;
   dispatch: Function | undefined;
+  encoderData: NativeJogEncoderData | undefined;
+  encoderVisibility: NativeJogEncoderVisibility | undefined;
   getZ(x: number, y: number): number;
   loadInComplete: boolean;
   mountedToolName: string | undefined;
@@ -1419,7 +1428,10 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
     hideAfterExit={true}
     preserveDepthWrite={true}>
     <LazyBot
+      axisActions={props.axisActions}
       dispatch={props.dispatch}
+      encoderData={props.encoderData}
+      encoderVisibility={props.encoderVisibility}
       config={props.config}
       configPosition={props.configPosition}
       getZ={props.getZ}
@@ -1468,10 +1480,13 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
       markName={"three_d_bot_ready"}>
       <FarmbotLoadIn
         activeFocus={props.activeFocus}
+        axisActions={props.axisActions}
         config={props.config}
         configPosition={props.configPosition}
         detailsReveal={props.detailsReveal}
         dispatch={props.dispatch}
+        encoderData={props.encoderData}
+        encoderVisibility={props.encoderVisibility}
         getZ={props.getZ}
         loadInComplete={loadInComplete}
         mountedToolName={props.mountedToolName}
@@ -3861,10 +3876,28 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           onPointTypeChange={updateAreaSelectionPointType} />
         <OptionalFarmbotLayer
           activeFocus={props.activeFocus}
+          axisActions={!objectSelectionMode && dispatch &&
+            props.firmwareSettings
+            ? {
+              arduinoBusy: !!props.arduinoBusy,
+              botPosition: props.bot?.hardware.location_data.position ||
+                props.currentBotLocation || {
+                x: undefined,
+                y: undefined,
+                z: undefined,
+              },
+              botOnline: !!props.botOnline,
+              dispatch,
+              firmwareSettings: props.firmwareSettings,
+              locked: !!props.bot?.hardware.informational_settings.locked,
+            }
+            : undefined}
           config={config}
           configPosition={props.configPosition}
           detailsReveal={detailsReveal}
           dispatch={objectSelectionMode ? undefined : dispatch}
+          encoderData={props.bot?.hardware.location_data}
+          encoderVisibility={props.encoderVisibility}
           getZ={getZ}
           loadProgress={loadProgress}
           markStep={markLoadStep}

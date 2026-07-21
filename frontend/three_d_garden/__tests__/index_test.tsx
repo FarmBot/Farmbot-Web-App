@@ -11,6 +11,7 @@ import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { createPanelCameraStore } from "../panel_camera";
 import { filterSectionIntersections } from "../section";
 import { Actions } from "../../constants";
+import { bot } from "../../__test_support__/fake_state/bot";
 
 const useThreeImplementation =
   (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
@@ -33,6 +34,7 @@ describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: { ...clone(INITIAL), viewCube: true },
     configPosition: clone(INITIAL_POSITION),
+    firmwareSettings: bot.hardware.mcu_params,
     panelCameraStore: createPanelCameraStore(true),
     addPlantProps: fakeAddPlantProps(),
     mapPoints: [],

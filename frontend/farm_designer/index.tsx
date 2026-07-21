@@ -242,6 +242,7 @@ export class RawFarmDesigner
           gardenSize={this.mapTransformProps.gridSize}
           firmwareHardware={
             this.props.sourceFbosConfig("firmware_hardware").value}
+          firmwareSettings={this.props.botMcuParams}
           gantryHeight={
             this.props.sourceFbosConfig("gantry_height").value as number}
           soilHeight={

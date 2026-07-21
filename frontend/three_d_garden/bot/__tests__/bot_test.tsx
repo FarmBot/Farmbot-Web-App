@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { Trail, useGLTF } from "@react-three/drei";
 import {
   Bot, clearBotShapeCache, FarmbotModelProps,
@@ -33,6 +33,8 @@ import { WaterFlowTextureProvider } from "../components/water_stream";
 import * as demoMovement from "../../../demo/lua_runner/movement";
 import { getBotKinematics } from "../kinematics";
 import { HighlightProvider } from "../../elements";
+import { bot as fakeBot } from
+  "../../../__test_support__/fake_state/bot";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -361,6 +363,94 @@ describe("<Bot />", () => {
       .toBeTruthy();
     expect(container.querySelector("[name='bot-z-axis'] [name='utm-tool']"))
       .toBeTruthy();
+  });
+
+  it("mounts native jog controls in their moving frames", () => {
+    const p = fakeProps();
+    p.configPosition.x = 1038;
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 1038, y: 0, z: 0 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    const { container, queryByRole } = render(<Bot {...p} />);
+    const control = (name: string) =>
+      container.querySelector(`[name='${name}']`);
+
+    expect(control("bot-jog-x-near")?.parentElement)
+      .toHaveAttribute("name", "bot-gantry");
+    expect(control("bot-jog-x-near"))
+      .toHaveAttribute("position", "0,-220,0");
+    expect(control("bot-jog-x-far"))
+      .toHaveAttribute("position", "0,1540,0");
+    expect(control("bot-jog-y")?.parentElement)
+      .toHaveAttribute("name", "bot-cross-slide");
+    expect(control("bot-jog-y"))
+      .toHaveAttribute("position", "0,0,200");
+    expect(control("bot-jog-z")?.parentElement)
+      .toHaveAttribute("name", "bot-z-axis");
+    expect(control("bot-jog-z"))
+      .toHaveAttribute("position", "100,0,300");
+
+    fireEvent.click(control("bot-jog-x-near-positive") as Element);
+    expect(queryByRole("heading", { name: "X: 1,038" }))
+      .toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "a" });
+    expect(queryByRole("heading", { name: "X: 1,038" }))
+      .toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(queryByRole("heading", { name: "X: 1,038" }))
+      .not.toBeInTheDocument();
+
+    fireEvent.click(control("bot-jog-x-near-center") as Element);
+    expect(queryByRole("heading", { name: "X AXIS" }))
+      .toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(queryByRole("heading", { name: "X AXIS" }))
+      .not.toBeInTheDocument();
+  });
+
+  it("doesn't activate native jog arrows without movement access", () => {
+    const p = fakeProps();
+    const { container, queryByRole } = render(<Bot {...p} />);
+
+    fireEvent.click(container.querySelector(
+      "[name='bot-jog-x-near-positive']",
+    ) as Element);
+
+    expect(queryByRole("heading")).not.toBeInTheDocument();
+  });
+
+  it("clears a jog popup when movement becomes unavailable", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    const result = render(<Bot {...p} />);
+    const positive = () => result.container.querySelector(
+      "[name='bot-jog-x-near-positive']",
+    ) as Element;
+    fireEvent.click(positive());
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
+
+    p.axisActions = { ...p.axisActions, locked: true };
+    result.rerender(<Bot {...p} />);
+    act(() => jest.runOnlyPendingTimers());
+    p.axisActions = { ...p.axisActions, locked: false };
+    result.rerender(<Bot {...p} />);
+
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .not.toBeInTheDocument();
   });
 
   it("highlights all clickable FarmBot objects with one UTM label", () => {

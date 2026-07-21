@@ -137,4 +137,24 @@ describe("<BotPositionRows />", () => {
     fireEvent.click(screen.getAllByText("Settings")[0]);
     expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
   });
+
+  it.each([
+    ["busy", { arduinoBusy: true }],
+    ["offline", { botOnline: false }],
+    ["locked", { locked: true }],
+  ])("disables all axis commands while %s", (_status, update) => {
+    const p = fakeProps();
+    Object.assign(p, update);
+    const { container } = render(<BotPositionRows {...p} />);
+    fireEvent.click(container.querySelector(".fa-ellipsis-v") as Element);
+
+    [
+      "MOVE TO HOME",
+      "FIND HOME",
+      "SET HOME",
+      "FIND LENGTH",
+      "SET LENGTH",
+    ].forEach(name =>
+      expect(screen.getAllByRole("button", { name })[0]).toBeDisabled());
+  });
 });

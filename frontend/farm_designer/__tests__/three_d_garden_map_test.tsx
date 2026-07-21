@@ -97,6 +97,7 @@ describe("<ThreeDGardenMap />", () => {
     gardenSize: fakeMapTransformProps().gridSize,
     device: fakeDevice().body,
     firmwareHardware: 0,
+    firmwareSettings: fakeBot.hardware.mcu_params,
     gantryHeight: 0,
     soilHeight: 0,
     designer: fakeDesignerState(),
@@ -211,8 +212,21 @@ describe("<ThreeDGardenMap />", () => {
         y: 200,
       }],
       addPlantProps: expect.any(Object),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      encoderVisibility: { raw: false, scaled: false },
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("passes encoder display settings to the 3D garden", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = setting =>
+      setting == BooleanSetting.raw_encoders
+      || setting == BooleanSetting.scaled_encoders;
+    render(<ThreeDGardenMap {...p} />);
+
+    expect(lastThreeDGardenProps().encoderVisibility)
+      .toEqual({ raw: true, scaled: true });
   });
 
   it("uses the selected calibration card face", () => {

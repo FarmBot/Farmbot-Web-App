@@ -328,26 +328,27 @@
     width: 1rem;
     text-align: center;
   }
-  .axis-actions {
-    width: 10rem;
-    .fb-button {
-      width: 100%;
-      float: none;
-      margin-bottom: 0.25rem;
+}
+
+.axis-actions {
+  width: 10rem;
+  .fb-button {
+    width: 100%;
+    float: none;
+    margin-bottom: 0.25rem;
+  }
+  a {
+    display: block;
+    padding: 1rem 0.5rem 0.75rem 0.5rem;
+    text-decoration: none !important;
+    font-size: 1.2rem;
+    .fa-external-link {
+      margin-top: 0.25rem;
+      float: right;
     }
-    a {
-      display: block;
-      padding: 1rem 0.5rem 0.75rem 0.5rem;
-      text-decoration: none !important;
-      font-size: 1.2rem;
+    &:hover {
       .fa-external-link {
-        margin-top: 0.25rem;
-        float: right;
-      }
-      &:hover {
-        .fa-external-link {
-          font-weight: bold;
-        }
+        font-weight: bold;
       }
     }
   }

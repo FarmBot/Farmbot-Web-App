@@ -207,6 +207,67 @@
     }
 
     .object-popup-content {
+      .native-jog-popup-actions {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.5rem;
+
+        .fb-button {
+          width: 100%;
+          margin: 0;
+          padding: 0.5rem 0.25rem;
+        }
+      }
+
+      .native-jog-position-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.5rem;
+
+        label {
+          grid-column: 1 / -1;
+        }
+
+        input {
+          width: 100%;
+        }
+
+        .fb-button {
+          min-width: 5rem;
+          margin: 0;
+        }
+      }
+
+      .native-jog-encoder-readings {
+        display: grid;
+        gap: 0.5rem;
+
+        .native-jog-encoder-reading {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 1rem;
+          align-items: center;
+
+          output {
+            font-family: monospace;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .native-jog-encoder-settings {
+        display: grid;
+        gap: 0.5rem;
+
+        fieldset {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 1rem;
+          align-items: center;
+          margin: 0;
+        }
+      }
+
       label {
         margin-top: 0;
         font-size: 1rem;

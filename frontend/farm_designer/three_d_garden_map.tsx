@@ -7,7 +7,7 @@ import {
 import { AxisNumberProperty, TaggedPlant } from "./map/interfaces";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import {
-  TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
+  McuParams, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedImage, TaggedLog, TaggedPoint,
   TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedTool,
   TaggedDevice, TaggedFbosConfig, TaggedSequence, TaggedWeedPointer,
@@ -46,6 +46,7 @@ import { envGet, prepopulateEnv } from "../photos/remote_env/selectors";
 export interface ThreeDGardenMapProps {
   gardenSize: AxisNumberProperty;
   firmwareHardware: unknown;
+  firmwareSettings: McuParams;
   gantryHeight: number;
   soilHeight: number;
   negativeZ: boolean;
@@ -239,6 +240,14 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     !props.getWebAppConfigValue(BooleanSetting.disable_animations);
   const cameraView =
     !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
+  const rawEncoderVisible =
+    !!props.getWebAppConfigValue(BooleanSetting.raw_encoders);
+  const scaledEncoderVisible =
+    !!props.getWebAppConfigValue(BooleanSetting.scaled_encoders);
+  const encoderVisibility = React.useMemo(() => ({
+    raw: rawEncoderVisible,
+    scaled: scaledEncoderVisible,
+  }), [rawEncoderVisible, scaledEncoderVisible]);
   const topDownAtStart =
     !!props.getWebAppConfigValue(BooleanSetting.top_down_view);
   const perspective = effectiveThreeDPerspective(
@@ -526,6 +535,8 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     noUTM={props.noUTM}
     deviceAccount={props.deviceAccount}
     bot={props.bot}
+    firmwareSettings={props.firmwareSettings}
+    encoderVisibility={encoderVisibility}
     mountedToolName={props.mountedToolName}
     allPoints={props.allPoints}
     groups={props.groups}
