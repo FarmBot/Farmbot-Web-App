@@ -1,8 +1,11 @@
 require "spec_helper"
 
 describe SceneObjects::Create do
-  let(:integer_fields) do
-    [:x_center, :y_center, :z_base, :x_size, :y_size, :z_size]
+  let(:open_integer_fields) do
+    [:x_center, :y_center, :z_base]
+  end
+  let(:positive_integer_fields) do
+    [:x_size, :y_size, :z_size]
   end
   let(:device) { FactoryBot.create(:device) }
   let(:params) do
@@ -47,10 +50,10 @@ describe SceneObjects::Create do
     end
   end
 
-  it "restricts integers to between -100000 and 100000" do
+  it "restricts integers to between valid range" do
     limit = SceneObjects::Helpers::INTEGER_LIMIT
 
-    integer_fields.each do |field|
+    open_integer_fields.each do |field|
       expect(described_class.run(
         params.merge(field => -limit, name: "#{field} minimum"),
       )).to be_success
@@ -59,6 +62,21 @@ describe SceneObjects::Create do
       )).to be_success
       expect(described_class.run(
         params.merge(field => -limit - 1),
+      )).not_to be_success
+      expect(described_class.run(
+        params.merge(field => limit + 1),
+      )).not_to be_success
+    end
+
+    positive_integer_fields.each do |field|
+      expect(described_class.run(
+        params.merge(field => 0, name: "#{field} minimum"),
+      )).to be_success
+      expect(described_class.run(
+        params.merge(field => limit, name: "#{field} maximum"),
+      )).to be_success
+      expect(described_class.run(
+        params.merge(field => -1),
       )).not_to be_success
       expect(described_class.run(
         params.merge(field => limit + 1),

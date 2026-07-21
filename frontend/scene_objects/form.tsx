@@ -83,6 +83,7 @@ const sizeFields = (): SceneObjectFormField[] => [
   { id: "y_size", label: t("Y"), field: "y_size" },
   { id: "z_size", label: t("Z"), field: "z_size" },
 ];
+const sizeFieldKeys = sizeFields().map(f => f.field);
 
 const combinedSizeField: SceneObjectFormField = {
   id: "size",
@@ -143,7 +144,7 @@ const SceneObjectFieldInput = (props: SceneObjectFieldInputProps) => {
     className={highlighted ? "scene-object-field-highlight" : ""}
     disabled={props.disabled}
     allowEmpty={true}
-    min={-100000}
+    min={sizeFieldKeys.includes(field.field) ? 0 : -100000}
     max={100000}
     onFocus={() => onFocusChange?.(field.id)}
     onBlur={() => onFocusChange?.(undefined)}
