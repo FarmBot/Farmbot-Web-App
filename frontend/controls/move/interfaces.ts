@@ -61,6 +61,7 @@ export interface HomeButtonProps {
 }
 
 export interface StepSizeSelectorProps {
+  choices?: number[];
   dispatch: Function;
   selected: number;
 }

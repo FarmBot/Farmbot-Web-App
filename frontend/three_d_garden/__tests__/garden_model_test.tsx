@@ -9,6 +9,7 @@ import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
   advanceSpaceflightOrbit, cameraAtRadius, cameraRadius,
+  blockCameraFollowEscape,
   cameraFitRadiusForZoom,
   cameraSideStarClipEnabled,
   constellationDiscoveryEnabled,
@@ -38,6 +39,7 @@ import {
   ViewPrismBridge,
   VIEW_PRISM_VIEWPORT_SIZE,
 } from "../garden_model";
+import { createPanelCameraStore } from "../panel_camera";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import {
@@ -1162,16 +1164,62 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findAllByType(PerspectiveCamera)).toHaveLength(1);
   });
 
-  it("exits camera follow from the product view prism", () => {
+  it("prioritizes open UI before exiting camera follow", () => {
+    location.pathname = Path.mock(Path.designer());
+    restoreActualReactState();
     const p = fakeProps();
     p.addPlantProps!.designer.threeDCameraFollow = true;
+    p.panelCameraStore = createPanelCameraStore(true);
     p.viewPrismBridgeRef = { current: {} };
-    createWrapper(p);
+    const wrapper = createWrapper(p);
+    const dispatch = p.addPlantProps!.dispatch as jest.Mock;
+    dispatch.mockClear();
 
     actRenderer(() =>
       p.viewPrismBridgeRef?.current?.selectDirection?.([0, 0, 1]));
 
-    expect(p.addPlantProps?.dispatch).toHaveBeenCalledWith({
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+    dispatch.mockClear();
+
+    const selectionLayer =
+      wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    actRenderer(() => selectionLayer.props.onUpdateLocationSelection({
+      kind: "location",
+      x: 1,
+      y: 2,
+      z: 3,
+    }));
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.locationSelection).toBeDefined();
+    location.pathname = Path.mock(Path.plants("select"));
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.locationSelection).toBeUndefined();
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Escape",
+        cancelable: true,
+      }));
+    });
+    expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
+    expect(dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+    dispatch.mockClear();
+    p.panelCameraStore.setOpen(false);
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Escape",
+        cancelable: true,
+      }));
+    });
+    expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_CAMERA_FOLLOW,
       payload: false,
     });
@@ -2154,6 +2202,7 @@ describe("<GardenModel />", () => {
     gantrySlot.body.y = 250;
     gantrySlot.body.gantry_mounted = true;
     const p = fakeProps();
+    p.config.pan = true;
     p.plants = [plant, outsidePlant];
     p.weeds = [weed];
     p.toolSlots = [{ toolSlot: gantrySlot, tool: undefined }];
@@ -2173,6 +2222,13 @@ describe("<GardenModel />", () => {
     });
     const start = get3DPositionFunc(p.config)({ x: 100, y: 100 });
     const end = get3DPositionFunc(p.config)({ x: 400, y: 400 });
+
+    actRenderer(() => hoverTarget.props.onPointerDown({
+      point: start,
+      shiftKey: false,
+    }));
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection).toBeUndefined();
 
     actRenderer(() => {
       window.dispatchEvent(new KeyboardEvent("keydown", {
@@ -2201,8 +2257,59 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
       .props.selection.phase).toEqual("drawing");
 
+    actRenderer(() => hoverTarget.props.onPointerMove({ point: end }));
+    let overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selectedCount).toEqual(1);
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer).props)
+      .toEqual(expect.objectContaining({
+        selectedObjects: [{ kind: "plant", id: 1 }],
+        selectedObjectsAlwaysVisible: true,
+      }));
+    const staticLayers = wrapper.root.findAll(node =>
+      typeof node.props.onPlantHoverChange == "function")[0];
+    expect(staticLayers.props).toEqual(expect.objectContaining({
+      plantsSelectable: false,
+      pointsSelectable: false,
+      weedsSelectable: false,
+      onSelectObject: undefined,
+      onHoverObject: undefined,
+      onHoverLabel: undefined,
+    }));
+    const farmbotLayer = wrapper.root.findAll(node =>
+      Object.prototype.hasOwnProperty.call(
+        node.props, "onToolSlotHoverObject",
+      ) && node.props.toolSlots === p.toolSlots)[0];
+    expect(farmbotLayer.props).toEqual(expect.objectContaining({
+      onSelectObject: undefined,
+      onHoverObject: undefined,
+      onToolSlotHoverObject: undefined,
+      onHoverLabel: undefined,
+    }));
+    const cameraRig = wrapper.root.findAll(node =>
+      node.props.cameraPhase == "normal"
+      && node.props.zoomEnabled !== undefined)[0];
+    expect(cameraRig.props.pan).toEqual(true);
+    expect(cameraRig.props.rotate).toEqual(true);
+
+    actRenderer(() => hoverTarget.props.onPointerDown({
+      point: end,
+      shiftKey: false,
+    }));
+    actRenderer(() => hoverTarget.props.onPointerUp({
+      point: end,
+      shiftKey: false,
+      delta: 10,
+    }));
+    actRenderer(() => hoverTarget.props.onClick({
+      point: end,
+      shiftKey: false,
+      delta: 10,
+      intersections: [],
+    }));
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection.phase).toEqual("drawing");
+
     actRenderer(() => {
-      hoverTarget.props.onPointerMove({ point: end });
       hoverTarget.props.onClick({
         point: end,
         shiftKey: false,
@@ -2210,7 +2317,7 @@ describe("<GardenModel />", () => {
         stopPropagation: jest.fn(),
       });
     });
-    let overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selection).toEqual({
       phase: "complete",
       pointType: "Plant",
@@ -2263,33 +2370,19 @@ describe("<GardenModel />", () => {
       },
     };
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
-    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     actRenderer(() => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Escape" }),
-      );
-    });
-    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
-    expect(overlay.props.selection.phase).toEqual("drawing");
-    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
-      .props.selectedObjects).toBeUndefined();
-
-    actRenderer(() => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Escape" }),
-      );
-    });
-    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
-    expect(overlay.props.selection.phase).toEqual("firstCorner");
-
-    actRenderer(() => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Escape" }),
-      );
+      const event = new KeyboardEvent("keydown", {
+        key: "Escape",
+        cancelable: true,
+      });
+      window.dispatchEvent(event);
+      expect(event.defaultPrevented).toBeTruthy();
     });
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selection).toBeUndefined();
     expect(overlay.props.shiftPressed).toEqual(false);
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toBeUndefined();
 
     actRenderer(() => {
       window.dispatchEvent(new KeyboardEvent("keydown", {
@@ -2300,31 +2393,42 @@ describe("<GardenModel />", () => {
     });
     expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
       .props.shiftPressed).toEqual(true);
-    actRenderer(() => hoverTarget.props.onClick({
+    const shiftedCameraRig = wrapper.root.findAll(node =>
+      node.props.cameraPhase == "normal"
+      && node.props.zoomEnabled !== undefined)[0];
+    expect(shiftedCameraRig.props.pan).toEqual(false);
+    expect(shiftedCameraRig.props.rotate).toEqual(false);
+    const stopPropagation = jest.fn();
+    actRenderer(() => hoverTarget.props.onPointerDown({
       point: start,
       shiftKey: true,
-      intersections: [],
-      stopPropagation: jest.fn(),
+      stopPropagation,
     }));
-    actRenderer(() => {
-      window.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Escape" }),
-      );
-    });
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
-    expect(overlay.props.selection.phase).toEqual("firstCorner");
-    actRenderer(() => hoverTarget.props.onClick({
+    expect(overlay.props.selection.phase).toEqual("drawing");
+    expect(shiftedCameraRig.props.pan).toEqual(true);
+    expect(shiftedCameraRig.props.rotate).toEqual(true);
+    actRenderer(() => hoverTarget.props.onPointerMove({ point: end }));
+    actRenderer(() => hoverTarget.props.onPointerUp({
       point: end,
-      shiftKey: false,
-      intersections: [],
-      stopPropagation: jest.fn(),
+      shiftKey: true,
+      delta: 10,
+      stopPropagation,
     }));
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selection).toEqual({
-      phase: "drawing",
+      phase: "complete",
       pointType: "Plant",
-      box: { x0: 400, y0: 400, x1: 400, y1: 400 },
+      box: { x0: 100, y0: 100, x1: 400, y1: 400 },
     });
+    actRenderer(() => hoverTarget.props.onClick({
+      point: end,
+      shiftKey: true,
+      delta: 10,
+    }));
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection.phase).toEqual("complete");
+    expect(stopPropagation).toHaveBeenCalledTimes(2);
     actRenderer(() => overlay.props.onClose());
     actRenderer(() => {
       window.dispatchEvent(new Event("blur"));
@@ -2353,6 +2457,21 @@ describe("<GardenModel />", () => {
       navigate: expect.any(Function),
     });
     expect(dispatch).toHaveBeenCalledWith("create group");
+    expect(dispatch).toHaveBeenCalledWith(expect.any(Function));
+    createGroupSpy.mockRestore();
+  });
+
+  it("doesn't create an empty area selection group", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.dispatch = jest.fn();
+    const createGroupSpy = jest.spyOn(pointGroupActions, "createGroup");
+    const { overlay } = renderCompletedAreaSelection(p);
+    expect(overlay().props.selectedCount).toEqual(0);
+
+    actRenderer(() => overlay().props.onCreateGroup());
+
+    expect(createGroupSpy).not.toHaveBeenCalled();
     createGroupSpy.mockRestore();
   });
 
@@ -2666,9 +2785,14 @@ describe("<GardenModel />", () => {
     const keydownHandler = keydownHandlers[keydownHandlers.length - 1] as
       ((event: KeyboardEvent) => void) | undefined;
     expect(keydownHandler).toBeDefined();
-    actRenderer(() => {
-      keydownHandler?.(new KeyboardEvent("keydown", { key: "Escape" }));
+    const event = new KeyboardEvent("keydown", {
+      key: "Escape",
+      cancelable: true,
     });
+    actRenderer(() => {
+      keydownHandler?.(event);
+    });
+    expect(event.defaultPrevented).toBeTruthy();
     addEventSpy.mockRestore();
     expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
       .props.locationSelection).toBeUndefined();
@@ -3145,6 +3269,44 @@ describe("usePanelCameraViewOffset()", () => {
 
     unmount();
     springSpy.mockRestore();
+  });
+});
+
+describe("blockCameraFollowEscape()", () => {
+  const baseProps = () => ({
+    areaSelectionActive: false,
+    popupOpen: false,
+    panelCameraStore: createPanelCameraStore(false),
+    dispatch: jest.fn(),
+  });
+
+  it("blocks camera exit for active scene workflows", () => {
+    const props = baseProps();
+    expect(blockCameraFollowEscape({
+      ...props,
+      areaSelectionActive: true,
+    })).toBeTruthy();
+    expect(blockCameraFollowEscape({
+      ...props,
+      popupOpen: true,
+    })).toBeTruthy();
+    expect(props.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("closes an open panel before allowing camera exit", () => {
+    const props = baseProps();
+    expect(blockCameraFollowEscape(props)).toBeFalsy();
+    expect(blockCameraFollowEscape({
+      ...props,
+      dispatch: undefined,
+    })).toBeFalsy();
+    expect(blockCameraFollowEscape({
+      ...props,
+      panelCameraStore: undefined,
+    })).toBeFalsy();
+    props.panelCameraStore.setOpen(true);
+    expect(blockCameraFollowEscape(props)).toBeTruthy();
+    expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });
 
@@ -3726,9 +3888,11 @@ describe("useGardenCameraController()", () => {
   it("exits follow from the prism and resets on exit", async () => {
     const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
     const stopCameraFollow = jest.fn();
+    const handleCameraFollowEscape = jest.fn(() => true);
     const props: GardenCameraControllerProps = {
       ...fakeControllerProps(),
       cameraFollow: true,
+      handleCameraFollowEscape,
       stopCameraFollow,
       viewPrismBridgeRef,
     };
@@ -3744,6 +3908,30 @@ describe("useGardenCameraController()", () => {
     expect(viewPrismBridgeRef.current?.selectDirection).toBeDefined();
     act(() => viewPrismBridgeRef.current?.selectDirection?.([0, 0, 1]));
     expect(stopCameraFollow).toHaveBeenCalled();
+    expect(dispatchKeyboardEvent("Escape").defaultPrevented).toBeFalsy();
+    expect(handleCameraFollowEscape).toHaveBeenCalled();
+    expect(stopCameraFollow).toHaveBeenCalledTimes(1);
+    handleCameraFollowEscape.mockReturnValue(false);
+    expect(dispatchKeyboardEvent("Escape", { repeat: true }).defaultPrevented)
+      .toBeFalsy();
+    expect(stopCameraFollow).toHaveBeenCalledTimes(1);
+    const preventedEscape = new KeyboardEvent("keydown", {
+      key: "Escape",
+      bubbles: true,
+      cancelable: true,
+    });
+    preventedEscape.preventDefault();
+    act(() => window.dispatchEvent(preventedEscape));
+    expect(stopCameraFollow).toHaveBeenCalledTimes(1);
+    const dialog = document.createElement("dialog");
+    dialog.className = "command-palette-dialog";
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    expect(dispatchKeyboardEvent("Escape").defaultPrevented).toBeFalsy();
+    expect(stopCameraFollow).toHaveBeenCalledTimes(1);
+    dialog.remove();
+    expect(dispatchKeyboardEvent("Escape").defaultPrevented).toBeFalsy();
+    expect(stopCameraFollow).toHaveBeenCalledTimes(2);
     expect(dispatchKeyboardEvent("ArrowRight").defaultPrevented)
       .toBeFalsy();
     rerender({ ...props, desiredFov: 1 });

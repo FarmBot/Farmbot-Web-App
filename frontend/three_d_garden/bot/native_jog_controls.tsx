@@ -1,5 +1,6 @@
 import React from "react";
 import { McuParams, Xyz } from "farmbot";
+import { isNumber } from "lodash";
 import { Config, PositionConfig } from "../config";
 import { Group } from "../components";
 import {
@@ -10,7 +11,8 @@ import {
   BotPositionSnapshotStore, useBotPositionSnapshot,
 } from "./position_spring";
 import {
-  moveAbsolute, moveRelative, moveToHome,
+  findAxisLength, findHome, moveAbsolute, moveRelative, moveToHome,
+  setHome,
 } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
 import { ToggleButton } from "../../ui";
@@ -18,30 +20,40 @@ import { BooleanSetting } from "../../session_keys";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { DeviceSetting } from "../../constants";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
-import { isNumber } from "lodash";
-import { AxisActionsMenu } from "../../controls/move/bot_position_rows";
 import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
-import { sourceFwConfigValue } from "../../settings/source_config_value";
+import { sourceFwConfigValue } from
+  "../../settings/source_config_value";
+import { StepSizeSelector } from "../../controls/move/step_size_selector";
+import { setAxisLength } from "../../controls/move/bot_position_rows";
+import { setMovementStateFromPosition } from
+  "../../connectivity/log_handlers";
+import { setPanelOpen } from "../../farm_designer/panel_header";
+import { Path } from "../../internal_urls";
+import { getBotVersion } from "./bot_versions";
+import { Link } from "../../link";
 
 export const NATIVE_JOG_ARROW_LENGTH = 100;
 const NATIVE_JOG_ARROW_WIDTH = 12;
 const NATIVE_JOG_SPHERE_RADIUS = 20;
 const NATIVE_JOG_COLOR = "gray";
 const NATIVE_JOG_HOVER_COLOR = "lightgray";
-const NATIVE_JOG_BED_OFFSET = 200;
+const NATIVE_JOG_BED_OFFSET = 100;
+const NATIVE_JOG_BEAM_INSET = 100;
+const NATIVE_JOG_BEAM_Z_OFFSET = 200;
+const NATIVE_JOG_RENDER_OPTIONS = {
+  depthTest: true,
+  depthWrite: true,
+  renderOrder: 0,
+} as const;
+export const NATIVE_JOG_STEP_CHOICES = [1, 10, 100, 1000];
 
 export type NativeJogDirection = -1 | 1;
 
-export type NativeJogSelection = {
+export interface NativeJogSelection {
   name: string;
-  type: "axis-actions";
-} | {
-  direction: NativeJogDirection;
-  name: string;
-  type: "jog";
-};
+}
 
 export interface NativeJogEncoderVisibility {
   raw: boolean;
@@ -58,26 +70,40 @@ export interface NativeJogAxisActionsContext {
   dispatch: Function;
   firmwareSettings: McuParams;
   locked: boolean;
+  stepSize?: number;
 }
 
 type NativeJogConfig = Pick<Config,
-  "bedWidthOuter" | "bedYOffset" | "botSizeX" | "botSizeY" |
-  "botSizeZ" | "mirrorX" | "mirrorY" | "negativeZ">;
+  "beamLength" | "bedWidthOuter" | "bedYOffset" | "botSizeX" |
+  "botSizeY" | "columnLength" | "kitVersion" | "mirrorX" |
+  "mirrorY" | "negativeZ">;
 
 export const getNativeJogControlPositions = (
   config: NativeJogConfig,
-) => ({
-  x: [
-    [0, -config.bedYOffset - NATIVE_JOG_BED_OFFSET, 0],
-    [
-      0,
-      config.bedWidthOuter - config.bedYOffset + NATIVE_JOG_BED_OFFSET,
-      0,
-    ],
-  ] as [ControlPoint, ControlPoint],
-  y: [0, 0, 200] as ControlPoint,
-  z: [100, 0, 300] as ControlPoint,
-});
+) => {
+  const beamEndOffset = getBotVersion(config.kitVersion).beamEndOffset;
+  const beamControlX = -39;
+  const beamControlZ = config.columnLength + NATIVE_JOG_BEAM_Z_OFFSET;
+  return {
+    x: [
+      [0, -config.bedYOffset - NATIVE_JOG_BED_OFFSET, 0],
+      [
+        0,
+        config.bedWidthOuter - config.bedYOffset + NATIVE_JOG_BED_OFFSET,
+        0,
+      ],
+    ] as [ControlPoint, ControlPoint],
+    y: [
+      [beamControlX, -beamEndOffset + NATIVE_JOG_BEAM_INSET, beamControlZ],
+      [
+        beamControlX,
+        config.beamLength - beamEndOffset - NATIVE_JOG_BEAM_INSET,
+        beamControlZ,
+      ],
+    ] as [ControlPoint, ControlPoint],
+    z: [60, 0, 300] as ControlPoint,
+  };
+};
 
 const axisPoint = (
   axis: Xyz,
@@ -123,6 +149,9 @@ export const getNativeJogDevicePosition = (
   z: position.z,
 });
 
+export const getNativeJogStepSize = (stepSize: number | undefined) =>
+  NATIVE_JOG_STEP_CHOICES.includes(stepSize || 0) ? stepSize || 100 : 100;
+
 const relativeMove = (axis: Xyz, distance: number) => {
   void moveRelative({
     x: axis == "x" ? distance : 0,
@@ -131,155 +160,164 @@ const relativeMove = (axis: Xyz, distance: number) => {
   });
 };
 
-const axisMaximum = (config: NativeJogConfig, axis: Xyz) => ({
-  x: config.botSizeX,
-  y: config.botSizeY,
-  z: config.botSizeZ,
-})[axis];
-
-interface NativeJogPopupProps {
-  axis: Xyz;
-  config: NativeJogConfig;
-  context: NativeJogAxisActionsContext;
-  direction: NativeJogDirection;
-  encoderData?: NativeJogEncoderData;
-  encoderVisibility?: NativeJogEncoderVisibility;
-  onClose(): void;
-  positionStore: BotPositionSnapshotStore;
-}
-
-const popupPosition = (
-  config: NativeJogConfig,
-  axis: Xyz,
-  direction: NativeJogDirection,
-) => axisPoint(
-  axis,
-  getNativeJogRenderDirection(config, axis, direction) *
-    NATIVE_JOG_ARROW_LENGTH / 2,
-);
-
 const encoderValue = (value: number | undefined) =>
   isNumber(value) ? value.toLocaleString() : "---";
 
-interface NativeJogEncoderSettingsPopupProps {
+interface NativeJogMoreOptionsPopupProps {
   axis: Xyz;
-  config: NativeJogConfig;
-  direction: NativeJogDirection;
-  dispatch: Function;
+  context: NativeJogAxisActionsContext;
   encoderVisibility?: NativeJogEncoderVisibility;
   onClose(): void;
 }
 
-export const NativeJogEncoderSettingsPopup = (
-  props: NativeJogEncoderSettingsPopupProps,
+export const NativeJogMoreOptionsPopup = (
+  props: NativeJogMoreOptionsPopupProps,
 ) => {
+  const movementAvailable = nativeJogMovementAvailable(props.context);
+  const hardwareDisabled =
+    disabledAxisMap(props.context.firmwareSettings)[props.axis];
   const toggle = (setting: "raw_encoders" | "scaled_encoders") =>
-    props.dispatch(toggleWebAppBool(BooleanSetting[setting]));
+    props.context.dispatch(toggleWebAppBool(BooleanSetting[setting]));
+  const sourceFwConfig = sourceFwConfigValue(
+    undefined,
+    props.context.firmwareSettings,
+  );
+  const openSettings = () => {
+    props.context.dispatch(setPanelOpen(true));
+  };
   return <ThreeDPopup
-    name={"bot-jog-encoder-settings-popup"}
-    position={popupPosition(props.config, props.axis, props.direction)}
-    title={t("Encoder display")}
-    onClose={props.onClose}>
-    <div className={"native-jog-encoder-settings"}>
-      <fieldset>
-        <label>{t(DeviceSetting.displayScaledEncoderPosition)}</label>
-        <ToggleButton
-          title={t("toggle scaled encoder display")}
-          toggleAction={() => toggle("scaled_encoders")}
-          toggleValue={!!props.encoderVisibility?.scaled} />
-      </fieldset>
-      <fieldset>
-        <label>{t(DeviceSetting.displayRawEncoderPosition)}</label>
-        <ToggleButton
-          title={t("toggle raw encoder display")}
-          toggleAction={() => toggle("raw_encoders")}
-          toggleValue={!!props.encoderVisibility?.raw} />
-      </fieldset>
-    </div>
-  </ThreeDPopup>;
-};
-
-interface NativeJogAxisActionsPopupProps {
-  axis: Xyz;
-  context: NativeJogAxisActionsContext;
-  onClose(): void;
-}
-
-export const NativeJogAxisActionsPopup = (
-  props: NativeJogAxisActionsPopupProps,
-) => {
-  return <ThreeDPopup
-    name={`bot-jog-${props.axis}-axis-actions-popup`}
+    name={"bot-jog-more-options-popup"}
     position={[0, 0, 0]}
-    title={t("{{axis}} AXIS", { axis: props.axis.toUpperCase() })}
+    title={t("More options")}
     onClose={props.onClose}>
-    <AxisActionsMenu
-      axis={props.axis}
-      arduinoBusy={props.context.arduinoBusy}
-      locked={props.context.locked}
-      hardwareDisabled={
-        disabledAxisMap(props.context.firmwareSettings)[props.axis]}
-      botOnline={props.context.botOnline}
-      dispatch={props.context.dispatch}
-      botPosition={props.context.botPosition}
-      sourceFwConfig={sourceFwConfigValue(
-        undefined,
-        props.context.firmwareSettings,
-      )} />
+    <div className={"native-jog-more-options"}>
+      <div className={"native-jog-encoder-settings"}>
+        <fieldset>
+          <label>{t(DeviceSetting.displayScaledEncoderPosition)}</label>
+          <ToggleButton
+            title={t("toggle scaled encoder display")}
+            toggleAction={() => toggle("scaled_encoders")}
+            toggleValue={!!props.encoderVisibility?.scaled} />
+        </fieldset>
+        <fieldset>
+          <label>{t(DeviceSetting.displayRawEncoderPosition)}</label>
+          <ToggleButton
+            title={t("toggle raw encoder display")}
+            toggleAction={() => toggle("raw_encoders")}
+            toggleValue={!!props.encoderVisibility?.raw} />
+        </fieldset>
+      </div>
+      <div className={"native-jog-more-option-actions"}>
+        <button
+          type={"button"}
+          className={"fb-button gray"}
+          disabled={!movementAvailable}
+          onClick={() => void setHome(props.axis)}>
+          {t("SET HOME")}
+        </button>
+        <button
+          type={"button"}
+          className={"fb-button gray"}
+          disabled={!movementAvailable || hardwareDisabled}
+          onClick={() => void findAxisLength(props.axis)}>
+          {t("FIND LENGTH")}
+        </button>
+        <button
+          type={"button"}
+          className={"fb-button gray"}
+          disabled={!movementAvailable}
+          onClick={setAxisLength({
+            axis: props.axis,
+            dispatch: props.context.dispatch,
+            botPosition: props.context.botPosition,
+            sourceFwConfig,
+          })}>
+          {t("SET LENGTH")}
+        </button>
+      </div>
+      <Link to={Path.settings("axes")} onClick={openSettings}>
+        <i className={"fa fa-external-link"} />
+        {t("Settings")}
+      </Link>
+    </div>
   </ThreeDPopup>;
 };
 
 interface NativeJogActionButtonsProps {
   axis: Xyz;
-  commandPosition: PositionConfig | undefined;
-  config: NativeJogConfig;
-  direction: NativeJogDirection;
+  context: NativeJogAxisActionsContext;
   movementAvailable: boolean;
+  stepSize: number;
 }
 
 const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
-  const jogDistances = props.direction == 1
-    ? [1, 10, 100, 1000]
-    : [-1, -10, -100, -1000];
+  const axisLabel = props.axis.toUpperCase();
+  const negativeArrow = props.axis == "z" ? "down" : "left";
+  const positiveArrow = props.axis == "z" ? "up" : "right";
+  const hardwareDisabled =
+    disabledAxisMap(props.context.firmwareSettings)[props.axis];
   const moveHome = () => {
     if (props.movementAvailable) { void moveToHome(props.axis); }
   };
-  const jog = (distance: number) => {
-    if (props.movementAvailable) { relativeMove(props.axis, distance); }
+  const findAxisHome = () => {
+    if (!props.movementAvailable || hardwareDisabled) { return; }
+    void findHome(props.axis);
+    props.context.dispatch(setMovementStateFromPosition());
   };
-  const moveToMax = () => {
-    if (!props.movementAvailable || !props.commandPosition) { return; }
-    void moveAbsolute({
-      ...props.commandPosition,
-      [props.axis]: axisMaximum(props.config, props.axis),
-    });
+  const jog = (direction: NativeJogDirection) => {
+    if (props.movementAvailable) {
+      relativeMove(props.axis, direction * props.stepSize);
+    }
   };
   return <div className={"native-jog-popup-actions"}>
-    {props.direction == -1 &&
-      <button
-        type={"button"}
-        className={"fb-button gray"}
-        disabled={!props.movementAvailable}
-        onClick={moveHome}>
-        {t("Home")}
-      </button>}
-    {jogDistances.map(distance =>
-      <button
-        type={"button"}
-        className={"fb-button gray"}
-        disabled={!props.movementAvailable}
-        key={distance}
-        onClick={() => jog(distance)}>
-        {distance > 0 ? `+${distance}` : distance}
-      </button>)}
-    {props.direction == 1 &&
-      <button
-        type={"button"}
-        className={"fb-button gray"}
-        disabled={!props.movementAvailable || !props.commandPosition}
-        onClick={moveToMax}>
-        {t("Max")}
-      </button>}
+    <button
+      type={"button"}
+      className={"home-button arrow-button fb-button gray"}
+      disabled={!props.movementAvailable}
+      aria-label={t("Move Home {{axis}}", { axis: axisLabel })}
+      title={t("Move Home {{axis}}", { axis: axisLabel })}
+      onClick={moveHome}>
+      <div className={"fa-stack"}>
+        <i className={"fa fa-home fa-stack-2x"} />
+        <i className={"fa fa-arrow-right fa-stack-1x"} />
+      </div>
+    </button>
+    <button
+      type={"button"}
+      className={"home-button arrow-button fb-button gray"}
+      disabled={!props.movementAvailable || hardwareDisabled}
+      aria-label={t("Find Home {{axis}}", { axis: axisLabel })}
+      title={t("Find Home {{axis}}", { axis: axisLabel })}
+      onClick={findAxisHome}>
+      <div className={"fa-stack"}>
+        <i className={"fa fa-home fa-stack-2x"} />
+        <i className={"fa fa-search fa-stack-1x"} />
+      </div>
+    </button>
+    <button
+      type={"button"}
+      className={[
+        "fb-button gray arrow-button fa fa-2x",
+        `fa-arrow-${negativeArrow}`,
+      ].join(" ")}
+      disabled={!props.movementAvailable}
+      aria-label={t("Jog -{{axis}}", { axis: axisLabel })}
+      title={t("Jog -{{axis}}", { axis: axisLabel })}
+      onClick={() => jog(-1)}>
+      <p>{`-${axisLabel}`}</p>
+    </button>
+    <button
+      type={"button"}
+      className={[
+        "fb-button gray arrow-button fa fa-2x",
+        `fa-arrow-${positiveArrow}`,
+      ].join(" ")}
+      disabled={!props.movementAvailable}
+      aria-label={t("Jog +{{axis}}", { axis: axisLabel })}
+      title={t("Jog +{{axis}}", { axis: axisLabel })}
+      onClick={() => jog(1)}>
+      <p>{`+${axisLabel}`}</p>
+    </button>
   </div>;
 };
 
@@ -311,6 +349,16 @@ const NativeJogEncoderReadings = (
   </div>;
 };
 
+interface NativeJogPopupProps {
+  axis: Xyz;
+  config: NativeJogConfig;
+  context: NativeJogAxisActionsContext;
+  encoderData?: NativeJogEncoderData;
+  encoderVisibility?: NativeJogEncoderVisibility;
+  onClose(): void;
+  positionStore: BotPositionSnapshotStore;
+}
+
 export const NativeJogPopup = (props: NativeJogPopupProps) => {
   const renderedPosition = useBotPositionSnapshot(props.positionStore);
   const renderedDevicePosition = getNativeJogDevicePosition(
@@ -325,7 +373,7 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
   const [target, setTarget] = React.useState(
     () => `${currentAxisPosition}`,
   );
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [moreOptionsOpen, setMoreOptionsOpen] = React.useState(false);
   const title = `${props.axis.toUpperCase()}: ${Math.round(
     currentAxisPosition,
   ).toLocaleString()}`;
@@ -340,42 +388,42 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
       [props.axis]: targetCoordinate,
     });
   };
-  if (settingsOpen) {
-    return <NativeJogEncoderSettingsPopup
+  if (moreOptionsOpen) {
+    return <NativeJogMoreOptionsPopup
       axis={props.axis}
-      config={props.config}
-      direction={props.direction}
-      dispatch={props.context.dispatch}
+      context={props.context}
       encoderVisibility={props.encoderVisibility}
-      onClose={() => setSettingsOpen(false)} />;
+      onClose={() => setMoreOptionsOpen(false)} />;
   }
+  const stepSize = getNativeJogStepSize(props.context.stepSize);
   return <ThreeDPopup
     name={`bot-jog-${props.axis}-popup`}
-    position={popupPosition(props.config, props.axis, props.direction)}
+    position={[0, 0, 0]}
     title={title}
     headerActions={
       <button
         type={"button"}
         className={"fa fa-cog fb-icon-button invert"}
-        title={t("encoder display settings")}
-        onClick={() => setSettingsOpen(true)} />
+        title={t("More options")}
+        onClick={() => setMoreOptionsOpen(true)} />
     }
     onClose={props.onClose}>
+    <StepSizeSelector
+      choices={NATIVE_JOG_STEP_CHOICES}
+      dispatch={props.context.dispatch}
+      selected={stepSize} />
     <NativeJogActionButtons
       axis={props.axis}
-      commandPosition={commandPosition}
-      config={props.config}
-      direction={props.direction}
-      movementAvailable={movementAvailable} />
+      context={props.context}
+      movementAvailable={movementAvailable}
+      stepSize={stepSize} />
     <div className={"native-jog-position-row"}>
-      <label htmlFor={`native-jog-${props.axis}-target`}>
-        {t("{{axis}} axis position", {
-          axis: props.axis.toUpperCase(),
-        })}
-      </label>
       <input
         id={`native-jog-${props.axis}-target`}
         type={"number"}
+        aria-label={t("{{axis}} axis position", {
+          axis: props.axis.toUpperCase(),
+        })}
         disabled={!movementAvailable}
         value={target}
         onChange={event => setTarget(event.currentTarget.value)} />
@@ -396,99 +444,91 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
 
 interface NativeJogArrowProps {
   axis: Xyz;
+  config: NativeJogConfig;
   deviceDirection: NativeJogDirection;
   enabled: boolean;
+  hovered: boolean;
   name: string;
-  onActivate(): void;
-  renderDirection: NativeJogDirection;
 }
 
 const NativeJogArrow = (props: NativeJogArrowProps) =>
-  <ControlHandle
+  <ControlArrow
     name={`${props.name}-${
-      props.deviceDirection == 1 ? "positive" : "negative"}`}
-    enabled={props.enabled}
-    onActivate={props.onActivate}>
-    {state => <ControlArrow
-      name={`${props.name}-${
-        props.deviceDirection == 1 ? "plus" : "minus"}-arrow`}
-      start={[0, 0, 0]}
-      end={axisPoint(
+      props.deviceDirection == 1 ? "plus" : "minus"}-arrow`}
+    start={[0, 0, 0]}
+    end={axisPoint(
+      props.axis,
+      getNativeJogRenderDirection(
+        props.config,
         props.axis,
-        props.renderDirection * NATIVE_JOG_ARROW_LENGTH,
-      )}
-      heads={"end"}
-      width={NATIVE_JOG_ARROW_WIDTH}
-      color={NATIVE_JOG_COLOR}
-      hoverColor={NATIVE_JOG_HOVER_COLOR}
-      hovered={state.hovered}
-      renderOnTop={true} />}
-  </ControlHandle>;
+        props.deviceDirection,
+      ) * NATIVE_JOG_ARROW_LENGTH,
+    )}
+    heads={"end"}
+    width={NATIVE_JOG_ARROW_WIDTH}
+    color={NATIVE_JOG_COLOR}
+    hoverColor={NATIVE_JOG_HOVER_COLOR}
+    hovered={props.hovered}
+    enabled={props.enabled}
+    {...NATIVE_JOG_RENDER_OPTIONS} />;
 
 export interface NativeJogControlPairProps {
   axis: Xyz;
   axisActions?: NativeJogAxisActionsContext;
-  axisActionsSelected?: boolean;
   config: NativeJogConfig;
   encoderData?: NativeJogEncoderData;
   encoderVisibility?: NativeJogEncoderVisibility;
   name: string;
   onClose(): void;
-  onSelect(direction: NativeJogDirection): void;
-  onSelectAxisActions?(): void;
+  onSelect(): void;
   position: ControlPoint;
   positionStore: BotPositionSnapshotStore;
-  selectedDirection?: NativeJogDirection;
+  selected?: boolean;
 }
 
 export const NativeJogControlPair = (
   props: NativeJogControlPairProps,
 ) => {
-  const movementAvailable = nativeJogMovementAvailable(props.axisActions);
+  const enabled = !!props.axisActions;
   return <Group name={props.name} position={props.position}>
     <ControlHandle
-      name={`${props.name}-center`}
-      enabled={!!props.axisActions && !!props.onSelectAxisActions}
-      onActivate={props.onSelectAxisActions}>
-      {state => <ControlSphere
-        name={`${props.name}-sphere`}
-        radius={NATIVE_JOG_SPHERE_RADIUS}
-        color={NATIVE_JOG_COLOR}
-        hoverColor={NATIVE_JOG_HOVER_COLOR}
-        hovered={state.hovered}
-        active={props.axisActionsSelected}
-        renderOnTop={true} />}
+      name={`${props.name}-control`}
+      enabled={enabled}
+      onActivate={props.onSelect}>
+      {state => <>
+        <ControlSphere
+          name={`${props.name}-sphere`}
+          radius={NATIVE_JOG_SPHERE_RADIUS}
+          color={NATIVE_JOG_COLOR}
+          hoverColor={NATIVE_JOG_HOVER_COLOR}
+          hovered={state.hovered}
+          active={props.selected}
+          enabled={enabled}
+          {...NATIVE_JOG_RENDER_OPTIONS} />
+        <NativeJogArrow
+          axis={props.axis}
+          config={props.config}
+          deviceDirection={-1}
+          enabled={enabled}
+          hovered={state.hovered}
+          name={props.name} />
+        <NativeJogArrow
+          axis={props.axis}
+          config={props.config}
+          deviceDirection={1}
+          enabled={enabled}
+          hovered={state.hovered}
+          name={props.name} />
+      </>}
     </ControlHandle>
-    <NativeJogArrow
-      axis={props.axis}
-      deviceDirection={-1}
-      enabled={movementAvailable}
-      name={props.name}
-      onActivate={() => props.onSelect(-1)}
-      renderDirection={getNativeJogRenderDirection(
-        props.config, props.axis, -1)} />
-    <NativeJogArrow
-      axis={props.axis}
-      deviceDirection={1}
-      enabled={movementAvailable}
-      name={props.name}
-      onActivate={() => props.onSelect(1)}
-      renderDirection={getNativeJogRenderDirection(
-        props.config, props.axis, 1)} />
-    {props.selectedDirection && props.axisActions &&
+    {props.selected && props.axisActions &&
       <NativeJogPopup
         axis={props.axis}
         config={props.config}
         context={props.axisActions}
-        direction={props.selectedDirection}
         encoderData={props.encoderData}
         encoderVisibility={props.encoderVisibility}
         onClose={props.onClose}
         positionStore={props.positionStore} />}
-    {props.axisActionsSelected && props.axisActions &&
-      <NativeJogAxisActionsPopup
-        axis={props.axis}
-        context={props.axisActions}
-        onClose={props.onClose} />}
   </Group>;
 };

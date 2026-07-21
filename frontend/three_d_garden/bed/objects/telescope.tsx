@@ -340,10 +340,12 @@ export const Telescope = (props: TelescopeProps) => {
   React.useEffect(() => {
     if (!popupOpen) { return; }
     const closePopup = (event: KeyboardEvent) => {
-      if (event.key == "Escape") { setPopupOpen(false); }
+      if (event.key != "Escape") { return; }
+      event.preventDefault();
+      setPopupOpen(false);
     };
-    window.addEventListener("keydown", closePopup);
-    return () => window.removeEventListener("keydown", closePopup);
+    window.addEventListener("keydown", closePopup, true);
+    return () => window.removeEventListener("keydown", closePopup, true);
   }, [popupOpen]);
 
   return <Group

@@ -18,6 +18,7 @@ describe("<ThreeDCameraControls />", () => {
     const button = screen.getByRole("button", { name: "PERSPECTIVE ON" });
     expect(button).toHaveClass("active");
     expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(button).toHaveAttribute("aria-keyshortcuts", "p");
     fireEvent.click(button);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_PERSPECTIVE,
@@ -91,5 +92,92 @@ describe("<ThreeDCameraControls />", () => {
       payload: false,
     });
     info.mockRestore();
+  });
+
+  it("toggles perspective with the p keyboard shortcut", () => {
+    const dispatch = jest.fn();
+    const designer = fakeDesignerState();
+    const { rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+
+    const disableEvent = new KeyboardEvent("keydown", {
+      key: "p",
+      bubbles: true,
+      cancelable: true,
+    });
+    fireEvent(window, disableEvent);
+    expect(disableEvent.defaultPrevented).toBeTruthy();
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+
+    designer.threeDPerspective = false;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: true,
+    });
+  });
+
+  it("ignores the perspective shortcut in restricted camera modes", () => {
+    const dispatch = jest.fn();
+    const designer = fakeDesignerState();
+    designer.threeDCameraFollow = true;
+    const { rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDCameraFollow = false;
+    designer.threeDViewMode = "stargazing";
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDViewMode = "spaceflight";
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("ignores perspective shortcuts reserved for focused UI", () => {
+    const dispatch = jest.fn();
+    render(<ThreeDCameraControls
+      designer={fakeDesignerState()}
+      dispatch={dispatch} />);
+
+    [
+      ["x", {}],
+      ["p", { altKey: true }],
+      ["p", { ctrlKey: true }],
+      ["p", { metaKey: true }],
+      ["p", { shiftKey: true }],
+      ["p", { repeat: true }],
+    ].forEach(([key, init]) => fireEvent.keyDown(window, {
+      key: key as string,
+      ...init as KeyboardEventInit,
+    }));
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    fireEvent.keyDown(input, { key: "p" });
+    input.remove();
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "command-palette-dialog";
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    fireEvent.keyDown(window, { key: "p" });
+    dialog.remove();
+
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });

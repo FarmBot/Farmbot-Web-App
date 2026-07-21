@@ -5,7 +5,7 @@ import { t } from "../../i18next_wrapper";
 import { changeStepSize } from "../../devices/actions";
 
 export class StepSizeSelector extends React.Component<StepSizeSelectorProps, {}> {
-  get choices() { return [1, 10, 100, 1000, 10000]; }
+  get choices() { return this.props.choices || [1, 10, 100, 1000, 10000]; }
 
   cssForIndex(num: number) {
     const choices = this.choices;

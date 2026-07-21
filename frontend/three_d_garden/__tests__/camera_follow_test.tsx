@@ -35,11 +35,11 @@ const cameraFollowMargins = (
 ) => {
   const backward = normalized(camera.position.map((value, index) =>
     value - camera.target[index]) as Tuple);
-  const right = normalized([-backward[1], backward[0], 0]);
-  const up: Tuple = [
-    backward[1] * right[2] - backward[2] * right[1],
-    backward[2] * right[0] - backward[0] * right[2],
-    backward[0] * right[1] - backward[1] * right[0],
+  const up = normalized(camera.up);
+  const right: Tuple = [
+    up[1] * backward[2] - up[2] * backward[1],
+    up[2] * backward[0] - up[0] * backward[2],
+    up[0] * backward[1] - up[1] * backward[0],
   ];
   const distance = Math.hypot(...camera.position.map((value, index) =>
     value - camera.target[index]));
@@ -79,7 +79,7 @@ const cameraFollowMargins = (
 };
 
 describe("getCameraFollowView()", () => {
-  it("uses the camera height and adds five degrees on every side", () => {
+  it("looks down from the camera with a cardinal, aspect-fit heading", () => {
     const config = clone(INITIAL);
     config.viewpointHeading = 37;
     const getZ = jest.fn(() => -100);
@@ -92,14 +92,19 @@ describe("getCameraFollowView()", () => {
     });
     expect(getZ).toHaveBeenCalledWith(200, 699);
     expect(camera.target[2]).toBeCloseTo(300);
+    expect(camera.position.slice(0, 2)).toEqual(camera.target.slice(0, 2));
+    expect(camera.heading).toEqual(90);
+    expect(camera.up[0]).toBeCloseTo(-1);
+    expect(camera.up[1]).toBeCloseTo(0);
 
     const backward = normalized(camera.position.map((value, index) =>
       value - camera.target[index]) as Tuple);
-    const right = normalized([-backward[1], backward[0], 0]);
-    const up: Tuple = [
-      backward[1] * right[2] - backward[2] * right[1],
-      backward[2] * right[0] - backward[0] * right[2],
-      backward[0] * right[1] - backward[1] * right[0],
+    expect(backward).toEqual([0, 0, 1]);
+    const up = normalized(camera.up);
+    const right: Tuple = [
+      up[1] * backward[2] - up[2] * backward[1],
+      up[2] * backward[0] - up[0] * backward[2],
+      up[0] * backward[1] - up[1] * backward[0],
     ];
     const distance = Math.hypot(...camera.position.map((value, index) =>
       value - camera.target[index]));
@@ -141,6 +146,17 @@ describe("getCameraFollowView()", () => {
       expect((verticalViewAngle - verticalAngle) * 180 / Math.PI)
         .toBeGreaterThanOrEqual(CAMERA_FOLLOW_FOV_MARGIN - 0.001);
     });
+
+    const portraitCamera = getCameraFollowView({
+      config,
+      position: INITIAL_POSITION,
+      getZ,
+      viewport: { width: 700, height: 1200 },
+    });
+    expect(portraitCamera.heading).toEqual(0);
+    expect(portraitCamera.up[0]).toBeCloseTo(0);
+    expect(portraitCamera.up[1]).toBeCloseTo(1);
+    expect(portraitCamera.up[2]).toBeCloseTo(0);
   });
 
   it("keeps five degrees around the footprint in panel sub-views", () => {
@@ -191,8 +207,8 @@ describe("getCameraFollowView()", () => {
         expect(margin).toBeGreaterThanOrEqual(
           CAMERA_FOLLOW_FOV_MARGIN - 0.001,
         ));
-      expect(openCamera.target).not.toEqual(closedCamera.target);
-      expect(openCamera.target[0]).not.toEqual(closedCamera.target[0]);
+      expect(openCamera.target).toEqual(closedCamera.target);
+      expect(openCamera.fov).not.toEqual(closedCamera.fov);
     });
   });
 });
@@ -231,6 +247,9 @@ describe("<CameraFollowController />", () => {
     const view = render(<CameraFollowController {...props} />);
     const initialTarget = controls.target.toArray();
     expect(controlsCamera.fov).not.toEqual(50);
+    expect(controlsCamera.up.x).toBeCloseTo(-1);
+    expect(controlsCamera.up.y).toBeCloseTo(0);
+    expect(controlsCamera.up.z).toBeCloseTo(0);
 
     act(() => {
       store.publish({ x: 600, y: 300, z: -50 });
@@ -240,6 +259,7 @@ describe("<CameraFollowController />", () => {
     const followedTarget = controls.target.toArray();
 
     view.rerender(<CameraFollowController {...props} enabled={false} />);
+    expect(controlsCamera.up.toArray()).toEqual([0, 0, 1]);
     act(() => {
       store.publish({ x: 900, y: 500, z: -100 });
       frame({ invalidate: jest.fn() }, 0.1);
@@ -270,8 +290,8 @@ describe("<CameraFollowController />", () => {
       controls,
     };
     render(<CameraFollowController {...props} />);
-    const openTarget = controls.target.toArray();
+    const openFov = controlsCamera.fov;
     act(() => panelCameraStore.setOpen(false));
-    expect(controls.target.toArray()).not.toEqual(openTarget);
+    expect(controlsCamera.fov).not.toEqual(openFov);
   });
 });

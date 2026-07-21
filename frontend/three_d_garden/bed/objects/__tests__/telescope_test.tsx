@@ -87,7 +87,10 @@ describe("<Telescope />", () => {
     popup && fireEvent.contextMenu(popup);
     popup && fireEvent.wheel(popup);
     popup && fireEvent.click(popup);
-    fireEvent.keyDown(window, { key: "Escape" });
+    expect(fireEvent.keyDown(window, {
+      key: "Escape",
+      cancelable: true,
+    })).toBeFalsy();
     expect(container.querySelector(".telescope-popup")).toBeNull();
     expect(container.querySelector("[name='telescope-model']")).toBeTruthy();
     clickSphere(container);

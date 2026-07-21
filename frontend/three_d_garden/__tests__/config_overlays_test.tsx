@@ -350,9 +350,10 @@ describe("<PrivateOverlay />", () => {
       expect(document.activeElement).toEqual(screen.getByPlaceholderText(
         "Search configs",
       )));
-    fireEvent.keyDown(screen.getByPlaceholderText("Search configs"), {
+    expect(fireEvent.keyDown(screen.getByPlaceholderText("Search configs"), {
       key: "Escape",
-    });
+      cancelable: true,
+    })).toBeFalsy();
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       config: false,

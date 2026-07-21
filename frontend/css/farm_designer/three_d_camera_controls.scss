@@ -59,6 +59,17 @@
   justify-content: center;
   width: 2.9rem;
   padding: 0;
+  color: var(--text-color);
+  background: var(--main-bg);
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+
+  &.active {
+    color: $off_white;
+    background: $medium_gray;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
 
   img {
     width: 1.8rem;

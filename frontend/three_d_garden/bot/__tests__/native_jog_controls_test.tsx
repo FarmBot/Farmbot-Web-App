@@ -11,23 +11,24 @@ import * as configActions from "../../../config_storage/actions";
 import { createBotPositionSnapshotStore } from "../position_spring";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { Path } from "../../../internal_urls";
+import { Actions } from "../../../constants";
 import {
   getNativeJogControlPositions, getNativeJogDevicePosition,
-  getNativeJogRenderDirection,
+  getNativeJogRenderDirection, getNativeJogStepSize,
   NativeJogControlPair, NativeJogControlPairProps,
   NATIVE_JOG_ARROW_LENGTH,
 } from "../native_jog_controls";
 
 describe("native jog control geometry", () => {
-  it("positions each pair in its requested kinematic frame", () => {
+  it("positions each control in its requested kinematic frame", () => {
     const config = clone(INITIAL);
     config.bedWidthOuter = 1360;
     config.bedYOffset = 20;
 
     expect(getNativeJogControlPositions(config)).toEqual({
-      x: [[0, -220, 0], [0, 1540, 0]],
-      y: [0, 0, 200],
-      z: [100, 0, 300],
+      x: [[0, -120, 0], [0, 1440, 0]],
+      y: [[-39, 50, 700], [-39, 1350, 700]],
+      z: [60, 0, 300],
     });
   });
 
@@ -69,37 +70,65 @@ describe("native jog control geometry", () => {
     },
   );
 
-  it("renders two 100mm gray arrows around one sphere", () => {
+  it("limits the 3D move amount to its four selector values", () => {
+    expect(getNativeJogStepSize(1)).toEqual(1);
+    expect(getNativeJogStepSize(1000)).toEqual(1000);
+    expect(getNativeJogStepSize(10000)).toEqual(100);
+    expect(getNativeJogStepSize(undefined)).toEqual(100);
+  });
+
+  it("renders two 100mm gray arrows and a sphere in one handle", () => {
     const arrowSpy = jest.spyOn(controls, "ControlArrow")
       .mockImplementation(props => <i
         data-testid={props.name}
         data-color={props.color}
+        data-depth-test={String(props.depthTest)}
+        data-depth-write={String(props.depthWrite)}
+        data-render-order={props.renderOrder}
         data-end={props.end.join(",")} />);
-    const config = clone(INITIAL);
-    const positionStore = createBotPositionSnapshotStore({
-      x: 100,
-      y: 200,
-      z: -300,
-    });
+    const sphereSpy = jest.spyOn(controls, "ControlSphere")
+      .mockImplementation(props => <i
+        data-testid={props.name}
+        data-depth-test={String(props.depthTest)}
+        data-depth-write={String(props.depthWrite)}
+        data-render-order={props.renderOrder} />);
+    const onSelect = jest.fn();
     const { container } = render(<NativeJogControlPair
       axis={"z"}
-      config={config}
+      config={clone(INITIAL)}
       name={"bot-jog-z"}
       onClose={jest.fn()}
-      onSelect={jest.fn()}
+      onSelect={onSelect}
       position={[100, 0, 300]}
-      positionStore={positionStore} />);
+      positionStore={createBotPositionSnapshotStore({
+        x: 100,
+        y: 200,
+        z: -300,
+      })} />);
 
-    expect(container.querySelectorAll("[name='bot-jog-z-sphere']"))
+    expect(container.querySelectorAll("[name='bot-jog-z-control']"))
       .toHaveLength(1);
+    expect(screen.getByTestId("bot-jog-z-sphere")).toBeInTheDocument();
     expect(screen.getByTestId("bot-jog-z-plus-arrow"))
       .toHaveAttribute("data-end", `0,0,${NATIVE_JOG_ARROW_LENGTH}`);
     expect(screen.getByTestId("bot-jog-z-minus-arrow"))
       .toHaveAttribute("data-end", `0,0,-${NATIVE_JOG_ARROW_LENGTH}`);
-    expect(screen.getAllByTestId(/bot-jog-z-.*-arrow/))
-      .toHaveLength(2);
-    screen.getAllByTestId(/bot-jog-z-.*-arrow/).forEach(arrow =>
-      expect(arrow).toHaveAttribute("data-color", "gray"));
+    screen.getAllByTestId(/bot-jog-z-.*-arrow/).forEach(arrow => {
+      expect(arrow).toHaveAttribute("data-color", "gray");
+      expect(arrow).toHaveAttribute("data-depth-test", "true");
+      expect(arrow).toHaveAttribute("data-depth-write", "true");
+      expect(arrow).toHaveAttribute("data-render-order", "0");
+    });
+    const sphere = screen.getByTestId("bot-jog-z-sphere");
+    expect(sphere).toHaveAttribute("data-depth-test", "true");
+    expect(sphere).toHaveAttribute("data-depth-write", "true");
+    expect(sphere).toHaveAttribute("data-render-order", "0");
+
+    fireEvent.click(container.querySelector(
+      "[name='bot-jog-z-control']",
+    ) as Element);
+    expect(onSelect).not.toHaveBeenCalled();
+    sphereSpy.mockRestore();
     arrowSpy.mockRestore();
   });
 
@@ -154,16 +183,22 @@ describe("<NativeJogControlPair />", () => {
       botPosition: position,
       botOnline: true,
       dispatch: jest.fn(),
-      firmwareSettings: clone(bot.hardware.mcu_params),
+      firmwareSettings: {
+        ...clone(bot.hardware.mcu_params),
+        movement_enable_endpoints_x: 1,
+        movement_enable_endpoints_y: 1,
+        movement_enable_endpoints_z: 1,
+      },
       locked: false,
+      stepSize: 100,
     },
     config,
     name: `bot-jog-${axis}`,
     onClose: jest.fn(),
     onSelect: jest.fn(),
-    onSelectAxisActions: jest.fn(),
     position: [0, 0, 0],
     positionStore: createBotPositionSnapshotStore(position),
+    selected: true,
   });
 
   afterEach(() => {
@@ -171,18 +206,19 @@ describe("<NativeJogControlPair />", () => {
   });
 
   it.each([
-    ["x", { x: 1, y: 0, z: 0 }, { x: 3000, y: 234, z: -50 }],
-    ["y", { x: 0, y: 1, z: 0 }, { x: 1038, y: 1500, z: -50 }],
-    ["z", { x: 0, y: 0, z: 1 }, { x: 1038, y: 234, z: 600 }],
+    ["x", { x: -100, y: 0, z: 0 }, { x: 100, y: 0, z: 0 }],
+    ["y", { x: 0, y: -100, z: 0 }, { x: 0, y: 100, z: 0 }],
+    ["z", { x: 0, y: 0, z: -100 }, { x: 0, y: 0, z: 100 }],
   ] as const)(
-    "sends positive %s jog and Max commands",
-    (axis, relative, maximum) => {
+    "runs the selected %s home and jog commands",
+    (axis, negative, positive) => {
       const moveRelative = jest.spyOn(deviceActions, "moveRelative")
         .mockImplementation(jest.fn());
-      const moveAbsolute = jest.spyOn(deviceActions, "moveAbsolute")
+      const moveToHome = jest.spyOn(deviceActions, "moveToHome")
+        .mockImplementation(jest.fn());
+      const findHome = jest.spyOn(deviceActions, "findHome")
         .mockImplementation(jest.fn());
       const p = props(axis);
-      p.selectedDirection = 1;
       render(<NativeJogControlPair {...p} />);
 
       expect(screen.getByRole("heading", {
@@ -190,37 +226,56 @@ describe("<NativeJogControlPair />", () => {
           position[axis],
         ).toLocaleString()}`,
       })).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: "+1" }));
-      fireEvent.click(screen.getByRole("button", { name: "Max" }));
-      fireEvent.click(screen.getByTitle("close"));
+      expect(screen.getAllByRole("button", {
+        name: /^(1|10|100|1000)$/,
+      })).toHaveLength(4);
+      fireEvent.click(screen.getByRole("button", {
+        name: `Move Home ${axis.toUpperCase()}`,
+      }));
+      fireEvent.click(screen.getByRole("button", {
+        name: `Find Home ${axis.toUpperCase()}`,
+      }));
+      const negativeButton = screen.getByRole("button", {
+        name: `Jog -${axis.toUpperCase()}`,
+      });
+      const positiveButton = screen.getByRole("button", {
+        name: `Jog +${axis.toUpperCase()}`,
+      });
+      expect(negativeButton).toHaveClass(
+        `fa-arrow-${axis == "z" ? "down" : "left"}`,
+      );
+      expect(positiveButton).toHaveClass(
+        `fa-arrow-${axis == "z" ? "up" : "right"}`,
+      );
+      fireEvent.click(negativeButton);
+      fireEvent.click(positiveButton);
 
-      expect(moveRelative).toHaveBeenCalledWith(relative);
-      expect(moveAbsolute).toHaveBeenCalledWith(maximum);
-      expect(p.onClose).toHaveBeenCalled();
+      expect(moveToHome).toHaveBeenCalledWith(axis);
+      expect(findHome).toHaveBeenCalledWith(axis);
+      expect(moveRelative).toHaveBeenNthCalledWith(1, negative);
+      expect(moveRelative).toHaveBeenNthCalledWith(2, positive);
+      expect(p.axisActions?.dispatch).toHaveBeenCalledWith(
+        expect.any(Function),
+      );
     },
   );
 
-  it("sends negative jog and Home commands", () => {
-    const moveRelative = jest.spyOn(deviceActions, "moveRelative")
-      .mockImplementation(jest.fn());
-    const moveToHome = jest.spyOn(deviceActions, "moveToHome")
-      .mockImplementation(jest.fn());
+  it("uses the shared move amount selector", () => {
     const p = props("x");
-    p.selectedDirection = -1;
     render(<NativeJogControlPair {...p} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Home" }));
-    fireEvent.click(screen.getByRole("button", { name: "-10" }));
+    fireEvent.click(screen.getByRole("button", { name: "10" }));
 
-    expect(moveToHome).toHaveBeenCalledWith("x");
-    expect(moveRelative).toHaveBeenCalledWith({ x: -10, y: 0, z: 0 });
+    expect(p.axisActions?.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_STEP_SIZE,
+      payload: 10,
+    });
   });
 
   it("moves to an entered axis coordinate and displays encoders", () => {
     const moveAbsolute = jest.spyOn(deviceActions, "moveAbsolute")
       .mockImplementation(jest.fn());
     const p = props("x");
-    p.selectedDirection = 1;
     p.axisActions && (p.axisActions.botPosition = {
       x: 900,
       y: 800,
@@ -231,9 +286,12 @@ describe("<NativeJogControlPair />", () => {
       scaled_encoders: { x: 1234.5, y: undefined, z: undefined },
       raw_encoders: { x: undefined, y: undefined, z: undefined },
     };
-    render(<NativeJogControlPair {...p} />);
+    const { container } = render(<NativeJogControlPair {...p} />);
 
     const input = screen.getByLabelText("X axis position");
+    expect(container.querySelector("label[for='native-jog-x-target']"))
+      .not.toBeInTheDocument();
+    expect(input).not.toHaveAttribute("placeholder");
     expect(input).toHaveValue(900);
     fireEvent.change(input, { target: { value: "2048.5" } });
     fireEvent.click(screen.getByRole("button", { name: "GO" }));
@@ -257,7 +315,6 @@ describe("<NativeJogControlPair />", () => {
     const moveAbsolute = jest.spyOn(deviceActions, "moveAbsolute")
       .mockImplementation(jest.fn());
     const p = props("x");
-    p.selectedDirection = 1;
     p.axisActions && (p.axisActions.botPosition = {
       x: undefined,
       y: 234,
@@ -265,37 +322,56 @@ describe("<NativeJogControlPair />", () => {
     });
     render(<NativeJogControlPair {...p} />);
 
-    expect(screen.getByRole("button", { name: "Max" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "GO" })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "Max" }));
     fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(moveAbsolute).not.toHaveBeenCalled();
   });
 
-  it("configures encoder displays from the cog popup", () => {
+  it("shows encoder, homing, length, and settings options", () => {
     const scaledToggle = jest.fn();
     const rawToggle = jest.fn();
     const toggle = jest.spyOn(configActions, "toggleWebAppBool")
       .mockImplementation(setting => setting == "scaled_encoders"
         ? scaledToggle
         : rawToggle);
-    const p = props("y");
+    const setHome = jest.spyOn(deviceActions, "setHome")
+      .mockImplementation(jest.fn());
+    const findAxisLength = jest.spyOn(deviceActions, "findAxisLength")
+      .mockImplementation(jest.fn());
+    const updateMCU = jest.spyOn(deviceActions, "updateMCU")
+      .mockImplementation(jest.fn());
+    const p = props("x");
     p.encoderVisibility = { raw: false, scaled: true };
-    p.selectedDirection = 1;
+    p.axisActions?.firmwareSettings &&
+      (p.axisActions.firmwareSettings.encoder_enabled_x = 1);
     render(<NativeJogControlPair {...p} />);
 
-    fireEvent.click(screen.getByTitle("encoder display settings"));
-    expect(screen.getByRole("heading", { name: "Encoder display" }))
+    fireEvent.click(screen.getByTitle("More options"));
+    expect(screen.getByRole("heading", { name: "More options" }))
       .toBeInTheDocument();
     fireEvent.click(screen.getByTitle("toggle scaled encoder display"));
     fireEvent.click(screen.getByTitle("toggle raw encoder display"));
+    fireEvent.click(screen.getByRole("button", { name: "SET HOME" }));
+    fireEvent.click(screen.getByRole("button", { name: "FIND LENGTH" }));
+    fireEvent.click(screen.getByRole("button", { name: "SET LENGTH" }));
+    const settings = screen.getByRole("link", { name: "Settings" });
+    expect(settings).toHaveAttribute("href", Path.settings("axes"));
+    fireEvent.click(settings);
+
     expect(toggle).toHaveBeenCalledWith("scaled_encoders");
     expect(toggle).toHaveBeenCalledWith("raw_encoders");
     expect(p.axisActions?.dispatch).toHaveBeenCalledWith(scaledToggle);
     expect(p.axisActions?.dispatch).toHaveBeenCalledWith(rawToggle);
+    expect(setHome).toHaveBeenCalledWith("x");
+    expect(findAxisLength).toHaveBeenCalledWith("x");
+    expect(updateMCU).toHaveBeenCalledWith(
+      "movement_axis_nr_steps_x",
+      expect.any(String),
+    );
+    expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
 
     fireEvent.click(screen.getByTitle("close"));
-    expect(screen.getByRole("heading", { name: "Y: 234" }))
+    expect(screen.getByRole("heading", { name: "X: 1,038" }))
       .toBeInTheDocument();
   });
 
@@ -308,84 +384,46 @@ describe("<NativeJogControlPair />", () => {
       .mockImplementation(jest.fn());
     const p = props("z");
     Object.assign(p.axisActions || {}, update);
-    p.selectedDirection = -1;
-    const { container } = render(<NativeJogControlPair {...p} />);
+    render(<NativeJogControlPair {...p} />);
 
-    fireEvent.click(container.querySelector(
-      "[name='bot-jog-z-negative']",
-    ) as Element);
-    expect(p.onSelect).not.toHaveBeenCalled();
-    screen.getAllByRole("button").forEach(button => {
-      if (button.title != "encoder display settings" &&
-        button.title != "close") {
-        expect(button).toBeDisabled();
-      }
-    });
-    fireEvent.click(screen.getByRole("button", { name: "-1" }));
+    ["Move Home Z", "Find Home Z", "Jog -Z", "Jog +Z", "GO"]
+      .forEach(name => expect(screen.getByRole("button", { name }))
+        .toBeDisabled());
+    fireEvent.click(screen.getByRole("button", { name: "Jog -Z" }));
     expect(moveRelative).not.toHaveBeenCalled();
   });
 
-  it("shows all axis actions in the sphere popup", () => {
-    const moveToHome = jest.spyOn(deviceActions, "moveToHome")
-      .mockImplementation(jest.fn());
-    const findHome = jest.spyOn(deviceActions, "findHome")
-      .mockImplementation(jest.fn());
-    const setHome = jest.spyOn(deviceActions, "setHome")
-      .mockImplementation(jest.fn());
-    const findAxisLength = jest.spyOn(deviceActions, "findAxisLength")
-      .mockImplementation(jest.fn());
-    const updateMCU = jest.spyOn(deviceActions, "updateMCU")
-      .mockImplementation(jest.fn());
-    const p = props("x");
-    p.axisActionsSelected = true;
-    p.axisActions?.firmwareSettings &&
-      (p.axisActions.firmwareSettings.encoder_enabled_x = 1);
+  it("disables homing and length discovery without axis tracking", () => {
+    const p = props("y");
+    if (p.axisActions) {
+      p.axisActions.firmwareSettings.encoder_enabled_y = 0;
+      p.axisActions.firmwareSettings.movement_enable_endpoints_y = 0;
+    }
     render(<NativeJogControlPair {...p} />);
 
-    expect(screen.getByRole("heading", { name: "X AXIS" }))
-      .toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "MOVE TO HOME" }));
-    fireEvent.click(screen.getByRole("button", { name: "FIND HOME" }));
-    fireEvent.click(screen.getByRole("button", { name: "SET HOME" }));
-    fireEvent.click(screen.getByRole("button", { name: "FIND LENGTH" }));
-    fireEvent.click(screen.getByRole("button", { name: "SET LENGTH" }));
-    fireEvent.click(screen.getByText("Settings"));
-
-    expect(moveToHome).toHaveBeenCalledWith("x");
-    expect(findHome).toHaveBeenCalledWith("x");
-    expect(setHome).toHaveBeenCalledWith("x");
-    expect(findAxisLength).toHaveBeenCalledWith("x");
-    expect(updateMCU).toHaveBeenCalledWith(
-      "movement_axis_nr_steps_x",
-      expect.any(String),
-    );
-    expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
+    expect(screen.getByRole("button", { name: "Find Home Y" }))
+      .toBeDisabled();
+    fireEvent.click(screen.getByTitle("More options"));
+    expect(screen.getByRole("button", { name: "FIND LENGTH" }))
+      .toBeDisabled();
   });
 
-  it("selects the sphere action popup", () => {
+  it("uses one clickable object to open the popup", () => {
     const p = props("y");
+    p.selected = false;
     const { container } = render(<NativeJogControlPair {...p} />);
 
+    expect(container.querySelector("[name='bot-jog-y-center']"))
+      .not.toBeInTheDocument();
+    expect(container.querySelector("[name='bot-jog-y-positive']"))
+      .not.toBeInTheDocument();
+    expect(container.querySelector("[name='bot-jog-y-negative']"))
+      .not.toBeInTheDocument();
     fireEvent.click(container.querySelector(
-      "[name='bot-jog-y-center']",
+      "[name='bot-jog-y-control']",
     ) as Element);
 
-    expect(p.onSelectAxisActions).toHaveBeenCalled();
-  });
-
-  it("opens the selected arrow popup", () => {
-    const p = props("y");
-    const { container } = render(<NativeJogControlPair {...p} />);
-
-    fireEvent.click(container.querySelector(
-      "[name='bot-jog-y-negative']",
-    ) as Element);
-    fireEvent.click(container.querySelector(
-      "[name='bot-jog-y-positive']",
-    ) as Element);
-
-    expect(p.onSelect).toHaveBeenNthCalledWith(1, -1);
-    expect(p.onSelect).toHaveBeenNthCalledWith(2, 1);
+    expect(p.onSelect).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 });

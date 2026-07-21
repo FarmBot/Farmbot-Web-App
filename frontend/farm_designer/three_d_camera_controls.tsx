@@ -16,7 +16,16 @@ export const effectiveThreeDPerspective = (
   designer: Pick<DesignerState, "threeDPerspective">,
 ) => designer.threeDPerspective ?? true;
 
+const perspectiveShortcutTargetIsEditable = (
+  target: EventTarget | null,
+) => target instanceof Element
+  && !!target.closest("input, textarea, select, [contenteditable]");
+
+const commandPaletteIsOpen = () =>
+  !!document.querySelector(".command-palette-dialog[open]");
+
 export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
+  const dispatch = props.dispatch;
   const perspective = effectiveThreeDPerspective(
     props.designer,
   );
@@ -24,6 +33,30 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
   const label = perspective
     ? t("PERSPECTIVE ON")
     : t("PERSPECTIVE OFF");
+  const perspectiveChangeAllowed =
+    props.designer.threeDViewMode == "normal" && !cameraFollow;
+  React.useEffect(() => {
+    if (!perspectiveChangeAllowed) { return; }
+    const togglePerspectiveOnP = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() != "p"
+        || event.altKey
+        || event.ctrlKey
+        || event.metaKey
+        || event.shiftKey
+        || event.repeat
+        || perspectiveShortcutTargetIsEditable(event.target)
+        || commandPaletteIsOpen()) {
+        return;
+      }
+      event.preventDefault();
+      dispatch({
+        type: Actions.SET_3D_PERSPECTIVE,
+        payload: !perspective,
+      });
+    };
+    window.addEventListener("keydown", togglePerspectiveOnP);
+    return () => window.removeEventListener("keydown", togglePerspectiveOnP);
+  }, [dispatch, perspective, perspectiveChangeAllowed]);
   return <div className={"three-d-camera-controls"}>
     <button
       type={"button"}
@@ -54,6 +87,7 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
       ].join(" ")}
       title={label}
       aria-pressed={perspective}
+      aria-keyshortcuts={"p"}
       onClick={() => cameraFollow
         ? info(t(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
         : props.dispatch({

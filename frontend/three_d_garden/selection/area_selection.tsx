@@ -6,7 +6,7 @@ import {
   getGardenPositionFunc, getWorldPositionFunc,
 } from "../helpers";
 import {
-  ControlArrow, ControlDragEvent, ControlHandle, ControlSphere,
+  ControlArrow, ControlDragEvent, ControlHandle, ControlLabel,
   noControlRaycast, planeConstraint, ThreeDPopup,
 } from "../controls";
 import { AxisNumberProperty } from
@@ -21,9 +21,9 @@ import { POINTER_TYPES } from
 
 export const AREA_SELECTION_GHOST_SIZE = 200;
 const AREA_SELECTION_LINE_Z_OFFSET = 8;
+const AREA_SELECTION_LABEL_Z_OFFSET = 80;
 const AREA_SELECTION_POPUP_Z_OFFSET = 180;
-const AREA_SELECTION_CONTROL_RADIUS = 30;
-const AREA_SELECTION_ARROW_LENGTH = 180;
+const AREA_SELECTION_ARROW_LENGTH = 100;
 const AREA_SELECTION_ARROW_WIDTH = 12;
 const AREA_SELECTION_COLOR = "dodgerblue";
 const AREA_SELECTION_HOVER_COLOR = "deepskyblue";
@@ -151,7 +151,7 @@ const AreaSelectionRectangle = (props: AreaSelectionRectangleProps) => {
     dashed={true}
     dashSize={25}
     gapSize={20}
-    lineWidth={2}
+    lineWidth={3}
     transparent={true}
     opacity={props.ghost ? 0.45 : 0.95}
     depthTest={false}
@@ -197,12 +197,13 @@ const AreaSelectionEdgeControl = (
       props.config,
     ));
   };
-  const arrowStart: [number, number, number] = xEdge
-    ? [-AREA_SELECTION_ARROW_LENGTH / 2, 0, 0]
-    : [0, -AREA_SELECTION_ARROW_LENGTH / 2, 0];
+  const lowerEdge = props.edge == "x0" || props.edge == "y0";
+  const mirrored = xEdge ? props.config.mirrorX : props.config.mirrorY;
+  const outwardDirection = (lowerEdge ? -1 : 1) * (mirrored ? -1 : 1);
+  const arrowStart: [number, number, number] = [0, 0, 0];
   const arrowEnd: [number, number, number] = xEdge
-    ? [AREA_SELECTION_ARROW_LENGTH / 2, 0, 0]
-    : [0, AREA_SELECTION_ARROW_LENGTH / 2, 0];
+    ? [outwardDirection * AREA_SELECTION_ARROW_LENGTH, 0, 0]
+    : [0, outwardDirection * AREA_SELECTION_ARROW_LENGTH, 0];
   return <ControlHandle
     name={`area-selection-${props.edge}-control`}
     position={worldPosition}
@@ -211,20 +212,11 @@ const AreaSelectionEdgeControl = (
     onDrag={update}
     onDragEnd={update}>
     {state => <>
-      <ControlSphere
-        name={`area-selection-${props.edge}-sphere`}
-        radius={AREA_SELECTION_CONTROL_RADIUS}
-        color={AREA_SELECTION_COLOR}
-        hoverColor={AREA_SELECTION_HOVER_COLOR}
-        hovered={state.hovered || state.dragging}
-        depthTest={false}
-        depthWrite={false}
-        renderOrder={AREA_SELECTION_RENDER_ORDER + 1} />
       <ControlArrow
         name={`area-selection-${props.edge}-arrow`}
         start={arrowStart}
         end={arrowEnd}
-        heads={"both"}
+        heads={"end"}
         width={AREA_SELECTION_ARROW_WIDTH}
         color={AREA_SELECTION_COLOR}
         hoverColor={AREA_SELECTION_HOVER_COLOR}
@@ -234,6 +226,36 @@ const AreaSelectionEdgeControl = (
         renderOrder={AREA_SELECTION_RENDER_ORDER} />
     </>}
   </ControlHandle>;
+};
+
+interface AreaSelectionCountLabelProps {
+  box: AreaSelectionBox;
+  config: Config;
+  count: number;
+  getZ(x: number, y: number): number;
+  pointType: AreaSelectionPointType;
+}
+
+const AreaSelectionCountLabel = (
+  props: AreaSelectionCountLabelProps,
+) => {
+  const { x1: x, y1: y } = props.box;
+  const position = getWorldPositionFunc(props.config)({
+    x,
+    y,
+    z: props.getZ(x, y) + AREA_SELECTION_LABEL_Z_OFFSET,
+  });
+  return <ControlLabel
+    name={"area-selection-count-label"}
+    position={position}
+    fontSize={34}
+    color={"white"}
+    depthTest={false}
+    depthWrite={false}
+    renderOrder={AREA_SELECTION_RENDER_ORDER + 1}
+    enabled={false}>
+    {areaSelectionTitle(props.count, props.pointType)}
+  </ControlLabel>;
 };
 
 interface AreaSelectionPopupProps {
@@ -351,12 +373,20 @@ export const GardenAreaSelectionOverlay = (
   const { box, ghost } = getAreaSelectionDisplay(props);
   if (!box) { return <></>; }
   const complete = props.selection?.phase == "complete";
+  const drawing = props.selection?.phase == "drawing";
   return <>
     <AreaSelectionRectangle
       box={box}
       config={props.config}
       getZ={props.getZ}
       ghost={ghost} />
+    {drawing && props.selection &&
+      <AreaSelectionCountLabel
+        box={box}
+        config={props.config}
+        count={props.selectedCount}
+        getZ={props.getZ}
+        pointType={props.selection.pointType} />}
     {complete && (["x0", "x1", "y0", "y1"] as const).map(edge =>
       <AreaSelectionEdgeControl
         key={edge}

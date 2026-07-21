@@ -23,12 +23,12 @@ import { BigDistance } from "./constants";
 import type { PanelCameraStore } from "./panel_camera";
 
 export const CAMERA_FOLLOW_FOV_MARGIN = 5;
-const CAMERA_FOLLOW_TILT = 1 / 5000;
 const MAX_HALF_FOV = Math.PI / 2 - 0.001;
 const MAX_FOV_TANGENT = Math.tan(MAX_HALF_FOV);
 const CAMERA_FOLLOW_FIT_EPSILON = Math.PI / 18000;
-const CAMERA_FOLLOW_FIT_ITERATIONS = 4;
 const CAMERA_FOLLOW_FOV_SEARCH_ITERATIONS = 32;
+const CARDINAL_FIT_TOLERANCE = 1e-9;
+const CARDINAL_HEADINGS = [0, 90, 180, 270];
 
 type VectorTuple = Camera["position"];
 
@@ -45,20 +45,9 @@ const cameraBasis = (heading: number) => {
   const angle = heading * Math.PI / 180;
   const sine = Math.sin(angle);
   const cosine = Math.cos(angle);
-  const length = Math.hypot(CAMERA_FOLLOW_TILT, 1);
-  const backward: VectorTuple = [
-    sine * CAMERA_FOLLOW_TILT / length,
-    -cosine * CAMERA_FOLLOW_TILT / length,
-    1 / length,
-  ];
   const right: VectorTuple = [cosine, sine, 0];
-  const planarUp: VectorTuple = [-sine, cosine, 0];
-  const up: VectorTuple = [
-    -sine / length,
-    cosine / length,
-    CAMERA_FOLLOW_TILT / length,
-  ];
-  return { backward, planarUp, right, up };
+  const up: VectorTuple = [-sine, cosine, 0];
+  return { right, up };
 };
 
 export interface CameraFollowViewProps {
@@ -77,84 +66,51 @@ interface CameraFollowProjection {
   verticalHalf: number;
 }
 
-interface CameraFollowAxisFit {
-  center: number;
-  fits: boolean;
-}
-
-const cameraFollowAxisFit = (
-  projectionCenter: number,
-  projectionHalf: number,
-  footprintTangents: number[],
-  verticalTangent: number,
-  margin: number,
-): CameraFollowAxisFit => {
-  const viewMinimum = Math.atan(
-    (projectionCenter - projectionHalf) * verticalTangent,
-  );
-  const viewMaximum = Math.atan(
-    (projectionCenter + projectionHalf) * verticalTangent,
-  );
-  const minimum = Math.min(...footprintTangents);
-  const maximum = Math.max(...footprintTangents);
-  const centerMinimum = Math.tan(viewMinimum + margin) - minimum;
-  const centerMaximum = Math.tan(viewMaximum - margin) - maximum;
-  return {
-    center: (centerMinimum + centerMaximum) / 2,
-    fits: viewMinimum + margin <= viewMaximum - margin
-      && centerMinimum <= centerMaximum,
-  };
-};
-
 const cameraFollowFit = (
   projection: CameraFollowProjection,
-  horizontalTangents: number[],
-  verticalTangents: number[],
-  minimumTangent: number,
+  horizontalAngles: number[],
+  verticalAngles: number[],
   margin: number,
 ) => {
-  const fit = (verticalTangent: number) => {
-    const horizontal = cameraFollowAxisFit(
-      projection.horizontalCenter,
-      projection.horizontalHalf,
-      horizontalTangents,
-      verticalTangent,
-      margin,
-    );
-    const vertical = cameraFollowAxisFit(
-      projection.verticalCenter,
-      projection.verticalHalf,
-      verticalTangents,
-      verticalTangent,
-      margin,
-    );
-    return { horizontal, vertical };
+  const axisFits = (
+    angles: number[],
+    center: number,
+    half: number,
+    tangent: number,
+  ) => {
+    const minimum = Math.atan((center - half) * tangent) + margin;
+    const maximum = Math.atan((center + half) * tangent) - margin;
+    return minimum <= maximum
+      && angles.every(angle => angle >= minimum && angle <= maximum);
   };
-  let verticalTangent = minimumTangent;
-  let result = fit(verticalTangent);
-  if (!result.horizontal.fits || !result.vertical.fits) {
-    let lower = verticalTangent;
-    let upper = MAX_FOV_TANGENT;
-    for (let iteration = 0;
-      iteration < CAMERA_FOLLOW_FOV_SEARCH_ITERATIONS;
-      iteration++) {
-      const candidate = (lower + upper) / 2;
-      const candidateFit = fit(candidate);
-      if (candidateFit.horizontal.fits && candidateFit.vertical.fits) {
-        upper = candidate;
-      } else {
-        lower = candidate;
-      }
+  const fits = (tangent: number) => axisFits(
+    horizontalAngles,
+    projection.horizontalCenter,
+    projection.horizontalHalf,
+    tangent,
+  ) && axisFits(
+    verticalAngles,
+    projection.verticalCenter,
+    projection.verticalHalf,
+    tangent,
+  );
+  let lower = 0;
+  let upper = MAX_FOV_TANGENT;
+  for (let iteration = 0;
+    iteration < CAMERA_FOLLOW_FOV_SEARCH_ITERATIONS;
+    iteration++) {
+    const candidate = (lower + upper) / 2;
+    if (fits(candidate)) {
+      upper = candidate;
+    } else {
+      lower = candidate;
     }
-    verticalTangent = upper;
-    result = fit(verticalTangent);
   }
-  return {
-    verticalTangent,
-    horizontalCenter: result.horizontal.center,
-    verticalCenter: result.vertical.center,
-  };
+  return upper;
 };
+
+const headingDistance = (left: number, right: number) =>
+  Math.abs((left - right + 540) % 360 - 180);
 
 const cameraFollowProjection = (
   viewport: CameraViewport,
@@ -184,6 +140,8 @@ const cameraFollowProjection = (
 
 export interface CameraFollowView extends Camera {
   fov: number;
+  heading: number;
+  up: VectorTuple;
 }
 
 export const getCameraFollowView = (
@@ -209,18 +167,8 @@ export const getCameraFollowView = (
   const footprint = view.points.slice(4).map(point => point.clone()
     .add(view.cameraLensPosition)
     .toArray());
-  const basis = cameraBasis(props.config.viewpointHeading);
-  const rightValues = footprint.map(point => dot(point, basis.right));
-  const upValues = footprint.map(point => dot(point, basis.planarUp));
-  const rightCenter = (Math.min(...rightValues) + Math.max(...rightValues)) / 2;
-  const upCenter = (Math.min(...upValues) + Math.max(...upValues)) / 2;
   const targetZ = footprint.reduce((sum, point) => sum + point[2], 0)
     / footprint.length;
-  const footprintCenter: VectorTuple = [
-    basis.right[0] * rightCenter + basis.planarUp[0] * upCenter,
-    basis.right[1] * rightCenter + basis.planarUp[1] * upCenter,
-    targetZ,
-  ];
   const projection = cameraFollowProjection(
     props.viewport,
     props.cameraView,
@@ -230,76 +178,46 @@ export const getCameraFollowView = (
     Math.max(0, props.fovMargin ?? CAMERA_FOLLOW_FOV_MARGIN)
       * Math.PI / 180 + CAMERA_FOLLOW_FIT_EPSILON,
   );
-  const lensHeight = view.cameraLensPosition.z;
-  let distance = (lensHeight - targetZ) / basis.backward[2];
-  let verticalTangent = 1;
-  let horizontalCenter = 0;
-  let verticalCenter = 0;
-  for (let iteration = 0;
-    iteration < CAMERA_FOLLOW_FIT_ITERATIONS;
-    iteration++) {
-    const footprintTangents = footprint.reduce((tangents, point) => {
-      const relative = subtract(point, footprintCenter);
-      const depth = distance - dot(relative, basis.backward);
+  const position = view.cameraLensPosition.toArray();
+  const preferredHeadings = [...CARDINAL_HEADINGS].sort((left, right) =>
+    headingDistance(left, props.config.viewpointHeading)
+      - headingDistance(right, props.config.viewpointHeading));
+  const fits = preferredHeadings.map(heading => {
+    const basis = cameraBasis(heading);
+    const angles = footprint.reduce((result, point) => {
+      const relative = subtract(point, position);
+      const depth = -relative[2];
       return {
-        horizontal: tangents.horizontal.concat(
-          dot(relative, basis.right) / depth,
+        horizontal: result.horizontal.concat(
+          Math.atan2(dot(relative, basis.right), depth),
         ),
-        vertical: tangents.vertical.concat(
-          dot(relative, basis.up) / depth,
+        vertical: result.vertical.concat(
+          Math.atan2(dot(relative, basis.up), depth),
         ),
       };
     }, { horizontal: [] as number[], vertical: [] as number[] });
-    const horizontalFootprintAngle = Math.max(
-      ...footprintTangents.horizontal.map(value => Math.atan(Math.abs(value))),
-    );
-    const verticalFootprintAngle = Math.max(
-      ...footprintTangents.vertical.map(value => Math.atan(Math.abs(value))),
-    );
-    const horizontalAngle = Math.min(
-      MAX_HALF_FOV,
-      horizontalFootprintAngle + fovMargin,
-    );
-    const verticalAngle = Math.min(
-      MAX_HALF_FOV,
-      verticalFootprintAngle + fovMargin,
-    );
-    const minimumTangent = Math.max(
-      Math.tan(horizontalAngle) / projection.horizontalHalf,
-      Math.tan(verticalAngle) / projection.verticalHalf,
-    );
-    const fit = cameraFollowFit(
-      projection,
-      footprintTangents.horizontal,
-      footprintTangents.vertical,
-      minimumTangent,
-      fovMargin,
-    );
-    verticalTangent = fit.verticalTangent;
-    horizontalCenter = fit.horizontalCenter;
-    verticalCenter = fit.verticalCenter;
-    distance = (lensHeight - targetZ)
-      / (basis.backward[2] - basis.up[2] * verticalCenter);
-  }
-  const target: VectorTuple = [
-    footprintCenter[0]
-      - basis.right[0] * horizontalCenter * distance
-      - basis.up[0] * verticalCenter * distance,
-    footprintCenter[1]
-      - basis.right[1] * horizontalCenter * distance
-      - basis.up[1] * verticalCenter * distance,
-    footprintCenter[2]
-      - basis.right[2] * horizontalCenter * distance
-      - basis.up[2] * verticalCenter * distance,
-  ];
+    return {
+      basis,
+      heading,
+      verticalTangent: cameraFollowFit(
+        projection,
+        angles.horizontal,
+        angles.vertical,
+        fovMargin,
+      ),
+    };
+  });
+  const fit = fits.reduce((best, candidate) =>
+    candidate.verticalTangent + CARDINAL_FIT_TOLERANCE
+      < best.verticalTangent
+      ? candidate
+      : best);
   return {
-    fov: Math.atan(verticalTangent) * 360 / Math.PI,
-    target,
-    position: [
-      target[0] + basis.backward[0] * distance,
-      target[1] + basis.backward[1] * distance,
-      target[2] + basis.backward[2] * distance,
-    ],
+    fov: Math.atan(fit.verticalTangent) * 360 / Math.PI,
+    heading: fit.heading,
+    up: fit.basis.up,
+    target: [position[0], position[1], targetZ],
+    position,
   };
 };
 
@@ -358,6 +276,7 @@ export const CameraFollowController = (
       fovMargin: props.fovMargin,
       cameraView,
     });
+    props.controlsCamera.up?.set(...camera.up);
     applySmoothCameraState({
       ...camera,
       zoom: 1,
@@ -392,6 +311,15 @@ export const CameraFollowController = (
     lastPosition.current = undefined;
     applyPosition(currentPosition());
   }, [applyPosition, currentPosition]);
+
+  React.useLayoutEffect(() => {
+    const camera = props.controlsCamera;
+    if (!camera || !props.enabled) { return; }
+    return () => {
+      camera.up?.set(0, 0, 1);
+      props.controls?.update?.();
+    };
+  }, [props.controls, props.controlsCamera, props.enabled]);
 
   useFrame(state => {
     if (!props.enabled || !props.controlsCamera || !props.controls) {

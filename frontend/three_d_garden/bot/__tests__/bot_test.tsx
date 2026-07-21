@@ -375,6 +375,7 @@ describe("<Bot />", () => {
       dispatch: jest.fn(),
       firmwareSettings: fakeBot.hardware.mcu_params,
       locked: false,
+      stepSize: 100,
     };
     const { container, queryByRole } = render(<Bot {...p} />);
     const control = (name: string) =>
@@ -383,48 +384,51 @@ describe("<Bot />", () => {
     expect(control("bot-jog-x-near")?.parentElement)
       .toHaveAttribute("name", "bot-gantry");
     expect(control("bot-jog-x-near"))
-      .toHaveAttribute("position", "0,-220,0");
+      .toHaveAttribute("position", "0,-120,0");
     expect(control("bot-jog-x-far"))
-      .toHaveAttribute("position", "0,1540,0");
-    expect(control("bot-jog-y")?.parentElement)
-      .toHaveAttribute("name", "bot-cross-slide");
-    expect(control("bot-jog-y"))
-      .toHaveAttribute("position", "0,0,200");
+      .toHaveAttribute("position", "0,1440,0");
+    expect(control("bot-jog-y-near")?.parentElement)
+      .toHaveAttribute("name", "bot-gantry");
+    expect(control("bot-jog-y-near"))
+      .toHaveAttribute("position", "-39,50,700");
+    expect(control("bot-jog-y-far")?.parentElement)
+      .toHaveAttribute("name", "bot-gantry");
+    expect(control("bot-jog-y-far"))
+      .toHaveAttribute("position", "-39,1350,700");
+    expect(control("bot-cross-slide")
+      ?.querySelector("[name^='bot-jog-y']"))
+      .not.toBeInTheDocument();
     expect(control("bot-jog-z")?.parentElement)
       .toHaveAttribute("name", "bot-z-axis");
     expect(control("bot-jog-z"))
-      .toHaveAttribute("position", "100,0,300");
+      .toHaveAttribute("position", "60,0,300");
 
-    fireEvent.click(control("bot-jog-x-near-positive") as Element);
+    fireEvent.click(control("bot-jog-x-near-control") as Element);
     expect(queryByRole("heading", { name: "X: 1,038" }))
       .toBeInTheDocument();
     fireEvent.keyDown(window, { key: "a" });
     expect(queryByRole("heading", { name: "X: 1,038" }))
       .toBeInTheDocument();
-    fireEvent.keyDown(window, { key: "Escape" });
+    expect(fireEvent.keyDown(window, {
+      key: "Escape",
+      cancelable: true,
+    })).toBeFalsy();
     expect(queryByRole("heading", { name: "X: 1,038" }))
-      .not.toBeInTheDocument();
-
-    fireEvent.click(control("bot-jog-x-near-center") as Element);
-    expect(queryByRole("heading", { name: "X AXIS" }))
-      .toBeInTheDocument();
-    fireEvent.keyDown(window, { key: "Escape" });
-    expect(queryByRole("heading", { name: "X AXIS" }))
       .not.toBeInTheDocument();
   });
 
-  it("doesn't activate native jog arrows without movement access", () => {
+  it("doesn't activate native jog controls without axis actions", () => {
     const p = fakeProps();
     const { container, queryByRole } = render(<Bot {...p} />);
 
     fireEvent.click(container.querySelector(
-      "[name='bot-jog-x-near-positive']",
+      "[name='bot-jog-x-near-control']",
     ) as Element);
 
     expect(queryByRole("heading")).not.toBeInTheDocument();
   });
 
-  it("clears a jog popup when movement becomes unavailable", () => {
+  it("keeps disabled controls open and closes when actions disappear", () => {
     jest.useFakeTimers();
     const p = fakeProps();
     p.axisActions = {
@@ -434,20 +438,26 @@ describe("<Bot />", () => {
       dispatch: jest.fn(),
       firmwareSettings: fakeBot.hardware.mcu_params,
       locked: false,
+      stepSize: 100,
     };
     const result = render(<Bot {...p} />);
-    const positive = () => result.container.querySelector(
-      "[name='bot-jog-x-near-positive']",
+    const control = () => result.container.querySelector(
+      "[name='bot-jog-x-near-control']",
     ) as Element;
-    fireEvent.click(positive());
+    fireEvent.click(control());
     expect(result.queryByRole("heading", { name: "X: 100" }))
       .toBeInTheDocument();
 
     p.axisActions = { ...p.axisActions, locked: true };
     result.rerender(<Bot {...p} />);
-    act(() => jest.runOnlyPendingTimers());
-    p.axisActions = { ...p.axisActions, locked: false };
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
+    expect(result.getByRole("button", { name: "Jog +X" }))
+      .toBeDisabled();
+
+    p.axisActions = undefined;
     result.rerender(<Bot {...p} />);
+    act(() => jest.runOnlyPendingTimers());
 
     expect(result.queryByRole("heading", { name: "X: 100" }))
       .not.toBeInTheDocument();

@@ -529,7 +529,11 @@ export const PrivateOverlay = (props: OverlayProps) => {
     searchInputRef.current?.focus();
   }, []);
   return <div className={"all-configs"}
-    onKeyDown={e => e.key == "Escape" && closeConfig()}>
+    onKeyDown={event => {
+      if (event.key != "Escape") { return; }
+      event.preventDefault();
+      closeConfig();
+    }}>
     <div className={"config-title"}
       onClick={() => setExpanded(!expanded)}>
       <p className={"config-expand-toggle"}>

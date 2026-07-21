@@ -209,13 +209,60 @@
     .object-popup-content {
       .native-jog-popup-actions {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 0.5rem;
 
         .fb-button {
+          display: grid;
+          place-items: center;
           width: 100%;
           margin: 0;
           padding: 0.5rem 0.25rem;
+
+          p {
+            margin: 0;
+            font-size: 1rem;
+          }
+        }
+
+        .home-button {
+          .fa-stack {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+          }
+
+          .fa-stack-2x {
+            top: 50%;
+            left: 50%;
+            width: auto;
+            margin: 0;
+            line-height: 1;
+            transform: translate(-50%, -50%);
+          }
+
+          .fa-stack-1x {
+            top: 5%;
+            left: 5%;
+            width: auto;
+            margin: 0;
+            line-height: 1;
+          }
+        }
+      }
+
+      .move-amount-wrapper {
+        display: flex;
+        width: 100%;
+        box-shadow: none;
+
+        .move-amount {
+          flex: 1;
+          width: auto;
         }
       }
 
@@ -223,10 +270,6 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 0.5rem;
-
-        label {
-          grid-column: 1 / -1;
-        }
 
         input {
           width: 100%;
@@ -265,6 +308,33 @@
           gap: 1rem;
           align-items: center;
           margin: 0;
+        }
+      }
+
+      .native-jog-more-options {
+        display: grid;
+        gap: 1rem;
+
+        .native-jog-more-option-actions {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0.5rem;
+
+          .fb-button {
+            width: 100%;
+            margin: 0;
+          }
+        }
+
+        a {
+          display: block;
+          padding: 0.5rem;
+          font-size: 1.2rem;
+          text-decoration: none !important;
+
+          .fa-external-link {
+            float: right;
+          }
         }
       }
 

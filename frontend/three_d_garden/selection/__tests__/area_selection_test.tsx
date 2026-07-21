@@ -8,6 +8,7 @@ import { Vector3 } from "three";
 import * as ui from "../../../ui";
 import { INITIAL } from "../../config";
 import * as controls from "../../controls";
+import { getWorldPositionFunc } from "../../helpers";
 import {
   AREA_SELECTION_GHOST_SIZE, areaSelectionPointTypes,
   areaSelectionTitle, GardenAreaSelectionOverlay,
@@ -77,7 +78,9 @@ describe("<GardenAreaSelectionOverlay />", () => {
     onPointTypeChange: jest.fn(),
   });
   const mockLine = () => jest.spyOn(threeDrei, "Line")
-    .mockImplementation(props => <div data-testid={props.name} />);
+    .mockImplementation(props => <div
+      data-testid={props.name}
+      data-line-width={props.lineWidth} />);
 
   it("shows and hides the shift-hover ghost", () => {
     const lineSpy = mockLine();
@@ -121,6 +124,31 @@ describe("<GardenAreaSelectionOverlay />", () => {
     lineSpy.mockRestore();
   });
 
+  it("shows the live selection count while drawing", () => {
+    const lineSpy = mockLine();
+    const labelSpy = jest.spyOn(controls, "ControlLabel")
+      .mockImplementation(props => <i data-testid={props.name}>
+        {props.children}
+      </i>);
+    const p = props();
+    p.selectedCount = 28;
+    p.selection = {
+      phase: "drawing",
+      pointType: "Plant",
+      box: { x0: 100, y0: 200, x1: 500, y1: 600 },
+    };
+    render(<GardenAreaSelectionOverlay {...p} />);
+
+    expect(screen.getByTestId("area-selection-count-label"))
+      .toHaveTextContent("28 plants");
+    expect(labelSpy).toHaveBeenCalledWith(expect.objectContaining({
+      position: getWorldPositionFunc(config)({ x: 500, y: 600, z: -20 }),
+      enabled: false,
+    }), undefined);
+    labelSpy.mockRestore();
+    lineSpy.mockRestore();
+  });
+
   it("renders completed controls and popup actions", () => {
     const lineSpy = mockLine();
     const handleSpy = jest.spyOn(controls, "ControlHandle")
@@ -143,15 +171,13 @@ describe("<GardenAreaSelectionOverlay />", () => {
           {children}
         </button>;
       });
-    const sphereSpy = jest.spyOn(controls, "ControlSphere")
-      .mockImplementation(props => <i
-        data-testid={props.name}
-        data-color={props.color} />);
     const arrowSpy = jest.spyOn(controls, "ControlArrow")
       .mockImplementation(props => <i
         data-testid={props.name}
         data-color={props.color}
-        data-heads={props.heads} />);
+        data-heads={props.heads}
+        data-start={JSON.stringify(props.start)}
+        data-end={JSON.stringify(props.end)} />);
     const selectSpy = jest.spyOn(ui, "FBSelect")
       .mockImplementation(((props: React.ComponentProps<typeof ui.FBSelect>) =>
         <select
@@ -175,23 +201,30 @@ describe("<GardenAreaSelectionOverlay />", () => {
       pointType: "Plant",
       box: { x0: 100, y0: 200, x1: 500, y1: 600 },
     };
-    render(
+    const { rerender } = render(
       <GardenAreaSelectionOverlay {...p} />,
     );
     expect(screen.getByTestId("area-selection-rectangle"))
       .toBeInTheDocument();
+    expect(screen.getByTestId("area-selection-rectangle"))
+      .toHaveAttribute("data-line-width", "3");
     expect(screen.getAllByTestId(/area-selection-.*-control/))
       .toHaveLength(4);
-    const spheres = screen.getAllByTestId(/area-selection-.*-sphere/);
     const arrows = screen.getAllByTestId(/area-selection-.*-arrow/);
-    expect(spheres).toHaveLength(4);
     expect(arrows).toHaveLength(4);
-    spheres.forEach(sphere => expect(sphere)
-      .toHaveAttribute("data-color", "dodgerblue"));
     arrows.forEach(arrow => {
       expect(arrow).toHaveAttribute("data-color", "dodgerblue");
-      expect(arrow).toHaveAttribute("data-heads", "both");
+      expect(arrow).toHaveAttribute("data-heads", "end");
+      expect(arrow).toHaveAttribute("data-start", "[0,0,0]");
     });
+    expect(screen.getByTestId("area-selection-x0-arrow"))
+      .toHaveAttribute("data-end", "[-100,0,0]");
+    expect(screen.getByTestId("area-selection-x1-arrow"))
+      .toHaveAttribute("data-end", "[100,0,0]");
+    expect(screen.getByTestId("area-selection-y0-arrow"))
+      .toHaveAttribute("data-end", "[0,-100,0]");
+    expect(screen.getByTestId("area-selection-y1-arrow"))
+      .toHaveAttribute("data-end", "[0,100,0]");
     expect(screen.getByRole("heading", { name: "3 plants" }))
       .toBeInTheDocument();
     expect(screen.getByLabelText("selection-type")).toHaveValue("Plant");
@@ -216,8 +249,14 @@ describe("<GardenAreaSelectionOverlay />", () => {
     expect(p.onDelete).toHaveBeenCalled();
     expect(p.onCreateGroup).toHaveBeenCalled();
     expect(p.onClose).toHaveBeenCalled();
+    rerender(<GardenAreaSelectionOverlay
+      {...p}
+      config={{ ...p.config, mirrorX: true, mirrorY: true }} />);
+    expect(screen.getByTestId("area-selection-x0-arrow"))
+      .toHaveAttribute("data-end", "[100,0,0]");
+    expect(screen.getByTestId("area-selection-y1-arrow"))
+      .toHaveAttribute("data-end", "[0,-100,0]");
     handleSpy.mockRestore();
-    sphereSpy.mockRestore();
     arrowSpy.mockRestore();
     selectSpy.mockRestore();
     lineSpy.mockRestore();
