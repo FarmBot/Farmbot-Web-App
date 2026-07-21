@@ -110,7 +110,7 @@ const GROUND_TEXTURE_FOR_SCENE: Record<string, string> = {
   Mars: "sand",
 };
 
-const GROUND_TEXTURE_NUM_FROM_SCENE_NUM: Record<number, number> =
+export const GROUND_TEXTURE_NUM_FROM_SCENE_NUM: Record<number, number> =
   Object.entries(GROUND_TEXTURE_FOR_SCENE)
     .reduce((acc, [sceneName, textureName]) => {
       const sceneNum = Number(Object.entries(SCENES)

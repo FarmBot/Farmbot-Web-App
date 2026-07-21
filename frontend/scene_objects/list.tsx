@@ -22,14 +22,22 @@ import {
   HOVER_ALL_SCENE_OBJECTS, staticSceneObjects,
 } from "../three_d_garden/scene_objects";
 import {
-  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENE_DDI_LIST, SCENE_DDIS,
+  findOrCreate3DConfigFunction, get3DConfigValueFunction,
+  GROUND_TEXTURE_NUM_FROM_SCENE_NUM, SCENE_DDI_LIST, SCENE_DDIS,
   SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { FBSelect, ToggleButton } from "../ui";
 import { TaggedSceneObject } from "farmbot";
-import { getWebAppConfigValue, setWebAppConfigValue } from "../config_storage/actions";
+import {
+  getWebAppConfigValue, setWebAppConfigValue,
+} from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+
+const SCENE_CHOICES = ["Outdoor", "Lab", "Greenhouse", "Custom"];
+
+const sceneImage = (scene: string) =>
+  `/app-resources/img/scenes/${scene.toLowerCase()}.avif`;
 
 export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
   dispatch: props.dispatch,
@@ -133,10 +141,64 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   }, [dispatch, featuredOpen, libScene]);
   const groundTextureNum =
     get3DConfigValueFunction(props.farmwareEnvs)("groundTexture");
+  const sceneNum = get3DConfigValueFunction(props.farmwareEnvs)("scene");
+  const sceneName = SCENES[sceneNum];
+  const [showSceneSelection, setShowSceneSelection] = React.useState(false);
+  const selectScene = (newSceneName: string) => {
+    const newSceneNum = SCENE_NUM_FROM_NAME[newSceneName];
+    if (newSceneNum == sceneNum) {
+      if (newSceneName == "Custom") { setShowSceneSelection(false); }
+      return;
+    }
+    if (newSceneName != "Custom" && sceneObjects.length > 0) {
+      if (!window.confirm(t(Content.CONFIRM_SCENE_CHANGE,
+        { count: sceneObjects.length }))) {
+        return;
+      }
+      sceneObjects.map(sceneObject =>
+        dispatch(destroy(sceneObject.uuid)));
+    }
+    const findOrCreate = findOrCreate3DConfigFunction(
+      dispatch, props.farmwareEnvs);
+    findOrCreate("scene", "" + newSceneNum);
+    findOrCreate("groundTexture",
+      "" + GROUND_TEXTURE_NUM_FROM_SCENE_NUM[newSceneNum]);
+    if (newSceneName == "Custom") { setShowSceneSelection(false); }
+  };
+  if (sceneName != "Custom" || showSceneSelection) {
+    return <DesignerPanel
+      panelName={"scene-objects-inventory"}
+      panel={Panel.SceneObjects}>
+      <DesignerPanelContent panelName={"scene-objects-inventory"}>
+        <div className={"scene-selection-grid"}>
+          {SCENE_CHOICES.map(scene =>
+            <button type={"button"}
+              key={scene}
+              className={["scene-selection-tile",
+                sceneName == scene ? "selected" : ""].join(" ")}
+              aria-pressed={sceneName == scene}
+              onClick={() => selectScene(scene)}>
+              <img src={sceneImage(scene)} alt={""} />
+              <span>
+                {t(scene)}
+                {scene == "Custom" &&
+                  <i className={"fa fa-external-link"} />}
+              </span>
+            </button>)}
+        </div>
+      </DesignerPanelContent>
+    </DesignerPanel>;
+  }
   return <DesignerPanel
     panelName={"scene-objects-inventory"}
     panel={Panel.SceneObjects}>
     <DesignerPanelTop panel={Panel.SceneObjects} withButton={true}>
+      <button type={"button"}
+        className={"fb-button gray scene-selection-return"}
+        title={t("back to scene selection")}
+        onClick={() => setShowSceneSelection(true)}>
+        <i className={"fa fa-reply"} />
+      </button>
       <SearchField nameKey={"scene-objects"}
         searchTerm={searchTerm}
         placeholder={t("Search your scene objects...")}

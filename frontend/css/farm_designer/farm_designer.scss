@@ -154,6 +154,18 @@
   align-items: center;
 }
 
+.scene-objects-inventory-panel {
+  .panel-top.with-button {
+    grid-template-columns: auto 1fr auto;
+  }
+  .scene-selection-return {
+    margin: 0;
+    padding: 0;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
 .panel-content {
   %panel-item-base {
     font-size: 1rem;
@@ -201,6 +213,47 @@
   }
   .my-scene-object-search-item {
     grid-template-columns: 1fr auto;
+  }
+  .scene-selection-grid {
+    display: grid;
+    gap: 1.5rem 1rem;
+    padding: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scene-selection-tile {
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    background: var(--secondary-bg);
+    box-shadow: 0 4px 7px 2px $translucent;
+    transition: transform 0.2s ease;
+    &:hover,
+    &:focus-visible {
+      box-shadow: 0 5px 8px 2px rgba(0, 0, 0, 0.25);
+      transform: translateY(-1px);
+    }
+    &.selected {
+      border-color: $green;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: 10rem;
+      object-fit: cover;
+    }
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.8rem;
+    }
   }
   .scene-object-catalog-wrapper {
     .non-empty-state {

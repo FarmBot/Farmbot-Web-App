@@ -26,6 +26,135 @@ describe("<RawSceneObjects />", () => {
     showSceneObjects: true,
   });
 
+  const setScene = (props: SceneObjectsProps, value: string) => {
+    const scene = fakeFarmwareEnv();
+    scene.body.key = "3D_scene";
+    scene.body.value = value;
+    props.farmwareEnvs = [scene];
+    return scene;
+  };
+
+  it("shows the inventory for the Custom scene", () => {
+    const p = fakeProps();
+    setScene(p, "0");
+    const { container, getByPlaceholderText } =
+      render(<RawSceneObjects {...p} />);
+
+    expect(getByPlaceholderText("Search your scene objects...")).toBeTruthy();
+    expect(container.querySelector(".scene-selection-grid")).toBeFalsy();
+  });
+
+  it("returns to the scene tiles from the inventory", () => {
+    const p = fakeProps();
+    setScene(p, "0");
+    const { container, getByText, getByTitle } =
+      render(<RawSceneObjects {...p} />);
+    const returnButton = getByTitle("back to scene selection");
+    const search = container.querySelector(".thin-search-wrapper");
+
+    expect(returnButton.nextElementSibling).toBe(search);
+    fireEvent.click(returnButton);
+    expect(container.querySelectorAll(".scene-selection-tile")).toHaveLength(4);
+
+    fireEvent.click(getByText("Custom"));
+    expect(container.querySelector(".scene-selection-grid")).toBeFalsy();
+  });
+
+  it.each([
+    ["1", "Outdoor"],
+    ["2", "Lab"],
+    ["3", "Greenhouse"],
+    ["4", undefined],
+    ["999", undefined],
+    ["invalid", undefined],
+  ])("shows scene tiles for scene %s", (value, activeScene) => {
+    const p = fakeProps();
+    setScene(p, value);
+    const { container } = render(<RawSceneObjects {...p} />);
+    const tiles = container.querySelectorAll(".scene-selection-tile");
+    const selected = container.querySelectorAll(
+      ".scene-selection-tile[aria-pressed='true']");
+
+    expect(tiles).toHaveLength(4);
+    expect(Array.from(tiles).map(tile => tile.textContent))
+      .toEqual(["Outdoor", "Lab", "Greenhouse", "Custom"]);
+    expect(selected).toHaveLength(activeScene ? 1 : 0);
+    if (activeScene) {
+      expect(selected[0]).toHaveTextContent(activeScene);
+      expect(selected[0]).toHaveClass("selected");
+    }
+  });
+
+  it("switches to Custom and updates the ground texture", () => {
+    const edit = jest.spyOn(crud, "edit")
+      .mockImplementation((_resource, update) => update as never);
+    const save = jest.spyOn(crud, "save")
+      .mockImplementation(uuid => `save ${uuid}` as never);
+    const p = fakeProps();
+    const scene = setScene(p, "1");
+    const texture = fakeFarmwareEnv();
+    texture.body.key = "3D_groundTexture";
+    texture.body.value = "2";
+    p.farmwareEnvs.push(texture);
+    const { getByText } = render(<RawSceneObjects {...p} />);
+
+    fireEvent.click(getByText("Custom"));
+
+    expect(edit).toHaveBeenCalledWith(scene, { value: "0" });
+    expect(edit).toHaveBeenCalledWith(texture, { value: "0" });
+    expect(save).toHaveBeenCalledWith(scene.uuid);
+    expect(save).toHaveBeenCalledWith(texture.uuid);
+    edit.mockRestore();
+    save.mockRestore();
+  });
+
+  it("confirms before replacing scene objects with a preset", () => {
+    const destroy = jest.spyOn(crud, "destroy")
+      .mockImplementation(uuid => `destroy ${uuid}` as never);
+    const edit = jest.spyOn(crud, "edit")
+      .mockImplementation((_resource, update) => update as never);
+    const initSave = jest.spyOn(crud, "initSave")
+      .mockImplementation((_resource, body) => body as never);
+    const confirm = jest.spyOn(window, "confirm")
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    const p = fakeProps();
+    const scene = setScene(p, "1");
+    const { getByText } = render(<RawSceneObjects {...p} />);
+
+    fireEvent.click(getByText("Lab"));
+    expect(destroy).not.toHaveBeenCalled();
+    expect(edit).not.toHaveBeenCalled();
+    expect(initSave).not.toHaveBeenCalled();
+
+    fireEvent.click(getByText("Lab"));
+    expect(destroy).toHaveBeenCalledWith(p.sceneObjects[0].uuid);
+    expect(edit).toHaveBeenCalledWith(scene, { value: "2" });
+    expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "3D_groundTexture",
+      value: "2",
+    });
+    confirm.mockRestore();
+    destroy.mockRestore();
+    edit.mockRestore();
+    initSave.mockRestore();
+  });
+
+  it("does nothing when selecting the active scene", () => {
+    const edit = jest.spyOn(crud, "edit");
+    const destroy = jest.spyOn(crud, "destroy");
+    const p = fakeProps();
+    setScene(p, "1");
+    const { getByText } = render(<RawSceneObjects {...p} />);
+
+    fireEvent.click(getByText("Outdoor"));
+
+    expect(edit).not.toHaveBeenCalled();
+    expect(destroy).not.toHaveBeenCalled();
+    edit.mockRestore();
+    destroy.mockRestore();
+  });
+
   it("sets hovered scene object", () => {
     const p = fakeProps();
     const { getByText } = render(<RawSceneObjects {...p} />);
@@ -242,10 +371,7 @@ describe("<RawSceneObjects />", () => {
       .mockImplementation((_resource, body) =>
         `save ${(body as { name: string }).name}` as never);
     const p = fakeProps();
-    const scene = fakeFarmwareEnv();
-    scene.body.key = "3D_scene";
-    scene.body.value = "1";
-    p.farmwareEnvs = [scene];
+    setScene(p, "0");
     const { getByText, getByTitle } = render(<RawSceneObjects {...p} />);
 
     fireEvent.click(getByText("Featured Scene Objects (4)"));
@@ -261,10 +387,7 @@ describe("<RawSceneObjects />", () => {
       .mockImplementation((_resource, body) =>
         `save ${(body as { name: string }).name}` as never);
     const p = fakeProps();
-    const scene = fakeFarmwareEnv();
-    scene.body.key = "3D_scene";
-    scene.body.value = "1";
-    p.farmwareEnvs = [scene];
+    setScene(p, "0");
     const { container, getByText, getByTitle } =
       render(<RawSceneObjects {...p} />);
 
@@ -284,10 +407,7 @@ describe("<RawSceneObjects />", () => {
 
   it("disables featured scene objects that already exist", () => {
     const p = fakeProps();
-    const scene = fakeFarmwareEnv();
-    scene.body.key = "3D_scene";
-    scene.body.value = "1";
-    p.farmwareEnvs = [scene];
+    setScene(p, "0");
     p.sceneObjects[0].body.name = "Fence";
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
@@ -300,10 +420,7 @@ describe("<RawSceneObjects />", () => {
 
   it("dispatches hover actions for featured scene objects", () => {
     const p = fakeProps();
-    const scene = fakeFarmwareEnv();
-    scene.body.key = "3D_scene";
-    scene.body.value = "1";
-    p.farmwareEnvs = [scene];
+    setScene(p, "0");
     const { container, getByText } = render(<RawSceneObjects {...p} />);
     fireEvent.click(getByText("Featured Scene Objects (4)"));
 
@@ -330,10 +447,7 @@ describe("<RawSceneObjects />", () => {
       .mockImplementation((_resource, body) =>
         `save ${(body as { name: string }).name}` as never);
     const p = fakeProps();
-    const scene = fakeFarmwareEnv();
-    scene.body.key = "3D_scene";
-    scene.body.value = "1";
-    p.farmwareEnvs = [scene];
+    setScene(p, "0");
     p.sceneObjects = [];
     const { container, getByText } = render(<RawSceneObjects {...p} />);
 
