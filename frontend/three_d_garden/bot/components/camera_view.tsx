@@ -9,6 +9,7 @@ import { useSpring, animated } from "@react-spring/three";
 import { getBotVersion } from "../bot_versions";
 import { updateBufferGeometry } from "./owned_extrude_geometry";
 import { perfCount } from "../../../performance/perf";
+import { CameraOperationAnimations } from "./camera_operation_animations";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
@@ -46,6 +47,7 @@ export interface CameraViewProps {
   configPosition: PositionConfig;
   distanceToSoil: number;
   cameraMountPosition: THREE.Vector3;
+  getZ(x: number, y: number): number;
 }
 
 type CameraViewPointConfig = Pick<Config,
@@ -210,7 +212,11 @@ const CameraViewBase = (props: CameraViewProps) => {
     cameraMountZ,
   ]);
   return config.cameraView
-    ? <Frustum points={points} position={cameraLensPosition} config={config} />
+    ? <Frustum
+      points={points}
+      position={cameraLensPosition}
+      config={config}
+      getZ={props.getZ} />
     : <></>;
 };
 
@@ -224,6 +230,10 @@ const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "imgRotation",
   "imgScale",
   "lastImageCapture",
+  "cameraOperation",
+  "lastCameraOperation",
+  "calibrationCardGrid",
+  "animate",
   "negativeZ",
   "kitVersion",
 ];
@@ -237,6 +247,7 @@ export const cameraViewPropsEqual = (
   prev.cameraMountPosition.x === next.cameraMountPosition.x &&
   prev.cameraMountPosition.y === next.cameraMountPosition.y &&
   prev.cameraMountPosition.z === next.cameraMountPosition.z &&
+  prev.getZ === next.getZ &&
   CAMERA_VIEW_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -246,6 +257,7 @@ interface FrustumProps {
   points: THREE.Vector3[];
   position: THREE.Vector3;
   config: Config;
+  getZ(x: number, y: number): number;
 }
 
 const frustumFaces = [
@@ -345,5 +357,15 @@ const Frustum = (props: FrustumProps) => {
         transparent={true}
         opacity={0.75} />
     </LineSegments>
+    {props.config.cameraOperation &&
+      <CameraOperationAnimations
+        key={`${props.config.cameraOperation}-` +
+          props.config.lastCameraOperation}
+        operation={props.config.cameraOperation}
+        operationId={props.config.lastCameraOperation}
+        points={props.points}
+        cameraPosition={props.position}
+        config={props.config}
+        getZ={props.getZ} />}
   </AnimatedMesh>;
 };

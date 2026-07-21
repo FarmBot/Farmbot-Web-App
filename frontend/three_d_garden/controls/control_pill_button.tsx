@@ -15,7 +15,8 @@ export interface ControlPillButtonProps {
   name: string;
   position: ControlPoint;
   rotation?: [number, number, number];
-  label: React.ReactNode;
+  label?: React.ReactNode;
+  icon?: React.ReactNode;
   length: number;
   width: number;
   thickness?: number;
@@ -130,21 +131,23 @@ const PillVisual = (props: PillVisualProps) => {
       }}>
       {material}
     </Extrude>
-    <ControlLabel
-      name={`${props.name}-label`}
-      position={[0, 0, props.thickness / 2 + 1]}
-      billboard={false}
-      fontSize={props.labelSize}
-      color={props.active
-        ? props.activeTextColor || CONTROL_COLORS.neutral
-        : props.textColor || "white"}
-      opacity={props.opacity}
-      transparent={props.transparent}
-      depthTest={props.depthTest ?? true}
-      depthWrite={props.depthWrite ?? true}
-      enabled={false}
-      renderOrder={(props.renderOrder || 0) + 1}>
-      {props.label}
-    </ControlLabel>
+    {props.icon}
+    {props.label !== undefined &&
+      <ControlLabel
+        name={`${props.name}-label`}
+        position={[0, 0, props.thickness / 2 + 1]}
+        billboard={false}
+        fontSize={props.labelSize}
+        color={props.active
+          ? props.activeTextColor || CONTROL_COLORS.neutral
+          : props.textColor || "white"}
+        opacity={props.opacity}
+        transparent={props.transparent}
+        depthTest={props.depthTest ?? true}
+        depthWrite={props.depthWrite ?? true}
+        enabled={false}
+        renderOrder={(props.renderOrder || 0) + 1}>
+        {props.label}
+      </ControlLabel>}
   </AnimatedGroup>;
 };

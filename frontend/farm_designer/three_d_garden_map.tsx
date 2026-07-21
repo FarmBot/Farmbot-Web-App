@@ -1,6 +1,9 @@
 import React from "react";
 import { ThreeDGarden } from "../three_d_garden";
-import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
+import {
+  cameraOperationDurationMs, CameraOperation, Config, INITIAL,
+  INITIAL_POSITION,
+} from "../three_d_garden/config";
 import { AxisNumberProperty, TaggedPlant } from "./map/interfaces";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import {
@@ -37,6 +40,8 @@ import {
   createPanelCameraStore, PanelCameraStore,
 } from "../three_d_garden/panel_camera";
 import { isEqual } from "lodash";
+import { forceOnline } from "../devices/must_be_online";
+import { envGet, prepopulateEnv } from "../photos/remote_env/selectors";
 
 export interface ThreeDGardenMapProps {
   gardenSize: AxisNumberProperty;
@@ -97,6 +102,34 @@ export const lastImageCaptureTime = (logs: TaggedLog[]): number => {
   for (const log of logs) {
     if (!log.body.id && log.body.message === "Taking photo") {
       latest = Math.max(latest, localIdFromUuid(log.uuid));
+    }
+  }
+  return latest;
+};
+
+const CAMERA_OPERATION_MESSAGES: Record<string, CameraOperation> = {
+  "Calibrating camera": "calibration",
+  "Executing Measure Soil Height": "soil-height",
+  "Running weed detector": "weeds",
+};
+
+export interface LatestCameraOperation {
+  type: CameraOperation;
+  startedAt: number;
+}
+
+export const latestCameraOperation = (
+  logs: TaggedLog[],
+): LatestCameraOperation => {
+  const latest: LatestCameraOperation = { type: "", startedAt: 0 };
+  for (const log of logs) {
+    const type = CAMERA_OPERATION_MESSAGES[log.body.message];
+    if (!log.body.id && type) {
+      const startedAt = localIdFromUuid(log.uuid);
+      if (startedAt > latest.startedAt) {
+        latest.type = type;
+        latest.startedAt = startedAt;
+      }
     }
   }
   return latest;
@@ -235,6 +268,18 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   const lastCaptureTime = React.useMemo(
     () => lastImageCaptureTime(props.logs),
     [props.logs]);
+  const cameraOperation = React.useMemo(
+    () => latestCameraOperation(props.logs),
+    [props.logs]);
+  const cameraOperationDuration = cameraOperationDurationMs(
+    props.bot?.hardware.informational_settings.target,
+    cameraOperation.type,
+    forceOnline(),
+  );
+  const calibrationCardGrid = !!envGet(
+    "CAMERA_CALIBRATION_easy_calibration",
+    prepopulateEnv(props.env),
+  );
   const sunPositionConfig = calcSunCoordinate(
     get3DTime(props.designer.threeDTime).toDate(),
     configValues.heading,
@@ -333,6 +378,10 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.viewpointHeading = viewpointHeading;
     nextConfig.cameraSelectionView = designer.threeDCameraSelection;
     nextConfig.lastImageCapture = lastCaptureTime;
+    nextConfig.cameraOperation = cameraOperation.type;
+    nextConfig.lastCameraOperation = cameraOperation.startedAt;
+    nextConfig.cameraOperationDurationMs = cameraOperationDuration;
+    nextConfig.calibrationCardGrid = calibrationCardGrid;
     return nextConfig;
   }, [
     animate,
@@ -345,6 +394,10 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     camCalData.imageRotation,
     camCalData.imageScale,
     cameraView,
+    cameraOperation.startedAt,
+    cameraOperation.type,
+    cameraOperationDuration,
+    calibrationCardGrid,
     configValues.ambient,
     configValues.axes,
     configValues.beamLength,

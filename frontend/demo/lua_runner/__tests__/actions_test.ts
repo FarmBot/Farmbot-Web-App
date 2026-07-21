@@ -3,6 +3,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import {
   fakeFbosConfig,
+  fakeFarmwareEnv,
   fakeFirmwareConfig,
   fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
@@ -46,6 +47,7 @@ describe("runActions()", () => {
     randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
     console.log = jest.fn();
     mockLocked = false;
+    sessionStorage.removeItem("soilSurfaceTriangles");
     (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
     (store as unknown as { getState: Function }).getState = mockGetState;
     eStop();
@@ -368,14 +370,13 @@ describe("expandActions()", () => {
           3,
         ],
       },
-      { type: "wait_ms", args: [12000] },
-      { type: "take_photo", args: [0, 0, 0] },
+      { type: "wait_ms", args: [3000] },
       {
         type: "send_message",
         args: [
-          "info",
-          "Uploaded image:",
-          "",
+          "success",
+          "Camera calibration complete.",
+          "toast",
           "{\"x\":0,\"y\":0,\"z\":0}",
           3,
         ],
@@ -384,6 +385,23 @@ describe("expandActions()", () => {
   });
 
   it("expands detect_weeds", () => {
+    const useBounds = fakeFarmwareEnv();
+    useBounds.body.key = "WEED_DETECTOR_use_bounds";
+    useBounds.body.value = "\"FALSE\"";
+    mockResources = buildResourceIndex([
+      fakeFirmwareConfig(),
+      fakeFbosConfig(),
+      fakeWebAppConfig(),
+      useBounds,
+    ]);
+    randomSpy.mockReset()
+      .mockReturnValueOnce(2)
+      .mockReturnValueOnce(-240)
+      .mockReturnValueOnce(-320)
+      .mockReturnValueOnce(10)
+      .mockReturnValueOnce(240)
+      .mockReturnValueOnce(320)
+      .mockReturnValueOnce(30);
     expect(expandActions([
       { type: "detect_weeds", args: [] },
     ], [])).toEqual([
@@ -397,35 +415,78 @@ describe("expandActions()", () => {
           3,
         ],
       },
-      { type: "wait_ms", args: [12000] },
-      { type: "take_photo", args: [0, 0, 0] },
+      { type: "wait_ms", args: [3000] },
       {
-        type: "send_message",
-        args: [
-          "info",
-          "Uploaded image:",
-          "",
-          "{\"x\":0,\"y\":0,\"z\":0}",
-          3,
-        ],
+        type: "create_point",
+        args: [JSON.stringify({
+          name: "Weed",
+          pointer_type: "Weed",
+          x: -240,
+          y: -320,
+          z: -500,
+          meta: { color: "red", created_by: "plant-detection" },
+          radius: 10,
+          plant_stage: "pending",
+        })],
       },
       {
         type: "create_point",
         args: [JSON.stringify({
           name: "Weed",
           pointer_type: "Weed",
-          x: 0,
-          y: 0,
+          x: 240,
+          y: 320,
           z: -500,
           meta: { color: "red", created_by: "plant-detection" },
-          radius: 50,
+          radius: 30,
           plant_stage: "pending",
         })],
       },
     ]);
+    expect(randomSpy.mock.calls).toEqual([
+      [2, 5],
+      [-240, 240],
+      [-320, 320],
+      [10, 30],
+      [-240, 240],
+      [-320, 320],
+      [10, 30],
+    ]);
+  });
+
+  it("keeps detected weeds inside garden bounds when configured", () => {
+    randomSpy.mockReset()
+      .mockReturnValueOnce(2)
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(10)
+      .mockReturnValueOnce(240)
+      .mockReturnValueOnce(320)
+      .mockReturnValueOnce(30);
+    const weeds = expandActions([
+      { type: "detect_weeds", args: [] },
+    ], []).filter(action => action.type == "create_point");
+    expect(weeds.map(weed => JSON.parse("" + weed.args[0])))
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ x: 0, y: 0 }),
+        expect.objectContaining({ x: 240, y: 320 }),
+      ]));
+    expect(randomSpy.mock.calls).toEqual([
+      [2, 5],
+      [0, 240],
+      [0, 320],
+      [10, 30],
+      [0, 240],
+      [0, 320],
+      [10, 30],
+    ]);
   });
 
   it("expands measure_soil_height", () => {
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.soil_height = -425;
+    mockResources = buildResourceIndex([fbosConfig]);
+    randomSpy.mockReturnValue(50);
     expect(expandActions([
       { type: "measure_soil_height", args: [] },
     ], [])).toEqual([
@@ -439,18 +500,7 @@ describe("expandActions()", () => {
           3,
         ],
       },
-      { type: "wait_ms", args: [12000] },
-      { type: "take_photo", args: [0, 0, 0] },
-      {
-        type: "send_message",
-        args: [
-          "info",
-          "Uploaded image:",
-          "",
-          "{\"x\":0,\"y\":0,\"z\":0}",
-          3,
-        ],
-      },
+      { type: "wait_ms", args: [3000] },
       {
         type: "create_point",
         args: [JSON.stringify({
@@ -458,12 +508,21 @@ describe("expandActions()", () => {
           pointer_type: "GenericPointer",
           x: 0,
           y: 0,
-          z: -500,
+          z: -375,
           meta: { at_soil_level: "true" },
           radius: 0,
         })],
       },
     ]);
+    expect(randomSpy).toHaveBeenCalledWith(-50, 50);
+
+    fbosConfig.body.soil_height = undefined;
+    mockResources = buildResourceIndex([fbosConfig]);
+    randomSpy.mockReturnValue(0);
+    const fallback = expandActions([
+      { type: "measure_soil_height", args: [] },
+    ], []).find(action => action.type == "create_point");
+    expect(JSON.parse("" + fallback?.args[0]).z).toEqual(-500);
   });
 });
 

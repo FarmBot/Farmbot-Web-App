@@ -3,7 +3,7 @@ import * as deviceModule from "../../../device";
 
 import { scanImage, detectPlants } from "../actions";
 import { error } from "../../../toast/toast";
-import { FarmwareName } from "../../../sequences/step_tiles/tile_execute_script";
+import * as photoActions from "../../actions";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -40,18 +40,22 @@ describe("scanImage()", () => {
 
 describe("detectPlants()", () => {
   it("executes", () => {
+    const detectWeeds = jest.spyOn(photoActions, "detectWeeds")
+      .mockImplementation(jest.fn());
     detectPlants(1)();
-    expect(mockDevice.execScript)
-      .toHaveBeenCalledWith(FarmwareName.PlantDetection, undefined);
+    expect(detectWeeds).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
+    detectWeeds.mockRestore();
   });
 
-  it("handles error", async () => {
-    mockDevice.execScript = jest.fn(() => Promise.reject());
-    await detectPlants(1)();
-    expect(mockDevice.execScript)
-      .toHaveBeenCalledWith(FarmwareName.PlantDetection, undefined);
-    expect(error).not.toHaveBeenCalled();
+  it("executes for demo accounts without prior calibration", () => {
+    localStorage.setItem("myBotIs", "online");
+    const detectWeeds = jest.spyOn(photoActions, "detectWeeds")
+      .mockImplementation(jest.fn());
+    detectPlants(0)();
+    expect(detectWeeds).toHaveBeenCalled();
+    detectWeeds.mockRestore();
+    localStorage.removeItem("myBotIs");
   });
 
   it("does not execute", () => {

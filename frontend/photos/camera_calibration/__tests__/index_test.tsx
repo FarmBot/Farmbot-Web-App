@@ -1,8 +1,9 @@
 const mockScanImage = jest.fn();
+const mockCalibrate = jest.fn();
 
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { CameraCalibration } from "..";
+import { CalibrationCardSVG, CameraCalibration } from "..";
 import { CameraCalibrationProps } from "../interfaces";
 import * as actions from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
@@ -21,7 +22,9 @@ let cameraCalibrationConfigSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockScanImage.mockClear();
-  calibrateSpy = jest.spyOn(actions, "calibrate").mockImplementation(jest.fn());
+  mockCalibrate.mockClear();
+  calibrateSpy = jest.spyOn(actions, "calibrate")
+    .mockImplementation(jest.fn(() => mockCalibrate));
   scanImageSpy = jest.spyOn(actions, "scanImage")
     .mockImplementation(jest.fn(() => mockScanImage) as never);
   imageWorkspaceSpy = jest.spyOn(imageWorkspaceModule, "ImageWorkspace")
@@ -138,6 +141,9 @@ describe("<CameraCalibration/>", () => {
     const button = screen.getByRole("button", { name: /calibrate/i });
     expect(button).toHaveTextContent("Calibrate");
     expect(button).not.toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(button);
+    expect(actions.calibrate).toHaveBeenCalled();
+    expect(mockCalibrate).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -181,5 +187,15 @@ describe("<CameraCalibration/>", () => {
       .toBeInTheDocument();
     expect(screen.queryByText(Content.CAMERA_CALIBRATION_RED_OBJECTS))
       .toBeNull();
+  });
+
+  it("renders both calibration card faces", () => {
+    const { container, rerender } = render(<CalibrationCardSVG grid={true} />);
+    expect(container.querySelector("#back")).toBeTruthy();
+    expect(container.querySelectorAll("#back circle")).toHaveLength(35);
+    rerender(<CalibrationCardSVG grid={false} />);
+    expect(container.querySelector("#front")).toBeTruthy();
+    expect(container.querySelectorAll("#front circle")).toHaveLength(5);
+    expect(container.querySelectorAll("#front line")).toHaveLength(7);
   });
 });

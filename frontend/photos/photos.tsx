@@ -14,7 +14,9 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader, ToolTip } from "../ui";
 import { Actions, ToolTips } from "../constants";
 import { requestFarmwareUpdate } from "../farmware/farmware_info";
-import { isBotOnline, MustBeOnline } from "../devices/must_be_online";
+import {
+  forceOnline, isBotOnline, MustBeOnline,
+} from "../devices/must_be_online";
 import { CaptureSettings } from "./capture_settings";
 import {
   PhotoFilterSettings, FiltersEnabledWarning,
@@ -32,6 +34,7 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { takePhoto } from "../devices/actions";
 import { cameraBtnProps } from "./capture_settings/camera_selection";
 import { downloadProgress } from "../settings/fbos_settings/os_update_button";
+import { measureSoilHeight } from "./actions";
 
 const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
@@ -189,6 +192,7 @@ export const RawDesignerPhotos = (props: DesignerPhotosProps) => {
           dispatch={props.dispatch}
           docPage={"measure-soil-height"} />
         {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
+          && !forceOnline()
           ? <FarmwareForm
             farmware={props.farmwares[FarmwareName.MeasureSoilHeight]}
             env={props.env}
@@ -200,7 +204,10 @@ export const RawDesignerPhotos = (props: DesignerPhotosProps) => {
               BooleanSetting.show_advanced_settings)}
             dispatch={props.dispatch} />
           : <div className={"farmware-form"}>
-            <button className={"fb-button green farmware-button pseudo-disabled"}>
+            <button
+              className={"fb-button green farmware-button"}
+              disabled={!botOnline}
+              onClick={() => { void measureSoilHeight(); }}>
               {t("measure")}
             </button>
           </div>}

@@ -1,8 +1,8 @@
 import React from "react";
 import { Billboard, Line } from "@react-three/drei";
-import { Plane } from "three";
+import { Plane, Shape } from "three";
 import { Config, PositionConfig } from "./config";
-import { Group } from "./components";
+import { Group, Mesh, MeshBasicMaterial } from "./components";
 import { Text } from "./elements";
 import {
   get3DPositionFunc, getGardenPositionFunc,
@@ -43,7 +43,10 @@ export const SECTION_CONTROL_PILL_WIDTH = 80;
 export const SECTION_CONTROL_PILL_LABEL_SIZE = 26;
 export const SECTION_CONTROL_PILL_COLOR = "dimgray";
 export const SECTION_CONTROL_PILL_HOVER_COLOR = "gray";
-export const SECTION_AXIS_TOGGLE_OFFSET_REDUCTION = 50;
+export const SECTION_CLOSE_CONTROL_SIZE = 80;
+export const SECTION_CLOSE_CONTROL_GAP = 20;
+export const SECTION_CLOSE_CONTROL_COLOR = "#e66";
+export const SECTION_CLOSE_CONTROL_HOVER_COLOR = "#f00";
 export const SECTION_CONTROL_RENDER_ORDER = 1001;
 
 type Point = [number, number, number];
@@ -84,6 +87,7 @@ export interface SectionControlLayout {
   followLine: [Point, Point];
   centerHandles: [Point, Point];
   axisTogglePositions: [Point, Point];
+  closePositions: [Point, Point];
   followHandles: [Point, Point];
   followCenter: number;
   nearWidthArrowStart: Point;
@@ -130,8 +134,15 @@ export const getSectionControlLayout = (
   const axisTogglePositions = centerHandles.map((handle, index) => {
     const position = [...handle] as Point;
     position[transverseIndex] += (index == 0 ? -1 : 1)
-      * (SECTION_CONTROL_MARKER_RADIUS + SECTION_CONTROL_PILL_LENGTH / 2
-        - SECTION_AXIS_TOGGLE_OFFSET_REDUCTION);
+      * (SECTION_CONTROL_OFFSET - SECTION_FOLLOW_CONTROL_OFFSET);
+    return position;
+  }) as [Point, Point];
+  const closePositions = axisTogglePositions.map((handle, index) => {
+    const position = [...handle] as Point;
+    position[transverseIndex] += (index == 0 ? -1 : 1)
+      * (SECTION_CONTROL_PILL_WIDTH / 2
+        + SECTION_CLOSE_CONTROL_SIZE / 2
+        + SECTION_CLOSE_CONTROL_GAP);
     return position;
   }) as [Point, Point];
   return {
@@ -142,6 +153,7 @@ export const getSectionControlLayout = (
     followLine: guideLine(axis, utmAxisPosition, followExtent, z),
     centerHandles,
     axisTogglePositions,
+    closePositions,
     followHandles: [
       pointForAxis(axis, utmAxisPosition, -followExtent, z),
       pointForAxis(axis, utmAxisPosition, followExtent, z),
@@ -325,8 +337,14 @@ interface SectionPillProps {
   name: string;
   position: Point;
   rotation: number;
-  label: string;
+  label?: string;
+  icon?: React.ReactNode;
   active?: boolean;
+  length?: number;
+  width?: number;
+  labelSize?: number;
+  color?: string;
+  hoverColor?: string;
   opacity: number;
   interactive: boolean;
   onClick(): void;
@@ -338,12 +356,13 @@ const SectionPill = (props: SectionPillProps) => {
     position={props.position}
     rotation={[0, 0, props.rotation]}
     label={props.label}
-    length={SECTION_CONTROL_PILL_LENGTH}
-    width={SECTION_CONTROL_PILL_WIDTH}
+    icon={props.icon}
+    length={props.length ?? SECTION_CONTROL_PILL_LENGTH}
+    width={props.width ?? SECTION_CONTROL_PILL_WIDTH}
     thickness={10}
-    labelSize={SECTION_CONTROL_PILL_LABEL_SIZE}
-    color={SECTION_CONTROL_PILL_COLOR}
-    hoverColor={SECTION_CONTROL_PILL_HOVER_COLOR}
+    labelSize={props.labelSize ?? SECTION_CONTROL_PILL_LABEL_SIZE}
+    color={props.color ?? SECTION_CONTROL_PILL_COLOR}
+    hoverColor={props.hoverColor ?? SECTION_CONTROL_PILL_HOVER_COLOR}
     activeColor={SECTION_CONTROL_ACTIVE_COLOR}
     activeHoverColor={SECTION_CONTROL_ACTIVE_HOVER_COLOR}
     active={props.active}
@@ -351,6 +370,43 @@ const SectionPill = (props: SectionPillProps) => {
     opacity={props.opacity}
     renderOrder={SECTION_CONTROL_RENDER_ORDER}
     onClick={props.onClick} />;
+};
+
+interface FontAwesomeXIconProps {
+  opacity: number;
+}
+
+const FontAwesomeXIcon = (props: FontAwesomeXIconProps) => {
+  const size = SECTION_CLOSE_CONTROL_SIZE * 0.55 * 0.75;
+  const shape = React.useMemo(() => {
+    const half = size / 2;
+    const inner = size * 0.16;
+    const corner = half - inner;
+    const result = new Shape();
+    const points = [
+      [-half, -corner], [-corner, -half], [0, -inner],
+      [corner, -half], [half, -corner], [inner, 0],
+      [half, corner], [corner, half], [0, inner],
+      [-corner, half], [-half, corner], [-inner, 0],
+    ];
+    result.moveTo(points[0][0], points[0][1]);
+    points.slice(1).map(point => result.lineTo(point[0], point[1]));
+    result.closePath();
+    return result;
+  }, [size]);
+  return <Group name={"font-awesome-x-icon"} position={[0, 0, 6]}>
+    <Mesh name={"font-awesome-x-icon-shape"}
+      raycast={sectionControlNoRaycast}
+      renderOrder={SECTION_CONTROL_RENDER_ORDER + 1}>
+      <shapeGeometry args={[shape]} />
+      <MeshBasicMaterial
+        color={"white"}
+        transparent={props.opacity < 1}
+        opacity={props.opacity}
+        depthTest={true}
+        depthWrite={true} />
+    </Mesh>
+  </Group>;
 };
 
 const SECTION_CONTROL_SIDES = ["negative", "positive"] as const;
@@ -468,7 +524,7 @@ export const SectionControls = (props: SectionControlsProps) => {
   const axisToggleAxis = axis == "x" ? "y" : "x";
   const axisToggleRotation = (axisToggleAxis == "x" ? Math.PI / 2 : 0)
     + (axis == "y" ? Math.PI : 0);
-  const followToggleRotation = axis == "x" ? 0 : Math.PI / 2;
+  const followToggleRotation = axis == "x" ? 0 : 3 * Math.PI / 2;
   React.useEffect(() => {
     const centerSynced = centerPreview !== undefined
       && centerDragging === undefined
@@ -624,6 +680,23 @@ export const SectionControls = (props: SectionControlsProps) => {
             props.gardenSize,
             dispatch,
           )} />)}
+      {SECTION_CONTROL_SIDES.map((side, index) =>
+        <SectionPill
+          key={side}
+          name={`section-close-${side}`}
+          position={layout.closePositions[index]}
+          rotation={axisToggleRotation + index * Math.PI}
+          icon={<FontAwesomeXIcon opacity={props.opacity} />}
+          length={SECTION_CLOSE_CONTROL_SIZE}
+          width={SECTION_CLOSE_CONTROL_SIZE}
+          color={SECTION_CLOSE_CONTROL_COLOR}
+          hoverColor={SECTION_CLOSE_CONTROL_HOVER_COLOR}
+          opacity={props.opacity}
+          interactive={props.interactive}
+          onClick={() => dispatch({
+            type: Actions.SET_3D_SECTION_OPEN,
+            payload: false,
+          })} />)}
       {centerDragPosition &&
         <Billboard follow={true} position={[
           centerDragPosition[0],

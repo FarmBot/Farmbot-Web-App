@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants, lastImageCaptureTime,
+  latestCameraOperation,
 } from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -10,7 +11,8 @@ import {
 import { render } from "@testing-library/react";
 import { clone, cloneDeep } from "lodash";
 import {
-  Config, INITIAL, SurfaceDebugOption,
+  CAMERA_OPERATION_RPI_DURATION_MS, Config,
+  DEMO_CAMERA_OPERATION_DURATION_MS, INITIAL, SurfaceDebugOption,
 } from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
@@ -20,6 +22,7 @@ import * as threeDGarden from "../../three_d_garden";
 import SunCalc from "suncalc";
 import { BooleanSetting } from "../../session_keys";
 import { namespace3D } from "../../settings/three_d_settings";
+import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
 
 let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
@@ -65,6 +68,13 @@ const otherLog = (localId: number) => {
   log.uuid = `Log.0.${localId}`;
   log.body.id = undefined;
   log.body.message = "Moving";
+  return log;
+};
+
+const operationLog = (localId: number, message: string, id?: number) => {
+  const log = otherLog(localId);
+  log.body.id = id;
+  log.body.message = message;
   return log;
 };
 
@@ -203,6 +213,13 @@ describe("<ThreeDGardenMap />", () => {
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("uses the selected calibration card face", () => {
+    const p = fakeProps();
+    p.env.CAMERA_CALIBRATION_easy_calibration = "\"FALSE\"";
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.calibrationCardGrid).toEqual(false);
   });
 
   it("converts props: unknown position", () => {
@@ -366,18 +383,59 @@ describe("<ThreeDGardenMap />", () => {
 
   it("converts props: logs", () => {
     const p = fakeProps();
-    p.logs = [cameraLog(123, 0)];
+    p.logs = [
+      cameraLog(123, 0),
+      operationLog(456, "Executing Measure Soil Height"),
+    ];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({
         lastImageCapture: 123,
+        cameraOperation: "soil-height",
+        lastCameraOperation: 456,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("uses the production camera-operation duration on an rpi", () => {
+    const p = fakeProps();
+    p.bot = cloneDeep(fakeBot);
+    p.bot.hardware.informational_settings.target = "rpi";
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.cameraOperationDurationMs)
+      .toEqual(CAMERA_OPERATION_RPI_DURATION_MS);
+  });
+
+  it("uses the three-second camera-operation duration in demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const p = fakeProps();
+    p.logs = [operationLog(456, "Running weed detector")];
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.cameraOperationDurationMs)
+      .toEqual(DEMO_CAMERA_OPERATION_DURATION_MS);
+  });
+
+  it("finds the latest unsaved camera operation log", () => {
+    expect(latestCameraOperation([
+      operationLog(100, "Calibrating camera"),
+      operationLog(999, "Running weed detector", 12),
+      otherLog(1000),
+      operationLog(300, "Executing Measure Soil Height"),
+      operationLog(200, "Running weed detector"),
+    ])).toEqual({ type: "soil-height", startedAt: 300 });
+    expect(latestCameraOperation([
+      operationLog(100, "Calibrating camera"),
+    ])).toEqual({ type: "calibration", startedAt: 100 });
+    expect(latestCameraOperation([
+      operationLog(100, "Running weed detector"),
+    ])).toEqual({ type: "weeds", startedAt: 100 });
+    expect(latestCameraOperation([otherLog(123)]))
+      .toEqual({ type: "", startedAt: 0 });
   });
 
   it("finds the latest unsaved camera capture log", () => {

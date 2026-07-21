@@ -6,6 +6,7 @@ import {
   fakeFirmwareConfig,
   fakeWebAppConfig,
   fakeFbosConfig,
+  fakeFarmwareEnv,
   fakePoint,
   fakeSequence, fakeTool,
   fakeToolSlot,
@@ -60,6 +61,7 @@ const mockGetState = () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
+  sessionStorage.removeItem("soilSurfaceTriangles");
   mockResources = buildResourceIndex([]);
   mockLocked = false;
   mockJobs = {};
@@ -1724,34 +1726,51 @@ describe("runDemoLuaCode()", () => {
     runDemoLuaCode("calibrate_camera()");
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
-    expect(info).not.toHaveBeenCalled();
-    expect(initSave).toHaveBeenCalledWith("Image", {
-      attachment_url: "http://localhost/soil.png",
-      created_at: expect.any(String),
-      meta: {
-        name: "demo.png",
-        x: 1,
-        y: 2,
-        z: 3,
-      },
-    });
+    expect(info).toHaveBeenCalledWith(
+      "Camera calibration complete.",
+      TOAST_OPTIONS().success,
+    );
+    expect(initSave).not.toHaveBeenCalled();
   });
 
   it("runs detect_weeds", () => {
+    const useBounds = fakeFarmwareEnv();
+    useBounds.body.key = "WEED_DETECTOR_use_bounds";
+    useBounds.body.value = "\"FALSE\"";
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([
+      fakeFbosConfig(),
+      firmwareConfig,
+      fakeWebAppConfig(),
+      useBounds,
+    ]);
+    randomSpy.mockReset()
+      .mockReturnValueOnce(2)
+      .mockReturnValueOnce(-240)
+      .mockReturnValueOnce(-320)
+      .mockReturnValueOnce(10)
+      .mockReturnValueOnce(240)
+      .mockReturnValueOnce(320)
+      .mockReturnValueOnce(30);
     setCurrent({ x: 1, y: 2, z: 3 });
     runDemoLuaCode("detect_weeds()");
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
-    expect(initSave).toHaveBeenCalledWith("Image", {
-      attachment_url: "http://localhost/soil.png",
-      created_at: expect.any(String),
+    expect(initSave).not.toHaveBeenCalledWith("Image", expect.anything());
+    expect(initSave).toHaveBeenCalledWith("Point", {
       meta: {
-        name: "demo.png",
-        x: 1,
-        y: 2,
-        z: 3,
+        color: "red",
+        created_by: "plant-detection",
       },
+      name: "Weed",
+      plant_stage: "pending",
+      pointer_type: "Weed",
+      radius: 10,
+      x: -239,
+      y: -318,
+      z: -500,
     });
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: {
@@ -1761,29 +1780,25 @@ describe("runDemoLuaCode()", () => {
       name: "Weed",
       plant_stage: "pending",
       pointer_type: "Weed",
-      radius: 50,
-      x: 1,
-      y: 2,
+      radius: 30,
+      x: 241,
+      y: 322,
       z: -500,
     });
+    expect(initSave).toHaveBeenCalledTimes(2);
   });
 
   it("runs measure_soil_height", () => {
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.soil_height = -425;
+    mockResources = buildResourceIndex([fbosConfig]);
+    randomSpy.mockReturnValue(50);
     setCurrent({ x: 1, y: 2, z: 3 });
     runDemoLuaCode("measure_soil_height()");
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(info).not.toHaveBeenCalled();
-    expect(initSave).toHaveBeenCalledWith("Image", {
-      attachment_url: "http://localhost/soil.png",
-      created_at: expect.any(String),
-      meta: {
-        name: "demo.png",
-        x: 1,
-        y: 2,
-        z: 3,
-      },
-    });
+    expect(initSave).not.toHaveBeenCalledWith("Image", expect.anything());
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: {
         at_soil_level: "true",
@@ -1793,7 +1808,7 @@ describe("runDemoLuaCode()", () => {
       radius: 0,
       x: 1,
       y: 2,
-      z: -500,
+      z: -375,
     });
   });
 

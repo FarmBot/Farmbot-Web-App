@@ -138,7 +138,8 @@ describe("section controls", () => {
       farLine: [[-51, -300, -292.5], [-51, 300, -292.5]],
       followLine: [[-300, -400, -292.5], [-300, 400, -292.5]],
       centerHandles: [[0, -500, -292.5], [0, 500, -292.5]],
-      axisTogglePositions: [[0, -625, -292.5], [0, 625, -292.5]],
+      axisTogglePositions: [[0, -600, -292.5], [0, 600, -292.5]],
+      closePositions: [[0, -700, -292.5], [0, 700, -292.5]],
       followHandles: [[-300, -400, -292.5], [-300, 400, -292.5]],
       followCenter: 200,
       nearWidthArrowStart: [51, 0, -292.5],
@@ -168,7 +169,10 @@ describe("section controls", () => {
       [-700, 0, -292.5], [700, 0, -292.5],
     ]);
     expect(layout.axisTogglePositions).toEqual([
-      [-825, 0, -292.5], [825, 0, -292.5],
+      [-800, 0, -292.5], [800, 0, -292.5],
+    ]);
+    expect(layout.closePositions).toEqual([
+      [-900, 0, -292.5], [900, 0, -292.5],
     ]);
     expect(layout.followLine).toEqual([
       [-600, -200, -292.5], [600, -200, -292.5],
@@ -316,17 +320,17 @@ describe("section controls", () => {
     unmountRenderer(wrapper);
   });
 
-  it("renders pill controls that switch the section axis", () => {
+  it("renders pill controls that switch the axis and close section view", () => {
     const controlProps = props();
     const wrapper = createRenderer(<SectionControls {...controlProps} />);
     const pointerEvent = event(0, 0);
     const negative = axisToggle(wrapper, "section-axis-toggle-negative");
     expect(negative.props).toMatchObject({
-      position: [0, -625, -292.5],
+      position: [0, -600, -292.5],
       rotation: [0, 0, 0],
     });
     expect(axisToggle(wrapper).props).toMatchObject({
-      position: [0, 625, -292.5],
+      position: [0, 600, -292.5],
       rotation: [0, 0, Math.PI],
     });
     expect(negative.findByProps({
@@ -366,6 +370,28 @@ describe("section controls", () => {
     expect(pointerEvent.stopPropagation).toHaveBeenCalledTimes(4);
     expect(pointerEvent.nativeEvent.stopImmediatePropagation)
       .toHaveBeenCalledTimes(2);
+    const close = sphere(wrapper, "section-close-negative");
+    expect(close.props).toMatchObject({
+      position: [0, -700, -292.5],
+      rotation: [0, 0, 0],
+    });
+    expect(pillBody(wrapper, "section-close-negative").props.userData)
+      .toEqual({ length: 80, width: 80, thickness: 10 });
+    expect(close.findByProps({ name: "font-awesome-x-icon" })).toBeTruthy();
+    expect(close.findByProps({ name: "font-awesome-x-icon-shape" }))
+      .toBeTruthy();
+    expect(close.findAllByProps({
+      name: "section-close-negative-label",
+    })).toHaveLength(0);
+    expect(sphereColor(wrapper, "section-close-negative")).toEqual("#e66");
+    actRenderer(() => close.props.onPointerOver(pointerEvent));
+    expect(sphereColor(wrapper, "section-close-negative")).toEqual("#f00");
+    actRenderer(() => close.props.onPointerOut(pointerEvent));
+    actRenderer(() => close.props.onClick(pointerEvent));
+    expect(controlProps.dispatch).toHaveBeenNthCalledWith(3, {
+      type: Actions.SET_3D_SECTION_OPEN,
+      payload: false,
+    });
     const yPlanes = getSectionClippingPlanes(config(), "y", 300, 100);
     controlProps.designer.threeDSectionAxis = "y";
     actRenderer(() => wrapper.update(<SectionControls
@@ -378,6 +404,18 @@ describe("section controls", () => {
       .toEqual([0, 0, 3 * Math.PI / 2]);
     expect(axisToggle(wrapper).props.rotation)
       .toEqual([0, 0, 5 * Math.PI / 2]);
+    expect(sphere(wrapper, "section-follow-toggle-negative").props.rotation)
+      .toEqual([0, 0, 3 * Math.PI / 2]);
+    expect(sphere(wrapper, "section-follow-toggle-positive").props.rotation)
+      .toEqual([0, 0, 5 * Math.PI / 2]);
+    expect(sphere(wrapper, "section-close-negative").props).toMatchObject({
+      position: [-900, 0, -292.5],
+      rotation: [0, 0, 3 * Math.PI / 2],
+    });
+    expect(sphere(wrapper, "section-close-positive").props).toMatchObject({
+      position: [900, 0, -292.5],
+      rotation: [0, 0, 5 * Math.PI / 2],
+    });
     unmountRenderer(wrapper);
   });
 

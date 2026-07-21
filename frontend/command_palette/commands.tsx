@@ -88,6 +88,9 @@ import {
   DEFAULT_POINT_GRID_RADIUS,
   DEFAULT_POINT_GRID_SPACING,
 } from "../plants/grid/grid_math";
+import {
+  calibrateCamera, detectWeeds, measureSoilHeight,
+} from "../photos/actions";
 
 interface BuildCommandProps {
   state: Everything;
@@ -1357,6 +1360,9 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     ["status", "Read FarmBot status", readStatus],
     ["verify-tool", "Verify tool", verifyTool],
     ["photo", "Take photo", takePhoto],
+    ["calibrate-camera", "Calibrate Camera", calibrateCamera],
+    ["detect-weeds", "Detect Weeds", detectWeeds],
+    ["measure-soil-height", "Measure Soil Height", measureSoilHeight],
     ["reboot", "Reboot FarmBot", reboot],
     ["shutdown", "Shutdown FarmBot", powerOff],
     ["firmware-restart", "Restart firmware", restartFirmware],
@@ -1371,6 +1377,9 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
   };
   const imageIcons: Record<string, string> = {
     photo: TAB_ICON[Panel.Photos],
+    "calibrate-camera": TAB_ICON[Panel.Photos],
+    "detect-weeds": TAB_ICON[Panel.Photos],
+    "measure-soil-height": TAB_ICON[Panel.Photos],
     "verify-tool": TAB_ICON[Panel.Tools],
   };
   const priorities: Record<string, number> = {

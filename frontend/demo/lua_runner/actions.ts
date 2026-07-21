@@ -12,8 +12,10 @@ import { Action, XyzNumber } from "./interfaces";
 import * as crud from "../../api/crud";
 import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
-import { getFirmwareSettings, getGardenSize } from "./stubs";
-import { clamp, random } from "lodash";
+import {
+  getFbosSettings, getFirmwareSettings, getGardenSize, getSoilHeight,
+} from "./stubs";
+import { clamp, random, range } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { calculateMove } from "./calculate_move";
 import { t } from "../../i18next_wrapper";
@@ -23,6 +25,10 @@ import {
   cancelDemoMovement, demoMovementActive, startDemoMovement,
 } from "./movement";
 import { perfCount } from "../../performance/perf";
+import { DEMO_CAMERA_OPERATION_DURATION_MS } from
+  "../../three_d_garden/config";
+import { getEnv } from "../../farmware/state_to_props";
+import { envGet, prepopulateEnv } from "../../photos/remote_env/selectors";
 
 const clampTarget = (target: XyzNumber): XyzNumber => {
   const firmwareConfig = getFirmwareSettings();
@@ -41,6 +47,64 @@ const current = {
   x: 0,
   y: 0,
   z: 0,
+};
+
+// The TOP_LEFT demo camera origin rotates the 640x480 image footprint 90deg.
+const DEMO_CAMERA_VIEW_HALF_X = 240;
+const DEMO_CAMERA_VIEW_HALF_Y = 320;
+
+const weedDetectorUsesGardenBounds = () => !!envGet(
+  "WEED_DETECTOR_use_bounds",
+  prepopulateEnv(getEnv(store.getState().resources.index)),
+);
+
+const cameraViewAxisRange = (
+  center: number,
+  radius: number,
+  axisLength: number,
+) => [
+  clamp(center - radius, 0, axisLength),
+  clamp(center + radius, 0, axisLength),
+];
+
+const randomPointInCameraView = (
+  center: XyzNumber,
+  useGardenBounds: boolean,
+) => {
+  if (!useGardenBounds) {
+    return {
+      x: center.x + random(
+        -DEMO_CAMERA_VIEW_HALF_X,
+        DEMO_CAMERA_VIEW_HALF_X,
+      ),
+      y: center.y + random(
+        -DEMO_CAMERA_VIEW_HALF_Y,
+        DEMO_CAMERA_VIEW_HALF_Y,
+      ),
+    };
+  }
+  const gardenSize = getGardenSize();
+  const [xMin, xMax] = cameraViewAxisRange(
+    center.x,
+    DEMO_CAMERA_VIEW_HALF_X,
+    gardenSize.x,
+  );
+  const [yMin, yMax] = cameraViewAxisRange(
+    center.y,
+    DEMO_CAMERA_VIEW_HALF_Y,
+    gardenSize.y,
+  );
+  return {
+    x: random(xMin, xMax),
+    y: random(yMin, yMax),
+  };
+};
+
+const addPoint = (expanded: Action[], body: Point) => {
+  expanded.push({
+    type: "create_point",
+    args: [JSON.stringify(body)],
+  });
 };
 
 export const setCurrent = (position: XyzNumber) => {
@@ -135,11 +199,11 @@ export const expandActionsFromPosition = (
           "detect_weeds": "Running weed detector",
           "measure_soil_height": "Executing Measure Soil Height",
         };
-        const DELAYS = {
-          "take_photo": 5,
-          "calibrate_camera": 15,
-          "detect_weeds": 15,
-          "measure_soil_height": 15,
+        const WAIT_MS = {
+          "take_photo": 2000,
+          "calibrate_camera": DEMO_CAMERA_OPERATION_DURATION_MS,
+          "detect_weeds": DEMO_CAMERA_OPERATION_DURATION_MS,
+          "measure_soil_height": DEMO_CAMERA_OPERATION_DURATION_MS,
         };
         expanded.push({
           type: "send_message",
@@ -153,52 +217,74 @@ export const expandActionsFromPosition = (
         });
         expanded.push({
           type: "wait_ms",
-          args: [(DELAYS[action.type] - 3) * 1000],
+          args: [WAIT_MS[action.type]],
         });
-        expanded.push({
-          type: "take_photo",
-          args: [
-            expansionCurrent.x,
-            expansionCurrent.y,
-            expansionCurrent.z,
-          ],
-        });
-        expanded.push({
-          type: "send_message",
-          args: [
-            "info",
-            "Uploaded image:",
-            "",
-            JSON.stringify(expansionCurrent),
-            3,
-          ],
-        });
+        if (action.type === "calibrate_camera") {
+          expanded.push({
+            type: "send_message",
+            args: [
+              "success",
+              "Camera calibration complete.",
+              "toast",
+              JSON.stringify(expansionCurrent),
+              3,
+            ],
+          });
+          break;
+        }
+        if (action.type === "take_photo") {
+          expanded.push({
+            type: "take_photo",
+            args: [
+              expansionCurrent.x,
+              expansionCurrent.y,
+              expansionCurrent.z,
+            ],
+          });
+          expanded.push({
+            type: "send_message",
+            args: [
+              "info",
+              "Uploaded image:",
+              "",
+              JSON.stringify(expansionCurrent),
+              3,
+            ],
+          });
+          break;
+        }
         if (action.type === "measure_soil_height") {
           const body: Point = {
             name: "Soil Height",
             pointer_type: "GenericPointer",
             x: expansionCurrent.x,
             y: expansionCurrent.y,
-            z: -500 + random(-10, 10),
+            z: (getFbosSettings().soil_height ?? -500)
+              + random(-50, 50),
             meta: { at_soil_level: "true" },
             radius: 0,
           };
-          const point = JSON.stringify(body);
-          expanded.push({ type: "create_point", args: [point] });
+          addPoint(expanded, body);
         }
         if (action.type === "detect_weeds") {
-          const body: Point = {
-            name: "Weed",
-            pointer_type: "Weed",
-            x: expansionCurrent.x,
-            y: expansionCurrent.y,
-            z: -500,
-            meta: { color: "red", created_by: "plant-detection" },
-            radius: 50,
-            plant_stage: "pending",
-          };
-          const point = JSON.stringify(body);
-          expanded.push({ type: "create_point", args: [point] });
+          const useGardenBounds = weedDetectorUsesGardenBounds();
+          range(random(2, 5)).map(() => {
+            const position = randomPointInCameraView(
+              expansionCurrent,
+              useGardenBounds,
+            );
+            const body: Point = {
+              name: "Weed",
+              pointer_type: "Weed",
+              x: position.x,
+              y: position.y,
+              z: getSoilHeight(position.x, position.y),
+              meta: { color: "red", created_by: "plant-detection" },
+              radius: random(10, 30),
+              plant_stage: "pending",
+            };
+            addPoint(expanded, body);
+          });
         }
         break;
       case "find_home":

@@ -1,3 +1,5 @@
+import React from "react";
+import { fireEvent, render } from "@testing-library/react";
 import { buildCommands, validNumberInput } from "../commands";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions, Content } from "../../constants";
@@ -37,6 +39,8 @@ import * as threeDSettings from "../../settings/three_d_settings";
 import { findCropIcon } from "../../crops/metadata";
 import { Command } from "../interfaces";
 import { getWebAppConfig } from "../../resources/getters";
+import * as photoActions from "../../photos/actions";
+import * as screenSize from "../../screen_size";
 
 const firstInputOptions = (command: Command | undefined) =>
   command?.actions?.[0].input?.fields[0].options || [];
@@ -158,6 +162,9 @@ describe("buildCommands()", () => {
     expect(ids).toContain("farmbot:move:z");
     expect(ids).toContain("farmbot:move-to:coordinates");
     expect(ids).toContain("farmbot:verify-tool");
+    expect(ids).toContain("farmbot:calibrate-camera");
+    expect(ids).toContain("farmbot:detect-weeds");
+    expect(ids).toContain("farmbot:measure-soil-height");
     expect(ids).toContain("add:curve:water");
     expect(ids).toContain("add:curve:spread");
     expect(ids).toContain("add:curve:height");
@@ -214,6 +221,15 @@ describe("buildCommands()", () => {
         imageIcon: TAB_ICON[Panel.Photos],
         themeAwareImageIcon: true,
       });
+    [
+      "farmbot:calibrate-camera",
+      "farmbot:detect-weeds",
+      "farmbot:measure-soil-height",
+    ].map(id => expect(commands.find(command => command.id == id))
+      .toMatchObject({
+        imageIcon: TAB_ICON[Panel.Photos],
+        themeAwareImageIcon: true,
+      }));
     expect(commands.find(command =>
       command.id == "section:connectivity:history")?.icon).toEqual("wifi");
     expect(commands.find(command => command.id == "popup:jobs")?.icon)
@@ -264,6 +280,39 @@ describe("buildCommands()", () => {
         .toContain("farmbot:estop"));
     expect(searchCommands(commands, "Emergency unlock")
       .map(command => command.id)).toContain("farmbot:unlock");
+  });
+
+  it("includes keyboard help on larger screens", () => {
+    const isMobile = jest.spyOn(screenSize, "isMobile").mockReturnValue(false);
+    const commands = buildCommands({
+      state: fakeState(), dispatch: jest.fn(), navigate: jest.fn(),
+    });
+    expect(commands.find(command => command.id == "help:hotkeys"))
+      .toMatchObject({
+        name: "Help > Hotkeys",
+        icon: "keyboard-o",
+      });
+    isMobile.mockRestore();
+  });
+
+  it("renders and runs toggle accessories", () => {
+    const commands = buildCommands({
+      state: stateWithResources(), dispatch: jest.fn(), navigate: jest.fn(),
+    });
+    const setting = commands.find(command =>
+      command.id == "setting:dark_mode:toggle");
+    const peripheral = commands.find(command =>
+      command.id.startsWith("farmbot:peripheral:")
+      && command.accessory);
+    const runSetting = jest.fn();
+    const runPeripheral = jest.fn();
+    const { getAllByRole } = render(<>
+      {setting?.accessory?.(runSetting, true)}
+      {peripheral?.accessory?.(runPeripheral, false)}
+    </>);
+    getAllByRole("button").map(button => fireEvent.click(button));
+    expect(runSetting).toHaveBeenCalled();
+    expect(runPeripheral).toHaveBeenCalled();
   });
 
   it("groups time travel presets and popup access", () => {
@@ -1250,6 +1299,11 @@ describe("buildCommands()", () => {
     ];
     actionNames.map(name => jest.spyOn(deviceActions, name)
       .mockImplementation(jest.fn() as never));
+    const photoActionNames: (keyof typeof photoActions)[] = [
+      "calibrateCamera", "detectWeeds", "measureSoilHeight",
+    ];
+    photoActionNames.map(name => jest.spyOn(photoActions, name)
+      .mockImplementation(jest.fn() as never));
     jest.spyOn(deviceActions, "sync")
       .mockReturnValue("sync-action" as never);
     const commands = buildCommands({ state, dispatch, navigate });
@@ -1305,6 +1359,8 @@ describe("buildCommands()", () => {
     [
       "farmbot:estop", "farmbot:unlock", "farmbot:status",
       "farmbot:photo", "farmbot:verify-tool", "farmbot:reboot",
+      "farmbot:calibrate-camera", "farmbot:detect-weeds",
+      "farmbot:measure-soil-height",
       "farmbot:shutdown",
       "farmbot:firmware-restart", "farmbot:sync",
     ].map(id => execute(id));
@@ -1312,6 +1368,9 @@ describe("buildCommands()", () => {
     expect(deviceActions.emergencyUnlock).toHaveBeenCalledWith(true);
     expect(deviceActions.readStatus).toHaveBeenCalledTimes(1);
     expect(deviceActions.takePhoto).toHaveBeenCalledTimes(1);
+    expect(photoActions.calibrateCamera).toHaveBeenCalledTimes(1);
+    expect(photoActions.detectWeeds).toHaveBeenCalledTimes(1);
+    expect(photoActions.measureSoilHeight).toHaveBeenCalledTimes(1);
     expect(deviceActions.readPin).toHaveBeenCalledWith(52, "pin52", 0);
     expect(deviceActions.reboot).toHaveBeenCalledTimes(1);
     expect(deviceActions.powerOff).toHaveBeenCalledTimes(1);

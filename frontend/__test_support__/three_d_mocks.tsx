@@ -212,15 +212,32 @@ jest.mock("three/examples/jsm/helpers/VertexNormalsHelper.js", () => ({
 jest.mock("three/examples/jsm/lines/LineSegments2.js", () => ({
   LineSegments2: class {
     name = "";
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    constructor(_geometry: unknown, _material: unknown) { }
+    frustumCulled = true;
+    constructor(
+      public geometry: unknown,
+      public material: unknown,
+    ) { }
   }
 }));
 
 jest.mock("three/examples/jsm/lines/LineSegmentsGeometry.js", () => ({
   LineSegmentsGeometry: class {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    setPositions(_positions: number[]) { }
+    attributes: Record<string, unknown> = {};
+    setPositions = jest.fn((positions: Float32Array | number[]) => {
+      const data = {
+        array: positions,
+        needsUpdate: false,
+        setUsage: jest.fn(),
+      };
+      const attribute = {
+        data,
+        set needsUpdate(value: boolean) { data.needsUpdate = value; },
+      };
+      this.attributes.instanceStart = attribute;
+      this.attributes.instanceEnd = attribute;
+      return this;
+    });
+    getAttribute(name: string) { return this.attributes[name]; }
     dispose = jest.fn();
   }
 }));
@@ -228,8 +245,7 @@ jest.mock("three/examples/jsm/lines/LineSegmentsGeometry.js", () => ({
 jest.mock("three/examples/jsm/lines/LineMaterial.js", () => ({
   LineMaterial: class {
     resolution = { set: jest.fn() };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    constructor(_options: Record<string, unknown>) { }
+    constructor(public options: Record<string, unknown>) { }
     dispose = jest.fn();
   }
 }));

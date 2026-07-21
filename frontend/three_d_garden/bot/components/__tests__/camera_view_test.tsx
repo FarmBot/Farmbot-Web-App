@@ -17,6 +17,7 @@ describe("<CameraView />", () => {
     configPosition: clone(INITIAL_POSITION),
     distanceToSoil: 500,
     cameraMountPosition: new THREE.Vector3(100, 200, 300),
+    getZ: jest.fn(() => 0),
   });
 
   it("renders", () => {
@@ -44,6 +45,17 @@ describe("<CameraView />", () => {
     p.config.lastImageCapture = 123;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
+  });
+
+  it("renders camera operation animations", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.cameraOperation = "calibration";
+    p.config.lastCameraOperation = 123;
+    const wrapper = createRenderer(<CameraView {...p} />);
+    expect(wrapper.root.findByProps({ name: "camera-operation-animation" }))
+      .toBeTruthy();
+    unmountRenderer(wrapper);
   });
 
   it("runs capture opacity pulse", async () => {
@@ -136,6 +148,22 @@ describe("<CameraView />", () => {
     expect(cameraViewPropsEqual(p, {
       ...p,
       config: { ...p.config, lastImageCapture: p.config.lastImageCapture + 1 },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      getZ: () => 1,
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, cameraOperation: "weeds" },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, lastCameraOperation: 123 },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, animate: !p.config.animate },
     })).toBeFalsy();
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { docLinkClick, Color } from "../../ui";
+import { docLinkClick } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { WDENVKey } from "../remote_env/interfaces";
@@ -17,6 +17,7 @@ import { Content, DeviceSetting, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 import { ExternalUrl } from "../../external_urls";
 import { NavigateFunction, useNavigate } from "react-router";
+import { CalibrationCardSVG } from "./calibration_card";
 
 export const CameraCalibration = (props: CameraCalibrationProps) => {
   const navigate = useNavigate();
@@ -126,56 +127,4 @@ export const CameraCalibrationMethodConfig =
         </a>]}
       onChange={props.saveEnvVar} />;
 
-const WIDTH = 177;
-const HEIGHT = 127;
-const SCALE = 3;
-
-export const CalibrationCardSVG = (props: { grid: boolean }) =>
-  <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-    width={`${WIDTH / SCALE}px`}
-    height={`${HEIGHT / SCALE}px`}>
-    {props.grid ? <CardBack /> : <CardFront />}
-  </svg>;
-
-const RED_R = 5;
-const CX = 66;
-const CY = 64;
-
-const CardFront = () =>
-  <g id={"front"} fill={Color.red} stroke={Color.white} strokeWidth={1}>
-    <circle cx={17} cy={CY} r={RED_R} stroke={"none"} />
-    <circle cx={117} cy={CY} r={RED_R} stroke={"none"} />
-    <circle cx={CX} cy={CY} r={4} fill={Color.offWhite} stroke={"none"} />
-    <circle cx={117} cy={14} r={4} fill={Color.offWhite} stroke={"none"} />
-    <circle cx={CX} cy={CY} r={9}
-      fill={"none"} stroke={"cyan"} strokeWidth={2} />
-    <line x1={CX} y1={23} x2={CX} y2={49} />
-    <line x1={CX} y1={79} x2={CX} y2={105} />
-    <line x1={26} y1={CY} x2={52} y2={CY} />
-    <line x1={81} y1={CY} x2={108} y2={CY} />
-    <line x1={163} y1={8} x2={163} y2={118} strokeWidth={6}
-      stroke={Color.lightGray} />
-    <line x1={136} y1={8} x2={136} y2={118} strokeWidth={3}
-      stroke={Color.lightGray} />
-    <line x1={146} y1={17} x2={146} y2={111} strokeWidth={3}
-      stroke={Color.lightGray} />
-  </g>;
-
-const R = 6;
-const SPACING = 30;
-
-const CardBack = () =>
-  <g id={"back"} fill={Color.white}>
-    <pattern id={"5-dot-row"} patternUnits="userSpaceOnUse"
-      x={SPACING / 2} y={12} width={SPACING} height={SPACING}>
-      <circle cx={R} cy={R} r={R} />
-    </pattern>
-    <pattern id={"4-dot-row"} patternUnits="userSpaceOnUse"
-      x={SPACING} y={27} width={SPACING} height={SPACING}>
-      <circle cx={R} cy={R} r={R} />
-    </pattern>
-    <rect x={SPACING / 2} y={12} width={149} height={105}
-      fill={"url(#5-dot-row)"} />
-    <rect x={SPACING} y={26} width={135} height={89}
-      fill={"url(#4-dot-row)"} />
-  </g>;
+export { CalibrationCardSVG } from "./calibration_card";

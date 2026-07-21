@@ -40,7 +40,8 @@ const CameraEffect = (props: EffectsAssemblyProps) => {
       configPosition,
       getZ,
       kinematics,
-    )} />;
+    )}
+    getZ={getZ} />;
 };
 
 const LaserEffect = (props: EffectsAssemblyProps) => {

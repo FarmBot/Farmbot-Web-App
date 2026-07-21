@@ -1,10 +1,29 @@
 import { clone } from "lodash";
 import {
-  getSeasonProperties, INITIAL, modifyConfig,
-  modifyConfigsFromUrlParams,
+  cameraOperationDurationMs, CAMERA_OPERATION_DURATION_MS,
+  CAMERA_OPERATION_RPI_DURATION_MS, DEMO_CAMERA_OPERATION_DURATION_MS,
+  getSeasonProperties, INITIAL, modifyConfig, modifyConfigsFromUrlParams,
 } from "../config";
 
 describe("modifyConfig()", () => {
+  it("uses three seconds for every camera operation", () => {
+    expect(cameraOperationDurationMs("rpi"))
+      .toEqual(CAMERA_OPERATION_RPI_DURATION_MS);
+    expect(cameraOperationDurationMs("farmbot_demo"))
+      .toEqual(CAMERA_OPERATION_DURATION_MS);
+    expect(cameraOperationDurationMs())
+      .toEqual(CAMERA_OPERATION_DURATION_MS);
+    expect(cameraOperationDurationMs(undefined, "weeds", true))
+      .toEqual(DEMO_CAMERA_OPERATION_DURATION_MS);
+    expect(cameraOperationDurationMs(undefined, "calibration", true))
+      .toEqual(DEMO_CAMERA_OPERATION_DURATION_MS);
+    expect(new Set([
+      CAMERA_OPERATION_DURATION_MS,
+      CAMERA_OPERATION_RPI_DURATION_MS,
+      DEMO_CAMERA_OPERATION_DURATION_MS,
+    ])).toEqual(new Set([3000]));
+  });
+
   it("enables labels on hover by default", () => {
     expect(INITIAL.labelsOnHover).toEqual(true);
     expect(INITIAL.constellations).toEqual(false);

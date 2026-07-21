@@ -21,6 +21,7 @@ import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
 import { Actions, Content, ToolTips } from "../../constants";
 import * as deviceActions from "../../devices/actions";
 import { error } from "../../toast/toast";
+import * as photoActions from "../actions";
 
 beforeEach(() => {
   jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
@@ -37,6 +38,7 @@ beforeEach(() => {
 
 afterEach(() => {
   mockDev = false;
+  localStorage.removeItem("myBotIs");
 });
 
 describe("<DesignerPhotos />", () => {
@@ -122,6 +124,35 @@ describe("<DesignerPhotos />", () => {
     expect(button).not.toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
     fireEvent.click(button);
     expect(deviceActions.takePhoto).toHaveBeenCalled();
+  });
+
+  it("measures soil height for demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const measureSoilHeight = jest.spyOn(photoActions, "measureSoilHeight")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.photosPanelState.measure = true;
+    p.farmwares = {
+      [FarmwareName.MeasureSoilHeight]:
+        fakeFarmware(FarmwareName.MeasureSoilHeight),
+    };
+    render(<DesignerPhotos {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /^measure$/i }));
+    expect(measureSoilHeight).toHaveBeenCalled();
+    measureSoilHeight.mockRestore();
+  });
+
+  it("measures soil height on real bots without legacy farmware", () => {
+    const measureSoilHeight = jest.spyOn(photoActions, "measureSoilHeight")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.photosPanelState.measure = true;
+    render(<DesignerPhotos {...p} />);
+    const button = screen.getByRole("button", { name: /^measure$/i });
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+    expect(measureSoilHeight).toHaveBeenCalled();
+    measureSoilHeight.mockRestore();
   });
 
   it("shows disabled take photo button", () => {

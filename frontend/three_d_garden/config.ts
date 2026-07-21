@@ -107,11 +107,34 @@ export interface Config {
   promoSpread: boolean;
   cameraView: boolean;
   lastImageCapture: number;
+  cameraOperation: CameraOperation;
+  lastCameraOperation: number;
+  cameraOperationDurationMs: number;
+  calibrationCardGrid: boolean;
   mirrorX: boolean;
   mirrorY: boolean;
   telescope: boolean;
   outdoorObjects: boolean;
 }
+
+export type CameraOperation = "" | "calibration" | "soil-height" | "weeds";
+
+export const CAMERA_OPERATION_DURATION_MS = 3000;
+export const CAMERA_OPERATION_RPI_DURATION_MS = CAMERA_OPERATION_DURATION_MS;
+export const DEMO_CAMERA_OPERATION_DURATION_MS = CAMERA_OPERATION_DURATION_MS;
+
+export const cameraOperationDurationMs = (
+  deviceTarget?: string,
+  operation?: CameraOperation,
+  demo = false,
+): number => {
+  if (demo && operation) {
+    return DEMO_CAMERA_OPERATION_DURATION_MS;
+  }
+  return deviceTarget == "rpi"
+    ? CAMERA_OPERATION_RPI_DURATION_MS
+    : CAMERA_OPERATION_DURATION_MS;
+};
 
 export interface PositionConfig {
   x: number;
@@ -240,6 +263,10 @@ export const INITIAL: ConfigWithPosition = {
   promoSpread: false,
   cameraView: false,
   lastImageCapture: 0,
+  cameraOperation: "",
+  lastCameraOperation: 0,
+  cameraOperationDurationMs: CAMERA_OPERATION_DURATION_MS,
+  calibrationCardGrid: true,
   mirrorX: false,
   mirrorY: false,
   telescope: false,
@@ -255,6 +282,7 @@ export const INITIAL_POSITION: PositionConfig = {
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
   "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin", "groundTexture",
+  "cameraOperation",
 ];
 
 export const NUMBER_KEYS = [
@@ -267,6 +295,7 @@ export const NUMBER_KEYS = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
   "interpolationPower", "lastImageCapture", "viewpointHeading", "zoomFactor",
+  "lastCameraOperation", "cameraOperationDurationMs",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -282,7 +311,7 @@ export const BOOLEAN_KEYS = [
   "urlCameraPos",
   "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
-  "cameraFitDebug", "telescope", "outdoorObjects",
+  "cameraFitDebug", "telescope", "outdoorObjects", "calibrationCardGrid",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -504,6 +533,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
+  "cameraOperation", "lastCameraOperation", "cameraOperationDurationMs",
   "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug", "telescope",
 ];
 
