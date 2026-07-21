@@ -22,6 +22,7 @@ export interface ThreeDObjectSelectionLayerProps {
   panelSelection?: ThreeDObjectSelection;
   panelCameraStore?: PanelCameraStore;
   selectedObjects?: ThreeDObjectSelection[];
+  selectedObjectsAlwaysVisible?: boolean;
   popupSelection: ThreeDObjectSelection | undefined;
   locationSelection: ThreeDLocationSelection | undefined;
   selectedLocation: ThreeDLocationSelection | undefined;

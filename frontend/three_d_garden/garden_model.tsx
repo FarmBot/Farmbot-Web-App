@@ -2,7 +2,9 @@ import React from "react";
 import {
   RootState, ThreeEvent, useFrame, useThree,
 } from "@react-three/fiber";
-import { useLocation, useNavigate } from "react-router";
+import {
+  NavigateFunction, useLocation, useNavigate,
+} from "react-router";
 import {
   OrbitControls, PerspectiveCamera,
   Stats,
@@ -59,7 +61,7 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
-import { Actions } from "../constants";
+import { Actions, Content } from "../constants";
 import { SlotWithTool } from "../resources/interfaces";
 import {
   applyCameraClippingRange, applyCameraViewOffset, cameraInit,
@@ -132,6 +134,19 @@ import {
   SceneObjects, staticSceneObjects, useSceneObjectPlacement,
 } from "./scene_objects";
 import { copySceneObject } from "../scene_objects/actions";
+import { destroy } from "../api/crud";
+import { createGroup } from "../point_groups/actions";
+import { error, success } from "../toast/toast";
+import {
+  getFilteredPoints,
+} from "../plants/select_plants";
+import { getSelected } from
+  "../farm_designer/map/background/selection_box_actions";
+import {
+  AreaSelectionBox, AreaSelectionPointType, areaSelectionPointTypes,
+  GardenAreaSelection, GardenAreaSelectionOverlay,
+  normalizeAreaSelectionBox,
+} from "./selection/area_selection";
 import {
   getSectionClippingPlanes, getSectionOutsidePlaneConstants,
   sectionNearPlaneIndex,
@@ -154,7 +169,6 @@ import {
   ViewPrism, VIEW_PRISM_BOUNDING_BOX_HALF_SIZE, ViewPrismDirection,
   VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
 } from "./view_prism";
-import { success } from "../toast/toast";
 import { t } from "../i18next_wrapper";
 import { STARGAZING_DEFAULT_FOV } from
   "../farm_designer/stargazing_constants";
@@ -585,6 +599,54 @@ const useMultiSelectModifier = () => {
     };
   }, []);
   return modifierRef;
+};
+
+export const useShiftModifier = () => {
+  const [state, setState] = React.useState({
+    pressed: false,
+    suppressed: false,
+  });
+  const stateRef = React.useRef(state);
+  const updateState = React.useCallback((next: typeof state) => {
+    const current = stateRef.current;
+    if (current.pressed == next.pressed
+      && current.suppressed == next.suppressed) {
+      return;
+    }
+    stateRef.current = next;
+    setState(next);
+  }, []);
+  React.useEffect(() => {
+    const updateModifier = (event: KeyboardEvent) => {
+      const current = stateRef.current;
+      const pressed = event.shiftKey;
+      const suppressed = pressed && current.pressed
+        ? current.suppressed
+        : false;
+      updateState({ pressed, suppressed });
+    };
+    const clearModifier = () => {
+      updateState({ pressed: false, suppressed: false });
+    };
+    window.addEventListener("keydown", updateModifier);
+    window.addEventListener("keyup", updateModifier);
+    window.addEventListener("blur", clearModifier);
+    return () => {
+      window.removeEventListener("keydown", updateModifier);
+      window.removeEventListener("keyup", updateModifier);
+      window.removeEventListener("blur", clearModifier);
+    };
+  }, [updateState]);
+  const suppress = React.useCallback(() => {
+    const current = stateRef.current;
+    if (current.pressed) {
+      updateState({ ...current, suppressed: true });
+    }
+  }, [updateState]);
+  return {
+    pressed: state.pressed && !state.suppressed,
+    suppress,
+  };
 };
 
 const selectionPointTypeFor = (
@@ -1482,6 +1544,7 @@ interface GridHoverTargetProps {
   getZ(x: number, y: number): number;
   soilSurfaceGeometry: ReturnType<typeof getSurface>["geometry"];
   onHoverPositionChange(position: GridHoverPosition | undefined): void;
+  onAreaSelect(position: GridHoverPosition, shiftKey: boolean): boolean;
   onLocationSelect(selection: ThreeDLocationSelection): void;
 }
 
@@ -1494,7 +1557,7 @@ const inGardenGrid = (config: Config, position: GridHoverPosition) =>
 const GridHoverTarget = (props: GridHoverTargetProps) => {
   const {
     config, enabled, getZ, onHoverPositionChange, onLocationSelect,
-    soilSurfaceGeometry,
+    onAreaSelect, soilSurfaceGeometry,
   } = props;
   const getGardenPosition = React.useMemo(() =>
     getGardenPositionFunc(config, false), [config]);
@@ -1563,13 +1626,14 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
     event.stopPropagation?.();
     const x = round(position.x);
     const y = round(position.y);
+    if (onAreaSelect({ x, y }, event.shiftKey)) { return; }
     onLocationSelect({
       kind: "location",
       x,
       y,
       z: round(getZ(x, y)),
     });
-  }, [enabled, getGridPosition, getZ, onLocationSelect]);
+  }, [enabled, getGridPosition, getZ, onAreaSelect, onLocationSelect]);
   return <Mesh
     name={"grid-hover-target"}
     geometry={hoverGeometry}
@@ -2675,6 +2739,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const mapPoints = props.mapPoints || EMPTY_GENERIC_POINTERS;
   const weeds = props.weeds || EMPTY_WEEDS;
   const allPoints = props.allPoints || EMPTY_POINTS;
+  const currentBotLocation = props.currentBotLocation || EMPTY_BOT_POSITION;
   const groups = props.groups || EMPTY_POINT_GROUPS;
   const plants = props.plants || EMPTY_PLANTS;
   const toolSlots = props.toolSlots || EMPTY_TOOL_SLOTS;
@@ -2751,6 +2816,28 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const [cameraDragging, setCameraDragging] = React.useState(false);
   const [gridHoverPosition, setGridHoverPosition] =
     React.useState<GridHoverPosition | undefined>(undefined);
+  const [areaSelection, setAreaSelection] =
+    React.useState<GardenAreaSelection | undefined>(undefined);
+  const {
+    pressed: shiftPressed,
+    suppress: suppressShiftSelection,
+  } = useShiftModifier();
+  const updateGridHoverPosition = React.useCallback((
+    position: GridHoverPosition | undefined,
+  ) => {
+    setGridHoverPosition(position);
+    if (!position) { return; }
+    setAreaSelection(current => current?.phase == "drawing"
+      ? {
+        ...current,
+        box: {
+          ...current.box,
+          x1: round(position.x),
+          y1: round(position.y),
+        },
+      }
+      : current);
+  }, []);
   const setSelectableObjectHover = React.useCallback(
     (hovered: boolean) => setSelectableObjectHoverCount(count =>
       hovered ? count + 1 : Math.max(0, count - 1)),
@@ -2946,6 +3033,50 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     setPopupSelection(undefined);
     setLocationSelection(undefined);
   }, []);
+  const selectAreaCorner = React.useCallback((
+    position: GridHoverPosition,
+    shiftKey: boolean,
+  ) => {
+    if (areaSelection?.phase == "firstCorner") {
+      setAreaSelection({
+        ...areaSelection,
+        phase: "drawing",
+        box: {
+          x0: position.x,
+          y0: position.y,
+          x1: position.x,
+          y1: position.y,
+        },
+      });
+      return true;
+    }
+    if (areaSelection?.phase == "drawing") {
+      setAreaSelection({
+        ...areaSelection,
+        phase: "complete",
+        box: {
+          ...areaSelection.box,
+          x1: position.x,
+          y1: position.y,
+        },
+      });
+      return true;
+    }
+    if (!shiftKey || !shiftPressed) { return false; }
+    closePopup();
+    dispatch?.(selectPoint(undefined));
+    setAreaSelection({
+      phase: "drawing",
+      pointType: "Plant",
+      box: {
+        x0: position.x,
+        y0: position.y,
+        x1: position.x,
+        y1: position.y,
+      },
+    });
+    return true;
+  }, [areaSelection, closePopup, dispatch, shiftPressed]);
   const openMultiSelectPanel = React.useCallback((
     selection: ThreeDObjectSelection,
   ) => {
@@ -3118,10 +3249,134 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     const group = groups.filter(group => group.body.id == groupIdFromPath)[0];
     return group ? pointsSelectedByGroup(group, allPoints) : undefined;
   }, [allPoints, groupIdFromPath, groupPanelOpen, groups]);
+  const areaSelectedUuids = React.useMemo(() => {
+    if (areaSelection?.phase != "complete") { return []; }
+    const selectablePoints = allPoints.map(point =>
+      point.body.pointer_type == "ToolSlot"
+        && point.body.gantry_mounted
+        ? {
+          ...point,
+          body: {
+            ...point.body,
+            x: currentBotLocation.x ?? point.body.x,
+          },
+        }
+        : point);
+    const points = getFilteredPoints({
+      plants,
+      allPoints: selectablePoints,
+      selectionPointType: areaSelectionPointTypes(
+        areaSelection.pointType,
+      ),
+      getConfigValue: addPlantProps?.getConfigValue,
+    });
+    return getSelected(points, areaSelection.box) || [];
+  }, [
+    addPlantProps?.getConfigValue,
+    allPoints,
+    areaSelection,
+    currentBotLocation.x,
+    plants,
+  ]);
+  React.useEffect(() => {
+    if (areaSelection?.phase != "complete" || !dispatch) { return; }
+    dispatch({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: areaSelectionPointTypes(areaSelection.pointType),
+    });
+    dispatch(selectPoint(
+      areaSelectedUuids.length > 0 ? areaSelectedUuids : undefined,
+    ));
+  }, [areaSelectedUuids, areaSelection, dispatch]);
+  const clearAreaSelectedPoints = React.useCallback(() => {
+    dispatch?.(selectPoint(undefined));
+    dispatch?.({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: undefined,
+    });
+  }, [dispatch]);
+  const closeAreaSelection = React.useCallback(() => {
+    setAreaSelection(undefined);
+    suppressShiftSelection();
+    clearAreaSelectedPoints();
+  }, [clearAreaSelectedPoints, suppressShiftSelection]);
+  const updateAreaSelectionBox = React.useCallback((
+    box: AreaSelectionBox,
+  ) => {
+    setAreaSelection(current => current?.phase == "complete"
+      ? { ...current, box: normalizeAreaSelectionBox(box) }
+      : current);
+  }, []);
+  const updateAreaSelectionPointType = React.useCallback((
+    pointType: AreaSelectionPointType,
+  ) => {
+    setAreaSelection(current => current?.phase == "complete"
+      ? { ...current, pointType }
+      : current);
+  }, []);
+  const openAreaSelectionPanel = React.useCallback(() => {
+    dispatch?.(setPanelOpen3D(true));
+    navigate(Path.plants("select"));
+    setAreaSelection(undefined);
+  }, [dispatch, navigate]);
+  const deleteAreaSelection = React.useCallback(() => {
+    if (!dispatch || areaSelectedUuids.length == 0) { return; }
+    if (!confirm(t(
+      "Are you sure you want to delete {{count}} selected objects?",
+      { count: areaSelectedUuids.length },
+    ))) { return; }
+    areaSelectedUuids.forEach(uuid => {
+      void dispatch(destroy(uuid, true));
+    });
+    closeAreaSelection();
+  }, [areaSelectedUuids, closeAreaSelection, dispatch]);
+  const createAreaSelectionGroup = React.useCallback(() => {
+    if (!dispatch || areaSelectedUuids.length == 0) { return; }
+    if (sectionDesigner?.openedSavedGarden) {
+      error(t(Content.ERROR_PLANT_TEMPLATE_GROUP));
+      return;
+    }
+    dispatch(createGroup({
+      pointUuids: areaSelectedUuids,
+      navigate: navigate as NavigateFunction,
+    }));
+    setAreaSelection(undefined);
+  }, [
+    areaSelectedUuids,
+    dispatch,
+    navigate,
+    sectionDesigner?.openedSavedGarden,
+  ]);
+  React.useEffect(() => {
+    if (!areaSelection) { return; }
+    const stepBackOnEscape = (event: KeyboardEvent) => {
+      if (event.key != "Escape") { return; }
+      clearAreaSelectedPoints();
+      switch (areaSelection.phase) {
+        case "complete":
+          setAreaSelection({ ...areaSelection, phase: "drawing" });
+          break;
+        case "drawing":
+          setAreaSelection({ ...areaSelection, phase: "firstCorner" });
+          break;
+        case "firstCorner":
+          setAreaSelection(undefined);
+          suppressShiftSelection();
+          break;
+      }
+    };
+    window.addEventListener("keydown", stepBackOnEscape);
+    return () => window.removeEventListener("keydown", stepBackOnEscape);
+  }, [areaSelection, clearAreaSelectedPoints, suppressShiftSelection]);
   const selectedObjectSelections = React.useMemo(() => {
-    const selectedPoints = selectionPanelOpen
-      ? addPlantProps?.designer.selectedPoints
-      : groupSelectedPoints?.map(point => point.uuid);
+    let selectedPoints: string[] | undefined;
+    if (areaSelection?.phase == "complete") {
+      selectedPoints = areaSelectedUuids;
+    } else if (selectionPanelOpen) {
+      selectedPoints = addPlantProps?.designer.selectedPoints;
+    } else {
+      selectedPoints = groupSelectedPoints?.map(point => point.uuid);
+    }
     if (!selectedPoints) { return undefined; }
     const selections: ThreeDObjectSelection[] = [];
     selectedPoints.forEach(uuid => {
@@ -3130,7 +3385,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     });
     return selections;
   }, [
-    addPlantProps?.designer.selectedPoints,
+    addPlantProps?.designer,
+    areaSelectedUuids,
+    areaSelection?.phase,
     groupSelectedPoints,
     selectionLookup,
     selectionPanelOpen,
@@ -3170,7 +3427,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     gridLoaded
     && !!activeGridHoverPosition
     && !cameraDragging
-    && !selectableObjectHovered;
+    && !selectableObjectHovered
+    && !shiftPressed
+    && !areaSelection;
   let sceneCursor: SceneCursorValue = "grab";
   if (activeGridHoverPosition) {
     sceneCursor = "crosshair";
@@ -3579,13 +3838,27 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         enabled={gridHoverEnabled}
         getZ={getZ}
         soilSurfaceGeometry={soilSurface.geometry}
+        onAreaSelect={selectAreaCorner}
         onLocationSelect={onSelectLocation}
-        onHoverPositionChange={setGridHoverPosition} />}
+        onHoverPositionChange={updateGridHoverPosition} />}
         {showGridHoverCrosshairs && activeGridHoverPosition &&
       <GridHoverCrosshairs
         config={config}
         getZ={getZ}
         position={activeGridHoverPosition} />}
+        <GardenAreaSelectionOverlay
+          config={config}
+          getZ={getZ}
+          ghostPosition={activeGridHoverPosition}
+          selection={areaSelection}
+          shiftPressed={shiftPressed}
+          selectedCount={areaSelectedUuids.length}
+          onBoxChange={updateAreaSelectionBox}
+          onClose={closeAreaSelection}
+          onCreateGroup={createAreaSelectionGroup}
+          onDelete={deleteAreaSelection}
+          onOpenPanel={openAreaSelectionPanel}
+          onPointTypeChange={updateAreaSelectionPointType} />
         <OptionalFarmbotLayer
           activeFocus={props.activeFocus}
           config={config}
@@ -3616,6 +3889,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           panelSelection={panelVisualSelection}
           panelCameraStore={props.panelCameraStore}
           selectedObjects={selectedObjectSelections}
+          selectedObjectsAlwaysVisible={
+            areaSelection?.phase == "complete"}
           popupSelection={activePopupSelection}
           locationSelection={activeLocationSelection}
           selectedLocation={selectedLocation}
@@ -3638,7 +3913,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           timeSettings={props.timeSettings}
           botOnline={!!props.botOnline}
           arduinoBusy={!!props.arduinoBusy}
-          currentBotLocation={props.currentBotLocation || EMPTY_BOT_POSITION}
+          currentBotLocation={currentBotLocation}
           movementState={props.movementState || EMPTY_MOVEMENT_STATE}
           defaultAxes={props.defaultAxes || "XY"}
           noUTM={!!props.noUTM}

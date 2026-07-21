@@ -40,6 +40,14 @@ function visiblePanelRings<T>(
   return panelOpen ? rings : [];
 }
 
+function visibleSelectedRings<T>(
+  alwaysVisible: boolean | undefined,
+  panelOpen: boolean,
+  rings: T[],
+) {
+  return alwaysVisible ? rings : visiblePanelRings(panelOpen, rings);
+}
+
 const selectionKey = (selection: ThreeDObjectSelection | undefined) =>
   selection ? `${selection.kind}-${selection.id}` : "";
 
@@ -186,7 +194,11 @@ export const ThreeDObjectSelectionLayer = (
 
   return <>
     <SelectedObjectRingBatch
-      objects={visiblePanelRings(panelOpen, selectedRings)} />
+      objects={visibleSelectedRings(
+        props.selectedObjectsAlwaysVisible,
+        panelOpen,
+        selectedRings,
+      )} />
     {overlayObject &&
       <SelectedObjectOverlay
         object={overlayObject}

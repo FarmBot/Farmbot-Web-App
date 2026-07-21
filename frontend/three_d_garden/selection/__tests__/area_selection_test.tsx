@@ -1,0 +1,225 @@
+import React from "react";
+import {
+  fireEvent, render, screen,
+} from "@testing-library/react";
+import * as threeDrei from "@react-three/drei";
+import { clone } from "lodash";
+import { Vector3 } from "three";
+import * as ui from "../../../ui";
+import { INITIAL } from "../../config";
+import * as controls from "../../controls";
+import {
+  AREA_SELECTION_GHOST_SIZE, areaSelectionPointTypes,
+  areaSelectionTitle, GardenAreaSelectionOverlay,
+  getGhostAreaSelectionBox, normalizeAreaSelectionBox,
+  resizeAreaSelectionBox,
+} from "../area_selection";
+
+describe("area selection geometry", () => {
+  it("creates a 200mm ghost rectangle within garden bounds", () => {
+    const config = { botSizeX: 1000, botSizeY: 800 };
+    expect(getGhostAreaSelectionBox({ x: 100, y: 200 }, config))
+      .toEqual({ x0: 100, y0: 200, x1: 300, y1: 400 });
+    const edge = getGhostAreaSelectionBox({ x: 950, y: 750 }, config);
+    expect(Math.abs(edge.x1 - edge.x0)).toEqual(
+      AREA_SELECTION_GHOST_SIZE,
+    );
+    expect(Math.abs(edge.y1 - edge.y0)).toEqual(
+      AREA_SELECTION_GHOST_SIZE,
+    );
+    expect(edge).toEqual({ x0: 950, y0: 750, x1: 750, y1: 550 });
+  });
+
+  it("normalizes and constrains resized edges", () => {
+    expect(normalizeAreaSelectionBox({
+      x0: 500, y0: 400, x1: 100, y1: 200,
+    })).toEqual({ x0: 100, y0: 200, x1: 500, y1: 400 });
+    const box = { x0: 100, y0: 200, x1: 500, y1: 400 };
+    const config = { botSizeX: 1000, botSizeY: 800 };
+    expect(resizeAreaSelectionBox(box, "x0", -50, config).x0)
+      .toEqual(0);
+    expect(resizeAreaSelectionBox(box, "x1", 1200, config).x1)
+      .toEqual(1000);
+    expect(resizeAreaSelectionBox(box, "y0", 600, config).y0)
+      .toEqual(400);
+    expect(resizeAreaSelectionBox(box, "y1", 50, config).y1)
+      .toEqual(200);
+  });
+
+  it("labels supported selection types", () => {
+    expect(areaSelectionPointTypes("Plant")).toEqual(["Plant"]);
+    expect(areaSelectionPointTypes("All")).toEqual([
+      "Plant", "GenericPointer", "Weed", "ToolSlot",
+    ]);
+    expect(areaSelectionTitle(1, "Plant")).toEqual("1 plant");
+    expect(areaSelectionTitle(3, "Plant")).toEqual("3 plants");
+    expect(areaSelectionTitle(2, "All")).toEqual("2 objects");
+  });
+});
+
+describe("<GardenAreaSelectionOverlay />", () => {
+  const config = clone(INITIAL);
+  config.botSizeX = 1000;
+  config.botSizeY = 800;
+  const props = ():
+    React.ComponentProps<typeof GardenAreaSelectionOverlay> => ({
+    config,
+    getZ: jest.fn(() => -100),
+    ghostPosition: undefined,
+    selection: undefined,
+    shiftPressed: false,
+    selectedCount: 0,
+    onBoxChange: jest.fn(),
+    onClose: jest.fn(),
+    onCreateGroup: jest.fn(),
+    onDelete: jest.fn(),
+    onOpenPanel: jest.fn(),
+    onPointTypeChange: jest.fn(),
+  });
+  const mockLine = () => jest.spyOn(threeDrei, "Line")
+    .mockImplementation(props => <div data-testid={props.name} />);
+
+  it("shows and hides the shift-hover ghost", () => {
+    const lineSpy = mockLine();
+    const p = props();
+    p.shiftPressed = true;
+    p.ghostPosition = { x: 100, y: 200 };
+    const { container, rerender } = render(
+      <GardenAreaSelectionOverlay {...p} />,
+    );
+    expect(screen.getByTestId("area-selection-ghost")).toBeInTheDocument();
+    expect(container.querySelector("[name='area-selection-popup']"))
+      .toBeFalsy();
+
+    rerender(
+      <GardenAreaSelectionOverlay
+        {...p}
+        shiftPressed={false} />,
+    );
+    expect(screen.queryByTestId("area-selection-ghost"))
+      .not.toBeInTheDocument();
+    lineSpy.mockRestore();
+  });
+
+  it("shows a ghost while choosing a replacement first corner", () => {
+    const lineSpy = mockLine();
+    const p = props();
+    p.ghostPosition = { x: 300, y: 400 };
+    p.selection = {
+      phase: "firstCorner",
+      pointType: "Plant",
+      box: { x0: 100, y0: 200, x1: 500, y1: 600 },
+    };
+    const { container } = render(
+      <GardenAreaSelectionOverlay {...p} />,
+    );
+    expect(screen.getByTestId("area-selection-ghost")).toBeInTheDocument();
+    expect(container.querySelector("[name$='-control']"))
+      .toBeFalsy();
+    expect(container.querySelector("[name='area-selection-popup']"))
+      .toBeFalsy();
+    lineSpy.mockRestore();
+  });
+
+  it("renders completed controls and popup actions", () => {
+    const lineSpy = mockLine();
+    const handleSpy = jest.spyOn(controls, "ControlHandle")
+      .mockImplementation(props => {
+        const state = { hovered: false, pressed: false, dragging: false };
+        const children = typeof props.children == "function"
+          ? props.children(state)
+          : props.children;
+        const dragEvent = {
+          point: new Vector3(50, 0, 0),
+          delta: new Vector3(50, 0, 0),
+        } as controls.ControlDragEvent;
+        return <button
+          type={"button"}
+          data-testid={props.name}
+          onClick={() => {
+            props.onDragStart?.(dragEvent);
+            props.onDrag?.(dragEvent);
+          }}>
+          {children}
+        </button>;
+      });
+    const sphereSpy = jest.spyOn(controls, "ControlSphere")
+      .mockImplementation(props => <i
+        data-testid={props.name}
+        data-color={props.color} />);
+    const arrowSpy = jest.spyOn(controls, "ControlArrow")
+      .mockImplementation(props => <i
+        data-testid={props.name}
+        data-color={props.color}
+        data-heads={props.heads} />);
+    const selectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: React.ComponentProps<typeof ui.FBSelect>) =>
+        <select
+          aria-label={"selection-type"}
+          value={String(props.selectedItem?.value)}
+          onChange={event => {
+            const item = props.list.find(item =>
+              String(item.value) == event.currentTarget.value);
+            item && props.onChange(item);
+          }}>
+          {props.list.map(item => <option
+            key={String(item.value)}
+            value={String(item.value)}>
+            {item.label}
+          </option>)}
+        </select>) as never);
+    const p = props();
+    p.selectedCount = 3;
+    p.selection = {
+      phase: "complete",
+      pointType: "Plant",
+      box: { x0: 100, y0: 200, x1: 500, y1: 600 },
+    };
+    render(
+      <GardenAreaSelectionOverlay {...p} />,
+    );
+    expect(screen.getByTestId("area-selection-rectangle"))
+      .toBeInTheDocument();
+    expect(screen.getAllByTestId(/area-selection-.*-control/))
+      .toHaveLength(4);
+    const spheres = screen.getAllByTestId(/area-selection-.*-sphere/);
+    const arrows = screen.getAllByTestId(/area-selection-.*-arrow/);
+    expect(spheres).toHaveLength(4);
+    expect(arrows).toHaveLength(4);
+    spheres.forEach(sphere => expect(sphere)
+      .toHaveAttribute("data-color", "dodgerblue"));
+    arrows.forEach(arrow => {
+      expect(arrow).toHaveAttribute("data-color", "dodgerblue");
+      expect(arrow).toHaveAttribute("data-heads", "both");
+    });
+    expect(screen.getByRole("heading", { name: "3 plants" }))
+      .toBeInTheDocument();
+    expect(screen.getByLabelText("selection-type")).toHaveValue("Plant");
+
+    fireEvent.click(screen.getByTestId("area-selection-x0-control"));
+    fireEvent.change(screen.getByLabelText("selection-type"), {
+      target: { value: "Weed" },
+    });
+    fireEvent.change(screen.getByLabelText("selection-type"), {
+      target: { value: "All" },
+    });
+    fireEvent.click(screen.getByTitle("open panel"));
+    fireEvent.click(screen.getByTitle("Delete"));
+    fireEvent.click(screen.getByTitle("Create group"));
+    fireEvent.click(screen.getByTitle("close"));
+    expect(p.onPointTypeChange).toHaveBeenCalledWith("Weed");
+    expect(p.onPointTypeChange).toHaveBeenCalledWith("All");
+    expect(p.onBoxChange).toHaveBeenCalledWith({
+      x0: 150, y0: 200, x1: 500, y1: 600,
+    });
+    expect(p.onOpenPanel).toHaveBeenCalled();
+    expect(p.onDelete).toHaveBeenCalled();
+    expect(p.onCreateGroup).toHaveBeenCalled();
+    expect(p.onClose).toHaveBeenCalled();
+    handleSpy.mockRestore();
+    sphereSpy.mockRestore();
+    arrowSpy.mockRestore();
+    selectSpy.mockRestore();
+    lineSpy.mockRestore();
+  });
+});

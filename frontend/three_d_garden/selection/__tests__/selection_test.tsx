@@ -736,6 +736,19 @@ describe("selection overlay and popups", () => {
     expect(container).not.toContainHTML("selected-object-x-crosshair");
   });
 
+  it("keeps area-selected object rings visible when the panel closes", () => {
+    const p = layerProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.plants = [plant];
+    p.selectedObjects = [{ kind: "plant", id: 1 }];
+    p.selectedObjectsAlwaysVisible = true;
+    p.panelCameraStore = createPanelCameraStore(false);
+    const { container } = render(<ThreeDObjectSelectionLayer {...p} />);
+
+    expect(container).toContainHTML("selected-object-ring");
+  });
+
   it("doesn't render scene object selection overlays", () => {
     const p = layerProps();
     const sceneObject = fakeSceneObject({ id: 7 });

@@ -30,6 +30,7 @@ import {
   stargazingOrbitPolarLimits,
   GardenCameraControllerProps,
   useGardenCameraController,
+  useShiftModifier,
   usePanelCameraViewOffset,
   SPACEFLIGHT_CAMERA,
   SPACEFLIGHT_FOV,
@@ -81,6 +82,8 @@ import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
+import { GardenAreaSelectionOverlay } from
+  "../selection/area_selection";
 import { Bed } from "../bed";
 import { getStargazingCamera, Telescope } from "../bed/objects/telescope";
 import { Actions } from "../../constants";
@@ -92,12 +95,15 @@ import {
   VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
 } from "../view_prism";
 import { success } from "../../toast/toast";
+import * as toast from "../../toast/toast";
 import {
   Color, Group as ThreeGroup,
   PerspectiveCamera as ThreePerspectiveCamera, Vector3,
 } from "three";
 import { SceneObjects, staticSceneObjects } from "../scene_objects";
 import * as sceneObjectActions from "../../scene_objects/actions";
+import * as pointGroupActions from "../../point_groups/actions";
+import * as crud from "../../api/crud";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -163,6 +169,73 @@ describe("<GardenModel />", () => {
     const wrapper = createRenderer(<GardenModel {...p} />);
     mountedWrappers.push(wrapper);
     return wrapper;
+  };
+
+  const restoreActualReactState = () => {
+    useStateSpy.mockRestore();
+    const actualUseState = jest.requireActual("react")
+      .useState as typeof React.useState;
+    useStateSpy = jest.spyOn(React, "useState")
+      .mockImplementation(actualUseState);
+  };
+
+  const renderCompletedAreaSelection = (p: GardenModelProps) => {
+    location.pathname = Path.mock(Path.designer());
+    restoreActualReactState();
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({
+      name: "grid-hover-target",
+    });
+    const start = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    const end = get3DPositionFunc(p.config)({ x: 400, y: 400 });
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Shift",
+        shiftKey: true,
+      }));
+      hoverTarget.props.onPointerMove({ point: start });
+    });
+    actRenderer(() => {
+      hoverTarget.props.onClick({
+        point: start,
+        shiftKey: true,
+        intersections: [],
+        stopPropagation: jest.fn(),
+      });
+    });
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keyup", {
+        key: "Shift",
+        shiftKey: false,
+      }));
+      hoverTarget.props.onPointerMove({ point: end });
+    });
+    actRenderer(() => {
+      hoverTarget.props.onClick({
+        point: end,
+        shiftKey: false,
+        intersections: [],
+        stopPropagation: jest.fn(),
+      });
+    });
+    return {
+      wrapper,
+      overlay: () => wrapper.root.findByType(GardenAreaSelectionOverlay),
+    };
+  };
+
+  const areaSelectionActionProps = () => {
+    const plant = fakePlant();
+    plant.body.id = 1;
+    plant.body.x = 150;
+    plant.body.y = 150;
+    const p = fakeProps();
+    p.plants = [plant];
+    p.addPlantProps = fakeAddPlantProps();
+    const dispatch = jest.fn();
+    p.addPlantProps.dispatch = dispatch;
+    p.addPlantProps.getConfigValue = jest.fn(() => true);
+    return { dispatch, p, plant };
   };
 
   const createCameraUrlWrapper = (promo = true) => {
@@ -2005,6 +2078,312 @@ describe("<GardenModel />", () => {
       hoverTarget.props.onPointerMove({ point: { x: 100000, y: 100000 } });
     });
     expect(event.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("updates Shift state only for effective modifier changes", () => {
+    restoreActualReactState();
+    let renders = 0;
+    const hook = renderHook(() => {
+      renders++;
+      return useShiftModifier();
+    });
+    const initialRenders = renders;
+
+    act(() => window.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "a",
+      shiftKey: false,
+    })));
+    expect(renders).toEqual(initialRenders);
+
+    act(() => window.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Shift",
+      shiftKey: true,
+    })));
+    expect(hook.result.current.pressed).toEqual(true);
+    const pressedRenders = renders;
+    act(() => window.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Shift",
+      shiftKey: true,
+    })));
+    expect(renders).toEqual(pressedRenders);
+
+    act(() => hook.result.current.suppress());
+    expect(hook.result.current.pressed).toEqual(false);
+    const suppressedRenders = renders;
+    act(() => hook.result.current.suppress());
+    expect(renders).toEqual(suppressedRenders);
+
+    act(() => window.dispatchEvent(new KeyboardEvent("keyup", {
+      key: "Shift",
+      shiftKey: false,
+    })));
+    const releasedRenders = renders;
+    act(() => {
+      hook.result.current.suppress();
+      window.dispatchEvent(new Event("blur"));
+    });
+    expect(renders).toEqual(releasedRenders);
+
+    act(() => window.dispatchEvent(new KeyboardEvent("keydown", {
+      key: "Shift",
+      shiftKey: true,
+    })));
+    expect(hook.result.current.pressed).toEqual(true);
+  });
+
+  it("bulk-selects garden objects with a shift-click rectangle", () => {
+    location.pathname = Path.mock(Path.designer());
+    restoreActualReactState();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    plant.body.x = 150;
+    plant.body.y = 150;
+    const outsidePlant = fakePlant();
+    outsidePlant.body.id = 2;
+    outsidePlant.body.x = 700;
+    outsidePlant.body.y = 700;
+    const weed = fakeWeed();
+    weed.body.id = 3;
+    weed.body.x = 250;
+    weed.body.y = 250;
+    const gantrySlot = fakeToolSlot();
+    gantrySlot.body.id = 4;
+    gantrySlot.body.x = 0;
+    gantrySlot.body.y = 250;
+    gantrySlot.body.gantry_mounted = true;
+    const p = fakeProps();
+    p.plants = [plant, outsidePlant];
+    p.weeds = [weed];
+    p.toolSlots = [{ toolSlot: gantrySlot, tool: undefined }];
+    p.allPoints = [weed, gantrySlot];
+    p.currentBotLocation = { x: 250, y: 0, z: 0 };
+    p.addPlantProps = fakeAddPlantProps();
+    const dispatch = jest.fn();
+    p.addPlantProps.dispatch = dispatch;
+    p.addPlantProps.getConfigValue = jest.fn(() => true);
+    const createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockReturnValue("create group" as never);
+    const errorSpy = jest.spyOn(toast, "error")
+      .mockImplementation(jest.fn());
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({
+      name: "grid-hover-target",
+    });
+    const start = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    const end = get3DPositionFunc(p.config)({ x: 400, y: 400 });
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Shift",
+        shiftKey: true,
+      }));
+      hoverTarget.props.onPointerMove({ point: start });
+    });
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.shiftPressed).toEqual(true);
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.ghostPosition).toEqual({ x: 100, y: 100 });
+
+    actRenderer(() => hoverTarget.props.onClick({
+      point: start,
+      shiftKey: true,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keyup", {
+        key: "Shift",
+        shiftKey: false,
+      }));
+    });
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection.phase).toEqual("drawing");
+
+    actRenderer(() => {
+      hoverTarget.props.onPointerMove({ point: end });
+      hoverTarget.props.onClick({
+        point: end,
+        shiftKey: false,
+        intersections: [],
+        stopPropagation: jest.fn(),
+      });
+    });
+    let overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection).toEqual({
+      phase: "complete",
+      pointType: "Plant",
+      box: { x0: 100, y0: 100, x1: 400, y1: 400 },
+    });
+    expect(overlay.props.selectedCount).toEqual(1);
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toEqual([{ kind: "plant", id: 1 }]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: [plant.uuid],
+    });
+
+    actRenderer(() => overlay.props.onBoxChange({
+      x0: 400, y0: 400, x1: 100, y1: 100,
+    }));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection.box).toEqual({
+      x0: 100, y0: 100, x1: 400, y1: 400,
+    });
+    actRenderer(() => overlay.props.onPointTypeChange("Weed"));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selectedCount).toEqual(1);
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toEqual([{ kind: "weed", id: 3 }]);
+    actRenderer(() => overlay.props.onPointTypeChange("ToolSlot"));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selectedCount).toEqual(1);
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toEqual([{ kind: "slot", id: 4 }]);
+    actRenderer(() => overlay.props.onPointTypeChange("Weed"));
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        openedSavedGarden: 1,
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    actRenderer(() => overlay.props.onCreateGroup());
+    expect(createGroupSpy).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalled();
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        openedSavedGarden: undefined,
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    actRenderer(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape" }),
+      );
+    });
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection.phase).toEqual("drawing");
+    expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
+      .props.selectedObjects).toBeUndefined();
+
+    actRenderer(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape" }),
+      );
+    });
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection.phase).toEqual("firstCorner");
+
+    actRenderer(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape" }),
+      );
+    });
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection).toBeUndefined();
+    expect(overlay.props.shiftPressed).toEqual(false);
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Shift",
+        shiftKey: true,
+      }));
+      hoverTarget.props.onPointerMove({ point: start });
+    });
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.shiftPressed).toEqual(true);
+    actRenderer(() => hoverTarget.props.onClick({
+      point: start,
+      shiftKey: true,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+    actRenderer(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape" }),
+      );
+    });
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection.phase).toEqual("firstCorner");
+    actRenderer(() => hoverTarget.props.onClick({
+      point: end,
+      shiftKey: false,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+    overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
+    expect(overlay.props.selection).toEqual({
+      phase: "drawing",
+      pointType: "Plant",
+      box: { x0: 400, y0: 400, x1: 400, y1: 400 },
+    });
+    actRenderer(() => overlay.props.onClose());
+    actRenderer(() => {
+      window.dispatchEvent(new Event("blur"));
+      window.dispatchEvent(new KeyboardEvent("keyup", {
+        key: "Shift",
+        shiftKey: false,
+      }));
+    });
+    createGroupSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it("creates a group from the visible area selection popup", () => {
+    const { dispatch, p, plant } = areaSelectionActionProps();
+    const createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockReturnValue("create group" as never);
+    const { wrapper, overlay } = renderCompletedAreaSelection(p);
+    expect(overlay().props.selectedCount).toEqual(1);
+
+    actRenderer(() => wrapper.root.findByProps({
+      title: "Create group",
+    }).props.onClick());
+
+    expect(createGroupSpy).toHaveBeenCalledWith({
+      pointUuids: [plant.uuid],
+      navigate: expect.any(Function),
+    });
+    expect(dispatch).toHaveBeenCalledWith("create group");
+    createGroupSpy.mockRestore();
+  });
+
+  it("deletes objects from the visible area selection popup", () => {
+    const { dispatch, p, plant } = areaSelectionActionProps();
+    const destroySpy = jest.spyOn(crud, "destroy")
+      .mockReturnValue("destroy point" as never);
+    const confirmSpy = jest.spyOn(window, "confirm")
+      .mockReturnValue(true);
+    const { wrapper, overlay } = renderCompletedAreaSelection(p);
+    expect(overlay().props.selectedCount).toEqual(1);
+
+    actRenderer(() => wrapper.root.findByProps({
+      title: "Delete",
+    }).props.onClick());
+
+    expect(destroySpy).toHaveBeenCalledWith(plant.uuid, true);
+    expect(dispatch).toHaveBeenCalledWith("destroy point");
+    expect(confirmSpy).toHaveBeenCalled();
+    destroySpy.mockRestore();
+    confirmSpy.mockRestore();
+  });
+
+  it("opens the full panel from the visible area selection popup", () => {
+    const { p } = areaSelectionActionProps();
+    const { wrapper, overlay } = renderCompletedAreaSelection(p);
+    expect(overlay().props.selectedCount).toEqual(1);
+
+    actRenderer(() => wrapper.root.findByProps({
+      title: "open panel",
+    }).props.onClick());
+
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("select"));
   });
 
   it("deselects active objects and grid locations on second click", () => {
