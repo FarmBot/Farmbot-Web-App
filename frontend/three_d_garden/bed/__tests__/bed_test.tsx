@@ -205,6 +205,16 @@ describe("<Bed />", () => {
     });
   });
 
+  it("selects the bed when a support is clicked", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn(() => true);
+    const { container } = render(<Bed {...p} />);
+    const supports = container.querySelector("[name='bed-supports']");
+    if (!supports) { throw new Error("Bed supports not found"); }
+    fireEvent.click(supports);
+    expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "bed", id: 0 });
+  });
+
   it("ignores dragged and unavailable bed selections", () => {
     const onSelectObject = jest.fn();
     const stopPropagation = jest.fn();
@@ -229,6 +239,7 @@ describe("<Bed />", () => {
       .toBeTruthy();
     expect(container.querySelector("[name='soil-surface-highlight']"))
       .toBeTruthy();
+    expect(container.querySelector("[name='bed-highlight']")).toBeTruthy();
   });
 
   it("replaces the single-plant pointer with the active grid preview", () => {

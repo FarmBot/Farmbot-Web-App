@@ -1,8 +1,12 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
 import { clone } from "lodash";
 import { areBoundsPropsEqual, Bounds, BoundsProps } from "../bounds";
+import {
+  createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
+import { ControlPillButton } from "../../../controls";
 
 describe("<Bounds />", () => {
   const fakeProps = (): BoundsProps => ({
@@ -18,8 +22,36 @@ describe("<Bounds />", () => {
   it("renders bounds", () => {
     const p = fakeProps();
     p.config.bounds = true;
+    p.onSelectObject = jest.fn();
     const { container } = render(<Bounds {...p} />);
     expect(container).toContainHTML("bounds");
+    expect(container).toHaveTextContent("Safe height");
+    expect(container).toHaveTextContent("Min soil");
+    expect(container).toHaveTextContent("Max soil");
+    const wrapper = createRenderer(<Bounds {...p} />);
+    wrapper.root.findAllByType(ControlPillButton).forEach(pill => {
+      expect(pill.props.rotation)
+        .toEqual([Math.PI / 2, Math.PI / 2, 0]);
+      pill.props.onClick();
+    });
+    expect(p.onSelectObject).toHaveBeenCalledTimes(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("opens the safe height popup", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    p.onSelectObject = jest.fn();
+    const { container } = render(<Bounds {...p} />);
+    const pill = container.querySelector("[name='safe-height-pill']");
+    if (!pill) { throw new Error("Safe height pill not found"); }
+    fireEvent.pointerDown(pill);
+    fireEvent.pointerUp(pill);
+    fireEvent.click(pill);
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "safeHeight",
+      id: 0,
+    });
   });
 
   it("skips unrelated enabled overlay config churn", () => {
@@ -116,6 +148,10 @@ describe("<Bounds />", () => {
       },
     });
     expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
+    expect(areBoundsPropsEqual(p, {
+      ...p,
+      onSelectObject: jest.fn(),
+    })).toBeFalsy();
     p.config.zDimension = true;
     expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
     expect(areBoundsPropsEqual(p, move("z"))).toBeFalsy();

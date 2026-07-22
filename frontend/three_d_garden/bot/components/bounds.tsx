@@ -1,6 +1,6 @@
 import React from "react";
 import { Config, PositionConfig } from "../../config";
-import { Box, Edges } from "@react-three/drei";
+import { Box, Edges, Line } from "@react-three/drei";
 import { Group, MeshBasicMaterial } from "../../components";
 import {
   get3DPositionNoMirrorFunc,
@@ -10,10 +10,14 @@ import {
 } from "../../helpers";
 import { DistanceIndicator } from "../../elements";
 import { BackSide } from "three";
+import { ControlPillButton, noControlRaycast } from "../../controls";
+import { ThreeDObjectSelectionHandler } from "../../selection_types";
+import { t } from "../../../i18next_wrapper";
 
 export interface BoundsProps {
   config: Config;
   configPosition: PositionConfig;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 const CONFIG_FIELDS: (keyof Config)[] = [
@@ -21,6 +25,7 @@ const CONFIG_FIELDS: (keyof Config)[] = [
   "beamLength", "bounds", "zDimension", "distanceIndicator", "bedXOffset",
   "bedYOffset", "botSizeX", "botSizeY", "botSizeZ", "negativeZ",
   "zGantryOffset",
+  "safeHeight", "minSoilZ", "maxSoilZ",
 ];
 
 const sameFields = <T, K extends keyof T>(
@@ -30,6 +35,7 @@ const sameFields = <T, K extends keyof T>(
 ) => fields.every(field => prev[field] === next[field]);
 
 export const areBoundsPropsEqual = (prev: BoundsProps, next: BoundsProps) => {
+  if (prev.onSelectObject !== next.onSelectObject) { return false; }
   if (!sameFields(prev.config, next.config, CONFIG_FIELDS)) { return false; }
   const positionFields = new Set<keyof PositionConfig>();
   if (prev.config.zDimension) { positionFields.add("z"); }
@@ -49,6 +55,57 @@ export const areBoundsPropsEqual = (prev: BoundsProps, next: BoundsProps) => {
     next.configPosition,
     [...positionFields],
   );
+};
+
+interface HeightPlaneProps {
+  color: string;
+  config: Config;
+  label: string;
+  name: string;
+  pillYOffset: number;
+  z: number;
+  onClick(): void;
+}
+
+const HeightPlane = (props: HeightPlaneProps) => {
+  const { botSizeX, botSizeY } = props.config;
+  const getWorldPosition = get3DPositionNoMirrorFunc(props.config);
+  const zero = zeroFunc(props.config);
+  const start = getWorldPosition({ x: 0, y: 0 });
+  const end = getWorldPosition({ x: botSizeX, y: botSizeY });
+  const z = zero.z + props.z;
+  return <Group name={`${props.name}-plane`}>
+    <Line
+      name={`${props.name}-lines`}
+      points={[
+        [start.x, start.y, z],
+        [end.x, start.y, z],
+        [end.x, end.y, z],
+        [start.x, end.y, z],
+        [start.x, start.y, z],
+      ]}
+      color={props.color}
+      lineWidth={2}
+      raycast={noControlRaycast} />
+    <ControlPillButton
+      name={`${props.name}-pill`}
+      position={[
+        start.x,
+        (start.y + end.y) / 2 + props.pillYOffset,
+        z + 12,
+      ]}
+      rotation={[Math.PI / 2, Math.PI / 2, 0]}
+      label={t(props.label)}
+      length={150}
+      width={48}
+      thickness={10}
+      labelSize={24}
+      color={props.color}
+      hoverColor={props.color}
+      depthTest={true}
+      depthWrite={true}
+      onClick={props.onClick} />
+  </Group>;
 };
 
 const BoundsComponent = (props: BoundsProps) => {
@@ -89,6 +146,30 @@ const BoundsComponent = (props: BoundsProps) => {
         color={"white"}
         threshold={1} />
     </Box>
+    {bounds && <HeightPlane
+      name={"safe-height"}
+      label={"Safe height"}
+      color={"green"}
+      config={props.config}
+      z={props.config.safeHeight}
+      pillYOffset={0}
+      onClick={() => props.onSelectObject?.({ kind: "safeHeight", id: 0 })} />}
+    {bounds && <HeightPlane
+      name={"min-soil"}
+      label={"Min soil"}
+      color={"#8b5a2b"}
+      config={props.config}
+      z={props.config.minSoilZ}
+      pillYOffset={-120}
+      onClick={() => undefined} />}
+    {bounds && <HeightPlane
+      name={"max-soil"}
+      label={"Max soil"}
+      color={"#8b5a2b"}
+      config={props.config}
+      z={props.config.maxSoilZ}
+      pillYOffset={120}
+      onClick={() => undefined} />}
     <Group visible={props.config.zDimension}>
       <DistanceIndicator
         start={{

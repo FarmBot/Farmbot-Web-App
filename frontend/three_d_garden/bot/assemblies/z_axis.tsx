@@ -20,6 +20,9 @@ import {
 } from "../../selection_types";
 import { BotVersion } from "../bot_versions";
 import { clickWasDragged } from "../../click_event";
+import { indicatorColor } from
+  "../../../controls/move/missed_step_indicator";
+import { NativeJogEncoderData } from "../native_jog_controls";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { EXTRUSION_WIDTH, UTM_RADIUS } from "./constants";
@@ -56,6 +59,7 @@ export interface ZAxisAssemblyProps {
   trailTarget: React.RefObject<THREE.Object3D>;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
+  encoderData?: NativeJogEncoderData;
 }
 
 const V17VacuumPumpCover = () => {
@@ -68,6 +72,13 @@ const V17VacuumPumpCover = () => {
     rotation={[0, 0, Math.PI / 2]}
     position={[1, 55, 490]} />;
 };
+
+export const maxMotorLoad = (encoderData: NativeJogEncoderData | undefined) =>
+  Math.max(
+    encoderData?.load?.x || 0,
+    encoderData?.load?.y || 0,
+    encoderData?.load?.z || 0,
+  );
 
 const LeadscrewDrive = (props: {
   zAxisLength: number;
@@ -167,6 +178,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
   const {
     botSizeZ, perspective, trail, zAxisLength, zGantryOffset,
   } = config;
+  const motorLoad = maxMotorLoad(props.encoderData);
   const zStop = useGLTF(
     version.number == "v1.9"
       ? ASSETS.models.mountedIdlerPulley
@@ -280,7 +292,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
         target={props.trailTarget}
         width={perspective ? 500 : 0.1}
         attenuation={t => Math.pow(t, 3)}
-        color={"red"}
+        color={config.motorLoad ? indicatorColor(motorLoad) : "red"}
         length={100}
         decay={0.5}
         local={false}
@@ -297,6 +309,7 @@ const Z_AXIS_CONFIG_FIELDS: (keyof Config)[] = [
   "cableCarriers",
   "columnLength",
   "kitVersion",
+  "motorLoad",
   "negativeZ",
   "perspective",
   "trail",
@@ -313,6 +326,7 @@ export const ZAxisAssembly = React.memo(
     prev.zAxisShape === next.zAxisShape &&
     prev.trailReady === next.trailReady &&
     prev.trailTarget === next.trailTarget &&
+    prev.encoderData === next.encoderData &&
     prev.onSelectObject === next.onSelectObject &&
     prev.onHoverObject === next.onHoverObject,
 );

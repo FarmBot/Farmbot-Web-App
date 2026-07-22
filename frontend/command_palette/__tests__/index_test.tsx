@@ -321,6 +321,15 @@ describe("<CommandPalette />", () => {
       .toEqual(false);
   });
 
+  it("clears recent commands from the Recent header", () => {
+    localStorage.setItem(COMMAND_PALETTE_RECENTS,
+      JSON.stringify(["farmbot:photo"]));
+    const { getByRole, queryByText } = setup();
+    fireEvent.click(getByRole("button", { name: "Clear" }));
+    expect(readRecentCommands()).toEqual([]);
+    expect(queryByText("Recent")).not.toBeInTheDocument();
+  });
+
   it("keeps search focused when the first recent action has an input", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS, JSON.stringify([{
       id: "farmbot:move:x",

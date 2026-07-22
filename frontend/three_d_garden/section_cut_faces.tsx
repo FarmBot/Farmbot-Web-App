@@ -9,7 +9,7 @@ import { Config, PositionConfig } from "./config";
 import { ASSETS } from "./constants";
 import {
   get3DPositionFunc, get3DPositionNoMirrorFunc, getColorFromBrightness,
-  getGardenPositionFunc, zDir as zDirFunc, zZero,
+  getGardenPositionFunc, zero as zeroFunc, zDir as zDirFunc, zZero,
 } from "./helpers";
 import { Group, Mesh, MeshPhongMaterial } from "./components";
 import { ThreeDSectionAxis } from "../farm_designer/interfaces";
@@ -86,6 +86,63 @@ export const getSectionNearPosition = (
 ) => {
   const normal = plane.normal[axis];
   return normal == 0 ? 0 : -plane.constant / normal;
+};
+
+export interface SectionBoundsCutLine {
+  color: string;
+  name: string;
+  points: Point[];
+}
+
+export const getSectionBoundsCutLines = (
+  config: Config,
+  axis: SectionAxis,
+  plane: Plane,
+): SectionBoundsCutLine[] => {
+  if (!config.bounds) { return []; }
+  const fixed = getSectionNearPosition(plane, axis);
+  const zero = zeroFunc(config);
+  const end = {
+    x: zero.x + config.botSizeX,
+    y: zero.y + config.botSizeY,
+  };
+  const axisMin = Math.min(zero[axis], end[axis]);
+  const axisMax = Math.max(zero[axis], end[axis]);
+  if (!inRange(fixed, axisMin, axisMax)) { return []; }
+  const transverse = axis == "x" ? "y" : "x";
+  const transverseMin = Math.min(zero[transverse], end[transverse]);
+  const transverseMax = Math.max(zero[transverse], end[transverse]);
+  const point = (transversePosition: number, z: number): Point =>
+    axis == "x"
+      ? [fixed, transversePosition, z]
+      : [transversePosition, fixed, z];
+  const top = zero.z;
+  const bottom = zero.z - config.botSizeZ;
+  const horizontalLine = (
+    name: string,
+    color: string,
+    z: number,
+  ): SectionBoundsCutLine => ({
+    name,
+    color,
+    points: [point(transverseMin, z), point(transverseMax, z)],
+  });
+  return [
+    {
+      name: "bounds",
+      color: "white",
+      points: [
+        point(transverseMin, bottom),
+        point(transverseMax, bottom),
+        point(transverseMax, top),
+        point(transverseMin, top),
+        point(transverseMin, bottom),
+      ],
+    },
+    horizontalLine("safe-height", "green", zero.z + config.safeHeight),
+    horizontalLine("min-soil", "#8b5a2b", zero.z + config.minSoilZ),
+    horizontalLine("max-soil", "#8b5a2b", zero.z + config.maxSoilZ),
+  ];
 };
 
 const inRange = (value: number, min: number, max: number) =>
@@ -483,6 +540,13 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
       axis,
     })
     : [], [axis, config, getZ, props.clipAll, props.farPlane]);
+  const nearBoundsLines = React.useMemo(
+    () => getSectionBoundsCutLines(config, axis, nearPlane),
+    [axis, config, nearPlane],
+  );
+  const farBoundsLines = React.useMemo(() => props.clipAll
+    ? getSectionBoundsCutLines(config, axis, props.farPlane)
+    : [], [axis, config, props.clipAll, props.farPlane]);
   React.useEffect(() => () => {
     geometries.soil?.dispose();
     geometries.bed.map(geometry => geometry.dispose());
@@ -556,5 +620,27 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
         opacity={props.opacity}
         renderOrder={SECTION_SOIL_CUT_LINE_RENDER_ORDER}
         raycast={sectionCutLineNoRaycast} />}
+    {nearBoundsLines.map(line =>
+      <Line
+        key={`near-${line.name}`}
+        name={`section-${line.name}-near-cut-line`}
+        points={line.points}
+        color={line.color}
+        lineWidth={2}
+        transparent={true}
+        opacity={props.opacity}
+        renderOrder={SECTION_SOIL_CUT_LINE_RENDER_ORDER}
+        raycast={sectionCutLineNoRaycast} />)}
+    {farBoundsLines.map(line =>
+      <Line
+        key={`far-${line.name}`}
+        name={`section-${line.name}-far-cut-line`}
+        points={line.points}
+        color={line.color}
+        lineWidth={2}
+        transparent={true}
+        opacity={props.opacity}
+        renderOrder={SECTION_SOIL_CUT_LINE_RENDER_ORDER}
+        raycast={sectionCutLineNoRaycast} />)}
   </Group>;
 };

@@ -18,6 +18,7 @@ import { DropDownItem, FBSelect } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { POINTER_TYPES } from
   "../../point_groups/criteria/interfaces";
+import { Group } from "../components";
 
 export const AREA_SELECTION_GHOST_SIZE = 200;
 const AREA_SELECTION_LINE_Z_OFFSET = 8;
@@ -165,6 +166,7 @@ interface AreaSelectionEdgeControlProps {
   edge: AreaSelectionEdge;
   getZ(x: number, y: number): number;
   onChange(box: AreaSelectionBox): void;
+  onCommit?(box: AreaSelectionBox): void;
 }
 
 const AreaSelectionEdgeControl = (
@@ -184,18 +186,25 @@ const AreaSelectionEdgeControl = (
   });
   const getGardenPosition = getGardenPositionFunc(props.config, false);
   const dragStartBox = React.useRef(box);
-  const update = (event: ControlDragEvent) => {
+  const updatedBox = (event: ControlDragEvent) => {
     const start = event.point.clone().sub(event.delta);
     const startGarden = getGardenPosition(start);
     const currentGarden = getGardenPosition(event.point);
     const axis = xEdge ? "x" : "y";
     const initial = dragStartBox.current[props.edge];
-    props.onChange(resizeAreaSelectionBox(
+    return resizeAreaSelectionBox(
       dragStartBox.current,
       props.edge,
       initial + currentGarden[axis] - startGarden[axis],
       props.config,
-    ));
+    );
+  };
+  const update = (event: ControlDragEvent) =>
+    props.onChange(updatedBox(event));
+  const commit = (event: ControlDragEvent) => {
+    const nextBox = updatedBox(event);
+    props.onChange(nextBox);
+    props.onCommit?.(nextBox);
   };
   const lowerEdge = props.edge == "x0" || props.edge == "y0";
   const mirrored = xEdge ? props.config.mirrorX : props.config.mirrorY;
@@ -210,7 +219,7 @@ const AreaSelectionEdgeControl = (
     constraint={planeConstraint("xy", worldPosition)}
     onDragStart={() => { dragStartBox.current = box; }}
     onDrag={update}
-    onDragEnd={update}>
+    onDragEnd={commit}>
     {state => <>
       <ControlArrow
         name={`area-selection-${props.edge}-arrow`}
@@ -408,4 +417,49 @@ export const GardenAreaSelectionOverlay = (
         onOpenPanel={props.onOpenPanel}
         onPointTypeChange={props.onPointTypeChange} />}
   </>;
+};
+
+export interface GroupAreaSelectionOverlayProps {
+  box: AreaSelectionBox;
+  config: Config;
+  getZ(x: number, y: number): number;
+  onBoxChange(box: AreaSelectionBox): void;
+}
+
+export const GroupAreaSelectionOverlay = (
+  props: GroupAreaSelectionOverlayProps,
+) => {
+  const externalBoxKey = [
+    props.box.x0,
+    props.box.x1,
+    props.box.y0,
+    props.box.y1,
+  ].join(":");
+  const [state, setState] = React.useState(() => ({
+    box: props.box,
+    externalBoxKey,
+  }));
+  let box = state.box;
+  if (state.externalBoxKey != externalBoxKey) {
+    box = props.box;
+    setState({ box, externalBoxKey });
+  }
+  const previewBox = (nextBox: AreaSelectionBox) =>
+    setState(current => ({ ...current, box: nextBox }));
+  return <Group name={"group-area-selection"}>
+    <AreaSelectionRectangle
+      box={box}
+      config={props.config}
+      getZ={props.getZ}
+      ghost={false} />
+    {(["x0", "x1", "y0", "y1"] as const).map(edge =>
+      <AreaSelectionEdgeControl
+        key={edge}
+        box={box}
+        config={props.config}
+        edge={edge}
+        getZ={props.getZ}
+        onChange={previewBox}
+        onCommit={props.onBoxChange} />)}
+  </Group>;
 };

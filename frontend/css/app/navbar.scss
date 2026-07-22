@@ -402,6 +402,12 @@ body:has(.app.light) {
   }
 }
 
+@media screen and (max-width: 900px) {
+  .nav-right .time-travel-button p {
+    display: none;
+  }
+}
+
 @media screen and (min-width: 1075px) {
   .mobile-menu-icon {
     display: none !important;

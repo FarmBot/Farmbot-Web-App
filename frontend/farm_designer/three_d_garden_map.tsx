@@ -39,9 +39,11 @@ import { effectiveThreeDPerspective } from "./three_d_camera_controls";
 import {
   createPanelCameraStore, PanelCameraStore,
 } from "../three_d_garden/panel_camera";
-import { isEqual } from "lodash";
+import { isEqual, isNumber } from "lodash";
 import { forceOnline } from "../devices/must_be_online";
 import { envGet, prepopulateEnv } from "../photos/remote_env/selectors";
+import { Actions } from "../constants";
+import { soilHeightPoint } from "../points/soil_height_helpers";
 
 export interface ThreeDGardenMapProps {
   gardenSize: AxisNumberProperty;
@@ -234,12 +236,34 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   const firmwareHardware = props.firmwareHardware;
   const zGantryOffset = props.gantryHeight;
   const soilHeight = Math.abs(props.soilHeight);
+  const fallbackSoilZ = soilHeight == 0 ? 0 : -soilHeight;
+  const rawSafeHeight = isNumber(props.fbosConfig?.body.safe_height)
+    ? props.fbosConfig.body.safe_height
+    : 0;
+  const safeHeight = rawSafeHeight == 0 ? 0 : -Math.abs(rawSafeHeight);
+  const measuredSoilZ = props.mapPoints
+    .filter(soilHeightPoint)
+    .map(point => point.body.z);
+  const minSoilZ = measuredSoilZ.length > 0
+    ? Math.min(...measuredSoilZ)
+    : fallbackSoilZ;
+  const maxSoilZ = measuredSoilZ.length > 0
+    ? Math.max(...measuredSoilZ)
+    : fallbackSoilZ;
   const displayTrail =
     !!props.getWebAppConfigValue(BooleanSetting.display_trail);
+  const displayMotorLoad =
+    !!props.getWebAppConfigValue(BooleanSetting.display_map_missed_steps);
   const animate =
     !props.getWebAppConfigValue(BooleanSetting.disable_animations);
   const cameraView =
     !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
+  const cropImages =
+    !!props.getWebAppConfigValue(BooleanSetting.crop_images);
+  const clipImages =
+    !!props.getWebAppConfigValue(BooleanSetting.clip_image_layer);
+  const showUncroppedCameraView = !!props.getWebAppConfigValue(
+    BooleanSetting.show_uncropped_camera_view_area);
   const rawEncoderVisible =
     !!props.getWebAppConfigValue(BooleanSetting.raw_encoders);
   const scaledEncoderVisible =
@@ -306,8 +330,12 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.bedLengthOuter = stableGridSize.x + 280;
     nextConfig.zoomBeacons = false;
     nextConfig.trail = displayTrail;
+    nextConfig.motorLoad = displayMotorLoad;
     nextConfig.animate = animate;
     nextConfig.cameraView = cameraView;
+    nextConfig.cropImages = cropImages;
+    nextConfig.clipImages = clipImages;
+    nextConfig.showUncroppedCameraView = showUncroppedCameraView;
     nextConfig.kitVersion = kitVersionFromFirmware(firmwareHardware);
     nextConfig.negativeZ = props.negativeZ;
     nextConfig.exaggeratedZ = designer.threeDExaggeratedZ;
@@ -319,6 +347,9 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.distanceIndicator = designer.distanceIndicator;
     nextConfig.zGantryOffset = zGantryOffset;
     nextConfig.soilHeight = soilHeight;
+    nextConfig.safeHeight = safeHeight;
+    nextConfig.minSoilZ = minSoilZ;
+    nextConfig.maxSoilZ = maxSoilZ;
     nextConfig.bedWallThickness = configValues.bedWallThickness;
     nextConfig.bedHeight = configValues.bedHeight;
     nextConfig.ccSupportSize = configValues.ccSupportSize;
@@ -403,6 +434,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     camCalData.imageRotation,
     camCalData.imageScale,
     cameraView,
+    clipImages,
     cameraOperation.startedAt,
     cameraOperation.type,
     cameraOperationDuration,
@@ -454,10 +486,14 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     designer.distanceIndicator,
     designer.threeDCameraSelection,
     designer.threeDExaggeratedZ,
+    cropImages,
     displayTrail,
+    displayMotorLoad,
     firmwareHardware,
     lastCaptureTime,
     light,
+    maxSoilZ,
+    minSoilZ,
     mirrorX,
     mirrorY,
     options.power,
@@ -466,6 +502,8 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     props.negativeZ,
     rotary,
     soilHeight,
+    safeHeight,
+    showUncroppedCameraView,
     stableGridSize.x,
     stableGridSize.y,
     sunPositionConfig.azimuth,
@@ -594,12 +632,24 @@ const useStableSceneProps = (
 };
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
+  const { dispatch, designer } = props;
   const [panelCameraStore] = React.useState(
-    () => createPanelCameraStore(props.designer.panelOpen),
+    () => createPanelCameraStore(designer.panelOpen),
   );
   React.useLayoutEffect(() => {
-    panelCameraStore.setOpen(props.designer.panelOpen);
-  }, [panelCameraStore, props.designer.panelOpen]);
+    panelCameraStore.setOpen(designer.panelOpen);
+  }, [designer.panelOpen, panelCameraStore]);
+  React.useEffect(() => {
+    if (designer.panelOpen || !designer.gridPlanting) { return; }
+    dispatch({
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    });
+  }, [
+    designer.gridPlanting,
+    designer.panelOpen,
+    dispatch,
+  ]);
   const sceneProps = useStableSceneProps({
     ...props,
     designer: threeDDesignerState(props.designer),

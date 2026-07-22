@@ -11,10 +11,13 @@ import * as controls from "../../controls";
 import { getWorldPositionFunc } from "../../helpers";
 import {
   AREA_SELECTION_GHOST_SIZE, areaSelectionPointTypes,
-  areaSelectionTitle, GardenAreaSelectionOverlay,
+  areaSelectionTitle, GardenAreaSelectionOverlay, GroupAreaSelectionOverlay,
   getGhostAreaSelectionBox, normalizeAreaSelectionBox,
   resizeAreaSelectionBox,
 } from "../area_selection";
+import {
+  actRenderer, createRenderer, unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("area selection geometry", () => {
   it("creates a 200mm ghost rectangle within garden bounds", () => {
@@ -260,5 +263,43 @@ describe("<GardenAreaSelectionOverlay />", () => {
     arrowSpy.mockRestore();
     selectSpy.mockRestore();
     lineSpy.mockRestore();
+  });
+});
+
+describe("<GroupAreaSelectionOverlay />", () => {
+  it("previews edge movement and commits once at drag end", () => {
+    const onBoxChange = jest.fn();
+    const config = { ...clone(INITIAL), botSizeX: 1000, botSizeY: 800 };
+    const getZ = () => -100;
+    const wrapper = createRenderer(<GroupAreaSelectionOverlay
+      box={{ x0: 100, y0: 200, x1: 500, y1: 600 }}
+      config={config}
+      getZ={getZ}
+      onBoxChange={onBoxChange} />);
+    const handle = wrapper.root.findAllByType(controls.ControlHandle)
+      .find(node => node.props.name == "area-selection-x0-control");
+    if (!handle) { throw new Error("X0 control not found"); }
+    const event = {
+      point: new Vector3(50, 0, 0),
+      delta: new Vector3(50, 0, 0),
+    } as controls.ControlDragEvent;
+    actRenderer(() => handle.props.onDragStart(event));
+    actRenderer(() => handle.props.onDrag(event));
+    expect(onBoxChange).not.toHaveBeenCalled();
+    actRenderer(() => handle.props.onDragEnd(event));
+    expect(onBoxChange).toHaveBeenCalledTimes(1);
+    expect(onBoxChange).toHaveBeenCalledWith({
+      x0: 150, y0: 200, x1: 500, y1: 600,
+    });
+    const committedPosition = [...handle.props.position];
+    actRenderer(() => wrapper.update(<GroupAreaSelectionOverlay
+      box={{ x0: 200, y0: 250, x1: 550, y1: 650 }}
+      config={config}
+      getZ={getZ}
+      onBoxChange={onBoxChange} />));
+    const updatedHandle = wrapper.root.findAllByType(controls.ControlHandle)
+      .find(node => node.props.name == "area-selection-x0-control");
+    expect(updatedHandle?.props.position).not.toEqual(committedPosition);
+    unmountRenderer(wrapper);
   });
 });

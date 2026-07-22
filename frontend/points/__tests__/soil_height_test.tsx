@@ -55,6 +55,8 @@ describe("<EditSoilHeight />", () => {
       dispatch: mockDispatch(jest.fn(), () => state),
       sourceFbosConfig: () => ({ value: 100, consistent: true }),
       averageZ: 150,
+      minZ: -550,
+      maxZ: -450,
     };
   };
 
@@ -64,12 +66,24 @@ describe("<EditSoilHeight />", () => {
       .toEqual("100");
     fireEvent.click(container.querySelector("button") as Element);
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
+    expect(container).toHaveTextContent("Min soil z");
+    expect(container).toHaveTextContent("Max soil z");
   });
 
   it("changes soil height", () => {
     const { container } = render(<EditSoilHeight {...fakeProps()} />);
     changeBlurableInput(container, "123");
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 123 });
+  });
+
+  it("keeps average controls when min and max are unavailable", () => {
+    const p = fakeProps();
+    p.minZ = undefined;
+    p.maxZ = undefined;
+    const { container } = render(<EditSoilHeight {...p} />);
+    expect(container).toHaveTextContent("use average z: 150");
+    expect(container).not.toHaveTextContent("Min soil z");
+    expect(container).not.toHaveTextContent("Max soil z");
   });
 
   it("doesn't change soil height", () => {

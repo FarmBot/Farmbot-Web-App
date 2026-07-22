@@ -25,6 +25,9 @@ export interface Config {
   bedBrightness: number;
   soilBrightness: number;
   soilHeight: number;
+  safeHeight: number;
+  minSoilZ: number;
+  maxSoilZ: number;
   soilSurface: string;
   soilSurfacePointCount: number;
   soilSurfaceVariance: number;
@@ -36,6 +39,7 @@ export interface Config {
   grid: boolean;
   axes: boolean;
   trail: boolean;
+  motorLoad: boolean;
   tracks: boolean;
   clouds: boolean;
   constellations: boolean;
@@ -106,6 +110,9 @@ export interface Config {
   interpolationPower: number;
   promoSpread: boolean;
   cameraView: boolean;
+  cropImages: boolean;
+  clipImages: boolean;
+  showUncroppedCameraView: boolean;
   lastImageCapture: number;
   cameraOperation: CameraOperation;
   lastCameraOperation: number;
@@ -181,6 +188,9 @@ export const INITIAL: ConfigWithPosition = {
   bedBrightness: 8,
   soilBrightness: 12,
   soilHeight: 500,
+  safeHeight: 0,
+  minSoilZ: -500,
+  maxSoilZ: -500,
   soilSurface: "random",
   soilSurfacePointCount: 25,
   soilSurfaceVariance: 75,
@@ -192,6 +202,7 @@ export const INITIAL: ConfigWithPosition = {
   grid: true,
   axes: false,
   trail: false,
+  motorLoad: false,
   tracks: true,
   clouds: true,
   constellations: false,
@@ -262,6 +273,9 @@ export const INITIAL: ConfigWithPosition = {
   interpolationPower: 4,
   promoSpread: false,
   cameraView: false,
+  cropImages: true,
+  clipImages: true,
+  showUncroppedCameraView: false,
   lastImageCapture: 0,
   cameraOperation: "",
   lastCameraOperation: 0,

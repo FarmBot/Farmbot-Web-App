@@ -21,7 +21,7 @@ import { ThreeDObjectSelectionHandler } from "../../selection_types";
 import { ThreeEvent } from "@react-three/fiber";
 import { clickWasDragged } from "../../click_event";
 import {
-  getUtilitiesPostWorldPosition, WIFI_ROUTER_LOCAL_Z,
+  getUtilitiesPostWorldPosition, UTILITIES_POST_SIZE, WIFI_ROUTER_LOCAL_Z,
 } from "./utilities_post_position";
 import { Highlight } from "../../elements";
 import { t } from "../../../i18next_wrapper";
@@ -176,7 +176,6 @@ const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
   "bedLengthOuter",
   "bedWidthOuter",
   "bedZOffset",
-  "legSize",
   "utilitiesPost",
 ];
 
@@ -198,9 +197,10 @@ const UtilitiesPostBase = (props: UtilitiesPostProps) => {
 const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
   const { onSelectObject } = props;
   const {
-    legSize, bedLengthOuter, bedWidthOuter,
+    bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
   } = props.config;
+  const legSize = UTILITIES_POST_SIZE;
   const postColor = getColorFromBrightness(bedBrightness);
   const faucetX = 0;
   const faucetY = -115;
@@ -233,13 +233,11 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
       bedLengthOuter,
       bedWidthOuter,
       bedZOffset,
-      legSize,
     }), [
     bedHeight,
     bedLengthOuter,
     bedWidthOuter,
     bedZOffset,
-    legSize,
   ]);
   const hiddenDepthOffset =
     -(bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE;

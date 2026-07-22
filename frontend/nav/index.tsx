@@ -465,7 +465,9 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
   };
 
   CommandPaletteButton = () => {
-    const label = `${t("Commands")} ${commandPaletteShortcut()}`;
+    const label = isMobile()
+      ? t("Commands")
+      : `${t("Commands")} ${commandPaletteShortcut()}`;
     return <div className={[
       "nav-popup-button-wrapper",
       "command-palette-nav-button-wrapper",

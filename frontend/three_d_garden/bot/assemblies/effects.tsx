@@ -11,12 +11,14 @@ import {
 } from "../kinematics";
 import { BotVersion } from "../bot_versions";
 import { perfCount, usePerfRenderCount } from "../../../performance/perf";
+import { ThreeDObjectSelectionHandler } from "../../selection_types";
 
 export interface EffectsAssemblyProps {
   config: Config;
   configPosition: PositionConfig;
   version: BotVersion;
   getZ(x: number, y: number): number;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 const useMeasuredGetZ = (getZRaw: EffectsAssemblyProps["getZ"]) =>
@@ -127,7 +129,8 @@ const EffectsAssemblyBase = (props: EffectsAssemblyProps) => {
     {config.laser && <LaserEffect {...props} />}
     {config.waterFlow && <WaterEffect {...props} />}
     {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
-      <Bounds config={config} configPosition={configPosition} />}
+      <Bounds config={config} configPosition={configPosition}
+        onSelectObject={props.onSelectObject} />}
   </Group>;
 };
 

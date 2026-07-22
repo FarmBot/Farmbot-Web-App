@@ -6,7 +6,7 @@ import {
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import {
-  fakeFarmwareEnv, fakeLog, fakePlant,
+  fakeFarmwareEnv, fakeLog, fakePlant, fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
 import { clone, cloneDeep } from "lodash";
@@ -23,6 +23,7 @@ import SunCalc from "suncalc";
 import { BooleanSetting } from "../../session_keys";
 import { namespace3D } from "../../settings/three_d_settings";
 import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
+import { tagAsSoilHeight } from "../../points/soil_height_helpers";
 
 let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
@@ -148,6 +149,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.pan = true;
     expectedConfig.zoom = true;
     expectedConfig.soilHeight = 0;
+    expectedConfig.minSoilZ = 0;
+    expectedConfig.maxSoilZ = 0;
     expectedConfig.zGantryOffset = 0;
     expectedConfig.zoomBeacons = false;
     expectedConfig.waterFlow = false;
@@ -188,6 +191,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.mirrorX = true;
     expectedConfig.mirrorY = true;
     expectedConfig.negativeZ = false;
+    expectedConfig.cropImages = false;
+    expectedConfig.clipImages = false;
     expectedConfig.viewpointHeading = 0;
     expectedConfig.kitVersion = "v1.7";
 
@@ -227,6 +232,22 @@ describe("<ThreeDGardenMap />", () => {
 
     expect(lastThreeDGardenProps().encoderVisibility)
       .toEqual({ raw: true, scaled: true });
+  });
+
+  it("uses measured soil height extrema", () => {
+    const p = fakeProps();
+    const low = fakePoint();
+    low.body.z = -550;
+    tagAsSoilHeight(low);
+    const high = fakePoint();
+    high.body.z = -450;
+    tagAsSoilHeight(high);
+    p.mapPoints = [low, high];
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      minSoilZ: -550,
+      maxSoilZ: -450,
+    }));
   });
 
   it("uses the selected calibration card face", () => {
@@ -302,6 +323,25 @@ describe("<ThreeDGardenMap />", () => {
 
     expect(threeDGardenSpy).toHaveBeenCalledTimes(2);
     expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(2);
+  });
+
+  it("exits grid planting when the panel closes", () => {
+    const p = fakeProps();
+    p.designer.gridPlanting = {
+      token: "grid",
+      gridId: "grid",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 100,
+    };
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    p.designer = { ...p.designer, panelOpen: false };
+    rerender(<ThreeDGardenMap {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: "SET_GRID_PLANTING",
+      payload: undefined,
+    });
   });
 
   it("keeps garden config stable across bot position updates", () => {

@@ -10,6 +10,9 @@ import { getBotVersion } from "../bot_versions";
 import { updateBufferGeometry } from "./owned_extrude_geometry";
 import { perfCount } from "../../../performance/perf";
 import { CameraOperationAnimations } from "./camera_operation_animations";
+import {
+  cropAmount, largeCrop,
+} from "../../../farm_designer/map/layers/images/map_image";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
@@ -59,7 +62,8 @@ type CameraViewPointConfig = Pick<Config,
   | "imgOffsetX"
   | "imgOffsetY"
   | "imgRotation"
-  | "imgOrigin">;
+  | "imgOrigin"
+  | "cropImages">;
 
 interface CameraViewPointInputs extends CameraViewPointConfig {
   configZ: number;
@@ -102,8 +106,22 @@ const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
     ? 0
     : (negativeZ ? -1 : 1) * configZ);
 
-  const widthAtSoilFromZero = imgCenterX * 2 * imgScale;
-  const heightAtSoilFromZero = imgCenterY * 2 * imgScale;
+  const crop = inputs.cropImages
+    ? cropAmount(imgRotation, {
+      width: imgCenterX * 2,
+      height: imgCenterY * 2,
+    })
+    : 0;
+  const circleCrop = inputs.cropImages && largeCrop(imgRotation);
+  const croppedCenter = circleCrop
+    ? Math.min(imgCenterX, imgCenterY)
+    : undefined;
+  const widthAtSoilFromZero = (croppedCenter
+    ? croppedCenter * 2
+    : imgCenterX * 2 - crop) * imgScale;
+  const heightAtSoilFromZero = (croppedCenter
+    ? croppedCenter * 2
+    : imgCenterY * 2 - crop) * imgScale;
   const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
   const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
   const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
@@ -156,6 +174,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
     imgOffsetY: config.imgOffsetY,
     imgRotation: config.imgRotation,
     imgOrigin: config.imgOrigin,
+    cropImages: config.cropImages,
     configZ: configPosition.z,
     distanceToSoil,
     cameraMountX: cameraMountPosition.x,
@@ -175,6 +194,7 @@ const CameraViewBase = (props: CameraViewProps) => {
     imgOffsetY,
     imgRotation,
     imgOrigin,
+    cropImages,
   } = config;
   const { x: cameraMountX, y: cameraMountY, z: cameraMountZ } =
     cameraMountPosition;
@@ -190,6 +210,7 @@ const CameraViewBase = (props: CameraViewProps) => {
       imgOffsetY,
       imgRotation,
       imgOrigin,
+      cropImages,
       configZ,
       distanceToSoil,
       cameraMountX,
@@ -205,23 +226,68 @@ const CameraViewBase = (props: CameraViewProps) => {
     imgOffsetY,
     imgRotation,
     imgOrigin,
+    cropImages,
     configZ,
     distanceToSoil,
     cameraMountX,
     cameraMountY,
     cameraMountZ,
   ]);
+  const uncroppedPoints = React.useMemo(() =>
+    cropImages && config.showUncroppedCameraView
+      ? getCameraViewPointsFromInputs({
+        negativeZ,
+        kitVersion,
+        imgCenterX,
+        imgCenterY,
+        imgScale,
+        imgOffsetX,
+        imgOffsetY,
+        imgRotation,
+        imgOrigin,
+        cropImages: false,
+        configZ,
+        distanceToSoil,
+        cameraMountX,
+        cameraMountY,
+        cameraMountZ,
+      }).points
+      : undefined, [
+    cameraMountX,
+    cameraMountY,
+    cameraMountZ,
+    config.showUncroppedCameraView,
+    configZ,
+    cropImages,
+    distanceToSoil,
+    imgCenterX,
+    imgCenterY,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgRotation,
+    imgScale,
+    kitVersion,
+    negativeZ,
+  ]);
   return config.cameraView
-    ? <Frustum
-      points={points}
-      position={cameraLensPosition}
-      config={config}
-      getZ={props.getZ} />
+    ? <>
+      <Frustum
+        points={points}
+        position={cameraLensPosition}
+        config={config}
+        getZ={props.getZ} />
+      {uncroppedPoints &&
+        <FrustumOutline
+          points={uncroppedPoints}
+          position={cameraLensPosition} />}
+    </>
     : <></>;
 };
 
 const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "cameraView",
+  "cropImages",
   "imgCenterX",
   "imgCenterY",
   "imgOffsetX",
@@ -235,6 +301,7 @@ const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "calibrationCardGrid",
   "animate",
   "negativeZ",
+  "showUncroppedCameraView",
   "kitVersion",
 ];
 
@@ -287,6 +354,29 @@ const frustumEdgesGeometry = (points: THREE.Vector3[]) => {
   return new THREE.BufferGeometry().setFromPoints(
     pairs.flatMap(([start, end]) => [points[start], points[end]]),
   );
+};
+
+interface FrustumOutlineProps {
+  points: THREE.Vector3[];
+  position: THREE.Vector3;
+}
+
+const FrustumOutline = (props: FrustumOutlineProps) => {
+  const geometry = React.useMemo(
+    () => frustumEdgesGeometry(props.points),
+    [props.points],
+  );
+  React.useEffect(() => () => geometry.dispose(), [geometry]);
+  return <LineSegments
+    name={"uncropped-camera-view"}
+    position={props.position}
+    geometry={geometry}>
+    <LineBasicMaterial
+      linewidth={1}
+      color={"white"}
+      transparent={true}
+      opacity={0.35} />
+  </LineSegments>;
 };
 
 const Frustum = (props: FrustumProps) => {

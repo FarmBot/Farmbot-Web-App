@@ -216,6 +216,15 @@ describe("<NavBar />", () => {
     window.removeEventListener(COMMAND_PALETTE_OPEN_EVENT, open);
   });
 
+  it("hides command palette shortcut help on mobile", () => {
+    mockIsMobile = true;
+    const { container } = renderNavBar();
+    const button = container.querySelector(".command-palette-nav-button");
+    expect(button).toHaveAttribute("title", "Commands");
+    expect(button?.getAttribute("title"))
+      .not.toContain(commandPaletteShortcut());
+  });
+
   it("displays movement progress", () => {
     const p = fakeProps();
     p.appState.movement = {

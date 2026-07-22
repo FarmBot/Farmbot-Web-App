@@ -125,6 +125,7 @@ interface SnapshotAssembliesProps {
   machineOrigin: [number, number, number];
   snapshotStore: BotPositionSnapshotStore;
   version: ReturnType<typeof getBotVersion>;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 const SnapshotAssemblies = (props: SnapshotAssembliesProps) => {
@@ -142,7 +143,8 @@ const SnapshotAssemblies = (props: SnapshotAssembliesProps) => {
         config={props.config}
         configPosition={configPosition}
         version={props.version}
-        getZ={props.getZ} />
+        getZ={props.getZ}
+        onSelectObject={props.onSelectObject} />
     </Group>
   </>;
 };
@@ -365,6 +367,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
                 zAxisShape={shapes.zAxis}
                 trailReady={trailReady}
                 trailTarget={trailTarget}
+                encoderData={props.encoderData}
                 onSelectObject={props.onSelectObject}
                 onHoverObject={props.onHoverObject} />
               <Tools
@@ -388,7 +391,8 @@ const EnabledBot = (props: FarmbotModelProps) => {
         getZ={props.getZ}
         machineOrigin={kinematics.machineOrigin}
         snapshotStore={snapshotStore}
-        version={version} />
+        version={version}
+        onSelectObject={props.onSelectObject} />
     </FocusVisibilityGroup>
   </WaterFlowTextureProvider>;
 };

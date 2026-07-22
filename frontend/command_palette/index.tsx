@@ -8,7 +8,8 @@ import {
 } from "./interfaces";
 import { searchCommands } from "./search";
 import {
-  orderCommandsWithRecents, readRecentCommandIds, recordRecentCommand,
+  clearRecentCommands, orderCommandsWithRecents, readRecentCommandIds,
+  recordRecentCommand,
 } from "./recents";
 import { t } from "../i18next_wrapper";
 import { ToggleButton } from "../ui";
@@ -296,6 +297,7 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
   const [selectedAction, setSelectedAction] = React.useState(0);
   const [values, setValues] = React.useState<Record<string, string>>({});
   const [validationError, setValidationError] = React.useState<string>();
+  const [, setRecentVersion] = React.useState(0);
   const commands = React.useMemo(() => open
     ? buildCommands({
       state: props.appState,
@@ -321,6 +323,12 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
     dialogRef.current?.close();
     resetClosedState();
   }, [resetClosedState]);
+  const clearRecents = React.useCallback(() => {
+    clearRecentCommands();
+    setRecentVersion(version => version + 1);
+    setSelected(0);
+    searchRef.current?.focus();
+  }, []);
 
   const show = React.useMemo(() => showCommandPalette.bind(
     undefined,
@@ -791,7 +799,18 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
         const active = selected == index;
         return <React.Fragment key={commandInstanceId(command)}>
           {index == 0 && recentCount > 0 &&
-            <p className="command-palette-group-label">{t("Recent")}</p>}
+            <div className={"command-palette-group-header"}>
+              <p className="command-palette-group-label">{t("Recent")}</p>
+              <button
+                type={"button"}
+                className={"fb-button gray command-palette-clear-recents"}
+                onClick={event => {
+                  event.stopPropagation();
+                  clearRecents();
+                }}>
+                {t("Clear")}
+              </button>
+            </div>}
           {index == recentCount && recentCount > 0 &&
             <p className="command-palette-group-label">{t("All commands")}</p>}
           <div

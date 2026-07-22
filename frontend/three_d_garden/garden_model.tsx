@@ -149,8 +149,9 @@ import { getSelected } from
 import {
   AreaSelectionBox, AreaSelectionPointType, areaSelectionPointTypes,
   GardenAreaSelection, GardenAreaSelectionOverlay,
-  normalizeAreaSelectionBox,
+  GroupAreaSelectionOverlay, normalizeAreaSelectionBox,
 } from "./selection/area_selection";
+import { editGtLtCriteria } from "../point_groups/criteria/edit";
 import {
   getSectionClippingPlanes, getSectionOutsidePlaneConstants,
   sectionNearPlaneIndex,
@@ -3373,6 +3374,33 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     const group = groups.filter(group => group.body.id == groupIdFromPath)[0];
     return group ? pointsSelectedByGroup(group, allPoints) : undefined;
   }, [allPoints, groupIdFromPath, groupPanelOpen, groups]);
+  const editedGroup = groupPanelOpen && groupIdFromPath != undefined
+    ? groups.find(group => group.body.id == groupIdFromPath)
+    : undefined;
+  const groupAreaSelectionBox = React.useMemo(() => {
+    if (!editedGroup || !sectionDesigner?.editGroupAreaInMap) {
+      return undefined;
+    }
+    const gt = editedGroup.body.criteria.number_gt;
+    const lt = editedGroup.body.criteria.number_lt;
+    return {
+      x0: gt.x ?? 0,
+      y0: gt.y ?? 0,
+      x1: lt.x ?? config.botSizeX,
+      y1: lt.y ?? config.botSizeY,
+    };
+  }, [
+    config.botSizeX,
+    config.botSizeY,
+    editedGroup,
+    sectionDesigner?.editGroupAreaInMap,
+  ]);
+  const updateGroupAreaSelectionBox = React.useCallback((
+    box: AreaSelectionBox,
+  ) => {
+    if (!dispatch || !editedGroup) { return; }
+    dispatch(editGtLtCriteria(editedGroup, box));
+  }, [dispatch, editedGroup]);
   const areaSelectedUuids = React.useMemo(() => {
     if (!areaSelection || areaSelection.phase == "firstCorner") { return []; }
     const selectablePoints = allPoints.map(point =>
@@ -3991,6 +4019,12 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           onDelete={deleteAreaSelection}
           onOpenPanel={openAreaSelectionPanel}
           onPointTypeChange={updateAreaSelectionPointType} />
+        {groupAreaSelectionBox &&
+          <GroupAreaSelectionOverlay
+            box={groupAreaSelectionBox}
+            config={config}
+            getZ={getZ}
+            onBoxChange={updateGroupAreaSelectionBox} />}
         <OptionalFarmbotLayer
           activeFocus={props.activeFocus}
           axisActions={!objectSelectionMode && dispatch &&

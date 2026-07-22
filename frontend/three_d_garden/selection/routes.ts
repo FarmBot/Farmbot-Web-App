@@ -180,5 +180,6 @@ export const pathForThreeDSelection = (
     case "connectivity": return Path.designer();
     case "sceneObject": return Path.sceneObjects(selection.id);
     case "bed": return Path.settings("3d_garden");
+    case "safeHeight": return Path.settings("farmbot");
   }
 };

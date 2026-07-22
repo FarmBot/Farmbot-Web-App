@@ -619,6 +619,20 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("colors the trail by motor load when enabled", () => {
+    const p = fakeProps();
+    p.config.trail = true;
+    p.config.motorLoad = true;
+    p.encoderData = {
+      load: { x: 25, y: 55, z: 10 },
+      raw_encoders: { x: undefined, y: undefined, z: undefined },
+      scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    };
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findByType(Trail).props.color).toEqual("yellow");
+    unmountRenderer(wrapper);
+  });
+
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);

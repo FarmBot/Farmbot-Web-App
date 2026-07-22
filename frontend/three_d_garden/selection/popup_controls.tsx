@@ -4,7 +4,7 @@ import {
   TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
-import { isUndefined, round } from "lodash";
+import { isUndefined, noop, round } from "lodash";
 import { ThreeDObjectSelectionLayerProps } from "./props";
 import {
   ResolvedLocationObject, ResolvedThreeDObject,
@@ -40,7 +40,9 @@ import {
   BlurableInput, DropDownItem, FBSelect, Help, ToggleButton,
 } from "../../ui";
 import { XYZ } from "../../devices/constants";
-import { betterCompact, parseIntInput } from "../../util";
+import {
+  betterCompact, parseIntInput, validFbosConfig,
+} from "../../util";
 import { getModifiedClassName } from
   "../../settings/fbos_settings/default_values";
 import { getFwHardwareValue } from
@@ -53,6 +55,9 @@ import {
   validSceneObjectColor,
 } from "../../scene_objects/appearance";
 import { toggleSceneObjectVisibility } from "../../scene_objects/actions";
+import { BotConfigInputBox } from
+  "../../settings/fbos_settings/bot_config_input_box";
+import { sourceFbosConfigValue } from "../../settings/source_config_value";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -594,6 +599,22 @@ const BedPopupControls = (props: PopupControlProps) => {
   </table>;
 };
 
+const SafeHeightPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "safeHeight") { return undefined; }
+  const sourceFbosConfig = sourceFbosConfigValue(
+    validFbosConfig(props.fbosConfig),
+    props.bot?.hardware.configuration || {},
+  );
+  return <div className={"row grid-exp-1"}>
+    <label>{t(DeviceSetting.safeHeight)}</label>
+    <BotConfigInputBox
+      setting={"safe_height"}
+      dispatch={props.dispatch || noop}
+      disabled={!props.dispatch}
+      sourceFbosConfig={sourceFbosConfig} />
+  </div>;
+};
+
 export const ObjectPopupControls = (props: PopupControlProps) => {
   switch (props.object.kind) {
     case "plant": return <PlantPopupControls {...props} />;
@@ -606,6 +627,7 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "connectivity": return <></>;
     case "sceneObject": return <SceneObjectPopupControls {...props} />;
     case "bed": return <BedPopupControls {...props} />;
+    case "safeHeight": return <SafeHeightPopupControls {...props} />;
   }
 };
 
@@ -657,7 +679,7 @@ export const ObjectPopupCopyButton = (props: PopupControlProps) => {
 type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
-  | { kind: "connectivity" } | { kind: "bed" }
+  | { kind: "connectivity" } | { kind: "bed" } | { kind: "safeHeight" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -677,7 +699,8 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
     || object.kind == "electronics"
     || object.kind == "camera"
     || object.kind == "connectivity"
-    || object.kind == "bed") {
+    || object.kind == "bed"
+    || object.kind == "safeHeight") {
     return undefined;
   }
   return <button

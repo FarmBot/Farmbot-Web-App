@@ -84,7 +84,7 @@ import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
-import { GardenAreaSelectionOverlay } from
+import { GardenAreaSelectionOverlay, GroupAreaSelectionOverlay } from
   "../selection/area_selection";
 import { Bed } from "../bed";
 import { getStargazingCamera, Telescope } from "../bed/objects/telescope";
@@ -2635,14 +2635,50 @@ describe("<GardenModel />", () => {
     const group = fakePointGroup();
     group.body.id = 2;
     group.body.point_ids = [point.body.id];
+    group.body.criteria.number_gt = { x: 100, y: 200 };
+    group.body.criteria.number_lt = { x: 500, y: 600 };
     location.pathname = Path.mock(Path.groups(2));
     getModeSpy.mockReturnValue(Mode.editGroup);
+    const groupAddPlantProps = fakeAddPlantProps();
+    groupAddPlantProps.designer.editGroupAreaInMap = true;
+    groupAddPlantProps.dispatch = jest.fn();
     actRenderer(() => wrapper.update(<GardenModel
       {...p}
       groups={[group]}
-      addPlantProps={fakeAddPlantProps()} />));
+      addPlantProps={groupAddPlantProps} />));
     expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
       .props.selectedObjects).toEqual([{ kind: "point", id: 1 }]);
+    const groupArea = wrapper.root.findByType(GroupAreaSelectionOverlay);
+    expect(groupArea.props.box).toEqual({
+      x0: 100, y0: 200, x1: 500, y1: 600,
+    });
+    actRenderer(() => groupArea.props.onBoxChange({
+      x0: 150, y0: 250, x1: 550, y1: 650,
+    }));
+    expect(groupAddPlantProps.dispatch).toHaveBeenCalledWith(
+      expect.any(Function));
+    const clearedGroup = {
+      ...group,
+      body: {
+        ...group.body,
+        criteria: {
+          ...group.body.criteria,
+          number_gt: {},
+          number_lt: {},
+        },
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel
+      {...p}
+      groups={[clearedGroup]}
+      addPlantProps={groupAddPlantProps} />));
+    expect(wrapper.root.findByType(GroupAreaSelectionOverlay).props.box)
+      .toEqual({
+        x0: 0,
+        y0: 0,
+        x1: p.config.botSizeX,
+        y1: p.config.botSizeY,
+      });
     getModeSpy.mockRestore();
   });
 

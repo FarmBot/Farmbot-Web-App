@@ -5,7 +5,7 @@ import {
 import { round } from "lodash";
 import { Config, PositionConfig } from "../config";
 import {
-  getWorldPositionFunc,
+  get3DPositionNoMirrorFunc, getWorldPositionFunc, zZero,
 } from "../helpers";
 import {
   getToolSlotRenderPosition,
@@ -87,6 +87,10 @@ interface ResolvedBedObject extends ResolvedThreeDObjectBase {
   kind: "bed";
 }
 
+interface ResolvedSafeHeightObject extends ResolvedThreeDObjectBase {
+  kind: "safeHeight";
+}
+
 export type ResolvedThreeDObject =
   | ResolvedPlantObject
   | ResolvedPointObject
@@ -97,7 +101,8 @@ export type ResolvedThreeDObject =
   | ResolvedCameraObject
   | ResolvedConnectivityObject
   | ResolvedSceneObject
-  | ResolvedBedObject;
+  | ResolvedBedObject
+  | ResolvedSafeHeightObject;
 
 export interface ResolvedLocationObject {
   kind: "location";
@@ -118,6 +123,7 @@ export const objectHasSelectionOverlay = (
   !!object
   && object.kind != "utm"
   && object.kind != "electronics"
+  && object.kind != "safeHeight"
   && object.kind != "camera"
   && object.kind != "connectivity"
   && object.kind != "sceneObject"
@@ -397,6 +403,31 @@ const resolveBedObject = (
   };
 };
 
+const resolveSafeHeightObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedSafeHeightObject => {
+  const { botSizeY, safeHeight } = props.config;
+  const position = get3DPositionNoMirrorFunc(props.config)({
+    x: 0,
+    y: botSizeY / 2,
+  });
+  const worldPosition: [number, number, number] = [
+    position.x,
+    position.y,
+    zZero(props.config) + safeHeight,
+  ];
+  return {
+    kind: "safeHeight",
+    selection,
+    name: t("Set safe height"),
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1], worldPosition[2] + 75],
+    ringRadius: MIN_RING_RADIUS,
+    locationCoordinate: { x: 0, y: botSizeY / 2, z: safeHeight },
+  };
+};
+
 export const resolveSelectedObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection | undefined,
@@ -413,6 +444,7 @@ export const resolveSelectedObject = (
     case "connectivity": return resolveConnectivityObject(props, selection);
     case "sceneObject": return resolveSceneObject(props, selection);
     case "bed": return resolveBedObject(props, selection);
+    case "safeHeight": return resolveSafeHeightObject(props, selection);
   }
 };
 

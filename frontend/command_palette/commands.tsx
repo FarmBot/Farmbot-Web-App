@@ -107,6 +107,8 @@ const localized = (english: string) => ({
 });
 
 const settingLabelOverrides: Record<string, string> = {
+  disable_i18n: "Internationalize web app",
+  enable_3d_electronics_box_top: "Enable 3D Electronics Box",
   param_e_stop_on_mov_err: "E-Stop on Movement Error",
   param_mov_nr_retry: "Max Retries",
   movement_step_per_mm: "Steps per mm",
@@ -833,19 +835,25 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
   const getValue = getWebAppConfigValueFromResources(
     props.state.resources.index);
   return Object.values(BooleanSetting)
-    .filter(setting => setting != BooleanSetting.home_button_homing)
+    .filter(setting => ![
+      BooleanSetting.home_button_homing,
+      BooleanSetting.show_first_party_farmware,
+      BooleanSetting.stub_config,
+    ].includes(setting))
     .map(setting => {
       const englishLabel = boolSettingLabels[setting] || settingLabel(setting);
       const current = !!getValue(setting);
+      const inverted = setting == BooleanSetting.disable_i18n;
+      const enabled = inverted ? !current : current;
       const set = (value: boolean) => {
         const confirmation = boolSettingConfirmations[setting];
         if (!current && value && confirmation && !confirm(t(confirmation))) {
           return false;
         }
-        props.dispatch(setWebAppConfigValue(setting, value));
+        props.dispatch(setWebAppConfigValue(setting, inverted ? !value : value));
         return true;
       };
-      const execute = () => set(!current);
+      const execute = () => set(!enabled);
       return {
         id: `setting:${setting}:toggle`,
         ...localized(englishLabel),
@@ -860,8 +868,8 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
         imageIcon: TAB_ICON[Panel.Settings],
         themeAwareImageIcon: true,
         execute,
-        toggleValue: current,
-        accessory: toggleAccessory(current),
+        toggleValue: enabled,
+        accessory: toggleAccessory(enabled),
       };
     });
 };
@@ -1020,7 +1028,10 @@ const fbosValueMetadata = (key: string): SettingValueMetadata => {
 };
 
 const configValueSettingCommands = (props: BuildCommandProps): Command[] => {
-  const ignored = ["id", "device_id", "created_at", "updated_at"];
+  const ignored = [
+    "id", "device_id", "created_at", "updated_at",
+    "arduino_debug_messages", "disable_factory_reset", "os_auto_update",
+  ];
   const supportedFbosValues = new Set([
     "safe_height", "soil_height", "gantry_height",
     "default_axis_order", "update_channel",
@@ -1101,6 +1112,7 @@ const configValueSettingCommands = (props: BuildCommandProps): Command[] => {
     });
   const firmwareEntries = Object.entries(firmwareConfig?.body || {})
     .filter(([key, value]) => !ignored.includes(key)
+      && !["param_test", "param_use_eeprom", "param_version"].includes(key)
       && typeof value == "number") as [string, number][];
   const firmwareValues = new Map(firmwareEntries);
   const axes: Xyz[] = ["x", "y", "z"];

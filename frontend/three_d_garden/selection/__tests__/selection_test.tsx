@@ -409,6 +409,8 @@ describe("selection routes", () => {
       .toEqual(Path.sceneObjects(5));
     expect(pathForThreeDSelection({ kind: "bed", id: 0 }))
       .toEqual(Path.settings("3d_garden"));
+    expect(pathForThreeDSelection({ kind: "safeHeight", id: 0 }))
+      .toEqual(Path.settings("farmbot"));
   });
 });
 
@@ -515,6 +517,25 @@ describe("selection resolve", () => {
       },
     }));
     expect(objectHasSelectionOverlay(bed)).toBeFalsy();
+  });
+
+  it("resolves safe height", () => {
+    const props = resolveProps();
+    props.config.safeHeight = -100;
+    const safeHeight = resolveSelectedObject(
+      props,
+      { kind: "safeHeight", id: 0 },
+    );
+    expect(safeHeight).toEqual(expect.objectContaining({
+      kind: "safeHeight",
+      name: "Set safe height",
+      locationCoordinate: {
+        x: 0,
+        y: props.config.botSizeY / 2,
+        z: -100,
+      },
+    }));
+    expect(objectHasSelectionOverlay(safeHeight)).toBeFalsy();
   });
 
   it("resolves selected locations and overlay eligibility", () => {
@@ -856,6 +877,18 @@ describe("selection popup controls", () => {
       expect(container).not.toBeEmptyDOMElement();
       unmount();
     });
+  });
+
+  it("renders safe height controls", () => {
+    const object = resolveSelectedObject(
+      resolveProps(),
+      { kind: "safeHeight", id: 0 },
+    );
+    if (!object) { throw new Error("Safe height was not resolved"); }
+    const p = layerProps();
+    const { container } = render(<ObjectPopupControls {...p} object={object} />);
+    expect(container).toHaveTextContent("Safe Height");
+    expect(container.querySelector("input[type='number']")).toBeTruthy();
   });
 
   it("updates scene object texture and color", () => {

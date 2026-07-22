@@ -58,6 +58,18 @@ describe("<CameraView />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("shows the uncropped view outline when requested", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.cropImages = true;
+    p.config.showUncroppedCameraView = true;
+    p.config.imgRotation = 20;
+    const wrapper = createRenderer(<CameraView {...p} />);
+    expect(wrapper.root.findByProps({ name: "uncropped-camera-view" }))
+      .toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
   it("runs capture opacity pulse", async () => {
     const next = jest.fn(() => Promise.resolve());
     const start = jest.fn((config: { to(callback: typeof next): Promise<void> }) =>
@@ -164,6 +176,17 @@ describe("<CameraView />", () => {
     expect(cameraViewPropsEqual(p, {
       ...p,
       config: { ...p.config, animate: !p.config.animate },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, cropImages: !p.config.cropImages },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: {
+        ...p.config,
+        showUncroppedCameraView: !p.config.showUncroppedCameraView,
+      },
     })).toBeFalsy();
   });
 });

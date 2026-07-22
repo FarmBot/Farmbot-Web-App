@@ -104,6 +104,10 @@ describe("<UtilitiesPost />", () => {
       ...p,
       config: { ...p.config, bedBrightness: p.config.bedBrightness + 1 },
     })).toBeFalsy();
+    expect(utilitiesPostPropsEqual(p, {
+      ...p,
+      config: { ...p.config, legSize: p.config.legSize + 1 },
+    })).toBeTruthy();
   });
 
   it("follows shared layout motion without starting another spring", () => {

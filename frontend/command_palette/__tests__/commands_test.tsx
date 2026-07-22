@@ -685,9 +685,6 @@ describe("buildCommands()", () => {
       param_config_ok: "Config Ok",
       param_e_stop_on_mov_err: "E-Stop on Movement Error",
       param_mov_nr_retry: "Max Retries",
-      param_test: "Test",
-      param_use_eeprom: "Use Eeprom",
-      param_version: "Version",
       movement_step_per_mm: "Steps per mm",
       movement_home_spd: "Movement Home Speed",
       movement_max_spd: "Movement Max Speed",
@@ -700,6 +697,9 @@ describe("buildCommands()", () => {
     Object.entries(expectedNames).map(([key, name]) =>
       expect(commands.find(command =>
         command.id == `firmware-setting:${key}:set`)?.name).toEqual(name));
+    ["param_test", "param_use_eeprom", "param_version"].map(key =>
+      expect(commands.find(command =>
+        command.id == `firmware-setting:${key}:set`)).toBeUndefined());
   });
 
   it("uses clear configuration setting titles", () => {
@@ -712,7 +712,18 @@ describe("buildCommands()", () => {
       .toEqual("Sequence Initialization Log");
     expect(commands.find(command => command.id ==
       "setting:enable_3d_electronics_box_top:toggle")?.name)
-      .toEqual("Enable 3D Electronics Box Top");
+      .toEqual("Enable 3D Electronics Box");
+    expect(commands.find(command =>
+      command.id == "setting:disable_i18n:toggle")?.name)
+      .toEqual("Internationalize web app");
+    [
+      "setting:show_first_party_farmware:toggle",
+      "setting:stub_config:toggle",
+      "fbos-setting:arduino_debug_messages:toggle",
+      "fbos-setting:disable_factory_reset:toggle",
+      "fbos-setting:os_auto_update:toggle",
+    ].map(id =>
+      expect(commands.find(command => command.id == id)).toBeUndefined());
   });
 
   it("ranks settings below map layer settings", () => {
@@ -1436,13 +1447,10 @@ describe("buildCommands()", () => {
     expect(searchCommands(commands, "Set Beep Verbosity"))
       .toContain(beepVerbosity);
 
-    execute("fbos-setting:os_auto_update:toggle");
     execute("fbos-setting:default_axis_order:set", { value: "xyz;high" });
     execute("fbos-setting:update_channel:set", { value: "stable" });
-    expect(updateConfig).toHaveBeenCalledWith({ os_auto_update: true });
     expect(commands.find(command =>
-      command.id == "fbos-setting:os_auto_update:toggle")?.name)
-      .toEqual("Os Auto Update");
+      command.id == "fbos-setting:os_auto_update:toggle")).toBeUndefined();
     const defaultAxisOrder = commands.find(command =>
       command.id == "fbos-setting:default_axis_order:set");
     expect(defaultAxisOrder?.name).toEqual("Default Axis Order");

@@ -34,6 +34,17 @@ const popupConnectivityData = (props: ObjectPopupProps) => {
   });
 };
 
+const objectShowsLocation = (object: ResolvedThreeDObject) =>
+  ![
+    "utm",
+    "electronics",
+    "camera",
+    "connectivity",
+    "sceneObject",
+    "bed",
+    "safeHeight",
+  ].includes(object.kind);
+
 export const ObjectPopup = (props: ObjectPopupProps) => {
   const coordinates = props.object.kind == "utm"
     ? `(${Math.round(props.object.locationCoordinate.x)}, `
@@ -68,19 +79,14 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
         <ObjectPopupVisibilityButton {...props} />
         <ObjectPopupDeleteButton {...props} />
         <ObjectPopupCopyButton {...props} />
-        <button
+        {props.object.kind != "safeHeight" && <button
           type={"button"}
           className={"fa fa-external-link fb-icon-button invert"}
           title={t("open panel")}
-          onClick={() => props.onOpenPanel(props.object.selection)} />
+          onClick={() => props.onOpenPanel(props.object.selection)} />}
       </>}
     onClose={props.onClosePopup}>
-    {props.object.kind != "utm"
-      && props.object.kind != "electronics"
-      && props.object.kind != "camera"
-      && props.object.kind != "connectivity"
-      && props.object.kind != "sceneObject"
-      && props.object.kind != "bed" &&
+    {objectShowsLocation(props.object) &&
       <PopupObjectLocationRow {...props} />}
     {popupContent}
   </ThreeDPopup>;

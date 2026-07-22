@@ -61,7 +61,7 @@ export interface NativeJogEncoderVisibility {
 }
 
 export type NativeJogEncoderData = Pick<BotLocationData,
-  "raw_encoders" | "scaled_encoders">;
+  "load" | "raw_encoders" | "scaled_encoders">;
 
 export interface NativeJogAxisActionsContext {
   arduinoBusy: boolean;

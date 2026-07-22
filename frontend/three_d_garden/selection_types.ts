@@ -1,6 +1,6 @@
 export type ThreeDObjectKind =
   "plant" | "point" | "weed" | "slot" | "utm" | "electronics" | "camera"
-  | "connectivity" | "sceneObject" | "bed";
+  | "connectivity" | "sceneObject" | "bed" | "safeHeight";
 
 export interface ThreeDObjectSelection {
   kind: ThreeDObjectKind;

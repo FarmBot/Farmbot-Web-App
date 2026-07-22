@@ -5,6 +5,7 @@ import { Everything } from "../interfaces";
 import { getFbosConfig } from "../resources/getters";
 import { SourceFbosConfig } from "../devices/interfaces";
 import { Row, BlurableInput } from "../ui";
+import { isUndefined } from "lodash";
 
 export {
   MEASURE_SOIL_HEIGHT_NAME,
@@ -29,20 +30,32 @@ export interface EditSoilHeightProps {
   dispatch: Function;
   sourceFbosConfig?: SourceFbosConfig;
   averageZ: number;
+  minZ?: number;
+  maxZ?: number;
 }
 
 export const EditSoilHeight = (props: EditSoilHeightProps) => {
   const { sourceFbosConfig } = props;
-  return <Row className="grid-exp-1">
-    {sourceFbosConfig && <label>{t("FarmBot soil z")}</label>}
-    {sourceFbosConfig && <BlurableInput type="number"
-      onCommit={e =>
-        props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
-      value={parseFloat("" + sourceFbosConfig("soil_height").value)} />}
-    <button className={"fb-button gray"}
-      title={t("use average soil height")}
-      onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
-      {t("use average z: {{ value }}", { value: props.averageZ })}
-    </button>
-  </Row>;
+  return <div className={"grid soil-height-summary"}>
+    <Row className="grid-exp-1">
+      {sourceFbosConfig && <label>{t("FarmBot soil z")}</label>}
+      {sourceFbosConfig && <BlurableInput type="number"
+        onCommit={e =>
+          props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
+        value={parseFloat("" + sourceFbosConfig("soil_height").value)} />}
+      <button className={"fb-button gray"}
+        title={t("use average soil height")}
+        onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
+        {t("use average z: {{ value }}", { value: props.averageZ })}
+      </button>
+    </Row>
+    {!isUndefined(props.minZ) && <Row className={"grid-exp-1"}>
+      <label>{t("Min soil z")}</label>
+      <input type={"number"} value={props.minZ} disabled={true} />
+    </Row>}
+    {!isUndefined(props.maxZ) && <Row className={"grid-exp-1"}>
+      <label>{t("Max soil z")}</label>
+      <input type={"number"} value={props.maxZ} disabled={true} />
+    </Row>}
+  </div>;
 };

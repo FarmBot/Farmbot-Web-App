@@ -4,7 +4,8 @@ import { Box3, BufferGeometry, Plane, Vector3 } from "three";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import {
   getSectionCutGeometries, getSectionNearPosition,
-  getSectionObjectCutGeometries, getSectionSoilCutLinePoints, SectionCutFaces,
+  getSectionObjectCutGeometries, getSectionSoilCutLinePoints,
+  getSectionBoundsCutLines, SectionCutFaces,
 } from "../section_cut_faces";
 import { getSectionClippingPlanes, SECTION_CLIPPING_EXEMPT } from "../section";
 import {
@@ -38,6 +39,24 @@ describe("section cut faces", () => {
     expect(getSectionNearPosition(
       new Plane(new Vector3(0, 0, 1), 5), "x",
     )).toEqual(0);
+  });
+
+  it("builds bounds and configured height intersections", () => {
+    const c = config();
+    c.bounds = true;
+    c.safeHeight = -50;
+    c.minSoilZ = -120;
+    c.maxSoilZ = -80;
+    const plane = getSectionClippingPlanes(c, "x", 500, 200)[0];
+    const lines = getSectionBoundsCutLines(c, "x", plane);
+    expect(lines.map(line => line.name)).toEqual([
+      "bounds", "safe-height", "min-soil", "max-soil",
+    ]);
+    expect(lines.find(line => line.name == "safe-height")?.points[0][2])
+      .toEqual(zZero(c) - 50);
+    expect(getSectionBoundsCutLines(
+      { ...c, bounds: false }, "x", plane,
+    )).toEqual([]);
   });
 
   it("builds terrain and frame cross-sections", () => {
@@ -188,6 +207,7 @@ describe("section cut faces", () => {
 
   it("renders textured cut faces exempt from clipping", () => {
     const c = config();
+    c.bounds = true;
     const planes = getSectionClippingPlanes(c, "x", 340, 200);
     const wrapper = createRenderer(<SectionCutFaces
       config={c}
@@ -235,6 +255,14 @@ describe("section cut faces", () => {
         expect(line.props.transparent).toEqual(true);
         expect(line.props.raycast()).toBeUndefined();
       });
+    ["bounds", "safe-height", "min-soil", "max-soil"].forEach(name => {
+      expect(wrapper.root.findByProps({
+        name: `section-${name}-near-cut-line`,
+      }).props.opacity).toEqual(0.4);
+      expect(wrapper.root.findByProps({
+        name: `section-${name}-far-cut-line`,
+      }).props.opacity).toEqual(0.4);
+    });
     unmountRenderer(wrapper);
   });
 

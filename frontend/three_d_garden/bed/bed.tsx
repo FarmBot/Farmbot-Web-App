@@ -240,6 +240,7 @@ interface BedSupportsProps {
   bedColor: string;
   legWoodTexture: ReturnType<typeof useTextureVariant>;
   supports: BedSupportInstance[];
+  onClick?(event: ThreeEvent<MouseEvent>): void;
 }
 
 const noScale = new Vector3(1, 1, 1);
@@ -362,6 +363,7 @@ const BedSupports = (props: BedSupportsProps) => {
   }, [supportMatrices]);
 
   return <Group name={"bed-supports"}
+    onClick={props.onClick}
     key={bedZOffset > 0 ? "raised" : "grounded"}
     userData={{ [SECTION_CLIPPING_EXEMPT]: bedZOffset > 0 }}>
     <InstancedMesh
@@ -845,24 +847,41 @@ const BedBase = (props: BedProps) => {
     onClick: (event: ThreeEvent<MouseEvent>) =>
       selectBed(props.onSelectObject, event),
   };
+  const selectBedFromEvent = (event: ThreeEvent<MouseEvent>) =>
+    selectBed(props.onSelectObject, event);
 
   return <Group name={"bed-group"}
     userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}>
-    <BedFrame {...commonBedFrameProps}>
-      <BedFrameMaterial
+    <Highlight highlightName={"bed"}
+      label={t("Bed")}
+      labelPosition={[0, 0, 100]}>
+      <BedFrame {...commonBedFrameProps}>
+        <BedFrameMaterial
+          bedColor={bedColor}
+          lowDetail={props.config.lowDetail} />
+      </BedFrame>
+      <Plane name={"bed-underside"}
+        args={[bedLengthOuter, bedWidthOuter]}
+        castShadow={true}
+        position={[
+          threeSpace(bedLengthOuter / 2, bedLengthOuter),
+          threeSpace(bedWidthOuter / 2, bedWidthOuter),
+          -props.config.bedHeight + 1,
+        ]}>
+        <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
+      </Plane>
+      <BedSupports
+        bedLengthOuter={bedLengthOuter}
+        bedWidthOuter={bedWidthOuter}
+        bedHeight={bedHeight}
+        bedZOffset={bedZOffset}
+        legsFlush={legsFlush}
+        legSize={legSize}
         bedColor={bedColor}
-        lowDetail={props.config.lowDetail} />
-    </BedFrame>
-    <Plane name={"bed-underside"}
-      args={[bedLengthOuter, bedWidthOuter]}
-      castShadow={true}
-      position={[
-        threeSpace(bedLengthOuter / 2, bedLengthOuter),
-        threeSpace(bedWidthOuter / 2, bedWidthOuter),
-        -props.config.bedHeight + 1,
-      ]}>
-      <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
-    </Plane>
+        legWoodTexture={legWoodTexture}
+        supports={supports}
+        onClick={selectBedFromEvent} />
+    </Highlight>
     <FocusVisibilityGroup name={"distance-indicator-group"}
       preserveDepthWrite={true}
       visible={xyDimensions || props.activeFocus == "Planter bed"}>
@@ -1004,16 +1023,6 @@ const BedBase = (props: BedProps) => {
           zZero(props.config),
         ]}
       />}
-    <BedSupports
-      bedLengthOuter={bedLengthOuter}
-      bedWidthOuter={bedWidthOuter}
-      bedHeight={bedHeight}
-      bedZOffset={bedZOffset}
-      legsFlush={legsFlush}
-      legSize={legSize}
-      bedColor={bedColor}
-      legWoodTexture={legWoodTexture}
-      supports={supports} />
     <UtilitiesPost config={props.config} activeFocus={props.activeFocus}
       onSelectObject={props.onSelectObject} />
     <Packaging config={props.config} />

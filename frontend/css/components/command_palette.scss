@@ -86,6 +86,19 @@
   text-transform: uppercase;
 }
 
+.command-palette-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 0.8rem;
+
+  .command-palette-clear-recents {
+    margin: 0;
+    padding: 0.2rem 0.8rem;
+    font-size: 1rem;
+  }
+}
+
 .command-palette-option {
   display: grid;
   grid-template-columns: 2.8rem minmax(0, 1fr) auto auto;
