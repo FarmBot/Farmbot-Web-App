@@ -2212,32 +2212,34 @@ export const useGardenCameraController = (
     props.viewPrismBridgeRef,
     props.viewportSize,
   ]);
-  const stopCameraFollow = props.stopCameraFollow;
+  const {
+    cameraFollow, handleCameraFollowEscape, stopCameraFollow,
+  } = props;
   React.useEffect(() => {
-    if (!props.cameraFollow || !stopCameraFollow) { return; }
+    if (!cameraFollow || !stopCameraFollow) { return; }
     const stopFollowOnEscape = (event: KeyboardEvent) => {
       if (event.key == "Escape"
         && !event.repeat
         && !event.defaultPrevented
         && !commandPaletteIsOpen()
-        && !props.handleCameraFollowEscape?.()) {
+        && !handleCameraFollowEscape?.()) {
         stopCameraFollow();
       }
     };
     window.addEventListener("keydown", stopFollowOnEscape);
     return () => window.removeEventListener("keydown", stopFollowOnEscape);
   }, [
-    props.cameraFollow,
-    props.handleCameraFollowEscape,
+    cameraFollow,
+    handleCameraFollowEscape,
     stopCameraFollow,
   ]);
   React.useImperativeHandle(props.viewPrismBridgeRef, () => ({
     camera: props.controlsCamera || undefined,
-    selectDirection: props.cameraFollow
+    selectDirection: cameraFollow
       ? () => stopCameraFollow?.()
       : selectViewDirection,
   }), [
-    props.cameraFollow,
+    cameraFollow,
     props.controlsCamera,
     selectViewDirection,
     stopCameraFollow,
@@ -2476,15 +2478,17 @@ export interface GardenRouteSnapshot {
 
 const routeSelectionKey = (
   selection: ThreeDObjectSelection | undefined,
-) => selection
-  ? `${selection.kind}:${selection.id}:${selection.uuid || ""}`
-  : "";
+) =>
+  selection
+    ? `${selection.kind}:${selection.id}:${selection.uuid || ""}`
+    : "";
 
 const routeLocationKey = (
   selection: ThreeDLocationSelection | undefined,
-) => selection
-  ? `${selection.x}:${selection.y}:${selection.z}`
-  : "";
+) =>
+  selection
+    ? `${selection.x}:${selection.y}:${selection.z}`
+    : "";
 
 export const createGardenRouteSnapshot = (
   pathname: string,
@@ -2549,9 +2553,10 @@ interface GardenSceneBackgroundProps {
 
 export const GardenSceneBackground = (
   props: GardenSceneBackgroundProps,
-) => props.ready
-  ? <Primitive object={props.backgroundColor} attach={"background"} />
-  : undefined;
+) =>
+  props.ready
+    ? <Primitive object={props.backgroundColor} attach={"background"} />
+    : undefined;
 
 interface GardenModelSceneProps extends GardenModelProps {
   route: GardenRouteSnapshot;
@@ -2728,8 +2733,8 @@ const GardenCameraRigBase = (props: GardenCameraRigProps) => {
   const orbitRotationEnabled =
     !cameraFollow && (
       spaceflightCameraSettled && viewMode == "spaceflight"
-    || stargazingCameraSettled && viewMode == "stargazing"
-    || normalCameraSettled && viewMode == "normal" && rotate);
+      || stargazingCameraSettled && viewMode == "stargazing"
+      || normalCameraSettled && viewMode == "normal" && rotate);
 
   return <>
     {!cameraFollow &&
@@ -2911,6 +2916,15 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     React.useState<ThreeDObjectSelection | undefined>(undefined);
   const [locationSelection, setLocationSelection] =
     React.useState<ThreeDLocationSelection | undefined>(undefined);
+  const [popupSelectionMode, setPopupSelectionMode] =
+    React.useState(objectSelectionMode);
+  if (popupSelectionMode != objectSelectionMode) {
+    setPopupSelectionMode(objectSelectionMode);
+    if (objectSelectionMode) {
+      setPopupSelection(undefined);
+      setLocationSelection(undefined);
+    }
+  }
   const areaSelectionDrawing = areaSelection?.phase == "drawing";
   const selectableObjectHovered = !areaSelectionDrawing
     && (selectableObjectHoverCount > 0 || plantIntersected);
@@ -3073,13 +3087,13 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       panelCameraStore: props.panelCameraStore,
       dispatch,
     }), [
-      areaSelection,
-      dispatch,
-      locationSelection,
-      objectSelectionMode,
-      popupSelection,
-      props.panelCameraStore,
-    ]);
+    areaSelection,
+    dispatch,
+    locationSelection,
+    objectSelectionMode,
+    popupSelection,
+    props.panelCameraStore,
+  ]);
   const cameraController = useGardenCameraController({
     baseCamera,
     startingCamera: defaultCamera,
@@ -3147,9 +3161,6 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     setPopupSelection(undefined);
     setLocationSelection(undefined);
   }, []);
-  React.useEffect(() => {
-    if (objectSelectionMode) { closePopup(); }
-  }, [closePopup, objectSelectionMode]);
   const selectAreaCorner = React.useCallback((
     position: GridHoverPosition,
     shiftKey: boolean,
@@ -3871,7 +3882,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           progress={loadProgress}
           complete={detailsReveal} />
         {config.cameraFitDebug &&
-      <CameraFitDebug {...activeCameraFit} />}
+          <CameraFitDebug {...activeCameraFit} />}
         <GardenSectionLayer
           bridgeRef={sectionBridgeRef}
           botSpringActive={farmbotVisible}
@@ -3953,20 +3964,20 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
             : undefined} />
         {objectHoverLabelNode}
         {gridHoverEnabled &&
-      <GridHoverTarget
-        areaSelectionPhase={areaSelection?.phase}
-        config={config}
-        enabled={gridHoverEnabled}
-        getZ={getZ}
-        soilSurfaceGeometry={soilSurface.geometry}
-        onAreaSelect={selectAreaCorner}
-        onLocationSelect={onSelectLocation}
-        onHoverPositionChange={updateGridHoverPosition} />}
+          <GridHoverTarget
+            areaSelectionPhase={areaSelection?.phase}
+            config={config}
+            enabled={gridHoverEnabled}
+            getZ={getZ}
+            soilSurfaceGeometry={soilSurface.geometry}
+            onAreaSelect={selectAreaCorner}
+            onLocationSelect={onSelectLocation}
+            onHoverPositionChange={updateGridHoverPosition} />}
         {showGridHoverCrosshairs && activeGridHoverPosition &&
-      <GridHoverCrosshairs
-        config={config}
-        getZ={getZ}
-        position={activeGridHoverPosition} />}
+          <GridHoverCrosshairs
+            config={config}
+            getZ={getZ}
+            position={activeGridHoverPosition} />}
         <GardenAreaSelectionOverlay
           config={config}
           getZ={getZ}
@@ -4082,22 +4093,22 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           {config.stats && <StatsGl className={"stats-gl"} />}
           {config.stats && <Stats />}
           {showZoomBeacons &&
-        <ZoomBeaconsLoadIn
-          config={config}
-          configPosition={props.configPosition}
-          activeFocus={props.activeFocus}
-          setActiveFocus={props.setActiveFocus}
-          reveal={detailsReveal}
-          onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
+            <ZoomBeaconsLoadIn
+              config={config}
+              configPosition={props.configPosition}
+              activeFocus={props.activeFocus}
+              setActiveFocus={props.setActiveFocus}
+              reveal={detailsReveal}
+              onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined} />}
           {config.threeAxes && <AxesHelper args={[5000]} />}
           {config.clouds && <Clouds config={config} />}
           {showMoistureMap && config.moistureDebug &&
-        <MoistureReadings
-          color={"green"}
-          radius={50}
-          applyOffset={true}
-          config={config}
-          readings={sensorReadings} />}
+            <MoistureReadings
+              color={"green"}
+              radius={50}
+              applyOffset={true}
+              config={config}
+              readings={sensorReadings} />}
           <GroupOrderVisual
             allPoints={allPoints}
             groups={groups}
@@ -4105,46 +4116,46 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
             tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
             getZ={getZ} />
           {props.addPlantProps?.designer.visualizedSequence &&
-        <LazyVisualization
-          visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-          config={config}
-          configPosition={props.configPosition} />}
+            <LazyVisualization
+              visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+              config={config}
+              configPosition={props.configPosition} />}
           {renderSolar &&
-        <LegacySolar
-          config={config}
-          activeFocus={props.activeFocus}
-          shadows={!props.promo} />}
+            <LegacySolar
+              config={config}
+              activeFocus={props.activeFocus}
+              shadows={!props.promo} />}
           {config.scene == "Lab" &&
-        <Lab
-          config={config}
-          activeFocus={props.activeFocus}
-          reveal={detailsReveal}
-          onDetailsLoadInRest={markDetailsLoaded} />}
+            <Lab
+              config={config}
+              activeFocus={props.activeFocus}
+              reveal={detailsReveal}
+              onDetailsLoadInRest={markDetailsLoaded} />}
           {config.scene == "Greenhouse" &&
-        <Greenhouse
-          config={config}
-          activeFocus={props.activeFocus}
-          plantIconAtlas={props.plantIconAtlas}
-          reveal={detailsReveal}
-          onDetailsLoadInRest={markDetailsLoaded} />}
+            <Greenhouse
+              config={config}
+              activeFocus={props.activeFocus}
+              plantIconAtlas={props.plantIconAtlas}
+              reveal={detailsReveal}
+              onDetailsLoadInRest={markDetailsLoaded} />}
           {config.cameraSelectionView && !cameraFollow &&
-        <CameraSelectionUI
-          config={config}
-          dispatch={dispatch}
-          topDownAtStart={topDownAtStart}
-          onSelect={selectStartingCamera} />}
+            <CameraSelectionUI
+              config={config}
+              dispatch={dispatch}
+              topDownAtStart={topDownAtStart}
+              onSelect={selectStartingCamera} />}
           <EnvironmentScenePreloader
             config={config}
             enabled={!!props.preloadEnvironmentScenes && loadProgress.complete}
             plantIconAtlas={props.plantIconAtlas} />
           {loadProgress.complete &&
-        <React.Suspense fallback={undefined}>
-          <GroundTexturePreloader config={config} />
-        </React.Suspense>}
+            <React.Suspense fallback={undefined}>
+              <GroundTexturePreloader config={config} />
+            </React.Suspense>}
           {detailsReveal && !animatedDetailsLoadIn &&
-        <LoadStepReady
-          step={"details"}
-          markStep={loadProgress.markStep} />}
+            <LoadStepReady
+              step={"details"}
+              markStep={loadProgress.markStep} />}
           <PopInGroup
             key={`scene-objects-load-in-${config.scene}`}
             name={"scene-objects-load-in"}
