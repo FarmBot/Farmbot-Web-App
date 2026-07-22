@@ -61,6 +61,7 @@ export const fakeDesignerState = (): DesignerState => ({
   distanceIndicator: "",
   panelOpen: true,
   threeDCameraFollow: false,
+  threeDUTMFollow: false,
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
   threeDPerspective: true,

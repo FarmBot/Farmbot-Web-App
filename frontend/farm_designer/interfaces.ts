@@ -207,6 +207,7 @@ export interface DesignerState {
   distanceIndicator: string;
   panelOpen: boolean;
   threeDCameraFollow: boolean;
+  threeDUTMFollow: boolean;
   threeDCameraSelection: boolean;
   threeDExaggeratedZ: boolean;
   threeDPerspective: boolean | undefined;

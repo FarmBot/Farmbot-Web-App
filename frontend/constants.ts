@@ -2472,6 +2472,8 @@ export namespace DiagnosticMessages {
 
 export const CAMERA_FOLLOW_PERSPECTIVE_REQUIRED =
   "Perspective mode is required when following the FarmBot's camera view.";
+export const UTM_FOLLOW_PERSPECTIVE_REQUIRED =
+  "Perspective mode is required when following the UTM.";
 
 export enum Actions {
 
@@ -2609,6 +2611,7 @@ export enum Actions {
   TOGGLE_3D_CAMERA_SELECTION = "TOGGLE_3D_CAMERA_SELECTION",
   TOGGLE_3D_EXAGGERATED_Z = "TOGGLE_3D_EXAGGERATED_Z",
   SET_3D_CAMERA_FOLLOW = "SET_3D_CAMERA_FOLLOW",
+  SET_3D_UTM_FOLLOW = "SET_3D_UTM_FOLLOW",
   SET_3D_PERSPECTIVE = "SET_3D_PERSPECTIVE",
   SET_3D_SECTION_OPEN = "SET_3D_SECTION_OPEN",
   SET_3D_SECTION_AXIS = "SET_3D_SECTION_AXIS",

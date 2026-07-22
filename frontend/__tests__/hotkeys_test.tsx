@@ -139,15 +139,17 @@ describe("hotkeysWithActions()", () => {
 
 describe("toggleHotkeyHelpOverlay()", () => {
   it("opens overlay", () => {
-    document.dispatchEvent = jest.fn();
+    const dispatchEvent = jest.spyOn(document, "dispatchEvent")
+      .mockImplementation(() => true);
     toggleHotkeyHelpOverlay();
-    expect(document.dispatchEvent).toHaveBeenCalledWith(
+    expect(dispatchEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         key: "?",
         shiftKey: true,
         bubbles: true,
       }),
     );
+    dispatchEvent.mockRestore();
   });
 });
 

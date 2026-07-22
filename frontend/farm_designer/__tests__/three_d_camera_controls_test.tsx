@@ -5,6 +5,7 @@ import { fakeDesignerState } from
   "../../__test_support__/fake_designer_state";
 import {
   Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED,
+  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../../constants";
 import * as toast from "../../toast/toast";
 
@@ -94,6 +95,43 @@ describe("<ThreeDCameraControls />", () => {
     info.mockRestore();
   });
 
+  it("toggles following the UTM", () => {
+    const info = jest.spyOn(toast, "info").mockImplementation(jest.fn());
+    const designer = fakeDesignerState();
+    const dispatch = jest.fn();
+    const { container, rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const follow = screen.getByRole("button", { name: "FOLLOW UTM" });
+    expect(follow).toHaveAttribute("aria-pressed", "false");
+    expect(container.querySelector(".three-d-utm-follow-control img"))
+      .toBeTruthy();
+    fireEvent.click(follow);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: true,
+    });
+
+    designer.threeDUTMFollow = true;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const stop = screen.getByRole("button", { name: "STOP FOLLOWING UTM" });
+    expect(stop).toHaveAttribute("aria-pressed", "true");
+    expect(container.querySelector(".three-d-utm-follow-control .fa-times"))
+      .toBeTruthy();
+    const dispatchCount = dispatch.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "PERSPECTIVE ON" }));
+    expect(info).toHaveBeenCalledWith(UTM_FOLLOW_PERSPECTIVE_REQUIRED);
+    expect(dispatch).toHaveBeenCalledTimes(dispatchCount);
+    fireEvent.click(stop);
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: false,
+    });
+    info.mockRestore();
+  });
+
   it("toggles perspective with the p keyboard shortcut", () => {
     const dispatch = jest.fn();
     const designer = fakeDesignerState();
@@ -134,6 +172,12 @@ describe("<ThreeDCameraControls />", () => {
 
     fireEvent.keyDown(window, { key: "p" });
     designer.threeDCameraFollow = false;
+    designer.threeDUTMFollow = true;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDUTMFollow = false;
     designer.threeDViewMode = "stargazing";
     rerender(<ThreeDCameraControls
       designer={designer}

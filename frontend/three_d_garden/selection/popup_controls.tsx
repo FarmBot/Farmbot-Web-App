@@ -322,6 +322,18 @@ const UtmPopupControls = (props: PopupControlProps) => {
         title={`${t("toggle")} ${t(DeviceSetting.trail)}`}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("FOLLOW UTM")}</label>
+      <ToggleButton
+        toggleValue={props.utmFollow}
+        toggleAction={() => props.dispatch?.({
+          type: Actions.SET_3D_UTM_FOLLOW,
+          payload: !props.utmFollow,
+        })}
+        disabled={!props.dispatch}
+        title={`${t("toggle")} ${t("FOLLOW UTM")}`}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
     {props.set3DConfigValue &&
       <div className={"object-popup-laser-row row grid-exp-1"}>
         <label>{t("LASER")}</label>

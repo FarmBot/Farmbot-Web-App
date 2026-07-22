@@ -12,6 +12,7 @@ import { Command, CommandAction } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import {
   Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED, Content, DeviceSetting,
+  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../constants";
 import {
   Panel, PANEL_SLUG, PANEL_TITLE, getPanelPath, setPanelOpen,
@@ -2299,8 +2300,12 @@ const cameraCommands = (props: BuildCommandProps): Command[] => {
     .threeDPerspective ?? true;
   const cameraFollow = props.state.resources.consumers.farm_designer
     .threeDCameraFollow;
-  const execute = () => cameraFollow
-    ? info(t(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
+  const utmFollow = props.state.resources.consumers.farm_designer
+    .threeDUTMFollow;
+  const execute = () => cameraFollow || utmFollow
+    ? info(t(utmFollow
+      ? UTM_FOLLOW_PERSPECTIVE_REQUIRED
+      : CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
     : props.dispatch({
       type: Actions.SET_3D_PERSPECTIVE,
       payload: !perspective,

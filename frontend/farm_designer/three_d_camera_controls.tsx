@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED,
+  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../constants";
 import { t } from "../i18next_wrapper";
 import { DesignerState } from "./interfaces";
@@ -30,11 +31,13 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
     props.designer,
   );
   const cameraFollow = props.designer.threeDCameraFollow;
+  const utmFollow = props.designer.threeDUTMFollow;
+  const followMode = cameraFollow || utmFollow;
   const label = perspective
     ? t("PERSPECTIVE ON")
     : t("PERSPECTIVE OFF");
   const perspectiveChangeAllowed =
-    props.designer.threeDViewMode == "normal" && !cameraFollow;
+    props.designer.threeDViewMode == "normal" && !followMode;
   React.useEffect(() => {
     if (!perspectiveChangeAllowed) { return; }
     const togglePerspectiveOnP = (event: KeyboardEvent) => {
@@ -58,6 +61,23 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
     return () => window.removeEventListener("keydown", togglePerspectiveOnP);
   }, [dispatch, perspective, perspectiveChangeAllowed]);
   return <div className={"three-d-camera-controls"}>
+    <button
+      type={"button"}
+      className={[
+        "three-d-utm-follow-control",
+        utmFollow ? "active" : "",
+      ].join(" ")}
+      title={utmFollow ? t("STOP FOLLOWING UTM") : t("FOLLOW UTM")}
+      aria-label={utmFollow ? t("STOP FOLLOWING UTM") : t("FOLLOW UTM")}
+      aria-pressed={utmFollow}
+      onClick={() => props.dispatch({
+        type: Actions.SET_3D_UTM_FOLLOW,
+        payload: !utmFollow,
+      })}>
+      {utmFollow
+        ? <i className={"fa fa-times"} />
+        : <img src={TAB_ICON[Panel.Tools]} alt={""} />}
+    </button>
     <button
       type={"button"}
       className={[
@@ -88,8 +108,10 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
       title={label}
       aria-pressed={perspective}
       aria-keyshortcuts={"p"}
-      onClick={() => cameraFollow
-        ? info(t(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
+      onClick={() => followMode
+        ? info(t(utmFollow
+          ? UTM_FOLLOW_PERSPECTIVE_REQUIRED
+          : CAMERA_FOLLOW_PERSPECTIVE_REQUIRED))
         : props.dispatch({
           type: Actions.SET_3D_PERSPECTIVE,
           payload: !perspective,

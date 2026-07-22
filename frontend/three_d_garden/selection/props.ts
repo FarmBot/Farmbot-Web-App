@@ -53,6 +53,7 @@ export interface ThreeDObjectSelectionLayerProps {
   bot: BotState | undefined;
   env: UserEnv;
   cameraFollow: boolean;
+  utmFollow: boolean;
   set3DConfigValue?(key: keyof Config, value: string): void;
   dispatch: Function | undefined;
   gridLoaded: boolean;

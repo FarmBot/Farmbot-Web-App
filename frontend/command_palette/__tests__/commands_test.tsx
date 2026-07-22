@@ -4,6 +4,7 @@ import { buildCommands, validNumberInput } from "../commands";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED, Content,
+  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../../constants";
 import {
   fakeFbosConfig, fakeFirmwareConfig, fakePeripheral, fakePlant, fakePoint,
@@ -88,6 +89,7 @@ describe("buildCommands()", () => {
     };
     const fbosConfig = fakeFbosConfig();
     fbosConfig.body.update_channel = "stable";
+    fbosConfig.body.sequence_init_log = true;
     state.resources = buildResourceIndex([
       fakeDevice(), fakeWebAppConfig(), fbosConfig, fakeFirmwareConfig(),
       fakeSequence(), regimen, fakePlant(),
@@ -1449,6 +1451,7 @@ describe("buildCommands()", () => {
 
     execute("fbos-setting:default_axis_order:set", { value: "xyz;high" });
     execute("fbos-setting:update_channel:set", { value: "stable" });
+    execute("fbos-setting:sequence_init_log:toggle");
     expect(commands.find(command =>
       command.id == "fbos-setting:os_auto_update:toggle")).toBeUndefined();
     const defaultAxisOrder = commands.find(command =>
@@ -1465,6 +1468,7 @@ describe("buildCommands()", () => {
       default_axis_order: "xyz;high",
     });
     expect(updateConfig).toHaveBeenCalledWith({ update_channel: "stable" });
+    expect(updateConfig).toHaveBeenCalledWith({ sequence_init_log: false });
     const firmwareSetting = commands.find(command =>
       command.id == "firmware-setting:encoder_missed_steps_max:set");
     firmwareSetting?.actions?.[0].execute({ x: "12" });
@@ -1542,6 +1546,11 @@ describe("buildCommands()", () => {
     state.resources.consumers.farm_designer.threeDCameraFollow = true;
     command()?.execute();
     expect(info).toHaveBeenCalledWith(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED);
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    state.resources.consumers.farm_designer.threeDCameraFollow = false;
+    state.resources.consumers.farm_designer.threeDUTMFollow = true;
+    command()?.execute();
+    expect(info).toHaveBeenCalledWith(UTM_FOLLOW_PERSPECTIVE_REQUIRED);
     expect(dispatch).toHaveBeenCalledTimes(2);
     info.mockRestore();
   });

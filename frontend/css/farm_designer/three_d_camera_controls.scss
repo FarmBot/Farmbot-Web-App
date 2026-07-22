@@ -22,7 +22,8 @@
 }
 
 .three-d-perspective-control,
-.three-d-camera-follow-control {
+.three-d-camera-follow-control,
+.three-d-utm-follow-control {
   position: relative;
   display: flex;
   align-items: center;
@@ -55,7 +56,8 @@
   }
 }
 
-.three-d-camera-follow-control {
+.three-d-camera-follow-control,
+.three-d-utm-follow-control {
   justify-content: center;
   width: 2.9rem;
   padding: 0;

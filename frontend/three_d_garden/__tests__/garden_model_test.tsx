@@ -735,6 +735,7 @@ describe("<GardenModel />", () => {
       spaceflightCamera: SPACEFLIGHT_CAMERA,
       viewMode: "normal",
       cameraFollow: false,
+      utmFollow: false,
       rotate: true,
       zoomEnabled: true,
       pan: true,
@@ -761,6 +762,18 @@ describe("<GardenModel />", () => {
     expect(orbitControls().props.minDistance).toEqual(0);
     expect(orbitControls().props.maxDistance).toEqual(Infinity);
     expect(springApi.stop).toHaveBeenCalled();
+
+    actRenderer(() => wrapper.update(<GardenCameraRig
+      {...rigProps}
+      zoomEnabled={false}
+      utmFollow={true} />));
+    expect(orbitControls().props.enableRotate).toEqual(false);
+    expect(orbitControls().props.enablePan).toEqual(false);
+    expect(orbitControls().props.enableZoom).toEqual(true);
+    expect(orbitControls().props.zoomToCursor).toEqual(false);
+    expect(orbitControls().props.minDistance).toEqual(500);
+    expect(orbitControls().props.maxDistance)
+      .toBeCloseTo(narrowDistance * 1.25);
 
     actRenderer(() => wrapper.update(<GardenCameraRig
       {...rigProps}
@@ -1221,6 +1234,27 @@ describe("<GardenModel />", () => {
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+  });
+
+  it("exits UTM follow from the view prism", () => {
+    const p = fakeProps();
+    p.addPlantProps!.designer.threeDUTMFollow = true;
+    p.viewPrismBridgeRef = { current: {} };
+    const wrapper = createWrapper(p);
+    const dispatch = p.addPlantProps!.dispatch as jest.Mock;
+    dispatch.mockClear();
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.enableRotate).toEqual(false);
+    expect(orbitControls.props.enablePan).toEqual(false);
+    expect(orbitControls.props.enableZoom).toEqual(true);
+
+    actRenderer(() =>
+      p.viewPrismBridgeRef?.current?.selectDirection?.([0, 0, 1]));
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
       payload: false,
     });
   });
@@ -3357,6 +3391,7 @@ describe("useGardenCameraController()", () => {
       target: [0, 0, 0],
     },
     cameraFollow: false,
+    utmFollow: false,
     viewMode: "normal",
     stargazingFov: 20,
     stargazingCamera: {

@@ -85,6 +85,7 @@ const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   bot: undefined,
   env: {},
   cameraFollow: false,
+  utmFollow: false,
   dispatch: jest.fn(),
   gridLoaded: true,
   getZ: jest.fn(() => 5),
@@ -1001,7 +1002,14 @@ describe("selection popup controls", () => {
     const trailToggle = controls.container
       .querySelector(".fb-toggle-button");
     trailToggle && fireEvent.click(trailToggle);
+    const followToggle = controls.container.querySelector(
+      ".object-popup-camera-row .fb-toggle-button");
+    followToggle && fireEvent.click(followToggle);
     expect(p.dispatch).toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: true,
+    });
     controls.unmount();
 
     const toolSelectionSpy =
