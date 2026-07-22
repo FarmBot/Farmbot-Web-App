@@ -15,8 +15,9 @@ import { Actions } from "../../../constants";
 import {
   getNativeJogControlPositions, getNativeJogDevicePosition,
   getNativeJogRenderDirection, getNativeJogStepSize,
+  nativeJogDirectionDisabled, nativeJogMaxPosition,
   NativeJogControlPair, NativeJogControlPairProps,
-  NATIVE_JOG_ARROW_LENGTH,
+  NATIVE_JOG_ARROW_LENGTH, NATIVE_JOG_CUSTOM_STEP_STORAGE_KEY,
 } from "../native_jog_controls";
 
 describe("native jog control geometry", () => {
@@ -70,10 +71,11 @@ describe("native jog control geometry", () => {
     },
   );
 
-  it("limits the 3D move amount to its four selector values", () => {
+  it("accepts preset and custom 3D move amounts", () => {
     expect(getNativeJogStepSize(1)).toEqual(1);
     expect(getNativeJogStepSize(1000)).toEqual(1000);
-    expect(getNativeJogStepSize(10000)).toEqual(100);
+    expect(getNativeJogStepSize(25)).toEqual(25);
+    expect(getNativeJogStepSize(Infinity)).toEqual(100);
     expect(getNativeJogStepSize(undefined)).toEqual(100);
   });
 
@@ -188,6 +190,12 @@ describe("<NativeJogControlPair />", () => {
         movement_enable_endpoints_x: 1,
         movement_enable_endpoints_y: 1,
         movement_enable_endpoints_z: 1,
+        movement_axis_nr_steps_x: 3000,
+        movement_axis_nr_steps_y: 1500,
+        movement_axis_nr_steps_z: 600,
+        movement_step_per_mm_x: 1,
+        movement_step_per_mm_y: 1,
+        movement_step_per_mm_z: 1,
       },
       locked: false,
       stepSize: 100,
@@ -222,9 +230,7 @@ describe("<NativeJogControlPair />", () => {
       render(<NativeJogControlPair {...p} />);
 
       expect(screen.getByRole("heading", {
-        name: `${axis.toUpperCase()}: ${Math.round(
-          position[axis],
-        ).toLocaleString()}`,
+        name: `${axis.toUpperCase()}: ${Math.round(position[axis])}`,
       })).toBeInTheDocument();
       expect(screen.getAllByRole("button", {
         name: /^(1|10|100|1000)$/,
@@ -232,6 +238,11 @@ describe("<NativeJogControlPair />", () => {
       fireEvent.click(screen.getByRole("button", {
         name: `Move Home ${axis.toUpperCase()}`,
       }));
+      expect(screen.getByRole("button", {
+        name: `Move Home ${axis.toUpperCase()}`,
+      }).querySelector(
+        `.fa-arrow-${axis == "z" ? "up" : "left"}`,
+      )).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", {
         name: `Find Home ${axis.toUpperCase()}`,
       }));
@@ -260,16 +271,173 @@ describe("<NativeJogControlPair />", () => {
     },
   );
 
-  it("uses the shared move amount selector", () => {
+  it("runs relative and homing commands with partial telemetry", () => {
+    const moveRelative = jest.spyOn(deviceActions, "moveRelative")
+      .mockImplementation(jest.fn());
+    const moveToHome = jest.spyOn(deviceActions, "moveToHome")
+      .mockImplementation(jest.fn());
+    const findHome = jest.spyOn(deviceActions, "findHome")
+      .mockImplementation(jest.fn());
     const p = props("x");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.botPosition = { x: undefined, y: 234, z: -50 };
     render(<NativeJogControlPair {...p} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "10" }));
+    const moveHome = screen.getByRole("button", { name: "Move Home X" });
+    const findAxisHome = screen.getByRole("button", { name: "Find Home X" });
+    const jog = screen.getByRole("button", { name: "Jog +X" });
+    expect(moveHome).toBeEnabled();
+    expect(findAxisHome).toBeEnabled();
+    expect(jog).toBeEnabled();
+    fireEvent.click(moveHome);
+    fireEvent.click(findAxisHome);
+    fireEvent.click(jog);
 
+    expect(moveToHome).toHaveBeenCalledWith("x");
+    expect(findHome).toHaveBeenCalledWith("x");
+    expect(moveRelative).toHaveBeenCalledWith({ x: 100, y: 0, z: 0 });
+    expect(screen.getByRole("button", { name: "GO" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Move to Max X" }))
+      .toBeDisabled();
+  });
+
+  it("uses preset and cached custom move amounts", () => {
+    const p = props("x");
+    const view = render(<NativeJogControlPair {...p} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "10" }));
     expect(p.axisActions?.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,
       payload: 10,
     });
+    const custom = screen.getByLabelText("Custom move amount");
+    expect(custom).toHaveAttribute("placeholder", "Custom");
+    fireEvent.change(custom, { target: { value: "25" } });
+    expect(p.axisActions?.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_STEP_SIZE,
+      payload: 25,
+    });
+    expect(localStorage.getItem(NATIVE_JOG_CUSTOM_STEP_STORAGE_KEY))
+      .toEqual("25");
+
+    view.unmount();
+    const cachedProps = props("x");
+    const cachedView = render(<NativeJogControlPair {...cachedProps} />);
+    const cached = screen.getByLabelText("Custom move amount");
+    expect(cached).toHaveValue(25);
+    fireEvent.focus(cached);
+    expect(cachedProps.axisActions?.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_STEP_SIZE,
+      payload: 25,
+    });
+
+    cachedView.unmount();
+    const selectedCustomProps = props("x");
+    selectedCustomProps.axisActions &&
+      (selectedCustomProps.axisActions.stepSize = 25);
+    render(<NativeJogControlPair {...selectedCustomProps} />);
+    expect(screen.getByLabelText("Custom move amount"))
+      .toHaveClass("move-amount-selected");
+  });
+
+  it("disables jog directions at configured axis ends", () => {
+    const p = props("x");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.botPosition = { x: 0, y: 234, z: -50 };
+    p.axisActions.firmwareSettings.movement_stop_at_home_x = 1;
+    p.axisActions.firmwareSettings.movement_home_up_x = 0;
+    const view = render(<NativeJogControlPair {...p} />);
+
+    expect(nativeJogDirectionDisabled(p.axisActions, "x", -1)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Jog -X" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Jog +X" })).toBeEnabled();
+
+    p.axisActions.botPosition = { x: 3000, y: 234, z: -50 };
+    p.axisActions.firmwareSettings.movement_stop_at_max_x = 1;
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(nativeJogMaxPosition(p.axisActions, "x")).toEqual(3000);
+    expect(screen.getByRole("button", { name: "Jog +X" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Move to Max X" }))
+      .toBeDisabled();
+
+    view.unmount();
+    const zProps = props("z");
+    if (!zProps.axisActions) { throw new Error("axis actions required"); }
+    zProps.axisActions.botPosition = { x: 1038, y: 234, z: 0 };
+    zProps.axisActions.firmwareSettings.movement_stop_at_home_z = 1;
+    zProps.axisActions.firmwareSettings.movement_home_up_z = 1;
+    render(<NativeJogControlPair {...zProps} />);
+    expect(nativeJogMaxPosition(zProps.axisActions, "z")).toEqual(-600);
+    expect(screen.getByRole("button", { name: "Jog +Z" })).toBeDisabled();
+  });
+
+  it("moves X to max and Z to safe height", () => {
+    const moveAbsolute = jest.spyOn(deviceActions, "moveAbsolute")
+      .mockImplementation(jest.fn());
+    const xProps = props("x");
+    const view = render(<NativeJogControlPair {...xProps} />);
+    const max = screen.getByRole("button", { name: "Move to Max X" });
+    expect(max).toHaveClass("fa-arrow-right");
+    fireEvent.click(max);
+    expect(moveAbsolute).toHaveBeenCalledWith({
+      x: 3000,
+      y: 234,
+      z: -50,
+    });
+
+    view.unmount();
+    const zProps = props("z");
+    zProps.config.safeHeight = -100;
+    const zView = render(<NativeJogControlPair {...zProps} />);
+    const safe = screen.getByRole("button", { name: "Move to Safe Height" });
+    expect(safe).toHaveClass("fa-arrow-down");
+    fireEvent.click(safe);
+    expect(moveAbsolute).toHaveBeenLastCalledWith({
+      x: 1038,
+      y: 234,
+      z: -100,
+    });
+    if (!zProps.axisActions) { throw new Error("axis actions required"); }
+    zProps.axisActions.botPosition = { ...position, z: -150 };
+    zView.rerender(<NativeJogControlPair {...zProps} />);
+    expect(screen.getByRole("button", { name: "Move to Safe Height" }))
+      .toHaveClass("fa-arrow-up");
+  });
+
+  it("shows movement progress and disables controls while busy", () => {
+    const moveRelative = jest.spyOn(deviceActions, "moveRelative")
+      .mockImplementation(() => new Promise(() => undefined));
+    const p = props("x");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    const view = render(<NativeJogControlPair {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: "Jog +X" }));
+
+    p.axisActions.arduinoBusy = true;
+    p.axisActions.botPosition = { x: 1088, y: 234, z: -50 };
+    p.axisActions.movementState = {
+      start: position,
+      distance: { x: 100, y: 0, z: 0 },
+    };
+    view.rerender(<NativeJogControlPair {...p} />);
+
+    const positive = screen.getByRole("button", { name: "Jog +X" });
+    expect(positive).toBeDisabled();
+    expect(positive.querySelector(".movement-progress"))
+      .toHaveStyle({ width: "50%" });
+    expect(screen.getByRole("button", { name: "Move Home X" }))
+      .toBeDisabled();
+    expect(moveRelative).toHaveBeenCalledWith({ x: 100, y: 0, z: 0 });
+
+    p.axisActions.arduinoBusy = false;
+    view.rerender(<NativeJogControlPair {...p} />);
+    p.axisActions.arduinoBusy = true;
+    p.axisActions.movementState = {
+      start: position,
+      distance: { x: -500, y: 0, z: 0 },
+    };
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(screen.getByRole("button", { name: "Jog +X" })
+      .querySelector(".movement-progress")).not.toBeInTheDocument();
   });
 
   it("moves to an entered axis coordinate and displays encoders", () => {
@@ -291,8 +459,8 @@ describe("<NativeJogControlPair />", () => {
     const input = screen.getByLabelText("X axis position");
     expect(container.querySelector("label[for='native-jog-x-target']"))
       .not.toBeInTheDocument();
-    expect(input).not.toHaveAttribute("placeholder");
-    expect(input).toHaveValue(900);
+    expect(input).toHaveAttribute("placeholder", "");
+    expect((input as HTMLInputElement).value).toEqual("");
     fireEvent.change(input, { target: { value: "2048.5" } });
     fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(moveAbsolute).toHaveBeenCalledWith({
@@ -346,7 +514,9 @@ describe("<NativeJogControlPair />", () => {
       (p.axisActions.firmwareSettings.encoder_enabled_x = 1);
     render(<NativeJogControlPair {...p} />);
 
-    fireEvent.click(screen.getByTitle("More options"));
+    const moreOptions = screen.getByTitle("More options");
+    fireEvent.pointerDown(moreOptions);
+    fireEvent.click(moreOptions);
     expect(screen.getByRole("heading", { name: "More options" }))
       .toBeInTheDocument();
     fireEvent.click(screen.getByTitle("toggle scaled encoder display"));
@@ -371,7 +541,7 @@ describe("<NativeJogControlPair />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
 
     fireEvent.click(screen.getByTitle("close"));
-    expect(screen.getByRole("heading", { name: "X: 1,038" }))
+    expect(screen.getByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
   });
 
@@ -386,7 +556,10 @@ describe("<NativeJogControlPair />", () => {
     Object.assign(p.axisActions || {}, update);
     render(<NativeJogControlPair {...p} />);
 
-    ["Move Home Z", "Find Home Z", "Jog -Z", "Jog +Z", "GO"]
+    [
+      "Move Home Z", "Find Home Z", "Jog -Z", "Jog +Z",
+      "Move to Safe Height", "GO",
+    ]
       .forEach(name => expect(screen.getByRole("button", { name }))
         .toBeDisabled());
     fireEvent.click(screen.getByRole("button", { name: "Jog -Z" }));

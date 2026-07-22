@@ -209,7 +209,7 @@
     .object-popup-content {
       .native-jog-popup-actions {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 0.5rem;
 
         .fb-button {
@@ -263,6 +263,30 @@
         .move-amount {
           flex: 1;
           width: auto;
+        }
+
+        .native-jog-custom-step {
+          min-width: 0;
+          border: 0;
+          border-left: 0;
+        }
+      }
+
+      .native-jog-progress-button {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+
+        &::before,
+        > p,
+        > span,
+        > .fa-stack {
+          z-index: 1;
+        }
+
+        .movement-progress {
+          z-index: 0;
+          pointer-events: none;
         }
       }
 

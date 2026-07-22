@@ -404,16 +404,16 @@ describe("<Bot />", () => {
       .toHaveAttribute("position", "60,0,300");
 
     fireEvent.click(control("bot-jog-x-near-control") as Element);
-    expect(queryByRole("heading", { name: "X: 1,038" }))
+    expect(queryByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
     fireEvent.keyDown(window, { key: "a" });
-    expect(queryByRole("heading", { name: "X: 1,038" }))
+    expect(queryByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
     expect(fireEvent.keyDown(window, {
       key: "Escape",
       cancelable: true,
     })).toBeFalsy();
-    expect(queryByRole("heading", { name: "X: 1,038" }))
+    expect(queryByRole("heading", { name: "X: 1038" }))
       .not.toBeInTheDocument();
   });
 
@@ -473,6 +473,7 @@ describe("<Bot />", () => {
       typeof node.type == "string" && node.props.name == name);
     expect(named("electronics-label")).toHaveLength(1);
     expect(named("camera-label")).toHaveLength(1);
+    expect(named("jog-controls-highlight")).toHaveLength(5);
     expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
     expect(named("utm-label")).toHaveLength(1);
     unmountRenderer(wrapper);

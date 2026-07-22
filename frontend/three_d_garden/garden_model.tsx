@@ -4041,6 +4041,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
               dispatch,
               firmwareSettings: props.firmwareSettings,
               locked: !!props.bot?.hardware.informational_settings.locked,
+              movementState: props.movementState || EMPTY_MOVEMENT_STATE,
               stepSize: props.bot?.stepSize,
             }
             : undefined}
