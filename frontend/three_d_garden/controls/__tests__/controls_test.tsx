@@ -4,6 +4,7 @@ import * as threeFiber from "@react-three/fiber";
 import * as springCore from "@react-spring/core";
 import { Ray, Vector3 } from "three";
 import {
+  axisConstraint,
   ControlArrow,
   ControlCursorProvider,
   ControlHandle,
@@ -152,6 +153,33 @@ describe("<ControlHandle />", () => {
     expect(onDrag.mock.calls[0][0].point.toArray()).toEqual([100, 0, 0]);
     expect(onDrag.mock.calls[0][0].delta.toArray()).toEqual([0, 0, 0]);
     actRenderer(() => handle().props.onPointerUp(event()));
+    unmountRenderer(wrapper);
+  });
+
+  it("resolves dynamic constraints at the pointer-down location", () => {
+    const onDrag = jest.fn();
+    const constraint = jest.fn((event: ControlPointerEvent) =>
+      axisConstraint("x", [event.point.x, event.point.y, event.point.z]));
+    const wrapper = createRenderer(
+      <ControlHandle
+        name={"test-control"}
+        constraint={constraint}
+        onDrag={onDrag}>
+        <group />
+      </ControlHandle>,
+    );
+    const handle = wrapper.root.findAll(node =>
+      `${node.type}` == "group" && node.props.name == "test-control")[0];
+    const down = pointerEvent(new Vector3(10, 20, 30));
+
+    actRenderer(() => handle.props.onPointerDown(down));
+    actRenderer(() => handle.props.onPointerMove(
+      pointerEvent(new Vector3(15, 40, 60), 5),
+    ));
+
+    expect(constraint).toHaveBeenCalledWith(down);
+    expect(onDrag.mock.calls[0][0].delta.toArray()).toEqual([5, 0, 0]);
+    actRenderer(() => handle.props.onPointerUp(pointerEvent()));
     unmountRenderer(wrapper);
   });
 
@@ -529,8 +557,15 @@ describe("<ThreeDPopup />", () => {
   it("normalizes popup framing and event isolation", () => {
     const onClose = jest.fn();
     const onParentClick = jest.fn();
+    const onParentPointerEvent = jest.fn();
+    const onParentDoubleClick = jest.fn();
     const { container } = render(
-      <div onClick={onParentClick}>
+      <div
+        onClick={onParentClick}
+        onPointerMove={onParentPointerEvent}
+        onPointerUp={onParentPointerEvent}
+        onPointerCancel={onParentPointerEvent}
+        onDoubleClick={onParentDoubleClick}>
         <ThreeDPopup
           name={"popup"}
           position={[1, 2, 3]}
@@ -545,7 +580,13 @@ describe("<ThreeDPopup />", () => {
     expect(container.textContent).toContain("Content");
     const popup = container.querySelector(".three-d-object-popup");
     popup && fireEvent.click(popup);
+    popup && fireEvent.pointerMove(popup);
+    popup && fireEvent.pointerUp(popup);
+    popup && fireEvent.pointerCancel(popup);
+    popup && fireEvent.doubleClick(popup);
     expect(onParentClick).not.toHaveBeenCalled();
+    expect(onParentPointerEvent).not.toHaveBeenCalled();
+    expect(onParentDoubleClick).not.toHaveBeenCalled();
     const button = container.querySelector("button");
     act(() => button?.click());
     expect(onClose).toHaveBeenCalledTimes(1);

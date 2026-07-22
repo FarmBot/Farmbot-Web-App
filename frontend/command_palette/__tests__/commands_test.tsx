@@ -1555,6 +1555,56 @@ describe("buildCommands()", () => {
     info.mockRestore();
   });
 
+  it("toggles 3D follow modes and bounds", () => {
+    const state = stateWithResources();
+    const dispatch = jest.fn();
+    const set3DConfigValue = jest.fn();
+    jest.spyOn(threeDSettings, "findOrCreate3DConfigFunction")
+      .mockReturnValue(set3DConfigValue);
+    const commands = buildCommands({
+      state, dispatch, navigate: jest.fn(),
+    });
+    const find = (id: string) => commands.find(command => command.id == id);
+
+    expect(find("camera:follow-camera-view")).toMatchObject({
+      name: "Follow Camera View",
+      imageIcon: TAB_ICON[Panel.Photos],
+      themeAwareImageIcon: true,
+      toggleValue: false,
+    });
+    expect(find("camera:follow-utm")).toMatchObject({
+      name: "Follow UTM",
+      imageIcon: TAB_ICON[Panel.Tools],
+      themeAwareImageIcon: true,
+      toggleValue: false,
+    });
+    expect(find("camera:bounds")).toMatchObject({
+      name: "Bounds",
+      icon: "cube",
+      toggleValue: false,
+    });
+
+    const followCameraView = find("camera:follow-camera-view");
+    const followUtm = find("camera:follow-utm");
+    const bounds = find("camera:bounds");
+    followCameraView?.accessory?.(jest.fn());
+    followUtm?.accessory?.(jest.fn());
+    bounds?.accessory?.(jest.fn());
+    followCameraView?.execute();
+    followUtm?.execute();
+    bounds?.execute();
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: true,
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: true,
+    });
+    expect(set3DConfigValue).toHaveBeenCalledWith("bounds", "1");
+  });
+
   it("labels orbit commands by surface and direction", () => {
     const dispatch = jest.fn();
     const commands = buildCommands({

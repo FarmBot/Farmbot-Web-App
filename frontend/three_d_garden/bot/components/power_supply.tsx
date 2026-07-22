@@ -8,6 +8,8 @@ import { easyCubicBezierCurve3 } from "../../helpers";
 import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
 import { useTextureVariant } from "../../texture_variants";
+import { UTILITIES_POST_SIZE } from
+  "../../bed/objects/utilities_post_position";
 
 export interface PowerSupplyProps {
   config: Config;
@@ -26,14 +28,14 @@ const cableColor = (enabled: boolean) => {
 
 type PowerCableConfig = Pick<Config,
   "bedHeight" | "bedLengthOuter" | "bedXOffset" | "bedYOffset"
-  | "bedZOffset" | "botSizeX" | "ccSupportSize" | "legSize">;
+  | "bedZOffset" | "botSizeX" | "ccSupportSize">;
 
 export const buildPowerCablePath = (
   config: PowerCableConfig,
 ): THREE.CurvePath<THREE.Vector3> => {
   const {
     bedHeight, bedLengthOuter, bedXOffset, bedYOffset, bedZOffset,
-    botSizeX, ccSupportSize, legSize,
+    botSizeX, ccSupportSize,
   } = config;
   const zGround = -bedHeight - bedZOffset;
   const localX = (position: number) => position - bedXOffset;
@@ -139,8 +141,8 @@ export const buildPowerCablePath = (
     [100, 0, 0],
     [-100, 0, 0],
     [
-      localX(bedLengthOuter + 550 - legSize / 2),
-      localY(legSize / 2),
+      localX(bedLengthOuter + 550 - UTILITIES_POST_SIZE / 2),
+      localY(UTILITIES_POST_SIZE / 2),
       zGround + 250,
     ],
   );
@@ -152,7 +154,7 @@ export const buildPowerCablePath = (
 const PowerSupplyHardwareBase = (props: PowerSupplyProps) => {
   const {
     bedLengthOuter, bedHeight, bedXOffset, bedYOffset,
-    legSize, ccSupportSize, bedZOffset,
+    ccSupportSize, bedZOffset,
   } = props.config;
   const zGround = -bedHeight - bedZOffset;
   const powerSupplyTexture = useTextureVariant(ASSETS.textures.aluminum, {
@@ -177,8 +179,8 @@ const PowerSupplyHardwareBase = (props: PowerSupplyProps) => {
       args={[plugDepth, 30, 30]}
       position={[
         bedLengthOuter + 600 - plugDepth / 2 - outletDepth
-          - legSize / 2 - bedXOffset,
-        legSize / 2 - bedYOffset,
+          - UTILITIES_POST_SIZE / 2 - bedXOffset,
+        UTILITIES_POST_SIZE / 2 - bedYOffset,
         zGround + 250,
       ]}>
       <MeshPhongMaterial color={cableColor(props.config.cableDebug)} />
@@ -190,7 +192,7 @@ const PowerCableBase = (props: PowerSupplyProps) => {
   const { config } = props;
   const {
     bedHeight, bedLengthOuter, bedXOffset, bedYOffset, bedZOffset,
-    botSizeX, ccSupportSize, legSize,
+    botSizeX, ccSupportSize,
   } = config;
   const combinedCablePath = React.useMemo(
     () => buildPowerCablePath({
@@ -201,7 +203,6 @@ const PowerCableBase = (props: PowerSupplyProps) => {
       bedZOffset,
       botSizeX,
       ccSupportSize,
-      legSize,
     }),
     [
       bedHeight,
@@ -211,7 +212,6 @@ const PowerCableBase = (props: PowerSupplyProps) => {
       bedZOffset,
       botSizeX,
       ccSupportSize,
-      legSize,
     ],
   );
   return <Tube name={"powerCable"}
@@ -230,7 +230,6 @@ const POWER_SUPPLY_HARDWARE_CONFIG_FIELDS: (keyof Config)[] = [
   "bedZOffset",
   "cableDebug",
   "ccSupportSize",
-  "legSize",
 ];
 
 const POWER_CABLE_CONFIG_FIELDS: (keyof Config)[] = [

@@ -42,8 +42,12 @@ export const ThreeDPopup = (props: ThreeDPopupProps) =>
         props.visible === false ? "hidden" : "visible",
       ].filter(Boolean).join(" ")}
       onPointerDown={stopThreeDPopupEvent}
+      onPointerMove={stopThreeDPopupEvent}
+      onPointerUp={stopThreeDPopupEvent}
+      onPointerCancel={stopThreeDPopupEvent}
       onContextMenu={stopThreeDPopupEvent}
       onWheel={stopThreeDPopupEvent}
+      onDoubleClick={stopThreeDPopupEvent}
       onClick={stopThreeDPopupEvent}>
       {(props.title !== undefined || props.onClose || props.headerActions) &&
         <div className={"object-popup-header row grid-exp-2"}>
@@ -56,7 +60,10 @@ export const ThreeDPopup = (props: ThreeDPopupProps) =>
                 className={"fa fa-times fb-icon-button invert"}
                 title={t("close")}
                 disabled={props.closeDisabled}
-                onClick={props.onClose} />}
+                onClick={event => {
+                  stopThreeDPopupEvent(event);
+                  props.onClose?.();
+                }} />}
           </div>
         </div>}
       <div className={[

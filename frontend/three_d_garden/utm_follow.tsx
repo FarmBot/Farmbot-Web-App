@@ -11,6 +11,7 @@ import { BotPositionSnapshotStore } from "./bot/position_spring";
 import { getBotKinematics } from "./bot/kinematics";
 import { BigDistance } from "./constants";
 
+export const UTM_FOLLOW_TARGET_Z_OFFSET = -100;
 export const UTM_FOLLOW_CAMERA_X_OFFSET = 1000;
 export const UTM_FOLLOW_CAMERA_Z_OFFSET = 300;
 
@@ -19,7 +20,11 @@ export const getUtmFollowView = (
   position: PositionConfig,
 ): Camera => {
   const utm = getBotKinematics(config, position).anchors.utm.worldPosition;
-  const target: Camera["target"] = [...utm];
+  const target: Camera["target"] = [
+    utm[0],
+    utm[1],
+    utm[2] + UTM_FOLLOW_TARGET_Z_OFFSET,
+  ];
   return {
     target,
     position: [

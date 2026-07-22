@@ -1,7 +1,7 @@
 import React from "react";
 import { Config, PositionConfig } from "../../config";
-import { Box, Edges, Line } from "@react-three/drei";
-import { Group, MeshBasicMaterial } from "../../components";
+import { Line } from "@react-three/drei";
+import { Group } from "../../components";
 import {
   get3DPositionNoMirrorFunc,
   threeSpace,
@@ -9,7 +9,6 @@ import {
   zDir as zDirFunc,
 } from "../../helpers";
 import { DistanceIndicator } from "../../elements";
-import { BackSide } from "three";
 import { ControlPillButton, noControlRaycast } from "../../controls";
 import { ThreeDObjectSelectionHandler } from "../../selection_types";
 import { t } from "../../../i18next_wrapper";
@@ -67,6 +66,51 @@ interface HeightPlaneProps {
   onClick(): void;
 }
 
+type BoundsPoint = [number, number, number];
+
+export const heightPlanePillLength = (
+  label: string,
+  labelSize: number,
+  minimum = 150,
+) => Math.max(
+  minimum,
+  Math.ceil(Array.from(label).length * labelSize * 0.6 + 48),
+);
+
+const rectangleSegments = (
+  minX: number,
+  minY: number,
+  maxX: number,
+  maxY: number,
+  z: number,
+): BoundsPoint[] => [
+  [minX, minY, z], [maxX, minY, z],
+  [maxX, minY, z], [maxX, maxY, z],
+  [maxX, maxY, z], [minX, maxY, z],
+  [minX, maxY, z], [minX, minY, z],
+];
+
+export const getBoundsLinePoints = (config: Config): BoundsPoint[] => {
+  const zero = zeroFunc(config);
+  const maxX = zero.x + config.botSizeX;
+  const maxY = zero.y + config.botSizeY;
+  const bottom = zero.z - config.botSizeZ;
+  const vertical: BoundsPoint[] = [
+    [zero.x, zero.y, bottom], [zero.x, zero.y, zero.z],
+    [maxX, zero.y, bottom], [maxX, zero.y, zero.z],
+    [maxX, maxY, bottom], [maxX, maxY, zero.z],
+    [zero.x, maxY, bottom], [zero.x, maxY, zero.z],
+  ];
+  const top = config.safeHeight == 0
+    ? []
+    : rectangleSegments(zero.x, zero.y, maxX, maxY, zero.z);
+  return [
+    ...rectangleSegments(zero.x, zero.y, maxX, maxY, bottom),
+    ...vertical,
+    ...top,
+  ];
+};
+
 const HeightPlane = (props: HeightPlaneProps) => {
   const { botSizeX, botSizeY } = props.config;
   const getWorldPosition = get3DPositionNoMirrorFunc(props.config);
@@ -74,6 +118,8 @@ const HeightPlane = (props: HeightPlaneProps) => {
   const start = getWorldPosition({ x: 0, y: 0 });
   const end = getWorldPosition({ x: botSizeX, y: botSizeY });
   const z = zero.z + props.z;
+  const label = t(props.label);
+  const labelSize = 24;
   return <Group name={`${props.name}-plane`}>
     <Line
       name={`${props.name}-lines`}
@@ -95,11 +141,11 @@ const HeightPlane = (props: HeightPlaneProps) => {
         z + 12,
       ]}
       rotation={[Math.PI / 2, Math.PI / 2, 0]}
-      label={t(props.label)}
-      length={150}
+      label={label}
+      length={heightPlanePillLength(label, labelSize)}
       width={48}
       thickness={10}
-      labelSize={24}
+      labelSize={labelSize}
       color={props.color}
       hoverColor={props.color}
       depthTest={true}
@@ -117,35 +163,20 @@ const BoundsComponent = (props: BoundsProps) => {
   const {
     bedLengthOuter, bedWidthOuter,
     zAxisLength, columnLength, beamLength, bounds,
-    bedYOffset, botSizeX, botSizeY, botSizeZ,
+    bedYOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zDir = zDirFunc(props.config);
   const zero = zeroFunc(props.config);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   return <Group name={"bounds-and-distances"}>
-    <Box name={"bounds"}
+    <Line name={"bounds"}
       visible={bounds}
-      position={[
-        zero.x + botSizeX / 2,
-        zero.y + botSizeY / 2,
-        zero.z - botSizeZ / 2,
-      ]}
-      args={[
-        botSizeX,
-        botSizeY,
-        botSizeZ,
-      ]}>
-      <MeshBasicMaterial
-        side={BackSide}
-        depthWrite={false}
-        transparent={true}
-        opacity={0} />
-      <Edges
-        lineWidth={1.1}
-        color={"white"}
-        threshold={1} />
-    </Box>
+      segments={true}
+      points={getBoundsLinePoints(props.config)}
+      lineWidth={1.1}
+      color={"white"}
+      raycast={noControlRaycast} />
     {bounds && <HeightPlane
       name={"safe-height"}
       label={"Safe height"}

@@ -55,17 +55,26 @@ describe("power supply components", () => {
   });
 
   it("builds the cable path in machine-local coordinates", () => {
-    const path = buildPowerCablePath(fakeProps().config);
+    const config = fakeProps().config;
+    const path = buildPowerCablePath(config);
     expect(path.curves).toHaveLength(7);
     const cableCarrierSpan = path.curves[0] as THREE.LineCurve3;
     expect(cableCarrierSpan.v1.toArray()).toEqual([1210, -40, -140]);
     expect(cableCarrierSpan.v2.toArray()).toEqual([1350, -40, -140]);
+    const outlet = path.curves[6] as THREE.CubicBezierCurve3;
+    config.legSize = 250;
+    const resizedOutlet = buildPowerCablePath(config)
+      .curves[6] as THREE.CubicBezierCurve3;
+    expect(resizedOutlet.v3.toArray()).toEqual(outlet.v3.toArray());
   });
 
   it("compares hardware-relevant config fields", () => {
     const p = fakeProps();
     expect(powerSupplyHardwarePropsEqual(p, {
       config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(powerSupplyHardwarePropsEqual(p, {
+      config: { ...p.config, legSize: p.config.legSize + 50 },
     })).toBeTruthy();
     expect(powerSupplyHardwarePropsEqual(p, {
       config: { ...p.config, bedLengthOuter: p.config.bedLengthOuter + 1 },
@@ -84,6 +93,9 @@ describe("power supply components", () => {
     const p = fakeProps();
     expect(powerCablePropsEqual(p, {
       config: { ...p.config, sun: p.config.sun + 1 },
+    })).toBeTruthy();
+    expect(powerCablePropsEqual(p, {
+      config: { ...p.config, legSize: p.config.legSize + 50 },
     })).toBeTruthy();
     expect(powerCablePropsEqual(p, {
       config: { ...p.config, botSizeX: p.config.botSizeX + 1 },

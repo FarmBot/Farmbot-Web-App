@@ -54,6 +54,14 @@ describe("section cut faces", () => {
     ]);
     expect(lines.find(line => line.name == "safe-height")?.points[0][2])
       .toEqual(zZero(c) - 50);
+    const zeroSafeBounds = getSectionBoundsCutLines(
+      { ...c, safeHeight: 0 }, "x", plane,
+    ).find(line => line.name == "bounds");
+    expect(zeroSafeBounds?.segments).toEqual(true);
+    expect(zeroSafeBounds?.points.filter((point, index, points) =>
+      index % 2 == 0
+      && point[2] == zZero(c)
+      && points[index + 1]?.[2] == zZero(c))).toHaveLength(0);
     expect(getSectionBoundsCutLines(
       { ...c, bounds: false }, "x", plane,
     )).toEqual([]);

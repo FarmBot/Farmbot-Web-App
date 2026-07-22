@@ -1406,6 +1406,7 @@ interface FarmbotLoadInProps {
   getZ(x: number, y: number): number;
   loadInComplete: boolean;
   mountedToolName: string | undefined;
+  navigate?(path: string): void;
   positionStore: BotPositionSnapshotStore;
   onExitRest?(): void;
   onLoadInComplete(): void;
@@ -1440,6 +1441,7 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
       trailReady={props.reveal && props.detailsReveal && props.loadInComplete}
       activeFocus={props.activeFocus}
       mountedToolName={props.mountedToolName}
+      navigate={props.navigate}
       positionStore={props.positionStore}
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
@@ -4077,6 +4079,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           loadProgress={loadProgress}
           markStep={markLoadStep}
           mountedToolName={props.mountedToolName}
+          navigate={navigate}
           positionStore={botPositionStore}
           reveal={farmbotReveal}
           showLoadProgress={props.showFarmbotLayerLoadProgress !== false}

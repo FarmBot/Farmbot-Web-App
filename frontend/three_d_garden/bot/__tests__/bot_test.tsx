@@ -377,7 +377,7 @@ describe("<Bot />", () => {
       locked: false,
       stepSize: 100,
     };
-    const { container, queryByRole } = render(<Bot {...p} />);
+    const { container, getByTitle, queryByRole } = render(<Bot {...p} />);
     const control = (name: string) =>
       container.querySelector(`[name='${name}']`);
 
@@ -409,12 +409,18 @@ describe("<Bot />", () => {
     fireEvent.keyDown(window, { key: "a" });
     expect(queryByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
+    fireEvent.click(getByTitle("More options"));
+    expect(queryByRole("heading", { name: "More options" }))
+      .toBeInTheDocument();
     expect(fireEvent.keyDown(window, {
       key: "Escape",
       cancelable: true,
     })).toBeFalsy();
-    expect(queryByRole("heading", { name: "X: 1038" }))
+    expect(queryByRole("heading"))
       .not.toBeInTheDocument();
+    fireEvent.click(control("bot-jog-x-near-control") as Element);
+    expect(queryByRole("heading", { name: "X: 1038" }))
+      .toBeInTheDocument();
   });
 
   it("doesn't activate native jog controls without axis actions", () => {
@@ -454,6 +460,12 @@ describe("<Bot />", () => {
       .toBeInTheDocument();
     expect(result.getByRole("button", { name: "Jog +X" }))
       .toBeDisabled();
+    fireEvent.click(result.getByTitle("close"));
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .not.toBeInTheDocument();
+    fireEvent.click(control());
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
 
     p.axisActions = undefined;
     result.rerender(<Bot {...p} />);

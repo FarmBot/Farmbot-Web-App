@@ -21,7 +21,9 @@ export interface ControlHandleProps {
   userData?: Record<string, unknown>;
   cursor?: string;
   dragCursor?: string;
-  constraint?: ControlDragConstraint;
+  constraint?: ControlDragConstraint | ((
+    event: ControlPointerEvent,
+  ) => ControlDragConstraint);
   canStart?(event: ControlPointerEvent): boolean;
   onHoverChange?(hovered: boolean): void;
   onActivate?(event: ControlPointerEvent): void;
@@ -140,7 +142,9 @@ export const ControlHandle = (props: ControlHandleProps) => {
       (event.target as HTMLElement | null)
         ?.setPointerCapture?.(event.pointerId);
       if (hasDrag) {
-        dragConstraint.current = props.constraint;
+        dragConstraint.current = typeof props.constraint == "function"
+          ? props.constraint(event)
+          : props.constraint;
         const next = dragEvent(event, false);
         dragStart.current.copy(next.point);
         draggingRef.current = true;

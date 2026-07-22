@@ -7,6 +7,7 @@ import {
   getUtmFollowView,
   UTM_FOLLOW_CAMERA_X_OFFSET,
   UTM_FOLLOW_CAMERA_Z_OFFSET,
+  UTM_FOLLOW_TARGET_Z_OFFSET,
   UtmFollowController,
 } from "../utm_follow";
 import { INITIAL, INITIAL_POSITION } from "../config";
@@ -23,7 +24,11 @@ describe("getUtmFollowView()", () => {
     ).anchors.utm.worldPosition;
     const view = getUtmFollowView(config, INITIAL_POSITION);
 
-    expect(view.target).toEqual(utm);
+    expect(view.target).toEqual([
+      utm[0],
+      utm[1],
+      utm[2] + UTM_FOLLOW_TARGET_Z_OFFSET,
+    ]);
     expect(view.position).toEqual([
       view.target[0] + UTM_FOLLOW_CAMERA_X_OFFSET,
       view.target[1],

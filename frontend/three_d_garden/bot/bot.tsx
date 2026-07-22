@@ -52,6 +52,7 @@ export interface FarmbotModelProps {
   trailReady?: boolean;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  navigate?(path: string): void;
   dispatch?: Function;
   axisActions?: NativeJogAxisActionsContext;
   encoderData?: NativeJogEncoderData;
@@ -282,6 +283,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
     encoderData: props.encoderData,
     encoderVisibility: props.encoderVisibility,
     name,
+    navigate: props.navigate,
     onClose: closeJogPopup,
     onSelect: () => setJogSelection({ name }),
     position,

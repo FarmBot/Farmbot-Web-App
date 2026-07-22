@@ -92,6 +92,7 @@ export interface SectionBoundsCutLine {
   color: string;
   name: string;
   points: Point[];
+  segments?: boolean;
 }
 
 export const getSectionBoundsCutLines = (
@@ -127,17 +128,26 @@ export const getSectionBoundsCutLines = (
     color,
     points: [point(transverseMin, z), point(transverseMax, z)],
   });
+  const boundsPoints = [
+    point(transverseMin, bottom),
+    point(transverseMax, bottom),
+    point(transverseMax, bottom),
+    point(transverseMax, top),
+    point(transverseMin, top),
+    point(transverseMin, bottom),
+  ];
+  if (config.safeHeight != 0) {
+    boundsPoints.push(
+      point(transverseMax, top),
+      point(transverseMin, top),
+    );
+  }
   return [
     {
       name: "bounds",
       color: "white",
-      points: [
-        point(transverseMin, bottom),
-        point(transverseMax, bottom),
-        point(transverseMax, top),
-        point(transverseMin, top),
-        point(transverseMin, bottom),
-      ],
+      points: boundsPoints,
+      segments: true,
     },
     horizontalLine("safe-height", "green", zero.z + config.safeHeight),
     horizontalLine("min-soil", "#8b5a2b", zero.z + config.minSoilZ),
@@ -625,6 +635,7 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
         key={`near-${line.name}`}
         name={`section-${line.name}-near-cut-line`}
         points={line.points}
+        segments={line.segments}
         color={line.color}
         lineWidth={2}
         transparent={true}
@@ -636,6 +647,7 @@ export const SectionCutFaces = (props: SectionCutFacesProps) => {
         key={`far-${line.name}`}
         name={`section-${line.name}-far-cut-line`}
         points={line.points}
+        segments={line.segments}
         color={line.color}
         lineWidth={2}
         transparent={true}

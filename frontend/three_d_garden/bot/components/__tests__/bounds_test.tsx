@@ -2,11 +2,15 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
 import { clone } from "lodash";
-import { areBoundsPropsEqual, Bounds, BoundsProps } from "../bounds";
+import {
+  areBoundsPropsEqual, Bounds, BoundsProps, getBoundsLinePoints,
+  heightPlanePillLength,
+} from "../bounds";
 import {
   createRenderer, unmountRenderer,
 } from "../../../../__test_support__/test_renderer";
 import { ControlPillButton } from "../../../controls";
+import { zero } from "../../../helpers";
 
 describe("<Bounds />", () => {
   const fakeProps = (): BoundsProps => ({
@@ -29,13 +33,33 @@ describe("<Bounds />", () => {
     expect(container).toHaveTextContent("Min soil");
     expect(container).toHaveTextContent("Max soil");
     const wrapper = createRenderer(<Bounds {...p} />);
-    wrapper.root.findAllByType(ControlPillButton).forEach(pill => {
+    const pills = wrapper.root.findAllByType(ControlPillButton);
+    pills.forEach(pill => {
       expect(pill.props.rotation)
         .toEqual([Math.PI / 2, Math.PI / 2, 0]);
       pill.props.onClick();
     });
+    expect(pills.find(pill => pill.props.name == "safe-height-pill")
+      ?.props.length).toEqual(heightPlanePillLength("Safe height", 24));
+    expect(heightPlanePillLength("A much longer translation", 24))
+      .toBeGreaterThan(heightPlanePillLength("Safe height", 24));
     expect(p.onSelectObject).toHaveBeenCalledTimes(1);
     unmountRenderer(wrapper);
+  });
+
+  it("omits top bounds edges when safe height is zero", () => {
+    const config = fakeProps().config;
+    const top = zero(config).z;
+    const topSegments = (points: ReturnType<typeof getBoundsLinePoints>) =>
+      points.reduce((count, point, index) => index % 2 == 0
+        && point[2] == top
+        && points[index + 1]?.[2] == top
+        ? count + 1
+        : count, 0);
+
+    expect(topSegments(getBoundsLinePoints(config))).toEqual(0);
+    config.safeHeight = -100;
+    expect(topSegments(getBoundsLinePoints(config))).toEqual(4);
   });
 
   it("opens the safe height popup", () => {

@@ -2293,9 +2293,14 @@ const resourceNavigationCommands = (props: BuildCommandProps): Command[] => {
 };
 
 const cameraCommands = (props: BuildCommandProps): Command[] => {
-  const getValue = getWebAppConfigValueFromResources(props.state.resources.index);
+  const index = props.state.resources.index;
+  const getValue = getWebAppConfigValueFromResources(index);
   const is3D = !!getValue(BooleanSetting.three_d_garden);
-  const unavailable = is3D ? undefined : t("Enable the 3D Garden setting first.");
+  const unavailable = is3D
+    ? undefined
+    : t("Enable the 3D Garden setting first.");
+  const envs = selectAllFarmwareEnvs(index);
+  const bounds = !!get3DConfigValueFunction(envs)("bounds");
   const perspective = props.state.resources.consumers.farm_designer
     .threeDPerspective ?? true;
   const cameraFollow = props.state.resources.consumers.farm_designer
@@ -2323,6 +2328,45 @@ const cameraCommands = (props: BuildCommandProps): Command[] => {
     execute,
     toggleValue: perspective,
     accessory: toggleAccessory(perspective, !!unavailable),
+  }, {
+    id: "camera:follow-camera-view",
+    ...localized("Follow Camera View"),
+    aliases: ["3D", "camera", "FarmBot camera", "camera view"],
+    group: "map",
+    imageIcon: TAB_ICON[Panel.Photos],
+    themeAwareImageIcon: true,
+    unavailable,
+    execute: () => props.dispatch({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: !cameraFollow,
+    }),
+    toggleValue: cameraFollow,
+    accessory: toggleAccessory(cameraFollow, !!unavailable),
+  }, {
+    id: "camera:follow-utm",
+    ...localized("Follow UTM"),
+    aliases: ["3D", "camera", "tool", "universal tool mount"],
+    group: "map",
+    imageIcon: TAB_ICON[Panel.Tools],
+    themeAwareImageIcon: true,
+    unavailable,
+    execute: () => props.dispatch({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: !utmFollow,
+    }),
+    toggleValue: utmFollow,
+    accessory: toggleAccessory(utmFollow, !!unavailable),
+  }, {
+    id: "camera:bounds",
+    ...localized("Bounds"),
+    aliases: ["3D", "camera", "bounding box", "axis limits"],
+    group: "map",
+    icon: "cube",
+    unavailable,
+    execute: () => findOrCreate3DConfigFunction(
+      props.dispatch, envs)("bounds", bounds ? "0" : "1"),
+    toggleValue: bounds,
+    accessory: toggleAccessory(bounds, !!unavailable),
   }];
   const targetName = (target: typeof VIEW_PRISM_TARGETS[number]) => {
     let surface = "Side";
