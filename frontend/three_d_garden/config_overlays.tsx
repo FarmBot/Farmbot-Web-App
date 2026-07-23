@@ -586,6 +586,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         </div>
         <div className={"config-section"}>
           <label>{"Bot State"}</label>
+          <Toggle {...common} configKey={"controlsOverlay"} />
           <Slider {...common} configKey={"x"} min={0} max={props.config.botSizeX} />
           <Slider {...common} configKey={"y"} min={0} max={props.config.botSizeY} />
           <Slider {...common} configKey={"z"}
@@ -692,6 +693,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
           <label>{"Environment"}</label>
           <Radio {...common} configKey={"scene"}
             options={["Outdoor", "Lab", "Greenhouse", "Mars"]} />
+          <Toggle {...common} configKey={"sceneObjects"} />
           <Toggle {...common} configKey={"outdoorObjects"} />
           <Toggle {...common} configKey={"ground"} />
           <Radio {...common} configKey={"groundTexture"}

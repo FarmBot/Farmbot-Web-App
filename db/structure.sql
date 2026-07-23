@@ -2085,7 +2085,8 @@ CREATE TABLE public.web_app_configs (
     dark_mode boolean DEFAULT true,
     top_down_view boolean DEFAULT false,
     viewpoint_heading integer DEFAULT 30,
-    show_scene_objects boolean DEFAULT true
+    show_scene_objects boolean DEFAULT true,
+    show_controls_overlay boolean DEFAULT true
 );
 
 
@@ -3849,6 +3850,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260723225144'),
 ('20260710222823'),
 ('20260430202719'),
 ('20260422013033'),

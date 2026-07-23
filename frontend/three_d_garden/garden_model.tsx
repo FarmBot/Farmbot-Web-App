@@ -965,6 +965,7 @@ interface GardenLayerVisibilityParams {
   activeFocus: string;
   botVisibleInConfig: boolean;
   showSoilPoints: boolean;
+  showSceneObjects: boolean;
 }
 
 // eslint-disable-next-line complexity
@@ -998,8 +999,7 @@ function getGardenLayerVisibility(
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!getConfigValue?.(
     BooleanSetting.show_sensor_readings);
-  const showSceneObjects = !!getConfigValue?.(
-    BooleanSetting.show_scene_objects);
+  const { showSceneObjects } = params;
   return {
     showPlants,
     plantsVisible,
@@ -3397,6 +3397,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   }, [loadProgress.complete, onLoadComplete]);
 
   const layerVisibility = React.useMemo(() => getGardenLayerVisibility({
+    showSceneObjects: config.sceneObjects,
     addPlantProps,
     activeFocus: props.activeFocus,
     botVisibleInConfig: config.bot,
@@ -3405,6 +3406,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     addPlantProps,
     config.bot,
     config.showSoilPoints,
+    config.sceneObjects,
     props.activeFocus,
   ]);
   const {

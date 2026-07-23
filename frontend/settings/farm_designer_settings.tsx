@@ -107,6 +107,11 @@ const DESIGNER_SETTINGS =
       disabled: !settingsProps.getConfigValue(BooleanSetting.display_trail),
     },
     {
+      title: DeviceSetting.showControlsOverlay,
+      description: Content.SHOW_CONTROLS_OVERLAY,
+      setting: BooleanSetting.show_controls_overlay,
+    },
+    {
       title: DeviceSetting.dynamicMap,
       description: Content.DYNAMIC_MAP_SIZE,
       setting: BooleanSetting.dynamic_map,

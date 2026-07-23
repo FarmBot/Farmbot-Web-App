@@ -107,7 +107,8 @@ describe("modifyConfigsFromUrlParams()", () => {
   it("sets other config", () => {
     window.location.search =
       "?kit=JR&x=1&ground=true&constellations=true"
-      + "&constellationsDebug=true";
+      + "&constellationsDebug=true&showSceneObjects=false"
+      + "&showControlsOverlay=false";
     const initial = clone(INITIAL);
     initial.sizePreset = "Genesis XL";
     initial.x = 100;
@@ -118,6 +119,8 @@ describe("modifyConfigsFromUrlParams()", () => {
     expect(result.ground).toEqual(true);
     expect(result.constellations).toEqual(true);
     expect(result.constellationsDebug).toEqual(true);
+    expect(result.sceneObjects).toEqual(true);
+    expect(result.controlsOverlay).toEqual(false);
   });
 });
 

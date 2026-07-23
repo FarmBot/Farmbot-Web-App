@@ -70,6 +70,8 @@ export interface Config {
   zDimension: boolean;
   promoInfo: boolean;
   settingsBar: boolean;
+  sceneObjects: boolean;
+  controlsOverlay: boolean;
   zoomBeacons: boolean;
   solar: boolean;
   utilitiesPost: boolean;
@@ -233,6 +235,8 @@ export const INITIAL: ConfigWithPosition = {
   zDimension: false,
   promoInfo: true,
   settingsBar: true,
+  sceneObjects: true,
+  controlsOverlay: false,
   zoomBeacons: true,
   solar: false,
   utilitiesPost: true,
@@ -318,6 +322,7 @@ export const BOOLEAN_KEYS = [
   "constellations", "constellationsDebug",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
+  "sceneObjects", "controlsOverlay",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
@@ -448,6 +453,7 @@ export const PRESETS: Record<string, Config> = {
     animateSeasons: false,
     distanceIndicator: "",
     north: false,
+    sceneObjects: false,
   },
   "Maximal": {
     ...INITIAL,
@@ -517,6 +523,7 @@ export const PRESETS: Record<string, Config> = {
     cameraFitDebug: true,
     telescope: true,
     outdoorObjects: true,
+    controlsOverlay: true,
   },
 };
 
@@ -537,6 +544,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate", "zoomFactor",
+  "sceneObjects", "controlsOverlay",
   "solar", "utilitiesPost", "packaging", "groundTexture",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",

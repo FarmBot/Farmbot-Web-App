@@ -142,6 +142,7 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.animations,
   DeviceSetting.trail,
   DeviceSetting.mapMissedSteps,
+  DeviceSetting.showControlsOverlay,
   DeviceSetting.dynamicMap,
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,

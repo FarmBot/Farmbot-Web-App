@@ -99,9 +99,10 @@ export const getBotSpringTarget = (
   config: BotPositionTransformConfig,
   reportedPosition: PositionConfig,
   demoTarget = getDemoMovementTarget(),
-): PositionConfig => demoTarget
-  ? getUnmirroredBotPosition(config, demoTarget)
-  : reportedPosition;
+): PositionConfig =>
+  demoTarget
+    ? getUnmirroredBotPosition(config, demoTarget)
+    : reportedPosition;
 
 export interface BotKinematicObjects {
   gantry?: Object3D | null;

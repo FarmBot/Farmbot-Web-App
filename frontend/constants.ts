@@ -999,6 +999,9 @@ export namespace Content {
     trim(`Display high motor load warning indicators in map.
     Requires TRAIL and stall detection to be enabled.`);
 
+  export const SHOW_CONTROLS_OVERLAY =
+    trim(`Display jog controls in the garden map.`);
+
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
@@ -2255,6 +2258,7 @@ export enum DeviceSetting {
   animations = `Plant animations`,
   trail = `Trail`,
   mapMissedSteps = `Motor load`,
+  showControlsOverlay = `Show controls overlay`,
   dynamicMap = `Dynamic map size`,
   mapSize = `Map size`,
   rotateMap = `Rotate map`,

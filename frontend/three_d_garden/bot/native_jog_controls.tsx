@@ -90,7 +90,7 @@ export interface NativeJogAxisActionsContext {
 type NativeJogConfig = Pick<Config,
   "beamLength" | "bedWidthOuter" | "bedYOffset" | "botSizeX" |
   "botSizeY" | "botSizeZ" | "columnLength" | "kitVersion" |
-  "mirrorX" | "mirrorY" | "negativeZ" | "safeHeight">;
+  "mirrorX" | "mirrorY" | "negativeZ" | "safeHeight" | "controlsOverlay">;
 
 export const getNativeJogControlPositions = (
   config: NativeJogConfig,
@@ -124,20 +124,22 @@ export const getNativeJogControlPositions = (
 const axisPoint = (
   axis: Xyz,
   distance: number,
-): ControlPoint => [
-  axis == "x" ? distance : 0,
-  axis == "y" ? distance : 0,
-  axis == "z" ? distance : 0,
-];
+): ControlPoint =>
+  [
+    axis == "x" ? distance : 0,
+    axis == "y" ? distance : 0,
+    axis == "z" ? distance : 0,
+  ];
 
 const controlPointSum = (
   first: ControlPoint,
   second: ControlPoint,
-): ControlPoint => [
-  first[0] + second[0],
-  first[1] + second[1],
-  first[2] + second[2],
-];
+): ControlPoint =>
+  [
+    first[0] + second[0],
+    first[1] + second[1],
+    first[2] + second[2],
+  ];
 
 export const getNativeJogRenderDirection = (
   config: NativeJogConfig,
@@ -212,7 +214,8 @@ export const getNativeJogDragPreviewPositions = (
 
 export const nativeJogMovementAvailable = (
   context: NativeJogAxisActionsContext | undefined,
-) => !!context && context.botOnline &&
+) =>
+  !!context && context.botOnline &&
   !context.arduinoBusy && !context.locked;
 
 export const getNativeJogAbsoluteDestination = (
@@ -544,8 +547,7 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
       onClick={moveHome}>
       <div className={"fa-stack"}>
         <i className={"fa fa-home fa-stack-2x"} />
-        <i className={`fa fa-arrow-${
-          props.axis == "z" ? "up" : "left"} fa-stack-1x`} />
+        <i className={`fa fa-arrow-${props.axis == "z" ? "up" : "left"} fa-stack-1x`} />
       </div>
       {progress("home")}
     </button>
@@ -885,8 +887,7 @@ interface NativeJogArrowProps {
 
 const NativeJogArrow = (props: NativeJogArrowProps) =>
   <ControlArrow
-    name={`${props.name}-${
-      props.deviceDirection == 1 ? "plus" : "minus"}-arrow`}
+    name={`${props.name}-${props.deviceDirection == 1 ? "plus" : "minus"}-arrow`}
     start={[0, 0, 0]}
     end={axisPoint(
       props.axis,
@@ -1231,7 +1232,8 @@ export const NativeJogControlPair = (
     ? SECTION_CONTROL_ACTIVE_COLOR
     : NATIVE_JOG_HOVER_COLOR;
   const showLocalPreview = !props.previewState || !dragPreview?.pending;
-  return <Group name={props.name} position={props.position}>
+  return <Group name={props.name} position={props.position}
+    visible={props.config.controlsOverlay}>
     <Highlight highlightName={"jog-controls"}>
       <ControlHandle
         name={`${props.name}-control`}

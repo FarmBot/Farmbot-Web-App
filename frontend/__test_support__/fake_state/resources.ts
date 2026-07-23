@@ -368,6 +368,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_soil_interpolation_map: false,
     show_weeds: true,
     show_scene_objects: true,
+    show_controls_overlay: true,
     x_axis_inverted: false,
     y_axis_inverted: false,
     z_axis_inverted: true,

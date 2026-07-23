@@ -177,9 +177,11 @@ describe("native jog control geometry", () => {
         data-depth-write={String(props.depthWrite)}
         data-render-order={props.renderOrder} />);
     const onSelect = jest.fn();
+    const config = clone(INITIAL);
+    config.controlsOverlay = true;
     const { container } = render(<NativeJogControlPair
       axis={"z"}
-      config={clone(INITIAL)}
+      config={config}
       name={"bot-jog-z"}
       onClose={jest.fn()}
       onSelect={onSelect}
@@ -232,6 +234,7 @@ describe("native jog control geometry", () => {
       config.mirrorX = true;
       config.mirrorY = true;
       config.negativeZ = false;
+      config.controlsOverlay = true;
       render(<NativeJogControlPair
         axis={axis}
         config={config}
@@ -259,6 +262,7 @@ describe("<NativeJogControlPair />", () => {
   config.botSizeX = 3000;
   config.botSizeY = 1500;
   config.botSizeZ = 600;
+  config.controlsOverlay = true;
   const position = { x: 1038, y: 234, z: -50 };
 
   const props = (axis: Xyz): NativeJogControlPairProps => ({
@@ -320,6 +324,15 @@ describe("<NativeJogControlPair />", () => {
       "x",
       5000,
     )).toEqual({ distance: 5000 });
+  });
+
+  it("hides controls when the overlay is disabled", () => {
+    const p = props("x");
+    p.config = { ...p.config, controlsOverlay: false };
+    const { container } = render(<NativeJogControlPair {...p} />);
+
+    expect(container.querySelector("[name='bot-jog-x-control']"))
+      .not.toBeInTheDocument();
   });
 
   it("previews and runs a custom relative move by dragging", () => {

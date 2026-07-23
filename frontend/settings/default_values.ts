@@ -64,6 +64,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   show_sensor_readings: false,
   show_moisture_interpolation_map: false,
   show_scene_objects: true,
+  show_controls_overlay: true,
   time_format_24_hour: false,
   show_pins: false,
   disable_emergency_unlock_confirmation: true,

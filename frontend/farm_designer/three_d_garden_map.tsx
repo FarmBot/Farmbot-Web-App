@@ -274,6 +274,10 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   }), [rawEncoderVisible, scaledEncoderVisible]);
   const topDownAtStart =
     !!props.getWebAppConfigValue(BooleanSetting.top_down_view);
+  const sceneObjects =
+    !!props.getWebAppConfigValue(BooleanSetting.show_scene_objects);
+  const controlsOverlay =
+    !!props.getWebAppConfigValue(BooleanSetting.show_controls_overlay);
   const perspective = effectiveThreeDPerspective(
     designer,
   );
@@ -387,6 +391,8 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.axes = !!configValues.axes;
     nextConfig.xyDimensions = !!configValues.xyDimensions;
     nextConfig.zDimension = !!configValues.zDimension;
+    nextConfig.sceneObjects = sceneObjects;
+    nextConfig.controlsOverlay = controlsOverlay;
     nextConfig.urlCameraPos = !!configValues.urlCameraPos;
     nextConfig.scene = SCENES[configValues.scene];
     nextConfig.ground = !!configValues.ground;
@@ -513,6 +519,8 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     viewpointHeading,
     waterFlow,
     zGantryOffset,
+    controlsOverlay,
+    sceneObjects,
   ]);
 
   const position = React.useMemo(() => {

@@ -177,6 +177,10 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) => {
       label={DeviceSetting.mapMissedSteps}
       helpText={Content.MAP_MISSED_STEPS}
       disabled={!props.getConfigValue(BooleanSetting.display_trail)} />
+    <NonLayerToggle {...props}
+      setting={BooleanSetting.show_controls_overlay}
+      label={DeviceSetting.showControlsOverlay}
+      helpText={Content.SHOW_CONTROLS_OVERLAY} />
   </div>;
 };
 

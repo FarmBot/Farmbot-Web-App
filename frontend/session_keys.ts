@@ -52,6 +52,7 @@ export const BooleanSetting: BooleanSettings = {
   highlight_modified_settings: "highlight_modified_settings",
   three_d_garden: "three_d_garden",
   top_down_view: "top_down_view",
+  show_controls_overlay: "show_controls_overlay",
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",

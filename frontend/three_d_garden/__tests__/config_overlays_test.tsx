@@ -172,6 +172,12 @@ describe("<PrivateOverlay />", () => {
     expect(container.querySelector("details")).toBeFalsy();
   });
 
+  it("includes scene and controls overlay configs", () => {
+    const { getByTitle } = render(<PrivateOverlay {...fakeProps()} />);
+    expect(getByTitle("sceneObjects")).toBeChecked();
+    expect(getByTitle("controlsOverlay")).not.toBeChecked();
+  });
+
   it("focuses the config search", () => {
     const { getByPlaceholderText } = render(<PrivateOverlay {...fakeProps()} />);
     expect(document.activeElement).toEqual(getByPlaceholderText("Search configs"));

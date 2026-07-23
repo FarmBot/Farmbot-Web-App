@@ -63,6 +63,7 @@ describe("<Bot />", () => {
     config.bot = true;
     config.tracks = true;
     config.cableCarriers = true;
+    config.controlsOverlay = true;
     return {
       config,
       configPosition: clone(INITIAL_POSITION),
