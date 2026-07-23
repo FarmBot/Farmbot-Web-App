@@ -1,7 +1,11 @@
-require 'nokogiri'
 require 'find'
+require 'json'
 
-API_COVERAGE_INDEX = File.join('coverage_api', 'index.html')
+API_COVERAGE_REPORT = File.join('coverage_api', 'coverage.json')
+
+def load_api_coverage(path)
+  JSON.parse(File.read(path)).fetch('coverage')
+end
 
 def normalize_frontend_path(path, frontend_root)
   return path if path.start_with?(frontend_root + "/")
@@ -50,7 +54,7 @@ namespace :check_file_coverage do
   desc "Check test coverage for one or more app files after running `rspec`. " +
        "Usage: rake check_file_coverage:api app/models/device.rb"
   task api: :environment do
-    abort("Run `rspec spec` first.") unless File.exist?(API_COVERAGE_INDEX)
+    abort("Run `rspec spec` first.") unless File.exist?(API_COVERAGE_REPORT)
 
     task_name = Rake.application.top_level_tasks.first
     task_index = ARGV.index(task_name)
@@ -65,7 +69,7 @@ namespace :check_file_coverage do
       paths = paths_args
     end
 
-    doc = Nokogiri::HTML(File.read(API_COVERAGE_INDEX))
+    coverage = load_api_coverage(API_COVERAGE_REPORT)
     failed = false
 
     define_method(:report_failure) do |path, message|
@@ -79,20 +83,14 @@ namespace :check_file_coverage do
         next
       end
 
-      header = doc.css('h3').find { |h| h.text.strip == path }
-      unless header
+      file_coverage = coverage[path]
+      unless file_coverage
         report_failure(path, "File not found in coverage report.")
         next
       end
 
-      span = header.next_element&.at('span')
-      unless span
-        report_failure(path, "Coverage span not found.")
-        next
-      end
-
-      coverage_text = span.text.strip
-      percentage = coverage_text.delete('%').to_f
+      percentage = file_coverage.fetch('lines_covered_percent')
+      coverage_text = "#{format('%.2f', percentage)}%"
 
       if percentage < 100
         report_failure(path, "#{coverage_text} (not fully covered)")

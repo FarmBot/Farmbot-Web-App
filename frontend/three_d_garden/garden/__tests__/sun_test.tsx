@@ -6,12 +6,14 @@ import { act, render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
-  AnimatedSunFrame, calcSunI, getAnimatedSeasonDate, getCycleLength,
+  AnimatedSunFrame, calcSunCoordinate, calcSunI, getAnimatedSeasonDate,
+  getCycleLength,
   getAnimatedSeasonSunCoordinate, getSeasonAnimationElapsed,
   getSeasonAnimationElapsedAtSunPosition, isSkyFullyBlack,
   nearestEquivalentAngle, skyColor, Sun, sunPropsEqual, SunProps,
   sceneObjectShadowBounds, refreshDirectionalLightShadow,
 } from "../sun";
+import * as SunCalc from "suncalc";
 import {
   Constellations, generateStars, projectConstellationPoint,
   starShaderModification,
@@ -63,6 +65,19 @@ describe("nearestEquivalentAngle()", () => {
     expect(nearestEquivalentAngle(1.28, 359.86)).toBeCloseTo(-0.14);
     expect(nearestEquivalentAngle(361.28, 2.7)).toBeCloseTo(362.7);
     expect(nearestEquivalentAngle(10, 20)).toEqual(20);
+  });
+});
+
+describe("calcSunCoordinate()", () => {
+  it("uses the degree values returned by SunCalc", () => {
+    const getPosition = jest.spyOn(SunCalc, "getPosition")
+      .mockReturnValue({ azimuth: 180, altitude: 45 });
+
+    expect(calcSunCoordinate(new Date(), 10, 35, -120)).toEqual({
+      azimuth: 260,
+      inclination: 45,
+    });
+    getPosition.mockRestore();
   });
 });
 

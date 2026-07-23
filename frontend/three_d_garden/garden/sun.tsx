@@ -14,7 +14,7 @@ import {
 } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useSpring } from "@react-spring/three";
-import SunCalc from "suncalc";
+import * as SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
 import { Season, SEASON_DURATIONS } from "../../promo/constants";
@@ -107,10 +107,9 @@ export const calcSunCoordinate = (
   longitude: number,
 ) => {
   const sunPosition = SunCalc.getPosition(date, latitude, longitude);
-  const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
   return {
-    azimuth: (sunAzimuth - heading - 90 + 360) % 360,
-    inclination: sunPosition.altitude * (180 / Math.PI),
+    azimuth: (sunPosition.azimuth - heading + 90 + 360) % 360,
+    inclination: sunPosition.altitude,
   };
 };
 
