@@ -2,8 +2,18 @@ import React from "react";
 import { isNumber, startCase } from "lodash";
 import { NavigateFunction } from "react-router";
 import {
-  ALLOWED_PIN_MODES, ANALOG, TaggedGenericPointer, uuid, Xyz,
+  ALLOWED_PIN_MODES, ANALOG, McuParamName, uuid, Xyz,
 } from "farmbot";
+import {
+  BooleanConfigKey as WebAppBooleanConfigKey,
+  NumberConfigKey as WebAppNumberConfigKey,
+  StringConfigKey as WebAppStringConfigKey,
+} from "farmbot/dist/resources/configs/web_app";
+import {
+  BooleanConfigKey as FbosBooleanConfigKey,
+  NumberConfigKey as FbosNumberConfigKey,
+  StringConfigKey as FbosStringConfigKey,
+} from "farmbot/dist/resources/configs/fbos";
 import { Axis } from "../devices/interfaces";
 import {
   ControlsState, Everything, PopupsState, SettingsPanelState,
@@ -12,7 +22,7 @@ import { Command, CommandAction } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import {
   Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED, Content, DeviceSetting,
-  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
+  ToolTips, UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../constants";
 import {
   Panel, PANEL_SLUG, PANEL_TITLE, getPanelPath, setPanelOpen,
@@ -21,16 +31,16 @@ import {
 import { getLinks } from "../nav/nav_links";
 import { FilePath, Icon, PAGE_SLUGS, Path } from "../internal_urls";
 import {
-  BooleanSetting, NumericSetting, StringSetting,
+  BooleanSetting, NumericSetting,
 } from "../session_keys";
 import {
   getWebAppConfigValueFromResources, setWebAppConfigValue,
 } from "../config_storage/actions";
 import {
   emergencyLock, emergencyUnlock, execSequence, findAxisLength, findHome,
-  moveAbsolute, moveRelative, moveToHome, pinToggle, powerOff, readStatus,
-  readPin, reboot, restartFirmware, setHome, sync, takePhoto, writePin,
-  updateConfig, updateMCU, ConfigKey,
+  flashFirmware, moveAbsolute, moveRelative, moveToHome, pinToggle, powerOff,
+  readStatus, readPin, reboot, restartFirmware, setHome, sync, takePhoto,
+  writePin, updateConfig, updateMCU,
 } from "../devices/actions";
 import { isBotOnlineFromState, forceOnline } from "../devices/must_be_online";
 import {
@@ -48,9 +58,8 @@ import { visualizeInMap } from "../farm_designer/map/sequence_visualization";
 import { copySequence } from "../sequences/actions";
 import { addNewSequenceToFolder } from "../folders/actions";
 import { addRegimen } from "../regimens/list/add_regimen";
-import { urlFriendly } from "../util";
+import { getMaxInputFromIntSize, urlFriendly } from "../util";
 import { ToggleButton } from "../ui";
-import { VIEW_PRISM_TARGETS } from "../three_d_garden/view_prism";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
 import { toggleHotkeyHelpOverlay } from "../hotkeys";
 import { isMobile } from "../screen_size";
@@ -79,6 +88,7 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { clearRecentCommands } from "./recents";
 import {
   findOrCreate3DConfigFunction, get3DConfigValueFunction,
+  GROUND_TEXTURE_NUM_FROM_SCENE_NUM, SCENE_DDI_LIST, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { toggleSectionAxis } from "../farm_designer/three_d_section";
 import { unselectPlant } from "../farm_designer/map/actions";
@@ -95,6 +105,31 @@ import {
 import {
   calibrateCamera, detectWeeds, measureSoilHeight,
 } from "../photos/actions";
+import {
+  DIRECT_COMMAND_HELP, FBOS_SETTINGS, FIRMWARE_SETTINGS,
+  FirmwareSettingMetadata, PIN_GUARD_SETTINGS, PaletteSettingMetadata,
+  SETTINGS_ITEMS, THREE_D_DEFAULTS, THREE_D_SETTINGS, WEB_APP_BOOLEAN_SETTINGS,
+  WEB_APP_NUMBER_SETTINGS, WEB_APP_STRING_SETTINGS,
+} from "../settings/setting_metadata";
+import {
+  hasEncoders, isTMCBoard, validFirmwareHardware,
+} from "../settings/firmware/firmware_hardware_support";
+import {
+  calculateScale, motorCurrentMaToPercent, motorCurrentPercentToMa,
+} from "../settings/hardware_settings/motors";
+import {
+  getDefaultFwConfigValue,
+} from "../settings/hardware_settings/default_values";
+import {
+  getDefaultConfigValue,
+} from "../settings/fbos_settings/default_values";
+import { resetVirtualTrail } from
+  "../farm_designer/map/layers/farmbot/bot_trail";
+import { linkToSetting } from "../settings/maybe_highlight";
+import { Config } from "../three_d_garden/config";
+import {
+  pinNumberDropdownItems,
+} from "../settings/hardware_settings/pin_number_dropdown";
 
 interface BuildCommandProps {
   state: Everything;
@@ -107,22 +142,24 @@ const localized = (english: string) => ({
   englishName: english,
 });
 
-const settingLabelOverrides: Record<string, string> = {
-  disable_i18n: "Internationalize web app",
-  enable_3d_electronics_box_top: "Enable 3D Electronics Box",
-  param_e_stop_on_mov_err: "E-Stop on Movement Error",
-  param_mov_nr_retry: "Max Retries",
-  movement_step_per_mm: "Steps per mm",
-  sequence_init_log: "Sequence Initialization Log",
-  encoder_use_for_pos: "Encoder Use for Position",
+const settingText = (metadata: PaletteSettingMetadata) => {
+  const englishName = metadata.englishName || metadata.label;
+  const translatedLabel = t(metadata.label);
+  let translatedName = translatedLabel;
+  if (metadata.englishName?.startsWith(metadata.label)) {
+    translatedName = metadata.englishName.replace(
+      metadata.label, translatedLabel);
+  } else if (translatedLabel == metadata.label) {
+    translatedName = englishName;
+  }
+  return {
+    name: translatedName,
+    englishName,
+  };
 };
 
-const settingLabel = (key: string) => settingLabelOverrides[key]
-  || startCase(key.replace(/^param_/, ""))
-    .replace(/\b3 D\b/g, "3D")
-    .replace(/\bSpd\b/g, "Speed")
-    .replace(/\bNr\b/g, "Number")
-    .replace(/^Pin Report\b/, "Pin Reporting");
+const settingHelp = (text: string | undefined, enableMarkdown = false) =>
+  text ? { help: { text, enableMarkdown } } : {};
 
 const sectionCommandText = (
   englishName: string,
@@ -141,10 +178,57 @@ const sectionCommandText = (
   };
 };
 
+const combinedPanelCommandText = (
+  englishName: string,
+  name = t(englishName),
+) => {
+  const verbs = ["Close", "Toggle", "Navigate to", "Go to"];
+  const aliases = verbs.flatMap(verb => [
+    `${verb} ${englishName}`,
+    `${t(verb)} ${name}`,
+  ]);
+  return { name, englishName, aliases };
+};
+
 const openPanel = (dispatch: Function, navigate: NavigateFunction, panel: Panel) => {
   dispatch(setPanelOpen(true));
   navigate(getPanelPath(panel));
 };
+
+const openAddPage = (props: BuildCommandProps, path: string) => {
+  props.dispatch(setPanelOpen(true));
+  props.navigate(path);
+};
+
+const panelAction = (
+  props: BuildCommandProps,
+  panel: Panel,
+): CommandAction => ({
+  id: "open-panel",
+  ...localized("Open Panel"),
+  aliases: [
+    `Open ${panel}`,
+    `${t("Open")} ${PANEL_TITLE()[panel]}`,
+    "show panel",
+    "navigation",
+  ],
+  execute: () => openPanel(props.dispatch, props.navigate, panel),
+});
+
+const COMBINED_PANELS = new Set([
+  Panel.Plants,
+  Panel.Weeds,
+  Panel.Points,
+  Panel.Curves,
+  Panel.Sequences,
+  Panel.SceneObjects,
+  Panel.Regimens,
+  Panel.FarmEvents,
+  Panel.Sensors,
+  Panel.Photos,
+  Panel.Tools,
+  Panel.Help,
+]);
 
 const panelCommands = (props: BuildCommandProps): Command[] => {
   const genericCommand: Command = {
@@ -162,7 +246,8 @@ const panelCommands = (props: BuildCommandProps): Command[] => {
     icon: "step-backward",
     execute: () => props.dispatch(setPanelOpen(false)),
   };
-  const panels = [Panel.Map, ...getLinks()];
+  const panels = [Panel.Map, ...getLinks()]
+    .filter(panel => !COMBINED_PANELS.has(panel));
   const specificCommands = panels.map(panel => {
     const title = PANEL_TITLE()[panel];
     const isMap = panel == Panel.Map;
@@ -174,14 +259,6 @@ const panelCommands = (props: BuildCommandProps): Command[] => {
         openPanel(props.dispatch, props.navigate, panel);
       }
     };
-    const close = () => {
-      props.dispatch(setPanelOpen(false));
-      props.navigate(Path.designer());
-    };
-    const active = isMap
-      ? !props.state.resources.consumers.farm_designer.panelOpen
-      : Path.getSlug(Path.designer()) == PANEL_SLUG[panel]
-        && props.state.resources.consumers.farm_designer.panelOpen;
     return {
       id: `panel:${PANEL_SLUG[panel] || "map"}`,
       ...sectionCommandText(panel, title,
@@ -189,7 +266,7 @@ const panelCommands = (props: BuildCommandProps): Command[] => {
       group: "navigation" as const,
       imageIcon: TAB_ICON[panel],
       themeAwareImageIcon: true,
-      execute: active ? close : open,
+      execute: open,
     };
   });
   return [genericCommand, ...specificCommands];
@@ -217,9 +294,7 @@ const logoutCommand = (): Command => ({
 
 const popupCommands = (props: BuildCommandProps): Command[] => {
   type PopupCommandKey = Exclude<keyof PopupsState, "timeTravel">;
-  const names: Record<PopupCommandKey, string> = {
-    controls: "Controls",
-    connectivity: "Connectivity",
+  const names: Partial<Record<PopupCommandKey, string>> = {
     jobs: "Jobs and Logs",
   };
   const icons: Partial<Record<PopupCommandKey, string>> = {
@@ -228,7 +303,7 @@ const popupCommands = (props: BuildCommandProps): Command[] => {
   };
   return (Object.keys(names) as PopupCommandKey[]).map(key => ({
     id: `popup:${key}`,
-    ...sectionCommandText(names[key], t(names[key]),
+    ...sectionCommandText(names[key] || "", t(names[key] || ""),
       ["popup", "popover", "panel", "show", "hide",
         ...(key == "jobs" ? ["jobs"] : [])]),
     group: "navigation" as const,
@@ -319,14 +394,18 @@ const controlsCommands = (props: BuildCommandProps): Command[] => {
     peripherals: "Peripherals",
     webcams: "Webcams",
   };
-  return (Object.keys(names) as (keyof ControlsState)[]).map(key => ({
-    id: `controls:${key}`,
-    ...sectionCommandText(`Controls > ${names[key]}`,
-      `${t("Controls")} > ${t(names[key])}`,
-      ["control", "popup", "tab", "show", "hide"]),
-    group: "controls",
-    imageIcon: TAB_ICON[Panel.Controls],
-    themeAwareImageIcon: true,
+  const actions: CommandAction[] = [{
+    id: "open-panel",
+    ...localized("Open Panel"),
+    aliases: ["Open Controls", "popup", "show"],
+    execute: () => props.dispatch({
+      type: Actions.OPEN_POPUP,
+      payload: "controls",
+    }),
+  }, ...(Object.keys(names) as (keyof ControlsState)[]).map(key => ({
+    id: key,
+    ...localized(names[key]),
+    aliases: ["control", "popup", "tab", "show", "hide"],
     execute: () => {
       const selected = props.state.app.controls[key];
       if (props.state.app.popups.controls && selected) {
@@ -336,54 +415,165 @@ const controlsCommands = (props: BuildCommandProps): Command[] => {
         props.dispatch({ type: Actions.SET_CONTROLS_PANEL_OPTION, payload: key });
       }
     },
-  }));
+  }))];
+  return [{
+    id: "popup:controls",
+    ...combinedPanelCommandText("Controls"),
+    aliases: ["control", "popup", "panel", "show", "hide"],
+    group: "controls",
+    imageIcon: TAB_ICON[Panel.Controls],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  }];
 };
 
 const inventorySectionCommands = (props: BuildCommandProps): Command[] => {
-  const groups = [
-    {
-      id: "plants", panel: Panel.Plants,
-      state: props.state.app.plantsPanelState,
-      action: Actions.TOGGLE_PLANTS_PANEL_OPTION,
+  const sectionAction = (
+    panel: Panel,
+    action: string,
+    section: string,
+    title = startCase(section),
+  ): CommandAction => ({
+    id: section,
+    ...localized(title),
+    aliases: ["accordion", "expand", "collapse", "show", "hide"],
+    execute: () => {
+      props.dispatch({ type: action, payload: section });
+      openPanel(props.dispatch, props.navigate, panel);
     },
-    {
-      id: "weeds", panel: Panel.Weeds,
-      state: props.state.app.weedsPanelState,
-      action: Actions.TOGGLE_WEEDS_PANEL_OPTION,
-    },
-    {
-      id: "points", panel: Panel.Points,
-      state: props.state.app.pointsPanelState,
-      action: Actions.TOGGLE_POINTS_PANEL_OPTION,
-    },
-    {
-      id: "curves", panel: Panel.Curves,
-      state: props.state.app.curvesPanelState,
-      action: Actions.TOGGLE_CURVES_PANEL_OPTION,
-    },
-    {
-      id: "sequences", panel: Panel.Sequences,
-      state: props.state.app.sequencesPanelState,
-      action: Actions.TOGGLE_SEQUENCES_PANEL_OPTION,
-    },
-  ];
-  return groups.flatMap(group => Object.keys(group.state).map(section => {
-    const groupName = startCase(group.id);
-    const sectionName = startCase(section);
-    return {
-      id: `section:${group.id}:${section}`,
-      ...sectionCommandText(`${groupName} > ${sectionName}`,
-        `${t(groupName)} > ${t(sectionName)}`,
-        ["accordion", "expand", "collapse", "show", "hide"]),
-      group: "navigation" as const,
-      imageIcon: TAB_ICON[group.panel],
-      themeAwareImageIcon: true,
-      execute: () => {
-        props.dispatch({ type: group.action, payload: section });
-        openPanel(props.dispatch, props.navigate, group.panel);
+  });
+  const basicCommand = (
+    panel: Panel,
+    actions: CommandAction[],
+  ): Command => ({
+    id: `panel:${PANEL_SLUG[panel]}`,
+    ...combinedPanelCommandText(panel, PANEL_TITLE()[panel]),
+    group: "navigation",
+    imageIcon: TAB_ICON[panel],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  });
+  const point = props.state.resources.consumers.farm_designer.drawnPoint || {
+    name: t("Created Point"),
+    cx: undefined,
+    cy: undefined,
+    z: 0,
+    r: 0,
+    color: "green",
+    at_soil_level: false,
+  };
+  const addPointGrid = () => {
+    openAddPage(props, Path.points("add"));
+    const getValue = getWebAppConfigValueFromResources(
+      props.state.resources.index);
+    if (!getValue(BooleanSetting.three_d_garden)) {
+      props.dispatch({
+        type: Actions.SET_LEGACY_POINT_GRID,
+        payload: true,
+      });
+      return;
+    }
+    const token = uuid();
+    props.dispatch({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: point,
+    });
+    props.dispatch({
+      type: Actions.SET_GRID_PLANTING,
+      payload: {
+        token,
+        gridId: token,
+        gridType: "point",
+        itemName: point.name,
+        defaultSpacing: DEFAULT_POINT_GRID_SPACING,
+        radius: DEFAULT_POINT_GRID_RADIUS,
+        z: point.z,
+        meta: {
+          color: point.color,
+          at_soil_level: "" + point.at_soil_level,
+        },
       },
-    };
+    });
+  };
+  const plants = [
+    {
+      id: "add-new",
+      ...localized("Add New"),
+      execute: () => openAddPage(props, Path.cropSearch()),
+    },
+    panelAction(props, Panel.Plants),
+    sectionAction(
+      Panel.Plants, Actions.TOGGLE_PLANTS_PANEL_OPTION, "plants"),
+    sectionAction(
+      Panel.Plants, Actions.TOGGLE_PLANTS_PANEL_OPTION, "groups"),
+    sectionAction(
+      Panel.Plants, Actions.TOGGLE_PLANTS_PANEL_OPTION,
+      "savedGardens", "Gardens"),
+  ];
+  const weeds = [
+    {
+      id: "add-new",
+      ...localized("Add New"),
+      execute: () => openAddPage(props, Path.weeds("add")),
+    },
+    panelAction(props, Panel.Weeds),
+    ...Object.keys(props.state.app.weedsPanelState).map(section =>
+      sectionAction(
+        Panel.Weeds, Actions.TOGGLE_WEEDS_PANEL_OPTION, section)),
+  ];
+  const points = [
+    {
+      id: "add-new",
+      ...localized("Add New"),
+      execute: () => openAddPage(props, Path.points("add")),
+    },
+    {
+      id: "add-grid",
+      ...localized("Add Grid"),
+      execute: addPointGrid,
+    },
+    panelAction(props, Panel.Points),
+    ...Object.keys(props.state.app.pointsPanelState).map(section =>
+      sectionAction(
+        Panel.Points, Actions.TOGGLE_POINTS_PANEL_OPTION, section)),
+  ];
+  const curveAdds = (
+    [CurveType.water, CurveType.spread, CurveType.height] as const
+  ).map(type => ({
+    id: `add-${type}`,
+    ...localized(`Add ${startCase(type)}`),
+    execute: () => {
+      props.dispatch(setPanelOpen(true));
+      return props.dispatch(createCurve(type, props.navigate));
+    },
   }));
+  const curves = [
+    ...curveAdds,
+    panelAction(props, Panel.Curves),
+    ...Object.keys(props.state.app.curvesPanelState).map(section =>
+      sectionAction(
+        Panel.Curves, Actions.TOGGLE_CURVES_PANEL_OPTION, section)),
+  ];
+  const sequences = [
+    {
+      id: "add-new",
+      ...localized("Add New"),
+      execute: () => addNewSequenceToFolder(props.navigate),
+    },
+    panelAction(props, Panel.Sequences),
+    ...Object.keys(props.state.app.sequencesPanelState).map(section =>
+      sectionAction(
+        Panel.Sequences, Actions.TOGGLE_SEQUENCES_PANEL_OPTION, section)),
+  ];
+  return [
+    basicCommand(Panel.Plants, plants),
+    basicCommand(Panel.Weeds, weeds),
+    basicCommand(Panel.Points, points),
+    basicCommand(Panel.Curves, curves),
+    basicCommand(Panel.Sequences, sequences),
+  ];
 };
 
 type PhotoTopLevelSection = Exclude<keyof PhotosPanelState,
@@ -391,24 +581,18 @@ type PhotoTopLevelSection = Exclude<keyof PhotosPanelState,
 
 const photoSectionCommands = (props: BuildCommandProps): Command[] => {
   const sections: [PhotoTopLevelSection, string][] = [
-    ["filter", "Filter map photos"],
-    ["camera", "Camera settings"],
-    ["calibration", "Camera calibration"],
+    ["filter", "Filters"],
+    ["camera", "Settings"],
+    ["calibration", "Calibration"],
     ["detection", "Weed detection"],
     ["measure", "Measure soil height"],
-    ["manage", "Manage data"],
   ];
-  return sections
-    .filter(([section]) => section != "manage"
-      || DevSettings.futureFeaturesEnabled())
-    .map(([section, title]) => ({
-      id: `section:photos:${section}`,
-      ...sectionCommandText(`Photos > ${title}`,
-        `${t("Photos")} > ${t(title)}`,
-        ["photos", "accordion", "expand", "show"]),
-      group: "navigation" as const,
-      imageIcon: TAB_ICON[Panel.Photos],
-      themeAwareImageIcon: true,
+  const actions: CommandAction[] = [
+    panelAction(props, Panel.Photos),
+    ...sections.map(([section, title]) => ({
+      id: section,
+      ...localized(title),
+      aliases: ["photos", "accordion", "expand", "show"],
       execute: () => {
         props.dispatch({
           type: Actions.BULK_TOGGLE_PHOTOS_PANEL,
@@ -420,27 +604,59 @@ const photoSectionCommands = (props: BuildCommandProps): Command[] => {
         });
         openPanel(props.dispatch, props.navigate, Panel.Photos);
       },
-    }));
+    })),
+  ];
+  return [{
+    id: "panel:photos",
+    ...combinedPanelCommandText("Photos"),
+    group: "navigation",
+    imageIcon: TAB_ICON[Panel.Photos],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  }];
 };
 
-const metricSectionCommands = (props: BuildCommandProps): Command[] =>
-  (["realtime", "network", "history"] as const).map(section => ({
-    id: `section:connectivity:${section}`,
-    ...sectionCommandText(`Connectivity > ${startCase(section)}`,
-      `${t("Connectivity")} > ${t(startCase(section))}`,
-      ["network", "metrics", "quality", "history"]),
-    group: "navigation",
-    icon: "wifi",
+const metricSectionCommands = (props: BuildCommandProps): Command[] => {
+  const actions: CommandAction[] = [{
+    id: "open-panel",
+    ...localized("Open Panel"),
+    execute: () => props.dispatch({
+      type: Actions.OPEN_POPUP,
+      payload: "connectivity",
+    }),
+  }, ...(["realtime", "network", "history"] as const).map(section => ({
+    id: section,
+    ...localized(startCase(section)),
+    aliases: ["network", "metrics", "quality", "history"],
     execute: () => {
       if (props.state.app.popups.connectivity
         && props.state.app.metricPanelState[section]) {
-        props.dispatch({ type: Actions.TOGGLE_POPUP, payload: "connectivity" });
+        props.dispatch({
+          type: Actions.TOGGLE_POPUP,
+          payload: "connectivity",
+        });
       } else {
-        props.dispatch({ type: Actions.OPEN_POPUP, payload: "connectivity" });
-        props.dispatch({ type: Actions.SET_METRIC_PANEL_OPTION, payload: section });
+        props.dispatch({
+          type: Actions.OPEN_POPUP,
+          payload: "connectivity",
+        });
+        props.dispatch({
+          type: Actions.SET_METRIC_PANEL_OPTION,
+          payload: section,
+        });
       }
     },
-  }));
+  }))];
+  return [{
+    id: "popup:connectivity",
+    ...combinedPanelCommandText("Connectivity"),
+    group: "navigation",
+    icon: "wifi",
+    actions,
+    execute: actions[0].execute,
+  }];
+};
 
 const profileCommands = (props: BuildCommandProps): Command[] => ([{
   id: "profile", name: "Map profile",
@@ -584,48 +800,36 @@ const selectionCommand = (props: BuildCommandProps): Command => {
 };
 
 const settingsSectionCommands = (props: BuildCommandProps): Command[] => {
-  const sections: Record<keyof SettingsPanelState, string> = {
-    farmbot_settings: "FarmBot",
-    firmware: "Firmware",
-    power_and_reset: "Power and Reset",
-    axis_settings: "Axes",
-    motors: "Motors",
-    encoders_or_stall_detection: "Encoders or Stall Detection",
-    limit_switches: "Limit Switches",
-    error_handling: "Error Handling",
-    pin_bindings: "Pin Bindings",
-    pin_guard: "Pin Guard",
-    pin_reporting: "Pin Reporting",
-    parameter_management: "Parameter Management",
-    custom_settings: "Custom Settings",
-    farm_designer: "Farm Designer",
-    three_d: "3D Garden",
-    account: "Account",
-    other_settings: "Other Settings",
-  };
-  const highlights: Record<keyof SettingsPanelState, DeviceSetting> = {
-    farmbot_settings: DeviceSetting.farmbotSettings,
-    firmware: DeviceSetting.firmware,
-    power_and_reset: DeviceSetting.powerAndReset,
-    axis_settings: DeviceSetting.axisSettings,
-    motors: DeviceSetting.motors,
-    encoders_or_stall_detection: DeviceSetting.encoders,
-    limit_switches: DeviceSetting.limitSwitchSettings,
-    error_handling: DeviceSetting.errorHandling,
-    pin_bindings: DeviceSetting.pinBindings,
-    pin_guard: DeviceSetting.pinGuard,
-    pin_reporting: DeviceSetting.pinReporting,
-    parameter_management: DeviceSetting.parameterManagement,
-    custom_settings: DeviceSetting.customSettings,
-    farm_designer: DeviceSetting.farmDesigner,
-    three_d: DeviceSetting.threeDGarden,
-    account: DeviceSetting.accountSettings,
-    other_settings: DeviceSetting.otherSettings,
-  };
-  return (Object.keys(sections) as (keyof SettingsPanelState)[]).map(key => ({
+  const sections: {
+    key: keyof SettingsPanelState;
+    title: DeviceSetting;
+  }[] = [
+    { key: "farmbot_settings", title: DeviceSetting.farmbotSettings },
+    { key: "power_and_reset", title: DeviceSetting.powerAndReset },
+    { key: "axis_settings", title: DeviceSetting.axisSettings },
+    { key: "motors", title: DeviceSetting.motors },
+    {
+      key: "encoders_or_stall_detection",
+      title: DeviceSetting.encoders,
+    },
+    { key: "limit_switches", title: DeviceSetting.limitSwitchSettings },
+    { key: "error_handling", title: DeviceSetting.errorHandling },
+    { key: "pin_bindings", title: DeviceSetting.pinBindings },
+    { key: "pin_guard", title: DeviceSetting.pinGuard },
+    {
+      key: "parameter_management",
+      title: DeviceSetting.parameterManagement,
+    },
+    { key: "custom_settings", title: DeviceSetting.customSettings },
+    { key: "farm_designer", title: DeviceSetting.farmDesigner },
+    { key: "three_d", title: DeviceSetting.threeDGarden },
+    { key: "account", title: DeviceSetting.accountSettings },
+    { key: "other_settings", title: DeviceSetting.otherSettings },
+  ];
+  return sections.map(({ key, title }) => ({
     id: `settings-section:${key}`,
-    ...sectionCommandText(`Settings > ${sections[key]}`,
-      `${t("Settings")} > ${t(sections[key])}`,
+    ...sectionCommandText(`Settings > ${title}`,
+      `${t("Settings")} > ${t(title)}`,
       ["accordion", "expand", "collapse"]),
     group: "settings" as const,
     imageIcon: TAB_ICON[Panel.Settings],
@@ -636,9 +840,76 @@ const settingsSectionCommands = (props: BuildCommandProps): Command[] => {
         payload: key,
       });
       props.dispatch(setPanelOpen(true));
-      props.navigate(Path.settings(urlFriendly(highlights[key]).toLowerCase()));
+      props.navigate(Path.settings(urlFriendly(title).toLowerCase()));
     },
   }));
+};
+
+const settingsItemCommands = (props: BuildCommandProps): Command[] => {
+  const getValue = getWebAppConfigValueFromResources(
+    props.state.resources.index);
+  const online = isBotOnlineFromState(props.state.bot) || forceOnline();
+  const fbosValues = getFbosConfig(props.state.resources.index)?.body
+    ?? props.state.bot.hardware.configuration;
+  const firmwareHardware = validFirmwareHardware(
+    fbosValues.firmware_hardware);
+  return SETTINGS_ITEMS
+    .filter(item => item.id != "change-ownership"
+      || (online && getValue(BooleanSetting.show_advanced_settings)))
+    .map(item => {
+      let help = item.help;
+      if (item.id == "soft-reset" && help) {
+        help = `${help} ${t(Content.OS_RESET_WARNING, {
+          resetMethod: t("Soft"),
+        })}`;
+      }
+      if (item.id == "hard-reset" && help) {
+        help = `${help} ${t(Content.OS_RESET_WARNING, {
+          resetMethod: t("Hard"),
+        })}`;
+      }
+      const openSettings = () => {
+        props.dispatch(setPanelOpen(true));
+        props.navigate(linkToSetting(item.label));
+      };
+      const flash = item.id == "flash-firmware" && firmwareHardware
+        ? withConfirmation(
+          "Are you sure you want to flash the firmware?",
+          () => flashFirmware(firmwareHardware),
+        )
+        : undefined;
+      const execute = flash || openSettings;
+      let unavailable: string | undefined;
+      if (item.id == "flash-firmware") {
+        if (!online) {
+          unavailable = t("FarmBot is offline.");
+        } else if (!firmwareHardware) {
+          unavailable = t("Select a firmware type first.");
+        }
+      }
+      return {
+        id: `settings-item:${item.id}`,
+        ...localized(item.label),
+        ...settingHelp(help),
+        aliases: [
+          `Open ${item.label}`,
+          `Settings ${item.label}`,
+          "setting", "configure", "edit",
+        ],
+        group: "settings" as const,
+        imageIcon: TAB_ICON[Panel.Settings],
+        themeAwareImageIcon: true,
+        unavailable,
+        actions: flash
+          ? [{
+            id: "flash",
+            ...localized("Flash"),
+            execute: flash,
+          }]
+          : undefined,
+        execute,
+      };
+    });
 };
 
 const setupWizardCommand = (props: BuildCommandProps): Command => {
@@ -672,17 +943,20 @@ const helpCommands = (props: BuildCommandProps): Command[] => {
   const pages: {
     id: string;
     title: string;
+    actionTitle?: string;
     path: string;
     icon?: string;
     imageIcon?: string;
   }[] = [
     {
-      id: "software", title: "Software Documentation", path: Path.help(),
+      id: "software", title: "Software Documentation",
+      actionTitle: "Software", path: Path.help(),
       imageIcon: FilePath.icon(Icon.documentation),
     },
     {
       id: "developer", title: "Developer Documentation",
-      path: Path.developer(), imageIcon: FilePath.icon(Icon.developer),
+      actionTitle: "Developer", path: Path.developer(),
+      imageIcon: FilePath.icon(Icon.developer),
     },
     {
       id: "genesis", title: "Genesis Documentation",
@@ -710,66 +984,44 @@ const helpCommands = (props: BuildCommandProps): Command[] => {
       imageIcon: FilePath.icon(Icon.support),
     },
   ];
-  const commands: Command[] = pages.map(page => {
-    const { id, title, path, icon, imageIcon } = page;
-    const englishName = `Help > ${title}`;
-    const name = `${t("Help")} > ${t(title)}`;
-    return {
-      id: `help:${id}`,
-      name,
-      englishName,
-      aliases: [
-        `Open ${englishName}`,
-        `${t("Open")} ${name}`,
-        `Navigate to ${englishName}`,
-        `${t("Navigate to")} ${name}`,
-        `Go to ${englishName}`,
-        `${t("Go to")} ${name}`,
-        "docs",
-        "documentation",
-        "support",
-      ],
-      group: "navigation",
-      icon,
-      imageIcon,
-      imageIconClass: imageIcon ? "help-header-icon" : undefined,
-      execute: () => {
-        props.dispatch(setPanelOpen(true));
-        props.navigate(path);
-      },
-    };
-  });
+  const actions: CommandAction[] = [
+    panelAction(props, Panel.Help),
+    ...pages.map(page => {
+      const { id, title, actionTitle, path } = page;
+      return {
+        id,
+        ...localized(actionTitle || title),
+        aliases: [
+          title,
+          "docs",
+          "documentation",
+          "support",
+        ],
+        execute: () => {
+          props.dispatch(setPanelOpen(true));
+          props.navigate(path);
+        },
+      };
+    }),
+  ];
   if (!isMobile()) {
-    commands.push({
-      id: "help:hotkeys",
-      name: `${t("Help")} > ${t("Hotkeys")}`,
-      englishName: "Help > Hotkeys",
+    actions.push({
+      id: "hotkeys",
+      ...localized("Hotkeys"),
       aliases: ["keyboard shortcuts", "shortcut help", "key bindings"],
-      group: "navigation",
-      icon: "keyboard-o",
       execute: toggleHotkeyHelpOverlay,
     });
   }
-  return commands;
-};
-
-const boolSettingLabels: Partial<Record<string, string>> = {
-  [BooleanSetting.legend_menu_open]: "Map Legend",
-  [BooleanSetting.show_plants]: DeviceSetting.showPlantsMapLayer,
-  [BooleanSetting.show_points]: DeviceSetting.showPointsMapLayer,
-  [BooleanSetting.show_weeds]: DeviceSetting.showWeedsMapLayer,
-  [BooleanSetting.show_historic_points]: DeviceSetting.showRemovedWeedsMapLayer,
-  [BooleanSetting.show_soil_interpolation_map]:
-    DeviceSetting.showSoilInterpolationMapLayer,
-  [BooleanSetting.show_spread]: DeviceSetting.showSpreadMapLayer,
-  [BooleanSetting.show_farmbot]: DeviceSetting.showFarmbotMapLayer,
-  [BooleanSetting.show_images]: DeviceSetting.showPhotosMapLayer,
-  [BooleanSetting.show_zones]: DeviceSetting.showAreasMapLayer,
-  [BooleanSetting.show_sensor_readings]: DeviceSetting.showReadingsMapLayer,
-  [BooleanSetting.show_moisture_interpolation_map]:
-    DeviceSetting.showMoistureInterpolationMapLayer,
-  [BooleanSetting.dark_mode]: DeviceSetting.darkMode,
-  [BooleanSetting.three_d_garden]: DeviceSetting.threeDGarden,
+  return [{
+    id: "panel:help",
+    ...combinedPanelCommandText("Help"),
+    aliases: ["docs", "documentation", "support"],
+    group: "navigation",
+    imageIcon: TAB_ICON[Panel.Help],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  }];
 };
 
 const boolSettingConfirmations: Partial<Record<string, string>> = {
@@ -818,59 +1070,58 @@ const laserCommand = (props: BuildCommandProps): Command => {
   };
 };
 
-const MAP_LAYER_SETTINGS = new Set<string>([
-  BooleanSetting.show_plants,
-  BooleanSetting.show_points,
-  BooleanSetting.show_soil_interpolation_map,
-  BooleanSetting.show_weeds,
-  BooleanSetting.show_spread,
-  BooleanSetting.show_farmbot,
-  BooleanSetting.show_images,
-  BooleanSetting.show_zones,
-  BooleanSetting.show_sensor_readings,
-  BooleanSetting.show_moisture_interpolation_map,
-  BooleanSetting.three_d_garden,
-]);
-
 const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
   const getValue = getWebAppConfigValueFromResources(
     props.state.resources.index);
-  return Object.values(BooleanSetting)
-    .filter(setting => ![
-      BooleanSetting.home_button_homing,
-      BooleanSetting.show_first_party_farmware,
-      BooleanSetting.stub_config,
-    ].includes(setting))
-    .map(setting => {
-      const englishLabel = boolSettingLabels[setting] || settingLabel(setting);
-      const current = !!getValue(setting);
-      const inverted = setting == BooleanSetting.disable_i18n;
+  return Object.entries(WEB_APP_BOOLEAN_SETTINGS)
+    .map(([setting, metadata]) => {
+      const key = setting as WebAppBooleanConfigKey;
+      const rawValue = getValue(key);
+      const current = metadata.defaultOn && rawValue === undefined
+        ? true
+        : !!rawValue;
+      const inverted = !!metadata.inverted;
       const enabled = inverted ? !current : current;
       const set = (value: boolean) => {
         const confirmation = boolSettingConfirmations[setting];
-        if (!current && value && confirmation && !confirm(t(confirmation))) {
+        const nextRawValue = inverted ? !value : value;
+        if (!current && nextRawValue
+          && confirmation && !confirm(t(confirmation))) {
           return false;
         }
-        props.dispatch(setWebAppConfigValue(setting, inverted ? !value : value));
+        props.dispatch(setWebAppConfigValue(
+          key,
+          nextRawValue,
+        ));
+        metadata.callback == "resetVirtualTrail" && resetVirtualTrail();
         return true;
       };
       const execute = () => set(!enabled);
+      const text = settingText(metadata);
+      const unavailable =
+        setting == BooleanSetting.display_map_missed_steps
+          && !getValue(BooleanSetting.display_trail)
+          ? t("Enable Trail first.")
+          : undefined;
       return {
         id: `setting:${setting}:toggle`,
-        ...localized(englishLabel),
+        ...text,
+        ...settingHelp(metadata.help),
         aliases: [
-          `Toggle ${englishLabel}`,
-          `${t("Toggle")} ${t(englishLabel)}`,
+          `Toggle ${text.englishName}`,
+          `${t("Toggle")} ${text.name}`,
           "enable", "disable", "show", "hide", "open", "close", setting,
+          ...(setting == BooleanSetting.xy_swap ? ["Rotate map"] : []),
         ],
-        group: MAP_LAYER_SETTINGS.has(setting)
+        group: metadata.mapLayer
           ? "map" as const
           : "settings" as const,
         imageIcon: TAB_ICON[Panel.Settings],
         themeAwareImageIcon: true,
+        unavailable,
         execute,
         toggleValue: enabled,
-        accessory: toggleAccessory(enabled),
+        accessory: toggleAccessory(enabled, !!unavailable),
       };
     });
 };
@@ -894,33 +1145,22 @@ const verbosityOptions = [0, 1, 2, 3].map(value => ({
 
 const numericSettingMetadata = (
   setting: string,
+  metadata: PaletteSettingMetadata,
 ): SettingValueMetadata => {
-  if (setting.endsWith("_log") || setting == NumericSetting.beep_verbosity) {
-    return { min: 0, max: 3, step: 1, options: verbosityOptions };
+  let options: SettingValueMetadata["options"];
+  if (setting == NumericSetting.beep_verbosity) {
+    options = verbosityOptions;
+  } else if (setting == NumericSetting.bot_origin_quadrant) {
+    options = [1, 2, 3, 4].map(value => ({
+      label: String(value), value: String(value),
+    }));
   }
-  switch (setting) {
-    case NumericSetting.bot_origin_quadrant:
-      return {
-        min: 1, max: 4, step: 1,
-        options: [1, 2, 3, 4].map(value => ({
-          label: String(value), value: String(value),
-        })),
-      };
-    case NumericSetting.zoom_level:
-      return { min: -8, max: 4, step: 1 };
-    case NumericSetting.map_size_x:
-    case NumericSetting.map_size_y:
-    case NumericSetting.default_plant_depth:
-      return { min: 0, step: 1 };
-    case NumericSetting.viewpoint_heading:
-      return {
-        min: 0, max: 315, step: 45,
-        options: [0, 45, 90, 135, 180, 225, 270, 315]
-          .map(value => ({ label: `${value}°`, value: String(value) })),
-      };
-    default:
-      return {};
-  }
+  return {
+    min: metadata.min,
+    max: metadata.max,
+    step: metadata.step,
+    options,
+  };
 };
 
 const validSettingValue = (
@@ -944,15 +1184,9 @@ const validSettingValue = (
   }
 };
 
-const stringSettingMetadata = (
-  setting: string,
-  current: string,
-): SettingValueMetadata => {
-  const options = setting == StringSetting.go_button_axes
-    ? ["X", "Y", "Z", "XY", "XYZ"]
-      .map(value => ({ label: value, value }))
-    : Object.entries(PAGE_SLUGS())
-      .map(([value, label]) => ({ value, label }));
+const stringSettingMetadata = (current: string): SettingValueMetadata => {
+  const options = Object.entries(PAGE_SLUGS())
+    .map(([value, label]) => ({ value, label }));
   if (current && !options.some(option => option.value == current)) {
     options.push({ value: current, label: `${current} (${t("Current")})` });
   }
@@ -962,25 +1196,56 @@ const stringSettingMetadata = (
 const webAppValueSettingCommands = (props: BuildCommandProps): Command[] => {
   const getValue = getWebAppConfigValueFromResources(
     props.state.resources.index);
-  const numbers = Object.values(NumericSetting)
-    .filter(setting => !["id", "device_id"].includes(setting))
-    .map(setting => ({ setting, type: "number" as const }));
-  const strings = [StringSetting.landing_page, StringSetting.go_button_axes]
-    .map(setting => ({ setting, type: "text" as const }));
-  return [...numbers, ...strings].map(({ setting, type }) => {
-    const baseLabel = settingLabel(setting);
-    const label = setting.endsWith("_log")
-      ? `${baseLabel} Verbosity`
-      : baseLabel;
-    const current = String(getValue(setting) ?? "");
-    const metadata = type == "number"
-      ? numericSettingMetadata(setting)
-      : stringSettingMetadata(setting, current);
+  const numbers = Object.entries(WEB_APP_NUMBER_SETTINGS)
+    .map(([setting, metadata]) => ({
+      setting, metadata, type: "number" as const,
+    }));
+  const strings = Object.entries(WEB_APP_STRING_SETTINGS)
+    .map(([setting, metadata]) => ({
+      setting, metadata, type: "text" as const,
+    }));
+  return [...numbers, ...strings].map(({ setting, metadata, type }) => {
+    const key = setting as WebAppNumberConfigKey | WebAppStringConfigKey;
+    const current = String(getValue(key) ?? "");
+    const valueMetadata = type == "number"
+      ? numericSettingMetadata(setting, metadata)
+      : stringSettingMetadata(current);
+    const text = settingText(metadata);
+    const unavailable = [
+      NumericSetting.map_size_x,
+      NumericSetting.map_size_y,
+    ].includes(setting as typeof NumericSetting.map_size_x)
+      && getValue(BooleanSetting.dynamic_map)
+      ? t("Disable Dynamic Map Size first.")
+      : undefined;
+    if (metadata.control == "toggle") {
+      const enabled = !!getValue(key);
+      const execute = () => props.dispatch(setWebAppConfigValue(
+        setting as WebAppNumberConfigKey,
+        enabled ? 0 : 1,
+      ));
+      return {
+        id: `setting:${setting}:set`,
+        ...text,
+        ...settingHelp(metadata.help),
+        aliases: [
+          `Toggle ${text.englishName}`,
+          "show", "hide", "enable", "disable", setting,
+        ],
+        group: "settings" as const,
+        imageIcon: TAB_ICON[Panel.Settings],
+        themeAwareImageIcon: true,
+        execute,
+        toggleValue: enabled,
+        accessory: toggleAccessory(enabled),
+      };
+    }
     const validate = (values: Record<string, string>) =>
-      validSettingValue(values, type, metadata);
+      validSettingValue(values, type, valueMetadata);
     const execute = (values?: Record<string, string>) => {
       if (!values || validate(values)) { return false; }
-      return props.dispatch(setWebAppConfigValue(setting,
+      return props.dispatch(setWebAppConfigValue(
+        key,
         type == "number" ? Number(values.value) : values.value));
     };
     const action: CommandAction = {
@@ -988,12 +1253,12 @@ const webAppValueSettingCommands = (props: BuildCommandProps): Command[] => {
       ...localized("Set"),
       input: {
         fields: [{
-          key: "value", label: t(label), type,
+          key: "value", label: text.name, type,
           initialValue: current,
-          min: metadata.min,
-          max: metadata.max,
-          step: metadata.step,
-          options: metadata.options,
+          min: valueMetadata.min,
+          max: valueMetadata.max,
+          step: valueMetadata.step,
+          options: valueMetadata.options,
         }],
         validate,
       },
@@ -1001,13 +1266,16 @@ const webAppValueSettingCommands = (props: BuildCommandProps): Command[] => {
     };
     return {
       id: `setting:${setting}:set`,
-      ...localized(label),
+      ...text,
+      ...settingHelp(metadata.help),
       aliases: [
-        "change", "update", setting, `Set ${label}`, t(`Set ${label}`),
+        "change", "update", setting,
+        `Set ${text.englishName}`, t(`Set ${text.englishName}`),
       ],
       group: "settings",
       imageIcon: TAB_ICON[Panel.Settings],
       themeAwareImageIcon: true,
+      unavailable,
       actions: [action],
       execute,
     };
@@ -1028,211 +1296,512 @@ const fbosValueMetadata = (key: string): SettingValueMetadata => {
   return options ? { options } : {};
 };
 
-const configValueSettingCommands = (props: BuildCommandProps): Command[] => {
-  const ignored = [
-    "id", "device_id", "created_at", "updated_at",
-    "arduino_debug_messages", "disable_factory_reset", "os_auto_update",
-  ];
-  const supportedFbosValues = new Set([
-    "safe_height", "soil_height", "gantry_height",
-    "default_axis_order", "update_channel",
-  ]);
+const fbosSettingCommands = (props: BuildCommandProps): Command[] => {
   const fbosConfig = getFbosConfig(props.state.resources.index);
-  const firmwareConfig = getFirmwareConfig(props.state.resources.index);
-  const fbosCommands = Object.entries(fbosConfig?.body || {})
-    .filter(([key, value]) => !ignored.includes(key)
-      && (typeof value == "boolean" || supportedFbosValues.has(key)))
-    .map(([key, value]) => {
-      const label = settingLabel(key);
-      if (typeof value == "boolean") {
-        return {
-          id: `fbos-setting:${key}:toggle`,
-          ...localized(label),
-          aliases: [
-            `FarmBot setting ${label}`,
-            t(`FarmBot setting ${label}`),
-            `Toggle FarmBot setting ${label}`,
-            "fbos", "device", "enable", "disable", key,
-          ],
-          group: "settings" as const,
-          imageIcon: TAB_ICON[Panel.Settings],
-          themeAwareImageIcon: true,
-          execute: () => props.dispatch(updateConfig({
-            [key]: !value,
-          })),
-          toggleValue: value,
-          accessory: key.endsWith("_log")
-            ? toggleAccessory(value)
-            : undefined,
-        };
-      }
-      const metadata = fbosValueMetadata(key);
-      const type = typeof value == "number" ? "number" as const : "text" as const;
-      const validate = (values: Record<string, string>) =>
-        validSettingValue(values, type, metadata);
-      const execute = (values?: Record<string, string>) => {
-        if (!values || validate(values)) { return false; }
-        if (key == "update_channel" && values.value != "stable"
-          && !confirm(Content.UNSTABLE_RELEASE_CHANNEL_WARNING)) {
-          return false;
-        }
-        return props.dispatch(updateConfig({
-          [key]: typeof value == "number"
-            ? Number(values.value)
-            : values.value,
-        }));
-      };
-      const action: CommandAction = {
-        id: "set",
-        ...localized("Set"),
-        input: {
-          fields: [{
-            key: "value", label: t(label),
-            type,
-            initialValue: String(value),
-            options: metadata.options,
-          }],
-          validate,
-        },
-        execute,
-      };
-      return {
-        id: `fbos-setting:${key}:set`,
-        ...localized(label),
-        aliases: [
-          "fbos", "device", "change", key,
-          `Set FarmBot setting ${label}`,
-          t(`Set FarmBot setting ${label}`),
-        ],
-        group: "settings" as const,
-        imageIcon: TAB_ICON[Panel.Settings],
-        themeAwareImageIcon: true,
-        actions: [action],
-        execute,
-      };
-    });
-  const firmwareEntries = Object.entries(firmwareConfig?.body || {})
-    .filter(([key, value]) => !ignored.includes(key)
-      && !["param_test", "param_use_eeprom", "param_version"].includes(key)
-      && typeof value == "number") as [string, number][];
-  const firmwareValues = new Map(firmwareEntries);
-  const axes: Xyz[] = ["x", "y", "z"];
-  const axisGroupBases = new Set(firmwareEntries.flatMap(([key]) => {
-    const match = key.match(/^(.*)_[xyz]$/);
-    const base = match?.[1];
-    return base && axes.every(axis => firmwareValues.has(`${base}_${axis}`))
-      ? [base]
-      : [];
-  }));
-  const handledAxisGroups = new Set<string>();
-  const firmwareSettingLabel = settingLabel;
-  const firmwareCommands = firmwareEntries.flatMap<Command>(([key, value]) => {
-    const match = key.match(/^(.*)_[xyz]$/);
-    const base = match?.[1];
-    if (base && axisGroupBases.has(base)) {
-      if (handledAxisGroups.has(base)) { return []; }
-      handledAxisGroups.add(base);
-      const keys = axes.map(axis => `${base}_${axis}`);
-      const label = firmwareSettingLabel(base);
-      const encoderSetting = base.startsWith("encoder_");
-      const englishName = encoderSetting
-        ? `Settings > Encoders > ${label}`
-        : label;
-      const booleanSetting = keys.every(isBooleanMcuParam);
-      const actions: CommandAction[] = axes.map((axis, index) => {
-        const axisLabel = firmwareSettingLabel(keys[index]);
-        return {
-          id: axis,
-          ...localized(axis.toUpperCase()),
-          aliases: [
-            keys[index],
-            `Set firmware setting ${axisLabel}`,
-            t(`Set firmware setting ${axisLabel}`),
-          ],
-          input: {
-            fields: [{
-              key: axis,
-              label: axis.toUpperCase(),
-              type: booleanSetting ? "boolean" : "number",
-              initialValue: String(firmwareValues.get(keys[index]) ?? ""),
-            }],
-            validate: booleanSetting
-              ? undefined
-              : values => validNumberInput({ value: values[axis] }),
-          },
-          execute: values => props.dispatch(updateMCU(
-            keys[index] as ConfigKey, values?.[axis] || "")),
-        };
-      });
-      return [{
-        id: `firmware-setting:${base}:set`,
-        name: encoderSetting
-          ? `${t("Settings")} > ${t("Encoders")} > ${t(label)}`
-          : t(englishName),
-        englishName,
-        aliases: [
-          "mcu", "hardware", "change", base,
-          `Set firmware setting ${label}`,
-        ],
-        group: "settings" as const,
-        imageIcon: TAB_ICON[Panel.Settings],
-        themeAwareImageIcon: true,
-        actions,
-        actionTable: true,
-        execute: actions[0].execute,
-      }];
-    }
-    const label = firmwareSettingLabel(key);
-    const encoderSetting = key.startsWith("encoder_");
-    const englishName = encoderSetting
-      ? `Settings > Encoders > ${label}`
-      : label;
+  const values = fbosConfig?.body
+    ?? props.state.bot.hardware.configuration;
+  const firmwareHardware = validFirmwareHardware(
+    values.firmware_hardware);
+  const getDefault = getDefaultConfigValue(firmwareHardware);
+  return Object.entries(FBOS_SETTINGS).flatMap<Command>(([key, setting]) => {
+    const resourceValue = values[key as keyof typeof values];
+    const value = resourceValue ?? getDefault(key as
+      FbosBooleanConfigKey | FbosNumberConfigKey | FbosStringConfigKey);
+    const text = settingText(setting);
+    const help = key == "gantry_height" && setting.help
+      ? t(setting.help, {
+        distance: String(
+          getDefault("gantry_height")),
+      })
+      : setting.help;
     const command = {
-      id: `firmware-setting:${key}:set`,
-      name: encoderSetting
-        ? `${t("Settings")} > ${t("Encoders")} > ${t(label)}`
-        : t(englishName),
-      englishName,
+      ...text,
+      ...settingHelp(help, key == "gantry_height"),
       aliases: [
-        "mcu", "hardware", "change", key,
-        `Set firmware setting ${label}`,
-        t(`Set firmware setting ${label}`),
+        "fbos", "device", "change", key,
+        `Set FarmBot setting ${text.englishName}`,
       ],
       group: "settings" as const,
       imageIcon: TAB_ICON[Panel.Settings],
       themeAwareImageIcon: true,
     };
-    if (isBooleanMcuParam(key)) {
-      const execute = () => props.dispatch(updateMCU(
-        key as ConfigKey, value === 0 ? "1" : "0"));
+    if (setting.control == "toggle") {
+      const enabled = !!value;
+      const execute = () => props.dispatch(updateConfig({ [key]: !enabled }));
       return [{
+        id: `fbos-setting:${key}:toggle`,
         ...command,
         execute,
-        toggleValue: value !== 0,
-        accessory: toggleAccessory(value !== 0),
+        toggleValue: enabled,
+        accessory: toggleAccessory(enabled),
       }];
     }
-    const execute = (values?: Record<string, string>) =>
-      props.dispatch(updateMCU(key as ConfigKey, values?.value || ""));
+    const metadata = {
+      ...fbosValueMetadata(key),
+      ...(setting.control == "number" ? { step: 1 } : {}),
+    };
+    const type = setting.control == "number"
+      ? "number" as const
+      : "text" as const;
+    const validate = (values: Record<string, string>) =>
+      validSettingValue(values, type, metadata);
+    const execute = (values?: Record<string, string>) => {
+      if (!values || validate(values)) { return false; }
+      if (key == "update_channel" && values.value != "stable"
+        && !confirm(t(Content.UNSTABLE_RELEASE_CHANNEL_WARNING))) {
+        return false;
+      }
+      return props.dispatch(updateConfig({
+        [key]: type == "number"
+          ? Number(values.value)
+          : values.value,
+      }));
+    };
     const action: CommandAction = {
       id: "set",
       ...localized("Set"),
       input: {
         fields: [{
-          key: "value", label: t(label), type: "number",
-          initialValue: String(value),
+          key: "value",
+          label: text.name,
+          type,
+          initialValue: value === undefined ? "" : String(value),
+          step: metadata.step,
+          options: metadata.options,
         }],
-        validate: validNumberInput,
+        validate,
       },
       execute,
     };
     return [{
+      id: `fbos-setting:${key}:set`,
       ...command,
       actions: [action],
       execute,
     }];
   });
-  return [...fbosCommands, ...firmwareCommands];
+};
+
+const axisFromKey = (
+  key: string,
+  fallback: Xyz = "x",
+): Xyz => {
+  const axis = key.match(/_([xyz])$/)?.[1];
+  return (axis || fallback) as Xyz;
+};
+
+const firmwareSettingVisible = (
+  setting: FirmwareSettingMetadata,
+  firmwareHardware: ReturnType<typeof validFirmwareHardware>,
+) => {
+  switch (setting.visibility) {
+    case "encoders":
+      return hasEncoders(firmwareHardware);
+    case "stall-future":
+      return !hasEncoders(firmwareHardware)
+        && DevSettings.futureFeaturesEnabled();
+    case "tmc":
+      return isTMCBoard(firmwareHardware);
+    default:
+      return true;
+  }
+};
+
+const firmwareSettingCommands = (props: BuildCommandProps): Command[] => {
+  const index = props.state.resources.index;
+  const fbosValues = getFbosConfig(index)?.body
+    ?? props.state.bot.hardware.configuration;
+  const values = getFirmwareConfig(index)?.body
+    ?? props.state.bot.hardware.mcu_params;
+  const firmwareHardware = validFirmwareHardware(
+    fbosValues.firmware_hardware);
+  const sourceFwConfig = (key: McuParamName) => ({
+    value: values[key],
+    consistent: true,
+  });
+  const movementScale = calculateScale(sourceFwConfig);
+  const getDefault = getDefaultFwConfigValue(firmwareHardware);
+  const transform = (
+    setting: FirmwareSettingMetadata,
+    key: McuParamName,
+    value: number,
+    direction: "to-display" | "from-display",
+  ) => {
+    const axis = axisFromKey(key, setting.axis);
+    let scale = 1;
+    if (setting.transform == "movement-scale") {
+      scale = movementScale[axis];
+    } else if (setting.transform == "microsteps") {
+      scale = values[`movement_microsteps_${axis}`] || 1;
+    }
+    if (setting.transform == "motor-current") {
+      return direction == "to-display"
+        ? motorCurrentMaToPercent(value)
+        : motorCurrentPercentToMa(value);
+    }
+    return direction == "to-display"
+      ? value / scale
+      : Math.round(value * scale);
+  };
+  const displayValue = (
+    setting: FirmwareSettingMetadata,
+    key: McuParamName,
+    value: number,
+  ) => transform(setting, key, value, "to-display");
+  const resolvedHelp = (
+    setting: FirmwareSettingMetadata,
+    help: string | undefined,
+  ) => {
+    if (!help) { return undefined; }
+    const defaults = Object.fromEntries(
+      setting.keys.map(key => {
+        const configKey = key as McuParamName;
+        const defaultValue = getDefault(configKey);
+        let formattedDefault: number | string = displayValue(
+          setting, configKey, defaultValue);
+        if (isBooleanMcuParam(configKey)) {
+          formattedDefault = defaultValue ? t("enabled") : t("disabled");
+        } else if (setting.transform == "microsteps") {
+          formattedDefault = defaultValue;
+        }
+        return [axisFromKey(key, setting.axis), formattedDefault];
+      }));
+    return t(help, {
+      ...defaults,
+      retries: getDefault("param_mov_nr_retry"),
+      eStopOnError: getDefault("param_e_stop_on_mov_err")
+        ? t("enabled")
+        : t("disabled"),
+      x2Motor: getDefault("movement_secondary_motor_x")
+        ? t("enabled")
+        : t("disabled"),
+    });
+  };
+  const encoders = hasEncoders(firmwareHardware);
+  const unavailable = props.state.bot.hardware.informational_settings.busy
+    ? t("FarmBot is busy.")
+    : undefined;
+  return Object.entries(FIRMWARE_SETTINGS)
+    .flatMap<Command>(([id, setting]) => {
+      if (!firmwareSettingVisible(setting, firmwareHardware)) { return []; }
+      const keys = setting.keys as McuParamName[];
+      const label = !encoders && setting.stallLabel
+        ? setting.stallLabel
+        : setting.label;
+      const help = !encoders && setting.stallHelp
+        ? setting.stallHelp
+        : setting.help;
+      const text = settingText({ ...setting, label });
+      const base = {
+        ...text,
+        ...settingHelp(resolvedHelp(setting, help)),
+        aliases: [
+          "mcu", "hardware", "change", id,
+          `Set firmware setting ${text.englishName}`,
+          ...keys,
+        ],
+        group: "settings" as const,
+        imageIcon: TAB_ICON[Panel.Settings],
+        themeAwareImageIcon: true,
+        unavailable,
+      };
+      if (keys.length == 1 && setting.control == "toggle") {
+        const key = keys[0];
+        const enabled = (values[key] ?? 0) != 0;
+        const execute = () => props.dispatch(updateMCU(
+          key, enabled ? "0" : "1"));
+        return [{
+          id: `firmware-setting:${id}:toggle`,
+          ...base,
+          execute,
+          toggleValue: enabled,
+          accessory: toggleAccessory(enabled, !!unavailable),
+        }];
+      }
+      const booleanSetting = keys.every(isBooleanMcuParam);
+      const actions = keys.map((key): CommandAction => {
+        const actionId = keys.length == 1
+          ? "set"
+          : axisFromKey(key, setting.axis);
+        const fieldKey = keys.length == 1 ? "value" : actionId;
+        const rawValue = values[key];
+        let initialValue = rawValue === undefined
+          ? ""
+          : String(displayValue(setting, key, rawValue));
+        if (booleanSetting) {
+          initialValue = String(rawValue ?? 0);
+        }
+        const rawMax = getMaxInputFromIntSize(setting.intSize);
+        const inputMin = setting.min ?? 0;
+        const transformedMax = displayValue(setting, key, rawMax);
+        const inputMax = setting.max === undefined
+          ? transformedMax
+          : Math.min(setting.max, transformedMax);
+        const validate = (input: Record<string, string>) => {
+          if (booleanSetting) { return; }
+          const invalid = validNumberInput({ value: input[fieldKey] });
+          if (invalid) { return invalid; }
+          const value = Number(input[fieldKey]);
+          const rawInput = transform(
+            setting, key, value, "from-display");
+          const integerInput = setting.transform
+            && setting.transform != "none"
+            ? true
+            : Number.isInteger(value);
+          if (!integerInput
+            || value < inputMin
+            || value > inputMax
+            || rawInput < -rawMax
+            || rawInput > rawMax) {
+            return t("Enter a value within the available range.");
+          }
+        };
+        return {
+          id: actionId,
+          ...localized(keys.length == 1
+            ? "Set"
+            : actionId.toUpperCase()),
+          aliases: [key],
+          input: {
+            fields: [{
+              key: fieldKey,
+              label: keys.length == 1 ? text.name : actionId.toUpperCase(),
+              type: booleanSetting ? "boolean" : "number",
+              initialValue,
+              min: booleanSetting ? undefined : inputMin,
+              max: booleanSetting ? undefined : inputMax,
+            }],
+            validate,
+          },
+          execute: input => {
+            const inputValue = input?.[fieldKey];
+            if (inputValue === undefined || validate(input || {})) {
+              return false;
+            }
+            const value = booleanSetting
+              ? inputValue
+              : String(transform(
+                setting, key, Number(inputValue), "from-display"));
+            return props.dispatch(updateMCU(key, value));
+          },
+        };
+      });
+      return [{
+        id: `firmware-setting:${id}:set`,
+        ...base,
+        actions,
+        actionTable: keys.length > 1,
+        execute: actions[0].execute,
+      }];
+    });
+};
+
+const pinGuardCommands = (props: BuildCommandProps): Command[] => {
+  const index = props.state.resources.index;
+  const values = getFirmwareConfig(index)?.body
+    ?? props.state.bot.hardware.mcu_params;
+  const unavailable = props.state.bot.hardware.informational_settings.busy
+    ? t("FarmBot is busy.")
+    : undefined;
+  const pinOptions = pinNumberDropdownItems(index)
+    .filter(item => !item.heading)
+    .map(item => ({
+      label: item.label,
+      value: String(item.value),
+    }));
+  const validPin = (input: Record<string, string>) =>
+    pinOptions.some(option => option.value == input.pin)
+      ? undefined
+      : t("Select a valid option.");
+  const validTimeout = (input: Record<string, string>) => {
+    const invalid = validNumberInput({ value: input.timeout });
+    if (invalid) { return invalid; }
+    const value = Number(input.timeout);
+    if (!Number.isInteger(value) || value < 0
+      || value > getMaxInputFromIntSize(undefined)) {
+      return t("Enter a value within the available range.");
+    }
+  };
+  return PIN_GUARD_SETTINGS.flatMap<Command>((setting, index) => {
+    const pinKey = setting.pinKey as McuParamName;
+    const timeoutKey = setting.timeoutKey as McuParamName;
+    const activeStateKey = setting.activeStateKey as McuParamName;
+    const pin: CommandAction = {
+      id: "pin",
+      ...localized("Pin"),
+      input: {
+        fields: [{
+          key: "pin",
+          label: t("Pin"),
+          type: "text",
+          initialValue: String(values[pinKey] ?? 0),
+          options: pinOptions,
+        }],
+        validate: validPin,
+      },
+      execute: (input?: Record<string, string>) => {
+        if (!input || validPin(input)) { return false; }
+        return props.dispatch(updateMCU(pinKey, input.pin));
+      },
+    };
+    const timeout: CommandAction = {
+      id: "timeout",
+      ...localized("Timeout (sec)"),
+      input: {
+        fields: [{
+          key: "timeout",
+          label: t("Timeout (sec)"),
+          type: "number",
+          initialValue: values[timeoutKey] === undefined
+            ? ""
+            : String(values[timeoutKey]),
+          min: 0,
+          max: getMaxInputFromIntSize(undefined),
+          step: 1,
+        }],
+        validate: validTimeout,
+      },
+      execute: (input?: Record<string, string>) => {
+        if (!input || validTimeout(input)) { return false; }
+        return props.dispatch(updateMCU(timeoutKey, input.timeout));
+      },
+    };
+    const state: CommandAction = {
+      id: "state",
+      ...localized("To State"),
+      input: {
+        fields: [{
+          key: "state",
+          label: t("To State"),
+          type: "boolean",
+          initialValue: values[activeStateKey] ? "0" : "1",
+        }],
+      },
+      execute: (input?: Record<string, string>) => {
+        if (input?.state === undefined) { return false; }
+        const activeState = input.state == "1" ? "0" : "1";
+        return props.dispatch(updateMCU(activeStateKey, activeState));
+      },
+    };
+    const actions = [pin, timeout, state];
+    return [{
+      id: `firmware-setting:pin-guard-${index + 1}:set`,
+      ...localized(setting.label),
+      ...settingHelp(setting.help),
+      aliases: ["pin guard", setting.pinKey, setting.timeoutKey],
+      group: "settings" as const,
+      imageIcon: TAB_ICON[Panel.Settings],
+      themeAwareImageIcon: true,
+      unavailable,
+      actions,
+      actionTable: true,
+      execute: actions[0].execute,
+    }];
+  });
+};
+
+const configValueSettingCommands = (props: BuildCommandProps): Command[] => [
+  ...fbosSettingCommands(props),
+  ...firmwareSettingCommands(props),
+  ...pinGuardCommands(props),
+];
+
+const threeDSettingCommands = (props: BuildCommandProps): Command[] => {
+  const index = props.state.resources.index;
+  const envs = selectAllFarmwareEnvs(index);
+  const getValue = get3DConfigValueFunction(envs);
+  const setValue = findOrCreate3DConfigFunction(props.dispatch, envs);
+  const sceneObjects = selectAllSceneObjects(index);
+  return THREE_D_SETTINGS.map(setting => {
+    const key = setting.key as keyof Config;
+    const value = getValue(key);
+    const text = settingText(setting);
+    const help = setting.help
+      ? t(setting.help, {
+        defaultConfigValue: String(THREE_D_DEFAULTS[key]),
+      })
+      : undefined;
+    const base = {
+      ...text,
+      ...settingHelp(help),
+      aliases: ["3D", "garden", "change", key, `Set ${text.englishName}`],
+      group: "settings" as const,
+      imageIcon: TAB_ICON[Panel.Settings],
+      themeAwareImageIcon: true,
+    };
+    if (setting.control == "toggle") {
+      const enabled = !!value;
+      const execute = () => setValue(key, enabled ? "0" : "1");
+      return {
+        id: key == "bounds"
+          ? "camera:bounds"
+          : `setting:3d:${key}:toggle`,
+        ...base,
+        execute,
+        toggleValue: enabled,
+        accessory: toggleAccessory(enabled),
+      };
+    }
+    let options: SettingValueMetadata["options"];
+    if (key == "scene") {
+      options = SCENE_DDI_LIST().map(item => ({
+        label: item.label,
+        value: String(item.value),
+      }));
+    } else if (key == "groundTexture") {
+      options = Object.values(TEXTURE_DDIS()).map(item => ({
+        label: item.label,
+        value: String(item.value),
+      }));
+    }
+    const validate = (input: Record<string, string>) => {
+      if (setting.control == "number") {
+        return validNumberInput(input);
+      }
+      if (!options?.some(option => option.value == input.value)) {
+        return t("Select a valid option.");
+      }
+    };
+    const execute = (input?: Record<string, string>) => {
+      if (!input || validate(input)) { return false; }
+      if (key == "scene") {
+        const scene = Number(input.value);
+        if (scene == value) { return false; }
+        if (SCENES[scene] != "Custom" && sceneObjects.length > 0
+          && !confirm(t(Content.CONFIRM_SCENE_CHANGE,
+            { count: sceneObjects.length }))) {
+          return false;
+        }
+        if (SCENES[scene] != "Custom") {
+          sceneObjects.map(item => props.dispatch(crud.destroy(item.uuid)));
+        }
+        setValue("groundTexture",
+          String(GROUND_TEXTURE_NUM_FROM_SCENE_NUM[scene]));
+      }
+      return setValue(key, input.value);
+    };
+    const action: CommandAction = {
+      id: "set",
+      ...localized("Set"),
+      input: {
+        fields: [{
+          key: "value",
+          label: text.name,
+          type: setting.control == "number" ? "number" : "text",
+          initialValue: String(value),
+          options,
+        }],
+        validate,
+      },
+      execute,
+    };
+    return {
+      id: `setting:3d:${key}:set`,
+      ...base,
+      actions: [action],
+      execute,
+    };
+  });
 };
 
 const commandUnavailable = (props: BuildCommandProps) => {
@@ -1310,11 +1879,27 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
   const findActions = axisActions(allAxes, findHome);
   const moveActions = axisActions(allAxes, moveToHome);
   const lengthActions = axisActions(allAxes, findAxisLength);
-  const setActions = axisActions(cartesianAxes, setHome);
+  const setActions = axisActions(cartesianAxes, axis =>
+    withConfirmation(
+      "Are you sure you want to set the home position?",
+      () => setHome(axis),
+    )());
+  const fbosValues = getFbosConfig(props.state.resources.index)?.body
+    ?? props.state.bot.hardware.configuration;
+  const firmwareHardware = validFirmwareHardware(
+    fbosValues.firmware_hardware);
+  const findHomeHelp = hasEncoders(firmwareHardware)
+    ? ToolTips.FIND_HOME_ENCODERS
+    : ToolTips.FIND_HOME_STALL_DETECTION;
+  const findLengthHelp = hasEncoders(firmwareHardware)
+    ? ToolTips.FIND_LENGTH_ENCODERS
+    : ToolTips.FIND_LENGTH_STALL_DETECTION;
   const grouped: Command[] = [
     {
       id: "farmbot:find-home",
-      ...localized("Find home"),
+      searchPriority: 2,
+      ...localized("Find Home"),
+      ...settingHelp(findHomeHelp),
       aliases: ["home", "zero", "calibrate", "axis"],
       group: "farmbot",
       icon: "home",
@@ -1324,7 +1909,9 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
     },
     {
       id: "farmbot:move-home",
-      ...localized("Move home"),
+      searchPriority: 3,
+      ...localized("Move Home"),
+      ...settingHelp(ToolTips.MOVE_TO_HOME),
       aliases: ["move to home", "home", "zero", "axis"],
       group: "farmbot",
       icon: "home",
@@ -1334,7 +1921,8 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
     },
     {
       id: "farmbot:find-length",
-      ...localized("Find axis length"),
+      ...localized("Find Axis Length"),
+      ...settingHelp(findLengthHelp),
       aliases: ["zero", "calibrate", "axis"],
       group: "farmbot",
       icon: "search",
@@ -1344,7 +1932,9 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
     },
     {
       id: "farmbot:set-home",
-      ...localized("Set home"),
+      searchPriority: 1,
+      ...localized("Set Home"),
+      ...settingHelp(ToolTips.SET_HOME_POSITION),
       aliases: ["home", "zero", "calibrate", "axis"],
       group: "farmbot",
       icon: "home",
@@ -1356,6 +1946,189 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
   return grouped;
 };
 
+const withConfirmation = (
+  message: string,
+  execute: () => unknown,
+) => () => {
+  if (!confirm(t(message))) { return false; }
+  return execute();
+};
+
+const verifyTool = (props: BuildCommandProps) => {
+  const sensors = selectAllSensors(props.state.resources.index);
+  const pin = getToolVerificationPin(sensors);
+  return readPin(pin, `pin${pin}`, 0);
+};
+
+const simplePanelCommands = (props: BuildCommandProps): Command[] => {
+  const index = props.state.resources.index;
+  const add = (
+    id: string,
+    title: string,
+    execute: () => unknown,
+  ): CommandAction => ({
+    id,
+    ...localized(title),
+    aliases: ["add", "new", "create"],
+    execute,
+  });
+  const definitions: {
+    panel: Panel;
+    addAction: CommandAction;
+    additionalActions?: CommandAction[];
+  }[] = [
+    {
+      panel: Panel.SceneObjects,
+      addAction: add("add-new", "Add New",
+        () => openAddPage(props, Path.sceneObjects("catalog"))),
+      additionalActions: [add("add-custom", "Add Custom",
+        () => openAddPage(props, Path.sceneObjects("add"))),
+      ],
+    },
+    {
+      panel: Panel.Regimens,
+      addAction: add("add-new", "Add New", () => props.dispatch(addRegimen(
+        selectAllRegimens(index).length, props.navigate))),
+    },
+    {
+      panel: Panel.FarmEvents,
+      addAction: add("add-new", "Add New",
+        () => openAddPage(props, Path.farmEvents("add"))),
+    },
+    {
+      panel: Panel.Sensors,
+      addAction: add("add-new", "Add New",
+        () => openAddPage(props, Path.sensors())),
+    },
+  ];
+  const commands = definitions.map(({
+    panel, addAction, additionalActions = [],
+  }): Command => {
+    const actions = [
+      addAction,
+      ...additionalActions,
+      panelAction(props, panel),
+    ];
+    return {
+      id: `panel:${PANEL_SLUG[panel]}`,
+      ...combinedPanelCommandText(panel, PANEL_TITLE()[panel]),
+      group: "resources",
+      imageIcon: TAB_ICON[panel],
+      themeAwareImageIcon: true,
+      actions,
+      execute: actions[0].execute,
+    };
+  });
+  const toolActions: CommandAction[] = [
+    {
+      id: "verify-tool",
+      ...localized("Verify Tool"),
+      unavailable: commandUnavailable(props),
+      execute: () => verifyTool(props),
+    },
+    panelAction(props, Panel.Tools),
+    add("add-tool", "Add Tool",
+      () => openAddPage(props, Path.tools("add"))),
+    add("add-tool-slot", "Add Tool Slot",
+      () => openAddPage(props, Path.toolSlots("add"))),
+  ];
+  commands.push({
+    id: "panel:tools",
+    ...combinedPanelCommandText("Tools"),
+    group: "resources",
+    imageIcon: TAB_ICON[Panel.Tools],
+    themeAwareImageIcon: true,
+    actions: toolActions,
+    execute: toolActions[0].execute,
+  });
+  return commands;
+};
+
+const cameraCommand = (props: BuildCommandProps): Command => {
+  const unavailable = commandUnavailable(props);
+  const actions: CommandAction[] = [
+    {
+      id: "take-photo",
+      ...localized("Take Photo"),
+      unavailable,
+      execute: takePhoto,
+    },
+    {
+      id: "detect-weeds",
+      ...localized("Detect Weeds"),
+      unavailable,
+      execute: detectWeeds,
+    },
+    {
+      id: "measure-soil-height",
+      ...localized("Measure Soil Height"),
+      unavailable,
+      execute: measureSoilHeight,
+    },
+    {
+      id: "calibrate",
+      ...localized("Calibrate"),
+      unavailable,
+      execute: calibrateCamera,
+    },
+  ];
+  return {
+    id: "farmbot:camera",
+    ...localized("Camera"),
+    aliases: ["photo", "camera calibration", "weed detection"],
+    group: "farmbot",
+    imageIcon: TAB_ICON[Panel.Photos],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  };
+};
+
+const powerCommand = (props: BuildCommandProps): Command => {
+  const unavailable = commandUnavailable(props);
+  const action = (
+    id: string,
+    title: string,
+    confirmation: string,
+    execute: () => unknown,
+  ): CommandAction => ({
+    id,
+    ...localized(title),
+    unavailable,
+    execute: withConfirmation(confirmation, execute),
+  });
+  const actions = [
+    action(
+      "reboot",
+      "Reboot FarmBot",
+      "Are you sure you want to reboot FarmBot?",
+      reboot,
+    ),
+    action(
+      "restart-firmware",
+      "Restart Firmware",
+      "Are you sure you want to restart the firmware?",
+      restartFirmware,
+    ),
+    action(
+      "shutdown",
+      "Shutdown FarmBot",
+      "Are you sure you want to shut down FarmBot?",
+      powerOff,
+    ),
+  ];
+  return {
+    id: "farmbot:power",
+    ...localized("Power"),
+    ...settingHelp(DIRECT_COMMAND_HELP["farmbot:reboot"]),
+    aliases: ["reboot", "restart", "shutdown", "power off"],
+    group: "farmbot",
+    icon: "power-off",
+    actions,
+    execute: actions[0].execute,
+  };
+};
+
 const directDeviceCommands = (props: BuildCommandProps): Command[] => {
   const unavailable = commandUnavailable(props);
   const unlock = () => {
@@ -1364,40 +2137,18 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     }
     return emergencyUnlock(true);
   };
-  const verifyTool = () => {
-    const sensors = selectAllSensors(props.state.resources.index);
-    const pin = getToolVerificationPin(sensors);
-    return readPin(pin, `pin${pin}`, 0);
-  };
   const commands: [string, string, () => unknown, string?][] = [
     ["estop", "E-Stop", emergencyLock],
     ["unlock", "Unlock", unlock],
     ["sync", "Sync FarmBot", () => props.dispatch(sync())],
     ["status", "Read FarmBot status", readStatus],
-    ["verify-tool", "Verify tool", verifyTool],
-    ["photo", "Take photo", takePhoto],
-    ["calibrate-camera", "Calibrate Camera", calibrateCamera],
-    ["detect-weeds", "Detect Weeds", detectWeeds],
-    ["measure-soil-height", "Measure Soil Height", measureSoilHeight],
-    ["reboot", "Reboot FarmBot", reboot],
-    ["shutdown", "Shutdown FarmBot", powerOff],
-    ["firmware-restart", "Restart firmware", restartFirmware],
   ];
   const icons: Record<string, string> = {
     estop: "pause",
     unlock: "unlock",
     sync: "refresh",
-    reboot: "power-off",
-    shutdown: "power-off",
-    "firmware-restart": "power-off",
   };
-  const imageIcons: Record<string, string> = {
-    photo: TAB_ICON[Panel.Photos],
-    "calibrate-camera": TAB_ICON[Panel.Photos],
-    "detect-weeds": TAB_ICON[Panel.Photos],
-    "measure-soil-height": TAB_ICON[Panel.Photos],
-    "verify-tool": TAB_ICON[Panel.Tools],
-  };
+  const imageIcons: Record<string, string> = {};
   const priorities: Record<string, number> = {
     estop: 2,
     unlock: 1,
@@ -1406,6 +2157,7 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     id: `farmbot:${id}`,
     priority: priorities[id],
     ...localized(name),
+    ...settingHelp(DIRECT_COMMAND_HELP[`farmbot:${id}`]),
     aliases: [
       "bot", "device", "rpc", "rcp", "execute",
       ...(id == "estop"
@@ -1716,31 +2468,12 @@ const addCommands = (props: BuildCommandProps): Command[] => {
   const botXY = isNumber(botPosition.x) && isNumber(botPosition.y)
     ? { x: round(botPosition.x), y: round(botPosition.y) }
     : undefined;
-  const botXYZ = isNumber(botPosition.x)
-    && isNumber(botPosition.y)
-    && isNumber(botPosition.z)
-    ? { x: botPosition.x, y: botPosition.y, z: botPosition.z }
-    : undefined;
   const locationUnavailable = t("FarmBot position unknown.");
-  const openAddPage = (path: string) => {
-    props.dispatch(setPanelOpen(true));
-    props.navigate(path);
-  };
   const routes: [string, Panel, string, string, string, string][] = [
-    ["plant", Panel.Plants, "Plants", "plant", "Add new", Path.cropSearch()],
-    ["weed", Panel.Weeds, "Weeds", "weed", "Add new", Path.weeds("add")],
-    ["event", Panel.FarmEvents, "Events", "farm event", "Add new",
-      Path.farmEvents("add")],
     ["group", Panel.Groups, "Groups", "group", "Add new", Path.groups()],
     ["garden", Panel.SavedGardens, "Gardens", "garden", "Add new",
       Path.savedGardens("add")],
     ["zone", Panel.Zones, "Zones", "zone", "Add new", Path.zones("add")],
-    ["scene-object", Panel.SceneObjects, "Scene Objects", "scene object",
-      "Add new", Path.sceneObjects("add")],
-    ["sensor", Panel.Sensors, "Sensors", "sensor", "Add new", Path.sensors()],
-    ["tool", Panel.Tools, "Tools", "tool", "Add new tool", Path.tools("add")],
-    ["tool-slot", Panel.Tools, "Tools", "tool slot", "Add new tool slot",
-      Path.toolSlots("add")],
     ["farmware", Panel.Farmware, "Farmware", "Farmware", "Add new",
       Path.farmware("add")],
   ];
@@ -1766,137 +2499,8 @@ const addCommands = (props: BuildCommandProps): Command[] => {
     group: "resources",
     imageIcon: TAB_ICON[panel],
     themeAwareImageIcon: true,
-    execute: () => openAddPage(path),
+    execute: () => openAddPage(props, path),
   }));
-  const point = designer.drawnPoint || {
-    name: t("Created Point"),
-    cx: undefined,
-    cy: undefined,
-    z: 0,
-    r: 0,
-    color: "green",
-    at_soil_level: false,
-  };
-  const pointActions: CommandAction[] = [
-    {
-      id: "add-new",
-      ...localized("Add new"),
-      aliases: ["new point", "create point"],
-      execute: () => openAddPage(Path.points("add")),
-    },
-    {
-      id: "add-grid",
-      ...localized("Add grid"),
-      aliases: ["point grid", "grid of points", "point row"],
-      execute: () => {
-        openAddPage(Path.points("add"));
-        if (!threeDGrid) {
-          props.dispatch({
-            type: Actions.SET_LEGACY_POINT_GRID,
-            payload: true,
-          });
-          return;
-        }
-        const token = uuid();
-        props.dispatch({
-          type: Actions.SET_DRAWN_POINT_DATA,
-          payload: point,
-        });
-        props.dispatch({
-          type: Actions.SET_GRID_PLANTING,
-          payload: {
-            token,
-            gridId: token,
-            gridType: "point",
-            itemName: point.name,
-            defaultSpacing: DEFAULT_POINT_GRID_SPACING,
-            radius: DEFAULT_POINT_GRID_RADIUS,
-            z: point.z,
-            meta: {
-              color: point.color,
-              at_soil_level: "" + point.at_soil_level,
-            },
-          },
-        });
-      },
-    },
-    {
-      id: "add-current",
-      ...localized("Add at current location"),
-      aliases: ["point here", "point at FarmBot", "current position"],
-      unavailable: botXYZ ? undefined : locationUnavailable,
-      execute: () => {
-        if (!botXYZ) { return; }
-        props.dispatch(crud.initSave<TaggedGenericPointer>("Point", {
-          pointer_type: "GenericPointer",
-          name: point.name || t("Created Point"),
-          meta: {
-            color: point.color,
-            created_by: "farm-designer",
-            type: "point",
-            ...(point.at_soil_level
-              ? { at_soil_level: "true" }
-              : {}),
-          },
-          x: botXYZ.x,
-          y: botXYZ.y,
-          z: botXYZ.z,
-          radius: point.r,
-        }));
-        props.dispatch({
-          type: Actions.SET_DRAWN_POINT_DATA,
-          payload: undefined,
-        });
-      },
-    },
-  ];
-  staticCommands.push({
-    id: "add:point",
-    ...localized("Points"),
-    aliases: ["add point", "new point", "create point"],
-    group: "resources",
-    imageIcon: TAB_ICON[Panel.Points],
-    themeAwareImageIcon: true,
-    actions: pointActions,
-    execute: pointActions[0].execute,
-  });
-  ([CurveType.water, CurveType.spread, CurveType.height] as const)
-    .map(type => staticCommands.push({
-      id: `add:curve:${type}`,
-      name: `${PANEL_TITLE()[Panel.Curves]} > ${t(startCase(type))}`
-        + ` > ${t("Add new")}`,
-      englishName: `Curves > ${startCase(type)} > Add new`,
-      aliases: [
-        `Add new ${type} curve`,
-        `${t("Add new")} ${t(type)} ${t("curve")}`,
-        `New ${type} curve`,
-        "create",
-        "plus",
-      ],
-      group: "resources",
-      imageIcon: TAB_ICON[Panel.Curves],
-      themeAwareImageIcon: true,
-      execute: () => {
-        props.dispatch(setPanelOpen(true));
-        return props.dispatch(createCurve(type, props.navigate));
-      },
-    }));
-  staticCommands.push({
-    id: "add:sequence",
-    ...addCommandText(Panel.Sequences, "Sequences", "sequence", "Add new"),
-    group: "resources",
-    imageIcon: TAB_ICON[Panel.Sequences],
-    themeAwareImageIcon: true,
-    execute: () => addNewSequenceToFolder(props.navigate),
-  }, {
-    id: "add:regimen",
-    ...addCommandText(Panel.Regimens, "Regimens", "regimen", "Add new"),
-    group: "resources",
-    imageIcon: TAB_ICON[Panel.Regimens],
-    themeAwareImageIcon: true,
-    execute: () => props.dispatch(addRegimen(
-      selectAllRegimens(index).length, props.navigate)),
-  });
   const decodeHtmlEntities = (value: string) => {
     const textarea = document.createElement("textarea");
     textarea.innerHTML = value;
@@ -1912,7 +2516,7 @@ const addCommands = (props: BuildCommandProps): Command[] => {
     };
   };
   const openCrop = (slug: string) => {
-    openAddPage(Path.cropSearch(slug));
+    openAddPage(props, Path.cropSearch(slug));
   };
   const cropCommand = (slug: string): Command => {
     const crop = findCropMetadata(slug);
@@ -2299,8 +2903,6 @@ const cameraCommands = (props: BuildCommandProps): Command[] => {
   const unavailable = is3D
     ? undefined
     : t("Enable the 3D Garden setting first.");
-  const envs = selectAllFarmwareEnvs(index);
-  const bounds = !!get3DConfigValueFunction(envs)("bounds");
   const perspective = props.state.resources.consumers.farm_designer
     .threeDPerspective ?? true;
   const cameraFollow = props.state.resources.consumers.farm_designer
@@ -2315,89 +2917,101 @@ const cameraCommands = (props: BuildCommandProps): Command[] => {
       type: Actions.SET_3D_PERSPECTIVE,
       payload: !perspective,
     });
+  const viewActions: CommandAction[] = [
+    {
+      id: "toggle-perspective",
+      ...localized("Toggle Perspective"),
+      unavailable,
+      execute,
+    },
+    {
+      id: "reset-view",
+      ...localized("Reset"),
+      unavailable,
+      execute: () => props.dispatch({
+        type: Actions.SET_3D_VIEW,
+        payload: { reset: true, nonce: Date.now() },
+      }),
+    },
+    {
+      id: "follow-camera",
+      ...localized("Follow Camera"),
+      unavailable,
+      execute: () => props.dispatch({
+        type: Actions.SET_3D_CAMERA_FOLLOW,
+        payload: !cameraFollow,
+      }),
+    },
+    {
+      id: "follow-utm",
+      ...localized("Follow UTM"),
+      unavailable,
+      execute: () => props.dispatch({
+        type: Actions.SET_3D_UTM_FOLLOW,
+        payload: !utmFollow,
+      }),
+    },
+  ];
   const result: Command[] = [{
-    id: "camera:perspective-view",
-    ...localized("Perspective View"),
-    aliases: [
-      "3d", "camera", "projection",
-      "Orthographic View", "Toggle perspective",
-    ],
+    id: "camera:view",
+    ...localized("3D Camera View"),
+    aliases: ["3d", "camera", "projection", "perspective", "reset view"],
     group: "map",
     icon: "cube",
-    unavailable,
-    execute,
-    toggleValue: perspective,
-    accessory: toggleAccessory(perspective, !!unavailable),
-  }, {
-    id: "camera:follow-camera-view",
-    ...localized("Follow Camera View"),
-    aliases: ["3D", "camera", "FarmBot camera", "camera view"],
-    group: "map",
-    imageIcon: TAB_ICON[Panel.Photos],
-    themeAwareImageIcon: true,
-    unavailable,
-    execute: () => props.dispatch({
-      type: Actions.SET_3D_CAMERA_FOLLOW,
-      payload: !cameraFollow,
-    }),
-    toggleValue: cameraFollow,
-    accessory: toggleAccessory(cameraFollow, !!unavailable),
-  }, {
-    id: "camera:follow-utm",
-    ...localized("Follow UTM"),
-    aliases: ["3D", "camera", "tool", "universal tool mount"],
-    group: "map",
-    imageIcon: TAB_ICON[Panel.Tools],
-    themeAwareImageIcon: true,
-    unavailable,
-    execute: () => props.dispatch({
-      type: Actions.SET_3D_UTM_FOLLOW,
-      payload: !utmFollow,
-    }),
-    toggleValue: utmFollow,
-    accessory: toggleAccessory(utmFollow, !!unavailable),
-  }, {
-    id: "camera:bounds",
-    ...localized("Bounds"),
-    aliases: ["3D", "camera", "bounding box", "axis limits"],
-    group: "map",
-    icon: "cube",
-    unavailable,
-    execute: () => findOrCreate3DConfigFunction(
-      props.dispatch, envs)("bounds", bounds ? "0" : "1"),
-    toggleValue: bounds,
-    accessory: toggleAccessory(bounds, !!unavailable),
+    actions: viewActions,
+    execute: viewActions[0].execute,
   }];
-  const targetName = (target: typeof VIEW_PRISM_TARGETS[number]) => {
-    let surface = "Side";
-    if (target.kind == "corner") {
-      surface = "Corner";
-    } else if (target.id == "face-top"
-      || target.id.startsWith("edge-top-")) {
-      surface = "Top";
-    }
-    const axes = target.direction.slice(0, 2).flatMap((value, index) =>
-      value == 0
-        ? []
-        : `${value > 0 ? "+" : "-"}${index == 0 ? "X" : "Y"}`);
-    return ["Orbit to", surface, ...axes].join(" ");
-  };
-  VIEW_PRISM_TARGETS.map((target, index) => {
-    const direction = target.direction;
-    result.push({
-      id: `camera:orbit:${target.id}`,
-      ...localized(targetName(target)),
-      aliases: ["camera", "view", "cube", target.kind,
-        direction.join(" "), String(index)],
-      group: "map",
-      icon: "cube",
+  const orbitCommand = (
+    id: string,
+    title: string,
+    targets: [string, [number, number, number]][],
+  ): Command => {
+    const actions = targets.map(([name, direction]) => ({
+      id: name.toLowerCase().replace(/ /g, "-"),
+      name,
+      englishName: name,
+      aliases: ["camera", "view", "cube", direction.join(" ")],
       unavailable,
       execute: () => props.dispatch({
         type: Actions.SET_3D_VIEW,
         payload: { direction, nonce: Date.now() },
       }),
-    });
-  });
+    }));
+    return {
+      id: `camera:orbit:${id}`,
+      ...localized(title),
+      aliases: ["camera", "view", "cube", "orbit"],
+      group: "map",
+      icon: "cube",
+      actions,
+      execute: actions[0].execute,
+    };
+  };
+  result.push(
+    orbitCommand("top", "Orbit to Top", [
+      ["Top", [0, 0, 1]],
+      ["Top +X", [1, 0, 1]],
+      ["Top +Y", [0, 1, 1]],
+      ["Top -X", [-1, 0, 1]],
+      ["Top -Y", [0, -1, 1]],
+    ]),
+    orbitCommand("corner", "Orbit to Corner", [
+      ["+X -Y", [1, -1, 1]],
+      ["+X +Y", [1, 1, 1]],
+      ["-X +Y", [-1, 1, 1]],
+      ["-X -Y", [-1, -1, 1]],
+    ]),
+    orbitCommand("side", "Orbit to Side", [
+      ["+X -Y", [1, -1, 0]],
+      ["+X", [1, 0, 0]],
+      ["+X +Y", [1, 1, 0]],
+      ["+Y", [0, 1, 0]],
+      ["-X +Y", [-1, 1, 0]],
+      ["-X", [-1, 0, 0]],
+      ["-X -Y", [-1, -1, 0]],
+      ["-Y", [0, -1, 0]],
+    ]),
+  );
   return result;
 };
 
@@ -2423,14 +3037,19 @@ export const buildCommands = (props: BuildCommandProps): Command[] => [
   selectionCommand(props),
   laserCommand(props),
   ...settingsSectionCommands(props),
+  ...settingsItemCommands(props),
   setupWizardCommand(props),
   ...helpCommands(props),
   ...booleanSettingCommands(props),
   ...webAppValueSettingCommands(props),
   ...configValueSettingCommands(props),
+  ...threeDSettingCommands(props),
   ...cameraCommands(props),
   ...relativeMoveCommands(props),
   ...homeCommands(props),
+  ...simplePanelCommands(props),
+  cameraCommand(props),
+  powerCommand(props),
   ...directDeviceCommands(props),
   ...moveToCommands(props),
   ...locatedResourceCommands(props),

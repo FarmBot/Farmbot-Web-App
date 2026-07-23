@@ -181,8 +181,32 @@ describe("maybeOpenPanel()", () => {
     expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
   });
 
+  it("opens power and reset for change ownership", () => {
+    location.search = "?highlight=change_ownership";
+    maybeOpenPanel()(jest.fn());
+    expect(toggleControlPanelSpy).toHaveBeenCalledWith("power_and_reset");
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
+  });
+
+  it("opens parameter management for resend parameters", () => {
+    location.search = "?highlight=resend_parameters";
+    maybeOpenPanel()(jest.fn());
+    expect(toggleControlPanelSpy)
+      .toHaveBeenCalledWith("parameter_management");
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
+  });
+
   it("opens the Other settings subsection from its highlight link", () => {
     location.search = "?highlight=other";
+
+    maybeOpenPanel()(jest.fn());
+
+    expect(toggleControlPanelSpy).toHaveBeenCalledWith("other_settings");
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
+  });
+
+  it("opens Other settings for the motor load plot setting", () => {
+    location.search = "?highlight=show_motor_load_plot_display";
 
     maybeOpenPanel()(jest.fn());
 

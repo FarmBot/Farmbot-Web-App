@@ -426,7 +426,7 @@ export const pointPlacementPhase = (
   }
   return isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy)
     ? "position"
-    : "radius";
+    : "finalize";
 };
 
 interface PointPositionDrag {
@@ -832,20 +832,6 @@ const pointLocationPayload = (
   cy: cursor.y,
   r: 0,
   z: mathRound(getZ(cursor.x, cursor.y), 1),
-  placementPhase: "radius",
-});
-
-const pointRadiusPayload = (
-  point: DrawnPointPayl,
-  cursor: { x: number, y: number },
-): DrawnPointPayl => ({
-  ...point,
-  cx: point.cx,
-  cy: point.cy,
-  r: singlePointRadiusFromCursor({
-    x: point.cx ?? 0,
-    y: point.cy ?? 0,
-  }, cursor),
   placementPhase: "finalize",
 });
 
@@ -881,12 +867,9 @@ const drawPointSoilClick = (props: DrawPointSoilClickProps) => {
   if (mode == Mode.createPoint && phase == "finalize") { return; }
   pointerPlantRef.current?.position?.set(0, 0, 0);
   if (mode == Mode.createPoint) {
-    const payload = phase == "position"
-      ? pointLocationPayload(drawnPoint, cursor, getZ)
-      : pointRadiusPayload(drawnPoint, cursor);
     addPlantProps.dispatch({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload,
+      payload: pointLocationPayload(drawnPoint, cursor, getZ),
     });
     return;
   }

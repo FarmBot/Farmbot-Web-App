@@ -344,11 +344,12 @@ const ToolsBase = (props: ToolsProps) => {
 export const Tools = React.memo(ToolsBase, toolsPropsEqual);
 
 interface OpacityFilterProps {
+  interactive?: boolean;
   opacity: number;
   children?: React.ReactNode;
 }
 
-const OpacityFilter = (props: OpacityFilterProps) => {
+export const OpacityFilter = (props: OpacityFilterProps) => {
   // eslint-disable-next-line no-null/no-null
   const groupRef = React.useRef<THREE.Group>(null);
   const appliedOpacityRef = React.useRef<number | undefined>(undefined);
@@ -362,11 +363,14 @@ const OpacityFilter = (props: OpacityFilterProps) => {
           child.material.transparent = true;
           child.material.opacity = props.opacity;
           child.material.needsUpdate = true;
+          if (props.interactive === false) {
+            child.raycast = () => undefined;
+          }
         }
       });
       appliedOpacityRef.current = props.opacity;
     }
-  }, [props.opacity]);
+  }, [props.interactive, props.opacity]);
   return <Group name={"opacity-filter"} ref={groupRef}>
     {props.children}
   </Group>;

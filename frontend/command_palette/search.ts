@@ -7,7 +7,7 @@ export const normalizeCommandText = (text: string) => text
   .replace(/[^\p{L}\p{N}+-]+/gu, " ")
   .trim();
 
-const MAX_SUBSEQUENCE_SCATTER_RATIO = 1;
+const MAX_SUBSEQUENCE_SCATTER_RATIO = 0.5;
 
 const compactSubsequence = (query: string, text: string) => {
   const queryCharacters = [...query];
@@ -25,7 +25,7 @@ const compactSubsequence = (query: string, text: string) => {
     }
     const scatter = textIndex - start - queryCharacters.length;
     return queryIndex == queryCharacters.length
-      && scatter <= queryCharacters.length * MAX_SUBSEQUENCE_SCATTER_RATIO;
+      && scatter < queryCharacters.length * MAX_SUBSEQUENCE_SCATTER_RATIO;
   });
 };
 
@@ -93,6 +93,7 @@ export const searchCommands = (commands: Command[], query: string) => commands
   })
   .filter(result => result.score > 0)
   .sort((a, b) => b.score - a.score
+    || (b.command.searchPriority || 0) - (a.command.searchPriority || 0)
     || (b.command.priority || 0) - (a.command.priority || 0)
     || Number(!!a.command.unavailable) - Number(!!b.command.unavailable)
     || a.command.name.length - b.command.name.length

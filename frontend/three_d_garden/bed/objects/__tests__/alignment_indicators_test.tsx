@@ -2,12 +2,14 @@ import React from "react";
 import { act, render } from "@testing-library/react";
 import { clone, range } from "lodash";
 import {
-  Color as ThreeColor, DoubleSide, InstancedBufferAttribute,
+  Color as ThreeColor, FrontSide, InstancedBufferAttribute,
+  MeshPhongMaterial,
 } from "three";
 import {
   ALIGNMENT_INDICATOR_COLOR,
   ALIGNMENT_INDICATOR_HEIGHT,
   ALIGNMENT_INDICATOR_LENGTH,
+  ALIGNMENT_INDICATOR_RENDER_ORDER,
   ALIGNMENT_INDICATOR_WIDTH,
   AlignmentIndicatorController,
   AlignmentIndicators,
@@ -23,8 +25,6 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { ThreeDGardenPlant } from "../../../garden";
 import { get3DPositionFunc, zZero } from "../../../helpers";
-import { POINT_PIN_RADIUS } from "../../../garden/point";
-import { DEFAULT_WEED_RADIUS } from "../../../garden/weed";
 import {
   actRenderer, createRenderer, unmountRenderer,
 } from "../../../../__test_support__/test_renderer";
@@ -89,10 +89,9 @@ describe("alignment indicator index", () => {
       worldY: plantPosition.y,
       worldZ: zZero(props.config) + props.getZ(100, 200)
         + ALIGNMENT_INDICATOR_HEIGHT,
-      radius: 40,
     }));
-    expect(weed?.radius).toEqual(DEFAULT_WEED_RADIUS);
-    expect(point?.radius).toEqual(POINT_PIN_RADIUS);
+    expect(weed?.gardenY).toEqual(300);
+    expect(point?.gardenX).toEqual(400);
   });
 
   it("only indexes visible object types", () => {
@@ -104,7 +103,7 @@ describe("alignment indicator index", () => {
     });
 
     expect(index.objectCount).toEqual(1);
-    expect(index.byY.get(300)?.[0]?.radius).toEqual(DEFAULT_WEED_RADIUS);
+    expect(index.byY.get(300)?.[0]?.gardenY).toEqual(300);
     expect(index.byY.has(200)).toBeFalsy();
   });
 
@@ -126,22 +125,55 @@ describe("alignment indicator index", () => {
 });
 
 describe("alignment indicator instances", () => {
-  it("configures the requested cyan segment style", () => {
+  it("configures the requested bright yellow prism style", () => {
     const material = createIndicatorMaterial();
+    const shader = {
+      uniforms: {},
+      vertexShader: "#include <common>\n#include <begin_vertex>",
+    } as Parameters<typeof material.onBeforeCompile>[0];
+    material.onBeforeCompile(shader, {} as never);
 
-    expect(ALIGNMENT_INDICATOR_HEIGHT).toEqual(5);
-    expect(material.uniforms.uLength?.value)
+    expect(material).toBeInstanceOf(MeshPhongMaterial);
+    expect(shader.uniforms.uHeight?.value)
+      .toEqual(ALIGNMENT_INDICATOR_HEIGHT);
+    expect(ALIGNMENT_INDICATOR_HEIGHT).toEqual(10);
+    expect(shader.uniforms.uLength?.value)
       .toEqual(ALIGNMENT_INDICATOR_LENGTH);
-    expect(ALIGNMENT_INDICATOR_LENGTH).toEqual(40);
-    expect(material.uniforms.uWidth?.value)
+    expect(ALIGNMENT_INDICATOR_LENGTH).toEqual(50);
+    expect(shader.uniforms.uWidth?.value)
       .toEqual(ALIGNMENT_INDICATOR_WIDTH);
-    expect(ALIGNMENT_INDICATOR_WIDTH).toEqual(10);
-    expect(material.uniforms.uColor?.value)
+    expect(ALIGNMENT_INDICATOR_WIDTH).toEqual(5);
+    expect(material.color)
       .toEqual(new ThreeColor(ALIGNMENT_INDICATOR_COLOR));
+    expect(material.flatShading).toBeTruthy();
     expect(material.depthTest).toBeTruthy();
-    expect(material.depthWrite).toBeFalsy();
-    expect(material.side).toEqual(DoubleSide);
+    expect(material.depthWrite).toBeTruthy();
+    expect(material.transparent).toBeTruthy();
+    expect(material.side).toEqual(FrontSide);
+    expect(shader.vertexShader).toContain(
+      "attribute float segmentHeight;");
+    expect(shader.vertexShader).toContain("vec3 transformed = vec3(");
     material.dispose();
+  });
+
+  it("creates one centered rectangular prism per instance", () => {
+    const geometry = createIndicatorGeometry(1);
+
+    expect(geometry.getAttribute("position").count).toEqual(8);
+    expect(geometry.getAttribute("normal").count).toEqual(8);
+    expect(geometry.index?.count).toEqual(36);
+    expect(Array.from(
+      geometry.getAttribute("segmentAlong").array,
+    )).toEqual([
+      -0.5, -0.5, 0.5, 0.5,
+      -0.5, -0.5, 0.5, 0.5,
+    ]);
+    expect(Array.from(
+      geometry.getAttribute("segmentHeight").array,
+    )).toEqual([
+      0, 0, 0, 0, 1, 1, 1, 1,
+    ]);
+    geometry.dispose();
   });
 
   it("writes horizontal, vertical, and dual-axis alignments", () => {
@@ -157,12 +189,8 @@ describe("alignment indicator instances", () => {
     )).toEqual([0, 0, 1, 1]);
     const centers = geometry.getAttribute("indicatorCenter") as
       InstancedBufferAttribute;
-    const radii = geometry.getAttribute("indicatorRadius") as
-      InstancedBufferAttribute;
     expect(centers.updateRanges)
       .toEqual([{ start: 0, count: 12 }]);
-    expect(radii.updateRanges)
-      .toEqual([{ start: 0, count: 4 }]);
     geometry.dispose();
   });
 
@@ -223,6 +251,7 @@ describe("<AlignmentIndicators />", () => {
       node.props.name == "alignment-indicators"
       && typeof node.props.raycast == "function")[0];
 
+    expect(mesh.props.renderOrder).toEqual(ALIGNMENT_INDICATOR_RENDER_ORDER);
     actRenderer(() => expect(mesh.props.raycast()).toBeUndefined());
     unmountRenderer(wrapper);
   });

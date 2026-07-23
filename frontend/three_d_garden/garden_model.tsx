@@ -512,6 +512,7 @@ export const getViewPrismCameraProjection = (
 export interface ViewPrismBridge {
   camera?: ThreePerspectiveCamera;
   selectDirection?(direction: ViewPrismDirection): void;
+  resetView?(): void;
 }
 
 interface FarmDesignerViewPrismProps {
@@ -2221,6 +2222,33 @@ export const useGardenCameraController = (
   const {
     handleCameraFollowEscape, stopCameraFollow,
   } = props;
+  const resetView = React.useCallback(() => {
+    resetViewPrismKeyboardNavigation();
+    cameraSpringCancelRef.current?.();
+    if (followMode) {
+      stopCameraFollow?.();
+      return;
+    }
+    const startingCamera = props.startingCamera;
+    setCameraRequest({
+      camera: {
+        target: startingCamera.target,
+        position: cameraPositionForFov(
+          startingCamera.position,
+          startingCamera.target,
+          NORMAL_CAMERA_FOV,
+          props.desiredFov,
+        ),
+      },
+      fov: props.desiredFov,
+    });
+  }, [
+    followMode,
+    props.desiredFov,
+    props.startingCamera,
+    resetViewPrismKeyboardNavigation,
+    stopCameraFollow,
+  ]);
   React.useEffect(() => {
     if (!followMode || !stopCameraFollow) { return; }
     const stopFollowOnEscape = (event: KeyboardEvent) => {
@@ -2244,9 +2272,11 @@ export const useGardenCameraController = (
     selectDirection: followMode
       ? () => stopCameraFollow?.()
       : selectViewDirection,
+    resetView,
   }), [
     followMode,
     props.controlsCamera,
+    resetView,
     selectViewDirection,
     stopCameraFollow,
   ]);

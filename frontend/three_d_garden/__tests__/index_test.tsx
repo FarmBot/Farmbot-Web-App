@@ -45,14 +45,22 @@ describe("<ThreeDGarden />", () => {
 
   it("applies palette camera requests through the view prism bridge", () => {
     const selectDirection = jest.fn();
-    const bridgeRef = { current: { selectDirection } };
+    const resetView = jest.fn();
+    const bridgeRef = { current: { selectDirection, resetView } };
     expect(applyViewRequest(
       bridgeRef, { direction: [1, 0, 1], nonce: 1 })).toEqual(true);
     expect(selectDirection).toHaveBeenCalledWith([1, 0, 1]);
+    expect(applyViewRequest(
+      bridgeRef, { reset: true, nonce: 2 })).toEqual(true);
+    expect(resetView).toHaveBeenCalledTimes(1);
     expect(applyViewRequest(bridgeRef, undefined)).toEqual(false);
     expect(applyViewRequest({ current: {} }, {
       direction: [1, 0, 1], nonce: 2,
     })).toEqual(false);
+    expect(applyViewRequest(
+      { current: { selectDirection } },
+      { reset: true, nonce: 3 },
+    )).toEqual(false);
     expect(selectDirection).toHaveBeenCalledTimes(1);
   });
 

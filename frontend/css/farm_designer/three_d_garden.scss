@@ -1,5 +1,4 @@
 @use "../variables" as *;
-@use "sass:color";
 @use "../global/fonts" as *;
 
 // sass-lint:disable space-around-operator no-misspelled-properties
@@ -207,11 +206,87 @@
     }
 
     .object-popup-content {
-      .native-jog-popup-actions {
+      .native-jog-control-grid {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 0.5rem;
 
+        .native-jog-popup-actions,
+        .native-jog-position-row {
+          display: contents;
+        }
+
+        .fb-button,
+        input {
+          width: 100%;
+          height: 4rem;
+          margin: 0;
+        }
+
+        .native-jog-step-selector {
+          display: flex;
+          grid-row: 1;
+          grid-column: 1 / 5;
+          width: 100%;
+          height: 4rem;
+          box-shadow: none;
+
+          .move-amount {
+            flex: 1;
+            width: auto;
+            padding: 0.5rem 0.25rem;
+            float: none;
+          }
+        }
+
+        .native-jog-negative-button {
+          grid-row: 1;
+          grid-column: 5;
+        }
+
+        .native-jog-positive-button {
+          grid-row: 1;
+          grid-column: 6;
+        }
+
+        .native-jog-home-button {
+          grid-row: 2;
+          grid-column: 1;
+        }
+
+        .native-jog-find-home-button {
+          grid-row: 2;
+          grid-column: 2;
+        }
+
+        .native-jog-limit-button {
+          grid-row: 2;
+          grid-column: 3;
+        }
+
+        .native-jog-position-row {
+          input {
+            grid-row: 2;
+            grid-column: 4 / 6;
+          }
+
+          .native-jog-go-button {
+            grid-row: 2;
+            grid-column: 6;
+
+            > span {
+              position: relative;
+              z-index: 1;
+            }
+
+            .movement-progress {
+              background: $dark_green;
+            }
+          }
+        }
+      }
+
+      .native-jog-popup-actions {
         .fb-button {
           display: grid;
           place-items: center;
@@ -255,46 +330,6 @@
         }
       }
 
-      .move-amount-wrapper {
-        display: flex;
-        width: 100%;
-        box-shadow: none;
-
-        .move-amount {
-          flex: 1;
-          width: auto;
-        }
-
-        .native-jog-custom-step {
-          min-width: 0;
-          height: 2.5rem;
-          padding: 0;
-          border: 0;
-          border-left: 0;
-          background-color: $white;
-          color: $medium_gray;
-
-          &:focus {
-            background-color: $white;
-            color: $medium_gray;
-            box-shadow: inset 0 -1px 0 0 $translucent2,
-            0 0 5px $translucent15;
-          }
-
-          &:hover {
-            background-color: color.adjust($white, $lightness: -40%);
-            color: $off_white;
-          }
-
-          &.move-amount-selected,
-          &.move-amount-selected:focus,
-          &.move-amount-selected:hover {
-            background-color: $medium_gray !important;
-            color: $off_white;
-          }
-        }
-      }
-
       .native-jog-progress-button {
         position: relative;
         isolation: isolate;
@@ -310,21 +345,6 @@
         .movement-progress {
           z-index: 0;
           pointer-events: none;
-        }
-      }
-
-      .native-jog-position-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.5rem;
-
-        input {
-          width: 100%;
-        }
-
-        .fb-button {
-          min-width: 5rem;
-          margin: 0;
         }
       }
 

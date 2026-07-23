@@ -168,7 +168,7 @@ describe("<PointerObjects />", () => {
     expect(p.placementCoordinateLabelRef.current).toBeNull();
   });
 
-  it("hides indicators while setting a point radius", () => {
+  it("hides indicators while finalizing a point", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     const point = fakeDrawnPoint();
@@ -181,7 +181,7 @@ describe("<PointerObjects />", () => {
     expect(container).not.toContainHTML("alignment-indicators");
   });
 
-  it("shows the live radius arrow and label for a single point", () => {
+  it("shows the editable radius control while finalizing a point", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.addPlantProps.designer.drawnPoint = {
@@ -197,18 +197,10 @@ describe("<PointerObjects />", () => {
       "[name='single-point-radius-arrow']")).toBeInTheDocument();
     expect(container.querySelector("[name='single-point-radius-arrow']")
       ?.querySelector("[color='purple']")).toBeInTheDocument();
+    fireEvent.pointerOver(container.querySelector(
+      "[name='single-point-radius-control']") as Element);
     expect(screen.getByText("r0").querySelector("[color='purple']"))
       .toBeInTheDocument();
-    act(() => p.singlePointRadiusRef.current?.update({
-      x: 70,
-      y: 160,
-    }));
-    expect(screen.getByText("r50")).toBeInTheDocument();
-    act(() => p.singlePointRadiusRef.current?.update({
-      x: 130,
-      y: 240,
-    }));
-    expect(screen.getByText("r50")).toBeInTheDocument();
 
     p.addPlantProps = {
       ...p.addPlantProps,
@@ -223,8 +215,6 @@ describe("<PointerObjects />", () => {
     rerender(<PointerObjects {...p} />);
     expect(container.querySelector("[name='single-point-radius-arrow']")
       ?.querySelector("[color='blue']")).toBeInTheDocument();
-    expect(screen.getByText("r50").querySelector("[color='blue']"))
-      .toBeInTheDocument();
   });
 
   it("moves the radius arrow around the cursor radius", () => {
@@ -273,7 +263,7 @@ describe("<PointerObjects />", () => {
       cy: undefined,
     })).toEqual("position");
     expect(pointPlacementPhase(Mode.createPoint, fakeDrawnPoint()))
-      .toEqual("radius");
+      .toEqual("finalize");
     expect(pointPlacementPhase(Mode.createPoint, {
       ...fakeDrawnPoint(),
       placementPhase: "finalize",
@@ -679,13 +669,8 @@ describe("soilClick()", () => {
     expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ["point", Path.points("add"), "finalize"],
-    ["weed", Path.weeds("add"), undefined],
-  ] as const)("handles a zero-radius %s", (
-    _label, path, placementPhase,
-  ) => {
-    location.pathname = Path.mock(path);
+  it("handles a zero-radius weed", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
     mockIsMobile = false;
     const p = fakeProps();
     const eventPoint = { x: 1, y: 2 };
@@ -706,7 +691,6 @@ describe("soilClick()", () => {
       cx: center.x,
       cy: center.y,
       r: 0,
-      ...(placementPhase ? { placementPhase } : {}),
     });
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
@@ -715,41 +699,11 @@ describe("soilClick()", () => {
     expect(createPointSpy).not.toHaveBeenCalled();
   });
 
-  it("finalizes a point radius in any cursor direction", () => {
-    location.pathname = Path.mock(Path.points("add"));
-    mockIsMobile = false;
-    const p = fakeProps();
-    const center = { x: 100, y: 200 };
-    const cursor = { x: 140, y: 240 };
-    p.addPlantProps.designer.drawnPoint = {
-      ...fakeDrawnPoint(),
-      cx: center.x,
-      cy: center.y,
-      r: 30,
-    };
-
-    soilClick(p)({
-      stopPropagation: jest.fn(),
-      point: get3DPositionFunc(p.config)(cursor),
-    } as unknown as ThreeEvent<MouseEvent>);
-
-    const expectedPoint = expect.objectContaining({
-      r: 60,
-      placementPhase: "finalize",
-    });
-    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_POINT_DATA,
-      payload: expectedPoint,
-    });
-    expect(createPointSpy).not.toHaveBeenCalled();
-  });
-
-  it("ignores soil clicks while finalizing a point", () => {
+  it("ignores soil clicks after setting a point location", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.addPlantProps.designer.drawnPoint = {
       ...fakeDrawnPoint(),
-      placementPhase: "finalize",
     };
 
     soilClick(p)({
@@ -938,8 +892,8 @@ describe("soilPointerMove()", () => {
     expect(getZ).toHaveBeenCalledTimes(1);
   });
 
-  it("updates the point preview radius around its center", () => {
-    location.pathname = Path.mock(Path.points("add"));
+  it("updates the weed preview radius around its center", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
     mockIsMobile = false;
     const p = fakeProps();
     const center = { x: 100, y: 200 };

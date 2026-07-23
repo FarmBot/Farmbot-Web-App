@@ -12,7 +12,7 @@ import {
   recordRecentCommand,
 } from "./recents";
 import { t } from "../i18next_wrapper";
-import { ToggleButton } from "../ui";
+import { Help, ToggleButton } from "../ui";
 
 interface CommandPaletteProps {
   appState: Everything;
@@ -265,6 +265,12 @@ const defaultActionIndex = (command?: Command) => {
   return index !== undefined && index >= 0 ? index : 0;
 };
 
+export const defaultCommandActionName = (command: Command) => {
+  if (command.id.startsWith("panel:")) { return t("Open Panel"); }
+  if (command.id.startsWith("settings-item:")) { return t("Open Settings"); }
+  return t("Execute");
+};
+
 const CommandIcon = ({ command }: { command: Command }) => {
   if (command.imageIcon) {
     const className = [
@@ -281,6 +287,25 @@ const CommandIcon = ({ command }: { command: Command }) => {
   }
   return <i className={`fa fa-${command.icon || "terminal"}`} />;
 };
+
+const CommandTitle = ({ command }: { command: Command }) =>
+  <div className="command-palette-option-title">
+    <strong>{command.name}</strong>
+    {command.help &&
+      <span
+        className="command-palette-help-container"
+        onClick={event => event.stopPropagation()}
+        onKeyDown={event =>
+          event.key != "Tab" && event.stopPropagation()}>
+        <Help
+          text={command.help.text}
+          enableMarkdown={command.help.enableMarkdown}
+          usePortal={false}
+          focusable={true}
+          customClass="command-palette-help"
+          ariaLabel={t("Help for {{name}}", { name: command.name })} />
+      </span>}
+  </div>;
 
 export const RawCommandPalette = (props: CommandPaletteProps) => {
   const navigate = useNavigate();
@@ -535,6 +560,17 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
     focusActionOrSearch(nextCommand, nextActions[actionIndex], offset < 0);
   };
 
+  const focusSelectedHelp = () => {
+    const selectedOption =
+      document.getElementById(`command-palette-option-${selected}`);
+    const help = selectedOption instanceof Element
+      ? selectedOption.querySelector<HTMLElement>(
+        ".command-palette-help-container [role='button']")
+      : undefined;
+    help?.focus();
+    return !!help;
+  };
+
   const onActionFieldKeyDown = (
     event: React.KeyboardEvent,
     command: Command,
@@ -544,7 +580,7 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
     fieldIndex: number,
   ) => {
     const horizontal = event.key == "ArrowLeft" || event.key == "ArrowRight";
-    if (horizontal && fields.length > 1) {
+    if (horizontal && fields.length > 1 && !field.options) {
       event.stopPropagation();
       event.preventDefault();
       const offset = event.key == "ArrowRight" ? 1 : -1;
@@ -580,16 +616,30 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
   // eslint-disable-next-line complexity
   const onKeyDown = (event: React.KeyboardEvent) => {
     event.stopPropagation();
+    const target = event.target as HTMLElement;
+    const nativeSelect = target.tagName == "SELECT";
+    const helpTrigger = !!target.closest(".command-palette-help-container");
     if (event.key == "Tab") {
       event.preventDefault();
-      moveTabSelection(event.shiftKey ? -1 : 1);
-    } else if (event.key == "ArrowDown") {
+      if (helpTrigger) {
+        if (event.shiftKey) {
+          const command = results[selected];
+          focusActionOrSearch(
+            command, command?.actions?.[selectedAction], true);
+        } else {
+          moveTabSelection(1);
+        }
+      } else if (event.shiftKey || !focusSelectedHelp()) {
+        moveTabSelection(event.shiftKey ? -1 : 1);
+      }
+    } else if (!nativeSelect && event.key == "ArrowDown") {
       event.preventDefault();
       moveSelection(1);
-    } else if (event.key == "ArrowUp") {
+    } else if (!nativeSelect && event.key == "ArrowUp") {
       event.preventDefault();
       moveSelection(-1);
-    } else if ((event.key == "ArrowLeft" || event.key == "ArrowRight")
+    } else if (!nativeSelect
+      && (event.key == "ArrowLeft" || event.key == "ArrowRight")
       && moveActionSelection(
         event.key == "ArrowRight" ? 1 : -1,
         (event.target as HTMLElement)
@@ -735,14 +785,55 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
                 setSelectedAction(actionIndex);
               }}
               onChange={value => {
+                setValidationError(undefined);
+                if (field.options) {
+                  executeAction(command, action, { [field.key]: value });
+                  return;
+                }
                 setValues(current => ({
                   ...current,
                   [actionValueKey(command, action, field.key)]: value,
                 }));
-                setValidationError(undefined);
               }} />}
         </label>;
       })}
+    </div>;
+  };
+
+  const renderDefaultAction = (
+    command: Command,
+    commandIndex: number,
+    active: boolean,
+  ) => {
+    const actionName = defaultCommandActionName(command);
+    return <div
+      className={[
+        "command-palette-actions",
+        "command-palette-default-actions",
+      ].join(" ")}>
+      <button
+        type="button"
+        tabIndex={-1}
+        className={[
+          "command-palette-action",
+          active ? "selected" : "",
+        ].join(" ")}
+        aria-label={`${command.name}: ${actionName}`}
+        disabled={!!command.unavailable}
+        title={command.unavailable}
+        onMouseMove={event => {
+          event.stopPropagation();
+          setSelected(commandIndex);
+          setSelectedAction(0);
+        }}
+        onClick={event => {
+          event.stopPropagation();
+          setSelected(commandIndex);
+          setSelectedAction(0);
+          execute(command);
+        }}>
+        {actionName}
+      </button>
     </div>;
   };
 
@@ -812,11 +903,17 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
               </button>
             </div>}
           {index == recentCount && recentCount > 0 &&
-            <p className="command-palette-group-label">{t("All commands")}</p>}
+            <p className={[
+              "command-palette-group-label",
+              "command-palette-all-commands-label",
+            ].join(" ")}>
+              {t("All commands")}
+            </p>}
           <div
             id={`command-palette-option-${index}`}
             className={[
               "command-palette-option",
+              `command-palette-${command.group}-command`,
               active ? "selected" : "",
               command.actions?.length ? "multi-action" : "",
               command.unavailable ? "disabled" : "",
@@ -829,27 +926,12 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
                 setSelected(index);
                 setSelectedAction(defaultActionIndex(command));
               }
-            }}
-            onClick={() => {
-              setSelected(index);
-              const actions = command.actions || [];
-              const actionIndex = active
-                && validActionIndex(actions, selectedAction)
-                ? selectedAction
-                : defaultActionIndex(command);
-              setSelectedAction(actionIndex);
-              const action = actions[actionIndex];
-              if (action) {
-                activateAction(command, action);
-              } else {
-                execute(command);
-              }
             }}>
             <div className="command-palette-option-icon">
               <CommandIcon command={command} />
             </div>
             <div className="command-palette-option-copy">
-              <strong>{command.name}</strong>
+              <CommandTitle command={command} />
               {command.unavailable && <span className="command-palette-unavailable">
                 {command.unavailable}
               </span>}
@@ -866,6 +948,8 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
                 {validationError}
               </p>}
             </div>}
+            {!command.actions?.length && !command.accessory
+              && renderDefaultAction(command, index, active)}
             {command.accessory && <div className="command-palette-accessory">
               {command.accessory(
                 () => execute(command),
@@ -884,9 +968,7 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
           {" "}<kbd>←</kbd><kbd>→</kbd> {t("Actions")}
         </>}
       </span>
-      <span><kbd>↵</kbd> {results[selected]?.actions?.length
-        ? t("Execute")
-        : t("Select")}</span>
+      <span><kbd>↵</kbd> {t("Execute")}</span>
     </div>
     </>}
   </dialog>;
@@ -906,9 +988,14 @@ export const commandPaletteStateEqual = (
     && next.resources.index === previous.resources.index
     && next.resources.consumers.farm_designer
       === previous.resources.consumers.farm_designer
+    && next.bot.hardware.configuration
+      === previous.bot.hardware.configuration
+    && next.bot.hardware.mcu_params
+      === previous.bot.hardware.mcu_params
     && next.bot.hardware.location_data
       === previous.bot.hardware.location_data
     && next.bot.hardware.pins === previous.bot.hardware.pins
+    && nextInfo.busy === previousInfo.busy
     && nextInfo.locked === previousInfo.locked
     && nextInfo.sync_status === previousInfo.sync_status
     && next.bot.connectivity.uptime["bot.mqtt"]

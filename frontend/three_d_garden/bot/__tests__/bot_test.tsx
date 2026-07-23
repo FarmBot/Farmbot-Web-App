@@ -35,6 +35,10 @@ import { getBotKinematics } from "../kinematics";
 import { HighlightProvider } from "../../elements";
 import { bot as fakeBot } from
   "../../../__test_support__/fake_state/bot";
+import {
+  NativeJogControlPair, NativeJogWorldPreview,
+} from "../native_jog_controls";
+import { Tools } from "../components/tools";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -387,16 +391,12 @@ describe("<Bot />", () => {
       .toHaveAttribute("position", "0,-120,0");
     expect(control("bot-jog-x-far"))
       .toHaveAttribute("position", "0,1440,0");
-    expect(control("bot-jog-y-near")?.parentElement)
-      .toHaveAttribute("name", "bot-gantry");
-    expect(control("bot-jog-y-near"))
-      .toHaveAttribute("position", "-39,50,700");
-    expect(control("bot-jog-y-far")?.parentElement)
-      .toHaveAttribute("name", "bot-gantry");
-    expect(control("bot-jog-y-far"))
-      .toHaveAttribute("position", "-39,1350,700");
-    expect(control("bot-cross-slide")
-      ?.querySelector("[name^='bot-jog-y']"))
+    expect(control("bot-jog-y")?.parentElement)
+      .toHaveAttribute("name", "bot-cross-slide");
+    expect(control("bot-jog-y"))
+      .toHaveAttribute("position", "-26.5,0,103");
+    expect(control("bot-gantry")
+      ?.querySelector(":scope > [name^='bot-jog-y']"))
       .not.toBeInTheDocument();
     expect(control("bot-jog-z")?.parentElement)
       .toHaveAttribute("name", "bot-z-axis");
@@ -421,6 +421,82 @@ describe("<Bot />", () => {
     fireEvent.click(control("bot-jog-x-near-control") as Element);
     expect(queryByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
+  });
+
+  it("shares one world-space preview across both X controls", () => {
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    const wrapper = createRenderer(<Bot {...p} />);
+    const xControls = wrapper.root.findAllByType(NativeJogControlPair)
+      .filter(node => node.props.axis == "x");
+
+    expect(xControls).toHaveLength(2);
+    expect(xControls[0].props.previewState.setPreview)
+      .toBe(xControls[1].props.previewState.setPreview);
+    expect(xControls[0].props.previewState.world().controlPositions)
+      .toHaveLength(2);
+    expect(xControls[0].props.managePreviewLifecycle).toBeTruthy();
+    expect(xControls[1].props.managePreviewLifecycle).toBeFalsy();
+    const yControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "y");
+    const zControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "z");
+    expect(yControl?.props.previewState.world().controlPositions)
+      .toHaveLength(1);
+    expect(zControl?.props.previewState.world().controlPositions)
+      .toHaveLength(1);
+    expect(yControl?.props.previewState.world().utmPosition)
+      .toEqual(zControl?.props.previewState.world().utmPosition);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders the mounted tool in a retained jog preview", () => {
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    p.mountedToolName = "Seeder";
+    p.toolSlots = [];
+    const wrapper = createRenderer(<Bot {...p} />);
+    const xControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "x");
+    if (!xControl) { throw new Error("Expected X jog control"); }
+
+    actRenderer(() => xControl.props.previewState.setPreview({
+      distance: 100,
+      pending: true,
+      sawBusy: false,
+      start: 100,
+      world: {
+        controlPositions: [[0, 0, 0], [0, 1, 0]],
+        utmPosition: [100, 200, -50],
+      },
+    }));
+
+    const preview = wrapper.root.findByType(NativeJogWorldPreview);
+    expect(preview.props.axis).toEqual("x");
+    expect(preview.props.ghost.type).toBe(Tools);
+    expect(preview.props.ghost.props).toMatchObject({
+      config: p.config,
+      configPosition: p.configPosition,
+      frame: "z-axis",
+      getZ: p.getZ,
+      mountedToolName: "Seeder",
+      toolSlots: [],
+    });
+    unmountRenderer(wrapper);
   });
 
   it("doesn't activate native jog controls without axis actions", () => {
@@ -485,7 +561,7 @@ describe("<Bot />", () => {
       typeof node.type == "string" && node.props.name == name);
     expect(named("electronics-label")).toHaveLength(1);
     expect(named("camera-label")).toHaveLength(1);
-    expect(named("jog-controls-highlight")).toHaveLength(5);
+    expect(named("jog-controls-highlight")).toHaveLength(4);
     expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
     expect(named("utm-label")).toHaveLength(1);
     unmountRenderer(wrapper);

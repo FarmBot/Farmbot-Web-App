@@ -12,57 +12,9 @@ import { TaggedFarmwareEnv } from "farmbot";
 import { isUndefined } from "lodash";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "./default_values";
-import { Config, SurfaceDebugOption } from "../three_d_garden/config";
+import { Config } from "../three_d_garden/config";
 import { DevSettings } from "./dev/dev_support";
-
-const DEFAULTS: Partial<Record<keyof Config, number>> = {
-  bedWallThickness: 40,
-  bedHeight: 300,
-  ccSupportSize: 50,
-  beamLength: 1500,
-  columnLength: 500,
-  zAxisLength: 1000,
-  bedXOffset: 150,
-  bedYOffset: 20,
-  bedZOffset: 0,
-  legSize: 100,
-  legsFlush: 1,
-  extraLegsX: 1,
-  extraLegsY: 0,
-  bedBrightness: 8,
-  soilBrightness: 12,
-  clouds: 1,
-  constellations: 1,
-  constellationsDebug: 0,
-  laser: 0,
-  stats: 0,
-  threeAxes: 0,
-  solar: 0,
-  lowDetail: 0,
-  eventDebug: 0,
-  cableDebug: 0,
-  lightsDebug: 0,
-  moistureDebug: 0,
-  cameraFitDebug: 0,
-  viewCube: 1,
-  ground: 1,
-  groundTexture: 0,
-  surfaceDebug: SurfaceDebugOption.none,
-  ambient: 75,
-  sun: 75,
-  heading: 0,
-  sunAzimuth: 230,
-  sunInclination: 140,
-  bounds: 0,
-  grid: 1,
-  scene: 0,
-  tracks: 1,
-  cableCarriers: 1,
-  axes: 0,
-  xyDimensions: 0,
-  zDimension: 0,
-  people: 0,
-};
+import { THREE_D_DEFAULTS } from "./setting_metadata";
 
 export const SCENES: Record<number, string> = {
   0: "Custom",
@@ -142,7 +94,7 @@ export const get3DConfigValueFunction = (envs: TaggedFarmwareEnv[]) => {
   const configs = index3DConfigs(envs);
   return (key: keyof Config): number => {
     const maybe = configs[namespace3D(key)];
-    const raw = isUndefined(maybe) ? DEFAULTS[key] : maybe.body.value;
+    const raw = isUndefined(maybe) ? THREE_D_DEFAULTS[key] : maybe.body.value;
     if (raw === true || raw === "true") { return 1; }
     if (raw === false || raw === "false") { return 0; }
     return parseFloat("" + raw);
@@ -154,7 +106,7 @@ export const findOrCreate3DConfigFunction =
     (key: keyof Config, value: string) => {
       const maybe = find(envs, key);
       if (isUndefined(maybe)) {
-        if (value != "" + DEFAULTS[key]) {
+        if (value != "" + THREE_D_DEFAULTS[key]) {
           dispatch(initSave("FarmwareEnv", { key: namespace3D(key), value }));
         }
       } else {
@@ -181,7 +133,7 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
   const { dispatch, configKey, distanceIndicator } = props;
   const value = props.getValue(configKey);
   const modifiedClassName = getModifiedClassNameSpecifyDefault(
-    value, DEFAULTS[configKey]);
+    value, THREE_D_DEFAULTS[configKey]);
   const action = (newValue: string) => props.findOrCreate(configKey, newValue);
   return <Highlight settingName={props.setting}>
     <Row className="grid-2-col">
@@ -191,7 +143,7 @@ export const ThreeDConfig = (props: ThreeDConfigProps) => {
         </label>
         <Help
           text={t(props.tooltip, {
-            defaultConfigValue: "" + DEFAULTS[configKey],
+            defaultConfigValue: "" + THREE_D_DEFAULTS[configKey],
           })}
           setOpen={() => dispatch({
             type: Actions.SET_DISTANCE_INDICATOR,

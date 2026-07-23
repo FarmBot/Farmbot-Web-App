@@ -42,6 +42,9 @@ import { useLocation, useNavigate } from "react-router";
 import { Path } from "../internal_urls";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { ExternalUrl } from "../external_urls";
+import {
+  ToggleHighlightModified,
+} from "../photos/data_management/toggle_highlight_modified";
 
 export const RawDesignerSettings = (props: DesignerSettingsProps) => {
   const navigate = useNavigate();
@@ -98,6 +101,9 @@ export const RawDesignerSettings = (props: DesignerSettingsProps) => {
           popoverClassName={"settings-panel-settings-menu"}
           target={<i className={"fa fa-gear fb-icon-button invert"} />}
           content={<div className="grid">
+            <ToggleHighlightModified
+              dispatch={dispatch}
+              getConfigValue={getConfigValue} />
             <ShowAdvancedToggle
               dispatch={dispatch}
               getConfigValue={getConfigValue} />

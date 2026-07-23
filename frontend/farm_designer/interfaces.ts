@@ -219,8 +219,11 @@ export interface DesignerState {
   threeDSectionClipAll: boolean;
   threeDViewMode: ThreeDViewMode;
   threeDStargazingFov: number;
-  threeDViewRequest: {
+  threeDViewRequest: ({
     direction: [number, number, number];
+  } | {
+    reset: true;
+  }) & {
     nonce: number;
   } | undefined;
   threeDTime: string | undefined;
@@ -421,7 +424,7 @@ export interface CameraCalibrationData {
   calibrationZ: string | undefined;
 }
 
-export type PointPlacementPhase = "position" | "radius" | "finalize";
+export type PointPlacementPhase = "position" | "finalize";
 
 export interface DrawnPointPayl {
   name: string;

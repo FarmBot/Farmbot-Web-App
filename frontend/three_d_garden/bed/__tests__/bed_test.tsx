@@ -508,13 +508,13 @@ describe("<Bed />", () => {
         cx: 1350,
         cy: 660,
         z: 0,
-        placementPhase: "radius",
+        placementPhase: "finalize",
       },
     });
     expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it("finalizes a drawn point radius before saving", () => {
+  it("ignores soil clicks after setting a point location", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
     location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
@@ -530,14 +530,7 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.click(soil);
-    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_POINT_DATA,
-      payload: {
-        ...point,
-        r: 1480,
-        placementPhase: "finalize",
-      },
-    });
+    expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
     expect(innerDispatch).not.toHaveBeenCalled();
   });
 
@@ -644,7 +637,7 @@ describe("<Bed />", () => {
     expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
-  it("updates pointer point radius around the center", () => {
+  it("doesn't update point radius after setting its location", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
@@ -653,32 +646,6 @@ describe("<Bed />", () => {
     mockTorusRef.current = { scale: { set: mockSetTorusScale } };
     mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
     mockImageRef.current = { scale: { set: mockSetImageScale } };
-    const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps();
-    const point = fakeDrawnPoint();
-    point.cx = 1;
-    point.cy = 1;
-    point.r = 0;
-    p.addPlantProps.designer.drawnPoint = point;
-    const { container } = render(<Bed {...p} />);
-    const soil = soilMesh(container);
-    fireEvent.pointerMove(soil);
-    expect(mockSetPlantPosition).not.toHaveBeenCalled();
-    expect(mockSetRadiusScale).toHaveBeenCalledWith(1500, 1500, 1500);
-    expect(mockSetTorusScale).toHaveBeenCalledWith(1500, 1500, 400);
-    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 667.5);
-    expect(mockSetImageScale).toHaveBeenCalledWith(1335, 1335, 1335);
-  });
-
-  it("doesn't update pointer point radius: no ref", () => {
-    getModeSpy.mockReturnValue(Mode.createPoint);
-    location.pathname = Path.mock(Path.points("add"));
-    mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
-    mockRadiusRef.current = undefined;
-    mockTorusRef.current = undefined;
-    mockBillboardRef.current = undefined;
-    mockImageRef.current = undefined;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();

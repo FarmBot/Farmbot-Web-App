@@ -14,15 +14,21 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import {
+  clampNativeJogDragDistance,
   getNativeJogAbsoluteDestination, getNativeJogControlPositions,
   getNativeJogDevicePosition,
   getNativeJogDragDistance, getNativeJogDragPreviewPositions,
   getNativeJogRenderDirection, getNativeJogStepSize,
   nativeJogDirectionDisabled, nativeJogMaxPosition,
-  NativeJogControlPair, NativeJogControlPairProps,
-  NATIVE_JOG_ARROW_LENGTH, NATIVE_JOG_CUSTOM_STEP_STORAGE_KEY,
+  NativeJogControlPair, NativeJogControlPairProps, NativeJogDragPreview,
+  NativeJogPreviewState, NativeJogWorldPreview,
+  NATIVE_JOG_ARROW_LENGTH,
+  NATIVE_JOG_DRAG_SNAP_THRESHOLD,
+  NATIVE_JOG_GUIDE_COLOR,
+  NATIVE_JOG_STEP_CHOICES,
+  NATIVE_JOG_Y_ARROW_LENGTH,
 } from "../native_jog_controls";
-import { ControlDragEvent } from "../../controls";
+import { ControlDragEvent, ControlPoint } from "../../controls";
 import { SECTION_CONTROL_ACTIVE_COLOR } from "../../section_controls";
 
 describe("native jog control geometry", () => {
@@ -33,7 +39,7 @@ describe("native jog control geometry", () => {
 
     expect(getNativeJogControlPositions(config)).toEqual({
       x: [[0, -120, 0], [0, 1440, 0]],
-      y: [[-39, 50, 700], [-39, 1350, 700]],
+      y: [-26.5, 0, 103],
       z: [60, 0, 300],
     });
   });
@@ -118,6 +124,23 @@ describe("native jog control geometry", () => {
     },
   );
 
+  it("snaps drag distances within five millimeters", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = false;
+    expect(getNativeJogDragDistance(
+      config,
+      "x",
+      [NATIVE_JOG_DRAG_SNAP_THRESHOLD, 0, 0],
+    )).toEqual(0);
+    expect(getNativeJogDragDistance(
+      config,
+      "x",
+      [-NATIVE_JOG_DRAG_SNAP_THRESHOLD, 0, 0],
+    )).toEqual(0);
+    expect(getNativeJogDragDistance(config, "x", [6, 0, 0])).toEqual(6);
+    expect(getNativeJogDragDistance(config, "x", [-6, 0, 0])).toEqual(-6);
+  });
+
   it.each([
     ["x", [0, -120, 0], 126, [126, 0, 0], [0, 50, 0], [126, 0, 100]],
     ["x", [0, 1440, 0], -50, [-50, 0, 0], [0, -50, 0], [-50, 0, 100]],
@@ -195,7 +218,8 @@ describe("native jog control geometry", () => {
 
   it.each([
     ["x", "-100,0,0", "100,0,0"],
-    ["y", "0,-100,0", "0,100,0"],
+    ["y", `0,-${NATIVE_JOG_Y_ARROW_LENGTH},0`,
+      `0,${NATIVE_JOG_Y_ARROW_LENGTH},0`],
     ["z", "0,0,-100", "0,0,100"],
   ] as const)(
     "renders device %s arrows in mirrored scene directions",
@@ -273,6 +297,31 @@ describe("<NativeJogControlPair />", () => {
     jest.restoreAllMocks();
   });
 
+  it("clamps drag distance to positive and negative axis bounds", () => {
+    const p = props("x");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    expect(clampNativeJogDragDistance(
+      p.config,
+      p.axisActions,
+      "x",
+      5000,
+    )).toEqual({ distance: 1962, boundDirection: 1 });
+    expect(clampNativeJogDragDistance(
+      p.config,
+      p.axisActions,
+      "x",
+      -5000,
+    )).toEqual({ distance: -1038, boundDirection: -1 });
+
+    p.axisActions.botPosition = { ...position, x: undefined };
+    expect(clampNativeJogDragDistance(
+      p.config,
+      p.axisActions,
+      "x",
+      5000,
+    )).toEqual({ distance: 5000 });
+  });
+
   it("previews and runs a custom relative move by dragging", () => {
     let handleProps: controls.ControlHandleProps | undefined;
     jest.spyOn(controls, "ControlHandle").mockImplementation(controlProps => {
@@ -298,14 +347,26 @@ describe("<NativeJogControlPair />", () => {
         data-position={labelProps.position?.join(",")}>
         {labelProps.children}
       </i>);
+    jest.spyOn(controls, "ControlArrow").mockImplementation(arrowProps =>
+      <i
+        data-testid={arrowProps.name}
+        data-color={arrowProps.color} />);
     const moveRelative = jest.spyOn(deviceActions, "moveRelative")
       .mockImplementation(jest.fn());
     const p = props("x");
     p.config = clone(config);
     p.config.mirrorX = true;
     p.position = [0, -120, 0];
+    p.positionStore = createBotPositionSnapshotStore({
+      x: 1962,
+      y: 234,
+      z: -50,
+    });
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.botPosition = { ...position, x: undefined };
+    p.ghost = <i data-testid={"mounted-tool-ghost"} />;
     p.selected = false;
-    render(<NativeJogControlPair {...p} />);
+    const view = render(<NativeJogControlPair {...p} />);
     const dragEvent = {
       delta: new Vector3(-125.6, 0, 0),
       dragged: true,
@@ -340,6 +401,21 @@ describe("<NativeJogControlPair />", () => {
       .toHaveAttribute("data-position", "-126,0,100");
     expect(screen.getByTestId("bot-jog-x-drag-label"))
       .toHaveTextContent("126mm");
+    expect(document.querySelector("[name='bot-jog-x-ghost']"))
+      .toHaveAttribute("position", "-126,0,0");
+    expect(screen.getByTestId("mounted-tool-ghost"))
+      .toBeInTheDocument();
+    act(() => handleProps?.onDrag?.({
+      ...dragEvent,
+      delta: new Vector3(-5000, 0, 0),
+    }));
+    expect(screen.getByTestId("bot-jog-x-plus-arrow"))
+      .toHaveAttribute("data-color", "red");
+    expect(screen.getByTestId("bot-jog-x-minus-arrow"))
+      .toHaveAttribute("data-color", "gray");
+    expect(document.querySelector("[name='bot-jog-x-drag-control']"))
+      .toHaveAttribute("position", "-1962,0,0");
+    act(() => handleProps?.onDrag?.(dragEvent));
 
     const snappedEvent = {
       ...dragEvent,
@@ -355,17 +431,206 @@ describe("<NativeJogControlPair />", () => {
       .toHaveAttribute("data-color", SECTION_CONTROL_ACTIVE_COLOR);
     expect(screen.getByTestId("bot-jog-x-drag-label"))
       .toHaveTextContent("0mm");
+    act(() => handleProps?.onDragEnd?.(snappedEvent));
+    expect(moveRelative).not.toHaveBeenCalled();
     act(() => handleProps?.onDrag?.(dragEvent));
 
     act(() => handleProps?.onDragEnd?.(realPointerDragEvent));
 
-    expect(moveRelative).toHaveBeenCalledWith({ x: 126, y: 0, z: 0 });
+    expect(moveRelative).toHaveBeenCalledWith(
+      { x: 126, y: 0, z: 0 },
+      expect.any(Function),
+    );
     expect(p.axisActions?.dispatch).toHaveBeenCalledWith(
       expect.any(Function),
     );
+    expect(screen.getByTestId("bot-jog-x-current-position-marker"))
+      .toBeInTheDocument();
+    expect(document.querySelector("[name='bot-jog-x-drag-control']"))
+      .toHaveAttribute("position", "-126,0,0");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.botPosition = { ...position, x: 1164 };
+    view.rerender(<NativeJogControlPair {...p} />);
     expect(screen.queryByTestId("bot-jog-x-current-position-marker"))
       .not.toBeInTheDocument();
     expect(p.onSelect).not.toHaveBeenCalled();
+  });
+
+  it("immediately resets a retained target when movement is canceled", () => {
+    let handleProps: controls.ControlHandleProps | undefined;
+    jest.spyOn(controls, "ControlHandle").mockImplementation(controlProps => {
+      handleProps = controlProps;
+      return <div>
+        {typeof controlProps.children == "function"
+          ? controlProps.children({
+            hovered: false,
+            pressed: true,
+            dragging: true,
+          })
+          : controlProps.children}
+      </div>;
+    });
+    jest.spyOn(deviceActions, "moveRelative")
+      .mockImplementation(jest.fn());
+    const p = props("y");
+    p.ghost = <i data-testid={"retained-ghost"} />;
+    const view = render(<NativeJogControlPair {...p} />);
+    const event = {
+      delta: new Vector3(0, 100, 0),
+      dragged: true,
+    } as ControlDragEvent;
+
+    act(() => handleProps?.onDragStart?.(event));
+    act(() => handleProps?.onDrag?.(event));
+    act(() => handleProps?.onDragEnd?.(event));
+    expect(screen.getByTestId("retained-ghost")).toBeInTheDocument();
+
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.arduinoBusy = true;
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(screen.getByTestId("retained-ghost")).toBeInTheDocument();
+    p.axisActions.arduinoBusy = false;
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(screen.queryByTestId("retained-ghost"))
+      .not.toBeInTheDocument();
+
+    act(() => handleProps?.onDragStart?.(event));
+    act(() => handleProps?.onDrag?.(event));
+    act(() => handleProps?.onDragEnd?.(event));
+    expect(screen.getByTestId("retained-ghost")).toBeInTheDocument();
+    p.axisActions.locked = true;
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(screen.queryByTestId("retained-ghost"))
+      .not.toBeInTheDocument();
+  });
+
+  it("resets a retained target when the movement command fails", () => {
+    let handleProps: controls.ControlHandleProps | undefined;
+    let onError: (() => void) | undefined;
+    jest.spyOn(controls, "ControlHandle").mockImplementation(controlProps => {
+      handleProps = controlProps;
+      return <div>
+        {typeof controlProps.children == "function"
+          ? controlProps.children({
+            hovered: false,
+            pressed: true,
+            dragging: true,
+          })
+          : controlProps.children}
+      </div>;
+    });
+    jest.spyOn(deviceActions, "moveRelative")
+      .mockImplementation((_move, failure) => {
+        onError = failure;
+        return Promise.resolve();
+      });
+    const p = props("y");
+    p.ghost = <i data-testid={"failed-move-ghost"} />;
+    render(<NativeJogControlPair {...p} />);
+    const event = {
+      delta: new Vector3(0, 100, 0),
+      dragged: true,
+    } as ControlDragEvent;
+
+    act(() => handleProps?.onDragStart?.(event));
+    act(() => handleProps?.onDrag?.(event));
+    act(() => handleProps?.onDragEnd?.(event));
+    expect(screen.getByTestId("failed-move-ghost")).toBeInTheDocument();
+    expect(onError).toEqual(expect.any(Function));
+
+    act(() => onError?.());
+
+    expect(screen.queryByTestId("failed-move-ghost"))
+      .not.toBeInTheDocument();
+    expect(handleProps?.constraint).toEqual(expect.any(Function));
+  });
+
+  it("moves shared X controls and retains one world-space target", () => {
+    const handles: Record<string, controls.ControlHandleProps> = {};
+    jest.spyOn(controls, "ControlHandle").mockImplementation(controlProps => {
+      handles[controlProps.name] = controlProps;
+      return <div>
+        {typeof controlProps.children == "function"
+          ? controlProps.children({
+            hovered: false,
+            pressed: true,
+            dragging: true,
+          })
+          : controlProps.children}
+      </div>;
+    });
+    jest.spyOn(deviceActions, "moveRelative")
+      .mockImplementation(jest.fn());
+    const near = props("x");
+    near.name = "bot-jog-x-near";
+    near.position = [0, -120, 0];
+    near.selected = false;
+    near.config = { ...near.config, mirrorX: false };
+    const far = {
+      ...near,
+      name: "bot-jog-x-far",
+      position: [0, 1440, 0] as ControlPoint,
+    };
+    const SharedControls = () => {
+      const [preview, setPreview] =
+        React.useState<NativeJogDragPreview | undefined>();
+      const previewState: NativeJogPreviewState = {
+        preview,
+        setPreview,
+        world: () => ({
+          controlPositions: [[1, 2, 3], [4, 5, 6]],
+          utmPosition: [10, 20, 30],
+        }),
+      };
+      return <>
+        <NativeJogControlPair
+          {...near}
+          previewState={previewState} />
+        <NativeJogControlPair
+          {...far}
+          managePreviewLifecycle={false}
+          previewState={previewState} />
+        {preview && <NativeJogWorldPreview
+          axis={"x"}
+          config={near.config}
+          name={"bot-jog-x"}
+          preview={preview} />}
+      </>;
+    };
+    const { container } = render(<SharedControls />);
+    const event = {
+      delta: new Vector3(100, 0, 0),
+      dragged: true,
+    } as ControlDragEvent;
+
+    act(() => handles["bot-jog-x-near-control"].onDragStart?.(event));
+    act(() => handles["bot-jog-x-near-control"].onDrag?.(event));
+    expect(container.querySelector(
+      "[name='bot-jog-x-near-drag-control']",
+    )).toHaveAttribute("position", "100,0,0");
+    expect(container.querySelector(
+      "[name='bot-jog-x-far-drag-control']",
+    )).toHaveAttribute("position", "100,0,0");
+    expect(container.querySelectorAll(
+      "[name='bot-jog-x-ghost']",
+    )).toHaveLength(1);
+    expect(container.querySelector(
+      "[name='bot-jog-x-world-control-0']",
+    )).not.toBeInTheDocument();
+
+    act(() => handles["bot-jog-x-near-control"].onDragEnd?.(event));
+    expect(container.querySelector(
+      "[name='bot-jog-x-world-control-0']",
+    )).toHaveAttribute("position", "101,2,3");
+    expect(container.querySelector(
+      "[name='bot-jog-x-world-control-1']",
+    )).toHaveAttribute("position", "104,5,6");
+    expect(container.querySelector(
+      "[name='bot-jog-x-ghost']",
+    )).toHaveAttribute("position", "110,20,30");
+    expect(container.querySelector(".line"))
+      .toHaveTextContent("native-jog-x-guide-line");
+    expect(NATIVE_JOG_GUIDE_COLOR).toEqual("orange");
   });
 
   it.each([
@@ -407,6 +672,40 @@ describe("<NativeJogControlPair />", () => {
       const positiveButton = screen.getByRole("button", {
         name: `Jog +${axis.toUpperCase()}`,
       });
+      const controlGrid = negativeButton.closest(
+        ".native-jog-control-grid",
+      );
+      expect(controlGrid).toContainElement(positiveButton);
+      expect(controlGrid).toContainElement(screen.getByRole("button", {
+        name: "1",
+      }));
+      const selector = screen.getByRole("button", {
+        name: "1",
+      }).closest(".native-jog-step-selector");
+      expect(selector).toContainElement(screen.getByRole("button", {
+        name: "1000",
+      }));
+      expect(negativeButton).toHaveClass("native-jog-negative-button");
+      expect(positiveButton).toHaveClass("native-jog-positive-button");
+      const absoluteInput = screen.getByLabelText(
+        `${axis.toUpperCase()} axis position`,
+      );
+      expect(controlGrid).toContainElement(absoluteInput);
+      expect(controlGrid).toContainElement(screen.getByRole("button", {
+        name: "GO",
+      }));
+      expect(screen.getByRole("button", {
+        name: `Move Home ${axis.toUpperCase()}`,
+      })).toHaveClass("native-jog-home-button");
+      expect(screen.getByRole("button", {
+        name: `Find Home ${axis.toUpperCase()}`,
+      })).toHaveClass("native-jog-find-home-button");
+      const limitButtonName = axis == "z"
+        ? "Move to Safe Height"
+        : `Move to Max ${axis.toUpperCase()}`;
+      expect(screen.getByRole("button", {
+        name: limitButtonName,
+      })).toHaveClass("native-jog-limit-button");
       expect(negativeButton).toHaveClass(
         `fa-arrow-${axis == "z" ? "down" : "left"}`,
       );
@@ -468,56 +767,23 @@ describe("<NativeJogControlPair />", () => {
     });
   });
 
-  it("uses preset and cached custom move amounts", () => {
+  it("uses preset move amounts without a custom amount input", () => {
     const p = props("x");
-    const view = render(<NativeJogControlPair {...p} />);
+    render(<NativeJogControlPair {...p} />);
 
     fireEvent.click(screen.getByRole("button", { name: "10" }));
     expect(p.axisActions?.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,
       payload: 10,
     });
-    const custom = screen.getByLabelText("Custom move amount");
-    expect(custom).toHaveAttribute("placeholder", "Custom");
-    expect(custom).toHaveClass("fb-button");
-    fireEvent.focus(custom);
-    expect(custom).toHaveClass("move-amount-selected");
-    expect(screen.getByRole("button", { name: "10" }))
-      .not.toHaveClass("move-amount-selected");
-    fireEvent.change(custom, { target: { value: "25" } });
-    expect(p.axisActions?.dispatch).toHaveBeenCalledWith({
-      type: Actions.CHANGE_STEP_SIZE,
-      payload: 25,
-    });
-    expect(localStorage.getItem(NATIVE_JOG_CUSTOM_STEP_STORAGE_KEY))
-      .toEqual("25");
-    expect(fireEvent.keyDown(custom, { key: "-" })).toEqual(false);
-    fireEvent.change(custom, { target: { value: "-25" } });
-    expect(custom).toHaveValue(25);
-    expect(localStorage.getItem(NATIVE_JOG_CUSTOM_STEP_STORAGE_KEY))
-      .toEqual("25");
+    expect(screen.queryByLabelText("Custom move amount"))
+      .not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "1" }))
+      .toHaveClass("leftmost");
+    expect(screen.getByRole("button", { name: "1000" }))
+      .toHaveClass("rightmost");
     fireEvent.click(screen.getByRole("button", { name: "100" }));
-    expect(custom).not.toHaveClass("move-amount-selected");
     expect(screen.getByRole("button", { name: "100" }))
-      .toHaveClass("move-amount-selected");
-
-    view.unmount();
-    const cachedProps = props("x");
-    const cachedView = render(<NativeJogControlPair {...cachedProps} />);
-    const cached = screen.getByLabelText("Custom move amount");
-    expect(cached).toHaveValue(25);
-    fireEvent.focus(cached);
-    expect(cachedProps.axisActions?.dispatch).toHaveBeenCalledWith({
-      type: Actions.CHANGE_STEP_SIZE,
-      payload: 25,
-    });
-
-    cachedView.unmount();
-    const selectedCustomProps = props("x");
-    selectedCustomProps.axisActions &&
-      (selectedCustomProps.axisActions.stepSize = 25);
-    render(<NativeJogControlPair {...selectedCustomProps} />);
-    expect(screen.getByLabelText("Custom move amount"))
       .toHaveClass("move-amount-selected");
   });
 
@@ -525,16 +791,18 @@ describe("<NativeJogControlPair />", () => {
     const p = props("x");
     if (!p.axisActions) { throw new Error("axis actions required"); }
     p.axisActions.botPosition = { x: 0, y: 234, z: -50 };
-    p.axisActions.firmwareSettings.movement_stop_at_home_x = 1;
+    p.axisActions.firmwareSettings.movement_stop_at_home_x = 0;
     p.axisActions.firmwareSettings.movement_home_up_x = 0;
     const view = render(<NativeJogControlPair {...p} />);
 
     expect(nativeJogDirectionDisabled(p.axisActions, "x", -1)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Move Home X" }))
+      .toBeDisabled();
     expect(screen.getByRole("button", { name: "Jog -X" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Jog +X" })).toBeEnabled();
 
     p.axisActions.botPosition = { x: 3000, y: 234, z: -50 };
-    p.axisActions.firmwareSettings.movement_stop_at_max_x = 1;
+    p.axisActions.firmwareSettings.movement_stop_at_max_x = 0;
     view.rerender(<NativeJogControlPair {...p} />);
     expect(nativeJogMaxPosition(
       p.axisActions,
@@ -549,7 +817,7 @@ describe("<NativeJogControlPair />", () => {
     const zProps = props("z");
     if (!zProps.axisActions) { throw new Error("axis actions required"); }
     zProps.axisActions.botPosition = { x: 1038, y: 234, z: 0 };
-    zProps.axisActions.firmwareSettings.movement_stop_at_home_z = 1;
+    zProps.axisActions.firmwareSettings.movement_stop_at_home_z = 0;
     zProps.axisActions.firmwareSettings.movement_home_up_z = 1;
     render(<NativeJogControlPair {...zProps} />);
     expect(nativeJogMaxPosition(
@@ -558,6 +826,29 @@ describe("<NativeJogControlPair />", () => {
       zProps.config.botSizeZ,
     )).toEqual(-600);
     expect(screen.getByRole("button", { name: "Jog +Z" })).toBeDisabled();
+  });
+
+  it("uses the rendered position and configured length for bounds", () => {
+    const p = props("x");
+    if (!p.axisActions) { throw new Error("axis actions required"); }
+    p.axisActions.botPosition = { x: undefined, y: 234, z: -50 };
+    p.positionStore = createBotPositionSnapshotStore({
+      x: 0,
+      y: 234,
+      z: -50,
+    });
+    p.axisActions.firmwareSettings.movement_axis_nr_steps_x = 0;
+    const view = render(<NativeJogControlPair {...p} />);
+
+    expect(screen.getByRole("button", { name: "Move Home X" }))
+      .toBeDisabled();
+    expect(screen.getByRole("button", { name: "Jog -X" }))
+      .toBeDisabled();
+
+    p.axisActions.botPosition = { x: 3000, y: 234, z: -50 };
+    view.rerender(<NativeJogControlPair {...p} />);
+    expect(screen.getByRole("button", { name: "Jog +X" }))
+      .toBeDisabled();
   });
 
   it("moves X to max and Z to safe height", () => {
@@ -660,7 +951,9 @@ describe("<NativeJogControlPair />", () => {
     expect(input).toHaveAttribute("placeholder", "");
     expect((input as HTMLInputElement).value).toEqual("");
     fireEvent.change(input, { target: { value: "2048.5" } });
-    fireEvent.click(screen.getByRole("button", { name: "GO" }));
+    const goButton = screen.getByRole("button", { name: "GO" });
+    expect(goButton).toHaveClass("native-jog-go-button");
+    fireEvent.click(goButton);
     expect(moveAbsolute).toHaveBeenCalledWith({
       x: 2048.5,
       y: 800,
@@ -725,9 +1018,17 @@ describe("<NativeJogControlPair />", () => {
       .toBeInTheDocument();
     fireEvent.click(screen.getByTitle("toggle scaled encoder display"));
     fireEvent.click(screen.getByTitle("toggle raw encoder display"));
-    fireEvent.click(screen.getByRole("button", { name: "SET HOME" }));
-    fireEvent.click(screen.getByRole("button", { name: "FIND LENGTH" }));
-    fireEvent.click(screen.getByRole("button", { name: "SET LENGTH" }));
+    const setHomeButton =
+      screen.getByRole("button", { name: "SET HOME" });
+    const findLengthButton =
+      screen.getByRole("button", { name: "FIND LENGTH" });
+    const setLengthButton =
+      screen.getByRole("button", { name: "SET LENGTH" });
+    [setHomeButton, findLengthButton, setLengthButton]
+      .forEach(button => expect(button).toHaveClass("yellow"));
+    fireEvent.click(setHomeButton);
+    fireEvent.click(findLengthButton);
+    fireEvent.click(setLengthButton);
     const settings = screen.getByRole("link", { name: "Settings" });
     expect(settings).toHaveAttribute("href", Path.settings("axes"));
     fireEvent.click(settings);
@@ -769,6 +1070,10 @@ describe("<NativeJogControlPair />", () => {
     ]
       .forEach(name => expect(screen.getByRole("button", { name }))
         .toBeDisabled());
+    NATIVE_JOG_STEP_CHOICES.forEach(step =>
+      expect(screen.getByRole("button", { name: `${step}` }))
+        .toBeEnabled());
+    expect(screen.getByLabelText("Z axis position")).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Jog -Z" }));
     expect(moveRelative).not.toHaveBeenCalled();
   });

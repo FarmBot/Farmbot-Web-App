@@ -476,6 +476,18 @@ describe("moveRelative()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
+  it("reports failed relative moves to the caller", async () => {
+    const onError = jest.fn();
+    await replaceDeviceWith({
+      moveRelative: jest.fn(() => Promise.reject()),
+    }, async () => {
+      await deviceActions().moveRelative({ x: 1, y: 0, z: 0 }, onError);
+    });
+
+    expect(error).toHaveBeenCalledWith("Relative movement failed");
+    expect(onError).toHaveBeenCalled();
+  });
+
   it("calls moveRelative on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
     await deviceActions().moveRelative({ x: 1, y: 0, z: 0 });

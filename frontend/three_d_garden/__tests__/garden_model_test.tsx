@@ -4021,6 +4021,46 @@ describe("useGardenCameraController()", () => {
     });
   });
 
+  it("resets to the user's configured starting camera", () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      viewPrismBridgeRef,
+    };
+    const { result } = renderHook(() =>
+      useGardenCameraController(props));
+    const cancel = jest.fn();
+    result.current.cameraSpringCancelRef.current = cancel;
+
+    act(() => viewPrismBridgeRef.current?.selectDirection?.([1, 0, 0]));
+    expect(result.current.cameraRequest?.camera.position)
+      .not.toEqual(props.startingCamera.position);
+    act(() => viewPrismBridgeRef.current?.resetView?.());
+
+    expect(cancel).toHaveBeenCalled();
+    expect(result.current.cameraRequest?.camera.target)
+      .toEqual(props.startingCamera.target);
+    result.current.cameraRequest?.camera.position.map((value, index) =>
+      expect(value).toBeCloseTo(props.startingCamera.position[index]));
+    expect(result.current.cameraRequest?.fov).toEqual(props.desiredFov);
+  });
+
+  it("stops camera follow before resetting its view", () => {
+    const viewPrismBridgeRef = React.createRef<ViewPrismBridge>();
+    const stopCameraFollow = jest.fn();
+    const props: GardenCameraControllerProps = {
+      ...fakeControllerProps(),
+      cameraFollow: true,
+      stopCameraFollow,
+      viewPrismBridgeRef,
+    };
+    renderHook(() => useGardenCameraController(props));
+
+    act(() => viewPrismBridgeRef.current?.resetView?.());
+
+    expect(stopCameraFollow).toHaveBeenCalledTimes(1);
+  });
+
   it("returns to the starting view when stargazing stops follow", async () => {
     const props: GardenCameraControllerProps = {
       ...fakeControllerProps(),

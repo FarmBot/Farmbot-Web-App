@@ -188,7 +188,13 @@ export const applyViewRequest = (
   bridgeRef: React.RefObject<ViewPrismBridge | null>,
   request: ThreeDGardenProps["addPlantProps"]["designer"]["threeDViewRequest"],
 ) => {
-  if (!request || !bridgeRef.current?.selectDirection) { return false; }
+  if (!request) { return false; }
+  if ("reset" in request) {
+    if (!bridgeRef.current?.resetView) { return false; }
+    bridgeRef.current.resetView();
+    return true;
+  }
+  if (!bridgeRef.current?.selectDirection) { return false; }
   bridgeRef.current.selectDirection(request.direction);
   return true;
 };

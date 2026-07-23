@@ -37,6 +37,7 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.shutdownFarmbot,
   DeviceSetting.softReset,
   DeviceSetting.hardReset,
+  DeviceSetting.changeOwnership,
 ];
 const AXES_PANEL = [
   DeviceSetting.axisSettings,
@@ -130,7 +131,7 @@ const PARAMETER_MANAGEMENT = [
   DeviceSetting.importParameters,
   DeviceSetting.highlightModifiedSettings,
   DeviceSetting.showAdvancedSettings,
-  DeviceSetting.resetHardwareParams,
+  DeviceSetting.paramResend,
 ];
 const CUSTOM_SETTINGS_PANEL = [
   DeviceSetting.customSettings,
@@ -201,6 +202,7 @@ const CONTROLS_SETTINGS = [
   DeviceSetting.displayRawEncoderPosition,
   DeviceSetting.swapXAndYAxisJogButtons,
   DeviceSetting.showMotorPositionPlotDisplay,
+  DeviceSetting.showMotorLoadPlotDisplay,
 ];
 const SEQUENCE_SETTINGS = [
   DeviceSetting.confirmStepDeletion,

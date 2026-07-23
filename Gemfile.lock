@@ -258,6 +258,8 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.3-aarch64-linux-gnu)
       racc (~> 1.4)
+    nokogiri (1.19.3-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.19.3-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
@@ -273,6 +275,7 @@ GEM
       rackup (>= 1.0.1)
       rake (>= 12.3.3)
     pg (1.6.3-aarch64-linux)
+    pg (1.6.3-arm64-darwin)
     pg (1.6.3-x86_64-linux)
     pp (0.6.3)
       prettyprint
@@ -458,6 +461,7 @@ GEM
 
 PLATFORMS
   aarch64-linux
+  arm64-darwin-25
   x86_64-linux
 
 DEPENDENCIES

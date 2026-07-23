@@ -220,9 +220,11 @@ describe("<NavBar />", () => {
     mockIsMobile = true;
     const { container } = renderNavBar();
     const button = container.querySelector(".command-palette-nav-button");
+    expect(button).toHaveAccessibleName("Commands");
     expect(button).toHaveAttribute("title", "Commands");
-    expect(button?.getAttribute("title"))
-      .not.toContain(commandPaletteShortcut());
+    expect(button).toHaveTextContent("");
+    expect(button?.querySelector("span")).toBeNull();
+    expect(button?.outerHTML).not.toContain(commandPaletteShortcut());
   });
 
   it("displays movement progress", () => {

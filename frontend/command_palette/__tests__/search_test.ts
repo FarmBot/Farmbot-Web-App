@@ -55,6 +55,20 @@ describe("command palette search", () => {
       .toEqual(["estop", "unlock", "other"]);
   });
 
+  it("uses search priority only to rank equally relevant results", () => {
+    const highSearchPriority = command({
+      id: "high-search", name: "Camera command",
+      englishName: "Camera command", searchPriority: 1,
+    });
+    const shortName = command({
+      id: "short", name: "Camera", englishName: "Camera",
+    });
+    expect(searchCommands([shortName, highSearchPriority], "camera")
+      .map(result => result.id)).toEqual(["short", "high-search"]);
+    expect(searchCommands([shortName, highSearchPriority], "cam")
+      .map(result => result.id)).toEqual(["high-search", "short"]);
+  });
+
   it("ranks shorter names before longer equally relevant names", () => {
     const result = searchCommands([
       command({ id: "long", name: "Open garden map",
@@ -64,11 +78,26 @@ describe("command palette search", () => {
     expect(result.map(command => command.id)).toEqual(["short", "long"]);
   });
 
-  it("supports compact subsequences and rejects scattered matches", () => {
+  it("supports plausible subsequences and rejects scattered matches", () => {
     const broccoli = command({
       name: "Broccoli",
       englishName: "Broccoli",
       aliases: [],
+    });
+    const redBellPepper = command({
+      name: "Red Bell Pepper",
+      englishName: "Red Bell Pepper",
+      aliases: ["add", "crop", "red-bell-pepper"],
+      actions: [
+        {
+          id: "add-new", name: "Add new", englishName: "Add new",
+          aliases: ["new plant"], execute: jest.fn(),
+        },
+        {
+          id: "add-grid", name: "Add grid", englishName: "Add grid",
+          aliases: ["Red Bell Pepper grid"], execute: jest.fn(),
+        },
+      ],
     });
     const scattered = command({
       name: "Set Disable Emergency Unlock Confirmation off",
@@ -76,8 +105,9 @@ describe("command palette search", () => {
       aliases: [],
     });
     expect(scoreCommand(command(), "photo")).toEqual(800);
-    expect(scoreCommand(command(), "tkpht")).toEqual(200);
+    expect(scoreCommand(command(), "tkpht")).toEqual(0);
     expect(scoreCommand(broccoli, "brocli")).toEqual(200);
+    expect(searchCommands([redBellPepper], "beep")).toEqual([]);
     expect(scoreCommand(scattered, "brocco")).toEqual(0);
     expect(scoreCommand(command(), "zzzz")).toEqual(0);
   });

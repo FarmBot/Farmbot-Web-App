@@ -381,14 +381,17 @@ export function settingToggle(
   };
 }
 
-export function moveRelative(props: MoveRelProps) {
+export function moveRelative(props: MoveRelProps, onError?: () => void) {
   if (forceOnline()) {
     return runDemoLuaCode(`move_relative(${props.x}, ${props.y}, ${props.z})`);
   }
   maybeAlertLocked();
   return getDevice()
     .moveRelative(props)
-    .then(maybeNoop, commandErr("Relative movement"));
+    .then(maybeNoop, () => {
+      commandErr("Relative movement")();
+      onError?.();
+    });
 }
 
 export function moveAbsolute(props: MoveRelProps) {

@@ -216,6 +216,30 @@ describe("SCENE_DDIS", () => {
 });
 
 describe("<ThreeDConfig /> scene selection", () => {
+  it("changes the selected ground texture", () => {
+    let fbSelectProps: FBSelectProps | undefined;
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps = props;
+        return <div />;
+      }) as never);
+    const findOrCreate = jest.fn();
+    render(<ThreeDConfig
+      dispatch={jest.fn()}
+      setting={DeviceSetting.groundTexture}
+      configKey={"groundTexture"}
+      tooltip={""}
+      getValue={() => 0}
+      findOrCreate={findOrCreate}
+      isTexture={true}
+      sceneObjectUuids={[]} />);
+
+    fbSelectProps?.onChange({ label: "Sand", value: 6 });
+
+    expect(findOrCreate).toHaveBeenCalledWith("groundTexture", "6");
+    fbSelectSpy.mockRestore();
+  });
+
   it("changes to Custom without deleting saved scene objects", () => {
     const fbSelectProps: FBSelectProps[] = [];
     const fbSelectSpy = jest.spyOn(ui, "FBSelect")

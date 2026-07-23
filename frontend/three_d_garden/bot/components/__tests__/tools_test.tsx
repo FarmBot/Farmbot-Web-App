@@ -39,7 +39,7 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
 import {
-  convertSlotsWithTools, Tools, ToolsProps, toolsPropsEqual,
+  convertSlotsWithTools, OpacityFilter, Tools, ToolsProps, toolsPropsEqual,
 } from "../tools";
 import { getToolSlotRenderPosition } from "../tool_slot_position";
 import {
@@ -191,6 +191,34 @@ describe("<Tools />", () => {
   it("renders promo tools", () => {
     const { container } = render(<Tools {...fakeProps()} />);
     expect(container).toContainHTML("toolbay5");
+  });
+
+  it("makes ghost contents translucent and non-interactive", () => {
+    const mesh = new THREE.Mesh();
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <OpacityFilter interactive={false} opacity={0.5}>
+          <mesh />
+        </OpacityFilter>,
+        {
+          createNodeMock: node => node.type == "group"
+            ? {
+              traverse: (callback: (child: THREE.Object3D) => void) =>
+                callback(mesh),
+            }
+            : {},
+        },
+      );
+    });
+
+    expect((mesh.material as THREE.Material).opacity).toEqual(0.5);
+    expect((mesh.material as THREE.Material).transparent).toBeTruthy();
+    expect(mesh.raycast(
+      {} as THREE.Raycaster,
+      [],
+    )).toBeUndefined();
+    TestRenderer.act(() => view?.unmount());
   });
 
   it("renders legacy promo toolbays in world coordinates", () => {

@@ -45,10 +45,16 @@ export interface RecentCommandExecution {
   values?: Record<string, string>;
 }
 
+export interface CommandHelp {
+  text: string;
+  enableMarkdown?: boolean;
+}
+
 export interface Command {
   id: string;
   instanceId?: string;
   priority?: number;
+  searchPriority?: number;
   name: string;
   englishName: string;
   aliases?: string[];
@@ -62,6 +68,7 @@ export interface Command {
   imageIconClass?: string;
   themeAwareImageIcon?: boolean;
   unavailable?: string;
+  help?: CommandHelp;
   execute(values?: Record<string, string>): unknown;
   actions?: CommandAction[];
   actionTable?: boolean;

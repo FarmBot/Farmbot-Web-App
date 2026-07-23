@@ -22,6 +22,7 @@ import { buildResourceIndex } from
 import * as sequenceActions from "../../sequences/actions";
 import * as sequenceVisualization from
   "../../farm_designer/map/sequence_visualization";
+import { DeviceSetting } from "../../constants";
 
 describe("<CommandPalette />", () => {
   beforeEach(() => {
@@ -102,7 +103,7 @@ describe("<CommandPalette />", () => {
 
   it("opens, searches, navigates, and closes from the keyboard", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS,
-      JSON.stringify(["farmbot:photo"]));
+      JSON.stringify(["farmbot:camera"]));
     const { container, getByLabelText } = setup();
     const dialog = container.querySelector("dialog");
     expect(dialog?.hasAttribute("open")).toEqual(true);
@@ -111,14 +112,14 @@ describe("<CommandPalette />", () => {
     expect(container.querySelector(".command-palette-footer")?.textContent)
       .toContain("Navigate");
     expect(container.querySelector(".command-palette-footer")?.textContent)
-      .toContain("Select");
+      .toContain("Execute");
     const search = getByLabelText("Search commands");
     expect(search).toHaveAttribute(
       "placeholder", "Search commands, settings, and navigations...");
     expect(document.activeElement).toEqual(search);
     fireEvent.change(search, { target: { value: "take photo" } });
     expect(container.querySelector("[aria-selected='true']")?.textContent)
-      .toContain("Take photo");
+      .toContain("Take Photo");
     fireEvent.keyDown(search, { key: "ArrowDown" });
     fireEvent.keyDown(search, { key: "ArrowUp" });
     fireEvent.click(getByLabelText("Close command palette"));
@@ -199,16 +200,18 @@ describe("<CommandPalette />", () => {
   });
 
   it("renders stacked icons and selects commands and actions on hover", () => {
+    const firstAction = jest.fn();
     const buildCommands = jest.spyOn(commandsModule, "buildCommands")
       .mockReturnValue([
         {
           id: "stacked", name: "Stacked", englishName: "Stacked",
           group: "navigation", iconStack: { base: "circle", overlay: "leaf" },
+          help: { text: "Stacked command help" },
           execute: jest.fn(),
           actions: [
             {
               id: "first", name: "First", englishName: "First",
-              execute: jest.fn(),
+              execute: firstAction,
             },
             {
               id: "second", name: "Second", englishName: "Second",
@@ -220,6 +223,10 @@ describe("<CommandPalette />", () => {
           id: "plain", name: "Plain", englishName: "Plain",
           group: "navigation", execute: jest.fn(),
         },
+        {
+          id: "setting", name: "Setting", englishName: "Setting",
+          group: "settings", execute: jest.fn(),
+        },
       ]);
     const { container } = render(<MemoryRouter>
       <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
@@ -229,8 +236,16 @@ describe("<CommandPalette />", () => {
       .toBeTruthy();
     expect(container.querySelector(".command-palette-icon-stack .fa-leaf"))
       .toBeTruthy();
+    const help = container.querySelector(
+      "[aria-label='Help for Stacked']") as HTMLElement;
+    expect(help).toBeTruthy();
+    expect(help.closest(".command-palette-option-title")).toBeTruthy();
+    fireEvent.keyDown(help, { key: "Enter" });
+    expect(firstAction).not.toHaveBeenCalled();
 
     const commands = container.querySelectorAll(".command-palette-option");
+    expect(commands[1]).toHaveClass("command-palette-navigation-command");
+    expect(commands[2]).toHaveClass("command-palette-settings-command");
     fireEvent.mouseMove(commands[1]);
     expect(commands[1]).toHaveAttribute("aria-selected", "true");
     const secondAction = commands[0].querySelectorAll(
@@ -242,6 +257,22 @@ describe("<CommandPalette />", () => {
     expect(commands[0].querySelectorAll(".command-palette-action")[1])
       .toHaveClass("selected");
     buildCommands.mockRestore();
+  });
+
+  it("reaches command help with keyboard navigation", () => {
+    const { getByLabelText } = setup();
+    const search = getByLabelText("Search commands");
+    const help = getByLabelText("Help for E-Stop");
+
+    expect(search).toHaveFocus();
+    fireEvent.keyDown(search, { key: "Tab" });
+    expect(help).toHaveFocus();
+    fireEvent.keyDown(help, { key: "Tab", shiftKey: true });
+    expect(search).toHaveFocus();
+    fireEvent.keyDown(search, { key: "Tab" });
+    expect(help).toHaveFocus();
+    fireEvent.keyDown(help, { key: "Tab" });
+    expect(search).toHaveFocus();
   });
 
   it("clears unsubmitted values after a native dialog close", () => {
@@ -291,7 +322,7 @@ describe("<CommandPalette />", () => {
       .toHaveClass("recent-execution");
     expect(container.querySelectorAll(".recent-execution")).toHaveLength(2);
     expect(customInputs[2]).not.toHaveClass("recent-execution");
-    expect(container.querySelectorAll(".command-palette-group-label")[1]
+    expect(container.querySelector(".command-palette-all-commands-label")
       ?.textContent).toEqual("All commands");
     const search = getAllByLabelText("Search commands")[0];
     fireEvent.keyDown(search, { key: "ArrowDown" });
@@ -309,7 +340,7 @@ describe("<CommandPalette />", () => {
 
   it("clears recent commands without recording itself", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS,
-      JSON.stringify(["farmbot:photo"]));
+      JSON.stringify(["farmbot:camera"]));
     const { container, getByLabelText } = setup();
     const search = getByLabelText("Search commands");
     fireEvent.change(search, { target: { value: "Clear Recent Commands" } });
@@ -323,7 +354,7 @@ describe("<CommandPalette />", () => {
 
   it("clears recent commands from the Recent header", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS,
-      JSON.stringify(["farmbot:photo"]));
+      JSON.stringify(["farmbot:camera"]));
     const { getByRole, queryByText } = setup();
     fireEvent.click(getByRole("button", { name: "Clear" }));
     expect(readRecentCommands()).toEqual([]);
@@ -403,6 +434,39 @@ describe("<CommandPalette />", () => {
         },
       },
     }, state)).toEqual(false);
+    expect(commandPaletteStateEqual({
+      ...state,
+      bot: {
+        ...state.bot,
+        hardware: {
+          ...state.bot.hardware,
+          configuration: { ...state.bot.hardware.configuration },
+        },
+      },
+    }, state)).toEqual(false);
+    expect(commandPaletteStateEqual({
+      ...state,
+      bot: {
+        ...state.bot,
+        hardware: {
+          ...state.bot.hardware,
+          mcu_params: { ...state.bot.hardware.mcu_params },
+        },
+      },
+    }, state)).toEqual(false);
+    expect(commandPaletteStateEqual({
+      ...state,
+      bot: {
+        ...state.bot,
+        hardware: {
+          ...state.bot.hardware,
+          informational_settings: {
+            ...state.bot.hardware.informational_settings,
+            busy: !state.bot.hardware.informational_settings.busy,
+          },
+        },
+      },
+    }, state)).toEqual(false);
   });
 
   it("closes from a backdrop click but not an interior click", () => {
@@ -419,8 +483,11 @@ describe("<CommandPalette />", () => {
       "setWebAppConfigValue").mockImplementation(jest.fn() as never);
     const { container, getByLabelText } = setup();
     const search = getByLabelText("Search commands");
-    fireEvent.change(search, { target: { value: "set beep verbosity" } });
-    const input = getByLabelText("Beep Verbosity: Set");
+    fireEvent.change(search, {
+      target: { value: DeviceSetting.browserFarmbotActivityBeep },
+    });
+    const input = getByLabelText(
+      `${DeviceSetting.browserFarmbotActivityBeep}: Set`);
     expect(input).toBeVisible();
     expect(container.querySelector(".command-palette-footer")?.textContent)
       .toContain("Actions");
@@ -441,7 +508,8 @@ describe("<CommandPalette />", () => {
       .toEqual(false);
 
     const recent = setup();
-    const recentInput = recent.getAllByLabelText("Beep Verbosity: Set")[0];
+    const recentInput = recent.getAllByLabelText(
+      `${DeviceSetting.browserFarmbotActivityBeep}: Set`)[0];
     expect(recentInput).toHaveValue("3");
     expect(recentInput).toHaveClass("recent-execution", "selected");
   });
@@ -452,8 +520,11 @@ describe("<CommandPalette />", () => {
       .mockImplementation(jest.fn() as never);
     const { container, getByLabelText } = setup();
     const search = getByLabelText("Search commands");
-    fireEvent.change(search, { target: { value: "set beep verbosity" } });
-    const value = getByLabelText("Beep Verbosity: Set");
+    fireEvent.change(search, {
+      target: { value: DeviceSetting.browserFarmbotActivityBeep },
+    });
+    const value = getByLabelText(
+      `${DeviceSetting.browserFarmbotActivityBeep}: Set`);
     fireEvent.change(value, { target: { value: "2" } });
     fireEvent.keyDown(value, { key: "Enter" });
     expect(update).toHaveBeenCalledWith("beep_verbosity", 2);
@@ -461,11 +532,38 @@ describe("<CommandPalette />", () => {
       .toEqual(false);
   });
 
+  it("executes dropdown commands when their selection changes", () => {
+    const update = jest.spyOn(
+      configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn() as never);
+    const { container, getByLabelText } = setup();
+    const search = getByLabelText("Search commands");
+    fireEvent.change(search, { target: { value: DeviceSetting.landingPage } });
+    const select = getByLabelText(`${DeviceSetting.landingPage}: Set`);
+    select.focus();
+    const arrowEvent = createEvent.keyDown(select, { key: "ArrowDown" });
+    fireEvent(select, arrowEvent);
+    expect(arrowEvent.defaultPrevented).toEqual(false);
+    expect(select).toHaveFocus();
+
+    fireEvent.change(select, { target: { value: "map" } });
+
+    expect(update).toHaveBeenCalledWith("landing_page", "map");
+    expect(readRecentCommands()[0]).toEqual({
+      id: "setting:landing_page:set",
+      actionId: "set",
+      values: { value: "map" },
+    });
+    expect(container.querySelector("dialog")?.hasAttribute("open"))
+      .toEqual(false);
+  });
+
   it("preserves arrow-key caret navigation in single-input commands", () => {
     const { getByLabelText } = setup();
     const search = getByLabelText("Search commands");
-    fireEvent.change(search, { target: { value: "Map Size X" } });
-    const input = getByLabelText("Map Size X: Set") as HTMLInputElement;
+    fireEvent.change(search, { target: { value: "Map size X (mm)" } });
+    const input = getByLabelText(
+      "Map size X (mm): Set") as HTMLInputElement;
     input.focus();
     const event = createEvent.keyDown(input, { key: "ArrowLeft" });
     fireEvent(input, event);
@@ -542,7 +640,7 @@ describe("<CommandPalette />", () => {
     expect(toggle).not.toHaveClass("yellow");
   });
 
-  it("executes an immediate command by clicking its row", () => {
+  it("only executes an immediate command from its action button", () => {
     const { container, getByLabelText } = setup();
     fireEvent.change(getByLabelText("Search commands"), {
       target: { value: "open plants" },
@@ -551,7 +649,26 @@ describe("<CommandPalette />", () => {
       ?.classList).toContain("theme-aware-icon");
     fireEvent.click(container.querySelector(".command-palette-option") as Element);
     expect(container.querySelector("dialog")?.hasAttribute("open"))
+      .toEqual(true);
+    const openPanel = getByLabelText("Plants: Open Panel");
+    fireEvent.mouseMove(openPanel);
+    expect(openPanel).toHaveClass("selected");
+    fireEvent.click(openPanel);
+    expect(container.querySelector("dialog")?.hasAttribute("open"))
       .toEqual(false);
+  });
+
+  it("selects and executes default actions from their buttons", () => {
+    const emergencyLock = jest.spyOn(deviceActions, "emergencyLock")
+      .mockImplementation(jest.fn() as never);
+    const { getByLabelText } = setup();
+    const execute = getByLabelText("E-Stop: Execute");
+
+    fireEvent.mouseMove(execute);
+    expect(execute).toHaveClass("selected");
+    fireEvent.click(execute);
+
+    expect(emergencyLock).toHaveBeenCalledTimes(1);
   });
 
   it("navigates and filters multi-action commands from the keyboard", () => {
@@ -604,7 +721,7 @@ describe("<CommandPalette />", () => {
       .toEqual(false);
   });
 
-  it("executes the highlighted option by clicking its command row", () => {
+  it("does not execute the highlighted action by clicking its command row", () => {
     const preview = jest.spyOn(sequenceVisualization, "visualizeInMap")
       .mockReturnValue("preview-action" as never);
     const { container, dispatch, getByLabelText, sequence } = setupSequence();
@@ -617,6 +734,11 @@ describe("<CommandPalette />", () => {
     fireEvent.click(container.querySelector(
       ".command-palette-option-copy") as Element);
 
+    expect(preview).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalledWith("preview-action");
+    expect(container.querySelector("dialog")?.hasAttribute("open"))
+      .toEqual(true);
+    fireEvent.keyDown(search, { key: "Enter" });
     expect(preview).toHaveBeenCalledWith(sequence.uuid);
     expect(dispatch).toHaveBeenCalledWith("preview-action");
     expect(container.querySelector("dialog")?.hasAttribute("open"))
@@ -666,7 +788,7 @@ describe("<CommandPalette />", () => {
     expect(custom).toEqual(document.activeElement);
     search.focus();
     fireEvent.click(custom.closest(".command-palette-option") as Element);
-    expect(custom).toEqual(document.activeElement);
+    expect(search).toEqual(document.activeElement);
     fireEvent.click(custom);
     fireEvent.keyDown(custom, { key: "Enter" });
     expect(container.textContent).toContain("Enter a valid number.");
@@ -798,10 +920,10 @@ describe("<CommandPalette />", () => {
     const { container, getByLabelText } = setupFirmware();
     const search = getByLabelText("Search commands");
     fireEvent.change(search, {
-      target: { value: "Encoder Missed Steps Max" },
+      target: { value: DeviceSetting.maxMissedSteps },
     });
     const table = container.querySelector(".command-palette-action-table");
-    const prefix = "Settings > Encoders > Encoder Missed Steps Max";
+    const prefix = DeviceSetting.maxMissedSteps;
     const x = getByLabelText(`${prefix}: X`);
     const y = getByLabelText(`${prefix}: Y`);
     const z = getByLabelText(`${prefix}: Z`);
@@ -815,12 +937,12 @@ describe("<CommandPalette />", () => {
     expect(y).toHaveClass("selected");
     expect(y.closest("label")).not.toHaveClass("selected");
     fireEvent.change(search, {
-      target: { value: "Encoder Missed Steps Max Y" },
+      target: { value: `${DeviceSetting.maxMissedSteps} Y` },
     });
     expect(container.querySelectorAll(".command-palette-action-input"))
       .toHaveLength(1);
     fireEvent.change(search, {
-      target: { value: "Encoder Missed Steps Max" },
+      target: { value: DeviceSetting.maxMissedSteps },
     });
     const selectedY = getByLabelText(`${prefix}: Y`);
     fireEvent.change(selectedY, { target: { value: "13" } });
@@ -906,7 +1028,7 @@ describe("<CommandPalette />", () => {
     toggle && fireEvent.click(toggle);
     expect(updateMCU).toHaveBeenCalledWith("movement_secondary_motor_x", "0");
     expect(readRecentCommands()[0]).toEqual({
-      id: "firmware-setting:movement_secondary_motor_x:set",
+      id: "firmware-setting:movement_secondary_motor_x:toggle",
       values: { toggle: "0" },
     });
     const recent = setupFirmware();

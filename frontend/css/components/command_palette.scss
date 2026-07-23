@@ -6,6 +6,7 @@
   max-height: min(72vh, 62rem);
   margin: 12vh auto auto;
   padding: 0;
+  outline: none;
   overflow: hidden;
   color: var(--text-color);
   background: var(--main-bg);
@@ -78,7 +79,7 @@
 }
 
 .command-palette-group-label {
-  margin: 0.6rem 0.8rem 0.3rem;
+  margin: 1rem 1.7rem !important;
   color: $medium_gray;
   font-size: 1.1rem;
   font-weight: 700;
@@ -86,15 +87,18 @@
   text-transform: uppercase;
 }
 
+.command-palette-all-commands-label {
+  margin-top: 3rem !important;
+}
+
 .command-palette-group-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-right: 0.8rem;
+  margin-right: 1.7rem;
 
   .command-palette-clear-recents {
     margin: 0;
-    padding: 0.2rem 0.8rem;
     font-size: 1rem;
   }
 }
@@ -108,7 +112,7 @@
   padding: 0.5rem 0.8rem;
   border: 2px solid transparent;
   border-radius: 0.5rem;
-  cursor: pointer;
+  cursor: default;
 
   &.selected {
     background: var(--secondary-bg);
@@ -118,6 +122,12 @@
   &.disabled {
     cursor: not-allowed;
     opacity: 0.55;
+  }
+
+  &.command-palette-settings-command {
+    .command-palette-option-title strong {
+      text-transform: uppercase;
+    }
   }
 }
 
@@ -176,11 +186,37 @@
   min-width: 0;
   flex-direction: column;
 
+  .command-palette-option-title {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    min-width: 0;
+  }
+
   strong {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 1.3rem;
+  }
+
+  .command-palette-help-container {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .command-palette-help {
+    line-height: 1;
+
+    .help-icon {
+      margin: 0;
+      font-size: 1.2rem;
+      opacity: 0.75;
+
+      &[role="button"] {
+        cursor: pointer;
+      }
+    }
   }
 }
 
@@ -418,9 +454,17 @@
 
   .command-palette-actions {
     grid-column: 2 / -1;
+
+    &.command-palette-default-actions {
+      grid-column: auto;
+    }
   }
 
   .command-palette-hotkeys {
+    display: none;
+  }
+
+  .command-palette-footer {
     display: none;
   }
 

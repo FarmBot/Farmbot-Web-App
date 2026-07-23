@@ -465,7 +465,8 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
   };
 
   CommandPaletteButton = () => {
-    const label = isMobile()
+    const mobile = isMobile();
+    const label = mobile
       ? t("Commands")
       : `${t("Commands")} ${commandPaletteShortcut()}`;
     return <div className={[
@@ -478,7 +479,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
         aria-label={label}
         onClick={openCommandPalette}>
         <i className="fa fa-terminal" aria-hidden={true} />
-        {!isMobile() && <span>{label}</span>}
+        {!mobile && <span>{label}</span>}
       </button>
     </div>;
   };
