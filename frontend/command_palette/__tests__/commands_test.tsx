@@ -169,14 +169,29 @@ describe("buildCommands()", () => {
     expect(ids).toContain("farmbot:move-to:coordinates");
     expect(ids).toContain("farmbot:camera");
     expect(ids).toContain("farmbot:power");
+    expect(ids).not.toContain("farmbot:status");
     expect(ids).not.toContain("farmbot:verify-tool");
     expect(ids).not.toContain("farmbot:calibrate-camera");
     expect(ids).not.toContain("farmbot:reboot");
+    expect(ids).not.toContain("profile:profile");
+    expect(ids).not.toContain("add:group");
+    expect(ids).not.toContain("add:garden");
+    expect(ids).not.toContain("add:farmware");
+    expect(ids).not.toContain("add:zone");
+    [1, 2, 3, 4, 5].map(index =>
+      expect(ids).not.toContain(
+        `firmware-setting:pin-guard-${index}:set`));
     expect(ids).not.toContain("add:curve:water");
     expect(ids).not.toContain("add:sequence");
     expect(ids).toContain("add:crop:tomato");
     expect(ids).toContain("setup-wizard");
     expect(ids).toContain("shop");
+    expect(ids).toContain("follow-farmbot");
+    expect(commands.find(command => command.id == "documentation"))
+      .toMatchObject({
+        name: "Docs",
+        aliases: expect.arrayContaining(["Documentation"]),
+      });
     expect(ids).toContain("panel:help");
     expect(commands.find(command => command.id == "panel:plants")
       ?.imageIcon).toEqual(TAB_ICON[Panel.Plants]);
@@ -212,9 +227,13 @@ describe("buildCommands()", () => {
     expect(commands.find(command => command.id == "popup:connectivity")?.icon)
       .toEqual("wifi");
     expect(commands.find(command => command.id == "farmbot:estop"))
-      .toMatchObject({ icon: "pause", priority: 2 });
+      .toMatchObject({
+        icon: "pause", priority: 2, accessory: expect.any(Function),
+      });
     expect(commands.find(command => command.id == "farmbot:unlock"))
-      .toMatchObject({ icon: "unlock", priority: 1 });
+      .toMatchObject({
+        icon: "unlock", priority: 1, accessory: expect.any(Function),
+      });
     expect(commands.find(command => command.id == "farmbot:camera"))
       .toMatchObject({
         imageIcon: TAB_ICON[Panel.Photos],
@@ -231,6 +250,12 @@ describe("buildCommands()", () => {
       imageIcon: TAB_ICON[Panel.Shop],
       themeAwareImageIcon: true,
     });
+    expect(commands.find(command => command.id == "follow-farmbot"))
+      .toMatchObject({
+        name: "Follow FarmBot",
+        imageIcon: expect.stringContaining("favicon"),
+        imageIconClass: "farmbot-favicon",
+      });
     expect(commands.find(command =>
       command.id == "add:crop:bishops-crown-pepper")?.name)
       .toEqual("Bishop's Crown Pepper");
@@ -265,7 +290,7 @@ describe("buildCommands()", () => {
     expect(actions("panel:points")).not.toContain("Add at current location");
     expect(actions("panel:curves")).toEqual([
       "Add Water", "Add Spread", "Add Height",
-      "Open Panel", "Water", "Spread", "Height",
+      "Open Panel",
     ]);
     expect(actions("panel:sequences")).toEqual([
       "Add New", "Open Panel", "Sequences", "Featured",
@@ -280,10 +305,17 @@ describe("buildCommands()", () => {
       "Open Panel", "Filters", "Settings", "Calibration",
       "Weed detection", "Measure soil height",
     ]);
+    expect(actions("documentation")).toEqual([
+      "Software", "Developer", "Genesis", "Express", "Education", "Business",
+    ]);
     expect(actions("panel:help")).toEqual([
-      "Open Panel", "Software", "Developer", "Genesis Documentation",
-      "Express Documentation", "Business Documentation",
-      "Education Documentation", "Take a Tour", "Get Help", "Hotkeys",
+      "Get Help", "Take a Tour", "Hotkeys",
+    ]);
+    expect(actions("shop")).toEqual([
+      "Buy Parts", "Full Kits", "Home", "Blog",
+    ]);
+    expect(actions("follow-farmbot")).toEqual([
+      "Subscribe to our Newsletter", "Blog",
     ]);
     expect(actions("panel:scene_objects")).toEqual([
       "Add New", "Add Custom", "Open Panel",
@@ -374,6 +406,27 @@ describe("buildCommands()", () => {
     hotkeys?.execute();
     hotkeys?.execute();
     isMobile.mockRestore();
+  });
+
+  it("confirms camera calibration", () => {
+    const confirm = jest.spyOn(window, "confirm").mockReturnValue(false);
+    const calibrate = jest.spyOn(photoActions, "calibrateCamera")
+      .mockImplementation(jest.fn() as never);
+    const action = buildCommands({
+      state: stateWithResources(), dispatch: jest.fn(), navigate: jest.fn(),
+    }).find(command => command.id == "farmbot:camera")
+      ?.actions?.find(item => item.id == "calibrate");
+
+    expect(action?.execute()).toEqual(false);
+    expect(confirm).toHaveBeenCalledWith(
+      "Are you sure you want to calibrate the camera?");
+    expect(calibrate).not.toHaveBeenCalled();
+
+    confirm.mockReturnValue(true);
+    action?.execute();
+    expect(calibrate).toHaveBeenCalledTimes(1);
+    confirm.mockRestore();
+    calibrate.mockRestore();
   });
 
   it("renders and runs toggle accessories", () => {
@@ -807,9 +860,6 @@ describe("buildCommands()", () => {
       expect(command?.actions).toBeUndefined();
       expect(command?.accessory).toEqual(expect.any(Function));
     });
-    expect(commands.find(item =>
-      item.id == "firmware-setting:pin-guard-1:set"))
-      .toMatchObject({ actionTable: true });
     const axisBoolean = commands.find(command =>
       command.id == "firmware-setting:encoder_invert:set");
     expect(axisBoolean?.actionTable).toEqual(true);
@@ -874,9 +924,6 @@ describe("buildCommands()", () => {
     expect(commands.find(command => command.id ==
       "firmware-setting:param_e_stop_on_mov_err:toggle")?.name)
       .toEqual(DeviceSetting.estopOnMovementError);
-    expect(commands.find(command =>
-      command.id == "firmware-setting:pin-guard-1:set")?.name)
-      .toEqual(DeviceSetting.pinGuard1);
   });
 
   it("uses clear configuration setting titles", () => {
@@ -957,10 +1004,8 @@ describe("buildCommands()", () => {
   });
 
   // eslint-disable-next-line complexity
-  it("validates firmware and pin guard inputs", () => {
+  it("validates firmware inputs", () => {
     const state = stateWithResources();
-    const update = jest.spyOn(deviceActions, "updateMCU")
-      .mockImplementation(jest.fn() as never);
     const commands = buildCommands({
       state, dispatch: jest.fn(), navigate: jest.fn(),
     });
@@ -972,28 +1017,6 @@ describe("buildCommands()", () => {
       expect(numeric?.input?.validate?.({ x: value }))
         .toEqual(expect.any(String)));
     expect(numeric?.execute({ x: "32001" })).toEqual(false);
-
-    const pinGuard = commands.find(command =>
-      command.id == "firmware-setting:pin-guard-1:set");
-    const pin = pinGuard?.actions?.find(action => action.id == "pin");
-    const timeout = pinGuard?.actions?.find(action => action.id == "timeout");
-    const stateAction = pinGuard?.actions?.find(action => action.id == "state");
-    expect(pin?.input?.validate?.({ pin: "13" })).toBeUndefined();
-    expect(pin?.input?.validate?.({ pin: "999" }))
-      .toEqual("Select a valid option.");
-    expect(timeout?.input?.validate?.({ timeout: "10" })).toBeUndefined();
-    expect(timeout?.input?.validate?.({ timeout: "1.5" }))
-      .toEqual("Enter a value within the available range.");
-    expect(pin?.execute({ pin: "999" })).toEqual(false);
-    expect(timeout?.execute({ timeout: "1.5" })).toEqual(false);
-    expect(stateAction?.execute()).toEqual(false);
-    expect(update).not.toHaveBeenCalled();
-    pin?.execute({ pin: "13" });
-    timeout?.execute({ timeout: "10" });
-    stateAction?.execute({ state: "1" });
-    expect(update).toHaveBeenCalledWith("pin_guard_1_pin_nr", "13");
-    expect(update).toHaveBeenCalledWith("pin_guard_1_time_out", "10");
-    expect(update).toHaveBeenCalledWith("pin_guard_1_active_state", "0");
   });
 
   it("falls back to live bot state when config resources are absent", () => {
@@ -1001,8 +1024,6 @@ describe("buildCommands()", () => {
     state.resources = buildResourceIndex([fakeDevice()]);
     state.bot.hardware.configuration.sequence_init_log = true;
     state.bot.hardware.mcu_params.encoder_missed_steps_max_x = 17;
-    state.bot.hardware.mcu_params.pin_guard_1_pin_nr = 13;
-    state.bot.hardware.mcu_params.pin_guard_1_time_out = 22;
     const commands = buildCommands({
       state, dispatch: jest.fn(), navigate: jest.fn(),
     });
@@ -1014,12 +1035,6 @@ describe("buildCommands()", () => {
       command.id == "firmware-setting:encoder_missed_steps_max:set")
       ?.actions?.find(action => action.id == "x")
       ?.input?.fields[0].initialValue).toEqual("17");
-    const pinGuard = commands.find(command =>
-      command.id == "firmware-setting:pin-guard-1:set");
-    expect(pinGuard?.actions?.find(action => action.id == "pin")
-      ?.input?.fields[0].initialValue).toEqual("13");
-    expect(pinGuard?.actions?.find(action => action.id == "timeout")
-      ?.input?.fields[0].initialValue).toEqual("22");
   });
 
   it("does not recreate or delete a scene that is already selected", () => {
@@ -1104,29 +1119,32 @@ describe("buildCommands()", () => {
       command.id == "setting:show_plants:toggle");
     const advancedSetting = commands.find(command =>
       command.id == "setting:show_advanced_settings:toggle");
+    const mapLayers = commands.filter(command =>
+      command.group == "map" && command.id.startsWith("setting:"));
     expect(commands.filter(command => command.group == "settings")
       .every(command => command.priority == -1)).toEqual(true);
-    expect(mapLayer).toMatchObject({ group: "map" });
+    expect(mapLayer).toMatchObject({
+      name: "Plants Map Layer",
+      englishName: "Plants Map Layer",
+      group: "map",
+      imageIcon: TAB_ICON[Panel.Map],
+      themeAwareImageIcon: true,
+    });
+    expect(mapLayers).toHaveLength(11);
+    expect(mapLayers.every(command =>
+      !command.name.startsWith("Show ")
+      && !command.englishName.startsWith("Show ")
+      && command.imageIcon == TAB_ICON[Panel.Map])).toEqual(true);
     expect(mapLayer?.priority).toBeUndefined();
     expect(commands.find(command =>
       command.id == "setting:three_d_garden:toggle")).toBeUndefined();
+    expect(commands.find(command =>
+      command.id == "setting:show_zones:toggle")).toBeUndefined();
     expect(advancedSetting).toMatchObject({
       group: "settings", priority: -1,
     });
     expect(searchCommands([setting!, mapLayer!], "enable"))
       .toEqual([mapLayer, setting]);
-  });
-
-  it("toggles the map profile", () => {
-    const state = stateWithResources();
-    state.resources.consumers.farm_designer.profileOpen = false;
-    const dispatch = jest.fn();
-    buildCommands({ state, dispatch, navigate: jest.fn() })
-      .find(command => command.id == "profile:profile")?.execute();
-    expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_PROFILE_OPEN,
-      payload: true,
-    });
   });
 
   it("requires confirmation before weakening safety settings", () => {
@@ -1493,24 +1511,46 @@ describe("buildCommands()", () => {
     expect(navigate).toHaveBeenCalledWith(Path.setup());
   });
 
-  it("navigates to Help destinations", () => {
+  it("navigates to Documentation destinations", () => {
     const dispatch = jest.fn();
     const navigate = jest.fn();
     const commands = buildCommands({ state: fakeState(), dispatch, navigate });
-    commands.find(command => command.id == "panel:help")
+    commands.find(command => command.id == "documentation")
       ?.actions?.find(action => action.id == "genesis")?.execute();
     expect(navigate).toHaveBeenCalledWith(Path.designer("genesis"));
     expect(dispatch).toHaveBeenCalled();
   });
 
-  it("opens the FarmBot shop in a new tab", () => {
-    const open = jest.spyOn(window, "open").mockImplementation(jest.fn());
+  it("opens FarmBot shop and follow links in new tabs", () => {
+    const open = jest.spyOn(window, "open").mockReturnValue({} as Window);
+    const assign = jest.spyOn(window.location, "assign")
+      .mockImplementation(jest.fn());
     const commands = buildCommands({
       state: fakeState(), dispatch: jest.fn(), navigate: jest.fn(),
     });
-    commands.find(command => command.id == "shop")?.execute();
+    const actions = [
+      ...(commands.find(command => command.id == "shop")?.actions || []),
+      ...(commands.find(command =>
+        command.id == "follow-farmbot")?.actions || []),
+    ];
+    const urls = [
+      ExternalUrl.Store.buyParts,
+      ExternalUrl.Store.fullKits,
+      ExternalUrl.Store.home,
+      ExternalUrl.Store.blog,
+      ...Object.values(ExternalUrl.Follow),
+      ExternalUrl.Store.blog,
+    ];
+    expect(actions.map(action => action.href)).toEqual(urls);
+    actions.find(action => action.id == "newsletter")?.execute();
     expect(open).toHaveBeenCalledWith(
-      ExternalUrl.Store.home, "_blank", "noopener,noreferrer");
+      ExternalUrl.Follow.newsletter, "_blank");
+
+    open.mockReturnValueOnce(undefined as unknown as Window);
+    actions.find(action => action.id == "buy-parts")?.execute();
+    expect(assign).toHaveBeenCalledWith(ExternalUrl.Store.buyParts);
+
+    assign.mockRestore();
     open.mockRestore();
   });
 
@@ -1660,7 +1700,7 @@ describe("buildCommands()", () => {
     const actionNames: (keyof typeof deviceActions)[] = [
       "emergencyLock", "emergencyUnlock", "execSequence", "findAxisLength",
       "findHome", "moveAbsolute", "moveRelative", "moveToHome", "pinToggle",
-      "powerOff", "readPin", "readStatus", "reboot", "restartFirmware",
+      "powerOff", "readPin", "reboot", "restartFirmware",
       "setHome", "takePhoto", "writePin",
     ];
     actionNames.map(name => jest.spyOn(deviceActions, name)
@@ -1723,7 +1763,7 @@ describe("buildCommands()", () => {
     expect(deviceActions.findAxisLength).toHaveBeenCalledWith("all");
 
     [
-      "farmbot:estop", "farmbot:unlock", "farmbot:status", "farmbot:sync",
+      "farmbot:estop", "farmbot:unlock", "farmbot:sync",
     ].map(id => execute(id));
     commands.find(command => command.id == "panel:tools")
       ?.actions?.find(action => action.id == "verify-tool")?.execute();
@@ -1733,7 +1773,6 @@ describe("buildCommands()", () => {
       ?.actions?.map(action => action.execute());
     expect(deviceActions.emergencyLock).toHaveBeenCalledTimes(1);
     expect(deviceActions.emergencyUnlock).toHaveBeenCalledWith(true);
-    expect(deviceActions.readStatus).toHaveBeenCalledTimes(1);
     expect(deviceActions.takePhoto).toHaveBeenCalledTimes(1);
     expect(photoActions.calibrateCamera).toHaveBeenCalledTimes(1);
     expect(photoActions.detectWeeds).toHaveBeenCalledTimes(1);
@@ -2149,9 +2188,6 @@ describe("buildCommands()", () => {
       ?.actions?.find(action => action.id == "add-new")?.execute();
     expect(addRegimen).toHaveBeenCalledWith(1, navigate);
     expect(dispatch).toHaveBeenCalledWith("add-regimen");
-    execute("add:farmware");
-    expect(navigate).toHaveBeenCalledWith(Path.farmware("add"));
-
     execute(`regimen:${regimen.uuid}`);
     expect(navigate).toHaveBeenLastCalledWith(Path.regimens("Foo"));
     const slot = selectAllToolSlotPointers(state.resources.index)[0];

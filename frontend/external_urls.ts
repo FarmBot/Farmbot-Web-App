@@ -28,6 +28,8 @@ export namespace ExternalUrl {
   const DEVELOPER_DOCS = "https://developer.farm.bot";
   const SOLAR = "https://solar.farm.bot";
   const RAISED_BED = "https://bed.farm.bot";
+  const BUY_FARMBOT = "https://buy.farm.bot";
+  const BLOG_FARMBOT = "https://blog.farm.bot";
   const FORUM = "https://forum.farmbot.org";
   const SHOPIFY_CDN = "https://cdn.shopify.com/s/files/1/2040/0289/files";
   const YOUTUBE = "https://www.youtube.com/embed/";
@@ -88,6 +90,9 @@ export namespace ExternalUrl {
   const KITS = `${FARMBOT}/collections/farmbot-kits/products`;
   export namespace Store {
     export const home = FARMBOT;
+    export const buyParts = `${FARMBOT}/collections`;
+    export const fullKits = BUY_FARMBOT;
+    export const blog = BLOG_FARMBOT;
     export const cameraCalibrationCard = `${PRODUCTS}/camera-calibration-card`;
     export const cameraReplacement =
       `${PRODUCTS}/genesis-v1-5-express-v1-0-camera-free-replacement`;
@@ -95,5 +100,9 @@ export namespace ExternalUrl {
       `${KITS}/farmbot-genesis-${version.replace(".", "-")}`;
     export const genesisXlKit = (version: string) =>
       `${KITS}/farmbot-genesis-xl-${version.replace(".", "-")}`;
+  }
+
+  export namespace Follow {
+    export const newsletter = "https://newsletter.farm.bot";
   }
 }

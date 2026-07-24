@@ -36,7 +36,8 @@ import { HighlightProvider } from "../../elements";
 import { bot as fakeBot } from
   "../../../__test_support__/fake_state/bot";
 import {
-  NativeJogControlPair, NativeJogWorldPreview,
+  NativeJogControlPair, NativeJogCurrentUtmShadow,
+  NativeJogWorldPreview,
 } from "../native_jog_controls";
 import { Tools } from "../components/tools";
 
@@ -395,14 +396,14 @@ describe("<Bot />", () => {
     expect(control("bot-jog-y")?.parentElement)
       .toHaveAttribute("name", "bot-cross-slide");
     expect(control("bot-jog-y"))
-      .toHaveAttribute("position", "-26.5,0,103");
+      .toHaveAttribute("position", "-26.5,-45,103");
     expect(control("bot-gantry")
       ?.querySelector(":scope > [name^='bot-jog-y']"))
       .not.toBeInTheDocument();
     expect(control("bot-jog-z")?.parentElement)
       .toHaveAttribute("name", "bot-z-axis");
     expect(control("bot-jog-z"))
-      .toHaveAttribute("position", "60,0,300");
+      .toHaveAttribute("position", "60,0,220");
 
     fireEvent.click(control("bot-jog-x-near-control") as Element);
     expect(queryByRole("heading", { name: "X: 1038" }))
@@ -422,6 +423,48 @@ describe("<Bot />", () => {
     fireEvent.click(control("bot-jog-x-near-control") as Element);
     expect(queryByRole("heading", { name: "X: 1038" }))
       .toBeInTheDocument();
+  });
+
+  it("removes jog controls and previews when the overlay is disabled", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.configPosition.x = 1038;
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 1038, y: 0, z: 0 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+      stepSize: 100,
+    };
+    const view = render(<Bot {...p} />);
+    const control = () => view.container.querySelector(
+      "[name='bot-jog-x-near-control']",
+    );
+
+    fireEvent.click(control() as Element);
+    fireEvent.pointerEnter(view.getByRole("button", { name: "Jog +X" }));
+    expect(view.container.querySelector("[name='bot-jog-x-ghost']"))
+      .toBeInTheDocument();
+
+    p.config = { ...p.config, controlsOverlay: false };
+    view.rerender(<Bot {...p} />);
+    expect(control()).not.toBeInTheDocument();
+    expect(view.container.querySelector("[name='bot-jog-x-world-preview']"))
+      .not.toBeInTheDocument();
+    expect(view.queryByRole("heading")).not.toBeInTheDocument();
+    expect(view.container.querySelector(
+      "[name='native-jog-current-utm-shadow']",
+    )).toBeInTheDocument();
+
+    act(() => jest.runOnlyPendingTimers());
+    p.config = { ...p.config, controlsOverlay: true };
+    view.rerender(<Bot {...p} />);
+    expect(control()).toBeInTheDocument();
+    expect(view.container.querySelector("[name='bot-jog-x-ghost']"))
+      .not.toBeInTheDocument();
+    expect(view.queryByRole("heading")).not.toBeInTheDocument();
   });
 
   it("shares one world-space preview across both X controls", () => {
@@ -455,6 +498,15 @@ describe("<Bot />", () => {
       .toHaveLength(1);
     expect(yControl?.props.previewState.world().utmPosition)
       .toEqual(zControl?.props.previewState.world().utmPosition);
+    expect(xControls[0].props.previewState.world().gardenPosition)
+      .toEqual(p.configPosition);
+    const currentShadow = wrapper.root.findByType(
+      NativeJogCurrentUtmShadow,
+    );
+    expect(currentShadow.props).toMatchObject({
+      config: p.config,
+      getZ: p.getZ,
+    });
     unmountRenderer(wrapper);
   });
 
@@ -482,12 +534,14 @@ describe("<Bot />", () => {
       start: 100,
       world: {
         controlPositions: [[0, 0, 0], [0, 1, 0]],
+        gardenPosition: { x: 100, y: 200, z: -50 },
         utmPosition: [100, 200, -50],
       },
     }));
 
     const preview = wrapper.root.findByType(NativeJogWorldPreview);
     expect(preview.props.axis).toEqual("x");
+    expect(preview.props.getZ).toBe(p.getZ);
     expect(preview.props.ghost.type).toBe(Tools);
     expect(preview.props.ghost.props).toMatchObject({
       config: p.config,

@@ -9,12 +9,15 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 let mockResources = buildResourceIndex([]);
 let mockLocked = false;
+let mockBotPosition = { x: 0, y: 0, z: 0 };
 
 import { TOAST_OPTIONS } from "../../../toast/constants";
 import { Actions } from "../../../constants";
 import { error, info } from "../../../toast/toast";
 import { store } from "../../../redux/store";
-import { eStop, expandActions, runActions, setCurrent } from "../actions";
+import {
+  eStop, expandActions, runActions, runDemoMovementCommand, setCurrent,
+} from "../actions";
 import * as lodash from "lodash";
 import {
   getDemoMovementTarget,
@@ -32,7 +35,7 @@ const mockGetState = () => ({
   resources: mockResources,
   bot: {
     hardware: {
-      location_data: { position: { x: 0, y: 0, z: 0 } },
+      location_data: { position: mockBotPosition },
       informational_settings: { locked: mockLocked },
     },
   },
@@ -47,6 +50,12 @@ describe("runActions()", () => {
     randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
     console.log = jest.fn();
     mockLocked = false;
+    mockBotPosition = { x: 0, y: 0, z: 0 };
+    mockResources = buildResourceIndex([
+      fakeFirmwareConfig(),
+      fakeFbosConfig(),
+      fakeWebAppConfig(),
+    ]);
     sessionStorage.removeItem("soilSurfaceTriangles");
     (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
     (store as unknown as { getState: Function }).getState = mockGetState;
@@ -133,6 +142,116 @@ describe("runActions()", () => {
     expect(mockDispatch).toHaveBeenCalledWith({
       type: Actions.DEMO_SET_BUSY,
       payload: false,
+    });
+  });
+
+  it("runs direct movement commands through the existing queue", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+
+    runDemoMovementCommand({
+      type: "move_relative",
+      position: { x: 100, y: 0, z: 0 },
+    });
+    jest.runAllTimers();
+
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 0, z: 0 });
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: true,
+    });
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+  });
+
+  it("serializes direct movement commands with queued actions", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    runActions([
+      { type: "animated_move_absolute", args: [100, 0, 0] },
+    ]);
+    runDemoMovementCommand({
+      type: "move_absolute",
+      position: { x: 200, y: 0, z: 0 },
+    });
+
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 0, z: 0 });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 200, y: 0, z: 0 });
+    reportDemoMovementComplete({ x: 200, y: 0, z: 0 });
+    jest.runAllTimers();
+  });
+
+  it("runs direct all-axis homing in Z, Y, X order", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    mockBotPosition = { x: 100, y: 200, z: 300 };
+    reportDemoMovementPosition(mockBotPosition);
+
+    runDemoMovementCommand({ type: "find_home", axis: "all" });
+    jest.runAllTimers();
+
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 200, z: 0 });
+    reportDemoMovementComplete({ x: 100, y: 200, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 0, z: 0 });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementTarget()).toEqual({ x: 0, y: 0, z: 0 });
+    reportDemoMovementComplete({ x: 0, y: 0, z: 0 });
+    jest.runAllTimers();
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_BUSY,
+      payload: false,
+    });
+  });
+
+  it("runs a direct single-axis Go Home command", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    mockBotPosition = { x: 100, y: 200, z: 300 };
+    reportDemoMovementPosition(mockBotPosition);
+
+    runDemoMovementCommand({ type: "go_to_home", axis: "y" });
+    jest.runAllTimers();
+
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 0, z: 300 });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 300 });
+    jest.runAllTimers();
+  });
+
+  it("cancels remaining direct homing targets on E-stop", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    mockBotPosition = { x: 100, y: 200, z: 300 };
+    reportDemoMovementPosition(mockBotPosition);
+    runDemoMovementCommand({ type: "go_to_home", axis: "all" });
+    jest.runAllTimers();
+
+    expect(getDemoMovementTarget()).toEqual({ x: 100, y: 200, z: 0 });
+    reportDemoMovementPosition({ x: 100, y: 200, z: 150 });
+    eStop();
+    reportDemoMovementComplete({ x: 100, y: 200, z: 0 });
+    jest.runAllTimers();
+
+    expect(getDemoMovementTarget()).toBeUndefined();
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 100, y: 200, z: 150 },
     });
   });
 
@@ -274,9 +393,11 @@ describe("expandActions()", () => {
     expect(expandActions([
       { type: "find_home", args: ["all"] },
     ], [])).toEqual([
+      { type: "busy", args: [1] },
       defaultMove(100, 200, 0),
       defaultMove(100, 0, 0),
       defaultMove(0, 0, 0),
+      { type: "busy", args: [0] },
     ]);
   });
 

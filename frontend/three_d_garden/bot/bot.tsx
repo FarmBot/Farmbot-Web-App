@@ -41,8 +41,9 @@ import { SECTION_FAR_CLIPPING_EXEMPT } from "../section";
 import {
   getNativeJogControlPositions, NativeJogControlPair,
   NativeJogAxisActionsContext, NativeJogEncoderData,
-  NativeJogDragPreview, NativeJogEncoderVisibility,
-  NativeJogPreviewState, NativeJogSelection, NativeJogWorldPreview,
+  NativeJogCurrentUtmShadow, NativeJogDragPreview,
+  NativeJogEncoderVisibility, NativeJogPreviewState,
+  NativeJogSelection, NativeJogWorldPreview,
 } from "./native_jog_controls";
 
 export { clearBotShapeCache } from "./bot_shapes";
@@ -209,6 +210,16 @@ const EnabledBot = (props: FarmbotModelProps) => {
     setJogSelection(undefined);
   }, []);
   React.useEffect(() => {
+    if (config.controlsOverlay) { return; }
+    const timeout = window.setTimeout(() => {
+      setJogSelection(undefined);
+      setXJogPreview(undefined);
+      setYJogPreview(undefined);
+      setZJogPreview(undefined);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [config.controlsOverlay]);
+  React.useEffect(() => {
     if (!jogSelection || axisActionsAvailable) { return; }
     const timeout = window.setTimeout(closeJogPopup, 0);
     return () => window.clearTimeout(timeout);
@@ -314,6 +325,10 @@ const EnabledBot = (props: FarmbotModelProps) => {
     return {
       controlPositions: localPositions.map(position =>
         addBotPositions(...parentPositions, position)),
+      gardenPosition: getUnmirroredBotPosition(
+        config,
+        snapshotStore.getSnapshot(),
+      ),
       utmPosition: currentKinematics.anchors.utm.worldPosition,
     };
   };
@@ -368,6 +383,10 @@ const EnabledBot = (props: FarmbotModelProps) => {
       keepMounted={true}
       preserveDepthWrite={true}
       visible={props.activeFocus != "Planter bed"}>
+      <NativeJogCurrentUtmShadow
+        config={config}
+        getZ={props.getZ}
+        positionStore={snapshotStore} />
       <Group name={"bot-static"}>
         <Group position={kinematics.machineOrigin}>
           <StationaryAssembly
@@ -383,16 +402,18 @@ const EnabledBot = (props: FarmbotModelProps) => {
       <Group name={"bot-machine"} position={kinematics.machineOrigin}>
         <Group ref={gantry} name={"bot-gantry"}
           position={initialKinematics.gantryPosition}>
-          <NativeJogControlPair {...jogProps(
-            "bot-jog-x-near",
-            "x",
-            jogPositions.x[0],
-          )} />
-          <NativeJogControlPair {...jogProps(
-            "bot-jog-x-far",
-            "x",
-            jogPositions.x[1],
-          )} />
+          {config.controlsOverlay && <>
+            <NativeJogControlPair {...jogProps(
+              "bot-jog-x-near",
+              "x",
+              jogPositions.x[0],
+            )} />
+            <NativeJogControlPair {...jogProps(
+              "bot-jog-x-far",
+              "x",
+              jogPositions.x[1],
+            )} />
+          </>}
           <GantryAssembly
             config={config}
             configPosition={configPosition}
@@ -411,11 +432,12 @@ const EnabledBot = (props: FarmbotModelProps) => {
               frame={"gantry"} />}
           <Group ref={crossSlide} name={"bot-cross-slide"}
             position={initialKinematics.crossSlidePosition}>
-            <NativeJogControlPair {...jogProps(
-              "bot-jog-y",
-              "y",
-              jogPositions.y,
-            )} />
+            {config.controlsOverlay &&
+              <NativeJogControlPair {...jogProps(
+                "bot-jog-y",
+                "y",
+                jogPositions.y,
+              )} />}
             <CrossSlideAssembly
               config={config}
               version={version}
@@ -423,11 +445,12 @@ const EnabledBot = (props: FarmbotModelProps) => {
               onHoverObject={props.onHoverObject} />
             <Group ref={zAxis} name={"bot-z-axis"}
               position={initialKinematics.zAxisPosition}>
-              <NativeJogControlPair {...jogProps(
-                "bot-jog-z",
-                "z",
-                jogPositions.z,
-              )} />
+              {config.controlsOverlay &&
+                <NativeJogControlPair {...jogProps(
+                  "bot-jog-z",
+                  "z",
+                  jogPositions.z,
+                )} />}
               <ZAxisAssembly
                 config={config}
                 configPosition={configPosition}
@@ -446,16 +469,19 @@ const EnabledBot = (props: FarmbotModelProps) => {
           </Group>
         </Group>
       </Group>
-      {(["x", "y", "z"] as const).map(axis =>
-        previewStates[axis].preview &&
-        <NativeJogWorldPreview
-          key={axis}
-          axis={axis}
-          config={config}
-          ghost={ghostTool()}
-          name={`bot-jog-${axis}`}
-          preview={previewStates[axis].preview}
-          utmRef={zAxis} />)}
+      {config.controlsOverlay &&
+        (["x", "y", "z"] as const).map(axis =>
+          previewStates[axis].preview &&
+          <NativeJogWorldPreview
+            key={axis}
+            axis={axis}
+            axisActions={props.axisActions}
+            config={config}
+            getZ={props.getZ}
+            ghost={ghostTool()}
+            name={`bot-jog-${axis}`}
+            preview={previewStates[axis].preview}
+            utmRef={zAxis} />)}
       <Group name={"bot-routing"} position={kinematics.machineOrigin}>
         <FrameRoutingAssembly
           config={config}

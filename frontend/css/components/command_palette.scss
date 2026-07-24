@@ -105,7 +105,7 @@
 
 .command-palette-option {
   display: grid;
-  grid-template-columns: 2.8rem minmax(0, 1fr) auto auto;
+  grid-template-columns: 2.8rem auto 1fr;
   gap: 0.6rem;
   align-items: center;
   min-height: 4.8rem;
@@ -127,6 +127,13 @@
   &.command-palette-settings-command {
     .command-palette-option-title strong {
       text-transform: uppercase;
+    }
+  }
+
+  &.command-palette-settings-section-command,
+  &.command-palette-title-case-command {
+    .command-palette-option-title strong {
+      text-transform: none;
     }
   }
 }
@@ -170,6 +177,10 @@
 
 .app.dark .command-palette-option-icon img.theme-aware-icon {
   filter: brightness(0%) invert(100%);
+}
+
+.app.dark .command-palette-option-icon img.farmbot-favicon {
+  filter: invert(100%);
 }
 
 .app.dark .command-palette-option-icon img.help-header-icon {
@@ -312,6 +323,8 @@
 }
 
 .command-palette-action {
+  display: inline-flex;
+  align-items: center;
   min-height: 2.6rem;
   margin: 0;
   padding: 0.3rem 0.7rem;
@@ -324,7 +337,13 @@
   font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.4;
+  text-decoration: none;
   text-transform: none;
+
+  &:link,
+  &:visited {
+    font-weight: 700;
+  }
 
   &:hover,
   &:focus-visible {

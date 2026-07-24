@@ -266,8 +266,13 @@ const defaultActionIndex = (command?: Command) => {
 };
 
 export const defaultCommandActionName = (command: Command) => {
+  if (command.id == "panel") { return t("Close Panel"); }
+  if (command.id == "panel:map") { return t("Show Map"); }
   if (command.id.startsWith("panel:")) { return t("Open Panel"); }
-  if (command.id.startsWith("settings-item:")) { return t("Open Settings"); }
+  if (command.id.startsWith("settings-section:")) {
+    return t("Open Section");
+  }
+  if (command.id.startsWith("settings-item:")) { return t("Open Setting"); }
   return t("Execute");
 };
 
@@ -668,12 +673,19 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
     const actionSelected = active && selectedAction == actionIndex;
     const recentExecution = command.recentExecution?.actionId == action.id;
     if (!action.input) {
+      const selectAction = () => {
+        setSelected(commandIndex);
+        setSelectedAction(actionIndex);
+      };
+      const className = [
+        "command-palette-action",
+        actionSelected ? "selected" : "",
+      ].join(" ");
       return <div key={action.id}
         className="command-palette-action-option"
         onMouseMove={event => {
           event.stopPropagation();
-          setSelected(commandIndex);
-          setSelectedAction(actionIndex);
+          selectAction();
         }}>
         <span
           className={[
@@ -681,29 +693,45 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
             recentExecution ? "recent-execution" : "",
           ].join(" ")}
           aria-hidden={true} />
-        <button
-          type="button"
-          tabIndex={-1}
-          className={[
-            "command-palette-action",
-            actionSelected ? "selected" : "",
-          ].join(" ")}
-          aria-label={`${command.name}: ${action.name}`}
-          disabled={!!(command.unavailable || action.unavailable)}
-          title={action.unavailable}
-          onMouseMove={event => {
-            event.stopPropagation();
-            setSelected(commandIndex);
-            setSelectedAction(actionIndex);
-          }}
-          onClick={event => {
-            event.stopPropagation();
-            setSelected(commandIndex);
-            setSelectedAction(actionIndex);
-            execute(command, action);
-          }}>
-          {action.name}
-        </button>
+        {action.href
+          ? <a
+            href={action.href}
+            target="_blank"
+            rel="noreferrer"
+            tabIndex={-1}
+            className={className}
+            aria-label={`${command.name}: ${action.name}`}
+            title={action.unavailable}
+            onMouseMove={event => {
+              event.stopPropagation();
+              selectAction();
+            }}
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+              selectAction();
+              execute(command, action);
+            }}>
+            {action.name}
+          </a>
+          : <button
+            type="button"
+            tabIndex={-1}
+            className={className}
+            aria-label={`${command.name}: ${action.name}`}
+            disabled={!!(command.unavailable || action.unavailable)}
+            title={action.unavailable}
+            onMouseMove={event => {
+              event.stopPropagation();
+              selectAction();
+            }}
+            onClick={event => {
+              event.stopPropagation();
+              selectAction();
+              execute(command, action);
+            }}>
+            {action.name}
+          </button>}
       </div>;
     }
     const inputValues = actionInputValues(command, action, values);
@@ -914,6 +942,12 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
             className={[
               "command-palette-option",
               `command-palette-${command.group}-command`,
+              command.id.startsWith("settings-section:")
+                ? "command-palette-settings-section-command"
+                : "",
+              command.id == "recents:clear"
+                ? "command-palette-title-case-command"
+                : "",
               active ? "selected" : "",
               command.actions?.length ? "multi-action" : "",
               command.unavailable ? "disabled" : "",

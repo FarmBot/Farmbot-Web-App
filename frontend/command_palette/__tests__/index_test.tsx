@@ -341,9 +341,12 @@ describe("<CommandPalette />", () => {
   it("clears recent commands without recording itself", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS,
       JSON.stringify(["farmbot:camera"]));
-    const { container, getByLabelText } = setup();
+    const { container, getByLabelText, getByText } = setup();
     const search = getByLabelText("Search commands");
     fireEvent.change(search, { target: { value: "Clear Recent Commands" } });
+    expect(getByText("Clear Recent Commands")
+      .closest(".command-palette-option"))
+      .toHaveClass("command-palette-title-case-command");
     fireEvent.keyDown(search, { key: "Enter" });
 
     expect(readRecentCommands()).toEqual([]);
@@ -658,17 +661,106 @@ describe("<CommandPalette />", () => {
       .toEqual(false);
   });
 
-  it("selects and executes default actions from their buttons", () => {
+  it("renders and executes emergency command buttons", () => {
     const emergencyLock = jest.spyOn(deviceActions, "emergencyLock")
       .mockImplementation(jest.fn() as never);
-    const { getByLabelText } = setup();
-    const execute = getByLabelText("E-Stop: Execute");
+    const { getByLabelText, getByRole, queryByLabelText } = setup();
+    const search = getByLabelText("Search commands");
+    fireEvent.change(search, { target: { value: "E-Stop" } });
+    const eStop = getByRole("button", { name: "E-STOP" });
 
-    fireEvent.mouseMove(execute);
-    expect(execute).toHaveClass("selected");
-    fireEvent.click(execute);
+    expect(eStop).toHaveClass("fb-button", "red", "e-stop");
+    expect(queryByLabelText("E-Stop: Execute")).toBeNull();
+    fireEvent.change(search, { target: { value: "Unlock" } });
+    expect(getByRole("button", { name: "UNLOCK" }))
+      .toHaveClass("fb-button", "yellow", "e-stop");
+    fireEvent.change(search, { target: { value: "E-Stop" } });
+    fireEvent.click(getByRole("button", { name: "E-STOP" }));
 
     expect(emergencyLock).toHaveBeenCalledTimes(1);
+  });
+
+  it("labels the Close Panel action", () => {
+    const { getByLabelText } = setup();
+    const search = getByLabelText("Search commands");
+    fireEvent.change(search, {
+      target: { value: "Close Panel" },
+    });
+    expect(getByLabelText("Close Panel: Close Panel")).toBeTruthy();
+    fireEvent.change(search, { target: { value: "Open Map" } });
+    expect(getByLabelText("Map: Show Map")).toBeTruthy();
+  });
+
+  it("renders external command actions as links", () => {
+    const execute = jest.fn();
+    const buildCommands = jest.spyOn(commandsModule, "buildCommands")
+      .mockReturnValue([{
+        id: "follow-farmbot",
+        name: "Follow FarmBot",
+        englishName: "Follow FarmBot",
+        group: "navigation",
+        execute: jest.fn(),
+        actions: [{
+          id: "blog",
+          name: "Blog",
+          englishName: "Blog",
+          href: "https://blog.farm.bot",
+          execute,
+        }],
+      }]);
+    const { getByRole } = render(<MemoryRouter>
+      <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
+        initialOpen={true} />
+    </MemoryRouter>);
+
+    const link = getByRole("link", { name: "Follow FarmBot: Blog" });
+    expect(link).toHaveAttribute("href", "https://blog.farm.bot");
+    expect(link).toHaveAttribute("target", "_blank");
+    fireEvent.mouseMove(link);
+    expect(link).toHaveClass("selected");
+    fireEvent.click(link);
+    expect(execute).toHaveBeenCalledTimes(1);
+    buildCommands.mockRestore();
+  });
+
+  it("labels Settings section commands without uppercasing them", () => {
+    const buildCommands = jest.spyOn(commandsModule, "buildCommands")
+      .mockReturnValue([{
+        id: "settings-section:axis_settings",
+        name: "Settings > Axis Settings",
+        englishName: "Settings > Axis Settings",
+        group: "settings",
+        execute: jest.fn(),
+      }]);
+    const { getByLabelText, getByText } = render(<MemoryRouter>
+      <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
+        initialOpen={true} />
+    </MemoryRouter>);
+
+    expect(getByLabelText("Settings > Axis Settings: Open Section"))
+      .toBeTruthy();
+    const title = getByText("Settings > Axis Settings");
+    expect(title.closest(".command-palette-option"))
+      .toHaveClass("command-palette-settings-section-command");
+    buildCommands.mockRestore();
+  });
+
+  it("labels individual Settings commands with Open Setting", () => {
+    const buildCommands = jest.spyOn(commandsModule, "buildCommands")
+      .mockReturnValue([{
+        id: "settings-item:set-axis-length",
+        name: "Set Axis Length",
+        englishName: "Set Axis Length",
+        group: "settings",
+        execute: jest.fn(),
+      }]);
+    const { getByLabelText } = render(<MemoryRouter>
+      <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
+        initialOpen={true} />
+    </MemoryRouter>);
+
+    expect(getByLabelText("Set Axis Length: Open Setting")).toBeTruthy();
+    buildCommands.mockRestore();
   });
 
   it("navigates and filters multi-action commands from the keyboard", () => {

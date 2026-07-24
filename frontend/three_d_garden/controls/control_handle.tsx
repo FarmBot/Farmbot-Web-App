@@ -21,6 +21,7 @@ export interface ControlHandleProps {
   userData?: Record<string, unknown>;
   cursor?: string;
   dragCursor?: string;
+  commitLastDragOnPointerUp?: boolean;
   constraint?: ControlDragConstraint | ((
     event: ControlPointerEvent,
   ) => ControlDragConstraint);
@@ -48,13 +49,17 @@ export const ControlHandle = (props: ControlHandleProps) => {
   const hoveredRef = React.useRef(false);
   const onHoverChangeRef = React.useRef(props.onHoverChange);
   const onDragCancelRef = React.useRef(props.onDragCancel);
+  const onDragEndRef = React.useRef(props.onDragEnd);
+  const lastDragEvent =
+    React.useRef<ControlDragEvent | undefined>(undefined);
   const dragStart = React.useRef(new Vector3());
   const dragConstraint =
     React.useRef<ControlDragConstraint | undefined>(undefined);
   React.useLayoutEffect(() => {
     onHoverChangeRef.current = props.onHoverChange;
     onDragCancelRef.current = props.onDragCancel;
-  }, [props.onDragCancel, props.onHoverChange]);
+    onDragEndRef.current = props.onDragEnd;
+  }, [props.onDragCancel, props.onDragEnd, props.onHoverChange]);
   const hasDrag = !!(
     props.constraint ||
     props.onDragStart ||
@@ -96,20 +101,40 @@ export const ControlHandle = (props: ControlHandleProps) => {
     pressedRef.current = false;
     draggingRef.current = false;
     dragConstraint.current = undefined;
+    lastDragEvent.current = undefined;
     setDragging(false);
     setPressed(false);
     onDragCancelRef.current?.();
   }, []);
 
+  const finishDrag = React.useCallback((
+    finalEvent = lastDragEvent.current,
+  ) => {
+    if (!draggingRef.current && !pressedRef.current) { return; }
+    const wasDragging = draggingRef.current;
+    pressedRef.current = false;
+    draggingRef.current = false;
+    dragConstraint.current = undefined;
+    lastDragEvent.current = undefined;
+    setDragging(false);
+    setPressed(false);
+    if (wasDragging && finalEvent) {
+      onDragEndRef.current?.(finalEvent);
+    }
+  }, []);
+
   React.useEffect(() => {
-    const stop = () => cancel();
-    window.addEventListener("pointerup", stop);
-    window.addEventListener("pointercancel", stop);
+    const pointerUp = () => props.commitLastDragOnPointerUp
+      ? finishDrag()
+      : cancel();
+    const pointerCancel = () => cancel();
+    window.addEventListener("pointerup", pointerUp);
+    window.addEventListener("pointercancel", pointerCancel);
     return () => {
-      window.removeEventListener("pointerup", stop);
-      window.removeEventListener("pointercancel", stop);
+      window.removeEventListener("pointerup", pointerUp);
+      window.removeEventListener("pointercancel", pointerCancel);
     };
-  }, [cancel]);
+  }, [cancel, finishDrag, props.commitLastDragOnPointerUp]);
 
   React.useEffect(() => {
     if (enabled) { return; }
@@ -148,6 +173,7 @@ export const ControlHandle = (props: ControlHandleProps) => {
         const next = dragEvent(event, false);
         dragStart.current.copy(next.point);
         draggingRef.current = true;
+        lastDragEvent.current = next;
         setDragging(true);
         props.onDragStart?.(next);
       }
@@ -155,19 +181,20 @@ export const ControlHandle = (props: ControlHandleProps) => {
     onPointerMove={event => {
       if (!enabled || !draggingRef.current) { return; }
       stopControlDragEvent(event);
-      props.onDrag?.(dragEvent(event));
+      const next = dragEvent(event);
+      lastDragEvent.current = next;
+      props.onDrag?.(next);
     }}
     onPointerUp={event => {
       if (!enabled || !pressedRef.current) { return; }
       stopControlDragEvent(event);
       if (draggingRef.current) {
-        props.onDragEnd?.(dragEvent(event));
+        const next = dragEvent(event);
+        lastDragEvent.current = next;
+        finishDrag(next);
+      } else {
+        finishDrag();
       }
-      draggingRef.current = false;
-      pressedRef.current = false;
-      dragConstraint.current = undefined;
-      setDragging(false);
-      setPressed(false);
       (event.target as HTMLElement | null)
         ?.releasePointerCapture?.(event.pointerId);
       if (!pointerInside.current) { setHover(false); }
@@ -178,7 +205,7 @@ export const ControlHandle = (props: ControlHandleProps) => {
     }}
     onLostPointerCapture={event => {
       stopControlDragEvent(event);
-      cancel();
+      if (!props.commitLastDragOnPointerUp) { cancel(); }
     }}
     onClick={event => {
       if (!enabled || clickWasDragged(event)) { return; }

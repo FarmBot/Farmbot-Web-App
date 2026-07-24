@@ -64,6 +64,7 @@ import { PingDictionary } from "../devices/connectivity/qos";
 import {
   commandPaletteShortcut, openCommandPalette,
 } from "../command_palette";
+import { preloadDemoMovementActions } from "../devices/actions";
 
 const createCachedSelector =
   <Input, Output>(selector: (input: Input) => Output) => {
@@ -200,6 +201,7 @@ const ConnectionStatus = (props: ConnectionStatusProps) => {
         type: Actions.DEMO_SET_STATE,
         payload: undefined,
       });
+      preloadDemoMovementActions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

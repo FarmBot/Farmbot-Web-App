@@ -8,7 +8,9 @@ import { error, info } from "../../toast/toast";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { TOAST_OPTIONS } from "../../toast/constants";
-import { Action, XyzNumber } from "./interfaces";
+import {
+  Action, DemoMovementCommand, XyzNumber,
+} from "./interfaces";
 import * as crud from "../../api/crud";
 import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
@@ -291,6 +293,7 @@ export const expandActionsFromPosition = (
       case "go_to_home":
         const axisInput = action.args[0] as string;
         const axes = axisInput == "all" ? ["z", "y", "x"] : [axisInput];
+        start();
         axes.map(axis => {
           const homeTarget = {
             x: axis == "x" ? 0 : expansionCurrent.x,
@@ -300,6 +303,7 @@ export const expandActionsFromPosition = (
           addPosition(homeTarget);
           setExpansionCurrent(homeTarget);
         });
+        stop();
         break;
       case "read_pin":
         const pin = action.args[0] as number;
@@ -577,6 +581,26 @@ export const runActions = (
       runNext();
     }
   });
+};
+
+export const runDemoMovementCommand = (
+  command: DemoMovementCommand,
+) => {
+  syncCurrentFromBotPosition();
+  const action: Action = "position" in command
+    ? {
+      type: command.type,
+      args: [
+        command.position.x,
+        command.position.y,
+        command.position.z,
+      ],
+    }
+    : {
+      type: command.type,
+      args: [command.axis],
+    };
+  runActions(expandActions([action], []));
 };
 
 const runNext = () => {

@@ -32,6 +32,7 @@ import * as controlsPanelModule from "../../controls/controls";
 import * as screenSize from "../../screen_size";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
 import * as mustBeOnline from "../../devices/must_be_online";
+import * as deviceActions from "../../devices/actions";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   commandPaletteShortcut, COMMAND_PALETTE_OPEN_EVENT,
@@ -42,6 +43,7 @@ let isMobileSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
 let maybeSetTimezoneSpy: jest.SpyInstance;
 let forceOnlineSpy: jest.SpyInstance;
+let preloadDemoMovementActionsSpy: jest.SpyInstance;
 
 describe("<NavBar />", () => {
   const mockStoreForProps = (props: NavBarProps) => {
@@ -88,6 +90,10 @@ describe("<NavBar />", () => {
       .mockImplementation(jest.fn());
     forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
       .mockImplementation(() => false);
+    preloadDemoMovementActionsSpy = jest.spyOn(
+      deviceActions,
+      "preloadDemoMovementActions",
+    ).mockImplementation(jest.fn());
   });
 
   afterEach(() => {
@@ -95,6 +101,7 @@ describe("<NavBar />", () => {
     isDesktopSpy.mockRestore();
     maybeSetTimezoneSpy.mockRestore();
     forceOnlineSpy.mockRestore();
+    preloadDemoMovementActionsSpy.mockRestore();
     localStorage.removeItem("myBotIs");
     document.body.innerHTML = "";
   });
@@ -149,6 +156,7 @@ describe("<NavBar />", () => {
       type: Actions.DEMO_SET_STATE,
       payload: undefined,
     });
+    expect(preloadDemoMovementActionsSpy).toHaveBeenCalled();
   });
 
   it("doesn't set demo state when not forced online", () => {
@@ -159,6 +167,7 @@ describe("<NavBar />", () => {
       type: Actions.DEMO_SET_STATE,
       payload: undefined,
     });
+    expect(preloadDemoMovementActionsSpy).not.toHaveBeenCalled();
   });
 
   it("displays links", () => {

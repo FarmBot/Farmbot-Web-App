@@ -34,6 +34,7 @@ export interface CommandAction {
   id: string;
   name: string;
   englishName: string;
+  href?: string;
   aliases?: string[];
   unavailable?: string;
   input?: CommandInput;

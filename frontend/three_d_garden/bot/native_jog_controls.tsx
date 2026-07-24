@@ -42,19 +42,25 @@ import { MovementState } from "../../interfaces";
 import { movementPercentRemaining } from "../../farm_designer/move_to";
 import { Highlight } from "../elements";
 import { SECTION_CONTROL_ACTIVE_COLOR } from "../section_controls";
-import { NativeJogGhost } from "./native_jog_ghost";
+import {
+  NativeJogGhost, NativeJogUtmShadow,
+} from "./native_jog_ghost";
+import { get3DPositionFunc, zZero } from "../helpers";
 
 export const NATIVE_JOG_ARROW_LENGTH = 100;
 export const NATIVE_JOG_Y_ARROW_LENGTH = NATIVE_JOG_ARROW_LENGTH * 1.5;
 const NATIVE_JOG_ARROW_WIDTH = 12;
+const NATIVE_JOG_MIN_RENDERED_ARROW_LENGTH = 1;
 const NATIVE_JOG_SPHERE_RADIUS = 20;
-const NATIVE_JOG_DRAG_SPHERE_OFFSET = 50;
 const NATIVE_JOG_DRAG_LABEL_OFFSET = 100;
 export const NATIVE_JOG_DRAG_SNAP_THRESHOLD = 5;
 const NATIVE_JOG_COLOR = "gray";
 const NATIVE_JOG_HOVER_COLOR = "lightgray";
 const NATIVE_JOG_BED_OFFSET = 100;
 const NATIVE_JOG_BEAM_Z_OFFSET = 200;
+const NATIVE_JOG_POPUP_Z_OFFSET = 50;
+export const NATIVE_JOG_SHADOW_Z_OFFSET = 10;
+const NATIVE_JOG_CROSSHAIR_Z_OFFSET = 6;
 const NATIVE_JOG_RENDER_OPTIONS = {
   depthTest: true,
   depthWrite: true,
@@ -88,9 +94,10 @@ export interface NativeJogAxisActionsContext {
 }
 
 type NativeJogConfig = Pick<Config,
-  "beamLength" | "bedWidthOuter" | "bedYOffset" | "botSizeX" |
-  "botSizeY" | "botSizeZ" | "columnLength" | "kitVersion" |
-  "mirrorX" | "mirrorY" | "negativeZ" | "safeHeight" | "controlsOverlay">;
+  "beamLength" | "bedLengthOuter" | "bedWidthOuter" | "bedXOffset" |
+  "bedYOffset" | "botSizeX" | "botSizeY" | "botSizeZ" |
+  "columnLength" | "kitVersion" | "mirrorX" | "mirrorY" |
+  "negativeZ" | "safeHeight" | "controlsOverlay" | "zGantryOffset">;
 
 export const getNativeJogControlPositions = (
   config: NativeJogConfig,
@@ -114,10 +121,10 @@ export const getNativeJogControlPositions = (
     ] as [ControlPoint, ControlPoint],
     y: [
       beamControlX - crossSlidePosition[0],
-      0,
+      -crossSlidePosition[1],
       beamControlZ - crossSlidePosition[2],
     ] as ControlPoint,
-    z: [60, 0, 300] as ControlPoint,
+    z: [60, 0, 220] as ControlPoint,
   };
 };
 
@@ -169,30 +176,9 @@ export const getNativeJogDragDistance = (
   return Math.abs(distance) <= NATIVE_JOG_DRAG_SNAP_THRESHOLD ? 0 : distance;
 };
 
-const getNativeJogDragSphereOffset = (
-  config: NativeJogConfig,
-  axis: Xyz,
-  controlPosition: ControlPoint,
-): ControlPoint => {
-  if (axis == "x") {
-    const bedCenterY = -config.bedYOffset + config.bedWidthOuter / 2;
-    return [
-      0,
-      controlPosition[1] < bedCenterY
-        ? NATIVE_JOG_DRAG_SPHERE_OFFSET
-        : -NATIVE_JOG_DRAG_SPHERE_OFFSET,
-      0,
-    ];
-  }
-  return axis == "y"
-    ? [0, 0, -NATIVE_JOG_DRAG_SPHERE_OFFSET]
-    : [-NATIVE_JOG_DRAG_SPHERE_OFFSET, 0, 0];
-};
-
 export const getNativeJogDragPreviewPositions = (
   config: NativeJogConfig,
   axis: Xyz,
-  controlPosition: ControlPoint,
   deviceDistance: number,
 ) => {
   const renderDistance = deviceDistance * getNativeJogRenderDirection(
@@ -201,15 +187,10 @@ export const getNativeJogDragPreviewPositions = (
     1,
   );
   const control = axisPoint(axis, renderDistance);
-  const marker = getNativeJogDragSphereOffset(
-    config,
-    axis,
-    controlPosition,
-  );
   const labelOffset: ControlPoint = axis == "z"
     ? [NATIVE_JOG_DRAG_LABEL_OFFSET, 0, 0]
     : [0, 0, NATIVE_JOG_DRAG_LABEL_OFFSET];
-  return { control, marker, label: controlPointSum(control, labelOffset) };
+  return { control, label: controlPointSum(control, labelOffset) };
 };
 
 export const nativeJogMovementAvailable = (
@@ -280,6 +261,51 @@ const configuredNativeJogAxisLength = (
   z: config.botSizeZ,
 })[axis];
 
+const nativeJogAxisBounds = (
+  config: NativeJogConfig,
+  context: NativeJogAxisActionsContext,
+  axis: Xyz,
+) => {
+  const firmwareLength = nativeJogAxisLength(context, axis);
+  const configuredLength = configuredNativeJogAxisLength(config, axis);
+  const length = firmwareLength > 0 ? firmwareLength : configuredLength;
+  return nativeJogAxisNegativeOnly(context, axis)
+    ? { minimum: -length, maximum: 0 }
+    : { minimum: 0, maximum: length };
+};
+
+const nativeJogDefaultArrowLength = (axis: Xyz) =>
+  axis == "y" ? NATIVE_JOG_Y_ARROW_LENGTH : NATIVE_JOG_ARROW_LENGTH;
+
+export const getNativeJogArrowLength = (
+  config: NativeJogConfig,
+  context: NativeJogAxisActionsContext | undefined,
+  axis: Xyz,
+  position: number,
+  direction: NativeJogDirection,
+) => {
+  const defaultLength = nativeJogDefaultArrowLength(axis);
+  if (!context || !Number.isFinite(position)) { return defaultLength; }
+  const { minimum, maximum } = nativeJogAxisBounds(
+    config,
+    context,
+    axis,
+  );
+  const availableDistance = direction < 0
+    ? position - minimum
+    : maximum - position;
+  return Math.max(0, Math.min(defaultLength, availableDistance));
+};
+
+const nativeJogPositionAtBound = (
+  config: NativeJogConfig,
+  context: NativeJogAxisActionsContext | undefined,
+  axis: Xyz,
+  position: number,
+) =>
+  getNativeJogArrowLength(config, context, axis, position, -1) == 0 ||
+  getNativeJogArrowLength(config, context, axis, position, 1) == 0;
+
 export interface NativeJogDragResult {
   boundDirection?: NativeJogDirection;
   distance: number;
@@ -295,12 +321,11 @@ export const clampNativeJogDragDistance = (
   if (!isNumber(position)) {
     return { distance: requestedDistance };
   }
-  const firmwareLength = nativeJogAxisLength(context, axis);
-  const configuredLength = configuredNativeJogAxisLength(config, axis);
-  const length = firmwareLength > 0 ? firmwareLength : configuredLength;
-  const negativeOnly = nativeJogAxisNegativeOnly(context, axis);
-  const minimum = negativeOnly ? -length : 0;
-  const maximum = negativeOnly ? 0 : length;
+  const { minimum, maximum } = nativeJogAxisBounds(
+    config,
+    context,
+    axis,
+  );
   const negativeDistance = minimum - position;
   const positiveDistance = maximum - position;
   const distance = Math.max(
@@ -444,13 +469,49 @@ type NativeJogAction =
 
 interface NativeJogProgressProps {
   active: boolean;
+  axis: Xyz;
+  distance: number;
   progress: number | undefined;
 }
+
+export const nativeJogProgressStyle = (
+  axis: Xyz,
+  distance: number,
+  progress: number,
+): React.CSSProperties => axis == "z"
+  ? {
+    height: `${progress}%`,
+    bottom: distance >= 0 ? 0 : undefined,
+    top: distance < 0 ? 0 : undefined,
+    left: 0,
+  }
+  : {
+    width: `${progress}%`,
+    left: distance >= 0 ? 0 : undefined,
+    right: distance < 0 ? 0 : undefined,
+    top: 0,
+  };
+
+export const nativeJogActionProgressDistance = (
+  axis: Xyz,
+  action: NativeJogAction,
+  movementDistance: number,
+) => {
+  if (action == "home" || action == "find-home") {
+    return axis == "z" ? 1 : -1;
+  }
+  if (action == "max") { return 1; }
+  return movementDistance;
+};
 
 const NativeJogProgress = (props: NativeJogProgressProps) =>
   props.active && isNumber(props.progress)
     ? <div className={"movement-progress"}
-      style={{ width: `${props.progress}%`, top: 0, left: 0 }} />
+      style={nativeJogProgressStyle(
+        props.axis,
+        props.distance,
+        props.progress,
+      )} />
     : undefined;
 
 interface NativeJogActionButtonsProps {
@@ -461,11 +522,12 @@ interface NativeJogActionButtonsProps {
   config: NativeJogConfig;
   context: NativeJogAxisActionsContext;
   movementAvailable: boolean;
+  previewMovement(distance: number | undefined): void;
   progress: number | undefined;
   runMovement(
     action: NativeJogAction,
     distance: number,
-    command: () => unknown,
+    command: (onError: () => void) => unknown,
   ): void;
   stepSize: number;
 }
@@ -490,22 +552,47 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
   const atMax = isNumber(axisPosition) && axisPosition == maxPosition;
   const safePosition = props.config.safeHeight;
   const atSafe = isNumber(axisPosition) && axisPosition == safePosition;
+  const homeDisabled = !props.movementAvailable || atHome;
+  const findHomeDisabled = !props.movementAvailable || hardwareDisabled;
+  const negativeDisabled = !props.movementAvailable ||
+    nativeJogDirectionDisabled(
+      props.context,
+      props.axis,
+      -1,
+      axisPosition,
+      configuredAxisLength,
+    );
+  const positiveDisabled = !props.movementAvailable ||
+    nativeJogDirectionDisabled(
+      props.context,
+      props.axis,
+      1,
+      axisPosition,
+      configuredAxisLength,
+    );
+  const maxDisabled = !props.absoluteMovementAvailable ||
+    atMax || maxPosition == 0;
+  const safeDisabled = !props.absoluteMovementAvailable || atSafe;
   const moveHome = () => {
     if (!props.movementAvailable) { return; }
     props.runMovement("home", isNumber(axisPosition) ? -axisPosition : 0,
-      () => moveToHome(props.axis));
+      onError => moveToHome(props.axis, onError));
   };
   const findAxisHome = () => {
     if (!props.movementAvailable || hardwareDisabled) { return; }
     props.runMovement("find-home",
       isNumber(axisPosition) ? -axisPosition : 0,
-      () => findHome(props.axis));
+      onError => findHome(props.axis, onError));
   };
   const jog = (direction: NativeJogDirection) => {
     if (!props.movementAvailable) { return; }
     const distance = direction * props.stepSize;
     props.runMovement(direction < 0 ? "negative" : "positive", distance,
-      () => relativeMove(props.axis, direction * props.stepSize));
+      onError => relativeMove(
+        props.axis,
+        direction * props.stepSize,
+        onError,
+      ));
   };
   const moveToAxisPosition = (
     action: "max" | "safe",
@@ -518,12 +605,29 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
     );
     if (!destination) { return; }
     props.runMovement(action, targetPosition - axisPosition,
-      () => moveAbsolute(destination));
+      onError => moveAbsolute(destination, onError));
   };
-  const progress = (action: NativeJogAction) =>
+  const progress = (
+    action: NativeJogAction,
+    distance: number,
+  ) =>
     <NativeJogProgress
       active={props.activeAction == action}
+      axis={props.axis}
+      distance={nativeJogActionProgressDistance(
+        props.axis,
+        action,
+        distance,
+      )}
       progress={props.progress} />;
+  const previewEvents = (distance: number, disabled: boolean) => ({
+    onPointerEnter: () => props.previewMovement(
+      disabled ? undefined : distance,
+    ),
+    onPointerLeave: () => props.previewMovement(undefined),
+    onFocus: () => props.previewMovement(disabled ? undefined : distance),
+    onBlur: () => props.previewMovement(undefined),
+  });
   let safeArrow = "minus";
   if (safePosition > axisPosition) {
     safeArrow = "up";
@@ -541,15 +645,16 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
         "native-jog-home-button",
         "native-jog-progress-button",
       ].join(" ")}
-      disabled={!props.movementAvailable || atHome}
+      disabled={homeDisabled}
       aria-label={t("Move Home {{axis}}", { axis: axisLabel })}
       title={t("Move Home {{axis}}", { axis: axisLabel })}
-      onClick={moveHome}>
+      onClick={moveHome}
+      {...previewEvents(-axisPosition, homeDisabled)}>
       <div className={"fa-stack"}>
         <i className={"fa fa-home fa-stack-2x"} />
         <i className={`fa fa-arrow-${props.axis == "z" ? "up" : "left"} fa-stack-1x`} />
       </div>
-      {progress("home")}
+      {progress("home", -axisPosition)}
     </button>
     <button
       type={"button"}
@@ -558,15 +663,16 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
         "native-jog-find-home-button",
         "native-jog-progress-button",
       ].join(" ")}
-      disabled={!props.movementAvailable || hardwareDisabled || atHome}
+      disabled={findHomeDisabled}
       aria-label={t("Find Home {{axis}}", { axis: axisLabel })}
       title={t("Find Home {{axis}}", { axis: axisLabel })}
-      onClick={findAxisHome}>
+      onClick={findAxisHome}
+      {...previewEvents(-axisPosition, findHomeDisabled)}>
       <div className={"fa-stack"}>
         <i className={"fa fa-home fa-stack-2x"} />
         <i className={"fa fa-search fa-stack-1x"} />
       </div>
-      {progress("find-home")}
+      {progress("find-home", -axisPosition)}
     </button>
     <button
       type={"button"}
@@ -576,19 +682,13 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
         "native-jog-progress-button",
         `fa-arrow-${negativeArrow}`,
       ].join(" ")}
-      disabled={!props.movementAvailable ||
-        nativeJogDirectionDisabled(
-          props.context,
-          props.axis,
-          -1,
-          axisPosition,
-          configuredAxisLength,
-        )}
+      disabled={negativeDisabled}
       aria-label={t("Jog -{{axis}}", { axis: axisLabel })}
       title={t("Jog -{{axis}}", { axis: axisLabel })}
-      onClick={() => jog(-1)}>
+      onClick={() => jog(-1)}
+      {...previewEvents(-props.stepSize, negativeDisabled)}>
       <p>{`-${axisLabel}`}</p>
-      {progress("negative")}
+      {progress("negative", -props.stepSize)}
     </button>
     <button
       type={"button"}
@@ -598,19 +698,13 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
         "native-jog-progress-button",
         `fa-arrow-${positiveArrow}`,
       ].join(" ")}
-      disabled={!props.movementAvailable ||
-        nativeJogDirectionDisabled(
-          props.context,
-          props.axis,
-          1,
-          axisPosition,
-          configuredAxisLength,
-        )}
+      disabled={positiveDisabled}
       aria-label={t("Jog +{{axis}}", { axis: axisLabel })}
       title={t("Jog +{{axis}}", { axis: axisLabel })}
-      onClick={() => jog(1)}>
+      onClick={() => jog(1)}
+      {...previewEvents(props.stepSize, positiveDisabled)}>
       <p>{`+${axisLabel}`}</p>
-      {progress("positive")}
+      {progress("positive", props.stepSize)}
     </button>
     {props.axis != "z"
       ? <button
@@ -620,13 +714,13 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
           "native-jog-limit-button",
           "native-jog-progress-button",
         ].join(" ")}
-        disabled={!props.absoluteMovementAvailable ||
-          atMax || maxPosition == 0}
+        disabled={maxDisabled}
         aria-label={t("Move to Max {{axis}}", { axis: axisLabel })}
         title={t("Move to Max {{axis}}", { axis: axisLabel })}
-        onClick={() => moveToAxisPosition("max", maxPosition)}>
+        onClick={() => moveToAxisPosition("max", maxPosition)}
+        {...previewEvents(maxPosition - axisPosition, maxDisabled)}>
         <p>{t("Max")}</p>
-        {progress("max")}
+        {progress("max", maxPosition - axisPosition)}
       </button>
       : <button
         type={"button"}
@@ -636,12 +730,13 @@ const NativeJogActionButtons = (props: NativeJogActionButtonsProps) => {
           safeIcon,
           "native-jog-progress-button",
         ].join(" ")}
-        disabled={!props.absoluteMovementAvailable || atSafe}
+        disabled={safeDisabled}
         aria-label={t("Move to Safe Height")}
         title={t("Move to Safe Height")}
-        onClick={() => moveToAxisPosition("safe", safePosition)}>
+        onClick={() => moveToAxisPosition("safe", safePosition)}
+        {...previewEvents(safePosition - axisPosition, safeDisabled)}>
         <p>{t("Safe")}</p>
-        {progress("safe")}
+        {progress("safe", safePosition - axisPosition)}
       </button>}
   </div>;
 };
@@ -656,11 +751,13 @@ export const NativeJogStepSizeSelector = (
 ) => {
   const select = (stepSize: number) =>
     props.context.dispatch(changeStepSize(stepSize));
+  const disabled = !props.context.botOnline || props.context.locked;
   return <div className={"move-amount-wrapper native-jog-step-selector"}>
     {NATIVE_JOG_STEP_CHOICES.map((choice, index) =>
       <button
         key={choice}
         type={"button"}
+        disabled={disabled}
         title={t("{{ amount }}mm", { amount: choice })}
         className={[
           "move-amount no-radius fb-button",
@@ -712,11 +809,13 @@ interface NativeJogPopupProps {
   encoderVisibility?: NativeJogEncoderVisibility;
   navigate?(path: string): void;
   onClose(): void;
+  onPreview(distance: number | undefined, pending?: boolean): void;
   positionStore: BotPositionSnapshotStore;
 }
 
 // eslint-disable-next-line complexity
 export const NativeJogPopup = (props: NativeJogPopupProps) => {
+  const onPreview = props.onPreview;
   const renderedPosition = useBotPositionSnapshot(props.positionStore);
   const renderedDevicePosition = getNativeJogDevicePosition(
     props.config,
@@ -727,6 +826,7 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
     ? axisPosition
     : renderedDevicePosition[props.axis];
   const [target, setTarget] = React.useState("");
+  const [targetFocused, setTargetFocused] = React.useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = React.useState(false);
   const [activeMovement, setActiveMovement] = React.useState<{
     action: NativeJogAction;
@@ -752,6 +852,25 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
   const targetCoordinate = parseFloat(target);
   const targetValid = Number.isFinite(targetCoordinate) &&
     absoluteMovementAvailable;
+  React.useEffect(() => {
+    if (!movementAvailable) {
+      onPreview(undefined);
+    }
+  }, [movementAvailable, onPreview]);
+  React.useEffect(() => {
+    if (!targetFocused) { return; }
+    onPreview(targetValid
+      ? targetCoordinate - currentAxisPosition
+      : undefined);
+  }, [
+    currentAxisPosition,
+    onPreview,
+    targetCoordinate,
+    targetFocused,
+    targetValid,
+  ]);
+  React.useEffect(() =>
+    () => onPreview(undefined), [onPreview]);
   const progressValue = props.context.movementState
     ? movementPercentRemaining(
       props.context.botPosition,
@@ -766,19 +885,41 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
     isEqual(activeMovement.movementState, props.context.movementState)
     ? activeMovement.action
     : undefined;
+  const goDistance = activeMovement?.movementState.distance[props.axis]
+    ?? targetCoordinate - currentAxisPosition;
   const runMovement = (
     action: NativeJogAction,
     distance: number,
-    command: () => unknown,
+    command: (onError: () => void) => unknown,
   ) => {
     if (!movementAvailable) { return; }
+    const movementDistance = clampNativeJogDragDistance(
+      props.config,
+      props.context,
+      props.axis,
+      distance,
+    ).distance;
+    onPreview(movementDistance, true);
     const movementState: MovementState = {
       start: props.context.botPosition,
-      distance: { x: 0, y: 0, z: 0, [props.axis]: distance },
+      distance: {
+        x: 0,
+        y: 0,
+        z: 0,
+        [props.axis]: movementDistance,
+      },
     };
     props.context.dispatch(setMovementState(movementState));
     setActiveMovement({ action, movementState });
-    command();
+    const cancelMovement = () => {
+      onPreview(undefined, true);
+      setActiveMovement(undefined);
+    };
+    try {
+      Promise.resolve(command(cancelMovement)).catch(cancelMovement);
+    } catch {
+      cancelMovement();
+    }
   };
   const go = () => {
     if (!targetValid) { return; }
@@ -789,12 +930,12 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
     );
     if (!destination) { return; }
     runMovement("go", targetCoordinate - currentAxisPosition,
-      () => moveAbsolute(destination));
+      onError => moveAbsolute(destination, onError));
   };
   const stepSize = getNativeJogStepSize(props.context.stepSize);
   return <ThreeDPopup
     name={`bot-jog-${props.axis}-popup`}
-    position={[0, 0, 0]}
+    position={[0, 0, NATIVE_JOG_POPUP_Z_OFFSET]}
     title={moreOptionsOpen ? t("More options") : title}
     headerActions={moreOptionsOpen
       ? <button
@@ -837,6 +978,7 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
             config={props.config}
             context={props.context}
             movementAvailable={movementAvailable}
+            previewMovement={onPreview}
             progress={progress}
             runMovement={runMovement}
             stepSize={stepSize} />
@@ -850,6 +992,11 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
               disabled={!movementAvailable}
               placeholder={""}
               value={target}
+              onFocus={() => setTargetFocused(true)}
+              onBlur={() => {
+                setTargetFocused(false);
+                onPreview(undefined);
+              }}
               onChange={event => setTarget(event.currentTarget.value)} />
             <button
               type={"button"}
@@ -859,10 +1006,24 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
                 "native-jog-progress-button",
               ].join(" ")}
               disabled={!targetValid}
-              onClick={go}>
+              onClick={go}
+              onPointerEnter={() => onPreview(targetValid
+                ? targetCoordinate - currentAxisPosition
+                : undefined)}
+              onPointerLeave={() => onPreview(undefined)}
+              onFocus={() => onPreview(targetValid
+                ? targetCoordinate - currentAxisPosition
+                : undefined)}
+              onBlur={() => onPreview(undefined)}>
               <span>{t("GO")}</span>
               <NativeJogProgress
                 active={activeAction == "go"}
+                axis={props.axis}
+                distance={nativeJogActionProgressDistance(
+                  props.axis,
+                  "go",
+                  goDistance,
+                )}
                 progress={progress} />
             </button>
           </div>
@@ -876,17 +1037,21 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
 };
 
 interface NativeJogArrowProps {
-  atBound: boolean;
   axis: Xyz;
   config: NativeJogConfig;
   deviceDirection: NativeJogDirection;
   enabled: boolean;
   hovered: boolean;
+  length: number;
   name: string;
 }
 
-const NativeJogArrow = (props: NativeJogArrowProps) =>
-  <ControlArrow
+const NativeJogArrow = (props: NativeJogArrowProps) => {
+  const renderedLength = Math.max(
+    props.length,
+    NATIVE_JOG_MIN_RENDERED_ARROW_LENGTH,
+  );
+  return <ControlArrow
     name={`${props.name}-${props.deviceDirection == 1 ? "plus" : "minus"}-arrow`}
     start={[0, 0, 0]}
     end={axisPoint(
@@ -895,17 +1060,16 @@ const NativeJogArrow = (props: NativeJogArrowProps) =>
         props.config,
         props.axis,
         props.deviceDirection,
-      ) * (props.axis == "y"
-        ? NATIVE_JOG_Y_ARROW_LENGTH
-        : NATIVE_JOG_ARROW_LENGTH),
+      ) * renderedLength,
     )}
     heads={"end"}
     width={NATIVE_JOG_ARROW_WIDTH}
-    color={props.atBound ? "red" : NATIVE_JOG_COLOR}
-    hoverColor={props.atBound ? "red" : NATIVE_JOG_HOVER_COLOR}
+    color={NATIVE_JOG_COLOR}
+    hoverColor={NATIVE_JOG_HOVER_COLOR}
     hovered={props.hovered}
     enabled={props.enabled}
     {...NATIVE_JOG_RENDER_OPTIONS} />;
+};
 
 export const NATIVE_JOG_GUIDE_COLOR = "orange";
 
@@ -921,7 +1085,7 @@ const NativeJogGuideLine = (props: NativeJogGuideLineProps) => {
   const lineRef = React.useRef<Line2>(null);
   const start = React.useRef(new Vector3(...props.start));
   useFrame(() => {
-    props.utmRef?.current?.getWorldPosition(start.current);
+    props.utmRef?.current?.getWorldPosition?.(start.current);
     lineRef.current?.geometry.setPositions([
       start.current.x,
       start.current.y,
@@ -940,9 +1104,107 @@ const NativeJogGuideLine = (props: NativeJogGuideLineProps) => {
     raycast={noControlRaycast} />;
 };
 
+type NativeJogGetZ = (x: number, y: number) => number;
+
+export const getNativeJogUtmShadowPosition = (
+  config: NativeJogConfig,
+  getZ: NativeJogGetZ,
+  gardenPosition: Pick<PositionConfig, "x" | "y">,
+): ControlPoint => {
+  const world = get3DPositionFunc(config)(gardenPosition);
+  return [
+    world.x,
+    world.y,
+    zZero(config) + getZ(gardenPosition.x, gardenPosition.y) +
+      NATIVE_JOG_SHADOW_Z_OFFSET,
+  ];
+};
+
+interface NativeJogTargetCrosshairsProps {
+  config: NativeJogConfig;
+  getZ: NativeJogGetZ;
+  name: string;
+  position: Pick<PositionConfig, "x" | "y">;
+}
+
+const NativeJogTargetCrosshairs = (
+  props: NativeJogTargetCrosshairsProps,
+) => {
+  const get3DPosition = get3DPositionFunc(props.config);
+  const zero = get3DPosition({ x: 0, y: 0 });
+  const extents = get3DPosition({
+    x: props.config.botSizeX,
+    y: props.config.botSizeY,
+  });
+  const target = get3DPosition(props.position);
+  const z = zZero(props.config) +
+    props.getZ(props.position.x, props.position.y) +
+    NATIVE_JOG_CROSSHAIR_Z_OFFSET;
+  return <Group name={`${props.name}-target-crosshairs`}>
+    <Line
+      name={`${props.name}-target-x-crosshair`}
+      points={[
+        [Math.min(zero.x, extents.x), target.y, z],
+        [Math.max(zero.x, extents.x), target.y, z],
+      ]}
+      color={"white"}
+      transparent={true}
+      opacity={0.75}
+      lineWidth={1.5}
+      raycast={noControlRaycast} />
+    <Line
+      name={`${props.name}-target-y-crosshair`}
+      points={[
+        [target.x, Math.min(zero.y, extents.y), z],
+        [target.x, Math.max(zero.y, extents.y), z],
+      ]}
+      color={"white"}
+      transparent={true}
+      opacity={0.75}
+      lineWidth={1.5}
+      raycast={noControlRaycast} />
+  </Group>;
+};
+
+export interface NativeJogCurrentUtmShadowProps {
+  config: NativeJogConfig;
+  getZ: NativeJogGetZ;
+  positionStore: BotPositionSnapshotStore;
+}
+
+export const NativeJogCurrentUtmShadow = (
+  props: NativeJogCurrentUtmShadowProps,
+) => {
+  // eslint-disable-next-line no-null/no-null
+  const positionRef = React.useRef<Object3D>(null);
+  const getPosition = React.useCallback(() => {
+    const gardenPosition = getNativeJogDevicePosition(
+      props.config,
+      props.positionStore.getSnapshot(),
+    );
+    return getNativeJogUtmShadowPosition(
+      props.config,
+      props.getZ,
+      gardenPosition,
+    );
+  }, [props.config, props.getZ, props.positionStore]);
+  const initialPosition = getPosition();
+  useFrame(() => positionRef.current?.position.set(...getPosition()));
+  return <Group
+    ref={positionRef}
+    name={"native-jog-current-utm-position"}
+    position={initialPosition}>
+    <NativeJogUtmShadow
+      name={"native-jog-current-utm"}
+      position={[0, 0, 0]} />
+  </Group>;
+};
+
 export interface NativeJogWorldPreviewProps {
   axis: Xyz;
+  axisActions?: NativeJogAxisActionsContext;
   config: NativeJogConfig;
+  getZ: NativeJogGetZ;
   ghost?: React.ReactNode;
   name: string;
   preview: NativeJogDragPreview;
@@ -956,13 +1218,30 @@ export const NativeJogWorldPreview = (
   const offset = getNativeJogDragPreviewPositions(
     props.config,
     props.axis,
-    [0, 0, 0],
     props.preview.distance,
   ).control;
   const targetUtm = controlPointSum(
     props.preview.world.utmPosition,
     offset,
   );
+  const targetGardenPosition = {
+    ...props.preview.world.gardenPosition,
+    [props.axis]: props.preview.start + props.preview.distance,
+  };
+  const targetAxisPosition =
+    props.preview.start + props.preview.distance;
+  const arrowLength = (direction: NativeJogDirection) =>
+    props.preview.boundDirection == direction && !props.axisActions
+      ? 0
+      : getNativeJogArrowLength(
+        props.config,
+        props.axisActions,
+        props.axis,
+        targetAxisPosition,
+        direction,
+      );
+  const negativeArrowLength = arrowLength(-1);
+  const positiveArrowLength = arrowLength(1);
   return <Group name={`${props.name}-world-preview`}>
     <NativeJogGuideLine
       axis={props.axis}
@@ -983,25 +1262,37 @@ export const NativeJogWorldPreview = (
             enabled={false}
             {...NATIVE_JOG_RENDER_OPTIONS} />
           <NativeJogArrow
-            atBound={props.preview.boundDirection == -1}
             axis={props.axis}
             config={props.config}
             deviceDirection={-1}
             enabled={false}
             hovered={false}
+            length={negativeArrowLength}
             name={`${props.name}-world-${index}`} />
           <NativeJogArrow
-            atBound={props.preview.boundDirection == 1}
             axis={props.axis}
             config={props.config}
             deviceDirection={1}
             enabled={false}
             hovered={false}
+            length={positiveArrowLength}
             name={`${props.name}-world-${index}`} />
         </Group>)}
     <NativeJogGhost name={props.name} position={targetUtm}>
       {props.ghost}
     </NativeJogGhost>
+    <NativeJogTargetCrosshairs
+      config={props.config}
+      getZ={props.getZ}
+      name={props.name}
+      position={targetGardenPosition} />
+    <NativeJogUtmShadow
+      name={`${props.name}-target-utm`}
+      position={getNativeJogUtmShadowPosition(
+        props.config,
+        props.getZ,
+        targetGardenPosition,
+      )} />
   </Group>;
 };
 
@@ -1027,11 +1318,15 @@ export interface NativeJogControlPairProps {
 export interface NativeJogDragPreview {
   boundDirection?: NativeJogDirection;
   distance: number;
+  dragging?: boolean;
+  dragVisitedInterior?: boolean;
+  dragVisitedUnsnapped?: boolean;
   pending: boolean;
   sawBusy: boolean;
   start: number;
   world?: {
     controlPositions: ControlPoint[];
+    gardenPosition: PositionConfig;
     utmPosition: ControlPoint;
   };
 }
@@ -1043,6 +1338,17 @@ export interface NativeJogPreviewState {
   >;
   world?(): NonNullable<NativeJogDragPreview["world"]>;
 }
+
+const nativeJogDragReleaseResult = (
+  releaseResult: NativeJogDragResult,
+  preview: NativeJogDragPreview | undefined,
+): NativeJogDragResult =>
+  preview?.dragging && preview.boundDirection
+    ? {
+      boundDirection: preview.boundDirection,
+      distance: preview.distance,
+    }
+    : releaseResult;
 
 interface NativeJogPreviewLifecycleProps {
   actionsAvailable: boolean;
@@ -1117,10 +1423,76 @@ export const NativeJogControlPair = (
     props.config,
     renderedPosition,
   );
+  const previewContext = React.useRef({
+    axisActions: props.axisActions,
+    config: props.config,
+    renderedDevicePosition,
+    world: props.previewState?.world,
+  });
+  React.useLayoutEffect(() => {
+    previewContext.current = {
+      axisActions: props.axisActions,
+      config: props.config,
+      renderedDevicePosition,
+      world: props.previewState?.world,
+    };
+  }, [
+    props.axisActions,
+    props.config,
+    props.previewState?.world,
+    renderedDevicePosition,
+  ]);
+  const previewControlled = !!props.previewState;
   const previewDistance = dragPreview?.distance;
   const clearPreview = React.useCallback(() => {
     setDragPreview(undefined);
   }, [setDragPreview]);
+  const previewMovement = React.useCallback((
+    distance: number | undefined,
+    pending = false,
+  ) => {
+    if (!previewControlled) { return; }
+    setDragPreview(current => {
+      if (current?.pending && !pending) { return current; }
+      const context = previewContext.current;
+      const axisActions = context.axisActions;
+      if (!isNumber(distance) || !axisActions ||
+        !nativeJogMovementAvailable(axisActions)) {
+        return undefined;
+      }
+      const reportedPosition =
+        axisActions.botPosition[props.axis];
+      const fallback = context.renderedDevicePosition[props.axis];
+      const start = isNumber(reportedPosition)
+        ? reportedPosition
+        : fallback;
+      const clampingContext = isNumber(reportedPosition)
+        ? axisActions
+        : {
+          ...axisActions,
+          botPosition: {
+            ...axisActions.botPosition,
+            [props.axis]: start,
+          },
+        };
+      const result = clampNativeJogDragDistance(
+        context.config,
+        clampingContext,
+        props.axis,
+        distance,
+      );
+      return {
+        ...result,
+        dragging: false,
+        dragVisitedInterior: false,
+        dragVisitedUnsnapped: false,
+        pending,
+        sawBusy: false,
+        start,
+        world: current?.world || context.world?.(),
+      };
+    });
+  }, [previewControlled, props.axis, setDragPreview]);
   const arduinoBusy = props.axisActions?.arduinoBusy;
   const botOnline = props.axisActions?.botOnline;
   const locked = props.axisActions?.locked;
@@ -1165,27 +1537,60 @@ export const NativeJogControlPair = (
   const startDrag = () => {
     const start = props.axisActions?.botPosition[props.axis];
     const fallback = renderedDevicePosition[props.axis];
+    const startPosition = isNumber(start) ? start : fallback;
     setDragPreview({
       distance: 0,
+      dragging: true,
+      dragVisitedInterior: !nativeJogPositionAtBound(
+        props.config,
+        props.axisActions,
+        props.axis,
+        startPosition,
+      ),
+      dragVisitedUnsnapped: false,
       pending: false,
       sawBusy: false,
-      start: isNumber(start) ? start : fallback,
+      start: startPosition,
       world: props.previewState?.world?.(),
     });
   };
   const updateDrag = (event: ControlDragEvent) => {
     const result = dragResult(event);
-    setDragPreview(current => ({
-      ...result,
-      pending: false,
-      sawBusy: false,
-      start: current?.start ?? renderedDevicePosition[props.axis],
-      world: current?.world || props.previewState?.world?.(),
-    }));
+    setDragPreview(current => {
+      const start = current?.start ?? renderedDevicePosition[props.axis];
+      const target = start + result.distance;
+      const startedInInterior = !nativeJogPositionAtBound(
+        props.config,
+        props.axisActions,
+        props.axis,
+        start,
+      );
+      const targetInInterior = !nativeJogPositionAtBound(
+        props.config,
+        props.axisActions,
+        props.axis,
+        target,
+      );
+      return {
+        ...result,
+        dragging: true,
+        dragVisitedInterior: !!current?.dragVisitedInterior ||
+          startedInInterior || targetInInterior,
+        dragVisitedUnsnapped: !!current?.dragVisitedUnsnapped ||
+          result.distance != 0,
+        pending: false,
+        sawBusy: false,
+        start,
+        world: current?.world || props.previewState?.world?.(),
+      };
+    });
   };
   const endDrag = (event: ControlDragEvent) => {
     const axisActions = props.axisActions!;
-    const result = dragResult(event);
+    const result = nativeJogDragReleaseResult(
+      dragResult(event),
+      dragPreview,
+    );
     const distance = result.distance;
     if (!nativeJogMovementAvailable(axisActions) || distance == 0 ||
       nativeJogDirectionDisabled(
@@ -1200,6 +1605,9 @@ export const NativeJogControlPair = (
       renderedDevicePosition[props.axis];
     setDragPreview({
       ...result,
+      dragging: false,
+      dragVisitedInterior: dragPreview?.dragVisitedInterior,
+      dragVisitedUnsnapped: dragPreview?.dragVisitedUnsnapped,
       pending: true,
       sawBusy: axisActions.arduinoBusy,
       start,
@@ -1215,29 +1623,62 @@ export const NativeJogControlPair = (
     ? getNativeJogDragPreviewPositions(
       props.config,
       props.axis,
-      props.position,
       previewDistance,
     )
     : undefined;
+  const previewCoordinate = dragPreview
+    ? Math.round(dragPreview.start + dragPreview.distance)
+    : 0;
   const snapped = previewDistance == 0;
   const controlPosition: ControlPoint = preview?.control || [0, 0, 0];
   const ghostPosition = controlPointSum(
     props.ghostPosition || [0, 0, 0],
     controlPosition,
   );
-  const controlColor = snapped
+  const reportedPosition = props.axisActions?.botPosition[props.axis];
+  const fallbackAxisPosition = isNumber(reportedPosition)
+    ? reportedPosition
+    : renderedDevicePosition[props.axis];
+  const controlAxisPosition = dragPreview
+    ? dragPreview.start + dragPreview.distance
+    : fallbackAxisPosition;
+  const negativeArrowLength = getNativeJogArrowLength(
+    props.config,
+    props.axisActions,
+    props.axis,
+    controlAxisPosition,
+    -1,
+  );
+  const positiveArrowLength = getNativeJogArrowLength(
+    props.config,
+    props.axisActions,
+    props.axis,
+    controlAxisPosition,
+    1,
+  );
+  const atBound = negativeArrowLength == 0 || positiveArrowLength == 0;
+  const activeDragAtBound = !!dragPreview?.dragging &&
+    !!dragPreview.dragVisitedInterior && atBound;
+  const returnedToSnap = !!dragPreview?.dragging &&
+    !!dragPreview.dragVisitedUnsnapped && snapped;
+  const idleControlColor = returnedToSnap
     ? SECTION_CONTROL_ACTIVE_COLOR
     : NATIVE_JOG_COLOR;
-  const controlHoverColor = snapped
+  const idleControlHoverColor = returnedToSnap
     ? SECTION_CONTROL_ACTIVE_COLOR
     : NATIVE_JOG_HOVER_COLOR;
+  const controlColor = activeDragAtBound ? "red" : idleControlColor;
+  const controlHoverColor = activeDragAtBound
+    ? "red"
+    : idleControlHoverColor;
   const showLocalPreview = !props.previewState || !dragPreview?.pending;
-  return <Group name={props.name} position={props.position}
-    visible={props.config.controlsOverlay}>
+  if (!props.config.controlsOverlay) { return undefined; }
+  return <Group name={props.name} position={props.position}>
     <Highlight highlightName={"jog-controls"}>
       <ControlHandle
         name={`${props.name}-control`}
         enabled={enabled}
+        commitLastDragOnPointerUp={true}
         constraint={movementAvailable && !dragPreview?.pending
           ? event => axisConstraint(props.axis, [
             event.point.x,
@@ -1271,32 +1712,23 @@ export const NativeJogControlPair = (
               enabled={enabled}
               {...NATIVE_JOG_RENDER_OPTIONS} />
             <NativeJogArrow
-              atBound={dragPreview?.boundDirection == -1}
               axis={props.axis}
               config={props.config}
               deviceDirection={-1}
               enabled={enabled}
               hovered={state.hovered || state.dragging}
+              length={negativeArrowLength}
               name={props.name} />
             <NativeJogArrow
-              atBound={dragPreview?.boundDirection == 1}
               axis={props.axis}
               config={props.config}
               deviceDirection={1}
               enabled={enabled}
               hovered={state.hovered || state.dragging}
+              length={positiveArrowLength}
               name={props.name} />
           </Group>
-          {preview && showLocalPreview && <>
-            <ControlSphere
-              name={`${props.name}-current-position-marker`}
-              position={preview.marker}
-              radius={NATIVE_JOG_SPHERE_RADIUS}
-              color={snapped
-                ? SECTION_CONTROL_ACTIVE_COLOR
-                : NATIVE_JOG_HOVER_COLOR}
-              enabled={false}
-              {...NATIVE_JOG_RENDER_OPTIONS} />
+          {preview && showLocalPreview &&
             <ControlLabel
               name={`${props.name}-drag-label`}
               position={preview.label}
@@ -1304,11 +1736,8 @@ export const NativeJogControlPair = (
               depthTest={false}
               depthWrite={false}
               renderOrder={1}>
-              {t("{{distance}}mm", {
-                distance: dragPreview?.distance || 0,
-              })}
-            </ControlLabel>
-          </>}
+              {previewCoordinate}
+            </ControlLabel>}
         </>}
       </ControlHandle>
     </Highlight>
@@ -1326,6 +1755,7 @@ export const NativeJogControlPair = (
         encoderVisibility={props.encoderVisibility}
         navigate={props.navigate}
         onClose={props.onClose}
+        onPreview={previewMovement}
         positionStore={props.positionStore} />}
   </Group>;
 };

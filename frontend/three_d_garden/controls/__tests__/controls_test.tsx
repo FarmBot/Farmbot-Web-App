@@ -125,6 +125,42 @@ describe("<ControlHandle />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("commits the last drag after early pointer capture loss", () => {
+    const onDragEnd = jest.fn();
+    const onDragCancel = jest.fn();
+    const wrapper = createRenderer(
+      <ControlHandle
+        name={"test-control"}
+        commitLastDragOnPointerUp={true}
+        onDrag={jest.fn()}
+        onDragEnd={onDragEnd}
+        onDragCancel={onDragCancel}>
+        <group />
+      </ControlHandle>,
+    );
+    const handle = wrapper.root.findAll(node =>
+      `${node.type}` == "group" &&
+      node.props.name == "test-control")[0];
+    actRenderer(() =>
+      handle.props.onPointerDown(pointerEvent(new Vector3(1, 2, 3))));
+    actRenderer(() =>
+      handle.props.onPointerMove(pointerEvent(new Vector3(4, 6, 8), 5)));
+    actRenderer(() =>
+      handle.props.onLostPointerCapture(pointerEvent()));
+
+    expect(onDragEnd).not.toHaveBeenCalled();
+    expect(onDragCancel).not.toHaveBeenCalled();
+
+    actRenderer(() => {
+      window.dispatchEvent(new Event("pointerup"));
+    });
+
+    expect(onDragEnd).toHaveBeenCalledTimes(1);
+    expect(onDragEnd.mock.calls[0][0].delta.toArray()).toEqual([3, 4, 5]);
+    expect(onDragCancel).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
   it("keeps the pointer-down constraint for the full drag", () => {
     const onDrag = jest.fn();
     const view = (z: number) =>

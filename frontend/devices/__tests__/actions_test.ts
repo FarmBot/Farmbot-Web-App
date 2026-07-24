@@ -82,6 +82,8 @@ beforeEach(() => {
   jest.spyOn(demoLuaRunner, "runDemoLuaCode").mockImplementation(jest.fn());
   jest.spyOn(demoLuaRunner, "csToLua").mockImplementation(jest.fn());
   jest.spyOn(demoLuaRunnerActions, "eStop").mockImplementation(jest.fn());
+  jest.spyOn(demoLuaRunnerActions, "runDemoMovementCommand")
+    .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
@@ -494,7 +496,25 @@ describe("moveRelative()", () => {
     expect(mockDevice.current.moveRelative).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
-    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("move_relative(1, 0, 0)");
+    expect(demoLuaRunnerActions.runDemoMovementCommand).toHaveBeenCalledWith({
+      type: "move_relative",
+      position: { x: 1, y: 0, z: 0 },
+    });
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+  });
+
+  it("reports failed demo moves to the caller", async () => {
+    const onError = jest.fn();
+    localStorage.setItem("myBotIs", "online");
+    (demoLuaRunnerActions.runDemoMovementCommand as jest.Mock)
+      .mockImplementationOnce(() => {
+        throw new Error("failed");
+      });
+
+    await deviceActions().moveRelative({ x: 1, y: 0, z: 0 }, onError);
+
+    expect(error).toHaveBeenCalledWith("Relative movement failed");
+    expect(onError).toHaveBeenCalled();
   });
 
   it("shows lock message", () => {
@@ -523,7 +543,37 @@ describe("moveAbsolute()", () => {
     await deviceActions().moveAbsolute({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveAbsolute).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
-    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("move_absolute(1, 0, 0)");
+    expect(demoLuaRunnerActions.runDemoMovementCommand).toHaveBeenCalledWith({
+      type: "move_absolute",
+      position: { x: 1, y: 0, z: 0 },
+    });
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+  });
+
+  it("reports failed absolute moves to the caller", async () => {
+    const onError = jest.fn();
+    await replaceDeviceWith({
+      moveAbsolute: jest.fn(() => Promise.reject()),
+    }, async () => {
+      await deviceActions().moveAbsolute({ x: 1, y: 0, z: 0 }, onError);
+    });
+
+    expect(error).toHaveBeenCalledWith("Absolute movement failed");
+    expect(onError).toHaveBeenCalled();
+  });
+
+  it("reports failed demo absolute moves to the caller", async () => {
+    const onError = jest.fn();
+    localStorage.setItem("myBotIs", "online");
+    (demoLuaRunnerActions.runDemoMovementCommand as jest.Mock)
+      .mockImplementationOnce(() => {
+        throw new Error("failed");
+      });
+
+    await deviceActions().moveAbsolute({ x: 1, y: 0, z: 0 }, onError);
+
+    expect(error).toHaveBeenCalledWith("Absolute movement failed");
+    expect(onError).toHaveBeenCalled();
   });
 });
 
@@ -703,7 +753,37 @@ describe("moveToHome()", () => {
     localStorage.setItem("myBotIs", "online");
     await deviceActions().moveToHome("x");
     expect(mockDevice.current.home).not.toHaveBeenCalled();
-    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("go_to_home(\"x\")");
+    expect(demoLuaRunnerActions.runDemoMovementCommand).toHaveBeenCalledWith({
+      type: "go_to_home",
+      axis: "x",
+    });
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+  });
+
+  it("reports failed home moves to the caller", async () => {
+    const onError = jest.fn();
+    await replaceDeviceWith({
+      home: jest.fn(() => Promise.reject()),
+    }, async () => {
+      await deviceActions().moveToHome("x", onError);
+    });
+
+    expect(error).toHaveBeenCalledWith("'Move To Home' command failed");
+    expect(onError).toHaveBeenCalled();
+  });
+
+  it("reports failed demo home moves to the caller", async () => {
+    const onError = jest.fn();
+    localStorage.setItem("myBotIs", "online");
+    (demoLuaRunnerActions.runDemoMovementCommand as jest.Mock)
+      .mockImplementationOnce(() => {
+        throw new Error("failed");
+      });
+
+    await deviceActions().moveToHome("x", onError);
+
+    expect(error).toHaveBeenCalledWith("'Move To Home' command failed");
+    expect(onError).toHaveBeenCalled();
   });
 });
 
@@ -723,7 +803,47 @@ describe("findHome()", () => {
     localStorage.setItem("myBotIs", "online");
     await deviceActions().findHome("all");
     expect(mockDevice.current.findHome).not.toHaveBeenCalled();
-    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("find_home(\"all\")");
+    expect(demoLuaRunnerActions.runDemoMovementCommand).toHaveBeenCalledWith({
+      type: "find_home",
+      axis: "all",
+    });
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+  });
+
+  it("reports failed home discovery to the caller", async () => {
+    const onError = jest.fn();
+    await replaceDeviceWith({
+      findHome: jest.fn(() => Promise.reject()),
+    }, async () => {
+      await deviceActions().findHome("x", onError);
+    });
+
+    expect(error).toHaveBeenCalledWith("'Find Home' command failed");
+    expect(onError).toHaveBeenCalled();
+  });
+
+  it("reports failed demo home discovery to the caller", async () => {
+    const onError = jest.fn();
+    localStorage.setItem("myBotIs", "online");
+    (demoLuaRunnerActions.runDemoMovementCommand as jest.Mock)
+      .mockImplementationOnce(() => {
+        throw new Error("failed");
+      });
+
+    await deviceActions().findHome("x", onError);
+
+    expect(error).toHaveBeenCalledWith("'Find Home' command failed");
+    expect(onError).toHaveBeenCalled();
+  });
+});
+
+describe("preloadDemoMovementActions()", () => {
+  it("only preloads movement actions for demo accounts", async () => {
+    expect(deviceActions().preloadDemoMovementActions()).toBeUndefined();
+
+    localStorage.setItem("myBotIs", "online");
+    await expect(deviceActions().preloadDemoMovementActions())
+      .resolves.toBeDefined();
   });
 });
 

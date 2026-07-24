@@ -39,7 +39,7 @@ import {
 import {
   emergencyLock, emergencyUnlock, execSequence, findAxisLength, findHome,
   flashFirmware, moveAbsolute, moveRelative, moveToHome, pinToggle, powerOff,
-  readStatus, readPin, reboot, restartFirmware, setHome, sync, takePhoto,
+  readPin, reboot, restartFirmware, setHome, sync, takePhoto,
   writePin, updateConfig, updateMCU,
 } from "../devices/actions";
 import { isBotOnlineFromState, forceOnline } from "../devices/must_be_online";
@@ -107,7 +107,7 @@ import {
 } from "../photos/actions";
 import {
   DIRECT_COMMAND_HELP, FBOS_SETTINGS, FIRMWARE_SETTINGS,
-  FirmwareSettingMetadata, PIN_GUARD_SETTINGS, PaletteSettingMetadata,
+  FirmwareSettingMetadata, PaletteSettingMetadata,
   SETTINGS_ITEMS, THREE_D_DEFAULTS, THREE_D_SETTINGS, WEB_APP_BOOLEAN_SETTINGS,
   WEB_APP_NUMBER_SETTINGS, WEB_APP_STRING_SETTINGS,
 } from "../settings/setting_metadata";
@@ -127,9 +127,6 @@ import { resetVirtualTrail } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { linkToSetting } from "../settings/maybe_highlight";
 import { Config } from "../three_d_garden/config";
-import {
-  pinNumberDropdownItems,
-} from "../settings/hardware_settings/pin_number_dropdown";
 
 interface BuildCommandProps {
   state: Everything;
@@ -272,16 +269,62 @@ const panelCommands = (props: BuildCommandProps): Command[] => {
   return [genericCommand, ...specificCommands];
 };
 
-const shopCommand = (): Command => ({
-  id: "shop",
-  ...localized("Shop"),
-  aliases: ["store", "farm.bot", "website", "buy"],
-  group: "navigation",
-  imageIcon: TAB_ICON[Panel.Shop],
-  themeAwareImageIcon: true,
-  execute: () => window.open(
-    ExternalUrl.Store.home, "_blank", "noopener,noreferrer"),
+const externalAction = (
+  id: string,
+  title: string,
+  url: string,
+): CommandAction => ({
+  id,
+  ...localized(title),
+  href: url,
+  aliases: ["website", "external link"],
+  execute: () => {
+    const newTab = window.open(url, "_blank");
+    if (newTab) {
+      newTab.opener = undefined;
+    } else {
+      window.location.assign(url);
+    }
+  },
 });
+
+const shopCommand = (): Command => {
+  const actions = [
+    externalAction("buy-parts", "Buy Parts", ExternalUrl.Store.buyParts),
+    externalAction("full-kits", "Full Kits", ExternalUrl.Store.fullKits),
+    externalAction("home", "Home", ExternalUrl.Store.home),
+    externalAction("blog", "Blog", ExternalUrl.Store.blog),
+  ];
+  return {
+    id: "shop",
+    ...localized("Shop"),
+    aliases: ["store", "farm.bot", "website", "buy"],
+    group: "navigation",
+    imageIcon: TAB_ICON[Panel.Shop],
+    themeAwareImageIcon: true,
+    actions,
+    execute: actions[0].execute,
+  };
+};
+
+const followFarmBotCommand = (): Command => {
+  const actions = [
+    externalAction(
+      "newsletter", "Subscribe to our Newsletter",
+      ExternalUrl.Follow.newsletter),
+    externalAction("blog", "Blog", ExternalUrl.Store.blog),
+  ];
+  return {
+    id: "follow-farmbot",
+    ...localized("Follow FarmBot"),
+    aliases: ["newsletter", "subscribe", "blog"],
+    group: "navigation",
+    imageIcon: FilePath.image("favicon", "png"),
+    imageIconClass: "farmbot-favicon",
+    actions,
+    execute: actions[0].execute,
+  };
+};
 
 const logoutCommand = (): Command => ({
   id: "logout",
@@ -552,9 +595,6 @@ const inventorySectionCommands = (props: BuildCommandProps): Command[] => {
   const curves = [
     ...curveAdds,
     panelAction(props, Panel.Curves),
-    ...Object.keys(props.state.app.curvesPanelState).map(section =>
-      sectionAction(
-        Panel.Curves, Actions.TOGGLE_CURVES_PANEL_OPTION, section)),
   ];
   const sequences = [
     {
@@ -657,21 +697,6 @@ const metricSectionCommands = (props: BuildCommandProps): Command[] => {
     execute: actions[0].execute,
   }];
 };
-
-const profileCommands = (props: BuildCommandProps): Command[] => ([{
-  id: "profile", name: "Map profile",
-  open: props.state.resources.consumers.farm_designer.profileOpen,
-  action: Actions.SET_PROFILE_OPEN,
-}] as const).map(profile => ({
-  id: `profile:${profile.id}`,
-  ...sectionCommandText(profile.name, t(profile.name),
-    ["section", "panel", "show", "hide"]),
-  group: "map" as const,
-  execute: () => props.dispatch({
-    type: profile.action,
-    payload: !profile.open,
-  }),
-}));
 
 const sectionViewCommand = (props: BuildCommandProps): Command => {
   const designer = props.state.resources.consumers.farm_designer;
@@ -940,88 +965,77 @@ const setupWizardCommand = (props: BuildCommandProps): Command => {
 };
 
 const helpCommands = (props: BuildCommandProps): Command[] => {
-  const pages: {
+  const pageAction = (page: {
     id: string;
     title: string;
-    actionTitle?: string;
     path: string;
-    icon?: string;
-    imageIcon?: string;
-  }[] = [
+  }): CommandAction => ({
+    id: page.id,
+    ...localized(page.title),
+    aliases: ["help", "docs", "documentation", "support"],
+    execute: () => {
+      props.dispatch(setPanelOpen(true));
+      props.navigate(page.path);
+    },
+  });
+  const documentationActions = [
     {
-      id: "software", title: "Software Documentation",
-      actionTitle: "Software", path: Path.help(),
-      imageIcon: FilePath.icon(Icon.documentation),
+      id: "software", title: "Software", path: Path.help(),
     },
     {
-      id: "developer", title: "Developer Documentation",
-      actionTitle: "Developer", path: Path.developer(),
-      imageIcon: FilePath.icon(Icon.developer),
+      id: "developer", title: "Developer", path: Path.developer(),
     },
     {
-      id: "genesis", title: "Genesis Documentation",
-      path: Path.designer("genesis"),
-      imageIcon: FilePath.image("favicon", "png"),
+      id: "genesis", title: "Genesis", path: Path.designer("genesis"),
     },
     {
-      id: "express", title: "Express Documentation",
-      path: Path.designer("express"),
-      imageIcon: FilePath.image("favicon", "png"),
+      id: "express", title: "Express", path: Path.designer("express"),
     },
     {
-      id: "business", title: "Business Documentation",
-      path: Path.designer("business"), imageIcon: FilePath.icon(Icon.shop),
+      id: "education", title: "Education", path: Path.designer("education"),
     },
     {
-      id: "education", title: "Education Documentation",
-      path: Path.designer("education"), icon: "graduation-cap",
+      id: "business", title: "Business", path: Path.designer("business"),
     },
-    {
-      id: "tours", title: "Take a Tour", path: Path.tours(), icon: "share",
-    },
-    {
+  ].map(pageAction);
+  const helpActions: CommandAction[] = [
+    pageAction({
       id: "support", title: "Get Help", path: Path.support(),
-      imageIcon: FilePath.icon(Icon.support),
-    },
-  ];
-  const actions: CommandAction[] = [
-    panelAction(props, Panel.Help),
-    ...pages.map(page => {
-      const { id, title, actionTitle, path } = page;
-      return {
-        id,
-        ...localized(actionTitle || title),
-        aliases: [
-          title,
-          "docs",
-          "documentation",
-          "support",
-        ],
-        execute: () => {
-          props.dispatch(setPanelOpen(true));
-          props.navigate(path);
-        },
-      };
+    }),
+    pageAction({
+      id: "tours", title: "Take a Tour", path: Path.tours(),
     }),
   ];
   if (!isMobile()) {
-    actions.push({
+    helpActions.push({
       id: "hotkeys",
       ...localized("Hotkeys"),
       aliases: ["keyboard shortcuts", "shortcut help", "key bindings"],
       execute: toggleHotkeyHelpOverlay,
     });
   }
-  return [{
-    id: "panel:help",
-    ...combinedPanelCommandText("Help"),
-    aliases: ["docs", "documentation", "support"],
-    group: "navigation",
-    imageIcon: TAB_ICON[Panel.Help],
-    themeAwareImageIcon: true,
-    actions,
-    execute: actions[0].execute,
-  }];
+  return [
+    {
+      id: "documentation",
+      ...localized("Docs"),
+      aliases: ["Documentation", "software", "developer"],
+      group: "navigation",
+      imageIcon: FilePath.icon(Icon.documentation),
+      themeAwareImageIcon: true,
+      actions: documentationActions,
+      execute: documentationActions[0].execute,
+    },
+    {
+      id: "panel:help",
+      ...localized("Help"),
+      aliases: ["support", "tour", "hotkeys"],
+      group: "navigation",
+      imageIcon: TAB_ICON[Panel.Help],
+      themeAwareImageIcon: true,
+      actions: helpActions,
+      execute: helpActions[0].execute,
+    },
+  ];
 };
 
 const boolSettingConfirmations: Partial<Record<string, string>> = {
@@ -1074,6 +1088,7 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
   const getValue = getWebAppConfigValueFromResources(
     props.state.resources.index);
   return Object.entries(WEB_APP_BOOLEAN_SETTINGS)
+    .filter(([setting]) => setting != BooleanSetting.show_zones)
     .map(([setting, metadata]) => {
       const key = setting as WebAppBooleanConfigKey;
       const rawValue = getValue(key);
@@ -1097,7 +1112,17 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
         return true;
       };
       const execute = () => set(!enabled);
-      const text = settingText(metadata);
+      const settingLabel = settingText(metadata);
+      const removeShowPrefix = (value: string, prefix: string) =>
+        value.startsWith(`${prefix} `)
+          ? value.slice(prefix.length + 1)
+          : value;
+      const text = metadata.mapLayer
+        ? {
+          name: removeShowPrefix(settingLabel.name, t("Show")),
+          englishName: removeShowPrefix(settingLabel.englishName, "Show"),
+        }
+        : settingLabel;
       const unavailable =
         setting == BooleanSetting.display_map_missed_steps
           && !getValue(BooleanSetting.display_trail)
@@ -1116,7 +1141,9 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
         group: metadata.mapLayer
           ? "map" as const
           : "settings" as const,
-        imageIcon: TAB_ICON[Panel.Settings],
+        imageIcon: TAB_ICON[
+          metadata.mapLayer ? Panel.Map : Panel.Settings
+        ],
         themeAwareImageIcon: true,
         unavailable,
         execute,
@@ -1596,114 +1623,9 @@ const firmwareSettingCommands = (props: BuildCommandProps): Command[] => {
     });
 };
 
-const pinGuardCommands = (props: BuildCommandProps): Command[] => {
-  const index = props.state.resources.index;
-  const values = getFirmwareConfig(index)?.body
-    ?? props.state.bot.hardware.mcu_params;
-  const unavailable = props.state.bot.hardware.informational_settings.busy
-    ? t("FarmBot is busy.")
-    : undefined;
-  const pinOptions = pinNumberDropdownItems(index)
-    .filter(item => !item.heading)
-    .map(item => ({
-      label: item.label,
-      value: String(item.value),
-    }));
-  const validPin = (input: Record<string, string>) =>
-    pinOptions.some(option => option.value == input.pin)
-      ? undefined
-      : t("Select a valid option.");
-  const validTimeout = (input: Record<string, string>) => {
-    const invalid = validNumberInput({ value: input.timeout });
-    if (invalid) { return invalid; }
-    const value = Number(input.timeout);
-    if (!Number.isInteger(value) || value < 0
-      || value > getMaxInputFromIntSize(undefined)) {
-      return t("Enter a value within the available range.");
-    }
-  };
-  return PIN_GUARD_SETTINGS.flatMap<Command>((setting, index) => {
-    const pinKey = setting.pinKey as McuParamName;
-    const timeoutKey = setting.timeoutKey as McuParamName;
-    const activeStateKey = setting.activeStateKey as McuParamName;
-    const pin: CommandAction = {
-      id: "pin",
-      ...localized("Pin"),
-      input: {
-        fields: [{
-          key: "pin",
-          label: t("Pin"),
-          type: "text",
-          initialValue: String(values[pinKey] ?? 0),
-          options: pinOptions,
-        }],
-        validate: validPin,
-      },
-      execute: (input?: Record<string, string>) => {
-        if (!input || validPin(input)) { return false; }
-        return props.dispatch(updateMCU(pinKey, input.pin));
-      },
-    };
-    const timeout: CommandAction = {
-      id: "timeout",
-      ...localized("Timeout (sec)"),
-      input: {
-        fields: [{
-          key: "timeout",
-          label: t("Timeout (sec)"),
-          type: "number",
-          initialValue: values[timeoutKey] === undefined
-            ? ""
-            : String(values[timeoutKey]),
-          min: 0,
-          max: getMaxInputFromIntSize(undefined),
-          step: 1,
-        }],
-        validate: validTimeout,
-      },
-      execute: (input?: Record<string, string>) => {
-        if (!input || validTimeout(input)) { return false; }
-        return props.dispatch(updateMCU(timeoutKey, input.timeout));
-      },
-    };
-    const state: CommandAction = {
-      id: "state",
-      ...localized("To State"),
-      input: {
-        fields: [{
-          key: "state",
-          label: t("To State"),
-          type: "boolean",
-          initialValue: values[activeStateKey] ? "0" : "1",
-        }],
-      },
-      execute: (input?: Record<string, string>) => {
-        if (input?.state === undefined) { return false; }
-        const activeState = input.state == "1" ? "0" : "1";
-        return props.dispatch(updateMCU(activeStateKey, activeState));
-      },
-    };
-    const actions = [pin, timeout, state];
-    return [{
-      id: `firmware-setting:pin-guard-${index + 1}:set`,
-      ...localized(setting.label),
-      ...settingHelp(setting.help),
-      aliases: ["pin guard", setting.pinKey, setting.timeoutKey],
-      group: "settings" as const,
-      imageIcon: TAB_ICON[Panel.Settings],
-      themeAwareImageIcon: true,
-      unavailable,
-      actions,
-      actionTable: true,
-      execute: actions[0].execute,
-    }];
-  });
-};
-
 const configValueSettingCommands = (props: BuildCommandProps): Command[] => [
   ...fbosSettingCommands(props),
   ...firmwareSettingCommands(props),
-  ...pinGuardCommands(props),
 ];
 
 const threeDSettingCommands = (props: BuildCommandProps): Command[] => {
@@ -2069,7 +1991,10 @@ const cameraCommand = (props: BuildCommandProps): Command => {
       id: "calibrate",
       ...localized("Calibrate"),
       unavailable,
-      execute: calibrateCamera,
+      execute: withConfirmation(
+        "Are you sure you want to calibrate the camera?",
+        calibrateCamera,
+      ),
     },
   ];
   return {
@@ -2141,7 +2066,6 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     ["estop", "E-Stop", emergencyLock],
     ["unlock", "Unlock", unlock],
     ["sync", "Sync FarmBot", () => props.dispatch(sync())],
-    ["status", "Read FarmBot status", readStatus],
   ];
   const icons: Record<string, string> = {
     estop: "pause",
@@ -2153,6 +2077,14 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     estop: 2,
     unlock: 1,
   };
+  const emergencyButton = (
+    id: "estop" | "unlock",
+  ) => (execute: () => void) =>
+    <button type="button"
+      className={`fb-button red e-stop${id == "unlock" ? " yellow" : ""}`}
+      onClick={execute}>
+      {t(id == "unlock" ? "UNLOCK" : "E-STOP")}
+    </button>;
   return commands.map(([id, name, execute, reason]) => ({
     id: `farmbot:${id}`,
     priority: priorities[id],
@@ -2179,6 +2111,9 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
     themeAwareImageIcon: !!imageIcons[id],
     unavailable: id == "estop" || id == "unlock" ? reason : unavailable,
     execute,
+    accessory: id == "estop" || id == "unlock"
+      ? emergencyButton(id)
+      : undefined,
   }));
 };
 
@@ -2469,38 +2404,6 @@ const addCommands = (props: BuildCommandProps): Command[] => {
     ? { x: round(botPosition.x), y: round(botPosition.y) }
     : undefined;
   const locationUnavailable = t("FarmBot position unknown.");
-  const routes: [string, Panel, string, string, string, string][] = [
-    ["group", Panel.Groups, "Groups", "group", "Add new", Path.groups()],
-    ["garden", Panel.SavedGardens, "Gardens", "garden", "Add new",
-      Path.savedGardens("add")],
-    ["zone", Panel.Zones, "Zones", "zone", "Add new", Path.zones("add")],
-    ["farmware", Panel.Farmware, "Farmware", "Farmware", "Add new",
-      Path.farmware("add")],
-  ];
-  const addCommandText = (
-    panel: Panel, englishPanel: string, resource: string, action: string,
-  ) => ({
-    name: `${PANEL_TITLE()[panel]} > ${t(action)}`,
-    englishName: `${englishPanel} > ${action}`,
-    aliases: [
-      `Add new ${resource}`,
-      `${t("Add new")} ${t(resource)}`,
-      `New ${resource}`,
-      `${t("New")} ${t(resource)}`,
-      "create",
-      "plus",
-    ],
-  });
-  const staticCommands: Command[] = routes.map(([
-    id, panel, englishPanel, resource, action, path,
-  ]) => ({
-    id: `add:${id}`,
-    ...addCommandText(panel, englishPanel, resource, action),
-    group: "resources",
-    imageIcon: TAB_ICON[panel],
-    themeAwareImageIcon: true,
-    execute: () => openAddPage(props, path),
-  }));
   const decodeHtmlEntities = (value: string) => {
     const textarea = document.createElement("textarea");
     textarea.innerHTML = value;
@@ -2597,7 +2500,7 @@ const addCommands = (props: BuildCommandProps): Command[] => {
   const apiCrops = selectAllCrops(index)
     .filter(crop => !CROP_SLUGS.includes(crop.body.slug))
     .map(crop => cropCommand(crop.body.slug));
-  return [...staticCommands, ...cropCommands, ...apiCrops];
+  return [...cropCommands, ...apiCrops];
 };
 
 interface ResourceCommandData {
@@ -3023,6 +2926,7 @@ const lowerSettingsPriority = (command: Command): Command =>
 export const buildCommands = (props: BuildCommandProps): Command[] => [
   ...panelCommands(props),
   shopCommand(),
+  followFarmBotCommand(),
   logoutCommand(),
   ...popupCommands(props),
   timeTravelCommand(props),
@@ -3032,7 +2936,6 @@ export const buildCommands = (props: BuildCommandProps): Command[] => [
   ...inventorySectionCommands(props),
   ...photoSectionCommands(props),
   ...metricSectionCommands(props),
-  ...profileCommands(props),
   sectionViewCommand(props),
   selectionCommand(props),
   laserCommand(props),

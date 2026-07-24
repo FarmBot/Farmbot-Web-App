@@ -30,3 +30,13 @@ export interface Action {
 }
 
 export type XyzNumber = Record<Xyz, number>;
+
+export type DemoMovementCommand =
+  | {
+    type: "move_absolute" | "move_relative";
+    position: XyzNumber;
+  }
+  | {
+    type: "find_home" | "go_to_home";
+    axis: Xyz | "all";
+  };

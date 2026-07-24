@@ -35,6 +35,7 @@ import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
 import { linkToSetting } from "../settings/maybe_highlight";
+import { DemoMovementCommand } from "../demo/lua_runner/interfaces";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -82,6 +83,27 @@ const maybeAlertLocked = () =>
 const runDemoLuaCode = (luaCode: string) => {
   return import("../demo/lua_runner")
     .then(({ runDemoLuaCode }) => runDemoLuaCode(luaCode));
+};
+
+let demoMovementActions:
+  Promise<typeof import("../demo/lua_runner/actions")> | undefined;
+
+const loadDemoMovementActions = () =>
+  demoMovementActions ||= import("../demo/lua_runner/actions");
+
+export const preloadDemoMovementActions = () =>
+  forceOnline() ? loadDemoMovementActions() : undefined;
+
+const runDemoMovementCommand = (command: DemoMovementCommand) =>
+  loadDemoMovementActions()
+    .then(module => module.runDemoMovementCommand(command));
+
+const movementError = (
+  noun: string,
+  onError?: () => void,
+) => () => {
+  commandErr(noun)();
+  onError?.();
 };
 
 const runDemoSequence = (
@@ -383,26 +405,29 @@ export function settingToggle(
 
 export function moveRelative(props: MoveRelProps, onError?: () => void) {
   if (forceOnline()) {
-    return runDemoLuaCode(`move_relative(${props.x}, ${props.y}, ${props.z})`);
+    return runDemoMovementCommand({
+      type: "move_relative",
+      position: props,
+    }).catch(movementError("Relative movement", onError));
   }
   maybeAlertLocked();
   return getDevice()
     .moveRelative(props)
-    .then(maybeNoop, () => {
-      commandErr("Relative movement")();
-      onError?.();
-    });
+    .then(maybeNoop, movementError("Relative movement", onError));
 }
 
-export function moveAbsolute(props: MoveRelProps) {
+export function moveAbsolute(props: MoveRelProps, onError?: () => void) {
   const noun = t("Absolute movement");
   if (forceOnline()) {
-    return runDemoLuaCode(`move_absolute(${props.x}, ${props.y}, ${props.z})`);
+    return runDemoMovementCommand({
+      type: "move_absolute",
+      position: props,
+    }).catch(movementError(noun, onError));
   }
   maybeAlertLocked();
   return getDevice()
     .moveAbsolute(props)
-    .then(maybeNoop, commandErr(noun));
+    .then(maybeNoop, movementError(noun, onError));
 }
 
 export function move(props: MoveProps) {
@@ -483,26 +508,30 @@ export function writePin(
     .then(maybeNoop, commandErr(noun));
 }
 
-export function moveToHome(axis: Axis) {
-  if (forceOnline()) {
-    return runDemoLuaCode(`go_to_home("${axis}")`);
-  }
+export function moveToHome(axis: Axis, onError?: () => void) {
   const noun = t("'Move To Home' command");
+  if (forceOnline()) {
+    return runDemoMovementCommand({ type: "go_to_home", axis })
+      .catch(movementError(noun, onError));
+  }
   maybeAlertLocked();
-  getDevice()
+  return getDevice()
     .home({ axis, speed: CONFIG_DEFAULTS.speed })
-    .catch(commandErr(noun));
+    .then(() => undefined)
+    .catch(movementError(noun, onError));
 }
 
-export function findHome(axis: Axis) {
+export function findHome(axis: Axis, onError?: () => void) {
   const noun = t("'Find Home' command");
   if (forceOnline()) {
-    return runDemoLuaCode(`find_home("${axis}")`);
+    return runDemoMovementCommand({ type: "find_home", axis })
+      .catch(movementError(noun, onError));
   }
   maybeAlertLocked();
-  getDevice()
+  return getDevice()
     .findHome({ axis, speed: CONFIG_DEFAULTS.speed })
-    .catch(commandErr(noun));
+    .then(() => undefined)
+    .catch(movementError(noun, onError));
 }
 
 export function setHome(axis: Axis) {

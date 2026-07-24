@@ -223,6 +223,14 @@
           margin: 0;
         }
 
+        .native-jog-popup-actions .fb-button:disabled,
+        .native-jog-position-row .fb-button:disabled,
+        .native-jog-position-row input:disabled,
+        .native-jog-step-selector .fb-button:disabled {
+          filter: grayscale(1) brightness(0.7);
+          cursor: not-allowed !important;
+        }
+
         .native-jog-step-selector {
           display: flex;
           grid-row: 1;
