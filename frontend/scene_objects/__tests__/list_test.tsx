@@ -17,6 +17,7 @@ import { HOVER_ALL_SCENE_OBJECTS } from
   "../../three_d_garden/scene_objects";
 import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
+import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("<RawSceneObjects />", () => {
   const fakeProps = (): SceneObjectsProps => ({
@@ -54,17 +55,41 @@ describe("<RawSceneObjects />", () => {
 
     expect(returnButton.nextElementSibling).toBe(search);
     fireEvent.click(returnButton);
-    expect(container.querySelectorAll(".scene-selection-tile")).toHaveLength(4);
+    expect(container.querySelectorAll(".scene-selection-tile")).toHaveLength(5);
 
     fireEvent.click(getByText("Custom"));
     expect(container.querySelector(".scene-selection-grid")).toBeFalsy();
+  });
+
+  it("clears imported scene previews when returning to scene tiles", () => {
+    const p = fakeProps();
+    setScene(p, "0");
+    const { getByText, getByTitle } =
+      render(<RawSceneObjects {...p} />);
+
+    fireEvent.click(getByText(/Featured Scene Objects/));
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: "Outdoor",
+    });
+
+    fireEvent.click(getByTitle("back to scene selection"));
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: undefined,
+    });
   });
 
   it.each([
     ["1", "Outdoor"],
     ["2", "Lab"],
     ["3", "Greenhouse"],
-    ["4", undefined],
+    ["4", "Mars"],
     ["999", undefined],
     ["invalid", undefined],
   ])("shows scene tiles for scene %s", (value, activeScene) => {
@@ -75,14 +100,28 @@ describe("<RawSceneObjects />", () => {
     const selected = container.querySelectorAll(
       ".scene-selection-tile[aria-pressed='true']");
 
-    expect(tiles).toHaveLength(4);
+    expect(tiles).toHaveLength(5);
     expect(Array.from(tiles).map(tile => tile.textContent))
-      .toEqual(["Outdoor", "Lab", "Greenhouse", "Custom"]);
+      .toEqual(["Outdoor", "Lab", "Greenhouse", "Mars", "Custom"]);
     expect(selected).toHaveLength(activeScene ? 1 : 0);
     if (activeScene) {
       expect(selected[0]).toHaveTextContent(activeScene);
       expect(selected[0]).toHaveClass("selected");
     }
+  });
+
+  it("shows the Mars scene when future features are enabled", () => {
+    const futureFeaturesEnabled =
+      jest.spyOn(DevSettings, "futureFeaturesEnabled")
+        .mockReturnValue(true);
+    const p = fakeProps();
+    setScene(p, "1");
+    const { container } = render(<RawSceneObjects {...p} />);
+    const tiles = container.querySelectorAll(".scene-selection-tile");
+
+    expect(Array.from(tiles).map(tile => tile.textContent))
+      .toEqual(["Outdoor", "Lab", "Greenhouse", "Mars", "Custom"]);
+    futureFeaturesEnabled.mockRestore();
   });
 
   it("switches to Custom and updates the ground texture", () => {
@@ -174,16 +213,20 @@ describe("<RawSceneObjects />", () => {
     });
   });
 
-  it("doesn't toggle the section when clicking the scene dropdown", () => {
+  it("keeps the featured section open when clicking the scene dropdown", () => {
     const p = fakeProps();
-    const { container } = render(<RawSceneObjects {...p} />);
+    const { getByTitle } = render(<RawSceneObjects {...p} />);
+    const featuredSection =
+      getByTitle("Featured Scene Objects").closest(".panel-section")!;
 
-    expect(container.querySelector(".panel-section")).not.toHaveClass("open");
-    fireEvent.click(container.querySelector(
-      ".section-header div[style='width: 10rem;']",
+    expect(featuredSection).not.toHaveClass("open");
+    fireEvent.click(getByTitle("Featured Scene Objects"));
+    expect(featuredSection).toHaveClass("open");
+    fireEvent.click(featuredSection.querySelector(
+      ".scene-object-select-row .filter-search button",
     ) as Element);
 
-    expect(container.querySelector(".panel-section")).not.toHaveClass("open");
+    expect(featuredSection).toHaveClass("open");
   });
 
   it("navigates to my scene object", () => {
@@ -275,15 +318,15 @@ describe("<RawSceneObjects />", () => {
     const p = fakeProps();
     p.showSceneObjects = false;
     const { container } = render(<RawSceneObjects {...p} />);
-    const mySceneObjectsHeader = container.querySelectorAll(
-      ".section-header")[1];
+    const mySceneObjectsHeader = container.querySelector(
+      "label[title='My Scene Objects']")?.closest(".section-header");
 
-    fireEvent.mouseEnter(mySceneObjectsHeader);
+    fireEvent.mouseEnter(mySceneObjectsHeader as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: HOVER_ALL_SCENE_OBJECTS,
     });
-    fireEvent.mouseLeave(mySceneObjectsHeader);
+    fireEvent.mouseLeave(mySceneObjectsHeader as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SCENE_OBJECT,
       payload: undefined,
@@ -314,7 +357,7 @@ describe("<RawSceneObjects />", () => {
     const controls = panelTop?.querySelector(".scene-object-layer-controls");
 
     expect(search?.nextElementSibling).toBe(controls);
-    expect(controls?.children).toHaveLength(2);
+    expect(controls?.children).toHaveLength(1);
   });
 
   it.each([true, false])("toggles the scene object layer from %s", show => {
@@ -323,9 +366,11 @@ describe("<RawSceneObjects />", () => {
       .mockImplementation(jest.fn());
     const p = fakeProps();
     p.showSceneObjects = show;
-    const { getByTitle } = render(<RawSceneObjects {...p} />);
+    const { container } = render(<RawSceneObjects {...p} />);
+    const layerToggle = container.querySelector(
+      `.scene-object-layer-controls [title='${show ? "hide" : "show"}']`);
 
-    fireEvent.click(getByTitle("show scene objects map layer"));
+    fireEvent.click(layerToggle as Element);
 
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_scene_objects, !show);
@@ -507,7 +552,8 @@ describe("<RawSceneObjects />", () => {
         return <div />;
       }) as never);
 
-    render(<RawSceneObjects {...p} />);
+    const { getByTitle } = render(<RawSceneObjects {...p} />);
+    fireEvent.click(getByTitle("Featured Scene Objects"));
     const sceneSelect = fbSelectProps.find(props =>
       props.list.some(item => item.label == "Lab"))!;
 

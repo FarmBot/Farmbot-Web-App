@@ -22,6 +22,7 @@ import { renderWithContext } from "../../__test_support__/mount_with_context";
 
 beforeEach(() => {
   jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  console.debug = jest.fn();
 });
 
 

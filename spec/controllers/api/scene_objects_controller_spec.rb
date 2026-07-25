@@ -20,6 +20,7 @@ describe Api::SceneObjectsController do
       x_size: 40,
       y_size: 50,
       z_size: 60,
+      rotation: 0,
     }
   end
 

@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import {
   Desk, deskPropsEqual, DeskProps, laptopPropsEqual, LaptopProps,
 } from "../desk";
-import { createRenderer, unmountRenderer } from
+import { actRenderer, createRenderer, unmountRenderer } from
   "../../../../__test_support__/test_renderer";
 import { MeshPhongMaterial } from "../../../components";
 
@@ -37,6 +37,21 @@ describe("<Desk />", () => {
       color={"#654321"} />);
     const materials = wrapper.root.findAllByType(MeshPhongMaterial);
 
+    expect(materials).toHaveLength(5);
+    materials.map(material =>
+      expect(material.props.map).toBeUndefined());
+    unmountRenderer(wrapper);
+  });
+
+  it("removes an existing texture", () => {
+    const wrapper = createRenderer(<Desk {...fakeProps()} />);
+
+    expect(wrapper.root.findAllByType(MeshPhongMaterial)
+      .every(material => material.props.map)).toEqual(true);
+    actRenderer(() =>
+      wrapper.update(<Desk {...fakeProps()} texture={"none"} />));
+
+    const materials = wrapper.root.findAllByType(MeshPhongMaterial);
     expect(materials).toHaveLength(5);
     materials.map(material =>
       expect(material.props.map).toBeUndefined());

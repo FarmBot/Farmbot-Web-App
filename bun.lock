@@ -31,7 +31,7 @@
         "browser-speech": "1.1.1",
         "delaunator": "5.1.0",
         "events": "3.3.0",
-        "farmbot": "15.9.7",
+        "farmbot": "15.9.8",
         "fengari": "0.1.5",
         "fengari-web": "0.1.4",
         "i18next": "26.3.6",
@@ -1094,7 +1094,7 @@
 
     "extglob": ["extglob@2.0.4", "", { "dependencies": { "array-unique": "^0.3.2", "define-property": "^1.0.0", "expand-brackets": "^2.1.4", "extend-shallow": "^2.0.1", "fragment-cache": "^0.2.1", "regex-not": "^1.0.0", "snapdragon": "^0.8.1", "to-regex": "^3.0.1" } }, "sha512-Nmb6QXkELsuBr24CJSkilo6UHHgbekK5UiZgfE6UHD3Eb27YC6oD+bhcT+tJ6cl8dmsgdQxnWlcry8ksBIBLpw=="],
 
-    "farmbot": ["farmbot@15.9.7", "", { "dependencies": { "mqtt": "5.15.1" } }, "sha512-iVrMgvpapdIxw1daFJvNHpHWTxFgGlsrDgcTNKHYumrpxgfOAtdKZ6lNTUspTGt2YywyOKeDgzB1iXNY/yB8mA=="],
+    "farmbot": ["farmbot@15.9.8", "", { "dependencies": { "mqtt": "5.15.1" } }, "sha512-HuqCwBCbXwlCS3xmrfrCQGJW3LN40CBDBuxkX6mGVINczJoZnMMiGhZZ5wtGukxqDL93AsM1R0qy03zkaH1xvQ=="],
 
     "fast-deep-equal": ["fast-deep-equal@3.1.3", "", {}, "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="],
 

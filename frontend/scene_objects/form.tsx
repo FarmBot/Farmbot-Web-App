@@ -1,11 +1,13 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { FBSelect, DropDownItem, BlurableInput } from "../ui";
-import type { SceneObjectFormValues } from "./interfaces";
+import {
+  rolloverRotation, type SceneObjectFormValues,
+} from "./interfaces";
+export { rolloverRotation } from "./interfaces";
 import type {
   SceneObjectAxis,
 } from "../three_d_garden/scenes/scene_object_data";
-import { DevSettings } from "../settings/dev/dev_support";
 import {
   sceneObjectShowsTextureAndColor,
   sceneObjectTextureChoices,
@@ -24,7 +26,6 @@ export interface SceneObjectFormFieldsProps {
   showUnifiedSize?: boolean;
   onUnifiedSizeChange?(unified: boolean): void;
   onPreserveAxesChange?(axes: SceneObjectAxis[]): void;
-  onSwapXAndY?(): void;
   onFocusChange?(field: string | undefined): void;
   showPreserveAxes?: boolean;
   hideCubeControl?: boolean;
@@ -51,13 +52,9 @@ const shapeChoices = (): DropDownItem[] => [
   { label: t("Solar Panel"), value: "solar" },
   { label: t("Tree"), value: "tree" },
   { label: t("Fence"), value: "fence" },
-  ...(DevSettings.futureFeaturesEnabled()
-    ? [
-      { label: t("Astronaut"), value: "astronaut" },
-      { label: t("HAB"), value: "hab" },
-      { label: t("Rover"), value: "rover" },
-    ]
-    : []),
+  { label: t("Astronaut"), value: "astronaut" },
+  { label: t("HAB"), value: "hab" },
+  { label: t("Rover"), value: "rover" },
 ];
 
 interface SceneObjectFormField {
@@ -85,6 +82,10 @@ const sizeFields = (): SceneObjectFormField[] => [
 ];
 const sizeFieldKeys = sizeFields().map(f => f.field);
 
+const rotationFields = (): SceneObjectFormField[] => [
+  { id: "rotation", field: "rotation" },
+];
+
 const combinedSizeField: SceneObjectFormField = {
   id: "size",
   field: "x_size",
@@ -98,6 +99,7 @@ const combinedSizeField: SceneObjectFormField = {
 const fieldRows = () => [
   { id: "center", label: t("Center"), fields: centerFields() },
   { id: "size", label: t("Size"), fields: sizeFields() },
+  { id: "rotation", label: t("Rotation"), fields: rotationFields() },
 ];
 
 const originChoices = () => [
@@ -107,20 +109,6 @@ const originChoices = () => [
 ];
 
 const sceneObjectAxes: SceneObjectAxis[] = ["x", "y", "z"];
-const swappedSceneObjectAxes: Record<SceneObjectAxis, SceneObjectAxis> = {
-  x: "y",
-  y: "x",
-  z: "z",
-};
-
-export const swapSceneObjectXAndY = (values: SceneObjectFormValues) => ({
-  x_size: values.y_size,
-  y_size: values.x_size,
-  preserve_axes: sceneObjectAxes.filter(axis => {
-    const sourceAxis = swappedSceneObjectAxes[axis];
-    return values.preserve_axes?.includes(sourceAxis);
-  }),
-});
 
 interface SceneObjectFieldInputProps {
   disabled?: boolean;
@@ -205,17 +193,6 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
     current.includes(row)
       ? current.filter(item => item != row)
       : [...current, row]);
-  const swapXAndY = () => {
-    if (props.onSwapXAndY) {
-      props.onSwapXAndY();
-      return;
-    }
-    onValueChange("x_size", values.y_size);
-    onValueChange("y_size", values.x_size);
-    props.onPreserveAxesChange?.(
-      swapSceneObjectXAndY(values).preserve_axes);
-  };
-
   return <div className={"grid half-gap scene-object-form-fields"}>
     <div className={"row grid-3-col info-box"}>
       <div className={"grid half-gap"}>
@@ -263,6 +240,12 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
         ? [combinedSizeField]
         : row.fields;
       const collapsed = collapsedRows.includes(row.id);
+      let fieldDataClass = "row grid-3-col plant-info-field-data";
+      if (row.id === "center") {
+        fieldDataClass = "grid half-gap plant-info-field-data";
+      } else if (row.id === "rotation") {
+        fieldDataClass = "row half-gap scene-object-rotation-data";
+      }
       return <div className={"grid half-gap info-box"}
         key={row.id}>
         <div className={"row scene-object-section-header"}>
@@ -275,11 +258,6 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
           </button>
           {row.id === "size" &&
             <div className={"row scene-object-size-actions"}>
-              <button type={"button"}
-                className={"fb-button gray scene-object-swap-size"}
-                onClick={swapXAndY}>
-                {t("Swap X & Y")}
-              </button>
               {!props.hideCubeControl && <label htmlFor={"cube"}>
                 <input id={"cube"}
                   type={"checkbox"}
@@ -297,11 +275,7 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
               </label>}
             </div>}
         </div>
-        {!collapsed && <div className={
-          row.id === "center"
-            ? "grid half-gap plant-info-field-data"
-            : "row grid-3-col plant-info-field-data"
-        }>
+        {!collapsed && <div className={fieldDataClass}>
           {rowFields.map(field => {
             const axis = field.id.replace("_size", "") as SceneObjectAxis;
             return <SceneObjectFieldInput
@@ -315,6 +289,20 @@ export const SceneObjectFormFields = (props: SceneObjectFormFieldsProps) => {
               onFocusChange={props.onFocusChange}
               onValueChange={onValueChange} />;
           })}
+          {row.id === "rotation" &&
+            <div className={"row scene-object-rotation-actions"}>
+              {[-90, 90].map(amount =>
+                <button type={"button"}
+                  key={amount}
+                  className={"fb-button gray"}
+                  onClick={() =>
+                    onValueChange(
+                      "rotation",
+                      rolloverRotation(values.rotation + amount),
+                    )}>
+                  {amount > 0 ? `+${amount}` : amount}
+                </button>)}
+            </div>}
         </div>}
         {!collapsed && !showUnifiedSize
           && row.id === "size" && props.showPreserveAxes &&

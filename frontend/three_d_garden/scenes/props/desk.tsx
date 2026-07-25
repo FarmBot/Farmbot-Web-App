@@ -61,6 +61,7 @@ const DeskBase = (props: DeskProps) => {
           args={[deskDepth, deskWidth, 50]}
           position={[0, 0, deskHeight + 25]}>
           <MeshPhongMaterial
+            key={props.texture}
             map={props.texture === "none" ? undefined : deskTexture}
             color={props.color} />
         </Box>
@@ -79,6 +80,7 @@ const DeskBase = (props: DeskProps) => {
               args={[deskLegWidth, deskLegWidth, deskHeight]}
               position={[xOffset, yOffset, deskHeight / 2]}>
               <MeshPhongMaterial
+                key={props.texture}
                 map={props.texture === "none" ? undefined : deskTexture}
                 color={props.color} />
             </Box>)}

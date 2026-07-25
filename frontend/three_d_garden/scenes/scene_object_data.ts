@@ -1,6 +1,6 @@
 import type { SceneObject } from "farmbot/dist/resources/api_resources";
 
-export type SceneObjectAxis = "x" | "y" | "z";
+export type SceneObjectAxis = "x" | "y" | "z" | "r";
 
 export interface CatalogSceneObject extends SceneObject {
   preserve_axes?: SceneObjectAxis[];
@@ -9,7 +9,7 @@ export interface CatalogSceneObject extends SceneObject {
 export const sceneObjectThumbnailFilename = (name: string) =>
   `${name.toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")}.png`;
+    .replace(/^-|-$/g, "")}.avif`;
 
 export const DEFAULT_SCENE_OBJECT: SceneObject = {
   name: "",
@@ -26,6 +26,7 @@ export const DEFAULT_SCENE_OBJECT: SceneObject = {
   x_origin: "home",
   y_origin: "home",
   z_origin: "world",
+  rotation: 0,
 };
 
 export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
@@ -36,7 +37,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#f4f4f4",
     show: true,
     x_center: -2150,
-    y_center: -1600,
+    y_center: -2830,
     z_base: 0,
     x_size: 10,
     y_size: 10000,
@@ -44,6 +45,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x"],
   },
   {
@@ -53,7 +55,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#f4f4f4",
     show: true,
     x_center: 2850,
-    y_center: 3370,
+    y_center: 2140,
     z_base: 0,
     x_size: 10000,
     y_size: 10,
@@ -61,6 +63,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["y"],
   },
   {
@@ -70,7 +73,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#ffffff",
     show: true,
     x_center: -1920,
-    y_center: 2200,
+    y_center: 970,
     z_base: 0,
     x_size: 500,
     y_size: 500,
@@ -78,7 +81,8 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
-    preserve_axes: ["x", "y"],
+    rotation: 0,
+    preserve_axes: ["x", "y", "r"],
   },
   {
     name: "Shelf",
@@ -87,7 +91,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#aaa",
     show: true,
     x_center: 2850,
-    y_center: 3070,
+    y_center: 1840,
     z_base: 775,
     x_size: 10000,
     y_size: 600,
@@ -95,6 +99,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["z"],
   },
   {
@@ -104,7 +109,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#ffffff",
     show: true,
     x_center: -150,
-    y_center: 3060,
+    y_center: 1830,
     z_base: 825,
     x_size: 700,
     y_size: 250,
@@ -112,6 +117,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["z"],
   },
   {
@@ -121,7 +127,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#ffffff",
     show: true,
     x_center: 850,
-    y_center: 3060,
+    y_center: 1830,
     z_base: 825,
     x_size: 700,
     y_size: 250,
@@ -129,6 +135,7 @@ export const GREENHOUSE_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["z"],
   },
 ];
@@ -141,7 +148,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#f4f4f4",
     show: true,
     x_center: -2250,
-    y_center: -1600,
+    y_center: -2830,
     z_base: 0,
     x_size: 200,
     y_size: 10000,
@@ -149,6 +156,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x"],
   },
   {
@@ -158,7 +166,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#f4f4f4",
     show: true,
     x_center: 2750,
-    y_center: 3470,
+    y_center: 2240,
     z_base: 0,
     x_size: 10200,
     y_size: 200,
@@ -166,6 +174,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["y"],
   },
   {
@@ -175,7 +184,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#999",
     show: true,
     x_center: 2850,
-    y_center: 3270,
+    y_center: 2040,
     z_base: 810,
     x_size: 10000,
     y_size: 200,
@@ -183,6 +192,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["z"],
   },
   {
@@ -192,7 +202,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#999",
     show: true,
     x_center: 2850,
-    y_center: 3270,
+    y_center: 2040,
     z_base: 1230,
     x_size: 10000,
     y_size: 200,
@@ -200,6 +210,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["z"]
   },
   {
@@ -217,6 +228,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "max",
     y_origin: "world",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x"],
   },
   {
@@ -234,6 +246,7 @@ export const LAB_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "max",
     y_origin: "world",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x", "y", "z"],
   },
 ];
@@ -246,15 +259,16 @@ export const OUTDOOR_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#ffffff",
     show: true,
     x_center: 0,
-    y_center: 5000,
+    y_center: 2040,
     z_base: 0,
     x_size: 1000,
     y_size: 1000,
     z_size: 2500,
     x_origin: "home",
-    y_origin: "home",
+    y_origin: "max",
     z_origin: "world",
-    preserve_axes: ["x", "y"],
+    rotation: 0,
+    preserve_axes: ["x", "y", "r"],
   },
   {
     name: "Solar Panel",
@@ -271,6 +285,7 @@ export const OUTDOOR_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "max",
     y_origin: "world",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x"],
   },
   {
@@ -280,14 +295,15 @@ export const OUTDOOR_SCENE_OBJECTS: CatalogSceneObject[] = [
     color: "#ffffff",
     show: true,
     x_center: 3500,
-    y_center: 4500,
+    y_center: 2040,
     z_base: 0,
     x_size: 5000,
     y_size: 500,
     z_size: 1000,
     x_origin: "home",
-    y_origin: "home",
+    y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["y"],
   },
   {
@@ -296,15 +312,16 @@ export const OUTDOOR_SCENE_OBJECTS: CatalogSceneObject[] = [
     shape: "fence",
     color: "#cccccc",
     show: true,
-    x_center: -1000,
-    y_center: 2000,
+    x_center: -1500,
+    y_center: -500,
     z_base: 0,
     x_size: 10,
     y_size: 5000,
     z_size: 1000,
     x_origin: "home",
-    y_origin: "home",
+    y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x"],
   },
 ];
@@ -325,6 +342,7 @@ export const MARS_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "max",
     y_origin: "max",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x", "y"],
   },
   {
@@ -342,6 +360,7 @@ export const MARS_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "home",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["x", "y"],
   },
   {
@@ -359,18 +378,32 @@ export const MARS_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_origin: "home",
     y_origin: "home",
     z_origin: "world",
+    rotation: 0,
     preserve_axes: ["y", "z"],
   },
 ];
 
 export const SCENE_OBJECT_CATALOG_SCENES = {
   greenhouse: GREENHOUSE_SCENE_OBJECTS
-    .filter(sceneObject => sceneObject.name != "Starter Tray 2")
+    .filter(sceneObject => ![
+      "Starter Tray 2",
+      "Greenhouse Wall Y",
+    ].includes(sceneObject.name))
     .map(sceneObject => sceneObject.name == "Starter Tray 1"
       ? { ...sceneObject, name: "Starter Tray" }
+      : sceneObject)
+    .map(sceneObject => sceneObject.name == "Greenhouse Wall X"
+      ? { ...sceneObject, name: "Greenhouse Wall" }
       : sceneObject),
   lab: LAB_SCENE_OBJECTS.filter(sceneObject =>
-    !["Lower Shelf", "Upper Shelf"].includes(sceneObject.name)),
+    ![
+      "Lower Shelf",
+      "Upper Shelf",
+      "Wall Y",
+    ].includes(sceneObject.name))
+    .map(sceneObject => sceneObject.name == "Wall X"
+      ? { ...sceneObject, name: "Wall" }
+      : sceneObject),
   outdoor: OUTDOOR_SCENE_OBJECTS,
   mars: MARS_SCENE_OBJECTS,
 };

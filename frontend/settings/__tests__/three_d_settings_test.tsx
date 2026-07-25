@@ -201,7 +201,7 @@ describe("SCENE_DDIS", () => {
       .mockReturnValue(false);
 
     expect(SCENE_DDI_LIST().map(item => item.label))
-      .toEqual(["Custom", "Outdoor", "Lab", "Greenhouse"]);
+      .toEqual(["Custom", "Outdoor", "Lab", "Greenhouse", "Mars"]);
     enabled.mockRestore();
   });
 

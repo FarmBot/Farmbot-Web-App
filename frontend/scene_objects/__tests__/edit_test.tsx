@@ -107,27 +107,6 @@ describe("<RawEditSceneObject />", () => {
     save.mockRestore();
   });
 
-  it("swaps X and Y sizes", () => {
-    location.pathname = Path.mock(Path.sceneObjects(1));
-    const edit = jest.spyOn(crud, "edit")
-      .mockImplementation(() => "edit action" as never);
-    const save = jest.spyOn(crud, "save")
-      .mockImplementation(() => "save action" as never);
-    const resource = fakeSceneObject({ x_size: 100, y_size: 200 });
-    const p = fakeProps(resource);
-    const { getByRole } = render(<RawEditSceneObject {...p} />);
-
-    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
-
-    expect(edit).toHaveBeenCalledWith(resource, {
-      x_size: 200,
-      y_size: 100,
-    });
-    expect(save).toHaveBeenCalledWith(resource.uuid);
-    edit.mockRestore();
-    save.mockRestore();
-  });
-
   it("updates a scene object string field", () => {
     location.pathname = Path.mock(Path.sceneObjects(1));
     const edit = jest.spyOn(crud, "edit")

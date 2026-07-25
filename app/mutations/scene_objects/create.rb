@@ -23,6 +23,7 @@ module SceneObjects
       integer :x_size, min: 0, max: Helpers::INTEGER_LIMIT
       integer :y_size, min: 0, max: Helpers::INTEGER_LIMIT
       integer :z_size, min: 0, max: Helpers::INTEGER_LIMIT
+      integer :rotation, min: -180, max: 180
     end
 
     def validate

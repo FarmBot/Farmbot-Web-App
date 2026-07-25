@@ -24,6 +24,7 @@ describe SceneObjects::Create do
       x_size: 4,
       y_size: 5,
       z_size: 6,
+      rotation: 0,
     }
   end
 

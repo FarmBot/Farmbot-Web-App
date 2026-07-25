@@ -1,10 +1,11 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { SceneObjectFormFields, SceneObjectFormValues } from "../form";
+import {
+  rolloverRotation, SceneObjectFormFields, SceneObjectFormValues,
+} from "../form";
 import * as ui from "../../ui";
 import { type FBSelectProps } from "../../ui";
 import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
-import { DevSettings } from "../../settings/dev/dev_support";
 
 describe("<SceneObjectFormFields />", () => {
   const values = (): SceneObjectFormValues => fakeSceneObject({
@@ -93,14 +94,19 @@ describe("<SceneObjectFormFields />", () => {
   });
 
   it("groups coordinate fields", () => {
-    const { container, getAllByText, getByText } =
+    const { container, getAllByText, getByRole, getByText, queryByRole } =
       render(<SceneObjectFormFields
         values={values()}
         onValueChange={jest.fn()} />);
 
-    expect(container.querySelectorAll(".info-box").length).toEqual(3);
+    expect(container.querySelectorAll(".info-box").length).toEqual(4);
     expect(getByText("Center")).toBeInTheDocument();
     expect(getByText("Size")).toBeInTheDocument();
+    expect(getByText("Rotation")).toBeInTheDocument();
+    expect(getByRole("button", { name: "+90" })).toBeInTheDocument();
+    expect(getByRole("button", { name: "-90" })).toBeInTheDocument();
+    expect(queryByRole("button", { name: "Swap X & Y" }))
+      .not.toBeInTheDocument();
     expect(getAllByText("X")).toHaveLength(2);
     expect(getAllByText("Y")).toHaveLength(2);
     expect(getAllByText("Z")).toHaveLength(2);
@@ -108,6 +114,44 @@ describe("<SceneObjectFormFields />", () => {
     expect(fieldGroups[0]).toHaveClass("grid");
     expect(fieldGroups[0]).not.toHaveClass("row");
     expect(fieldGroups[1]).toHaveClass("row", "grid-3-col");
+  });
+
+  it("edits and adjusts rotation", () => {
+    const onValueChange = jest.fn();
+    const { container, getByRole } = render(<SceneObjectFormFields
+      values={{ ...values(), rotation: 45 }}
+      onValueChange={onValueChange} />);
+    const rotationInput =
+      container.querySelector("input[name='rotation']")!;
+
+    expect(rotationInput).toHaveValue(45);
+    commitInput(rotationInput, "60");
+    fireEvent.click(getByRole("button", { name: "+90" }));
+    fireEvent.click(getByRole("button", { name: "-90" }));
+
+    expect(onValueChange).toHaveBeenCalledWith("rotation", 60);
+    expect(onValueChange).toHaveBeenCalledWith("rotation", 135);
+    expect(onValueChange).toHaveBeenCalledWith("rotation", -45);
+  });
+
+  it("rolls rotation button values over at 180 degrees", () => {
+    expect(rolloverRotation(180)).toEqual(180);
+    expect(rolloverRotation(-180)).toEqual(-180);
+    expect(rolloverRotation(270)).toEqual(-90);
+    expect(rolloverRotation(-270)).toEqual(90);
+
+    const onValueChange = jest.fn();
+    const { getByRole, rerender } = render(<SceneObjectFormFields
+      values={{ ...values(), rotation: 135 }}
+      onValueChange={onValueChange} />);
+    fireEvent.click(getByRole("button", { name: "+90" }));
+    rerender(<SceneObjectFormFields
+      values={{ ...values(), rotation: -135 }}
+      onValueChange={onValueChange} />);
+    fireEvent.click(getByRole("button", { name: "-90" }));
+
+    expect(onValueChange).toHaveBeenCalledWith("rotation", -135);
+    expect(onValueChange).toHaveBeenCalledWith("rotation", 135);
   });
 
   it("highlights the focused field", () => {
@@ -193,9 +237,6 @@ describe("<SceneObjectFormFields />", () => {
   });
 
   it("edits select fields", () => {
-    const futureFeaturesEnabled =
-      jest.spyOn(DevSettings, "futureFeaturesEnabled")
-        .mockReturnValue(false);
     const onValueChange = jest.fn();
     const fbSelectProps: FBSelectProps[] = [];
     const fbSelectSpy = jest.spyOn(ui, "FBSelect")
@@ -213,7 +254,7 @@ describe("<SceneObjectFormFields />", () => {
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("tree");
     expect(fbSelectProps[0].list.map(item => item.value)).toContain("fence");
     expect(fbSelectProps[0].list.map(item => item.value))
-      .not.toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
+      .toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
     fbSelectProps.slice(1).forEach(selectProps => {
       expect(selectProps.list).toEqual([
         { label: "Home", value: "home" },
@@ -229,28 +270,6 @@ describe("<SceneObjectFormFields />", () => {
     expect(onValueChange).toHaveBeenCalledWith("x_origin", "max");
     expect(onValueChange).toHaveBeenCalledWith("y_origin", "world");
     fbSelectSpy.mockRestore();
-    futureFeaturesEnabled.mockRestore();
-  });
-
-  it("shows future shape choices", () => {
-    const futureFeaturesEnabled =
-      jest.spyOn(DevSettings, "futureFeaturesEnabled")
-        .mockReturnValue(true);
-    const fbSelectProps: FBSelectProps[] = [];
-    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation(((props: FBSelectProps) => {
-        fbSelectProps.push(props);
-        return <div />;
-      }) as never);
-
-    render(<SceneObjectFormFields
-      values={values()}
-      onValueChange={jest.fn()} />);
-
-    expect(fbSelectProps[0].list.map(item => item.value))
-      .toEqual(expect.arrayContaining(["astronaut", "hab", "rover"]));
-    fbSelectSpy.mockRestore();
-    futureFeaturesEnabled.mockRestore();
   });
 
   it("edits texture fields", () => {
@@ -335,35 +354,13 @@ describe("<SceneObjectFormFields />", () => {
     expect(queryByLabelText("Fixed X")).not.toBeInTheDocument();
   });
 
-  it("swaps X and Y sizes", () => {
-    const onValueChange = jest.fn();
-    const onPreserveAxesChange = jest.fn();
-    const onSwapXAndY = jest.fn();
-    const { getByRole, rerender } = render(<SceneObjectFormFields
-      values={{ ...values(), preserve_axes: ["x", "z"] }}
-      onPreserveAxesChange={onPreserveAxesChange}
-      onValueChange={onValueChange} />);
-
-    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
-
-    expect(onValueChange).toHaveBeenNthCalledWith(1, "x_size", 200);
-    expect(onValueChange).toHaveBeenNthCalledWith(2, "y_size", 100);
-    expect(onPreserveAxesChange).toHaveBeenCalledWith(["y", "z"]);
-
-    rerender(<SceneObjectFormFields
-      values={values()}
-      onSwapXAndY={onSwapXAndY}
-      onValueChange={onValueChange} />);
-    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
-    expect(onSwapXAndY).toHaveBeenCalled();
-  });
-
-  it("collapses center and size sections", () => {
+  it("collapses field sections", () => {
     const { container, getByRole } = render(<SceneObjectFormFields
       values={values()}
       onValueChange={jest.fn()} />);
     const centerToggle = getByRole("button", { name: "Center" });
     const sizeToggle = getByRole("button", { name: "Size" });
+    const rotationToggle = getByRole("button", { name: "Rotation" });
 
     fireEvent.click(centerToggle);
     expect(centerToggle).toHaveAttribute("aria-expanded", "false");
@@ -379,6 +376,11 @@ describe("<SceneObjectFormFields />", () => {
     fireEvent.click(sizeToggle);
     expect(sizeToggle).toHaveAttribute("aria-expanded", "false");
     expect(container.querySelector("input[name='x_size']"))
+      .not.toBeInTheDocument();
+
+    fireEvent.click(rotationToggle);
+    expect(rotationToggle).toHaveAttribute("aria-expanded", "false");
+    expect(container.querySelector("input[name='rotation']"))
       .not.toBeInTheDocument();
   });
 });

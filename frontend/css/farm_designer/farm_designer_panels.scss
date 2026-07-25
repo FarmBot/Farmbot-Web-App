@@ -854,8 +854,18 @@
     }
   }
 
-  .scene-object-swap-size {
-    margin: 0;
+  .scene-object-rotation-data {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .scene-object-rotation-actions {
+    gap: 0.5rem;
+
+    .fb-button {
+      margin: 0;
+      height: 3rem;
+    }
   }
 }
 

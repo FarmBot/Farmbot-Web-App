@@ -10,6 +10,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   LAB_SCENE_OBJECTS,
   SCENE_OBJECT_CATALOG_SCENES,
+  sceneObjectThumbnailFilename,
 } from "../../three_d_garden/scenes/scene_object_data";
 import { fakeSceneObject } from
   "../../__test_support__/fake_state/resources";
@@ -68,7 +69,7 @@ describe("<RawSceneObjectCatalog />", () => {
 
     fireEvent.change(search, { target: { value: "Lab" } });
     expect(container.querySelectorAll(".scene-object-catalog-tile"))
-      .toHaveLength(LAB_SCENE_OBJECTS.length - 2);
+      .toHaveLength(LAB_SCENE_OBJECTS.length - 3);
     expect(screen.queryByText("Lab")).not.toBeInTheDocument();
   });
 
@@ -164,5 +165,12 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     expect(mapStateToProps(state).dispatch).toEqual(state.dispatch);
+  });
+});
+
+describe("sceneObjectThumbnailFilename()", () => {
+  it("returns an AVIF filename", () => {
+    expect(sceneObjectThumbnailFilename("Custom Scene Object"))
+      .toEqual("custom-scene-object.avif");
   });
 });

@@ -14,6 +14,7 @@ FactoryBot.define do
     x_size { 100 }
     y_size { 100 }
     z_size { 100 }
+    rotation { 0 }
     device
   end
 end

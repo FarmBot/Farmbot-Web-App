@@ -1,14 +1,16 @@
 import React from "react";
-import { ThreeEvent } from "@react-three/fiber";
-import { Box, Cylinder, Edges, Sphere } from "@react-three/drei";
-import { Group, MeshBasicMaterial, MeshPhongMaterial } from "./components";
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { Box, Cone, Cylinder, Edges, Line, Sphere } from "@react-three/drei";
+import {
+  Group, Mesh, MeshBasicMaterial, MeshPhongMaterial,
+} from "./components";
 import { Config } from "./config";
 import {
   get3DPositionFunc, getGardenPositionFunc,
   zZero,
 } from "./helpers";
 import {
-  sceneObjectBody, SceneObjectFormValues,
+  rolloverRotation, sceneObjectBody, SceneObjectFormValues,
 } from "../scene_objects/interfaces";
 import { edit, init, save } from "../api/crud";
 import { Path } from "../internal_urls";
@@ -17,7 +19,8 @@ import { useTextureVariant } from "./texture_variants";
 import { PottedPlant } from "./scenes/props/potted_plant";
 import { StarterTray } from "./scenes/props/starter_tray";
 import {
-  Group as ThreeGroup, Material, Object3D, Vector3, DoubleSide,
+  CatmullRomCurve3, Group as ThreeGroup, Material, Object3D, Vector3,
+  DoubleSide,
 } from "three";
 import { SpecialStatus, TaggedResource, TaggedSceneObject } from "farmbot";
 import { ThreeDObjectSelection } from "./selection_types";
@@ -37,9 +40,9 @@ import { Solar } from "./garden/solar";
 import { clickWasDragged } from "./click_event";
 import { MARS_SCENE_OBJECTS } from "./scenes/scene_object_data";
 import {
-  axisConstraint, ControlArrow, ControlDragEvent, ControlHandle,
+  axisConstraint, ControlArrow, ControlDragEvent, ControlHandle, ControlLabel,
   CONTROL_ARROW_WIDTH, CONTROL_RENDER_ORDER, CONTROL_SIZE_ARROW_WIDTH,
-  ControlSphere, planeConstraint,
+  ControlSphere, noControlRaycast, planeConstraint,
   pointerRayPointAtZ as controlPointerRayPointAtZ,
   stopControlDragEvent, stopControlEvent,
 } from "./controls";
@@ -58,12 +61,45 @@ const FACE_MARKER_RENDER_ORDER = FACE_SIZE_RENDER_ORDER + 1;
 const FACE_SIZE_ARROW_LENGTH = 250;
 const FACE_SIZE_LABEL_SIZE = ORIGIN_LABEL_SIZE;
 const OBJECT_AXIS_ARROW_LENGTH = 125;
+const ROTATION_CONTROL_SPACING = 100;
+const ROTATION_CONTROL_ARC = Math.PI / 3;
+const ROTATION_CONTROL_SEGMENTS = 16;
+const ROTATION_CONTROL_WIDTH = CONTROL_SIZE_ARROW_WIDTH;
+const ROTATION_CONTROL_HEAD_LENGTH = ROTATION_CONTROL_WIDTH * 3;
+const ROTATION_CONTROL_HEAD_RADIUS = ROTATION_CONTROL_WIDTH;
+const ROTATION_GUIDE_EXTENSION = 250;
+const ROTATION_SNAP_INCREMENT = 5;
+const ROTATION_ORTHO_SNAP_RANGE = ROTATION_SNAP_INCREMENT * 2;
+const BASE_OBJECT_MARKER_CAMERA_DISTANCE = 3500;
+const MAX_OBJECT_MARKER_SCALE = 4;
 
 interface SceneObjectCursor {
   x: number;
   y: number;
   z: number;
 }
+
+type XYZRecord = Record<"x" | "y" | "z", number>;
+
+export const sceneObjectRotation = (
+  rotation: number,
+): [number, number, number] => [0, 0, rotation * Math.PI / 180];
+
+export const rotatePointAboutZ = (
+  point: XYZRecord,
+  pivot: XYZRecord,
+  radians: number,
+): XYZRecord => {
+  const x = point.x - pivot.x;
+  const y = point.y - pivot.y;
+  const cos = Math.cos(radians);
+  const sin = Math.sin(radians);
+  return {
+    x: pivot.x + x * cos - y * sin,
+    y: pivot.y + x * sin + y * cos,
+    z: point.z,
+  };
+};
 
 export interface SceneObjectBounds {
   x0: number;
@@ -76,6 +112,7 @@ export interface SceneObjectBounds {
 
 interface SceneObjectDraft {
   center?: SceneObjectCursor;
+  rotation?: number;
   corner?: SceneObjectCursor;
   heightStartY?: number;
 }
@@ -126,6 +163,26 @@ const preservesPlacementAxis = (
 const preservesFootprint = (sceneObject: SceneObjectFormValues) =>
   preservesPlacementAxis(sceneObject, "x")
   && preservesPlacementAxis(sceneObject, "y");
+
+const preservesRotation = (sceneObject: SceneObjectFormValues) =>
+  !!sceneObject.preserve_axes?.includes("r");
+
+const hasTranslucentPlacementPreview = (
+  sceneObject: SceneObjectFormValues,
+) => sceneObject.preserve_axes !== undefined;
+
+const placementPreviewAxisSize = (
+  sceneObject: SceneObjectFormValues | undefined,
+  axis: "x" | "y" | "z",
+  placementSize: number,
+  rotating: boolean,
+) => {
+  if (!sceneObject) { return placementSize; }
+  if (rotating) {
+    return sceneObject[sceneObjectSizeFields[axis]] ?? placementSize;
+  }
+  return placementAxisSize(sceneObject, axis, placementSize);
+};
 
 export const heightFromPointerRay = (
   e: ThreeEvent<MouseEvent | PointerEvent>,
@@ -236,9 +293,12 @@ const pointerRayParameterOnLine = (
 export const sceneObjectCornersFromCenter = (
   center: SceneObjectCursor,
   corner: SceneObjectCursor,
+  rotation = 0,
 ) => {
-  const widthX = Math.abs(corner.x - center.x);
-  const widthY = Math.abs(corner.y - center.y);
+  const localCorner = rotatePointAboutZ(
+    corner, center, -sceneObjectRotation(rotation)[2]);
+  const widthX = Math.abs(localCorner.x - center.x);
+  const widthY = Math.abs(localCorner.y - center.y);
   return {
     x_0: Math.round(center.x - widthX),
     y_0: Math.round(center.y - widthY),
@@ -246,6 +306,50 @@ export const sceneObjectCornersFromCenter = (
     x_1: Math.round(center.x + widthX),
     y_1: Math.round(center.y + widthY),
   };
+};
+
+export const snapSceneObjectRotation = (rotation: number) => {
+  const orthogonalRotation = Math.round(rotation / 90) * 90;
+  const closeToOrthogonal =
+    Math.abs(rotation - orthogonalRotation) <= ROTATION_ORTHO_SNAP_RANGE;
+  const snappedRotation = closeToOrthogonal
+    ? orthogonalRotation
+    : Math.round(rotation / ROTATION_SNAP_INCREMENT)
+    * ROTATION_SNAP_INCREMENT;
+  return rolloverRotation(snappedRotation);
+};
+
+export const sceneObjectPlacementRotation = (
+  center: SceneObjectCursor,
+  cursor: SceneObjectCursor,
+  fallback = 0,
+) => {
+  const x = cursor.x - center.x;
+  const y = cursor.y - center.y;
+  if (x == 0 && y == 0) { return fallback; }
+  const degrees = Math.atan2(y, x) * 180 / Math.PI;
+  const rotation = snapSceneObjectRotation(degrees);
+  return rotation == 0 ? 0 : rotation;
+};
+
+export const sceneObjectRotationGuideVisible = (rotation: number) =>
+  Math.abs(rotation % 90) < 0.001;
+
+export const sceneObjectRotationGuidePoints = (
+  center: XYZRecord,
+  xSize: number,
+  ySize: number,
+  rotation: number,
+): [[number, number, number], [number, number, number]] => {
+  const halfLength = Math.max(xSize, ySize) / 2
+    + ROTATION_GUIDE_EXTENSION;
+  const radians = sceneObjectRotation(rotation)[2];
+  const x = Math.cos(radians) * halfLength;
+  const y = Math.sin(radians) * halfLength;
+  return [
+    [center.x - x, center.y - y, center.z],
+    [center.x + x, center.y + y, center.z],
+  ];
 };
 
 const boundsFromSceneObject = (sceneObject: TaggedSceneObject, config: Config):
@@ -268,12 +372,16 @@ const sceneObjectNumber = (name: string) => {
 };
 
 const sizeFromCenterAndCorner = (
-  center: { x: number, y: number },
-  corner: { x: number, y: number },
-) => ({
-  x_size: Math.max(1, Math.round(Math.abs(corner.x - center.x) * 2)),
-  y_size: Math.max(1, Math.round(Math.abs(corner.y - center.y) * 2)),
-});
+  center: SceneObjectCursor,
+  corner: SceneObjectCursor,
+  rotation: number,
+) => {
+  const bounds = sceneObjectCornersFromCenter(center, corner, rotation);
+  return {
+    x_size: Math.max(1, bounds.x_1 - bounds.x_0),
+    y_size: Math.max(1, bounds.y_1 - bounds.y_0),
+  };
+};
 
 export const nextSceneObjectName = (
   sceneObjects: TaggedSceneObject[] | undefined,
@@ -365,15 +473,18 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
   ) => {
     const drawnSceneObject = drawnSceneObjectRef.current;
     if (!dispatch || !drawnSceneObject) { return; }
+    const payload = { ...drawnSceneObject, ...update };
+    drawnSceneObjectRef.current = payload;
     dispatch({
       type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
-      payload: { ...drawnSceneObject, ...update },
+      payload,
     });
   }, [dispatch]);
   const saveSceneObject = React.useCallback((
     center: SceneObjectCursor,
     corner: SceneObjectCursor,
     height: number,
+    rotation?: number,
   ) => {
     if (!dispatch) { return; }
     const drawnSceneObject = drawnSceneObjectRef.current;
@@ -381,7 +492,8 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const name = drawnSceneObject.name ||
       nextSceneObjectName(props.sceneObjects, createdNames.current);
     const c = adjustCenter(props.config, drawnSceneObject, center);
-    const footprint = sizeFromCenterAndCorner(center, corner);
+    const footprint = sizeFromCenterAndCorner(
+      center, corner, drawnSceneObject.rotation);
     const body: SceneObject = {
       ...sceneObjectBody(drawnSceneObject),
       name,
@@ -394,6 +506,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
         drawnSceneObject, "y", footprint.y_size),
       z_size: placementAxisSize(drawnSceneObject, "z",
         Math.max(1, Math.round(height - center.z))),
+      rotation: rotation ?? drawnSceneObject.rotation,
     };
     const action = init("SceneObject", body);
     createdNames.current.push(name);
@@ -408,6 +521,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     props.config,
   ]);
 
+  // eslint-disable-next-line complexity
   const onClick = React.useCallback((e: ThreeEvent<MouseEvent>) => {
     const drawnSceneObject = drawnSceneObjectRef.current;
     if (!enabled || !cursor || !drawnSceneObject || clickWasDragged(e)) {
@@ -425,24 +539,54 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
         y_center: cursor.y,
         z_base: c.z,
       });
-      if (preservesFootprint(drawnSceneObject)) {
-        if (preservesPlacementAxis(drawnSceneObject, "z")) {
-          saveSceneObject(center, center, center.z);
-          resetPlacement();
-        } else {
-          setDraft({
-            center,
-            corner: center,
-            heightStartY: eventScreenY(e),
-          });
+      if (preservesRotation(drawnSceneObject)
+        || !hasTranslucentPlacementPreview(drawnSceneObject)) {
+        const rotation = drawnSceneObject.rotation;
+        if (!preservesFootprint(drawnSceneObject)) {
+          setDraft({ center, rotation });
+          return;
         }
-      } else {
-        setDraft({ center });
+        if (preservesPlacementAxis(drawnSceneObject, "z")) {
+          saveSceneObject(center, center, center.z, rotation);
+          resetPlacement();
+          return;
+        }
+        setDraft({
+          center,
+          rotation,
+          corner: center,
+          heightStartY: eventScreenY(e),
+        });
+        return;
       }
+      setDraft({ center });
+      return;
+    }
+    if (draft.rotation === undefined) {
+      const rotation = sceneObjectPlacementRotation(
+        draft.center, cursor, drawnSceneObject.rotation);
+      updateDrawnSceneObject({ rotation });
+      if (!preservesFootprint(drawnSceneObject)) {
+        setDraft({ ...draft, rotation });
+        return;
+      }
+      if (preservesPlacementAxis(drawnSceneObject, "z")) {
+        saveSceneObject(
+          draft.center, draft.center, draft.center.z, rotation);
+        resetPlacement();
+        return;
+      }
+      setDraft({
+        ...draft,
+        rotation,
+        corner: draft.center,
+        heightStartY: eventScreenY(e),
+      });
       return;
     }
     if (!draft.corner) {
-      const bounds = sceneObjectCornersFromCenter(draft.center, cursor);
+      const bounds = sceneObjectCornersFromCenter(
+        draft.center, cursor, draft.rotation);
       const c = adjustCenter(props.config, drawnSceneObject, draft.center);
       updateDrawnSceneObject({
         x_center: c.x,
@@ -454,7 +598,8 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
           bounds.y_1 - bounds.y_0),
       });
       if (preservesPlacementAxis(drawnSceneObject, "z")) {
-        saveSceneObject(draft.center, cursor, cursor.z);
+        saveSceneObject(
+          draft.center, cursor, cursor.z, draft.rotation);
         resetPlacement();
       } else {
         setDraft({ ...draft, corner: cursor, heightStartY: eventScreenY(e) });
@@ -465,7 +610,8 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       z_size: placementAxisSize(drawnSceneObject, "z",
         Math.max(1, Math.round(cursor.z - draft.center.z))),
     });
-    saveSceneObject(draft.center, draft.corner, cursor.z);
+    saveSceneObject(
+      draft.center, draft.corner, cursor.z, draft.rotation);
     resetPlacement();
   }, [
     cursor,
@@ -483,7 +629,13 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const drawnSceneObject = props.drawnSceneObject;
     const center = draft.center || cursor;
     const corner = draft.corner || cursor;
-    const bounds = sceneObjectCornersFromCenter(center, corner);
+    const rotation = draft.center && draft.rotation === undefined
+      ? sceneObjectPlacementRotation(
+        draft.center, cursor, drawnSceneObject?.rotation)
+      : draft.rotation ?? drawnSceneObject?.rotation ?? 0;
+    const rotating = !!draft.center && draft.rotation === undefined;
+    const bounds = sceneObjectCornersFromCenter(
+      center, corner, rotation);
     const dragXSize = Math.max(1, bounds.x_1 - bounds.x_0);
     const dragYSize = Math.max(1, bounds.y_1 - bounds.y_0);
     const dragHeight = draft.corner && draft.center
@@ -499,6 +651,18 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       : cursor;
     const groundZ = -props.config.bedZOffset - props.config.bedHeight;
     const spherePosition = get3DPosition(cursorPosition);
+    const guideCenter = get3DPosition(center);
+    const guidePoints = sceneObjectRotationGuidePoints(
+      {
+        x: guideCenter.x,
+        y: guideCenter.y,
+        z: groundZ + center.z + 5,
+      },
+      drawnSceneObject?.x_size ?? dragXSize,
+      drawnSceneObject?.y_size ?? dragYSize,
+      rotation);
+    const showRotationGuide = rotating
+      && sceneObjectRotationGuideVisible(rotation);
     const originPlanePosition = get3DPosition({ x: 0, y: 0 });
     const showOriginPlane = drawnSceneObject?.z_origin != "world";
     const originPlaneZ = draft.center?.z || cursor.z;
@@ -506,6 +670,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       ? adjustCenter(props.config, drawnSceneObject, center)
       : center;
     const showGhost = drawnSceneObject
+      && hasTranslucentPlacementPreview(drawnSceneObject)
       && (!draft.corner
         || (preservesFootprint(drawnSceneObject)
           && !preservesPlacementAxis(drawnSceneObject, "z")));
@@ -535,6 +700,15 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       ]}>
         <MeshBasicMaterial color={"dodgerblue"} />
       </Sphere>
+      {showRotationGuide &&
+        <Line
+          name={"scene-object-placement-rotation-guide"}
+          points={guidePoints}
+          color={"orange"}
+          lineWidth={4}
+          depthTest={false}
+          renderOrder={FACE_SIZE_RENDER_ORDER}
+          raycast={noControlRaycast} />}
       {showGhost && drawnSceneObject &&
         <SceneObjectPreview
           config={props.config}
@@ -544,6 +718,7 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
             x_center: adjustedCenter.x,
             y_center: adjustedCenter.y,
             z_base: adjustedCenter.z,
+            rotation,
           }} />}
       {draft.center &&
         <SceneObjectPreview
@@ -559,24 +734,23 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
             z_base: draft.corner
               ? (drawnSceneObject?.z_base ?? adjustedCenter.z)
               : adjustedCenter.z,
-            x_size: drawnSceneObject
-              ? placementAxisSize(drawnSceneObject, "x", dragXSize)
-              : dragXSize,
-            y_size: drawnSceneObject
-              ? placementAxisSize(drawnSceneObject, "y", dragYSize)
-              : dragYSize,
-            z_size: drawnSceneObject
-              ? placementAxisSize(drawnSceneObject, "z", height)
-              : height,
+            x_size: placementPreviewAxisSize(
+              drawnSceneObject, "x", dragXSize, rotating),
+            y_size: placementPreviewAxisSize(
+              drawnSceneObject, "y", dragYSize, rotating),
+            z_size: placementPreviewAxisSize(
+              drawnSceneObject, "z", height, rotating),
             x_origin: drawnSceneObject?.x_origin || "home",
             y_origin: drawnSceneObject?.y_origin || "home",
             z_origin: drawnSceneObject?.z_origin || "world",
+            rotation,
           }} />}
     </Group>;
   }, [
     cursor,
     draft.center,
     draft.corner,
+    draft.rotation,
     enabled,
     get3DPosition,
     props.config,
@@ -592,6 +766,7 @@ interface SceneObjectsProps {
   isPromo?: boolean;
   dispatch?: Function;
   hoverSelection?: ThreeDObjectSelection;
+  selection?: ThreeDObjectSelection;
   onSelectObject?(selection: ThreeDObjectSelection): boolean | void;
   activeFocus: string;
   visible: boolean;
@@ -692,6 +867,80 @@ export const sceneObjectPoint = (
   ];
 };
 
+export type SceneObjectRotationCorner =
+  "x0y0" | "x0y1" | "x1y0" | "x1y1";
+
+const SCENE_OBJECT_ROTATION_CONTROL_CORNERS: SceneObjectRotationCorner[] = [
+  "x1y0", "x0y1",
+];
+
+const sceneObjectRotationCornerPoint = (
+  config: Config,
+  bounds: SceneObjectBounds,
+  center: SceneObjectCursor,
+  rotation: number,
+  corner: SceneObjectRotationCorner,
+) => {
+  const pivot = pointToRecord(sceneObjectPoint(config, center));
+  const point = pointToRecord(sceneObjectPoint(config, {
+    x: corner.startsWith("x0") ? bounds.x0 : bounds.x1,
+    y: corner.endsWith("y0") ? bounds.y0 : bounds.y1,
+    z: bounds.z0,
+  }));
+  return rotatePointAboutZ(
+    point, pivot, sceneObjectRotation(rotation)[2]);
+};
+
+export const sceneObjectRotationControlPoints = (
+  config: Config,
+  bounds: SceneObjectBounds,
+  center: SceneObjectCursor,
+  rotation: number,
+  scale = 1,
+  corner: SceneObjectRotationCorner = "x1y0",
+): [number, number, number][] => {
+  const pivot = pointToRecord(sceneObjectPoint(config, center));
+  const rotatedCorner = sceneObjectRotationCornerPoint(
+    config, bounds, center, rotation, corner);
+  const cornerOffset = new Vector3(
+    rotatedCorner.x - pivot.x,
+    rotatedCorner.y - pivot.y,
+    0,
+  );
+  const radius = cornerOffset.length()
+    + ROTATION_CONTROL_SPACING * scale;
+  const midpoint = Math.atan2(cornerOffset.y, cornerOffset.x);
+  const start = midpoint - ROTATION_CONTROL_ARC / 2;
+  const z = pivot.z + 5;
+  return range(ROTATION_CONTROL_SEGMENTS + 1).map(index => {
+    const angle = start
+      + ROTATION_CONTROL_ARC * index / ROTATION_CONTROL_SEGMENTS;
+    return [
+      pivot.x + Math.cos(angle) * radius,
+      pivot.y + Math.sin(angle) * radius,
+      z,
+    ];
+  });
+};
+
+export const sceneObjectRotationFromPointer = (
+  startRotation: number,
+  startAngle: number,
+  pivot: XYZRecord,
+  pointer: XYZRecord,
+) => {
+  const pointerAngle = Math.atan2(
+    pointer.y - pivot.y,
+    pointer.x - pivot.x,
+  );
+  const angleDelta = pointerAngle - startAngle;
+  const wrappedDelta = Math.atan2(
+    Math.sin(angleDelta), Math.cos(angleDelta));
+  const rotation = startRotation + wrappedDelta * 180 / Math.PI;
+  const rolledRotation = snapSceneObjectRotation(rotation);
+  return rolledRotation == 0 ? 0 : rolledRotation;
+};
+
 interface SceneObjectSelectionMarkersProps {
   config: Config;
   sceneObject: TaggedSceneObject;
@@ -706,10 +955,24 @@ interface SceneObjectSelectionMarkersProps {
   onPreviewEnd(): void;
 }
 
+interface SceneObjectRotationControlProps {
+  config: Config;
+  sceneObject: TaggedSceneObject;
+  bounds: SceneObjectBounds;
+  center: SceneObjectCursor;
+  dispatch?: Function;
+  focusedField: string;
+  interactionLocked(): boolean;
+  setInteractionLocked(locked: boolean): void;
+  onPreview(update: Partial<TaggedSceneObject["body"]>): void;
+  onPreviewEnd(): void;
+}
+
 interface SceneObjectSelectionMarkerProps {
   name: string;
   position: [number, number, number];
   hovered?: boolean;
+  scale: number;
   onHoverChange?(hovered: boolean): void;
   onPointerDown(e: ThreeEvent<PointerEvent>): void;
   onPointerMove(e: ThreeEvent<PointerEvent>): void;
@@ -724,11 +987,19 @@ interface FaceSizeDragState {
   markerZ: number;
 }
 
+interface RotationDragState {
+  corner: SceneObjectRotationCorner;
+  pivot: XYZRecord;
+  startAngle: number;
+  startRotation: number;
+}
+
 interface SceneObjectMoveHandleProps {
   config: Config;
   sceneObject: TaggedSceneObject;
   args: [number, number, number];
   position: [number, number, number];
+  rotation?: [number, number, number];
   dispatch?: Function;
   setInteractionLocked(locked: boolean): void;
   onPreview(update: Partial<TaggedSceneObject["body"]>): void;
@@ -766,6 +1037,7 @@ const eventHitsSceneObjectInteraction = (e: ThreeEvent<PointerEvent>) =>
       (name.startsWith("scene-object-base-") &&
         name.endsWith("-axis-arrow")) ||
       name.startsWith("scene-object-face-size-arrow") ||
+      name.startsWith("scene-object-rotation-control") ||
       name.startsWith("scene-object-selection-marker")));
 
 const SceneObjectSelectionMarker =
@@ -780,7 +1052,7 @@ const SceneObjectSelectionMarker =
       {state => <ControlSphere
         name={props.name}
         position={props.position}
-        radius={MARKER_RADIUS}
+        radius={MARKER_RADIUS * props.scale}
         color={"dodgerblue"}
         hoverColor={"deepskyblue"}
         hovered={state.hovered || props.hovered}
@@ -814,6 +1086,21 @@ const SceneObjectSelectionMarkers =
     const getGardenPosition = React.useMemo(
       () => getGardenPositionFunc(config),
       [config]);
+    const rotation = sceneObjectRotation(sceneObject.body.rotation)[2];
+    const pivot = React.useMemo(
+      () => pointToRecord(sceneObjectPoint(config, center)),
+      [center, config]);
+    const rotatePoint = React.useCallback((
+      point: XYZRecord,
+      radians = rotation,
+    ) => rotatePointAboutZ(point, pivot, radians), [pivot, rotation]);
+    const rotatedSceneObjectPoint = React.useCallback((
+      gardenPosition: SceneObjectCursor,
+    ): [number, number, number] => {
+      const point = pointToRecord(sceneObjectPoint(config, gardenPosition));
+      const rotated = rotatePoint(point);
+      return [rotated.x, rotated.y, rotated.z];
+    }, [config, rotatePoint]);
     const updateSceneObject = React.useCallback((
       update: Partial<TaggedSceneObject["body"]>,
     ) => {
@@ -830,39 +1117,67 @@ const SceneObjectSelectionMarkers =
     ) => {
       e.stopPropagation();
       const dragMarkerZ = faceSizeDrag?.markerZ ?? markerZ;
+      const dragBounds = faceSizeDrag?.bounds || bounds;
+      const dragCenter = faceSizeDrag?.center || center;
+      const dragBody = faceSizeDrag?.body || sceneObject.body;
+      const dragPivot = pointToRecord(
+        sceneObjectPoint(config, dragCenter));
       const markerPoint = pointerRayPointAtZ(e, dragMarkerZ);
-      const rawGardenPosition = getGardenPosition(markerPoint);
+      const localMarkerPoint = rotatePointAboutZ(
+        markerPoint, dragPivot, -rotation);
+      const rawGardenPosition = getGardenPosition(localMarkerPoint);
       const gardenPosition = {
         x: rawGardenPosition.x + faceDragOffset.x,
         y: rawGardenPosition.y + faceDragOffset.y,
       };
-      const dragBounds = faceSizeDrag?.bounds || bounds;
-      const dragCenter = faceSizeDrag?.center || center;
-      const dragBody = faceSizeDrag?.body || sceneObject.body;
       if (field == "x0" || field == "x1") {
         const fixedX = field == "x0" ? dragBounds.x1 : dragBounds.x0;
         const resizedX = field == "x0"
           ? Math.min(gardenPosition.x, fixedX - 1)
           : Math.max(gardenPosition.x, fixedX + 1);
         const x = (resizedX + fixedX) / 2;
-        const c = adjustCenter(config, dragBody, { ...dragCenter, x });
+        const localCenter = sceneObjectPoint(
+          config, { ...dragCenter, x });
+        const rotatedCenter = rotatePointAboutZ(
+          pointToRecord(localCenter), dragPivot, rotation);
+        const worldCenter = getGardenPosition(rotatedCenter);
+        const c = adjustCenter(config, dragBody, {
+          ...dragCenter,
+          x: worldCenter.x,
+          y: worldCenter.y,
+        });
         const xSize = snapSceneObjectSize(Math.abs(resizedX - fixedX));
-        return {
+        const update = {
           x_center: snapToGrid(c.x),
           x_size: xSize,
         };
+        return rotation == 0
+          ? update
+          : { ...update, y_center: snapToGrid(c.y) };
       }
       const fixedY = field == "y0" ? dragBounds.y1 : dragBounds.y0;
       const resizedY = field == "y0"
         ? Math.min(gardenPosition.y, fixedY - 1)
         : Math.max(gardenPosition.y, fixedY + 1);
       const y = (resizedY + fixedY) / 2;
-      const c = adjustCenter(config, dragBody, { ...dragCenter, y });
+      const localCenter = sceneObjectPoint(
+        config, { ...dragCenter, y });
+      const rotatedCenter = rotatePointAboutZ(
+        pointToRecord(localCenter), dragPivot, rotation);
+      const worldCenter = getGardenPosition(rotatedCenter);
+      const c = adjustCenter(config, dragBody, {
+        ...dragCenter,
+        x: worldCenter.x,
+        y: worldCenter.y,
+      });
       const ySize = snapSceneObjectSize(Math.abs(resizedY - fixedY));
-      return {
+      const update = {
         y_center: snapToGrid(c.y),
         y_size: ySize,
       };
+      return rotation == 0
+        ? update
+        : { ...update, x_center: snapToGrid(c.x) };
     }, [
       bounds,
       center,
@@ -870,6 +1185,7 @@ const SceneObjectSelectionMarkers =
       faceDragOffset,
       faceSizeDrag,
       getGardenPosition,
+      rotation,
       sceneObject,
     ]);
     const faceResizePointerDown = React.useCallback((
@@ -878,7 +1194,8 @@ const SceneObjectSelectionMarkers =
       e: ThreeEvent<PointerEvent>,
     ) => {
       const markerPoint = pointerRayPointAtZ(e, markerPosition[2]);
-      const gardenPosition = getGardenPosition(markerPoint);
+      const localMarkerPoint = rotatePoint(markerPoint, -rotation);
+      const gardenPosition = getGardenPosition(localMarkerPoint);
       setFaceDragOffset({
         x: markerGardenPosition.x - gardenPosition.x,
         y: markerGardenPosition.y - gardenPosition.y,
@@ -890,12 +1207,21 @@ const SceneObjectSelectionMarkers =
         markerZ: markerPosition[2],
       });
       onPreview({});
-    }, [bounds, center, getGardenPosition, onPreview, sceneObject.body]);
+    }, [
+      bounds,
+      center,
+      getGardenPosition,
+      onPreview,
+      rotatePoint,
+      rotation,
+      sceneObject.body,
+    ]);
     const uniformSizeUpdate = React.useCallback((
       e: ThreeEvent<PointerEvent>,
       drag: UniformSizeDragState,
     ) => {
-      const parameter = pointerRayParameterOnLine(e, drag.startPoint);
+      const parameter = pointerRayParameterOnLine(
+        e, drag.startPoint, drag.direction);
       const delta = (parameter - drag.startParameter) * 2 / Math.sqrt(3);
       const referenceSize = Math.max(1, drag.startReferenceSize);
       const scale = snapSceneObjectSize(referenceSize + delta) / referenceSize;
@@ -913,7 +1239,9 @@ const SceneObjectSelectionMarkers =
       updateSceneObject,
       onPreviewEnd,
     });
-    const markerRadius = MARKER_RADIUS;
+    const scale = useObjectMarkerScale(
+      sceneObjectPoint(config, center));
+    const markerRadius = MARKER_RADIUS * scale;
     const faceMarkers = [
       {
         field: "x0" as const,
@@ -972,7 +1300,7 @@ const SceneObjectSelectionMarkers =
     };
     const markers = [
       ...individualFaceMarkers.map((marker, index) => {
-        const position = sceneObjectPoint(config, marker.gardenPosition);
+        const position = rotatedSceneObjectPoint(marker.gardenPosition);
         return {
           position,
           hovered: hoveredFace === index,
@@ -1080,7 +1408,8 @@ const SceneObjectSelectionMarkers =
         }]
         : []),
       {
-        position: sceneObjectPoint(config, uniformScaleMarker.gardenPosition),
+        position: rotatedSceneObjectPoint(
+          uniformScaleMarker.gardenPosition),
         hovered: hoveredFace === 5,
         onHoverChange: (hovered: boolean) => {
           if (props.interactionLocked()) { return; }
@@ -1089,12 +1418,23 @@ const SceneObjectSelectionMarkers =
           setSceneObjectFieldFocus(dispatch, hovered ? "size" : undefined);
         },
         onPointerDown: (e: ThreeEvent<PointerEvent>) => {
-          const startPoint = pointToRecord(sceneObjectPoint(
-            config, uniformScaleMarker.gardenPosition));
+          const startPoint = pointToRecord(rotatedSceneObjectPoint(
+            uniformScaleMarker.gardenPosition));
+          const rotatedDirection = rotatePointAboutZ(
+            { x: XYZ_UNIT.x, y: XYZ_UNIT.y, z: XYZ_UNIT.z },
+            { x: 0, y: 0, z: 0 },
+            rotation,
+          );
+          const direction = new Vector3(
+            rotatedDirection.x,
+            rotatedDirection.y,
+            rotatedDirection.z,
+          );
           props.setInteractionLocked(true);
           setFaceDragging(true);
           setUniformSizeDrag({
-            startParameter: pointerRayParameterOnLine(e, startPoint),
+            startParameter: pointerRayParameterOnLine(
+              e, startPoint, direction),
             startReferenceSize: Math.max(
               1,
               sceneObject.body.x_size,
@@ -1107,6 +1447,7 @@ const SceneObjectSelectionMarkers =
               z_size: sceneObject.body.z_size,
             },
             startPoint,
+            direction,
           });
           setSceneObjectFieldFocus(dispatch, "size");
           onPreview({});
@@ -1149,8 +1490,11 @@ const SceneObjectSelectionMarkers =
       indicator: typeof faceSizeIndicators[number],
       index: number,
     ) => {
-      const start = pointToRecord(sceneObjectPoint(
+      const unrotatedStart = pointToRecord(sceneObjectPoint(
         config, indicator.gardenPosition));
+      const start = rotatePoint(unrotatedStart);
+      const end = rotatePoint(
+        faceArrowEnd(unrotatedStart, indicator.direction, scale));
       const marker = markers[index];
       return <SingleAxisIndicator
         key={index}
@@ -1158,8 +1502,9 @@ const SceneObjectSelectionMarkers =
         color={"dodgerblue"}
         hovered={marker.hovered}
         onHoverChange={marker.onHoverChange}
+        scale={scale}
         start={start}
-        end={faceArrowEnd(start, indicator.direction)}
+        end={end}
         label={indicator.label}
         hideLabel={indicator.direction == "xyz+" && !props.unifiedSize}
         labelVisible={sizeLabelVisible(focusedField, indicator.direction)}
@@ -1176,11 +1521,200 @@ const SceneObjectSelectionMarkers =
           name={`scene-object-selection-marker-${index}`}
           position={marker.position}
           hovered={marker.hovered}
+          scale={scale}
           onHoverChange={marker.onHoverChange}
           onPointerDown={marker.onPointerDown}
           onPointerMove={marker.onPointerMove}
           onPointerUp={marker.onPointerUp}
           onPointerCancel={marker.onPointerCancel} />)}
+    </>;
+  };
+
+const rotationArrowHeadRotation = (
+  from: [number, number, number],
+  to: [number, number, number],
+): [number, number, number] =>
+  [
+    0,
+    0,
+    Math.atan2(to[1] - from[1], to[0] - from[0]) - Math.PI / 2,
+  ];
+
+const SceneObjectRotationControl =
+  (props: SceneObjectRotationControlProps) => {
+    const {
+      bounds,
+      center,
+      config,
+      dispatch,
+      onPreview,
+      onPreviewEnd,
+      sceneObject,
+    } = props;
+    const [drag, setDrag] = React.useState<RotationDragState>();
+    const [hoveredCorner, setHoveredCorner] =
+      React.useState<SceneObjectRotationCorner>();
+    const scale = useObjectMarkerScale(
+      sceneObjectPoint(config, center));
+    const pivot = pointToRecord(sceneObjectPoint(config, center));
+    const guidePoints = sceneObjectRotationGuidePoints(
+      {
+        ...pivot,
+        z: pivot.z + 5,
+      },
+      sceneObject.body.x_size,
+      sceneObject.body.y_size,
+      sceneObject.body.rotation);
+    const updateSceneObject = (
+      update: Partial<TaggedSceneObject["body"]>,
+    ) => {
+      if (!dispatch) { return; }
+      const resource = sceneObject as unknown as TaggedResource;
+      dispatch(edit(resource, update));
+      dispatch(save(sceneObject.uuid));
+    };
+    const rotationUpdate = (point: Vector3) => drag
+      ? {
+        rotation: sceneObjectRotationFromPointer(
+          drag.startRotation,
+          drag.startAngle,
+          drag.pivot,
+          point,
+        ),
+      }
+      : {};
+    const renderControl = (corner: SceneObjectRotationCorner) => {
+      const points = sceneObjectRotationControlPoints(
+        config, bounds, center, sceneObject.body.rotation, scale, corner);
+      const start = points[0];
+      const next = points[1];
+      const previous = points[points.length - 2];
+      const end = points[points.length - 1];
+      const labelPoint = points[Math.floor(points.length / 2)];
+      const curve = new CatmullRomCurve3(
+        points.map(point => new Vector3(...point)));
+      const active = hoveredCorner == corner || drag?.corner == corner;
+      const color = active ? "deepskyblue" : "dodgerblue";
+      return <ControlHandle
+        key={corner}
+        name={"scene-object-rotation-control"}
+        canStart={() => !props.interactionLocked()}
+        constraint={planeConstraint(
+          "xy", [pivot.x, pivot.y, pivot.z])}
+        onHoverChange={isHovered => {
+          if (props.interactionLocked() && !drag) { return; }
+          setHoveredCorner(current => {
+            if (isHovered) { return corner; }
+            return current == corner ? undefined : current;
+          });
+          setSceneObjectFieldFocus(
+            dispatch, isHovered ? "rotation" : undefined);
+        }}
+        onDragStart={({ point }) => {
+          props.setInteractionLocked(true);
+          setDrag({
+            corner,
+            pivot,
+            startAngle: Math.atan2(
+              point.y - pivot.y, point.x - pivot.x),
+            startRotation: sceneObject.body.rotation,
+          });
+          setSceneObjectFieldFocus(dispatch, "rotation");
+          onPreview({});
+        }}
+        onDrag={({ point }) => {
+          if (!drag) { return; }
+          onPreview(rotationUpdate(point));
+        }}
+        onDragEnd={({ point }) => {
+          if (drag) {
+            updateSceneObject(rotationUpdate(point));
+          }
+          setDrag(undefined);
+          setHoveredCorner(undefined);
+          props.setInteractionLocked(false);
+          setSceneObjectFieldFocus(dispatch, undefined);
+          onPreviewEnd();
+        }}
+        onDragCancel={() => {
+          setDrag(undefined);
+          setHoveredCorner(undefined);
+          props.setInteractionLocked(false);
+          setSceneObjectFieldFocus(dispatch, undefined);
+          onPreviewEnd();
+        }}>
+        <Group
+          name={"scene-object-rotation-control-shape"}
+          renderOrder={FACE_SIZE_RENDER_ORDER}>
+          <Mesh
+            name={"scene-object-rotation-control-arc"}
+            renderOrder={FACE_SIZE_RENDER_ORDER}>
+            <tubeGeometry args={[
+              curve,
+              ROTATION_CONTROL_SEGMENTS,
+              ROTATION_CONTROL_WIDTH * scale / 2,
+              8,
+              false,
+            ]} />
+            <MeshPhongMaterial
+              color={color}
+              depthTest={true}
+              depthWrite={true}
+              toneMapped={false} />
+          </Mesh>
+          <Cone
+            name={"scene-object-rotation-control-start"}
+            args={[
+              ROTATION_CONTROL_HEAD_RADIUS * scale,
+              ROTATION_CONTROL_HEAD_LENGTH * scale,
+              16,
+            ]}
+            position={start}
+            rotation={rotationArrowHeadRotation(next, start)}
+            renderOrder={FACE_SIZE_RENDER_ORDER}>
+            <MeshPhongMaterial color={color} toneMapped={false} />
+          </Cone>
+          <Cone
+            name={"scene-object-rotation-control-end"}
+            args={[
+              ROTATION_CONTROL_HEAD_RADIUS * scale,
+              ROTATION_CONTROL_HEAD_LENGTH * scale,
+              16,
+            ]}
+            position={end}
+            rotation={rotationArrowHeadRotation(previous, end)}
+            renderOrder={FACE_SIZE_RENDER_ORDER}>
+            <MeshPhongMaterial color={color} toneMapped={false} />
+          </Cone>
+          <ControlLabel
+            name={"scene-object-rotation-control-label"}
+            position={[
+              labelPoint[0],
+              labelPoint[1],
+              labelPoint[2] + ROTATION_CONTROL_WIDTH * scale * 2,
+            ]}
+            fontSize={FACE_SIZE_LABEL_SIZE * scale}
+            color={color}
+            depthTest={true}
+            depthWrite={true}
+            renderOrder={FACE_SIZE_RENDER_ORDER}
+            visible={props.focusedField == "rotation" || active}>
+            {`${sceneObject.body.rotation}°`}
+          </ControlLabel>
+        </Group>
+      </ControlHandle>;
+    };
+    return <>
+      {drag && sceneObjectRotationGuideVisible(sceneObject.body.rotation) &&
+        <Line
+          name={"scene-object-edit-rotation-guide"}
+          points={guidePoints}
+          color={"orange"}
+          lineWidth={4}
+          depthTest={false}
+          renderOrder={FACE_SIZE_RENDER_ORDER}
+          raycast={noControlRaycast} />}
+      {SCENE_OBJECT_ROTATION_CONTROL_CORNERS.map(renderControl)}
     </>;
   };
 
@@ -1229,6 +1763,7 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
   return <ControlHandle
     name={"scene-object-move-handle"}
     position={position}
+    rotation={props.rotation}
     constraint={planeConstraint("xy", [0, 0, groundPlaneZ])}
     canStart={event => !eventHitsSceneObjectInteraction(event)}
     onDragStart={({ point }) => {
@@ -1286,6 +1821,7 @@ interface ObjectBaseAxesProps extends SceneObjectOriginMarkersProps {
 interface OriginAxisIndicatorProps {
   name: string;
   axis: AxisName;
+  scale: number;
   labelVisible?: boolean;
   start: Record<"x" | "y" | "z", number>;
   end: Record<"x" | "y" | "z", number>;
@@ -1302,6 +1838,7 @@ interface OriginMarker {
 interface SingleAxisIndicatorProps {
   name: string;
   color: string;
+  scale: number;
   start: Record<"x" | "y" | "z", number>;
   end: Record<"x" | "y" | "z", number>;
   labelVisible?: boolean;
@@ -1315,7 +1852,6 @@ interface SingleAxisIndicatorProps {
   onPointerCancel?(): void;
 }
 
-type XYZRecord = Record<"x" | "y" | "z", number>;
 type Direction = "x-" | "x+" | "y-" | "y+" | "z+" | "xyz+";
 type AxisName = "x" | "y" | "z";
 interface AxisDragState {
@@ -1335,6 +1871,7 @@ interface UniformSizeDragState {
   startReferenceSize: number;
   startSizes: Record<"x_size" | "y_size" | "z_size", number>;
   startPoint: XYZRecord;
+  direction: Vector3;
 }
 
 const pointToRecord = ([x, y, z]: [number, number, number]) => ({ x, y, z });
@@ -1366,12 +1903,34 @@ const setSceneObjectFieldFocus = (
   field: string | undefined,
 ) => dispatch?.(setFocusedSceneObjectField(field));
 
+export const objectMarkerScale = (distance: number) =>
+  Math.min(
+    MAX_OBJECT_MARKER_SCALE,
+    Math.max(1, distance / BASE_OBJECT_MARKER_CAMERA_DISTANCE),
+  );
+
+const useObjectMarkerScale = (position: [number, number, number]) => {
+  const { camera } = useThree();
+  const [scale, setScale] = React.useState(1);
+  useFrame(() => {
+    const dx = camera.position.x - position[0];
+    const dy = camera.position.y - position[1];
+    const dz = camera.position.z - position[2];
+    const next = objectMarkerScale(
+      Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2));
+    setScale(current =>
+      Math.abs(current - next) > 0.05 ? next : current);
+  });
+  return scale;
+};
+
 const faceArrowEnd = (
   start: XYZRecord,
   direction: Direction,
+  scale: number,
 ): XYZRecord => {
   const end = { ...start };
-  const length = FACE_SIZE_ARROW_LENGTH;
+  const length = FACE_SIZE_ARROW_LENGTH * scale;
   const diagonal = length / Math.sqrt(3);
   switch (direction) {
     case "x-": end.x -= length; break;
@@ -1415,7 +1974,7 @@ const SingleAxisIndicator = (props: SingleAxisIndicatorProps) => {
       name={`${props.name}-arrow`}
       start={[start.x, start.y, start.z]}
       end={[end.x, end.y, end.z]}
-      width={CONTROL_SIZE_ARROW_WIDTH}
+      width={CONTROL_SIZE_ARROW_WIDTH * props.scale}
       color={props.color}
       hoverColor={"deepskyblue"}
       hovered={state.hovered || props.hovered}
@@ -1425,7 +1984,7 @@ const SingleAxisIndicator = (props: SingleAxisIndicatorProps) => {
       renderOrder={FACE_SIZE_RENDER_ORDER}
       label={props.label}
       labelName={`${props.name}-label`}
-      labelSize={FACE_SIZE_LABEL_SIZE}
+      labelSize={FACE_SIZE_LABEL_SIZE * props.scale}
       labelVisible={!props.hideLabel
         && (props.labelVisible
           || props.hovered
@@ -1445,12 +2004,12 @@ const OriginAxisIndicator = (props: OriginAxisIndicatorProps) => {
     end={[end.x, end.y, end.z]}
     heads={"both"}
     colorType={props.axis}
-    width={CONTROL_ARROW_WIDTH}
+    width={CONTROL_ARROW_WIDTH * props.scale}
     renderOnTop={true}
     renderOrder={ORIGIN_MARKER_RENDER_ORDER}
     label={`${signedDistance.toFixed(0)}mm`}
     labelName={`${props.name}-label`}
-    labelSize={ORIGIN_LABEL_SIZE}
+    labelSize={ORIGIN_LABEL_SIZE * props.scale}
     labelDepthTest={false}
     labelDepthWrite={false}
     labelRenderOrder={ORIGIN_MARKER_RENDER_ORDER}
@@ -1467,8 +2026,9 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
     [config]);
   const position = sceneObjectPoint(config, center);
   const start = pointToRecord(position);
-  const markerRadius = ORIGIN_MARKER_RADIUS;
-  const arrowLength = OBJECT_AXIS_ARROW_LENGTH;
+  const scale = useObjectMarkerScale(position);
+  const markerRadius = ORIGIN_MARKER_RADIUS * scale;
+  const arrowLength = OBJECT_AXIS_ARROW_LENGTH * scale;
   const updateSceneObject = React.useCallback((
     update: Partial<TaggedSceneObject["body"]>,
   ) => {
@@ -1609,7 +2169,7 @@ const ObjectBaseAxes = (props: ObjectBaseAxesProps) => {
           renderOnTop={true}
           hovered={state.hovered || hoveredAxis == axis.name}
           renderOrder={OBJECT_AXIS_RENDER_ORDER}
-          width={CONTROL_ARROW_WIDTH} />}
+          width={CONTROL_ARROW_WIDTH * scale} />}
       </ControlHandle>)}
   </Group>;
 };
@@ -1622,6 +2182,7 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
   const yOrigin = originY(config, y_origin);
   const zOrigin = originZ(config, z_origin);
   const objectBase = sceneObjectPoint(config, center);
+  const scale = useObjectMarkerScale(objectBase);
   const markers: OriginMarker[] = [
     {
       name: "z",
@@ -1680,6 +2241,7 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
         <OriginAxisIndicator
           name={`scene-object-${marker.name}-origin-arrow`}
           axis={marker.name as AxisName}
+          scale={scale}
           labelVisible={originLabelVisible(
             focusedField,
             marker.name as AxisName,
@@ -1690,7 +2252,7 @@ const SceneObjectOriginMarkers = (props: SceneObjectOriginMarkersProps) => {
         {marker.showSphere &&
           <ControlSphere
             name={`scene-object-${marker.name}-origin-marker`}
-            radius={ORIGIN_MARKER_RADIUS}
+            radius={ORIGIN_MARKER_RADIUS * scale}
             colorType={"origin"}
             renderOnTop={true}
             renderOrder={ORIGIN_SPHERE_RENDER_ORDER}
@@ -1784,6 +2346,9 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
 export const SceneObjects = (props: SceneObjectsProps) => {
   const selectedSceneObjectId = Number(Path.getSlug(Path.sceneObjects()));
   const hasSelectedSceneObject = !isNaN(selectedSceneObjectId);
+  const popupSceneObjectSelection = props.selection?.kind == "sceneObject"
+    ? props.selection
+    : undefined;
   const [dragPreview, setDragPreview] =
     React.useState<SceneObjectDragPreview>();
   const [bodyDragging, setBodyDragging] = React.useState<string>();
@@ -1811,8 +2376,14 @@ export const SceneObjects = (props: SceneObjectsProps) => {
   return <>
     {/* eslint-disable-next-line complexity */}
     {shownSceneObjects.map(sceneObject => {
-      const selected = hasSelectedSceneObject
+      const selectedFromPopup = !!popupSceneObjectSelection
+        && (popupSceneObjectSelection.id == sceneObject.body.id
+          || popupSceneObjectSelection.uuid == sceneObject.uuid);
+      const selectedFromRoute = hasSelectedSceneObject
         && sceneObject.body.id === selectedSceneObjectId;
+      const selected = popupSceneObjectSelection
+        ? selectedFromPopup
+        : selectedFromRoute;
       const hovered = (hoverAllUserSceneObjects
         && userSceneObjectUuids.has(sceneObject.uuid))
         || (props.hoverSelection?.kind == "sceneObject"
@@ -1831,6 +2402,8 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       const bounds = boundsFromSceneObject(previewedSceneObject, props.config);
       const center = reCenter(props.config, previewedSceneObject);
       const position = sceneObjectPosition(props.config, previewedSceneObject);
+      const rotation = sceneObjectRotation(
+        previewedSceneObject.body.rotation);
       const preview = (update: Partial<TaggedSceneObject["body"]>) =>
         setDragPreview({ uuid: sceneObject.uuid, update });
       const size: [number, number, number] = [x_size, y_size, z_size];
@@ -1850,9 +2423,13 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       const renderHoverEdges = (
         edgePosition: [number, number, number],
         edgeSize = size,
+        edgeRotation?: [number, number, number],
       ) =>
         hovered && !selected &&
-        <Box args={edgeSize} position={edgePosition}>
+        <Box
+          args={edgeSize}
+          position={edgePosition}
+          rotation={edgeRotation}>
           <MeshBasicMaterial
             color={"white"}
             transparent={true}
@@ -1863,6 +2440,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
       const renderMoveHandle = (
         handlePosition: [number, number, number],
         handleSize = size,
+        handleRotation?: [number, number, number],
       ) =>
         selected &&
         <SceneObjectMoveHandle
@@ -1871,6 +2449,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           sceneObject={sceneObject}
           args={handleSize}
           position={handlePosition}
+          rotation={handleRotation}
           setInteractionLocked={setInteractionLocked}
           onPreview={preview}
           onPreviewEnd={endPreview}
@@ -1903,6 +2482,18 @@ export const SceneObjects = (props: SceneObjectsProps) => {
               props.designer?.unifiedSceneObjectSize == sceneObject.uuid}
             onPreview={preview}
             onPreviewEnd={endPreview} />
+          <SceneObjectRotationControl
+            config={props.config}
+            dispatch={props.dispatch}
+            focusedField={
+              props.designer?.focusedSceneObjectField || ""}
+            sceneObject={previewedSceneObject}
+            bounds={bounds}
+            center={center}
+            interactionLocked={getInteractionLocked}
+            setInteractionLocked={setInteractionLocked}
+            onPreview={preview}
+            onPreviewEnd={endPreview} />
         </>;
 
       if (shape === "plant") {
@@ -1911,7 +2502,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <PottedPlant size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -1926,7 +2517,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <StarterTray size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -1941,7 +2532,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Laptop size={[x_size, y_size, z_size]} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -1956,7 +2547,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Desk size={[x_size, y_size, z_size]}
               texture={texture}
               color={color}
@@ -1974,7 +2565,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Solar size={size} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -1989,7 +2580,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Tree size={size} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -2004,7 +2595,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Fence size={size} texture={texture} color={color} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -2019,7 +2610,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Astronaut size={size} texture={texture} color={color} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -2034,7 +2625,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Rover size={size} texture={texture} color={color} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -2049,7 +2640,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           onClick={selectSceneObject}
           show={show}
           visible={visible}>
-          <Group position={position}>
+          <Group position={position} rotation={rotation}>
             <Hab size={size} texture={texture} color={color} />
             {renderMoveHandle([0, 0, 0])}
             {renderHoverEdges([0, 0, 0])}
@@ -2060,6 +2651,11 @@ export const SceneObjects = (props: SceneObjectsProps) => {
 
       if (shape === "window") {
         const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
+        const wallRotation: [number, number, number] = [
+          0,
+          0,
+          wall.rotation[2] + rotation[2],
+        ];
         return <SceneObjectOpacity key={sceneObject.uuid}
           opacity={opacity}
           onClick={selectSceneObject}
@@ -2067,7 +2663,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           visible={visible}>
           <Group
             position={position}
-            rotation={wall.rotation}>
+            rotation={wallRotation}>
             <GreenhouseWall size={wall.size} />
             {renderMoveHandle([0, 0, 0], wall.size)}
             {renderHoverEdges([0, 0, 0], wall.size)}
@@ -2091,8 +2687,8 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           height={z_size}
           color={color}
           shape={shape} />
-        {renderMoveHandle(position)}
-        {renderHoverEdges(position)}
+        {renderMoveHandle(position, size, rotation)}
+        {renderHoverEdges(position, size, rotation)}
         {renderSelectionMarkers()}
       </SceneObjectOpacity>;
     })}
@@ -2165,34 +2761,40 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
     body: props.sceneObject,
   } as TaggedSceneObject;
   const position = sceneObjectPosition(props.config, sceneObject);
+  const rotation = sceneObjectRotation(props.sceneObject.rotation);
 
   if (shape === "plant") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <PottedPlant size={[x_size, y_size, z_size]} />
     </Group>;
   }
 
   if (shape === "tray") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <StarterTray size={[x_size, y_size, z_size]} />
     </Group>;
   }
 
   if (shape === "window") {
     const wall = greenhouseWallRenderProps(x_size, y_size, z_size);
-    return <Group position={position} rotation={wall.rotation}>
+    const wallRotation: [number, number, number] = [
+      0,
+      0,
+      wall.rotation[2] + rotation[2],
+    ];
+    return <Group position={position} rotation={wallRotation}>
       <GreenhouseWall size={wall.size} />
     </Group>;
   }
 
   if (shape === "laptop") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Laptop size={[x_size, y_size, z_size]} />
     </Group>;
   }
 
   if (shape === "desk") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Desk size={[x_size, y_size, z_size]}
         texture={texture}
         color={color}
@@ -2201,19 +2803,19 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   }
 
   if (shape === "solar") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Solar size={[x_size, y_size, z_size]} />
     </Group>;
   }
 
   if (shape === "tree") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Tree size={[x_size, y_size, z_size]} />
     </Group>;
   }
 
   if (shape === "fence") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Fence size={[x_size, y_size, z_size]}
         texture={texture}
         color={color} />
@@ -2221,7 +2823,7 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   }
 
   if (shape === "astronaut") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Astronaut size={[x_size, y_size, z_size]}
         texture={texture}
         color={color} />
@@ -2229,7 +2831,7 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   }
 
   if (shape === "hab") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Hab size={[x_size, y_size, z_size]}
         texture={texture}
         color={color} />
@@ -2237,7 +2839,7 @@ const SceneObjectPreviewContent = (props: SceneObjectPreviewProps) => {
   }
 
   if (shape === "rover") {
-    return <Group position={position}>
+    return <Group position={position} rotation={rotation}>
       <Rover size={[x_size, y_size, z_size]}
         texture={texture}
         color={color} />
@@ -2274,6 +2876,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
     offset: [0, 1],
   });
   const position = sceneObjectPosition(props.config, props.sceneObject);
+  const rotation = sceneObjectRotation(props.sceneObject.body.rotation);
   const materialKey = props.textureUrl || "none";
   const materialProps = {
     map: props.textureUrl ? texture : undefined,
@@ -2286,7 +2889,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
       castShadow={true}
       receiveShadow={true}
       position={position}
-      rotation={[Math.PI / 2, 0, 0]}
+      rotation={[Math.PI / 2, 0, rotation[2]]}
       scale={[props.width, props.height, props.depth]}
       args={[0.5, 0.5, 1, 32]}>
       <MeshPhongMaterial key={materialKey} {...materialProps} />
@@ -2298,6 +2901,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
       castShadow={true}
       receiveShadow={true}
       position={position}
+      rotation={rotation}
       scale={[props.width, props.depth, props.height]}
       args={[0.5, 32, 32]}>
       <MeshPhongMaterial key={materialKey} {...materialProps} />
@@ -2309,6 +2913,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
       castShadow={true}
       receiveShadow={true}
       position={position}
+      rotation={rotation}
       args={[props.width, props.depth, props.height]}>
       {range(6).map(faceIndex =>
         <MeshPhongMaterial
@@ -2323,6 +2928,7 @@ const SceneObjectBox = (props: SceneObjectBoxProps) => {
     castShadow={true}
     receiveShadow={true}
     position={position}
+    rotation={rotation}
     args={[props.width, props.depth, props.height]}>
     <MeshPhongMaterial key={materialKey} {...materialProps} />
   </Box>;

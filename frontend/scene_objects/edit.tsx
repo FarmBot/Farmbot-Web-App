@@ -55,6 +55,7 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
       x_origin: sceneObject.body.x_origin,
       y_origin: sceneObject.body.y_origin,
       z_origin: sceneObject.body.z_origin,
+      rotation: sceneObject.body.rotation,
     }
     : undefined;
   const onValueChange = (
@@ -75,14 +76,6 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
   const onUnifiedSizeChange = (unified: boolean) =>
     props.dispatch(setUnifiedSceneObjectSize(
       unified ? sceneObject?.uuid : undefined));
-  const onSwapXAndY = () => {
-    if (!sceneObject) { return; }
-    props.dispatch(edit(sceneObject, {
-      x_size: sceneObject.body.y_size,
-      y_size: sceneObject.body.x_size,
-    }));
-    props.dispatch(save(sceneObject.uuid));
-  };
   const navigate = useNavigate();
   const navigateToPath = (path: string) => {
     void navigate(path);
@@ -140,7 +133,6 @@ export const RawEditSceneObject = (props: EditSceneObjectProps) => {
           hideVisibilityControl={true}
           onFocusChange={onFocusChange}
           onUnifiedSizeChange={onUnifiedSizeChange}
-          onSwapXAndY={onSwapXAndY}
           onValueChange={onValueChange} />
         : <span>{t("Redirecting")}...</span>}
     </DesignerPanelContent>

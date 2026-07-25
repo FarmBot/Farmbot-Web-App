@@ -12,9 +12,7 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus, TaggedPoint } from "farmbot";
 import { destroy, initSave } from "../api/crud";
 import { useNavigate } from "react-router";
-import {
-  SceneObjectFormFields, SceneObjectFormValues, swapSceneObjectXAndY,
-} from "./form";
+import { SceneObjectFormFields, SceneObjectFormValues } from "./form";
 import { Actions } from "../constants";
 import { availableSceneObjectName, sceneObjectFocusHandler } from "./actions";
 import {
@@ -98,16 +96,6 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
       },
     });
   };
-  const onSwapXAndY = () => {
-    if (!props.drawnSceneObject) { return; }
-    props.dispatch({
-      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
-      payload: {
-        ...props.drawnSceneObject,
-        ...swapSceneObjectXAndY(props.drawnSceneObject),
-      },
-    });
-  };
   const discardFailedSceneObjects = () => props.sceneObjects
     .filter(sceneObject =>
       !initialSceneObjectUuids.current.has(sceneObject.uuid)
@@ -145,7 +133,6 @@ export const RawAddSceneObject = (props: AddSceneObjectProps) => {
           hideCubeControl={true}
           onFocusChange={onFocusChange}
           onPreserveAxesChange={onPreserveAxesChange}
-          onSwapXAndY={onSwapXAndY}
           onUnifiedSizeChange={setShowUnifiedSize}
           onValueChange={onValueChange} />}
     </DesignerPanelContent>

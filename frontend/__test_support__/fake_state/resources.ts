@@ -568,6 +568,7 @@ export function fakeSceneObject(
     x_origin: "home",
     y_origin: "home",
     z_origin: "world",
+    rotation: 0,
     ...input,
   });
 }

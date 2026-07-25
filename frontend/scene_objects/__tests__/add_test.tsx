@@ -73,29 +73,6 @@ describe("<RawAddSceneObject />", () => {
     });
   });
 
-  it("swaps sizes and preserved axes together", () => {
-    const p = fakeProps();
-    p.drawnSceneObject = {
-      ...p.drawnSceneObject!,
-      x_size: 100,
-      y_size: 200,
-      preserve_axes: ["x", "z"],
-    };
-    const { getByRole } = render(<RawAddSceneObject {...p} />);
-
-    fireEvent.click(getByRole("button", { name: "Swap X & Y" }));
-
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
-      payload: {
-        ...p.drawnSceneObject,
-        x_size: 200,
-        y_size: 100,
-        preserve_axes: ["y", "z"],
-      },
-    });
-  });
-
   it("updates focused scene object field state", () => {
     const p = fakeProps();
     const { container } = render(<RawAddSceneObject {...p} />);

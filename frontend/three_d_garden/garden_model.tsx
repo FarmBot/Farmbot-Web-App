@@ -2600,6 +2600,44 @@ interface GardenModelSceneProps extends GardenModelProps {
   navigate(path: string): void;
 }
 
+interface SceneObjectPopupRouteListenerProps {
+  ignoreNextChange: boolean;
+  onIgnoreNextChange(): void;
+  open: boolean;
+  onRouteChange(): void;
+}
+
+const SceneObjectPopupRouteListener =
+  (props: SceneObjectPopupRouteListenerProps) => {
+    const location = useLocation();
+    const route = location.pathname;
+    const previousRouteRef = React.useRef(route);
+    const {
+      ignoreNextChange,
+      onIgnoreNextChange,
+      onRouteChange,
+      open,
+    } = props;
+    React.useEffect(() => {
+      const routeChanged = previousRouteRef.current != route;
+      previousRouteRef.current = route;
+      if (routeChanged && ignoreNextChange) {
+        onIgnoreNextChange();
+        return;
+      }
+      if (routeChanged && open) {
+        onRouteChange();
+      }
+    }, [
+      ignoreNextChange,
+      onIgnoreNextChange,
+      onRouteChange,
+      open,
+      route,
+    ]);
+    return <></>;
+  };
+
 interface GardenCameraRigProps {
   camera: Camera;
   zoom: number;
@@ -2961,6 +2999,12 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     React.useState<ThreeDLocationSelection | undefined>(undefined);
   const [popupSelectionMode, setPopupSelectionMode] =
     React.useState(objectSelectionMode);
+  const [ignoreNextPopupRouteChange, setIgnoreNextPopupRouteChange] =
+    React.useState(false);
+  const clearIgnoredPopupRouteChange = React.useCallback(
+    () => setIgnoreNextPopupRouteChange(false),
+    [],
+  );
   if (popupSelectionMode != objectSelectionMode) {
     setPopupSelectionMode(objectSelectionMode);
     if (objectSelectionMode) {
@@ -3297,6 +3341,11 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     if (multiSelectModifier.current && openMultiSelectPanel(selection)) {
       return true;
     }
+    if (selection.kind == "sceneObject"
+      && props.route.editingSceneObject) {
+      setIgnoreNextPopupRouteChange(true);
+      navigate(Path.sceneObjects());
+    }
     const activeSelection = activePopupSelectionRef.current;
     if (activeSelection?.kind == selection.kind &&
       activeSelection.id == selection.id) {
@@ -3310,9 +3359,11 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     closePopup,
     dispatch,
     multiSelectModifier,
+    navigate,
     objectSelectionMode,
     openMultiSelectPanel,
     props.promo,
+    props.route.editingSceneObject,
     selectionLookup,
     selectionPointType,
   ]);
@@ -3906,6 +3957,11 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   ]);
 
   return <ControlCursorProvider baseCursor={sceneCursor}>
+    <SceneObjectPopupRouteListener
+      ignoreNextChange={ignoreNextPopupRouteChange}
+      onIgnoreNextChange={clearIgnoredPopupRouteChange}
+      open={popupSelection?.kind == "sceneObject"}
+      onRouteChange={closePopup} />
     <FocusTransitionProvider enabled={focusTransitionsEnabled}>
       <GardenSceneBackground
         backgroundColor={backgroundColor}
@@ -4264,7 +4320,10 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
                 dispatch={dispatch}
                 designer={addPlantProps?.designer}
                 hoverSelection={hoverSelection}
-                onSelectObject={onSelectObject}
+                selection={
+                  addingSceneObject ? undefined : activePopupSelection}
+                onSelectObject={
+                  addingSceneObject ? undefined : onSelectObject}
                 sceneObjects={props.sceneObjects} />
             </Group>
           </PopInGroup>

@@ -35,6 +35,7 @@ const previewObject: SceneObject = {
   x_origin: "world",
   y_origin: "world",
   z_origin: "world",
+  rotation: 0,
 };
 
 const ThumbnailContent = () => {

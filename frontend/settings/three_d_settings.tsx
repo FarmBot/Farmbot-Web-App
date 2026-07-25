@@ -13,7 +13,6 @@ import { isUndefined } from "lodash";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "./default_values";
 import { Config } from "../three_d_garden/config";
-import { DevSettings } from "./dev/dev_support";
 import { THREE_D_DEFAULTS } from "./setting_metadata";
 
 export const SCENES: Record<number, string> = {
@@ -205,12 +204,7 @@ const DDIS = (
     }, {} as Record<number, DropDownItem>);
 
 export const SCENE_DDIS = () => DDIS(SCENES, SCENE_LABELS());
-export const SCENE_DDI_LIST = () => Object.values(SCENE_DDIS())
-  .filter(ddi => ![
-    DevSettings.futureFeaturesEnabled()
-      ? undefined
-      : SCENE_NUM_FROM_NAME["Mars"],
-  ].filter((v): v is number => !!v).includes(ddi.value as number));
+export const SCENE_DDI_LIST = () => Object.values(SCENE_DDIS());
 export const TEXTURE_DDIS = () => DDIS(TEXTURES, TEXTURE_LABELS());
 
 const BY_NAME = (values: Record<number, string>) =>

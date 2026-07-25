@@ -148,13 +148,15 @@
 }
 
 .scene-object-layer-controls {
-  display: grid;
-  grid-template-columns: auto 10rem;
-  gap: 0.5rem;
+  display: flex;
   align-items: center;
 }
 
 .scene-objects-inventory-panel {
+  .scene-object-select-row {
+    margin-left: 1rem;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
   .panel-top.with-button {
     grid-template-columns: auto 1fr auto;
   }

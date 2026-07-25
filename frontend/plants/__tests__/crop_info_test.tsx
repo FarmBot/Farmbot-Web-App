@@ -58,6 +58,7 @@ beforeEach(() => {
       value={props.value}
       onChange={e =>
         props.onCommit(e)} />) as never);
+  console.debug = jest.fn();
 });
 
 afterEach(() => {

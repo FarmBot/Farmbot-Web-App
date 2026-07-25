@@ -14,5 +14,6 @@ class SceneObjectSerializer < ApplicationSerializer
              :z_base,
              :x_size,
              :y_size,
-             :z_size
+             :z_size,
+             :rotation
 end

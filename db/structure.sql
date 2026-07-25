@@ -1616,7 +1616,8 @@ CREATE TABLE public.scene_objects (
     z_size integer NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    show boolean DEFAULT true NOT NULL
+    show boolean DEFAULT true NOT NULL,
+    rotation integer DEFAULT 0 NOT NULL
 );
 
 
@@ -3850,6 +3851,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260724204047'),
 ('20260723225144'),
 ('20260710222823'),
 ('20260430202719'),

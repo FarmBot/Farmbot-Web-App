@@ -3,6 +3,7 @@ import {
   act, fireEvent, render, renderHook,
 } from "@testing-library/react";
 import { Cone, Cylinder, Sphere } from "@react-three/drei";
+import * as threeFiber from "@react-three/fiber";
 import {
   nextSceneObjectName, sceneObjectCornersFromCenter, sceneObjectPoint,
   sceneObjectMoveUpdate, sceneObjectPosition, pointerRayPointAtZ,
@@ -13,11 +14,17 @@ import {
   sceneObjectTopResizeUpdate, topResizeMarkerHandlers,
   greenhouseWallRenderProps, placementAxisSize, SceneObjectPreview,
   sceneObjectAppearanceKey, applySceneObjectOpacity, unifiedSizeUpdate,
+  rotatePointAboutZ, sceneObjectRotation,
+  sceneObjectRotationControlPoints, sceneObjectRotationFromPointer,
+  objectMarkerScale, sceneObjectPlacementRotation,
+  sceneObjectRotationGuideVisible, snapSceneObjectRotation,
 } from "../scene_objects";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { BigDistance } from "../constants";
-import { zZero } from "../helpers";
+import {
+  get3DPositionFunc, getGardenPositionFunc, zZero,
+} from "../helpers";
 import {
   type Material, MeshBasicMaterial as ThreeMeshBasicMaterial,
   Object3D, Ray, Vector3,
@@ -70,13 +77,18 @@ const findSelectionMarker = (
   });
 };
 
-const findControlHandle = (
+const findControlHandles = (
   wrapper: ReturnType<typeof createRenderer>,
   name: string,
-) => wrapper.root.find(node =>
+) => wrapper.root.findAll(node =>
   node.type == "group" as ElementType &&
   node.props.name == name &&
   typeof node.props.onPointerDown == "function");
+
+const findControlHandle = (
+  wrapper: ReturnType<typeof createRenderer>,
+  name: string,
+) => findControlHandles(wrapper, name)[0];
 
 const findControlArrow = (
   wrapper: ReturnType<typeof createRenderer>,
@@ -87,6 +99,13 @@ const findControlArrow = (
   Array.isArray(node.props.end));
 
 describe("scene object placement helpers", () => {
+  beforeEach(() => {
+    jest.spyOn(threeFiber, "useFrame").mockImplementation(() => {
+      // eslint-disable-next-line no-null/no-null
+      return null;
+    });
+  });
+
   it("orients greenhouse walls before rendering", () => {
     expect(greenhouseWallRenderProps(10, 10000, 2500)).toEqual({
       size: [10000, 10, 2500],
@@ -96,6 +115,142 @@ describe("scene object placement helpers", () => {
       size: [10000, 10, 2500],
       rotation: [0, 0, 0],
     });
+  });
+
+  it("converts scene object rotation to Z-axis radians", () => {
+    expect(sceneObjectRotation(90)).toEqual([0, 0, Math.PI / 2]);
+    expect(sceneObjectRotation(-90)).toEqual([0, 0, -Math.PI / 2]);
+  });
+
+  it("rotates a point around a nonzero Z-axis pivot", () => {
+    const point = { x: 30, y: 20, z: 40 };
+    const pivot = { x: 10, y: 20, z: 5 };
+    const rotated = rotatePointAboutZ(point, pivot, Math.PI / 2);
+
+    expect(rotated.x).toBeCloseTo(10);
+    expect(rotated.y).toBeCloseTo(40);
+    expect(rotated.z).toEqual(40);
+    const restored = rotatePointAboutZ(rotated, pivot, -Math.PI / 2);
+    expect(restored.x).toBeCloseTo(point.x);
+    expect(restored.y).toBeCloseTo(point.y);
+    expect(restored.z).toEqual(point.z);
+  });
+
+  it("scales scene object controls with camera distance", () => {
+    expect(objectMarkerScale(0)).toEqual(1);
+    expect(objectMarkerScale(3500)).toEqual(1);
+    expect(objectMarkerScale(7000)).toEqual(2);
+    expect(objectMarkerScale(14000)).toEqual(4);
+    expect(objectMarkerScale(28000)).toEqual(4);
+  });
+
+  it("positions the rotation control beyond a rotated base corner", () => {
+    const config = clone(INITIAL);
+    const center = { x: 100, y: 200, z: 20 };
+    const bounds = {
+      x0: 50,
+      y0: 100,
+      z0: 20,
+      x1: 150,
+      y1: 300,
+      z1: 100,
+    };
+    const points = sceneObjectRotationControlPoints(
+      config, bounds, center, 90);
+    const oppositePoints = sceneObjectRotationControlPoints(
+      config, bounds, center, 90, 1, "x0y1");
+    const pivot = new Vector3(...sceneObjectPoint(config, center));
+    const corner = new Vector3(...sceneObjectPoint(config, {
+      x: bounds.x1,
+      y: bounds.y0,
+      z: bounds.z0,
+    }));
+
+    expect(points).toHaveLength(17);
+    expect(new Vector3(...points[8]).distanceTo(pivot))
+      .toBeGreaterThan(corner.distanceTo(pivot));
+    expect(points.every(point => point[2] == pivot.z + 5)).toEqual(true);
+    expect(points[8][0] + oppositePoints[8][0])
+      .toBeCloseTo(pivot.x * 2);
+    expect(points[8][1] + oppositePoints[8][1])
+      .toBeCloseTo(pivot.y * 2);
+  });
+
+  it("calculates rotation from the pointer angle", () => {
+    const pivot = { x: 10, y: 20, z: 0 };
+    const twelveDegrees = 12 * Math.PI / 180;
+    const twentyDegrees = 20 * Math.PI / 180;
+
+    expect(sceneObjectRotationFromPointer(
+      30, 0, pivot, { x: 10, y: 30, z: 0 })).toEqual(120);
+    expect(sceneObjectRotationFromPointer(
+      30, Math.PI, pivot, { x: 10, y: 10, z: 0 })).toEqual(120);
+    expect(sceneObjectRotationFromPointer(
+      0,
+      0,
+      pivot,
+      {
+        x: pivot.x + Math.cos(twelveDegrees),
+        y: pivot.y + Math.sin(twelveDegrees),
+        z: 0,
+      },
+    )).toEqual(10);
+    expect(sceneObjectRotationFromPointer(
+      170,
+      0,
+      pivot,
+      {
+        x: pivot.x + Math.cos(twentyDegrees),
+        y: pivot.y + Math.sin(twentyDegrees),
+        z: 0,
+      },
+    )).toEqual(-170);
+    expect(sceneObjectRotationFromPointer(
+      -170,
+      0,
+      pivot,
+      {
+        x: pivot.x + Math.cos(-twentyDegrees),
+        y: pivot.y + Math.sin(-twentyDegrees),
+        z: 0,
+      },
+    )).toEqual(170);
+  });
+
+  it("rotates scene objects and previews about the Z axis", () => {
+    const sceneObject = fakeSceneObject({ rotation: 90 });
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    const preview = createRenderer(<SceneObjectPreview
+      config={clone(INITIAL)}
+      sceneObject={{ ...sceneObject.body, shape: "plant", rotation: -90 }} />);
+
+    expect(wrapper.root.findAll(node =>
+      node.props.rotation?.[2] === Math.PI / 2)).not.toHaveLength(0);
+    expect(preview.root.findAll(node =>
+      node.props.rotation?.[2] === -Math.PI / 2)).not.toHaveLength(0);
+    unmountRenderer(wrapper);
+    unmountRenderer(preview);
+  });
+
+  it("adds scene object rotation to greenhouse wall orientation", () => {
+    const sceneObject = fakeSceneObject({
+      shape: "window",
+      x_size: 10,
+      y_size: 100,
+      rotation: 90,
+    }).body;
+    const wrapper = createRenderer(<SceneObjectPreview
+      config={clone(INITIAL)}
+      sceneObject={sceneObject} />);
+
+    expect(wrapper.root.findAll(node =>
+      node.props.rotation?.[2] === Math.PI)).not.toHaveLength(0);
+    unmountRenderer(wrapper);
   });
 
   it("changes the appearance key when the material changes", () => {
@@ -186,6 +341,48 @@ describe("scene object placement helpers", () => {
     });
   });
 
+  it("calculates rotated box bounds in local object axes", () => {
+    expect(sceneObjectCornersFromCenter(
+      { x: 100, y: 200, z: 0 },
+      { x: 140, y: 260, z: 0 },
+      90,
+    )).toEqual({
+      x_0: 40,
+      y_0: 160,
+      z_0: 0,
+      x_1: 160,
+      y_1: 240,
+    });
+  });
+
+  it("calculates snapped rotation during scene object placement", () => {
+    const center = { x: 100, y: 200, z: 0 };
+    expect(sceneObjectPlacementRotation(
+      center, { x: 200, y: 200, z: 0 })).toEqual(0);
+    expect(sceneObjectPlacementRotation(
+      center, { x: 100, y: 300, z: 0 })).toEqual(90);
+    expect(sceneObjectPlacementRotation(
+      center, { x: 90, y: 190, z: 0 })).toEqual(-135);
+    expect(sceneObjectPlacementRotation(center, center, 45)).toEqual(45);
+  });
+
+  it("snaps nearby rotations to orthogonal angles", () => {
+    expect(snapSceneObjectRotation(79)).toEqual(80);
+    expect(snapSceneObjectRotation(80)).toEqual(90);
+    expect(snapSceneObjectRotation(100)).toEqual(90);
+    expect(snapSceneObjectRotation(101)).toEqual(100);
+    expect(snapSceneObjectRotation(-80)).toEqual(-90);
+    expect(snapSceneObjectRotation(44)).toEqual(45);
+  });
+
+  it("shows the placement rotation guide at right angles", () => {
+    expect(sceneObjectRotationGuideVisible(0)).toEqual(true);
+    expect(sceneObjectRotationGuideVisible(90)).toEqual(true);
+    expect(sceneObjectRotationGuideVisible(-90)).toEqual(true);
+    expect(sceneObjectRotationGuideVisible(180)).toEqual(true);
+    expect(sceneObjectRotationGuideVisible(45)).toEqual(false);
+  });
+
   it("increments scene object names", () => {
     const sceneObject = fakeSceneObject({ name: "Scene Object 2" });
     expect(nextSceneObjectName([sceneObject], [
@@ -207,10 +404,13 @@ describe("scene object placement helpers", () => {
   });
 
   it.each([
-    { axes: ["z"], clicks: 2 },
-    { axes: ["x", "y"], clicks: 2 },
-    { axes: ["x", "y", "z"], clicks: 1 },
-  ] as { axes: ("x" | "y" | "z")[], clicks: number }[])(
+    { axes: ["z"], clicks: 3 },
+    { axes: ["x", "y"], clicks: 3 },
+    { axes: ["x", "y", "z"], clicks: 2 },
+    { axes: ["r"], clicks: 3 },
+    { axes: ["x", "y", "r"], clicks: 2 },
+    { axes: ["x", "y", "z", "r"], clicks: 1 },
+  ] as { axes: ("x" | "y" | "z" | "r")[], clicks: number }[])(
     "skips preserved placement steps: $axes",
     ({ axes, clicks }) => {
       const dispatch = jest.fn((action: unknown) => Promise.resolve(action));
@@ -249,6 +449,13 @@ describe("scene object placement helpers", () => {
         ([action]) => (action as { type?: string }).type == "INIT_RESOURCE",
       )?.[0] as { payload: { body: SceneObjectFormValues } };
       expect(create.payload.body).not.toHaveProperty("preserve_axes");
+      expect(create.payload.body.rotation)
+        .toEqual(axes.includes("r") ? 0 : 45);
+      if (axes.includes("x")
+        && axes.includes("y")
+        && !axes.includes("z")) {
+        expect(create.payload.body.z_size).toEqual(20);
+      }
     },
   );
 
@@ -601,6 +808,24 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
   });
 
+  it("shows edit controls for a popup-selected scene object", () => {
+    location.pathname = Path.mock(Path.designer());
+    const sceneObject = fakeSceneObject({ id: 7 });
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      selection: { kind: "sceneObject", id: 7 },
+      visible: true,
+    }));
+
+    expect(findControlHandle(
+      wrapper, "scene-object-rotation-control")).toBeTruthy();
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0")).toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
   it("does not mount or select individually hidden scene objects", () => {
     location.pathname = Path.mock(Path.sceneObjects(1));
     const onSelectObject = jest.fn();
@@ -731,6 +956,9 @@ describe("scene object placement helpers", () => {
     const faceMarkerObject = {
       name: "scene-object-selection-marker-1",
     };
+    const rotationControlObject = {
+      name: "scene-object-rotation-control-arc",
+    };
     const interactionEvent = (object: object) => ({
       ...event,
       stopPropagation: jest.fn(),
@@ -745,6 +973,7 @@ describe("scene object placement helpers", () => {
       interactionEvent(axisObject),
       interactionEvent(faceArrowObject),
       interactionEvent(faceMarkerObject),
+      interactionEvent(rotationControlObject),
     ];
     const unrelatedEvent = interactionEvent({
       name: "scene-object-base-x",
@@ -929,6 +1158,93 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
   });
 
+  it("drags a rotated face along the object's local axis", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({
+      x_center: 100,
+      y_center: 200,
+      x_size: 100,
+      y_size: 200,
+      rotation: 90,
+      x_origin: "home",
+      y_origin: "home",
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const [markerX, markerY, markerZ] =
+      positionArray(marker.props.position);
+    const pivotArray = sceneObjectPoint(config, {
+      x: 100,
+      y: 200,
+      z: sceneObject.body.z_base,
+    });
+    const pivot = {
+      x: pivotArray[0], y: pivotArray[1], z: pivotArray[2],
+    };
+    const targetArray = sceneObjectPoint(config, {
+      x: 250,
+      y: 200,
+      z: sceneObject.body.z_base,
+    });
+    const target = rotatePointAboutZ({
+      x: targetArray[0], y: targetArray[1], z: markerZ,
+    }, pivot, Math.PI / 2);
+    const event = {
+      point: new Vector3(target.x, target.y, target.z),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+    };
+
+    act(() => {
+      marker.props.onPointerDown({
+        ...event,
+        point: new Vector3(markerX, markerY, markerZ),
+      });
+    });
+    act(() => {
+      const draggedMarker = findSelectionMarker(
+        wrapper, "scene-object-selection-marker-1");
+      draggedMarker.props.onPointerMove(event);
+      draggedMarker.props.onPointerUp(event);
+    });
+
+    const localCenter = sceneObjectPoint(config, {
+      x: 150,
+      y: 200,
+      z: sceneObject.body.z_base,
+    });
+    const rotatedCenter = rotatePointAboutZ({
+      x: localCenter[0], y: localCenter[1], z: localCenter[2],
+    }, pivot, Math.PI / 2);
+    const expectedCenter = getGardenPositionFunc(config)(rotatedCenter);
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          x_center: expectedCenter.x,
+          y_center: expectedCenter.y,
+          x_size: 200,
+        },
+      }),
+    }));
+    unmountRenderer(wrapper);
+  });
+
   it("drags a selected scene object y face resize marker", () => {
     location.pathname = Path.mock(Path.sceneObjects(1));
     const dispatch = jest.fn();
@@ -1063,6 +1379,183 @@ describe("scene object placement helpers", () => {
           z: 60,
         })[2],
       ));
+    unmountRenderer(wrapper);
+  });
+
+  it("rotates size markers and arrows around the object center", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject({
+      x_center: 100,
+      y_center: 200,
+      z_base: 20,
+      x_size: 100,
+      y_size: 200,
+      z_size: 80,
+      rotation: 90,
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    const pivotArray = sceneObjectPoint(config, {
+      x: 100, y: 200, z: 20,
+    });
+    const pivot = {
+      x: pivotArray[0], y: pivotArray[1], z: pivotArray[2],
+    };
+    const rotatedPoint = (point: {
+      x: number, y: number, z: number,
+    }): [number, number, number] => {
+      const [x, y, z] = sceneObjectPoint(config, point);
+      const rotated = rotatePointAboutZ(
+        { x, y, z }, pivot, Math.PI / 2);
+      return [rotated.x, rotated.y, rotated.z];
+    };
+    const xFace = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-1");
+    const yFace = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-3");
+    const top = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-4");
+    const uniform = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-5");
+    const expectedXFace = rotatedPoint({ x: 150, y: 200, z: 60 });
+    const expectedYFace = rotatedPoint({ x: 100, y: 300, z: 60 });
+    const expectedUniform = rotatedPoint({ x: 150, y: 300, z: 100 });
+
+    positionArray(xFace.props.position).map((value, index) =>
+      expect(value).toBeCloseTo(expectedXFace[index]));
+    positionArray(yFace.props.position).map((value, index) =>
+      expect(value).toBeCloseTo(expectedYFace[index]));
+    positionArray(uniform.props.position).map((value, index) =>
+      expect(value).toBeCloseTo(expectedUniform[index]));
+    expect(positionArray(top.props.position).slice(0, 2))
+      .toEqual(pivotArray.slice(0, 2));
+
+    const xArrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-1-arrow").props;
+    const topArrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-4-arrow").props;
+    const uniformArrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-5-arrow").props;
+    expect(positionArray(xArrow.end)[1])
+      .toBeGreaterThan(positionArray(xArrow.start)[1]);
+    expect(positionArray(topArrow.end).slice(0, 2))
+      .toEqual(positionArray(topArrow.start).slice(0, 2));
+    expect(positionArray(uniformArrow.end)[0])
+      .toBeLessThan(positionArray(uniformArrow.start)[0]);
+    expect(positionArray(uniformArrow.end)[1])
+      .toBeGreaterThan(positionArray(uniformArrow.start)[1]);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders and drags the scene object rotation control", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({
+      x_center: 100,
+      y_center: 200,
+      z_base: 20,
+      rotation: 10,
+      x_origin: "home",
+      y_origin: "home",
+      z_origin: "world",
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-guide",
+    })).toHaveLength(0);
+    expect(wrapper.root.findAll(node =>
+      node.type == "mesh" as ElementType &&
+      node.props.name == "scene-object-rotation-control-arc"))
+      .toHaveLength(2);
+    const startHeads = wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-start",
+    });
+    expect(startHeads).toHaveLength(4);
+    expect(startHeads[0].props.args).toEqual([20, 60, 16]);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-end",
+    })).toHaveLength(4);
+    const tubes = wrapper.root.findAll(node =>
+      node.type == "tubeGeometry" as ElementType);
+    expect(tubes).toHaveLength(2);
+    expect(tubes[0].props.args.slice(1)).toEqual([16, 10, 8, false]);
+    expect(findControlHandles(
+      wrapper, "scene-object-rotation-control")).toHaveLength(2);
+    const [pivotX, pivotY, pivotZ] = sceneObjectPoint(config, {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    });
+    const event = (point: Vector3) => ({
+      point,
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+    });
+
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerOver({
+          stopPropagation: jest.fn(),
+        });
+    });
+    const label = wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-label",
+    })[0];
+    expect(label.props.children).toEqual("10°");
+    expect(label.props.fontSize).toEqual(32);
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerDown(event(
+          new Vector3(pivotX + 100, pivotY, pivotZ)));
+    });
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerMove(event(
+          new Vector3(pivotX, pivotY + 100, pivotZ)));
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-label",
+    })[0].props.children).toEqual("90°");
+    const guide = wrapper.root.findByProps({
+      name: "scene-object-edit-rotation-guide",
+    });
+    expect(guide.props.color).toEqual("orange");
+    expect(guide.props.points[0][0])
+      .toBeCloseTo(guide.props.points[1][0] as number);
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerUp(event(
+          new Vector3(pivotX, pivotY + 100, pivotZ)));
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-guide",
+    })).toHaveLength(0);
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: { rotation: 90 },
+      }),
+    }));
     unmountRenderer(wrapper);
   });
 
@@ -1334,17 +1827,20 @@ describe("scene object placement helpers", () => {
     }));
 
     expect(findControlHandle(
-      wrapper, "scene-object-face-size-arrow-0").findAllByProps({
-      name: "scene-object-face-size-arrow-0-label",
-    }).length).toBeGreaterThan(0);
+      wrapper, "scene-object-face-size-arrow-0")
+      .findAllByProps({
+        name: "scene-object-face-size-arrow-0-label",
+      }).length).toBeGreaterThan(0);
     expect(findControlHandle(
-      wrapper, "scene-object-face-size-arrow-1").findAllByProps({
-      name: "scene-object-face-size-arrow-1-label",
-    }).length).toBeGreaterThan(0);
+      wrapper, "scene-object-face-size-arrow-1")
+      .findAllByProps({
+        name: "scene-object-face-size-arrow-1-label",
+      }).length).toBeGreaterThan(0);
     expect(findControlHandle(
-      wrapper, "scene-object-face-size-arrow-2").findByProps({
-      name: "scene-object-face-size-arrow-2-arrow",
-    }).props.labelVisible).toEqual(false);
+      wrapper, "scene-object-face-size-arrow-2")
+      .findByProps({
+        name: "scene-object-face-size-arrow-2-arrow",
+      }).props.labelVisible).toEqual(false);
     unmountRenderer(wrapper);
   });
 
@@ -1386,7 +1882,7 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
   });
 
-  it("uses fixed world sizing for selected scene object controls", () => {
+  it("uses minimum world sizing for selected scene object controls", () => {
     location.pathname = Path.mock(Path.sceneObjects(1));
     const sceneObject = fakeSceneObject();
     sceneObject.body.id = 1;
@@ -1423,6 +1919,65 @@ describe("scene object placement helpers", () => {
     });
     expect(markerEvent.stopPropagation).not.toHaveBeenCalled();
     unmountRenderer(wrapper);
+  });
+
+  it("scales selected scene object controls with camera distance", () => {
+    const frameCallbacks: (() => void)[] = [];
+    const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(callback => {
+        frameCallbacks.push(callback as () => void);
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      });
+    const useThreeSpy = jest.spyOn(threeFiber, "useThree")
+      .mockReturnValue({
+        camera: { position: { x: 100000, y: 0, z: 0 } },
+      });
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject();
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      designer: {
+        focusedSceneObjectField: "rotation",
+        hoveredSceneObject: undefined,
+        unifiedSceneObjectSize: undefined,
+      },
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+
+    act(() => {
+      frameCallbacks.slice().map(callback => callback());
+    });
+
+    expect(findSelectionMarker(
+      wrapper, "scene-object-selection-marker-0").props.args[0])
+      .toEqual(140);
+    const faceArrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-0-arrow").props;
+    expect(faceArrow.width).toEqual(80);
+    expect(faceArrow.labelSize).toEqual(128);
+    expect(Math.abs(faceArrow.end[0] - faceArrow.start[0])).toEqual(1000);
+    expect(findControlArrow(
+      wrapper, "scene-object-base-x-axis-arrow-shape").props.width)
+      .toEqual(40);
+    expect(findControlArrow(
+      wrapper, "scene-object-x-origin-arrow").props.width)
+      .toEqual(40);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-start",
+    })[0].props.args).toEqual([80, 240, 16]);
+    const rotationTube = wrapper.root.findAll(node =>
+      node.type == "tubeGeometry" as ElementType);
+    expect(rotationTube[0].props.args[2]).toEqual(40);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-rotation-control-label",
+    })[0].props.fontSize).toEqual(128);
+    unmountRenderer(wrapper);
+    useFrameSpy.mockRestore();
+    useThreeSpy.mockRestore();
   });
 
   it("drags a selected scene object face size arrow", () => {
@@ -1640,6 +2195,69 @@ describe("scene object placement helpers", () => {
       currentArrow.props.onPointerDown(event(0));
       currentArrow.props.onPointerCancel(event(150));
     });
+    unmountRenderer(wrapper);
+  });
+
+  it("drags all sizes along the rotated xyz size arrow", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const dispatch = jest.fn();
+    const sceneObject = fakeSceneObject({
+      x_size: 100,
+      y_size: 200,
+      z_size: 300,
+      rotation: 90,
+    });
+    sceneObject.body.id = 1;
+    const config = clone(INITIAL);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config,
+      activeFocus: "",
+      dispatch,
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    const marker = findSelectionMarker(
+      wrapper, "scene-object-selection-marker-5");
+    const markerPosition = new Vector3(
+      ...positionArray(marker.props.position));
+    const arrow = findControlArrow(
+      wrapper, "scene-object-face-size-arrow-5-arrow");
+    const direction = new Vector3(
+      ...positionArray(arrow.props.end),
+    ).sub(new Vector3(
+      ...positionArray(arrow.props.start),
+    )).normalize();
+    const event = (distance: number) => ({
+      point: markerPosition.clone().addScaledVector(direction, distance),
+      pointerId: 1,
+      stopPropagation: jest.fn(),
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+      target: {
+        setPointerCapture: jest.fn(),
+        releasePointerCapture: jest.fn(),
+      },
+    });
+
+    act(() => {
+      marker.props.onPointerDown(event(0));
+    });
+    act(() => {
+      const draggedMarker = findSelectionMarker(
+        wrapper, "scene-object-selection-marker-5");
+      draggedMarker.props.onPointerMove(event(75));
+      draggedMarker.props.onPointerUp(event(300 * Math.sqrt(3) / 2));
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "EDIT_RESOURCE",
+      payload: expect.objectContaining({
+        update: {
+          x_size: 200,
+          y_size: 400,
+          z_size: 600,
+        },
+      }),
+    }));
     unmountRenderer(wrapper);
   });
 
@@ -2174,14 +2792,17 @@ describe("scene object placement helpers", () => {
     expect(event.stopPropagation).not.toHaveBeenCalled();
   });
 
-  it("shows the prefilled object at low opacity until the second click", () => {
-    const drawnSceneObject = fakeSceneObject({
-      name: "Potted Plant",
-      shape: "plant",
-      x_size: 500,
-      y_size: 600,
-      z_size: 700,
-    }).body;
+  it("shows the prefilled object at low opacity until footprint placement", () => {
+    const drawnSceneObject: SceneObjectFormValues = {
+      ...fakeSceneObject({
+        name: "Potted Plant",
+        shape: "plant",
+        x_size: 500,
+        y_size: 600,
+        z_size: 700,
+      }).body,
+      preserve_axes: [],
+    };
     const event = {
       point: new Vector3(100, 200, 0),
       nativeEvent: { clientY: 100 },
@@ -2213,6 +2834,11 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
 
     act(() => result.current.onClick(event as never));
+    act(() => result.current.onPointerMove({
+      ...event,
+      point: new Vector3(200, 300, 0),
+    } as never));
+    act(() => result.current.onClick(event as never));
     wrapper = createRenderer(result.current.preview as React.ReactElement);
     const previews = wrapper.root.findAllByType(SceneObjectPreview);
     expect(previews).toHaveLength(2);
@@ -2230,6 +2856,127 @@ describe("scene object placement helpers", () => {
     wrapper = createRenderer(result.current.preview as React.ReactElement);
     preview = wrapper.root.findByType(SceneObjectPreview);
     expect(preview.props.opacity).toBeUndefined();
+    unmountRenderer(wrapper);
+  });
+
+  it("skips the ghost and rotation phase for custom objects", () => {
+    const config = clone(INITIAL);
+    const drawnSceneObject = fakeSceneObject({ rotation: 30 }).body;
+    const get3DPosition = get3DPositionFunc(config);
+    const event = (gardenPosition: { x: number, y: number }) => {
+      const point = get3DPosition(gardenPosition);
+      return {
+        point: new Vector3(point.x, point.y, 0),
+        nativeEvent: { clientY: 100 },
+        stopPropagation: jest.fn(),
+        ray: new Ray(
+          new Vector3(point.x, point.y, 100),
+          new Vector3(0, 0, -1),
+        ),
+      };
+    };
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch: jest.fn(),
+      drawnSceneObject,
+    }));
+
+    act(() => result.current.onPointerMove(
+      event({ x: 100, y: 200 }) as never));
+    let wrapper = createRenderer(
+      result.current.preview as React.ReactElement);
+    expect(wrapper.root.findAllByType(SceneObjectPreview)).toHaveLength(0);
+    unmountRenderer(wrapper);
+
+    act(() => result.current.onClick(
+      event({ x: 100, y: 200 }) as never));
+    act(() => result.current.onPointerMove(
+      event({ x: 140, y: 260 }) as never));
+    wrapper = createRenderer(
+      result.current.preview as React.ReactElement);
+    const preview = wrapper.root.findByType(SceneObjectPreview);
+    expect(preview.props.opacity).toBeUndefined();
+    expect(preview.props.sceneObject.rotation).toEqual(30);
+    expect(preview.props.sceneObject).toEqual(expect.objectContaining({
+      x_size: 130,
+      y_size: 64,
+    }));
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-placement-rotation-guide",
+    })).toHaveLength(0);
+    unmountRenderer(wrapper);
+  });
+
+  it("sizes rotated placement previews in local object axes", () => {
+    const config = clone(INITIAL);
+    const drawnSceneObject: SceneObjectFormValues = {
+      ...fakeSceneObject({ rotation: 0 }).body,
+      preserve_axes: [],
+    };
+    const dispatch = jest.fn();
+    const get3DPosition = get3DPositionFunc(config);
+    const event = (gardenPosition: { x: number, y: number }) => {
+      const point = get3DPosition(gardenPosition);
+      return {
+        point: new Vector3(point.x, point.y, 0),
+        nativeEvent: { clientY: 100 },
+        stopPropagation: jest.fn(),
+        ray: new Ray(
+          new Vector3(point.x, point.y, 100),
+          new Vector3(0, 0, -1),
+        ),
+      };
+    };
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
+      config,
+      enabled: true,
+      dispatch,
+      drawnSceneObject,
+    }));
+
+    act(() => result.current.onPointerMove(
+      event({ x: 100, y: 200 }) as never));
+    act(() => result.current.onClick(
+      event({ x: 100, y: 200 }) as never));
+    act(() => result.current.onPointerMove(
+      event({ x: 100, y: 300 }) as never));
+    const rotationWrapper = createRenderer(
+      result.current.preview as React.ReactElement);
+    const rotationPreview = rotationWrapper.root
+      .findAllByType(SceneObjectPreview)
+      .find(item => item.props.opacity === undefined);
+    expect(rotationPreview?.props.sceneObject.rotation).toEqual(90);
+    const guide = rotationWrapper.root.findByProps({
+      name: "scene-object-placement-rotation-guide",
+    });
+    expect(guide.props.color).toEqual("orange");
+    expect(guide.props.points[0][0])
+      .toBeCloseTo(guide.props.points[1][0] as number);
+    expect(Math.abs(guide.props.points[1][1] - guide.props.points[0][1]))
+      .toBeGreaterThan(drawnSceneObject.y_size);
+    unmountRenderer(rotationWrapper);
+    act(() => result.current.onClick(
+      event({ x: 100, y: 300 }) as never));
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: "SET_DRAWN_SCENE_OBJECT_DATA",
+      payload: expect.objectContaining({ rotation: 90 }),
+    }));
+    act(() => result.current.onPointerMove(
+      event({ x: 140, y: 260 }) as never));
+
+    const wrapper = createRenderer(
+      result.current.preview as React.ReactElement);
+    const preview = wrapper.root.findAllByType(SceneObjectPreview)
+      .find(item => item.props.opacity === undefined);
+    expect(preview?.props.sceneObject).toEqual(expect.objectContaining({
+      rotation: 90,
+      x_size: 120,
+      y_size: 80,
+    }));
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-placement-rotation-guide",
+    })).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 
@@ -2326,10 +3073,10 @@ describe("scene object placement helpers", () => {
       result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
     });
     act(() => {
-      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 80) as never);
     });
     act(() => {
-      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onClick(event(new Vector3(50, 50, 0), 80) as never);
     });
     act(() =>
       result.current.onPointerMove(
@@ -2416,9 +3163,9 @@ describe("scene object placement helpers", () => {
     }));
 
     act(() =>
-      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never));
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 80) as never));
     act(() =>
-      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never));
+      result.current.onClick(event(new Vector3(50, 50, 0), 80) as never));
 
     await act(async () => {
       result.current.onPointerMove(event(new Vector3(50, 50, 100), 50) as never);
@@ -2466,10 +3213,10 @@ describe("scene object placement helpers", () => {
       result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
     });
     act(() => {
-      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onPointerMove(event(new Vector3(50, 50, 0), 80) as never);
     });
     act(() => {
-      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
+      result.current.onClick(event(new Vector3(50, 50, 0), 80) as never);
     });
 
     await act(async () => {
@@ -2734,13 +3481,21 @@ describe("scene object placement helpers", () => {
       drawnSceneObject: body,
     }));
 
-    act(() => {
-      result.current.onPointerMove(event(new Vector3(0, 0, 0), 100) as never);
-      result.current.onClick(event(new Vector3(0, 0, 0), 100) as never);
-      result.current.onPointerMove(event(new Vector3(50, 50, 0), 90) as never);
-      result.current.onClick(event(new Vector3(50, 50, 0), 90) as never);
-      result.current.onPointerMove(event(new Vector3(50, 50, 0), 50) as never);
-    });
+    act(() =>
+      result.current.onPointerMove(
+        event(new Vector3(0, 0, 0), 100) as never));
+    act(() =>
+      result.current.onClick(
+        event(new Vector3(0, 0, 0), 100) as never));
+    act(() =>
+      result.current.onPointerMove(
+        event(new Vector3(50, 50, 0), 90) as never));
+    act(() =>
+      result.current.onClick(
+        event(new Vector3(50, 50, 0), 90) as never));
+    act(() =>
+      result.current.onPointerMove(
+        event(new Vector3(50, 50, 0), 50) as never));
 
     const wrapper = createRenderer(result.current.preview as React.ReactElement);
     const plane = wrapper.root.findByProps({ name: "scene-object-origin-plane" });

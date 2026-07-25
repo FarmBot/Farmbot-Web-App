@@ -12,7 +12,9 @@ const PUBLIC = join(ROOT, "public");
 const OUTPUT = join(PUBLIC, "app-resources", "img", "scene_objects");
 const ENTRYPOINT = join(import.meta.dir, "scene_object_thumbnail_renderer.tsx");
 const ROTATED_SHAPES = new Set(["astronaut", "hab", "rover"]);
-const requestedThumbnail = process.argv[2]?.toLowerCase().replace(/\.png$/, "");
+const requestedThumbnail = process.argv[2]
+  ?.toLowerCase()
+  .replace(/\.(avif|png)$/, "");
 
 const targets = [
   {
@@ -44,7 +46,7 @@ const renderTargets = targets.flatMap(target =>
   })))
   .filter(target => !requestedThumbnail || [
     target.sceneObject.name.toLowerCase(),
-    target.filename.toLowerCase().replace(/\.png$/, ""),
+    target.filename.toLowerCase().replace(/\.avif$/, ""),
   ].includes(requestedThumbnail));
 
 if (renderTargets.length == 0) {
@@ -140,7 +142,26 @@ try {
     const canvas = page.locator("canvas");
     await canvas.waitFor({ state: "visible" });
     await page.waitForTimeout(250);
-    await canvas.screenshot({ path: join(OUTPUT, target.filename) });
+    const avifPath = join(OUTPUT, target.filename);
+    const pngPath = avifPath.replace(/\.avif$/, ".png");
+    await canvas.screenshot({ path: pngPath });
+    try {
+      const conversion = Bun.spawnSync([
+        "magick",
+        pngPath,
+        "-quality", "50",
+        "-define", "heic:speed=5",
+        avifPath,
+      ], {
+        stdout: "inherit",
+        stderr: "inherit",
+      });
+      if (conversion.exitCode != 0) {
+        throw new Error(`Unable to convert ${target.filename} to AVIF.`);
+      }
+    } finally {
+      await rm(pngPath, { force: true });
+    }
     console.log("done");
   }
 } finally {

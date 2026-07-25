@@ -2769,6 +2769,57 @@ describe("<GardenModel />", () => {
     });
   });
 
+  it("closes only the scene object editor when editing from a popup", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    restoreActualReactState();
+    const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(() => {
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      });
+    const sceneObject = fakeSceneObject({ id: 7 });
+    const p = fakeProps();
+    p.sceneObjects = [sceneObject];
+    const wrapper = createWrapper(p);
+    const sceneObjects = () => wrapper.root.findByType(SceneObjects);
+    const selectionLayer = () =>
+      wrapper.root.findByType(ThreeDObjectSelectionLayer);
+
+    actRenderer(() => sceneObjects().props.onSelectObject({
+      kind: "sceneObject",
+      id: 7,
+    }));
+
+    expect(selectionLayer().props.popupSelection).toEqual({
+      kind: "sceneObject",
+      id: 7,
+    });
+    expect(sceneObjects().props.selection).toEqual({
+      kind: "sceneObject",
+      id: 7,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sceneObjects());
+
+    location.pathname = Path.mock(Path.sceneObjects());
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(selectionLayer().props.popupSelection).toEqual({
+      kind: "sceneObject",
+      id: 7,
+    });
+    expect(sceneObjects().props.selection).toEqual({
+      kind: "sceneObject",
+      id: 7,
+    });
+
+    location.pathname = Path.mock(Path.plants(1));
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(selectionLayer().props.popupSelection).toBeUndefined();
+    expect(sceneObjects().props.selection).toBeUndefined();
+    useFrameSpy.mockRestore();
+  });
+
   it("suppresses promo popups for FarmBot hardware", () => {
     const p = fakeProps();
     p.promo = true;
@@ -3069,6 +3120,10 @@ describe("<GardenModel />", () => {
     }]>(() => Promise.resolve());
     p.addPlantProps.dispatch = dispatch;
     const wrapper = createWrapper(p);
+    expect(wrapper.root.findByType(SceneObjects).props.onSelectObject)
+      .toBeUndefined();
+    expect(wrapper.root.findByType(SceneObjects).props.selection)
+      .toBeUndefined();
     const ground = () => wrapper.root.findAll(node =>
       `${node.props.name}`.startsWith("ground "))[0];
     const stopPropagation = jest.fn();

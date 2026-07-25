@@ -27,14 +27,20 @@ import {
   SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
-import { FBSelect, ToggleButton } from "../ui";
+import { FBSelect } from "../ui";
 import { TaggedSceneObject } from "farmbot";
 import {
   getWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 
-const SCENE_CHOICES = ["Outdoor", "Lab", "Greenhouse", "Custom"];
+const SCENE_CHOICES = () => [
+  "Outdoor",
+  "Lab",
+  "Greenhouse",
+  "Mars",
+  "Custom",
+];
 
 const sceneImage = (scene: string) =>
   `/app-resources/img/scenes/${scene.toLowerCase()}.avif`;
@@ -144,6 +150,19 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   const sceneNum = get3DConfigValueFunction(props.farmwareEnvs)("scene");
   const sceneName = SCENES[sceneNum];
   const [showSceneSelection, setShowSceneSelection] = React.useState(false);
+  const returnToSceneSelection = () => {
+    setFeaturedOpen(false);
+    setSelected([]);
+    dispatch({
+      type: Actions.SET_FEATURED_SCENE,
+      payload: undefined,
+    });
+    dispatch({
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: undefined,
+    });
+    setShowSceneSelection(true);
+  };
   const selectScene = (newSceneName: string) => {
     const newSceneNum = SCENE_NUM_FROM_NAME[newSceneName];
     if (newSceneNum == sceneNum) {
@@ -171,7 +190,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       panel={Panel.SceneObjects}>
       <DesignerPanelContent panelName={"scene-objects-inventory"}>
         <div className={"scene-selection-grid"}>
-          {SCENE_CHOICES.map(scene =>
+          {SCENE_CHOICES().map(scene =>
             <button type={"button"}
               key={scene}
               className={["scene-selection-tile",
@@ -196,7 +215,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       <button type={"button"}
         className={"fb-button gray scene-selection-return"}
         title={t("back to scene selection")}
-        onClick={() => setShowSceneSelection(true)}>
+        onClick={returnToSceneSelection}>
         <i className={"fa fa-reply"} />
       </button>
       <SearchField nameKey={"scene-objects"}
@@ -204,11 +223,18 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         placeholder={t("Search your scene objects...")}
         onChange={setSearchTerm} />
       <div className={"scene-object-layer-controls"}>
-        <ToggleButton
-          title={t("show scene objects map layer")}
-          toggleValue={props.showSceneObjects}
-          toggleAction={() => dispatch(setWebAppConfigValue(
+        <i
+          className={`fa fb-icon-button invert ${props.showSceneObjects
+            ? "fa-eye"
+            : "fa-eye-slash"}`}
+          title={props.showSceneObjects ? t("hide") : t("show")}
+          onClick={() => dispatch(setWebAppConfigValue(
             BooleanSetting.show_scene_objects, !props.showSceneObjects))} />
+      </div>
+    </DesignerPanelTop>
+    <DesignerPanelContent panelName={"scene-objects-inventory"}>
+      <div className={"row scene-object-select-row"}>
+        <label>{t("Ground texture")}</label>
         <FBSelect
           key={libScene}
           list={Object.values(TEXTURE_DDIS())}
@@ -216,60 +242,6 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
           onChange={ddi => findOrCreate3DConfigFunction(
             props.dispatch, props.farmwareEnvs)("groundTexture", "" + ddi.value)} />
       </div>
-    </DesignerPanelTop>
-    <DesignerPanelContent panelName={"scene-objects-inventory"}>
-      <PanelSection isOpen={featuredOpen}
-        panel={Panel.SceneObjects}
-        toggleOpen={() => setFeaturedOpen(!featuredOpen)}
-        itemCount={featuredSceneObjects.length}
-        extraHeaderContent={
-          <div onClick={e => e.stopPropagation()} style={{ width: "10rem" }}>
-            <FBSelect
-              key={libScene}
-              list={SCENE_DDI_LIST().filter(ddi => !["Custom"].includes(ddi.label))}
-              selectedItem={SCENE_DDIS()[SCENE_NUM_FROM_NAME[libScene]]}
-              onChange={ddi => {
-                setLibScene(SCENES[ddi.value as number]);
-                setFeaturedOpen(true);
-              }} />
-          </div>}
-        addTitle={t("add new scene object")}
-        addClassName={"plus-scene-object"}
-        title={t("Featured Scene Objects")}>
-        <div style={{ height: "3rem" }}>
-          <button className={"fb-button green"}
-            onClick={() => {
-              featuredSceneObjects
-                .filter(so => selected.includes(so.uuid))
-                .map(sceneObject => {
-                  props.dispatch(initSave("SceneObject", sceneObject.body));
-                });
-              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
-                "scene",
-                SCENE_NUM_FROM_NAME["Custom"] + "",
-              );
-            }}>
-            {t("Import selected")}
-          </button>
-          <button className={"fb-button green"}
-            title={t("Import all")}
-            onClick={() => {
-              featuredSceneObjects
-                .filter(so => !sceneObjects
-                  .map(s => s.body.name)
-                  .includes(so.body.name))
-                .map(sceneObject => {
-                  props.dispatch(initSave("SceneObject", sceneObject.body));
-                });
-              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
-                "scene",
-                SCENE_NUM_FROM_NAME["Custom"] + "");
-            }}>
-            {t("Import all")}
-          </button>
-        </div>
-        {featuredSceneObjects.map(featuredItem)}
-      </PanelSection>
       <PanelSection isOpen={myOpen}
         panel={Panel.SceneObjects}
         toggleOpen={() => setMyOpen(!myOpen)}
@@ -312,6 +284,58 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
           title={t("No scene objects yet.")}
           text={Content.NO_SCENE_OBJECTS}
           colorScheme={"sceneObjects"} />
+      </PanelSection>
+      <PanelSection isOpen={featuredOpen}
+        panel={Panel.SceneObjects}
+        toggleOpen={() => setFeaturedOpen(!featuredOpen)}
+        itemCount={featuredSceneObjects.length}
+        addTitle={t("add new scene object")}
+        addClassName={"plus-scene-object"}
+        title={t("Featured Scene Objects")}>
+        <div className={"row scene-object-select-row"}>
+          <label>{t("Import objects from")}</label>
+          <FBSelect
+            key={libScene}
+            list={SCENE_DDI_LIST().filter(ddi => !["Custom"].includes(ddi.label))}
+            selectedItem={SCENE_DDIS()[SCENE_NUM_FROM_NAME[libScene]]}
+            onChange={ddi => {
+              setLibScene(SCENES[ddi.value as number]);
+              setFeaturedOpen(true);
+            }} />
+        </div>
+        {featuredSceneObjects.map(featuredItem)}
+        <div style={{ height: "3rem" }}>
+          <button className={"fb-button green"}
+            onClick={() => {
+              featuredSceneObjects
+                .filter(so => selected.includes(so.uuid))
+                .map(sceneObject => {
+                  props.dispatch(initSave("SceneObject", sceneObject.body));
+                });
+              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
+                "scene",
+                SCENE_NUM_FROM_NAME["Custom"] + "",
+              );
+            }}>
+            {t("Import selected")}
+          </button>
+          <button className={"fb-button green"}
+            title={t("Import all")}
+            onClick={() => {
+              featuredSceneObjects
+                .filter(so => !sceneObjects
+                  .map(s => s.body.name)
+                  .includes(so.body.name))
+                .map(sceneObject => {
+                  props.dispatch(initSave("SceneObject", sceneObject.body));
+                });
+              findOrCreate3DConfigFunction(props.dispatch, props.farmwareEnvs)(
+                "scene",
+                SCENE_NUM_FROM_NAME["Custom"] + "");
+            }}>
+            {t("Import all")}
+          </button>
+        </div>
       </PanelSection>
     </DesignerPanelContent>
   </DesignerPanel >;
