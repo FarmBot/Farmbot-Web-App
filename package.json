@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test-slow": "bash scripts/test_slow.sh",
+    "test-timings": "bash scripts/test_timings.sh",
     "test-iso": "bash scripts/test_isolated.sh",
     "test": "bun test",
     "coverage-html": "genhtml -q coverage_fe/lcov.info --output-directory coverage_fe",
