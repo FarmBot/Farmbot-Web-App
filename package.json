@@ -12,7 +12,7 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-slow": "bash scripts/test_slow.sh",
+    "test-slow": "bash scripts/test_slow.sh && bun run coverage-html",
     "test-timings": "bash scripts/test_timings.sh",
     "test-iso": "bash scripts/test_isolated.sh",
     "test": "bun test",

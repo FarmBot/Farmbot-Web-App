@@ -2,12 +2,16 @@
 set -uo pipefail
 
 max_attempts=5
+test_command=(bun test --bail)
+
+if [ "$#" -gt 0 ]; then
+  test_command=("$@")
+fi
 
 attempt=1
 while true; do
-  if timeout --kill-after=30s 2m bun test --bail; then
-    bun run coverage-html
-    exit $?
+  if timeout --kill-after=30s 2m "${test_command[@]}"; then
+    exit 0
   else
     test_status=$?
   fi

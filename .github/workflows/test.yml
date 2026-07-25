@@ -88,7 +88,11 @@ jobs:
       - name: Run JS tests
         run: |
           set +e
-          sudo docker compose run -T --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+          sudo docker compose run -T --rm web \
+            bash scripts/test_slow.sh \
+            bun test \
+            --reporter=junit \
+            --reporter-outfile=test-results/junit.xml
           status=$?
           if [ "$status" -eq 0 ]; then
             echo "COVERAGE_AVAILABLE=true" >> "$GITHUB_ENV"
