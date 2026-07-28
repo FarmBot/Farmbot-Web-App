@@ -966,13 +966,14 @@ describe("<GardenModel />", () => {
       .toBe(backgroundColor);
   });
 
-  it("hides focus beacons while stargazing", () => {
+  it("hides focus beacons while stargazing", async () => {
     const p = fakeProps();
     const beaconLoadIn = (wrapper: ReturnType<typeof createRenderer>) =>
       wrapper.root.findAll(node =>
         node.props.name == "zoom-beacons-load-in");
     const wrapper = createWrapper(p);
-    expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
+    await waitFor(() =>
+      expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0));
 
     p.addPlantProps = {
       ...p.addPlantProps!,
@@ -992,7 +993,8 @@ describe("<GardenModel />", () => {
       },
     };
     actRenderer(() => wrapper.update(<GardenModel {...p} />));
-    expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0);
+    await waitFor(() =>
+      expect(beaconLoadIn(wrapper).length).toBeGreaterThan(0));
   });
 
   it("passes spaceflight state to the telescope", () => {

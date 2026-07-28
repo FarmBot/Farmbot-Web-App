@@ -258,7 +258,13 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
           });
         }}
         itemCount={filteredSceneObjects.length}
-        addNew={() => { navigate(Path.sceneObjects("catalog")); }}
+        addNew={() => {
+          dispatch({
+            type: Actions.HOVER_SCENE_OBJECT,
+            payload: undefined,
+          });
+          navigate(Path.sceneObjects("catalog"));
+        }}
         extraHeaderContent={filteredSceneObjects.length > 0 && myOpen &&
           <button className={"fb-button red delete"}
             title={t("delete all")}

@@ -31,6 +31,7 @@ import { sceneObjectPosition } from "../scene_objects";
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
 const FIXED_POPUP_Z_OFFSET = 75;
+const SCENE_OBJECT_POPUP_Z_OFFSET = 200;
 const SLOT_RING_RADIUS = 50;
 const SEED_TROUGH_RING_Y_OFFSET = 20;
 export interface ResolvedThreeDObjectBase {
@@ -372,7 +373,7 @@ const resolveSceneObject = (
     popupPosition: [
       worldPosition[0],
       worldPosition[1],
-      worldPosition[2] + z_size / 2 + POPUP_Z_PADDING,
+      worldPosition[2] + z_size / 2 + SCENE_OBJECT_POPUP_Z_OFFSET,
     ],
     ringRadius: Math.max(Math.hypot(x_size, y_size) / 2, MIN_RING_RADIUS),
     locationCoordinate: {

@@ -103,7 +103,9 @@ const EnabledStarterTrays = (props: StarterTraysProps) => {
   const scaleVector = React.useMemo(() => new Vector3(), []);
   const trayQuaternion = React.useMemo(() => new Quaternion(), []);
   const seedlingQuaternion = React.useMemo(() => new Quaternion(), []);
+  const parentQuaternion = React.useMemo(() => new Quaternion(), []);
   const lastCameraQuaternion = React.useMemo(() => new Quaternion(), []);
+  const lastParentQuaternion = React.useMemo(() => new Quaternion(), []);
   const seedlingMatrixNeedsUpdate = React.useRef(true);
   const hasCameraQuaternion = React.useRef(false);
   const dimensions = props.dimensions;
@@ -133,10 +135,20 @@ const EnabledStarterTrays = (props: StarterTraysProps) => {
   useFrame(state => {
     const mesh = seedlingRef.current;
     if (!mesh) { return; }
+    mesh.parent?.getWorldQuaternion(parentQuaternion);
     const cameraChanged = !hasCameraQuaternion.current
       || !lastCameraQuaternion.equals(state.camera.quaternion);
-    if (!seedlingMatrixNeedsUpdate.current && !cameraChanged) { return; }
-    seedlingQuaternion.copy(state.camera.quaternion);
+    const parentChanged = !hasCameraQuaternion.current
+      || !lastParentQuaternion.equals(parentQuaternion);
+    if (!seedlingMatrixNeedsUpdate.current
+      && !cameraChanged
+      && !parentChanged) {
+      return;
+    }
+    seedlingQuaternion
+      .copy(parentQuaternion)
+      .invert()
+      .multiply(state.camera.quaternion);
     scaleVector.set(
       dimensions.seedlingSize,
       dimensions.seedlingSize,
@@ -156,6 +168,7 @@ const EnabledStarterTrays = (props: StarterTraysProps) => {
     });
     mesh.instanceMatrix.needsUpdate = true;
     lastCameraQuaternion.copy(state.camera.quaternion);
+    lastParentQuaternion.copy(parentQuaternion);
     hasCameraQuaternion.current = true;
     seedlingMatrixNeedsUpdate.current = false;
   });

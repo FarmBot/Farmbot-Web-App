@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import {
   StarterTray, StarterTrays, starterTraysPropsEqual,
 } from "../starter_tray";
-import { InstancedMesh, Quaternion, Vector3 } from "three";
+import { InstancedMesh, Matrix4, Quaternion, Vector3 } from "three";
 import * as threeFiber from "@react-three/fiber";
 
 const mockMesh = () => ({
@@ -143,9 +143,15 @@ describe("<StarterTrays />", () => {
     useEffectSpy.mockRestore();
   });
 
-  it("reuses seedling matrices until the camera changes", () => {
+  it("updates seedling billboards for camera and parent rotation", () => {
     const trayMesh = mockMesh();
     const seedlingMesh = mockMesh();
+    const parentQuaternion = new Quaternion();
+    (seedlingMesh as unknown as {
+      parent: { getWorldQuaternion(target: Quaternion): Quaternion };
+    }).parent = {
+      getWorldQuaternion: target => target.copy(parentQuaternion),
+    };
     const refs: React.RefObject<unknown>[] = [];
     let frameFn: Parameters<typeof threeFiber.useFrame>[0] | undefined;
     const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
@@ -180,6 +186,20 @@ describe("<StarterTrays />", () => {
     camera.quaternion.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
     frameFn?.({ camera } as never, 0, undefined);
     expect(seedlingMesh.setMatrixAt).toHaveBeenCalledTimes(280);
+
+    parentQuaternion.setFromAxisAngle(
+      new Vector3(0, 0, 1), Math.PI / 2);
+    frameFn?.({ camera } as never, 0, undefined);
+    expect(seedlingMesh.setMatrixAt).toHaveBeenCalledTimes(420);
+    const calls = (seedlingMesh.setMatrixAt as jest.Mock).mock.calls;
+    const matrix = calls[calls.length - 1][1] as Matrix4;
+    const instanceQuaternion = new Quaternion();
+    matrix.decompose(
+      new Vector3(), instanceQuaternion, new Vector3());
+    const worldQuaternion = parentQuaternion.clone()
+      .multiply(instanceQuaternion);
+    expect(Math.abs(worldQuaternion.dot(camera.quaternion)))
+      .toBeCloseTo(1);
 
     useRefSpy.mockRestore();
     useFrameSpy.mockRestore();

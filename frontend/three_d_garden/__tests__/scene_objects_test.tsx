@@ -2,7 +2,7 @@ import React, { ElementType } from "react";
 import {
   act, fireEvent, render, renderHook,
 } from "@testing-library/react";
-import { Cone, Cylinder, Sphere } from "@react-three/drei";
+import { Box, Cone, Cylinder, Edges, Sphere } from "@react-three/drei";
 import * as threeFiber from "@react-three/fiber";
 import {
   nextSceneObjectName, sceneObjectCornersFromCenter, sceneObjectPoint,
@@ -17,9 +17,10 @@ import {
   rotatePointAboutZ, sceneObjectRotation,
   sceneObjectRotationControlPoints, sceneObjectRotationFromPointer,
   objectMarkerScale, sceneObjectPlacementRotation,
-  sceneObjectRotationGuideVisible, snapSceneObjectRotation,
+  sceneObjectRotationGuideVisible, scaledPlacementSize,
+  snapSceneObjectRotation,
 } from "../scene_objects";
-import { clone } from "lodash";
+import { clone, range } from "lodash";
 import { INITIAL } from "../config";
 import { BigDistance } from "../constants";
 import {
@@ -36,7 +37,7 @@ import { Path } from "../../internal_urls";
 import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { SceneObjectFormValues } from "../../scene_objects/interfaces";
-import { MeshPhongMaterial } from "../components";
+import { MeshBasicMaterial, MeshPhongMaterial } from "../components";
 
 type TestSceneObjectPlacementProps = Omit<
   Parameters<typeof useSceneObjectPlacement>[0],
@@ -174,6 +175,26 @@ describe("scene object placement helpers", () => {
       .toBeCloseTo(pivot.x * 2);
     expect(points[8][1] + oppositePoints[8][1])
       .toBeCloseTo(pivot.y * 2);
+  });
+
+  it("limits the rotation control length", () => {
+    const config = clone(INITIAL);
+    const center = { x: 0, y: 0, z: 0 };
+    const bounds = {
+      x0: -5000,
+      y0: -5000,
+      z0: 0,
+      x1: 5000,
+      y1: 5000,
+      z1: 100,
+    };
+    const points = sceneObjectRotationControlPoints(
+      config, bounds, center, 0);
+    const length = points.slice(1).reduce((total, point, index) =>
+      total + new Vector3(...point).distanceTo(
+        new Vector3(...points[index])), 0);
+
+    expect(length).toBeCloseTo(1000);
   });
 
   it("calculates rotation from the pointer angle", () => {
@@ -368,10 +389,10 @@ describe("scene object placement helpers", () => {
 
   it("snaps nearby rotations to orthogonal angles", () => {
     expect(snapSceneObjectRotation(79)).toEqual(80);
-    expect(snapSceneObjectRotation(80)).toEqual(90);
-    expect(snapSceneObjectRotation(100)).toEqual(90);
+    expect(snapSceneObjectRotation(80)).toEqual(80);
+    expect(snapSceneObjectRotation(100)).toEqual(100);
     expect(snapSceneObjectRotation(101)).toEqual(100);
-    expect(snapSceneObjectRotation(-80)).toEqual(-90);
+    expect(snapSceneObjectRotation(-80)).toEqual(-80);
     expect(snapSceneObjectRotation(44)).toEqual(45);
   });
 
@@ -403,12 +424,30 @@ describe("scene object placement helpers", () => {
     expect(placementAxisSize(sceneObject, "z", 100)).toEqual(700);
   });
 
+  it("uniformly scales preserved placement dimensions", () => {
+    const sceneObject: SceneObjectFormValues = {
+      ...fakeSceneObject({
+        x_size: 500,
+        y_size: 600,
+        z_size: 700,
+      }).body,
+      preserve_axes: ["x", "y", "r"],
+    };
+
+    expect(scaledPlacementSize(sceneObject, 1400)).toEqual({
+      x_size: 1000,
+      y_size: 1200,
+      z_size: 1400,
+    });
+  });
+
   it.each([
     { axes: ["z"], clicks: 3 },
     { axes: ["x", "y"], clicks: 3 },
     { axes: ["x", "y", "z"], clicks: 2 },
     { axes: ["r"], clicks: 3 },
     { axes: ["x", "y", "r"], clicks: 2 },
+    { axes: ["x", "y", "r", "r"], clicks: 2 },
     { axes: ["x", "y", "z", "r"], clicks: 1 },
   ] as { axes: ("x" | "y" | "z" | "r")[], clicks: number }[])(
     "skips preserved placement steps: $axes",
@@ -456,8 +495,56 @@ describe("scene object placement helpers", () => {
         && !axes.includes("z")) {
         expect(create.payload.body.z_size).toEqual(20);
       }
+      if (axes.join() == "x,y,r") {
+        expect(create.payload.body.x_size).toEqual(14);
+        expect(create.payload.body.y_size).toEqual(17);
+      }
     },
   );
+
+  it("uses one scale step for solar object placement", () => {
+    const dispatch = jest.fn((action: unknown) => Promise.resolve(action));
+    const drawnSceneObject: SceneObjectFormValues = {
+      ...fakeSceneObject({
+        shape: "solar",
+        x_size: 800,
+        y_size: 2000,
+        z_size: 300,
+      }).body,
+      preserve_axes: ["x"],
+    };
+    const event = (index: number) => ({
+      point: new Vector3(index * 50, index * 50, index * 50),
+      nativeEvent: { clientY: 100 - index * 10 },
+      stopPropagation: jest.fn(),
+      ray: new Ray(
+        new Vector3(index * 50, index * 50, 100),
+        new Vector3(0, 0, -1),
+      ),
+    });
+    const { result } = renderHook(() => useTestSceneObjectPlacement({
+      config: clone(INITIAL),
+      enabled: true,
+      dispatch,
+      drawnSceneObject,
+    }));
+
+    range(3).map(index => {
+      act(() => result.current.onPointerMove(event(index) as never));
+      act(() => result.current.onClick(event(index) as never));
+    });
+
+    const creates = dispatch.mock.calls.filter(([action]) =>
+      (action as { type?: string }).type == "INIT_RESOURCE");
+    expect(creates).toHaveLength(1);
+    const body = (creates[0][0] as {
+      payload: { body: SceneObjectFormValues };
+    }).payload.body;
+    expect(body.rotation).toEqual(45);
+    expect(body.x_size).toEqual(53);
+    expect(body.y_size).toEqual(133);
+    expect(body.z_size).toEqual(20);
+  });
 
   it("positions scene objects above the ground", () => {
     const config = clone(INITIAL);
@@ -697,6 +784,7 @@ describe("scene object placement helpers", () => {
   });
 
   it("renders edges for hovered scene objects", () => {
+    location.pathname = Path.mock(Path.sceneObjects());
     const sceneObject = fakeSceneObject();
     sceneObject.body.id = 1;
     const wrapper = createRenderer(React.createElement(SceneObjects, {
@@ -709,6 +797,36 @@ describe("scene object placement helpers", () => {
 
     expect(wrapper.root.findAllByProps({ className: "edges" }).length)
       .toEqual(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("renders a yellow bottom edge for grounded selected objects", () => {
+    location.pathname = Path.mock(Path.sceneObjects(1));
+    const sceneObject = fakeSceneObject({
+      x_size: 100,
+      y_size: 200,
+      z_base: 0,
+      z_size: 300,
+    });
+    sceneObject.body.id = 1;
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [sceneObject],
+      visible: true,
+    }));
+    const bottomEdge = wrapper.root.findAll(node =>
+      node.type == Box
+      && node.props.name == "scene-object-bottom-edge")[0];
+
+    expect(bottomEdge.props.args).toEqual([108, 208, 0]);
+    expect(bottomEdge.props.position).toEqual([0, 0, -146]);
+    expect(bottomEdge.findAll(node =>
+      node.type == MeshBasicMaterial
+      && node.props.color == "yellow")).toHaveLength(1);
+    expect(bottomEdge.findAll(node =>
+      node.type == Edges
+      && node.props.color == "yellow")).toHaveLength(1);
     unmountRenderer(wrapper);
   });
 
@@ -1510,6 +1628,12 @@ describe("scene object placement helpers", () => {
         releasePointerCapture: jest.fn(),
       },
     });
+    const targetAngle = 80 * Math.PI / 180;
+    const rotationTarget = new Vector3(
+      pivotX + Math.cos(targetAngle) * 100,
+      pivotY + Math.sin(targetAngle) * 100,
+      pivotZ,
+    );
 
     act(() => {
       findControlHandle(wrapper, "scene-object-rotation-control")
@@ -1529,8 +1653,28 @@ describe("scene object placement helpers", () => {
     });
     act(() => {
       findControlHandle(wrapper, "scene-object-rotation-control")
-        .props.onPointerMove(event(
-          new Vector3(pivotX, pivotY + 100, pivotZ)));
+        .props.onPointerMove(event(rotationTarget));
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-guide",
+    })).toHaveLength(1);
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerCancel(event(rotationTarget));
+    });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-guide",
+    })).toHaveLength(0);
+    expect(dispatch.mock.calls.filter(([action]) =>
+      (action as { type?: string }).type == "EDIT_RESOURCE")).toHaveLength(0);
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerDown(event(
+          new Vector3(pivotX + 100, pivotY, pivotZ)));
+    });
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerMove(event(rotationTarget));
     });
     expect(wrapper.root.findAllByProps({
       name: "scene-object-rotation-control-label",
@@ -1543,8 +1687,7 @@ describe("scene object placement helpers", () => {
       .toBeCloseTo(guide.props.points[1][0] as number);
     act(() => {
       findControlHandle(wrapper, "scene-object-rotation-control")
-        .props.onPointerUp(event(
-          new Vector3(pivotX, pivotY + 100, pivotZ)));
+        .props.onPointerUp(event(rotationTarget));
     });
     expect(wrapper.root.findAllByProps({
       name: "scene-object-edit-rotation-guide",
@@ -1556,6 +1699,12 @@ describe("scene object placement helpers", () => {
         update: { rotation: 90 },
       }),
     }));
+    act(() => {
+      findControlHandle(wrapper, "scene-object-rotation-control")
+        .props.onPointerOut({ stopPropagation: jest.fn() });
+    });
+    expect(dispatch.mock.calls.filter(([action]) =>
+      (action as { type?: string }).type == "EDIT_RESOURCE")).toHaveLength(1);
     unmountRenderer(wrapper);
   });
 
@@ -2529,10 +2678,19 @@ describe("scene object placement helpers", () => {
       findControlHandle(wrapper, "scene-object-base-z-axis-arrow")
         .props.onPointerDown(event(basePoint, 200));
     });
+    const bottomEdgeBoxes = () => wrapper.root.findAll(node =>
+      node.type == Box
+      && node.props.name == "scene-object-bottom-edge");
+    expect(bottomEdgeBoxes()).toHaveLength(1);
     act(() => {
       const arrow = findControlHandle(
         wrapper, "scene-object-base-z-axis-arrow");
       arrow.props.onPointerMove(event(zTargetPoint));
+    });
+    expect(bottomEdgeBoxes()).toHaveLength(0);
+    act(() => {
+      const arrow = findControlHandle(
+        wrapper, "scene-object-base-z-axis-arrow");
       arrow.props.onPointerUp(event(zTargetPoint));
     });
 

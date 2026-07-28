@@ -63,13 +63,14 @@ const FACE_SIZE_LABEL_SIZE = ORIGIN_LABEL_SIZE;
 const OBJECT_AXIS_ARROW_LENGTH = 125;
 const ROTATION_CONTROL_SPACING = 100;
 const ROTATION_CONTROL_ARC = Math.PI / 3;
+const ROTATION_CONTROL_MAX_LENGTH = 1000;
 const ROTATION_CONTROL_SEGMENTS = 16;
 const ROTATION_CONTROL_WIDTH = CONTROL_SIZE_ARROW_WIDTH;
 const ROTATION_CONTROL_HEAD_LENGTH = ROTATION_CONTROL_WIDTH * 3;
 const ROTATION_CONTROL_HEAD_RADIUS = ROTATION_CONTROL_WIDTH;
 const ROTATION_GUIDE_EXTENSION = 250;
 const ROTATION_SNAP_INCREMENT = 5;
-const ROTATION_ORTHO_SNAP_RANGE = ROTATION_SNAP_INCREMENT * 2;
+const ROTATION_ORTHO_SNAP_RANGE = ROTATION_SNAP_INCREMENT * 1;
 const BASE_OBJECT_MARKER_CAMERA_DISTANCE = 3500;
 const MAX_OBJECT_MARKER_SCALE = 4;
 
@@ -166,6 +167,25 @@ const preservesFootprint = (sceneObject: SceneObjectFormValues) =>
 
 const preservesRotation = (sceneObject: SceneObjectFormValues) =>
   !!sceneObject.preserve_axes?.includes("r");
+
+const usesPlacementScale = (sceneObject: SceneObjectFormValues) =>
+  sceneObject.shape == "solar"
+  || (sceneObject.preserve_axes?.length == 3
+    && preservesFootprint(sceneObject)
+    && preservesRotation(sceneObject));
+
+export const scaledPlacementSize = (
+  sceneObject: SceneObjectFormValues,
+  height: number,
+) => {
+  const zSize = Math.max(1, Math.round(height));
+  const scale = zSize / Math.max(1, sceneObject.z_size);
+  return {
+    x_size: Math.max(1, Math.round(sceneObject.x_size * scale)),
+    y_size: Math.max(1, Math.round(sceneObject.y_size * scale)),
+    z_size: zSize,
+  };
+};
 
 const hasTranslucentPlacementPreview = (
   sceneObject: SceneObjectFormValues,
@@ -494,17 +514,22 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const c = adjustCenter(props.config, drawnSceneObject, center);
     const footprint = sizeFromCenterAndCorner(
       center, corner, drawnSceneObject.rotation);
+    const scaledSize = usesPlacementScale(drawnSceneObject)
+      ? scaledPlacementSize(
+        drawnSceneObject, Math.max(1, height - center.z))
+      : undefined;
     const body: SceneObject = {
       ...sceneObjectBody(drawnSceneObject),
       name,
       x_center: c.x,
       y_center: c.y,
       z_base: c.z,
-      x_size: placementAxisSize(
+      x_size: scaledSize?.x_size ?? placementAxisSize(
         drawnSceneObject, "x", footprint.x_size),
-      y_size: placementAxisSize(
+      y_size: scaledSize?.y_size ?? placementAxisSize(
         drawnSceneObject, "y", footprint.y_size),
-      z_size: placementAxisSize(drawnSceneObject, "z",
+      z_size: scaledSize?.z_size ?? placementAxisSize(
+        drawnSceneObject, "z",
         Math.max(1, Math.round(height - center.z))),
       rotation: rotation ?? drawnSceneObject.rotation,
     };
@@ -542,6 +567,15 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       if (preservesRotation(drawnSceneObject)
         || !hasTranslucentPlacementPreview(drawnSceneObject)) {
         const rotation = drawnSceneObject.rotation;
+        if (usesPlacementScale(drawnSceneObject)) {
+          setDraft({
+            center,
+            rotation,
+            corner: center,
+            heightStartY: eventScreenY(e),
+          });
+          return;
+        }
         if (!preservesFootprint(drawnSceneObject)) {
           setDraft({ center, rotation });
           return;
@@ -566,6 +600,15 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       const rotation = sceneObjectPlacementRotation(
         draft.center, cursor, drawnSceneObject.rotation);
       updateDrawnSceneObject({ rotation });
+      if (usesPlacementScale(drawnSceneObject)) {
+        setDraft({
+          ...draft,
+          rotation,
+          corner: draft.center,
+          heightStartY: eventScreenY(e),
+        });
+        return;
+      }
       if (!preservesFootprint(drawnSceneObject)) {
         setDraft({ ...draft, rotation });
         return;
@@ -606,10 +649,13 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
       }
       return;
     }
-    updateDrawnSceneObject({
-      z_size: placementAxisSize(drawnSceneObject, "z",
-        Math.max(1, Math.round(cursor.z - draft.center.z))),
-    });
+    const height = Math.max(1, Math.round(
+      cursor.z - draft.center.z));
+    updateDrawnSceneObject(usesPlacementScale(drawnSceneObject)
+      ? scaledPlacementSize(drawnSceneObject, height)
+      : {
+        z_size: placementAxisSize(drawnSceneObject, "z", height),
+      });
     saveSceneObject(
       draft.center, draft.corner, cursor.z, draft.rotation);
     resetPlacement();
@@ -641,6 +687,10 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
     const dragHeight = draft.corner && draft.center
       ? Math.max(1, cursor.z - draft.center.z)
       : 1;
+    const scaledSize = draft.corner && drawnSceneObject
+      && usesPlacementScale(drawnSceneObject)
+      ? scaledPlacementSize(drawnSceneObject, dragHeight)
+      : undefined;
     const height = draft.corner
       ? dragHeight
       : 1;
@@ -734,11 +784,11 @@ export const useSceneObjectPlacement = (props: SceneObjectPlacementProps) => {
             z_base: draft.corner
               ? (drawnSceneObject?.z_base ?? adjustedCenter.z)
               : adjustedCenter.z,
-            x_size: placementPreviewAxisSize(
+            x_size: scaledSize?.x_size ?? placementPreviewAxisSize(
               drawnSceneObject, "x", dragXSize, rotating),
-            y_size: placementPreviewAxisSize(
+            y_size: scaledSize?.y_size ?? placementPreviewAxisSize(
               drawnSceneObject, "y", dragYSize, rotating),
-            z_size: placementPreviewAxisSize(
+            z_size: scaledSize?.z_size ?? placementPreviewAxisSize(
               drawnSceneObject, "z", height, rotating),
             x_origin: drawnSceneObject?.x_origin || "home",
             y_origin: drawnSceneObject?.y_origin || "home",
@@ -909,12 +959,16 @@ export const sceneObjectRotationControlPoints = (
   );
   const radius = cornerOffset.length()
     + ROTATION_CONTROL_SPACING * scale;
+  const arc = Math.min(
+    ROTATION_CONTROL_ARC,
+    ROTATION_CONTROL_MAX_LENGTH * scale / radius,
+  );
   const midpoint = Math.atan2(cornerOffset.y, cornerOffset.x);
-  const start = midpoint - ROTATION_CONTROL_ARC / 2;
+  const start = midpoint - arc / 2;
   const z = pivot.z + 5;
   return range(ROTATION_CONTROL_SEGMENTS + 1).map(index => {
     const angle = start
-      + ROTATION_CONTROL_ARC * index / ROTATION_CONTROL_SEGMENTS;
+      + arc * index / ROTATION_CONTROL_SEGMENTS;
     return [
       pivot.x + Math.cos(angle) * radius,
       pivot.y + Math.sin(angle) * radius,
@@ -997,6 +1051,7 @@ interface RotationDragState {
 interface SceneObjectMoveHandleProps {
   config: Config;
   sceneObject: TaggedSceneObject;
+  showBottomEdge: boolean;
   args: [number, number, number];
   position: [number, number, number];
   rotation?: [number, number, number];
@@ -1730,6 +1785,16 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
     setInteractionLocked,
     onDragStateChange,
   } = props;
+  const bottomEdgeSize: [number, number, number] = [
+    args[0] + EDGE_LINE_WIDTH * 2,
+    args[1] + EDGE_LINE_WIDTH * 2,
+    0,
+  ];
+  const bottomEdgePosition: [number, number, number] = [
+    0,
+    0,
+    -args[2] / 2 + EDGE_LINE_WIDTH,
+  ];
   const dragging = React.useRef(false);
   const dragOffset = React.useRef({ x: 0, y: 0 });
   const getGardenPosition = React.useMemo(
@@ -1797,6 +1862,24 @@ const SceneObjectMoveHandle = (props: SceneObjectMoveHandleProps) => {
         opacity={0}
         depthTest={false} />
       <Edges color={"white"} lineWidth={EDGE_LINE_WIDTH} />
+      {props.showBottomEdge &&
+        <Box
+          name={"scene-object-bottom-edge"}
+          args={bottomEdgeSize}
+          position={bottomEdgePosition}
+          renderOrder={1000}
+          raycast={noControlRaycast}>
+          <MeshBasicMaterial
+            color={"yellow"}
+            transparent={true}
+            opacity={0}
+            depthWrite={false}
+            toneMapped={false} />
+          <Edges
+            color={"yellow"}
+            lineWidth={EDGE_LINE_WIDTH}
+            toneMapped={false} />
+        </Box>}
     </Box>
   </ControlHandle>;
 };
@@ -2447,6 +2530,7 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           config={props.config}
           dispatch={props.dispatch}
           sceneObject={sceneObject}
+          showBottomEdge={previewedSceneObject.body.z_base == 0}
           args={handleSize}
           position={handlePosition}
           rotation={handleRotation}

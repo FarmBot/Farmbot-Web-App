@@ -279,7 +279,7 @@ export const OUTDOOR_SCENE_OBJECTS: CatalogSceneObject[] = [
     x_center: 2000,
     y_center: 0,
     z_base: 0,
-    x_size: 800,
+    x_size: 500,
     y_size: 2000,
     z_size: 300,
     x_origin: "max",

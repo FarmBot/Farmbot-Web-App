@@ -498,7 +498,7 @@ describe("selection resolve", () => {
       locationCoordinate: { x: 100, y: 200, z: 30 },
     }));
     expect(sceneObject?.popupPosition[2])
-      .toBeGreaterThan(sceneObject?.worldPosition[2] || 0);
+      .toEqual((sceneObject?.worldPosition[2] || 0) + 250);
     expect(objectHasSelectionOverlay(sceneObject)).toBeFalsy();
   });
 

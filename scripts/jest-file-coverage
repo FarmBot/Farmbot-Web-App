@@ -96,6 +96,13 @@ fs.writeFileSync(setupFile, [
   "window.ResizeObserver = MockResizeObserver;",
   "globalThis.ResizeObserver = MockResizeObserver;",
   ...setupFiles.map(file => `import ${JSON.stringify(file)};`),
+  "const threeFiber = require('@react-three/fiber');",
+  "const defaultUseFrame = threeFiber.useFrame.getMockImplementation();",
+  "const defaultUseThree = threeFiber.useThree.getMockImplementation();",
+  "beforeEach(() => {",
+  "  threeFiber.useFrame.mockImplementation(defaultUseFrame);",
+  "  threeFiber.useThree.mockImplementation(defaultUseThree);",
+  "});",
 ].join("\n") + "\n");
 
 const config = {
