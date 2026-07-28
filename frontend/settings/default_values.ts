@@ -89,7 +89,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   view_celery_script: false,
   highlight_modified_settings: true,
   show_advanced_settings: false,
-  three_d_garden: false,
+  three_d_garden: true,
   dark_mode: true,
   top_down_view: false,
   viewpoint_heading: 45,

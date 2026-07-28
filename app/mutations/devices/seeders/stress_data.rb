@@ -53,7 +53,6 @@ module Devices
           show_moisture_interpolation_map: true,
           show_weeds: true,
           show_spread: true,
-          three_d_garden: true,
         )
       end
 

@@ -188,15 +188,15 @@ describe("<GardenMapLegend />", () => {
 
   it("renders 3D controls off", () => {
     const { container } = render(<GardenMapLegend {...fakeProps()} />);
-    expect(container.textContent).toContain("3D beta");
+    expect(container.textContent).toContain("3D");
     expect(container.textContent).not.toContain("Top down");
     expect(container.textContent).not.toContain("Amplify Z");
   });
 
   it("toggles 3D view", () => {
     const { container } = render(<GardenMapLegend {...fakeProps()} />);
-    const toggle = container.querySelector("button[title='show 3D beta']");
-    if (!toggle) { throw new Error("Missing 3D beta toggle"); }
+    const toggle = container.querySelector("button[title='show 3D']");
+    if (!toggle) { throw new Error("Missing 3D toggle"); }
     fireEvent.click(toggle);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.three_d_garden, true);
@@ -207,8 +207,8 @@ describe("<GardenMapLegend />", () => {
     const p = fakeProps();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     const { container } = render(<GardenMapLegend {...p} />);
-    const toggle = container.querySelector("button[title='hide 3D beta']");
-    if (!toggle) { throw new Error("Missing 3D beta toggle"); }
+    const toggle = container.querySelector("button[title='hide 3D']");
+    if (!toggle) { throw new Error("Missing 3D toggle"); }
     fireEvent.click(toggle);
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
@@ -272,7 +272,7 @@ describe("<GardenMapLegend />", () => {
     const p = fakeProps();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     render(<GardenMapLegend {...p} />);
-    fireEvent.click(screen.getByLabelText("3D beta help"));
+    fireEvent.click(screen.getByLabelText("3D help"));
     expect(screen.getByText("3D Controls")).toBeInTheDocument();
     expect(screen.getByText("Scroll to zoom")).toBeInTheDocument();
   });

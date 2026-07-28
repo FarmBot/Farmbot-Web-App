@@ -2082,7 +2082,7 @@ CREATE TABLE public.web_app_configs (
     default_plant_depth integer DEFAULT 5,
     show_missed_step_plot boolean DEFAULT false,
     enable_3d_electronics_box_top boolean DEFAULT true,
-    three_d_garden boolean DEFAULT false,
+    three_d_garden boolean DEFAULT true,
     dark_mode boolean DEFAULT true,
     top_down_view boolean DEFAULT false,
     viewpoint_heading integer DEFAULT 30,
@@ -3851,6 +3851,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260728183708'),
 ('20260724204047'),
 ('20260723225144'),
 ('20260710222823'),

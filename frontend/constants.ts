@@ -2328,7 +2328,7 @@ export enum DeviceSetting {
   showObjects = `Objects`,
   showSceneObjectsMapLayer = `Show Scene Objects Map Layer`,
   showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
-  show3DMap = `3D beta`,
+  show3DMap = `3D`,
 
   // Controls
   invertJogButtonXAxis = `X Axis`,

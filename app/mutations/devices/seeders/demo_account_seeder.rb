@@ -177,7 +177,6 @@ module Devices
           .web_app_config
           .update!(
             discard_unsaved: true,
-            three_d_garden: true,
           )
         stress_data(product_line)&.update_demo_settings
         device

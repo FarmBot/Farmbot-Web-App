@@ -344,7 +344,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
-      expect(settings_three_d_garden?(device)).to be(false)
+      expect(settings_three_d_garden?(device)).to be(true)
       expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
