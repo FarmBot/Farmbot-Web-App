@@ -3597,7 +3597,10 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       ),
       getConfigValue: addPlantProps?.getConfigValue,
     });
-    return getSelected(points, areaSelection.box) || [];
+    return getSelected(
+      points,
+      normalizeAreaSelectionBox(areaSelection.box),
+    ) || [];
   }, [
     addPlantProps?.getConfigValue,
     allPoints,
@@ -3646,7 +3649,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     box: AreaSelectionBox,
   ) => {
     setAreaSelection(current => current?.phase == "complete"
-      ? { ...current, box: normalizeAreaSelectionBox(box) }
+      ? { ...current, box }
       : current);
   }, []);
   const updateAreaSelectionPointType = React.useCallback((

@@ -2525,8 +2525,9 @@ describe("<GardenModel />", () => {
     }));
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selection.box).toEqual({
-      x0: 100, y0: 100, x1: 400, y1: 400,
+      x0: 400, y0: 400, x1: 100, y1: 100,
     });
+    expect(overlay.props.selectedCount).toEqual(1);
     actRenderer(() => overlay.props.onPointTypeChange("Weed"));
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selectedCount).toEqual(1);

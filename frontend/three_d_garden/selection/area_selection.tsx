@@ -274,32 +274,28 @@ export const areaSelectionTitle = (
 
 export type AreaSelectionEdge = "x0" | "x1" | "y0" | "y1";
 
+const OPPOSITE_AREA_SELECTION_EDGE: Record<
+  AreaSelectionEdge,
+  AreaSelectionEdge
+> = {
+  x0: "x1",
+  x1: "x0",
+  y0: "y1",
+  y1: "y0",
+};
+
 export const resizeAreaSelectionBox = (
   box: AreaSelectionBox,
   edge: AreaSelectionEdge,
   value: number,
   config: Pick<Config, "botSizeX" | "botSizeY">,
-): AreaSelectionBox => {
-  const normalized = normalizeAreaSelectionBox(box);
-  switch (edge) {
-    case "x0": return {
-      ...normalized,
-      x0: Math.max(0, Math.min(normalized.x1, value)),
-    };
-    case "x1": return {
-      ...normalized,
-      x1: Math.max(normalized.x0, Math.min(config.botSizeX, value)),
-    };
-    case "y0": return {
-      ...normalized,
-      y0: Math.max(0, Math.min(normalized.y1, value)),
-    };
-    case "y1": return {
-      ...normalized,
-      y1: Math.max(normalized.y0, Math.min(config.botSizeY, value)),
-    };
-  }
-};
+): AreaSelectionBox => ({
+  ...box,
+  [edge]: Math.max(0, Math.min(
+    edge == "x0" || edge == "x1" ? config.botSizeX : config.botSizeY,
+    value,
+  )),
+});
 
 interface AreaSelectionRectangleProps {
   box: AreaSelectionBox;
@@ -339,22 +335,23 @@ const AreaSelectionRectangle = (props: AreaSelectionRectangleProps) => {
         depthWrite={false}
         side={DoubleSide} />
     </Mesh>
-    <Line
-      name={props.name || (props.ghost
-        ? "area-selection-ghost"
-        : "area-selection-rectangle")}
-      points={geometry.outlinePoints}
-      color={"white"}
-      dashed={true}
-      dashSize={25}
-      gapSize={20}
-      lineWidth={2}
-      transparent={true}
-      opacity={0.95}
-      depthTest={!!props.gridLayer}
-      depthWrite={true}
-      renderOrder={RenderOrder.default}
-      raycast={noControlRaycast} />
+    {geometry.outlinePoints.length > 1 &&
+      <Line
+        name={props.name || (props.ghost
+          ? "area-selection-ghost"
+          : "area-selection-rectangle")}
+        points={geometry.outlinePoints}
+        color={"white"}
+        dashed={true}
+        dashSize={25}
+        gapSize={20}
+        lineWidth={2}
+        transparent={true}
+        opacity={0.95}
+        depthTest={!!props.gridLayer}
+        depthWrite={true}
+        renderOrder={RenderOrder.default}
+        raycast={noControlRaycast} />}
   </>;
 };
 
@@ -370,7 +367,7 @@ interface AreaSelectionEdgeControlProps {
 const AreaSelectionEdgeControl = (
   props: AreaSelectionEdgeControlProps,
 ) => {
-  const box = normalizeAreaSelectionBox(props.box);
+  const box = props.box;
   const xEdge = props.edge == "x0" || props.edge == "x1";
   const coordinate = box[props.edge];
   const position = {
@@ -400,11 +397,16 @@ const AreaSelectionEdgeControl = (
   const update = (event: ControlDragEvent) =>
     props.onChange(updatedBox(event));
   const commit = (event: ControlDragEvent) => {
-    const nextBox = updatedBox(event);
+    const nextBox = normalizeAreaSelectionBox(updatedBox(event));
     props.onChange(nextBox);
     props.onCommit?.(nextBox);
   };
-  const lowerEdge = props.edge == "x0" || props.edge == "y0";
+  const originallyLower = props.edge == "x0" || props.edge == "y0";
+  const oppositeEdge = OPPOSITE_AREA_SELECTION_EDGE[props.edge];
+  const oppositeCoordinate = box[oppositeEdge];
+  const lowerEdge = coordinate == oppositeCoordinate
+    ? originallyLower
+    : coordinate < oppositeCoordinate;
   const mirrored = xEdge ? props.config.mirrorX : props.config.mirrorY;
   const outwardDirection = (lowerEdge ? -1 : 1) * (mirrored ? -1 : 1);
   const arrowStart: [number, number, number] = [0, 0, 0];

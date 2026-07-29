@@ -43,7 +43,7 @@ describe("area selection geometry", () => {
     expect(edge).toEqual({ x0: 950, y0: 750, x1: 750, y1: 550 });
   });
 
-  it("normalizes and constrains resized edges", () => {
+  it("normalizes boxes and constrains resized edges to the garden", () => {
     expect(normalizeAreaSelectionBox({
       x0: 500, y0: 400, x1: 100, y1: 200,
     })).toEqual({ x0: 100, y0: 200, x1: 500, y1: 400 });
@@ -53,10 +53,15 @@ describe("area selection geometry", () => {
       .toEqual(0);
     expect(resizeAreaSelectionBox(box, "x1", 1200, config).x1)
       .toEqual(1000);
-    expect(resizeAreaSelectionBox(box, "y0", 600, config).y0)
-      .toEqual(400);
-    expect(resizeAreaSelectionBox(box, "y1", 50, config).y1)
-      .toEqual(200);
+    expect(resizeAreaSelectionBox(box, "x0", 700, config))
+      .toEqual({ ...box, x0: 700 });
+    expect(resizeAreaSelectionBox(box, "y0", 600, config))
+      .toEqual({ ...box, y0: 600 });
+    expect(resizeAreaSelectionBox(box, "y1", 50, config))
+      .toEqual({ ...box, y1: 50 });
+    expect(normalizeAreaSelectionBox(
+      resizeAreaSelectionBox(box, "x0", 700, config),
+    )).toEqual({ x0: 500, y0: 200, x1: 700, y1: 400 });
   });
 
   it("clips the original soil triangles to the selection bounds", () => {
@@ -289,6 +294,22 @@ describe("<GardenAreaSelectionOverlay />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("does not create line geometry for an empty terrain intersection", () => {
+    const p = props();
+    p.selection = {
+      phase: "drawing",
+      pointType: "Plant",
+      box: { x0: 100, y0: 200, x1: 500, y1: 600 },
+    };
+    p.soilSurfaceTriangles = [];
+    const wrapper = createRenderer(<GardenAreaSelectionOverlay {...p} />);
+
+    expect(wrapper.root.findAllByType(threeDrei.Line)).toHaveLength(0);
+    expect(wrapper.root.findAllByType(Mesh)
+      .some(node => node.props.name == "area-selection-fill")).toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
   it("renders completed controls and popup actions", () => {
     const lineSpy = mockLine();
     const handleSpy = jest.spyOn(controls, "ControlHandle")
@@ -446,6 +467,44 @@ describe("<GroupAreaSelectionOverlay />", () => {
     const updatedHandle = wrapper.root.findAllByType(controls.ControlHandle)
       .find(node => node.props.name == "area-selection-x0-control");
     expect(updatedHandle?.props.position).not.toEqual(committedPosition);
+    unmountRenderer(wrapper);
+  });
+
+  it("pulls an edge through its opposite bound", () => {
+    const onBoxChange = jest.fn();
+    const config = { ...clone(INITIAL), botSizeX: 1000, botSizeY: 800 };
+    const wrapper = createRenderer(<GroupAreaSelectionOverlay
+      box={{ x0: 100, y0: 200, x1: 500, y1: 600 }}
+      config={config}
+      getZ={() => -100}
+      onBoxChange={onBoxChange}
+      soilSurfaceTriangles={soilSurfaceTriangles} />);
+    let handle = wrapper.root.findAllByType(controls.ControlHandle)
+      .find(node => node.props.name == "area-selection-x0-control");
+    if (!handle) { throw new Error("X0 control not found"); }
+    const event = {
+      point: new Vector3(550, 0, 0),
+      delta: new Vector3(550, 0, 0),
+    } as controls.ControlDragEvent;
+    actRenderer(() => handle?.props.onDragStart(event));
+    actRenderer(() => handle?.props.onDrag(event));
+    expect(wrapper.root.findByType(GroupAreaVisual).props.box).toEqual({
+      x0: 650, y0: 200, x1: 500, y1: 600,
+    });
+    handle = wrapper.root.findAllByType(controls.ControlHandle)
+      .find(node => node.props.name == "area-selection-x0-control");
+    expect(handle?.props.position).toEqual(getWorldPositionFunc(config)({
+      x: 650, y: 400, z: -92,
+    }));
+    const arrow = handle?.findByType(controls.ControlArrow);
+    expect(arrow?.props.end).toEqual([100, 0, 0]);
+    const oppositeArrow = wrapper.root.findAllByType(controls.ControlArrow)
+      .find(node => node.props.name == "area-selection-x1-arrow");
+    expect(oppositeArrow?.props.end).toEqual([-100, 0, 0]);
+    actRenderer(() => handle?.props.onDragEnd(event));
+    expect(onBoxChange).toHaveBeenCalledWith({
+      x0: 500, y0: 200, x1: 650, y1: 600,
+    });
     unmountRenderer(wrapper);
   });
 });
