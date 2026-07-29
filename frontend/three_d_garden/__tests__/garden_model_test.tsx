@@ -4124,6 +4124,7 @@ describe("useGardenCameraController()", () => {
   });
 
   it("ignores arrow keys reserved for focused UI", () => {
+    const addEventListener = jest.spyOn(window, "addEventListener");
     const props: GardenCameraControllerProps = {
       ...fakeControllerProps(),
       viewPrismBridgeRef: React.createRef<ViewPrismBridge>(),
@@ -4131,6 +4132,24 @@ describe("useGardenCameraController()", () => {
     const { result } = renderHook(() =>
       useGardenCameraController(props));
     const initialRequest = result.current.cameraRequest;
+    const keydown = addEventListener.mock.calls
+      .find(([event]) => event == "keydown")?.[1] as EventListener;
+    const handleKeyboardEvent = (
+      key: string,
+      init: KeyboardEventInit = {},
+      target?: Element,
+    ) => {
+      const event = new KeyboardEvent("keydown", {
+        key,
+        cancelable: true,
+        ...init,
+      });
+      if (target) {
+        Object.defineProperty(event, "target", { value: target });
+      }
+      act(() => keydown(event));
+      return event;
+    };
 
     [
       ["KeyA", {}],
@@ -4140,7 +4159,7 @@ describe("useGardenCameraController()", () => {
       ["ArrowRight", { shiftKey: true }],
       ["ArrowRight", { repeat: true }],
     ].map(([key, init]) => {
-      const event = dispatchKeyboardEvent(
+      const event = handleKeyboardEvent(
         key as string,
         init as KeyboardEventInit,
       );
@@ -4148,32 +4167,31 @@ describe("useGardenCameraController()", () => {
     });
 
     const input = document.createElement("input");
-    document.body.appendChild(input);
-    expect(dispatchKeyboardEvent(
+    expect(handleKeyboardEvent(
       "ArrowRight",
       {},
       input,
     ).defaultPrevented).toBeFalsy();
-    input.remove();
 
     const editable = document.createElement("div");
     editable.setAttribute("contenteditable", "true");
-    document.body.appendChild(editable);
-    expect(dispatchKeyboardEvent(
+    expect(handleKeyboardEvent(
       "ArrowRight",
       {},
       editable,
     ).defaultPrevented).toBeFalsy();
-    editable.remove();
 
     const dialog = document.createElement("dialog");
     dialog.className = "command-palette-dialog";
     dialog.setAttribute("open", "");
     document.body.appendChild(dialog);
-    expect(dispatchKeyboardEvent(
-      "ArrowRight",
-    ).defaultPrevented).toBeFalsy();
-    dialog.remove();
+    try {
+      expect(handleKeyboardEvent(
+        "ArrowRight",
+      ).defaultPrevented).toBeFalsy();
+    } finally {
+      dialog.remove();
+    }
 
     expect(result.current.cameraRequest).toBe(initialRequest);
   });
