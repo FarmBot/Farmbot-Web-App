@@ -134,10 +134,10 @@ export const editGtLtCriteria =
         && isNumber(box.x1) && isNumber(box.y1))) { return; }
       const tempGtCriteria = cloneDeep(group.body.criteria.number_gt);
       const tempLtCriteria = cloneDeep(group.body.criteria.number_lt);
-      tempGtCriteria.x = Math.min(box.x0, box.x1);
-      tempGtCriteria.y = Math.min(box.y0, box.y1);
-      tempLtCriteria.x = Math.max(box.x0, box.x1);
-      tempLtCriteria.y = Math.max(box.y0, box.y1);
+      tempGtCriteria.x = Math.round(Math.min(box.x0, box.x1));
+      tempGtCriteria.y = Math.round(Math.min(box.y0, box.y1));
+      tempLtCriteria.x = Math.round(Math.max(box.x0, box.x1));
+      tempLtCriteria.y = Math.round(Math.max(box.y0, box.y1));
       dispatch(editCriteria(group, {
         number_gt: tempGtCriteria,
         number_lt: tempLtCriteria,

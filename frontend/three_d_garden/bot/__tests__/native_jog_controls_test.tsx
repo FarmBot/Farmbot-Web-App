@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  act, fireEvent, render, screen,
+  act, createEvent, fireEvent, render, screen,
 } from "@testing-library/react";
 import { clone } from "lodash";
 import { Xyz } from "farmbot";
@@ -1487,7 +1487,8 @@ describe("<NativeJogControlPair />", () => {
     fireEvent.click(setLengthButton);
     const settings = screen.getByRole("link", { name: "Settings" });
     expect(settings).toHaveAttribute("href", Path.settings("axes"));
-    fireEvent.click(settings);
+    const settingsClick = createEvent.click(settings, { cancelable: true });
+    fireEvent(settings, settingsClick);
 
     expect(toggle).toHaveBeenCalledWith("scaled_encoders");
     expect(toggle).toHaveBeenCalledWith("raw_encoders");
@@ -1500,10 +1501,13 @@ describe("<NativeJogControlPair />", () => {
       expect.any(String),
     );
     expect(p.navigate).toHaveBeenCalledWith(Path.settings("axes"));
+    expect(settingsClick.defaultPrevented).toEqual(true);
 
     fireEvent.click(screen.getByTitle("back"));
-    expect(screen.getByRole("heading", { name: "X: 1038" }))
-      .toBeInTheDocument();
+    const title = screen.getByRole("heading", { name: "X: 1038" });
+    expect(title).toBeInTheDocument();
+    expect(title.querySelector(".native-jog-coordinate"))
+      .toHaveTextContent("1038");
     fireEvent.click(screen.getByTitle("More options"));
     fireEvent.click(screen.getByTitle("close"));
     expect(p.onClose).toHaveBeenCalledTimes(1);

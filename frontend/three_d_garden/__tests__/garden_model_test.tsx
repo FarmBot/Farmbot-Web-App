@@ -84,8 +84,9 @@ import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
 import { ThreeDObjectSelectionLayer } from "../selection/layer";
-import { GardenAreaSelectionOverlay, GroupAreaSelectionOverlay } from
-  "../selection/area_selection";
+import {
+  GardenAreaSelectionOverlay, GroupAreaSelectionOverlay, GroupAreaVisual,
+} from "../selection/area_selection";
 import { Bed } from "../bed";
 import { getStargazingCamera, Telescope } from "../bed/objects/telescope";
 import { Actions } from "../../constants";
@@ -2148,6 +2149,7 @@ describe("<GardenModel />", () => {
   it("handles grid hover and location selection", () => {
     location.pathname = Path.mock(Path.designer());
     const p = fakeProps();
+    p.config.grid = false;
     const wrapper = createWrapper(p);
     const hoverTarget = wrapper.root.findByProps({ name: "grid-hover-target" });
     const point = get3DPositionFunc(p.config)({ x: 100, y: 100 });
@@ -2292,6 +2294,16 @@ describe("<GardenModel />", () => {
     });
     expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
       .props.selection.phase).toEqual("drawing");
+
+    const beyondX = get3DPositionFunc(p.config)({ x: -100, y: 300 });
+    actRenderer(() => hoverTarget.props.onPointerMove({ point: beyondX }));
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection.box).toEqual({
+      x0: 100,
+      y0: 100,
+      x1: 0,
+      y1: 300,
+    });
 
     actRenderer(() => hoverTarget.props.onPointerMove({ point: end }));
     let overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
@@ -2715,6 +2727,57 @@ describe("<GardenModel />", () => {
         x1: p.config.botSizeX,
         y1: p.config.botSizeY,
       });
+    getModeSpy.mockRestore();
+  });
+
+  it("shows bounded group areas when the Areas layer is enabled", () => {
+    location.pathname = Path.mock(Path.designer());
+    const group = fakePointGroup();
+    group.body.criteria.number_gt = { x: 100, y: 200 };
+    group.body.criteria.number_lt = { x: 500, y: 600 };
+    const p = fakeProps();
+    p.groups = [group];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(
+      setting => setting == BooleanSetting.show_zones,
+    );
+    const wrapper = createWrapper(p);
+    const visual = wrapper.root.findByProps({
+      name: `group-area-${group.uuid}`,
+    });
+    expect(visual).toBeTruthy();
+    expect(wrapper.root.findAllByType(GroupAreaVisual)).toHaveLength(1);
+    const revealGroup = wrapper.root.findByProps({
+      name: "group-areas-load-in",
+    });
+    expect(revealGroup.type).toEqual(GridRevealGroup);
+    expect(revealGroup.props.reveal).toEqual(true);
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      getConfigValue: jest.fn(() => false),
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(wrapper.root.findAllByProps({
+      name: `group-area-${group.uuid}`,
+    })).toHaveLength(0);
+  });
+
+  it("exits object selection modes when activating the telescope", () => {
+    location.pathname = Path.mock(Path.groups(2));
+    const getModeSpy = jest.spyOn(mapUtil, "getMode")
+      .mockReturnValue(Mode.editGroup);
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    const wrapper = createWrapper(p);
+    const telescope = wrapper.root.findByType(Telescope);
+
+    actRenderer(() => telescope.props.onActivate());
+
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith(
+      expect.any(Function),
+    );
+    expect(mockNavigate).toHaveBeenCalledWith(Path.designer());
     getModeSpy.mockRestore();
   });
 

@@ -228,7 +228,6 @@ const LayerToggles = (props: LayerTogglesProps) => {
     designer,
   };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
-  const only2DClass = is3D ? "disabled" : "";
   const sectionOpen = designer.threeDSectionOpen;
   const exaggeratedZ = designer.threeDExaggeratedZ;
   const description = (isMobile()
@@ -299,7 +298,6 @@ const LayerToggles = (props: LayerTogglesProps) => {
           helpText={Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA} />
       </div>} />
     <LayerToggle
-      className={only2DClass}
       settingName={BooleanSetting.show_zones}
       value={props.showZones}
       label={DeviceSetting.showAreas}

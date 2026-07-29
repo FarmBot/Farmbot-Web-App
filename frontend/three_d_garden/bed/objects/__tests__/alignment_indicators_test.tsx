@@ -13,6 +13,7 @@ import {
   ALIGNMENT_INDICATOR_WIDTH,
   AlignmentIndicatorController,
   AlignmentIndicators,
+  alignmentIndicatorLength,
   buildAlignmentIndex,
   createIndicatorGeometry,
   createIndicatorMaterial,
@@ -24,6 +25,7 @@ import {
   fakePoint, fakeWeed,
 } from "../../../../__test_support__/fake_state/resources";
 import { ThreeDGardenPlant } from "../../../garden";
+import { DEFAULT_WEED_RADIUS } from "../../../garden/weed";
 import { get3DPositionFunc, zZero } from "../../../helpers";
 import {
   actRenderer, createRenderer, unmountRenderer,
@@ -85,13 +87,18 @@ describe("alignment indicator index", () => {
     expect(plant).toEqual(expect.objectContaining({
       gardenX: 100,
       gardenY: 200,
+      length: 120,
       worldX: plantPosition.x,
       worldY: plantPosition.y,
       worldZ: zZero(props.config) + props.getZ(100, 200)
         + ALIGNMENT_INDICATOR_HEIGHT,
     }));
     expect(weed?.gardenY).toEqual(300);
+    expect(weed?.length).toEqual(DEFAULT_WEED_RADIUS * 2 * 1.5);
     expect(point?.gardenX).toEqual(400);
+    expect(point?.length).toEqual(ALIGNMENT_INDICATOR_LENGTH);
+    expect(alignmentIndicatorLength(20)).toEqual(50);
+    expect(alignmentIndicatorLength(100)).toEqual(150);
   });
 
   it("only indexes visible object types", () => {
@@ -125,7 +132,7 @@ describe("alignment indicator index", () => {
 });
 
 describe("alignment indicator instances", () => {
-  it("configures the requested bright yellow prism style", () => {
+  it("configures the requested bright red prism style", () => {
     const material = createIndicatorMaterial();
     const shader = {
       uniforms: {},
@@ -137,8 +144,6 @@ describe("alignment indicator instances", () => {
     expect(shader.uniforms.uHeight?.value)
       .toEqual(ALIGNMENT_INDICATOR_HEIGHT);
     expect(ALIGNMENT_INDICATOR_HEIGHT).toEqual(10);
-    expect(shader.uniforms.uLength?.value)
-      .toEqual(ALIGNMENT_INDICATOR_LENGTH);
     expect(ALIGNMENT_INDICATOR_LENGTH).toEqual(50);
     expect(shader.uniforms.uWidth?.value)
       .toEqual(ALIGNMENT_INDICATOR_WIDTH);
@@ -152,6 +157,10 @@ describe("alignment indicator instances", () => {
     expect(material.side).toEqual(FrontSide);
     expect(shader.vertexShader).toContain(
       "attribute float segmentHeight;");
+    expect(shader.vertexShader).toContain(
+      "attribute float indicatorLength;");
+    expect(shader.vertexShader).toContain(
+      "along * segmentAlong * indicatorLength");
     expect(shader.vertexShader).toContain("vec3 transformed = vec3(");
     material.dispose();
   });
@@ -161,6 +170,7 @@ describe("alignment indicator instances", () => {
 
     expect(geometry.getAttribute("position").count).toEqual(8);
     expect(geometry.getAttribute("normal").count).toEqual(8);
+    expect(geometry.getAttribute("indicatorLength").count).toEqual(1);
     expect(geometry.index?.count).toEqual(36);
     expect(Array.from(
       geometry.getAttribute("segmentAlong").array,
@@ -187,6 +197,9 @@ describe("alignment indicator instances", () => {
     expect(Array.from(
       geometry.getAttribute("indicatorAxis").array.slice(0, 4),
     )).toEqual([0, 0, 1, 1]);
+    expect(Array.from(
+      geometry.getAttribute("indicatorLength").array.slice(0, 4),
+    )).toEqual([120, 50, 120, 150]);
     const centers = geometry.getAttribute("indicatorCenter") as
       InstancedBufferAttribute;
     expect(centers.updateRanges)

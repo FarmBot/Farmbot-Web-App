@@ -75,12 +75,23 @@ describe("<NavLinks />", () => {
 
   it("clicks map icon", () => {
     const p = fakeProps();
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<NavLinks {...p} />);
     fireEvent.click(container.querySelector("#map") as Element);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING, payload: "grid-token",
     });
   });
 
@@ -115,6 +126,14 @@ describe("<NavLinks />", () => {
   it("clicks inactive link: opens panel", () => {
     location.pathname = Path.mock(Path.weeds());
     const p = fakeProps();
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<NavLinks {...p} />);
@@ -122,6 +141,9 @@ describe("<NavLinks />", () => {
     expect(p.close).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING, payload: "grid-token",
     });
   });
 

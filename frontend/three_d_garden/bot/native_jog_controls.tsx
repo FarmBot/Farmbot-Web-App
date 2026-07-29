@@ -453,7 +453,6 @@ export const NativeJogMoreOptions = (
       </button>
     </div>
     <a href={Path.settings("axes")} onClick={event => {
-      if (!props.navigate) { return; }
       event.preventDefault();
       openSettings();
     }}>
@@ -839,9 +838,12 @@ export const NativeJogPopup = (props: NativeJogPopupProps) => {
     }
     wasBusy.current = props.context.arduinoBusy;
   }, [props.context.arduinoBusy]);
-  const title = `${props.axis.toUpperCase()}: ${Math.round(
-    currentAxisPosition,
-  )}`;
+  const title = <>
+    {props.axis.toUpperCase()}:{" "}
+    <span className={"native-jog-coordinate"}>
+      {Math.round(currentAxisPosition)}
+    </span>
+  </>;
   const movementAvailable = nativeJogMovementAvailable(props.context);
   const absoluteMovementAvailable = movementAvailable &&
     !!getNativeJogAbsoluteDestination(

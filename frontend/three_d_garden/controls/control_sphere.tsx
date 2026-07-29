@@ -1,7 +1,7 @@
 import React from "react";
 import { Sphere } from "@react-three/drei";
 import { Group, MeshPhongMaterial } from "../components";
-import { noControlRaycast } from "./events";
+import { controlRaycast } from "./events";
 import { ControlPulse, ControlPulseProps } from "./control_pulse";
 import {
   ControlColorType, ControlRenderOptions, CONTROL_HOVER_SCALE,
@@ -70,7 +70,7 @@ export const ControlSphere = (props: ControlSphereProps) => {
         props.segments || 16,
         props.segments || 16,
       ]}
-      raycast={enabled ? undefined : noControlRaycast}
+      raycast={controlRaycast(enabled)}
       renderOrder={renderOptions.renderOrder}>
       {material}
     </Sphere>

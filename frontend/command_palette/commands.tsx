@@ -187,12 +187,23 @@ const combinedPanelCommandText = (
   return { name, englishName, aliases };
 };
 
-const openPanel = (dispatch: Function, navigate: NavigateFunction, panel: Panel) => {
-  dispatch(setPanelOpen(true));
-  navigate(getPanelPath(panel));
+const clearGridPlanting = (props: BuildCommandProps) => {
+  const token = props.state.resources.consumers.farm_designer
+    .gridPlanting?.token;
+  token && props.dispatch({
+    type: Actions.CLEAR_GRID_PLANTING,
+    payload: token,
+  });
+};
+
+const openPanel = (props: BuildCommandProps, panel: Panel) => {
+  clearGridPlanting(props);
+  props.dispatch(setPanelOpen(true));
+  props.navigate(getPanelPath(panel));
 };
 
 const openAddPage = (props: BuildCommandProps, path: string) => {
+  clearGridPlanting(props);
   props.dispatch(setPanelOpen(true));
   props.navigate(path);
 };
@@ -209,7 +220,7 @@ const panelAction = (
     "show panel",
     "navigation",
   ],
-  execute: () => openPanel(props.dispatch, props.navigate, panel),
+  execute: () => openPanel(props, panel),
 });
 
 const COMBINED_PANELS = new Set([
@@ -253,7 +264,7 @@ const panelCommands = (props: BuildCommandProps): Command[] => {
         props.dispatch(setPanelOpen(false));
         props.navigate(Path.designer());
       } else {
-        openPanel(props.dispatch, props.navigate, panel);
+        openPanel(props, panel);
       }
     };
     return {
@@ -483,7 +494,7 @@ const inventorySectionCommands = (props: BuildCommandProps): Command[] => {
     aliases: ["accordion", "expand", "collapse", "show", "hide"],
     execute: () => {
       props.dispatch({ type: action, payload: section });
-      openPanel(props.dispatch, props.navigate, panel);
+      openPanel(props, panel);
     },
   });
   const basicCommand = (
@@ -642,7 +653,7 @@ const photoSectionCommands = (props: BuildCommandProps): Command[] => {
           type: Actions.TOGGLE_PHOTOS_PANEL_OPTION,
           payload: section,
         });
-        openPanel(props.dispatch, props.navigate, Panel.Photos);
+        openPanel(props, Panel.Photos);
       },
     })),
   ];
@@ -749,6 +760,14 @@ const sectionViewCommand = (props: BuildCommandProps): Command => {
     actions,
     execute: actions[0].execute,
   };
+};
+
+const sectionViewCommands = (props: BuildCommandProps): Command[] => {
+  const getValue = getWebAppConfigValueFromResources(
+    props.state.resources.index);
+  return getValue(BooleanSetting.three_d_garden)
+    ? [sectionViewCommand(props)]
+    : [];
 };
 
 const selectionCommand = (props: BuildCommandProps): Command => {
@@ -2936,7 +2955,7 @@ export const buildCommands = (props: BuildCommandProps): Command[] => [
   ...inventorySectionCommands(props),
   ...photoSectionCommands(props),
   ...metricSectionCommands(props),
-  sectionViewCommand(props),
+  ...sectionViewCommands(props),
   selectionCommand(props),
   laserCommand(props),
   ...settingsSectionCommands(props),

@@ -378,10 +378,20 @@ export const RawCropInfo = (props: CropInfoProps) => {
       panel={Panel.Plants}
       title={crop.name}
       backTo={Path.cropSearch()}
-      onBack={() => !designer.cropSearchQuery && dispatch({
-        type: Actions.SEARCH_QUERY_CHANGE,
-        payload: startCase(slug).toLowerCase(),
-      })}
+      onBack={() => {
+        activeGridToken && dispatch({
+          type: Actions.CLEAR_GRID_PLANTING,
+          payload: activeGridToken,
+        });
+        legacyGridRequested && dispatch({
+          type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+          payload: slug,
+        });
+        !designer.cropSearchQuery && dispatch({
+          type: Actions.SEARCH_QUERY_CHANGE,
+          payload: startCase(slug).toLowerCase(),
+        });
+      }}
       style={{
         background: `linear-gradient(
     rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${image})`

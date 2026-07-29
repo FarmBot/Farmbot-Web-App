@@ -1,6 +1,6 @@
 import React from "react";
 import { Line } from "@react-three/drei";
-import { PointType } from "farmbot";
+import { PointType, TaggedPointGroup } from "farmbot";
 import { Config } from "../config";
 import {
   getGardenPositionFunc, getWorldPositionFunc,
@@ -19,6 +19,7 @@ import { t } from "../../i18next_wrapper";
 import { POINTER_TYPES } from
   "../../point_groups/criteria/interfaces";
 import { Group } from "../components";
+import { RenderOrder } from "../constants";
 
 export const AREA_SELECTION_GHOST_SIZE = 200;
 const AREA_SELECTION_LINE_Z_OFFSET = 8;
@@ -125,6 +126,8 @@ interface AreaSelectionRectangleProps {
   config: Config;
   getZ(x: number, y: number): number;
   ghost: boolean;
+  gridLayer?: boolean;
+  name?: string;
 }
 
 const AreaSelectionRectangle = (props: AreaSelectionRectangleProps) => {
@@ -144,19 +147,22 @@ const AreaSelectionRectangle = (props: AreaSelectionRectangleProps) => {
     point(box.x0, box.y0),
   ];
   return <Line
-    name={props.ghost
+    name={props.name || (props.ghost
       ? "area-selection-ghost"
-      : "area-selection-rectangle"}
+      : "area-selection-rectangle")}
     points={points}
     color={"white"}
     dashed={true}
     dashSize={25}
     gapSize={20}
-    lineWidth={3}
+    lineWidth={2}
     transparent={true}
     opacity={props.ghost ? 0.45 : 0.95}
-    depthTest={false}
-    renderOrder={AREA_SELECTION_RENDER_ORDER}
+    depthTest={!!props.gridLayer}
+    depthWrite={true}
+    renderOrder={props.gridLayer
+      ? RenderOrder.default
+      : AREA_SELECTION_RENDER_ORDER}
     raycast={noControlRaycast} />;
 };
 
@@ -426,6 +432,46 @@ export interface GroupAreaSelectionOverlayProps {
   onBoxChange(box: AreaSelectionBox): void;
 }
 
+type GroupAreaConfig = Pick<Config, "botSizeX" | "botSizeY">;
+
+export const getGroupAreaSelectionBox = (
+  group: TaggedPointGroup,
+  config: GroupAreaConfig,
+  includeUnbounded = false,
+): AreaSelectionBox | undefined => {
+  const gt = group.body.criteria.number_gt;
+  const lt = group.body.criteria.number_lt;
+  const bounds = [gt.x, gt.y, lt.x, lt.y];
+  if (!includeUnbounded && !bounds.some(value => typeof value == "number")) {
+    return undefined;
+  }
+  return {
+    x0: gt.x ?? 0,
+    y0: gt.y ?? 0,
+    x1: lt.x ?? config.botSizeX,
+    y1: lt.y ?? config.botSizeY,
+  };
+};
+
+export interface GroupAreaVisualProps {
+  box: AreaSelectionBox;
+  config: Config;
+  getZ(x: number, y: number): number;
+  gridLayer?: boolean;
+  name?: string;
+}
+
+export const GroupAreaVisual = (props: GroupAreaVisualProps) =>
+  <Group name={props.name || "group-area-visual"}>
+    <AreaSelectionRectangle
+      box={props.box}
+      config={props.config}
+      getZ={props.getZ}
+      ghost={false}
+      gridLayer={props.gridLayer}
+      name={props.name ? `${props.name}-rectangle` : undefined} />
+  </Group>;
+
 export const GroupAreaSelectionOverlay = (
   props: GroupAreaSelectionOverlayProps,
 ) => {
@@ -447,11 +493,10 @@ export const GroupAreaSelectionOverlay = (
   const previewBox = (nextBox: AreaSelectionBox) =>
     setState(current => ({ ...current, box: nextBox }));
   return <Group name={"group-area-selection"}>
-    <AreaSelectionRectangle
+    <GroupAreaVisual
       box={box}
       config={props.config}
-      getZ={props.getZ}
-      ghost={false} />
+      getZ={props.getZ} />
     {(["x0", "x1", "y0", "y1"] as const).map(edge =>
       <AreaSelectionEdgeControl
         key={edge}

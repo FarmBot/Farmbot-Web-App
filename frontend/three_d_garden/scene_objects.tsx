@@ -58,13 +58,14 @@ const ORIGIN_MARKER_RENDER_ORDER = ORIGIN_SPHERE_RENDER_ORDER + 1;
 const OBJECT_AXIS_RENDER_ORDER = ORIGIN_MARKER_RENDER_ORDER + 1;
 const FACE_SIZE_RENDER_ORDER = OBJECT_AXIS_RENDER_ORDER + 1;
 const FACE_MARKER_RENDER_ORDER = FACE_SIZE_RENDER_ORDER + 1;
-const FACE_SIZE_ARROW_LENGTH = 250;
+const FACE_SIZE_ARROW_LENGTH = 150;
 const FACE_SIZE_LABEL_SIZE = ORIGIN_LABEL_SIZE;
 const OBJECT_AXIS_ARROW_LENGTH = 125;
 const ROTATION_CONTROL_SPACING = 100;
 const ROTATION_CONTROL_ARC = Math.PI / 3;
-const ROTATION_CONTROL_MAX_LENGTH = 1000;
+const ROTATION_CONTROL_MAX_LENGTH = 250;
 const ROTATION_CONTROL_SEGMENTS = 16;
+const ROTATION_GUIDE_SEGMENTS = 64;
 const ROTATION_CONTROL_WIDTH = CONTROL_SIZE_ARROW_WIDTH;
 const ROTATION_CONTROL_HEAD_LENGTH = ROTATION_CONTROL_WIDTH * 3;
 const ROTATION_CONTROL_HEAD_RADIUS = ROTATION_CONTROL_WIDTH;
@@ -977,6 +978,19 @@ export const sceneObjectRotationControlPoints = (
   });
 };
 
+const sceneObjectRotationRadiusGuidePoints = (
+  pivot: XYZRecord,
+  radius: number,
+): [number, number, number][] =>
+  range(ROTATION_GUIDE_SEGMENTS + 1).map(index => {
+    const angle = Math.PI * 2 * index / ROTATION_GUIDE_SEGMENTS;
+    return [
+      pivot.x + Math.cos(angle) * radius,
+      pivot.y + Math.sin(angle) * radius,
+      pivot.z + 5,
+    ];
+  });
+
 export const sceneObjectRotationFromPointer = (
   startRotation: number,
   startAngle: number,
@@ -1044,8 +1058,14 @@ interface FaceSizeDragState {
 interface RotationDragState {
   corner: SceneObjectRotationCorner;
   pivot: XYZRecord;
+  radius: number;
   startAngle: number;
   startRotation: number;
+}
+
+interface HoveredRotationControl {
+  corner: SceneObjectRotationCorner;
+  radius: number;
 }
 
 interface SceneObjectMoveHandleProps {
@@ -1607,8 +1627,8 @@ const SceneObjectRotationControl =
       sceneObject,
     } = props;
     const [drag, setDrag] = React.useState<RotationDragState>();
-    const [hoveredCorner, setHoveredCorner] =
-      React.useState<SceneObjectRotationCorner>();
+    const [hoveredControl, setHoveredControl] =
+      React.useState<HoveredRotationControl>();
     const scale = useObjectMarkerScale(
       sceneObjectPoint(config, center));
     const pivot = pointToRecord(sceneObjectPoint(config, center));
@@ -1648,7 +1668,11 @@ const SceneObjectRotationControl =
       const labelPoint = points[Math.floor(points.length / 2)];
       const curve = new CatmullRomCurve3(
         points.map(point => new Vector3(...point)));
-      const active = hoveredCorner == corner || drag?.corner == corner;
+      const radius = Math.hypot(
+        start[0] - pivot.x,
+        start[1] - pivot.y,
+      );
+      const active = hoveredControl?.corner == corner || drag?.corner == corner;
       const color = active ? "deepskyblue" : "dodgerblue";
       return <ControlHandle
         key={corner}
@@ -1658,9 +1682,9 @@ const SceneObjectRotationControl =
           "xy", [pivot.x, pivot.y, pivot.z])}
         onHoverChange={isHovered => {
           if (props.interactionLocked() && !drag) { return; }
-          setHoveredCorner(current => {
-            if (isHovered) { return corner; }
-            return current == corner ? undefined : current;
+          setHoveredControl(current => {
+            if (isHovered) { return { corner, radius }; }
+            return current?.corner == corner ? undefined : current;
           });
           setSceneObjectFieldFocus(
             dispatch, isHovered ? "rotation" : undefined);
@@ -1670,6 +1694,7 @@ const SceneObjectRotationControl =
           setDrag({
             corner,
             pivot,
+            radius,
             startAngle: Math.atan2(
               point.y - pivot.y, point.x - pivot.x),
             startRotation: sceneObject.body.rotation,
@@ -1686,14 +1711,14 @@ const SceneObjectRotationControl =
             updateSceneObject(rotationUpdate(point));
           }
           setDrag(undefined);
-          setHoveredCorner(undefined);
+          setHoveredControl(undefined);
           props.setInteractionLocked(false);
           setSceneObjectFieldFocus(dispatch, undefined);
           onPreviewEnd();
         }}
         onDragCancel={() => {
           setDrag(undefined);
-          setHoveredCorner(undefined);
+          setHoveredControl(undefined);
           props.setInteractionLocked(false);
           setSceneObjectFieldFocus(dispatch, undefined);
           onPreviewEnd();
@@ -1759,7 +1784,24 @@ const SceneObjectRotationControl =
         </Group>
       </ControlHandle>;
     };
+    const radiusGuide = drag?.radius ?? hoveredControl?.radius;
+    const radiusGuidePoints = radiusGuide !== undefined
+      ? sceneObjectRotationRadiusGuidePoints(
+        pivot, radiusGuide)
+      : undefined;
     return <>
+      {radiusGuidePoints &&
+        <Line
+          name={"scene-object-edit-rotation-radius-guide"}
+          points={radiusGuidePoints}
+          color={"white"}
+          lineWidth={2}
+          dashed={true}
+          dashSize={25}
+          gapSize={25}
+          depthTest={false}
+          renderOrder={FACE_SIZE_RENDER_ORDER}
+          raycast={noControlRaycast} />}
       {drag && sceneObjectRotationGuideVisible(sceneObject.body.rotation) &&
         <Line
           name={"scene-object-edit-rotation-guide"}

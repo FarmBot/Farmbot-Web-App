@@ -11,13 +11,16 @@ import * as controls from "../../controls";
 import { getWorldPositionFunc } from "../../helpers";
 import {
   AREA_SELECTION_GHOST_SIZE, areaSelectionPointTypes,
-  areaSelectionTitle, GardenAreaSelectionOverlay, GroupAreaSelectionOverlay,
-  getGhostAreaSelectionBox, normalizeAreaSelectionBox,
+  areaSelectionTitle, GardenAreaSelectionOverlay, getGroupAreaSelectionBox,
+  GroupAreaSelectionOverlay, GroupAreaVisual, getGhostAreaSelectionBox,
+  normalizeAreaSelectionBox,
   resizeAreaSelectionBox,
 } from "../area_selection";
 import {
   actRenderer, createRenderer, unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import { fakePointGroup } from
+  "../../../__test_support__/fake_state/resources";
 
 describe("area selection geometry", () => {
   it("creates a 200mm ghost rectangle within garden bounds", () => {
@@ -59,6 +62,28 @@ describe("area selection geometry", () => {
     expect(areaSelectionTitle(3, "Plant")).toEqual("3 plants");
     expect(areaSelectionTitle(2, "All")).toEqual("2 objects");
   });
+
+  it("resolves bounded group location areas", () => {
+    const group = fakePointGroup();
+    group.body.criteria.number_gt = { x: 100 };
+    group.body.criteria.number_lt = { y: 700 };
+    const config = { botSizeX: 1000, botSizeY: 800 };
+    expect(getGroupAreaSelectionBox(group, config)).toEqual({
+      x0: 100,
+      y0: 0,
+      x1: 1000,
+      y1: 700,
+    });
+    group.body.criteria.number_gt = {};
+    group.body.criteria.number_lt = {};
+    expect(getGroupAreaSelectionBox(group, config)).toBeUndefined();
+    expect(getGroupAreaSelectionBox(group, config, true)).toEqual({
+      x0: 0,
+      y0: 0,
+      x1: 1000,
+      y1: 800,
+    });
+  });
 });
 
 describe("<GardenAreaSelectionOverlay />", () => {
@@ -83,7 +108,26 @@ describe("<GardenAreaSelectionOverlay />", () => {
   const mockLine = () => jest.spyOn(threeDrei, "Line")
     .mockImplementation(props => <div
       data-testid={props.name}
-      data-line-width={props.lineWidth} />);
+      data-depth-test={`${props.depthTest}`}
+      data-depth-write={`${props.depthWrite}`}
+      data-line-width={props.lineWidth}
+      data-render-order={props.renderOrder} />);
+
+  it("renders passive group areas with grid depth behavior", () => {
+    const lineSpy = mockLine();
+    render(<GroupAreaVisual
+      box={{ x0: 100, y0: 200, x1: 500, y1: 600 }}
+      config={config}
+      getZ={jest.fn(() => -100)}
+      gridLayer={true}
+      name={"group-area"} />);
+
+    const rectangle = screen.getByTestId("group-area-rectangle");
+    expect(rectangle).toHaveAttribute("data-depth-test", "true");
+    expect(rectangle).toHaveAttribute("data-depth-write", "true");
+    expect(rectangle).toHaveAttribute("data-render-order", "0");
+    lineSpy.mockRestore();
+  });
 
   it("shows and hides the shift-hover ghost", () => {
     const lineSpy = mockLine();
@@ -210,7 +254,7 @@ describe("<GardenAreaSelectionOverlay />", () => {
     expect(screen.getByTestId("area-selection-rectangle"))
       .toBeInTheDocument();
     expect(screen.getByTestId("area-selection-rectangle"))
-      .toHaveAttribute("data-line-width", "3");
+      .toHaveAttribute("data-line-width", "2");
     expect(screen.getAllByTestId(/area-selection-.*-control/))
       .toHaveLength(4);
     const arrows = screen.getAllByTestId(/area-selection-.*-arrow/);

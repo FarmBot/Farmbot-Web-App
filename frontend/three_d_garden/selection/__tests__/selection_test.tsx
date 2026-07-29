@@ -1,5 +1,6 @@
 import React from "react";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import * as threeFiber from "@react-three/fiber";
 import { clone } from "lodash";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
@@ -25,7 +26,9 @@ import {
   ObjectPopupHeaderColor, ObjectPopupVisibilityButton,
   PopupObjectLocationRow, PopupSelectedLocationRow,
 } from "../popup_controls";
-import { LocationPopup, ObjectPopup } from "../popups";
+import {
+  LocationPopup, ObjectPopup, scaledObjectPopupPosition,
+} from "../popups";
 import { SelectedObjectOverlay } from "../overlay";
 import {
   ThreeDObjectSelectionLayer,
@@ -50,6 +53,7 @@ import { bot as fakeBot } from "../../../__test_support__/fake_state/bot";
 import { createPanelCameraStore } from "../../panel_camera";
 import * as crud from "../../../api/crud";
 import { Actions } from "../../../constants";
+import { ThreeDPopup } from "../../controls";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -579,6 +583,50 @@ describe("selection resolve", () => {
 });
 
 describe("selection overlay and popups", () => {
+  it("scales scene object popup clearance with camera distance", () => {
+    const object = sceneObjectObject();
+    const top = object.worldPosition[2] + object.sceneObject.body.z_size / 2;
+
+    expect(scaledObjectPopupPosition(object, 1)[2]).toEqual(top + 200);
+    expect(scaledObjectPopupPosition(object, 2)[2]).toEqual(top + 400);
+    expect(scaledObjectPopupPosition(plantObject(), 2)).toEqual([4, 5, 6]);
+  });
+
+  it("updates scene object popup clearance as the camera moves away", () => {
+    const frameCallbacks: (() => void)[] = [];
+    const useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(callback => {
+        frameCallbacks.push(callback as () => void);
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      });
+    const object = sceneObjectObject();
+    const useThreeSpy = jest.spyOn(threeFiber, "useThree")
+      .mockReturnValue({
+        position: {
+          x: object.worldPosition[0] + 7000,
+          y: object.worldPosition[1],
+          z: object.worldPosition[2],
+        },
+      });
+    const wrapper = createRenderer(<ObjectPopup
+      {...layerProps()}
+      object={object}
+      visible={true} />);
+    const top = object.worldPosition[2]
+      + object.sceneObject.body.z_size / 2;
+
+    expect(wrapper.root.findByType(ThreeDPopup).props.position[2])
+      .toEqual(top + 200);
+    act(() => frameCallbacks.forEach(callback => callback()));
+    expect(wrapper.root.findByType(ThreeDPopup).props.position[2])
+      .toEqual(top + 400);
+
+    unmountRenderer(wrapper);
+    useFrameSpy.mockRestore();
+    useThreeSpy.mockRestore();
+  });
+
   it("renders selected object overlays", () => {
     const refSpy = jest.spyOn(React, "useRef")
       .mockReturnValue({ current: { rotation: { z: 0 } } });

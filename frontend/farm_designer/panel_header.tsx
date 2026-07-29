@@ -201,13 +201,27 @@ interface NavTabProps {
   designer: DesignerState;
 }
 
+export const clearGridPlanting = (
+  dispatch: Function,
+  designer: DesignerState,
+) => {
+  const token = designer.gridPlanting?.token;
+  token && dispatch({
+    type: Actions.CLEAR_GRID_PLANTING,
+    payload: token,
+  });
+};
+
 const NavTab = (props: NavTabProps) => {
   const { panel, dispatch, designer } = props;
   const isActive = getCurrentPanel(designer) === panel;
   return <Link id={PANEL_SLUG[panel]}
     to={isActive ? Path.designer() : getPanelPath(panel)}
     style={{ flex: 0.3 }}
-    onClick={() => dispatch(setPanelOpen(!isActive))}
+    onClick={() => {
+      clearGridPlanting(dispatch, designer);
+      dispatch(setPanelOpen(!isActive));
+    }}
     className={isActive ? "active" : ""}>
     <img width={35} height={30}
       src={TAB_ICON[panel]}
@@ -275,7 +289,10 @@ export class DesignerNavTabs
           className={getCurrentPanel(this.props.designer) === Panel.Map
             ? "active"
             : ""}
-          onClick={() => this.props.dispatch(setPanelOpen(false))}>
+          onClick={() => {
+            clearGridPlanting(this.props.dispatch, this.props.designer);
+            this.props.dispatch(setPanelOpen(false));
+          }}>
           <img width={35} height={30}
             src={FilePath.icon(Icon.map)}
             title={PANEL_TITLE()[Panel.Map]} />

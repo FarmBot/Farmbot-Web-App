@@ -2,7 +2,7 @@ import React from "react";
 import { act, fireEvent, render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import * as springCore from "@react-spring/core";
-import { Ray, Vector3 } from "three";
+import { Mesh, Ray, Vector3 } from "three";
 import {
   axisConstraint,
   ControlArrow,
@@ -310,6 +310,17 @@ describe("3D control visuals", () => {
       node.props.name == "sphere")[0];
     expect(sphere.props.args).toEqual([10, 16, 16]);
     expect(sphere.props.raycast).toBe(noControlRaycast);
+    expect(sphere.props.raycast()).toBeUndefined();
+    actRenderer(() => wrapper.update(
+      <ControlSphere
+        name={"sphere"}
+        radius={10}
+        enabled={true} />,
+    ));
+    expect(wrapper.root.findAll(node =>
+      node.type == "div" &&
+      node.props.name == "sphere")[0].props.raycast)
+      .toBe(Mesh.prototype.raycast);
     unmountRenderer(wrapper);
 
     const hovered = createRenderer(

@@ -40,6 +40,16 @@ describe("<Telescope />", () => {
 
   const showTelescope = (container: HTMLElement) => clickSphere(container);
 
+  it("reports telescope activation", () => {
+    const props = fakeProps();
+    props.onActivate = jest.fn();
+    const { container } = render(<Telescope {...props} />);
+
+    clickSphere(container);
+
+    expect(props.onActivate).toHaveBeenCalledTimes(1);
+  });
+
   it("enables and disables the telescope from the sphere", () => {
     const props = fakeProps();
     const { container, unmount } = render(<Telescope {...props} />);

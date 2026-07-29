@@ -369,6 +369,7 @@ export const GridRevealGroup = (props: GridRevealGroupProps) =>
     reveal={props.reveal}
     onRest={props.onRest}
     fromScale={[0.001, 0.001, 1]}
-    toScale={[1, 1, 1]}>
+    toScale={[1, 1, 1]}
+    fadeIn={true}>
     {props.children}
   </LoadInGroup>;

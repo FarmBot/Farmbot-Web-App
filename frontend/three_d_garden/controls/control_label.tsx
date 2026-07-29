@@ -4,7 +4,7 @@ import { Text } from "../elements/text";
 import {
   ControlRenderOptions, resolveControlRenderOptions,
 } from "./theme";
-import { noControlRaycast } from "./events";
+import { controlRaycast } from "./events";
 import { ControlPoint } from "./types";
 
 export interface ControlLabelProps extends ControlRenderOptions {
@@ -31,7 +31,7 @@ const LabelText = (props: ControlLabelProps) => {
     depthTest={renderOptions.depthTest}
     depthWrite={renderOptions.depthWrite}
     renderOrder={renderOptions.renderOrder}
-    raycast={props.enabled === false ? noControlRaycast : undefined}
+    raycast={controlRaycast(props.enabled !== false)}
     rotation={[0, 0, 0]}
     position={[0, 0, 0]}>
     {props.children}

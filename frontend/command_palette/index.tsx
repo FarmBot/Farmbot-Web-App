@@ -8,7 +8,7 @@ import {
 } from "./interfaces";
 import { searchCommands } from "./search";
 import {
-  clearRecentCommands, orderCommandsWithRecents, readRecentCommandIds,
+  clearRecentCommands, orderCommandsWithRecents, readRecentCommands,
   recordRecentCommand,
 } from "./recents";
 import { t } from "../i18next_wrapper";
@@ -21,6 +21,12 @@ interface CommandPaletteProps {
 }
 
 export const COMMAND_PALETTE_OPEN_EVENT = "farmbot:open-command-palette";
+export const COMMAND_PALETTE_RESULT_LIMIT = 100;
+
+const readRecentCommandsForVersion = (
+  open: boolean,
+  _recentVersion: number,
+) => open ? readRecentCommands() : [];
 
 export const openCommandPalette = () =>
   window.dispatchEvent(new Event(COMMAND_PALETTE_OPEN_EVENT));
@@ -327,7 +333,7 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
   const [selectedAction, setSelectedAction] = React.useState(0);
   const [values, setValues] = React.useState<Record<string, string>>({});
   const [validationError, setValidationError] = React.useState<string>();
-  const [, setRecentVersion] = React.useState(0);
+  const [recentVersion, setRecentVersion] = React.useState(0);
   const commands = React.useMemo(() => open
     ? buildCommands({
       state: props.appState,
@@ -335,10 +341,21 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
       navigate,
     })
     : [], [open, props.appState, props.dispatch, navigate]);
-  const recentIds = open ? readRecentCommandIds() : [];
-  const results = query
+  const recentCommands = React.useMemo(
+    () => readRecentCommandsForVersion(open, recentVersion),
+    [open, recentVersion],
+  );
+  const recentIds = recentCommands.map(command => command.id);
+  // The ordering helpers read command closures that the compiler cannot infer.
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const results = React.useMemo(() => (query
     ? searchCommands(commands, query)
-    : orderCommandsWithRecents(commands);
+    : orderCommandsWithRecents(commands, recentCommands))
+    .slice(0, COMMAND_PALETTE_RESULT_LIMIT), [
+    commands,
+    query,
+    recentCommands,
+  ]);
   const recentCount = query
     ? 0
     : recentIds
@@ -401,11 +418,11 @@ export const RawCommandPalette = (props: CommandPaletteProps) => {
       initializedOpen.current = false;
       return;
     }
-    if (initializedOpen.current || !commands.length) { return; }
+    if (initializedOpen.current || !results.length) { return; }
     initializedOpen.current = true;
-    const command = orderCommandsWithRecents(commands)[0];
+    const command = results[0];
     setSelectedAction(defaultActionIndex(command));
-  }, [commands, open]);
+  }, [open, results]);
 
   const focusActionInput = (
     command?: Command,

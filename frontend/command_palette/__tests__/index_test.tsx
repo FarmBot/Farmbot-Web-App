@@ -1,8 +1,10 @@
 import React from "react";
 import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { range } from "lodash";
 import {
   commandPaletteShortcut, COMMAND_PALETTE_OPEN_EVENT,
+  COMMAND_PALETTE_RESULT_LIMIT,
   commandPaletteStateEqual, completeCommandExecution,
   handleCommandPaletteHotkey, mapStateToCommandPaletteProps,
   openCommandPalette, RawCommandPalette, showCommandPalette,
@@ -42,10 +44,35 @@ describe("<CommandPalette />", () => {
     });
   });
 
-  const setup = () => render(<MemoryRouter>
-    <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
-      initialOpen={true} />
-  </MemoryRouter>);
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const actualBuildCommands = commandsModule.buildCommands;
+
+  const mockCommandCatalog = (
+    state: ReturnType<typeof fakeState>,
+    dispatch: Function,
+    commandIds: string[] | undefined,
+  ) => {
+    if (!commandIds) { return; }
+    const commands = actualBuildCommands({
+      state,
+      dispatch,
+      navigate: jest.fn(),
+    }).filter(command => commandIds.includes(command.id));
+    jest.spyOn(commandsModule, "buildCommands").mockReturnValue(commands);
+  };
+
+  const setup = (commandIds?: string[]) => {
+    const state = fakeState();
+    const dispatch = jest.fn();
+    mockCommandCatalog(state, dispatch, commandIds);
+    return render(<MemoryRouter>
+      <RawCommandPalette appState={state} dispatch={dispatch}
+        initialOpen={true} />
+    </MemoryRouter>);
+  };
 
   const setupSequence = () => {
     const state = fakeState();
@@ -63,10 +90,11 @@ describe("<CommandPalette />", () => {
     };
   };
 
-  const setupFirmware = () => {
+  const setupFirmware = (commandIds?: string[]) => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakeFirmwareConfig()]);
     const dispatch = jest.fn();
+    mockCommandCatalog(state, dispatch, commandIds);
     return {
       ...render(<MemoryRouter>
         <RawCommandPalette appState={state} dispatch={dispatch}
@@ -199,6 +227,25 @@ describe("<CommandPalette />", () => {
     expect(COMMAND_PALETTE_OPEN_EVENT).toEqual("farmbot:open-command-palette");
   });
 
+  it("limits the rendered command catalog", () => {
+    jest.spyOn(commandsModule, "buildCommands").mockReturnValue(
+      range(COMMAND_PALETTE_RESULT_LIMIT + 1).map(index => ({
+        id: `command-${index}`,
+        name: `Command ${index}`,
+        englishName: `Command ${index}`,
+        group: "navigation",
+        execute: jest.fn(),
+      })),
+    );
+    const { container } = render(<MemoryRouter>
+      <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
+        initialOpen={true} />
+    </MemoryRouter>);
+
+    expect(container.querySelectorAll(".command-palette-option"))
+      .toHaveLength(COMMAND_PALETTE_RESULT_LIMIT);
+  });
+
   it("renders stacked icons and selects commands and actions on hover", () => {
     const firstAction = jest.fn();
     const buildCommands = jest.spyOn(commandsModule, "buildCommands")
@@ -277,7 +324,7 @@ describe("<CommandPalette />", () => {
 
   it("clears unsubmitted values after a native dialog close", () => {
     localStorage.removeItem(COMMAND_PALETTE_RECENTS);
-    const { container, getByLabelText } = setup();
+    const { container, getByLabelText } = setup(["farmbot:move:x"]);
     const search = getByLabelText("Search commands");
     fireEvent.change(search, { target: { value: "Move X" } });
     const custom = getByLabelText(
@@ -304,7 +351,7 @@ describe("<CommandPalette />", () => {
         values: { xDistance: "42.5" },
       },
     ]));
-    const { container, getAllByLabelText } = setup();
+    const { container, getAllByLabelText } = setup(["farmbot:move:x"]);
     const customInputs = getAllByLabelText("Move X: Custom distance");
     expect(customInputs).toHaveLength(3);
     const custom = customInputs[1] as HTMLInputElement;
@@ -484,7 +531,9 @@ describe("<CommandPalette />", () => {
   it("shows setting actions inline and restores them in Recents", () => {
     const setValue = jest.spyOn(configStorageActions,
       "setWebAppConfigValue").mockImplementation(jest.fn() as never);
-    const { container, getByLabelText } = setup();
+    const { container, getByLabelText } = setup([
+      "setting:beep_verbosity:set",
+    ]);
     const search = getByLabelText("Search commands");
     fireEvent.change(search, {
       target: { value: DeviceSetting.browserFarmbotActivityBeep },
@@ -510,7 +559,7 @@ describe("<CommandPalette />", () => {
     expect(container.querySelector("dialog")?.hasAttribute("open"))
       .toEqual(false);
 
-    const recent = setup();
+    const recent = setup(["setting:beep_verbosity:set"]);
     const recentInput = recent.getAllByLabelText(
       `${DeviceSetting.browserFarmbotActivityBeep}: Set`)[0];
     expect(recentInput).toHaveValue("3");
@@ -724,24 +773,28 @@ describe("<CommandPalette />", () => {
   });
 
   it("labels Settings section commands without uppercasing them", () => {
+    const execute = jest.fn();
     const buildCommands = jest.spyOn(commandsModule, "buildCommands")
       .mockReturnValue([{
         id: "settings-section:axis_settings",
         name: "Settings > Axis Settings",
         englishName: "Settings > Axis Settings",
         group: "settings",
-        execute: jest.fn(),
+        execute,
       }]);
     const { getByLabelText, getByText } = render(<MemoryRouter>
       <RawCommandPalette appState={fakeState()} dispatch={jest.fn()}
         initialOpen={true} />
     </MemoryRouter>);
 
-    expect(getByLabelText("Settings > Axis Settings: Open Section"))
-      .toBeTruthy();
+    const action = getByLabelText("Settings > Axis Settings: Open Section");
     const title = getByText("Settings > Axis Settings");
     expect(title.closest(".command-palette-option"))
       .toHaveClass("command-palette-settings-section-command");
+    fireEvent.mouseMove(action);
+    expect(action).toHaveClass("selected");
+    fireEvent.click(action);
+    expect(execute).toHaveBeenCalledTimes(1);
     buildCommands.mockRestore();
   });
 
@@ -904,7 +957,9 @@ describe("<CommandPalette />", () => {
   it("shows multi-field actions inline", () => {
     const move = jest.spyOn(deviceActions, "moveAbsolute")
       .mockImplementation(jest.fn());
-    const { container, getByLabelText } = setup();
+    const { container, getByLabelText } = setup([
+      "farmbot:move-to:coordinates",
+    ]);
     const search = getByLabelText("Search commands");
     fireEvent.change(search, {
       target: { value: "Move to coordinates absolute location position" },
@@ -947,7 +1002,7 @@ describe("<CommandPalette />", () => {
       actionId: "move",
       values: { x: "1", y: "2", z: "3" },
     });
-    const recent = setup();
+    const recent = setup(["farmbot:move-to:coordinates"]);
     ["X", "Y", "Z"].map(axis => {
       const input = recent.getAllByLabelText(
         `Move to coordinates: Move: ${axis}`)[0];
@@ -961,7 +1016,10 @@ describe("<CommandPalette />", () => {
       { id: "farmbot:move:x" },
       { id: "farmbot:move:y" },
     ]));
-    const { container, getAllByLabelText, getByLabelText } = setup();
+    const { container, getAllByLabelText, getByLabelText } = setup([
+      "farmbot:move:x",
+      "farmbot:move:y",
+    ]);
     const search = getByLabelText("Search commands");
     const selectedAction = () => container.querySelector(
       ".command-palette-action.selected")?.textContent;
@@ -1009,7 +1067,8 @@ describe("<CommandPalette />", () => {
   it("edits grouped numeric firmware axis settings in a table", () => {
     const updateMCU = jest.spyOn(deviceActions, "updateMCU")
       .mockImplementation(jest.fn() as never);
-    const { container, getByLabelText } = setupFirmware();
+    const commandIds = ["firmware-setting:encoder_missed_steps_max:set"];
+    const { container, getByLabelText } = setupFirmware(commandIds);
     const search = getByLabelText("Search commands");
     fireEvent.change(search, {
       target: { value: DeviceSetting.maxMissedSteps },
@@ -1046,7 +1105,7 @@ describe("<CommandPalette />", () => {
       actionId: "y",
       values: { y: "13" },
     });
-    const recent = setupFirmware();
+    const recent = setupFirmware(commandIds);
     const recentY = recent.getAllByLabelText(`${prefix}: Y`)[0];
     expect(recentY).toHaveValue(13);
     expect(recentY).toHaveClass("selected");
@@ -1061,7 +1120,8 @@ describe("<CommandPalette />", () => {
   it("edits grouped boolean firmware axis settings in a table", () => {
     const updateMCU = jest.spyOn(deviceActions, "updateMCU")
       .mockImplementation(jest.fn() as never);
-    const { container, getByLabelText } = setupFirmware();
+    const commandIds = ["firmware-setting:encoder_invert:set"];
+    const { container, getByLabelText } = setupFirmware(commandIds);
     const search = getByLabelText("Search commands");
     fireEvent.change(search, { target: { value: "Encoder Invert" } });
     const toggles = container.querySelectorAll(
@@ -1088,7 +1148,7 @@ describe("<CommandPalette />", () => {
       actionId: "x",
       values: { x: "1", y: "0", z: "0" },
     });
-    const recent = setupFirmware();
+    const recent = setupFirmware(commandIds);
     const recentLabel = recent.container.querySelector(
       ".command-palette-axis-label.recent-execution");
     const recentToggle = recentLabel?.querySelector(".fb-toggle-button");
@@ -1108,7 +1168,10 @@ describe("<CommandPalette />", () => {
   it("renders standalone boolean firmware settings as toggles", () => {
     const updateMCU = jest.spyOn(deviceActions, "updateMCU")
       .mockImplementation(jest.fn() as never);
-    const { container, getByLabelText } = setupFirmware();
+    const commandIds = [
+      "firmware-setting:movement_secondary_motor_x:toggle",
+    ];
+    const { container, getByLabelText } = setupFirmware(commandIds);
     fireEvent.change(getByLabelText("Search commands"), {
       target: { value: "Movement Secondary Motor X" },
     });
@@ -1123,7 +1186,7 @@ describe("<CommandPalette />", () => {
       id: "firmware-setting:movement_secondary_motor_x:toggle",
       values: { toggle: "0" },
     });
-    const recent = setupFirmware();
+    const recent = setupFirmware(commandIds);
     expect(recent.container.querySelector(
       ".command-palette-accessory .fb-toggle-button")?.textContent)
       .toEqual("off");

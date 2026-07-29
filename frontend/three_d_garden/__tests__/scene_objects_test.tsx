@@ -194,7 +194,7 @@ describe("scene object placement helpers", () => {
       total + new Vector3(...point).distanceTo(
         new Vector3(...points[index])), 0);
 
-    expect(length).toBeCloseTo(1000);
+    expect(length).toBeCloseTo(250);
   });
 
   it("calculates rotation from the pointer angle", () => {
@@ -1595,6 +1595,9 @@ describe("scene object placement helpers", () => {
     expect(wrapper.root.findAllByProps({
       name: "scene-object-edit-rotation-guide",
     })).toHaveLength(0);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-radius-guide",
+    })).toHaveLength(0);
     expect(wrapper.root.findAll(node =>
       node.type == "mesh" as ElementType &&
       node.props.name == "scene-object-rotation-control-arc"))
@@ -1641,6 +1644,9 @@ describe("scene object placement helpers", () => {
           stopPropagation: jest.fn(),
         });
     });
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-radius-guide",
+    })).toHaveLength(1);
     const label = wrapper.root.findAllByProps({
       name: "scene-object-rotation-control-label",
     })[0];
@@ -1651,6 +1657,25 @@ describe("scene object placement helpers", () => {
         .props.onPointerDown(event(
           new Vector3(pivotX + 100, pivotY, pivotZ)));
     });
+    const radiusGuide = wrapper.root.findByProps({
+      name: "scene-object-edit-rotation-radius-guide",
+    });
+    expect(radiusGuide.props).toMatchObject({
+      color: "white",
+      dashed: true,
+      dashSize: 25,
+      gapSize: 25,
+    });
+    expect(radiusGuide.props.points).toHaveLength(65);
+    const controlStart = tubes[0].props.args[0].points[0] as Vector3;
+    const controlRadius = controlStart.distanceTo(
+      new Vector3(pivotX, pivotY, pivotZ + 5));
+    const guidePoints = radiusGuide.props.points as
+      [number, number, number][];
+    guidePoints.map(point =>
+      expect(new Vector3(...point).distanceTo(
+        new Vector3(pivotX, pivotY, pivotZ + 5)))
+        .toBeCloseTo(controlRadius));
     act(() => {
       findControlHandle(wrapper, "scene-object-rotation-control")
         .props.onPointerMove(event(rotationTarget));
@@ -1664,6 +1689,9 @@ describe("scene object placement helpers", () => {
     });
     expect(wrapper.root.findAllByProps({
       name: "scene-object-edit-rotation-guide",
+    })).toHaveLength(0);
+    expect(wrapper.root.findAllByProps({
+      name: "scene-object-edit-rotation-radius-guide",
     })).toHaveLength(0);
     expect(dispatch.mock.calls.filter(([action]) =>
       (action as { type?: string }).type == "EDIT_RESOURCE")).toHaveLength(0);
@@ -2057,7 +2085,7 @@ describe("scene object placement helpers", () => {
       .toEqual(10);
     const sizeArrow = findControlArrow(
       wrapper, "scene-object-face-size-arrow-0-arrow").props;
-    expect(Math.abs(sizeArrow.end[0] - sizeArrow.start[0])).toEqual(250);
+    expect(Math.abs(sizeArrow.end[0] - sizeArrow.start[0])).toEqual(150);
     const markerEvent = {
       stopPropagation: jest.fn(),
       nativeEvent: { stopImmediatePropagation: jest.fn() },
@@ -2108,7 +2136,7 @@ describe("scene object placement helpers", () => {
       wrapper, "scene-object-face-size-arrow-0-arrow").props;
     expect(faceArrow.width).toEqual(80);
     expect(faceArrow.labelSize).toEqual(128);
-    expect(Math.abs(faceArrow.end[0] - faceArrow.start[0])).toEqual(1000);
+    expect(Math.abs(faceArrow.end[0] - faceArrow.start[0])).toEqual(600);
     expect(findControlArrow(
       wrapper, "scene-object-base-x-axis-arrow-shape").props.width)
       .toEqual(40);

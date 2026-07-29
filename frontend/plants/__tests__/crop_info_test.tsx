@@ -262,9 +262,17 @@ describe("<CropInfo />", () => {
     });
   });
 
-  it("returns to crop search", () => {
+  it("returns to crop search and exits grid planting", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
     const { container } = render(<CropInfo {...p} />);
     const backArrow = container.querySelector(".back-arrow");
     expect(backArrow).toBeTruthy();
@@ -272,6 +280,10 @@ describe("<CropInfo />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch());
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "grid-token",
     });
   });
 

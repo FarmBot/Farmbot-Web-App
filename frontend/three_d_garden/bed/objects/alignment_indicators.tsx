@@ -11,9 +11,10 @@ import type { Config } from "../../config";
 import { RenderOrder } from "../../constants";
 import { get3DPositionFunc, zZero } from "../../helpers";
 import type { ThreeDGardenPlant } from "../../garden/plants";
+import { DEFAULT_WEED_RADIUS } from "../../garden/weed";
 import { Mesh } from "../../components";
 
-export const ALIGNMENT_INDICATOR_COLOR = "#ffff00";
+export const ALIGNMENT_INDICATOR_COLOR = "#ff0000";
 export const ALIGNMENT_INDICATOR_HEIGHT = 10;
 export const ALIGNMENT_INDICATOR_LENGTH = 50;
 export const ALIGNMENT_INDICATOR_RENDER_ORDER = RenderOrder.plants + 1;
@@ -26,6 +27,7 @@ type AlignmentConfig = Pick<Config,
 export interface AlignmentObject {
   gardenX: number;
   gardenY: number;
+  length: number;
   worldX: number;
   worldY: number;
   worldZ: number;
@@ -47,6 +49,11 @@ export interface BuildAlignmentIndexProps {
   showPoints: boolean;
   getZ(x: number, y: number): number;
 }
+
+export const alignmentIndicatorLength = (diameter?: number) =>
+  diameter === undefined
+    ? ALIGNMENT_INDICATOR_LENGTH
+    : Math.max(ALIGNMENT_INDICATOR_LENGTH, diameter * 1.5);
 
 const addToIndex = (
   index: AlignmentIndex,
@@ -74,11 +81,13 @@ export const buildAlignmentIndex = (props: BuildAlignmentIndexProps) => {
   const addObject = (
     gardenX: number,
     gardenY: number,
+    diameter?: number,
   ) => {
     const position = get3DPosition({ x: gardenX, y: gardenY });
     addToIndex(index, {
       gardenX,
       gardenY,
+      length: alignmentIndicatorLength(diameter),
       worldX: position.x,
       worldY: position.y,
       worldZ: zBase + props.getZ(gardenX, gardenY)
@@ -87,12 +96,13 @@ export const buildAlignmentIndex = (props: BuildAlignmentIndexProps) => {
   };
   if (props.showPlants) {
     props.plants.forEach(plant =>
-      addObject(plant.x, plant.y));
+      addObject(plant.x, plant.y, plant.size));
   }
   if (props.showWeeds) {
     props.weeds.forEach(weed => addObject(
       weed.body.x,
       weed.body.y,
+      (weed.body.radius == 0 ? DEFAULT_WEED_RADIUS : weed.body.radius) * 2,
     ));
   }
   if (props.showPoints) {
@@ -141,8 +151,11 @@ export const createIndicatorGeometry = (capacity: number) => {
     new Float32Array(capacity * 3), 3);
   const axes = new InstancedBufferAttribute(
     new Float32Array(capacity), 1);
+  const lengths = new InstancedBufferAttribute(
+    new Float32Array(capacity), 1);
   centers.setUsage(DynamicDrawUsage);
   axes.setUsage(DynamicDrawUsage);
+  lengths.setUsage(DynamicDrawUsage);
   geometry.setIndex(new BufferAttribute(indices, 1));
   geometry.setAttribute("position", new BufferAttribute(positions, 3));
   geometry.setAttribute("normal", new BufferAttribute(normals, 3));
@@ -154,6 +167,7 @@ export const createIndicatorGeometry = (capacity: number) => {
     "segmentHeight", new BufferAttribute(segmentHeights, 1));
   geometry.setAttribute("indicatorCenter", centers);
   geometry.setAttribute("indicatorAxis", axes);
+  geometry.setAttribute("indicatorLength", lengths);
   geometry.instanceCount = 0;
   return geometry;
 };
@@ -168,7 +182,6 @@ export const createIndicatorMaterial = () => {
   });
   material.onBeforeCompile = shader => {
     shader.uniforms.uHeight = { value: ALIGNMENT_INDICATOR_HEIGHT };
-    shader.uniforms.uLength = { value: ALIGNMENT_INDICATOR_LENGTH };
     shader.uniforms.uWidth = { value: ALIGNMENT_INDICATOR_WIDTH };
     shader.vertexShader = shader.vertexShader.replace(
       "#include <common>",
@@ -178,9 +191,9 @@ export const createIndicatorMaterial = () => {
     attribute float segmentHeight;
     attribute vec3 indicatorCenter;
     attribute float indicatorAxis;
+    attribute float indicatorLength;
 
     uniform float uHeight;
-    uniform float uLength;
     uniform float uWidth;
       `,
     ).replace(
@@ -193,7 +206,7 @@ export const createIndicatorMaterial = () => {
       );
       vec2 across = vec2(-along.y, along.x);
       vec2 indicatorPosition = indicatorCenter.xy
-        + along * segmentAlong * uLength
+        + along * segmentAlong * indicatorLength
         + across * segmentAcross * uWidth;
       vec3 transformed = vec3(
         indicatorPosition,
@@ -211,6 +224,7 @@ const writeInstances = (
   startIndex: number,
   centers: Float32Array,
   axes: Float32Array,
+  lengths: Float32Array,
 ) => {
   if (!objects) { return startIndex; }
   let instanceIndex = startIndex;
@@ -220,6 +234,7 @@ const writeInstances = (
     centers[centerIndex + 1] = object.worldY;
     centers[centerIndex + 2] = object.worldZ;
     axes[instanceIndex] = axis;
+    lengths[instanceIndex] = object.length;
     instanceIndex += 1;
   }
   return instanceIndex;
@@ -234,22 +249,28 @@ export const updateIndicatorGeometry = (
     InstancedBufferAttribute;
   const axes = geometry.getAttribute("indicatorAxis") as
     InstancedBufferAttribute;
+  const lengths = geometry.getAttribute("indicatorLength") as
+    InstancedBufferAttribute;
   const centerArray = centers.array as Float32Array;
   const axisArray = axes.array as Float32Array;
+  const lengthArray = lengths.array as Float32Array;
   let count = writeInstances(
     index.byY.get(position.y), 0, 0,
-    centerArray, axisArray);
+    centerArray, axisArray, lengthArray);
   count = writeInstances(
     index.byX.get(position.x), 1, count,
-    centerArray, axisArray);
+    centerArray, axisArray, lengthArray);
   geometry.instanceCount = count;
   if (count > 0) {
     centers.clearUpdateRanges();
     centers.addUpdateRange(0, count * centers.itemSize);
     axes.clearUpdateRanges();
     axes.addUpdateRange(0, count * axes.itemSize);
+    lengths.clearUpdateRanges();
+    lengths.addUpdateRange(0, count * lengths.itemSize);
     centers.needsUpdate = true;
     axes.needsUpdate = true;
+    lengths.needsUpdate = true;
   }
   return count;
 };

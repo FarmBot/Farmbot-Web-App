@@ -29,12 +29,15 @@ describe("<Solar />", () => {
   });
 
   it("keeps solar mounted during focus transitions", () => {
-    const { container } = render(
+    const wrapper = createRenderer(
       <FocusTransitionProvider enabled={true}>
         <LegacySolar {...fakeProps()} />
       </FocusTransitionProvider>,
     );
-    expect(container).toContainHTML("solar-wiring");
+    expect(wrapper.root.findByProps({ name: "solar-wiring" })).toBeTruthy();
+    expect(wrapper.root.findAll(node =>
+      node.props.color == "silver")[0].props.depthWrite).toEqual(false);
+    unmountRenderer(wrapper);
   });
 
   it("disables shadows", () => {
@@ -61,7 +64,7 @@ describe("<Solar />", () => {
     const solarCells = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh");
     expect(solarCells[0].props.frustumCulled).toEqual(false);
-    expect(solarCells[0].props.renderOrder).toEqual(RenderOrder.one + 1);
+    expect(solarCells[0].props.renderOrder).toEqual(RenderOrder.default);
     unmountRenderer(wrapper);
   });
 
@@ -71,21 +74,21 @@ describe("<Solar />", () => {
     const first = createRenderer(<LegacySolar {...p} />);
     const firstCells = first.root.findAll(node =>
       (node.type as string) == "instancedMesh"
-      && node.props.renderOrder == RenderOrder.one + 1)[0];
+      && node.props.renderOrder == RenderOrder.default)[0];
     const firstGeometry = firstCells.props.args[0];
     unmountRenderer(first);
 
     const second = createRenderer(<LegacySolar {...p} />);
     const secondCells = second.root.findAll(node =>
       (node.type as string) == "instancedMesh"
-      && node.props.renderOrder == RenderOrder.one + 1)[0];
+      && node.props.renderOrder == RenderOrder.default)[0];
 
     expect(secondCells.props.args[0]).toBe(firstGeometry);
     expect(secondCells.props.dispose).toBeNull();
     unmountRenderer(second);
   });
 
-  it("renders solar cells above panels and wiring", () => {
+  it("uses standard scene object rendering with panel depth", () => {
     const p = fakeProps();
     p.config.solar = true;
     const wrapper = createRenderer(<LegacySolar {...p} />);
@@ -93,16 +96,21 @@ describe("<Solar />", () => {
       node.props.name == "solar-wiring")[0];
     const panel = wrapper.root.findAll(node =>
       (node.type as string) == "mesh"
-      && node.props.renderOrder == RenderOrder.one)[0];
+      && node.props.renderOrder == RenderOrder.default)[0];
     const cells = wrapper.root.findAll(node =>
       (node.type as string) == "instancedMesh")[0];
     const cellMaterial = wrapper.root.findAll(node =>
-      node.props.side == DoubleSide)[0];
+      node.props.color == "#131361"
+      && node.props.depthWrite !== undefined)[0];
+    const panelMaterial = wrapper.root.findAll(node =>
+      node.props.color == "silver")[0];
     expect(wiring.props.renderOrder).toEqual(RenderOrder.default);
-    expect(panel.props.renderOrder).toEqual(RenderOrder.one);
-    expect(Number(cells.props.renderOrder))
-      .toBeGreaterThan(Number(panel.props.renderOrder));
+    expect(panel.props.renderOrder).toEqual(RenderOrder.default);
+    expect(cells.props.renderOrder).toEqual(RenderOrder.default);
     expect(cellMaterial.props.side).toEqual(DoubleSide);
+    expect(cellMaterial.props.depthWrite).toEqual(true);
+    expect(panelMaterial.props.side).toEqual(DoubleSide);
+    expect(panelMaterial.props.depthWrite).toEqual(true);
     unmountRenderer(wrapper);
   });
 
@@ -190,5 +198,6 @@ describe("<Solar />", () => {
       .toBeFalsy();
     expect(solarPropsEqual(p, { ...p, opacity: 1 })).toBeFalsy();
     expect(solarPropsEqual(p, { ...p, shadows: false })).toBeFalsy();
+    expect(solarPropsEqual(p, { ...p, depthWrite: true })).toBeFalsy();
   });
 });

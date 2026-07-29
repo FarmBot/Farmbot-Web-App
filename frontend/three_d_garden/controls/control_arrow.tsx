@@ -2,7 +2,7 @@ import React from "react";
 import { Cone, Cylinder } from "@react-three/drei";
 import { Quaternion, Vector3 } from "three";
 import { Group, MeshPhongMaterial } from "../components";
-import { noControlRaycast } from "./events";
+import { controlRaycast } from "./events";
 import { ControlLabel } from "./control_label";
 import { ControlPoint } from "./types";
 import {
@@ -94,7 +94,7 @@ export const ControlArrow = (props: ControlArrowProps) => {
         args={[width / 2, width / 2, shaftLength, 16]}
         position={[shaftStart + shaftLength / 2, 0, 0]}
         renderOrder={renderOptions.renderOrder}
-        raycast={enabled ? undefined : noControlRaycast}
+        raycast={controlRaycast(enabled)}
         rotation={[0, 0, -Math.PI / 2]}>
         {material}
       </Cylinder>
@@ -107,7 +107,7 @@ export const ControlArrow = (props: ControlArrowProps) => {
           ]}
           position={[distance - headLength / 2, 0, 0]}
           renderOrder={renderOptions.renderOrder}
-          raycast={enabled ? undefined : noControlRaycast}
+          raycast={controlRaycast(enabled)}
           rotation={[0, 0, -Math.PI / 2]}>
           {material}
         </Cone>}
@@ -120,7 +120,7 @@ export const ControlArrow = (props: ControlArrowProps) => {
           ]}
           position={[headLength / 2, 0, 0]}
           renderOrder={props.renderOrder}
-          raycast={enabled ? undefined : noControlRaycast}
+          raycast={controlRaycast(enabled)}
           rotation={[0, 0, Math.PI / 2]}>
           {material}
         </Cone>}

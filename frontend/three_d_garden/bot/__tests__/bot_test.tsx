@@ -456,12 +456,15 @@ describe("<Bot />", () => {
     expect(view.queryByRole("heading")).not.toBeInTheDocument();
     expect(view.container.querySelector(
       "[name='native-jog-current-utm-shadow']",
-    )).toBeInTheDocument();
+    )).not.toBeInTheDocument();
 
     act(() => jest.runOnlyPendingTimers());
     p.config = { ...p.config, controlsOverlay: true };
     view.rerender(<Bot {...p} />);
     expect(control()).toBeInTheDocument();
+    expect(view.container.querySelector(
+      "[name='native-jog-current-utm-shadow']",
+    )).toBeInTheDocument();
     expect(view.container.querySelector("[name='bot-jog-x-ghost']"))
       .not.toBeInTheDocument();
     expect(view.queryByRole("heading")).not.toBeInTheDocument();

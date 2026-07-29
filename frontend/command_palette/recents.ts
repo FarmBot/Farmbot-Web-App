@@ -69,9 +69,12 @@ export const recordRecentCommand = (
   localStorage.setItem(COMMAND_PALETTE_RECENTS, JSON.stringify(next));
 };
 
-export const orderCommandsWithRecents = (commands: Command[]) => {
+export const orderCommandsWithRecents = (
+  commands: Command[],
+  recentCommands = readRecentCommands(),
+) => {
   const lookup = new Map(commands.map(command => [command.id, command]));
-  const recent: Command[] = readRecentCommands()
+  const recent: Command[] = recentCommands
     .flatMap((item, index) => {
       const command = lookup.get(item.id);
       if (!command) { return []; }

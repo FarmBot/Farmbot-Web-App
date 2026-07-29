@@ -5,7 +5,7 @@ import { ExtrudeGeometryOptions, Shape } from "three";
 import { Group, MeshPhongMaterial } from "../components";
 import { ControlHandle } from "./control_handle";
 import { ControlLabel } from "./control_label";
-import { noControlRaycast } from "./events";
+import { controlRaycast } from "./events";
 import { CONTROL_COLORS } from "./theme";
 import { ControlPoint } from "./types";
 
@@ -113,7 +113,7 @@ const PillVisual = (props: PillVisualProps) => {
     depthTest={props.depthTest ?? true}
     depthWrite={props.depthWrite ?? true}
     toneMapped={!!props.active} />;
-  const raycast = props.enabled ? undefined : noControlRaycast;
+  const raycast = controlRaycast(props.enabled);
   return <AnimatedGroup
     name={`${props.name}-visual`}
     position-z={z}

@@ -99,6 +99,7 @@ describe("<GardenMapLegend />", () => {
     const { container } = render(<GardenMapLegend {...p} />);
     expect(container.querySelector("button[title='zoom in']"))
       .not.toBeInTheDocument();
+    expect(screen.getByTitle("show Areas")).not.toHaveClass("disabled");
   });
 
   it("highlights clickable objects while hovering over help", () => {

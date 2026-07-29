@@ -383,10 +383,11 @@ const EnabledBot = (props: FarmbotModelProps) => {
       keepMounted={true}
       preserveDepthWrite={true}
       visible={props.activeFocus != "Planter bed"}>
-      <NativeJogCurrentUtmShadow
-        config={config}
-        getZ={props.getZ}
-        positionStore={snapshotStore} />
+      {config.controlsOverlay &&
+        <NativeJogCurrentUtmShadow
+          config={config}
+          getZ={props.getZ}
+          positionStore={snapshotStore} />}
       <Group name={"bot-static"}>
         <Group position={kinematics.machineOrigin}>
           <StationaryAssembly

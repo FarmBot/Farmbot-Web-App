@@ -40,6 +40,37 @@ describe("<PopInGroup />", () => {
 
     expect(onRest).toHaveBeenCalled();
   });
+
+  it("hides the group after its exit animation rests", () => {
+    let springProps: { onRest(): void } | undefined;
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementationOnce(props => {
+        springProps = props as typeof springProps;
+        return {
+          position: [0, 0, 0],
+          scale: 1,
+        } as never;
+      });
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <PopInGroup
+          name={"bed-load-out"}
+          reveal={false}
+          animateExit={true}
+          hideAfterExit={true}>
+          <span>content</span>
+        </PopInGroup>,
+      );
+    });
+
+    TestRenderer.act(() => springProps?.onRest());
+
+    expect(view?.root.findAllByProps({ name: "bed-load-out" })
+      .some(node => node.props.visible === false)).toEqual(true);
+    useSpringSpy.mockRestore();
+    TestRenderer.act(() => view?.unmount());
+  });
 });
 
 describe("<FallInGroup />", () => {
@@ -93,6 +124,36 @@ describe("<GridRevealGroup />", () => {
 
     expect(container.innerHTML).toContain("grid-load-in");
     expect(screen.getByText("grid")).toBeTruthy();
+  });
+
+  it("fades from transparent to fully visible while revealing", () => {
+    let springProps: {
+      from: { opacity: number };
+      to: { opacity: number };
+    } | undefined;
+    const useSpringSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementationOnce(props => {
+        springProps = props as typeof springProps;
+        return {
+          position: [0, 0, 0],
+          scale: 1,
+        } as never;
+      });
+
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <GridRevealGroup name={"grid-load-in"}>
+          <span>grid</span>
+        </GridRevealGroup>,
+        { createNodeMock: () => new Object3D() },
+      );
+    });
+
+    expect(springProps?.from.opacity).toEqual(0);
+    expect(springProps?.to.opacity).toEqual(1);
+    useSpringSpy.mockRestore();
+    TestRenderer.act(() => view?.unmount());
   });
 });
 

@@ -18,6 +18,7 @@ export interface SolarProps {
   size: [number, number, number];
   opacity?: number | SpringValue<number>;
   shadows?: boolean;
+  depthWrite?: boolean;
 }
 
 export interface LegacySolarProps {
@@ -82,6 +83,7 @@ const getSolarCellGeometry = () => {
 interface SolarMaterialProps {
   opacity: number | SpringValue<number>;
   color: string;
+  depthWrite?: boolean;
   side?: typeof DoubleSide;
 }
 
@@ -91,11 +93,12 @@ const SolarMaterial = (props: SolarMaterialProps) =>
     opacity={props.opacity}
     side={props.side}
     transparent={true}
-    depthWrite={false} />;
+    depthWrite={props.depthWrite ?? false} />;
 
 interface SolarPartProps {
   opacity: SolarMaterialProps["opacity"];
   shadows: boolean;
+  depthWrite: boolean;
 }
 
 const SolarCells = (props: SolarPartProps) => {
@@ -112,7 +115,7 @@ const SolarCells = (props: SolarPartProps) => {
 
   return <InstancedMesh
     ref={setRef}
-    renderOrder={RenderOrder.one + 1}
+    renderOrder={RenderOrder.default}
     castShadow={props.shadows}
     receiveShadow={props.shadows}
     frustumCulled={false}
@@ -122,6 +125,7 @@ const SolarCells = (props: SolarPartProps) => {
     <SolarMaterial
       color={"#131361"}
       opacity={props.opacity}
+      depthWrite={props.depthWrite}
       side={DoubleSide} />
   </InstancedMesh>;
 };
@@ -130,11 +134,15 @@ const SolarPanel = React.memo(
   (props: SolarPartProps) => {
     return <Group rotation={[0, Math.PI / 6, 0]}>
       <Mesh
-        renderOrder={RenderOrder.one}
+        renderOrder={RenderOrder.default}
         castShadow={props.shadows}
         receiveShadow={props.shadows}>
         <BoxGeometry args={[panelWidth, panelLength, panelDepth]} />
-        <SolarMaterial color={"silver"} opacity={props.opacity} />
+        <SolarMaterial
+          color={"silver"}
+          opacity={props.opacity}
+          depthWrite={props.depthWrite}
+          side={DoubleSide} />
       </Mesh>
       <SolarCells {...props} />
     </Group>;
@@ -155,6 +163,7 @@ interface SolarWiringProps extends SolarPlacementProps {
 interface LegacySolarArrayProps extends SolarPlacementProps {
   opacity: SolarMaterialProps["opacity"];
   shadows: boolean;
+  depthWrite: boolean;
 }
 
 const LegacySolarArray = React.memo((props: LegacySolarArrayProps) => {
@@ -170,6 +179,7 @@ const LegacySolarArray = React.memo((props: LegacySolarArrayProps) => {
     rotation={[0, 0, Math.PI]}>
     <Solar size={SOLAR_BOUNDS}
       opacity={props.opacity}
+      depthWrite={props.depthWrite}
       shadows={props.shadows} />
   </Group>;
 });
@@ -212,6 +222,7 @@ const SolarWiring = React.memo((props: SolarWiringProps) => {
 export const solarPropsEqual = (prev: SolarProps, next: SolarProps) =>
   prev.opacity === next.opacity &&
   prev.shadows === next.shadows &&
+  prev.depthWrite === next.depthWrite &&
   prev.size[0] === next.size[0] &&
   prev.size[1] === next.size[1] &&
   prev.size[2] === next.size[2];
@@ -224,13 +235,20 @@ const SolarBase = (props: SolarProps) => {
   ] as [number, number, number], [props.size]);
   const opacity = props.opacity ?? 1;
   const shadows = props.shadows ?? true;
+  const depthWrite = props.depthWrite ?? opacity === 1;
 
   return <Group name={"solar"} scale={scale}>
     <Group name={"solar-panel"} position={[0, -525, 0]}>
-      <SolarPanel opacity={opacity} shadows={shadows} />
+      <SolarPanel
+        opacity={opacity}
+        shadows={shadows}
+        depthWrite={depthWrite} />
     </Group>
     <Group name={"solar-panel"} position={[0, 525, 0]}>
-      <SolarPanel opacity={opacity} shadows={shadows} />
+      <SolarPanel
+        opacity={opacity}
+        shadows={shadows}
+        depthWrite={depthWrite} />
     </Group>
   </Group>;
 };
@@ -262,6 +280,7 @@ export const LegacySolar = (props: LegacySolarProps) => {
   const hardwareProps: LegacySolarArrayProps = {
     ...placementProps,
     opacity,
+    depthWrite: visible,
     shadows: props.shadows ?? true,
   };
 

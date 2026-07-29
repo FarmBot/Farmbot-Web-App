@@ -127,6 +127,9 @@ describe("buildCommands()", () => {
   // eslint-disable-next-line complexity
   it("builds a comprehensive registry with stable unique ids", () => {
     const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    state.resources = buildResourceIndex([config]);
     const commands = buildCommands({
       state,
       dispatch: jest.fn(),
@@ -1192,7 +1195,8 @@ describe("buildCommands()", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.panelOpen = true;
     const setPanel = jest.fn();
-    const dispatch = jest.fn((action: Function) => action(setPanel));
+    const dispatch = jest.fn((action: Function | { type: string }) =>
+      typeof action == "function" ? action(setPanel) : action);
     const commands = buildCommands({ state, dispatch, navigate: jest.fn() });
     const panel = commands.find(command => command.id == "panel");
     expect(panel?.name).toEqual("Close Panel");
@@ -1211,9 +1215,22 @@ describe("buildCommands()", () => {
       .toEqual([false, false]);
 
     const navigate = jest.fn();
+    state.resources.consumers.farm_designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
     buildCommands({ state, dispatch, navigate })
       .find(command => command.id == "panel:plants")
       ?.actions?.find(action => action.id == "open-panel")?.execute();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "grid-token",
+    });
+    state.resources.consumers.farm_designer.gridPlanting = undefined;
     expect(setPanel.mock.calls.map(call => call[0].payload))
       .toEqual([false, false, true]);
     expect(navigate).toHaveBeenCalledWith(Path.plants());
@@ -1287,6 +1304,9 @@ describe("buildCommands()", () => {
 
   it("provides section view controls", () => {
     const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    state.resources = buildResourceIndex([config]);
     const dispatch = jest.fn();
     const command = buildCommands({
       state, dispatch, navigate: jest.fn(),
@@ -1310,6 +1330,17 @@ describe("buildCommands()", () => {
       { type: Actions.SET_3D_SECTION_FOLLOW_BOT, payload: false },
       { type: Actions.SET_3D_SECTION_CLIP_ALL, payload: false },
     ]);
+  });
+
+  it("only provides section view controls when 3D is enabled", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = false;
+    state.resources = buildResourceIndex([config]);
+
+    expect(buildCommands({
+      state, dispatch: jest.fn(), navigate: jest.fn(),
+    }).find(item => item.id == "section-view")).toBeUndefined();
   });
 
   it("selects resources and manages the selection panel", () => {

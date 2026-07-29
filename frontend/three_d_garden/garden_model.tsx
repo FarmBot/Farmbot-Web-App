@@ -45,7 +45,7 @@ import {
   AmbientLight, AxesHelper, Group, Mesh, MeshBasicMaterial,
   Primitive,
 } from "./components";
-import { isUndefined, kebabCase, range, round, uniq } from "lodash";
+import { clamp, isUndefined, kebabCase, range, round, uniq } from "lodash";
 import {
   PointType, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   McuParams, TaggedSensor,
@@ -149,7 +149,8 @@ import { getSelected } from
 import {
   AreaSelectionBox, AreaSelectionPointType, areaSelectionPointTypes,
   GardenAreaSelection, GardenAreaSelectionOverlay,
-  GroupAreaSelectionOverlay, normalizeAreaSelectionBox,
+  getGroupAreaSelectionBox, GroupAreaSelectionOverlay, GroupAreaVisual,
+  normalizeAreaSelectionBox,
 } from "./selection/area_selection";
 import { editGtLtCriteria } from "../point_groups/criteria/edit";
 import {
@@ -957,6 +958,7 @@ interface GardenLayerVisibility {
   showSpread: boolean;
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
+  showGroupAreas: boolean;
   showSceneObjects: boolean;
 }
 
@@ -999,6 +1001,7 @@ function getGardenLayerVisibility(
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!getConfigValue?.(
     BooleanSetting.show_sensor_readings);
+  const showGroupAreas = !!getConfigValue?.(BooleanSetting.show_zones);
   const { showSceneObjects } = params;
   return {
     showPlants,
@@ -1009,6 +1012,7 @@ function getGardenLayerVisibility(
     showSpread,
     showMoistureMap,
     showMoistureReadings,
+    showGroupAreas,
     showSceneObjects,
   };
 }
@@ -1048,6 +1052,7 @@ interface StaticGardenLayersProps {
   spaceflight: boolean;
   cameraSideStarClipEnabled: boolean;
   constellationDiscoveryEnabled: boolean;
+  onTelescopeActivate?(): void;
   showSpread: boolean;
   plantInstanceCapacity: number | undefined;
   routeKey: string;
@@ -1080,7 +1085,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     addPlantProps, plantLabelNodes, plantsVisible,
     plantIconAtlas, setHover, threeDPlants, plantIconCapacities, startTimeRef,
     dispatch, stargazing, spaceflight, cameraSideStarClipEnabled,
-    constellationDiscoveryEnabled, showSpread,
+    constellationDiscoveryEnabled, onTelescopeActivate, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
@@ -1135,7 +1140,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           sunIsSet={sunIsSet}
           stargazing={stargazing}
           spaceflight={spaceflight}
-          dispatch={dispatch} />}
+          dispatch={dispatch}
+          onActivate={onTelescopeActivate} />}
       <AmbientLight intensity={config.ambient / 100} />
       <Ground
         config={config}
@@ -1629,26 +1635,53 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
     });
     return inGardenGrid(config, position) ? position : undefined;
   }, [config, getGardenPosition]);
+  const getClippedGridPosition = React.useCallback((
+    point: { x: number, y: number },
+  ): GridHoverPosition => {
+    const position = getGardenPosition({
+      x: point.x,
+      y: point.y,
+    });
+    return {
+      x: clamp(position.x, 0, config.botSizeX),
+      y: clamp(position.y, 0, config.botSizeY),
+    };
+  }, [config.botSizeX, config.botSizeY, getGardenPosition]);
   const updateHover = React.useCallback((event: ThreeEvent<PointerEvent>) => {
     if (!enabled || !gridSelectionAllowed()) {
       onHoverPositionChange(undefined);
       return;
     }
-    onHoverPositionChange(getGridPosition(event.point));
-  }, [enabled, getGridPosition, onHoverPositionChange]);
+    onHoverPositionChange(areaSelectionPhase == "drawing"
+      ? getClippedGridPosition(event.point)
+      : getGridPosition(event.point));
+  }, [
+    areaSelectionPhase,
+    enabled,
+    getClippedGridPosition,
+    getGridPosition,
+    onHoverPositionChange,
+  ]);
   const clearHover = React.useCallback(() => {
     onHoverPositionChange(undefined);
   }, [onHoverPositionChange]);
   const selectArea = React.useCallback((
     event: ThreeEvent<PointerEvent>,
   ) => {
-    const position = getGridPosition(event.point);
+    const position = areaSelectionPhase == "drawing"
+      ? getClippedGridPosition(event.point)
+      : getGridPosition(event.point);
     if (!position) { return false; }
     return onAreaSelect({
       x: round(position.x),
       y: round(position.y),
     }, event.shiftKey);
-  }, [getGridPosition, onAreaSelect]);
+  }, [
+    areaSelectionPhase,
+    getClippedGridPosition,
+    getGridPosition,
+    onAreaSelect,
+  ]);
   const startAreaDrag = React.useCallback((
     event: ThreeEvent<PointerEvent>,
   ) => {
@@ -2959,6 +2992,11 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const selectionPanelOpen = mode == Mode.boxSelect;
   const groupPanelOpen = mode == Mode.editGroup;
   const objectSelectionMode = selectionPanelOpen || groupPanelOpen;
+  const exitObjectSelectionMode = React.useCallback(() => {
+    if (!objectSelectionMode) { return; }
+    dispatch?.(setPanelOpen3D(false));
+    navigate(Path.designer());
+  }, [dispatch, navigate, objectSelectionMode]);
   const selectionPointType = addPlantProps?.designer.selectionPointType;
   const kindSelectable = (kind: ThreeDObjectSelection["kind"]) =>
     !objectSelectionMode || selectionKindAllowed(kind, selectionPointType);
@@ -3462,7 +3500,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   ]);
   const {
     plantsVisible, farmbotVisible, showPoints, showWeeds,
-    showSpread, showMoistureMap,
+    showSpread, showMoistureMap, showGroupAreas,
     showMoistureReadings, showSceneObjects,
   } = layerVisibility;
   const routeKey = props.route.key;
@@ -3479,19 +3517,27 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     if (!editedGroup || !sectionDesigner?.editGroupAreaInMap) {
       return undefined;
     }
-    const gt = editedGroup.body.criteria.number_gt;
-    const lt = editedGroup.body.criteria.number_lt;
-    return {
-      x0: gt.x ?? 0,
-      y0: gt.y ?? 0,
-      x1: lt.x ?? config.botSizeX,
-      y1: lt.y ?? config.botSizeY,
-    };
+    return getGroupAreaSelectionBox(editedGroup, config, true);
   }, [
-    config.botSizeX,
-    config.botSizeY,
+    config,
     editedGroup,
     sectionDesigner?.editGroupAreaInMap,
+  ]);
+  const visibleGroupAreas = React.useMemo(() => {
+    if (!showGroupAreas) { return []; }
+    return groups.flatMap(group => {
+      if (group.uuid == editedGroup?.uuid && groupAreaSelectionBox) {
+        return [];
+      }
+      const box = getGroupAreaSelectionBox(group, config);
+      return box ? [{ box, uuid: group.uuid }] : [];
+    });
+  }, [
+    config,
+    editedGroup?.uuid,
+    groupAreaSelectionBox,
+    groups,
+    showGroupAreas,
   ]);
   const updateGroupAreaSelectionBox = React.useCallback((
     box: AreaSelectionBox,
@@ -3661,7 +3707,6 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const gridHoverEnabled =
     !spaceflight
     && !props.promo
-    && config.grid
     && props.activeFocus != "Planter bed"
     && gridSelectionAllowed();
   const activeGridHoverPosition = gridHoverEnabled
@@ -4075,6 +4120,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
             viewMode,
             cameraPhase,
           )}
+          onTelescopeActivate={exitObjectSelectionMode}
           showSpread={showSpread}
           plantInstanceCapacity={props.plantInstanceCapacity}
           routeKey={routeKey}
@@ -4131,6 +4177,19 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           onDelete={deleteAreaSelection}
           onOpenPanel={openAreaSelectionPanel}
           onPointTypeChange={updateAreaSelectionPointType} />
+        {visibleGroupAreas.length > 0 &&
+          <GridRevealGroup
+            name={"group-areas-load-in"}
+            reveal={gridReveal}>
+            {visibleGroupAreas.map(({ box, uuid }) =>
+              <GroupAreaVisual
+                key={uuid}
+                box={box}
+                config={config}
+                getZ={getZ}
+                gridLayer={true}
+                name={`group-area-${uuid}`} />)}
+          </GridRevealGroup>}
         {groupAreaSelectionBox &&
           <GroupAreaSelectionOverlay
             box={groupAreaSelectionBox}

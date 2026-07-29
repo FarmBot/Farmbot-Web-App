@@ -2,6 +2,7 @@ import React from "react";
 import { ThreeDObjectSelectionLayerProps } from "./props";
 import {
   ResolvedLocationObject, ResolvedThreeDObject,
+  SCENE_OBJECT_POPUP_Z_OFFSET,
 } from "./resolve";
 import {
   ObjectPopupControls, ObjectPopupCopyButton, ObjectPopupDeleteButton,
@@ -15,6 +16,8 @@ import { getFwHardwareValue } from
   "../../settings/firmware/firmware_hardware_support";
 import { ConnectivityPopupContent } from "./connectivity_popup";
 import { ThreeDPopup } from "../controls";
+import { useFrame, useThree } from "@react-three/fiber";
+import { objectMarkerScale } from "../scene_objects";
 
 interface ObjectPopupProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -45,7 +48,41 @@ const objectShowsLocation = (object: ResolvedThreeDObject) =>
     "safeHeight",
   ].includes(object.kind);
 
+export const scaledObjectPopupPosition = (
+  object: ResolvedThreeDObject,
+  scale: number,
+): [number, number, number] => {
+  if (object.kind != "sceneObject") { return object.popupPosition; }
+  return [
+    object.popupPosition[0],
+    object.popupPosition[1],
+    object.worldPosition[2]
+      + object.sceneObject.body.z_size / 2
+      + SCENE_OBJECT_POPUP_Z_OFFSET * scale,
+  ];
+};
+
+const useScaledObjectPopupPosition = (object: ResolvedThreeDObject) => {
+  const camera = useThree(state => state.camera);
+  const [scale, setScale] = React.useState(1);
+  const scaleRef = React.useRef(scale);
+  useFrame(() => {
+    if (object.kind != "sceneObject") { return; }
+    const distance = Math.hypot(
+      camera.position.x - object.worldPosition[0],
+      camera.position.y - object.worldPosition[1],
+      camera.position.z - object.worldPosition[2],
+    );
+    const next = objectMarkerScale(distance);
+    if (Math.abs(scaleRef.current - next) <= 0.05) { return; }
+    scaleRef.current = next;
+    setScale(next);
+  });
+  return scaledObjectPopupPosition(object, scale);
+};
+
 export const ObjectPopup = (props: ObjectPopupProps) => {
+  const popupPosition = useScaledObjectPopupPosition(props.object);
   const coordinates = props.object.kind == "utm"
     ? `(${Math.round(props.object.locationCoordinate.x)}, `
       + `${Math.round(props.object.locationCoordinate.y)}, `
@@ -60,7 +97,7 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
   }
   return <ThreeDPopup
     name={"selected-object-popup"}
-    position={props.object.popupPosition}
+    position={popupPosition}
     visible={props.visible}
     title={
       <span className={"row"}>

@@ -269,6 +269,7 @@ export interface TelescopeProps {
   stargazing: boolean;
   spaceflight: boolean;
   dispatch: Function | undefined;
+  onActivate?(): void;
 }
 
 export const Telescope = (props: TelescopeProps) => {
@@ -333,6 +334,7 @@ export const Telescope = (props: TelescopeProps) => {
   const toggleTelescope = (event: ControlPointerEvent) => {
     event.stopPropagation();
     if (celestialView) { return; }
+    props.onActivate?.();
     const nextEnabled = state != "enabled";
     setEnabledRequested(nextEnabled);
     setPopupOpen(nextEnabled);
