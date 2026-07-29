@@ -4219,6 +4219,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           ghostPosition={activeGridHoverPosition}
           selection={areaSelection}
           shiftPressed={areaSelectionModifierPressed}
+          soilSurfaceTriangles={soilSurface.triangles}
           selectedCount={areaSelectedUuids.length}
           onBoxChange={updateAreaSelectionBox}
           onClose={closeAreaSelection}
@@ -4235,16 +4236,17 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
                 key={uuid}
                 box={box}
                 config={config}
-                getZ={getZ}
                 gridLayer={true}
-                name={`group-area-${uuid}`} />)}
+                name={`group-area-${uuid}`}
+                soilSurfaceTriangles={soilSurface.triangles} />)}
           </GridRevealGroup>}
         {groupAreaSelectionBox &&
           <GroupAreaSelectionOverlay
             box={groupAreaSelectionBox}
             config={config}
             getZ={getZ}
-            onBoxChange={updateGroupAreaSelectionBox} />}
+            onBoxChange={updateGroupAreaSelectionBox}
+            soilSurfaceTriangles={soilSurface.triangles} />}
         <OptionalFarmbotLayer
           activeFocus={props.activeFocus}
           axisActions={!objectSelectionMode && dispatch &&

@@ -4,7 +4,7 @@ import {
 } from "@testing-library/react";
 import * as threeDrei from "@react-three/drei";
 import { clone } from "lodash";
-import { Vector3 } from "three";
+import { DoubleSide, Vector3 } from "three";
 import * as ui from "../../../ui";
 import { INITIAL } from "../../config";
 import * as controls from "../../controls";
@@ -12,6 +12,7 @@ import { getWorldPositionFunc } from "../../helpers";
 import {
   AREA_SELECTION_GHOST_SIZE, areaSelectionPointTypes,
   areaSelectionTitle, GardenAreaSelectionOverlay, getGroupAreaSelectionBox,
+  getAreaSelectionGeometry,
   GroupAreaSelectionOverlay, GroupAreaVisual, getGhostAreaSelectionBox,
   normalizeAreaSelectionBox,
   resizeAreaSelectionBox,
@@ -21,6 +22,11 @@ import {
 } from "../../../__test_support__/test_renderer";
 import { fakePointGroup } from
   "../../../__test_support__/fake_state/resources";
+import {
+  BufferAttribute, Mesh, MeshBasicMaterial,
+} from "../../components";
+import { RenderOrder } from "../../constants";
+import { precomputeTriangles } from "../../triangle_functions";
 
 describe("area selection geometry", () => {
   it("creates a 200mm ghost rectangle within garden bounds", () => {
@@ -51,6 +57,50 @@ describe("area selection geometry", () => {
       .toEqual(400);
     expect(resizeAreaSelectionBox(box, "y1", 50, config).y1)
       .toEqual(200);
+  });
+
+  it("clips the original soil triangles to the selection bounds", () => {
+    const config = { ...clone(INITIAL), botSizeX: 100, botSizeY: 100 };
+    const triangles = precomputeTriangles([
+      [0, 0, 0],
+      [100, 0, 0],
+      [100, 100, 100],
+      [0, 100, 0],
+    ], [0, 1, 2, 0, 2, 3]);
+    const geometry = getAreaSelectionGeometry(
+      { x0: 20, y0: 30, x1: 80, y1: 70 },
+      config,
+      triangles,
+    );
+    const fillPoints: number[][] = [];
+    for (let i = 0; i < geometry.fillVertices.length; i += 3) {
+      fillPoints.push([...geometry.fillVertices.slice(i, i + 3)]);
+    }
+
+    expect(fillPoints).toHaveLength(6);
+    expect(geometry.fillIndices).toHaveLength(12);
+    expect(geometry.outlinePoints).toHaveLength(7);
+    expect(fillPoints).toContainEqual(getWorldPositionFunc(config)({
+      x: 30,
+      y: 30,
+      z: 38,
+    }));
+    expect(fillPoints).toContainEqual(getWorldPositionFunc(config)({
+      x: 70,
+      y: 70,
+      z: 78,
+    }));
+    expect(fillPoints).toContainEqual(getWorldPositionFunc(config)({
+      x: 20,
+      y: 70,
+      z: 28,
+    }));
+    expect(geometry.outlinePoints).toContainEqual(
+      getWorldPositionFunc(config)({ x: 30, y: 30, z: 38 }),
+    );
+    expect(geometry.outlinePoints[0]).toEqual(
+      geometry.outlinePoints[geometry.outlinePoints.length - 1],
+    );
   });
 
   it("labels supported selection types", () => {
@@ -90,6 +140,12 @@ describe("<GardenAreaSelectionOverlay />", () => {
   const config = clone(INITIAL);
   config.botSizeX = 1000;
   config.botSizeY = 800;
+  const soilSurfaceTriangles = precomputeTriangles([
+    [0, 0, -100],
+    [1000, 0, -100],
+    [1000, 800, -100],
+    [0, 800, -100],
+  ], [0, 1, 2, 0, 2, 3]);
   const props = ():
     React.ComponentProps<typeof GardenAreaSelectionOverlay> => ({
     config,
@@ -97,6 +153,7 @@ describe("<GardenAreaSelectionOverlay />", () => {
     ghostPosition: undefined,
     selection: undefined,
     shiftPressed: false,
+    soilSurfaceTriangles,
     selectedCount: 0,
     onBoxChange: jest.fn(),
     onClose: jest.fn(),
@@ -111,6 +168,7 @@ describe("<GardenAreaSelectionOverlay />", () => {
       data-depth-test={`${props.depthTest}`}
       data-depth-write={`${props.depthWrite}`}
       data-line-width={props.lineWidth}
+      data-opacity={props.opacity}
       data-render-order={props.renderOrder} />);
 
   it("renders passive group areas with grid depth behavior", () => {
@@ -118,9 +176,9 @@ describe("<GardenAreaSelectionOverlay />", () => {
     render(<GroupAreaVisual
       box={{ x0: 100, y0: 200, x1: 500, y1: 600 }}
       config={config}
-      getZ={jest.fn(() => -100)}
       gridLayer={true}
-      name={"group-area"} />);
+      name={"group-area"}
+      soilSurfaceTriangles={soilSurfaceTriangles} />);
 
     const rectangle = screen.getByTestId("group-area-rectangle");
     expect(rectangle).toHaveAttribute("data-depth-test", "true");
@@ -138,6 +196,10 @@ describe("<GardenAreaSelectionOverlay />", () => {
       <GardenAreaSelectionOverlay {...p} />,
     );
     expect(screen.getByTestId("area-selection-ghost")).toBeInTheDocument();
+    expect(screen.getByTestId("area-selection-ghost"))
+      .toHaveAttribute("data-opacity", "0.95");
+    expect(container.querySelector("[name='area-selection-ghost-fill']"))
+      .toBeInTheDocument();
     expect(container.querySelector("[name='area-selection-popup']"))
       .toBeFalsy();
 
@@ -147,6 +209,8 @@ describe("<GardenAreaSelectionOverlay />", () => {
         shiftPressed={false} />,
     );
     expect(screen.queryByTestId("area-selection-ghost"))
+      .not.toBeInTheDocument();
+    expect(container.querySelector("[name='area-selection-ghost-fill']"))
       .not.toBeInTheDocument();
     lineSpy.mockRestore();
   });
@@ -194,6 +258,35 @@ describe("<GardenAreaSelectionOverlay />", () => {
     }), undefined);
     labelSpy.mockRestore();
     lineSpy.mockRestore();
+  });
+
+  it("fills selected areas and renders them with the grid", () => {
+    const p = props();
+    p.selection = {
+      phase: "drawing",
+      pointType: "Plant",
+      box: { x0: 100, y0: 200, x1: 500, y1: 600 },
+    };
+    const wrapper = createRenderer(<GardenAreaSelectionOverlay {...p} />);
+    const fill = wrapper.root.findAllByType(Mesh)
+      .find(node => node.props.name == "area-selection-fill");
+    const line = wrapper.root.findByType(threeDrei.Line);
+    const material = fill?.findByType(MeshBasicMaterial);
+    const attributes = fill?.findAllByType(BufferAttribute);
+
+    expect(fill?.props.renderOrder).toEqual(RenderOrder.default);
+    expect(line.props.renderOrder).toEqual(RenderOrder.default);
+    expect(attributes?.map(attribute => attribute.props.attach))
+      .toEqual(expect.arrayContaining(["index", "attributes-position"]));
+    expect(material?.props).toEqual(expect.objectContaining({
+      color: "white",
+      transparent: true,
+      opacity: 0.3,
+      depthTest: true,
+      depthWrite: false,
+      side: DoubleSide,
+    }));
+    unmountRenderer(wrapper);
   });
 
   it("renders completed controls and popup actions", () => {
@@ -311,6 +404,13 @@ describe("<GardenAreaSelectionOverlay />", () => {
 });
 
 describe("<GroupAreaSelectionOverlay />", () => {
+  const soilSurfaceTriangles = precomputeTriangles([
+    [0, 0, -100],
+    [1000, 0, -100],
+    [1000, 800, -100],
+    [0, 800, -100],
+  ], [0, 1, 2, 0, 2, 3]);
+
   it("previews edge movement and commits once at drag end", () => {
     const onBoxChange = jest.fn();
     const config = { ...clone(INITIAL), botSizeX: 1000, botSizeY: 800 };
@@ -319,7 +419,8 @@ describe("<GroupAreaSelectionOverlay />", () => {
       box={{ x0: 100, y0: 200, x1: 500, y1: 600 }}
       config={config}
       getZ={getZ}
-      onBoxChange={onBoxChange} />);
+      onBoxChange={onBoxChange}
+      soilSurfaceTriangles={soilSurfaceTriangles} />);
     const handle = wrapper.root.findAllByType(controls.ControlHandle)
       .find(node => node.props.name == "area-selection-x0-control");
     if (!handle) { throw new Error("X0 control not found"); }
@@ -340,7 +441,8 @@ describe("<GroupAreaSelectionOverlay />", () => {
       box={{ x0: 200, y0: 250, x1: 550, y1: 650 }}
       config={config}
       getZ={getZ}
-      onBoxChange={onBoxChange} />));
+      onBoxChange={onBoxChange}
+      soilSurfaceTriangles={soilSurfaceTriangles} />));
     const updatedHandle = wrapper.root.findAllByType(controls.ControlHandle)
       .find(node => node.props.name == "area-selection-x0-control");
     expect(updatedHandle?.props.position).not.toEqual(committedPosition);

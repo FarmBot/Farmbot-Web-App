@@ -1,5 +1,6 @@
 import React from "react";
 import { Line } from "@react-three/drei";
+import { DoubleSide } from "three";
 import { PointType, TaggedPointGroup } from "farmbot";
 import { Config } from "../config";
 import {
@@ -18,8 +19,11 @@ import { DropDownItem, FBSelect } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { POINTER_TYPES } from
   "../../point_groups/criteria/interfaces";
-import { Group } from "../components";
+import {
+  BufferAttribute, BufferGeometry, Group, Mesh, MeshBasicMaterial,
+} from "../components";
 import { RenderOrder } from "../constants";
+import type { TriangleData } from "../triangle_functions";
 
 export const AREA_SELECTION_GHOST_SIZE = 200;
 const AREA_SELECTION_LINE_Z_OFFSET = 8;
@@ -54,6 +58,182 @@ export const normalizeAreaSelectionBox = (
   x1: Math.max(box.x0, box.x1),
   y1: Math.max(box.y0, box.y1),
 });
+
+type SoilSurfacePoint = TriangleData["a"];
+type ClipAxis = 0 | 1;
+
+export interface AreaSelectionGeometry {
+  fillIndices: Uint16Array | Uint32Array;
+  fillVertices: Float32Array;
+  outlinePoints: [number, number, number][];
+}
+
+const AREA_SELECTION_GEOMETRY_EPSILON = 1e-6;
+
+const areaSelectionPointKey = (point: SoilSurfacePoint) =>
+  `${Math.round(point[0] / AREA_SELECTION_GEOMETRY_EPSILON)}:`
+  + `${Math.round(point[1] / AREA_SELECTION_GEOMETRY_EPSILON)}`;
+
+const clipAreaSelectionPolygon = (
+  polygon: SoilSurfacePoint[],
+  axis: ClipAxis,
+  boundary: number,
+  keepGreater: boolean,
+) => {
+  if (polygon.length == 0) { return polygon; }
+  const inside = (point: SoilSurfacePoint) => keepGreater
+    ? point[axis] >= boundary
+    : point[axis] <= boundary;
+  const intersection = (
+    start: SoilSurfacePoint,
+    end: SoilSurfacePoint,
+  ): SoilSurfacePoint => {
+    const ratio = (boundary - start[axis]) / (end[axis] - start[axis]);
+    return [
+      start[0] + (end[0] - start[0]) * ratio,
+      start[1] + (end[1] - start[1]) * ratio,
+      start[2] + (end[2] - start[2]) * ratio,
+    ];
+  };
+  const result: SoilSurfacePoint[] = [];
+  let previous = polygon[polygon.length - 1];
+  let previousInside = inside(previous);
+  polygon.forEach(current => {
+    const currentInside = inside(current);
+    if (currentInside != previousInside) {
+      result.push(intersection(previous, current));
+    }
+    if (currentInside) { result.push(current); }
+    previous = current;
+    previousInside = currentInside;
+  });
+  return result;
+};
+
+const clipAreaSelectionTriangle = (
+  triangle: TriangleData,
+  box: AreaSelectionBox,
+) => {
+  const boundaries: [ClipAxis, number, boolean][] = [
+    [0, box.x0, true],
+    [0, box.x1, false],
+    [1, box.y0, true],
+    [1, box.y1, false],
+  ];
+  return boundaries.reduce(
+    (polygon, [axis, boundary, keepGreater]) =>
+      clipAreaSelectionPolygon(polygon, axis, boundary, keepGreater),
+    [triangle.a, triangle.b, triangle.c],
+  );
+};
+
+const areaSelectionTriangleArea = (
+  a: SoilSurfacePoint,
+  b: SoilSurfacePoint,
+  c: SoilSurfacePoint,
+) => Math.abs(
+  (b[0] - a[0]) * (c[1] - a[1])
+  - (b[1] - a[1]) * (c[0] - a[0]),
+);
+
+const uniqueAreaSelectionPoints = (points: SoilSurfacePoint[]) =>
+  [...new Map(points.map(point =>
+    [areaSelectionPointKey(point), point])).values()];
+
+export const getAreaSelectionGeometry = (
+  selectionBox: AreaSelectionBox,
+  config: Config,
+  soilSurfaceTriangles: TriangleData[],
+): AreaSelectionGeometry => {
+  const box = normalizeAreaSelectionBox(selectionBox);
+  const getWorldPosition = getWorldPositionFunc(config);
+  const vertexLookup = new Map<string, number>();
+  const fillVertexValues: number[] = [];
+  const fillIndexValues: number[] = [];
+  const boundaryPoints: SoilSurfacePoint[] = [];
+  const vertexIndex = (point: SoilSurfacePoint) => {
+    const key = areaSelectionPointKey(point);
+    const existing = vertexLookup.get(key);
+    if (existing !== undefined) { return existing; }
+    const index = vertexLookup.size;
+    vertexLookup.set(key, index);
+    fillVertexValues.push(...getWorldPosition({
+      x: point[0],
+      y: point[1],
+      z: point[2] + AREA_SELECTION_LINE_Z_OFFSET,
+    }));
+    return index;
+  };
+
+  soilSurfaceTriangles.forEach(triangle => {
+    if (
+      triangle.maxX < box.x0 || triangle.minX > box.x1
+      || triangle.maxY < box.y0 || triangle.minY > box.y1
+    ) { return; }
+    const polygon = clipAreaSelectionTriangle(triangle, box);
+    if (polygon.length < 3) { return; }
+    polygon.forEach(point => {
+      if (
+        Math.abs(point[0] - box.x0) < AREA_SELECTION_GEOMETRY_EPSILON
+        || Math.abs(point[0] - box.x1) < AREA_SELECTION_GEOMETRY_EPSILON
+        || Math.abs(point[1] - box.y0) < AREA_SELECTION_GEOMETRY_EPSILON
+        || Math.abs(point[1] - box.y1) < AREA_SELECTION_GEOMETRY_EPSILON
+      ) {
+        boundaryPoints.push(point);
+      }
+    });
+    for (let i = 1; i < polygon.length - 1; i++) {
+      if (areaSelectionTriangleArea(
+        polygon[0], polygon[i], polygon[i + 1],
+      ) < AREA_SELECTION_GEOMETRY_EPSILON) { continue; }
+      fillIndexValues.push(
+        vertexIndex(polygon[0]),
+        vertexIndex(polygon[i]),
+        vertexIndex(polygon[i + 1]),
+      );
+    }
+  });
+
+  const onBoundary = (value: number, boundary: number) =>
+    Math.abs(value - boundary) < AREA_SELECTION_GEOMETRY_EPSILON;
+  const uniqueBoundaryPoints = uniqueAreaSelectionPoints(boundaryPoints);
+  const bottom = uniqueBoundaryPoints
+    .filter(point => onBoundary(point[1], box.y0))
+    .sort((a, b) => a[0] - b[0]);
+  const right = uniqueBoundaryPoints
+    .filter(point => onBoundary(point[0], box.x1))
+    .sort((a, b) => a[1] - b[1]);
+  const top = uniqueBoundaryPoints
+    .filter(point => onBoundary(point[1], box.y1))
+    .sort((a, b) => b[0] - a[0]);
+  const left = uniqueBoundaryPoints
+    .filter(point => onBoundary(point[0], box.x0))
+    .sort((a, b) => b[1] - a[1]);
+  const orderedBoundary: SoilSurfacePoint[] = [];
+  [...bottom, ...right, ...top, ...left].forEach(point => {
+    const previous = orderedBoundary[orderedBoundary.length - 1];
+    if (!previous
+      || areaSelectionPointKey(point) != areaSelectionPointKey(previous)) {
+      orderedBoundary.push(point);
+    }
+  });
+  if (orderedBoundary.length > 0
+    && areaSelectionPointKey(orderedBoundary[0])
+      != areaSelectionPointKey(orderedBoundary[orderedBoundary.length - 1])) {
+    orderedBoundary.push(orderedBoundary[0]);
+  }
+  const outlinePoints = orderedBoundary.map(point => getWorldPosition({
+    x: point[0],
+    y: point[1],
+    z: point[2] + AREA_SELECTION_LINE_Z_OFFSET,
+  }));
+  const IndexArray = vertexLookup.size > 65535 ? Uint32Array : Uint16Array;
+  return {
+    fillIndices: new IndexArray(fillIndexValues),
+    fillVertices: new Float32Array(fillVertexValues),
+    outlinePoints,
+  };
+};
 
 const ghostEnd = (start: number, maximum: number) =>
   start + AREA_SELECTION_GHOST_SIZE <= maximum
@@ -124,46 +304,58 @@ export const resizeAreaSelectionBox = (
 interface AreaSelectionRectangleProps {
   box: AreaSelectionBox;
   config: Config;
-  getZ(x: number, y: number): number;
   ghost: boolean;
   gridLayer?: boolean;
   name?: string;
+  soilSurfaceTriangles: TriangleData[];
 }
 
 const AreaSelectionRectangle = (props: AreaSelectionRectangleProps) => {
-  const box = normalizeAreaSelectionBox(props.box);
-  const getWorldPosition = getWorldPositionFunc(props.config);
-  const point = (x: number, y: number): [number, number, number] =>
-    getWorldPosition({
-      x,
-      y,
-      z: props.getZ(x, y) + AREA_SELECTION_LINE_Z_OFFSET,
-    });
-  const points = [
-    point(box.x0, box.y0),
-    point(box.x1, box.y0),
-    point(box.x1, box.y1),
-    point(box.x0, box.y1),
-    point(box.x0, box.y0),
-  ];
-  return <Line
-    name={props.name || (props.ghost
-      ? "area-selection-ghost"
-      : "area-selection-rectangle")}
-    points={points}
-    color={"white"}
-    dashed={true}
-    dashSize={25}
-    gapSize={20}
-    lineWidth={2}
-    transparent={true}
-    opacity={props.ghost ? 0.45 : 0.95}
-    depthTest={!!props.gridLayer}
-    depthWrite={true}
-    renderOrder={props.gridLayer
-      ? RenderOrder.default
-      : AREA_SELECTION_RENDER_ORDER}
-    raycast={noControlRaycast} />;
+  const geometry = React.useMemo(() => getAreaSelectionGeometry(
+    props.box,
+    props.config,
+    props.soilSurfaceTriangles,
+  ), [props.box, props.config, props.soilSurfaceTriangles]);
+  return <>
+    <Mesh
+      name={props.ghost
+        ? "area-selection-ghost-fill"
+        : "area-selection-fill"}
+      renderOrder={RenderOrder.default}
+      raycast={noControlRaycast}>
+      <BufferGeometry>
+        <BufferAttribute
+          attach={"index"}
+          args={[geometry.fillIndices, 1]} />
+        <BufferAttribute
+          attach={"attributes-position"}
+          args={[geometry.fillVertices, 3]} />
+      </BufferGeometry>
+      <MeshBasicMaterial
+        color={"white"}
+        transparent={true}
+        opacity={0.3}
+        depthTest={true}
+        depthWrite={false}
+        side={DoubleSide} />
+    </Mesh>
+    <Line
+      name={props.name || (props.ghost
+        ? "area-selection-ghost"
+        : "area-selection-rectangle")}
+      points={geometry.outlinePoints}
+      color={"white"}
+      dashed={true}
+      dashSize={25}
+      gapSize={20}
+      lineWidth={2}
+      transparent={true}
+      opacity={0.95}
+      depthTest={!!props.gridLayer}
+      depthWrite={true}
+      renderOrder={RenderOrder.default}
+      raycast={noControlRaycast} />
+  </>;
 };
 
 interface AreaSelectionEdgeControlProps {
@@ -351,6 +543,7 @@ export interface GardenAreaSelectionOverlayProps {
   ghostPosition: AxisNumberProperty | undefined;
   selection: GardenAreaSelection | undefined;
   shiftPressed: boolean;
+  soilSurfaceTriangles: TriangleData[];
   selectedCount: number;
   onBoxChange(box: AreaSelectionBox): void;
   onClose(): void;
@@ -393,8 +586,8 @@ export const GardenAreaSelectionOverlay = (
     <AreaSelectionRectangle
       box={box}
       config={props.config}
-      getZ={props.getZ}
-      ghost={ghost} />
+      ghost={ghost}
+      soilSurfaceTriangles={props.soilSurfaceTriangles} />
     {drawing && props.selection &&
       <AreaSelectionCountLabel
         box={box}
@@ -430,6 +623,7 @@ export interface GroupAreaSelectionOverlayProps {
   config: Config;
   getZ(x: number, y: number): number;
   onBoxChange(box: AreaSelectionBox): void;
+  soilSurfaceTriangles: TriangleData[];
 }
 
 type GroupAreaConfig = Pick<Config, "botSizeX" | "botSizeY">;
@@ -456,9 +650,9 @@ export const getGroupAreaSelectionBox = (
 export interface GroupAreaVisualProps {
   box: AreaSelectionBox;
   config: Config;
-  getZ(x: number, y: number): number;
   gridLayer?: boolean;
   name?: string;
+  soilSurfaceTriangles: TriangleData[];
 }
 
 export const GroupAreaVisual = (props: GroupAreaVisualProps) =>
@@ -466,10 +660,10 @@ export const GroupAreaVisual = (props: GroupAreaVisualProps) =>
     <AreaSelectionRectangle
       box={props.box}
       config={props.config}
-      getZ={props.getZ}
       ghost={false}
       gridLayer={props.gridLayer}
-      name={props.name ? `${props.name}-rectangle` : undefined} />
+      name={props.name ? `${props.name}-rectangle` : undefined}
+      soilSurfaceTriangles={props.soilSurfaceTriangles} />
   </Group>;
 
 export const GroupAreaSelectionOverlay = (
@@ -496,7 +690,7 @@ export const GroupAreaSelectionOverlay = (
     <GroupAreaVisual
       box={box}
       config={props.config}
-      getZ={props.getZ} />
+      soilSurfaceTriangles={props.soilSurfaceTriangles} />
     {(["x0", "x1", "y0", "y1"] as const).map(edge =>
       <AreaSelectionEdgeControl
         key={edge}
