@@ -3079,6 +3079,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     !!addPlantProps?.designer.threeDAreaSelectionMode;
   const areaSelectionModifierPressed = shiftPressed || areaSelectionMode;
   const previousAreaSelectionMode = React.useRef(areaSelectionMode);
+  const areaSelectionModeAutoDisabled = React.useRef(false);
   const updateGridHoverPosition = React.useCallback((
     position: GridHoverPosition | undefined,
   ) => {
@@ -3325,6 +3326,13 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           y1: position.y,
         },
       });
+      if (areaSelectionMode) {
+        areaSelectionModeAutoDisabled.current = true;
+        dispatch?.({
+          type: Actions.SET_3D_AREA_SELECTION_MODE,
+          payload: false,
+        });
+      }
       return true;
     }
     if (!shiftKey || !areaSelectionModifierPressed) { return false; }
@@ -3344,6 +3352,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     return true;
   }, [
     areaSelection,
+    areaSelectionMode,
     clearObjectHover,
     closePopup,
     dispatch,
@@ -3618,6 +3627,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       previousAreaSelectionMode.current && !areaSelectionMode;
     previousAreaSelectionMode.current = areaSelectionMode;
     if (!exitedAreaSelectionMode || !areaSelection) { return; }
+    const autoDisabled = areaSelectionModeAutoDisabled.current;
+    areaSelectionModeAutoDisabled.current = false;
+    if (autoDisabled) { return; }
     setAreaSelection(undefined);
     clearAreaSelectedPoints();
   }, [
