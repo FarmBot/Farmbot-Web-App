@@ -444,6 +444,22 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
+        {is3D && isMobile() &&
+          <div className={"select-area-mode"}>
+            <button
+              className={[
+                "fb-button",
+                props.designer.threeDAreaSelectionMode ? "green" : "gray",
+              ].join(" ")}
+              title={t("select area")}
+              aria-pressed={props.designer.threeDAreaSelectionMode}
+              onClick={() => props.dispatch({
+                type: Actions.SET_3D_AREA_SELECTION_MODE,
+                payload: !props.designer.threeDAreaSelectionMode,
+              })}>
+              {t("select area")}
+            </button>
+          </div>}
         {is3D &&
           <i className="fa fa-question-circle"
             style={{ fontSize: "2rem" }}

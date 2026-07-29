@@ -1566,6 +1566,7 @@ const hasPlantIntersection = (event: ThreeEvent<PointerEvent>) =>
     isPlantIntersectionObject(intersection.object));
 
 interface GridHoverTargetProps {
+  areaSelectionMode: boolean;
   areaSelectionPhase: GardenAreaSelection["phase"] | undefined;
   config: Config;
   enabled: boolean;
@@ -1584,8 +1585,9 @@ const inGardenGrid = (config: Config, position: GridHoverPosition) =>
 
 const GridHoverTarget = (props: GridHoverTargetProps) => {
   const {
-    areaSelectionPhase, config, enabled, getZ, onHoverPositionChange,
-    onLocationSelect, onAreaSelect, soilSurfaceGeometry,
+    areaSelectionMode, areaSelectionPhase, config, enabled, getZ,
+    onHoverPositionChange, onLocationSelect, onAreaSelect,
+    soilSurfaceGeometry,
   } = props;
   const areaDragStarted = React.useRef(false);
   const suppressAreaClick = React.useRef(false);
@@ -1676,8 +1678,9 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
     return onAreaSelect({
       x: round(position.x),
       y: round(position.y),
-    }, event.shiftKey);
+    }, event.shiftKey || areaSelectionMode);
   }, [
+    areaSelectionMode,
     areaSelectionPhase,
     getClippedGridPosition,
     getGridPosition,
@@ -1686,13 +1689,14 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
   const startAreaDrag = React.useCallback((
     event: ThreeEvent<PointerEvent>,
   ) => {
-    if (!enabled || !event.shiftKey || areaSelectionPhase == "drawing") {
+    if (!enabled || (!event.shiftKey && !areaSelectionMode)
+      || areaSelectionPhase == "drawing") {
       return;
     }
     if (!gridSelectionAllowed() || !selectArea(event)) { return; }
     event.stopPropagation?.();
     areaDragStarted.current = true;
-  }, [areaSelectionPhase, enabled, selectArea]);
+  }, [areaSelectionMode, areaSelectionPhase, enabled, selectArea]);
   const finishAreaDrag = React.useCallback((
     event: ThreeEvent<PointerEvent>,
   ) => {
@@ -1711,19 +1715,32 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
     if (!gridSelectionAllowed()) { return; }
     if (event.intersections?.some(({ object }) =>
       object.name.startsWith("bug-"))) { return; }
-    const position = getGridPosition(event.point);
+    const position = areaSelectionPhase == "drawing"
+      ? getClippedGridPosition(event.point)
+      : getGridPosition(event.point);
     if (!position) { return; }
     event.stopPropagation?.();
     const x = round(position.x);
     const y = round(position.y);
-    if (onAreaSelect({ x, y }, event.shiftKey)) { return; }
+    if (onAreaSelect({ x, y }, event.shiftKey || areaSelectionMode)) {
+      return;
+    }
     onLocationSelect({
       kind: "location",
       x,
       y,
       z: round(getZ(x, y)),
     });
-  }, [enabled, getGridPosition, getZ, onAreaSelect, onLocationSelect]);
+  }, [
+    areaSelectionPhase,
+    areaSelectionMode,
+    enabled,
+    getClippedGridPosition,
+    getGridPosition,
+    getZ,
+    onAreaSelect,
+    onLocationSelect,
+  ]);
   return <Mesh
     name={"grid-hover-target"}
     geometry={hoverGeometry}
@@ -3058,6 +3075,10 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     pressed: shiftPressed,
     suppress: suppressShiftSelection,
   } = useShiftModifier();
+  const areaSelectionMode =
+    !!addPlantProps?.designer.threeDAreaSelectionMode;
+  const areaSelectionModifierPressed = shiftPressed || areaSelectionMode;
+  const previousAreaSelectionMode = React.useRef(areaSelectionMode);
   const updateGridHoverPosition = React.useCallback((
     position: GridHoverPosition | undefined,
   ) => {
@@ -3306,7 +3327,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       });
       return true;
     }
-    if (!shiftKey || !shiftPressed) { return false; }
+    if (!shiftKey || !areaSelectionModifierPressed) { return false; }
     closePopup();
     clearObjectHover();
     dispatch?.(selectPoint(undefined));
@@ -3326,7 +3347,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     clearObjectHover,
     closePopup,
     dispatch,
-    shiftPressed,
+    areaSelectionModifierPressed,
   ]);
   const openMultiSelectPanel = React.useCallback((
     selection: ThreeDObjectSelection,
@@ -3592,6 +3613,18 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       payload: undefined,
     });
   }, [dispatch]);
+  React.useEffect(() => {
+    const exitedAreaSelectionMode =
+      previousAreaSelectionMode.current && !areaSelectionMode;
+    previousAreaSelectionMode.current = areaSelectionMode;
+    if (!exitedAreaSelectionMode || !areaSelection) { return; }
+    setAreaSelection(undefined);
+    clearAreaSelectedPoints();
+  }, [
+    areaSelection,
+    areaSelectionMode,
+    clearAreaSelectedPoints,
+  ]);
   const closeAreaSelection = React.useCallback(() => {
     setAreaSelection(undefined);
     suppressShiftSelection();
@@ -3718,7 +3751,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     && !!activeGridHoverPosition
     && !cameraDragging
     && !selectableObjectHovered
-    && !shiftPressed
+    && !areaSelectionModifierPressed
     && !areaSelection;
   let sceneCursor: SceneCursorValue = "grab";
   if (activeGridHoverPosition) {
@@ -4037,9 +4070,11 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           viewMode={viewMode}
           cameraFollow={cameraFollow}
           utmFollow={utmFollow}
-          rotate={config.rotate && (!shiftPressed || !!areaSelection)}
+          rotate={config.rotate
+            && (!areaSelectionModifierPressed || !!areaSelection)}
           zoomEnabled={config.zoom}
-          pan={config.pan && (!shiftPressed || !!areaSelection)}
+          pan={config.pan
+            && (!areaSelectionModifierPressed || !!areaSelection)}
           lightsDebug={config.lightsDebug}
           onStart={handleCameraDragStart}
           onChange={handleCameraChange}
@@ -4152,6 +4187,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
         {objectHoverLabelNode}
         {gridHoverEnabled &&
           <GridHoverTarget
+            areaSelectionMode={areaSelectionMode}
             areaSelectionPhase={areaSelection?.phase}
             config={config}
             enabled={gridHoverEnabled}
@@ -4170,7 +4206,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           getZ={getZ}
           ghostPosition={activeGridHoverPosition}
           selection={areaSelection}
-          shiftPressed={shiftPressed}
+          shiftPressed={areaSelectionModifierPressed}
           selectedCount={areaSelectedUuids.length}
           onBoxChange={updateAreaSelectionBox}
           onClose={closeAreaSelection}

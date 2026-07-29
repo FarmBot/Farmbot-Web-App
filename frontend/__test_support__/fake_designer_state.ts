@@ -60,6 +60,7 @@ export const fakeDesignerState = (): DesignerState => ({
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
+  threeDAreaSelectionMode: false,
   threeDCameraFollow: false,
   threeDUTMFollow: false,
   threeDCameraSelection: false,

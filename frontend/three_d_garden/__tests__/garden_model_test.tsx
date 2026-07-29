@@ -2168,6 +2168,102 @@ describe("<GardenModel />", () => {
     expect(event.stopPropagation).toHaveBeenCalled();
   });
 
+  it("clamps the second area selection click to the garden bounds", () => {
+    location.pathname = Path.mock(Path.designer());
+    restoreActualReactState();
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({
+      name: "grid-hover-target",
+    });
+    const start = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+    const outside = get3DPositionFunc(p.config)({
+      x: -100,
+      y: p.config.botSizeY + 100,
+    });
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Shift",
+        shiftKey: true,
+      }));
+    });
+    actRenderer(() => hoverTarget.props.onClick({
+      point: start,
+      shiftKey: true,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+    actRenderer(() => hoverTarget.props.onClick({
+      point: outside,
+      shiftKey: false,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection).toEqual({
+      phase: "complete",
+      pointType: "Plant",
+      box: {
+        x0: 100,
+        y0: 100,
+        x1: 0,
+        y1: p.config.botSizeY,
+      },
+    });
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keyup", {
+        key: "Shift",
+        shiftKey: false,
+      }));
+    });
+  });
+
+  it("uses and exits mobile area selection mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    restoreActualReactState();
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps();
+    addPlantProps.designer.threeDAreaSelectionMode = true;
+    const dispatch = jest.fn();
+    addPlantProps.dispatch = dispatch;
+    p.addPlantProps = addPlantProps;
+    const wrapper = createWrapper(p);
+    const hoverTarget = wrapper.root.findByProps({
+      name: "grid-hover-target",
+    });
+    const start = get3DPositionFunc(p.config)({ x: 100, y: 100 });
+
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.shiftPressed).toEqual(true);
+    actRenderer(() => hoverTarget.props.onClick({
+      point: start,
+      shiftKey: false,
+      intersections: [],
+      stopPropagation: jest.fn(),
+    }));
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection.phase).toEqual("drawing");
+
+    p.addPlantProps = {
+      ...addPlantProps,
+      designer: {
+        ...addPlantProps.designer,
+        threeDAreaSelectionMode: false,
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
+      .props.selection).toBeUndefined();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: undefined,
+    });
+  });
+
   it("updates Shift state only for effective modifier changes", () => {
     restoreActualReactState();
     let renders = 0;

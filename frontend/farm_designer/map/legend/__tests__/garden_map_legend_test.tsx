@@ -126,6 +126,46 @@ describe("<GardenMapLegend />", () => {
       .not.toBeInTheDocument();
   });
 
+  it("toggles mobile area selection mode after select", () => {
+    isMobileSpy.mockReturnValue(true);
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { rerender } = render(<GardenMapLegend {...p} />);
+    const select = screen.getByText(/^select$/i).closest("div");
+    const selectArea = screen.getByRole("button", { name: /select area/i });
+
+    expect(select?.nextElementSibling).toContainElement(selectArea);
+    expect(selectArea).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(selectArea);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_AREA_SELECTION_MODE,
+      payload: true,
+    });
+
+    p.designer.threeDAreaSelectionMode = true;
+    rerender(<GardenMapLegend {...p} />);
+    expect(selectArea).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(selectArea);
+    expect(p.dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_AREA_SELECTION_MODE,
+      payload: false,
+    });
+  });
+
+  it("hides area selection mode off mobile and in 2D", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { rerender } = render(<GardenMapLegend {...p} />);
+    expect(screen.queryByRole("button", { name: /select area/i }))
+      .not.toBeInTheDocument();
+
+    isMobileSpy.mockReturnValue(true);
+    p.getConfigValue = jest.fn(() => false);
+    rerender(<GardenMapLegend {...p} />);
+    expect(screen.queryByRole("button", { name: /select area/i }))
+      .not.toBeInTheDocument();
+  });
+
   it("renders with readings", () => {
     const p = fakeProps();
     const { container } = render(<GardenMapLegend {...p} />);

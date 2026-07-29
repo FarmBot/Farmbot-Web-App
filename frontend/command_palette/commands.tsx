@@ -127,6 +127,8 @@ import { resetVirtualTrail } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { linkToSetting } from "../settings/maybe_highlight";
 import { Config } from "../three_d_garden/config";
+import { disableBugs } from
+  "../farm_designer/map/easter_eggs/bugs";
 
 interface BuildCommandProps {
   state: Everything;
@@ -713,6 +715,9 @@ const sectionViewCommand = (props: BuildCommandProps): Command => {
   const designer = props.state.resources.consumers.farm_designer;
   const getValue = getWebAppConfigValueFromResources(
     props.state.resources.index);
+  const unavailable = getValue(BooleanSetting.three_d_garden)
+    ? undefined
+    : t("Enable the 3D Garden setting first.");
   const actions: CommandAction[] = [
     {
       id: "toggle",
@@ -757,18 +762,14 @@ const sectionViewCommand = (props: BuildCommandProps): Command => {
     ],
     group: "map",
     icon: "scissors",
+    unavailable,
     actions,
     execute: actions[0].execute,
   };
 };
 
-const sectionViewCommands = (props: BuildCommandProps): Command[] => {
-  const getValue = getWebAppConfigValueFromResources(
-    props.state.resources.index);
-  return getValue(BooleanSetting.three_d_garden)
-    ? [sectionViewCommand(props)]
-    : [];
-};
+const sectionViewCommands = (props: BuildCommandProps): Command[] =>
+  [sectionViewCommand(props)];
 
 const selectionCommand = (props: BuildCommandProps): Command => {
   const index = props.state.resources.index;
@@ -1101,6 +1102,66 @@ const laserCommand = (props: BuildCommandProps): Command => {
     toggleValue: enabled,
     accessory: toggleAccessory(enabled, !!unavailable),
   };
+};
+
+const mapViewCommands = (props: BuildCommandProps): Command[] => {
+  const index = props.state.resources.index;
+  const getValue = getWebAppConfigValueFromResources(index);
+  const is3D = !!getValue(BooleanSetting.three_d_garden);
+  const amplifyZ = props.state.resources.consumers.farm_designer
+    .threeDExaggeratedZ;
+  const showAreas = !!getValue(BooleanSetting.show_zones);
+  const unavailable3D = is3D
+    ? undefined
+    : t("Enable the 3D Garden setting first.");
+  const mapCommand = (command: Command): Command => ({
+    imageIcon: TAB_ICON[Panel.Map],
+    themeAwareImageIcon: true,
+    ...command,
+  });
+  const toggle3D = () => {
+    if (is3D) { disableBugs(); }
+    props.dispatch(setWebAppConfigValue(
+      BooleanSetting.three_d_garden, !is3D));
+  };
+  const toggleAmplifyZ = () => props.dispatch({
+    type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+    payload: !amplifyZ,
+  });
+  const toggleAreas = () => props.dispatch(setWebAppConfigValue(
+    BooleanSetting.show_zones, !showAreas));
+  return [
+    mapCommand({
+      id: "setting:three_d_garden:toggle",
+      ...localized("3D Map"),
+      aliases: ["3D Garden", "Toggle 3D Map", "enable", "disable"],
+      group: "map",
+      execute: toggle3D,
+      toggleValue: is3D,
+      accessory: toggleAccessory(is3D),
+    }),
+    mapCommand({
+      id: "setting:amplify_z:toggle",
+      ...localized("Amplify Z"),
+      aliases: ["Exaggerate Z", "Toggle Amplify Z", "enable", "disable"],
+      group: "map",
+      unavailable: unavailable3D,
+      execute: toggleAmplifyZ,
+      toggleValue: amplifyZ,
+      accessory: toggleAccessory(amplifyZ, !!unavailable3D),
+    }),
+    mapCommand({
+      id: "setting:show_zones:toggle",
+      ...localized("Areas Map Layer"),
+      aliases: [
+        "Areas", "Zones", "Toggle Areas Map Layer", "show", "hide",
+      ],
+      group: "map",
+      execute: toggleAreas,
+      toggleValue: showAreas,
+      accessory: toggleAccessory(showAreas),
+    }),
+  ];
 };
 
 const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
@@ -2958,6 +3019,7 @@ export const buildCommands = (props: BuildCommandProps): Command[] => [
   ...sectionViewCommands(props),
   selectionCommand(props),
   laserCommand(props),
+  ...mapViewCommands(props),
   ...settingsSectionCommands(props),
   ...settingsItemCommands(props),
   setupWizardCommand(props),

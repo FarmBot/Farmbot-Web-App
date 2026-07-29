@@ -1133,21 +1133,69 @@ describe("buildCommands()", () => {
       imageIcon: TAB_ICON[Panel.Map],
       themeAwareImageIcon: true,
     });
-    expect(mapLayers).toHaveLength(11);
+    expect(mapLayers).toHaveLength(14);
     expect(mapLayers.every(command =>
       !command.name.startsWith("Show ")
       && !command.englishName.startsWith("Show ")
       && command.imageIcon == TAB_ICON[Panel.Map])).toEqual(true);
     expect(mapLayer?.priority).toBeUndefined();
     expect(commands.find(command =>
-      command.id == "setting:three_d_garden:toggle")).toBeUndefined();
+      command.id == "setting:three_d_garden:toggle")?.name).toEqual("3D Map");
     expect(commands.find(command =>
-      command.id == "setting:show_zones:toggle")).toBeUndefined();
+      command.id == "setting:amplify_z:toggle")?.name).toEqual("Amplify Z");
+    expect(commands.find(command =>
+      command.id == "setting:show_zones:toggle")?.name)
+      .toEqual("Areas Map Layer");
     expect(advancedSetting).toMatchObject({
       group: "settings", priority: -1,
     });
     expect(searchCommands([setting!, mapLayer!], "enable"))
       .toEqual([mapLayer, setting]);
+  });
+
+  it("provides separate map view toggle commands", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    config.body.show_zones = true;
+    state.resources = buildResourceIndex([config]);
+    state.resources.consumers.farm_designer.threeDExaggeratedZ = true;
+    const dispatch = jest.fn();
+    const update = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn() as never);
+    const commands = buildCommands({
+      state, dispatch, navigate: jest.fn(),
+    });
+    const command = (id: string) =>
+      commands.find(item => item.id == id);
+
+    expect(command("setting:three_d_garden:toggle"))
+      .toMatchObject({ toggleValue: true });
+    expect(command("setting:amplify_z:toggle"))
+      .toMatchObject({ toggleValue: true });
+    expect(command("setting:show_zones:toggle"))
+      .toMatchObject({ toggleValue: true });
+
+    command("setting:three_d_garden:toggle")?.execute();
+    command("setting:amplify_z:toggle")?.execute();
+    command("setting:show_zones:toggle")?.execute();
+
+    expect(update.mock.calls.map(call => call.slice(0, 2))).toEqual([
+      [BooleanSetting.three_d_garden, false],
+      [BooleanSetting.show_zones, false],
+    ]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+      payload: false,
+    });
+
+    config.body.three_d_garden = false;
+    const disabledCommands = buildCommands({
+      state, dispatch, navigate: jest.fn(),
+    });
+    expect(disabledCommands.find(item =>
+      item.id == "setting:amplify_z:toggle")?.unavailable)
+      .toEqual("Enable the 3D Garden setting first.");
   });
 
   it("requires confirmation before weakening safety settings", () => {
@@ -1332,7 +1380,7 @@ describe("buildCommands()", () => {
     ]);
   });
 
-  it("only provides section view controls when 3D is enabled", () => {
+  it("disables section view controls when 3D is disabled", () => {
     const state = fakeState();
     const config = fakeWebAppConfig();
     config.body.three_d_garden = false;
@@ -1340,7 +1388,10 @@ describe("buildCommands()", () => {
 
     expect(buildCommands({
       state, dispatch: jest.fn(), navigate: jest.fn(),
-    }).find(item => item.id == "section-view")).toBeUndefined();
+    }).find(item => item.id == "section-view")).toMatchObject({
+      name: "Section View",
+      unavailable: "Enable the 3D Garden setting first.",
+    });
   });
 
   it("selects resources and manages the selection panel", () => {

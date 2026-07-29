@@ -212,6 +212,15 @@ describe("designer reducer", () => {
     expect(newState.threeDExaggeratedZ).toEqual(true);
   });
 
+  it("sets 3D area selection mode", () => {
+    const action: ReduxAction<boolean> = {
+      type: Actions.SET_3D_AREA_SELECTION_MODE,
+      payload: true,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.threeDAreaSelectionMode).toEqual(true);
+  });
+
   it("sets 3D section open state", () => {
     const newState = designer(oldState(), {
       type: Actions.SET_3D_SECTION_OPEN,

@@ -75,6 +75,7 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
+  threeDAreaSelectionMode: false,
   threeDCameraFollow: false,
   threeDUTMFollow: false,
   threeDCameraSelection: false,
@@ -348,6 +349,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_3D_EXAGGERATED_Z, (s, { payload }) => {
     s.threeDExaggeratedZ = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_AREA_SELECTION_MODE, (s, { payload }) => {
+    s.threeDAreaSelectionMode = payload;
     return s;
   })
   .add<boolean>(Actions.SET_3D_SECTION_OPEN, (s, { payload }) => {
