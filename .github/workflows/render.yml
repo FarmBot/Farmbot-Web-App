@@ -164,13 +164,33 @@ jobs:
         if: env.NOTIFY == 'true'
         run: scripts/ci/send-notification "${FPS_VALUE} fps (${PERCENT_CHANGE}% change)"
 
-      - name: Upload image artifacts
+      - name: Upload source image artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: images
+          name: source images
           path: |
             /tmp/*.png
+            !/tmp/render_summary_plots.png
+            !/tmp/render_summary_screenshots.png
+          if-no-files-found: warn
+
+      - name: Upload summary plots image artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render_summary_plots
+          path: |
+            /tmp/render_summary_plots.png
+          if-no-files-found: warn
+
+      - name: Upload summary screenshots image artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render_summary_screenshots
+          path: |
+            /tmp/render_summary_screenshots.png
           if-no-files-found: warn
 
       - name: Upload csv artifacts
