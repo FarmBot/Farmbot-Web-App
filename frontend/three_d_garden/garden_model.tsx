@@ -1501,6 +1501,7 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
         getZ={props.getZ}
         loadInComplete={loadInComplete}
         mountedToolName={props.mountedToolName}
+        navigate={props.navigate}
         positionStore={props.positionStore}
         onExitRest={markFarmbotHidden}
         onLoadInComplete={markFarmbotLoaded}

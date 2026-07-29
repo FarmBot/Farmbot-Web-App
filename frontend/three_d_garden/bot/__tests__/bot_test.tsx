@@ -609,7 +609,7 @@ describe("<Bot />", () => {
       .not.toBeInTheDocument();
   });
 
-  it("highlights all clickable FarmBot objects with one UTM label", () => {
+  it("highlights all clickable FarmBot objects without labels", () => {
     const wrapper = createRenderer(
       <HighlightProvider highlighted3DObject={"all"}>
         <Bot {...fakeProps()} />
@@ -617,11 +617,11 @@ describe("<Bot />", () => {
     );
     const named = (name: string) => wrapper.root.findAll(node =>
       typeof node.type == "string" && node.props.name == name);
-    expect(named("electronics-label")).toHaveLength(1);
-    expect(named("camera-label")).toHaveLength(1);
     expect(named("jog-controls-highlight")).toHaveLength(4);
     expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
-    expect(named("utm-label")).toHaveLength(1);
+    expect(wrapper.root.findAll(node =>
+      typeof node.props.name == "string"
+      && node.props.name.endsWith("-label"))).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 

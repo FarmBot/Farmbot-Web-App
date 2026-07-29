@@ -20,7 +20,6 @@ import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
 import { frontSideMaterial } from "../../geometry_batching";
 import { Highlight } from "../../elements";
-import { t } from "../../../i18next_wrapper";
 
 type Box = GLTF & {
   nodes: {
@@ -251,9 +250,7 @@ const ElectronicsBoxBase = (props: ElectronicsBoxProps) => {
     ? getBotKinematics(config, configPosition).anchors.electronics.localPosition
     : getElectronicsBoxPosition(config, configPosition);
   return <Group name={"electronics-box"} position={position}>
-    <Highlight highlightName={"electronics"}
-      label={t("Electronics Box")}
-      labelPosition={[0, 0, 220]}>
+    <Highlight highlightName={"electronics"}>
       <ElectronicsBoxModel
         kitVersion={config.kitVersion}
         onClick={selectElectronics}

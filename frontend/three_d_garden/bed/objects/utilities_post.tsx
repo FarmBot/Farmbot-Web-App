@@ -24,7 +24,6 @@ import {
   getUtilitiesPostWorldPosition, UTILITIES_POST_SIZE, WIFI_ROUTER_LOCAL_Z,
 } from "./utilities_post_position";
 import { Highlight } from "../../elements";
-import { t } from "../../../i18next_wrapper";
 
 const AnimatedGroup = animated(Group);
 const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
@@ -269,10 +268,7 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
       position={[-legSize / 2 - outletDepth / 2, 0, 85]}>
       <MeshPhongMaterial color={"gray"} />
     </Box>
-    <Highlight
-      highlightName={"connectivity"}
-      label={t("Connectivity")}
-      labelPosition={[0, 0, WIFI_ROUTER_LOCAL_Z + 60]}>
+    <Highlight highlightName={"connectivity"}>
       <Group name={"wifi-router"}
         onClick={selectConnectivity}
         position={[0, 0, WIFI_ROUTER_LOCAL_Z]}>

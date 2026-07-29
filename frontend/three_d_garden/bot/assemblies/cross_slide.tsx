@@ -18,7 +18,6 @@ import { clickWasDragged } from "../../click_event";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { Highlight } from "../../elements";
-import { t } from "../../../i18next_wrapper";
 
 export interface CrossSlideAssemblyProps {
   config: Config;
@@ -75,9 +74,7 @@ const CrossSlideAssemblyBase = (props: CrossSlideAssemblyProps) => {
       ? <Group name={"crossSlide"} rotation={[0, 0, Math.PI / 2]}>
         <CrossSlideV19Model
           model={crossSlide as unknown as CrossSlideV19Full} />
-        <Highlight highlightName={"camera"}
-          label={t("Camera")}
-          labelPosition={[-46, 87.5, 92.5]}>
+        <Highlight highlightName={"camera"}>
           <Group name={"camera"}
             {...cameraEvents}
             position={[-46, 87.5, -7.5]}

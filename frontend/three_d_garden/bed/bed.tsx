@@ -72,7 +72,6 @@ import {
 import {
   SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
 } from "../section";
-import { t } from "../../i18next_wrapper";
 import { BotPosition } from "../../devices/interfaces";
 import { clickWasDragged } from "../click_event";
 
@@ -852,9 +851,7 @@ const BedBase = (props: BedProps) => {
 
   return <Group name={"bed-group"}
     userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}>
-    <Highlight highlightName={"bed"}
-      label={t("Bed")}
-      labelPosition={[0, 0, 100]}>
+    <Highlight highlightName={"bed"}>
       <BedFrame {...commonBedFrameProps}>
         <BedFrameMaterial
           bedColor={bedColor}
@@ -992,13 +989,7 @@ const BedBase = (props: BedProps) => {
           getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>
-      <Highlight highlightName={"soil-surface"}
-        label={t("Garden")}
-        labelPosition={[
-          bedXOffset,
-          bedYOffset,
-          zZero(props.config) + 100,
-        ]}>
+      <Highlight highlightName={"soil-surface"}>
         {props.config.lowDetail
           ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
           : <DetailedSoilLayer

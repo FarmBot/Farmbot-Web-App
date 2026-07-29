@@ -27,7 +27,6 @@ import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { EXTRUSION_WIDTH, UTM_RADIUS } from "./constants";
 import { Highlight } from "../../elements";
-import { t } from "../../../i18next_wrapper";
 
 type ZStop = GLTF & {
   nodes: { [PartName.zStop]: THREE.Mesh };
@@ -145,9 +144,7 @@ const ZAxisCamera = (props: ZAxisCameraProps) => {
     ASSETS.models.cameraMountHalf,
     LIB_DIR,
   ) as unknown as CameraMountHalf;
-  return <Highlight highlightName={"camera"}
-    label={t("Camera")}
-    labelPosition={[12, 35, props.zGantryOffset - 20]}>
+  return <Highlight highlightName={"camera"}>
     <Group name={"camera"}
       onClick={props.onClick}
       onPointerOver={() => props.onHoverObject?.(true)}
@@ -230,9 +227,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
         geometry={(zStop as unknown as ZStop).nodes[PartName.zStop].geometry}>
         <MeshPhongMaterial color={"silver"} />
       </Mesh>;
-  const utmComponent = <Highlight highlightName={"utm"}
-    label={t("UTM")}
-    labelPosition={[0, 0, 120]}>
+  const utmComponent = <Highlight highlightName={"utm"}>
     <Group name={"UTM"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh
