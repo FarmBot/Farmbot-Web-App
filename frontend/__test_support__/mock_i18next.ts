@@ -1,13 +1,19 @@
-import { template, templateSettings } from "lodash";
 import { Dictionary } from "farmbot";
 
-templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+export const interpolate = (
+  text: string | undefined,
+  values: Dictionary<string | number> = {},
+): string => (text ?? "").replace(/{{([\s\S]+?)}}/g, (_, key: string) => {
+  const interpolationKey = key.trim();
+  const value = values[interpolationKey];
+  if (value === undefined) {
+    throw new Error(`Missing interpolation value: ${interpolationKey}`);
+  }
+  return String(value);
+});
 
 jest.mock("i18next", () => ({
-  t: (i: string, translation: Dictionary<string> = {}): string => {
-    /** Does not support js reserved word dictionary keys. */
-    const precompiledTemplate = template(i);
-    return precompiledTemplate(translation);
-  },
+  t: (i: string, translation: Dictionary<string | number> = {}): string =>
+    interpolate(i, translation),
   init: jest.fn((_, ok) => ok()),
 }));
