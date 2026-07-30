@@ -90,13 +90,80 @@ describe DashboardController do
     end
 
     it "handles self hosted image uploads" do
-      params = { key: "fake_key", file: "fake_file" }
+      key = "fake_key"
+      params = {
+        key: key,
+        file: "fake_file",
+        signature: Image.direct_upload_token(key),
+      }
       be_mocked = receive(:self_hosted_image_upload)
-                    .with(params)
-                    .and_return({something: 'testing'})
+                    .with(key: key, file: "fake_file")
+                    .and_return({ something: "testing" })
       expect(Image).to(be_mocked)
       post :direct_upload, params: params
       expect(response.status).to eq(200)
+    end
+
+    it "rejects unsigned self hosted image uploads" do
+      expect(Image).not_to receive(:self_hosted_image_upload)
+      post :direct_upload, params: { key: "fake_key", file: "fake_file" }
+      expect(response.status).to eq(401)
+    end
+
+    it "rejects signatures for a different upload key" do
+      signature = Image.direct_upload_token("different_key")
+      expect(Image).not_to receive(:self_hosted_image_upload)
+      post :direct_upload, params: {
+        key: "fake_key",
+        file: "fake_file",
+        signature: signature,
+      }
+      expect(response.status).to eq(401)
+    end
+
+    it "rejects oversized images" do
+      key = "fake_key"
+      allow(Image).to receive(:self_hosted_image_upload)
+        .and_raise(Image::DirectUploadTooLarge)
+      post :direct_upload, params: {
+        key: key,
+        file: "fake_file",
+        signature: Image.direct_upload_token(key),
+      }
+      expect(response.status).to eq(413)
+    end
+
+    it "rejects files that are not JPEG images" do
+      key = "fake_key"
+      allow(Image).to receive(:self_hosted_image_upload)
+        .and_raise(Image::InvalidDirectUploadImage)
+      post :direct_upload, params: {
+        key: key,
+        file: "fake_file",
+        signature: Image.direct_upload_token(key),
+      }
+      expect(response.status).to eq(415)
+    end
+
+    it "serves direct uploads as JPEG images" do
+      filename = SecureRandom.uuid
+      path = Image.direct_upload_path("#{filename}.jpg")
+      FileUtils.mkdir_p(path.dirname)
+      FileUtils.cp(Rails.root.join("public", "plant.jpg"), path)
+
+      begin
+        get :direct_upload_file, params: { filename: filename }
+        expect(response.status).to eq(200)
+        expect(response.media_type).to eq("image/jpeg")
+        expect(response.headers["X-Content-Type-Options"]).to eq("nosniff")
+      ensure
+        File.delete(path) if File.exist?(path)
+      end
+    end
+
+    it "returns not found for missing direct uploads" do
+      get :direct_upload_file, params: { filename: SecureRandom.uuid }
+      expect(response.status).to eq(404)
     end
   end
 end

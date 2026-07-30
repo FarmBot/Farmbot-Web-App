@@ -5,20 +5,54 @@ describe Api::ImagesController do
   let(:user) { FactoryBot.create(:user) }
 
   it "uploads file" do
+    tempfile = Tempfile.new(["wow", ".jpg"])
+    tempfile.binmode
+    tempfile.write(File.binread(Rails.root.join("public", "plant.jpg")))
+    tempfile.rewind
     fake_file = ActionDispatch::Http::UploadedFile.new(
       filename: "wow.jpg",
       type: "image/jpg",
       head: "",
-      tempfile: Tempfile.new,
+      tempfile: tempfile,
     )
-    name = "wow.jpg"
     Image.self_hosted_image_upload(key: "/abc.jpg", file: fake_file)
-    expected = "public/direct_upload/temp/abc.jpg"
+    expected = Image.direct_upload_path("abc.jpg")
     begin
       assert File.file?(expected)
     ensure
       File.delete(expected) if File.exist?(expected)
     end
+  end
+
+  it "rejects oversized direct uploads" do
+    tempfile = Tempfile.new(["large", ".jpg"])
+    tempfile.truncate(Image::MAX_IMAGE_SIZE + 1)
+    fake_file = ActionDispatch::Http::UploadedFile.new(
+      filename: "large.jpg",
+      type: "image/jpeg",
+      head: "",
+      tempfile: tempfile,
+    )
+
+    expect {
+      Image.self_hosted_image_upload(key: "/large.jpg", file: fake_file)
+    }.to raise_error(Image::DirectUploadTooLarge)
+  end
+
+  it "rejects non-image direct uploads" do
+    tempfile = Tempfile.new(["fake", ".jpg"])
+    tempfile.write("<html>not an image</html>")
+    tempfile.rewind
+    fake_file = ActionDispatch::Http::UploadedFile.new(
+      filename: "fake.jpg",
+      type: "image/jpeg",
+      head: "",
+      tempfile: tempfile,
+    )
+
+    expect {
+      Image.self_hosted_image_upload(key: "/fake.jpg", file: fake_file)
+    }.to raise_error(Image::InvalidDirectUploadImage)
   end
 
   it "Creates a policy object" do
@@ -51,9 +85,15 @@ describe Api::ImagesController do
     expect(json).to be_kind_of(Hash)
     expect(json[:verb]).to eq("POST")
     expect(json[:url]).to include($API_URL)
-    [:policy, :signature, :GoogleAccessId]
+    [:policy, :GoogleAccessId]
       .map { |key| expect(json.dig(:form_data, key)).to eq("N/A") }
     expect(json[:form_data].keys.sort).to include(:signature)
+    expect(
+      Image.valid_direct_upload_token?(
+        key: json.dig(:form_data, :key),
+        token: json.dig(:form_data, :signature),
+      ),
+    ).to be(true)
   end
 
   describe "#index" do
