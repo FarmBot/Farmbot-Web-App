@@ -1,6 +1,6 @@
 let mockDev = false;
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
   LandingPageSetting, LandingPageSettingProps,
@@ -65,14 +65,17 @@ afterEach(() => {
 
 describe("<AccountSettings />", () => {
   let requestAccountExportSpy: jest.SpyInstance;
+  let confirmSpy: jest.SpyInstance;
   beforeEach(() => {
     requestAccountExportSpy = jest.spyOn(
       requestAccountExportModule, "requestAccountExport")
       .mockImplementation(jest.fn());
+    confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
   });
 
   afterEach(() => {
     requestAccountExportSpy.mockRestore();
+    confirmSpy.mockRestore();
   });
 
   const fakeProps = (): AccountSettingsProps => ({
@@ -89,6 +92,7 @@ describe("<AccountSettings />", () => {
     const input = container.querySelector(`input[name="${name}"]`);
     if (!input) { throw new Error(`Expected input for ${name}`); }
     fireEvent.blur(input, { currentTarget: { value }, target: { value } });
+    return input;
   };
 
   it("changes name", () => {
@@ -100,14 +104,76 @@ describe("<AccountSettings />", () => {
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
-  it("changes email", () => {
+  it("changes email", async () => {
     const p = fakeProps();
-    p.user.body.email = "";
+    p.user.body.email = "old@example.com";
     p.settingsPanelState.account = true;
-    commitField(p, "email", "new email");
-    expect(editSpy).toHaveBeenCalledWith(p.user, { email: "new email" });
+    p.dispatch = jest.fn(action => action);
+    saveSpy.mockImplementation(() => Promise.resolve() as never);
+    commitField(p, "email", "new@example.com");
+    expect(confirmSpy).toHaveBeenCalledWith(
+      "Change account email address from 'old@example.com' " +
+      "to 'new@example.com'?");
+    expect(editSpy).toHaveBeenCalledWith(
+      p.user, { email: "new@example.com" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
-    expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM));
+  });
+
+  it("rejects an invalid email", () => {
+    const checkValidity = jest.spyOn(
+      HTMLInputElement.prototype, "checkValidity").mockReturnValue(false);
+    const reportValidity = jest.spyOn(
+      HTMLInputElement.prototype, "reportValidity").mockReturnValue(false);
+    const p = fakeProps();
+    p.user.body.email = "old@example.com";
+    p.settingsPanelState.account = true;
+    const input = commitField(p, "email", "invalid");
+    expect(input.getAttribute("type")).toEqual("email");
+    expect(checkValidity).toHaveBeenCalled();
+    expect(reportValidity).toHaveBeenCalled();
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+    checkValidity.mockRestore();
+    reportValidity.mockRestore();
+  });
+
+  it("does not change email when confirmation is cancelled", () => {
+    confirmSpy.mockReturnValue(false);
+    const p = fakeProps();
+    p.user.body.email = "old@example.com";
+    p.settingsPanelState.account = true;
+    commitField(p, "email", "new@example.com");
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
+
+  it("does not change an unchanged email", () => {
+    const p = fakeProps();
+    p.user.body.email = "same@example.com";
+    p.settingsPanelState.account = true;
+    commitField(p, "email", "same@example.com");
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
+
+  it("restores the email when saving fails", async () => {
+    const p = fakeProps();
+    p.user.body.email = "old@example.com";
+    p.settingsPanelState.account = true;
+    p.dispatch = jest.fn(action => action);
+    saveSpy.mockImplementation(
+      () => Promise.reject(new Error("save failed")) as never);
+    commitField(p, "email", "new@example.com");
+    await waitFor(() => {
+      expect(editSpy).toHaveBeenLastCalledWith(
+        p.user, { email: "old@example.com" });
+    });
+    expect(editSpy).toHaveBeenCalledTimes(2);
+    expect(success).not.toHaveBeenCalled();
   });
 
   it("changes language", () => {

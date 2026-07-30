@@ -23,6 +23,18 @@ describe Users::Create do
     expect(results.success?).to be_truthy
   end
 
+    it "rejects an invalid email address" do
+      results = Users::Create.run(email:                 "not-an-email",
+                                  name:                  "Faker",
+                                  password:              "password12345",
+                                  password_confirmation: "password12345",
+                                  agree_to_terms:        false)
+
+      expect(results.success?).to be false
+      expect(results.errors.message_list)
+        .to include(Users::Create::INVALID_EMAIL)
+    end
+
     it "stops unauthorized users from creating accounts on server" do
       ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io,farm.bot") do
         email   = "#{SecureRandom.hex(8)}@qwerty.io"

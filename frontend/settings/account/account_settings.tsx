@@ -60,14 +60,28 @@ export const AccountSettings = (props: AccountSettingsProps) =>
             {t(DeviceSetting.accountEmail)}
           </label>
           <BlurableInput
-            type="text"
+            type="email"
             name="email"
             value={props.user.body.email || ""}
             onCommit={e => {
-              success(t(Content.CHECK_EMAIL_TO_CONFIRM));
-              props.dispatch(edit(
-                props.user, { email: e.currentTarget.value }));
-              props.dispatch(save(props.user.uuid));
+              const input = e.currentTarget;
+              const originalEmail = props.user.body.email || "";
+              if (!input.checkValidity()) {
+                input.reportValidity();
+                return;
+              }
+              if (originalEmail != input.value && confirm(
+                t("Change account email address from '{{ from }}' to '{{ to }}'?",
+                  { from: originalEmail, to: input.value },
+                ))) {
+                props.dispatch(edit(
+                  props.user, { email: input.value }));
+                props.dispatch(save(props.user.uuid))
+                  .then(() => success(t(Content.CHECK_EMAIL_TO_CONFIRM)))
+                  .catch(() => {
+                    props.dispatch(edit(props.user, { email: originalEmail }));
+                  });
+              }
             }} />
         </Row>
       </Highlight>

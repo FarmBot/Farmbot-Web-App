@@ -1,5 +1,7 @@
 module Users
   class Update < Mutations::Command
+    include Users::EmailDomainHelpers
+
     PASSWORD_PROBLEMS = "Password and confirmation(s) do not match " +
                         "or is less than 8 characters."
     EMAIL_IN_USE = "That email is already registered"
@@ -17,6 +19,7 @@ module Users
 
     def validate
       confirm_new_password if password
+      maybe_check_email if email && attempting_email_change?
       email_is_invalid = attempting_email_change? && user_already_exists?
       add_error(:email, :in_use, EMAIL_IN_USE) if email_is_invalid
     end
