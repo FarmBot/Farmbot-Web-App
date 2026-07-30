@@ -55,6 +55,7 @@ export interface GardenMapLegendProps {
   showZones: boolean;
   showSensorReadings: boolean;
   showMoistureInterpolationMap: boolean;
+  showSceneObjects: boolean;
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
@@ -68,6 +69,7 @@ export interface GardenMapLegendProps {
   firmwareConfig: McuParams;
   botLocationData: BotLocationData;
   botSize: BotSize;
+  gardenSize: AxisNumberProperty;
   designer: DesignerState;
 }
 

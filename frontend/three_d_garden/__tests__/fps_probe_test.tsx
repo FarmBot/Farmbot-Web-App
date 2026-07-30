@@ -150,6 +150,19 @@ describe("FPSProbe", () => {
   it("reports when benchmarking is enabled", () => {
     localStorage.setItem("FB_PERF_BENCHMARK", "true");
     expect(fpsProbeReportingEnabled()).toBeTruthy();
+    const { unmount } = render(<FPSProbe />);
+    const frameHandler = useFrameSpy.mock.calls[0][0] as () => void;
+    frameHandler();
+    expect(window.__threeDRenderMetrics).toEqual({
+      calls: 0,
+      triangles: 0,
+      points: 0,
+      lines: 0,
+      geometries: 0,
+      textures: 0,
+    });
+    unmount();
+    expect(window.__threeDRenderMetrics).toBeUndefined();
   });
 
   it("counts scene objects", () => {

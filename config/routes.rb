@@ -27,6 +27,7 @@ FarmBot::Application.routes.draw do
       sequences: [:create, :destroy, :index, :show, :update],
       telemetries: [:create, :destroy, :index, :show],
       featured_sequences: [:index],
+      scene_objects: [:create, :destroy, :index, :show, :update],
       sequence_versions: [:show],
       tools: [:create, :destroy, :index, :show, :update],
       webcam_feeds: [:create, :destroy, :index, :show, :update],

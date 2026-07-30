@@ -117,7 +117,7 @@ export const CameraIndicator = ({ videoDevices }: CameraIndicatorProps) => {
 };
 
 /** Return an indicator color for the given WiFi signal strength (%). */
-const colorFromSignalStrength = (percent: number) => {
+export const colorFromSignalStrength = (percent: number) => {
   if (percent < 20) {
     return "gray";
   } else if (percent < 68) {
@@ -142,15 +142,22 @@ interface WiFiStrengthDisplayProps {
   extraInfo?: boolean;
 }
 
+export const calcWifiStrengthPercent = (
+  wifiStrength: number | undefined,
+  wifiStrengthPercent: number | undefined,
+): number | undefined => wifiStrengthPercent ?? (wifiStrength
+  ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
+  : undefined);
+
 /** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay(
   { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps,
 ): React.ReactNode {
-  const calculatedPercent = wifiStrength
-    ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
-    : 0;
   const valueAvailable = isWifi(wifiStrength, wifiStrengthPercent);
-  const percent = wifiStrengthPercent || calculatedPercent;
+  const percent = calcWifiStrengthPercent(
+    wifiStrength,
+    wifiStrengthPercent,
+  ) ?? 0;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${percent}%`;
   const color = colorFromSignalStrength(percent);
@@ -179,7 +186,7 @@ export const isWifi = (
 export const LocalIpAddress = ({ address }: { address: string | undefined }) =>
   <p className={"ip-address"}><b>{t("Local IP")}: </b>{address || "---"}</p>;
 
-const calcMac =
+export const calcMac =
   (nodeName: string | undefined, target: string | undefined, wifi: boolean) => {
     if (!isString(nodeName) || nodeName.includes("---") || !nodeName) {
       return "---";

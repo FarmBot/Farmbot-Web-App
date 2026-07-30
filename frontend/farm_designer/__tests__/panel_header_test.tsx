@@ -89,6 +89,34 @@ describe("<DesignerNavTabs />", () => {
     });
   });
 
+  it("exits grid planting when another panel is opened", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.designer.panelOpen = true;
+    p.designer.gridPlanting = {
+      token: "grid-token",
+      gridId: "grid-token",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const setPanel = jest.fn();
+    p.dispatch = mockDispatch(setPanel);
+    const { container } = render(<DesignerNavTabs {...p} />);
+
+    fireEvent.click(container.querySelector("#points") as Element);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "grid-token",
+    });
+    expect(setPanel).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
+  });
+
   it("closes panel when map icon is clicked", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();

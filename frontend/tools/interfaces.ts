@@ -2,12 +2,15 @@ import { UUID } from "../resources/interfaces";
 import {
   FirmwareHardware, TaggedTool, TaggedToolSlotPointer,
   TaggedDevice, TaggedSensor, Xyz, TaggedPointGroup, TaggedPoint,
+  TaggedPeripheral,
 } from "farmbot";
 import { BotOriginQuadrant } from "../farm_designer/interfaces";
 import { BotState, BotPosition, UserEnv } from "../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 import { MovementState } from "../interfaces";
+import { PeripheralValues } from
+  "../farm_designer/map/layers/farmbot/bot_trail";
 
 export interface AddToolSlotState {
   uuid: UUID | undefined;
@@ -57,6 +60,8 @@ export interface ToolsProps {
   findTool(id: number): TaggedTool | undefined;
   device: TaggedDevice;
   sensors: TaggedSensor[];
+  peripherals: TaggedPeripheral[];
+  peripheralValues: PeripheralValues;
   bot: BotState;
   hoveredToolSlot: string | undefined;
   firmwareHardware: FirmwareHardware | undefined;

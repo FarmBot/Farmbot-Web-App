@@ -12,6 +12,7 @@ import {
   Matrix4,
   Quaternion,
   InstancedBufferAttribute,
+  DoubleSide,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -34,6 +35,7 @@ import { perfMeasure } from "../../performance/perf";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
 } from "../selection_types";
+import { SPREAD_SPHERE_SEGMENTS } from "./geometry_detail";
 
 const spreadLayerSpringConfig = {
   tension: 240,
@@ -156,6 +158,7 @@ export interface PlantSpreadInstancesProps {
   dispatch?: Function;
   activePositionRef: ActivePositionRef;
   spreadVisible: boolean;
+  forceWhite?: boolean;
   instanceCapacity?: number;
   routeKey?: string;
   onSelectObject?: ThreeDObjectSelectionHandler;
@@ -203,6 +206,7 @@ export const findPlantById = (
 const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, activePositionRef, spreadVisible,
+    forceWhite,
   } = props;
   const instanceCapacity = Math.max(props.instanceCapacity || 0, plants.length);
   // eslint-disable-next-line no-null/no-null
@@ -324,7 +328,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   React.useEffect(() => {
     const updateState = getUpdateState();
     updateState.needsInstanceUpdate = true;
-  }, [activeDragSpread, staticInstances]);
+  }, [activeDragSpread, forceWhite, staticInstances]);
 
   React.useEffect(() => {
     spreadVisibleRef.current = spreadVisible;
@@ -382,6 +386,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
       editPlantMode,
       clickToAddMode,
       hasTransientPlant,
+      forceWhite,
       plantId,
       activeDragSpread || "",
       activeKey,
@@ -414,7 +419,11 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
           let r = 0;
           let g = 1;
           let b = 0;
-          if (clickToAddMode || editPlantMode) {
+          if (forceWhite) {
+            r = 1;
+            g = 1;
+            b = 1;
+          } else if (clickToAddMode || editPlantMode) {
             const overlap = getSpreadOverlap({
               spreadRadii,
               activeDragXY: {
@@ -450,6 +459,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
   if (!spreadInstancesVisible) { return <></>; }
 
   return <InstancedMesh
+    name={"plant-spread-instances"}
     key={`plant-spread-${instanceCapacity}`}
     ref={instancedRef}
     args={[undefined, undefined, instanceCapacity]}
@@ -457,16 +467,19 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
     userData={{ plantIndexes }}
     visible={visible}
     raycast={noRaycast}>
-    <SphereGeometry args={[1, 32, 32]} />
+    <SphereGeometry args={[1, ...SPREAD_SPHERE_SEGMENTS]} />
     <MeshPhongMaterial
       color={"white"}
+      side={DoubleSide}
       transparent={true}
       opacity={0.4}
       vertexColors={true}
       onBeforeCompile={(shader) => {
         shader.uniforms.uBoundsCenter = { value: boundsCenter };
         shader.uniforms.uHalfSize = { value: halfSize };
-        shader.uniforms.uOutside = { value: new Color("red") };
+        shader.uniforms.uOutside = {
+          value: new Color(forceWhite ? "white" : "red"),
+        };
         shader.uniforms.uMirrorX = { value: config.mirrorX ? -1 : 1 };
         shader.uniforms.uMirrorY = { value: config.mirrorY ? -1 : 1 };
         outOfBoundsShaderModification(shader, true);
@@ -526,8 +539,13 @@ export const outOfBoundsShaderModification =
       colorVertex,
     ).replace(
       "#include <worldpos_vertex>",
-      `#include <worldpos_vertex>
-       vWorldPosition = worldPosition.xyz;`);
+      `vec4 boundsWorldPosition = vec4(position, 1.0);
+       #ifdef USE_INSTANCING
+         boundsWorldPosition = instanceMatrix * boundsWorldPosition;
+       #endif
+       boundsWorldPosition = modelMatrix * boundsWorldPosition;
+       vWorldPosition = boundsWorldPosition.xyz;
+       #include <worldpos_vertex>`);
     shader.fragmentShader = shader.fragmentShader.replace(
       "#include <common>",
       `#include <common>

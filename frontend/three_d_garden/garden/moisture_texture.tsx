@@ -15,6 +15,7 @@ import {
 import { getMoistureColor } from "../../farm_designer/map/layers/sensor_readings/moisture";
 import { Matrix4 } from "three";
 import { perfMeasure } from "../../performance/perf";
+import { MARKER_SPHERE_SEGMENTS } from "./geometry_detail";
 
 export interface MoistureSurfaceProps {
   position: [number, number, number];
@@ -237,7 +238,7 @@ const MoistureReadingsBase = (props: MoistureReadingsProps) => {
       <instancedBufferAttribute
         attach={"instanceMatrix"}
         args={[matrices, 16]} />
-      <SphereGeometry args={[props.radius, 16, 16]} />
+      <SphereGeometry args={[props.radius, ...MARKER_SPHERE_SEGMENTS]} />
       <MeshBasicMaterial color={props.color} />
     </InstancedMeshComponent>
   </Group>;

@@ -15,6 +15,11 @@ CURRENT_COMMIT = ENV.fetch("GITHUB_SHA", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
 REMOTE_COVERAGE_OVERRIDE = ENV.fetch('REMOTE_COVERAGE_OVERRIDE', '0').to_f
+FRONTEND_SOURCE_EXTENSIONS = %w[.js .jsx .ts .tsx].freeze
+
+def frontend_source_file?(path)
+  FRONTEND_SOURCE_EXTENSIONS.include?(File.extname(path))
+end
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def maybe_open_json(url)
@@ -240,7 +245,7 @@ def print_lib_progress
   }
   component_counts = { "class" => 0, "const" => 0, "function" => 0 }
   Find.find("frontend") do |path|
-    next unless File.file?(path)
+    next unless File.file?(path) && frontend_source_file?(path)
     includesEnzyme = false
     includesRTL = false
     enz_markers = /\b(?:^|\W)(?:mount|shallow)\s*\(/

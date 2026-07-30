@@ -191,4 +191,6 @@ export class API {
   get curvesPath() { return `${this.baseUrl}/api/curves/`; }
   /** /api/ai */
   get aiPath() { return `${this.baseUrl}/api/ai`; }
+  /** /api/scene_objects */
+  get sceneObjectsPath() { return `${this.baseUrl}/api/scene_objects/`; }
 }

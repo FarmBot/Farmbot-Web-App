@@ -2,7 +2,7 @@ import { fakeState } from "../__test_support__/fake_state";
 const mockState = fakeState();
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { HotkeysProvider } from "@blueprintjs/core";
 import {
   HotKey, HotKeys, HotKeysProps, hotkeysWithActions, HotkeysWithActionsProps,
@@ -61,7 +61,34 @@ describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
     const p = fakeProps();
     const hotkeys = hotkeysWithActions(p);
-    expect(Object.values(hotkeys).length).toBe(8);
+    expect(Object.values(hotkeys)).toHaveLength(15);
+    expect(hotkeys[HotKey.openGuide]).toMatchObject({
+      combo: "shift + ?",
+      label: "Open Hotkeys",
+    });
+    expect(hotkeys[HotKey.commandPalette]).toMatchObject({
+      combo: "mod + k",
+      label: "Open Command Palette",
+    });
+    expect(hotkeys[HotKey.gridMode]).toMatchObject({
+      combo: "g",
+      label: "Toggle 3D Grid Mode",
+    });
+    expect(hotkeys[HotKey.perspective]).toMatchObject({
+      combo: "p",
+      label: "Toggle 3D Perspective",
+    });
+    expect([
+      hotkeys[HotKey.orbitLeft],
+      hotkeys[HotKey.orbitRight],
+      hotkeys[HotKey.orbitUp],
+      hotkeys[HotKey.orbitDown],
+    ]).toEqual([
+      expect.objectContaining({ combo: "left", label: "Orbit 3D View Left" }),
+      expect.objectContaining({ combo: "right", label: "Orbit 3D View Right" }),
+      expect.objectContaining({ combo: "up", label: "Orbit 3D View Up" }),
+      expect.objectContaining({ combo: "down", label: "Orbit 3D View Down" }),
+    ]);
     const e = {} as KeyboardEvent;
 
     hotkeys[HotKey.save].onKeyDown?.(e);
@@ -112,15 +139,17 @@ describe("hotkeysWithActions()", () => {
 
 describe("toggleHotkeyHelpOverlay()", () => {
   it("opens overlay", () => {
-    document.dispatchEvent = jest.fn();
+    const dispatchEvent = jest.spyOn(document, "dispatchEvent")
+      .mockImplementation(() => true);
     toggleHotkeyHelpOverlay();
-    expect(document.dispatchEvent).toHaveBeenCalledWith(
+    expect(dispatchEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         key: "?",
         shiftKey: true,
         bubbles: true,
       }),
     );
+    dispatchEvent.mockRestore();
   });
 });
 
@@ -142,5 +171,19 @@ describe("<HotKeys />", () => {
     location.pathname = Path.mock(Path.designer());
     const { container } = renderHotKeys(fakeProps());
     expect(container.querySelectorAll("div").length).toEqual(1);
+  });
+
+  it("lists current shortcuts", () => {
+    location.pathname = Path.mock(Path.designer());
+    renderHotKeys(fakeProps());
+    fireEvent.keyDown(document, { key: "?", shiftKey: true });
+
+    expect(screen.getByText("Open Command Palette")).toBeInTheDocument();
+    expect(screen.getByText("Toggle 3D Grid Mode")).toBeInTheDocument();
+    expect(screen.getByText("Toggle 3D Perspective")).toBeInTheDocument();
+    expect(screen.getByText("Orbit 3D View Left")).toBeInTheDocument();
+    expect(screen.getByText("Orbit 3D View Right")).toBeInTheDocument();
+    expect(screen.getByText("Orbit 3D View Up")).toBeInTheDocument();
+    expect(screen.getByText("Orbit 3D View Down")).toBeInTheDocument();
   });
 });

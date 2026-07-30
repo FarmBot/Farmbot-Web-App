@@ -3,7 +3,7 @@ import { NavLinksProps } from "./interfaces";
 import { Link } from "../link";
 import {
   Panel, showSensors, showFarmware, PANEL_SLUG, TAB_ICON, PANEL_TITLE,
-  getPanelPath, getCurrentPanel,
+  clearGridPlanting, getPanelPath, getCurrentPanel,
   setPanelOpen,
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
@@ -16,6 +16,7 @@ export const getLinks = (): Panel[] => [
   Panel.Points,
   Panel.Curves,
   Panel.Sequences,
+  Panel.SceneObjects,
   Panel.Regimens,
   Panel.FarmEvents,
   ...(showSensors() ? [Panel.Sensors] : []),
@@ -37,6 +38,7 @@ export const NavLinks = (props: NavLinksProps) =>
           ? "active"
           : ""}
         onClick={() => {
+          clearGridPlanting(props.dispatch, props.designer);
           props.close();
           props.dispatch(setPanelOpen(false));
         }}>
@@ -53,6 +55,7 @@ export const NavLinks = (props: NavLinksProps) =>
           key={PANEL_SLUG[panel]}
           draggable={false}
           onClick={() => {
+            clearGridPlanting(props.dispatch, props.designer);
             props.dispatch(setPanelOpen(!isActive));
             props.close();
           }}>

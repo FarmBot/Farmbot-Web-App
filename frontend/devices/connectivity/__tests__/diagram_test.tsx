@@ -92,7 +92,7 @@ describe("<ConnectivityDiagram/>", () => {
 
 describe("getTextPosition()", () => {
   it("returns coordinates", () => {
-    expect(getTextPosition("top" as DiagramNodes)).toEqual({ x: 0, y: -75 });
+    expect(getTextPosition("top" as DiagramNodes)).toEqual({ x: 0, y: -60 });
   });
   it("returns fallback", () => {
     expect(getTextPosition("na" as DiagramNodes)).toEqual({ x: 0, y: 0 });
@@ -106,14 +106,14 @@ describe("nodeLabel()", () => {
     expect(text?.textContent).toEqual("Top Node");
     expect(text?.getAttribute("text-anchor")).toEqual("middle");
     expect(text?.getAttribute("x")).toEqual("0");
-    expect(text?.getAttribute("y")).toEqual("-75");
+    expect(text?.getAttribute("y")).toEqual("-60");
   });
 });
 
 describe("getLineProps()", () => {
   it("returns coordinates", () => {
     expect(getLineProps("bottom" as DiagramNodes, "left" as DiagramNodes))
-      .toEqual({ x1: -25, x2: -50, y1: 55, y2: 20 });
+      .toEqual({ x1: -25, x2: -50, y1: 40, y2: 20 });
   });
   it("returns fallback", () => {
     expect(getLineProps("na" as DiagramNodes, "na" as DiagramNodes))
@@ -159,7 +159,7 @@ describe("<Connector/>", () => {
     expect(lines.item(0).getAttribute("stroke-width")).toEqual("9");
     expect(lines.item(0).getAttribute("x1")).toEqual("-25");
     expect(lines.item(0).getAttribute("x2")).toEqual("-50");
-    expect(lines.item(0).getAttribute("y1")).toEqual("-55");
+    expect(lines.item(0).getAttribute("y1")).toEqual("-40");
     expect(lines.item(0).getAttribute("y2")).toEqual("-20");
     expect(lines.item(1).getAttribute("id")).toEqual("connector-color");
     expect(lines.item(1).getAttribute("stroke")).toEqual(Color.red);

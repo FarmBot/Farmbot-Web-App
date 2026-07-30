@@ -28,7 +28,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { error, warning } from "../../../toast/toast";
 import * as ui from "../../../ui";
-import { FBSelectProps } from "../../../ui";
+import { FBSelectProps, PopoverProps } from "../../../ui";
 import {
   actRenderer,
   createRenderer,
@@ -38,6 +38,7 @@ import {
 let getDeviceSpy: jest.SpyInstance;
 let initSaveSpy: jest.SpyInstance;
 let fbSelectMock: jest.SpyInstance;
+let popoverMock: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -46,6 +47,9 @@ beforeEach(() => {
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
   fbSelectMock = jest.spyOn(ui, "FBSelect")
     .mockImplementation(((_props: FBSelectProps) => <div />) as never);
+  popoverMock = jest.spyOn(ui, "Popover")
+    .mockImplementation(({ target, content }: PopoverProps) =>
+      <div>{target}{content}</div>);
   mockDevice.registerGpio = jest.fn(() => Promise.resolve());
   mockDevice.unregisterGpio = jest.fn(() => Promise.resolve());
 });
@@ -54,6 +58,7 @@ afterEach(() => {
   getDeviceSpy.mockRestore();
   initSaveSpy.mockRestore();
   fbSelectMock.mockRestore();
+  popoverMock.mockRestore();
 });
 
 const AVAILABLE_PIN = 18;

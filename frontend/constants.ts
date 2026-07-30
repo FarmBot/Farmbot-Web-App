@@ -653,6 +653,9 @@ export namespace ToolTips {
   export const THREE_D_ENVIRONMENT =
     trim(`3D Scene. (default: "Outdoor")`);
 
+  export const THREE_D_GROUND_TEXTURE =
+    trim(`Ground texture. (default: "Grass")`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -996,6 +999,9 @@ export namespace Content {
     trim(`Display high motor load warning indicators in map.
     Requires TRAIL and stall detection to be enabled.`);
 
+  export const SHOW_CONTROLS_OVERLAY =
+    trim(`Display jog controls in the garden map.`);
+
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the garden map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
@@ -1259,10 +1265,17 @@ export namespace Content {
   export const NO_SEED_CONTAINERS =
     trim(`Press + to add a seed container`);
 
+  export const NO_SCENE_OBJECTS =
+    trim(`Press + to add a scene object`);
+
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
     a MARK AS step in a sequence. Use the verify button or read the tool
     verification pin in a sequence to verify that a tool is attached.`);
+
+  export const CONFIRM_SCENE_CHANGE =
+    trim(`"Changing the scene will remove all {{ count }} objects from the
+    garden. Are you sure?"`);
 
   // Farm Events
   export const NOTHING_SCHEDULED =
@@ -1447,6 +1460,11 @@ export namespace TourContent {
     sensors and sensor readings. Click the Read Sensor buttons to read the
     current value of your sensors. Create and view historical sensor
     readings in the Sensor History section.`);
+
+  export const SCENE_OBJECTS_PANEL =
+    trim(`This is the scene objects panel. Here you can view and manage all of the
+    scene objects in your virtual environment. Pressing the + button
+    will create a new scene object.`);
 
   export const JOBS_AND_LOGS_PANEL =
     trim(`Here you can view running and completed jobs as well as log messages.`);
@@ -1933,12 +1951,12 @@ export namespace SetupWizardContent {
     protective equipment. Disconnect the rotary tool when not in use.`);
 
   export const SLOTS_SETUP =
-    trim(`In real life, manually (by hand) load the watering nozzle tool
+    trim(`In real life, manually (by hand) load the seeder tool
     into the toolbay slot nearest the home position.`);
 
   export const SLOTS_1_COORDINATES =
     trim(`Using the manual controls, instruct FarmBot to move towards the
-    slot with the watering nozzle in it. As you get closer, change the
+    slot with the seeder in it. As you get closer, change the
     MOVE AMOUNT to a smaller value for finer movements. Your goal is to
     position the UTM just above the tool and then descend down onto it
     (mounting it). Once the UTM has fully mounted the tool, click the blue
@@ -1947,9 +1965,9 @@ export namespace SetupWizardContent {
 
   export const SLOTS_2_COORDINATES =
     trim(`Using the manual controls, move the UTM up 100mm in the +Z
-    direction to dismount the watering nozzle. Then move the UTM 100mm
-    in the +Y direction to roughly align with the next slot in the toolbay.
-    Manually (by hand) move the watering nozzle tool into the next slot.
+    direction to dismount the seeder. Then move the UTM 100mm in the +Y
+    direction to roughly align with the next slot in the toolbay. Manually
+    (by hand) move the seeder tool into the next slot.
     Using the manual controls, move the UTM to descend down onto the tool.
     Take your time, you may need to make fine +/- 1mm adjustments to the
     X and Y position as you are descending. Once the tool is mounted,
@@ -2239,12 +2257,12 @@ export enum DeviceSetting {
   farmDesigner = `Farm Designer`,
   animations = `Plant animations`,
   trail = `Trail`,
-  mapMissedSteps = `FarmBot motor load`,
+  mapMissedSteps = `Motor load`,
+  showControlsOverlay = `Show controls overlay`,
   dynamicMap = `Dynamic map size`,
   mapSize = `Map size`,
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
-  topDownView = `Top down view`,
   setCameraStartingLocation = `Set camera starting location`,
   cropMapImages = `Crop map images`,
   clipPhotosOutOfBounds = `Clip photos out of bounds`,
@@ -2283,6 +2301,7 @@ export enum DeviceSetting {
   grid = `Grid`,
   heading = `Heading`,
   environment = `Environment`,
+  groundTexture = `Ground Texture`,
 
   // Map
   showPlants = `Plants`,
@@ -2306,8 +2325,10 @@ export enum DeviceSetting {
   showReadings = `Readings`,
   showReadingsMapLayer = `Show Readings Map Layer`,
   showMoisture = `Moisture`,
+  showObjects = `Objects`,
+  showSceneObjectsMapLayer = `Show Scene Objects Map Layer`,
   showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
-  show3DMap = `3D beta`,
+  show3DMap = `3D`,
 
   // Controls
   invertJogButtonXAxis = `X Axis`,
@@ -2453,6 +2474,11 @@ export namespace DiagnosticMessages {
     reconfiguration of FarmBot OS may be necessary.`);
 }
 
+export const CAMERA_FOLLOW_PERSPECTIVE_REQUIRED =
+  "Perspective mode is required when following the FarmBot's camera view.";
+export const UTM_FOLLOW_PERSPECTIVE_REQUIRED =
+  "Perspective mode is required when following the UTM.";
+
 export enum Actions {
 
   // Resources
@@ -2515,6 +2541,7 @@ export enum Actions {
   DEMO_SET_ESTOP = "DEMO_SET_ESTOP",
   DEMO_SET_MOUNTED_TOOL_ID = "DEMO_SET_MOUNTED_TOOL_ID",
   DEMO_SET_QUEUE_LENGTH = "DEMO_SET_QUEUE_LENGTH",
+  DEMO_SET_BUSY = "DEMO_SET_BUSY",
 
   // Draggable
   PUT_DATA_XFER = "PUT_DATA_XFER",
@@ -2530,6 +2557,9 @@ export enum Actions {
   HOVER_SENSOR_READING = "HOVER_SENSOR_READING",
   HOVER_IMAGE = "HOVER_IMAGE",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  HOVER_SCENE_OBJECT = "HOVER_SCENE_OBJECT",
+  SET_FEATURED_SCENE = "SET_FEATURED_SCENE",
+  SET_3D_HIGHLIGHT = "SET_3D_HIGHLIGHT",
   HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
@@ -2539,6 +2569,9 @@ export enum Actions {
   SET_SLUG_BULK = "SET_SLUG_BULK",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_DRAWN_POINT_DATA = "SET_DRAWN_POINT_DATA",
+  SET_DRAWN_SCENE_OBJECT_DATA = "SET_DRAWN_SCENE_OBJECT_DATA",
+  SET_FOCUSED_SCENE_OBJECT_FIELD = "SET_FOCUSED_SCENE_OBJECT_FIELD",
+  SET_UNIFIED_SCENE_OBJECT_SIZE = "SET_UNIFIED_SCENE_OBJECT_SIZE",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
   SET_SETTINGS_SEARCH_TERM = "SET_SETTINGS_SEARCH_TERM",
@@ -2558,6 +2591,11 @@ export enum Actions {
   SHOW_CAMERA_VIEW_POINTS = "SHOW_CAMERA_VIEW_POINTS",
   TOGGLE_GRID_ID = "TOGGLE_GRID_ID",
   SET_GRID_START = "SET_GRID_START",
+  SET_GRID_PLANTING = "SET_GRID_PLANTING",
+  CLEAR_GRID_PLANTING = "CLEAR_GRID_PLANTING",
+  SET_LEGACY_GRID_PLANTING_CROP = "SET_LEGACY_GRID_PLANTING_CROP",
+  CLEAR_LEGACY_GRID_PLANTING_CROP = "CLEAR_LEGACY_GRID_PLANTING_CROP",
+  SET_LEGACY_POINT_GRID = "SET_LEGACY_POINT_GRID",
   TOGGLE_SOIL_HEIGHT_LABELS = "TOGGLE_SOIL_HEIGHT_LABELS",
   SET_PANEL_OPEN = "SET_PANEL_OPEN",
   SET_PROFILE_OPEN = "SET_PROFILE_OPEN",
@@ -2574,9 +2612,21 @@ export enum Actions {
 
   // 3D
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
-  TOGGLE_3D_TOP_DOWN_VIEW = "TOGGLE_3D_TOP_DOWN_VIEW",
+  SET_3D_AREA_SELECTION_MODE = "SET_3D_AREA_SELECTION_MODE",
   TOGGLE_3D_CAMERA_SELECTION = "TOGGLE_3D_CAMERA_SELECTION",
   TOGGLE_3D_EXAGGERATED_Z = "TOGGLE_3D_EXAGGERATED_Z",
+  SET_3D_CAMERA_FOLLOW = "SET_3D_CAMERA_FOLLOW",
+  SET_3D_UTM_FOLLOW = "SET_3D_UTM_FOLLOW",
+  SET_3D_PERSPECTIVE = "SET_3D_PERSPECTIVE",
+  SET_3D_SECTION_OPEN = "SET_3D_SECTION_OPEN",
+  SET_3D_SECTION_AXIS = "SET_3D_SECTION_AXIS",
+  SET_3D_SECTION_CENTER = "SET_3D_SECTION_CENTER",
+  SET_3D_SECTION_WIDTH = "SET_3D_SECTION_WIDTH",
+  SET_3D_SECTION_FOLLOW_BOT = "SET_3D_SECTION_FOLLOW_BOT",
+  SET_3D_SECTION_CLIP_ALL = "SET_3D_SECTION_CLIP_ALL",
+  SET_3D_VIEW_MODE = "SET_3D_VIEW_MODE",
+  SET_3D_STARGAZING_FOV = "SET_3D_STARGAZING_FOV",
+  SET_3D_VIEW = "SET_3D_VIEW",
   SET_3D_TIME = "RESET_3D_TIME",
 
   // Regimens

@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+if [ "$#" -lt 2 ]; then
+  echo "Usage: $0 TEST_FILE SOURCE_FILE"
+  echo "Example:"
+  echo "  $0 frontend/three_d_garden/__tests__/scene_objects_test.ts \\"
+  echo "    frontend/three_d_garden/scene_objects.tsx"
+  exit 1
+fi
+
+test_file="$1"
+source_file="$2"
+coverage_dir="coverage_jest_file"
+config_file=".jest-file-coverage.config.cjs"
+setup_file=".jest-file-coverage.setup.ts"
+resolver_binding="node_modules/@unrs/resolver-binding-linux-x64-gnu"
+
+if [ ! -d "$resolver_binding" ]; then
+  echo "Missing $resolver_binding"
+  echo
+  echo "Jest 30 needs unrs-resolver's optional native package to resolve modules."
+  echo "Install optional dependencies, or install this package explicitly:"
+  echo "  bun install"
+  echo "  # or"
+  echo "  bun add -d @unrs/resolver-binding-linux-x64-gnu@1.11.1"
+  echo
+  echo "If node_modules is owned by another user, fix ownership first."
+  exit 1
+fi
+
+rm -rf "$coverage_dir"
+mkdir -p "$coverage_dir"
+trap 'rm -f "$config_file" "$setup_file"' EXIT
+
+node - "$config_file" "$setup_file" <<'NODE'
+const fs = require("fs");
+const path = require("path");
+
+const [configFile, setupFile] = process.argv.slice(2);
+const rootDir = process.cwd();
+const base = require(path.join(rootDir, "jest.config.js"));
+const absolute = file => path.join(rootDir, file);
+const setupFiles = [
+  ...base.setupFiles,
+  ...base.setupFilesAfterEnv.map(file => file.replace("<rootDir>/", "")),
+]
+  .filter(file => !file.endsWith("/additional_mocks.tsx"))
+  .map(absolute)
+  .filter(fs.existsSync);
+
+fs.writeFileSync(setupFile, [
+  "import { TextDecoder, TextEncoder } from 'util';",
+  "Object.assign(globalThis, { TextDecoder, TextEncoder });",
+  "globalThis.mockNavigate = jest.fn();",
+  "const originalConsoleError = console.error.bind(console);",
+  "jest.spyOn(console, 'error').mockImplementation((...args) => {",
+  "  const message = String(args[0] ?? '');",
+  "  if (message.includes('react-test-renderer is deprecated')) { return; }",
+  "  originalConsoleError(...args);",
+  "});",
+  "jest.mock('three/examples/jsm/postprocessing/EffectComposer.js', () => ({",
+  "  EffectComposer: class {",
+  "    addPass = jest.fn(); setPixelRatio = jest.fn(); setSize = jest.fn();",
+  "    render = jest.fn(); dispose = jest.fn();",
+  "  },",
+  "}));",
+  "jest.mock('three/examples/jsm/postprocessing/OutlinePass.js', () => ({",
+  "  OutlinePass: class {",
+  "    visibleEdgeColor = { set: jest.fn() };",
+  "    hiddenEdgeColor = { set: jest.fn() };",
+  "    dispose = jest.fn();",
+  "  },",
+  "}));",
+  "jest.mock('three/examples/jsm/postprocessing/RenderPass.js', () => ({",
+  "  RenderPass: class {},",
+  "}));",
+  "jest.mock('react-router', () => ({",
+  "  BrowserRouter: jest.fn(({ children }) => children),",
+  "  MemoryRouter: jest.fn(({ children }) => children),",
+  "  Route: jest.fn(({ children }) => children),",
+  "  Routes: jest.fn(({ children }) => children),",
+  "  useNavigate: () => globalThis.mockNavigate,",
+  "  useLocation: () => window.location,",
+  "  Navigate: jest.fn(({ to }) => globalThis.mockNavigate(to)),",
+  "  Outlet: jest.fn(() => null),",
+  "}));",
+  "window.alert = jest.fn();",
+  "globalThis.alert = window.alert;",
+  "class MockResizeObserver {",
+  "  observe = jest.fn(); unobserve = jest.fn(); disconnect = jest.fn();",
+  "}",
+  "window.ResizeObserver = MockResizeObserver;",
+  "globalThis.ResizeObserver = MockResizeObserver;",
+  ...setupFiles.map(file => `import ${JSON.stringify(file)};`),
+  "const threeFiber = require('@react-three/fiber');",
+  "const defaultUseFrame = threeFiber.useFrame.getMockImplementation();",
+  "const defaultUseThree = threeFiber.useThree.getMockImplementation();",
+  "beforeEach(() => {",
+  "  threeFiber.useFrame.mockImplementation(defaultUseFrame);",
+  "  threeFiber.useThree.mockImplementation(defaultUseThree);",
+  "});",
+].join("\n") + "\n");
+
+const config = {
+  ...base,
+  rootDir,
+  transform: {
+    "^.+\\.(ts|tsx)$": ["ts-jest", {
+      diagnostics: false,
+      tsconfig: path.join(rootDir, "tsconfig.tests.json"),
+    }],
+  },
+  setupFiles: [],
+  setupFilesAfterEnv: [path.join(rootDir, setupFile)],
+  coverageDirectory: path.join(rootDir, "coverage_jest_file"),
+  testEnvironmentOptions: {
+    url: "http://localhost/app/designer/scene_objects/1",
+  },
+};
+
+fs.writeFileSync(
+  configFile,
+  `module.exports = ${JSON.stringify(config, null, 2)};\n`,
+);
+NODE
+
+./node_modules/.bin/jest "$test_file" \
+  --config "$config_file" \
+  --runInBand \
+  --coverage \
+  --coverageDirectory "$coverage_dir" \
+  --collectCoverageFrom "$source_file" \
+  --coverageReporters html \
+  --coverageReporters json \
+  --coverageReporters lcov \
+  --coverageReporters text
+
+node - "$coverage_dir/coverage-final.json" "$source_file" <<'NODE'
+const fs = require("fs");
+const path = require("path");
+
+const [coveragePath, sourceFile] = process.argv.slice(2);
+const coverage = JSON.parse(fs.readFileSync(coveragePath, "utf8"));
+const normalizedSource = path.resolve(sourceFile);
+const key = Object.keys(coverage).find(file =>
+  path.resolve(file) == normalizedSource);
+
+if (!key) {
+  console.error(`No coverage entry found for ${sourceFile}`);
+  process.exit(1);
+}
+
+const fileCoverage = coverage[key];
+const fnMap = fileCoverage.fnMap || {};
+const hits = fileCoverage.f || {};
+const uncovered = Object.entries(fnMap)
+  .filter(([id]) => !hits[id])
+  .map(([id, fn]) => ({
+    id,
+    name: fn.name || "(anonymous)",
+    line: fn.loc.start.line,
+    column: fn.loc.start.column,
+  }));
+
+console.log(`\nFunction coverage details for ${sourceFile}`);
+console.log("HTML:    coverage_jest_file/lcov-report/index.html");
+console.log(`Covered: ${Object.keys(fnMap).length - uncovered.length}`);
+console.log(`Total:   ${Object.keys(fnMap).length}`);
+
+if (uncovered.length) {
+  console.log("\nUncovered functions:");
+  uncovered.forEach(fn => {
+    console.log(`- ${fn.name} at ${sourceFile}:${fn.line}:${fn.column}`);
+  });
+  process.exitCode = 2;
+} else {
+  console.log("\nAll functions covered.");
+}
+NODE

@@ -18,7 +18,21 @@ const globalAny = globalThis as typeof globalThis & {
 };
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
+const originalWindowAddEventListener = window.addEventListener;
+const originalWindowRemoveEventListener = window.removeEventListener;
 const originalSyntaxError = globalThis.SyntaxError;
+const restoreWindowEventMethods = () => {
+  Object.defineProperty(window, "addEventListener", {
+    value: originalWindowAddEventListener,
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(window, "removeEventListener", {
+    value: originalWindowRemoveEventListener,
+    configurable: true,
+    writable: true,
+  });
+};
 const ensureSyntaxError = () => {
   const assign = (target: Record<string, unknown> | undefined) => {
     if (!target) { return; }
@@ -218,6 +232,7 @@ const globalConfigBaseline = cloneForReset(globalAny.globalConfig ?? {});
 const defaultThreeFiberState = () => ({
   clock: { getElapsedTime: jest.fn(() => 0) },
   camera: new THREE.PerspectiveCamera(),
+  invalidate: jest.fn(),
   gl: {
     info: {
       render: { calls: 0, triangles: 0, points: 0, lines: 0 },
@@ -260,11 +275,13 @@ const resetThreeFiberHookMocks = () => {
   asMockLike<
     Parameters<typeof threeFiber.useThree>,
     ReturnType<typeof threeFiber.useThree>
-  >(threeFiber.useThree)?.mockImplementation(() => state);
+  >(threeFiber.useThree)?.mockImplementation((selector) =>
+    selector ? selector(state as unknown as RootState) : state);
 };
 
 beforeEach(() => {
   bunJest.clearAllMocks();
+  restoreWindowEventMethods();
   resetThreeFiberHookMocks();
   location.search = "";
   resetMutableFixture(auth, authBaseline);
@@ -303,6 +320,7 @@ afterEach(() => {
     configurable: true,
   });
   ensureSyntaxError();
+  restoreWindowEventMethods();
   bunJest.restoreAllMocks?.();
   bunJest.useRealTimers?.();
   cleanup();

@@ -55,6 +55,6 @@ ActiveSupport::Notifications.subscribe("rack.attack") do |_n, _s, _f, _r, req|
   end
 end
 
-Rack::Attack.throttled_response = lambda do |_req|
+Rack::Attack.throttled_responder = lambda do |_req|
   [429, {}, [Rack::Attack::THROTTLE_WARNING]]
 end

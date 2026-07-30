@@ -25,6 +25,7 @@
 
 // Components
 @use "components/go_button";
+@use "components/command_palette";
 @use "components/image_flipper";
 @use "components/widgets";
 
@@ -32,7 +33,10 @@
 @use "farm_designer/farm_designer_panels";
 @use "farm_designer/farm_designer";
 @use "farm_designer/profile_viewer";
+@use "farm_designer/three_d_section";
+@use "farm_designer/three_d_camera_controls";
 @use "farm_designer/three_d_garden";
+@use "farm_designer/stargazing";
 
 // Panels
 @use "panels/connectivity";

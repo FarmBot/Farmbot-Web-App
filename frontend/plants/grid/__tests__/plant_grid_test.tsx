@@ -22,8 +22,7 @@ describe("<PlantGrid />", () => {
       .mockImplementation(() => "SAVE_GRID_MOCK" as never);
     stashGridSpy = jest.spyOn(thunks, "stashGrid")
       .mockImplementation(() => "STASH_GRID_MOCK" as never);
-    batchInitDirtySpy = jest.spyOn(crud, "batchInitDirty")
-      .mockImplementation(jest.fn());
+    batchInitDirtySpy = jest.spyOn(crud, "batchInitDirty");
   });
 
   afterEach(() => {
@@ -83,7 +82,8 @@ describe("<PlantGrid />", () => {
     const { ref } = renderGrid(p);
     const oldId = ref.current?.state.gridId;
     await ref.current?.saveGrid();
-    expect(thunks.saveGrid).toHaveBeenCalledWith(oldId);
+    expect(thunks.saveGrid).toHaveBeenCalledWith(
+      oldId, expect.any(Array));
     expect(success).toHaveBeenCalledWith("6 plants added.");
     await waitFor(() => expect(ref.current?.state.gridId).not.toEqual(oldId));
     expect(p.close).toHaveBeenCalled();
@@ -97,12 +97,26 @@ describe("<PlantGrid />", () => {
     expect(success).toHaveBeenCalledWith("6 points added.");
   });
 
+  it("reports a grid save failure without closing", async () => {
+    const p = fakeProps();
+    p.close = jest.fn();
+    const { ref } = renderGrid(p);
+    (p.dispatch as jest.Mock).mockRejectedValueOnce(new Error("save failed"));
+
+    await ref.current?.saveGrid();
+
+    expect(error).toHaveBeenCalledWith("Unable to save the grid.");
+    expect(p.close).not.toHaveBeenCalled();
+    expect(ref.current?.state.status).toEqual("dirty");
+  });
+
   it("stashes a grid", async () => {
     const props = fakeProps();
     const { ref } = renderGrid(props);
     const gridId = ref.current?.state.gridId;
     await ref.current?.revertPreview({ setStatus: true })();
-    expect(thunks.stashGrid).toHaveBeenCalledWith(gridId);
+    expect(thunks.stashGrid).toHaveBeenCalledWith(
+      gridId, expect.any(Array));
   });
 
   it(`prevents creation of grids with > ${MAX_N} plants`, () => {
@@ -186,6 +200,20 @@ describe("<PlantGrid />", () => {
       })]));
   });
 
+  it("previews saved-garden grids as plant templates", () => {
+    const p = fakeProps();
+    p.designer = fakeDesignerState();
+    p.designer.openedSavedGarden = 42;
+    renderGrid(p);
+    expect(batchInitDirty).toHaveBeenCalledWith(
+      "PlantTemplate",
+      expect.arrayContaining([expect.objectContaining({
+        saved_garden_id: 42,
+        openfarm_slug: "beets",
+      })]),
+    );
+  });
+
   it("discards unsaved changes", () => {
     const p = fakeProps();
     const { ref, unmount } = renderGrid(p);
@@ -240,7 +268,7 @@ describe("<PlantGrid />", () => {
     expect(ref.current?.state.offsetPacking).toBeFalsy();
     fireEvent.click(getToggleButtonByLabel("hexagonal packing"));
     expect(ref.current?.state.offsetPacking).toBeTruthy();
-    expect(ref.current?.state.grid.spacingH).toEqual(217);
+    expect(ref.current?.state.grid.spacingH).toEqual(220);
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
@@ -304,5 +332,29 @@ describe("<PlantGrid />", () => {
     expect(chevronUp).toBeInTheDocument();
     fireEvent.click(chevronUp as Element);
     expect(ref.current?.state.isOpen).toBeFalsy();
+  });
+
+  it("opens a collapsible grid when requested", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.open = true;
+    const { container, ref } = renderGrid(p);
+
+    expect(ref.current?.state.isOpen).toBeTruthy();
+    expect(container.querySelector(".fa-chevron-up")).toBeInTheDocument();
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
+  });
+
+  it("opens an already-mounted collapsible grid when requested", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    const ref = React.createRef<PlantGrid>();
+    const view = render(<PlantGrid ref={ref} {...p} />);
+    expect(ref.current?.state.isOpen).toBeFalsy();
+
+    view.rerender(<PlantGrid ref={ref} {...p} open={true} />);
+
+    expect(ref.current?.state.isOpen).toBeTruthy();
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 });

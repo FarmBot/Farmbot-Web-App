@@ -1,8 +1,16 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
 import { clone } from "lodash";
-import { Bounds, BoundsProps } from "../bounds";
+import {
+  areBoundsPropsEqual, Bounds, BoundsProps, getBoundsLinePoints,
+  heightPlanePillLength,
+} from "../bounds";
+import {
+  createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
+import { ControlPillButton } from "../../../controls";
+import { zero } from "../../../helpers";
 
 describe("<Bounds />", () => {
   const fakeProps = (): BoundsProps => ({
@@ -18,8 +26,56 @@ describe("<Bounds />", () => {
   it("renders bounds", () => {
     const p = fakeProps();
     p.config.bounds = true;
+    p.onSelectObject = jest.fn();
     const { container } = render(<Bounds {...p} />);
     expect(container).toContainHTML("bounds");
+    expect(container).toHaveTextContent("Safe height");
+    expect(container).toHaveTextContent("Min soil");
+    expect(container).toHaveTextContent("Max soil");
+    const wrapper = createRenderer(<Bounds {...p} />);
+    const pills = wrapper.root.findAllByType(ControlPillButton);
+    pills.forEach(pill => {
+      expect(pill.props.rotation)
+        .toEqual([Math.PI / 2, Math.PI / 2, 0]);
+      pill.props.onClick();
+    });
+    expect(pills.find(pill => pill.props.name == "safe-height-pill")
+      ?.props.length).toEqual(heightPlanePillLength("Safe height", 24));
+    expect(heightPlanePillLength("A much longer translation", 24))
+      .toBeGreaterThan(heightPlanePillLength("Safe height", 24));
+    expect(p.onSelectObject).toHaveBeenCalledTimes(1);
+    unmountRenderer(wrapper);
+  });
+
+  it("omits top bounds edges when safe height is zero", () => {
+    const config = fakeProps().config;
+    const top = zero(config).z;
+    const topSegments = (points: ReturnType<typeof getBoundsLinePoints>) =>
+      points.reduce((count, point, index) => index % 2 == 0
+        && point[2] == top
+        && points[index + 1]?.[2] == top
+        ? count + 1
+        : count, 0);
+
+    expect(topSegments(getBoundsLinePoints(config))).toEqual(0);
+    config.safeHeight = -100;
+    expect(topSegments(getBoundsLinePoints(config))).toEqual(4);
+  });
+
+  it("opens the safe height popup", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    p.onSelectObject = jest.fn();
+    const { container } = render(<Bounds {...p} />);
+    const pill = container.querySelector("[name='safe-height-pill']");
+    if (!pill) { throw new Error("Safe height pill not found"); }
+    fireEvent.pointerDown(pill);
+    fireEvent.pointerUp(pill);
+    fireEvent.click(pill);
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "safeHeight",
+      id: 0,
+    });
   });
 
   it("skips unrelated enabled overlay config churn", () => {
@@ -103,5 +159,30 @@ describe("<Bounds />", () => {
       }} />);
 
     expect(container).toContainHTML("2000mm");
+  });
+
+  it("compares position using the active indicator dependencies", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    const move = (axis: keyof typeof p.configPosition) => ({
+      ...p,
+      configPosition: {
+        ...p.configPosition,
+        [axis]: p.configPosition[axis] + 1,
+      },
+    });
+    expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
+    expect(areBoundsPropsEqual(p, {
+      ...p,
+      onSelectObject: jest.fn(),
+    })).toBeFalsy();
+    p.config.zDimension = true;
+    expect(areBoundsPropsEqual(p, move("x"))).toBeTruthy();
+    expect(areBoundsPropsEqual(p, move("z"))).toBeFalsy();
+    p.config.distanceIndicator = "beamLength";
+    expect(areBoundsPropsEqual(p, move("x"))).toBeFalsy();
+    expect(areBoundsPropsEqual(p, move("y"))).toBeTruthy();
+    p.config.distanceIndicator = "zAxisLength";
+    expect(areBoundsPropsEqual(p, move("y"))).toBeFalsy();
   });
 });

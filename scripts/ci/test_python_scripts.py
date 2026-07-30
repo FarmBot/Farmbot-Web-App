@@ -64,34 +64,67 @@ class CiPythonScriptTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(stdout, "n/a\n")
 
-    def test_previous_fps_value_reads_previous_row(self):
-        metrics_name = f"scene_metrics_test_{os.getpid()}"
-        path = Path("/tmp") / f"{metrics_name}.csv"
+    def test_previous_fps_value_reads_latest_history_row(self):
+        history_name = f"fps_history_test_{os.getpid()}"
+        path = Path("/tmp") / f"{history_name}.csv"
         path.write_text(
-            "epoch, FPS, Calls\n"
-            "1, 80, 1\n"
-            "2, 90, 1\n"
-            "3, 100, 1\n",
+            "fps,% change,load duration,commit sha\n"
+            "80,0.00,5.00,old123\n"
+            "90,12.50,5.00,old123\n"
+            "100,11.11,5.00,old123\n",
         )
         try:
             code, stdout, stderr = run_script("previous-fps-value", env={
-                "CHOSEN_METRICS": metrics_name,
+                "FPS_HISTORY": history_name,
                 "FALLBACK_FPS_VALUE": "100",
             })
         finally:
             path.unlink(missing_ok=True)
 
         self.assertEqual(code, 0)
-        self.assertEqual(stdout, "90.00\n")
+        self.assertEqual(stdout, "100.00\n")
         self.assertEqual(stderr, "")
 
     def test_previous_fps_value_uses_fallback_without_history(self):
         code, stdout, _stderr = run_script("previous-fps-value", env={
-            "CHOSEN_METRICS": f"missing_metrics_{os.getpid()}",
+            "FPS_HISTORY": f"missing_history_{os.getpid()}",
             "FALLBACK_FPS_VALUE": "100",
         })
         self.assertEqual(code, 0)
         self.assertEqual(stdout, "100\n")
+
+    def test_track_fps_history_appends_csv(self):
+        history_name = f"fps_history_track_test_{os.getpid()}"
+        path = Path("/tmp") / f"{history_name}.csv"
+        github_env = Path("/tmp") / f"github_env_track_test_{os.getpid()}"
+        path.write_text(
+            "fps,% change,load duration,commit sha\n"
+            "100.00,0.00,5.00,old123\n")
+        try:
+            code, stdout, stderr = run_script("track-fps-history", env={
+                "FPS_HISTORY": history_name,
+                "FPS_VALUE": "106.04",
+                "FALLBACK_FPS_VALUE": "100",
+                "LOAD_DURATION": "5.00",
+                "GITHUB_SHA": "0123456789abcdef",
+                "GITHUB_ENV": str(github_env),
+                "PATH": os.environ["PATH"],
+            })
+            self.assertEqual(code, 0)
+            self.assertEqual(
+                stdout,
+                "Previous value: 100.00 fps\n"
+                "106.04 fps (6.04% change)\n")
+            self.assertEqual(stderr, "")
+            self.assertEqual(
+                path.read_text(),
+                "fps,% change,load duration,commit sha\n"
+                "100.00,0.00,5.00,old123\n"
+                "106.04,6.04,5.00,0123456789\n")
+            self.assertEqual(github_env.read_text(), "PERCENT_CHANGE=6.04\n")
+        finally:
+            path.unlink(missing_ok=True)
+            github_env.unlink(missing_ok=True)
 
     def test_render_url_records_outputs_field_separated_records(self):
         with tempfile.NamedTemporaryFile("w", delete=False) as file:
@@ -119,16 +152,18 @@ class CiPythonScriptTest(unittest.TestCase):
             "promo\034fps\034http://localhost:3000/promo\034"
             "[{\"click\":{\"title\":\"Run\"}},"
             "{\"fill\":{\"placeholder\":\"Filter...\",\"value\":\"Genesis\"}},"
-            "{\"hover\":{\"classname\":\"item\"}}]\034app\034\n")
+            "{\"hover\":{\"classname\":\"item\"}}]\034app\034\034\034\n")
         self.assertEqual(stderr, "")
 
-    def test_render_url_records_outputs_roi_when_present(self):
+    def test_render_url_records_outputs_optional_fields_when_present(self):
         with tempfile.NamedTemporaryFile("w", delete=False) as file:
             json.dump([{
                 "name": "dropdown",
                 "mode": "screenshot",
                 "url": "http://localhost:3000/demo",
                 "roi": {"x": 1, "y": 2, "width": 3, "height": 4},
+                "waitFor3d": True,
+                "zoom": 200,
             }], file)
             file_path = file.name
         try:
@@ -141,8 +176,42 @@ class CiPythonScriptTest(unittest.TestCase):
         self.assertEqual(
             stdout,
             "dropdown\034screenshot\034http://localhost:3000/demo\034\034\034"
-            "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}\n")
+            "{\"x\":1,\"y\":2,\"width\":3,\"height\":4}"
+            "\034true\034200\n")
         self.assertEqual(stderr, "")
+
+    def test_generate_storage_states(self):
+        with tempfile.TemporaryDirectory() as source_dir:
+            with tempfile.TemporaryDirectory() as output_dir:
+                source = Path(source_dir) / "promo.json"
+                source.write_text(json.dumps({
+                    "origin": "http://localhost:3000",
+                    "localStorage": {
+                        "PROMO_RESOURCES": {"points": [{"x": 1}]},
+                        "PLAIN": "value",
+                    },
+                }))
+
+                code, stdout, stderr = run_script(
+                    "generate-storage-states", [source_dir, output_dir])
+
+                output = Path(output_dir) / "promo.json"
+                self.assertEqual(code, 0)
+                self.assertEqual(stdout, f"STORAGE_STATE={output}\n")
+                self.assertEqual(stderr, "")
+                self.assertEqual(json.loads(output.read_text()), {
+                    "cookies": [],
+                    "origins": [{
+                        "origin": "http://localhost:3000",
+                        "localStorage": [
+                            {
+                                "name": "PROMO_RESOURCES",
+                                "value": "{\"points\":[{\"x\":1}]}",
+                            },
+                            {"name": "PLAIN", "value": "value"},
+                        ],
+                    }],
+                })
 
     def test_create_compare_link_uses_latest_deployment_sha(self):
         deployments = json.dumps([{"sha": "old123"}])

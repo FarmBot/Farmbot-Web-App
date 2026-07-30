@@ -6,7 +6,7 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
     "arduino",
     "farmduino", "farmduino_k14", "farmduino_k15",
-    "farmduino_k16", "farmduino_k17", "farmduino_k18",
+    "farmduino_k16", "farmduino_k17", "farmduino_k18", "farmduino_k19",
     "express_k10", "express_k11", "express_k12",
     "none",
   ];
@@ -24,6 +24,7 @@ const ordered: FirmwareHardware[] = [
   "farmduino_k16",
   "farmduino_k17",
   "farmduino_k18",
+  "farmduino_k19",
   "none",
 ];
 
@@ -48,6 +49,7 @@ const NO_TOOLS = [...EXPRESS_BOARDS];
 const NO_ETHERNET = ["express_k10"];
 const NO_ZERO_2 = ["express_k10"];
 const NO_EXTRA_BUTTONS = [...EXPRESS_BOARDS];
+const NO_WATERING_NOZZLE_TOOL = ["farmduino_k19"];
 const MANY_BUTTONS =
   ["farmduino_k14", "farmduino_k15", "farmduino_k16", "farmduino_k17"];
 const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
@@ -92,6 +94,10 @@ export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
 export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
 
+export const hasWateringNozzleTool =
+  (firmwareHardware: FirmwareHardware | undefined) =>
+    !firmwareHardware || !NO_WATERING_NOZZLE_TOOL.includes(firmwareHardware);
+
 export const hasWeeder = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || HAS_WEEDER.includes(firmwareHardware);
 
@@ -102,8 +108,9 @@ export const hasEthernet = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_ETHERNET.includes(firmwareHardware);
 
 export const hasZero2 = (firmwareHardware: FirmwareHardware | undefined) =>
-  isExpress(firmwareHardware)
-  && !NO_ZERO_2.includes(firmwareHardware as FirmwareHardware);
+  !!firmwareHardware
+  && isExpress(firmwareHardware)
+  && !NO_ZERO_2.includes(firmwareHardware);
 
 const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>
@@ -147,6 +154,7 @@ const FIRMWARE_LOOKUP: { [id: string]: FirmwareHardware } = {
   I: "farmduino_k16",
   J: "farmduino_k17",
   K: "farmduino_k18",
+  L: "farmduino_k19",
   E: "express_k10",
   D: "express_k11",
   C: "express_k12",
@@ -160,6 +168,7 @@ enum BoardLabels {
   farmduino_k16 = "Farmduino (Genesis v1.6)",
   farmduino_k17 = "Farmduino (Genesis v1.7)",
   farmduino_k18 = "Farmduino (Genesis v1.8)",
+  farmduino_k19 = "Farmduino (Genesis v1.9)",
   express_k10 = "Farmduino (Express v1.0)",
   express_k11 = "Farmduino (Express v1.1)",
   express_k12 = "Farmduino (Express v1.2)",
@@ -174,6 +183,7 @@ enum KitLabels {
   farmduino_k16 = "Genesis v1.6",
   farmduino_k17 = "Genesis v1.7",
   farmduino_k18 = "Genesis v1.8",
+  farmduino_k19 = "Genesis v1.9",
   express_k10 = "Express v1.0",
   express_k11 = "Express v1.1",
   express_k12 = "Express v1.2",
@@ -189,6 +199,7 @@ const KIT_LOOKUP = {
   farmduino_k16: KitLabels.farmduino_k16,
   farmduino_k17: KitLabels.farmduino_k17,
   farmduino_k18: KitLabels.farmduino_k18,
+  farmduino_k19: KitLabels.farmduino_k19,
   express_k10: KitLabels.express_k10,
   express_k11: KitLabels.express_k11,
   express_k12: KitLabels.express_k12,
@@ -203,12 +214,14 @@ const FARMDUINO_K15 = { label: BoardLabels.farmduino_k15, value: "farmduino_k15"
 const FARMDUINO_K16 = { label: BoardLabels.farmduino_k16, value: "farmduino_k16" };
 const FARMDUINO_K17 = { label: BoardLabels.farmduino_k17, value: "farmduino_k17" };
 const FARMDUINO_K18 = { label: BoardLabels.farmduino_k18, value: "farmduino_k18" };
+const FARMDUINO_K19 = { label: BoardLabels.farmduino_k19, value: "farmduino_k19" };
 const EXPRESS_K10 = { label: BoardLabels.express_k10, value: "express_k10" };
 const EXPRESS_K11 = { label: BoardLabels.express_k11, value: "express_k11" };
 const EXPRESS_K12 = { label: BoardLabels.express_k12, value: "express_k12" };
 const NONE = { label: BoardLabels.none, value: "none" };
 
 export const FIRMWARE_CHOICES_DDI = {
+  [FARMDUINO_K19.value]: FARMDUINO_K19,
   [FARMDUINO_K18.value]: FARMDUINO_K18,
   [FARMDUINO_K17.value]: FARMDUINO_K17,
   [FARMDUINO_K16.value]: FARMDUINO_K16,
@@ -223,6 +236,7 @@ export const FIRMWARE_CHOICES_DDI = {
 };
 
 export const getFirmwareChoices = () => ([
+  FARMDUINO_K19,
   FARMDUINO_K18,
   FARMDUINO_K17,
   FARMDUINO_K16,

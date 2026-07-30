@@ -2,6 +2,10 @@ PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
+  {
+    packages: ["typescript"],
+    reasons: ["eslint"],
+  }
 ]
 
 # Load package.json as JSON.
@@ -17,9 +21,9 @@ def save_package_json(json)
   }
 end
 
-# Parse bun output.
-def parse_bun_outdated(output)
-  latest_json = {}
+# Parse bun output with current and latest versions.
+def parse_bun_outdated_versions(output)
+  versions = {}
   ansi_escape = /(?:\e|\\e)\[[0-9;]*m/
 
   output.each_line do |line|
@@ -32,7 +36,7 @@ def parse_bun_outdated(output)
       next if columns[1] == "Package"
 
       package = columns[1].sub(/\s+\(dev\)\z/, "")
-      latest_json[package] = columns[4]
+      versions[package] = { current: columns[2], latest: columns[4] }
       next
     end
 
@@ -43,34 +47,60 @@ def parse_bun_outdated(output)
     latest = latest.delete_prefix('"').delete_suffix('"')
     next if package == "Package"
 
-    latest_json[package.sub(/\s+\(dev\)\z/, "")] = latest
+    versions[package.sub(/\s+\(dev\)\z/, "")] = { current: nil, latest: latest }
   end
 
-  latest_json
+  versions
+end
+
+# Parse the latest versions from bun output.
+def parse_bun_outdated(output)
+  parse_bun_outdated_versions(output).transform_values { |data| data[:latest] }
 end
 
 # Fetch latest versions for outdated dependencies.
 def fetch_available_upgrades()
-  latest_json = {}
+  versions = {}
   begin
     output = `bun outdated`
     return {} if output.nil? || output.strip.empty?
-    latest_json = parse_bun_outdated(output)
+    versions = parse_bun_outdated_versions(output)
   rescue Errno::ENOENT
-    latest_json = {}
+    versions = {}
   end
+
+  outdated_dependencies = versions.keys
+  missing_reasons = EXCLUDE
+    .flat_map { |exclude| exclude[:reasons] }
+    .uniq
+    .reject { |reason| versions.key?(reason) }
+  unless missing_reasons.empty?
+    package_json = load_package_json()
+    missing_reasons.each do |reason|
+      version = package_json.dig(DEPS_KEY, reason) ||
+        package_json.dig(DEV_DEPS_KEY, reason)
+      versions[reason] = { current: version, latest: version } if version
+    end
+  end
+
   latest_versions = {}
-  latest_json.each do |dep, latest|
+  outdated_dependencies.each do |dep|
+    data = versions[dep]
+    current = data[:current]
+    latest = data[:latest]
     any_excluded = false
     for exclude in EXCLUDE
       excluded = exclude[:packages].include?(dep)
+      reason_dependencies = exclude[:reasons]
       if excluded
         any_excluded = true
-        puts "excluding #{dep} v#{latest} because of " \
-              "#{exclude[:reason]} v#{exclude[:version]}\n"
-      end
-      if exclude[:reason].include?(dep)
-        puts "  #{dep} latest v#{latest}\n"
+        puts "excluding #{dep} v#{latest} because:\n"
+        reason_dependencies.each do |reason|
+          reason_current = versions.dig(reason, :current)
+          reason_latest = versions.dig(reason, :latest)
+          puts " #{reason} v#{reason_current} requires #{dep} v#{current} " \
+                "(#{reason} latest v#{reason_latest})\n"
+        end
       end
     end
     unless any_excluded || latest.nil? || latest.include?("beta")

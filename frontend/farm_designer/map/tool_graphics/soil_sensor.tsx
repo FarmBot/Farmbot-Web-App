@@ -1,6 +1,6 @@
 import React from "react";
 import { trim } from "../../../util";
-import { Color } from "../../../ui/colors";
+import { Color } from "../../../ui";
 import { ToolColor } from "./all_tools";
 import { SpecificToolProfileProps, ToolGraphicProps } from "./interfaces";
 import { ToolDimensions } from "./tool";

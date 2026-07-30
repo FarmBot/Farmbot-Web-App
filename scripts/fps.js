@@ -9,6 +9,8 @@ function parseArgs(argv) {
         screenshotPath: '/tmp/fps.png',
         samplesCsvPath: '/tmp/fps_samples.csv',
         screenshotOnly: false,
+        screenshot3dOnly: false,
+        waitFor3d: false,
     };
     const valueOptions = {
         '--name': 'name',
@@ -18,6 +20,7 @@ function parseArgs(argv) {
         '--actions': 'actions',
         '--state': 'state',
         '--roi': 'roi',
+        '--zoom': 'zoom',
     };
 
     for (let i = 0; i < argv.length; i++) {
@@ -28,6 +31,14 @@ function parseArgs(argv) {
         }
         if (arg === '--screenshot-only') {
             options.screenshotOnly = true;
+            continue;
+        }
+        if (arg === '--screenshot-3d-only') {
+            options.screenshot3dOnly = true;
+            continue;
+        }
+        if (arg === '--wait-for-3d') {
+            options.waitFor3d = true;
             continue;
         }
         const optionName = valueOptions[arg];
@@ -48,14 +59,20 @@ const name = options.name;
 const url = options.url;
 const screenshotPath = options.screenshotPath;
 const samplesCsvPath = options.samplesCsvPath;
+const screenshot3dOnly = options.screenshot3dOnly;
 const maxLoadingSamples = 240;
-const postLoadSamples = 10;
+const postLoadSamples = screenshot3dOnly ? 1 : 10;
 const sampleIntervalMs = 1000;
 const defaultActionTimeoutMs = 5000;
 const ci = Boolean(process.env.CI);
 const openWindow = Boolean(process.env.DISPLAY && process.env.OPEN_WINDOW);
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 const screenshotOnly = options.screenshotOnly;
+const waitFor3d = options.waitFor3d;
+const zoom = options.zoom === undefined ? undefined : Number(options.zoom);
+if (zoom !== undefined && !Number.isFinite(zoom)) {
+    throw new Error(`Zoom must be a finite number: ${options.zoom}`);
+}
 const actions = options.actions ? JSON.parse(options.actions) : [];
 const roi = options.roi ? JSON.parse(options.roi) : undefined;
 const roiScale = (() => {
@@ -116,6 +133,9 @@ function printUsage() {
         '  --screenshot-path <path>               Full-page screenshot PNG path. Default: /tmp/fps.png',
         '  --fps-samples-path <path>              FPS samples CSV path. Default: /tmp/fps_samples.csv',
         '  --screenshot-only                      Take a screenshot without FPS metrics.',
+        '  --screenshot-3d-only                   Take a screenshot of 3D scene without saving FPS metrics.',
+        '  --wait-for-3d                          Wait for 3D loading before taking screenshots.',
+        '  --zoom <value>                         Adjust 3D zoom before screenshots; positive values zoom out.',
         '  --actions <json>                       Perform ordered actions after page load.',
         '  --state <name>                         Load cookies and localStorage from /tmp/<name>.json.',
         '  --roi <json>                           Crop screenshots to {x,y,width,height}.',
@@ -247,6 +267,39 @@ async function saveScreenshot(page, destination, label) {
     console.log(`${label}=${destination}`);
 }
 
+async function waitFor3DLoad(page) {
+    await page.waitForFunction(() => typeof window.__fps !== 'undefined');
+    let loadedSeen = false;
+    for (let i = 0; i < maxLoadingSamples; i++) {
+        const loading = await pageIsLoading(page);
+        if (loading) {
+            loadedSeen = false;
+        } else if (loadedSeen) {
+            console.log('3D_LOAD_COMPLETE=true');
+            return;
+        } else {
+            loadedSeen = true;
+        }
+        await page.waitForTimeout(sampleIntervalMs);
+    }
+    throw new Error(`3D load did not finish after ${maxLoadingSamples} samples`);
+}
+
+async function adjust3DZoom(page, value) {
+    await page.locator('.garden-bed-3d-model canvas').first().hover();
+    const stepCount = Math.min(
+        Math.max(Math.ceil(Math.abs(value) / 100), 1),
+        100,
+    );
+    const stepValue = value / stepCount;
+    for (let step = 0; step < stepCount; step++) {
+        await page.mouse.wheel(0, stepValue);
+        await page.waitForTimeout(20);
+    }
+    await page.waitForTimeout(500);
+    console.log(`3D_ZOOM=${value}`);
+}
+
 function actionScreenshotPath(index) {
     const extension = path.extname(screenshotPath);
     const basePath = extension
@@ -257,7 +310,11 @@ function actionScreenshotPath(index) {
 
 async function performScreenshotAction(page, action, destination) {
     await performAction(page, action);
-    await page.waitForTimeout(1000);
+    if (waitFor3d) {
+        await waitFor3DLoad(page);
+    } else {
+        await page.waitForTimeout(1000);
+    }
     await saveScreenshot(page, destination, 'ACTION_SCREENSHOT');
 }
 
@@ -285,6 +342,12 @@ async function main() {
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await prepareStressResources(page, url);
+        if (screenshotOnly && (waitFor3d || zoom !== undefined)) {
+            await waitFor3DLoad(page);
+        }
+        if (screenshotOnly && zoom !== undefined) {
+            await adjust3DZoom(page, zoom);
+        }
         for (const [index, action] of actions.entries()) {
             if (screenshotOnly) {
                 await performScreenshotAction(page, action, actionScreenshotPath(index));
@@ -294,7 +357,9 @@ async function main() {
         }
         if (screenshotOnly) {
             if (actions.length === 0) {
-                await page.waitForTimeout(1000);
+                if (!waitFor3d) {
+                    await page.waitForTimeout(1000);
+                }
                 await saveScreenshot(page, screenshotPath, 'SCREENSHOT');
             }
             return;
@@ -353,6 +418,7 @@ async function main() {
         if (loading) {
             throw new Error(`3D load did not finish after ${sampleValues.length} samples`);
         }
+
         averagePostLoadSample =
             postLoadValues.reduce((total, value) => total + value, 0)
             / postLoadValues.length;
@@ -360,17 +426,20 @@ async function main() {
             throw new Error('Average post-load FPS was not a valid value');
         }
         console.log(`FPS_VALUE=${averagePostLoadSample.toFixed(2)}`);
+        console.log(`LOAD_DURATION=${sampleValues.find(s => !s.loading)?.elapsedSeconds.toFixed(2) || 'unknown'}`);
         const data = await page.evaluate(() => window.__scene_metrics);
         if (!data || data === 'undefined') {
             throw new Error('window.__scene_metrics was not available');
         }
         console.log(`SCENE_METRICS=${data}`);
         await saveScreenshot(page, screenshotPath, 'FPS_SCREENSHOT');
-        saveFpsSamplesCsv(sampleValues, samplesCsvPath);
-        console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
+        if (!screenshot3dOnly) {
+            saveFpsSamplesCsv(sampleValues, samplesCsvPath);
+            console.log(`FPS_SAMPLES_CSV=${samplesCsvPath}`);
+        }
         await saveStorage(page);
     } catch (err) {
-        console.error('Failed to read window.__fps:', err.message || err);
+        console.error('Render failed:', err.message || err);
         process.exitCode = 1;
     } finally {
         await browser.close();

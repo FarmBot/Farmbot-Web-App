@@ -22,6 +22,7 @@ import { renderWithContext } from "../../__test_support__/mount_with_context";
 
 beforeEach(() => {
   jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  console.debug = jest.fn();
 });
 
 
@@ -29,9 +30,11 @@ describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.drawnPoint = fakeDrawnPoint();
+    state.resources.consumers.farm_designer.legacyPointGrid = true;
     const props = mapStateToProps(state);
     expect(props.drawnPoint?.cx).toEqual(10);
     expect(props.drawnPoint?.cy).toEqual(20);
+    expect(props.legacyPointGrid).toBeTruthy();
   });
 });
 
@@ -124,6 +127,210 @@ describe("<CreatePoints />", () => {
     expect(text.includes("add point") || text.includes("save")).toBeTruthy();
   });
 
+  it("uses the panel header for 3D point grid mode", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.threeDGrid = true;
+    const { container } = render(<CreatePoints {...p} />);
+
+    expect(container).not.toHaveTextContent("Add Grid or Row");
+    expect(container.querySelector(".save")).not.toBeInTheDocument();
+    const gridButton =
+      container.querySelector(".plus-grid-btn") as HTMLButtonElement;
+    expect(gridButton).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(gridButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: expect.objectContaining({
+        token: expect.any(String),
+        gridId: expect.any(String),
+        gridType: "point",
+        itemName: "Fake Point",
+        defaultSpacing: 100,
+        radius: 0,
+        z: 0,
+        meta: {
+          color: "green",
+          at_soil_level: "false",
+        },
+      }),
+    });
+  });
+
+  it("keeps the legacy save button for 3D weeds", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.threeDGrid = true;
+
+    const { container } = render(<CreatePoints {...p} />);
+
+    expect(container.querySelector(".save")).toBeInTheDocument();
+  });
+
+  it("opens and consumes a requested legacy point grid", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.legacyPointGrid = true;
+    p.dispatch = jest.fn(() => Promise.resolve());
+
+    const { container } = render(<CreatePoints {...p} />);
+
+    expect(container.querySelector(".fa-chevron-up")).toBeInTheDocument();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: false,
+    });
+  });
+
+  it("opens a legacy point grid requested after mounting", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const view = render(<CreatePoints {...p} />);
+    expect(view.container.querySelector(".fa-chevron-down"))
+      .toBeInTheDocument();
+
+    view.rerender(<CreatePoints {...p} legacyPointGrid={true} />);
+
+    expect(view.container.querySelector(".fa-chevron-up"))
+      .toBeInTheDocument();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: false,
+    });
+  });
+
+  it("exits active 3D point grid mode from the header", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.threeDGrid = true;
+    p.gridPlanting = {
+      token: "point-grid",
+      gridId: "point-grid",
+      gridType: "point",
+      itemName: "Fake Point",
+      defaultSpacing: 60,
+      radius: 30,
+    };
+    const { container } = render(<CreatePoints {...p} />);
+    const gridButton =
+      container.querySelector(".plus-grid-btn") as HTMLButtonElement;
+    expect(gridButton).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(gridButton);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    });
+  });
+
+  it("toggles 3D point grid mode with the g hotkey", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.threeDGrid = true;
+    render(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+
+    fireEvent.keyDown(window, { key: "g" });
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: expect.objectContaining({
+        gridType: "point",
+        itemName: "Fake Point",
+      }),
+    });
+  });
+
+  it("exits 3D point grid mode with the g hotkey", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.threeDGrid = true;
+    p.gridPlanting = {
+      token: "point-grid",
+      gridId: "point-grid",
+      gridType: "point",
+      itemName: "Fake Point",
+      defaultSpacing: 60,
+      radius: 30,
+    };
+    const { container } = render(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+
+    fireEvent.keyDown(window, { key: "G" });
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    });
+    jest.clearAllMocks();
+
+    const radiusInput =
+      container.querySelector("input[name='r']") as HTMLInputElement;
+    fireEvent.keyDown(radiusInput, { key: "g" });
+    fireEvent.keyDown(window, { key: "g", ctrlKey: true });
+
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("does not start a point grid without point data", () => {
+    const p = fakeProps();
+    p.threeDGrid = true;
+    const { ref } = renderCreatePoints(p);
+    jest.clearAllMocks();
+
+    act(() => ref.current?.toggleThreeDGrid());
+
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("initializes point data", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    render(<CreatePoints {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point",
+        cx: undefined,
+        cy: undefined,
+        z: 0,
+        r: 0,
+        color: "green",
+        at_soil_level: false,
+      },
+    });
+  });
+
+  it("keeps existing point data", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.drawnPoint = {
+      name: "Location Point",
+      cx: 300,
+      cy: 540,
+      z: 0,
+      r: 0,
+      color: "gray",
+      at_soil_level: false,
+    };
+    render(<CreatePoints {...p} />);
+    expect(p.dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point",
+        cx: undefined,
+        cy: undefined,
+        z: 0,
+        r: 0,
+        color: "green",
+        at_soil_level: false,
+      },
+    });
+  });
+
   it("renders for weeds", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
@@ -156,6 +363,49 @@ describe("<CreatePoints />", () => {
     expect(ref.current?.props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, r: 100 },
+    });
+  });
+
+  it("synchronizes active point grid attributes", () => {
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    p.drawnPoint = point;
+    p.gridPlanting = {
+      token: "point-grid",
+      gridId: "point-grid",
+      gridType: "point",
+      itemName: "Fake Point",
+      defaultSpacing: 100,
+      radius: 0,
+      z: 0,
+      meta: {
+        color: "green",
+        at_soil_level: "false",
+      },
+    };
+    const { ref } = renderCreatePoints(p);
+    jest.clearAllMocks();
+
+    act(() => ref.current?.setDrawnPoint({
+      ...point,
+      name: "Updated Grid",
+      r: 40,
+      z: 70,
+      color: "blue",
+      at_soil_level: true,
+    }));
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_PLANTING,
+      payload: {
+        ...p.gridPlanting,
+        itemName: "Updated Grid",
+        z: 70,
+        meta: {
+          color: "blue",
+          at_soil_level: "true",
+        },
+      },
     });
   });
 
@@ -208,9 +458,18 @@ describe("<CreatePoints />", () => {
   ])("uses current location: %s %s %s", (pointName, color, path) => {
     location.pathname = Path.mock(path);
     const p = fakeProps();
-    p.drawnPoint = fakeDrawnPoint();
+    p.drawnPoint = {
+      name: pointName,
+      cx: undefined,
+      cy: undefined,
+      z: 0,
+      r: 0,
+      color,
+      at_soil_level: false,
+    };
     p.botPosition = { x: 1, y: 2, z: 3 };
     const view = render(<CreatePoints {...p} />);
+    jest.clearAllMocks();
     const button = view.container
       .querySelector(".fa-crosshairs")
       ?.closest("button");
@@ -219,7 +478,7 @@ describe("<CreatePoints />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
         name: pointName,
-        cx: undefined, cy: undefined, z: 0, r: 0, color,
+        cx: 1, cy: 2, z: 3, r: 0, color,
         at_soil_level: false,
       },
       type: Actions.SET_DRAWN_POINT_DATA,
@@ -280,6 +539,19 @@ describe("<CreatePoints />", () => {
     });
   });
 
+  it("changes point color from the picker", () => {
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    const { container } = render(<CreatePoints {...p} />);
+    fireEvent.click(container.querySelector(".saucer") as Element);
+    fireEvent.click(document.querySelector("[title='blue']") as Element);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: { ...p.drawnPoint, color: "blue" },
+      type: Actions.SET_DRAWN_POINT_DATA,
+    });
+  });
+
   it("updates value", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
@@ -311,6 +583,26 @@ describe("<CreatePoints />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: undefined
+    });
+  });
+
+  it("exits point grid mode when unmounting", () => {
+    const p = fakeProps();
+    p.gridPlanting = {
+      token: "point-grid",
+      gridId: "point-grid",
+      gridType: "point",
+      itemName: "Point",
+      defaultSpacing: 60,
+    };
+    const view = render(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+
+    view.unmount();
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "point-grid",
     });
   });
 });

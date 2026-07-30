@@ -3,10 +3,11 @@ import { Xyz } from "farmbot";
 export interface Action {
     type:
     | "move_absolute"
-    | "expanded_move_absolute"
+    | "animated_move_absolute"
     | "move_relative"
     | "move"
     | "_move"
+    | "busy"
     | "toggle_pin"
     | "read_pin"
     | "sensor_reading"
@@ -29,3 +30,13 @@ export interface Action {
 }
 
 export type XyzNumber = Record<Xyz, number>;
+
+export type DemoMovementCommand =
+  | {
+    type: "move_absolute" | "move_relative";
+    position: XyzNumber;
+  }
+  | {
+    type: "find_home" | "go_to_home";
+    axis: Xyz | "all";
+  };

@@ -9,6 +9,7 @@ import {
 import { Billboard, Sphere, useTexture } from "@react-three/drei";
 import {
   BufferGeometry,
+  DoubleSide,
   InstancedMesh as InstancedMeshType,
   Matrix4,
   Quaternion,
@@ -36,8 +37,10 @@ import {
   ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
   ThreeDObjectSelectionHandler,
 } from "../selection_types";
+import { SPREAD_SPHERE_SEGMENTS } from "./geometry_detail";
 
 export const WEED_IMG_SIZE_FRACTION = 0.89;
+export const DEFAULT_WEED_RADIUS = 50;
 const noRaycast = () => undefined;
 
 const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
@@ -51,7 +54,10 @@ const useWeedIconTexture = (plantIconAtlas = PLANT_ICON_ATLAS) => {
 
 let weedRadiusGeometry: BufferGeometry | undefined = undefined;
 const getWeedRadiusGeometry = () => {
-  weedRadiusGeometry ||= new SphereGeometry(1, 32, 32);
+  weedRadiusGeometry ||= new SphereGeometry(
+    1,
+    ...SPREAD_SPHERE_SEGMENTS,
+  );
   return weedRadiusGeometry;
 };
 
@@ -125,7 +131,7 @@ export const WeedBase = (props: WeedBaseProps) => {
     radiusRef, billboardRef, imageRef,
   } = props;
   const getWorldPosition = getWorldPositionFunc(config);
-  const weedSize = radius == 0 ? 50 : radius;
+  const weedSize = radius == 0 ? DEFAULT_WEED_RADIUS : radius;
   const iconSize = weedSize * WEED_IMG_SIZE_FRACTION;
   const texture = useWeedIconTexture();
   return <Group
@@ -170,6 +176,7 @@ export const WeedBase = (props: WeedBaseProps) => {
       position={[0, 0, iconSize / 2]}>
       <MeshPhongMaterial
         color={color}
+        side={DoubleSide}
         depthWrite={false}
         transparent={true}
         opacity={0.5 * alpha} />
@@ -232,7 +239,9 @@ const getWeedInstances = (
 
   for (let index = 0; index < weeds.length; index++) {
     const weed = weeds[index];
-    const size = weed.body.radius == 0 ? 50 : weed.body.radius;
+    const size = weed.body.radius == 0
+      ? DEFAULT_WEED_RADIUS
+      : weed.body.radius;
     weedInstances[index] = {
       weed,
       position: getWorldPosition({
@@ -428,6 +437,7 @@ const WeedRadiusInstances = (props: WeedRadiusInstancesProps) => {
     renderOrder={RenderOrder.weedSpheres}>
     <MeshPhongMaterial
       color={bucket.color}
+      side={DoubleSide}
       depthWrite={false}
       transparent={true}
       opacity={0.5} />

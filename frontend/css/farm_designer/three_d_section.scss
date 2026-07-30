@@ -1,0 +1,105 @@
+@use "../variables" as *;
+
+.three-d-section-settings {
+  display: grid;
+  gap: 1rem;
+  width: 20rem;
+
+  label {
+    margin: 0;
+    align-self: center;
+  }
+
+  .three-d-section-view,
+  .three-d-section-follow,
+  .three-d-section-clip-all {
+    align-items: center;
+  }
+
+  .three-d-section-value {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: 0.5rem;
+
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .three-d-section-input {
+    position: relative;
+
+    input {
+      padding-right: 2rem;
+    }
+  }
+
+  .three-d-section-carets {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: grid;
+    width: 2rem;
+    height: 3rem;
+
+    button {
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      color: $dark_gray;
+      background: transparent;
+      line-height: 1;
+
+      i {
+        color: $dark_gray;
+      }
+
+      &:disabled {
+        opacity: 0.35;
+      }
+    }
+  }
+
+  .three-d-section-slider {
+    grid-column: 1 / -1;
+    height: 1.5rem !important;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+
+    &:active,
+    &:focus {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    &::-webkit-slider-runnable-track {
+      height: 0.4rem;
+      border-radius: 0.2rem;
+      background: var(--text-color);
+    }
+
+    &::-webkit-slider-thumb {
+      width: 1.4rem;
+      height: 1.4rem;
+      margin-top: -0.5rem;
+      appearance: none;
+      border-radius: 50%;
+      background: dodgerblue;
+    }
+
+    &::-moz-range-track {
+      height: 0.4rem;
+      border-radius: 0.2rem;
+      background: var(--text-color);
+    }
+
+    &::-moz-range-thumb {
+      width: 1.4rem;
+      height: 1.4rem;
+      border: 0;
+      border-radius: 50%;
+      background: dodgerblue;
+    }
+  }
+}

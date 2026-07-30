@@ -71,5 +71,17 @@ describe("<WateringAnimations />", () => {
     const routingChanged = fakeProps();
     routingChanged.config.zGantryOffset += 1;
     expect(wateringAnimationsPropsEqual(previous, routingChanged)).toBeFalsy();
+
+    const v19Previous = fakeProps();
+    v19Previous.config.kitVersion = "v1.9";
+    const v19ZChanged = {
+      ...v19Previous,
+      configPosition: {
+        ...v19Previous.configPosition,
+        z: v19Previous.configPosition.z + 1,
+      },
+    };
+    expect(wateringAnimationsPropsEqual(v19Previous, v19ZChanged))
+      .toBeTruthy();
   });
 });

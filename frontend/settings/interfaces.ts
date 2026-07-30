@@ -37,6 +37,7 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   wizardStepResults: TaggedWizardStepResult[];
   settingsPanelState: SettingsPanelState;
   distanceIndicator: string;
+  sceneObjectUuids: string[];
 }
 
 export interface DesignerSettingsSectionProps {
@@ -78,6 +79,7 @@ export interface ThreeDSettingsProps {
   settingsPanelState: SettingsPanelState;
   farmwareEnvs: TaggedFarmwareEnv[];
   distanceIndicator: string;
+  sceneObjectUuids: string[];
 }
 
 export interface OtherSettingsProps {

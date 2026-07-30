@@ -107,6 +107,11 @@ const DESIGNER_SETTINGS =
       disabled: !settingsProps.getConfigValue(BooleanSetting.display_trail),
     },
     {
+      title: DeviceSetting.showControlsOverlay,
+      description: Content.SHOW_CONTROLS_OVERLAY,
+      setting: BooleanSetting.show_controls_overlay,
+    },
+    {
       title: DeviceSetting.dynamicMap,
       description: Content.DYNAMIC_MAP_SIZE,
       setting: BooleanSetting.dynamic_map,
@@ -122,11 +127,6 @@ const DESIGNER_SETTINGS =
       title: DeviceSetting.rotateMap,
       description: Content.MAP_SWAP_XY,
       setting: BooleanSetting.xy_swap,
-    },
-    {
-      title: DeviceSetting.topDownView,
-      description: Content.TOP_DOWN_VIEW,
-      setting: BooleanSetting.top_down_view,
     },
     {
       title: DeviceSetting.mapOrigin,

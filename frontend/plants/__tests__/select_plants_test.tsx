@@ -126,6 +126,14 @@ describe("<SelectPlants />", () => {
     expect(screen.getByText("Strawberry")).toBeInTheDocument();
   });
 
+  it("preserves an intentionally typed single selection", () => {
+    const p = fakeProps();
+    p.selectionPointType = ["Plant"];
+    render(<SelectPlants {...p} />);
+    expect(unselectPlantSpy).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Strawberry")).toBeInTheDocument();
+  });
+
   it("displays selection description in 2D", () => {
     const p = fakeProps();
     p.getConfigValue = setting => setting !== BooleanSetting.three_d_garden;

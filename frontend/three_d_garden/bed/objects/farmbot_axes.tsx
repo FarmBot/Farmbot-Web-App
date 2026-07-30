@@ -1,8 +1,8 @@
 import React from "react";
 import { Config } from "../../config";
-import { Arrow } from "../../elements";
 import { threeSpace, zZero } from "../../helpers";
 import { Group } from "../../components";
+import { ControlArrow } from "../../controls";
 
 export interface FarmbotAxesProps {
   config: Config;
@@ -35,9 +35,15 @@ const FarmbotAxesBase = (props: FarmbotAxesProps) => {
   const y = threeSpace(0, bedWidthOuter) + bedYOffset;
   const z = zZero(props.config);
   return <Group position={[x, y, z]}>
-    <Arrow length={length} width={width} />
-    <Arrow length={length} width={width} rotation={[0, 0, Math.PI / 2]} />
-    <Arrow length={length} width={width} rotation={[0, -Math.PI / 2, 0]} />
+    <ControlArrow name={"x-axis"} start={[0, 0, 0]} end={[length, 0, 0]}
+      width={width} color={"#ccc"} enabled={false}
+      depthTest={true} depthWrite={true} />
+    <ControlArrow name={"y-axis"} start={[0, 0, 0]} end={[0, length, 0]}
+      width={width} color={"#ccc"} enabled={false}
+      depthTest={true} depthWrite={true} />
+    <ControlArrow name={"z-axis"} start={[0, 0, 0]} end={[0, 0, length]}
+      width={width} color={"#ccc"} enabled={false}
+      depthTest={true} depthWrite={true} />
   </Group>;
 };
 

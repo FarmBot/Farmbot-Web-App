@@ -38,7 +38,9 @@ import { useGLTF } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
 import { clone } from "lodash";
-import { Tools, ToolsProps, toolsPropsEqual } from "../tools";
+import {
+  convertSlotsWithTools, OpacityFilter, Tools, ToolsProps, toolsPropsEqual,
+} from "../tools";
 import { getToolSlotRenderPosition } from "../tool_slot_position";
 import {
   fakeTool, fakeToolSlot,
@@ -158,6 +160,8 @@ describe("<Tools />", () => {
   ) => (node: React.ReactElement) => {
     if (node.type == "mesh") { return new THREE.Mesh(); }
     if (node.type != "group") { return {}; }
+    const nodeProps = node.props as { name?: string };
+    if (nodeProps.name != "opacity-filter") { return {}; }
     const meshCount = meshCounts.shift() || 0;
     const meshes = Array.from({ length: meshCount }, () => {
       const mesh = new THREE.Mesh();
@@ -186,7 +190,79 @@ describe("<Tools />", () => {
 
   it("renders promo tools", () => {
     const { container } = render(<Tools {...fakeProps()} />);
+    expect(container).toContainHTML("toolbay5");
+  });
+
+  it("makes ghost contents translucent and non-interactive", () => {
+    const mesh = new THREE.Mesh();
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(
+        <OpacityFilter interactive={false} opacity={0.5}>
+          <mesh />
+        </OpacityFilter>,
+        {
+          createNodeMock: node => node.type == "group"
+            ? {
+              traverse: (callback: (child: THREE.Object3D) => void) =>
+                callback(mesh),
+            }
+            : {},
+        },
+      );
+    });
+
+    expect((mesh.material as THREE.Material).opacity).toEqual(0.5);
+    expect((mesh.material as THREE.Material).transparent).toBeTruthy();
+    expect(mesh.raycast(
+      {} as THREE.Raycaster,
+      [],
+    )).toBeUndefined();
+    TestRenderer.act(() => view?.unmount());
+  });
+
+  it("renders legacy promo toolbays in world coordinates", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const { container } = render(<Tools {...p} />);
     expect(container).toContainHTML("toolbay3");
+  });
+
+  it("keeps the promo logo out of raycasting", () => {
+    let view: TestRenderer.ReactTestRenderer | undefined;
+    TestRenderer.act(() => {
+      view = TestRenderer.create(<Tools {...fakeProps()} />);
+    });
+    const logo = view?.root.find(node => node.props.name == "toolbay5Logo");
+    expect(logo?.props.raycast()).toBeUndefined();
+    TestRenderer.act(() => view?.unmount());
+  });
+
+  it("renders tools in their owning frames", () => {
+    const p = fakeProps();
+    const stationary = render(<Tools {...p} frame={"stationary"} />);
+    expect(stationary.container).toContainHTML("toolbay5");
+    expect(stationary.container.querySelectorAll("[name='slot']"))
+      .toHaveLength(5);
+    expect(stationary.container.querySelector("[name='utm-tool']")).toBeNull();
+    stationary.unmount();
+
+    const gantry = render(<Tools {...p} frame={"gantry"} />);
+    expect(gantry.container).toContainHTML("seedTrough");
+    expect(gantry.container).not.toContainHTML("toolbay5");
+    gantry.unmount();
+
+    const zAxis = render(<Tools {...p} frame={"z-axis"} />);
+    expect(zAxis.container.querySelector("[name='utm-tool']")).toBeTruthy();
+    expect(zAxis.container.querySelector("[name='slot']")).toBeNull();
+  });
+
+  it("normalizes resource slots to explicit mount frames", () => {
+    const tools = convertSlotsWithTools(configuredUserTools());
+    expect(tools.filter(tool => tool.mountFrame == "stationary"))
+      .toHaveLength(5);
+    expect(tools.filter(tool => tool.mountFrame == "gantry"))
+      .toHaveLength(2);
   });
 
   it("renders user tools", () => {
@@ -253,6 +329,19 @@ describe("<Tools />", () => {
     expect(toolsPropsEqual(previous, {
       ...previous,
       toolSlots: configuredUserTools(),
+    })).toBeFalsy();
+
+    const gantryPrevious = {
+      ...previous,
+      frame: "gantry" as const,
+      config: { ...previous.config, mirrorX: true },
+    };
+    expect(toolsPropsEqual(gantryPrevious, {
+      ...gantryPrevious,
+      configPosition: {
+        ...gantryPrevious.configPosition,
+        x: gantryPrevious.configPosition.x + 1,
+      },
     })).toBeFalsy();
   });
 
@@ -397,7 +486,7 @@ describe("<Tools />", () => {
     expect(getToolSlotRenderPosition(config, configPosition, {
       toolSlot,
       tool: undefined,
-    }).z).toEqual(361);
+    }).z).toEqual(421);
     toolSlot.body.gantry_mounted = true;
     expect(getToolSlotRenderPosition(config, configPosition, {
       toolSlot,

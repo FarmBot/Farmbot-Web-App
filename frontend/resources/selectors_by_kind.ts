@@ -24,6 +24,7 @@ import {
   TaggedWizardStepResult,
   TaggedTelemetry,
   TaggedCurve,
+  TaggedSceneObject,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -90,6 +91,8 @@ export const selectAllRegimens = (i: ResourceIndex) =>
   findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors =
   (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
+export const selectAllSceneObjects =
+  (i: ResourceIndex) => findAll<TaggedSceneObject>(i, "SceneObject");
 export const selectAllPinBindings =
   (i: ResourceIndex) => findAll<TaggedPinBinding>(i, "PinBinding");
 export const selectAllSequences = (i: ResourceIndex) =>

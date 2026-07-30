@@ -237,11 +237,11 @@ describe("clearCriteriaField()", () => {
 describe("editGtLtCriteria()", () => {
   it("adds criteria", () => {
     const group = fakePointGroup();
-    const box = { x0: 0, y0: 2, x1: 3, y1: 4 };
+    const box = { x0: 0.1, y0: 2.4, x1: 3.6, y1: 4.9 };
     editGtLtCriteria(group, box)(dispatch);
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.number_gt = { x: 0, y: 2 };
-    expectedBody.criteria.number_lt = { x: 3, y: 4 };
+    expectedBody.criteria.number_lt = { x: 4, y: 5 };
     expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 

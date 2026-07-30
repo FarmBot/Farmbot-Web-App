@@ -94,6 +94,14 @@ jobs:
             echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Restore fps history
+        id: restore_fps_history
+        run: |
+          scripts/ci/git-restore-artifact-branch-file "$FPS_HISTORY.csv"
+          if compgen -G "/tmp/$FPS_HISTORY.csv" >/dev/null; then
+            echo "fps_history_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Restore FPS metrics
         if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
         uses: actions/cache/restore@v5
@@ -124,12 +132,7 @@ jobs:
         run: scripts/ci/run-playwright-render
 
       - name: Track FPS value
-        run: |
-          PREV=$(scripts/ci/previous-fps-value)
-          echo "Previous value: $PREV fps"
-          percent_change=$(scripts/ci/percent-change --new "$FPS_VALUE" --old "$PREV")
-          echo "$FPS_VALUE fps ($percent_change% change)"
-          echo "PERCENT_CHANGE=$percent_change" >> "$GITHUB_ENV"
+        run: scripts/ci/track-fps-history
 
       - name: Plot metric CSVs
         if: always()
@@ -161,13 +164,33 @@ jobs:
         if: env.NOTIFY == 'true'
         run: scripts/ci/send-notification "${FPS_VALUE} fps (${PERCENT_CHANGE}% change)"
 
-      - name: Upload image artifacts
+      - name: Upload source image artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: images
+          name: source images
           path: |
             /tmp/*.png
+            !/tmp/render_summary_plots.png
+            !/tmp/render_summary_screenshots.png
+          if-no-files-found: warn
+
+      - name: Upload summary plots image artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render_summary_plots
+          path: |
+            /tmp/render_summary_plots.png
+          if-no-files-found: warn
+
+      - name: Upload summary screenshots image artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: render_summary_screenshots
+          path: |
+            /tmp/render_summary_screenshots.png
           if-no-files-found: warn
 
       - name: Upload csv artifacts
@@ -193,8 +216,11 @@ jobs:
         if: success() && env.NOTIFY == 'true'
         run: |
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          for MESSAGE in \
-            "<${RENDER_SUMMARY_URL:-$RUN_URL}|render summary>"
-          do
-            scripts/ci/send-notification "$MESSAGE"
-          done
+          if [ -n "${RENDER_SUMMARY_URLS:-}" ]; then
+            for URL in $RENDER_SUMMARY_URLS; do
+              NAME="$(basename "$URL" .png)"
+              scripts/ci/send-notification "<$URL|$NAME>"
+            done
+          else
+            scripts/ci/send-notification "<$RUN_URL|render summary>"
+          fi

@@ -1,5 +1,4 @@
 @use "../variables" as *;
-@use "sass:color";
 @use "../global/fonts" as *;
 
 // sass-lint:disable space-around-operator no-misspelled-properties
@@ -23,10 +22,6 @@
 
 .promo {
   &.three-d-garden {
-    .garden-bed-3d-model {
-      width: 100vw;
-    }
-
     .overlay {
       .settings-bar {
         button {
@@ -48,23 +43,114 @@
   }
 
   .garden-bed-3d-model {
-    width: calc(100vw + 45rem);
+    width: 100vw;
     position: relative;
     height: 100vh;
     cursor: grab;
-
-    @media screen and (max-width: 768px) {
-      width: 100vw;
-    }
+    touch-action: none;
   }
 
   .three-d-object-popup-wrapper {
     pointer-events: none;
   }
 
+  .grid-action-controls-wrapper {
+    pointer-events: none;
+  }
+
+  .grid-action-controls {
+    display: flex;
+    gap: 1rem;
+    pointer-events: auto;
+
+    .grid-point-color-picker {
+      display: flex;
+      position: relative;
+    }
+
+    .grid-point-color-menu {
+      position: absolute;
+      bottom: 4.5rem;
+      left: 50%;
+      width: 13rem;
+      padding: 0.4rem;
+      background: var(--main-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.4rem;
+      box-shadow: var(--box-shadow);
+      backdrop-filter: var(--blur);
+      transform: translateX(-50%);
+
+      .color-picker-cluster,
+      .color-picker-item-wrapper {
+        display: inline-block;
+      }
+    }
+
+    .grid-action-button {
+      display: grid;
+      width: 3.5rem;
+      height: 3.5rem;
+      margin: 0;
+      padding: 0;
+      float: none;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      color: $off_white;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow:
+      inset 0 -1px 0 $translucent2,
+      0 0 0.5rem $translucent15;
+      transition:
+      filter 120ms ease,
+      transform 120ms ease;
+
+      &:hover:not(:disabled) {
+        filter: brightness(1.1);
+        transform: scale(1.08);
+      }
+
+      &:active:not(:disabled) {
+        filter: brightness(0.95);
+        transform: scale(0.94);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+
+      &.grid-action-cancel {
+        background: $red;
+      }
+
+      &.grid-action-save {
+        background: $green;
+      }
+
+      &.grid-action-packing {
+        background: $medium_gray;
+
+        .grid-packing-icon {
+          width: 2rem;
+          height: 2rem;
+          fill: currentcolor;
+        }
+      }
+
+      &.grid-action-color {
+        text-shadow: 0 1px 2px $translucent5;
+      }
+    }
+  }
+
   .three-d-object-popup {
     width: min(30rem, calc(100vw - 2rem));
     padding: 1rem;
+    padding-top: 0.8rem;
     color: var(--text-color);
     cursor: default;
     pointer-events: auto;
@@ -94,9 +180,17 @@
         font-family: $inknut;
         font-size: 2rem;
         font-weight: bold;
-        line-height: 1.2;
+        line-height: 1.4;
         text-overflow: ellipsis;
         white-space: nowrap;
+
+        .object-popup-title-coordinates {
+          font-size: 0.65em;
+        }
+
+        .native-jog-coordinate {
+          font-family: monospace;
+        }
       }
     }
 
@@ -116,6 +210,213 @@
     }
 
     .object-popup-content {
+      .native-jog-control-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 0.5rem;
+
+        .native-jog-popup-actions,
+        .native-jog-position-row {
+          display: contents;
+        }
+
+        .fb-button,
+        input {
+          width: 100%;
+          height: 4rem;
+          margin: 0;
+        }
+
+        .native-jog-popup-actions .fb-button:disabled,
+        .native-jog-position-row .fb-button:disabled,
+        .native-jog-position-row input:disabled,
+        .native-jog-step-selector .fb-button:disabled {
+          filter: grayscale(1) brightness(0.7);
+          cursor: not-allowed !important;
+        }
+
+        .native-jog-step-selector {
+          display: flex;
+          grid-row: 1;
+          grid-column: 1 / 5;
+          width: 100%;
+          height: 4rem;
+          box-shadow: none;
+
+          .move-amount {
+            flex: 1;
+            width: auto;
+            padding: 0.5rem 0.25rem;
+            float: none;
+          }
+        }
+
+        .native-jog-negative-button {
+          grid-row: 1;
+          grid-column: 5;
+        }
+
+        .native-jog-positive-button {
+          grid-row: 1;
+          grid-column: 6;
+        }
+
+        .native-jog-home-button {
+          grid-row: 2;
+          grid-column: 1;
+        }
+
+        .native-jog-find-home-button {
+          grid-row: 2;
+          grid-column: 2;
+        }
+
+        .native-jog-limit-button {
+          grid-row: 2;
+          grid-column: 3;
+        }
+
+        .native-jog-position-row {
+          input {
+            grid-row: 2;
+            grid-column: 4 / 6;
+          }
+
+          .native-jog-go-button {
+            grid-row: 2;
+            grid-column: 6;
+
+            > span {
+              position: relative;
+              z-index: 1;
+            }
+
+            .movement-progress {
+              background: $dark_green;
+            }
+          }
+        }
+      }
+
+      .native-jog-popup-actions {
+        .fb-button {
+          display: grid;
+          place-items: center;
+          width: 100%;
+          margin: 0;
+          padding: 0.5rem 0.25rem;
+
+          p {
+            margin: 0;
+            font-size: 1rem;
+          }
+        }
+
+        .home-button {
+          .fa-stack {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+          }
+
+          .fa-stack-2x {
+            top: 50%;
+            left: 50%;
+            width: auto;
+            margin: 0;
+            line-height: 1;
+            transform: translate(-50%, -50%);
+          }
+
+          .fa-stack-1x {
+            top: 5%;
+            left: 5%;
+            width: auto;
+            margin: 0;
+            line-height: 1;
+          }
+        }
+      }
+
+      .native-jog-progress-button {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+
+        &::before,
+        > p,
+        > span,
+        > .fa-stack {
+          z-index: 1;
+        }
+
+        .movement-progress {
+          z-index: 0;
+          pointer-events: none;
+        }
+      }
+
+      .native-jog-encoder-readings {
+        display: grid;
+        gap: 0.5rem;
+
+        .native-jog-encoder-reading {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 1rem;
+          align-items: center;
+
+          output {
+            font-family: monospace;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .native-jog-encoder-settings {
+        display: grid;
+        gap: 0.5rem;
+
+        fieldset {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 1rem;
+          align-items: center;
+          margin: 0;
+        }
+      }
+
+      .native-jog-more-options {
+        display: grid;
+        gap: 1rem;
+
+        .native-jog-more-option-actions {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 0.5rem;
+
+          .fb-button {
+            width: 100%;
+            margin: 0;
+          }
+        }
+
+        a {
+          display: block;
+          padding: 0.5rem;
+          font-size: 1.2rem;
+          text-decoration: none !important;
+
+          .fa-external-link {
+            float: right;
+          }
+        }
+      }
+
       label {
         margin-top: 0;
         font-size: 1rem;
@@ -143,8 +444,77 @@
         }
       }
 
+      .object-popup-bed-table {
+        width: 100%;
+        border-spacing: 0 0.5rem;
+
+        th {
+          padding-right: 1rem;
+          text-align: left;
+        }
+
+        td {
+          width: 8rem;
+        }
+
+        input {
+          width: 100%;
+        }
+      }
+
       .point-color-input {
         align-self: end;
+      }
+
+      .connectivity-popup-content {
+        gap: 1rem;
+
+        .connectivity-diagram {
+          width: 20rem;
+
+          text {
+            font-size: 1.3rem;
+          }
+        }
+
+        .connectivity-summary-table {
+          width: 100%;
+          font-size: 1.2rem;
+
+          th,
+          td {
+            padding: 0.3rem 0.5rem;
+            text-align: left;
+          }
+
+          th {
+            width: 55%;
+          }
+
+          .connectivity-summary-indicator {
+            width: 2rem;
+
+            .saucer {
+              float: right;
+              width: 1rem;
+              height: 1rem;
+              margin: 0;
+              cursor: default;
+            }
+
+            .connectivity-summary-wifi {
+              width: 2.5rem;
+              height: 1rem;
+
+              .percent-bar {
+                position: relative;
+                top: 0;
+                right: auto;
+                width: 100%;
+              }
+            }
+          }
+        }
       }
 
       .object-popup-mounted-tool-row {
@@ -153,13 +523,27 @@
 
       .object-popup-trail-row,
       .object-popup-laser-row,
-      .object-popup-camera-row {
+      .object-popup-camera-row,
+      .object-popup-scene-object-row,
+      .object-popup-home-row,
+      .object-popup-tool-action-row {
         align-items: center;
 
         button {
           margin: 0;
           float: none;
           justify-self: end;
+        }
+      }
+
+      .tool-action-buttons,
+      .tool-peripheral-action {
+        align-items: center;
+        justify-self: end;
+
+        button {
+          margin: 0;
+          float: none;
         }
       }
 
@@ -192,6 +576,19 @@
           justify-self: end;
         }
       }
+    }
+
+    &.telescope-popup {
+      .telescope-popup-content {
+        gap: 1rem;
+
+        p {
+          margin: 0;
+          font-size: 1.2rem;
+          line-height: 1.4;
+        }
+      }
+
     }
   }
 
@@ -291,7 +688,7 @@
         }
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: $tablet_max_width) {
         justify-content: left;
         pointer-events: all;
       }
@@ -453,7 +850,7 @@
     backdrop-filter: blur(5px);
     box-shadow: $translucent2 0px 0px 5px;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: $tablet_max_width) {
       margin: 0 1rem;
     }
   }
@@ -491,18 +888,45 @@
       margin-top: 1rem;
     }
 
-    .config-search {
-      width: 100%;
-      height: 2rem;
-      margin-bottom: 0.5rem;
-      padding: 0.2rem 0.5rem;
-      font-size: 0.85rem;
-      box-shadow: none;
+    .config-search-wrapper {
+      position: relative;
+
+      .config-search {
+        width: 100%;
+        height: 2rem;
+        margin-bottom: 0.5rem;
+        padding: 0.2rem 2rem 0.2rem 0.5rem;
+        font-size: 0.85rem;
+        box-shadow: none;
+      }
+
+      .config-search-clear {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 2rem;
+        padding: 0 0.65rem;
+        border: 0;
+        background: transparent;
+        color: $dark_gray;
+        cursor: pointer;
+      }
     }
 
     .config-title {
       color: $off_white;
+      cursor: pointer;
       font-weight: bold;
+
+      .config-expand-toggle {
+        display: inline-block;
+        width: 1.25rem;
+        margin: 0;
+        padding: 0;
+        color: $off_white;
+        text-align: left;
+        vertical-align: middle;
+      }
     }
 
     label {
@@ -839,7 +1263,7 @@
     transform-origin: 50% 50%;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: $tablet_max_width) {
     .beacon-info-wrapper {
       display: grid;
       position: absolute;

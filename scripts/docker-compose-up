@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+readonly WARNING_INTERVAL_SECONDS=1
+monitor_pid=""
+
+monitor_assets() {
+  local container_id=""
+  local container_ids=""
+  local current_id=""
+  local exit_code=""
+
+  trap 'exit 0' INT TERM
+
+  while true; do
+    container_ids="$(docker compose ps --quiet assets 2>/dev/null || true)"
+    container_id="${container_ids%%$'\n'*}"
+
+    if [[ -z "$container_id" ]]; then
+      sleep "$WARNING_INTERVAL_SECONDS"
+      continue
+    fi
+
+    exit_code="$(docker wait "$container_id" 2>/dev/null || true)"
+    if [[ ! "$exit_code" =~ ^[0-9]+$ ]]; then
+      sleep "$WARNING_INTERVAL_SECONDS"
+      continue
+    fi
+
+    if ((exit_code == 0)); then
+      sleep "$WARNING_INTERVAL_SECONDS"
+      continue
+    fi
+
+    while true; do
+      container_ids="$(docker compose ps --quiet assets 2>/dev/null || true)"
+      current_id="${container_ids%%$'\n'*}"
+
+      # A running container means the assets service was restarted. Resume
+      # monitoring it, whether Docker reused the container or recreated it.
+      if [[ -n "$current_id" ]]; then
+        break
+      fi
+
+      printf '%s\n' \
+        "******** ASSETS FAILED (exit ${exit_code}) — run: docker compose logs assets ********" \
+        >&2
+      sleep "$WARNING_INTERVAL_SECONDS"
+    done
+  done
+}
+
+cleanup_monitor() {
+  if [[ -n "$monitor_pid" ]] && kill -0 "$monitor_pid" 2>/dev/null; then
+    kill "$monitor_pid" 2>/dev/null || true
+    wait "$monitor_pid" 2>/dev/null || true
+  fi
+  monitor_pid=""
+}
+
+trap cleanup_monitor EXIT INT TERM
+
+monitor_assets &
+monitor_pid=$!
+
+docker compose up "$@"
+compose_status=$?
+
+trap - EXIT INT TERM
+cleanup_monitor
+exit "$compose_status"

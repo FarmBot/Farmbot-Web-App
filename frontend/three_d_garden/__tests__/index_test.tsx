@@ -1,15 +1,27 @@
 import React from "react";
-import { render } from "@testing-library/react";
-import { ThreeDGardenProps, ThreeDGarden } from "../index";
+import { act, render } from "@testing-library/react";
+import {
+  applyViewRequest, consumeViewRequest, ThreeDGardenProps, ThreeDGarden,
+} from "../index";
+import { VIEW_PRISM_VIEWPORT_SIZE } from "../garden_model";
 import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { createPanelCameraStore } from "../panel_camera";
+import { filterSectionIntersections } from "../section";
+import { Actions } from "../../constants";
+import { bot } from "../../__test_support__/fake_state/bot";
+
+const useThreeImplementation =
+  (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
+  jest.spyOn(reactThreeFiber, "useThree")
+    .mockImplementation(useThreeImplementation);
 });
 
 afterEach(() => {
@@ -20,17 +32,85 @@ afterEach(() => {
 
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
-    config: clone(INITIAL),
+    config: { ...clone(INITIAL), viewCube: true },
     configPosition: clone(INITIAL_POSITION),
+    firmwareSettings: bot.hardware.mcu_params,
+    panelCameraStore: createPanelCameraStore(true),
     addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],
     threeDPlants: [],
+    sceneObjects: [],
+  });
+
+  it("applies palette camera requests through the view prism bridge", () => {
+    const selectDirection = jest.fn();
+    const resetView = jest.fn();
+    const bridgeRef = { current: { selectDirection, resetView } };
+    expect(applyViewRequest(
+      bridgeRef, { direction: [1, 0, 1], nonce: 1 })).toEqual(true);
+    expect(selectDirection).toHaveBeenCalledWith([1, 0, 1]);
+    expect(applyViewRequest(
+      bridgeRef, { reset: true, nonce: 2 })).toEqual(true);
+    expect(resetView).toHaveBeenCalledTimes(1);
+    expect(applyViewRequest(bridgeRef, undefined)).toEqual(false);
+    expect(applyViewRequest({ current: {} }, {
+      direction: [1, 0, 1], nonce: 2,
+    })).toEqual(false);
+    expect(applyViewRequest(
+      { current: { selectDirection } },
+      { reset: true, nonce: 3 },
+    )).toEqual(false);
+    expect(selectDirection).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears palette camera requests after applying them", () => {
+    const dispatch = jest.fn();
+    const selectDirection = jest.fn();
+    const bridgeRef = { current: { selectDirection } };
+    expect(consumeViewRequest(bridgeRef, {
+      direction: [-1, 1, 1], nonce: 1,
+    }, dispatch)).toEqual(true);
+    expect(selectDirection).toHaveBeenCalledWith([-1, 1, 1]);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_VIEW,
+      payload: undefined,
+    });
+    expect(consumeViewRequest(bridgeRef, undefined, dispatch)).toEqual(false);
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("renders", () => {
+    const canvasSpy = jest.spyOn(reactThreeFiber, "Canvas");
     const { container } = render(<ThreeDGarden {...fakeProps()} />);
     expect(container).toContainHTML("three-d-garden");
+    const viewport = container.querySelector(".view-prism-viewport");
+    expect(viewport).toHaveStyle({
+      width: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
+      height: `${VIEW_PRISM_VIEWPORT_SIZE}px`,
+    });
+    expect(canvasSpy).toHaveBeenCalledTimes(2);
+    expect(canvasSpy.mock.calls[0][0].events).toEqual(expect.any(Function));
+    const store = {} as never;
+    expect(canvasSpy.mock.calls[0][0].events?.(store)).toEqual({
+      enabled: true,
+      filter: filterSectionIntersections,
+    });
+    expect(reactThreeFiber.events).toHaveBeenCalledWith(store);
+    expect(canvasSpy.mock.calls[0][0]).toEqual(expect.objectContaining({
+      gl: { alpha: true },
+      style: { backgroundColor: "#2c362f" },
+    }));
+    expect(canvasSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        gl: { alpha: true },
+        camera: expect.objectContaining({
+          position: [0, 0, expect.any(Number)],
+          fov: 40,
+        }),
+      }),
+      undefined,
+    );
   });
 
   it("disables canvas shadows in low-detail mode", () => {
@@ -42,6 +122,15 @@ describe("<ThreeDGarden />", () => {
       expect.objectContaining({ shadows: false }),
       undefined);
     canvasSpy.mockRestore();
+  });
+
+  it("hides the product view prism when disabled", () => {
+    const canvasSpy = jest.spyOn(reactThreeFiber, "Canvas");
+    const p = fakeProps();
+    p.config.viewCube = false;
+    const { container } = render(<ThreeDGarden {...p} />);
+    expect(container.querySelector(".view-prism-viewport")).toBeFalsy();
+    expect(canvasSpy).toHaveBeenCalledTimes(1);
   });
 
   it("counts benchmark renders", () => {
@@ -56,6 +145,17 @@ describe("<ThreeDGarden />", () => {
     const p = fakeProps();
     const { rerender } = render(<ThreeDGarden {...p} />);
     rerender(<ThreeDGarden {...p} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
+  });
+
+  it("isolates panel camera store updates", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    render(<ThreeDGarden {...p} />);
+
+    act(() => p.panelCameraStore.setOpen(false));
+
+    expect(p.panelCameraStore.getSnapshot()).toBeFalsy();
     expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
   });
 });

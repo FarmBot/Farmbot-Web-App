@@ -1,118 +1,52 @@
-/* eslint-disable complexity */
-import React, { useEffect, useState } from "react";
-import * as THREE from "three";
-import { ThreeEvent } from "@react-three/fiber";
-import {
-  Cylinder, Extrude, Trail, Tube, useGLTF,
-} from "@react-three/drei";
-import {
-  DoubleSide, ExtrudeGeometryOptions, Shape, RepeatWrapping,
-} from "three";
-import {
-  easyCubicBezierCurve3, get3DPositionNoMirrorFunc,
-  zDir as zDirFunc,
-  zZero as zZeroFunc,
-} from "../helpers";
+import React from "react";
+import { Object3D } from "three";
 import { Config, PositionConfig } from "../config";
-import type { GLTF } from "three-stdlib";
-import { ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName } from "../constants";
-import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
-import { range } from "lodash";
-import {
-  CrossSlideFull, CrossSlideModel,
-  GantryWheelPlate, GantryWheelPlateFull,
-  VacuumPumpCoverFull, VacuumPumpCoverModel,
-} from "./parts";
-import { PowerSupply } from "./power_supply";
-import { Group, Mesh, MeshPhongMaterial } from "../components";
-import {
-  ElectronicsBox, Bounds, Tools, Solenoid, XAxisWaterTube,
-  CableCarrierX,
-  CableCarrierSupportVertical,
-  CableCarrierZ,
-  CableCarrierY,
-  CableCarrierSupportHorizontal,
-  GantryBeam,
-  CameraView,
-} from "./components";
-import { SlotWithTool } from "../../resources/interfaces";
-import { WateringAnimations } from "./components/watering_animations";
+import { Group } from "../components";
 import { FocusVisibilityGroup } from "../focus_transition";
-import { useTextureVariant } from "../texture_variants";
-import { WaterFlowTextureProvider } from "./components/water_stream";
+import { SlotWithTool } from "../../resources/interfaces";
 import {
   ThreeDObjectHoverHandler, ThreeDObjectHoverLabelHandler,
   ThreeDObjectSelectionHandler,
 } from "../selection_types";
-import { clickWasDragged } from "../click_event";
-import { Mode } from "../../farm_designer/map/interfaces";
-import { getMode } from "../../farm_designer/map/util";
+import { Tools, XAxisWaterTube } from "./components";
+import { WaterFlowTextureProvider } from "./components/water_stream";
+import {
+  CrossSlideAssembly, EffectsAssembly, FluidRoutingAssembly,
+  FrameRoutingAssembly, GantryAssembly, StationaryAssembly, ZAxisAssembly,
+} from "./assemblies";
+import {
+  BotKinematics, getBotKinematics, Vector3Tuple,
+} from "./kinematics";
+import { getBotVersion } from "./bot_versions";
+import { useBotShapes } from "./bot_shapes";
+import {
+  BotPositionSnapshotStore, useBotPositionSnapshot,
+  useBotPositionSpring,
+} from "./position_spring";
+import {
+  getDemoMovementStopVersion,
+  getDemoMovementPosition,
+  getDemoMovementTarget,
+  demoMovementActive,
+  registerDemoMovementDriver,
+  reportDemoMovementComplete,
+  reportDemoMovementPosition,
+  startDemoMovement,
+} from "../../demo/lua_runner/movement";
+import {
+  perfEnabled, usePerfRenderCount,
+} from "../../performance/perf";
+import { Actions } from "../../constants";
+import { SECTION_FAR_CLIPPING_EXEMPT } from "../section";
+import {
+  getNativeJogControlPositions, NativeJogControlPair,
+  NativeJogAxisActionsContext, NativeJogEncoderData,
+  NativeJogCurrentUtmShadow, NativeJogDragPreview,
+  NativeJogEncoderVisibility, NativeJogPreviewState,
+  NativeJogSelection, NativeJogWorldPreview,
+} from "./native_jog_controls";
 
-const xTrackPadding = 280;
-const extrusionWidth = 20;
-const utmRadius = 35;
-const cameraMountOffset = {
-  x: extrusionWidth - 8,
-  y: utmRadius,
-};
-const distinguishableBlack = "#333";
-
-type LeftBracket = GLTF & {
-  nodes: { [PartName.leftBracket]: THREE.Mesh };
-  materials: never;
-}
-type RightBracket = GLTF & {
-  nodes: { [PartName.rightBracket]: THREE.Mesh };
-  materials: never;
-}
-type ZStop = GLTF & {
-  nodes: { [PartName.zStop]: THREE.Mesh };
-  materials: never;
-}
-type BeltClip = GLTF & {
-  nodes: { [PartName.beltClip]: THREE.Mesh };
-  materials: never;
-}
-type UTM = GLTF & {
-  nodes: { [PartName.utm]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
-type HousingVertical = GLTF & {
-  nodes: { [PartName.housingVertical]: THREE.Mesh };
-  materials: never;
-}
-type HorizontalMotorHousing = GLTF & {
-  nodes: { [PartName.horizontalMotorHousing]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
-type ZAxisMotorMount = GLTF & {
-  nodes: { [PartName.zAxisMotorMount]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
-type CameraMountHalf = GLTF & {
-  nodes: { [PartName.cameraMountHalf]: THREE.Mesh };
-  materials: never;
-}
-type XAxisCCMount = GLTF & {
-  nodes: { [PartName.xAxisCCMount]: THREE.Mesh };
-  materials: never;
-}
-
-interface XAxisCCMountModelProps {
-  position: [number, number, number];
-}
-
-const XAxisCCMountModel = (props: XAxisCCMountModelProps) => {
-  const xAxisCCMount =
-    useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
-  return <Mesh name={"xCCMount"}
-    position={props.position}
-    rotation={[0, 0, Math.PI / 2]}
-    scale={1000}
-    geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
-    <MeshPhongMaterial color={"silver"} />
-  </Mesh>;
-};
+export { clearBotShapeCache } from "./bot_shapes";
 
 export interface FarmbotModelProps {
   config: Config;
@@ -122,931 +56,448 @@ export interface FarmbotModelProps {
   trailReady?: boolean;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  navigate?(path: string): void;
   dispatch?: Function;
+  axisActions?: NativeJogAxisActionsContext;
+  encoderData?: NativeJogEncoderData;
+  encoderVisibility?: NativeJogEncoderVisibility;
   onSelectObject?: ThreeDObjectSelectionHandler;
   onHoverObject?: ThreeDObjectHoverHandler;
   onToolSlotHoverObject?: ThreeDObjectHoverHandler;
   onHoverLabel?: ThreeDObjectHoverLabelHandler;
+  positionStore?: BotPositionSnapshotStore;
 }
-
-interface RequestedShapes {
-  track: boolean;
-  beam: boolean;
-  column: boolean;
-  zAxis: boolean;
-}
-
-interface BotShapeCache {
-  track?: Shape;
-  beam?: Shape;
-  column?: Shape;
-  zAxis?: Shape;
-}
-
-const botShapeCache: BotShapeCache = {};
-
-export const clearBotShapeCache = () => {
-  botShapeCache.track = undefined;
-  botShapeCache.beam = undefined;
-  botShapeCache.column = undefined;
-  botShapeCache.zAxis = undefined;
-};
-
-const botGardenXY = (
-  config: Config,
-  gardenX: number,
-  gardenY: number,
-): [number, number] => {
-  const position = get3DPositionNoMirrorFunc(config)({
-    x: gardenX,
-    y: gardenY,
-  });
-  return [position.x, position.y];
-};
-
-const botOuterXY = (
-  config: Config,
-  gardenX: number,
-  outerY: number,
-): [number, number] =>
-  botGardenXY(config, gardenX, outerY - config.bedYOffset);
-
-interface BotXYSubassemblyProps {
-  config: Config;
-  configPosition: PositionConfig;
-}
-
-const sameBotXYSubassemblyProps = <P extends BotXYSubassemblyProps>(
-  prev: P,
-  next: P,
-) => {
-  return prev.config === next.config &&
-    prev.configPosition.x === next.configPosition.x &&
-    prev.configPosition.y === next.configPosition.y;
-};
-
-const sameConfigFields = (
-  prev: Config,
-  next: Config,
-  fields: (keyof Config)[],
-) => fields.every(field => prev[field] === next[field]);
-
-interface BotFrameSubassembliesProps
-  extends BotXYSubassemblyProps {
-  trackShape: Shape | undefined;
-  columnShape: Shape | undefined;
-}
-
-const BOT_FRAME_CONFIG_FIELDS: (keyof Config)[] = [
-  "bedHeight",
-  "bedLengthOuter",
-  "bedWidthOuter",
-  "bedXOffset",
-  "bedYOffset",
-  "botSizeX",
-  "cableCarriers",
-  "columnLength",
-  "tracks",
-];
-
-const sameBotFrameSubassembliesProps = (
-  prev: BotFrameSubassembliesProps,
-  next: BotFrameSubassembliesProps,
-) =>
-  sameConfigFields(prev.config, next.config, BOT_FRAME_CONFIG_FIELDS) &&
-  prev.configPosition.x === next.configPosition.x &&
-  prev.configPosition.y === next.configPosition.y &&
-  prev.trackShape === next.trackShape &&
-  prev.columnShape === next.columnShape;
-
-const BotFrameSubassembliesBase = (props: BotFrameSubassembliesProps) => {
-  const {
-    bedWidthOuter, tracks, columnLength, botSizeX,
-  } = props.config;
-  const { x, y } = props.configPosition;
-  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.01, 0.0003],
-  });
-  const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
-  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
-  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
-  const horizontalMotorHousing = useGLTF(
-    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
-  return <>
-    {[0 - extrusionWidth, bedWidthOuter].map((outerY, index) => {
-      const bedColumnYOffset =
-        (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
-      return <Group key={outerY}>
-        <Extrude name={"columns"}
-          castShadow={true}
-          args={[
-            props.columnShape,
-            { steps: 1, depth: columnLength, bevelEnabled: false },
-          ]}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - extrusionWidth - 23,
-              outerY + bedColumnYOffset,
-            ),
-            30,
-          ]}
-          rotation={[0, 0, Math.PI / 2]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>
-        <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - extrusionWidth - 23,
-              outerY - (index == 0 ? 0 : 170) + bedColumnYOffset,
-            ),
-            columnLength - 30,
-          ]}
-          rotation={[Math.PI / 2, Math.PI / 2, 0]}
-          scale={1000}
-          geometry={index == 0
-            ? leftBracket.nodes[PartName.leftBracket].geometry
-            : rightBracket.nodes[PartName.rightBracket].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - (index == 0 ? 58 : 88),
-              outerY - (index == 0 ? 0 : -20) + bedColumnYOffset,
-            ),
-            columnLength + 70,
-          ]}
-          rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
-          scale={1000}
-          geometry={undefined}
-          material={undefined} />
-        <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - 79,
-              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
-            ),
-            columnLength + 80,
-          ]}
-          rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
-          scale={1000}
-          geometry={
-            horizontalMotorHousing.nodes[PartName.horizontalMotorHousing].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Cylinder name={"motorPulley"}
-          args={[8, 8, 40]}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - 74,
-              outerY - (index == 0 ? 5 : -25) + bedColumnYOffset,
-            ),
-            columnLength + 55,
-          ]}
-          rotation={[0, 0, 0]}>
-          <MeshPhongMaterial color={"#999"} />
-        </Cylinder>
-        {tracks && <Extrude name={"tracks"}
-          castShadow={true}
-          args={[
-            props.trackShape,
-            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
-          ]}
-          position={[
-            ...botOuterXY(
-              props.config,
-              index == 0
-                ? botSizeX + xTrackPadding / 2 - 10
-                : -xTrackPadding / 2 - 10,
-              outerY + (index == 0 ? 2.5 : 17.5),
-            ),
-            2,
-          ]}
-          rotation={[
-            index == 0 ? -Math.PI / 2 : -Math.PI / 2,
-            index == 0 ? -Math.PI / 2 : Math.PI / 2,
-            0,
-          ]}>
-          <MeshPhongMaterial
-            color={"white"}
-            map={aluminumTexture}
-            side={DoubleSide} />
-        </Extrude>}
-        <Mesh name={"xStopMin"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              -143,
-              outerY + 10 + bedColumnYOffset,
-            ),
-            2 + (index == 0 ? 0 : 5),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? 0 : Math.PI,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"xStopMax"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              botSizeX - 16 + xTrackPadding / 2,
-              outerY + 10 + bedColumnYOffset,
-            ),
-            2 + (index == 0 ? 5 : 0),
-          ]}
-          rotation={[
-            0,
-            index == 0 ? Math.PI : 0,
-            (index == 0 ? 1 : -1) * Math.PI / 2,
-          ]}
-          scale={1000}
-          geometry={beltClip.nodes[PartName.beltClip].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <GantryWheelPlateComponent name={"gantryWheelPlate"}
-          position={[
-            ...botOuterXY(
-              props.config,
-              x - 53,
-              outerY + (index == 0 ? 0 : extrusionWidth + 5)
-              - 2 - (index == 0 ? 1 : 0)
-              + bedColumnYOffset,
-            ),
-            -30,
-          ]}
-          rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
-          scale={[1000, 1000 * (index == 0 ? -1 : 1), 1000]} />
-      </Group>;
-    })}
-    {props.config.cableCarriers &&
-    <XAxisCCMountModel
-      position={[
-        ...botOuterXY(props.config, x - 43, -12),
-        -40,
-      ]} />}
-    {props.config.cableCarriers &&
-    <CableCarrierX
-      config={props.config}
-      configPosition={props.configPosition} />}
-    <CrossSlideModel
-      model={crossSlide}
-      name={"crossSlide"}
-      position={[
-        ...botGardenXY(props.config, x - 12.5, y + 5),
-        columnLength + 105,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
-  </>;
-};
-
-const BotFrameSubassemblies = React.memo(
-  BotFrameSubassembliesBase,
-  sameBotFrameSubassembliesProps,
-);
-
-interface BotGantrySubassembliesProps
-  extends BotXYSubassemblyProps {
-  beamShape: Shape | undefined;
-}
-
-const BOT_GANTRY_CONFIG_FIELDS: (keyof Config)[] = [
-  "bedLengthOuter",
-  "bedWidthOuter",
-  "bedXOffset",
-  "bedYOffset",
-  "botSizeY",
-  "cableCarriers",
-  "columnLength",
-  "kitVersion",
-  "light",
-];
-
-const sameBotGantrySubassembliesProps = (
-  prev: BotGantrySubassembliesProps,
-  next: BotGantrySubassembliesProps,
-) =>
-  sameConfigFields(prev.config, next.config, BOT_GANTRY_CONFIG_FIELDS) &&
-  prev.configPosition.x === next.configPosition.x &&
-  prev.configPosition.y === next.configPosition.y &&
-  prev.beamShape === next.beamShape;
-
-const BotGantrySubassembliesBase = (props: BotGantrySubassembliesProps) => {
-  const {
-    botSizeY, bedYOffset, columnLength,
-  } = props.config;
-  const { x, y } = props.configPosition;
-  const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
-    wrapS: RepeatWrapping,
-    wrapT: RepeatWrapping,
-    repeat: [0.01, 0.0003],
-  });
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
-  const yBeltPath = React.useCallback(() => {
-    const radius = 12;
-    const path = new Shape();
-    path.moveTo(0, 0);
-    path.lineTo(0, y + 30);
-    path.arc(radius, -5, radius, Math.PI, Math.PI / 2, true);
-    path.lineTo(45, y + 30);
-    path.arc(0, 10, 10, -Math.PI / 2, Math.PI / 4);
-    path.lineTo(0, y + 100);
-    path.arc(radius, 5, radius, (-3 / 4) * Math.PI, Math.PI, true);
-    path.lineTo(0, botSizeY + 220);
-    path.lineTo(-2, botSizeY + 220);
-    path.lineTo(-2, y + 100);
-    path.arc(radius, 4, radius, Math.PI, (-3 / 4) * Math.PI);
-    path.lineTo(45, y + 50);
-    path.arc(0, -10, 8, Math.PI / 4, -Math.PI / 2, true);
-    path.lineTo(radius, y + 40);
-    path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
-    path.lineTo(-2, 0);
-    return path;
-  }, [botSizeY, y]);
-  const yBeltArgs = React.useMemo(() => [
-    yBeltPath(),
-    { steps: 1, depth: 6, bevelEnabled: false },
-  ] as [Shape, ExtrudeGeometryOptions], [yBeltPath]);
-  return <>
-    <GantryBeam
-      config={props.config}
-      configPosition={props.configPosition}
-      aluminumTexture={aluminumTexture}
-      beamShape={props.beamShape} />
-    {props.config.cableCarriers &&
-    <CableCarrierSupportHorizontal
-      config={props.config}
-      configPosition={props.configPosition} />}
-    {props.config.cableCarriers &&
-    <CableCarrierY
-      config={props.config}
-      configPosition={props.configPosition} />}
-    <Mesh name={"yStopMin"}
-      position={[
-        ...botOuterXY(props.config, x - extrusionWidth - 9, bedYOffset - 125),
-        columnLength + 40 + extrusionWidth * 3,
-      ]}
-      rotation={[0, 0, Math.PI]}
-      scale={1000}
-      geometry={beltClip.nodes[PartName.beltClip].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Extrude name={"yBelt"}
-      args={yBeltArgs}
-      position={[
-        ...botGardenXY(props.config, x - 25.5, -100),
-        columnLength + 100,
-      ]}
-      rotation={[0, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
-    <Mesh name={"yStopMax"}
-      position={[
-        ...botOuterXY(
-          props.config,
-          x - extrusionWidth - 9,
-          botSizeY + bedYOffset + 135,
-        ),
-        columnLength + 40 + extrusionWidth * 3 + 5,
-      ]}
-      rotation={[0, Math.PI, 0]}
-      scale={1000}
-      geometry={beltClip.nodes[PartName.beltClip].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-  </>;
-};
-
-const BotGantrySubassemblies = React.memo(
-  BotGantrySubassembliesBase,
-  sameBotGantrySubassembliesProps,
-);
-
-interface BotElectronicsSubassemblyProps extends BotXYSubassemblyProps {
-  onSelectObject?: ThreeDObjectSelectionHandler;
-  onHoverObject?: ThreeDObjectHoverHandler;
-}
-
-const botElectronicsSubassemblyPropsEqual = (
-  prev: BotElectronicsSubassemblyProps,
-  next: BotElectronicsSubassemblyProps,
-) =>
-  sameBotXYSubassemblyProps(prev, next) &&
-  prev.onSelectObject === next.onSelectObject &&
-  prev.onHoverObject === next.onHoverObject;
-
-const BotElectronicsSubassemblyBase = (props: BotElectronicsSubassemblyProps) =>
-  <ElectronicsBox
-    config={props.config}
-    configPosition={props.configPosition}
-    onSelectObject={props.onSelectObject}
-    onHoverObject={props.onHoverObject} />;
-
-const BotElectronicsSubassembly = React.memo(
-  BotElectronicsSubassemblyBase,
-  botElectronicsSubassemblyPropsEqual,
-);
-
-interface BotVerticalToolheadSubassemblyProps
-  extends BotXYSubassemblyProps {
-  zAxisShape: Shape | undefined;
-  getZ(x: number, y: number): number;
-  trailReady: boolean;
-  onSelectObject?: ThreeDObjectSelectionHandler;
-  onHoverObject?: ThreeDObjectHoverHandler;
-}
-
-const BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS: (keyof Config)[] = [
-  "bedLengthOuter",
-  "bedWidthOuter",
-  "bedXOffset",
-  "bedYOffset",
-  "botSizeZ",
-  "cableCarriers",
-  "cameraView",
-  "columnLength",
-  "imgCenterX",
-  "imgCenterY",
-  "imgOffsetX",
-  "imgOffsetY",
-  "imgOrigin",
-  "imgRotation",
-  "imgScale",
-  "kitVersion",
-  "laser",
-  "lastImageCapture",
-  "negativeZ",
-  "perspective",
-  "trail",
-  "zAxisLength",
-  "zGantryOffset",
-];
-
-const sameBotVerticalToolheadSubassemblyProps = (
-  prev: BotVerticalToolheadSubassemblyProps,
-  next: BotVerticalToolheadSubassemblyProps,
-) =>
-  sameConfigFields(prev.config, next.config, BOT_VERTICAL_TOOLHEAD_CONFIG_FIELDS) &&
-  prev.configPosition.x === next.configPosition.x &&
-  prev.configPosition.y === next.configPosition.y &&
-  prev.configPosition.z === next.configPosition.z &&
-  prev.getZ === next.getZ &&
-  prev.onSelectObject === next.onSelectObject &&
-  prev.onHoverObject === next.onHoverObject &&
-  prev.trailReady === next.trailReady &&
-  prev.zAxisShape === next.zAxisShape;
-
-const BotVerticalToolheadSubassemblyBase =
-  (props: BotVerticalToolheadSubassemblyProps) => {
-    const config = props.config;
-    const {
-      botSizeZ, trail, laser, columnLength, zAxisLength, zGantryOffset,
-    } = config;
-    const { x, y, z } = props.configPosition;
-    const zZero = zZeroFunc(config);
-    const zDir = zDirFunc(config);
-    const get3DPosition = get3DPositionNoMirrorFunc(config);
-    const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
-      const position = get3DPosition({ x: gardenX, y: gardenY });
-      return [position.x, position.y];
-    };
-    const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
-    const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
-    const housingVertical = useGLTF(
-      ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
-    const zAxisMotorMount = useGLTF(
-      ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
-    const vacuumPumpCover = useGLTF(
-      ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
-    const cameraMountHalf = useGLTF(
-      ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
-    const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
-      wrapS: RepeatWrapping,
-      wrapT: RepeatWrapping,
-      repeat: [0.01, 0.0003],
-    });
-    const distanceToSoil = -props.getZ(x, y) - zDir * z;
-    const defaultTrailWidth = config.perspective ? 500 : 0.1;
-    const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
-      switch (kitVersion) {
-        case "v1.7":
-          return [...gardenXY(x + 69, y + 100), zZero - zDir * z + 245];
-        case "v1.8":
-        default:
-          return [...gardenXY(x + 24, y), zZero - zDir * z + 245];
-      }
-    };
-    const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
-      switch (kitVersion) {
-        case "v1.7":
-          return [0, 0, Math.PI / 2];
-        case "v1.8":
-        default:
-          return [0, 0, -Math.PI / 2];
-      }
-    };
-    const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
-      switch (kitVersion) {
-        case "v1.7":
-          return [...gardenXY(x + 1, y + 55), zZero - zDir * z + 490];
-        case "v1.8":
-        default:
-          return [...gardenXY(x - 9, y + 110), zZero + columnLength + 25];
-      }
-    };
-    const cameraMountPosition = new THREE.Vector3(
-      ...gardenXY(x + cameraMountOffset.x, y + cameraMountOffset.y),
-      zZero - zDir * z - 140 + zGantryOffset + 20,
-    );
-    const selectUtm = (event: ThreeEvent<MouseEvent>) => {
-      if (clickWasDragged(event)) { return; }
-      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-        return;
-      }
-      if (props.onSelectObject) {
-        props.onSelectObject({ kind: "utm", id: 0 }) !== false &&
-          event.stopPropagation?.();
-      }
-    };
-    const selectCamera = (event: ThreeEvent<MouseEvent>) => {
-      if (clickWasDragged(event)) { return; }
-      if ([...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
-        return;
-      }
-      if (props.onSelectObject) {
-        props.onSelectObject({ kind: "camera", id: 0 }) !== false &&
-          event.stopPropagation?.();
-      }
-    };
-    const utmComponent = <Group name={"UTM"}
-      position={[
-        ...gardenXY(x, y),
-        zZero - zDir * z,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}>
-      <Mesh
-        geometry={utm.nodes.M5_Barb.geometry}
-        material={utm.materials.PaletteMaterial001}
-        position={[0.015, 0.009, 0.036]}
-        onClick={selectUtm}
-        onPointerOver={() => props.onHoverObject?.(true)}
-        onPointerOut={() => props.onHoverObject?.(false)}
-        rotation={[0, 0, 2.094]} />
-    </Group>;
-
-    return <>
-      <Extrude name={"z-axis"}
-        castShadow={true}
-        args={[
-          props.zAxisShape,
-          { steps: 1, depth: zAxisLength, bevelEnabled: false },
-        ]}
-        position={[
-          ...gardenXY(x - 11, y + utmRadius),
-          zZero - zDir * z,
-        ]}
-        rotation={[0, 0, 0]}>
-        <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
-      </Extrude>
-      <Group name={"zMotor"}>
-        <Mesh name={"zMotorHousing"}
-          position={[
-            ...gardenXY(x - 7, y + utmRadius - 46),
-            zZero - zDir * z + zAxisLength - 80,
-          ]}
-          rotation={[0, 0, Math.PI]}
-          scale={1000}
-          geometry={housingVertical.nodes[PartName.housingVertical].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"zMotor"}
-          position={[
-            ...gardenXY(x - 1, y + utmRadius - 5),
-            zZero - zDir * z + zAxisLength - 140,
-          ]}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={1000}
-          geometry={undefined}
-          material={undefined} />
-        <Mesh name={"zMotorMount"}
-          position={[
-            ...gardenXY(x - 6, y + utmRadius - 65),
-            zZero - zDir * z + zAxisLength - 80,
-          ]}
-          rotation={[0, 0, Math.PI]}
-          scale={1000}
-          geometry={zAxisMotorMount.nodes[PartName.zAxisMotorMount].geometry}>
-          <MeshPhongMaterial color={"silver"} side={DoubleSide} />
-        </Mesh>
-        <Cylinder name={"motorShaft"}
-          args={[2.5, 2.5, 40]}
-          position={[
-            ...gardenXY(x - 6, y + utmRadius - 65),
-            zZero - zDir * z + zAxisLength - 80,
-          ]}
-          rotation={[Math.PI / 2, 0, 0]}>
-          <MeshPhongMaterial color={"#999"} />
-        </Cylinder>
-      </Group>
-      <Mesh name={"shaftCoupler"}
-        position={[
-          ...gardenXY(x - 6, y - 30),
-          zZero - zDir * z + zAxisLength - 120,
-        ]}
-        rotation={[0, 0, 0]}
-        scale={1000}
-        geometry={undefined}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Cylinder name={"shaftCoupler"}
-        args={[10, 10, 25]}
-        position={[
-          ...gardenXY(x - 6, y - 30),
-          zZero - zDir * z + zAxisLength - 120 + 25 / 2,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"silver"} />
-      </Cylinder>
-      <Cylinder name={"leadscrew"}
-        material-color={"#555"}
-        args={[4, 4, zAxisLength - 200]}
-        position={[
-          ...gardenXY(x - 5, y - 30),
-          zZero - zDir * z + zAxisLength / 2,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]} />
-      {config.cableCarriers &&
-      <CableCarrierSupportVertical
-        config={config}
-        configPosition={props.configPosition} />}
-      {config.cableCarriers &&
-      <CableCarrierZ config={config}
-        configPosition={props.configPosition} />}
-      <Mesh name={"zStopMax"}
-        position={[
-          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
-          zZero - zDir * z - 30 + zGantryOffset,
-        ]}
-        rotation={[0, Math.PI / 2, 0]}
-        scale={1000}
-        geometry={zStop.nodes[PartName.zStop].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"zStopMin"}
-        position={[
-          ...gardenXY(x - 16, y + utmRadius + extrusionWidth / 2),
-          zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
-        ]}
-        rotation={[0, Math.PI / 2, 0]}
-        scale={1000}
-        geometry={zStop.nodes[PartName.zStop].geometry}>
-        <MeshPhongMaterial color={"silver"} />
-      </Mesh>
-      <Mesh name={"vacuumPump"}
-        position={[
-          ...gardenXY(x + 17, y),
-          zZero - zDir * z + 40,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}
-        scale={1000}
-        geometry={undefined}
-        material={undefined} />
-      <Tube name={"air-tube"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[easyCubicBezierCurve3(
-          [
-            ...gardenXY(x + 17, y),
-            zZero - zDir * z + 35,
-          ],
-          [0, 0, 100],
-          [0, 0, -200],
-          airTubeEndPosition(config.kitVersion),
-        ), 20, 5, 8]}>
-        <MeshPhongMaterial
-          color={"white"}
-          transparent={true}
-          opacity={0.75}
-        />
-      </Tube>
-      <VacuumPumpCoverModel
-        model={vacuumPumpCover}
-        rotation={vacuumPumpCoverRotation(config.kitVersion)}
-        scale={1000}
-        position={vacuumPumpCoverPosition(config.kitVersion)} />
-      <Group name={"camera"}
-        onClick={selectCamera}
-        onPointerOver={() => props.onHoverObject?.(true)}
-        onPointerOut={() => props.onHoverObject?.(false)}
-        rotation={[Math.PI, 0, 0]}
-        position={cameraMountPosition}>
-        <Mesh name={"cameraMount"}
-          rotation={[0, 0, 0]}
-          position={[0, 0, -40]}
-          scale={1000}
-          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-        <Mesh name={"cameraMount"}
-          rotation={[0, Math.PI, 0]}
-          scale={1000}
-          geometry={cameraMountHalf.nodes[PartName.cameraMountHalf].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>
-      </Group>
-      <CameraView
-        config={config}
-        configPosition={props.configPosition}
-        cameraMountPosition={cameraMountPosition}
-        distanceToSoil={-props.getZ(x - 11, y) - zDir * z} />
-      {props.trailReady && trail
-        ? <Trail
-          width={defaultTrailWidth}
-          attenuation={t => Math.pow(t, 3)}
-          color={"red"}
-          length={100}
-          decay={0.5}
-          local={false}
-          stride={0}
-          interval={1}>
-          {utmComponent}
-        </Trail>
-        : utmComponent}
-      <Cylinder
-        visible={laser}
-        material-color={"red"}
-        args={[5, 5, distanceToSoil]}
-        position={[
-          ...gardenXY(x, y),
-          zZero - zDir * z - distanceToSoil / 2,
-        ]}
-        rotation={[Math.PI / 2, 0, 0]} />
-    </>;
-  };
-
-const BotVerticalToolheadSubassembly = React.memo(
-  BotVerticalToolheadSubassemblyBase,
-  sameBotVerticalToolheadSubassemblyProps,
-);
-
-const BotBedUtilitySubassembliesBase = (props: { config: Config }) =>
-  <>
-    <PowerSupply config={props.config} />
-    <XAxisWaterTube config={props.config} />
-  </>;
-
-const BotBedUtilitySubassemblies =
-  React.memo(BotBedUtilitySubassembliesBase);
 
 export const Bot = (props: FarmbotModelProps) =>
   props.config.bot ? <EnabledBot {...props} /> : undefined;
 
-const EnabledBot = (props: FarmbotModelProps) => {
-  const config = props.config;
-  const { tracks } = props.config;
-  const [trackShape, setTrackShape] =
-    useState<Shape | undefined>(() => botShapeCache.track);
-  const [beamShape, setBeamShape] =
-    useState<Shape | undefined>(() => botShapeCache.beam);
-  const [columnShape, setColumnShape] =
-    useState<Shape | undefined>(() => botShapeCache.column);
-  const [zAxisShape, setZAxisShape] =
-    useState<Shape | undefined>(() => botShapeCache.zAxis);
-  const requestedShapes = React.useRef<RequestedShapes>({
-    track: false,
-    beam: false,
-    column: false,
-    zAxis: false,
-  });
-  useEffect(() => {
-    let loader: SVGLoader | undefined;
-    const getLoader = () => {
-      loader ||= new SVGLoader();
-      return loader;
-    };
-    if (tracks && !trackShape && !requestedShapes.current.track) {
-      requestedShapes.current.track = true;
-      getLoader().load(ASSETS.shapes.track,
-        svg => {
-          const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
-          const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[2])[0];
-          outline.holes.push(smallCutout);
-          outline.holes.push(largeCutout);
-          botShapeCache.track = outline;
-          setTrackShape(outline);
-        });
-    }
-    if (!beamShape && !requestedShapes.current.beam) {
-      requestedShapes.current.beam = true;
-      getLoader().load(ASSETS.shapes.beam,
-        svg => {
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          range(1, 6).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
-          });
-          botShapeCache.beam = outline;
-          setBeamShape(outline);
-        });
-    }
-    if (!columnShape && !requestedShapes.current.column) {
-      requestedShapes.current.column = true;
-      getLoader().load(ASSETS.shapes.column,
-        svg => {
-          const outline = SVGLoader.createShapes(svg.paths[3])[0];
-          range(3).map(i => {
-            const hole = SVGLoader.createShapes(svg.paths[i])[0];
-            outline.holes.push(hole);
-          });
-          botShapeCache.column = outline;
-          setColumnShape(outline);
-        });
-    }
-    if (!zAxisShape && !requestedShapes.current.zAxis) {
-      requestedShapes.current.zAxis = true;
-      getLoader().load(ASSETS.shapes.zAxis,
-        svg => {
-          const hole = SVGLoader.createShapes(svg.paths[1])[0];
-          const outline = SVGLoader.createShapes(svg.paths[0])[0];
-          outline.holes.push(hole);
-          botShapeCache.zAxis = outline;
-          setZAxisShape(outline);
-        });
-    }
-  }, [beamShape, columnShape, trackShape, tracks, zAxisShape]);
-  const trailReady = props.trailReady !== false;
+type BotPositionTransformConfig = Pick<Config,
+  "botSizeX" | "botSizeY" | "mirrorX" | "mirrorY">;
 
-  const botModel = <FocusVisibilityGroup name={"bot"} keepMounted={true}
-    preserveDepthWrite={true}
-    visible={props.activeFocus != "Planter bed"}>
-    <BotFrameSubassemblies
-      config={config}
-      configPosition={props.configPosition}
-      trackShape={trackShape}
-      columnShape={columnShape} />
-    <BotVerticalToolheadSubassembly
-      config={config}
-      configPosition={props.configPosition}
-      getZ={props.getZ}
-      onSelectObject={props.onSelectObject}
-      onHoverObject={props.onHoverObject}
-      trailReady={trailReady}
-      zAxisShape={zAxisShape} />
-    <BotGantrySubassemblies
-      config={config}
-      configPosition={props.configPosition}
-      beamShape={beamShape} />
-    <Solenoid config={config} configPosition={props.configPosition} />
-    <BotElectronicsSubassembly
-      config={config}
-      configPosition={props.configPosition}
-      onSelectObject={props.onSelectObject}
-      onHoverObject={props.onHoverObject} />
-    <Tools
-      dispatch={props.dispatch}
-      config={config}
-      configPosition={props.configPosition}
-      getZ={props.getZ}
-      toolSlots={props.toolSlots}
-      onSelectObject={props.onSelectObject}
-      onHoverObject={props.onHoverObject}
-      onToolSlotHoverObject={props.onToolSlotHoverObject}
-      onHoverLabel={props.onHoverLabel}
-      mountedToolName={props.mountedToolName} />
-    {config.waterFlow &&
-      <React.Suspense fallback={undefined}>
-        <WateringAnimations
-          waterFlow={config.waterFlow}
-          config={config}
-          configPosition={props.configPosition}
-          getZ={props.getZ} />
-      </React.Suspense>}
-    <BotBedUtilitySubassemblies config={config} />
-    {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
-    <Bounds config={config} configPosition={props.configPosition} />}
-  </FocusVisibilityGroup>;
+export const getUnmirroredBotPosition = (
+  config: BotPositionTransformConfig,
+  position: PositionConfig,
+): PositionConfig => ({
+  x: config.mirrorX ? config.botSizeX - position.x : position.x,
+  y: config.mirrorY ? config.botSizeY - position.y : position.y,
+  z: position.z,
+});
+
+export const getDemoMovementSpringCallbacks = (
+  config: BotPositionTransformConfig,
+) => {
+  const toGardenPosition = (position: PositionConfig) =>
+    getUnmirroredBotPosition(config, position);
+  return {
+    onChange: (position: PositionConfig) =>
+      reportDemoMovementPosition(toGardenPosition(position)),
+    onRest: (position: PositionConfig) =>
+      reportDemoMovementComplete(toGardenPosition(position)),
+  };
+};
+
+export const getBotSpringTarget = (
+  config: BotPositionTransformConfig,
+  reportedPosition: PositionConfig,
+  demoTarget = getDemoMovementTarget(),
+): PositionConfig =>
+  demoTarget
+    ? getUnmirroredBotPosition(config, demoTarget)
+    : reportedPosition;
+
+export interface BotKinematicObjects {
+  gantry?: Object3D | null;
+  crossSlide?: Object3D | null;
+  zAxis?: Object3D | null;
+  trailTarget?: Object3D | null;
+}
+
+export const applyBotKinematicFrame = (
+  objects: BotKinematicObjects,
+  kinematics: BotKinematics,
+) => {
+  objects.gantry?.position?.set(...kinematics.gantryPosition);
+  objects.crossSlide?.position?.set(...kinematics.crossSlidePosition);
+  objects.zAxis?.position?.set(...kinematics.zAxisPosition);
+  objects.trailTarget?.position?.set(
+    ...kinematics.anchors.utm.worldPosition,
+  );
+};
+
+interface SnapshotAssembliesProps {
+  config: Config;
+  currentPosition: React.MutableRefObject<PositionConfig>;
+  getZ(x: number, y: number): number;
+  machineOrigin: [number, number, number];
+  snapshotStore: BotPositionSnapshotStore;
+  version: ReturnType<typeof getBotVersion>;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+}
+
+const SnapshotAssemblies = (props: SnapshotAssembliesProps) => {
+  const configPosition = useBotPositionSnapshot(props.snapshotStore);
+  return <>
+    <Group name={"bot-fluid-routing"} position={props.machineOrigin}>
+      <FluidRoutingAssembly
+        config={props.config}
+        configPosition={configPosition}
+        positionRef={props.currentPosition}
+        version={props.version} />
+    </Group>
+    <Group name={"bot-effects"}>
+      <EffectsAssembly
+        config={props.config}
+        configPosition={configPosition}
+        version={props.version}
+        getZ={props.getZ}
+        onSelectObject={props.onSelectObject} />
+    </Group>
+  </>;
+};
+
+interface SnapshotGantryToolsProps extends FarmbotModelProps {
+  snapshotStore: BotPositionSnapshotStore;
+}
+
+const SnapshotGantryTools = (props: SnapshotGantryToolsProps) => {
+  const configPosition = useBotPositionSnapshot(props.snapshotStore);
+  return <Tools {...props}
+    configPosition={configPosition}
+    frame={"gantry"} />;
+};
+
+const addBotPositions = (
+  ...positions: Vector3Tuple[]
+): Vector3Tuple => [
+  positions.reduce((total, position) => total + position[0], 0),
+  positions.reduce((total, position) => total + position[1], 0),
+  positions.reduce((total, position) => total + position[2], 0),
+];
+
+const EnabledBot = (props: FarmbotModelProps) => {
+  usePerfRenderCount("EnabledBot");
+  const { config, dispatch } = props;
+  const { botSizeX, botSizeY, mirrorX, mirrorY } = config;
+  const version = getBotVersion(config.kitVersion);
+  const shapes = useBotShapes(config.tracks, version);
+  const demoSpringCallbacks = React.useMemo(
+    () => getDemoMovementSpringCallbacks({
+      botSizeX,
+      botSizeY,
+      mirrorX,
+      mirrorY,
+    }),
+    [botSizeX, botSizeY, mirrorX, mirrorY],
+  );
+  const springTarget = getBotSpringTarget(config, props.configPosition);
+  const [initialKinematics] = React.useState(
+    () => getBotKinematics(config, springTarget, version),
+  );
+  const gantry = React.useRef<Object3D | undefined>(undefined);
+  const crossSlide = React.useRef<Object3D | undefined>(undefined);
+  const zAxis = React.useRef<Object3D | undefined>(undefined);
+  const trailTarget = React.useRef(new Object3D());
+  const [jogSelection, setJogSelection] =
+    React.useState<NativeJogSelection | undefined>();
+  const [xJogPreview, setXJogPreview] =
+    React.useState<NativeJogDragPreview | undefined>();
+  const [yJogPreview, setYJogPreview] =
+    React.useState<NativeJogDragPreview | undefined>();
+  const [zJogPreview, setZJogPreview] =
+    React.useState<NativeJogDragPreview | undefined>();
+  const axisActionsAvailable = !!props.axisActions;
+  const closeJogPopup = React.useCallback(() => {
+    setJogSelection(undefined);
+  }, []);
+  React.useEffect(() => {
+    if (config.controlsOverlay) { return; }
+    const timeout = window.setTimeout(() => {
+      setJogSelection(undefined);
+      setXJogPreview(undefined);
+      setYJogPreview(undefined);
+      setZJogPreview(undefined);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [config.controlsOverlay]);
+  React.useEffect(() => {
+    if (!jogSelection || axisActionsAvailable) { return; }
+    const timeout = window.setTimeout(closeJogPopup, 0);
+    return () => window.clearTimeout(timeout);
+  }, [
+    axisActionsAvailable,
+    closeJogPopup,
+    jogSelection,
+  ]);
+  React.useEffect(() => {
+    if (!jogSelection) { return; }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key != "Escape") { return; }
+      event.preventDefault();
+      closeJogPopup();
+    };
+    window.addEventListener("keydown", closeOnEscape, true);
+    return () => window.removeEventListener("keydown", closeOnEscape, true);
+  }, [closeJogPopup, jogSelection]);
+  const applyPosition = React.useCallback((position: PositionConfig) => {
+    applyBotKinematicFrame(
+      {
+        gantry: gantry.current,
+        crossSlide: crossSlide.current,
+        zAxis: zAxis.current,
+        trailTarget: trailTarget.current,
+      },
+      getBotKinematics(config, position, version),
+    );
+  }, [config, version]);
+  const springCallbacks = React.useMemo(() => ({
+    onChange: (position: PositionConfig) => {
+      applyPosition(position);
+      demoSpringCallbacks.onChange(position);
+    },
+    onRest: demoSpringCallbacks.onRest,
+  }), [applyPosition, demoSpringCallbacks]);
+  const springResetKey = getDemoMovementStopVersion();
+  const { snapshotStore, currentPosition } =
+    useBotPositionSpring(
+      springTarget,
+      config.animate,
+      springCallbacks,
+      springResetKey,
+      props.positionStore,
+    );
+  React.useLayoutEffect(() => {
+    applyPosition(currentPosition.current);
+  }, [applyPosition, config.animate, currentPosition, springResetKey]);
+  React.useEffect(() => config.animate
+    ? registerDemoMovementDriver()
+    : undefined, [config.animate]);
+  React.useEffect(() => {
+    if (!perfEnabled()) { return; }
+    const benchmark = {
+      active: demoMovementActive,
+      config: () => ({
+        cableCarriers: config.cableCarriers,
+        trail: config.trail,
+        waterFlow: config.waterFlow,
+      }),
+      moveTo: (position: PositionConfig) =>
+        new Promise<void>(resolve => {
+          startDemoMovement(position, resolve);
+        }),
+      position: getDemoMovementPosition,
+      setWater: (enabled: boolean) => dispatch?.({
+        type: Actions.DEMO_WRITE_PIN,
+        payload: { pin: 8, mode: "digital", value: Number(enabled) },
+      }),
+    };
+    window.__threeDBotBenchmark = benchmark;
+    return () => {
+      if (window.__threeDBotBenchmark == benchmark) {
+        delete window.__threeDBotBenchmark;
+      }
+    };
+  }, [config.cableCarriers, config.trail, config.waterFlow, dispatch]);
+  const kinematics = getBotKinematics(config, springTarget, version);
+  const configPosition = snapshotStore.getSnapshot();
+  const trailReady = props.trailReady !== false;
+  const jogPositions = getNativeJogControlPositions(config);
+  const nativeJogWorld = (axis: "x" | "y" | "z") => {
+    const currentKinematics = getBotKinematics(
+      config,
+      snapshotStore.getSnapshot(),
+      version,
+    );
+    const { machineOrigin, gantryPosition, crossSlidePosition,
+      zAxisPosition } = currentKinematics;
+    const parentPositions = {
+      x: [machineOrigin, gantryPosition],
+      y: [machineOrigin, gantryPosition, crossSlidePosition],
+      z: [
+        machineOrigin,
+        gantryPosition,
+        crossSlidePosition,
+        zAxisPosition,
+      ],
+    }[axis];
+    const localPositions = axis == "x"
+      ? jogPositions.x
+      : [axis == "y" ? jogPositions.y : jogPositions.z];
+    return {
+      controlPositions: localPositions.map(position =>
+        addBotPositions(...parentPositions, position)),
+      gardenPosition: getUnmirroredBotPosition(
+        config,
+        snapshotStore.getSnapshot(),
+      ),
+      utmPosition: currentKinematics.anchors.utm.worldPosition,
+    };
+  };
+  const previewStates: Record<"x" | "y" | "z", NativeJogPreviewState> = {
+    x: {
+      preview: xJogPreview,
+      setPreview: setXJogPreview,
+      world: () => nativeJogWorld("x"),
+    },
+    y: {
+      preview: yJogPreview,
+      setPreview: setYJogPreview,
+      world: () => nativeJogWorld("y"),
+    },
+    z: {
+      preview: zJogPreview,
+      setPreview: setZJogPreview,
+      world: () => nativeJogWorld("z"),
+    },
+  };
+  const jogProps = (
+    name: string,
+    axis: "x" | "y" | "z",
+    position: [number, number, number],
+  ) => ({
+    axis,
+    axisActions: props.axisActions,
+    config,
+    encoderData: props.encoderData,
+    encoderVisibility: props.encoderVisibility,
+    name,
+    navigate: props.navigate,
+    onClose: closeJogPopup,
+    onSelect: () => setJogSelection({ name }),
+    position,
+    positionStore: snapshotStore,
+    previewState: previewStates[axis],
+    managePreviewLifecycle: name != "bot-jog-x-far",
+    selected: axisActionsAvailable && jogSelection?.name == name,
+  });
+  const ghostTool = () => <Tools
+    config={config}
+    configPosition={configPosition}
+    toolSlots={props.toolSlots}
+    mountedToolName={props.mountedToolName}
+    getZ={props.getZ}
+    frame={"z-axis"} />;
+
   return <WaterFlowTextureProvider waterFlow={config.waterFlow}>
-    {botModel}
+    <FocusVisibilityGroup name={"bot"}
+      userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}
+      keepMounted={true}
+      preserveDepthWrite={true}
+      visible={props.activeFocus != "Planter bed"}>
+      {config.controlsOverlay &&
+        <NativeJogCurrentUtmShadow
+          config={config}
+          getZ={props.getZ}
+          positionStore={snapshotStore} />}
+      <Group name={"bot-static"}>
+        <Group position={kinematics.machineOrigin}>
+          <StationaryAssembly
+            config={config}
+            trackShape={shapes.track} />
+          <Tools
+            {...props}
+            configPosition={configPosition}
+            frame={"stationary"} />
+        </Group>
+        <XAxisWaterTube config={config} />
+      </Group>
+      <Group name={"bot-machine"} position={kinematics.machineOrigin}>
+        <Group ref={gantry} name={"bot-gantry"}
+          position={initialKinematics.gantryPosition}>
+          {config.controlsOverlay && <>
+            <NativeJogControlPair {...jogProps(
+              "bot-jog-x-near",
+              "x",
+              jogPositions.x[0],
+            )} />
+            <NativeJogControlPair {...jogProps(
+              "bot-jog-x-far",
+              "x",
+              jogPositions.x[1],
+            )} />
+          </>}
+          <GantryAssembly
+            config={config}
+            configPosition={configPosition}
+            version={version}
+            columnShape={shapes.column}
+            beamShape={shapes.beam}
+            onSelectObject={props.onSelectObject}
+            onHoverObject={props.onHoverObject} />
+          {config.mirrorX
+            ? <SnapshotGantryTools
+              {...props}
+              snapshotStore={snapshotStore} />
+            : <Tools
+              {...props}
+              configPosition={configPosition}
+              frame={"gantry"} />}
+          <Group ref={crossSlide} name={"bot-cross-slide"}
+            position={initialKinematics.crossSlidePosition}>
+            {config.controlsOverlay &&
+              <NativeJogControlPair {...jogProps(
+                "bot-jog-y",
+                "y",
+                jogPositions.y,
+              )} />}
+            <CrossSlideAssembly
+              config={config}
+              version={version}
+              onSelectObject={props.onSelectObject}
+              onHoverObject={props.onHoverObject} />
+            <Group ref={zAxis} name={"bot-z-axis"}
+              position={initialKinematics.zAxisPosition}>
+              {config.controlsOverlay &&
+                <NativeJogControlPair {...jogProps(
+                  "bot-jog-z",
+                  "z",
+                  jogPositions.z,
+                )} />}
+              <ZAxisAssembly
+                config={config}
+                configPosition={configPosition}
+                version={version}
+                zAxisShape={shapes.zAxis}
+                trailReady={trailReady}
+                trailTarget={trailTarget}
+                encoderData={props.encoderData}
+                onSelectObject={props.onSelectObject}
+                onHoverObject={props.onHoverObject} />
+              <Tools
+                {...props}
+                configPosition={configPosition}
+                frame={"z-axis"} />
+            </Group>
+          </Group>
+        </Group>
+      </Group>
+      {config.controlsOverlay &&
+        (["x", "y", "z"] as const).map(axis =>
+          previewStates[axis].preview &&
+          <NativeJogWorldPreview
+            key={axis}
+            axis={axis}
+            axisActions={props.axisActions}
+            config={config}
+            getZ={props.getZ}
+            ghost={ghostTool()}
+            name={`bot-jog-${axis}`}
+            preview={previewStates[axis].preview}
+            utmRef={zAxis} />)}
+      <Group name={"bot-routing"} position={kinematics.machineOrigin}>
+        <FrameRoutingAssembly
+          config={config}
+          configPosition={configPosition}
+          positionRef={currentPosition}
+          version={version} />
+      </Group>
+      <SnapshotAssemblies
+        config={config}
+        currentPosition={currentPosition}
+        getZ={props.getZ}
+        machineOrigin={kinematics.machineOrigin}
+        snapshotStore={snapshotStore}
+        version={version}
+        onSelectObject={props.onSelectObject} />
+    </FocusVisibilityGroup>
   </WaterFlowTextureProvider>;
 };

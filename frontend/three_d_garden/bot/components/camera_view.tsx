@@ -1,23 +1,31 @@
 import React from "react";
 import * as THREE from "three";
 import { Config, PositionConfig } from "../../config";
-import { Mesh, MeshStandardMaterial } from "../../components";
-import { Edges } from "@react-three/drei";
-import { ConvexGeometry } from "three-stdlib";
+import {
+  LineBasicMaterial, LineSegments, Mesh, MeshStandardMaterial,
+} from "../../components";
 import { extraRotation } from "../../garden/images";
 import { useSpring, animated } from "@react-spring/three";
+import { getBotVersion } from "../bot_versions";
+import { updateBufferGeometry } from "./owned_extrude_geometry";
+import { perfCount } from "../../../performance/perf";
+import { CameraOperationAnimations } from "./camera_operation_animations";
+import {
+  cropAmount, largeCrop,
+} from "../../../farm_designer/map/layers/images/map_image";
 
 const AnimatedMesh = animated(Mesh);
 const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
-const cameraMountOffset = {
+const zMountedCameraMountOffset = {
   x: 12,
   y: 35,
 };
-const cameraMountToLensOffset = new THREE.Vector3(
+const zMountedCameraMountToLensOffset = new THREE.Vector3(
   0,
   29,
   0,
 );
+const noCameraOffset = new THREE.Vector3(0, 0, 0);
 
 type V3 = [number, number, number];
 
@@ -42,17 +50,20 @@ export interface CameraViewProps {
   configPosition: PositionConfig;
   distanceToSoil: number;
   cameraMountPosition: THREE.Vector3;
+  getZ(x: number, y: number): number;
 }
 
 type CameraViewPointConfig = Pick<Config,
   "negativeZ"
+  | "kitVersion"
   | "imgCenterX"
   | "imgCenterY"
   | "imgScale"
   | "imgOffsetX"
   | "imgOffsetY"
   | "imgRotation"
-  | "imgOrigin">;
+  | "imgOrigin"
+  | "cropImages">;
 
 interface CameraViewPointInputs extends CameraViewPointConfig {
   configZ: number;
@@ -65,6 +76,7 @@ interface CameraViewPointInputs extends CameraViewPointConfig {
 const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
   const {
     negativeZ,
+    kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -77,16 +89,39 @@ const getCameraViewPointsFromInputs = (inputs: CameraViewPointInputs) => {
     cameraMountY,
     cameraMountZ,
   } = inputs;
+  const isV19 = getBotVersion(kitVersion).number == "v1.9";
+  const cameraMountOffset = isV19
+    ? { x: 0, y: 0 }
+    : zMountedCameraMountOffset;
+  const cameraMountToLensOffset = isV19
+    ? noCameraOffset
+    : zMountedCameraMountToLensOffset;
   const cameraLensPosition = new THREE.Vector3(
     cameraMountX,
     cameraMountY,
     cameraMountZ,
   )
     .add(cameraMountToLensOffset);
-  const soilZ = distanceToSoil + (negativeZ ? -1 : 1) * configZ;
+  const soilZ = distanceToSoil + (isV19
+    ? 0
+    : (negativeZ ? -1 : 1) * configZ);
 
-  const widthAtSoilFromZero = imgCenterX * 2 * imgScale;
-  const heightAtSoilFromZero = imgCenterY * 2 * imgScale;
+  const crop = inputs.cropImages
+    ? cropAmount(imgRotation, {
+      width: imgCenterX * 2,
+      height: imgCenterY * 2,
+    })
+    : 0;
+  const circleCrop = inputs.cropImages && largeCrop(imgRotation);
+  const croppedCenter = circleCrop
+    ? Math.min(imgCenterX, imgCenterY)
+    : undefined;
+  const widthAtSoilFromZero = (croppedCenter
+    ? croppedCenter * 2
+    : imgCenterX * 2 - crop) * imgScale;
+  const heightAtSoilFromZero = (croppedCenter
+    ? croppedCenter * 2
+    : imgCenterY * 2 - crop) * imgScale;
   const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
   const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
   const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
@@ -131,6 +166,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
   const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
   return getCameraViewPointsFromInputs({
     negativeZ: config.negativeZ,
+    kitVersion: config.kitVersion,
     imgCenterX: config.imgCenterX,
     imgCenterY: config.imgCenterY,
     imgScale: config.imgScale,
@@ -138,6 +174,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
     imgOffsetY: config.imgOffsetY,
     imgRotation: config.imgRotation,
     imgOrigin: config.imgOrigin,
+    cropImages: config.cropImages,
     configZ: configPosition.z,
     distanceToSoil,
     cameraMountX: cameraMountPosition.x,
@@ -149,7 +186,7 @@ export const getCameraViewPoints = (props: CameraViewProps) => {
 const CameraViewBase = (props: CameraViewProps) => {
   const { config, configPosition, distanceToSoil, cameraMountPosition } = props;
   const {
-    negativeZ,
+    negativeZ, kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -157,6 +194,7 @@ const CameraViewBase = (props: CameraViewProps) => {
     imgOffsetY,
     imgRotation,
     imgOrigin,
+    cropImages,
   } = config;
   const { x: cameraMountX, y: cameraMountY, z: cameraMountZ } =
     cameraMountPosition;
@@ -164,6 +202,7 @@ const CameraViewBase = (props: CameraViewProps) => {
   const { cameraLensPosition, points } = React.useMemo(() =>
     getCameraViewPointsFromInputs({
       negativeZ,
+      kitVersion,
       imgCenterX,
       imgCenterY,
       imgScale,
@@ -171,6 +210,7 @@ const CameraViewBase = (props: CameraViewProps) => {
       imgOffsetY,
       imgRotation,
       imgOrigin,
+      cropImages,
       configZ,
       distanceToSoil,
       cameraMountX,
@@ -178,6 +218,7 @@ const CameraViewBase = (props: CameraViewProps) => {
       cameraMountZ,
     }), [
     negativeZ,
+    kitVersion,
     imgCenterX,
     imgCenterY,
     imgScale,
@@ -185,19 +226,68 @@ const CameraViewBase = (props: CameraViewProps) => {
     imgOffsetY,
     imgRotation,
     imgOrigin,
+    cropImages,
     configZ,
     distanceToSoil,
     cameraMountX,
     cameraMountY,
     cameraMountZ,
   ]);
+  const uncroppedPoints = React.useMemo(() =>
+    cropImages && config.showUncroppedCameraView
+      ? getCameraViewPointsFromInputs({
+        negativeZ,
+        kitVersion,
+        imgCenterX,
+        imgCenterY,
+        imgScale,
+        imgOffsetX,
+        imgOffsetY,
+        imgRotation,
+        imgOrigin,
+        cropImages: false,
+        configZ,
+        distanceToSoil,
+        cameraMountX,
+        cameraMountY,
+        cameraMountZ,
+      }).points
+      : undefined, [
+    cameraMountX,
+    cameraMountY,
+    cameraMountZ,
+    config.showUncroppedCameraView,
+    configZ,
+    cropImages,
+    distanceToSoil,
+    imgCenterX,
+    imgCenterY,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgRotation,
+    imgScale,
+    kitVersion,
+    negativeZ,
+  ]);
   return config.cameraView
-    ? <Frustum points={points} position={cameraLensPosition} config={config} />
+    ? <>
+      <Frustum
+        points={points}
+        position={cameraLensPosition}
+        config={config}
+        getZ={props.getZ} />
+      {uncroppedPoints &&
+        <FrustumOutline
+          points={uncroppedPoints}
+          position={cameraLensPosition} />}
+    </>
     : <></>;
 };
 
 const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "cameraView",
+  "cropImages",
   "imgCenterX",
   "imgCenterY",
   "imgOffsetX",
@@ -206,7 +296,13 @@ const CAMERA_VIEW_CONFIG_FIELDS: (keyof Config)[] = [
   "imgRotation",
   "imgScale",
   "lastImageCapture",
+  "cameraOperation",
+  "lastCameraOperation",
+  "calibrationCardGrid",
+  "animate",
   "negativeZ",
+  "showUncroppedCameraView",
+  "kitVersion",
 ];
 
 export const cameraViewPropsEqual = (
@@ -218,6 +314,7 @@ export const cameraViewPropsEqual = (
   prev.cameraMountPosition.x === next.cameraMountPosition.x &&
   prev.cameraMountPosition.y === next.cameraMountPosition.y &&
   prev.cameraMountPosition.z === next.cameraMountPosition.z &&
+  prev.getZ === next.getZ &&
   CAMERA_VIEW_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -227,15 +324,89 @@ interface FrustumProps {
   points: THREE.Vector3[];
   position: THREE.Vector3;
   config: Config;
+  getZ(x: number, y: number): number;
 }
 
+const frustumFaces = [
+  [0, 2, 3], [0, 3, 1],
+  [4, 5, 7], [4, 7, 6],
+  [0, 1, 5], [0, 5, 4],
+  [2, 6, 7], [2, 7, 3],
+  [0, 4, 6], [0, 6, 2],
+  [1, 3, 7], [1, 7, 5],
+];
+
+const frustumGeometry = (points: THREE.Vector3[]) => {
+  const geometry = new THREE.BufferGeometry().setFromPoints(
+    frustumFaces.flatMap(face => face.map(index => points[index])),
+  );
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return geometry;
+};
+
+const frustumEdgesGeometry = (points: THREE.Vector3[]) => {
+  const pairs = [
+    [0, 1], [0, 2], [1, 3], [2, 3],
+    [4, 5], [4, 6], [5, 7], [6, 7],
+    [0, 4], [1, 5], [2, 6], [3, 7],
+  ];
+  return new THREE.BufferGeometry().setFromPoints(
+    pairs.flatMap(([start, end]) => [points[start], points[end]]),
+  );
+};
+
+interface FrustumOutlineProps {
+  points: THREE.Vector3[];
+  position: THREE.Vector3;
+}
+
+const FrustumOutline = (props: FrustumOutlineProps) => {
+  const geometry = React.useMemo(
+    () => frustumEdgesGeometry(props.points),
+    [props.points],
+  );
+  React.useEffect(() => () => geometry.dispose(), [geometry]);
+  return <LineSegments
+    name={"uncropped-camera-view"}
+    position={props.position}
+    geometry={geometry}>
+    <LineBasicMaterial
+      linewidth={1}
+      color={"white"}
+      transparent={true}
+      opacity={0.35} />
+  </LineSegments>;
+};
+
 const Frustum = (props: FrustumProps) => {
-  const geometry = React.useMemo(() => {
-    const g = new ConvexGeometry(props.points);
-    g.computeVertexNormals();
-    g.computeBoundingSphere();
-    return g;
-  }, [props.points]);
+  const geometryKey = props.points.flatMap(point =>
+    point.toArray().map(coordinate => Math.round(coordinate))).join(":");
+  const [geometry] = React.useState(() => {
+    perfCount("bot.geometry.cameraView");
+    return frustumGeometry(props.points);
+  });
+  const [edgesGeometry] = React.useState(() => {
+    perfCount("bot.geometry.cameraViewEdges");
+    return frustumEdgesGeometry(props.points);
+  });
+  const geometryKeyRef = React.useRef(geometryKey);
+  React.useLayoutEffect(() => {
+    if (geometryKeyRef.current == geometryKey) { return; }
+    perfCount("bot.geometry.cameraView");
+    const replacement = frustumGeometry(props.points);
+    updateBufferGeometry(geometry, replacement);
+    replacement.dispose();
+    perfCount("bot.geometry.cameraViewEdges");
+    const replacementEdges = frustumEdgesGeometry(props.points);
+    updateBufferGeometry(edgesGeometry, replacementEdges);
+    replacementEdges.dispose();
+    geometryKeyRef.current = geometryKey;
+  }, [edgesGeometry, geometry, geometryKey, props.points]);
+  React.useLayoutEffect(() => () => {
+    geometry.dispose();
+    edgesGeometry.dispose();
+  }, [edgesGeometry, geometry]);
 
   const baseOpacity = 0.25;
   const [spring, api] = useSpring(() => ({ opacity: baseOpacity }));
@@ -269,11 +440,22 @@ const Frustum = (props: FrustumProps) => {
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges
-      lineWidth={1.1}
-      color={"white"}
-      transparent={true}
-      opacity={0.75}
-      threshold={1} />
+    <LineSegments geometry={edgesGeometry}>
+      <LineBasicMaterial
+        linewidth={1.1}
+        color={"white"}
+        transparent={true}
+        opacity={0.75} />
+    </LineSegments>
+    {props.config.cameraOperation &&
+      <CameraOperationAnimations
+        key={`${props.config.cameraOperation}-` +
+          props.config.lastCameraOperation}
+        operation={props.config.cameraOperation}
+        operationId={props.config.lastCameraOperation}
+        points={props.points}
+        cameraPosition={props.position}
+        config={props.config}
+        getZ={props.getZ} />}
   </AnimatedMesh>;
 };

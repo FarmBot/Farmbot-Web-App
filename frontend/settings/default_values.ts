@@ -63,6 +63,8 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   show_soil_interpolation_map: false,
   show_sensor_readings: false,
   show_moisture_interpolation_map: false,
+  show_scene_objects: true,
+  show_controls_overlay: true,
   time_format_24_hour: false,
   show_pins: false,
   disable_emergency_unlock_confirmation: true,
@@ -87,10 +89,10 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   view_celery_script: false,
   highlight_modified_settings: true,
   show_advanced_settings: false,
-  three_d_garden: false,
+  three_d_garden: true,
   dark_mode: true,
   top_down_view: false,
-  viewpoint_heading: 30,
+  viewpoint_heading: 45,
 };
 
 const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =
@@ -110,6 +112,7 @@ const getDefaultConfigValue =
         case "farmduino_k16":
         case "farmduino_k17":
         case "farmduino_k18":
+        case "farmduino_k19":
           return DEFAULT_GENESIS_WEB_APP_CONFIG_VALUES[key];
         case "express_k10":
         case "express_k11":

@@ -20,6 +20,7 @@ export enum Panel {
   Groups = "Groups",
   Curves = "Curves",
   SavedGardens = "SavedGardens",
+  SceneObjects = "SceneObjects",
   Sequences = "Sequences",
   Regimens = "Regimens",
   FarmEvents = "FarmEvents",
@@ -62,6 +63,7 @@ export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Sequences]: PanelColor.gray,
   [Panel.Regimens]: PanelColor.gray,
   [Panel.SavedGardens]: PanelColor.gray,
+  [Panel.SceneObjects]: PanelColor.gray,
   [Panel.FarmEvents]: PanelColor.gray,
   [Panel.Zones]: PanelColor.gray,
   [Panel.Controls]: PanelColor.gray,
@@ -86,6 +88,7 @@ export const TAB_ICON: Record<Panel, string> = {
   [Panel.Sequences]: FilePath.icon(Icon.sequence),
   [Panel.Regimens]: FilePath.icon(Icon.regimens),
   [Panel.SavedGardens]: FilePath.icon(Icon.gardens),
+  [Panel.SceneObjects]: FilePath.icon(Icon.zones),
   [Panel.FarmEvents]: FilePath.icon(Icon.calendar),
   [Panel.Zones]: FilePath.icon(Icon.zones),
   [Panel.Controls]: FilePath.icon(Icon.controls),
@@ -110,6 +113,7 @@ export const PANEL_SLUG: Record<Panel, string> = {
   [Panel.Sequences]: "sequences",
   [Panel.Regimens]: "regimens",
   [Panel.SavedGardens]: "gardens",
+  [Panel.SceneObjects]: "scene_objects",
   [Panel.FarmEvents]: "events",
   [Panel.Zones]: "zones",
   [Panel.Controls]: "controls",
@@ -149,6 +153,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Sequences]: t("Sequences"),
   [Panel.Regimens]: t("Regimens"),
   [Panel.SavedGardens]: t("Gardens"),
+  [Panel.SceneObjects]: t("Scene Objects"),
   [Panel.FarmEvents]: t("Events"),
   [Panel.Zones]: t("Zones"),
   [Panel.Controls]: t("Controls"),
@@ -196,13 +201,27 @@ interface NavTabProps {
   designer: DesignerState;
 }
 
+export const clearGridPlanting = (
+  dispatch: Function,
+  designer: DesignerState,
+) => {
+  const token = designer.gridPlanting?.token;
+  token && dispatch({
+    type: Actions.CLEAR_GRID_PLANTING,
+    payload: token,
+  });
+};
+
 const NavTab = (props: NavTabProps) => {
   const { panel, dispatch, designer } = props;
   const isActive = getCurrentPanel(designer) === panel;
   return <Link id={PANEL_SLUG[panel]}
     to={isActive ? Path.designer() : getPanelPath(panel)}
     style={{ flex: 0.3 }}
-    onClick={() => dispatch(setPanelOpen(!isActive))}
+    onClick={() => {
+      clearGridPlanting(dispatch, designer);
+      dispatch(setPanelOpen(!isActive));
+    }}
     className={isActive ? "active" : ""}>
     <img width={35} height={30}
       src={TAB_ICON[panel]}
@@ -270,7 +289,10 @@ export class DesignerNavTabs
           className={getCurrentPanel(this.props.designer) === Panel.Map
             ? "active"
             : ""}
-          onClick={() => this.props.dispatch(setPanelOpen(false))}>
+          onClick={() => {
+            clearGridPlanting(this.props.dispatch, this.props.designer);
+            this.props.dispatch(setPanelOpen(false));
+          }}>
           <img width={35} height={30}
             src={FilePath.icon(Icon.map)}
             title={PANEL_TITLE()[Panel.Map]} />
@@ -282,6 +304,7 @@ export class DesignerNavTabs
         <NavTab {...common} panel={Panel.Sequences} />
         <NavTab {...common} panel={Panel.Regimens} />
         <NavTab {...common} panel={Panel.FarmEvents} />
+        <NavTab {...common} panel={Panel.SceneObjects} />
         {DevSettings.futureFeaturesEnabled() &&
           <NavTab {...common} panel={Panel.Zones} />}
         {showSensors() && <NavTab {...common} panel={Panel.Sensors} />}

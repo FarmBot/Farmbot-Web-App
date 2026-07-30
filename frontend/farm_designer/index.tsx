@@ -20,6 +20,7 @@ import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
+import { ThreeDCameraControls } from "./three_d_camera_controls";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
@@ -31,6 +32,7 @@ import {
 } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
+import { StargazingControls } from "./stargazing";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -92,6 +94,7 @@ export class RawFarmDesigner
       show_sensor_readings: init(BooleanSetting.show_sensor_readings, false),
       show_moisture_interpolation_map:
         init(BooleanSetting.show_moisture_interpolation_map, false),
+      show_scene_objects: init(BooleanSetting.show_scene_objects, true),
       bot_origin_quadrant: this.getBotOriginQuadrant(),
       zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue)),
     };
@@ -159,6 +162,7 @@ export class RawFarmDesigner
       show_zones,
       show_sensor_readings,
       show_moisture_interpolation_map,
+      show_scene_objects,
       zoom_level
     } = this.state;
 
@@ -177,6 +181,12 @@ export class RawFarmDesigner
 
     return <div className="farm-designer">
 
+      {threeDGarden &&
+        <StargazingControls
+          mode={this.props.designer.threeDViewMode}
+          fov={this.props.designer.threeDStargazingFov}
+          dispatch={this.props.dispatch} />}
+
       <GardenMapLegend
         className={this.mapPanelClassName}
         zoom={this.updateZoomLevel}
@@ -192,6 +202,7 @@ export class RawFarmDesigner
         showZones={show_zones}
         showSensorReadings={show_sensor_readings}
         showMoistureInterpolationMap={show_moisture_interpolation_map}
+        showSceneObjects={show_scene_objects}
         designer={this.props.designer}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
@@ -203,6 +214,7 @@ export class RawFarmDesigner
         firmwareConfig={this.props.botMcuParams}
         botLocationData={this.props.botLocationData}
         botSize={this.props.botSize}
+        gardenSize={this.mapTransformProps.gridSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
       <DesignerNavTabs
@@ -227,13 +239,15 @@ export class RawFarmDesigner
           deviceAccount={this.props.deviceAccount}
           bot={this.props.bot}
           plants={this.props.plants}
-          get3DConfigValue={get3DConfigValue}
-          set3DConfigValue={set3DConfigValue}
-          sourceFbosConfig={this.props.sourceFbosConfig}
+          gardenSize={this.mapTransformProps.gridSize}
+          firmwareHardware={
+            this.props.sourceFbosConfig("firmware_hardware").value}
+          firmwareSettings={this.props.botMcuParams}
+          gantryHeight={
+            this.props.sourceFbosConfig("gantry_height").value as number}
+          soilHeight={
+            this.props.sourceFbosConfig("soil_height").value as number}
           negativeZ={!!this.props.botMcuParams.movement_home_up_z}
-          gridOffset={gridOffset}
-          mapTransformProps={this.mapTransformProps}
-          botSize={this.props.botSize}
           dispatch={this.props.dispatch}
           curves={this.props.curves}
           mapPoints={this.props.genericPoints}
@@ -252,12 +266,14 @@ export class RawFarmDesigner
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
           peripheralValues={this.props.peripheralValues}
+          peripherals={this.props.peripherals}
           allPoints={this.props.allPoints}
           groups={this.props.groups}
           images={this.props.latestImages}
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
           env={this.props.env}
+          sceneObjects={this.props.sceneObjects}
           farmwareEnvs={this.props.farmwareEnvs}
           logs={this.props.logs}
           cameraCalibrationData={this.props.cameraCalibrationData}
@@ -315,6 +331,11 @@ export class RawFarmDesigner
         && !isMobile()
         && (isDesktop() || !this.props.designer.panelOpen) &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
+
+      {threeDGarden &&
+        <ThreeDCameraControls
+          designer={this.props.designer}
+          dispatch={this.props.dispatch} />}
 
       {!threeDGarden &&
         <ProfileViewer

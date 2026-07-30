@@ -1,20 +1,29 @@
 import React from "react";
 import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants, lastImageCaptureTime,
+  latestCameraOperation,
 } from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
-import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
-import { fakeLog, fakePlant } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFarmwareEnv, fakeLog, fakePlant, fakePoint,
+} from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
-import { clone } from "lodash";
-import { INITIAL, SurfaceDebugOption } from "../../three_d_garden/config";
+import { clone, cloneDeep } from "lodash";
+import {
+  CAMERA_OPERATION_RPI_DURATION_MS, Config,
+  DEMO_CAMERA_OPERATION_DURATION_MS, INITIAL, SurfaceDebugOption,
+} from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_data";
 import * as threeDGarden from "../../three_d_garden";
-import * as suncalc from "suncalc";
+import * as SunCalc from "suncalc";
+import { BooleanSetting } from "../../session_keys";
+import { namespace3D } from "../../settings/three_d_settings";
+import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
+import { tagAsSoilHeight } from "../../points/soil_height_helpers";
 
 let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
@@ -24,7 +33,7 @@ beforeEach(() => {
   delete window.__fbPerf;
   threeDGardenSpy = jest.spyOn(threeDGarden, "ThreeDGarden")
     .mockImplementation(jest.fn(() => <div />) as never);
-  getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
+  getPositionSpy = jest.spyOn(SunCalc, "getPosition").mockReturnValue({
     altitude: 0.5,
     azimuth: 1.0,
   });
@@ -63,6 +72,21 @@ const otherLog = (localId: number) => {
   return log;
 };
 
+const operationLog = (localId: number, message: string, id?: number) => {
+  const log = otherLog(localId);
+  log.body.id = id;
+  log.body.message = message;
+  return log;
+};
+
+const fake3DConfigValues = () =>
+  (Object.keys(INITIAL) as (keyof Config)[]).map(key => {
+    const env = fakeFarmwareEnv();
+    env.body.key = namespace3D(key);
+    env.body.value = "1";
+    return env;
+  });
+
 describe("<ThreeDGardenMap />", () => {
   const lastThreeDGardenProps = () => {
     const calls = (threeDGarden.ThreeDGarden as unknown as jest.Mock)
@@ -71,12 +95,12 @@ describe("<ThreeDGardenMap />", () => {
   };
 
   const fakeProps = (): ThreeDGardenMapProps => ({
-    mapTransformProps: fakeMapTransformProps(),
+    gardenSize: fakeMapTransformProps().gridSize,
     device: fakeDevice().body,
-    botSize: fakeBotSize(),
-    gridOffset: { x: 10, y: 10 },
-    get3DConfigValue: () => 1,
-    sourceFbosConfig: () => ({ value: 0, consistent: true }),
+    firmwareHardware: 0,
+    firmwareSettings: fakeBot.hardware.mcu_params,
+    gantryHeight: 0,
+    soilHeight: 0,
     designer: fakeDesignerState(),
     plants: [fakePlant()],
     dispatch: jest.fn(),
@@ -88,14 +112,16 @@ describe("<ThreeDGardenMap />", () => {
     negativeZ: false,
     mountedToolName: undefined,
     peripheralValues: [],
+    peripherals: [],
     allPoints: [],
     groups: [],
     images: [],
     sensors: [],
     sensorReadings: [],
+    sceneObjects: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
     env: {},
-    farmwareEnvs: [],
+    farmwareEnvs: fake3DConfigValues(),
     logs: [],
   });
 
@@ -123,6 +149,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.pan = true;
     expectedConfig.zoom = true;
     expectedConfig.soilHeight = 0;
+    expectedConfig.minSoilZ = 0;
+    expectedConfig.maxSoilZ = 0;
     expectedConfig.zGantryOffset = 0;
     expectedConfig.zoomBeacons = false;
     expectedConfig.waterFlow = false;
@@ -132,37 +160,53 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedBrightness = 1;
     expectedConfig.soilBrightness = 1;
     expectedConfig.cableDebug = true;
+    expectedConfig.constellations = true;
+    expectedConfig.constellationsDebug = true;
     expectedConfig.eventDebug = true;
     expectedConfig.lightsDebug = true;
     expectedConfig.moistureDebug = true;
+    expectedConfig.cameraFitDebug = true;
+    expectedConfig.viewCube = true;
     expectedConfig.surfaceDebug = SurfaceDebugOption.normals;
     expectedConfig.lowDetail = true;
     expectedConfig.solar = true;
     expectedConfig.stats = true;
     expectedConfig.heading = 1;
     expectedConfig.north = true;
-    expectedConfig.desk = true;
     expectedConfig.laser = true;
     expectedConfig.threeAxes = true;
-    expectedConfig.sunAzimuth = 1;
-    expectedConfig.sunInclination = 1;
-    expectedConfig.scene = "Lab";
+    expectedConfig.sunAzimuth = 90;
+    expectedConfig.sunInclination = 0.5;
+    expectedConfig.scene = "Outdoor";
+    expectedConfig.groundTexture = "bricks";
     expectedConfig.plants = "";
     expectedConfig.axes = true;
     expectedConfig.people = true;
     expectedConfig.xyDimensions = true;
     expectedConfig.zDimension = true;
+    expectedConfig.sceneObjects = false;
+    expectedConfig.controlsOverlay = false;
+    expectedConfig.urlCameraPos = true;
     expectedConfig.imgScale = 0.6;
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;
     expectedConfig.mirrorX = true;
     expectedConfig.mirrorY = true;
+    expectedConfig.negativeZ = false;
+    expectedConfig.cropImages = false;
+    expectedConfig.clipImages = false;
     expectedConfig.viewpointHeading = 0;
+    expectedConfig.kitVersion = "v1.7";
 
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
       configPosition: { x: 2999, y: 1498, z: 3 },
+      panelCameraStore: expect.objectContaining({
+        getSnapshot: expect.any(Function),
+        setOpen: expect.any(Function),
+        subscribe: expect.any(Function),
+      }),
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
@@ -175,8 +219,44 @@ describe("<ThreeDGardenMap />", () => {
         y: 200,
       }],
       addPlantProps: expect.any(Object),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      encoderVisibility: { raw: false, scaled: false },
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("passes encoder display settings to the 3D garden", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = setting =>
+      setting == BooleanSetting.raw_encoders
+      || setting == BooleanSetting.scaled_encoders;
+    render(<ThreeDGardenMap {...p} />);
+
+    expect(lastThreeDGardenProps().encoderVisibility)
+      .toEqual({ raw: true, scaled: true });
+  });
+
+  it("uses measured soil height extrema", () => {
+    const p = fakeProps();
+    const low = fakePoint();
+    low.body.z = -550;
+    tagAsSoilHeight(low);
+    const high = fakePoint();
+    high.body.z = -450;
+    tagAsSoilHeight(high);
+    p.mapPoints = [low, high];
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      minSoilZ: -550,
+      maxSoilZ: -450,
+    }));
+  });
+
+  it("uses the selected calibration card face", () => {
+    const p = fakeProps();
+    p.env.CAMERA_CALIBRATION_easy_calibration = "\"FALSE\"";
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.calibrationCardGrid).toEqual(false);
   });
 
   it("converts props: unknown position", () => {
@@ -193,11 +273,77 @@ describe("<ThreeDGardenMap />", () => {
     }));
   });
 
+  it("applies constellation custom settings", () => {
+    const p = fakeProps();
+    const constellation = p.farmwareEnvs.find(env =>
+      env.body.key == namespace3D("constellations"));
+    if (constellation) { constellation.body.value = "0"; }
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      constellations: false,
+      constellationsDebug: true,
+    }));
+  });
+
   it("counts benchmark renders", () => {
     window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
     render(<ThreeDGardenMap {...fakeProps()} />);
     expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
     expect(window.__fbPerf?.marks.three_d_map_mounted.length).toEqual(1);
+  });
+
+  it("isolates panel updates from the garden scene", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    p.currentBotLocation = { x: 1, y: 2, z: 3 };
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    const firstGardenProps = lastThreeDGardenProps();
+    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeTruthy();
+    expect(firstGardenProps.addPlantProps.designer)
+      .not.toHaveProperty("panelOpen");
+
+    let equivalentProps = cloneDeep(p);
+    for (let cycle = 0; cycle < 10; cycle++) {
+      equivalentProps = cloneDeep(equivalentProps);
+      equivalentProps.designer.panelOpen = false;
+      rerender(<ThreeDGardenMap {...equivalentProps} />);
+      equivalentProps = cloneDeep(equivalentProps);
+      equivalentProps.designer.panelOpen = true;
+      rerender(<ThreeDGardenMap {...equivalentProps} />);
+    }
+
+    expect(firstGardenProps.panelCameraStore.getSnapshot()).toBeTruthy();
+    expect(threeDGardenSpy).toHaveBeenCalledTimes(1);
+    expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
+
+    equivalentProps.designer = {
+      ...equivalentProps.designer,
+      threeDExaggeratedZ:
+        !equivalentProps.designer.threeDExaggeratedZ,
+    };
+    rerender(<ThreeDGardenMap {...equivalentProps} />);
+
+    expect(threeDGardenSpy).toHaveBeenCalledTimes(2);
+    expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(2);
+  });
+
+  it("exits grid planting when the panel closes", () => {
+    const p = fakeProps();
+    p.designer.gridPlanting = {
+      token: "grid",
+      gridId: "grid",
+      gridType: "plant",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 100,
+    };
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    p.designer = { ...p.designer, panelOpen: false };
+    rerender(<ThreeDGardenMap {...p} />);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: "SET_GRID_PLANTING",
+      payload: undefined,
+    });
   });
 
   it("keeps garden config stable across bot position updates", () => {
@@ -210,8 +356,32 @@ describe("<ThreeDGardenMap />", () => {
     expect(second.config).toBe(first.config);
     expect(second.threeDPlants).toBe(first.threeDPlants);
     expect(second.addPlantProps).toBe(first.addPlantProps);
+    expect(second.addPlantProps.botPosition)
+      .toEqual({ x: 10, y: 20, z: 30 });
     expect(second.configPosition).not.toBe(first.configPosition);
     expect(second.configPosition).toEqual({ x: 2990, y: 1480, z: 30 });
+  });
+
+  it("preserves perspective and enables rotation in section view", () => {
+    const p = fakeProps();
+    p.designer.threeDSectionOpen = true;
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      perspective: true,
+      rotate: true,
+    }));
+  });
+
+  it("loads a saved top-down camera with perspective on", () => {
+    const p = fakeProps();
+    p.designer.threeDPerspective = undefined;
+    p.getWebAppConfigValue = setting =>
+      setting == BooleanSetting.top_down_view;
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config).toEqual(expect.objectContaining({
+      perspective: true,
+      rotate: true,
+    }));
   });
 
   it("converts props: negative z", () => {
@@ -258,18 +428,29 @@ describe("<ThreeDGardenMap />", () => {
     expect(callArgs.config.sunAzimuth).toBeLessThanOrEqual(360);
   });
 
-  it("converts props: night", () => {
+  it("uses fallback coordinates when device location is unavailable", () => {
     const p = fakeProps();
-    p.designer.threeDTime = undefined;
-    p.get3DConfigValue = () => -1;
+    p.device.lat = undefined;
+    p.device.lng = undefined;
+    render(<ThreeDGardenMap {...p} />);
+    expect(getPositionSpy).toHaveBeenCalledWith(
+      expect.any(Date), 35, -120);
+  });
+
+  it("converts props: logs", () => {
+    const p = fakeProps();
+    p.logs = [
+      cameraLog(123, 0),
+      operationLog(456, "Executing Measure Soil Height"),
+    ];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({
-        sunInclination: -1,
-        sunAzimuth: -1,
-        sun: -1,
+        lastImageCapture: 123,
+        cameraOperation: "soil-height",
+        lastCameraOperation: 456,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -277,20 +458,40 @@ describe("<ThreeDGardenMap />", () => {
     }));
   });
 
-  it("converts props: logs", () => {
+  it("uses the production camera-operation duration on an rpi", () => {
     const p = fakeProps();
-    p.logs = [cameraLog(123, 0)];
-    p.plants = [];
+    p.bot = cloneDeep(fakeBot);
+    p.bot.hardware.informational_settings.target = "rpi";
     render(<ThreeDGardenMap {...p} />);
-    const call = lastThreeDGardenProps();
-    expect(call).toEqual(expect.objectContaining({
-      config: expect.objectContaining({
-        lastImageCapture: 123,
-      }),
-      threeDPlants: [],
-      addPlantProps: expect.any(Object),
-      ...EMPTY_PROPS,
-    }));
+    expect(lastThreeDGardenProps().config.cameraOperationDurationMs)
+      .toEqual(CAMERA_OPERATION_RPI_DURATION_MS);
+  });
+
+  it("uses the three-second camera-operation duration in demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const p = fakeProps();
+    p.logs = [operationLog(456, "Running weed detector")];
+    render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.cameraOperationDurationMs)
+      .toEqual(DEMO_CAMERA_OPERATION_DURATION_MS);
+  });
+
+  it("finds the latest unsaved camera operation log", () => {
+    expect(latestCameraOperation([
+      operationLog(100, "Calibrating camera"),
+      operationLog(999, "Running weed detector", 12),
+      otherLog(1000),
+      operationLog(300, "Executing Measure Soil Height"),
+      operationLog(200, "Running weed detector"),
+    ])).toEqual({ type: "soil-height", startedAt: 300 });
+    expect(latestCameraOperation([
+      operationLog(100, "Calibrating camera"),
+    ])).toEqual({ type: "calibration", startedAt: 100 });
+    expect(latestCameraOperation([
+      operationLog(100, "Running weed detector"),
+    ])).toEqual({ type: "weeds", startedAt: 100 });
+    expect(latestCameraOperation([otherLog(123)]))
+      .toEqual({ type: "", startedAt: 0 });
   });
 
   it("finds the latest unsaved camera capture log", () => {
@@ -325,7 +526,7 @@ describe("<ThreeDGardenMap />", () => {
   ])("converts props: kitVersion", (firmwareHardware, kitVersion) => {
     const p = fakeProps();
     p.plants = [];
-    p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
+    p.firmwareHardware = firmwareHardware;
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
@@ -344,6 +545,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ waterFlow: true }),
+      peripheralValues: p.peripheralValues,
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,

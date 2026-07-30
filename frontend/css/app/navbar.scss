@@ -23,7 +23,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .nav-load-in {
-    animation: nav-slide-in 320ms ease-out both;
+    animation: nav-slide-in 320ms ease-out backwards;
   }
 }
 
@@ -195,6 +195,7 @@ nav {
   .time-travel-button,
   .nav-coordinates,
   .jobs-button,
+  .command-palette-nav-button,
   .setup-button,
   .connectivity-button {
     margin: 0;
@@ -234,8 +235,8 @@ nav {
     .movement-progress {
       top: 0;
       left: 0;
-      background: $placeholder_gray;
       border-radius: 0;
+      z-index: unset;
     }
   }
   .jobs-button {
@@ -282,6 +283,27 @@ nav {
   .connection-status-popover {
     display: inline;
   }
+  .command-palette-nav-button-wrapper {
+    transition: all 0.2s ease;
+    color: $gray;
+    cursor: pointer;
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+
+    &:hover {
+      color: $white;
+      font-weight: bold;
+    }
+  }
+  .command-palette-nav-button {
+    font-size: 1.1rem !important;
+    white-space: nowrap;
+
+    i {
+      margin-right: 0;
+    }
+  }
   a {
     font-weight: normal;
     color: $black;
@@ -300,6 +322,7 @@ body:has(.app.light) {
     .time-travel-button,
     .nav-coordinates,
     .jobs-button,
+    .command-palette-nav-button,
     .setup-button,
     .connectivity-button {
       &.hover {
@@ -376,6 +399,12 @@ body:has(.app.light) {
 @media screen and (max-width: 1075px) {
   .top-menu-container .nav-links {
     display: none !important;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .nav-right .time-travel-button p {
+    display: none;
   }
 }
 

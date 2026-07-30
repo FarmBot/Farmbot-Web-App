@@ -157,8 +157,8 @@ export class RawSelectPlants
   };
 
   componentDidMount() {
-    const { dispatch, selected } = this.props;
-    if (selected && selected.length == 1) {
+    const { dispatch, selected, selectionPointType } = this.props;
+    if (selected && selected.length == 1 && !selectionPointType) {
       unselectPlant(dispatch)();
     } else {
       dispatch(setHoveredPlant(undefined));

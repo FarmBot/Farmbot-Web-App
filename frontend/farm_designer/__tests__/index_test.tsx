@@ -83,6 +83,7 @@ describe("<FarmDesigner />", () => {
     botMcuParams: bot.hardware.mcu_params,
     botSize: fakeBotSize(),
     peripheralValues: [],
+    peripherals: [],
     eStopStatus: false,
     latestImages: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
@@ -90,6 +91,7 @@ describe("<FarmDesigner />", () => {
     getConfigValue: jest.fn(),
     sensorReadings: [],
     sensors: [],
+    sceneObjects: [],
     groups: [],
     mountedToolInfo: fakeMountedToolInfo(),
     visualizedSequenceBody: [],
@@ -106,6 +108,7 @@ describe("<FarmDesigner />", () => {
     expect(lastLegendProps?.legendMenuOpen).toBeFalsy();
     expect(lastLegendProps?.showPlants).toBeTruthy();
     expect(lastLegendProps?.showPoints).toBeTruthy();
+    expect(lastLegendProps?.gardenSize).toEqual({ x: 2900, y: 1230 });
     expect(lastLegendProps?.showSpread).toBeFalsy();
     expect(lastLegendProps?.showFarmbot).toBeTruthy();
     expect(lastLegendProps?.showImages).toBeFalsy();

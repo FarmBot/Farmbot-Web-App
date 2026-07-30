@@ -5,6 +5,8 @@
 : "${CHOSEN_FPS:=${FPS_SAMPLES_NAME}_${CHOSEN_NAME}}"
 : "${SCENE_METRICS_NAME:=scene_metrics}"
 : "${CHOSEN_METRICS:=${SCENE_METRICS_NAME}_${CHOSEN_NAME}}"
+: "${FPS_HISTORY:=fps_history}"
+: "${LOAD_DURATION_NAME:=load_duration}"
 : "${COMBINED_RENDER_IMAGE:=render_summary}"
 : "${COMBINED_RENDER_IMAGE_SCALE:=3}"
 : "${FE_COVERAGE_NAME:=fe_coverage}"

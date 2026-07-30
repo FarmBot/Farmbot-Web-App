@@ -8,11 +8,15 @@ import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { formatTime } from "../util";
 import { TimeSettings } from "../interfaces";
 
+const FALLBACK_LATITUDE = 35;
+const FALLBACK_LONGITUDE = -120;
+
 export const latLng = (device: DeviceAccountSettings) => {
   const latitude = parseFloat("" + device.lat);
   const longitude = parseFloat("" + device.lng);
-  const valid = isFinite(latitude) && isFinite(longitude);
-  return { latitude, longitude, valid };
+  return isFinite(latitude) && isFinite(longitude)
+    ? { latitude, longitude }
+    : { latitude: FALLBACK_LATITUDE, longitude: FALLBACK_LONGITUDE };
 };
 
 export const get3DTime = (threeDTime: string | undefined) => {
@@ -22,11 +26,7 @@ export const get3DTime = (threeDTime: string | undefined) => {
 const calc3DTime = (threeDTime: string | undefined, offset: number) =>
   get3DTime(threeDTime).add(offset, "hour").format("HH:mm");
 
-export const showTimeTravelButton = (
-  threeDGarden: boolean,
-  device: DeviceAccountSettings,
-) =>
-  threeDGarden && latLng(device).valid;
+export const showTimeTravelButton = (threeDGarden: boolean) => threeDGarden;
 
 export interface TimeTravelTargetProps {
   isOpen: boolean;
@@ -59,15 +59,20 @@ export interface TimeTravelContentProps {
   device: DeviceAccountSettings;
 }
 
-export const TimeTravelContent = (props: TimeTravelContentProps) => {
-  const { threeDTime } = props.designer;
-  const { dispatch } = props;
+export interface TimeTravelControlsProps {
+  dispatch: Function | undefined;
+  threeDTime: string | undefined;
+  label?: string;
+}
+
+export const TimeTravelControls = (props: TimeTravelControlsProps) => {
+  const { dispatch, threeDTime } = props;
   return <div className={"time-travel grid half-gap"}>
-    <label>{t("Time Travel")}</label>
+    <label>{t(props.label || "Time Travel")}</label>
     <div className={"row grid-3-col"}>
       <button className={"fb-button gray"}
         title={t("minus hour")}
-        onClick={() => dispatch({
+        onClick={() => dispatch?.({
           type: Actions.SET_3D_TIME,
           payload: calc3DTime(threeDTime, -1),
         })}>
@@ -75,7 +80,7 @@ export const TimeTravelContent = (props: TimeTravelContentProps) => {
       </button>
       <button className={"fb-button gray"}
         title={t("reset hour")}
-        onClick={() => dispatch({
+        onClick={() => dispatch?.({
           type: Actions.SET_3D_TIME,
           payload: undefined,
         })}>
@@ -83,7 +88,7 @@ export const TimeTravelContent = (props: TimeTravelContentProps) => {
       </button>
       <button className={"fb-button gray"}
         title={t("plus hour")}
-        onClick={() => dispatch({
+        onClick={() => dispatch?.({
           type: Actions.SET_3D_TIME,
           payload: calc3DTime(threeDTime, 1),
         })}>
@@ -92,3 +97,8 @@ export const TimeTravelContent = (props: TimeTravelContentProps) => {
     </div>
   </div>;
 };
+
+export const TimeTravelContent = (props: TimeTravelContentProps) =>
+  <TimeTravelControls
+    dispatch={props.dispatch}
+    threeDTime={props.designer.threeDTime} />;

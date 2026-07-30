@@ -15,13 +15,14 @@ const toolStatus = (value: number | undefined): string => {
   }
 };
 
+export const getToolVerificationPin = (sensors: TaggedSensor[]) => {
+  const sensor = sensors.find(sensor => sensor.body.label.toLowerCase()
+    .includes("tool verification"));
+  return sensor?.body.pin || 63;
+};
+
 export const ToolVerification = (props: ToolVerificationProps) => {
-  const toolVerificationSensor =
-    props.sensors.filter(sensor => sensor.body.label.toLowerCase()
-      .includes("tool verification"))[0] as TaggedSensor | undefined;
-  const toolVerificationPin = toolVerificationSensor
-    ? toolVerificationSensor.body.pin || 63
-    : 63;
+  const toolVerificationPin = getToolVerificationPin(props.sensors);
   const pins = props.bot.hardware.pins;
   const pinData = pins[toolVerificationPin];
   const toolVerificationValue = pinData ? pinData.value : undefined;

@@ -1,11 +1,16 @@
 import { Canvas } from "@react-three/fiber";
+import * as ReactThreeFiber from "@react-three/fiber";
 import React from "react";
 import { Config, PositionConfig } from "./config";
-import { GardenModel } from "./garden_model";
+import {
+  FarmDesignerViewPrism, GardenModel, getViewPrismCameraProjection,
+  ViewPrismBridge, VIEW_PRISM_VIEWPORT_SIZE,
+} from "./garden_model";
+import { NORMAL_CAMERA_FOV } from "./camera";
 import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
 import {
-  TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
+  McuParams, TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
   TaggedSensorReading,
   TaggedDevice,
@@ -13,6 +18,8 @@ import {
   TaggedSequence,
   TaggedTool,
   TaggedWeedPointer,
+  TaggedPeripheral,
+  TaggedSceneObject,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
@@ -20,10 +27,26 @@ import { ThreeDGardenPlant } from "./garden";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
 import { BotPosition, BotState, UserEnv } from "../devices/interfaces";
 import { MovementState, TimeSettings } from "../interfaces";
+import { PeripheralValues } from
+  "../farm_designer/map/layers/farmbot/bot_trail";
+import { HighlightProvider } from "./elements";
+import {
+  PanelCameraController, PanelCameraStore,
+} from "./panel_camera";
+import { filterSectionIntersections } from "./section";
+import { Actions } from "../constants";
+import type { NativeJogEncoderVisibility } from
+  "./bot/native_jog_controls";
+
+const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
+  ...ReactThreeFiber.events(store),
+  filter: filterSectionIntersections,
+});
 
 export interface ThreeDGardenProps {
   config: Config;
   configPosition: PositionConfig;
+  panelCameraStore: PanelCameraStore;
   threeDPlants: ThreeDGardenPlant[];
   plants?: TaggedPlant[];
   addPlantProps: AddPlantProps;
@@ -42,63 +65,146 @@ export interface ThreeDGardenProps {
   noUTM?: boolean;
   deviceAccount?: TaggedDevice;
   bot?: BotState;
+  firmwareSettings?: McuParams;
+  encoderVisibility?: NativeJogEncoderVisibility;
   mountedToolName?: string;
   allPoints?: TaggedPoint[];
   groups?: TaggedPointGroup[];
   images?: TaggedImage[];
   sensorReadings?: TaggedSensorReading[];
   sensors?: TaggedSensor[];
+  peripherals?: TaggedPeripheral[];
+  peripheralValues?: PeripheralValues;
   env?: UserEnv;
   set3DConfigValue?(key: keyof Config, value: string): void;
+  sceneObjects: TaggedSceneObject[];
 }
+
+interface ViewPrismViewportProps {
+  bridgeRef: React.RefObject<ViewPrismBridge | null>;
+}
+
+export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
+  const viewPrismCamera = getViewPrismCameraProjection(
+    VIEW_PRISM_VIEWPORT_SIZE,
+    NORMAL_CAMERA_FOV,
+  );
+  return <div
+    className={"view-prism-viewport"}
+    style={{
+      width: VIEW_PRISM_VIEWPORT_SIZE,
+      height: VIEW_PRISM_VIEWPORT_SIZE,
+    }}
+    aria-hidden={true}>
+    <Canvas
+      gl={{ alpha: true }}
+      camera={{
+        position: [0, 0, viewPrismCamera.distance],
+        fov: NORMAL_CAMERA_FOV,
+        near: viewPrismCamera.near,
+        far: viewPrismCamera.far,
+      }}>
+      <FarmDesignerViewPrism bridgeRef={props.bridgeRef} />
+    </Canvas>
+  </div>;
+};
 
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   usePerfRenderCount("ThreeDGarden");
+  const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   React.useEffect(() => {
     perfMark("three_d_garden_mounted");
   }, []);
+  const viewRequest = props.addPlantProps.designer.threeDViewRequest;
+  React.useEffect(() => {
+    consumeViewRequest(
+      viewPrismBridgeRef, viewRequest, props.addPlantProps.dispatch);
+  }, [props.addPlantProps.dispatch, viewRequest]);
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas
+        events={sectionAwareEvents}
+        gl={{ alpha: true }}
+        style={{ backgroundColor: "#2c362f" }}
         shadows={props.config.lowDetail ? false : "variance"}
         onCreated={({ gl }) => {
           gl.localClippingEnabled = true;
           perfMark("canvas_created");
         }}>
-        <GardenModel
-          config={props.config}
-          configPosition={props.configPosition}
-          threeDPlants={props.threeDPlants}
-          plants={props.plants}
-          activeFocus={""}
-          setActiveFocus={noop}
-          mapPoints={props.mapPoints}
-          weeds={props.weeds}
-          toolSlots={props.toolSlots}
-          tools={props.tools}
-          sequences={props.sequences}
-          fbosConfig={props.fbosConfig}
-          timeSettings={props.timeSettings}
-          botOnline={props.botOnline}
-          arduinoBusy={props.arduinoBusy}
-          currentBotLocation={props.currentBotLocation}
-          movementState={props.movementState}
-          defaultAxes={props.defaultAxes}
-          noUTM={props.noUTM}
-          deviceAccount={props.deviceAccount}
-          bot={props.bot}
-          mountedToolName={props.mountedToolName}
-          allPoints={props.allPoints}
-          groups={props.groups}
-          images={props.images}
-          sensorReadings={props.sensorReadings}
-          sensors={props.sensors}
-          env={props.env}
-          set3DConfigValue={props.set3DConfigValue}
-          addPlantProps={props.addPlantProps} />
+        <HighlightProvider highlighted3DObject={
+          props.addPlantProps.designer.highlighted3DObject}>
+          <GardenModel
+            config={props.config}
+            configPosition={props.configPosition}
+            panelCamera={true}
+            panelCameraStore={props.panelCameraStore}
+            threeDPlants={props.threeDPlants}
+            plants={props.plants}
+            activeFocus={""}
+            setActiveFocus={noop}
+            mapPoints={props.mapPoints}
+            weeds={props.weeds}
+            toolSlots={props.toolSlots}
+            tools={props.tools}
+            sequences={props.sequences}
+            fbosConfig={props.fbosConfig}
+            timeSettings={props.timeSettings}
+            botOnline={props.botOnline}
+            arduinoBusy={props.arduinoBusy}
+            currentBotLocation={props.currentBotLocation}
+            movementState={props.movementState}
+            defaultAxes={props.defaultAxes}
+            noUTM={props.noUTM}
+            deviceAccount={props.deviceAccount}
+            bot={props.bot}
+            firmwareSettings={props.firmwareSettings}
+            encoderVisibility={props.encoderVisibility}
+            mountedToolName={props.mountedToolName}
+            allPoints={props.allPoints}
+            groups={props.groups}
+            images={props.images}
+            sensorReadings={props.sensorReadings}
+            sensors={props.sensors}
+            peripherals={props.peripherals}
+            peripheralValues={props.peripheralValues}
+            env={props.env}
+            set3DConfigValue={props.set3DConfigValue}
+            sceneObjects={props.sceneObjects}
+            viewPrismBridgeRef={viewPrismBridgeRef}
+            addPlantProps={props.addPlantProps} />
+        </HighlightProvider>
+        <PanelCameraController store={props.panelCameraStore} />
       </Canvas>
     </div>
+    {props.config.viewCube &&
+      <ViewPrismViewport
+        bridgeRef={viewPrismBridgeRef} />}
   </div>;
 });
 
 ThreeDGarden.displayName = "ThreeDGarden";
+
+export const applyViewRequest = (
+  bridgeRef: React.RefObject<ViewPrismBridge | null>,
+  request: ThreeDGardenProps["addPlantProps"]["designer"]["threeDViewRequest"],
+) => {
+  if (!request) { return false; }
+  if ("reset" in request) {
+    if (!bridgeRef.current?.resetView) { return false; }
+    bridgeRef.current.resetView();
+    return true;
+  }
+  if (!bridgeRef.current?.selectDirection) { return false; }
+  bridgeRef.current.selectDirection(request.direction);
+  return true;
+};
+
+export const consumeViewRequest = (
+  bridgeRef: React.RefObject<ViewPrismBridge | null>,
+  request: ThreeDGardenProps["addPlantProps"]["designer"]["threeDViewRequest"],
+  dispatch: Function,
+) => {
+  if (!applyViewRequest(bridgeRef, request)) { return false; }
+  dispatch({ type: Actions.SET_3D_VIEW, payload: undefined });
+  return true;
+};

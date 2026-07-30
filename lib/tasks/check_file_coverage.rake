@@ -1,7 +1,11 @@
-require 'nokogiri'
 require 'find'
+require 'json'
 
-API_COVERAGE_INDEX = File.join('coverage_api', 'index.html')
+API_COVERAGE_REPORT = File.join('coverage_api', 'coverage.json')
+
+def load_api_coverage(path)
+  JSON.parse(File.read(path)).fetch('coverage')
+end
 
 def normalize_frontend_path(path, frontend_root)
   return path if path.start_with?(frontend_root + "/")
@@ -42,11 +46,15 @@ def load_lcov_coverage(path, frontend_root)
   files
 end
 
+def changed_files_from_env
+  ENV.fetch('CHANGED_FILES', '').split(',').reject(&:empty?)
+end
+
 namespace :check_file_coverage do
   desc "Check test coverage for one or more app files after running `rspec`. " +
        "Usage: rake check_file_coverage:api app/models/device.rb"
   task api: :environment do
-    abort("Run `rspec spec` first.") unless File.exist?(API_COVERAGE_INDEX)
+    abort("Run `rspec spec` first.") unless File.exist?(API_COVERAGE_REPORT)
 
     task_name = Rake.application.top_level_tasks.first
     task_index = ARGV.index(task_name)
@@ -61,7 +69,7 @@ namespace :check_file_coverage do
       paths = paths_args
     end
 
-    doc = Nokogiri::HTML(File.read(API_COVERAGE_INDEX))
+    coverage = load_api_coverage(API_COVERAGE_REPORT)
     failed = false
 
     define_method(:report_failure) do |path, message|
@@ -75,20 +83,14 @@ namespace :check_file_coverage do
         next
       end
 
-      header = doc.css('h3').find { |h| h.text.strip == path }
-      unless header
+      file_coverage = coverage[path]
+      unless file_coverage
         report_failure(path, "File not found in coverage report.")
         next
       end
 
-      span = header.next_element&.at('span')
-      unless span
-        report_failure(path, "Coverage span not found.")
-        next
-      end
-
-      coverage_text = span.text.strip
-      percentage = coverage_text.delete('%').to_f
+      percentage = file_coverage.fetch('lines_covered_percent')
+      coverage_text = "#{format('%.2f', percentage)}%"
 
       if percentage < 100
         report_failure(path, "#{coverage_text} (not fully covered)")
@@ -109,7 +111,7 @@ namespace :check_file_coverage do
   end
 
   desc "Check frontend file coverage after running `bun test`. " +
-       "Usage: rake check_file_coverage:frontend frontend/app.tsx"
+       "Usage: rake check_file_coverage:fe [frontend/app.tsx]"
   task fe: :environment do
     frontend_root = 'frontend'
     coverage_root = 'coverage_fe'
@@ -117,12 +119,32 @@ namespace :check_file_coverage do
 
     task_name = Rake.application.top_level_tasks.first
     task_index = ARGV.index(task_name)
-    paths_args = ARGV.drop(task_index + 1)
+    task_args = ARGV.drop(task_index + 1)
+    paths_args = task_args
 
     lcov_coverage = load_lcov_coverage(lcov_file_path, frontend_root)
     abort("Run `bun test` first.") if lcov_coverage.empty?
 
-    if paths_args.empty?
+    check_changed_files = ENV.key?('CHANGED_FILES')
+    changed_files = changed_files_from_env
+    no_changed_files = check_changed_files && changed_files.empty?
+    print_file_statuses = !paths_args.empty? || (check_changed_files && changed_files.any?)
+
+    if check_changed_files && changed_files.any?
+      paths = lcov_coverage.keys.select do |frontend_path|
+        normalized_frontend_path = frontend_path.sub(/^frontend\//, '')
+        changed_files.any? { |file| file.end_with?(normalized_frontend_path) }
+      end
+      matched_changed_files = changed_files.select do |file|
+        paths.any? do |frontend_path|
+          normalized_frontend_path = frontend_path.sub(/^frontend\//, '')
+          file.end_with?(normalized_frontend_path)
+        end
+      end
+      (changed_files - matched_changed_files).each do |file|
+        puts "↷ #{file}: skipped (not in frontend coverage report)"
+      end
+    elsif paths_args.empty?
       paths = lcov_coverage.keys
     else
       paths = paths_args.map do |path|
@@ -130,10 +152,8 @@ namespace :check_file_coverage do
       end
     end
 
-    changed_files = ENV['CHANGED_FILES']&.split(',')
-    changed_files_exists = !changed_files.nil? && !changed_files.empty?
-
     failed = false
+    checked_count = 0
 
     define_method(:report_failure) do |path, message|
       puts "❌ #{path}: #{message}"
@@ -141,16 +161,12 @@ namespace :check_file_coverage do
     end
 
     paths.each do |frontend_path|
-      if changed_files_exists
-        normalized_frontend_path = frontend_path.sub(/^frontend\//, '')
-        unless changed_files.any? { |f| f.end_with?(normalized_frontend_path) }
-          next
-        end
-      end
-
       if frontend_path.end_with?('.d.ts') || frontend_path.end_with?('interfaces.ts')
+        puts "↷ #{frontend_path}: skipped" if print_file_statuses
         next
       end
+
+      checked_count += 1
 
       coverage = lcov_coverage[frontend_path]
       unless coverage
@@ -177,24 +193,24 @@ namespace :check_file_coverage do
       incomplete = metrics.select { |_k, v| v < 100.0 }
 
       if incomplete.any?
-        messages = incomplete.map { |k, v| "#{k}: #{v}%" }.join(", ")
+        messages = incomplete.map { |k, v| "#{k}: #{format('%.2f', v)}%" }.join(", ")
         report_failure(frontend_path, "Not fully covered (#{messages})")
       else
-        if !paths_args.empty? || changed_files_exists
-          puts "✅ #{frontend_path}: 100% coverage on all metrics"
-        end
+        puts "✅ #{frontend_path}: 100% coverage on all metrics" if print_file_statuses
       end
     end
 
     if failed
+      puts "\n\nNo changed frontend files found; checked all frontend files." if no_changed_files
       abort("One or more files did not meet coverage requirements. (FAIL)")
     else
-      if paths_args.empty?
-        if changed_files_exists
-          puts "All changed files at 100%! (PASS)"
-        else
-          puts "All files at 100%! (PASS)"
-        end
+      if no_changed_files
+        puts "All files at 100%! (PASS)"
+        puts "\n\nNo changed frontend files found."
+      elsif check_changed_files
+        puts "All changed files at 100%! (PASS)"
+      elsif paths_args.empty?
+        puts "All files at 100%! (PASS)"
       end
     end
   end

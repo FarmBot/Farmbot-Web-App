@@ -147,6 +147,27 @@
   }
 }
 
+.scene-object-layer-controls {
+  display: flex;
+  align-items: center;
+}
+
+.scene-objects-inventory-panel {
+  .scene-object-select-row {
+    margin-left: 1rem;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+  .panel-top.with-button {
+    grid-template-columns: auto 1fr auto;
+  }
+  .scene-selection-return {
+    margin: 0;
+    padding: 0;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
 .panel-content {
   %panel-item-base {
     font-size: 1rem;
@@ -156,6 +177,7 @@
   }
   .plant-search-item,
   .group-search-item,
+  .scene-object-search-item,
   .curve-search-item {
     display: grid;
     gap: 1rem;
@@ -179,6 +201,7 @@
       }
     }
   }
+  .scene-object-search-item-name,
   .curve-search-item-name,
   .plant-search-item-name,
   .regimen-search-item-name,
@@ -189,6 +212,103 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+  .my-scene-object-search-item {
+    grid-template-columns: 1fr auto;
+  }
+  .scene-selection-grid {
+    display: grid;
+    gap: 1.5rem 1rem;
+    padding: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scene-selection-tile {
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    color: var(--text-color);
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    background: var(--secondary-bg);
+    box-shadow: 0 4px 7px 2px $translucent;
+    transition: transform 0.2s ease;
+    &:hover,
+    &:focus-visible {
+      box-shadow: 0 5px 8px 2px rgba(0, 0, 0, 0.25);
+      transform: translateY(-1px);
+    }
+    &.selected {
+      border-color: $green;
+    }
+    img {
+      display: block;
+      width: 100%;
+      height: 10rem;
+      object-fit: cover;
+    }
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 0.8rem;
+    }
+  }
+  .scene-object-catalog-wrapper {
+    .non-empty-state {
+      display: block;
+    }
+  }
+  .scene-object-catalog-grid {
+    display: grid;
+    gap: 1.5rem 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scene-object-catalog-tile {
+    position: relative;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+    border: 0;
+    border-radius: 5px;
+    background: var(--secondary-bg);
+    box-shadow: 0 4px 7px 2px $translucent;
+    transition: transform 0.2s ease;
+    &:hover {
+      box-shadow: 0 5px 8px 2px rgba(0, 0, 0, 0.25);
+      transform: translateY(-1px);
+    }
+    img {
+      width: 100%;
+      height: 10rem;
+      object-fit: cover;
+    }
+  }
+  .scene-object-catalog-label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 3rem 0.6rem 0.6rem;
+    color: $white;
+    background: linear-gradient(transparent, $translucent15 50%, $translucent4);
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    text-transform: uppercase;
+  }
+  .scene-object-catalog-name {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 1.2rem;
   }
   .plant-search-item-age {
     @extend %panel-item-base;
@@ -360,6 +480,25 @@
   &.dead {
     z-index: 5;
     pointer-events: none;
+  }
+}
+
+.bugs-button {
+  padding: 0;
+  margin: auto;
+  .fa-stack {
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    vertical-align: middle;
+    .fa-stack-1x,
+    .fa-stack-2x {
+      top: 50%;
+      left: 50%;
+      width: auto;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 
@@ -540,7 +679,7 @@
   position: fixed;
   top: 7.5rem;
   right: -155px;
-  z-index: 3;
+  z-index: 5;
   transition: all 0.3s ease;
   &.active {
     transform: translateX(-165px);
@@ -780,32 +919,5 @@
   .fa-step-backward,
   .fa-step-forward {
     font-size: 1rem;
-  }
-}
-
-@media screen and (min-width: $mobile_max_width) {
-  .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
-    animation: panel-hide-shift-3d 0.3s ease forwards;
-  }
-  .farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
-    animation: panel-show-shift-3d 0.3s ease forwards;
-  }
-}
-
-@keyframes panel-show-shift-3d {
-  0% {
-    transform: translateX(-22.5rem);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes panel-hide-shift-3d {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-22.5rem);
   }
 }

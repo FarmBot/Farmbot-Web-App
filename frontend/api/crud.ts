@@ -291,6 +291,7 @@ export function urlFor(tag: ResourceName) {
     PointGroup: API.current.pointGroupsPath,
     Regimen: API.current.regimensPath,
     SavedGarden: API.current.savedGardensPath,
+    SceneObject: API.current.sceneObjectsPath,
     Sensor: API.current.sensorPath,
     SensorReading: API.current.sensorReadingPath,
     Sequence: API.current.sequencesPath,

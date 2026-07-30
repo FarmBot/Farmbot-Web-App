@@ -16,6 +16,7 @@ import { FocusTransitionProvider } from "../../focus_transition";
 import { RenderOrder } from "../../constants";
 import * as spring from "@react-spring/three";
 import * as springCore from "@react-spring/core";
+import { ControlPulse } from "../../controls";
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
 let isDesktopSpy: jest.SpyInstance;
@@ -43,6 +44,17 @@ describe("<ZoomBeacons />", () => {
     configPosition: clone(INITIAL_POSITION),
     activeFocus: "",
     setActiveFocus: jest.fn(),
+  });
+  const beaconControl = (
+    wrapper: ReturnType<typeof createRenderer>,
+  ) => wrapper.root.findAll(node =>
+    `${node.type}` == "group" &&
+    node.props.name == "beacon-control" &&
+    typeof node.props.onPointerOver == "function")[0];
+  const pointerEvent = () => ({
+    delta: 0,
+    stopPropagation: jest.fn(),
+    nativeEvent: { stopImmediatePropagation: jest.fn() },
   });
 
   it("renders", async () => {
@@ -74,12 +86,12 @@ describe("<ZoomBeacons />", () => {
     const p = fakeProps();
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node =>
-      node.props.name == "beacon-sphere")[0];
+    const control = beaconControl(wrapper);
+    const event = pointerEvent();
     actRenderer(() => {
-      sphere?.props.onPointerEnter();
-      sphere?.props.onPointerLeave();
-      sphere?.props.onClick();
+      control.props.onPointerOver(event);
+      control.props.onPointerOut(event);
+      control.props.onClick(event);
     });
     expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
     unmountRenderer(wrapper);
@@ -96,7 +108,9 @@ describe("<ZoomBeacons />", () => {
     const useSpringSpy = jest.spyOn(spring, "useSpring")
       .mockImplementation(((springProps: unknown) => {
         type SpringTo = (nextFn: typeof next) => Promise<unknown>;
-        const props = springProps as {
+        const props = (typeof springProps == "function"
+          ? springProps()
+          : springProps) as {
           from?: object;
           to?: SpringTo | object;
         };
@@ -125,12 +139,10 @@ describe("<ZoomBeacons />", () => {
     const p = fakeProps();
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node =>
-      node.props.name == "beacon-sphere")[0];
-    actRenderer(() => sphere?.props.onPointerEnter());
-    const hoveredSphere = wrapper.root.findAll(node =>
-      node.props.name == "beacon-sphere")[0];
-    actRenderer(() => hoveredSphere?.props.onPointerLeave());
+    const control = beaconControl(wrapper);
+    actRenderer(() => control.props.onPointerOver(pointerEvent()));
+    actRenderer(() =>
+      beaconControl(wrapper).props.onPointerOut(pointerEvent()));
     expect(fociSpy).toHaveBeenCalledTimes(1);
     unmountRenderer(wrapper);
     fociSpy.mockRestore();
@@ -149,9 +161,8 @@ describe("<ZoomBeacons />", () => {
           stats: !p.config.stats,
         }} />);
     });
-    const sphere = wrapper.root.findAll(node =>
-      node.props.name == "beacon-sphere")[0];
-    actRenderer(() => sphere?.props.onClick());
+    actRenderer(() =>
+      beaconControl(wrapper).props.onClick(pointerEvent()));
     expect(fociSpy).toHaveBeenCalledTimes(1);
     expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
     unmountRenderer(wrapper);
@@ -216,7 +227,7 @@ describe("<ZoomBeacons />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("renders visible beacons without writing depth", () => {
+  it("writes pulse depth while keeping the beacon transparent", () => {
     const p = fakeProps();
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
@@ -227,6 +238,9 @@ describe("<ZoomBeacons />", () => {
     expect(sphere.props.renderOrder).toEqual(RenderOrder.beacons);
     expect(materials[0].props.depthTest).toBeUndefined();
     expect(materials[0].props.depthWrite).toEqual(false);
+    expect(wrapper.root.findAllByType(ControlPulse)
+      .every(pulse =>
+        pulse.props.depthWrite === true)).toEqual(true);
     unmountRenderer(wrapper);
   });
 
@@ -294,21 +308,14 @@ describe("<ZoomBeacons />", () => {
   });
 
   it("changes cursor: zoom-in", () => {
-    const element = document.createElement("div");
-    Object.defineProperty(document, "querySelector", {
-      value: () => element,
-      configurable: true,
-    });
+    document.body.style.cursor = "default";
     const p = fakeProps();
     p.activeFocus = "";
     p.config.animate = false;
     const wrapper = createRenderer(<ZoomBeacons {...p} />);
-    const sphere = wrapper.root.findAll(node =>
-      node.props.name == "beacon-sphere")[0];
-    actRenderer(() => {
-      sphere?.props.onPointerEnter();
-    });
-    expect(element.style.cursor).toEqual("zoom-in");
+    actRenderer(() =>
+      beaconControl(wrapper).props.onPointerOver(pointerEvent()));
+    expect(document.body.style.cursor).toEqual("zoom-in");
     unmountRenderer(wrapper);
   });
 

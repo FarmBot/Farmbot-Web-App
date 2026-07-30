@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Box, Detailed, Extrude, Plane, useHelper,
+  Box, Extrude, Plane, useHelper,
 } from "@react-three/drei";
 import {
   DoubleSide,
@@ -23,9 +23,9 @@ import {
 } from "three";
 import { range } from "lodash";
 import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
-import { Config, detailLevels, SurfaceDebugOption } from "../config";
+import { Config, SurfaceDebugOption } from "../config";
 import { ASSETS } from "../constants";
-import { DistanceIndicator } from "../elements";
+import { DistanceIndicator, Highlight } from "../elements";
 import { FarmbotAxes, UtilitiesPost, Packaging } from "./objects";
 import {
   Group, InstancedMesh, Mesh, MeshNormalMaterial, MeshPhongMaterial,
@@ -36,29 +36,44 @@ import {
   TaggedCurve, TaggedGenericPointer, TaggedImage,
   TaggedSensor,
   TaggedSensorReading,
+  TaggedWeedPointer,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
-import { DesignerState } from "../../farm_designer/interfaces";
+import { ThreeDDesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
 import {
   ActivePositionRef,
   BillboardRef,
   ImageRef,
+  PlacementCoordinateLabelRef,
   PointerObjects, PointerPlantRef, RadiusRef, soilClick, soilPointerMove,
+  SinglePointRadiusControlRef,
   TorusRef,
   XCrosshairRef,
   YCrosshairRef,
 } from "./objects/pointer_objects";
-import { ThreeElements } from "@react-three/fiber";
-import { ImageTexture } from "../garden";
+import { ThreeElements, ThreeEvent } from "@react-three/fiber";
+import { ImageTexture, ThreeDGardenPlant } from "../garden";
 import {
   VertexNormalsHelper,
 } from "three/examples/jsm/helpers/VertexNormalsHelper.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 import { FocusVisibilityGroup } from "../focus_transition";
+import { ThreeDObjectSelectionHandler } from "../selection_types";
 import { useTextureVariant } from "../texture_variants";
+import {
+  AlignmentIndicatorController,
+} from "./objects/alignment_indicators";
+import {
+  GridPlanting, GridPlantingController,
+} from "./objects/grid_planting";
+import {
+  SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
+} from "../section";
+import { BotPosition } from "../../devices/interfaces";
+import { clickWasDragged } from "../click_event";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -119,6 +134,7 @@ interface BedFrameProps {
   bedHeight: number;
   bedStartZ: number;
   botSize: Record<"x" | "y" | "z" | "thickness", number>;
+  onClick?(event: ThreeEvent<MouseEvent>): void;
   children: React.ReactElement;
 }
 
@@ -126,6 +142,7 @@ const BedFrame = (props: BedFrameProps) =>
   <Extrude name={"bed"}
     castShadow={true}
     receiveShadow={true}
+    onClick={props.onClick}
     args={[
       bedStructure2D(props.botSize),
       { steps: 1, depth: props.bedHeight, bevelEnabled: false },
@@ -169,13 +186,24 @@ const SurfaceHeightMaterial = (props: { children: React.ReactNode }) =>
 
 interface TexturedBedMaterialProps {
   bedColor: string;
+  repeat?: [number, number];
 }
+
+export const BED_TEXTURE_REPEAT_PER_MM: [number, number] = [0.0003, 0.003];
+
+export const getBedTextureRepeat = (
+  size: [number, number],
+): [number, number] =>
+  [
+    size[0] * BED_TEXTURE_REPEAT_PER_MM[0],
+    size[1] * BED_TEXTURE_REPEAT_PER_MM[1],
+  ];
 
 export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
   const bedWoodTexture = useTextureVariant(ASSETS.textures.wood, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
-    repeat: [0.0003, 0.003],
+    repeat: props.repeat || BED_TEXTURE_REPEAT_PER_MM,
   });
 
   return <MeshPhongMaterial
@@ -184,7 +212,16 @@ export const TexturedBedMaterial = (props: TexturedBedMaterialProps) => {
     side={DoubleSide} />;
 };
 
-type BedFramePropsWithoutChildren = Omit<BedFrameProps, "children">;
+interface BedFrameMaterialProps {
+  bedColor: string;
+  lowDetail: boolean;
+}
+
+export const BedFrameMaterial = (props: BedFrameMaterialProps) =>
+  props.lowDetail
+    ? <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+    : <TexturedBedMaterial bedColor={props.bedColor} />;
+
 type SoilLayerPropsWithoutChildren = Omit<SoilLayerProps, "children">;
 
 interface BedSupportInstance {
@@ -202,6 +239,7 @@ interface BedSupportsProps {
   bedColor: string;
   legWoodTexture: ReturnType<typeof useTextureVariant>;
   supports: BedSupportInstance[];
+  onClick?(event: ThreeEvent<MouseEvent>): void;
 }
 
 const noScale = new Vector3(1, 1, 1);
@@ -323,7 +361,10 @@ const BedSupports = (props: BedSupportsProps) => {
     });
   }, [supportMatrices]);
 
-  return <Group name={"bed-supports"}>
+  return <Group name={"bed-supports"}
+    onClick={props.onClick}
+    key={bedZOffset > 0 ? "raised" : "grounded"}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: bedZOffset > 0 }}>
     <InstancedMesh
       ref={legRef}
       name={"bed-leg-wood"}
@@ -333,62 +374,70 @@ const BedSupports = (props: BedSupportsProps) => {
       <BoxGeometry args={[legSize, legSize, legHeight]} />
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
     </InstancedMesh>
-    <InstancedMesh
-      ref={bracketRef}
-      name={"caster-bracket"}
-      args={[bracketGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"silver"} />
-    </InstancedMesh>
-    <InstancedMesh
-      ref={wheelRef}
-      name={"wheel"}
-      args={[wheelGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"#434343"} />
-    </InstancedMesh>
-    <InstancedMesh
-      ref={axleRef}
-      name={"axle"}
-      args={[axleGeometry, undefined, supports.length]}
-      // eslint-disable-next-line no-null/no-null
-      dispose={null}
-      castShadow={true}
-      receiveShadow={true}>
-      <MeshPhongMaterial color={"#434343"} />
-    </InstancedMesh>
+    {bedZOffset > 0 && <React.Fragment>
+      <InstancedMesh
+        ref={bracketRef}
+        name={"caster-bracket"}
+        args={[bracketGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"silver"} />
+      </InstancedMesh>
+      <InstancedMesh
+        ref={wheelRef}
+        name={"wheel"}
+        args={[wheelGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"#434343"} />
+      </InstancedMesh>
+      <InstancedMesh
+        ref={axleRef}
+        name={"axle"}
+        args={[axleGeometry, undefined, supports.length]}
+        // eslint-disable-next-line no-null/no-null
+        dispose={null}
+        castShadow={true}
+        receiveShadow={true}>
+        <MeshPhongMaterial color={"#434343"} />
+      </InstancedMesh>
+    </React.Fragment>}
   </Group>;
 };
-
-interface LowDetailBedFrameProps {
-  commonBedFrameProps: BedFramePropsWithoutChildren;
-}
-
-const LowDetailBedFrame = (props: LowDetailBedFrameProps) =>
-  <BedFrame {...props.commonBedFrameProps}>
-    <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
-  </BedFrame>;
-
-interface LowDetailSoilLayerProps {
-  layerProps: SoilLayerPropsWithoutChildren;
-}
-
-const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
-  <SoilLayer {...props.layerProps}>
-    <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
-  </SoilLayer>;
 
 interface DetailedSoilLayerProps {
   bedProps: BedProps;
   layerProps: SoilLayerPropsWithoutChildren;
   soilSurfaceSide: Side;
 }
+
+interface LowDetailSoilLayerProps {
+  layerProps: SoilLayerPropsWithoutChildren;
+}
+
+export type DetailedSoilMaterialType =
+  "default" | "height" | "normals" | "savedGarden";
+
+export const getDetailedSoilMaterialType = (
+  surfaceDebug: SurfaceDebugOption,
+  isSavedGarden: boolean,
+): DetailedSoilMaterialType => {
+  if (surfaceDebug == SurfaceDebugOption.normals) { return "normals"; }
+  if (surfaceDebug == SurfaceDebugOption.height) { return "height"; }
+  if (isSavedGarden && surfaceDebug == SurfaceDebugOption.none) {
+    return "savedGarden";
+  }
+  return "default";
+};
+
+const LowDetailSoilLayer = (props: LowDetailSoilLayerProps) =>
+  <SoilLayer {...props.layerProps}>
+    <MeshPhongMaterial side={DoubleSide} shininess={0} color={"#29231e"} />
+  </SoilLayer>;
 
 const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
   const { bedProps } = props;
@@ -415,21 +464,23 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
       bedProps.showMoistureReadings,
       bedProps.showMoistureMap,
     ]);
+  const isSavedGarden = !!bedProps.addPlantProps?.designer.openedSavedGarden;
+  const materialType = getDetailedSoilMaterialType(
+    bedProps.config.surfaceDebug, isSavedGarden);
 
   return <SoilLayer {...props.layerProps}>
     <>
-      {bedProps.config.surfaceDebug == SurfaceDebugOption.normals &&
+      {materialType == "normals" &&
         <MeshNormalMaterial
           flatShading={true}
           side={props.soilSurfaceSide}>
           {soilTexture}
         </MeshNormalMaterial>}
-      {bedProps.config.surfaceDebug == SurfaceDebugOption.height &&
+      {materialType == "height" &&
         <SurfaceHeightMaterial>
           {soilTexture}
         </SurfaceHeightMaterial>}
-      {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
-        .includes(bedProps.config.surfaceDebug) &&
+      {materialType == "default" &&
         <MeshPhongMaterial
           flatShading={true}
           side={props.soilSurfaceSide}
@@ -437,22 +488,35 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
           color={getColorFromBrightness(bedProps.config.soilBrightness)}>
           {soilTexture}
         </MeshPhongMaterial>}
+      {materialType == "savedGarden" &&
+        <MeshPhongMaterial
+          color={"blue"}
+          flatShading={true}
+          side={DoubleSide}
+          shininess={0} />}
     </>
   </SoilLayer>;
 };
 
 export interface AddPlantProps {
   gridSize: AxisNumberProperty;
+  botPosition: BotPosition;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
-  designer: DesignerState;
+  designer: ThreeDDesignerState;
+  topDownAtStart: boolean;
 }
 
 export interface BedProps {
   config: Config;
   activeFocus: string;
   mapPoints: TaggedGenericPointer[];
+  plants: ThreeDGardenPlant[];
+  weeds: TaggedWeedPointer[];
+  showPlants: boolean;
+  showPoints: boolean;
+  showWeeds: boolean;
   addPlantProps?: AddPlantProps;
   getZ(x: number, y: number): number;
   images?: TaggedImage[];
@@ -462,7 +526,17 @@ export interface BedProps {
   sensors: TaggedSensor[];
   sensorReadings: TaggedSensorReading[];
   activePositionRef: ActivePositionRef;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
+
+export const selectBed = (
+  onSelectObject: ThreeDObjectSelectionHandler | undefined,
+  event: ThreeEvent<MouseEvent>,
+) => {
+  if (!onSelectObject || clickWasDragged(event)) { return; }
+  onSelectObject({ kind: "bed", id: 0 }) !== false
+    && event.stopPropagation?.();
+};
 
 const BED_CONFIG_FIELDS: (keyof Config)[] = [
   "axes",
@@ -527,9 +601,20 @@ const bedSettingFieldsEqual = (prev: BedProps, next: BedProps) =>
     prev.addPlantProps?.getConfigValue(field)
     === next.addPlantProps?.getConfigValue(field));
 
+const bedAlignmentPropsEqual = (
+  prev: Readonly<BedProps>,
+  next: Readonly<BedProps>,
+) =>
+  prev.mapPoints === next.mapPoints
+  && prev.plants === next.plants
+  && prev.weeds === next.weeds
+  && prev.showPlants === next.showPlants
+  && prev.showPoints === next.showPoints
+  && prev.showWeeds === next.showWeeds;
+
 const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   prev.activeFocus === next.activeFocus
-  && prev.mapPoints === next.mapPoints
+  && bedAlignmentPropsEqual(prev, next)
   && prev.addPlantProps === next.addPlantProps
   && prev.getZ === next.getZ
   && prev.images === next.images
@@ -539,6 +624,7 @@ const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   && prev.sensors === next.sensors
   && prev.sensorReadings === next.sensorReadings
   && prev.activePositionRef === next.activePositionRef
+  && prev.onSelectObject === next.onSelectObject
   && bedConfigFieldsEqual(prev.config, next.config)
   && bedSettingFieldsEqual(prev, next);
 
@@ -631,6 +717,9 @@ const BedBase = (props: BedProps) => {
   const pointerPlantRef: PointerPlantRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
+  const gridPlantingRef = React.useRef<GridPlantingController>(null);
+
+  // eslint-disable-next-line no-null/no-null
   const radiusRef: RadiusRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
@@ -647,6 +736,17 @@ const BedBase = (props: BedProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const yCrosshairRef: YCrosshairRef = React.useRef(null);
+
+  const alignmentIndicatorRef =
+    // eslint-disable-next-line no-null/no-null
+    React.useRef<AlignmentIndicatorController>(null);
+
+  const placementCoordinateLabelRef: PlacementCoordinateLabelRef =
+    React.useRef(null); // eslint-disable-line no-null/no-null
+
+  const singlePointRadiusRef =
+    // eslint-disable-next-line no-null/no-null
+    React.useRef<SinglePointRadiusControlRef>(null);
 
   const navigate = useNavigate();
 
@@ -680,21 +780,31 @@ const BedBase = (props: BedProps) => {
     threeSpace(0, bedWidthOuter) + bedYOffset,
     zZero(props.config),
   ];
-  const onSoilClick = props.addPlantProps
+  const gridPlantingRequest =
+    props.addPlantProps?.designer.gridPlanting;
+  let onSoilClick;
+  if (gridPlantingRequest) {
+    onSoilClick = (event: ThreeEvent<MouseEvent>) =>
+      gridPlantingRef.current?.onClick(event);
+  } else if (props.addPlantProps) {
     // eslint-disable-next-line react-hooks/refs
-    ? soilClick({
+    onSoilClick = soilClick({
       config: props.config,
       addPlantProps: props.addPlantProps,
       pointerPlantRef,
       navigate,
       getZ: props.getZ,
-    })
-    : undefined;
+    });
+  }
   const onSoilPointerMove = React.useMemo(
-    () =>
-      props.addPlantProps
+    () => {
+      if (gridPlantingRequest) {
+        return (event: ThreeEvent<MouseEvent>) =>
+          gridPlantingRef.current?.onPointerMove(event);
+      }
+      if (props.addPlantProps) {
         // eslint-disable-next-line react-hooks/refs
-        ? soilPointerMove({
+        return soilPointerMove({
           addPlantProps: props.addPlantProps,
           config: props.config,
           pointerPlantRef,
@@ -704,15 +814,21 @@ const BedBase = (props: BedProps) => {
           imageRef,
           xCrosshairRef,
           yCrosshairRef,
+          alignmentIndicatorRef,
+          placementCoordinateLabelRef,
+          singlePointRadiusRef,
           activePositionRef: props.activePositionRef,
           getZ: props.getZ,
-        })
-        : undefined,
+        });
+      }
+      return undefined;
+    },
     [
       props.addPlantProps,
       props.config,
       props.activePositionRef,
       props.getZ,
+      gridPlantingRequest,
     ]);
   const commonSoilLayerProps = {
     config: props.config,
@@ -727,27 +843,42 @@ const BedBase = (props: BedProps) => {
     bedHeight,
     bedStartZ,
     botSize,
+    onClick: (event: ThreeEvent<MouseEvent>) =>
+      selectBed(props.onSelectObject, event),
   };
+  const selectBedFromEvent = (event: ThreeEvent<MouseEvent>) =>
+    selectBed(props.onSelectObject, event);
 
-  return <Group name={"bed-group"}>
-    {props.config.lowDetail
-      ? <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
-      : <Detailed distances={detailLevels(props.config)}>
-        <BedFrame {...commonBedFrameProps}>
-          <TexturedBedMaterial bedColor={bedColor} />
-        </BedFrame>
-        <LowDetailBedFrame commonBedFrameProps={commonBedFrameProps} />
-      </Detailed>}
-    <Plane name={"bed-underside"}
-      args={[bedLengthOuter, bedWidthOuter]}
-      castShadow={true}
-      position={[
-        threeSpace(bedLengthOuter / 2, bedLengthOuter),
-        threeSpace(bedWidthOuter / 2, bedWidthOuter),
-        -props.config.bedHeight + 1,
-      ]}>
-      <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
-    </Plane>
+  return <Group name={"bed-group"}
+    userData={{ [SECTION_FAR_CLIPPING_EXEMPT]: true }}>
+    <Highlight highlightName={"bed"}>
+      <BedFrame {...commonBedFrameProps}>
+        <BedFrameMaterial
+          bedColor={bedColor}
+          lowDetail={props.config.lowDetail} />
+      </BedFrame>
+      <Plane name={"bed-underside"}
+        args={[bedLengthOuter, bedWidthOuter]}
+        castShadow={true}
+        position={[
+          threeSpace(bedLengthOuter / 2, bedLengthOuter),
+          threeSpace(bedWidthOuter / 2, bedWidthOuter),
+          -props.config.bedHeight + 1,
+        ]}>
+        <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
+      </Plane>
+      <BedSupports
+        bedLengthOuter={bedLengthOuter}
+        bedWidthOuter={bedWidthOuter}
+        bedHeight={bedHeight}
+        bedZOffset={bedZOffset}
+        legsFlush={legsFlush}
+        legSize={legSize}
+        bedColor={bedColor}
+        legWoodTexture={legWoodTexture}
+        supports={supports}
+        onClick={selectBedFromEvent} />
+    </Highlight>
     <FocusVisibilityGroup name={"distance-indicator-group"}
       preserveDepthWrite={true}
       visible={xyDimensions || props.activeFocus == "Planter bed"}>
@@ -818,7 +949,7 @@ const BedBase = (props: BedProps) => {
         </Box>
       </>}
     <React.Suspense fallback={undefined}>
-      {props.addPlantProps &&
+      {props.addPlantProps && !gridPlantingRequest &&
         <PointerObjects
           pointerPlantRef={pointerPlantRef}
           radiusRef={radiusRef}
@@ -827,21 +958,45 @@ const BedBase = (props: BedProps) => {
           imageRef={imageRef}
           xCrosshairRef={xCrosshairRef}
           yCrosshairRef={yCrosshairRef}
+          alignmentIndicatorRef={alignmentIndicatorRef}
+          placementCoordinateLabelRef={placementCoordinateLabelRef}
+          singlePointRadiusRef={singlePointRadiusRef}
           activePositionRef={props.activePositionRef}
+          navigate={navigate}
           config={props.config}
           addPlantProps={props.addPlantProps}
-          mapPoints={props.mapPoints} />}
+          mapPoints={props.mapPoints}
+          plants={props.plants}
+          weeds={props.weeds}
+          showPlants={props.showPlants}
+          showPoints={props.showPoints}
+          showWeeds={props.showWeeds}
+          getZ={props.getZ} />}
+      {props.addPlantProps && gridPlantingRequest &&
+        <GridPlanting
+          key={gridPlantingRequest.token}
+          ref={gridPlantingRef}
+          config={props.config}
+          addPlantProps={props.addPlantProps}
+          mapPoints={props.mapPoints}
+          plants={props.plants}
+          weeds={props.weeds}
+          showPlants={props.showPlants}
+          showPoints={props.showPoints}
+          showWeeds={props.showWeeds}
+          activePositionRef={props.activePositionRef}
+          navigate={navigate}
+          getZ={props.getZ} />}
     </React.Suspense>
     <React.Suspense>
-      {props.config.lowDetail
-        ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
-        : <Detailed distances={detailLevels(props.config)}>
-          <DetailedSoilLayer
+      <Highlight highlightName={"soil-surface"}>
+        {props.config.lowDetail
+          ? <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
+          : <DetailedSoilLayer
             bedProps={props}
             layerProps={commonSoilLayerProps}
-            soilSurfaceSide={soilSurfaceSide} />
-          <LowDetailSoilLayer layerProps={commonSoilLayerProps} />
-        </Detailed>}
+            soilSurfaceSide={soilSurfaceSide} />}
+      </Highlight>
     </React.Suspense>
     {props.config.moistureDebug &&
       <MoistureSurface
@@ -859,17 +1014,8 @@ const BedBase = (props: BedProps) => {
           zZero(props.config),
         ]}
       />}
-    <BedSupports
-      bedLengthOuter={bedLengthOuter}
-      bedWidthOuter={bedWidthOuter}
-      bedHeight={bedHeight}
-      bedZOffset={bedZOffset}
-      legsFlush={legsFlush}
-      legSize={legSize}
-      bedColor={bedColor}
-      legWoodTexture={legWoodTexture}
-      supports={supports} />
-    <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
+    <UtilitiesPost config={props.config} activeFocus={props.activeFocus}
+      onSelectObject={props.onSelectObject} />
     <Packaging config={props.config} />
   </Group>;
 };

@@ -5,6 +5,7 @@ import { Group } from "./components";
 import { Object3D } from "three";
 import { createFocusMaterialBinding } from "./focus_transition";
 import { perfEnabled } from "../performance/perf";
+import { ThreeElements } from "@react-three/fiber";
 
 const AnimatedGroup = animated(Group);
 
@@ -293,8 +294,8 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
     ref={setRef}
     name={props.name}
     visible={groupVisible}
-    position={position}
-    scale={scale}>
+    position={position as unknown as ThreeElements["group"]["position"]}
+    scale={scale as unknown as ThreeElements["group"]["scale"]}>
     {props.children}
   </AnimatedGroup>;
 };
@@ -368,6 +369,7 @@ export const GridRevealGroup = (props: GridRevealGroupProps) =>
     reveal={props.reveal}
     onRest={props.onRest}
     fromScale={[0.001, 0.001, 1]}
-    toScale={[1, 1, 1]}>
+    toScale={[1, 1, 1]}
+    fadeIn={true}>
     {props.children}
   </LoadInGroup>;

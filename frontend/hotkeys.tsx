@@ -30,6 +30,13 @@ export enum HotKey {
   addEvent = "addEvent",
   closePanel = "closePanel",
   openGuide = "openGuide",
+  commandPalette = "commandPalette",
+  gridMode = "gridMode",
+  perspective = "perspective",
+  orbitLeft = "orbitLeft",
+  orbitRight = "orbitRight",
+  orbitUp = "orbitUp",
+  orbitDown = "orbitDown",
 }
 
 const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
@@ -63,7 +70,35 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
   },
   [HotKey.openGuide]: {
     combo: "shift + ?",
-    label: t("Open Guide"),
+    label: t("Open Hotkeys"),
+  },
+  [HotKey.commandPalette]: {
+    combo: "mod + k",
+    label: t("Open Command Palette"),
+  },
+  [HotKey.gridMode]: {
+    combo: "g",
+    label: t("Toggle 3D Grid Mode"),
+  },
+  [HotKey.perspective]: {
+    combo: "p",
+    label: t("Toggle 3D Perspective"),
+  },
+  [HotKey.orbitLeft]: {
+    combo: "left",
+    label: t("Orbit 3D View Left"),
+  },
+  [HotKey.orbitRight]: {
+    combo: "right",
+    label: t("Orbit 3D View Right"),
+  },
+  [HotKey.orbitUp]: {
+    combo: "up",
+    label: t("Orbit 3D View Up"),
+  },
+  [HotKey.orbitDown]: {
+    combo: "down",
+    label: t("Orbit 3D View Down"),
   },
 });
 
@@ -125,6 +160,13 @@ export const hotkeysWithActions = (props: HotkeysWithActionsProps) => {
       },
     },
     [HotKey.openGuide]: hotkeysBase[HotKey.openGuide],
+    [HotKey.commandPalette]: hotkeysBase[HotKey.commandPalette],
+    [HotKey.gridMode]: hotkeysBase[HotKey.gridMode],
+    [HotKey.perspective]: hotkeysBase[HotKey.perspective],
+    [HotKey.orbitLeft]: hotkeysBase[HotKey.orbitLeft],
+    [HotKey.orbitRight]: hotkeysBase[HotKey.orbitRight],
+    [HotKey.orbitUp]: hotkeysBase[HotKey.orbitUp],
+    [HotKey.orbitDown]: hotkeysBase[HotKey.orbitDown],
   };
   return list;
 };

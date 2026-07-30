@@ -1,8 +1,8 @@
 import React from "react";
-import { Row, BlurableInput, ToggleButton } from "../../ui";
+import { Row, BlurableInput, FBSelect, ToggleButton } from "../../ui";
 import { DevSettings } from "./dev_support";
 import { store } from "../../redux/store";
-import { INITIAL } from "../../three_d_garden/config";
+import { INITIAL, SurfaceDebugOption } from "../../three_d_garden/config";
 import { edit, initSave, save } from "../../api/crud";
 import { selectAllFarmwareEnvs } from "../../resources/selectors_by_kind";
 
@@ -101,17 +101,12 @@ export const DevWidgetAllOrderOptionsRow = () =>
         : DevSettings.enableAllOrderOptions} />
   </Row>;
 
-export const DevWidgetChunkingDisabledRow = () =>
-  <Row className="grid-exp-1">
-    <label>
-      {"Demo movement chunking"}
-    </label>
-    <ToggleButton
-      toggleValue={localStorage.getItem("DISABLE_CHUNKING") !== "true"}
-      toggleAction={localStorage.getItem("DISABLE_CHUNKING") === "true"
-        ? () => localStorage.removeItem("DISABLE_CHUNKING")
-        : () => localStorage.setItem("DISABLE_CHUNKING", "true")} />
-  </Row>;
+const surfaceDebugOptions = [
+  { label: "None", value: SurfaceDebugOption.none },
+  { label: "Normals", value: SurfaceDebugOption.normals },
+  { label: "Height", value: SurfaceDebugOption.height },
+  { label: "Blank", value: SurfaceDebugOption.blank },
+];
 
 export const Dev3dDebugSettings = () => {
   const dispatch = store.dispatch as Function;
@@ -123,20 +118,28 @@ export const Dev3dDebugSettings = () => {
       .map(key => {
         const farmwareEnv = farmwareEnvs.filter(e => e.body.key == key)[0];
         const value = farmwareEnv?.body.value ? 1 : 0;
+        const updateValue = (nextValue: string | number) => {
+          if (farmwareEnv) {
+            dispatch(edit(farmwareEnv, { value: nextValue }));
+            dispatch(save(farmwareEnv.uuid));
+          } else {
+            dispatch(initSave("FarmwareEnv", { key, value: nextValue }));
+          }
+        };
         return <Row key={key} className="grid-exp-1">
           <label style={{ textTransform: "none" }}>
             {key}
           </label>
-          <ToggleButton
-            toggleValue={!!value}
-            toggleAction={() => {
-              if (farmwareEnv) {
-                dispatch(edit(farmwareEnv, { value: value == 0 ? 1 : 0 }));
-                dispatch(save(farmwareEnv.uuid));
-              } else {
-                dispatch(initSave("FarmwareEnv", { key, value: 1 }));
-              }
-            }} />
+          {key == "3D_surfaceDebug"
+            ? <FBSelect
+              list={surfaceDebugOptions}
+              selectedItem={surfaceDebugOptions.find(option =>
+                option.value == (farmwareEnv?.body.value
+                  ?? SurfaceDebugOption.none))}
+              onChange={option => updateValue(option.value)} />
+            : <ToggleButton
+              toggleValue={!!value}
+              toggleAction={() => updateValue(value == 0 ? 1 : 0)} />}
         </Row>;
       })}
   </>;
@@ -150,7 +153,6 @@ export const DevSettingsRows = () =>
     <DevWidgetShowInternalEnvsRow />
     <DevWidgetFBOSRow />
     <DevWidgetAllOrderOptionsRow />
-    <DevWidgetChunkingDisabledRow />
     <Dev3dDebugSettings />
     <p>Demo Queue Length: {store.getState().bot.demoQueueLength}</p>
   </div>;

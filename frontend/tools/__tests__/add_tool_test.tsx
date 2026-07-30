@@ -1,7 +1,7 @@
 let mockSave = () => Promise.resolve();
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SaveBtn } from "../../ui";
@@ -16,6 +16,7 @@ import {
   getRendererInstance,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import { NavigationContext } from "../../routes_helpers";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -49,27 +50,21 @@ describe("<AddTool />", () => {
   });
 
   it("renders watering nozzle", () => {
-    const wrapper = createWrapper();
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "watering nozzle" });
+    const ref = React.createRef<AddTool>();
+    const { container } = render(<AddTool {...fakeProps()} ref={ref} />);
+    act(() => {
+      ref.current?.setState({ toolName: "watering nozzle" });
     });
-    const labels = wrapper.root.findAllByType("label")
-      .map(node => node.children.join("").toLowerCase());
-    expect(labels.some(label => label.includes("flow rate"))).toBeTruthy();
-    unmountRenderer(wrapper);
+    expect(container.textContent?.toLowerCase()).toContain("flow rate");
   });
 
   it("renders seeder", () => {
-    const wrapper = createWrapper();
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "seeder" });
+    const ref = React.createRef<AddTool>();
+    const { container } = render(<AddTool {...fakeProps()} ref={ref} />);
+    act(() => {
+      ref.current?.setState({ toolName: "seeder" });
     });
-    const labels = wrapper.root.findAllByType("label")
-      .map(node => node.children.join("").toLowerCase());
-    expect(labels.some(label => label.includes("tip z offset"))).toBeTruthy();
-    unmountRenderer(wrapper);
+    expect(container.textContent?.toLowerCase()).toContain("tip z offset");
   });
 
   it("changes flow rate", () => {
@@ -137,15 +132,16 @@ describe("<AddTool />", () => {
     mockSave = () => Promise.resolve();
     const p = fakeProps();
     p.dispatch = mockDispatch();
-    const wrapper = createWrapper(p);
-    const instance = getInstance(wrapper);
-    actRenderer(() => {
-      instance.setState({ toolName: "Foo" });
-    });
     const navigate = jest.fn();
-    instance.navigate = navigate;
-    await actRenderer(async () => {
-      instance.save();
+    const ref = React.createRef<AddTool>();
+    render(<NavigationContext.Provider value={navigate}>
+      <AddTool {...p} ref={ref} />
+    </NavigationContext.Provider>);
+    act(() => {
+      ref.current?.setState({ toolName: "Foo" });
+    });
+    await act(async () => {
+      ref.current?.save();
       await Promise.resolve();
     });
     expect(crud.init).toHaveBeenCalledWith("Tool", {
@@ -153,9 +149,8 @@ describe("<AddTool />", () => {
       flow_rate_ml_per_s: 0,
       seeder_tip_z_offset: 80,
     });
-    expect(instance.state.uuid).toEqual(undefined);
+    expect(ref.current?.state.uuid).toEqual(undefined);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    unmountRenderer(wrapper);
   });
 
   it("removes unsaved tool on exit", async () => {

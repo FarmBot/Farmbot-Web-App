@@ -4,30 +4,53 @@ import { useTexture } from "@react-three/drei";
 import {
   BillboardRef,
   ImageRef,
+  PlantPlacementSphere,
   PointerObjects, PointerObjectsProps,
   PointerPlantRef,
+  pointPlacementPhase,
   RadiusRef,
+  SinglePointFinalControls,
   soilClick, SoilClickProps,
   soilPointerMove, SoilPointerMoveProps,
+  SinglePointRadiusControl,
+  SinglePointRadiusControlRef,
+  singlePointRadiusFromCursor,
   TorusRef,
   XCrosshairRef,
   YCrosshairRef,
 } from "../pointer_objects";
-import { render } from "@testing-library/react";
+import {
+  act, fireEvent, render, screen,
+} from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { fakeAddPlantProps } from "../../../../__test_support__/fake_props";
 import { fakeDrawnPoint } from "../../../../__test_support__/fake_designer_state";
 import { clone } from "lodash";
 import { Path } from "../../../../internal_urls";
-import { Vector3 } from "three";
+import {
+  Vector3, WebGLProgramParametersWithUniforms,
+} from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import * as plantActions from "../../../plant_actions";
+import * as pointActions from "../../../../points/create_point_action";
 import * as screenSize from "../../../../screen_size";
 import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
 import { fakePoint } from "../../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
+import {
+  actRenderer, createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
+import {
+  get3DPositionFunc, getGardenPositionFunc,
+} from "../../../helpers";
+import { Actions } from "../../../../constants";
+import {
+  ControlArrow, ControlHandle, ControlSphere,
+} from "../../../controls";
+import { Mode } from "../../../../farm_designer/map/interfaces";
 
 let dropPlantSpy: jest.SpyInstance;
+let createPointSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 let requestAnimationFrameSpy: jest.SpyInstance;
 type AnimationFrameHandler = Parameters<typeof window.requestAnimationFrame>[0];
@@ -35,6 +58,8 @@ type AnimationFrameHandler = Parameters<typeof window.requestAnimationFrame>[0];
 beforeEach(() => {
   mockIsMobile = false;
   dropPlantSpy = jest.spyOn(plantActions, "dropPlant3D").mockImplementation(jest.fn());
+  createPointSpy = jest.spyOn(pointActions, "createPoint")
+    .mockImplementation(jest.fn());
   isMobileSpy = jest.spyOn(screenSize, "isMobile")
     .mockImplementation(() => mockIsMobile);
   requestAnimationFrameSpy = jest.spyOn(window, "requestAnimationFrame")
@@ -46,6 +71,7 @@ beforeEach(() => {
 
 afterEach(() => {
   dropPlantSpy.mockRestore();
+  createPointSpy.mockRestore();
   isMobileSpy.mockRestore();
   requestAnimationFrameSpy.mockRestore();
   delete PLANT_ICON_ATLAS["/crops/icons/mint.avif"];
@@ -55,6 +81,13 @@ describe("<PointerObjects />", () => {
   const fakeProps = (): PointerObjectsProps => ({
     config: clone(INITIAL),
     mapPoints: [],
+    plants: [],
+    weeds: [],
+    showPlants: true,
+    showPoints: true,
+    showWeeds: true,
+    navigate: jest.fn(),
+    getZ: () => 0,
     addPlantProps: fakeAddPlantProps(),
     pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
     radiusRef: { current: { scale: new Vector3(0, 0, 0) } } as RadiusRef,
@@ -63,14 +96,384 @@ describe("<PointerObjects />", () => {
     imageRef: { current: { scale: new Vector3(0, 0, 0) } } as ImageRef,
     xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as XCrosshairRef,
     yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as YCrosshairRef,
+    alignmentIndicatorRef: { current: { update: jest.fn() } },
+    // eslint-disable-next-line no-null/no-null
+    placementCoordinateLabelRef: { current: null },
+    // eslint-disable-next-line no-null/no-null
+    singlePointRadiusRef: { current: null },
     activePositionRef: { current: { x: 0, y: 0 } },
   });
 
   it("renders", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
-    const { container } = render(<PointerObjects {...fakeProps()} />);
+    const p = fakeProps();
+    const { container } = render(<PointerObjects {...p} />);
     expect(container).toContainHTML("pointerPlant");
+    expect(container).toContainHTML("alignment-indicators");
+    act(() => p.placementCoordinateLabelRef.current?.update({
+      x: 100.04,
+      y: 200.05,
+      z: 3.66,
+    }));
+    expect(screen.getByText("(100, 200.1)"))
+      .toBeInTheDocument();
+  });
+
+  it("restores the live cursor position when single placement mounts", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.activePositionRef.current =
+      get3DPositionFunc(p.config)({ x: 320, y: 470 });
+
+    render(<PointerObjects {...p} />);
+
+    expect(screen.getByText("(320, 470)")).toBeInTheDocument();
+  });
+
+  it.each([
+    ["point", Path.points("add")],
+    ["weed", Path.weeds("add")],
+  ])("shows coordinates while setting a %s location", (_label, path) => {
+    location.pathname = Path.mock(path);
+    const p = fakeProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: undefined,
+      cy: undefined,
+    };
+    render(<PointerObjects {...p} />);
+
+    act(() => p.placementCoordinateLabelRef.current?.update({
+      x: 10,
+      y: 20,
+      z: 30,
+    }));
+
+    expect(screen.getByText("(10, 20)"))
+      .toBeInTheDocument();
+  });
+
+  it("hides indicators during a grid preview", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const point = fakePoint();
+    point.specialStatus = SpecialStatus.DIRTY;
+    point.body.meta.gridId = "preview";
+    p.mapPoints = [point];
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("alignment-indicators");
+    expect(p.placementCoordinateLabelRef.current).toBeNull();
+  });
+
+  it("hides indicators while finalizing a point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.cx = 100;
+    point.cy = 200;
+    p.addPlantProps.designer.drawnPoint = point;
+
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container).not.toContainHTML("alignment-indicators");
+  });
+
+  it("shows the editable radius control while finalizing a point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: 100,
+      cy: 200,
+      r: 0,
+      color: "purple",
+    };
+    const { container, rerender } = render(<PointerObjects {...p} />);
+
+    expect(container.querySelector(
+      "[name='single-point-radius-arrow']")).toBeInTheDocument();
+    expect(container.querySelector("[name='single-point-radius-arrow']")
+      ?.querySelector("[color='purple']")).toBeInTheDocument();
+    fireEvent.pointerOver(container.querySelector(
+      "[name='single-point-radius-control']") as Element);
+    expect(screen.getByText("r0").querySelector("[color='purple']"))
+      .toBeInTheDocument();
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        drawnPoint: {
+          ...p.addPlantProps.designer.drawnPoint,
+          color: "blue",
+        },
+      },
+    };
+    rerender(<PointerObjects {...p} />);
+    expect(container.querySelector("[name='single-point-radius-arrow']")
+      ?.querySelector("[color='blue']")).toBeInTheDocument();
+  });
+
+  it("moves the radius arrow around the cursor radius", () => {
+    const center = { x: 100, y: 200 };
+
+    expect(singlePointRadiusFromCursor(
+      center, { x: 70, y: 160 })).toEqual(50);
+    expect(singlePointRadiusFromCursor(
+      center, { x: 100, y: 200 })).toEqual(0);
+    expect(singlePointRadiusFromCursor(
+      center, { x: 130, y: 240 })).toEqual(50);
+
+    const config = clone(INITIAL);
+    const ref = React.createRef<SinglePointRadiusControlRef>();
+    const wrapper = createRenderer(
+      <SinglePointRadiusControl
+        ref={ref}
+        config={config}
+        point={{
+          ...fakeDrawnPoint(),
+          cx: center.x,
+          cy: center.y,
+          r: 0,
+        }} />);
+    const getGardenPosition = getGardenPositionFunc(config);
+    const arrowEnd = () => {
+      const end = wrapper.root.findByType(ControlArrow)
+        .props.end as [number, number, number];
+      return getGardenPosition(new Vector3(...end));
+    };
+    actRenderer(() => ref.current?.update({ x: 130, y: 240 }));
+    expect(arrowEnd().x).toBeGreaterThan(center.x);
+    expect(arrowEnd().y).toBeGreaterThan(center.y);
+    actRenderer(() => ref.current?.update({ x: 70, y: 160 }));
+    expect(arrowEnd().x).toBeLessThan(center.x);
+    expect(arrowEnd().y).toBeLessThan(center.y);
+    unmountRenderer(wrapper);
+  });
+
+  it("derives point placement phases", () => {
+    expect(pointPlacementPhase(Mode.createPoint, undefined))
+      .toEqual("position");
+    expect(pointPlacementPhase(Mode.createPoint, {
+      ...fakeDrawnPoint(),
+      cx: undefined,
+      cy: undefined,
+    })).toEqual("position");
+    expect(pointPlacementPhase(Mode.createPoint, fakeDrawnPoint()))
+      .toEqual("finalize");
+    expect(pointPlacementPhase(Mode.createPoint, {
+      ...fakeDrawnPoint(),
+      placementPhase: "finalize",
+    })).toEqual("finalize");
+  });
+
+  it("shows point finalization controls and actions", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = {
+      ...fakeDrawnPoint(),
+      cx: 100,
+      cy: 200,
+      r: 30,
+      placementPhase: "finalize" as const,
+    };
+    p.addPlantProps.designer.drawnPoint = point;
+    const { container } = render(<PointerObjects {...p} />);
+
+    expect(container.querySelector(
+      "[data-testid='single-point-action-controls']"))
+      .toBeInTheDocument();
+    expect(container.querySelector(
+      "[name='single-point-start-marker'] [color='white']"))
+      .toBeInTheDocument();
+    expect(container.querySelector(
+      "[name='single-point-start-x-arrow-shape']"))
+      .toBeInTheDocument();
+    expect(container.querySelector(
+      "[name='single-point-start-y-arrow-shape']"))
+      .toBeInTheDocument();
+    expect(container.querySelector(
+      "[name='single-point-radius-control']"))
+      .toBeInTheDocument();
+
+    fireEvent.pointerOver(container.querySelector(
+      "[name='single-point-start-marker-control']") as Element);
+    expect(screen.getByText("(100, 200)")).toBeInTheDocument();
+
+    fireEvent.click(container.querySelector(
+      "[name='single-point-color-control']") as Element);
+    expect(container.querySelectorAll(
+      ".grid-point-color-menu .saucer")).toHaveLength(8);
+    fireEvent.click(document.querySelector("[title='blue']") as Element);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...point, color: "blue" },
+    });
+
+    (p.addPlantProps.dispatch as jest.Mock).mockClear();
+    fireEvent.click(container.querySelector(
+      "[name='single-point-cancel-control']") as Element);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        ...point,
+        cx: undefined,
+        cy: undefined,
+        r: 0,
+        placementPhase: "position",
+      },
+    });
+
+    fireEvent.click(container.querySelector(
+      "[name='single-point-save-control']") as Element);
+    expect(createPointSpy).toHaveBeenCalledWith({
+      dispatch: p.addPlantProps.dispatch,
+      drawnPoint: point,
+      navigate: p.navigate,
+    });
+    createPointSpy.mockClear();
+    fireEvent.keyDown(window, { key: "Enter" });
+    expect(createPointSpy).toHaveBeenCalled();
+  });
+
+  it("quantizes independent X and Y final position controls", () => {
+    const config = clone(INITIAL);
+    const onChange = jest.fn();
+    const point = {
+      ...fakeDrawnPoint(),
+      cx: 100,
+      cy: 200,
+      placementPhase: "finalize" as const,
+    };
+    const wrapper = createRenderer(<SinglePointFinalControls
+      config={config}
+      point={point}
+      gridSize={{ x: 500, y: 500 }}
+      getZ={x => x / 10}
+      onChange={onChange}
+      onCancel={jest.fn()}
+      onSave={jest.fn()} />);
+    const handles = wrapper.root.findAllByType(ControlHandle);
+    const xHandle = handles.find(handle =>
+      handle.props.name == "single-point-start-x-arrow");
+    if (!xHandle) { throw new Error("X point position control not found."); }
+    const dragAt = (position: { x: number, y: number }) => {
+      const world = get3DPositionFunc(config)(position);
+      return {
+        point: new Vector3(world.x, world.y, 125),
+        delta: new Vector3(),
+        dragged: true,
+        event: {} as ThreeEvent<PointerEvent>,
+      };
+    };
+    actRenderer(() =>
+      xHandle.props.onDragStart(dragAt({ x: 150, y: 200 })));
+    actRenderer(() =>
+      xHandle.props.onDrag(dragAt({ x: 174, y: 260 })));
+    actRenderer(() =>
+      xHandle.props.onDragEnd(dragAt({ x: 174, y: 260 })));
+    actRenderer(() => xHandle.props.onDragCancel());
+
+    expect(onChange).toHaveBeenCalledWith({
+      ...point,
+      cx: 120,
+      cy: 200,
+      z: 12,
+    });
+    expect(wrapper.root.findByType(ControlSphere).props.colorType)
+      .toEqual("origin");
+    const arrows = wrapper.root.findAllByType(ControlArrow);
+    expect(arrows.map(arrow => arrow.props.width)).toEqual([10, 10]);
+    expect(arrows.map(arrow => arrow.props.colorType))
+      .toEqual(["x", "y"]);
+    unmountRenderer(wrapper);
+  });
+
+  it("dispatches finalized radius adjustments", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const center = { x: 100, y: 200 };
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: center.x,
+      cy: center.y,
+      r: 40,
+      placementPhase: "finalize",
+    };
+    const wrapper = createRenderer(<PointerObjects {...p} />);
+    const handle = wrapper.root.findAllByType(ControlHandle)
+      .find(node => node.props.name == "single-point-radius-control");
+    if (!handle) { throw new Error("Point radius control not found."); }
+    const direction = {
+      x: -1 / Math.sqrt(2),
+      y: -1 / Math.sqrt(2),
+    };
+    const dragAt = (distance: number) => {
+      const garden = {
+        x: center.x + direction.x * distance,
+        y: center.y + direction.y * distance,
+      };
+      const world = get3DPositionFunc(p.config)(garden);
+      return {
+        point: new Vector3(world.x, world.y, 20),
+        delta: new Vector3(),
+        dragged: true,
+        event: {} as ThreeEvent<PointerEvent>,
+      };
+    };
+    actRenderer(() => handle.props.onDragStart(dragAt(70)));
+    actRenderer(() => handle.props.onDrag(dragAt(80)));
+
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expect.objectContaining({ r: 50 }),
+    });
+    unmountRenderer(wrapper);
+  });
+
+  it("adjusts finalized radius without jumping from the shaft", () => {
+    const config = clone(INITIAL);
+    const onChange = jest.fn();
+    const center = { x: 100, y: 200 };
+    const direction = {
+      x: -1 / Math.sqrt(2),
+      y: -1 / Math.sqrt(2),
+    };
+    const wrapper = createRenderer(<SinglePointRadiusControl
+      config={config}
+      point={{
+        ...fakeDrawnPoint(),
+        cx: center.x,
+        cy: center.y,
+        r: 40,
+      }}
+      editable={true}
+      onChange={onChange} />);
+    const handle = wrapper.root.findByType(ControlHandle);
+    const dragAt = (distance: number) => {
+      const garden = {
+        x: center.x + direction.x * distance,
+        y: center.y + direction.y * distance,
+      };
+      const world = get3DPositionFunc(config)(garden);
+      return {
+        point: new Vector3(world.x, world.y, 20),
+        delta: new Vector3(),
+        dragged: true,
+        event: {} as ThreeEvent<PointerEvent>,
+      };
+    };
+    actRenderer(() => handle.props.onDragStart(dragAt(70)));
+    actRenderer(() => handle.props.onDrag(dragAt(70)));
+    expect(onChange).toHaveBeenLastCalledWith(40);
+    actRenderer(() => handle.props.onDrag(dragAt(80)));
+    expect(onChange).toHaveBeenLastCalledWith(50);
+    actRenderer(() => handle.props.onDrag(dragAt(-10)));
+    expect(onChange).toHaveBeenLastCalledWith(0);
+    unmountRenderer(wrapper);
   });
 
   it("loads the atlas texture for the pointer plant preview", () => {
@@ -89,6 +492,21 @@ describe("<PointerObjects />", () => {
     render(<PointerObjects {...fakeProps()} />);
 
     expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+  });
+
+  it("shows placement controls while the crop texture loads", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    (useTexture as unknown as jest.Mock).mockImplementationOnce(() => {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw new Promise(() => undefined);
+    });
+
+    const { container } = render(<PointerObjects {...fakeProps()} />);
+
+    expect(container).toContainHTML("pointerPlant");
+    expect(container).toContainHTML("x-crosshair");
+    expect(container).toContainHTML("y-crosshair");
+    expect(container).toContainHTML("alignment-indicators");
   });
 
   it("skips hidden preview work in ordinary designer mode", () => {
@@ -141,6 +559,35 @@ describe("<PointerObjects />", () => {
         bedLengthOuter: p.config.bedLengthOuter + 10,
       }} />);
     expect(useTextureMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("<PlantPlacementSphere />", () => {
+  it("provides white placement color and computed bounds to the shader", () => {
+    const wrapper = createRenderer(<PlantPlacementSphere
+      config={clone(INITIAL)}
+      spread={100} />);
+    const material = wrapper.root.find(node =>
+      typeof node.props.onBeforeCompile == "function");
+    const shader = {
+      vertexShader: [
+        "#include <common>",
+        "#include <color_vertex>",
+        "#include <worldpos_vertex>",
+      ].join("\n"),
+      fragmentShader: [
+        "#include <common>",
+        "#include <color_fragment>",
+      ].join("\n"),
+      uniforms: {},
+    } as unknown as WebGLProgramParametersWithUniforms;
+
+    material.props.onBeforeCompile(shader);
+
+    expect(shader.uniforms.uBoundsCenter.value).toBeInstanceOf(Vector3);
+    expect(shader.uniforms.uHalfSize.value).toBeInstanceOf(Vector3);
+    expect(shader.uniforms.uInside.value.getHexString()).toEqual("ffffff");
+    unmountRenderer(wrapper);
   });
 });
 
@@ -221,6 +668,98 @@ describe("soilClick()", () => {
     expect(e.stopPropagation).toHaveBeenCalled();
     expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
   });
+
+  it("handles a zero-radius weed", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    const eventPoint = { x: 1, y: 2 };
+    const center = getGardenPositionFunc(p.config)(eventPoint);
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: center.x,
+      cy: center.y,
+      r: 30,
+    };
+
+    soilClick(p)({
+      stopPropagation: jest.fn(),
+      point: eventPoint,
+    } as unknown as ThreeEvent<MouseEvent>);
+
+    const expectedPoint = expect.objectContaining({
+      cx: center.x,
+      cy: center.y,
+      r: 0,
+    });
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expectedPoint,
+    });
+    expect(createPointSpy).not.toHaveBeenCalled();
+  });
+
+  it("ignores soil clicks after setting a point location", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+    };
+
+    soilClick(p)({
+      stopPropagation: jest.fn(),
+      point: new Vector3(),
+    } as unknown as ThreeEvent<MouseEvent>);
+
+    expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
+    expect(createPointSpy).not.toHaveBeenCalled();
+  });
+
+  it("sets a weed location before sizing it", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    const p = fakeProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: undefined,
+      cy: undefined,
+    };
+
+    soilClick(p)({
+      stopPropagation: jest.fn(),
+      point: new Vector3(1, 2, 0),
+    } as unknown as ThreeEvent<MouseEvent>);
+
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expect.objectContaining({
+        cx: 1350,
+        cy: 660,
+      }),
+    });
+    expect(createPointSpy).not.toHaveBeenCalled();
+  });
+
+  it("creates a weed after setting a positive radius", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    const p = fakeProps();
+    const center = { x: 100, y: 200 };
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: center.x,
+      cy: center.y,
+    };
+
+    soilClick(p)({
+      stopPropagation: jest.fn(),
+      point: get3DPositionFunc(p.config)({ x: 130, y: 240 }),
+    } as unknown as ThreeEvent<MouseEvent>);
+
+    expect(createPointSpy).toHaveBeenCalledWith({
+      dispatch: p.addPlantProps.dispatch,
+      drawnPoint: expect.objectContaining({ r: 50 }),
+      navigate: p.navigate,
+    });
+  });
 });
 
 describe("soilPointerMove()", () => {
@@ -242,6 +781,13 @@ describe("soilPointerMove()", () => {
     imageRef: { current: { scale: { set: jest.fn() } } } as unknown as ImageRef,
     xCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as XCrosshairRef,
     yCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as YCrosshairRef,
+    alignmentIndicatorRef: { current: { update: jest.fn() } },
+    placementCoordinateLabelRef: {
+      current: { update: jest.fn() },
+    },
+    singlePointRadiusRef: {
+      current: { update: jest.fn() },
+    },
     activePositionRef: { current: { x: 0, y: 0 } },
   });
 
@@ -257,6 +803,10 @@ describe("soilPointerMove()", () => {
     soilPointerMove(p)(e);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(100, 200, 0);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledWith({ x: 1450, y: 860 });
+    expect(p.placementCoordinateLabelRef.current?.update)
+      .toHaveBeenCalledWith({ x: 1450, y: 860, z: 0 });
   });
 
   it("coalesces pointer updates into one animation frame", () => {
@@ -285,6 +835,10 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(110, 210, 0);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledTimes(1);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledWith({ x: 1460, y: 870 });
   });
 
   it("updates plant position with mirrored world coordinates", () => {
@@ -333,6 +887,33 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.yCrosshairRef.current?.position.set)
       .toHaveBeenCalledTimes(1);
+    expect(p.alignmentIndicatorRef.current?.update)
+      .toHaveBeenCalledTimes(1);
     expect(getZ).toHaveBeenCalledTimes(1);
+  });
+
+  it("updates the weed preview radius around its center", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    const center = { x: 100, y: 200 };
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: center.x,
+      cy: center.y,
+      r: 0,
+    };
+    const moveTo = (cursor: { x: number, y: number }) =>
+      soilPointerMove(p)({
+        stopPropagation: jest.fn(),
+        point: get3DPositionFunc(p.config)(cursor),
+      } as unknown as ThreeEvent<MouseEvent>);
+
+    moveTo({ x: 140, y: 240 });
+    expect(p.radiusRef.current?.scale.set)
+      .toHaveBeenLastCalledWith(60, 60, 60);
+    moveTo({ x: 50, y: 150 });
+    expect(p.radiusRef.current?.scale.set)
+      .toHaveBeenLastCalledWith(70, 70, 70);
   });
 });

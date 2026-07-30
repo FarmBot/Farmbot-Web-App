@@ -51,6 +51,9 @@ body:has(.app.dark) {
     margin: -1rem;
     margin-top: 0;
     background: var(--main-bg);
+    backdrop-filter: var(--blur);
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
     a {
       padding: 1rem;
       line-height: 0;

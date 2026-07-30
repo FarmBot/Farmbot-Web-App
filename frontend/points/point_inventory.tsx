@@ -58,6 +58,8 @@ interface PointsSectionProps {
   metaQuery: Record<string, string>;
   getColorOverride?: GetColor;
   averageZ?: number;
+  minZ?: number;
+  maxZ?: number;
   sourceFbosConfig?: SourceFbosConfig;
 }
 
@@ -89,6 +91,8 @@ const PointsSection = (props: PointsSectionProps) => {
         <EditSoilHeight
           sourceFbosConfig={props.sourceFbosConfig}
           averageZ={averageZ}
+          minZ={props.minZ}
+          maxZ={props.maxZ}
           dispatch={dispatch} />}
       {genericPoints.map(p => <PointInventoryItem
         key={p.uuid}
@@ -267,6 +271,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
             metaQuery={soilHeightQuery}
             getColorOverride={getSoilHeightColor(sortedSoilHeightPoints)}
             averageZ={round(mean(sortedSoilHeightPoints.map(p => p.body.z)))}
+            minZ={Math.min(...sortedSoilHeightPoints.map(p => p.body.z))}
+            maxZ={Math.max(...sortedSoilHeightPoints.map(p => p.body.z))}
             sourceFbosConfig={this.props.sourceFbosConfig}
             hoveredPoint={this.props.hoveredPoint}
             dispatch={dispatch} />}

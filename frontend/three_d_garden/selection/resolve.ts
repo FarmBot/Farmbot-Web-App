@@ -1,18 +1,19 @@
 import {
-  TaggedDevice, TaggedGenericPointer, TaggedWeedPointer, Vector3,
+  TaggedDevice, TaggedGenericPointer, TaggedSceneObject, TaggedWeedPointer,
+  Vector3,
 } from "farmbot";
 import { round } from "lodash";
 import { Config, PositionConfig } from "../config";
 import {
-  get3DPositionNoMirrorFunc, getWorldPositionFunc, zDir as zDirFunc,
-  zZero as zZeroFunc,
+  get3DPositionNoMirrorFunc, getWorldPositionFunc, zZero,
 } from "../helpers";
 import {
-  getToolRenderPosition, getToolSlotRenderPosition,
+  getToolSlotRenderPosition,
 } from "../bot/components/tool_slot_position";
 import {
   getElectronicsBoxPosition,
 } from "../bot/components/electronics_box";
+import { getBotKinematics } from "../bot/kinematics";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
@@ -23,17 +24,16 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import { t } from "../../i18next_wrapper";
+import { getWifiRouterWorldPosition } from
+  "../bed/objects/utilities_post_position";
+import { sceneObjectPosition } from "../scene_objects";
 
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
 const FIXED_POPUP_Z_OFFSET = 75;
+export const SCENE_OBJECT_POPUP_Z_OFFSET = 200;
 const SLOT_RING_RADIUS = 50;
 const SEED_TROUGH_RING_Y_OFFSET = 20;
-const cameraMountOffset = {
-  x: 12,
-  y: 35,
-};
-
 export interface ResolvedThreeDObjectBase {
   selection: ThreeDObjectSelection;
   name: string;
@@ -75,6 +75,23 @@ interface ResolvedCameraObject extends ResolvedThreeDObjectBase {
   kind: "camera";
 }
 
+interface ResolvedConnectivityObject extends ResolvedThreeDObjectBase {
+  kind: "connectivity";
+}
+
+interface ResolvedSceneObject extends ResolvedThreeDObjectBase {
+  kind: "sceneObject";
+  sceneObject: TaggedSceneObject;
+}
+
+interface ResolvedBedObject extends ResolvedThreeDObjectBase {
+  kind: "bed";
+}
+
+interface ResolvedSafeHeightObject extends ResolvedThreeDObjectBase {
+  kind: "safeHeight";
+}
+
 export type ResolvedThreeDObject =
   | ResolvedPlantObject
   | ResolvedPointObject
@@ -82,7 +99,11 @@ export type ResolvedThreeDObject =
   | ResolvedSlotObject
   | ResolvedUtmObject
   | ResolvedElectronicsObject
-  | ResolvedCameraObject;
+  | ResolvedCameraObject
+  | ResolvedConnectivityObject
+  | ResolvedSceneObject
+  | ResolvedBedObject
+  | ResolvedSafeHeightObject;
 
 export interface ResolvedLocationObject {
   kind: "location";
@@ -103,7 +124,11 @@ export const objectHasSelectionOverlay = (
   !!object
   && object.kind != "utm"
   && object.kind != "electronics"
-  && object.kind != "camera";
+  && object.kind != "safeHeight"
+  && object.kind != "camera"
+  && object.kind != "connectivity"
+  && object.kind != "sceneObject"
+  && object.kind != "bed";
 
 const objectName = (
   resource: { body: { name?: string, id?: number } },
@@ -121,6 +146,7 @@ export interface ResolveSelectedObjectProps {
   points: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   toolSlots: SlotWithTool[];
+  sceneObjects: TaggedSceneObject[];
   currentBotLocation: BotPosition;
   deviceAccount: TaggedDevice | undefined;
   getZ(x: number, y: number): number;
@@ -245,18 +271,17 @@ const resolveUtmObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection,
 ): ResolvedUtmObject => {
-  const worldPosition = getToolRenderPosition(props.config, {
-    x: props.configPosition.x,
-    y: props.configPosition.y,
-    z: props.configPosition.z,
-  }, false);
+  const worldPosition = getBotKinematics(
+    props.config,
+    props.configPosition,
+  ).anchors.utm.worldPosition;
   return {
     kind: "utm",
     selection,
     name: t("UTM"),
-    worldPosition: [worldPosition.x, worldPosition.y, worldPosition.z],
-    popupPosition: [worldPosition.x, worldPosition.y,
-      worldPosition.z + FIXED_POPUP_Z_OFFSET],
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1],
+      worldPosition[2] + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
       x: props.configPosition.x,
@@ -292,26 +317,115 @@ const resolveCameraObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection,
 ): ResolvedCameraObject => {
-  const { x, y, z } = props.configPosition;
-  const position = get3DPositionNoMirrorFunc(props.config)({
-    x: x + cameraMountOffset.x,
-    y: y + cameraMountOffset.y,
-  });
-  const zPosition =
-    zZeroFunc(props.config) - zDirFunc(props.config) * z
-    - 140 + props.config.zGantryOffset + 20;
+  const camera = getBotKinematics(
+    props.config,
+    props.configPosition,
+  ).anchors.camera;
+  const [x, y, z] = camera.worldPosition;
   return {
     kind: "camera",
     selection,
     name: t("Camera"),
-    worldPosition: [position.x, position.y, zPosition],
-    popupPosition: [position.x, position.y, zPosition + FIXED_POPUP_Z_OFFSET],
+    worldPosition: camera.worldPosition,
+    popupPosition: [x, y, z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
-      x: x + cameraMountOffset.x,
-      y: y + cameraMountOffset.y,
-      z,
+      x: camera.gardenPosition.x,
+      y: camera.gardenPosition.y,
+      z: props.configPosition.z,
     },
+  };
+};
+
+const resolveConnectivityObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedConnectivityObject => {
+  const worldPosition = getWifiRouterWorldPosition(props.config);
+  return {
+    kind: "connectivity",
+    selection,
+    name: t("Connectivity"),
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1],
+      worldPosition[2] + FIXED_POPUP_Z_OFFSET],
+    ringRadius: SLOT_RING_RADIUS,
+    locationCoordinate: { x: 0, y: 0, z: 0 },
+  };
+};
+
+const resolveSceneObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedSceneObject | undefined => {
+  const sceneObject = props.sceneObjects.find(resource =>
+    resource.body.id == selection.id
+    || resource.uuid == selection.uuid);
+  if (!sceneObject) { return undefined; }
+  const worldPosition = sceneObjectPosition(props.config, sceneObject);
+  const { x_size, y_size, z_size } = sceneObject.body;
+  return {
+    kind: "sceneObject",
+    selection,
+    sceneObject,
+    name: sceneObject.body.name,
+    worldPosition,
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
+      worldPosition[2] + z_size / 2 + SCENE_OBJECT_POPUP_Z_OFFSET,
+    ],
+    ringRadius: Math.max(Math.hypot(x_size, y_size) / 2, MIN_RING_RADIUS),
+    locationCoordinate: {
+      x: sceneObject.body.x_center,
+      y: sceneObject.body.y_center,
+      z: sceneObject.body.z_base,
+    },
+  };
+};
+
+const resolveBedObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedBedObject => {
+  const { bedHeight, bedLengthOuter, bedWidthOuter } = props.config;
+  return {
+    kind: "bed",
+    selection,
+    name: t("Bed"),
+    worldPosition: [0, 0, -bedHeight / 2],
+    popupPosition: [0, 0, FIXED_POPUP_Z_OFFSET],
+    ringRadius: Math.hypot(bedLengthOuter, bedWidthOuter) / 2,
+    locationCoordinate: {
+      x: bedLengthOuter / 2,
+      y: bedWidthOuter / 2,
+      z: 0,
+    },
+  };
+};
+
+const resolveSafeHeightObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedSafeHeightObject => {
+  const { botSizeY, safeHeight } = props.config;
+  const position = get3DPositionNoMirrorFunc(props.config)({
+    x: 0,
+    y: botSizeY / 2,
+  });
+  const worldPosition: [number, number, number] = [
+    position.x,
+    position.y,
+    zZero(props.config) + safeHeight,
+  ];
+  return {
+    kind: "safeHeight",
+    selection,
+    name: t("Set safe height"),
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1], worldPosition[2] + 75],
+    ringRadius: MIN_RING_RADIUS,
+    locationCoordinate: { x: 0, y: botSizeY / 2, z: safeHeight },
   };
 };
 
@@ -328,6 +442,10 @@ export const resolveSelectedObject = (
     case "utm": return resolveUtmObject(props, selection);
     case "electronics": return resolveElectronicsObject(props, selection);
     case "camera": return resolveCameraObject(props, selection);
+    case "connectivity": return resolveConnectivityObject(props, selection);
+    case "sceneObject": return resolveSceneObject(props, selection);
+    case "bed": return resolveBedObject(props, selection);
+    case "safeHeight": return resolveSafeHeightObject(props, selection);
   }
 };
 

@@ -5,6 +5,27 @@
     "url": "http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
   },
   {
+    "name": "lab",
+    "mode": "3d_screenshot",
+    "url": "http://localhost:3000/promo?scene=Lab&zoomFactor=3&promoInfo=false&settingsBar=false"
+  },
+  {
+    "name": "greenhouse",
+    "mode": "3d_screenshot",
+    "url": "http://localhost:3000/promo?scene=Greenhouse&zoomFactor=3&promoInfo=false&settingsBar=false"
+  },
+  {
+    "name": "outdoor",
+    "mode": "3d_screenshot",
+    "url": "http://localhost:3000/promo?scene=Outdoor&zoomFactor=3&promoInfo=false&settingsBar=false"
+  },
+  {
+    "name": "points",
+    "mode": "3d_screenshot",
+    "url": "http://localhost:3000/promo?otherPreset=Minimal&config=false&showSoilPoints=true&grid=true",
+    "state": "fixture_points"
+  },
+  {
     "name": "login",
     "mode": "screenshot",
     "url": "http://localhost:3000/"
@@ -87,5 +108,30 @@
       }
     ],
     "state": "app"
+  },
+  {
+    "name": "featured_scene_objects",
+    "mode": "screenshot",
+    "url": "http://localhost:3000/app/designer/scene_objects",
+    "actions": [
+      {
+        "click": {
+          "title": "Featured Scene Objects"
+        }
+      },
+      {
+        "click": {
+          "title": "Import all"
+        }
+      },
+      {
+        "click": {
+          "title": "Fence"
+        }
+      }
+    ],
+    "state": "app",
+    "waitFor3d": true,
+    "zoom": 2000
   }
 ]

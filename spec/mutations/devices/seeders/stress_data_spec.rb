@@ -17,7 +17,10 @@ describe Devices::Seeders::StressData do
     described_class.new(device, 3).seed!
 
     expect(device.plants.count).to eq(3)
-    expect(device.generic_pointers.where(name: "Soil Height").count).to eq(3)
+    soil_height_points = device.generic_pointers.where(name: "Soil Height")
+    expect(soil_height_points.count).to eq(3)
+    expect(soil_height_points.pluck(:x, :y).flatten)
+      .to all(satisfy { |coordinate| (coordinate % 10).zero? })
     expect(device.points.where(pointer_type: "Weed").count).to eq(3)
     expect(device.images.count).to eq(3)
     expect(device.images.first.meta).to include(

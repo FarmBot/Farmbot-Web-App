@@ -183,6 +183,15 @@ describe("<FbosDetails />", () => {
     expect(container.textContent).not.toContain("dBm");
   });
 
+  it("displays an explicit zero WiFi strength percentage", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.wifi_level = -50;
+    p.bot.hardware.informational_settings.wifi_level_percent = 0;
+    const { container } = render(<FbosDetails {...p} />);
+    expect(container.querySelector(".percent-bar-fill"))
+      .toHaveStyle({ width: "0%" });
+  });
+
   it.each<[number, string]>([
     [10, "gray"],
     [50, "red"],

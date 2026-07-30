@@ -1,17 +1,29 @@
 import React from "react";
 import { animated, useSpring } from "@react-spring/three";
-import { Box, Cylinder, RoundedBox, Tube } from "@react-three/drei";
+import { to } from "@react-spring/core";
+import { Box, RoundedBox } from "@react-three/drei";
 import { RepeatWrapping } from "three";
 import { ASSETS } from "../../constants";
 import { Config } from "../../config";
 import {
-  threeSpace, getColorFromBrightness, easyCubicBezierCurve3,
+  getColorFromBrightness, easyCubicBezierCurve3,
 } from "../../helpers";
 import { outletDepth } from "../../bot";
 import * as THREE from "three";
-import { Group, MeshPhongMaterial } from "../../components";
+import { Group, Mesh, MeshPhongMaterial } from "../../components";
 import { useFocusTransition } from "../../focus_transition";
 import { useTextureVariant } from "../../texture_variants";
+import {
+  mergeSolidGeometries,
+  SolidGeometryPart,
+} from "../../geometry_batching";
+import { ThreeDObjectSelectionHandler } from "../../selection_types";
+import { ThreeEvent } from "@react-three/fiber";
+import { clickWasDragged } from "../../click_event";
+import {
+  getUtilitiesPostWorldPosition, UTILITIES_POST_SIZE, WIFI_ROUTER_LOCAL_Z,
+} from "./utilities_post_position";
+import { Highlight } from "../../elements";
 
 const AnimatedGroup = animated(Group);
 const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
@@ -23,32 +35,112 @@ const utilitiesPostFocusSpringConfig = {
 export interface UtilitiesPostProps {
   config: Config;
   activeFocus: string;
+  onSelectObject?: ThreeDObjectSelectionHandler;
 }
 
 type Vector3 = [number, number, number];
 
+interface UtilitiesPostGeometryProps {
+  hosePathCurved: THREE.Curve<THREE.Vector3>;
+  hosePathStraight: THREE.Curve<THREE.Vector3>;
+  legSize: number;
+}
+
+export const makeUtilitiesPostGeometry = (
+  props: UtilitiesPostGeometryProps,
+) => {
+  const { hosePathCurved, hosePathStraight, legSize } = props;
+  const handlePosition: Vector3 = [0, -legSize / 2 - 65, 105];
+  const handleRotation: Vector3 = [-Math.PI / 4, 0, 0];
+  const parts: SolidGeometryPart[] = [
+    {
+      geometry: new THREE.CylinderGeometry(
+        outletDepth / 2, outletDepth / 2, 200,
+      ),
+      color: "gray",
+      position: [-legSize / 2 - outletDepth / 2, 0, -50],
+      rotation: [Math.PI / 2, 0, 0],
+    },
+    ...[-30, 30].map((x, index): SolidGeometryPart => ({
+      geometry: new THREE.CylinderGeometry(3.5, 3.5, 60),
+      color: "gray",
+      position: [x, 0, 200],
+      rotation: [Math.PI / 2, 0, index == 0 ? Math.PI / 8 : -Math.PI / 8],
+    })),
+    ...[
+      { color: "green", x: -40 },
+      { color: "blue", x: -30 },
+    ].map(({ color, x }): SolidGeometryPart => ({
+      geometry: new THREE.CylinderGeometry(2, 2, 61),
+      color,
+      position: [x, 0, 170],
+    })),
+    {
+      geometry: new THREE.CylinderGeometry(18, 18, 200),
+      color: "#f4f4f4",
+      position: [0, -legSize / 2 - 20, -50],
+      rotation: [Math.PI / 2, 0, 0],
+    },
+    {
+      geometry: new THREE.CylinderGeometry(20, 20, 80),
+      color: "gold",
+      position: [0, -legSize / 2 - 20, 90],
+      rotation: [Math.PI / 2, 0, 0],
+    },
+    {
+      geometry: new THREE.CylinderGeometry(18, 18, 70),
+      color: "gold",
+      position: [0, -legSize / 2 - 45, 90],
+      rotation: [Math.PI / 4, 0, 0],
+    },
+    {
+      geometry: new THREE.CylinderGeometry(25, 25, 10),
+      color: "#0266b5",
+      position: handlePosition,
+      rotation: handleRotation,
+    },
+    {
+      geometry: new THREE.CylinderGeometry(4, 4, 15),
+      color: "#434343",
+      position: handlePosition,
+      rotation: handleRotation,
+    },
+    {
+      geometry: new THREE.TubeGeometry(hosePathCurved, 10, 15, 8),
+      color: "darkgreen",
+    },
+    {
+      geometry: new THREE.TubeGeometry(hosePathStraight, 1, 15, 8),
+      color: "darkgreen",
+    },
+  ];
+  const geometry = mergeSolidGeometries(parts);
+  parts.forEach(part => part.geometry?.dispose());
+  return geometry;
+};
+
 interface UtilitiesPostFocusGroupProps
   extends Omit<React.ComponentProps<typeof Group>, "position" | "visible"> {
-  hiddenPosition: Vector3;
+  hiddenDepthOffset: number;
   shownPosition: Vector3;
   visible: boolean;
 }
 
 const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
   const {
-    hiddenPosition, shownPosition, visible, children, ...groupProps
+    hiddenDepthOffset, shownPosition, visible, children, ...groupProps
   } = props;
   const transition = useFocusTransition();
   const [groupVisible, setGroupVisible] = React.useState(visible);
-  const [{ position }, api] = useSpring(() => ({
-    position: visible ? shownPosition : hiddenPosition,
+  const [{ focusDepthOffset }, api] = useSpring(() => ({
+    focusDepthOffset: visible ? 0 : hiddenDepthOffset,
     immediate: !transition.enabled,
     config: utilitiesPostFocusSpringConfig,
   }));
 
   React.useEffect(() => {
     api.start({
-      position: visible ? shownPosition : hiddenPosition,
+      focusDepthOffset: visible ? 0 : hiddenDepthOffset,
       immediate: !transition.enabled,
       config: utilitiesPostFocusSpringConfig,
       onRest: () => {
@@ -57,7 +149,7 @@ const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
         }
       },
     });
-  }, [api, hiddenPosition, shownPosition, transition.enabled, visible]);
+  }, [api, hiddenDepthOffset, transition.enabled, visible]);
 
   React.useEffect(() => {
     if (!transition.enabled || !visible) { return; }
@@ -65,11 +157,16 @@ const UtilitiesPostFocusGroup = (props: UtilitiesPostFocusGroupProps) => {
     setGroupVisible(true);
   }, [transition.enabled, visible]);
 
-  return <AnimatedGroup {...groupProps}
+  const focusPosition = to(focusDepthOffset,
+    depth => [0, 0, depth] as Vector3);
+
+  return <Group {...groupProps}
     visible={transition.enabled ? visible || groupVisible : visible}
-    position={position}>
-    {children}
-  </AnimatedGroup>;
+    position={shownPosition}>
+    <AnimatedGroup position={focusPosition}>
+      {children}
+    </AnimatedGroup>
+  </Group>;
 };
 
 const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
@@ -78,7 +175,6 @@ const UTILITIES_POST_CONFIG_FIELDS: (keyof Config)[] = [
   "bedLengthOuter",
   "bedWidthOuter",
   "bedZOffset",
-  "legSize",
   "utilitiesPost",
 ];
 
@@ -87,6 +183,7 @@ export const utilitiesPostPropsEqual = (
   next: UtilitiesPostProps,
 ) =>
   prev.activeFocus === next.activeFocus &&
+  prev.onSelectObject === next.onSelectObject &&
   UTILITIES_POST_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
@@ -97,11 +194,12 @@ const UtilitiesPostBase = (props: UtilitiesPostProps) => {
 };
 
 const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
+  const { onSelectObject } = props;
   const {
-    legSize, bedLengthOuter, bedWidthOuter,
+    bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
   } = props.config;
-  const groundZ = -bedHeight - bedZOffset;
+  const legSize = UTILITIES_POST_SIZE;
   const postColor = getColorFromBrightness(bedBrightness);
   const faucetX = 0;
   const faucetY = -115;
@@ -128,135 +226,67 @@ const EnabledUtilitiesPost = (props: UtilitiesPostProps) => {
     wrapT: RepeatWrapping,
     repeat: [0.02, 0.05],
   });
-  const shownPosition = React.useMemo<Vector3>(() => [
-    threeSpace(bedLengthOuter + 600, bedLengthOuter),
-    threeSpace(legSize / 2, bedWidthOuter),
-    groundZ + 150,
-  ], [bedLengthOuter, bedWidthOuter, groundZ, legSize]);
-  const hiddenPosition = React.useMemo<Vector3>(() => [
-    shownPosition[0],
-    shownPosition[1],
-    shownPosition[2]
-      - (bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE,
-  ], [bedHeight, bedZOffset, shownPosition]);
+  const shownPosition = React.useMemo<Vector3>(() =>
+    getUtilitiesPostWorldPosition({
+      bedHeight,
+      bedLengthOuter,
+      bedWidthOuter,
+      bedZOffset,
+    }), [
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedZOffset,
+  ]);
+  const hiddenDepthOffset =
+    -(bedHeight + bedZOffset) * UTILITIES_POST_FOCUS_DEPTH_SCALE;
+  const solidGeometry = React.useMemo(() => makeUtilitiesPostGeometry({
+    hosePathCurved,
+    hosePathStraight,
+    legSize,
+  }), [hosePathCurved, hosePathStraight, legSize]);
+  React.useEffect(() => () => solidGeometry?.dispose(), [solidGeometry]);
+  const selectConnectivity = React.useCallback(
+    (event: ThreeEvent<MouseEvent>) => {
+      if (clickWasDragged(event) || !onSelectObject) { return; }
+      onSelectObject({ kind: "connectivity", id: 0 }) !== false &&
+        event.stopPropagation?.();
+    }, [onSelectObject]);
 
   return <UtilitiesPostFocusGroup name={"utilities"}
     visible={props.activeFocus != "Planter bed"}
     shownPosition={shownPosition}
-    hiddenPosition={hiddenPosition}>
+    hiddenDepthOffset={hiddenDepthOffset}>
     <Box name={"utilities-post"}
       castShadow={true}
       args={[legSize, legSize, 300]}>
       <MeshPhongMaterial map={postWoodTexture} color={postColor} />
     </Box>
-    <Cylinder name={"pipe"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[outletDepth / 2, outletDepth / 2, 200]}
-      position={[-legSize / 2 - outletDepth / 2, 0, -50]}
-      rotation={[Math.PI / 2, 0, 0]}>
-      <MeshPhongMaterial color={"gray"} />
-    </Cylinder>
     <Box name={"electrical-outlet"}
       castShadow={true}
       args={[outletDepth, 75, 110]}
       position={[-legSize / 2 - outletDepth / 2, 0, 85]}>
       <MeshPhongMaterial color={"gray"} />
     </Box>
-    <Group name={"wifi-router"}
-      position={[0, 0, 165]}>
-      <RoundedBox name={"router-base"}
-        castShadow={true}
-        receiveShadow={true}
-        radius={8}
-        args={[legSize, 60, 30]}>
-        <MeshPhongMaterial color={"lightgray"} />
-      </RoundedBox>
-      <Cylinder name={"antenna-1"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[3.5, 3.5, 60]}
-        position={[-30, 0, 35]}
-        rotation={[Math.PI / 2, 0, Math.PI / 8]}>
-        <MeshPhongMaterial color={"gray"} />
-      </Cylinder>
-      <Cylinder name={"antenna-2"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[3.5, 3.5, 60]}
-        position={[30, 0, 35]}
-        rotation={[Math.PI / 2, 0, -Math.PI / 8]}>
-        <MeshPhongMaterial color={"gray"} />
-      </Cylinder>
-      <Cylinder name={"led-light-1"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[2, 2, 61]}
-        position={[-40, 0, 5]}>
-        <MeshPhongMaterial color={"green"} />
-      </Cylinder>
-      <Cylinder name={"led-light-2"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[2, 2, 61]}
-        position={[-30, 0, 5]}>
-        <MeshPhongMaterial color={"blue"} />
-      </Cylinder>
-    </Group>
-    <Group name={"water-source"}>
-      <Cylinder name={"pipe"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[18, 18, 200]}
-        position={[0, -legSize / 2 - 20, -50]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"#f4f4f4"} />
-      </Cylinder>
-      <Cylinder name={"faucet-base"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[20, 20, 80]}
-        position={[0, -legSize / 2 - 20, 90]}
-        rotation={[Math.PI / 2, 0, 0]}>
-        <MeshPhongMaterial color={"gold"} />
-      </Cylinder>
-      <Cylinder name={"faucet-outlet"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[18, 18, 70]}
-        position={[0, -legSize / 2 - 45, 90]}
-        rotation={[Math.PI / 4, 0, 0]}>
-        <MeshPhongMaterial color={"gold"} />
-      </Cylinder>
-      <Group name={"faucet-handle"}
-        position={[0, -legSize / 2 - 65, 105]}
-        rotation={[-Math.PI / 4, 0, 0]}>
-        <Cylinder name={"handle"}
+    <Highlight highlightName={"connectivity"}>
+      <Group name={"wifi-router"}
+        onClick={selectConnectivity}
+        position={[0, 0, WIFI_ROUTER_LOCAL_Z]}>
+        <RoundedBox name={"router-base"}
           castShadow={true}
           receiveShadow={true}
-          args={[25, 25, 10]}>
-          <MeshPhongMaterial color={"#0266b5"} />
-        </Cylinder>
-        <Cylinder name={"pin"}
-          castShadow={true}
-          receiveShadow={true}
-          args={[4, 4, 15]}>
-          <MeshPhongMaterial color={"#434343"} />
-        </Cylinder>
+          radius={8}
+          args={[legSize, 60, 30]}>
+          <MeshPhongMaterial color={"lightgray"} />
+        </RoundedBox>
       </Group>
-      <Tube name={"garden-hose-curved"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[hosePathCurved, 10, 15, 8]}>
-        <MeshPhongMaterial color="darkgreen" />
-      </Tube>
-      <Tube name={"garden-hose-straight"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[hosePathStraight, 1, 15, 8]}>
-        <MeshPhongMaterial color="darkgreen" />
-      </Tube>
-    </Group>
+    </Highlight>
+    <Mesh name={"utilities-solid-hardware"}
+      castShadow={true}
+      receiveShadow={true}
+      geometry={solidGeometry}>
+      <MeshPhongMaterial color={"white"} vertexColors={true} />
+    </Mesh>
   </UtilitiesPostFocusGroup>;
 };
 

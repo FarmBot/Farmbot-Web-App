@@ -12,9 +12,9 @@ def required_env(name):
     return value
 
 
-chosen_metrics = required_env("CHOSEN_METRICS")
+fps_history = required_env("FPS_HISTORY")
 fallback = required_env("FALLBACK_FPS_VALUE")
-path = f"/tmp/{chosen_metrics}.csv"
+path = f"/tmp/{fps_history}.csv"
 
 try:
     with open(path, newline="") as f:
@@ -28,9 +28,9 @@ except FileNotFoundError:
     rows = []
 
 values = []
-for row in rows[:-1]:
+for row in rows:
     try:
-        values.append(float(row["FPS"]))
+        values.append(float(row["fps"]))
     except (KeyError, TypeError, ValueError):
         pass
 

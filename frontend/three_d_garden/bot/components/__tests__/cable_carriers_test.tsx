@@ -1,15 +1,17 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
+import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import {
   CableCarrierX, CableCarrierY, CableCarrierZ,
   CableCarrierSupportVertical, CableCarrierSupportVerticalProps,
   CableCarrierSupportHorizontal, CableCarrierSupportHorizontalProps,
+  buildCableCarrierShape,
 } from "../cable_carriers";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
-import { Object3D, Shape } from "three";
+import { ExtrudeGeometry, Object3D, Shape, Vector3 } from "three";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
 
@@ -21,6 +23,11 @@ describe("moving cable carriers", () => {
   const fakeProps = () => ({
     config: clone(INITIAL),
     configPosition: clone(INITIAL_POSITION),
+  });
+
+  it.each([0, 500, 1000])("builds a carrier at axis position %s", position => {
+    const shape = buildCableCarrierShape(1000, position, 70);
+    expect(shape.getPoints()).not.toHaveLength(0);
   });
 
   it("skips disabled moving carriers", () => {
@@ -82,6 +89,109 @@ describe("moving cable carriers", () => {
     expect(container.innerHTML).toContain("yCC");
     expect(moveToSpy).toHaveBeenCalledTimes(1);
     moveToSpy.mockRestore();
+  });
+
+  it("disposes replaced and unmounted moving carrier geometry", () => {
+    const p = fakeProps();
+    const disposeSpy = jest.spyOn(ExtrudeGeometry.prototype, "dispose");
+    const { rerender, unmount } = render(<CableCarrierX {...p} />);
+    rerender(<CableCarrierX {...p} configPosition={{
+      ...p.configPosition,
+      x: p.configPosition.x + 10,
+    }} />);
+    expect(disposeSpy).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(disposeSpy).toHaveBeenCalledTimes(2);
+    disposeSpy.mockRestore();
+  });
+
+  it("deforms and translates carriers inside the render frame", () => {
+    const frameCallbacks: Parameters<typeof useFrame>[0][] = [];
+    (useFrame as jest.Mock).mockImplementation(
+      (callback: Parameters<typeof useFrame>[0]) => {
+        frameCallbacks.push(callback);
+        return undefined;
+      });
+    const p = fakeProps();
+    const positionRef = { current: { ...p.configPosition } };
+    const { container, unmount } = render(<CableCarrierY
+      {...p}
+      local={true}
+      positionRef={positionRef} />);
+    const mesh = container.querySelector("mesh") as unknown as {
+      geometry: ExtrudeGeometry;
+      position: Vector3;
+    };
+    mesh.position = new Vector3();
+    positionRef.current = {
+      ...positionRef.current,
+      x: positionRef.current.x + 10,
+      y: positionRef.current.y + 20,
+    };
+
+    act(() => frameCallbacks.forEach(callback =>
+      callback({} as never, 0)));
+
+    expect(mesh.position.x).toEqual(positionRef.current.x - 39);
+    unmount();
+    (useFrame as jest.Mock).mockReset();
+  });
+
+  it("updates a non-local Z carrier inside the render frame", () => {
+    const frameCallbacks: Parameters<typeof useFrame>[0][] = [];
+    (useFrame as jest.Mock).mockImplementation(
+      (callback: Parameters<typeof useFrame>[0]) => {
+        frameCallbacks.push(callback);
+        return undefined;
+      });
+    const p = fakeProps();
+    const positionRef = { current: { ...p.configPosition } };
+    const { container, unmount } = render(<CableCarrierZ
+      {...p}
+      local={false}
+      positionRef={positionRef} />);
+    const mesh = container.querySelector("mesh") as unknown as {
+      position: Vector3;
+    };
+    mesh.position = new Vector3();
+    positionRef.current = {
+      x: positionRef.current.x + 10,
+      y: positionRef.current.y + 20,
+      z: positionRef.current.z + 30,
+    };
+
+    act(() => frameCallbacks.forEach(callback =>
+      callback({} as never, 0)));
+
+    expect(mesh.position.toArray()).not.toEqual([0, 0, 0]);
+    unmount();
+    (useFrame as jest.Mock).mockReset();
+  });
+
+  it("updates an X carrier inside the render frame", () => {
+    let frameCallback: Parameters<typeof useFrame>[0] | undefined;
+    (useFrame as jest.Mock).mockImplementation(
+      (callback: Parameters<typeof useFrame>[0]) => {
+        frameCallback = callback;
+        return undefined;
+      });
+    const p = fakeProps();
+    const positionRef = { current: { ...p.configPosition } };
+    const { container, unmount } = render(<CableCarrierX
+      {...p}
+      local={true}
+      positionRef={positionRef} />);
+    const mesh = container.querySelector("mesh") as unknown as {
+      position: Vector3;
+    };
+    mesh.position = new Vector3();
+    positionRef.current.x += 10;
+
+    act(() => frameCallback?.({} as never, 0));
+
+    expect(mesh.position.toArray()).not.toEqual([0, 0, 0]);
+    unmount();
+    (useFrame as jest.Mock).mockReset();
   });
 });
 

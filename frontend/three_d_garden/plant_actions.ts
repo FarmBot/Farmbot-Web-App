@@ -3,7 +3,7 @@ import { Actions, Content } from "../constants";
 import { t } from "../i18next_wrapper";
 import { error } from "../toast/toast";
 import { AxisNumberProperty } from "../farm_designer/map/interfaces";
-import { DesignerState } from "../farm_designer/interfaces";
+import { ThreeDDesignerState } from "../farm_designer/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { NumericSetting } from "../session_keys";
 import { isNumber } from "lodash";
@@ -17,7 +17,7 @@ export interface DropPlant3DProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
-  designer: DesignerState;
+  designer: ThreeDDesignerState;
 }
 
 const newPlantBody = (
@@ -26,7 +26,7 @@ const newPlantBody = (
   slug: string,
   cropName: string,
   depth: number,
-  designer: DesignerState,
+  designer: ThreeDDesignerState,
 ) => ({
   pointer_type: "Plant" as const,
   name: cropName,

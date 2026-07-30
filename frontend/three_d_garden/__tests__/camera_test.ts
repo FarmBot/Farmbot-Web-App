@@ -2,42 +2,110 @@ let mockDev: string | undefined = undefined;
 let mockIsDesktop = true;
 
 import {
-  cameraInit, CameraInitProps, getDefaultCameraPosition,
-  GetDefaultCameraPositionProps,
+  alignCameraPositionToViewPrism, applyCameraClippingRange,
+  applyCameraViewOffset, cameraInit, CameraInitProps, clearCameraUrlParams,
+  cameraPositionForFov, canonicalCamera, distanceForFov,
+  FARM_DESIGNER_DESKTOP_MIN_WIDTH, FARM_DESIGNER_PANEL_MARGIN,
+  FARM_DESIGNER_PANEL_OUTER_WIDTH, FARM_DESIGNER_PANEL_WIDTH,
+  getCameraClippingRange, getCameraFromUrlParams, getDefaultCameraPosition,
+  getCameraFit, getPanelCameraViewOffset, getSphereCameraFit,
+  getViewPrismKeyboardPreset, getViewportFramingTangents,
+  GetDefaultCameraPositionProps, nearestCardinalHeading,
+  nearestCardinalTopViewDirection, nearestViewPrismHeading,
+  nextViewPrismKeyboardPreset,
+  positionForViewDirection, setCameraUrlParams, viewPrismDirectionForHeading,
+  ViewPrismKeyboardPreset, ViewPrismLayer,
 } from "../camera";
 import * as devSupport from "../../settings/dev/dev_support";
 import * as screenSize from "../../screen_size";
 
 let get3dCameraSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
+let replaceStateSpy: jest.SpyInstance;
+let originalUrl: string;
 
 beforeEach(() => {
+  originalUrl = window.location.href;
   get3dCameraSpy = jest.spyOn(devSupport.DevSettings, "get3dCamera")
     .mockImplementation((() =>
       mockDev || ""));
   isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
     .mockImplementation(() => mockIsDesktop);
+  replaceStateSpy = jest.spyOn(window.history, "replaceState")
+    .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
   get3dCameraSpy.mockRestore();
   isDesktopSpy.mockRestore();
+  replaceStateSpy.mockRestore();
+  const url = new URL(originalUrl);
+  window.location.href = url.toString();
+  window.location.pathname = url.pathname;
+  window.location.search = url.search;
+  window.location.hash = url.hash;
+});
+
+describe("camera URL params", () => {
+  const setUrl = (search = "") => {
+    const url = new URL(`/app/designer${search}`, window.location.href);
+    window.location.href = url.toString();
+    window.location.pathname = url.pathname;
+    window.location.search = url.search;
+  };
+
+  it("reads a camera from URL params", () => {
+    setUrl("?camX=1&camY=2&camZ=3&camTX=4&camTY=5&camTZ=6");
+    expect(getCameraFromUrlParams()).toEqual({
+      position: [1, 2, 3],
+      target: [4, 5, 6],
+    });
+  });
+
+  it.each([
+    "?camX=1",
+    "?camX=1&camY=2&camZ=3&camTX=4&camTY=5&camTZ=invalid",
+  ])("rejects an incomplete or invalid camera: %s", search => {
+    setUrl(search);
+    expect(getCameraFromUrlParams()).toBeUndefined();
+  });
+
+  it("sets and clears camera URL params", () => {
+    setUrl("?keep=true&camX=100");
+    setCameraUrlParams({
+      position: [1.2, 2.5, 3.8],
+      target: [4.4, 5.5, 6.6],
+    });
+    const setUrlCall = replaceStateSpy.mock.calls[0][2] as string;
+    expect(setUrlCall.startsWith("/app/designer?")).toBeTruthy();
+    expect(new URL(setUrlCall, window.location.href).search).toEqual(
+      "?keep=true&urlCameraPos=true&camX=1&camY=3&camZ=4"
+      + "&camTX=4&camTY=6&camTZ=7",
+    );
+
+    setUrl(new URL(setUrlCall, window.location.href).search);
+    clearCameraUrlParams();
+    const clearUrlCall = replaceStateSpy.mock.calls[1][2] as string;
+    expect(new URL(clearUrlCall, window.location.href).search)
+      .toEqual("?keep=true&urlCameraPos=true");
+  });
 });
 
 describe("cameraInit()", () => {
   const fakeProps = (): CameraInitProps => ({
-    topDown: false,
     viewpointHeading: 45,
     bedSize: { x: 3000, y: 1500 },
+    zoomFactor: 10,
   });
 
   it("initializes camera", () => {
     mockDev = undefined;
     mockIsDesktop = true;
-    expect(cameraInit(fakeProps())).toEqual({
-      position: [2475, -2475, 2500],
-      target: [0, 0, 0],
-    });
+    const camera = cameraInit(fakeProps());
+    expect(camera.target).toEqual([0, 0, 0]);
+    expect(camera.position[0]).toBeCloseTo(2483.3613);
+    expect(camera.position[1]).toBeCloseTo(-2483.3613);
+    expect(camera.position[2]).toBeCloseTo(2483.3613);
   });
 
   it("initializes camera: dev", () => {
@@ -52,30 +120,20 @@ describe("cameraInit()", () => {
   it("handles invalid dev camera setting", () => {
     mockDev = "{";
     mockIsDesktop = true;
-    expect(cameraInit(fakeProps())).toEqual({
-      position: [2475, -2475, 2500],
-      target: [0, 0, 0],
-    });
+    const camera = cameraInit(fakeProps());
+    expect(camera.position[0]).toBeCloseTo(2483.3613);
+    expect(camera.position[1]).toBeCloseTo(-2483.3613);
+    expect(camera.position[2]).toBeCloseTo(2483.3613);
   });
 
   it("initializes camera: mobile", () => {
     mockDev = undefined;
     mockIsDesktop = false;
-    expect(cameraInit(fakeProps())).toEqual({
-      position: [4596, -4596, 3400],
-      target: [0, 0, 0],
-    });
-  });
-
-  it("initializes camera: top-down", () => {
-    mockDev = undefined;
-    mockIsDesktop = false;
-    const p = fakeProps();
-    p.topDown = true;
-    expect(cameraInit(p)).toEqual({
-      position: [0, 0, 5000],
-      target: [0, 0, 0],
-    });
+    const camera = cameraInit(fakeProps());
+    expect(camera.target).toEqual([0, 0, 0]);
+    expect(camera.position[0]).toBeCloseTo(4235.0298);
+    expect(camera.position[1]).toBeCloseTo(-4235.0298);
+    expect(camera.position[2]).toBeCloseTo(4235.0298);
   });
 
   it("initializes camera from heading", () => {
@@ -83,10 +141,34 @@ describe("cameraInit()", () => {
     mockIsDesktop = true;
     const p = fakeProps();
     p.viewpointHeading = 90;
+    const camera = cameraInit(p);
+    expect(camera.target).toEqual([0, 0, 0]);
+    expect(camera.position[0]).toBeCloseTo(3041.3813);
+    expect(camera.position[1]).toEqual(0);
+    expect(camera.position[2]).toBeCloseTo(3041.3813);
+  });
+
+  it("initializes a saved top-down camera above the garden", () => {
+    mockDev = JSON.stringify({
+      position: [1, 2, 3],
+      target: [4, 5, 6],
+    });
+    const p = fakeProps();
+    p.topDownAtStart = true;
+    p.viewpointHeading = 90;
     expect(cameraInit(p)).toEqual({
-      position: [3500, 0, 2500],
+      position: [1, 0, 5000],
       target: [0, 0, 0],
     });
+  });
+});
+
+describe("nearestCardinalHeading()", () => {
+  it("rounds normalized headings to the nearest cardinal", () => {
+    expect(nearestCardinalHeading(30)).toEqual(0);
+    expect(nearestCardinalHeading(45)).toEqual(90);
+    expect(nearestCardinalHeading(315)).toEqual(0);
+    expect(nearestCardinalHeading(-10)).toEqual(0);
   });
 });
 
@@ -94,8 +176,8 @@ describe("getDefaultCameraPosition()", () => {
   const fakeProps = (): GetDefaultCameraPositionProps => ({
     heading: 0,
     bedSize: { x: 3000, y: 1500 },
-    topDown: false,
     visual: false,
+    zoomFactor: 10,
   });
 
   it("returns desktop position", () => {
@@ -112,19 +194,563 @@ describe("getDefaultCameraPosition()", () => {
     expect(getDefaultCameraPosition(p)).toEqual([-6500, 0, 3400]);
   });
 
-  it("returns top down position", () => {
-    mockIsDesktop = true;
-    const p = fakeProps();
-    p.heading = 90;
-    p.topDown = true;
-    expect(getDefaultCameraPosition(p)).toEqual([3500, 0, 5000]);
-  });
-
   it("returns camera location visual location", () => {
     mockIsDesktop = true;
     const p = fakeProps();
     p.heading = 180;
     p.visual = true;
     expect(getDefaultCameraPosition(p)).toEqual([0, 2750, 2500]);
+  });
+
+  it("returns a top-down camera marker location", () => {
+    const p = fakeProps();
+    p.topDown = true;
+    p.heading = 90;
+    expect(getDefaultCameraPosition(p)).toEqual([3500, 0, 5000]);
+  });
+});
+
+describe("perspective camera framing", () => {
+  const clippingConfig = {
+    sceneRadius: 41000,
+    minNear: 10,
+    minFar: 75000,
+    maxCameraScale: 1,
+  };
+
+  it("preserves apparent scale while changing FOV", () => {
+    const distance = distanceForFov(1000, 40, 1);
+    expect(distance).toBeGreaterThan(40000);
+    expect(cameraPositionForFov([1000, 0, 0], [0, 0, 0], 40, 1))
+      .toEqual([distance, 0, 0]);
+    expect(canonicalCamera({
+      position: [distance, 0, 0],
+      target: [0, 0, 0],
+    }, 1).position[0]).toBeCloseTo(1000);
+  });
+
+  it("fits the circumscribed bed circle to the limiting viewport dimension", () => {
+    const landscape = getCameraFit({
+      viewport: { width: 1200, height: 600 },
+      bedSize: { x: 3000, y: 4000 },
+    });
+    expect(landscape.circumscribedRadius).toEqual(2500);
+    expect(landscape.cameraRadius * Math.tan(20 * Math.PI / 180))
+      .toBeCloseTo(2500);
+
+    const portrait = getCameraFit({
+      viewport: { width: 300, height: 600 },
+      bedSize: { x: 3000, y: 4000 },
+    });
+    expect(portrait.cameraRadius).toBeCloseTo(landscape.cameraRadius * 2);
+    expect(getCameraFit({
+      viewport: { width: 0, height: 0 },
+      bedSize: { x: 0, y: 0 },
+      fov: 20,
+    }).cameraRadius).toEqual(0);
+  });
+
+  it("reserves viewport margin when fitting a camera", () => {
+    const viewport = { width: 800, height: 600 };
+    const withoutMargin = getCameraFit({
+      viewport,
+      bedSize: { x: 3000, y: 4000 },
+    });
+    const withMargin = getCameraFit({
+      viewport,
+      bedSize: { x: 3000, y: 4000 },
+      margin: 16,
+    });
+    expect(withMargin.cameraRadius).toBeGreaterThan(
+      withoutMargin.cameraRadius,
+    );
+  });
+
+  it("reserves percentage margins relative to each viewport axis", () => {
+    const viewport = { width: 1000, height: 500 };
+    const fov = 60;
+    const framing = getViewportFramingTangents(
+      viewport,
+      fov,
+      0,
+      0.05,
+    );
+    const verticalTangent = Math.tan(fov * Math.PI / 360);
+
+    expect(framing.horizontal).toBeCloseTo(
+      0.9 * viewport.width / viewport.height * verticalTangent,
+    );
+    expect(framing.vertical).toBeCloseTo(0.9 * verticalTangent);
+  });
+
+  it.each([
+    { width: 1200, height: 600 },
+    { width: 375, height: 667 },
+  ])("fits a sphere to the side and top margins in $width x $height",
+    viewport => {
+      const radius = 40000;
+      const fov = 60;
+      const margin = 16;
+      const framing = getViewportFramingTangents(viewport, fov, margin);
+      const fit = getSphereCameraFit({
+        viewport,
+        radius,
+        fov,
+        margin,
+      });
+      const depthSquared = fit.centerDepth ** 2 - radius ** 2;
+      const horizontalTangent = radius / Math.sqrt(depthSquared);
+      const topTangent = (
+        fit.centerVerticalOffset * fit.centerDepth
+        + radius * Math.sqrt(
+          fit.centerVerticalOffset ** 2 + depthSquared,
+        )
+      ) / depthSquared;
+      expect(horizontalTangent).toBeCloseTo(framing.horizontal);
+      expect(topTangent).toBeCloseTo(framing.vertical);
+    });
+
+  it.each([
+    [[1, 0, 0], [100, 0, 0]],
+    [[-1, 0, 0], [-100, 0, 0]],
+    [[0, 1, 0], [0, 100, 0]],
+    [[0, -1, 0], [0, -100, 0]],
+    [[0, 0, 1], [0, 0, 100]],
+    [[1, 1, 0], [Math.SQRT1_2 * 100, Math.SQRT1_2 * 100, 0]],
+  ] as const)("maps the %s cube direction", (direction, expected) => {
+    const position = positionForViewDirection(
+      [...direction],
+      [0, 0, 0],
+      100,
+    );
+    position.map((value, index) =>
+      expect(value).toBeCloseTo(expected[index]));
+  });
+
+  it.each([
+    [0, [0, -1, 1]],
+    [90, [1, 0, 1]],
+    [180, [0, 1, 1]],
+    [270, [-1, 0, 1]],
+    [45, [1, -1, 1]],
+    [135, [1, 1, 1]],
+    [225, [-1, 1, 1]],
+    [315, [-1, -1, 1]],
+  ] as const)("maps heading %s to prism direction %s", (heading, expected) => {
+    expect(viewPrismDirectionForHeading(heading)).toEqual(expected);
+  });
+
+  it("normalizes legacy headings to the nearest prism target", () => {
+    expect(nearestViewPrismHeading(30)).toEqual(45);
+    expect(nearestViewPrismHeading(-10)).toEqual(0);
+    expect(nearestViewPrismHeading(370)).toEqual(0);
+    const position = alignCameraPositionToViewPrism([3, 4, 0], 90);
+    expect(Math.hypot(...position)).toBeCloseTo(5);
+    expect(position[0]).toBeCloseTo(position[2]);
+  });
+
+  it("keeps the target for an empty cube direction", () => {
+    expect(positionForViewDirection([0, 0, 0], [1, 2, 3], 100))
+      .toEqual([1, 2, 3]);
+  });
+
+  it("tightens clipping around a distant camera", () => {
+    expect(getCameraClippingRange(
+      [100000, 0, 0],
+      clippingConfig,
+    )).toEqual({ near: 59000, far: 141000 });
+    expect(getCameraClippingRange(
+      [1000, 0, 0],
+      clippingConfig,
+    )).toEqual({ near: 10, far: 75000 });
+    expect(getCameraClippingRange(
+      [100000, 0, 0],
+      { ...clippingConfig, maxCameraScale: 1.75 },
+    ).far).toEqual(216000);
+    expect(getCameraClippingRange(
+      [0, 0, 0],
+      { ...clippingConfig, sceneRadius: 0, minNear: 1000, minFar: 0 },
+    )).toEqual({ near: 1000, far: 1001 });
+  });
+
+  it("applies clipping to the live perspective camera", () => {
+    const camera = {
+      position: { x: 100000, y: 0, z: 0 },
+      near: 10,
+      far: 75000,
+      updateProjectionMatrix: jest.fn(),
+    };
+    applyCameraClippingRange(camera, clippingConfig);
+    expect(camera.near).toEqual(59000);
+    expect(camera.far).toEqual(141000);
+    expect(camera.updateProjectionMatrix).toHaveBeenCalled();
+    expect(() => applyCameraClippingRange(undefined, clippingConfig))
+      .not.toThrow();
+  });
+});
+
+describe("farm designer camera view offset", () => {
+  it("uses a virtual desktop viewport around the panel", () => {
+    const open = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      true,
+    );
+    const closed = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+
+    expect(FARM_DESIGNER_PANEL_WIDTH).toEqual(450);
+    expect(FARM_DESIGNER_PANEL_MARGIN).toEqual(10);
+    expect(FARM_DESIGNER_PANEL_OUTER_WIDTH).toEqual(470);
+    expect(FARM_DESIGNER_DESKTOP_MIN_WIDTH).toEqual(769);
+    expect(open).toEqual({
+      enabled: true,
+      fullWidth: 1670,
+      fullHeight: 600,
+      offsetX: 0,
+      offsetY: 0,
+      width: 1200,
+      height: 600,
+    });
+    expect(closed).toEqual({
+      ...open,
+      offsetX: 235,
+    });
+  });
+
+  it("uses the actual viewport outside the desktop designer", () => {
+    expect(getPanelCameraViewOffset(
+      { width: 768, height: 600 },
+      false,
+    )).toEqual({
+      enabled: false,
+      fullWidth: 768,
+      fullHeight: 600,
+      offsetX: 0,
+      offsetY: 0,
+      width: 768,
+      height: 600,
+    });
+    expect(getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      undefined,
+    ).enabled).toBeFalsy();
+    expect(getPanelCameraViewOffset(
+      { width: 0, height: 0 },
+      undefined,
+    )).toEqual(expect.objectContaining({
+      fullWidth: 1,
+      fullHeight: 1,
+      width: 1,
+      height: 1,
+    }));
+  });
+
+  it("applies and clears the camera projection crop", () => {
+    const camera = {
+      aspect: 1,
+      clearViewOffset: jest.fn(),
+      setViewOffset: jest.fn(),
+    };
+    const desktopView = getPanelCameraViewOffset(
+      { width: 1200, height: 600 },
+      false,
+    );
+    applyCameraViewOffset(camera, desktopView);
+    expect(camera.setViewOffset)
+      .toHaveBeenCalledWith(1670, 600, 235, 0, 1200, 600);
+
+    applyCameraViewOffset(camera, desktopView, 100);
+    expect(camera.setViewOffset)
+      .toHaveBeenLastCalledWith(1670, 600, 100, 0, 1200, 600);
+
+    const mobileView = getPanelCameraViewOffset(
+      { width: 600, height: 800 },
+      false,
+    );
+    applyCameraViewOffset(camera, mobileView);
+    expect(camera.aspect).toEqual(0.75);
+    expect(camera.clearViewOffset).toHaveBeenCalled();
+    expect(() => applyCameraViewOffset(undefined, desktopView))
+      .not.toThrow();
+  });
+});
+
+describe("top view heading", () => {
+  it.each([
+    [[10, -20, 100], [0, -1, 5000]],
+    [[20, -10, 100], [1, 0, 5000]],
+    [[10, 20, 100], [0, 1, 5000]],
+    [[-20, 10, 100], [-1, 0, 5000]],
+  ] as const)("rounds %s to a cardinal heading", (position, expected) => {
+    expect(nearestCardinalTopViewDirection(
+      [...position],
+      [0, 0, 0],
+    )).toEqual(expected);
+  });
+
+  it("prefers the live OrbitControls azimuth", () => {
+    expect(nearestCardinalTopViewDirection(
+      [0, -1, 100],
+      [0, 0, 0],
+      Math.PI,
+    )).toEqual([0, 1, 5000]);
+  });
+
+  it.each([
+    [45, [0, -1, 5000]],
+    [135, [0, 1, 5000]],
+    [225, [0, 1, 5000]],
+    [315, [0, -1, 5000]],
+  ] as const)(
+    "rounds landscape corner heading %s toward 0 or 180 degrees",
+    (heading, expected) => {
+      expect(nearestCardinalTopViewDirection(
+        [0, 0, 0],
+        [0, 0, 0],
+        heading * Math.PI / 180,
+        { width: 1200, height: 600 },
+      )).toEqual(expected);
+    },
+  );
+
+  it.each([
+    [45, [1, 0, 5000]],
+    [135, [1, 0, 5000]],
+    [225, [-1, 0, 5000]],
+    [315, [-1, 0, 5000]],
+  ] as const)(
+    "rounds portrait corner heading %s toward 90 or 270 degrees",
+    (heading, expected) => {
+      expect(nearestCardinalTopViewDirection(
+        [0, 0, 0],
+        [0, 0, 0],
+        heading * Math.PI / 180,
+        { width: 600, height: 1200 },
+      )).toEqual(expected);
+    },
+  );
+
+  it("uses the nearest heading away from an exact corner", () => {
+    expect(nearestCardinalTopViewDirection(
+      [0, 0, 0],
+      [0, 0, 0],
+      44 * Math.PI / 180,
+      { width: 600, height: 1200 },
+    )).toEqual([0, -1, 5000]);
+    expect(nearestCardinalTopViewDirection(
+      [0, 0, 0],
+      [0, 0, 0],
+      46 * Math.PI / 180,
+      { width: 1200, height: 600 },
+    )).toEqual([1, 0, 5000]);
+  });
+
+  it("retains normal tie rounding without a rectangular viewport", () => {
+    expect(nearestCardinalTopViewDirection(
+      [0, 0, 0],
+      [0, 0, 0],
+      Math.PI / 4,
+    )).toEqual([1, 0, 5000]);
+    expect(nearestCardinalTopViewDirection(
+      [0, 0, 0],
+      [0, 0, 0],
+      Math.PI / 4,
+      { width: 600, height: 600 },
+    )).toEqual([1, 0, 5000]);
+  });
+});
+
+describe("view prism keyboard navigation", () => {
+  const cameraForPreset = (
+    layer: ViewPrismLayer,
+    heading: number,
+  ) => {
+    const direction = viewPrismDirectionForHeading(heading);
+    if (layer == "side") {
+      direction[2] = 0;
+    }
+    if (layer == "top") {
+      direction[0] /= 5000;
+      direction[1] /= 5000;
+      direction[2] = 1;
+    }
+    return {
+      position: direction,
+      target: [0, 0, 0] as [number, number, number],
+    };
+  };
+
+  const preset = (
+    layer: ViewPrismLayer,
+    heading: number,
+  ): ViewPrismKeyboardPreset => ({
+    layer,
+    heading,
+    direction: layer == "top"
+      ? [0, 0, 1]
+      : cameraForPreset(layer, heading).position,
+    azimuth: layer == "top" ? heading * Math.PI / 180 : undefined,
+  });
+
+  it.each([
+    ["side", 0, "side"],
+    ["angled", 45, "angled"],
+    ["top", 90, "top"],
+  ] as const)(
+    "classifies a %s camera at %s degrees",
+    (layer, heading, expectedLayer) => {
+      const result = getViewPrismKeyboardPreset(
+        cameraForPreset(layer, heading),
+      );
+      expect(result.layer).toEqual(expectedLayer);
+      expect(result.heading).toEqual(heading);
+    },
+  );
+
+  it.each([
+    ["side", 45],
+    ["angled", 45],
+    ["top", 90],
+  ] as const)(
+    "orbits every %s preset by %s degrees and wraps",
+    (layer, step) => {
+      const headings = layer == "top"
+        ? [0, 90, 180, 270]
+        : [0, 45, 90, 135, 180, 225, 270, 315];
+      headings.map(heading => {
+        const current = preset(layer, heading);
+        expect(nextViewPrismKeyboardPreset(
+          current,
+          "ArrowRight",
+        )?.heading).toEqual((heading + step) % 360);
+        expect(nextViewPrismKeyboardPreset(
+          current,
+          "ArrowLeft",
+        )?.heading).toEqual((heading - step + 360) % 360);
+      });
+    },
+  );
+
+  it.each([
+    ["side", 0, [315, 45]],
+    ["side", 20, [0, 45]],
+    ["angled", 44, [0, 45]],
+    ["angled", 46, [45, 90]],
+    ["top", 89, [0, 90]],
+    ["top", 91, [90, 180]],
+  ] as const)(
+    "snaps a free %s orbit at %s degrees directionally",
+    (layer, heading, expected) => {
+      const angle = heading * Math.PI / 180;
+      let z = 1;
+      if (layer == "side") { z = 0; }
+      if (layer == "top") { z = 100; }
+      const camera = {
+        position: [
+          Math.sin(angle),
+          -Math.cos(angle),
+          z,
+        ] as [number, number, number],
+        target: [0, 0, 0] as [number, number, number],
+      };
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowLeft",
+      )?.heading).toEqual(expected[0]);
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowRight",
+      )?.heading).toEqual(expected[1]);
+    },
+  );
+
+  it.each([
+    [{ width: 1200, height: 600 }, [0, 0, 90, 180, 180, 180, 270, 0]],
+    [{ width: 600, height: 1200 }, [0, 90, 90, 90, 180, 270, 270, 270]],
+    [{ width: 600, height: 600 }, [0, 90, 90, 180, 180, 270, 270, 0]],
+  ])("moves up through all prism layers for viewport %s",
+    (viewport, expectedTopHeadings) => {
+      const headings = [0, 45, 90, 135, 180, 225, 270, 315];
+      headings.map((heading, index) => {
+        const angled = nextViewPrismKeyboardPreset(
+          preset("side", heading),
+          "ArrowUp",
+          viewport,
+        );
+        expect(angled).toMatchObject({ layer: "angled", heading });
+        expect(nextViewPrismKeyboardPreset(
+          angled!,
+          "ArrowUp",
+          viewport,
+        )).toMatchObject({
+          layer: "top",
+          heading: expectedTopHeadings[index],
+          direction: [0, 0, 1],
+        });
+      });
+    });
+
+  it("moves down through the layers and stops at their boundaries", () => {
+    [0, 90, 180, 270].map(heading => {
+      const angled = nextViewPrismKeyboardPreset(
+        preset("top", heading),
+        "ArrowDown",
+      );
+      expect(angled).toMatchObject({ layer: "angled", heading });
+      expect(nextViewPrismKeyboardPreset(
+        angled!,
+        "ArrowDown",
+      )).toMatchObject({ layer: "side", heading });
+    });
+    expect(nextViewPrismKeyboardPreset(
+      preset("top", 0),
+      "ArrowUp",
+    )).toBeUndefined();
+    expect(nextViewPrismKeyboardPreset(
+      preset("side", 0),
+      "ArrowDown",
+    )).toBeUndefined();
+  });
+
+  it.each([
+    [10, "side", "angled"],
+    [35, "side", "angled"],
+    [55, "angled", "top"],
+    [80, "angled", "top"],
+  ] as const)(
+    "snaps a free orbit at %s degrees elevation directionally",
+    (elevation, downLayer, upLayer) => {
+      const angle = elevation * Math.PI / 180;
+      const camera = {
+        position: [
+          0,
+          -Math.cos(angle),
+          Math.sin(angle),
+        ] as [number, number, number],
+        target: [0, 0, 0] as [number, number, number],
+      };
+
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowDown",
+      )?.layer).toEqual(downLayer);
+      expect(nextViewPrismKeyboardPreset(
+        camera,
+        "ArrowUp",
+      )?.layer).toEqual(upLayer);
+    },
+  );
+
+  it("preserves target-relative headings and handles an empty offset", () => {
+    expect(getViewPrismKeyboardPreset({
+      position: [110, 200, 300],
+      target: [100, 200, 300],
+    })).toMatchObject({ layer: "side", heading: 90 });
+    expect(getViewPrismKeyboardPreset({
+      position: [1, 2, 3],
+      target: [1, 2, 3],
+    })).toMatchObject({ layer: "side", heading: 0 });
   });
 });

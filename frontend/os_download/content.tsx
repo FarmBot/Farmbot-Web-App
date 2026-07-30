@@ -47,6 +47,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
     imageUrl: RPI4().imageUrl,
     releaseTag: RPI4().releaseTag,
     kits: [
+      "Genesis v1.9",
+      "Genesis XL v1.9",
       "Genesis v1.8",
       "Genesis XL v1.8",
       "Genesis v1.7",
@@ -144,6 +146,7 @@ enum Version {
   "v1.6" = "v1.6",
   "v1.7" = "v1.7",
   "v1.8" = "v1.8",
+  "v1.9" = "v1.9",
 }
 
 const VERSIONS = () => ({
@@ -153,6 +156,7 @@ const VERSIONS = () => ({
     Version["v1.0"],
   ],
   [Model.Genesis]: [
+    Version["v1.9"],
     Version["v1.8"],
     Version["v1.7"],
     Version["v1.6"],
@@ -242,6 +246,9 @@ const DOWNLOADS = (): Downloads => ({
       [Run.first]: RPI4(),
     },
     [Version["v1.8"]]: {
+      [Run.first]: RPI4(),
+    },
+    [Version["v1.9"]]: {
       [Run.first]: RPI4(),
     },
   }

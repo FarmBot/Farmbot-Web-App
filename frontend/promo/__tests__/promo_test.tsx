@@ -10,6 +10,7 @@ import * as zoomBeaconConstants from
 import { INITIAL, PRESETS } from "../../three_d_garden/config";
 import { calculatePlantPositions } from "../plants";
 import * as screenSize from "../../screen_size";
+import { PROMO_RESOURCES_KEY } from "../resources";
 
 type CanvasComponentProps = React.ComponentProps<typeof reactThreeFiber.Canvas>;
 type CanvasCreatedState =
@@ -49,6 +50,7 @@ describe("<Promo />", () => {
 
   afterEach(() => {
     window.location.search = originalSearch;
+    localStorage.removeItem(PROMO_RESOURCES_KEY);
     jest.useRealTimers();
     console.error = originalConsoleError;
     canvasSpy.mockRestore();
@@ -62,6 +64,7 @@ describe("<Promo />", () => {
     console.error = jest.fn();
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("three-d-garden");
+    expect(container.querySelector(".view-prism-viewport")).toBeFalsy();
     expect(gardenModelSpy.mock.calls[0][0]).toEqual(
       expect.objectContaining({
         plantIconCapacities: expect.any(Object),
@@ -72,6 +75,14 @@ describe("<Promo />", () => {
     unmount();
   });
 
+  it("shows the view prism when viewCube is enabled", () => {
+    window.location.search = "?viewCube=true";
+    const { container, unmount } = render(<Promo />);
+    expect(container.querySelector(".view-prism-viewport")).toBeTruthy();
+    expect(canvasSpy).toHaveBeenCalledTimes(2);
+    unmount();
+  });
+
   it("loads settings bar after the 3D scene is ready", () => {
     const { container, unmount } = render(<Promo />);
     expect(container.querySelector(".settings-bar-loaded")).toBeFalsy();
@@ -79,6 +90,16 @@ describe("<Promo />", () => {
       gardenModelSpy.mock.calls[0][0].onDetailsRevealStart();
     });
     expect(container.querySelector(".settings-bar-loaded")).toBeTruthy();
+    unmount();
+  });
+
+  it("doesn't expose stargazing in the promo", () => {
+    const { container, unmount } = render(<Promo />);
+    const gardenProps =
+      gardenModelSpy.mock.calls[gardenModelSpy.mock.calls.length - 1][0];
+    expect(gardenProps.celestialView).toBeUndefined();
+    expect(gardenProps.timeTravelDispatch).toBeUndefined();
+    expect(container.querySelector(".stargazing-controls")).toBeNull();
     unmount();
   });
 
@@ -117,6 +138,39 @@ describe("<Promo />", () => {
     unmount();
   });
 
+  it("applies constellation promo configs", () => {
+    window.location.search =
+      "?constellations=true&constellationsDebug=true";
+    const { unmount } = render(<Promo />);
+    expect(gardenModelSpy.mock.calls[0][0].config).toEqual(
+      expect.objectContaining({
+        constellations: true,
+        constellationsDebug: true,
+      }),
+    );
+    unmount();
+  });
+
+  it("uses promo resources from local storage", () => {
+    localStorage.setItem(PROMO_RESOURCES_KEY, JSON.stringify({
+      plants: [{ name: "Spinach", openfarm_slug: "spinach", x: 100, y: 200 }],
+      points: [{ name: "Point 1", x: 300, y: 400, z: -100 }],
+      weeds: [{ name: "Weed", x: 500, y: 600, z: -100 }],
+    }));
+    const { unmount } = render(<Promo />);
+    expect(gardenModelSpy.mock.calls[0][0].threeDPlants)
+      .toEqual([expect.objectContaining({ label: "Spinach", x: 100, y: 200 })]);
+    expect(gardenModelSpy.mock.calls[0][0].mapPoints)
+      .toEqual([expect.objectContaining({
+        body: expect.objectContaining({ name: "Point 1", x: 300, y: 400 }),
+      })]);
+    expect(gardenModelSpy.mock.calls[0][0].weeds)
+      .toEqual([expect.objectContaining({
+        body: expect.objectContaining({ name: "Weed", x: 500, y: 600 }),
+      })]);
+    unmount();
+  });
+
   it("adjusts the initial mobile heading", () => {
     isMobileSpy.mockReturnValue(true);
     const { unmount } = render(<Promo />);
@@ -127,16 +181,23 @@ describe("<Promo />", () => {
 
   it("clears active focus on Escape", async () => {
     focusFromUrlParamsSpy.mockReturnValue("What you can grow");
-    const { unmount } = render(<Promo />);
+    const addEventListenerSpy = jest.spyOn(window, "addEventListener");
+    const { container, unmount } = render(<Promo />);
     await waitFor(() => expect(gardenModelSpy.mock.calls[0][0])
       .toEqual(expect.objectContaining({ activeFocus: "What you can grow" })));
-    fireEvent.keyDown(window, { key: "Enter" });
-    fireEvent.keyDown(screen.getByText("garden-model")
-      .closest(".three-d-garden") as HTMLElement, { key: "Escape" });
+    const promo = container.querySelector(".promo") as HTMLElement;
+    fireEvent.keyDown(promo, { key: "Enter" });
+    const keyDownListener = addEventListenerSpy.mock.calls.find(
+      ([eventName]) => eventName == "keydown",
+    )?.[1] as EventListener;
+    act(() => keyDownListener(new KeyboardEvent("keydown", { key: "Enter" })));
+    expect(pushStateSpy).not.toHaveBeenCalled();
+    act(() => keyDownListener(new KeyboardEvent("keydown", { key: "Escape" })));
     await waitFor(() => expect(pushStateSpy).toHaveBeenCalled());
     const nextUrl = pushStateSpy.mock.calls[0][2] as string;
     expect(nextUrl).not.toContain("focus=");
     unmount();
+    addEventListenerSpy.mockRestore();
   });
 });
 

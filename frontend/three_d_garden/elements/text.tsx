@@ -1,5 +1,6 @@
 import React from "react";
 import { Center, Text3D } from "@react-three/drei";
+import { ThreeElements } from "@react-three/fiber";
 import { ASSETS, RenderOrder } from "../constants";
 import { MeshBasicMaterial } from "../components";
 
@@ -11,8 +12,13 @@ export interface TextProps {
   color: string;
   name?: string;
   visible?: boolean;
-  renderOrder?: RenderOrder;
+  renderOrder?: RenderOrder | number;
   thickness?: number;
+  depthTest?: boolean;
+  depthWrite?: boolean;
+  transparent?: boolean;
+  opacity?: number;
+  raycast?: ThreeElements["mesh"]["raycast"];
 }
 
 const sameVector = (
@@ -31,6 +37,11 @@ export const textPropsEqual = (prev: TextProps, next: TextProps) =>
   prev.visible === next.visible &&
   prev.renderOrder === next.renderOrder &&
   prev.thickness === next.thickness &&
+  prev.depthTest === next.depthTest &&
+  prev.depthWrite === next.depthWrite &&
+  prev.transparent === next.transparent &&
+  prev.opacity === next.opacity &&
+  prev.raycast === next.raycast &&
   sameVector(prev.position, next.position) &&
   sameVector(prev.rotation, next.rotation);
 
@@ -44,9 +55,15 @@ const TextBase = (props: TextProps) => {
       font={ASSETS.fonts.cabinBold}
       size={props.fontSize}
       height={props.thickness || 0.01}
-      rotation={props.rotation}>
+      rotation={props.rotation}
+      raycast={props.raycast}>
       {props.children}
-      <MeshBasicMaterial color={props.color} />
+      <MeshBasicMaterial
+        color={props.color}
+        depthTest={props.depthTest}
+        depthWrite={props.depthWrite}
+        transparent={props.transparent ?? props.opacity !== undefined}
+        opacity={props.opacity} />
     </Text3D>
   </Center>;
 };

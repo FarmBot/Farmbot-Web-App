@@ -142,6 +142,19 @@ describe("resource reducer", () => {
     expect(dev4.specialStatus).toBe(SpecialStatus.SAVED);
   });
 
+  it("marks resources as SAVING when reducing SAVE_RESOURCE_START", () => {
+    const tool = fakeResource("Tool", { id: 1, name: "tool" });
+    const state = buildResourceIndex([tool]);
+
+    const next = resourceReducer(state, {
+      type: Actions.SAVE_RESOURCE_START,
+      payload: tool,
+    });
+
+    const savedTool = next.index.references[tool.uuid] as TaggedTool;
+    expect(savedTool.specialStatus).toBe(SpecialStatus.SAVING);
+  });
+
   const TEST_RESOURCE_NAMES: TaggedResource["kind"][] = ["Crop", "Device",
     "FarmEvent", "FarmwareInstallation", "FbosConfig",
     "FirmwareConfig", "Log", "Peripheral", "PinBinding", "PlantTemplate",

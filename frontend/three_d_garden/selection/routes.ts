@@ -1,21 +1,22 @@
 import {
-  PointType, TaggedGenericPointer, TaggedWeedPointer,
+  PointType, TaggedGenericPointer, TaggedSceneObject, TaggedWeedPointer,
 } from "farmbot";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
-import { DesignerState } from "../../farm_designer/interfaces";
+import { ThreeDDesignerState } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
 
 const POINT_TYPE_BY_SELECTION_KIND:
-  Partial<Record<ThreeDObjectSelection["kind"], PointType>> = {
-    plant: "Plant",
-    point: "GenericPointer",
-    weed: "Weed",
-    slot: "ToolSlot",
-  };
+  Partial<Record<ThreeDObjectSelection["kind"], PointType>> =
+{
+  plant: "Plant",
+  point: "GenericPointer",
+  weed: "Weed",
+  slot: "ToolSlot",
+};
 
 export const pointTypeForSelectionKind = (
   kind: ThreeDObjectSelection["kind"],
@@ -34,6 +35,7 @@ interface SelectionLookupProps {
   points: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   toolSlots: SlotWithTool[];
+  sceneObjects: TaggedSceneObject[];
 }
 
 export interface ThreeDObjectSelectionLookup {
@@ -65,8 +67,11 @@ export const createSelectionLookup = (props: SelectionLookupProps) => {
   props.weeds.forEach(weed => weed.body.id && addLookupSelection(
     lookup, weed.uuid, { kind: "weed", id: weed.body.id }));
   props.toolSlots.forEach(slot => slot.toolSlot.body.id && addLookupSelection(
-    lookup, slot.toolSlot.uuid, {
-      kind: "slot", id: slot.toolSlot.body.id,
+    lookup, slot.toolSlot.uuid,
+    { kind: "slot", id: slot.toolSlot.body.id }));
+  props.sceneObjects.forEach(sceneObject => sceneObject.body.id
+    && addLookupSelection(lookup, sceneObject.uuid, {
+      kind: "sceneObject", id: sceneObject.body.id,
     }));
   return lookup;
 };
@@ -95,6 +100,7 @@ export const routeSelectionFromPath = (
     case "points": return { kind: "point", id };
     case "weeds": return { kind: "weed", id };
     case "tool-slots": return { kind: "slot", id };
+    case "scene-objects": return { kind: "sceneObject", id };
     default: return undefined;
   }
 };
@@ -124,11 +130,13 @@ const selectionFromResource = (
   resource?.body.id ? { kind, id: resource.body.id } : undefined;
 
 export const hoverSelectionFromDesigner = (
-  designer: DesignerState | undefined,
+  designer: ThreeDDesignerState | undefined,
   plants: TaggedPlant[],
   points: TaggedGenericPointer[],
   weeds: TaggedWeedPointer[],
   toolSlots: SlotWithTool[],
+  sceneObjects: TaggedSceneObject[] = [],
+  // eslint-disable-next-line complexity
 ): ThreeDObjectSelection | undefined => {
   const hoveredPlantUuid =
     designer?.hoveredPlant.plantUUID || designer?.hoveredPlantListItem;
@@ -144,7 +152,18 @@ export const hoverSelectionFromDesigner = (
 
   const slot = toolSlots.filter(resource =>
     resource.toolSlot.uuid == designer?.hoveredToolSlot)[0];
-  return selectionFromResource("slot", slot?.toolSlot);
+  const slotSelection = selectionFromResource("slot", slot?.toolSlot);
+  if (slotSelection) { return slotSelection; }
+
+  const sceneObject = sceneObjects.filter(resource =>
+    resource.uuid == designer?.hoveredSceneObject)[0];
+  const sceneObjectSelection = selectionFromResource("sceneObject", sceneObject);
+  if (sceneObjectSelection) { return sceneObjectSelection; }
+  const staticSceneObject = sceneObjects.filter(resource =>
+    resource.uuid == designer?.hoveredSceneObject)[0];
+  return staticSceneObject
+    ? { kind: "sceneObject", id: 0, uuid: staticSceneObject.uuid }
+    : undefined;
 };
 
 export const pathForThreeDSelection = (
@@ -158,5 +177,9 @@ export const pathForThreeDSelection = (
     case "utm": return Path.tools();
     case "electronics": return Path.settings("farmbot");
     case "camera": return Path.photos();
+    case "connectivity": return Path.designer();
+    case "sceneObject": return Path.sceneObjects(selection.id);
+    case "bed": return Path.settings("3d_garden");
+    case "safeHeight": return Path.settings("farmbot");
   }
 };

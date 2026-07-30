@@ -203,6 +203,19 @@ describe("<ResourceTitle />", () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
+  it("uses a custom name change handler", () => {
+    const p = fakeProps();
+    p.onChange = jest.fn();
+    const { container } = render(<ResourceTitle {...p} />);
+    fireEvent.click(container.querySelector("span") as Element);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
+
+    expect(p.onChange).toHaveBeenCalledWith("abc");
+    expect(editSpy).not.toHaveBeenCalled();
+  });
+
   it("is read-only", () => {
     const p = fakeProps();
     p.readOnly = true;

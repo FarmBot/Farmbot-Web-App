@@ -5,7 +5,13 @@ import axios from "axios";
 import { API } from "../index";
 import { Actions } from "../../constants";
 import { get } from "lodash";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
+import { fakePeripheral } from
+  "../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "farmbot";
+import * as dataConsistency from "../../connectivity/data_consistency";
 
 describe("successful refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -92,6 +98,39 @@ describe("initSaveGetId()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions._RESOURCE_NO,
       payload: expect.objectContaining({ err: "error" })
+    });
+  });
+});
+
+describe("updateViaAjax()", () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it("creates a resource without an API id", async () => {
+    const startTracking = jest.spyOn(dataConsistency, "startTracking")
+      .mockImplementation(jest.fn());
+    const peripheral = fakePeripheral();
+    peripheral.body.id = undefined;
+    const index = buildResourceIndex([peripheral]).index;
+    const dispatch = jest.fn();
+    const responseBody = { ...peripheral.body, id: 123 };
+    const post = jest.spyOn(axios, "post")
+      .mockResolvedValue({ data: responseBody });
+
+    await crud.updateViaAjax({
+      uuid: peripheral.uuid,
+      statusBeforeError: SpecialStatus.DIRTY,
+      dispatch,
+      index,
+    });
+
+    expect(post).toHaveBeenCalledWith(
+      API.current.peripheralsPath,
+      peripheral.body,
+    );
+    expect(startTracking).toHaveBeenCalledWith(peripheral.uuid);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SAVE_RESOURCE_OK,
+      payload: expect.objectContaining({ body: responseBody }),
     });
   });
 });

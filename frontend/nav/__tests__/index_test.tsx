@@ -2,7 +2,7 @@ let mockIsMobile = false;
 
 import React from "react";
 import { fireEvent } from "@testing-library/react";
-import { RawNavBar as NavBar } from "../index";
+import { mapStateToProps, RawNavBar as NavBar } from "../index";
 import { Provider } from "react-redux";
 import { Store, UnknownAction } from "redux";
 import { TaggedResource } from "farmbot";
@@ -20,7 +20,9 @@ import { Path } from "../../internal_urls";
 import { NavigationContext } from "../../routes_helpers";
 import { fakePercentJob } from "../../__test_support__/fake_bot_data";
 import {
-  fakeFirmwareConfig, fakeUser, fakeWebAppConfig,
+  fakeFbosConfig, fakeFirmwareConfig, fakePeripheral, fakeSequence,
+  fakeTelemetry, fakeUser, fakeWebAppConfig, fakeWebcamFeed,
+  fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
 import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
@@ -29,14 +31,19 @@ import { renderWithContext } from "../../__test_support__/mount_with_context";
 import * as controlsPanelModule from "../../controls/controls";
 import * as screenSize from "../../screen_size";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
-import { showTimeTravelButton } from "../../three_d_garden/time_travel";
 import * as mustBeOnline from "../../devices/must_be_online";
+import * as deviceActions from "../../devices/actions";
 import { fakeState } from "../../__test_support__/fake_state";
+import {
+  commandPaletteShortcut, COMMAND_PALETTE_OPEN_EVENT,
+} from "../../command_palette";
+import { BooleanSetting } from "../../session_keys";
 
 let isMobileSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
 let maybeSetTimezoneSpy: jest.SpyInstance;
 let forceOnlineSpy: jest.SpyInstance;
+let preloadDemoMovementActionsSpy: jest.SpyInstance;
 
 describe("<NavBar />", () => {
   const mockStoreForProps = (props: NavBarProps) => {
@@ -83,6 +90,10 @@ describe("<NavBar />", () => {
       .mockImplementation(jest.fn());
     forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
       .mockImplementation(() => false);
+    preloadDemoMovementActionsSpy = jest.spyOn(
+      deviceActions,
+      "preloadDemoMovementActions",
+    ).mockImplementation(jest.fn());
   });
 
   afterEach(() => {
@@ -90,6 +101,7 @@ describe("<NavBar />", () => {
     isDesktopSpy.mockRestore();
     maybeSetTimezoneSpy.mockRestore();
     forceOnlineSpy.mockRestore();
+    preloadDemoMovementActionsSpy.mockRestore();
     localStorage.removeItem("myBotIs");
     document.body.innerHTML = "";
   });
@@ -144,6 +156,7 @@ describe("<NavBar />", () => {
       type: Actions.DEMO_SET_STATE,
       payload: undefined,
     });
+    expect(preloadDemoMovementActionsSpy).toHaveBeenCalled();
   });
 
   it("doesn't set demo state when not forced online", () => {
@@ -154,6 +167,7 @@ describe("<NavBar />", () => {
       type: Actions.DEMO_SET_STATE,
       payload: undefined,
     });
+    expect(preloadDemoMovementActionsSpy).not.toHaveBeenCalled();
   });
 
   it("displays links", () => {
@@ -191,6 +205,35 @@ describe("<NavBar />", () => {
     expect(container.querySelector(".connectivity-button.hover")).toBeTruthy();
     expect(container.querySelector(".nav-coordinates.hover")).toBeTruthy();
     expect(container.querySelector(".jobs-button.hover")).toBeTruthy();
+    expect(document.querySelector(
+      ".connectivity-popover-portal.nav-popover-portal")).toBeTruthy();
+    expect(document.querySelector(
+      ".controls-popover-portal.nav-popover-portal")).toBeTruthy();
+    expect(document.querySelector(
+      ".jobs-panel-portal.nav-popover-portal")).toBeTruthy();
+  });
+
+  it("opens the command palette from the right nav cluster", () => {
+    const open = jest.fn();
+    window.addEventListener(COMMAND_PALETTE_OPEN_EVENT, open);
+    const { container } = renderNavBar();
+    const button = container.querySelector(".command-palette-nav-button");
+    expect(button?.textContent)
+      .toEqual(`Commands ${commandPaletteShortcut()}`);
+    fireEvent.click(button as Element);
+    expect(open).toHaveBeenCalledTimes(1);
+    window.removeEventListener(COMMAND_PALETTE_OPEN_EVENT, open);
+  });
+
+  it("hides command palette shortcut help on mobile", () => {
+    mockIsMobile = true;
+    const { container } = renderNavBar();
+    const button = container.querySelector(".command-palette-nav-button");
+    expect(button).toHaveAccessibleName("Commands");
+    expect(button).toHaveAttribute("title", "Commands");
+    expect(button).toHaveTextContent("");
+    expect(button?.querySelector("span")).toBeNull();
+    expect(button?.outerHTML).not.toContain(commandPaletteShortcut());
   });
 
   it("displays movement progress", () => {
@@ -229,11 +272,19 @@ describe("<NavBar />", () => {
   });
 
   it("toggles state value", () => {
+    const setStateSpy = jest.spyOn(
+      NavBar.prototype as unknown as { setState: jest.Mock },
+      "setState",
+    );
     const { container } = renderNavBar();
     const icon = container.querySelector(".mobile-menu-icon") as HTMLElement;
     expect(document.querySelector(".mobile-menu.active")).toBeFalsy();
     fireEvent.click(icon);
     expect(document.querySelector(".mobile-menu.active")).toBeTruthy();
+    fireEvent.click(document.querySelector(
+      ".mobile-menu.active .shop-link") as HTMLElement);
+    expect(setStateSpy).toHaveBeenLastCalledWith({ mobileMenuOpen: false });
+    setStateSpy.mockRestore();
   });
 
   it("toggles popup", () => {
@@ -243,6 +294,27 @@ describe("<NavBar />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POPUP, payload: "connectivity",
     });
+    fireEvent.click(container.querySelector(".nav-coordinates") as Element);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POPUP, payload: "controls",
+    });
+    fireEvent.click(container.querySelector(".jobs-button") as Element);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POPUP, payload: "jobs",
+    });
+  });
+
+  it("closes the mobile menu from a navigation link", () => {
+    const setStateSpy = jest.spyOn(
+      NavBar.prototype as unknown as { setState: jest.Mock },
+      "setState",
+    );
+    const { container } = renderNavBar();
+    fireEvent.click(container.querySelector(
+      ".top-menu-container .nav-links a",
+    ) as Element);
+    expect(setStateSpy).toHaveBeenCalledWith({ mobileMenuOpen: false });
+    setStateSpy.mockRestore();
   });
 
   it("updates document title", () => {
@@ -298,6 +370,7 @@ describe("<NavBar />", () => {
     const { container } = renderNavBar();
     const setupButton = container.querySelector(".setup-button") as HTMLAnchorElement;
     expect(setupButton).toBeTruthy();
+    expect(setupButton).toHaveTextContent(/^Setup: 0%$/);
     fireEvent.click(setupButton);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
   });
@@ -316,12 +389,13 @@ describe("<NavBar />", () => {
     expect(container.querySelector(".setup-button")).toBeNull();
   });
 
-  it("displays time travel button", () => {
+  it("displays time travel button without device coordinates", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
-    p.device.body.lat = 1;
-    p.device.body.lng = 1;
-    expect(showTimeTravelButton(true, p.device.body)).toBeTruthy();
+    p.device.body.lat = undefined;
+    p.device.body.lng = undefined;
+    const { container } = renderNavBar(p);
+    expect(container.querySelector(".time-travel-button")).toBeTruthy();
   });
 
   it("displays navbar visual warning for support tokens", () => {
@@ -365,6 +439,54 @@ describe("<NavBar />", () => {
       == p.bot.hardware.mcu_params);
     expect(callWithMcuParams).toBeTruthy();
     controlsPanelSpy.mockRestore();
+  });
+
+  it("maps and memoizes connected navbar state", () => {
+    const state = fakeState();
+    const device = fakeDevice();
+    const wizardStepResult = fakeWizardStepResult();
+    const peripheral = fakePeripheral();
+    const sequence = fakeSequence();
+    state.resources = buildResourceIndex([
+      device,
+      fakeUser(),
+      fakeWebAppConfig(),
+      fakeFbosConfig(),
+      fakeFirmwareConfig(),
+      wizardStepResult,
+      fakeTelemetry(),
+      fakeWebcamFeed(),
+      peripheral,
+      sequence,
+    ]);
+
+    const first = mapStateToProps(state);
+    expect(first.dispatch).toBe(state.dispatch);
+    expect(first.resources).toBe(state.resources.index);
+    expect(first.designer).toBe(state.resources.consumers.farm_designer);
+    expect(first.device.body.id).toEqual(device.body.id);
+    expect(first.firmwareConfig).toEqual(expect.any(Object));
+    expect(first.wizardStepResults.map(result => result.body.id))
+      .toEqual([wizardStepResult.body.id]);
+    expect(first.peripherals.map(result => result.body.id))
+      .toEqual([peripheral.body.id]);
+    expect(first.sequences.map(result => result.body.id))
+      .toEqual([sequence.body.id]);
+    expect(first.getConfigValue(BooleanSetting.three_d_garden)).toBeFalsy();
+
+    const connectivityUpdate = {
+      ...state,
+      bot: { ...state.bot, connectivity: cloneDeep(state.bot.connectivity) },
+    };
+    const second = mapStateToProps(connectivityUpdate);
+    expect(second.bot).toBe(first.bot);
+    expect(second.peripherals).toBe(first.peripherals);
+
+    const botUpdate = {
+      ...connectivityUpdate,
+      bot: { ...connectivityUpdate.bot, stepSize: state.bot.stepSize + 1 },
+    };
+    expect(mapStateToProps(botUpdate).bot).toBe(botUpdate.bot);
   });
 
 });

@@ -1,9 +1,11 @@
 export type ThreeDObjectKind =
-  "plant" | "point" | "weed" | "slot" | "utm" | "electronics" | "camera";
+  "plant" | "point" | "weed" | "slot" | "utm" | "electronics" | "camera"
+  | "connectivity" | "sceneObject" | "bed" | "safeHeight";
 
 export interface ThreeDObjectSelection {
   kind: ThreeDObjectKind;
   id: number;
+  uuid?: string;
 }
 
 export interface ThreeDLocationSelection {

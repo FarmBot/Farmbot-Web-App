@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+import json
+from pathlib import Path
+import sys
+
+
+def storage_items(values):
+    return [
+        {
+            "name": name,
+            "value": value if isinstance(value, str) else json.dumps(
+                value, separators=(",", ":")),
+        }
+        for name, value in values.items()
+    ]
+
+
+def storage_state(data):
+    return {
+        "cookies": data.get("cookies", []),
+        "origins": [
+            {
+                "origin": data["origin"],
+                "localStorage": storage_items(data.get("localStorage", {})),
+            },
+        ],
+    }
+
+
+def main():
+    source_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
+        "scripts/ci/storage-states")
+    output_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("/tmp")
+
+    if not source_dir.exists():
+        return
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for source in sorted(source_dir.glob("*.json")):
+        with source.open(encoding="utf-8") as file:
+            data = json.load(file)
+        output = output_dir / source.name
+        with output.open("w", encoding="utf-8") as file:
+            json.dump(storage_state(data), file, separators=(",", ":"))
+            file.write("\n")
+        print(f"STORAGE_STATE={output}")
+
+
+if __name__ == "__main__":
+    main()

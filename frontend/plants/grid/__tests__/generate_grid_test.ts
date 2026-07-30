@@ -54,9 +54,35 @@ describe("initPlantGrid", () => {
       designer: fakeDesignerState(),
     });
     expect(result.length).toEqual(expectedGrid.length);
-    expect(result[0].pointer_type).toEqual("Plant");
+    expect(result[0]).toEqual(expect.objectContaining({
+      pointer_type: "Plant",
+    }));
     const vectors = result.map(x => [x.x, x.y]);
     expect(vectors).toEqual(expectedGrid);
+  });
+
+  it("creates plant templates for a saved garden", () => {
+    const designer = fakeDesignerState();
+    designer.openedSavedGarden = 42;
+    designer.cropRadius = 100;
+    const result = initPlantGrid({
+      grid: testGridInputs(),
+      openfarm_slug: "slug",
+      itemName: "beets",
+      gridId: "123",
+      offsetPacking: false,
+      designer,
+    });
+    expect(result).toHaveLength(expectedGrid.length);
+    expect(result[0]).toEqual({
+      saved_garden_id: 42,
+      radius: 25,
+      x: 11,
+      y: 31,
+      z: 0,
+      name: "beets",
+      openfarm_slug: "slug",
+    });
   });
 
   it("saves a point grid", () => {
@@ -71,9 +97,11 @@ describe("initPlantGrid", () => {
       designer: fakeDesignerState(),
     });
     expect(result.length).toEqual(expectedGrid.length);
-    expect(result[0].pointer_type).toEqual("GenericPointer");
-    expect(result[0].radius).toEqual(100);
-    expect(result[0].meta.color).toEqual("green");
+    expect(result[0]).toEqual(expect.objectContaining({
+      pointer_type: "GenericPointer",
+      radius: 100,
+      meta: expect.objectContaining({ color: "green" }),
+    }));
   });
 
   it("saves a point grid using defaults", () => {
@@ -85,8 +113,10 @@ describe("initPlantGrid", () => {
       z: 0,
     });
     expect(result.length).toEqual(expectedGrid.length);
-    expect(result[0].pointer_type).toEqual("GenericPointer");
-    expect(result[0].radius).toEqual(0);
+    expect(result[0]).toEqual(expect.objectContaining({
+      pointer_type: "GenericPointer",
+      radius: 0,
+    }));
   });
 });
 

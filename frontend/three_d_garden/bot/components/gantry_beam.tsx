@@ -7,12 +7,14 @@ import {
   DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
 import { range } from "lodash";
+import { getBotVersion } from "../bot_versions";
 
 export interface GantryBeamProps {
   config: Config;
   configPosition: PositionConfig;
   beamShape: Shape | undefined;
   aluminumTexture: Texture;
+  local?: boolean;
 }
 
 const gantryBeamPropsEqual = (
@@ -24,6 +26,7 @@ const gantryBeamPropsEqual = (
   return prevProps.configPosition.x == nextProps.configPosition.x
     && prevProps.beamShape == nextProps.beamShape
     && prevProps.aluminumTexture == nextProps.aluminumTexture
+    && prevProps.local == nextProps.local
     && prevConfig.beamLength == nextConfig.beamLength
     && prevConfig.columnLength == nextConfig.columnLength
     && prevConfig.bedYOffset == nextConfig.bedYOffset
@@ -37,14 +40,17 @@ const gantryBeamPropsEqual = (
 
 const GantryBeamComponent = (props: GantryBeamProps) => {
   const {
-    beamLength, columnLength, bedYOffset, bedWidthOuter,
+    beamLength, columnLength, kitVersion,
   } = props.config;
   const { x } = props.configPosition;
+  const version = getBotVersion(kitVersion);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
-  const position = get3DPosition({
-    x: x - 39,
-    y: (bedWidthOuter + beamLength) / 2 - 50 - bedYOffset,
-  });
+  const position = props.local
+    ? { x: -39, y: beamLength - version.beamEndOffset }
+    : get3DPosition({
+      x: x - 39,
+      y: beamLength - version.beamEndOffset,
+    });
   return <Group name={"gantry-beam"}
     position={[
       position.x,
@@ -67,22 +73,12 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
       <LightStrip
         width={beamLength}
         debug={props.config.lightsDebug}
-        ledsUnderBeam={ledsUnderBeam(props.config.kitVersion)} />}
+        ledsUnderBeam={version.ledsUnderBeam} />}
   </Group>;
 };
 
 export const GantryBeam = React.memo(GantryBeamComponent,
   gantryBeamPropsEqual);
-
-const ledsUnderBeam = (kitVersion: string): boolean => {
-  switch (kitVersion) {
-    case "v1.7":
-      return true;
-    case "v1.8":
-    default:
-      return false;
-  }
-};
 
 interface LightStripProps {
   width: number;

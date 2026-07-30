@@ -25,6 +25,9 @@ export interface Config {
   bedBrightness: number;
   soilBrightness: number;
   soilHeight: number;
+  safeHeight: number;
+  minSoilZ: number;
+  maxSoilZ: number;
   soilSurface: string;
   soilSurfacePointCount: number;
   soilSurfaceVariance: number;
@@ -36,15 +39,18 @@ export interface Config {
   grid: boolean;
   axes: boolean;
   trail: boolean;
+  motorLoad: boolean;
   tracks: boolean;
   clouds: boolean;
+  constellations: boolean;
+  constellationsDebug: boolean;
   sunInclination: number;
   sunAzimuth: number;
   heading: number;
   perspective: boolean;
-  topDown: boolean;
   viewpointHeading: number;
   cameraSelectionView: boolean;
+  cameraFitDebug: boolean;
   bot: boolean;
   laser: boolean;
   tool: string;
@@ -53,7 +59,9 @@ export interface Config {
   stats: boolean;
   config: boolean;
   urlParamAutoAdd: boolean;
+  urlCameraPos: boolean;
   zoom: boolean;
+  zoomFactor: number;
   pan: boolean;
   rotate: boolean;
   bounds: boolean;
@@ -62,12 +70,15 @@ export interface Config {
   zDimension: boolean;
   promoInfo: boolean;
   settingsBar: boolean;
+  sceneObjects: boolean;
+  controlsOverlay: boolean;
   zoomBeacons: boolean;
   solar: boolean;
   utilitiesPost: boolean;
   packaging: boolean;
   people: boolean;
   scene: string;
+  groundTexture: string;
   lowDetail: boolean;
   eventDebug: boolean;
   cableDebug: boolean;
@@ -88,7 +99,6 @@ export interface Config {
   vacuum: boolean;
   rotary: number;
   north: boolean;
-  desk: boolean;
   imgScale: number;
   imgRotation: number;
   imgOffsetX: number;
@@ -102,10 +112,38 @@ export interface Config {
   interpolationPower: number;
   promoSpread: boolean;
   cameraView: boolean;
+  cropImages: boolean;
+  clipImages: boolean;
+  showUncroppedCameraView: boolean;
   lastImageCapture: number;
+  cameraOperation: CameraOperation;
+  lastCameraOperation: number;
+  cameraOperationDurationMs: number;
+  calibrationCardGrid: boolean;
   mirrorX: boolean;
   mirrorY: boolean;
+  telescope: boolean;
+  outdoorObjects: boolean;
 }
+
+export type CameraOperation = "" | "calibration" | "soil-height" | "weeds";
+
+export const CAMERA_OPERATION_DURATION_MS = 3000;
+export const CAMERA_OPERATION_RPI_DURATION_MS = CAMERA_OPERATION_DURATION_MS;
+export const DEMO_CAMERA_OPERATION_DURATION_MS = CAMERA_OPERATION_DURATION_MS;
+
+export const cameraOperationDurationMs = (
+  deviceTarget?: string,
+  operation?: CameraOperation,
+  demo = false,
+): number => {
+  if (demo && operation) {
+    return DEMO_CAMERA_OPERATION_DURATION_MS;
+  }
+  return deviceTarget == "rpi"
+    ? CAMERA_OPERATION_RPI_DURATION_MS
+    : CAMERA_OPERATION_DURATION_MS;
+};
 
 export interface PositionConfig {
   x: number;
@@ -135,10 +173,10 @@ export const INITIAL: ConfigWithPosition = {
   ccSupportSize: 50,
   x: 300,
   y: 700,
-  z: 200,
+  z: -200,
   beamLength: 1500,
   columnLength: 500,
-  zAxisLength: 1000,
+  zAxisLength: 800,
   bedXOffset: 150,
   bedYOffset: 20,
   bedZOffset: 0,
@@ -152,6 +190,9 @@ export const INITIAL: ConfigWithPosition = {
   bedBrightness: 8,
   soilBrightness: 12,
   soilHeight: 500,
+  safeHeight: 0,
+  minSoilZ: -500,
+  maxSoilZ: -500,
   soilSurface: "random",
   soilSurfacePointCount: 25,
   soilSurfaceVariance: 75,
@@ -163,15 +204,18 @@ export const INITIAL: ConfigWithPosition = {
   grid: true,
   axes: false,
   trail: false,
+  motorLoad: false,
   tracks: true,
   clouds: true,
+  constellations: false,
+  constellationsDebug: false,
   sunInclination: 140,
   sunAzimuth: 230,
   heading: 0,
   perspective: true,
-  topDown: false,
-  viewpointHeading: 30,
+  viewpointHeading: 45,
   cameraSelectionView: false,
+  cameraFitDebug: false,
   bot: true,
   laser: false,
   tool: "rotaryTool",
@@ -180,7 +224,9 @@ export const INITIAL: ConfigWithPosition = {
   stats: false,
   config: false,
   urlParamAutoAdd: false,
+  urlCameraPos: false,
   zoom: false,
+  zoomFactor: 10,
   pan: false,
   rotate: true,
   bounds: false,
@@ -189,12 +235,15 @@ export const INITIAL: ConfigWithPosition = {
   zDimension: false,
   promoInfo: true,
   settingsBar: true,
+  sceneObjects: true,
+  controlsOverlay: false,
   zoomBeacons: true,
   solar: false,
   utilitiesPost: true,
   packaging: false,
   people: false,
   scene: "Outdoor",
+  groundTexture: "grass",
   lowDetail: false,
   eventDebug: false,
   cableDebug: false,
@@ -207,15 +256,14 @@ export const INITIAL: ConfigWithPosition = {
   animate: true,
   animateSeasons: false,
   distanceIndicator: "",
-  kitVersion: "v1.7",
-  negativeZ: false,
+  kitVersion: "v1.9",
+  negativeZ: true,
   exaggeratedZ: false,
   waterFlow: false,
   light: false,
   vacuum: false,
   rotary: 0,
   north: false,
-  desk: true,
   imgScale: 1,
   imgRotation: 0,
   imgOffsetX: 0,
@@ -229,20 +277,30 @@ export const INITIAL: ConfigWithPosition = {
   interpolationPower: 4,
   promoSpread: false,
   cameraView: false,
+  cropImages: true,
+  clipImages: true,
+  showUncroppedCameraView: false,
   lastImageCapture: 0,
+  cameraOperation: "",
+  lastCameraOperation: 0,
+  cameraOperationDurationMs: CAMERA_OPERATION_DURATION_MS,
+  calibrationCardGrid: true,
   mirrorX: false,
   mirrorY: false,
+  telescope: false,
+  outdoorObjects: false,
 };
 
 export const INITIAL_POSITION: PositionConfig = {
   x: 300,
   y: 700,
-  z: 200,
+  z: -200,
 };
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-  "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin",
+  "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin", "groundTexture",
+  "cameraOperation",
 ];
 
 export const NUMBER_KEYS = [
@@ -254,20 +312,25 @@ export const NUMBER_KEYS = [
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
-  "interpolationPower", "lastImageCapture", "viewpointHeading",
+  "interpolationPower", "lastImageCapture", "viewpointHeading", "zoomFactor",
+  "lastCameraOperation", "cameraOperationDurationMs",
 ];
 
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
-  "tracks", "clouds", "perspective", "topDown", "bot", "laser", "cableCarriers",
+  "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
+  "constellations", "constellationsDebug",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
+  "sceneObjects", "controlsOverlay",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
-  "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
+  "urlCameraPos",
+  "light", "vacuum", "north", "interpolationUseNearest", "promoSpread",
   "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
+  "cameraFitDebug", "telescope", "outdoorObjects", "calibrationCardGrid",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -283,7 +346,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 300,
     zAxisLength: 750,
     bedXOffset: 150,
-    bedYOffset: 80,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 400,
     bedLengthOuter: 900,
@@ -390,7 +453,7 @@ export const PRESETS: Record<string, Config> = {
     animateSeasons: false,
     distanceIndicator: "",
     north: false,
-    desk: false,
+    sceneObjects: false,
   },
   "Maximal": {
     ...INITIAL,
@@ -438,7 +501,7 @@ export const PRESETS: Record<string, Config> = {
     utilitiesPost: true,
     packaging: true,
     people: true,
-    scene: "outdoor",
+    scene: "Outdoor",
     lowDetail: false,
     eventDebug: false,
     cableDebug: true,
@@ -455,9 +518,12 @@ export const PRESETS: Record<string, Config> = {
     rotary: 1,
     exaggeratedZ: true,
     north: true,
-    desk: true,
     promoSpread: true,
     cameraView: true,
+    cameraFitDebug: true,
+    telescope: true,
+    outdoorObjects: true,
+    controlsOverlay: true,
   },
 };
 
@@ -472,25 +538,55 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedWallThickness", "bedHeight",
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
-  "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
-  "perspective", "topDown", "bot", "laser", "viewpointHeading",
+  "trail", "clouds", "constellations", "constellationsDebug",
+  "sunInclination", "sunAzimuth", "heading",
+  "perspective", "bot", "laser", "viewpointHeading",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
-  "settingsBar", "zoomBeacons", "pan", "rotate",
-  "solar", "utilitiesPost", "packaging",
+  "settingsBar", "zoomBeacons", "pan", "rotate", "zoomFactor",
+  "sceneObjects", "controlsOverlay",
+  "solar", "utilitiesPost", "packaging", "groundTexture",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "light", "vacuum", "rotary", "animateSeasons",
+  "light", "vacuum", "rotary", "animateSeasons", "outdoorObjects",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
-  "showSoilPoints", "urlParamAutoAdd", "north", "desk",
+  "showSoilPoints", "urlParamAutoAdd", "urlCameraPos", "north",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
-  "mirrorX", "mirrorY", "cameraSelectionView",
+  "cameraOperation", "lastCameraOperation", "cameraOperationDurationMs",
+  "mirrorX", "mirrorY", "cameraSelectionView", "cameraFitDebug", "telescope",
 ];
 
+const zAxisLengthFromKitVersion = (
+  sizePreset: string,
+  kitVersion: string,
+): number => {
+  const presetLength = PRESETS[sizePreset].zAxisLength;
+  return kitVersion == "v1.7" || kitVersion == "v1.8"
+    ? presetLength
+    : presetLength - 200;
+};
+
+const maybeUpdateZAxisLengthFromKitVersion = (
+  config: ConfigWithPosition,
+  update: Partial<ConfigWithPosition>,
+): ConfigWithPosition => {
+  if (!update.kitVersion && !update.sizePreset) {
+    return config;
+  }
+  return {
+    ...config,
+    zAxisLength: zAxisLengthFromKitVersion(
+      config.sizePreset,
+      config.kitVersion,
+    ),
+  };
+};
+
 export const modifyConfig =
+  // eslint-disable-next-line complexity
   (config: ConfigWithPosition, update: Partial<ConfigWithPosition>) => {
     const newConfig: ConfigWithPosition = { ...config, ...update };
     if (update.sizePreset) {
@@ -499,24 +595,34 @@ export const modifyConfig =
       if (update.sizePreset == "Jr") {
         newConfig.x = 100;
         newConfig.y = 100;
-        newConfig.z = 50;
+        newConfig.z = newConfig.negativeZ ? -50 : 50;
       }
     }
     if (update.scene) {
       newConfig.clouds = update.scene == "Outdoor";
       newConfig.people = update.scene != "Outdoor";
+      switch (update.scene) {
+        case "Lab":
+          newConfig.groundTexture = "concrete";
+          break;
+        case "Greenhouse":
+          newConfig.groundTexture = "bricks";
+          break;
+        case "Mars":
+          newConfig.groundTexture = "sand";
+          break;
+        default:
+          newConfig.groundTexture = "grass";
+      }
       newConfig.bedType =
-        (update.scene != "Outdoor" && newConfig.sizePreset != "Genesis XL")
+        (["Lab", "Greenhouse"].includes(update.scene)
+          && newConfig.sizePreset != "Genesis XL")
           ? "Mobile"
           : "Standard";
     }
     if (update.bedType || (newConfig.bedType != config.bedType)) {
       newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
       newConfig.legsFlush = false;
-    }
-    if (Object.keys(update).includes("topDown")) {
-      newConfig.perspective = !update.topDown;
-      newConfig.rotate = !update.topDown;
     }
     if (update.otherPreset) {
       if (update.otherPreset == "Reset all") {
@@ -532,7 +638,7 @@ export const modifyConfig =
         OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
       }
     }
-    return newConfig;
+    return maybeUpdateZAxisLengthFromKitVersion(newConfig, update);
   };
 
 export const KIT_LOOKUP: { [x: string]: string } = {
@@ -622,6 +728,3 @@ export const getSeasonProperties = (
     cloudOpacity: params.cloudOpacity,
   };
 };
-
-export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 50000];

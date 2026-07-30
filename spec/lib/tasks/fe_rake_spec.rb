@@ -46,4 +46,34 @@ describe "fe.rake helpers" do
       })
     end
   end
+
+  describe "#fetch_available_upgrades" do
+    it "reports the latest version of each dependency in an exclusion reason" do
+      output = <<~TEXT
+        │ Package          │ Current │ Update │ Latest │
+        │ axios (dev)      │ 1.19.0  │ 1.19.0 │ 1.20.0 │
+        │ typescript (dev) │ 6.0.3   │ 6.0.3  │ 7.0.2  │
+        │ prettier (dev)   │ 3.6.1   │ 3.6.1  │ 3.6.2  │
+        │ eslint (dev)     │ 10.8.0  │ 10.8.0 │ 10.9.0 │
+      TEXT
+      allow(self).to receive(:`).with("bun outdated").and_return(output)
+
+      stub_const("EXCLUDE", [
+        {
+          packages: ["typescript", "axios"],
+          reasons: ["eslint", "prettier"],
+        },
+      ])
+
+      expected_output =
+        "excluding axios v1.20.0 because:\n" \
+          " eslint v10.8.0 requires axios v1.19.0 (eslint latest v10.9.0)\n" \
+          " prettier v3.6.1 requires axios v1.19.0 (prettier latest v3.6.2)\n" \
+        "excluding typescript v7.0.2 because:\n" \
+          " eslint v10.8.0 requires typescript v6.0.3 (eslint latest v10.9.0)\n" \
+          " prettier v3.6.1 requires typescript v6.0.3 (prettier latest v3.6.2)\n"
+
+      expect { fetch_available_upgrades }.to output(expected_output).to_stdout
+    end
+  end
 end

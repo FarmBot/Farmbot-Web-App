@@ -9,6 +9,7 @@ import {
   fallbackInstancedMeshes,
   mergedInstancedGeometry,
 } from "./merged_instanced_geometry";
+import { PartName } from "../../constants";
 
 type Mesh = THREE.Mesh & { instanceMatrix: InstancedBufferAttribute | undefined };
 type CrossSlideNodes = Record<string, Mesh> & {
@@ -22,8 +23,23 @@ export type CrossSlideFull = GLTF & {
   };
 }
 
-interface CrossSlideProps extends Omit<ThreeElements["group"], "ref"> {
+export type CrossSlideV19Full = GLTF & {
+  nodes: {
+    [PartName.crossSlideV19]: THREE.Mesh;
+  };
+  materials: {
+    PaletteMaterial001: THREE.MeshStandardMaterial;
+  };
+}
+
+type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
+
+interface CrossSlideProps extends PartGroupProps {
   model: CrossSlideFull;
+}
+
+interface CrossSlideV19Props extends PartGroupProps {
+  model: CrossSlideV19Full;
 }
 
 export const CrossSlideModel = (props: CrossSlideProps) => {
@@ -34,7 +50,8 @@ export const CrossSlideModel = (props: CrossSlideProps) => {
     <MeshComponent
       geometry={nodes.Cable_Carrier_Spacer_Block.geometry}
       material={materials.PaletteMaterial001}
-      position={[0.03, 0.005, 0.061]}
+      position={[30, 5, 61]}
+      scale={1000}
       rotation={[-Math.PI / 2, 0, Math.PI]} />
     {mergedGeometry
       ? <MeshComponent
@@ -44,6 +61,19 @@ export const CrossSlideModel = (props: CrossSlideProps) => {
   </Group>;
 };
 
+export const CrossSlideV19Model = (props: CrossSlideV19Props) => {
+  const { model, ...groupProps } = props;
+  const { nodes, materials } = model;
+  return <Group {...groupProps}>
+    <MeshComponent
+      geometry={nodes[PartName.crossSlideV19].geometry}
+      material={materials.PaletteMaterial001}
+      position={[40, -2, 38]}
+      scale={1000}
+      rotation={[Math.PI / 2, 0, -Math.PI / 2]} />
+  </Group>;
+};
+
 export const CrossSlide = (model: CrossSlideFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) =>
+  (props: PartGroupProps) =>
     <CrossSlideModel {...props} model={model} />;

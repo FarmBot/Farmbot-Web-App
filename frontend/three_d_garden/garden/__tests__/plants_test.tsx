@@ -18,6 +18,7 @@ import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
 import * as reactSpring from "@react-spring/three";
 import {
+  DoubleSide,
   Quaternion,
   WebGLProgramParametersWithUniforms,
 } from "three";
@@ -235,8 +236,51 @@ describe("<ThreeDPlantSpread />", () => {
     queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = true;
-    const { container } = render(<PlantSpreadInstances {...p} />);
-    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    const mesh = wrapper.root.findAll(node =>
+      (node.type as string) == "instancedMesh")[0];
+    const material = wrapper.root.findAll(node =>
+      node.props.color == "white")[0];
+
+    expect(mesh).toBeDefined();
+    expect(material.props.side).toEqual(DoubleSide);
+    unmountRenderer(wrapper);
+  });
+
+  it("forces preview spread spheres to remain white", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.spreadVisible = true;
+    p.forceWhite = true;
+    const wrapper = createRenderer(<PlantSpreadInstances {...p} />);
+    allRefs[0].current = buildMeshRef();
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    const mesh = allRefs[0].current;
+    const colors = (mesh?.setColorAt as jest.Mock).mock.calls
+      .map(call => call[1]);
+    const material = wrapper.root.find(node =>
+      typeof node.props.onBeforeCompile == "function");
+    const shader = {
+      vertexShader: [
+        "#include <common>",
+        "#include <color_vertex>",
+        "#include <worldpos_vertex>",
+      ].join("\n"),
+      fragmentShader: [
+        "#include <common>",
+        "#include <color_fragment>",
+      ].join("\n"),
+      uniforms: {},
+    } as unknown as WebGLProgramParametersWithUniforms;
+
+    material.props.onBeforeCompile(shader);
+
+    expect(colors).toHaveLength(2);
+    colors.forEach(color =>
+      expect(color.getHexString()).toEqual("ffffff"));
+    expect(shader.uniforms.uOutside.value.getHexString()).toEqual("ffffff");
+    unmountRenderer(wrapper);
   });
 
   it("uses reserved spread capacity while rendering active plants", () => {
@@ -640,5 +684,7 @@ describe("outOfBoundsShaderModification", () => {
     expect(shader.fragmentShader).toContain("p.x *= uMirrorX");
     expect(shader.fragmentShader).toContain("p.y *= uMirrorY");
     expect(shader.vertexShader).not.toContain("vInstanceColor");
+    expect(shader.vertexShader).toContain("boundsWorldPosition");
+    expect(shader.vertexShader).not.toContain("worldPosition.xyz");
   });
 });

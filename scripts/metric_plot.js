@@ -66,6 +66,8 @@ function buildMetricPlotSvg(samples, options = {}) {
     const yMaxOverride = Number(options.yMax);
     const yMaxBaseline = Number(options.yMaxBaseline);
     const yTickInterval = Number(options.yTickInterval);
+    const xTickInterval = Number(options.xTickInterval);
+    const xGridInterval = Number(options.xGridInterval);
     const rightYMinOverride = Number(options.rightYMin);
     const rightYMaxBaseline = Number(options.rightYMaxBaseline);
     const rightYTickInterval = Number(options.rightYTickInterval);
@@ -83,6 +85,14 @@ function buildMetricPlotSvg(samples, options = {}) {
     const rightAxisLabel = escapeSvgText(rightAxisSeries[0]?.name || '');
     if (!Number.isFinite(yTickInterval)) {
         throw new Error('yTickInterval is required');
+    }
+    if (options.xTickInterval !== undefined
+        && (!Number.isFinite(xTickInterval) || xTickInterval <= 0)) {
+        throw new Error('xTickInterval must be a positive number');
+    }
+    if (options.xGridInterval !== undefined
+        && (!Number.isFinite(xGridInterval) || xGridInterval <= 0)) {
+        throw new Error('xGridInterval must be a positive number');
     }
     if (hasRightAxis && ![
         rightYMinOverride,
@@ -230,7 +240,18 @@ function buildMetricPlotSvg(samples, options = {}) {
             })
             .join('')
         : '';
-    const tickInterval = maxX <= 10 ? 1 : maxX <= 100 ? 10 : 100;
+    const tickInterval = Number.isFinite(xTickInterval)
+        ? xTickInterval
+        : maxX <= 10 ? 1 : maxX <= 100 ? 10 : 100;
+    const xGrid = Number.isFinite(xGridInterval)
+        ? Array.from({ length: Math.floor(maxX / xGridInterval) + 1 },
+            (_value, index) => {
+                const gridValue = index * xGridInterval;
+                const x = formatPoint(xFor(gridValue));
+                return `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#d0d7de" />`;
+            })
+            .join('')
+        : '';
     const xTicks = Array.from({ length: Math.floor(maxX / tickInterval) + 1 },
         (_value, index) => {
             const tickValue = index * tickInterval;
@@ -242,10 +263,13 @@ function buildMetricPlotSvg(samples, options = {}) {
         })
         .join('');
     const firstLoaded = series[0]?.samples.find(({ loading }) => loading === false);
+    const loadedLabel = firstLoaded
+        ? escapeSvgText(`Loaded ${formatStat(firstLoaded.x)}s`)
+        : '';
     const loadedMarker = firstLoaded
         ? [
             `<line x1="${formatPoint(xFor(firstLoaded.x))}" y1="${margin.top}" x2="${formatPoint(xFor(firstLoaded.x))}" y2="${height - margin.bottom}" stroke="#f97316" stroke-width="2" stroke-dasharray="5 4" />`,
-            `<text x="${formatPoint(xFor(firstLoaded.x) + 6)}" y="${margin.top + 16}" fill="#c2410c" font-family="Arial, sans-serif" font-size="12" font-weight="700">Loaded</text>`,
+            `<text x="${formatPoint(xFor(firstLoaded.x) + 6)}" y="${margin.top + 16}" fill="#c2410c" font-family="Arial, sans-serif" font-size="12" font-weight="700">${loadedLabel}</text>`,
         ].join('')
         : '';
     const averageValue = Number(options.averageValue);
@@ -284,6 +308,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     <text x="${margin.left}" y="28" fill="#24292f" font-family="Arial, sans-serif" font-size="20" font-weight="700">${title}</text>
     ${legend}
     ${grid}
+    ${xGrid}
     <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#8c959f" />
     ${hasRightAxis ? `<line x1="${width - margin.right}" y1="${margin.top}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${rightAxisColor}" stroke-width="2" />` : ''}
     ${rightAxisTicks}
@@ -370,6 +395,7 @@ const title = (basename, prefix) => {
 const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const basename = path.basename(filename);
     const isSceneMetricsCsv = /^scene_metrics(?:_[^/]+)?\.csv$/.test(basename);
+    const isFpsHistoryCsv = basename === 'fps_history.csv';
     const firstHeader = headers[0];
     const xHeader = headers.find(header =>
         ['elapsed seconds', 'elapsedSeconds'].includes(header));
@@ -403,6 +429,18 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             decimalValues: true,
             samples: rows.map((row, index) => sampleFor(row, index, 'percent')),
             latestCommitSha: latestCommitShaFor(rows, ['percent']),
+        };
+    }
+    if (isFpsHistoryCsv && headers.includes('fps')) {
+        return {
+            title: 'FPS history',
+            xLabel: 'Runs',
+            yMin: 0,
+            yMaxBaseline: 200,
+            yTickInterval: 100,
+            decimalValues: false,
+            samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
+            latestCommitSha: latestCommitShaFor(rows, ['fps']),
         };
     }
     if (headers.includes('FPS')) {
@@ -451,6 +489,8 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
         return {
             title: title(basename, 'FPS samples'),
             xLabel: xHeader ? 'Seconds' : 'Samples',
+            xTickInterval: xHeader ? 1 : undefined,
+            xGridInterval: xHeader ? 1 : undefined,
             yMin: 0,
             yMaxBaseline: 200,
             yTickInterval: 100,
@@ -465,9 +505,11 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
 };
 
 const buildCsvPlotSvg = (content, options = {}) => {
-    const inferred = inferCsvPlot(parseCsv(content), options.filename);
+    const inferred = options.inferred || inferCsvPlot(parseCsv(content), options.filename);
     const { latestCommitSha, ...plotOptions } = inferred;
-    const svg = buildMetricPlotSvg(inferred.samples, { ...plotOptions, ...options });
+    const svgOptions = { ...options };
+    delete svgOptions.inferred;
+    const svg = buildMetricPlotSvg(inferred.samples, { ...plotOptions, ...svgOptions });
     return addLatestCommitSha(svg, latestCommitSha);
 };
 
@@ -489,12 +531,43 @@ async function saveCsvPlot(browser, csvPath, destination, options = {}) {
     }
 }
 
+async function saveLoadDurationPlot(browser, csvPath, destination) {
+    const content = fs.readFileSync(csvPath, 'utf8');
+    const { headers, rows } = parseCsv(content);
+    if (
+        !headers.includes('fps')
+        || !headers.includes('% change')
+        || !headers.includes('load duration')
+        || !rows.some(row => Number.isFinite(Number(row['load duration'])))
+    ) {
+        return undefined;
+    }
+
+    await saveCsvPlot(browser, csvPath, destination, {
+        inferred: {
+            title: 'Load duration',
+            xLabel: 'Runs',
+            yMin: 0,
+            yMaxBaseline: 10,
+            yTickInterval: 1,
+            decimalValues: true,
+            samples: rows.map((row, index) => ({
+                x: index,
+                value: Number(row['load duration']),
+            })),
+            latestCommitSha: latestCommitShaFor(rows, ['load duration']),
+        },
+    });
+    return destination;
+}
+
 function printUsage() {
     console.log([
         'Usage: bun scripts/metric_plot.js <csv_path> [plot_path]',
         '',
         'Supported CSV inputs:',
         '  fps_samples.csv     Plots the fps column against elapsed seconds.',
+        '  fps_history.csv     Plots historical fps values.',
         '  fe_coverage.csv     Plots the percent column.',
         '  scene_metrics.csv   Plots numeric columns.',
         '',
@@ -524,6 +597,13 @@ async function main() {
     try {
         await saveCsvPlot(browser, csvPath, destination);
         console.log(`CSV_PLOT=${destination}`);
+        const loadDurationName = process.env.LOAD_DURATION_NAME || 'load_duration';
+        const loadDurationDestination = path.join('/tmp', `${loadDurationName}.png`);
+        const loadDurationPlot = await saveLoadDurationPlot(
+            browser, csvPath, loadDurationDestination);
+        if (loadDurationPlot) {
+            console.log(`CSV_PLOT=${loadDurationPlot}`);
+        }
     } finally {
         await browser.close();
     }
@@ -536,6 +616,7 @@ module.exports = {
     inferCsvPlot,
     parseCsv,
     saveCsvPlot,
+    saveLoadDurationPlot,
     saveMetricPlot,
 };
 

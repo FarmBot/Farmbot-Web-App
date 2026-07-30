@@ -194,9 +194,9 @@ describe("<AlertCard />", () => {
     p.alert.problem_tag = "api.setup.not_completed";
     const { container } = render(<AlertCard {...p} />);
     expect(container.textContent?.toLowerCase()).toContain("wizard");
+    expect(container.textContent?.toLowerCase()).toContain("get started");
     fireEvent.click(container.querySelector("a") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
-    expect(container.textContent?.toLowerCase()).toContain("get started");
   });
 
   it("renders setup card: partially complete", () => {
@@ -331,12 +331,12 @@ describe("changeFirmwareHardware()", () => {
 describe("SEED_DATA_OPTIONS()", () => {
   it("returns options", () => {
     mockFeatureBoolean = false;
-    expect(SEED_DATA_OPTIONS().length).toEqual(17);
+    expect(SEED_DATA_OPTIONS().length).toEqual(19);
   });
 
   it("returns more options", () => {
     mockFeatureBoolean = true;
-    expect(SEED_DATA_OPTIONS().length).toEqual(19);
+    expect(SEED_DATA_OPTIONS().length).toEqual(21);
   });
 
   it("shows stress options only after a stress search", () => {

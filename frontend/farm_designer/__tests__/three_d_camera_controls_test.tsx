@@ -1,0 +1,227 @@
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { ThreeDCameraControls } from "../three_d_camera_controls";
+import { fakeDesignerState } from
+  "../../__test_support__/fake_designer_state";
+import {
+  Actions, CAMERA_FOLLOW_PERSPECTIVE_REQUIRED,
+  UTM_FOLLOW_PERSPECTIVE_REQUIRED,
+} from "../../constants";
+import * as toast from "../../toast/toast";
+
+describe("<ThreeDCameraControls />", () => {
+  it("toggles perspective", () => {
+    const dispatch = jest.fn();
+    const designer = fakeDesignerState();
+    render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const button = screen.getByRole("button", { name: "PERSPECTIVE ON" });
+    expect(button).toHaveClass("active");
+    expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(button).toHaveAttribute("aria-keyshortcuts", "p");
+    fireEvent.click(button);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+  });
+
+  it("shows the inactive perspective state", () => {
+    const designer = fakeDesignerState();
+    designer.threeDPerspective = false;
+    render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={jest.fn()} />);
+    const button = screen.getByRole("button", { name: "PERSPECTIVE OFF" });
+    expect(button).not.toHaveClass("active");
+    expect(button).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("defaults to perspective on when transient state is unset", () => {
+    const designer = fakeDesignerState();
+    designer.threeDPerspective = undefined;
+    const dispatch = jest.fn();
+    render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const button = screen.getByRole("button", { name: "PERSPECTIVE ON" });
+    expect(button).toHaveClass("active");
+    fireEvent.click(button);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+  });
+
+  it("toggles following the FarmBot camera", () => {
+    const info = jest.spyOn(toast, "info").mockImplementation(jest.fn());
+    const designer = fakeDesignerState();
+    const dispatch = jest.fn();
+    const { container, rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const follow = screen.getByRole("button", {
+      name: "FOLLOW CAMERA VIEW",
+    });
+    expect(follow).toHaveAttribute("aria-pressed", "false");
+    expect(container.querySelector(".three-d-camera-follow-control img"))
+      .toBeTruthy();
+    fireEvent.click(follow);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: true,
+    });
+
+    designer.threeDCameraFollow = true;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const stop = screen.getByRole("button", {
+      name: "STOP FOLLOWING CAMERA VIEW",
+    });
+    expect(stop).toHaveAttribute("aria-pressed", "true");
+    expect(container.querySelector(".three-d-camera-follow-control .fa-times"))
+      .toBeTruthy();
+    const dispatchCount = dispatch.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "PERSPECTIVE ON" }));
+    expect(info).toHaveBeenCalledWith(CAMERA_FOLLOW_PERSPECTIVE_REQUIRED);
+    expect(dispatch).toHaveBeenCalledTimes(dispatchCount);
+    fireEvent.click(stop);
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+    info.mockRestore();
+  });
+
+  it("toggles following the UTM", () => {
+    const info = jest.spyOn(toast, "info").mockImplementation(jest.fn());
+    const designer = fakeDesignerState();
+    const dispatch = jest.fn();
+    const { container, rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const follow = screen.getByRole("button", { name: "FOLLOW UTM" });
+    expect(follow).toHaveAttribute("aria-pressed", "false");
+    expect(container.querySelector(".three-d-utm-follow-control img"))
+      .toBeTruthy();
+    fireEvent.click(follow);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: true,
+    });
+
+    designer.threeDUTMFollow = true;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    const stop = screen.getByRole("button", { name: "STOP FOLLOWING UTM" });
+    expect(stop).toHaveAttribute("aria-pressed", "true");
+    expect(container.querySelector(".three-d-utm-follow-control .fa-times"))
+      .toBeTruthy();
+    const dispatchCount = dispatch.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "PERSPECTIVE ON" }));
+    expect(info).toHaveBeenCalledWith(UTM_FOLLOW_PERSPECTIVE_REQUIRED);
+    expect(dispatch).toHaveBeenCalledTimes(dispatchCount);
+    fireEvent.click(stop);
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: false,
+    });
+    info.mockRestore();
+  });
+
+  it("toggles perspective with the p keyboard shortcut", () => {
+    const dispatch = jest.fn();
+    const designer = fakeDesignerState();
+    const { rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+
+    const disableEvent = new KeyboardEvent("keydown", {
+      key: "p",
+      bubbles: true,
+      cancelable: true,
+    });
+    fireEvent(window, disableEvent);
+    expect(disableEvent.defaultPrevented).toBeTruthy();
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+
+    designer.threeDPerspective = false;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: true,
+    });
+  });
+
+  it("ignores the perspective shortcut in restricted camera modes", () => {
+    const dispatch = jest.fn();
+    const designer = fakeDesignerState();
+    designer.threeDCameraFollow = true;
+    const { rerender } = render(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDCameraFollow = false;
+    designer.threeDUTMFollow = true;
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDUTMFollow = false;
+    designer.threeDViewMode = "stargazing";
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+    designer.threeDViewMode = "spaceflight";
+    rerender(<ThreeDCameraControls
+      designer={designer}
+      dispatch={dispatch} />);
+    fireEvent.keyDown(window, { key: "p" });
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("ignores perspective shortcuts reserved for focused UI", () => {
+    const dispatch = jest.fn();
+    render(<ThreeDCameraControls
+      designer={fakeDesignerState()}
+      dispatch={dispatch} />);
+
+    [
+      ["x", {}],
+      ["p", { altKey: true }],
+      ["p", { ctrlKey: true }],
+      ["p", { metaKey: true }],
+      ["p", { shiftKey: true }],
+      ["p", { repeat: true }],
+    ].forEach(([key, init]) => fireEvent.keyDown(window, {
+      key: key as string,
+      ...init as KeyboardEventInit,
+    }));
+
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    fireEvent.keyDown(input, { key: "p" });
+    input.remove();
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "command-palette-dialog";
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    fireEvent.keyDown(window, { key: "p" });
+    dialog.remove();
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+});

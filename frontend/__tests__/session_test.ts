@@ -4,6 +4,8 @@ import {
   Session,
 } from "../session";
 import { auth } from "../__test_support__/fake_state/token";
+import { STARGAZING_PROGRESS_STORAGE_KEY } from
+  "../farm_designer/stargazing_progress_key";
 
 beforeEach(() => {
   localStorage.clear();
@@ -53,12 +55,14 @@ describe("clear()", () => {
   it("clears", () => {
     jest.clearAllMocks();
     localStorage.setItem("foo", "bar");
+    localStorage.setItem(STARGAZING_PROGRESS_STORAGE_KEY, "progress");
     sessionStorage.setItem("foo", "bar");
     expect(localStorage.getItem("foo")).toBeTruthy();
     expect(sessionStorage.getItem("foo")).toBeTruthy();
     expect(Session.clear()).toEqual(undefined);
     expect(location.assign).toHaveBeenCalled();
     expect(localStorage.getItem("foo")).toBeFalsy();
+    expect(localStorage.getItem(STARGAZING_PROGRESS_STORAGE_KEY)).toBeFalsy();
     expect(sessionStorage.getItem("foo")).toBeFalsy();
   });
 });

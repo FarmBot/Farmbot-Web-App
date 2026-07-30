@@ -44,7 +44,7 @@ export const PinNumberDropdown = (props: PinNumberDropdownProps) => {
       : undefined}
     customNullLabel={t("Select a pin")}
     onChange={onChange({ dispatch, oldValue: pinNumberValue, pinNumKey })}
-    list={listItems(resources)} />;
+    list={pinNumberDropdownItems(resources)} />;
 };
 
 const peripheralDictionary = (resources: ResourceIndex): Dictionary<number> => {
@@ -67,7 +67,9 @@ const DISABLE_DDI = (): DropDownItem => ({
   label: t("None"), value: 0
 });
 
-const listItems = (resources: ResourceIndex): DropDownItem[] =>
+export const pinNumberDropdownItems = (
+  resources: ResourceIndex,
+): DropDownItem[] =>
   [DISABLE_DDI(), ...peripheralItems(resources), ...pinDropdowns(n => n)];
 
 const peripheralItems = (resources: ResourceIndex): DropDownItem[] => {

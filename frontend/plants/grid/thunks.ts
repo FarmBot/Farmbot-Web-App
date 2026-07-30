@@ -1,7 +1,7 @@
 import { GetState } from "../../redux/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import { selectAllActivePoints } from "../../resources/selectors";
-import { TaggedPoint } from "farmbot";
+import { TaggedPoint, TaggedResource } from "farmbot";
 import { saveAll } from "../../api/crud";
 import { Actions } from "../../constants";
 
@@ -14,17 +14,32 @@ function findPlantByGridId(index: ResourceIndex, gridId: string) {
   return myPlants;
 }
 
-export function saveGrid(gridId: string) {
+const findGridResources = (
+  index: ResourceIndex,
+  gridId: string,
+  resourceUuids: string[] | undefined,
+): TaggedResource[] =>
+  resourceUuids
+    ? resourceUuids
+      .map(uuid => index.references[uuid])
+      .filter((resource): resource is TaggedResource => !!resource)
+    : findPlantByGridId(index, gridId);
+
+export function saveGrid(gridId: string, resourceUuids?: string[]) {
   return function (dispatch: Function, getState: GetState) {
-    const plants = findPlantByGridId(getState().resources.index, gridId);
-    const p = saveAll(plants);
+    const plants = findGridResources(
+      getState().resources.index, gridId, resourceUuids);
+    const p = saveAll(plants, undefined, saveError => {
+      throw saveError;
+    });
     return dispatch(p) as Promise<{}>;
   };
 }
 
-export function stashGrid(gridId: string) {
+export function stashGrid(gridId: string, resourceUuids?: string[]) {
   return function (dispatch: Function, getState: GetState) {
-    const plants = findPlantByGridId(getState().resources.index, gridId);
+    const plants = findGridResources(
+      getState().resources.index, gridId, resourceUuids);
     dispatch({
       type: Actions.BATCH_DESTROY_RESOURCE_OK,
       payload: plants,

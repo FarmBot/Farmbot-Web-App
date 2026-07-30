@@ -11,11 +11,12 @@ import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { Quaternion } from "three";
+import { DoubleSide, Quaternion } from "three";
 import {
   createRenderer,
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
+import { MeshPhongMaterial } from "../../components";
 
 describe("<Weed />", () => {
   let getModeSpy: jest.SpyInstance;
@@ -44,8 +45,16 @@ describe("<Weed />", () => {
   });
 
   it("renders", () => {
-    const { container } = render(<Weed {...fakeProps()} />);
-    expect(container).toContainHTML("weed");
+    const p = fakeProps();
+    p.weed.body.meta.color = "purple";
+    const wrapper = createRenderer(<Weed {...p} />);
+    mountedWrappers.push(wrapper);
+    const weed = wrapper.root.findAll(node =>
+      node.props.name == `weed-${p.weed.body.id}`)[0];
+    const material = wrapper.root.findByType(MeshPhongMaterial);
+
+    expect(weed).toBeDefined();
+    expect(material.props.side).toEqual(DoubleSide);
   });
 
   it("renders mirrored position", () => {
@@ -144,6 +153,11 @@ describe("<Weed />", () => {
     expect(meshes[0].props.name).toEqual("weed-icons");
     expect(meshes[1].props.name).toEqual("weed-radius");
     expect(meshes[2].props.name).toEqual("weed-radius");
+    const radiusMaterials = meshes.slice(1).flatMap(mesh =>
+      mesh.findAllByType(MeshPhongMaterial));
+    expect(radiusMaterials).toHaveLength(2);
+    radiusMaterials.map(material =>
+      expect(material.props.side).toEqual(DoubleSide));
   });
 
   it("buckets weed radii by color", () => {

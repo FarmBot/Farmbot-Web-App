@@ -1,9 +1,10 @@
 import React from "react";
 import { findIndex } from "lodash";
 import { Config, PositionConfig } from "./config";
-import { get3DPositionNoMirrorFunc, threeSpace, zDir, zZero } from "./helpers";
+import { threeSpace } from "./helpers";
 import { ExternalUrl } from "../external_urls";
 import { isDesktop } from "../screen_size";
+import { getBotKinematics } from "./bot/kinematics";
 
 export type VectorXyz = [x: number, y: number, z: number];
 
@@ -29,15 +30,9 @@ interface Focus {
 }
 
 export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] => {
-  const get3DPosition = get3DPositionNoMirrorFunc(config);
-  const utmPosition = get3DPosition({
-    x: configPosition.x,
-    y: configPosition.y + 150,
-  });
-  const electronicsPosition = get3DPosition({
-    x: configPosition.x - 50,
-    y: -200 - config.bedYOffset,
-  });
+  const kinematics = getBotKinematics(config, configPosition);
+  const utmPosition = kinematics.anchors.utm.worldPosition;
+  const electronicsPosition = kinematics.anchors.electronics.worldPosition;
   return [
     {
       label: "What you can grow",
@@ -187,9 +182,9 @@ export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] =>
         scale: 400,
       },
       position: [
-        utmPosition.x,
-        utmPosition.y,
-        zZero(config) - zDir(config) * configPosition.z,
+        utmPosition[0],
+        utmPosition[1] + 150,
+        utmPosition[2],
       ],
       camera: {
         narrow: {
@@ -241,7 +236,11 @@ export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] =>
         ],
         scale: 550,
       },
-      position: [electronicsPosition.x, electronicsPosition.y, config.columnLength - 150],
+      position: [
+        electronicsPosition[0] + 23,
+        electronicsPosition[1] - 180,
+        electronicsPosition[2] + 40,
+      ],
       camera: {
         narrow: {
           position: [

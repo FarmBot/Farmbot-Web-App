@@ -1,41 +1,77 @@
 import React from "react";
-import { Config, detailLevels } from "../config";
-import { Detailed } from "@react-three/drei";
+import { Config } from "../config";
 import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
-import { CircleGeometry, Float32BufferAttribute, RepeatWrapping } from "three";
+import {
+  CylinderGeometry, DoubleSide, Float32BufferAttribute, RepeatWrapping,
+  type Side,
+} from "three";
 import { useTextureVariant } from "../texture_variants";
+import { ThreeEvent } from "@react-three/fiber";
+import { SECTION_CLIPPING_EXEMPT } from "../section";
 
 export interface GroundProps {
   config: Config;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
 }
 
+const GROUND_DEPTH = 25000;
+const groundFade = 1;
+
+export const GROUND_TEXTURE_URLS = [
+  ASSETS.textures.grass,
+  ASSETS.textures.bricks,
+  ASSETS.textures.concrete,
+  ASSETS.textures.water,
+  ASSETS.textures.aluminum,
+  ASSETS.textures.soil,
+  ASSETS.textures.sand,
+  ASSETS.textures.wood,
+];
+
+export const GROUND_TEXTURES = [
+  "grass", "bricks", "concrete", "water",
+  "aluminum", "soil", "sand", "wood",
+];
+
 interface GroundWrapperProps {
-  sceneName: string;
+  ground: boolean;
+  groundTexture: string;
   groundZ: number;
-  geometry: CircleGeometry;
+  geometry: CylinderGeometry;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerMove?: (e: ThreeEvent<MouseEvent>) => void;
   children: React.ReactElement;
 }
 
 const GroundWrapper = (props: GroundWrapperProps) =>
-  <Mesh name={`ground ${props.sceneName}`}
-    receiveShadow={true}
+  <Mesh name={`ground ${props.groundTexture}`}
+    userData={{ [SECTION_CLIPPING_EXEMPT]: true }}
+    receiveShadow={props.ground}
     geometry={props.geometry}
     // eslint-disable-next-line no-null/no-null
     dispose={null}
-    position={[0, 0, -props.groundZ]}>
+    onClick={props.onClick}
+    onPointerMove={props.onPointerMove}
+    position={[0, 0, -props.groundZ - GROUND_DEPTH / 2]}
+    rotation={[Math.PI / 2, 0, 0]}>
     {props.children}
   </Mesh>;
 
-const groundFade = 1;
 const buildGroundGeometry = (radius: number, segments: number) => {
-  const geometry = new CircleGeometry(radius, segments);
+  const geometry = new CylinderGeometry(
+    radius,
+    radius,
+    GROUND_DEPTH,
+    segments,
+  );
   const positions = geometry.attributes.position;
   const colors = new Float32Array(positions.count * 3);
   for (let i = 0; i < positions.count; i++) {
     const x = positions.getX(i);
-    const y = positions.getY(i);
-    const t = Math.min(Math.sqrt(x * x + y * y) / radius, 1);
+    const z = positions.getZ(i);
+    const t = Math.min(Math.sqrt(x * x + z * z) / radius, 1);
     const shade = 1 - t * groundFade;
     const offset = i * 3;
     colors[offset] = shade;
@@ -46,8 +82,8 @@ const buildGroundGeometry = (radius: number, segments: number) => {
   return geometry;
 };
 
-let lowDetailGroundGeometry: CircleGeometry | undefined;
-let highDetailGroundGeometry: CircleGeometry | undefined;
+let lowDetailGroundGeometry: CylinderGeometry | undefined;
+let highDetailGroundGeometry: CylinderGeometry | undefined;
 
 const getLowDetailGroundGeometry = () => {
   lowDetailGroundGeometry ||= buildGroundGeometry(BigDistance.ground, 16);
@@ -59,22 +95,58 @@ const getHighDetailGroundGeometry = () => {
   return highDetailGroundGeometry;
 };
 
-const getGroundProperties = (sceneName: string) => {
-  switch (sceneName) {
-    case "Greenhouse":
+const getGroundProperties = (groundTexture: string) => {
+  switch (groundTexture) {
+    case "bricks":
       return {
         texture: ASSETS.textures.bricks,
         repeat: [30, 30] as [number, number],
         color: "#999",
         lowDetailColor: "#8c6f64",
       };
-    case "Lab":
+    case "concrete":
       return {
         texture: ASSETS.textures.concrete,
         repeat: [16, 24] as [number, number],
         color: "#aaa",
         lowDetailColor: "gray",
       };
+    case "water":
+      return {
+        texture: ASSETS.textures.water,
+        repeat: [16, 24] as [number, number],
+        color: "#00f",
+        lowDetailColor: "blue",
+      };
+    case "aluminum":
+      return {
+        texture: ASSETS.textures.aluminum,
+        repeat: [16, 24] as [number, number],
+        color: "#aaa",
+        lowDetailColor: "gray",
+      };
+    case "soil":
+      return {
+        texture: ASSETS.textures.soil,
+        repeat: [16, 24] as [number, number],
+        color: "#fff",
+        lowDetailColor: "brown",
+      };
+    case "sand":
+      return {
+        texture: ASSETS.textures.sand,
+        repeat: [16, 24] as [number, number],
+        color: "#fff",
+        lowDetailColor: "tan",
+      };
+    case "wood":
+      return {
+        texture: ASSETS.textures.wood,
+        repeat: [16, 24] as [number, number],
+        color: "#deb887",
+        lowDetailColor: "saddlebrown",
+      };
+    case "grass":
     default:
       return {
         texture: ASSETS.textures.grass,
@@ -85,22 +157,33 @@ const getGroundProperties = (sceneName: string) => {
   }
 };
 
-const GroundMaterial = (props: { sceneName: string }) => {
-  const properties = getGroundProperties(props.sceneName);
+interface TexturedGroundMaterialProps {
+  ground: boolean;
+  groundTexture: string;
+  side?: Side;
+  vertexColors?: boolean;
+}
+
+export const TexturedGroundMaterial = (
+  props: TexturedGroundMaterialProps,
+) => {
+  const properties = getGroundProperties(props.groundTexture);
   const texture = useTextureVariant(properties.texture, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
     repeat: properties.repeat,
   });
   return <MeshPhongMaterial
-    map={texture}
+    map={props.ground ? texture : undefined}
+    transparent={!props.ground}
+    opacity={props.ground ? 1 : 0}
     color={properties.color}
     shininess={0}
-    vertexColors={true} />;
+    side={props.side}
+    vertexColors={props.vertexColors} />;
 };
 
 const GroundBase = (props: GroundProps) => {
-  if (!props.config.ground) { return <></>; }
   return <VisibleGround {...props} />;
 };
 
@@ -110,66 +193,54 @@ const GROUND_CONFIG_FIELDS: (keyof Config)[] = [
   "ground",
   "lowDetail",
   "scene",
+  "groundTexture",
 ];
 
 export const groundPropsEqual = (prev: GroundProps, next: GroundProps) =>
-  GROUND_CONFIG_FIELDS.every(field =>
+  prev.onClick === next.onClick
+  && prev.onPointerMove === next.onPointerMove
+  && GROUND_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
 export const Ground = React.memo(GroundBase, groundPropsEqual);
 
+export const GroundTexturePreloader = (props: { config: Config }) =>
+  <group name={"ground-texture-preloader"} visible={false}>
+    {GROUND_TEXTURES.map(groundTexture =>
+      <Ground
+        key={groundTexture}
+        config={{
+          ...props.config,
+          ground: true,
+          groundTexture,
+          lowDetail: false,
+        }} />)}
+  </group>;
+
 const VisibleGround = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
+  const properties = getGroundProperties(config.groundTexture);
 
-  const groundProperties = getGroundProperties(config.scene);
-  const common = { sceneName: config.scene, groundZ };
-
-  if (config.lowDetail) {
-    return <LowDetailGround
-      {...common}
-      color={groundProperties.lowDetailColor} />;
-  }
-
-  return <DetailedGround
-    {...common}
-    config={config}
-    color={groundProperties.lowDetailColor} />;
-};
-
-interface LowDetailGroundProps {
-  sceneName: string;
-  groundZ: number;
-  color: string;
-}
-
-const LowDetailGround = (props: LowDetailGroundProps) => {
   return <GroundWrapper
-    sceneName={props.sceneName}
-    groundZ={props.groundZ}
-    geometry={getLowDetailGroundGeometry()}>
-    <MeshPhongMaterial
-      color={props.color}
-      shininess={0}
-      vertexColors={true} />
+    ground={config.ground}
+    groundTexture={config.groundTexture}
+    groundZ={groundZ}
+    onClick={props.onClick}
+    onPointerMove={props.onPointerMove}
+    geometry={config.lowDetail
+      ? getLowDetailGroundGeometry()
+      : getHighDetailGroundGeometry()}>
+    {config.lowDetail
+      ? <MeshPhongMaterial
+        color={properties.lowDetailColor}
+        shininess={0}
+        side={DoubleSide}
+        vertexColors={true} />
+      : <TexturedGroundMaterial
+        ground={config.ground}
+        groundTexture={config.groundTexture}
+        side={DoubleSide}
+        vertexColors={true} />}
   </GroundWrapper>;
-};
-
-interface DetailedGroundProps extends LowDetailGroundProps {
-  config: Config;
-}
-
-const DetailedGround = (props: DetailedGroundProps) => {
-  const common = {
-    sceneName: props.sceneName,
-    groundZ: props.groundZ,
-  };
-
-  return <Detailed distances={detailLevels(props.config)}
-    visible={props.config.ground}>
-    <GroundWrapper {...common} geometry={getHighDetailGroundGeometry()}>
-      <GroundMaterial sceneName={props.config.scene} />
-    </GroundWrapper>
-    <LowDetailGround {...common} color={props.color} />
-  </Detailed>;
 };

@@ -1,12 +1,18 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
-import { useGLTF } from "@react-three/drei";
-import { Bot, clearBotShapeCache, FarmbotModelProps } from "../bot";
+import { act, fireEvent, render } from "@testing-library/react";
+import { Trail, useGLTF } from "@react-three/drei";
+import {
+  Bot, clearBotShapeCache, FarmbotModelProps,
+  applyBotKinematicFrame,
+  getBotSpringTarget, getDemoMovementSpringCallbacks,
+  getUnmirroredBotPosition,
+} from "../bot";
 import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
-import { Texture, TextureLoader } from "three";
+import { Object3D, Texture, TextureLoader } from "three";
 import { ASSETS } from "../../constants";
+import { Actions } from "../../../constants";
 import { Path } from "../../../internal_urls";
 import * as mapUtil from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
@@ -24,6 +30,16 @@ import {
 } from "../components/cable_carriers";
 import { Bounds } from "../components/bounds";
 import { WaterFlowTextureProvider } from "../components/water_stream";
+import * as demoMovement from "../../../demo/lua_runner/movement";
+import { getBotKinematics } from "../kinematics";
+import { HighlightProvider } from "../../elements";
+import { bot as fakeBot } from
+  "../../../__test_support__/fake_state/bot";
+import {
+  NativeJogControlPair, NativeJogCurrentUtmShadow,
+  NativeJogWorldPreview,
+} from "../native_jog_controls";
+import { Tools } from "../components/tools";
 
 describe("<Bot />", () => {
   const createShapesMock = SVGLoader.createShapes as unknown as jest.Mock;
@@ -31,10 +47,16 @@ describe("<Bot />", () => {
   beforeEach(() => {
     clearBotShapeCache();
     createShapesMock.mockClear();
+    localStorage.removeItem("FB_PERF_BENCHMARK");
+    delete window.__threeDBotBenchmark;
+    demoMovement.cancelDemoMovement();
   });
 
   afterEach(() => {
     jest.useRealTimers();
+    localStorage.removeItem("FB_PERF_BENCHMARK");
+    delete window.__threeDBotBenchmark;
+    demoMovement.cancelDemoMovement();
   });
 
   const fakeProps = (): FarmbotModelProps => {
@@ -42,6 +64,7 @@ describe("<Bot />", () => {
     config.bot = true;
     config.tracks = true;
     config.cableCarriers = true;
+    config.controlsOverlay = true;
     return {
       config,
       configPosition: clone(INITIAL_POSITION),
@@ -49,6 +72,145 @@ describe("<Bot />", () => {
       getZ: jest.fn(),
     };
   };
+
+  it("converts mirrored render positions back to garden coordinates", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getUnmirroredBotPosition(config, { x: 100, y: 200, z: 300 }))
+      .toEqual({
+        x: config.botSizeX - 100,
+        y: config.botSizeY - 200,
+        z: 300,
+      });
+    config.mirrorX = false;
+    config.mirrorY = false;
+    expect(getUnmirroredBotPosition(config, { x: 100, y: 200, z: 300 }))
+      .toEqual({ x: 100, y: 200, z: 300 });
+  });
+
+  it("reports raw spring positions to the demo movement coordinator", () => {
+    const changeSpy = jest.spyOn(demoMovement, "reportDemoMovementPosition");
+    const restSpy = jest.spyOn(demoMovement, "reportDemoMovementComplete");
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    const callbacks = getDemoMovementSpringCallbacks(config);
+    callbacks.onChange({ x: 100, y: 200, z: 300 });
+    callbacks.onRest({ x: 100, y: 200, z: 300 });
+    const rawPosition = {
+      x: config.botSizeX - 100,
+      y: config.botSizeY - 200,
+      z: 300,
+    };
+    expect(changeSpy).toHaveBeenCalledWith(rawPosition);
+    expect(restSpy).toHaveBeenCalledWith(rawPosition);
+    changeSpy.mockRestore();
+    restSpy.mockRestore();
+  });
+
+  it("keeps the demo target while Redux reports spring progress", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getBotSpringTarget(
+      config,
+      { x: 40, y: 50, z: 60 },
+      { x: 100, y: 200, z: 300 },
+    )).toEqual({
+      x: config.botSizeX - 100,
+      y: config.botSizeY - 200,
+      z: 300,
+    });
+    expect(getBotSpringTarget(
+      config,
+      { x: 40, y: 50, z: 60 },
+      undefined,
+    )).toEqual({ x: 40, y: 50, z: 60 });
+  });
+
+  it.each(["v1.7", "v1.9"])(
+    "applies mirrored %s kinematics directly to object frames",
+    kitVersion => {
+      const config = clone(INITIAL);
+      config.kitVersion = kitVersion;
+      config.mirrorX = true;
+      config.mirrorY = true;
+      config.negativeZ = true;
+      const gardenPosition = { x: 100, y: 200, z: -250 };
+      const position = getUnmirroredBotPosition(config, gardenPosition);
+      const kinematics = getBotKinematics(config, position);
+      const gantry = new Object3D();
+      const crossSlide = new Object3D();
+      const zAxis = new Object3D();
+      const trailTarget = new Object3D();
+
+      applyBotKinematicFrame({
+        gantry,
+        crossSlide,
+        zAxis,
+        trailTarget,
+      }, kinematics);
+
+      expect(gantry.position.toArray()).toEqual([
+        config.botSizeX - gardenPosition.x,
+        0,
+        0,
+      ]);
+      expect(crossSlide.position.y).toEqual(
+        config.botSizeY - gardenPosition.y +
+        (kitVersion == "v1.9" ? 45 : 5),
+      );
+      expect(zAxis.position.y).toEqual(
+        kitVersion == "v1.9" ? -45 : -5,
+      );
+      expect(zAxis.position.z).toEqual(kinematics.zAxisPosition[2]);
+      expect(trailTarget.position.toArray())
+        .toEqual(kinematics.anchors.utm.worldPosition);
+    },
+  );
+
+  it("doesn't register an animation driver when animations are disabled", () => {
+    const registerSpy = jest.spyOn(
+      demoMovement,
+      "registerDemoMovementDriver",
+    );
+    const p = fakeProps();
+    p.config.animate = false;
+    render(<Bot {...p} />);
+    expect(registerSpy).not.toHaveBeenCalled();
+    registerSpy.mockRestore();
+  });
+
+  it("exposes movement controls only for performance benchmarks", async () => {
+    localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    p.config.trail = true;
+    p.dispatch = jest.fn();
+    const result = render(<Bot {...p} />);
+    const benchmark = window.__threeDBotBenchmark;
+    expect(benchmark?.config()).toEqual({
+      cableCarriers: true,
+      trail: true,
+      waterFlow: false,
+    });
+    benchmark?.setWater(true);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 8, mode: "digital", value: 1 },
+    });
+
+    const target = { x: 100, y: 200, z: -300 };
+    const movement = benchmark?.moveTo(target);
+    expect(benchmark?.active()).toBeTruthy();
+    demoMovement.reportDemoMovementComplete(target);
+    await movement;
+    expect(benchmark?.active()).toBeFalsy();
+    expect(benchmark?.position()).toEqual(target);
+
+    result.unmount();
+    expect(window.__threeDBotBenchmark).toBeUndefined();
+  });
 
   it("renders", () => {
     const p = fakeProps();
@@ -59,10 +221,36 @@ describe("<Bot />", () => {
     const { container } = render(<Bot {...p} />);
     expect(container).toContainHTML("bot");
     expect(container).toContainHTML("water-tube");
-    const slots = container.querySelectorAll("[name='slot']");
-    const lastSlot = slots[slots.length - 1];
-    expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1350,200,51");
+    expect(container.querySelector("[name='bot-static']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-gantry']")
+      ?.getAttribute("position")).toContain("300,0,0");
+    expect(container.querySelector("[name='bot-cross-slide']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='bot-z-axis']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-routing']")).toBeTruthy();
+    expect(container.querySelector("[name='bot-effects']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerSupply']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerPlug']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-routing'] [name='powerCable']",
+    )).toBeTruthy();
+    expect(container.querySelector(
+      "[name='bot-static'] [name='powerCable']",
+    )).toBeNull();
+  });
+
+  it("keeps mirrored gantry tools subscribed to movement snapshots", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    const { container } = render(<Bot {...p} />);
+
+    expect(container.querySelector("[name='bot-gantry']"))
+      .toBeTruthy();
   });
 
   it("renders: Jr", () => {
@@ -72,24 +260,369 @@ describe("<Bot />", () => {
     p.config.trail = false;
     const { container } = render(<Bot {...p} />);
     expect(container).toContainHTML("bot");
-    const slots = container.querySelectorAll("[name='slot']");
-    const lastSlot = slots[slots.length - 1];
-    expect(lastSlot?.getAttribute("position")?.replace(/\s+/g, ""))
-      .toContain("-1350,100,51");
+    expect(container.querySelectorAll("[name='tracks']")).toHaveLength(0);
+    expect(container.querySelector("[name='bot-gantry']")).toBeTruthy();
   });
 
   it("renders: v1.7", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.7";
     const { container } = render(<Bot {...p} />);
-    expect(container.querySelectorAll("[name='button-group']").length).toEqual(5);
+    expect(container.querySelector("[name='button-housings']")
+      ?.getAttribute("args")).toContain("5");
+    expect(container.querySelectorAll("[name='leftMotor']")).toHaveLength(1);
+    expect(container.querySelector("[name='zMotor']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeNull();
+    expect(container.querySelector("[name='yIdlerPulley']")).toBeNull();
   });
 
   it("renders: v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
     const { container } = render(<Bot {...p} />);
-    expect(container.querySelectorAll("[name='button-group']").length).toEqual(3);
+    expect(container.querySelector("[name='button-housings']")
+      ?.getAttribute("args")).toContain("3");
+    expect(container.querySelector("[name='zMotor']")).toBeTruthy();
+    expect(container.querySelector("[name='zBelt']")).toBeNull();
+  });
+
+  it("renders the v1.9 belt-driven structure", () => {
+    const p = fakeProps();
+    const { container } = render(<Bot {...p} />);
+    expect(container.querySelector("[name='leftMotor']")).toBeNull();
+    expect(container.querySelector("[name='zMotor']")).toBeNull();
+    expect(container.querySelector("[name='zBelt']")).toBeTruthy();
+    expect(container.querySelector("[name='yIdlerPulley']")).toBeTruthy();
+  });
+
+  it("only loads v1.9 gantry and Z-axis model variants", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    render(<Bot {...p} />);
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+
+    expect(urls).toContain(ASSETS.models.leftBracketV19);
+    expect(urls).toContain(ASSETS.models.rightBracketV19);
+    expect(urls).toContain(ASSETS.models.mountedIdlerPulleyGantry);
+    expect(urls).not.toContain(ASSETS.models.leftBracket);
+    expect(urls).not.toContain(ASSETS.models.rightBracket);
+    expect(urls).not.toContain(ASSETS.models.housingVertical);
+    expect(urls).not.toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).not.toContain(ASSETS.models.cameraMountHalf);
+  });
+
+  it("doesn't load v1.9-only models for a legacy FarmBot", () => {
+    const useGltfMock = useGLTF as unknown as jest.Mock;
+    useGltfMock.mockClear();
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    render(<Bot {...p} />);
+    const urls = useGltfMock.mock.calls.map(([url]) => url);
+
+    expect(urls).toContain(ASSETS.models.leftBracket);
+    expect(urls).toContain(ASSETS.models.rightBracket);
+    expect(urls).toContain(ASSETS.models.housingVertical);
+    expect(urls).toContain(ASSETS.models.zAxisMotorMount);
+    expect(urls).toContain(ASSETS.models.cameraMountHalf);
+    expect(urls).not.toContain(ASSETS.models.leftBracketV19);
+    expect(urls).not.toContain(ASSETS.models.rightBracketV19);
+    expect(urls).not.toContain(ASSETS.models.mountedIdlerPulleyGantry);
+  });
+
+  it.each([
+    ["v1.7", 500],
+    ["v1.8", 500],
+    ["v1.9", 450],
+  ])("renders %s columns at the section length", (kitVersion, depth) => {
+    const p = fakeProps();
+    p.config.kitVersion = kitVersion;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const columns = wrapper.root
+      .findAll(node => node.props.name == "columns");
+    expect(columns).toHaveLength(2);
+    expect(columns[0].props.args[1].depth).toEqual(depth);
+    unmountRenderer(wrapper);
+  });
+
+  it("preserves the Jr column length adjustment", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    p.config.columnLength = 300;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const columns = wrapper.root
+      .findAll(node => node.props.name == "columns");
+    expect(columns[0].props.args[1].depth).toEqual(250);
+    unmountRenderer(wrapper);
+  });
+
+  it("uses local kinematic frame positions", () => {
+    const { container } = render(<Bot {...fakeProps()} />);
+    expect(container.querySelector("[name='bot-machine']")
+      ?.getAttribute("position")).toContain("-1350,-660,0");
+    expect(container.querySelector("[name='bot-cross-slide']")
+      ?.getAttribute("position")).toContain("-12.5,745,597");
+    expect(container.querySelector("[name='bot-z-axis']")
+      ?.getAttribute("position")).toContain("12.5,-45,-397");
+    expect(container.querySelector("[name='bot-static'] [name='slot']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='bot-z-axis'] [name='utm-tool']"))
+      .toBeTruthy();
+  });
+
+  it("mounts native jog controls in their moving frames", () => {
+    const p = fakeProps();
+    p.configPosition.x = 1038;
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 1038, y: 0, z: 0 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+      stepSize: 100,
+    };
+    const { container, getByTitle, queryByRole } = render(<Bot {...p} />);
+    const control = (name: string) =>
+      container.querySelector(`[name='${name}']`);
+
+    expect(control("bot-jog-x-near")?.parentElement)
+      .toHaveAttribute("name", "bot-gantry");
+    expect(control("bot-jog-x-near"))
+      .toHaveAttribute("position", "0,-120,0");
+    expect(control("bot-jog-x-far"))
+      .toHaveAttribute("position", "0,1440,0");
+    expect(control("bot-jog-y")?.parentElement)
+      .toHaveAttribute("name", "bot-cross-slide");
+    expect(control("bot-jog-y"))
+      .toHaveAttribute("position", "-26.5,-45,103");
+    expect(control("bot-gantry")
+      ?.querySelector(":scope > [name^='bot-jog-y']"))
+      .not.toBeInTheDocument();
+    expect(control("bot-jog-z")?.parentElement)
+      .toHaveAttribute("name", "bot-z-axis");
+    expect(control("bot-jog-z"))
+      .toHaveAttribute("position", "60,0,220");
+
+    fireEvent.click(control("bot-jog-x-near-control") as Element);
+    expect(queryByRole("heading", { name: "X: 1038" }))
+      .toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "a" });
+    expect(queryByRole("heading", { name: "X: 1038" }))
+      .toBeInTheDocument();
+    fireEvent.click(getByTitle("More options"));
+    expect(queryByRole("heading", { name: "More options" }))
+      .toBeInTheDocument();
+    expect(fireEvent.keyDown(window, {
+      key: "Escape",
+      cancelable: true,
+    })).toBeFalsy();
+    expect(queryByRole("heading"))
+      .not.toBeInTheDocument();
+    fireEvent.click(control("bot-jog-x-near-control") as Element);
+    expect(queryByRole("heading", { name: "X: 1038" }))
+      .toBeInTheDocument();
+  });
+
+  it("removes jog controls and previews when the overlay is disabled", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.configPosition.x = 1038;
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 1038, y: 0, z: 0 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+      stepSize: 100,
+    };
+    const view = render(<Bot {...p} />);
+    const control = () => view.container.querySelector(
+      "[name='bot-jog-x-near-control']",
+    );
+
+    fireEvent.click(control() as Element);
+    fireEvent.pointerEnter(view.getByRole("button", { name: "Jog +X" }));
+    expect(view.container.querySelector("[name='bot-jog-x-ghost']"))
+      .toBeInTheDocument();
+
+    p.config = { ...p.config, controlsOverlay: false };
+    view.rerender(<Bot {...p} />);
+    expect(control()).not.toBeInTheDocument();
+    expect(view.container.querySelector("[name='bot-jog-x-world-preview']"))
+      .not.toBeInTheDocument();
+    expect(view.queryByRole("heading")).not.toBeInTheDocument();
+    expect(view.container.querySelector(
+      "[name='native-jog-current-utm-shadow']",
+    )).not.toBeInTheDocument();
+
+    act(() => jest.runOnlyPendingTimers());
+    p.config = { ...p.config, controlsOverlay: true };
+    view.rerender(<Bot {...p} />);
+    expect(control()).toBeInTheDocument();
+    expect(view.container.querySelector(
+      "[name='native-jog-current-utm-shadow']",
+    )).toBeInTheDocument();
+    expect(view.container.querySelector("[name='bot-jog-x-ghost']"))
+      .not.toBeInTheDocument();
+    expect(view.queryByRole("heading")).not.toBeInTheDocument();
+  });
+
+  it("shares one world-space preview across both X controls", () => {
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    const wrapper = createRenderer(<Bot {...p} />);
+    const xControls = wrapper.root.findAllByType(NativeJogControlPair)
+      .filter(node => node.props.axis == "x");
+
+    expect(xControls).toHaveLength(2);
+    expect(xControls[0].props.previewState.setPreview)
+      .toBe(xControls[1].props.previewState.setPreview);
+    expect(xControls[0].props.previewState.world().controlPositions)
+      .toHaveLength(2);
+    expect(xControls[0].props.managePreviewLifecycle).toBeTruthy();
+    expect(xControls[1].props.managePreviewLifecycle).toBeFalsy();
+    const yControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "y");
+    const zControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "z");
+    expect(yControl?.props.previewState.world().controlPositions)
+      .toHaveLength(1);
+    expect(zControl?.props.previewState.world().controlPositions)
+      .toHaveLength(1);
+    expect(yControl?.props.previewState.world().utmPosition)
+      .toEqual(zControl?.props.previewState.world().utmPosition);
+    expect(xControls[0].props.previewState.world().gardenPosition)
+      .toEqual(p.configPosition);
+    const currentShadow = wrapper.root.findByType(
+      NativeJogCurrentUtmShadow,
+    );
+    expect(currentShadow.props).toMatchObject({
+      config: p.config,
+      getZ: p.getZ,
+    });
+    unmountRenderer(wrapper);
+  });
+
+  it("renders the mounted tool in a retained jog preview", () => {
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+    };
+    p.mountedToolName = "Seeder";
+    p.toolSlots = [];
+    const wrapper = createRenderer(<Bot {...p} />);
+    const xControl = wrapper.root.findAllByType(NativeJogControlPair)
+      .find(node => node.props.axis == "x");
+    if (!xControl) { throw new Error("Expected X jog control"); }
+
+    actRenderer(() => xControl.props.previewState.setPreview({
+      distance: 100,
+      pending: true,
+      sawBusy: false,
+      start: 100,
+      world: {
+        controlPositions: [[0, 0, 0], [0, 1, 0]],
+        gardenPosition: { x: 100, y: 200, z: -50 },
+        utmPosition: [100, 200, -50],
+      },
+    }));
+
+    const preview = wrapper.root.findByType(NativeJogWorldPreview);
+    expect(preview.props.axis).toEqual("x");
+    expect(preview.props.getZ).toBe(p.getZ);
+    expect(preview.props.ghost.type).toBe(Tools);
+    expect(preview.props.ghost.props).toMatchObject({
+      config: p.config,
+      configPosition: p.configPosition,
+      frame: "z-axis",
+      getZ: p.getZ,
+      mountedToolName: "Seeder",
+      toolSlots: [],
+    });
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't activate native jog controls without axis actions", () => {
+    const p = fakeProps();
+    const { container, queryByRole } = render(<Bot {...p} />);
+
+    fireEvent.click(container.querySelector(
+      "[name='bot-jog-x-near-control']",
+    ) as Element);
+
+    expect(queryByRole("heading")).not.toBeInTheDocument();
+  });
+
+  it("keeps disabled controls open and closes when actions disappear", () => {
+    jest.useFakeTimers();
+    const p = fakeProps();
+    p.axisActions = {
+      arduinoBusy: false,
+      botPosition: { x: 100, y: 200, z: -50 },
+      botOnline: true,
+      dispatch: jest.fn(),
+      firmwareSettings: fakeBot.hardware.mcu_params,
+      locked: false,
+      stepSize: 100,
+    };
+    const result = render(<Bot {...p} />);
+    const control = () => result.container.querySelector(
+      "[name='bot-jog-x-near-control']",
+    ) as Element;
+    fireEvent.click(control());
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
+
+    p.axisActions = { ...p.axisActions, locked: true };
+    result.rerender(<Bot {...p} />);
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
+    expect(result.getByRole("button", { name: "Jog +X" }))
+      .toBeDisabled();
+    fireEvent.click(result.getByTitle("close"));
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .not.toBeInTheDocument();
+    fireEvent.click(control());
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .toBeInTheDocument();
+
+    p.axisActions = undefined;
+    result.rerender(<Bot {...p} />);
+    act(() => jest.runOnlyPendingTimers());
+
+    expect(result.queryByRole("heading", { name: "X: 100" }))
+      .not.toBeInTheDocument();
+  });
+
+  it("highlights all clickable FarmBot objects without labels", () => {
+    const wrapper = createRenderer(
+      <HighlightProvider highlighted3DObject={"all"}>
+        <Bot {...fakeProps()} />
+      </HighlightProvider>,
+    );
+    const named = (name: string) => wrapper.root.findAll(node =>
+      typeof node.type == "string" && node.props.name == name);
+    expect(named("jog-controls-highlight")).toHaveLength(4);
+    expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
+    expect(wrapper.root.findAll(node =>
+      typeof node.props.name == "string"
+      && node.props.name.endsWith("-label"))).toHaveLength(0);
+    unmountRenderer(wrapper);
   });
 
   it("selects the UTM", () => {
@@ -107,9 +640,10 @@ describe("<Bot />", () => {
     expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "utm", id: 0 });
   });
 
-  it("selects the camera", () => {
+  it.each(["v1.7", "v1.9"])("selects the %s camera", kitVersion => {
     location.pathname = Path.mock(Path.designer());
     const p = fakeProps();
+    p.config.kitVersion = kitVersion;
     p.onSelectObject = jest.fn();
     p.onHoverObject = jest.fn();
     const { container } = render(<Bot {...p} />);
@@ -122,20 +656,24 @@ describe("<Bot />", () => {
     expect(p.onSelectObject).toHaveBeenCalledWith({ kind: "camera", id: 0 });
   });
 
-  it("doesn't select the UTM in camera selection mode", () => {
-    const getModeSpy = jest.spyOn(mapUtil, "getMode")
-      .mockReturnValue(Mode.cameraSelection);
-    location.pathname = Path.mock(Path.designer());
-    const p = fakeProps();
-    p.onSelectObject = jest.fn();
-    const { container } = render(<Bot {...p} />);
-    const utm = container.querySelector("group[name='UTM'] mesh");
-    const camera = container.querySelector("group[name='camera']");
-    utm && fireEvent.click(utm);
-    camera && fireEvent.click(camera);
-    expect(p.onSelectObject).not.toHaveBeenCalled();
-    getModeSpy.mockRestore();
-  });
+  it.each(["v1.7", "v1.9"])(
+    "doesn't select the %s camera in camera selection mode",
+    kitVersion => {
+      const getModeSpy = jest.spyOn(mapUtil, "getMode")
+        .mockReturnValue(Mode.cameraSelection);
+      location.pathname = Path.mock(Path.designer());
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.onSelectObject = jest.fn();
+      const { container } = render(<Bot {...p} />);
+      const utm = container.querySelector("group[name='UTM'] mesh");
+      const camera = container.querySelector("group[name='camera']");
+      utm && fireEvent.click(utm);
+      camera && fireEvent.click(camera);
+      expect(p.onSelectObject).not.toHaveBeenCalled();
+      getModeSpy.mockRestore();
+    },
+  );
 
   it("hides FarmBot in Planter bed focus", () => {
     const p = fakeProps();
@@ -213,17 +751,46 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("seeds the trail at the UTM world position", () => {
+    const p = fakeProps();
+    p.config.trail = true;
+    const wrapper = createRenderer(<Bot {...p} />);
+    const trail = wrapper.root.findByType(Trail);
+    const expectedPosition = getBotKinematics(
+      p.config,
+      p.configPosition,
+    ).anchors.utm.worldPosition;
+
+    expect(trail.props.target.current.position.toArray())
+      .toEqual(expectedPosition);
+    unmountRenderer(wrapper);
+  });
+
+  it("colors the trail by motor load when enabled", () => {
+    const p = fakeProps();
+    p.config.trail = true;
+    p.config.motorLoad = true;
+    p.encoderData = {
+      load: { x: 25, y: 55, z: 10 },
+      raw_encoders: { x: undefined, y: undefined, z: undefined },
+      scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    };
+    const wrapper = createRenderer(<Bot {...p} />);
+    expect(wrapper.root.findByType(Trail).props.color).toEqual("yellow");
+    unmountRenderer(wrapper);
+  });
+
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);
-    expect(createShapesMock).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(14);
   });
 
   it("skips track shape loading when tracks are disabled", () => {
     const p = fakeProps();
     p.config.tracks = false;
     render(<Bot {...p} />);
-    expect(createShapesMock).toHaveBeenCalledTimes(12);
+    expect(createShapesMock).toHaveBeenCalledTimes(11);
   });
 
   it("skips X-axis carrier mount model when carriers are disabled", () => {
@@ -271,7 +838,7 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("skips X/Y-only model hooks during z-only rerenders", () => {
+  it("moves the Z frame without rerendering rigid models", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();
     const wrapper = createRenderer(<Bot {...p} />);
@@ -294,7 +861,7 @@ describe("<Bot />", () => {
     expect(urls).not.toContain(ASSETS.models.horizontalMotorHousing);
     expect(urls).not.toContain(ASSETS.models.xAxisCCMount);
     expect(urls).not.toContain(ASSETS.models.beltClip);
-    expect(urls).toContain(ASSETS.models.zStop);
+    expect(urls).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 
@@ -330,7 +897,7 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("updates X/Y-only model hooks when x changes", () => {
+  it("moves the gantry frame without rerendering rigid models", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     const p = fakeProps();
     const wrapper = createRenderer(<Bot {...p} />);
@@ -346,10 +913,7 @@ describe("<Bot />", () => {
     });
 
     const urls = useGltfMock.mock.calls.map(([url]) => url);
-    expect(urls).toContain(ASSETS.models.gantryWheelPlate);
-    expect(urls).toContain(ASSETS.models.crossSlide);
-    expect(urls).toContain(ASSETS.models.xAxisCCMount);
-    expect(urls).toContain(ASSETS.models.beltClip);
+    expect(urls).toHaveLength(0);
     unmountRenderer(wrapper);
   });
 
@@ -360,6 +924,6 @@ describe("<Bot />", () => {
     const second = render(<Bot {...p} />);
     second.unmount();
 
-    expect(createShapesMock).toHaveBeenCalledTimes(15);
+    expect(createShapesMock).toHaveBeenCalledTimes(14);
   });
 });

@@ -676,7 +676,7 @@
     "FarmBot is offline": "FarmBot이 오프라인입니다",
     "FarmBot Kit": "FarmBot 키트",
     "FarmBot model": "FarmBot 모델",
-    "FarmBot motor load": "FarmBot 모터 부하",
+    "Motor load": "모터 부하",
     "FarmBot Network Requirements": "FarmBot 네트워크 요구사항",
     "FarmBot origin (home) location in images. If the origin does not correspond to an image corner, rotate the camera until one does. (default: {{ defaultOrigin }})": "이미지에서의 FarmBot 원점 (홈) 위치입니다. 원점이 이미지 모서리와 일치하지 않으면 카메라를 회전하여 일치시켜주세요. (기본값: {{ defaultOrigin }})",
     "Farmbot OS": "Farmbot 운영 체제",

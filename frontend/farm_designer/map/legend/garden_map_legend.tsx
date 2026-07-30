@@ -5,7 +5,7 @@ import { atMaxZoom, atMinZoom } from "../zoom";
 import {
   ImageFilterMenu,
 } from "../../../photos/photo_filter_settings/image_filter_menu";
-import { BugsControls } from "../easter_eggs/bugs";
+import { BugsControls, disableBugs } from "../easter_eggs/bugs";
 import { MoveModeLink } from "../../move_to";
 import {
   GetWebAppConfigValue, setWebAppConfigValue,
@@ -27,9 +27,9 @@ import {
 } from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
-import { isTopDown } from "../../../three_d_garden/helpers";
 import { isMobile } from "../../../screen_size";
 import type { Config } from "../../../three_d_garden/config";
+import { ThreeDSectionSettings } from "../../three_d_section";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -68,12 +68,15 @@ interface NonLayerToggleProps {
   dispatch: Function;
   disabled?: boolean;
   invert?: boolean;
+  value?: boolean;
+  onClick?(): void;
   children?: React.ReactNode;
 }
 
 const NonLayerToggle = (props: NonLayerToggleProps) => {
   const { setting, getConfigValue } = props;
-  const value = !!(setting ? getConfigValue(setting) : undefined);
+  const configValue = !!(setting ? getConfigValue(setting) : undefined);
+  const value = props.value ?? configValue;
   return <div
     className={[
       "row grid-exp-1 align-baseline",
@@ -84,8 +87,8 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
       disabled={props.disabled}
       className={getModifiedClassName(setting)}
       title={t(props.label)}
-      toggleAction={() =>
-        props.dispatch(setWebAppConfigValue(setting, !value))}
+      toggleAction={props.onClick || (() =>
+        props.dispatch(setWebAppConfigValue(setting, !value)))}
       toggleValue={props.invert ? !value : value} />}
     {props.children}
   </div>;
@@ -107,8 +110,18 @@ export const PointsSubMenu = (props: SettingsSubMenuProps) =>
       label={DeviceSetting.showRemovedWeeds} />
   </div>;
 
-export const PlantsSubMenu = (props: SettingsSubMenuProps) =>
+interface PlantsSubMenuProps extends SettingsSubMenuProps {
+  showSpread: boolean;
+  toggle: GardenMapLegendProps["toggle"];
+}
+
+export const PlantsSubMenu = (props: PlantsSubMenuProps) =>
   <div className="grid">
+    <NonLayerToggle {...props}
+      setting={BooleanSetting.show_spread}
+      label={DeviceSetting.showSpread}
+      value={props.showSpread}
+      onClick={props.toggle(BooleanSetting.show_spread)} />
     <NonLayerToggle {...props}
       setting={BooleanSetting.disable_animations}
       label={DeviceSetting.animations}
@@ -122,14 +135,17 @@ export const PlantsSubMenu = (props: SettingsSubMenuProps) =>
 
 export const FarmbotSubMenu = (props: SettingsSubMenuProps) => {
   const laser = !!props.get3DConfigValue?.("laser");
+  const grid = !!props.get3DConfigValue?.("grid");
+  const bounds = !!props.get3DConfigValue?.("bounds");
   const is3D = props.getConfigValue(BooleanSetting.three_d_garden);
-  const laserAvailable = !!(props.get3DConfigValue && props.set3DConfigValue);
+  const threeDConfigAvailable =
+    !!(props.get3DConfigValue && props.set3DConfigValue);
   return <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.display_trail}
       label={DeviceSetting.trail}
       helpText={Content.VIRTUAL_TRAIL} />
-    {is3D && laserAvailable &&
+    {is3D && threeDConfigAvailable &&
       <NonLayerToggle {...props}
         label={"LASER"}>
         <ToggleButton
@@ -138,11 +154,33 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) => {
           toggleAction={() => props.set3DConfigValue?.(
             "laser", laser ? "0" : "1")} />
       </NonLayerToggle>}
+    {is3D && threeDConfigAvailable &&
+      <NonLayerToggle {...props}
+        label={DeviceSetting.grid}>
+        <ToggleButton
+          title={t(DeviceSetting.grid)}
+          toggleValue={grid}
+          toggleAction={() => props.set3DConfigValue?.(
+            "grid", grid ? "0" : "1")} />
+      </NonLayerToggle>}
+    {is3D && threeDConfigAvailable &&
+      <NonLayerToggle {...props}
+        label={DeviceSetting.bounds}>
+        <ToggleButton
+          title={t(DeviceSetting.bounds)}
+          toggleValue={bounds}
+          toggleAction={() => props.set3DConfigValue?.(
+            "bounds", bounds ? "0" : "1")} />
+      </NonLayerToggle>}
     <NonLayerToggle {...props}
       setting={BooleanSetting.display_map_missed_steps}
       label={DeviceSetting.mapMissedSteps}
       helpText={Content.MAP_MISSED_STEPS}
       disabled={!props.getConfigValue(BooleanSetting.display_trail)} />
+    <NonLayerToggle {...props}
+      setting={BooleanSetting.show_controls_overlay}
+      label={DeviceSetting.showControlsOverlay}
+      helpText={Content.SHOW_CONTROLS_OVERLAY} />
   </div>;
 };
 
@@ -190,8 +228,7 @@ const LayerToggles = (props: LayerTogglesProps) => {
     designer,
   };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
-  const only2DClass = is3D ? "disabled" : "";
-  const topDown = isTopDown(designer, getConfigValue);
+  const sectionOpen = designer.threeDSectionOpen;
   const exaggeratedZ = designer.threeDExaggeratedZ;
   const description = (isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
@@ -204,7 +241,10 @@ const LayerToggles = (props: LayerTogglesProps) => {
       label={DeviceSetting.showPlants}
       onClick={toggle(BooleanSetting.show_plants)}
       submenuTitle={t("extras")}
-      popover={<PlantsSubMenu {...subMenuProps} />} />
+      popover={<PlantsSubMenu
+        {...subMenuProps}
+        showSpread={props.showSpread}
+        toggle={props.toggle} />} />
     <LayerToggle
       settingName={BooleanSetting.show_points}
       value={props.showPoints}
@@ -223,11 +263,6 @@ const LayerToggles = (props: LayerTogglesProps) => {
       onClick={toggle(BooleanSetting.show_weeds)}
       submenuTitle={t("extras")}
       popover={<PointsSubMenu {...subMenuProps} />} />
-    <LayerToggle
-      settingName={BooleanSetting.show_spread}
-      value={props.showSpread}
-      label={DeviceSetting.showSpread}
-      onClick={toggle(BooleanSetting.show_spread)} />
     <LayerToggle
       settingName={BooleanSetting.show_farmbot}
       value={props.showFarmbot}
@@ -263,7 +298,6 @@ const LayerToggles = (props: LayerTogglesProps) => {
           helpText={Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA} />
       </div>} />
     <LayerToggle
-      className={only2DClass}
       settingName={BooleanSetting.show_zones}
       value={props.showZones}
       label={DeviceSetting.showAreas}
@@ -278,13 +312,21 @@ const LayerToggles = (props: LayerTogglesProps) => {
       value={props.showMoistureInterpolationMap}
       label={DeviceSetting.showMoisture}
       onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />
+    {is3D &&
+      <LayerToggle
+        settingName={BooleanSetting.show_scene_objects}
+        value={props.showSceneObjects}
+        label={DeviceSetting.showObjects}
+        onClick={toggle(BooleanSetting.show_scene_objects)} />}
     <GardenMapLegendToggle
       settingName={BooleanSetting.three_d_garden}
       value={!!is3D}
       label={DeviceSetting.show3DMap}
       labelClassName={"row half-gap grid-exp-2"}
-      onClick={() => dispatch(setWebAppConfigValue(
-        BooleanSetting.three_d_garden, !is3D))}>
+      onClick={() => {
+        if (is3D) { disableBugs(); }
+        dispatch(setWebAppConfigValue(BooleanSetting.three_d_garden, !is3D));
+      }}>
       {is3D &&
         <Help
           text={description}
@@ -296,12 +338,28 @@ const LayerToggles = (props: LayerTogglesProps) => {
     </GardenMapLegendToggle>
     {is3D &&
       <GardenMapLegendToggle
-        value={topDown}
-        label={"Top down"}
+        value={sectionOpen}
+        label={"SECTION"}
+        labelClassName={"row half-gap grid-exp-2"}
         onClick={() => dispatch({
-          type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-          payload: !topDown,
-        })} />}
+          type: Actions.SET_3D_SECTION_OPEN,
+          payload: !sectionOpen,
+        })}>
+        <Popover
+          position={Position.BOTTOM_RIGHT}
+          className={"caret-menu-button"}
+          target={<button type={"button"}
+            className={"fb-icon-button invert"}
+            title={t("section settings")}
+            aria-label={t("section settings")}
+            aria-haspopup={"menu"}>
+            <i className={"fa fa-caret-down"} aria-hidden={true} />
+          </button>}
+          content={<ThreeDSectionSettings
+            designer={designer}
+            dispatch={dispatch}
+            gardenSize={props.gardenSize} />} />
+      </GardenMapLegendToggle>}
     {is3D &&
       <GardenMapLegendToggle
         value={exaggeratedZ}
@@ -310,9 +368,10 @@ const LayerToggles = (props: LayerTogglesProps) => {
           type: Actions.TOGGLE_3D_EXAGGERATED_Z,
           payload: !exaggeratedZ,
         })} />}
-    <ZDisplayToggle
-      open={props.zDisplayOpen}
-      setOpen={props.setZDisplayOpen} />
+    {!is3D &&
+      <ZDisplayToggle
+        open={props.zDisplayOpen}
+        setOpen={props.setZDisplayOpen} />}
   </div>;
 };
 
@@ -385,9 +444,37 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
+        {is3D && isMobile() &&
+          <div className={"select-area-mode"}>
+            <button
+              className={[
+                "fb-button",
+                props.designer.threeDAreaSelectionMode ? "green" : "gray",
+              ].join(" ")}
+              title={t("select area")}
+              aria-pressed={props.designer.threeDAreaSelectionMode}
+              onClick={() => props.dispatch({
+                type: Actions.SET_3D_AREA_SELECTION_MODE,
+                payload: !props.designer.threeDAreaSelectionMode,
+              })}>
+              {t("select area")}
+            </button>
+          </div>}
+        {is3D &&
+          <i className="fa fa-question-circle"
+            style={{ fontSize: "2rem" }}
+            title={t("Highlight clickable objects in the map")}
+            onMouseEnter={() => props.dispatch({
+              type: Actions.SET_3D_HIGHLIGHT,
+              payload: "all",
+            })}
+            onMouseLeave={() => props.dispatch({
+              type: Actions.SET_3D_HIGHLIGHT,
+              payload: undefined,
+            })} />}
         <BugsControls />
       </div>
-      {zDisplayOpen &&
+      {!is3D && zDisplayOpen &&
         <ZDisplay
           allPoints={props.allPoints}
           firmwareConfig={props.firmwareConfig}

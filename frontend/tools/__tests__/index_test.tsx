@@ -66,6 +66,8 @@ describe("<Tools />", () => {
     findTool: () => fakeTool(),
     device: fakeDevice(),
     sensors: [fakeSensor()],
+    peripherals: [],
+    peripheralValues: [],
     bot,
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,

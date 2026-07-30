@@ -69,10 +69,10 @@ describe("<FlipperImage />", () => {
   });
 
   it("renders placeholder at specific size", () => {
-    Object.defineProperty(document, "getElementById", {
-      value: () => ({ clientWidth: 200, clientHeight: 100 }),
-      configurable: true,
-    });
+    jest.spyOn(document, "getElementById").mockReturnValue({
+      clientWidth: 200,
+      clientHeight: 100,
+    } as HTMLElement);
     const p = fakeProps();
     p.image.body.attachment_processed_at = undefined;
     const { container } = render(<FlipperImage {...p} />);
@@ -87,9 +87,8 @@ describe("<FlipperImage />", () => {
   });
 
   it("renders placeholder at default size", () => {
-    Object.defineProperty(document, "getElementById", {
-      value: () => ({}), configurable: true,
-    });
+    jest.spyOn(document, "getElementById")
+      .mockReturnValue({} as HTMLElement);
     const p = fakeProps();
     p.image.body.attachment_processed_at = undefined;
     const { container } = render(<FlipperImage {...p} />);

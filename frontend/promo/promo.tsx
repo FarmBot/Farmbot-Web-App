@@ -3,7 +3,10 @@ import {
   Config, ConfigWithPosition, INITIAL, modifyConfigsFromUrlParams,
   PRESETS,
 } from "../three_d_garden/config";
-import { GardenModel } from "../three_d_garden/garden_model";
+import {
+  GardenModel, ViewPrismBridge,
+} from "../three_d_garden/garden_model";
+import { ViewPrismViewport } from "../three_d_garden";
 import { Canvas } from "@react-three/fiber";
 import {
   PrivateOverlay, PublicOverlay, ToolTip,
@@ -23,6 +26,10 @@ import { FocusTransitionProvider } from "../three_d_garden/focus_transition";
 import {
   PROMO_PLANT_ICON_ATLAS,
 } from "../three_d_garden/garden/plant_icon_atlas";
+import {
+  getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
+} from "./resources";
+import { clearCameraUrlParams } from "../three_d_garden/camera";
 
 const PROMO_BED_SIZES = [
   {
@@ -125,12 +132,28 @@ export const Promo = () => {
     return next;
   });
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = React.useState(() =>
-    getFocusFromUrlParams());
+  const [activeFocus, setActiveFocusState] = React.useState(
+    () => getFocusFromUrlParams());
+  const setActiveFocus = React.useCallback((focus: string) => {
+    if (focus != activeFocus) {
+      clearCameraUrlParams();
+    }
+    setActiveFocusState(focus);
+  }, [activeFocus]);
+  const exitFocus = React.useCallback(() => {
+    setActiveFocus("");
+    if (activeFocus) {
+      setUrlParam("focus", "");
+    }
+  }, [activeFocus, setActiveFocus]);
   const [threeDLoaded, setThreeDLoaded] = React.useState(false);
   const [seasonAnimationPaused, setSeasonAnimationPaused] =
     React.useState(false);
+  const startTimeRef = React.useRef<number>(0);
+  const seasonAnimationElapsedRef =
+    React.useRef<number | undefined>(undefined);
   const [seasonResetKey, setSeasonResetKey] = React.useState(0);
+  const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   const handleThreeDLoadComplete = React.useCallback(() =>
     setThreeDLoaded(true), []);
   const handleSeasonSelect = React.useCallback(() =>
@@ -143,13 +166,11 @@ export const Promo = () => {
 
   const mapPoints = React.useMemo<TaggedGenericPointer[]>(() =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    calculatePointPositions(config), [
+    getPromoResourcePoints() || calculatePointPositions(config), [
     config.soilSurface, config.soilHeight, config.soilSurfacePointCount,
     config.soilSurfaceVariance, config.bedXOffset, config.bedYOffset,
     config.bedWallThickness, config.bedLengthOuter, config.bedWidthOuter,
   ]);
-
-  const startTimeRef = React.useRef<number>(0);
 
   React.useEffect(() => {
     startTimeRef.current = performance.now() / 1000;
@@ -178,25 +199,21 @@ export const Promo = () => {
     return () => clearTimeout(timeout);
   }, [config.plants, config.animateSeasons]);
 
-  const clearActiveFocus = React.useCallback(() => {
-    setActiveFocus("");
-    setUrlParam("focus", "");
-  }, []);
-
   React.useEffect(() => {
     if (!activeFocus) { return; }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key != "Escape") { return; }
-      clearActiveFocus();
+      exitFocus();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeFocus, clearActiveFocus]);
+  }, [activeFocus, exitFocus]);
 
   const plants = React.useMemo(() => {
-    return getCachedPlants(config);
+    return getPromoResourcePlants() || getCachedPlants(config);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.plants, config.bedLengthOuter, config.bedWidthOuter]);
+  const weeds = React.useMemo(() => getPromoResourceWeeds() || [], []);
 
   const threeDPlants = React.useMemo(() => {
     return config.promoSpread
@@ -215,8 +232,7 @@ export const Promo = () => {
       ? { ...config, animateSeasons: true }
       : config, [config, seasonAnimationPaused]);
 
-  return <div className={"three-d-garden promo"}
-    onKeyDown={e => activeFocus && e.key == "Escape" && clearActiveFocus()}>
+  return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <FocusTransitionProvider enabled={config.animate}>
         <MemoryRouter>
@@ -231,6 +247,7 @@ export const Promo = () => {
               startTimeRef={startTimeRef}
               threeDPlants={threeDPlants}
               mapPoints={mapPoints}
+              weeds={weeds}
               plantIconCapacities={plantCapacities.iconCapacities}
               plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
               plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
@@ -240,12 +257,15 @@ export const Promo = () => {
               showFarmbotLayerLoadProgress={false}
               onDetailsRevealStart={handleThreeDLoadComplete}
               smoothFocusTransitions={true}
-              smoothConfigTransitions={true} />
+              smoothConfigTransitions={true}
+              viewPrismBridgeRef={viewPrismBridgeRef} />
           </Canvas>
         </MemoryRouter>
         <PublicOverlay {...common}
+          publicContentVisible={!activeFocus}
           loadComplete={threeDLoaded}
           startTimeRef={startTimeRef}
+          seasonAnimationElapsedRef={seasonAnimationElapsedRef}
           seasonAnimationPaused={seasonAnimationPaused}
           setSeasonAnimationPaused={setSeasonAnimationPaused}
           onSeasonSelect={handleSeasonSelect} />
@@ -255,6 +275,7 @@ export const Promo = () => {
         {config.config &&
           <PrivateOverlay {...common}
             startTimeRef={startTimeRef}
+            seasonAnimationElapsedRef={seasonAnimationElapsedRef}
             seasonAnimationPaused={seasonAnimationPaused}
             setSeasonAnimationPaused={setSeasonAnimationPaused}
             onSeasonSelect={handleSeasonSelect} />}
@@ -263,5 +284,7 @@ export const Promo = () => {
         </span>
       </FocusTransitionProvider>
     </div>
+    {config.viewCube &&
+      <ViewPrismViewport bridgeRef={viewPrismBridgeRef} />}
   </div>;
 };

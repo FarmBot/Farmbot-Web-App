@@ -17,6 +17,7 @@ const FARMBOT_PANEL = [
   DeviceSetting.farmbotLocation,
   DeviceSetting.indoor,
   DeviceSetting.environment,
+  DeviceSetting.groundTexture,
   DeviceSetting.heading,
   DeviceSetting.time_zone,
   DeviceSetting.camera,
@@ -36,6 +37,7 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.shutdownFarmbot,
   DeviceSetting.softReset,
   DeviceSetting.hardReset,
+  DeviceSetting.changeOwnership,
 ];
 const AXES_PANEL = [
   DeviceSetting.axisSettings,
@@ -129,7 +131,7 @@ const PARAMETER_MANAGEMENT = [
   DeviceSetting.importParameters,
   DeviceSetting.highlightModifiedSettings,
   DeviceSetting.showAdvancedSettings,
-  DeviceSetting.resetHardwareParams,
+  DeviceSetting.paramResend,
 ];
 const CUSTOM_SETTINGS_PANEL = [
   DeviceSetting.customSettings,
@@ -140,11 +142,11 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.animations,
   DeviceSetting.trail,
   DeviceSetting.mapMissedSteps,
+  DeviceSetting.showControlsOverlay,
   DeviceSetting.dynamicMap,
   DeviceSetting.mapSize,
   DeviceSetting.rotateMap,
   DeviceSetting.mapOrigin,
-  DeviceSetting.topDownView,
   DeviceSetting.setCameraStartingLocation,
   DeviceSetting.cropMapImages,
   DeviceSetting.clipPhotosOutOfBounds,
@@ -190,6 +192,7 @@ const MAP_SETTINGS = [
   DeviceSetting.showAreasMapLayer,
   DeviceSetting.showReadingsMapLayer,
   DeviceSetting.showMoistureInterpolationMapLayer,
+  DeviceSetting.showSceneObjectsMapLayer,
   DeviceSetting.show3DMap,
 ];
 const CONTROLS_SETTINGS = [
@@ -200,6 +203,7 @@ const CONTROLS_SETTINGS = [
   DeviceSetting.displayRawEncoderPosition,
   DeviceSetting.swapXAndYAxisJogButtons,
   DeviceSetting.showMotorPositionPlotDisplay,
+  DeviceSetting.showMotorLoadPlotDisplay,
 ];
 const SEQUENCE_SETTINGS = [
   DeviceSetting.confirmStepDeletion,
@@ -317,6 +321,7 @@ CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 MAP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 SEQUENCE_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
 LOG_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
+SETTING_PANEL_LOOKUP[DeviceSetting.otherSettings] = "other_settings";
 
 const PHOTOS_PANEL_LOOKUP =
   {} as Record<DeviceSetting, (keyof PhotosPanelState)[]>;

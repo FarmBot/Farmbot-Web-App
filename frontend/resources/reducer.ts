@@ -71,6 +71,7 @@ export const emptyState = (): RestResources => {
         Sensor: {},
         SensorReading: {},
         Sequence: {},
+        SceneObject: {},
         Tool: {},
         User: {},
         WebAppConfig: {},

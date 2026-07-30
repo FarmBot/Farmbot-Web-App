@@ -136,7 +136,7 @@
 
 @keyframes panel-show {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(calc(-100% - var(--panel-horizontal-margin)));
   }
   100% {
     transform: translateX(0);
@@ -148,6 +148,6 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-120%);
+    transform: translateX(calc(-100% - var(--panel-horizontal-margin)));
   }
 }

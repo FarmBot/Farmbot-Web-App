@@ -7,7 +7,9 @@ import { INITIAL, INITIAL_POSITION } from "../../../config";
 import {
   CameraView, cameraViewPropsEqual, CameraViewProps, getCameraViewPoints,
 } from "../camera_view";
-import { ConvexGeometry } from "three-stdlib";
+import {
+  createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
 
 describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
@@ -15,6 +17,7 @@ describe("<CameraView />", () => {
     configPosition: clone(INITIAL_POSITION),
     distanceToSoil: 500,
     cameraMountPosition: new THREE.Vector3(100, 200, 300),
+    getZ: jest.fn(() => 0),
   });
 
   it("renders", () => {
@@ -22,6 +25,11 @@ describe("<CameraView />", () => {
     p.config.cameraView = true;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
+    const wrapper = createRenderer(<CameraView {...p} />);
+    const cameraView = wrapper.root.findAll(node =>
+      node.props.name == "camera-view")[0];
+    expect(cameraView.props.userData).toBeUndefined();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't render", () => {
@@ -37,6 +45,29 @@ describe("<CameraView />", () => {
     p.config.lastImageCapture = 123;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
+  });
+
+  it("renders camera operation animations", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.cameraOperation = "calibration";
+    p.config.lastCameraOperation = 123;
+    const wrapper = createRenderer(<CameraView {...p} />);
+    expect(wrapper.root.findByProps({ name: "camera-operation-animation" }))
+      .toBeTruthy();
+    unmountRenderer(wrapper);
+  });
+
+  it("shows the uncropped view outline when requested", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.cropImages = true;
+    p.config.showUncroppedCameraView = true;
+    p.config.imgRotation = 20;
+    const wrapper = createRenderer(<CameraView {...p} />);
+    expect(wrapper.root.findByProps({ name: "uncropped-camera-view" }))
+      .toBeTruthy();
+    unmountRenderer(wrapper);
   });
 
   it("runs capture opacity pulse", async () => {
@@ -67,6 +98,7 @@ describe("<CameraView />", () => {
 
   it("computes camera view points from props", () => {
     const p = fakeProps();
+    p.config.kitVersion = "v1.8";
     p.config.imgCenterX = 100;
     p.config.imgCenterY = 50;
     p.config.imgScale = 1;
@@ -79,9 +111,9 @@ describe("<CameraView />", () => {
     expect(result.points.length).toEqual(8);
   });
 
-  it("reuses unchanged frustum geometry and rebuilds when inputs change", () => {
+  it("moves the frustum without rebuilding unchanged local geometry", () => {
     const normalsSpy = jest.spyOn(
-      ConvexGeometry.prototype,
+      THREE.BufferGeometry.prototype,
       "computeVertexNormals",
     );
     const p = fakeProps();
@@ -91,8 +123,23 @@ describe("<CameraView />", () => {
     expect(normalsSpy).toHaveBeenCalledTimes(1);
     rerender(<CameraView {...p}
       cameraMountPosition={new THREE.Vector3(101, 200, 300)} />);
+    expect(normalsSpy).toHaveBeenCalledTimes(1);
+    rerender(<CameraView {...p}
+      cameraMountPosition={new THREE.Vector3(101, 200, 300)}
+      distanceToSoil={p.distanceToSoil + 1} />);
     expect(normalsSpy).toHaveBeenCalledTimes(2);
     normalsSpy.mockRestore();
+  });
+
+  it("accepts camera configuration after an incomplete initial layout", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.distanceToSoil = 0;
+    const { rerender } = render(<CameraView {...p} />);
+
+    expect(() => rerender(<CameraView
+      {...p}
+      distanceToSoil={500} />)).not.toThrow();
   });
 
   it("compares camera-view-relevant inputs", () => {
@@ -113,6 +160,33 @@ describe("<CameraView />", () => {
     expect(cameraViewPropsEqual(p, {
       ...p,
       config: { ...p.config, lastImageCapture: p.config.lastImageCapture + 1 },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      getZ: () => 1,
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, cameraOperation: "weeds" },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, lastCameraOperation: 123 },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, animate: !p.config.animate },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: { ...p.config, cropImages: !p.config.cropImages },
+    })).toBeFalsy();
+    expect(cameraViewPropsEqual(p, {
+      ...p,
+      config: {
+        ...p.config,
+        showUncroppedCameraView: !p.config.showUncroppedCameraView,
+      },
     })).toBeFalsy();
   });
 });

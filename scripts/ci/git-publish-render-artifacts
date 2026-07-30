@@ -5,6 +5,7 @@ set -euo pipefail
 : "${COMBINED_RENDER_IMAGE:?COMBINED_RENDER_IMAGE is required}"
 : "${CHOSEN_FPS:?CHOSEN_FPS is required}"
 : "${SCENE_METRICS_NAME:?SCENE_METRICS_NAME is required}"
+: "${FPS_HISTORY:?FPS_HISTORY is required}"
 : "${FE_COVERAGE_NAME:?FE_COVERAGE_NAME is required}"
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 : "${GITHUB_RUN_ID:?GITHUB_RUN_ID is required}"
@@ -22,23 +23,31 @@ else
 fi
 
 mkdir -p "$worktree/build/latest" "$worktree/build/${GITHUB_RUN_ID}"
-for image in "$COMBINED_RENDER_IMAGE"; do
-  cp "/tmp/$image.png" "$worktree/build/latest/$image.png"
-  cp "/tmp/$image.png" "$worktree/build/${GITHUB_RUN_ID}/$image.png"
+render_summary_urls=()
+for image in "/tmp/$COMBINED_RENDER_IMAGE"*.png; do
+  [ -f "$image" ] || continue
+  image_name="$(basename "$image")"
+  cp "$image" "$worktree/build/latest/$image_name"
+  cp "$image" "$worktree/build/${GITHUB_RUN_ID}/$image_name"
+  render_summary_urls+=("$image_name")
 done
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/latest/$CHOSEN_FPS.csv"
 cp "/tmp/$CHOSEN_FPS.csv" "$worktree/build/${GITHUB_RUN_ID}/$CHOSEN_FPS.csv"
-for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FE_COVERAGE_NAME.csv"; do
+for metric in "/tmp/$SCENE_METRICS_NAME"*.csv "/tmp/$FPS_HISTORY.csv" "/tmp/$FE_COVERAGE_NAME.csv"; do
   [ -f "$metric" ] && cp "$metric" "$worktree/$(basename "$metric")"
 done
 git -C "$worktree" add build
-for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FE_COVERAGE_NAME.csv"; do
+for artifact in "$worktree/$SCENE_METRICS_NAME"*.csv "$worktree/$FPS_HISTORY.csv" "$worktree/$FE_COVERAGE_NAME.csv"; do
   [ -f "$artifact" ] && git -C "$worktree" add "$(basename "$artifact")"
 done
 git -C "$worktree" commit -m "Update CI image artifacts for ${GITHUB_RUN_ID}" || true
 git -C "$worktree" push origin "HEAD:$ARTIFACT_BRANCH"
 
 raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${ARTIFACT_BRANCH}/build/${GITHUB_RUN_ID}"
-render_summary_url="${raw_base}/${COMBINED_RENDER_IMAGE}.png"
-echo "RENDER_SUMMARY_URL=${render_summary_url}"
-echo "RENDER_SUMMARY_URL=${render_summary_url}" >> "$GITHUB_ENV"
+render_summary_urls=$(
+  printf '%s\n' "${render_summary_urls[@]}" \
+    | awk -v raw_base="$raw_base" 'NF { print raw_base "/" $0 }' \
+    | paste -sd ' ' -
+)
+echo "RENDER_SUMMARY_URLS=${render_summary_urls}"
+echo "RENDER_SUMMARY_URLS=${render_summary_urls}" >> "$GITHUB_ENV"

@@ -1,5 +1,7 @@
 import { BotPosition } from "../../devices/interfaces";
-import { DesignerState } from "../../farm_designer/interfaces";
+import {
+  DesignerState, ThreeDDesignerState,
+} from "../../farm_designer/interfaces";
 
 export type PlantGridKey =
   | "startX"
@@ -14,6 +16,7 @@ export interface PlantGridState {
   status: "clean" | "dirty",
   grid: PlantGridData;
   gridId: string;
+  gridUuids: string[];
   offsetPacking: boolean;
   cameraView: boolean;
   previous: string;
@@ -34,6 +37,7 @@ export interface PlantGridProps {
   meta?: Record<string, string | undefined>;
   designer?: DesignerState;
   collapsible?: boolean;
+  open?: boolean;
 }
 
 export interface PlantGridInitOption {
@@ -45,7 +49,7 @@ export interface PlantGridInitOption {
   radius?: number;
   z?: number;
   meta?: Record<string, string | undefined>;
-  designer?: DesignerState;
+  designer?: DesignerState | ThreeDDesignerState;
 }
 
 interface GridInputPropsBase {
@@ -64,4 +68,5 @@ export interface GridInputProps extends GridInputPropsBase {
 export interface InputCellProps extends GridInputPropsBase {
   gridKey: PlantGridKey;
   itemType: "points" | "plants";
+  disabled?: boolean;
 }

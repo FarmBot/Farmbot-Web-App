@@ -56,7 +56,7 @@ export const getVisualizationPoints = (
   const getWorldPosition = getVisualizationWorldPositionFunc(config);
   const points = [getWorldPosition(stashedPos)];
   for (const action of actions) {
-    if (action.type != "expanded_move_absolute") { continue; }
+    if (action.type != "animated_move_absolute") { continue; }
     const coordinate = action.args as [number, number, number];
     points.push(getWorldPosition({
       x: coordinate[0],

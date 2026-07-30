@@ -1,334 +1,205 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { clone } from "lodash";
+import * as lodash from "lodash";
+import * as configStorageActions from "../../config_storage/actions";
 import {
   CameraSelectionUI, cameraSelectionUIPropsEqual, CameraSelectionUIProps,
 } from "../camera_selection_ui";
-import { clone } from "lodash";
-import * as lodash from "lodash";
 import { INITIAL } from "../config";
-import * as configStorageActions from "../../config_storage/actions";
-import { BooleanSetting, NumericSetting } from "../../session_keys";
-import { getDefaultCameraPosition } from "../camera";
 import {
-  actRenderer,
-  createRenderer,
-  unmountRenderer,
+  actRenderer, createRenderer, unmountRenderer,
 } from "../../__test_support__/test_renderer";
-import * as threeFiber from "@react-three/fiber";
+import { BooleanSetting, NumericSetting } from "../../session_keys";
+import { Actions } from "../../constants";
 
 describe("<CameraSelectionUI />", () => {
-  let setWebAppConfigValueSpy: jest.SpyInstance;
   let debounceSpy: jest.SpyInstance;
-  let useFrameSpy: jest.SpyInstance;
-  let useStateSpy: jest.SpyInstance;
-  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
+  let setWebAppConfigValueSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    setWebAppConfigValueSpy = jest.spyOn(configStorageActions,
-      "setWebAppConfigValue")
-      .mockImplementation(jest.fn());
     debounceSpy = jest.spyOn(lodash, "debounce")
       .mockImplementation((fn => fn) as typeof lodash.debounce);
-    useFrameSpy = jest.spyOn(threeFiber, "useFrame")
-      .mockImplementation(() => undefined as never);
-    useStateSpy = jest.spyOn(React, "useState");
+    setWebAppConfigValueSpy = jest.spyOn(
+      configStorageActions,
+      "setWebAppConfigValue",
+    ).mockImplementation(jest.fn());
   });
 
   afterEach(() => {
-    mountedWrappers.splice(0).forEach(wrapper =>
-      unmountRenderer(wrapper));
-    setWebAppConfigValueSpy.mockRestore();
     debounceSpy.mockRestore();
-    useFrameSpy.mockRestore();
-    useStateSpy.mockRestore();
+    setWebAppConfigValueSpy.mockRestore();
   });
-
-  const fakeConfig = () => {
-    const config = clone(INITIAL);
-    config.bedHeight = 100;
-    return config;
-  };
 
   const fakeProps = (): CameraSelectionUIProps => ({
-    config: fakeConfig(),
+    config: clone(INITIAL),
     dispatch: jest.fn(),
     topDownAtStart: false,
+    onSelect: jest.fn(),
   });
-
-  const findHead = (
+  const cameraMarkers = (
     wrapper: ReturnType<typeof createRenderer>,
-    angle: number,
-    topDown: boolean,
   ) => wrapper.root.findAll(node =>
-    node.props.name == "head"
-    && node.props.userData?.hovered?.angle == angle
-    && node.props.userData?.hovered?.topDown === topDown)[0];
+    `${node.type}` == "group" &&
+    `${node.props.name}`.startsWith("camera-location-") &&
+    typeof node.props.onPointerOver == "function" &&
+    !!node.props.userData?.hovered);
 
-  const markerPosition = (
-    head: ReturnType<typeof findHead>,
-  ): [number, number, number] | undefined => {
-    let parent = head?.parent;
-    while (parent && parent.props.position === undefined) {
-      parent = parent.parent;
-    }
-    return parent?.props.position;
-  };
+  it("renders four top-down and eight angled camera markers", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    const heads = cameraMarkers(wrapper);
+    const topDownAngles = heads
+      .filter(head => head.props.userData.hovered.topDown)
+      .map(head => head.props.userData.hovered.angle);
+    const angledAngles = heads
+      .filter(head => !head.props.userData.hovered.topDown)
+      .map(head => head.props.userData.hovered.angle);
+    expect([...new Set(topDownAngles)]).toEqual([0, 90, 180, 270]);
+    expect([...new Set(angledAngles)])
+      .toEqual([0, 90, 180, 270, 45, 135, 225, 315]);
+    unmountRenderer(wrapper);
+  });
 
-  const expectedMarkerPosition = (
-    config: CameraSelectionUIProps["config"],
-    angle: number,
-    topDown: boolean,
-    debug = false,
-  ): [number, number, number] => {
-    const position = getDefaultCameraPosition({
-      heading: angle,
-      bedSize: {
-        x: config.bedLengthOuter,
-        y: config.bedWidthOuter,
-      },
-      topDown,
-      visual: !debug,
+  it("updates marker hover state and handles selection", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    const head = cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 45
+      && node.props.userData?.hovered?.topDown === false)!;
+    expect(head).toBeTruthy();
+    const markerColor = () => cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 45
+      && node.props.userData?.hovered?.topDown === false)!
+      .findAll(node =>
+        node.props.color !== undefined &&
+        node.props.hoverColor === undefined)[0].props.color;
+    expect(markerColor()).toEqual("blue");
+    const stopPropagation = jest.fn();
+    const pointerEvent = {
+      delta: 0,
+      stopPropagation,
+      nativeEvent: { stopImmediatePropagation: jest.fn() },
+    };
+    actRenderer(() => head.props.onPointerOver(pointerEvent));
+    expect(markerColor()).toEqual("cyan");
+    actRenderer(() => head.props.onPointerOver(pointerEvent));
+    expect(markerColor()).toEqual("cyan");
+    actRenderer(() => head.props.onPointerMove());
+    expect(markerColor()).toEqual("cyan");
+    actRenderer(() => head.props.onPointerOut(pointerEvent));
+    expect(markerColor()).toEqual("blue");
+    actRenderer(() => head.props.onClick(pointerEvent));
+    expect(stopPropagation).toHaveBeenCalled();
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      NumericSetting.viewpoint_heading,
+      45,
+    );
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      BooleanSetting.top_down_view,
+      false,
+    );
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: true,
     });
-    const baseScaleXY = debug ? 1 : 0.5;
-    const scale = topDown ? 0.1 : baseScaleXY;
-    const baseScaleZ = debug ? 1 : 0.5 * 0.25;
-    const zScale = topDown ? 0 : baseScaleZ;
-    return [
-      position[0] * scale,
-      position[1] * scale,
-      position[2] * zScale,
-    ];
-  };
+    expect(p.onSelect).toHaveBeenCalledWith(45, false);
+    unmountRenderer(wrapper);
 
-  it("renders hidden by default", () => {
-    const wrapper = createRenderer(<CameraSelectionUI {...fakeProps()} />);
-    mountedWrappers.push(wrapper);
-    const group = wrapper.root.findAll(node =>
-      node.props.name == "camera-selection")[0];
-    expect(group?.props.visible).toEqual(false);
+    p.dispatch = undefined;
+    p.onSelect = jest.fn();
+    const noDispatchWrapper = createRenderer(<CameraSelectionUI {...p} />);
+    const clickable = noDispatchWrapper.root.findAll(node =>
+      node.props.onClick)[0];
+    actRenderer(() => clickable.props.onClick(pointerEvent));
+    expect(p.onSelect).not.toHaveBeenCalled();
+    unmountRenderer(noDispatchWrapper);
   });
 
-  it("doesn't register a frame loop", () => {
-    const wrapper = createRenderer(<CameraSelectionUI {...fakeProps()} />);
-    mountedWrappers.push(wrapper);
-    expect(useFrameSpy).not.toHaveBeenCalled();
-  });
-
-  it("renders unique heading marker", () => {
+  it("maps a legacy angled heading to its nearest prism marker", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     p.config.viewpointHeading = 30;
-    const { container } = render(<CameraSelectionUI {...p} />);
-    expect(container.querySelectorAll(".spherehead").length).toEqual(12);
+    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
+    const selected = cameraMarkers(wrapper).filter(node =>
+      node.props.userData.hovered.topDown === false
+      && node.findAll(item => item.props.color == "blue").length > 0);
+    expect(selected.length).toBeGreaterThan(0);
+    expect([...new Set(selected.map(node =>
+      node.props.userData.hovered.angle))]).toEqual([45]);
+    unmountRenderer(wrapper);
   });
 
-  it("keeps top-down heading marker choices and selection", () => {
+  it("maps a saved top-down heading to its nearest cardinal marker", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
-    p.config.viewpointHeading = 45;
+    p.config.viewpointHeading = 30;
     p.topDownAtStart = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-
-    expect(findHead(wrapper, 45, true)).toBeTruthy();
-    expect(findHead(wrapper, 45, false)).toBeFalsy();
-    const material = findHead(wrapper, 45, true)?.findAll(node =>
-      node.props.color !== undefined)[0];
-    expect(material?.props.color).toEqual("blue");
+    const selected = cameraMarkers(wrapper).filter(node =>
+      node.props.userData.hovered.topDown === true
+      && node.findAll(item => item.props.color == "blue").length > 0);
+    expect([...new Set(selected.map(node =>
+      node.props.userData.hovered.angle))]).toEqual([0]);
+    unmountRenderer(wrapper);
   });
 
-  it("keeps marker positions stable across unchanged config churn", () => {
+  it("selects a top-down camera with perspective on", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-
-    expect(markerPosition(findHead(wrapper, 30, false))).toEqual(
-      expectedMarkerPosition(p.config, 30, false));
-
-    actRenderer(() => {
-      wrapper.update(<CameraSelectionUI {...p} config={clone(p.config)} />);
-    });
-
-    expect(markerPosition(findHead(wrapper, 30, false))).toEqual(
-      expectedMarkerPosition(p.config, 30, false));
-  });
-
-  it("reuses marker setup across unchanged config churn", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    debounceSpy.mockClear();
-
-    actRenderer(() => {
-      wrapper.update(<CameraSelectionUI {...p} config={clone(p.config)} />);
-    });
-
-    expect(debounceSpy).not.toHaveBeenCalled();
-  });
-
-  it("dispatches heading update", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const groups = wrapper.root.findAll(node => node.props.onClick);
-    actRenderer(() => {
-      groups[0]?.props.onClick({ stopPropagation: jest.fn() });
-    });
+    const head = cameraMarkers(wrapper).find(node =>
+      node.props.userData.hovered.angle == 90
+      && node.props.userData?.hovered?.topDown === true)!;
+    actRenderer(() =>
+      head.props.onClick({
+        delta: 0,
+        stopPropagation: jest.fn(),
+        nativeEvent: { stopImmediatePropagation: jest.fn() },
+      }));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.viewpoint_heading, 0);
+      NumericSetting.viewpoint_heading,
+      90,
+    );
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      BooleanSetting.top_down_view, true);
-    expect(p.dispatch).toHaveBeenCalled();
-  });
-
-  it("handles missing dispatch", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    p.dispatch = undefined;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const groups = wrapper.root.findAll(node => node.props.onClick);
-    actRenderer(() => {
-      groups[0]?.props.onClick({ stopPropagation: jest.fn() });
+      BooleanSetting.top_down_view,
+      true,
+    );
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: true,
     });
-    expect(setWebAppConfigValueSpy).not.toHaveBeenCalled();
+    expect(p.onSelect).toHaveBeenCalledWith(90, true);
+    unmountRenderer(wrapper);
   });
 
-  it("updates marker color from pointer hover state", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const hoveredSphere = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-    actRenderer(() => {
-      hoveredSphere?.props.onPointerOver();
-    });
-    expect(hoveredSphere).toBeTruthy();
-    const updatedSphere = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-    const material = updatedSphere?.findAll(node =>
-      node.props.color !== undefined)[0];
-    expect(material?.props.color).toEqual("cyan");
-  });
-
-  it("clears marker color on pointer out", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const hoveredSphere = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-
-    actRenderer(() => {
-      hoveredSphere?.props.onPointerOver();
-      hoveredSphere?.props.onPointerOut();
-    });
-
-    const updatedSphere = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-    const material = updatedSphere?.findAll(node =>
-      node.props.color !== undefined)[0];
-    expect(material?.props.color).toEqual("blue");
-  });
-
-  it("keeps default color when raycast finds no hovered marker", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    p.config.viewpointHeading = 0;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-
-    const sphere = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-    const material = sphere?.findAll(node =>
-      node.props.color !== undefined)[0];
-    expect(material?.props.color).toEqual("orange");
-  });
-
-  it("avoids repeated hover state updates for the same marker", () => {
-    const setHovered = jest.fn();
-    useStateSpy.mockImplementationOnce(initial =>
-      [initial as unknown, setHovered]);
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const head = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-
-    actRenderer(() => {
-      head?.props.onPointerMove();
-      head?.props.onPointerMove();
-    });
-
-    expect(setHovered).toHaveBeenCalledTimes(1);
-    expect(setHovered).toHaveBeenCalledWith({ angle: 30, topDown: false });
-  });
-
-  it("renders debug camera markers", () => {
+  it("renders debug markers", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     p.config.lightsDebug = true;
-    const { container } = render(<CameraSelectionUI {...p} />);
-    expect(container.querySelectorAll(".line").length).toEqual(8);
-  });
-
-  it("dispatches non-top-down heading update", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
-    mountedWrappers.push(wrapper);
-    const head = wrapper.root.findAll(node =>
-      node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 30
-      && node.props.userData?.hovered?.topDown === false)[0];
-    actRenderer(() => {
-      head?.props.onClick({ stopPropagation: jest.fn() });
-    });
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.viewpoint_heading, 30);
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      BooleanSetting.top_down_view, false);
+    expect(wrapper.root.findAll(node => node.props.name == "body").length)
+      .toEqual(32);
+    expect(wrapper.root.findAll(node => node.props.className == "line"))
+      .toHaveLength(8);
+    unmountRenderer(wrapper);
   });
 
-  it("compares camera-selection-relevant inputs", () => {
-    const p = fakeProps();
-    p.config.cameraSelectionView = true;
-    expect(cameraSelectionUIPropsEqual(p, {
-      ...p,
-      config: { ...p.config, sun: p.config.sun + 1 },
-    })).toBeTruthy();
-    expect(cameraSelectionUIPropsEqual(p, {
-      ...p,
-      topDownAtStart: !p.topDownAtStart,
-    })).toBeFalsy();
-    expect(cameraSelectionUIPropsEqual(p, {
-      ...p,
-      dispatch: jest.fn(),
-    })).toBeFalsy();
-    expect(cameraSelectionUIPropsEqual(p, {
-      ...p,
-      config: { ...p.config, viewpointHeading: p.config.viewpointHeading + 1 },
-    })).toBeFalsy();
-    expect(cameraSelectionUIPropsEqual(p, {
-      ...p,
-      config: { ...p.config, lightsDebug: !p.config.lightsDebug },
-    })).toBeFalsy();
+  it("compares only relevant props", () => {
+    const first = fakeProps();
+    expect(cameraSelectionUIPropsEqual(first, first)).toEqual(true);
+    expect(cameraSelectionUIPropsEqual(first, {
+      ...first,
+      config: { ...first.config, viewpointHeading: 90 },
+    })).toEqual(false);
+    expect(cameraSelectionUIPropsEqual(first, {
+      ...first,
+      topDownAtStart: true,
+    })).toEqual(false);
+    expect(cameraSelectionUIPropsEqual(first, {
+      ...first,
+      onSelect: jest.fn(),
+    })).toEqual(false);
   });
 });

@@ -252,27 +252,33 @@ export interface PanelSectionProps {
   toggleOpen(): void;
   itemCount: number;
   title: string;
-  addNew(): void;
+  addNew?: () => void;
   addTitle: string;
   addClassName: string;
   children: React.ReactNode | React.ReactNode[];
   extraHeaderContent?: React.ReactNode | false;
   extraHeaderTitle?: React.ReactNode | false;
+  onMouseEnter?(): void;
+  onMouseLeave?(): void;
 }
 
 export const PanelSection = (props: PanelSectionProps) => {
-  const { isOpen } = props;
+  const { isOpen, addNew } = props;
   return <div className={`panel-section ${isOpen ? "open" : ""}`}>
     <div className={"section-header"}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
       onClick={props.toggleOpen}>
-      <label>{`${props.title} (${props.itemCount})`}</label>
+      <label title={props.title}>
+        {`${props.title} (${props.itemCount})`}
+      </label>
       {props.extraHeaderTitle}
       <div className="row">
         {props.extraHeaderContent}
-        {isOpen && <div
+        {isOpen && addNew && <div
           onClick={e => {
             e.stopPropagation();
-            props.addNew();
+            addNew();
           }}
           className={[
             "fb-button green",

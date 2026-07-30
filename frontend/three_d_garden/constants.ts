@@ -22,6 +22,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     grass: "/3D/textures/grass.avif",
     wood: "/3D/textures/wood.avif",
     soil: "/3D/textures/soil.avif",
+    sand: "/3D/textures/sand.avif",
     aluminum: "/3D/textures/aluminum.avif",
     concrete: "/3D/textures/concrete.avif",
     screen: "/3D/textures/screen.avif",
@@ -32,15 +33,23 @@ export const ASSETS: Record<string, Record<string, string>> = {
     track: "/3D/shapes/track.svg",
     column: "/3D/shapes/column.svg",
     beam: "/3D/shapes/beam.svg",
+    beamV19: "/3D/shapes/beam_v19.svg",
     zAxis: "/3D/shapes/z_axis.svg",
   },
   models: {
     gantryWheelPlate: "/3D/models/gantry_wheel_plate.glb",
+    gantryWheelPlateV19: "/3D/models/gantry_wheel_plate_v19.glb",
     leftBracket: "/3D/models/left_bracket.glb",
+    leftBracketV19: "/3D/models/left_bracket_v19.glb",
     rightBracket: "/3D/models/right_bracket.glb",
+    rightBracketV19: "/3D/models/right_bracket_v19.glb",
     crossSlide: "/3D/models/cross_slide.glb",
+    crossSlideV19: "/3D/models/cross_slide_v19.glb",
     beltClip: "/3D/models/belt_clip.glb",
     zStop: "/3D/models/z_stop.glb",
+    mountedIdlerPulley: "/3D/models/mounted_idler_pulley.glb",
+    mountedIdlerPulleyGantry:
+      "/3D/models/mounted_idler_pulley_gantry.glb",
     utm: "/3D/models/utm.glb",
     ccSupportHorizontal: "/3D/models/cc_support_horizontal.glb",
     ccSupportVertical: "/3D/models/cc_support_vertical.glb",
@@ -48,6 +57,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     horizontalMotorHousing: "/3D/models/horizontal_motor_housing.glb",
     zAxisMotorMount: "/3D/models/z_axis_motor_mount.glb",
     toolbay3: "/3D/models/toolbay_3.glb",
+    toolbay5: "/3D/models/toolbay_5.glb",
     toolbay1: "/3D/models/toolbay_1.glb",
     rotaryToolBase: "/3D/models/rotary_tool_base.glb",
     rotaryToolImplement: "/3D/models/rotary_tool_implement.glb",
@@ -71,6 +81,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     led: "/3D/models/led_indicator.glb",
   },
   other: {
+    farmbotLogo: "/app-resources/img/farmbot.avif",
     gear: "/app-resources/img/icons/settings.svg",
     weed: "/3D/icons/generic-weed.avif",
     plant: "/3D/icons/generic-plant.avif",
@@ -113,12 +124,30 @@ export enum VacuumPumpCoverMaterial {
   one = "0.603922_0.647059_0.686275_0.000000_0.000000",
 }
 
+export enum MountedIdlerPulleyMaterial {
+  mount = "0.901961_0.901961_0.901961_0.000000_0.000000",
+  locknut = "0.800000_0.800000_0.800000_0.000000_0.000000",
+  shim = "0.917647_0.917647_0.917647_0.000000_0.000000",
+  bearing = "0.301961_0.301961_0.301961_0.000000_0.000000",
+}
+
+export enum GantryCornerBracketMaterial {
+  hardware = "0.800000_0.800000_0.800000_0.000000_0.000000",
+  bracket = "0.901961_0.901961_0.901961_0.000000_0.000000",
+}
+
 export enum PartName {
   gantryWheelPlate = "Gantry_Wheel_Plate",
   leftBracket = "Left_Gantry_Corner_Bracket",
   rightBracket = "Right_Gantry_Corner_Bracket",
+  gantryCornerBracketNutBar = "Nut_Bar_-_60mm",
   crossSlide = "Cross-Slide_Plate",
+  crossSlideV19 = "M5_Flange_Locknut",
   zStop = "Z-Axis_Hardstop",
+  mountedIdlerPulleyMount = "Idler_Pulley_Mount",
+  mountedIdlerPulleyLocknut = "M5_Locknut",
+  mountedIdlerPulleyShim = "M5_Shim",
+  mountedIdlerPulleyBearing = "Bearing",
   beltClip = "Belt_Clip_-_Slim",
   utm = "M5_Barb",
   ccSupportHorizontal = "60mm_Horizontal_Cable_Carrier_Support",
@@ -128,6 +157,7 @@ export enum PartName {
   zAxisMotorMount = "Z-Axis_Motor_Mount",
   toolbay3 = "mesh0_mesh",
   toolbay3Logo = "mesh0_mesh_1",
+  toolbay5 = "5-Slot_Toolbay",
   toolbay1 = "mesh0_mesh",
   toolbay1Logo = "mesh0_mesh_1",
   seeder = "Seeder_Brass_Insert",

@@ -5,7 +5,10 @@ import { isNumber } from "lodash";
 import {
   Decal, OrthographicCamera, Plane, RenderTexture, useTexture,
 } from "@react-three/drei";
-import { DoubleSide } from "three";
+import {
+  DataTexture, DoubleSide, Plane as ThreePlane, RGBAFormat, Texture,
+  UnsignedByteType, Vector3,
+} from "three";
 import { ASSETS } from "../constants";
 import { MeshBasicMaterial } from "../components";
 import { soilSurfaceExtents } from "../triangles";
@@ -16,7 +19,7 @@ import {
 import { AddPlantProps } from "../bed";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
-  imageSizeCheck, isRotated,
+  cropAmount, imageSizeCheck, isRotated, largeCrop,
 } from "../../farm_designer/map/layers/images/map_image";
 import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
@@ -98,6 +101,8 @@ const IMAGE_TEXTURE_CONFIG_FIELDS: (keyof Config)[] = [
   "botSizeX",
   "botSizeY",
   "columnLength",
+  "clipImages",
+  "cropImages",
   "imgCalZ",
   "imgCenterX",
   "imgCenterY",
@@ -112,12 +117,15 @@ const IMAGE_TEXTURE_CONFIG_FIELDS: (keyof Config)[] = [
   "lightsDebug",
   "mirrorX",
   "mirrorY",
+  "showUncroppedCameraView",
   "soilBrightness",
   "surfaceDebug",
   "zGantryOffset",
 ];
 
 const IMAGE_TEXTURE_SETTING_FIELDS = [
+  BooleanSetting.crop_images,
+  BooleanSetting.clip_image_layer,
   BooleanSetting.show_images,
   StringSetting.photo_filter_begin,
   StringSetting.photo_filter_end,
@@ -169,16 +177,36 @@ const getSensorReadingKey = (readings: TaggedSensorReading[]) => {
   return key;
 };
 
+const getPhotoFilterKey = (props: ImageTextureProps) => {
+  const designer = props.addPlantProps?.designer;
+  const getConfigValue = props.addPlantProps?.getConfigValue;
+  return [
+    props.images?.map(image => image.uuid).join(","),
+    designer?.hiddenImages.join(","),
+    designer?.shownImages.join(","),
+    designer?.hideUnShownImages,
+    designer?.alwaysHighlightImage,
+    designer?.showPhotoImages,
+    designer?.showCalibrationImages,
+    designer?.showDetectionImages,
+    designer?.showHeightImages,
+    designer?.hoveredMapImage,
+    IMAGE_TEXTURE_SETTING_FIELDS.map(field => getConfigValue?.(field)).join(","),
+  ].join(":");
+};
+
 export const getImageTextureKey = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const moistureVisible = props.showMoistureMap || props.showMoistureReadings;
   return [
     extents.x.min, extents.x.max,
     extents.y.min, extents.y.max,
+    props.config.surfaceDebug,
     props.showMoistureMap,
     props.showMoistureReadings,
     moistureVisible && getSensorKey(props.sensors),
     moistureVisible && getSensorReadingKey(props.sensorReadings),
+    getPhotoFilterKey(props),
   ].join(":");
 };
 
@@ -318,6 +346,8 @@ interface ImageWrapperProps {
 const IMAGE_WRAPPER_CONFIG_FIELDS: (keyof Config)[] = [
   "botSizeX",
   "botSizeY",
+  "clipImages",
+  "cropImages",
   "imgCenterX",
   "imgCenterY",
   "imgOffsetX",
@@ -359,6 +389,53 @@ const imageWrapperPropsEqual = (
   && imageWrapperImagesEqual(prev.image, next.image)
   && imageWrapperConfigFieldsEqual(prev.config, next.config);
 
+type ImageClippingConfig = Pick<Config,
+  "botSizeX" | "botSizeY" | "clipImages">;
+
+export const getImageClippingPlanes = (
+  config: ImageClippingConfig,
+): ThreePlane[] | undefined => config.clipImages
+  ? [
+    new ThreePlane(new Vector3(1, 0, 0), 0),
+    new ThreePlane(new Vector3(-1, 0, 0), config.botSizeX),
+    new ThreePlane(new Vector3(0, 1, 0), 0),
+    new ThreePlane(new Vector3(0, -1, 0), config.botSizeY),
+  ]
+  : undefined;
+
+const CIRCLE_MASK_SIZE = 64;
+
+export const createCircleCropMask = () => {
+  const data = new Uint8Array(CIRCLE_MASK_SIZE * CIRCLE_MASK_SIZE * 4);
+  const center = (CIRCLE_MASK_SIZE - 1) / 2;
+  const radius = CIRCLE_MASK_SIZE / 2;
+  for (let y = 0; y < CIRCLE_MASK_SIZE; y++) {
+    for (let x = 0; x < CIRCLE_MASK_SIZE; x++) {
+      const distance = Math.hypot(x - center, y - center);
+      const value = Math.round(255 * Math.max(
+        0,
+        Math.min(1, radius - distance),
+      ));
+      const index = (y * CIRCLE_MASK_SIZE + x) * 4;
+      data[index] = value;
+      data[index + 1] = value;
+      data[index + 2] = value;
+      data[index + 3] = value;
+    }
+  }
+  const texture = new DataTexture(
+    data,
+    CIRCLE_MASK_SIZE,
+    CIRCLE_MASK_SIZE,
+    RGBAFormat,
+    UnsignedByteType,
+  );
+  texture.needsUpdate = true;
+  return texture;
+};
+
+const CIRCLE_CROP_MASK = createCircleCropMask();
+
 const ImageWrapperBase = (props: ImageWrapperProps) => {
   const { config } = props;
   const rawUrl = props.image.body.attachment_url;
@@ -367,6 +444,31 @@ const ImageWrapperBase = (props: ImageWrapperProps) => {
     : rawUrl;
   const texture = useTexture(url);
   const i = (texture.source?.data ?? texture.image) as HTMLImageElement | undefined;
+  const crop = React.useMemo(() => i
+    ? get3DImageCrop({
+      enabled: config.cropImages,
+      imageRotation: config.imgRotation,
+      imageWidth: i.width,
+      imageHeight: i.height,
+      imageScale: config.imgScale,
+    })
+    : undefined, [
+    config.cropImages,
+    config.imgRotation,
+    config.imgScale,
+    i,
+  ]);
+  const map = React.useMemo(() => crop
+    ? getCroppedTexture(texture, crop)
+    : texture, [crop, texture]);
+  const { botSizeX, botSizeY, clipImages } = config;
+  const clippingPlanes = React.useMemo(
+    () => getImageClippingPlanes({ botSizeX, botSizeY, clipImages }),
+    [botSizeX, botSizeY, clipImages],
+  );
+  React.useEffect(() => () => {
+    if (map != texture) { map.dispose(); }
+  }, [map, texture]);
   if (!i) { return; }
   return perfMeasure("imageWrapperSetupMs", () => {
     const aspect = i.width / i.height;
@@ -382,18 +484,70 @@ const ImageWrapperBase = (props: ImageWrapperProps) => {
 
     return <Decal
       name={"image"}
-      map={texture}
+      map={map}
       position={getImagePosition(
         config, props.x, props.y, props.xOffset, props.yOffset, props.z)}
       debug={config.lightsDebug}
       material-side={DoubleSide}
+      material-alphaMap={crop?.circle ? CIRCLE_CROP_MASK : undefined}
+      material-transparent={true}
+      material-clippingPlanes={clippingPlanes}
       depthTest={true}
       rotation={[0, 0, rotation]}
-      scale={[width, height, 1000]} />;
+      scale={[crop?.width || width, crop?.height || height, 1000]} />;
   });
 };
 
 const ImageWrapper = React.memo(ImageWrapperBase, imageWrapperPropsEqual);
+
+export interface ImageCrop {
+  circle: boolean;
+  width: number;
+  height: number;
+  repeat: [number, number];
+  offset: [number, number];
+}
+
+interface Get3DImageCropProps {
+  enabled: boolean;
+  imageRotation: number;
+  imageWidth: number;
+  imageHeight: number;
+  imageScale: number;
+}
+
+export const get3DImageCrop = (
+  props: Get3DImageCropProps,
+): ImageCrop | undefined => {
+  if (!props.enabled || !props.imageRotation) { return; }
+  const size = { width: props.imageWidth, height: props.imageHeight };
+  const crop = cropAmount(props.imageRotation, size);
+  const circleCrop = largeCrop(props.imageRotation);
+  const croppedWidth = circleCrop
+    ? Math.min(size.width, size.height)
+    : Math.max(1, size.width - crop);
+  const croppedHeight = circleCrop
+    ? Math.min(size.width, size.height)
+    : Math.max(1, size.height - crop);
+  return {
+    circle: circleCrop,
+    width: croppedWidth * props.imageScale,
+    height: croppedHeight * props.imageScale,
+    repeat: [croppedWidth / size.width, croppedHeight / size.height],
+    offset: [
+      (size.width - croppedWidth) / size.width / 2,
+      (size.height - croppedHeight) / size.height / 2,
+    ],
+  };
+};
+
+export const getCroppedTexture = (texture: Texture, crop: ImageCrop) => {
+  const croppedTexture = texture.clone();
+  croppedTexture.repeat.set(...crop.repeat);
+  croppedTexture.offset.set(...crop.offset);
+  croppedTexture.needsUpdate = true;
+  return croppedTexture;
+};
 
 export const extraRotation = (config: Pick<Config, "imgOrigin">) => {
   switch (config.imgOrigin) {

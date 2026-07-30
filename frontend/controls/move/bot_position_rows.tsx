@@ -96,60 +96,65 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
 };
 
 export const AxisActions = (props: AxisActionsProps) => {
+  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
+    target={<i className="fa fa-ellipsis-v" />}
+    content={<AxisActionsMenu {...props} />} />;
+};
+
+export const AxisActionsMenu = (props: AxisActionsProps) => {
   const {
     axis, arduinoBusy, locked, hardwareDisabled, botOnline,
     dispatch, botPosition, sourceFwConfig,
   } = props;
   const className = lockedClass(locked);
+  const unavailable = arduinoBusy || locked || !botOnline;
   const navigate = useNavigate();
-  return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
-    target={<i className="fa fa-ellipsis-v" />}
-    content={<div className={"axis-actions"}>
-      <LockableButton
-        disabled={arduinoBusy || !botOnline}
-        className={className}
-        title={t("MOVE TO HOME")}
-        onClick={moveToHomeCommand(axis, botPosition, dispatch)}>
-        {t("MOVE TO HOME")}
-      </LockableButton>
-      <LockableButton
-        disabled={arduinoBusy || hardwareDisabled || !botOnline}
-        className={className}
-        title={t("FIND HOME")}
-        onClick={() => {
-          findHome(axis);
-          dispatch(setMovementStateFromPosition());
-        }}>
-        {t("FIND HOME")}
-      </LockableButton>
-      <LockableButton
-        disabled={arduinoBusy || !botOnline}
-        title={t("SET HOME")}
-        onClick={() => setHome(axis)}>
-        {t("SET HOME")}
-      </LockableButton>
-      <LockableButton
-        disabled={arduinoBusy || hardwareDisabled || !botOnline}
-        className={className}
-        title={t("FIND LENGTH")}
-        onClick={() => findAxisLength(axis)}>
-        {t("FIND LENGTH")}
-      </LockableButton>
-      <LockableButton
-        disabled={!botOnline}
-        className={className}
-        title={t("SET LENGTH")}
-        onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
-        {t("SET LENGTH")}
-      </LockableButton>
-      <a onClick={() => {
-        dispatch(setPanelOpen(true));
-        navigate(Path.settings("axes"));
+  return <div className={"axis-actions"}>
+    <LockableButton
+      disabled={unavailable}
+      className={className}
+      title={t("MOVE TO HOME")}
+      onClick={moveToHomeCommand(axis, botPosition, dispatch)}>
+      {t("MOVE TO HOME")}
+    </LockableButton>
+    <LockableButton
+      disabled={unavailable || hardwareDisabled}
+      className={className}
+      title={t("FIND HOME")}
+      onClick={() => {
+        findHome(axis);
+        dispatch(setMovementStateFromPosition());
       }}>
-        <i className="fa fa-external-link" />
-        {t("Settings")}
-      </a>
-    </div>} />;
+      {t("FIND HOME")}
+    </LockableButton>
+    <LockableButton
+      disabled={unavailable}
+      title={t("SET HOME")}
+      onClick={() => setHome(axis)}>
+      {t("SET HOME")}
+    </LockableButton>
+    <LockableButton
+      disabled={unavailable || hardwareDisabled}
+      className={className}
+      title={t("FIND LENGTH")}
+      onClick={() => findAxisLength(axis)}>
+      {t("FIND LENGTH")}
+    </LockableButton>
+    <LockableButton
+      disabled={unavailable}
+      className={className}
+      title={t("SET LENGTH")}
+      onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
+      {t("SET LENGTH")}
+    </LockableButton>
+    <a onClick={() => {
+      dispatch(setPanelOpen(true));
+      navigate(Path.settings("axes"));
+    }}>
+      <i className="fa fa-external-link" />
+      {t("Settings")}
+    </a>
+  </div>;
 };
 
 export const setAxisLength = (props: SetAxisLengthProps) => () => {

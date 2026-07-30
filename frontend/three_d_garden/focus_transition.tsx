@@ -3,6 +3,7 @@ import { useSpring } from "@react-spring/three";
 import { Material, Object3D } from "three";
 import { Group } from "./components";
 import { Camera, VectorXyz } from "./zoom_beacons_constants";
+import { perfCount, perfMark } from "../performance/perf";
 
 export const FOCUS_TRANSITION_MS = 750;
 
@@ -10,6 +11,45 @@ export const easeInOutCubic = (t: number) =>
   t < 0.5
     ? 4 * t * t * t
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+const cubicBezierPoint = (
+  t: number,
+  controlPoint1: number,
+  controlPoint2: number,
+) => {
+  const inverse = 1 - t;
+  return 3 * inverse * inverse * t * controlPoint1
+    + 3 * inverse * t * t * controlPoint2
+    + t * t * t;
+};
+
+const cubicBezierSlope = (
+  t: number,
+  controlPoint1: number,
+  controlPoint2: number,
+) => {
+  const inverse = 1 - t;
+  return 3 * inverse * inverse * controlPoint1
+    + 6 * inverse * t * (controlPoint2 - controlPoint1)
+    + 3 * t * t * (1 - controlPoint2);
+};
+
+/** Equivalent to CSS `ease`, or cubic-bezier(0.25, 0.1, 0.25, 1). */
+export const cssEase = (progress: number) => {
+  const clampedProgress = Math.min(1, Math.max(0, progress));
+  let curveTime = clampedProgress;
+  for (let iteration = 0; iteration < 5; iteration++) {
+    const slope = cubicBezierSlope(curveTime, 0.25, 0.25);
+    if (slope == 0) {
+      break;
+    }
+    curveTime -=
+      (cubicBezierPoint(curveTime, 0.25, 0.25) - clampedProgress)
+      / slope;
+    curveTime = Math.min(1, Math.max(0, curveTime));
+  }
+  return cubicBezierPoint(curveTime, 0.1, 1);
+};
 
 interface FocusTransitionContextValue {
   enabled: boolean;
@@ -401,7 +441,16 @@ export const FocusVisibilityDiv = (props: FocusVisibilityDivProps) => {
 
 export interface SmoothCameraState extends Camera {
   zoom: number;
+  fov: number;
 }
+
+export type CameraInterpolation = "orbit" | "linear";
+
+export const CAMERA_SPRING_CONFIG = {
+  mass: 1,
+  tension: 160,
+  friction: 24,
+};
 
 const vectorFromSpring = (value: unknown, fallback: VectorXyz): VectorXyz =>
   Array.isArray(value) && value.length == 3
@@ -415,7 +464,38 @@ export const cameraTransitionValue = (
   position: vectorFromSpring(value.position, fallback.position),
   target: vectorFromSpring(value.target, fallback.target),
   zoom: typeof value.zoom == "number" ? value.zoom : fallback.zoom,
+  fov: typeof value.fov == "number" ? value.fov : fallback.fov,
 });
+
+const TOP_VIEW_HORIZONTAL_THRESHOLD = 0.001;
+
+export const interpolateZUpSphericalDirection = (
+  from: VectorXyz,
+  to: VectorXyz,
+  progress: number,
+): VectorXyz => {
+  const clampedProgress = Math.max(0, Math.min(1, progress));
+  const fromAzimuth = Math.atan2(from[0], -from[1]);
+  const toHorizontal = Math.hypot(to[0], to[1]);
+  const toAzimuth = toHorizontal
+    ? Math.atan2(to[0], -to[1])
+    : fromAzimuth;
+  const azimuthDelta = Math.atan2(
+    Math.sin(toAzimuth - fromAzimuth),
+    Math.cos(toAzimuth - fromAzimuth),
+  );
+  const azimuth = fromAzimuth + azimuthDelta * clampedProgress;
+  const fromPolar = Math.acos(Math.max(-1, Math.min(1, from[2])));
+  const toPolar = Math.acos(Math.max(-1, Math.min(1, to[2])));
+  const polar = fromPolar
+    + (toPolar - fromPolar) * clampedProgress;
+  const horizontal = Math.sin(polar);
+  return [
+    horizontal * Math.sin(azimuth),
+    -horizontal * Math.cos(azimuth),
+    Math.cos(polar),
+  ];
+};
 
 export const interpolateCameraState = (
   from: SmoothCameraState,
@@ -424,18 +504,97 @@ export const interpolateCameraState = (
 ): SmoothCameraState => {
   const lerp = (start: number, end: number) =>
     start + (end - start) * progress;
+  const target: VectorXyz = [
+    lerp(from.target[0], to.target[0]),
+    lerp(from.target[1], to.target[1]),
+    lerp(from.target[2], to.target[2]),
+  ];
+  const fromOffset = from.position.map((value, index) =>
+    value - from.target[index]) as VectorXyz;
+  const toOffset = to.position.map((value, index) =>
+    value - to.target[index]) as VectorXyz;
+  const fromRadius = Math.hypot(...fromOffset);
+  const toRadius = Math.hypot(...toOffset);
+  const normalize = (vector: VectorXyz, length: number): VectorXyz =>
+    length ? vector.map(value => value / length) as VectorXyz : [0, 0, 1];
+  const fromDirection = normalize(fromOffset, fromRadius);
+  const toDirection = normalize(toOffset, toRadius);
+  const dot = Math.max(-1, Math.min(1,
+    fromDirection.reduce((sum, value, index) =>
+      sum + value * toDirection[index], 0)));
+  let direction: VectorXyz;
+  const nearTop = (direction: VectorXyz) => direction[2] > 0
+    && Math.hypot(direction[0], direction[1])
+    <= TOP_VIEW_HORIZONTAL_THRESHOLD;
+  const upperHemisphereTransition = fromDirection[2] > 0
+    && toDirection[2] > 0;
+  if (upperHemisphereTransition
+    || nearTop(fromDirection)
+    || nearTop(toDirection)) {
+    direction = interpolateZUpSphericalDirection(
+      fromDirection,
+      toDirection,
+      progress,
+    );
+  } else if (dot > 0.9995) {
+    const mixed = fromDirection.map((value, index) =>
+      lerp(value, toDirection[index])) as VectorXyz;
+    direction = normalize(mixed, Math.hypot(...mixed));
+  } else if (dot < -0.9995) {
+    const basis: VectorXyz = Math.abs(fromDirection[2]) < 0.9
+      ? [0, 0, 1]
+      : [1, 0, 0];
+    const cross: VectorXyz = [
+      fromDirection[1] * basis[2] - fromDirection[2] * basis[1],
+      fromDirection[2] * basis[0] - fromDirection[0] * basis[2],
+      fromDirection[0] * basis[1] - fromDirection[1] * basis[0],
+    ];
+    const orthogonal = normalize(cross, Math.hypot(...cross));
+    direction = fromDirection.map((value, index) =>
+      value * Math.cos(Math.PI * progress)
+      + orthogonal[index] * Math.sin(Math.PI * progress)) as VectorXyz;
+  } else {
+    const angle = Math.acos(dot);
+    const denominator = Math.sin(angle);
+    const fromWeight = Math.sin((1 - progress) * angle) / denominator;
+    const toWeight = Math.sin(progress * angle) / denominator;
+    direction = fromDirection.map((value, index) =>
+      value * fromWeight + toDirection[index] * toWeight) as VectorXyz;
+  }
+  const fov = lerp(from.fov, to.fov);
+  const fovScale = (value: number) => Math.tan(value * Math.PI / 360);
+  const visibleHalfHeight = lerp(
+    fromRadius * fovScale(from.fov),
+    toRadius * fovScale(to.fov),
+  );
+  const radius = visibleHalfHeight / fovScale(fov);
   return {
-    position: [
-      lerp(from.position[0], to.position[0]),
-      lerp(from.position[1], to.position[1]),
-      lerp(from.position[2], to.position[2]),
-    ],
-    target: [
-      lerp(from.target[0], to.target[0]),
-      lerp(from.target[1], to.target[1]),
-      lerp(from.target[2], to.target[2]),
-    ],
+    position: direction.map((value, index) =>
+      target[index] + value * radius) as VectorXyz,
+    target,
     zoom: lerp(from.zoom, to.zoom),
+    fov,
+  };
+};
+
+export const interpolateLinearCameraState = (
+  from: SmoothCameraState,
+  to: SmoothCameraState,
+  progress: number,
+): SmoothCameraState => {
+  const clampedProgress = Math.max(0, Math.min(1, progress));
+  const lerp = (start: number, end: number) =>
+    start + (end - start) * clampedProgress;
+  const interpolateVector = (
+    start: VectorXyz,
+    end: VectorXyz,
+  ): VectorXyz => start.map((value, index) =>
+    lerp(value, end[index])) as VectorXyz;
+  return {
+    position: interpolateVector(from.position, to.position),
+    target: interpolateVector(from.target, to.target),
+    zoom: lerp(from.zoom, to.zoom),
+    fov: lerp(from.fov, to.fov),
   };
 };
 
@@ -444,6 +603,7 @@ const cameraKey = (state: SmoothCameraState) =>
     ...state.position,
     ...state.target,
     state.zoom,
+    state.fov,
   ].join(",");
 
 export interface SmoothCameraObject {
@@ -455,6 +615,8 @@ export interface SmoothCameraObject {
     toArray?(): number[];
   };
   zoom: number;
+  fov?: number;
+  far?: number;
   lookAt?(x: number, y: number, z: number): void;
   updateProjectionMatrix?(): void;
 }
@@ -467,6 +629,7 @@ export interface SmoothCameraControls {
     set(x: number, y: number, z: number): void;
     toArray?(): number[];
   };
+  getAzimuthalAngle?(): number;
   update?(): void;
 }
 
@@ -498,129 +661,165 @@ export const readSmoothCameraState = (
   zoom: typeof cameraObject?.zoom == "number"
     ? cameraObject.zoom
     : fallback.zoom,
+  fov: typeof cameraObject?.fov == "number"
+    ? cameraObject.fov
+    : fallback.fov,
 });
+
+interface ApplySmoothCameraStateOptions {
+  emitControlsUpdate?: boolean;
+}
 
 export const applySmoothCameraState = (
   state: SmoothCameraState,
   cameraObject?: SmoothCameraObject | null,
   controls?: SmoothCameraControls | null,
+  options: ApplySmoothCameraStateOptions = {},
 ) => {
   if (cameraObject && typeof cameraObject.position?.set == "function") {
     setVector(cameraObject.position, state.position);
     cameraObject.zoom = state.zoom;
+    if (typeof cameraObject.fov == "number") {
+      cameraObject.fov = state.fov;
+    }
     cameraObject.updateProjectionMatrix?.();
     cameraObject.lookAt?.(...state.target);
   }
   if (controls && typeof controls.target?.set == "function") {
     setVector(controls.target, state.target);
-    controls.update?.();
+    if (options.emitControlsUpdate !== false) { controls.update?.(); }
   }
 };
 
 export interface UseSmoothCameraProps {
   camera: Camera;
   zoom: number;
+  fov: number;
   enabled: boolean;
   cameraObject?: SmoothCameraObject | null;
   controls?: SmoothCameraControls | null;
-  updateStateDuringTransition?: boolean;
+  interpolation?: CameraInterpolation;
+  cancelRef?: React.MutableRefObject<(() => void) | undefined>;
+  onFrame?(): void;
+  onRest?(): void;
 }
 
 export const useSmoothCamera = (props: UseSmoothCameraProps) => {
-  const transition = useFocusTransition();
+  const {
+    cameraObject, cancelRef, controls, enabled, interpolation,
+    onFrame, onRest,
+  } = props;
   const [positionX, positionY, positionZ] = props.camera.position;
   const [targetX, targetY, targetZ] = props.camera.target;
   const target = React.useMemo<SmoothCameraState>(() => ({
     position: [positionX, positionY, positionZ],
     target: [targetX, targetY, targetZ],
     zoom: props.zoom,
+    fov: props.fov,
   }), [
     positionX,
     positionY,
     positionZ,
     props.zoom,
+    props.fov,
     targetX,
     targetY,
     targetZ,
   ]);
-  const [displayCamera, setDisplayCamera] = React.useState(target);
-  const displayRef = React.useRef(displayCamera);
+  const displayRef = React.useRef(target);
   const key = cameraKey(target);
+  const [, api] = useSpring(() => ({
+    progress: 1,
+    immediate: true,
+  }));
 
-  React.useEffect(() => {
-    displayRef.current = displayCamera;
-  }, [displayCamera]);
-
-  const appliedCamera = props.enabled ? displayCamera : target;
   React.useLayoutEffect(() => {
     applySmoothCameraState(
-      appliedCamera,
-      props.cameraObject,
-      props.controls,
+      displayRef.current,
+      cameraObject,
+      controls,
     );
+    onFrame?.();
   }, [
-    appliedCamera,
-    props.cameraObject,
-    props.controls,
+    cameraObject,
+    controls,
+    onFrame,
   ]);
 
   React.useEffect(() => {
-    if (!props.enabled) {
+    if (!enabled) {
       displayRef.current = target;
       applySmoothCameraState(
         target,
-        props.cameraObject,
-        props.controls,
+        cameraObject,
+        controls,
       );
+      onFrame?.();
+      perfMark("garden_camera_settled");
+      onRest?.();
       return;
     }
     const from = readSmoothCameraState(
       displayRef.current,
-      props.cameraObject,
-      props.controls,
+      cameraObject,
+      controls,
     );
-    const updateStateDuringTransition =
-      props.updateStateDuringTransition ?? true;
-    const startedAt = performance.now();
-    let frame = 0;
-    const tick = () => {
-      const elapsed = performance.now() - startedAt;
-      const progress = Math.min(elapsed / transition.duration, 1);
-      const next = interpolateCameraState(
-        from,
-        target,
-        easeInOutCubic(progress),
-      );
-      displayRef.current = next;
-      if (updateStateDuringTransition) {
-        setDisplayCamera(next);
-      }
-      applySmoothCameraState(next, props.cameraObject, props.controls);
-      if (progress < 1) {
-        frame = window.requestAnimationFrame(tick);
-      } else {
-        displayRef.current = target;
-        if (updateStateDuringTransition) {
-          setDisplayCamera(target);
-        }
-        applySmoothCameraState(
+    api.start({
+      from: { progress: 0 },
+      progress: 1,
+      immediate: false,
+      config: CAMERA_SPRING_CONFIG,
+      onChange: result => {
+        const value = result.value as { progress?: number };
+        const interpolate = interpolation == "linear"
+          ? interpolateLinearCameraState
+          : interpolateCameraState;
+        const next = interpolate(
+          from,
           target,
-          props.cameraObject,
-          props.controls,
+          value.progress ?? 1,
         );
-      }
-    };
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
+        displayRef.current = next;
+        applySmoothCameraState(next, cameraObject, controls);
+        onFrame?.();
+        perfCount("gardenCamera.springFrame");
+        perfMark("garden_camera_spring_frame");
+      },
+      onRest: result => {
+        displayRef.current = target;
+        applySmoothCameraState(target, cameraObject, controls);
+        onFrame?.();
+        if (!result?.cancelled) {
+          perfMark("garden_camera_settled");
+          onRest?.();
+        }
+      },
+    });
+    return () => { api.stop?.(); };
   }, [
+    api,
     key,
-    props.cameraObject,
-    props.controls,
-    props.enabled,
+    cameraObject,
+    controls,
+    enabled,
+    interpolation,
+    onFrame,
+    onRest,
     target,
-    props.updateStateDuringTransition,
-    transition.duration,
   ]);
 
-  return props.enabled ? displayCamera : target;
+  React.useLayoutEffect(() => {
+    if (cancelRef) {
+      // The caller owns this imperative handle; assigning it is the ref API.
+      // eslint-disable-next-line react-hooks/immutability
+      cancelRef.current = () => api.stop?.();
+    }
+    return () => {
+      if (cancelRef) {
+        // eslint-disable-next-line react-hooks/immutability
+        cancelRef.current = undefined;
+      }
+    };
+  }, [api, cancelRef]);
+
 };

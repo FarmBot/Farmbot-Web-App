@@ -22,6 +22,15 @@ describe("ExternalUrl", () => {
       .toEqual("https://cdn.shopify.com/s/files/1/2040/0289/files/Controls.png?9668345515035078097");
     expect(ExternalUrl.Store.home)
       .toEqual("https://farm.bot");
+    expect(ExternalUrl.Store.buyParts)
+      .toEqual("https://farm.bot/collections");
+    expect(ExternalUrl.Store.fullKits)
+      .toEqual("https://buy.farm.bot");
+    expect(ExternalUrl.Store.blog)
+      .toEqual("https://blog.farm.bot");
+    expect(Object.values(ExternalUrl.Follow)).toEqual([
+      "https://newsletter.farm.bot",
+    ]);
     expect(ExternalUrl.myFarmBot)
       .toEqual("https://my.farm.bot");
     expect(ExternalUrl.Store.cameraCalibrationCard)

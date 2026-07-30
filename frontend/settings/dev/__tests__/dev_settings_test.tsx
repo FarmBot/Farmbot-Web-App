@@ -6,8 +6,7 @@ import {
   DevWidgetShowInternalEnvsRow,
   DevWidget3dCameraRow,
   DevWidgetAllOrderOptionsRow,
-  DevWidgetChunkingDisabledRow,
-  Dev3dDebugSettings,
+  Dev3dDebugSettings, DevSettingsRows,
 } from "../dev_settings";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { DevSettings } from "../dev_support";
@@ -18,6 +17,9 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { store } from "../../../redux/store";
+import * as ui from "../../../ui";
+import { type FBSelectProps } from "../../../ui";
+import { SurfaceDebugOption } from "../../../three_d_garden/config";
 
 const mockState = fakeState();
 let setWebAppConfigValueSpy: jest.SpyInstance;
@@ -40,7 +42,6 @@ const expectRemovedFromInternalUse = (key: string) => {
 beforeEach(() => {
   jest.clearAllMocks();
   Object.keys(mockDevSettings).forEach(key => delete mockDevSettings[key]);
-  localStorage.removeItem("DISABLE_CHUNKING");
   setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(() => () => { });
   getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
@@ -221,20 +222,11 @@ describe("<DevWidgetAllOrderOptionsRow />", () => {
   });
 });
 
-describe("<DevWidgetChunkingDisabledRow />", () => {
-  it("enables chunking disabled", () => {
-    const { container } = render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(toggleButton(container));
-    expect(localStorage.getItem("DISABLE_CHUNKING")).toEqual("true");
-    localStorage.removeItem("DISABLE_CHUNKING");
-  });
-
-  it("disables chunking disabled", () => {
-    localStorage.setItem("DISABLE_CHUNKING", "true");
-    const { container } = render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(toggleButton(container));
-    expect(localStorage.getItem("DISABLE_CHUNKING")).toBeFalsy();
-    localStorage.removeItem("DISABLE_CHUNKING");
+describe("<DevSettingsRows />", () => {
+  it("renders without the obsolete movement chunking control", () => {
+    const { container } = render(<DevSettingsRows />);
+    expect(container.textContent).toContain("Demo Queue Length");
+    expect(container.textContent).not.toContain("Demo movement chunking");
   });
 });
 
@@ -268,6 +260,12 @@ describe("<Dev3dDebugSettings />", () => {
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
+  it("shows the prefixed camera-fit debug setting", () => {
+    mockState.resources = buildResourceIndex([]);
+    const { container } = render(<Dev3dDebugSettings />);
+    expect(toggleFor(container, "3D_cameraFitDebug")).toBeDefined();
+  });
+
   it("edits env", () => {
     const env = fakeFarmwareEnv();
     env.body.key = "3D_eventDebug";
@@ -292,5 +290,64 @@ describe("<Dev3dDebugSettings />", () => {
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 0 });
     expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+  });
+
+  it("adds the surface debug env from a dropdown", () => {
+    mockState.resources = buildResourceIndex([]);
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<Dev3dDebugSettings />);
+    const surfaceDebugSelect = fbSelectProps[0];
+    expect(surfaceDebugSelect.list).toEqual([
+      { label: "None", value: SurfaceDebugOption.none },
+      { label: "Normals", value: SurfaceDebugOption.normals },
+      { label: "Height", value: SurfaceDebugOption.height },
+      { label: "Blank", value: SurfaceDebugOption.blank },
+    ]);
+    expect(surfaceDebugSelect.selectedItem)
+      .toEqual({ label: "None", value: SurfaceDebugOption.none });
+
+    surfaceDebugSelect.onChange({
+      label: "Normals",
+      value: SurfaceDebugOption.normals,
+    });
+    expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "3D_surfaceDebug",
+      value: SurfaceDebugOption.normals,
+    });
+    fbSelectSpy.mockRestore();
+  });
+
+  it("edits the surface debug env from a dropdown", () => {
+    const env = fakeFarmwareEnv();
+    env.body.key = "3D_surfaceDebug";
+    env.body.value = SurfaceDebugOption.blank;
+    mockState.resources = buildResourceIndex([env]);
+    const fbSelectProps: FBSelectProps[] = [];
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) => {
+        fbSelectProps.push(props);
+        return <div />;
+      }) as never);
+
+    render(<Dev3dDebugSettings />);
+    const surfaceDebugSelect = fbSelectProps[0];
+    expect(surfaceDebugSelect.selectedItem)
+      .toEqual({ label: "Blank", value: SurfaceDebugOption.blank });
+    surfaceDebugSelect.onChange({
+      label: "Height",
+      value: SurfaceDebugOption.height,
+    });
+
+    expect(editSpy).toHaveBeenCalledWith(env, {
+      value: SurfaceDebugOption.height,
+    });
+    expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+    fbSelectSpy.mockRestore();
   });
 });

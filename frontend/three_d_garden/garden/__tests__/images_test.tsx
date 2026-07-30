@@ -4,16 +4,19 @@ import { useTexture } from "@react-three/drei";
 import { render, screen } from "@testing-library/react";
 import TestRenderer from "react-test-renderer";
 import {
+  createCircleCropMask,
   extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
+  get3DImageCrop, getCroppedTexture, getImageClippingPlanes,
   ImageTexture, ImageTextureProps, splitFilteredImages,
 } from "../images";
-import { INITIAL } from "../../config";
+import { INITIAL, SurfaceDebugOption } from "../../config";
 import { clone } from "lodash";
 import {
   fakeImage, fakeSensor, fakeSensorReading, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import * as mustBeOnline from "../../../devices/must_be_online";
+import { Texture, Vector3 } from "three";
 
 beforeEach(() => {
   jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
@@ -34,6 +37,71 @@ describe("<ImageTexture />", () => {
     sensorReadings: [],
     showMoistureReadings: true,
     showMoistureMap: true,
+  });
+
+  it("crops camera images when enabled", () => {
+    expect(get3DImageCrop({
+      enabled: true,
+      imageRotation: 20,
+      imageWidth: 400,
+      imageHeight: 200,
+      imageScale: 0.5,
+    })).toEqual({
+      circle: false,
+      width: 153.5,
+      height: 53.5,
+      repeat: [0.7675, 0.535],
+      offset: [0.11625, 0.2325],
+    });
+    expect(get3DImageCrop({
+      enabled: false,
+      imageRotation: 20,
+      imageWidth: 400,
+      imageHeight: 200,
+      imageScale: 0.5,
+    })).toBeUndefined();
+    expect(get3DImageCrop({
+      enabled: true,
+      imageRotation: 45,
+      imageWidth: 400,
+      imageHeight: 200,
+      imageScale: 0.5,
+    })).toEqual(expect.objectContaining({
+      circle: true,
+      width: 100,
+      height: 100,
+    }));
+  });
+
+  it("applies crop and clipping textures", () => {
+    const source = new Texture();
+    const cropped = getCroppedTexture(source, {
+      circle: false,
+      width: 100,
+      height: 50,
+      repeat: [0.5, 0.25],
+      offset: [0.25, 0.375],
+    });
+    expect(cropped).not.toBe(source);
+    expect(cropped.repeat.toArray()).toEqual([0.5, 0.25]);
+    expect(cropped.offset.toArray()).toEqual([0.25, 0.375]);
+    expect(cropped.version).toBeGreaterThan(0);
+
+    const config = { botSizeX: 1000, botSizeY: 500, clipImages: true };
+    const planes = getImageClippingPlanes(config) || [];
+    expect(planes).toHaveLength(4);
+    expect(planes.every(plane =>
+      plane.distanceToPoint(new Vector3(500, 250, 0)) >= 0)).toBeTruthy();
+    expect(planes.some(plane =>
+      plane.distanceToPoint(new Vector3(1001, 250, 0)) < 0)).toBeTruthy();
+    expect(getImageClippingPlanes({ ...config, clipImages: false }))
+      .toBeUndefined();
+
+    const mask = createCircleCropMask();
+    const maskData = mask.image.data as Uint8Array;
+    expect(maskData[0]).toEqual(0);
+    const center = (32 * 64 + 32) * 4;
+    expect(maskData[center]).toEqual(255);
   });
 
   it("renders", () => {
@@ -198,6 +266,26 @@ describe("<ImageTexture />", () => {
     const p = fakeProps();
     const key = getImageTextureKey(p);
     p.showMoistureMap = false;
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key when photo submenu filters change", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps();
+    const key = getImageTextureKey(p);
+    p.addPlantProps.designer = {
+      ...p.addPlantProps.designer,
+      showDetectionImages: false,
+    };
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key from blank to normal surface rendering", () => {
+    const p = fakeProps();
+    p.config.surfaceDebug = SurfaceDebugOption.blank;
+    const key = getImageTextureKey(p);
+    p.config.surfaceDebug = SurfaceDebugOption.none;
+
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 

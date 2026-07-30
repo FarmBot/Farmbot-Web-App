@@ -65,7 +65,8 @@
         font-family: $inknut;
         font-weight: bold;
       }
-      .bp6-popover-wrapper {
+      .bp6-popover-wrapper,
+      .grid-mode-button-wrapper {
         position: absolute;
         right: 0;
       }
@@ -75,6 +76,13 @@
         right: 1.5rem;
         box-shadow: inset 0 0 0 1.5px $off_white !important;
         color: $off_white !important;
+        &.grid-mode-active {
+          color: $dark_gray !important;
+          background: $off_white !important;
+          box-shadow:
+          inset 0 0 0 1.5px $off_white,
+          0 0 0.8rem $translucent5_white !important;
+        }
       }
     }
   }

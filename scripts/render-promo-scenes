@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export OPEN_WINDOW="${OPEN_WINDOW:-1}"
+
+for scene in Lab Outdoor Greenhouse Mars Custom; do
+  name="${scene,,}"
+  base_url="http://localhost:3000/promo"
+
+  zoomFactor="5"
+  if [[ "$scene" == "Mars" ]]; then
+    zoomFactor="3"
+  fi
+  outdoorObjects="false"
+  if [[ "$scene" == "Outdoor" ]]; then
+    outdoorObjects="true"
+  fi
+  params=(
+    "scene=${scene}"
+    "promoInfo=false"
+    "settingsBar=false"
+    "zoomBeacons=false"
+    "outdoorObjects=${outdoorObjects}"
+    "people=false"
+    "grid=false"
+    "zoomFactor=${zoomFactor}"
+  )
+
+  url="${base_url}?$(IFS='&'; echo "${params[*]}")"
+  screenshot_path="/tmp/${name}.png"
+
+  echo "Rendering ${url} to ${screenshot_path}"
+  bun scripts/fps.js \
+    --screenshot-only \
+    --wait-for-3d \
+    --name "$name" \
+    --url "$url" \
+    --screenshot-path "$screenshot_path"
+
+    avif_path="/tmp/${name}.avif"
+    magick "$screenshot_path" \
+      -quality 50 \
+      -define heic:speed=5 \
+      "$avif_path"
+done

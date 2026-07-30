@@ -1,11 +1,14 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
-import type { Vector3 } from "three";
+import * as THREE from "three";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import {
-  ElectronicsBox, ElectronicsBoxProps, getElectronicsBoxPosition,
+  ElectronicsBox,
+  ElectronicsBoxProps,
+  getElectronicsBoxPosition,
+  makeHardwareInstanceAttributes,
 } from "../electronics_box";
 import { ASSETS } from "../../../constants";
 import * as mapUtil from "../../../../farm_designer/map/util";
@@ -28,7 +31,9 @@ const electronicsBoxPosition = (container: HTMLElement) => {
   const props = propsKey
     ? (element as ReactPropsElement)[propsKey]
     : undefined;
-  const position = (props as { position?: Vector3 } | undefined)?.position;
+  const position = (props as {
+    position?: THREE.Vector3;
+  } | undefined)?.position;
   if (!position) {
     throw new Error("electronics-box position missing");
   }
@@ -53,6 +58,27 @@ describe("<ElectronicsBox />", () => {
   it("renders box", () => {
     const { container } = render(<ElectronicsBox {...fakeProps()} />);
     expect(container).toContainHTML("electronics-box");
+    expect(container.querySelector("[name='electronics-highlight']"))
+      .toBeTruthy();
+    expect(container.querySelector("[name='button-housings']"))
+      .toBeTruthy();
+    expect(container.querySelectorAll("[name^='button-']"))
+      .toHaveLength(3);
+  });
+
+  it("builds colored hardware instance transforms", () => {
+    const attributes = makeHardwareInstanceAttributes([
+      { position: -30, color: "red" },
+      { position: 30, color: "blue" },
+    ], -50, 1000);
+    const matrix = new THREE.Matrix4().fromArray(
+      attributes.instanceMatrix.array,
+      16,
+    );
+
+    expect(attributes.instanceMatrix.count).toEqual(2);
+    expect(attributes.instanceColor.count).toEqual(2);
+    expect(matrix.elements.slice(12, 15)).toEqual([-50, 30, 0]);
   });
 
   it("selects and hovers the electronics box", () => {

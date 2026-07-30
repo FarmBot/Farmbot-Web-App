@@ -13,11 +13,13 @@ const requiredEnv = name => {
     return value;
 };
 
-const output = `/tmp/${requiredEnv('COMBINED_RENDER_IMAGE')}.png`;
+const outputName = requiredEnv('COMBINED_RENDER_IMAGE');
 const screenshotName = requiredEnv('SCREENSHOT_NAME');
 const fpsSamplesName = requiredEnv('FPS_SAMPLES_NAME');
 const sceneMetricsName = requiredEnv('SCENE_METRICS_NAME');
 const feCoverageName = requiredEnv('FE_COVERAGE_NAME');
+const fpsHistoryName = requiredEnv('FPS_HISTORY');
+const loadDurationName = requiredEnv('LOAD_DURATION_NAME');
 const renderImageScale = Number(process.env.COMBINED_RENDER_IMAGE_SCALE || 3);
 if (!Number.isFinite(renderImageScale) || renderImageScale <= 0) {
     console.error('COMBINED_RENDER_IMAGE_SCALE must be a positive number');
@@ -33,7 +35,6 @@ const metricRow = name => [
     [`${name} screenshot`, imagePath(`${screenshotName}_${name}`)],
     [`${name} fps`, imagePath(`${fpsSamplesName}_${name}`)],
     [`${name} metrics`, imagePath(`${sceneMetricsName}_${name}`)],
-    [],
 ];
 const actionScreenshotPaths = name => {
     const prefix = `${screenshotName}_${name}_action_`;
@@ -56,24 +57,46 @@ const screenshotCell = name => {
             : imagePath(`${screenshotName}_${name}`),
     ];
 };
-const rows = [
-    metricRow('promo_xl'),
-    metricRow('app'),
-    metricRow('stress'),
-    metricRow('water'),
-    [
-        screenshotCell('login'),
-        screenshotCell('os'),
-        screenshotCell('demo'),
-        ['fe coverage', imagePath(feCoverageName)],
+const rowSets = {
+    plots: [
+        metricRow('promo_xl'),
+        metricRow('app'),
+        metricRow('stress'),
+        metricRow('water'),
+        [
+            ['fe coverage', imagePath(feCoverageName)],
+            ['fps history', imagePath(fpsHistoryName)],
+            ['load duration', imagePath(loadDurationName)],
+        ],
     ],
-    [
-        screenshotCell('password_reset'),
-        screenshotCell('404'),
-        screenshotCell('dropdown'),
-        [],
+    screenshots: [
+        [
+            screenshotCell('login'),
+            screenshotCell('os'),
+            screenshotCell('demo'),
+        ],
+        [
+            screenshotCell('password_reset'),
+            screenshotCell('404'),
+            screenshotCell('dropdown'),
+        ],
+        [
+            screenshotCell('lab'),
+            screenshotCell('greenhouse'),
+            screenshotCell('outdoor'),
+        ],
+        [
+            screenshotCell('featured_scene_objects_action_1'),
+            screenshotCell('featured_scene_objects_action_2'),
+            screenshotCell('featured_scene_objects_action_3'),
+        ],
+        [
+            screenshotCell('points'),
+            [],
+            [],
+        ],
     ],
-];
+};
 
 const escapeHtml = value => String(value)
     .replace(/&/g, '&amp;')
@@ -102,10 +125,11 @@ const cell = ([title, filePaths]) => {
         <div class="${imageClass}">${existingPaths.map(imageTag).join('')}</div>
       </figure>`;
 };
-const rowHtml = rows
-    .map(row => `<section class="row">${row.map(cell).join('')}</section>`)
-    .join('');
-const html = `<!doctype html>
+const html = rows => {
+    const rowHtml = rows
+        .map(row => `<section class="row">${row.map(cell).join('')}</section>`)
+        .join('');
+    return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -120,7 +144,7 @@ const html = `<!doctype html>
     }
     .row {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 16px;
     }
@@ -173,9 +197,13 @@ const html = `<!doctype html>
   ${rowHtml}
 </body>
 </html>`;
+};
 
 async function main() {
-    fs.mkdirSync(path.dirname(output), { recursive: true });
+    Object.keys(rowSets).forEach(key => {
+        const output = `/tmp/${outputName}_${key}.png`;
+        fs.mkdirSync(path.dirname(output), { recursive: true });
+    });
     const browser = await chromium.launch({
         args: [
             '--no-sandbox',
@@ -187,9 +215,12 @@ async function main() {
             viewport: { width: 1800, height: 1200 },
             deviceScaleFactor: renderImageScale,
         });
-        await page.setContent(html, { waitUntil: 'load' });
-        await page.screenshot({ path: output, fullPage: true });
-        console.log(`COMBINED_RENDER_IMAGE=${output}`);
+        for (const [key, rows] of Object.entries(rowSets)) {
+            const output = `/tmp/${outputName}_${key}.png`;
+            await page.setContent(html(rows), { waitUntil: 'load' });
+            await page.screenshot({ path: output, fullPage: true });
+            console.log(`COMBINED_RENDER_IMAGE=${output}`);
+        }
     } finally {
         await browser.close();
     }

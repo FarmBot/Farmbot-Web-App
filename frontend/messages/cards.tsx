@@ -25,7 +25,7 @@ import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { ExternalUrl } from "../external_urls";
-import { setupProgressString } from "../wizard/data";
+import { setupProgress } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
 import { useNavigate } from "react-router";
@@ -168,6 +168,11 @@ const FirmwareChoiceTable = () =>
     </thead>
     <tbody>
       <tr>
+        <td>{"Genesis v1.9"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k19"].label}</code></td>
+      </tr>
+      <tr>
         <td>{"Genesis v1.8"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k18"].label}</code></td>
@@ -263,6 +268,8 @@ const DEMO_STRESS_SEED_DATA_OPTIONS: DropDownItem[] = [
 ];
 
 export const SEED_DATA_OPTIONS = (displayAll = false): DropDownItem[] => [
+  { label: "Genesis v1.9", value: "genesis_1.9" },
+  { label: "Genesis XL v1.9", value: "genesis_xl_1.9" },
   { label: "Genesis v1.8", value: "genesis_1.8" },
   { label: "Genesis v1.8 XL", value: "genesis_xl_1.8" },
   ...(displayAll ? DEMO_STRESS_SEED_DATA_OPTIONS : []),
@@ -464,12 +471,13 @@ const DemoAccount = (props: CommonAlertCardProps) =>
 
 const SetupIncomplete = (props: SetupIncompleteProps) => {
   const resources = store.getState().resources.index;
-  const percentComplete = setupProgressString(
+  const progress = setupProgress(
     selectAllWizardStepResults(resources),
     {
       firmwareHardware: validFirmwareHardware(props.apiFirmwareValue),
     });
-  const buttonText = percentComplete != "0% complete"
+  const percentComplete = `${progress}%`;
+  const buttonText = progress > 0
     ? t("Continue setup")
     : t("Get Started");
   const navigate = useNavigate();

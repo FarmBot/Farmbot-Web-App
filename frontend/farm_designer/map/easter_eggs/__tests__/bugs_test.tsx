@@ -5,6 +5,7 @@ import {
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
   BugsSettings,
+  BugsButton,
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
@@ -140,11 +141,36 @@ describe("<BugsSettings />", () => {
 
   it("toggles setting off", () => {
     localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "true");
+    localStorage.setItem(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
     const { container } = render(<BugsSettings />);
     expect(screen.getByText(/bug/i)).toBeTruthy();
     const button = container.querySelector("button");
     if (!button) { throw new Error("Missing settings button"); }
     fireEvent.click(button);
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
+  });
+});
+
+describe("<BugsButton />", () => {
+  it("toggles bugs", () => {
+    const { container } = render(<BugsButton />);
+    expect(container.querySelectorAll(".fa-bug")).toHaveLength(1);
+    expect(container.querySelectorAll(".fa-ban")).toHaveLength(1);
+    fireEvent.click(screen.getByTitle("show bugs"));
+    expect(getEggStatus(EggKeys.BRING_ON_THE_BUGS)).toEqual("true");
+    expect(container.querySelectorAll(".fa-ban")).toHaveLength(0);
+    fireEvent.click(screen.getByTitle("hide bugs"));
+    expect(getEggStatus(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
+    expect(container.querySelectorAll(".fa-ban")).toHaveLength(1);
+  });
+
+  it("uses enabled status when bugs are dead", () => {
+    setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
+    setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
+    const { container } = render(<BugsButton />);
+    expect(screen.getByTitle("hide bugs")).toBeInTheDocument();
+    expect(container.querySelectorAll(".fa-ban")).toHaveLength(0);
+    fireEvent.click(screen.getByTitle("hide bugs"));
+    expect(getEggStatus(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
   });
 });

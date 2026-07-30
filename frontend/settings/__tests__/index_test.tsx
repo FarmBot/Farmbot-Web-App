@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { RawDesignerSettings as DesignerSettings } from "../index";
 import { DesignerSettingsProps } from "../interfaces";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
@@ -76,6 +76,7 @@ describe("<DesignerSettings />", () => {
     wizardStepResults: [],
     settingsPanelState: fakePanelState,
     distanceIndicator: "",
+    sceneObjectUuids: [],
   });
 
   it("renders settings", () => {
@@ -224,6 +225,27 @@ describe("<DesignerSettings />", () => {
     const button = screen.getByRole("button", { name: /setup wizard/i });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
+  });
+
+  it("toggles highlight modified settings from the settings menu", () => {
+    const p = fakeProps();
+    const { container } = render(<DesignerSettings {...p} />);
+    const gear = container.querySelector(".fa-gear");
+    if (!gear) { throw new Error("Expected settings menu gear icon"); }
+    fireEvent.click(gear);
+    const menu = document.querySelector(".settings-panel-settings-menu");
+    if (!(menu instanceof HTMLElement)) {
+      throw new Error("Expected settings panel settings menu");
+    }
+    const label = within(menu).getByText("Highlight modified settings");
+    const row = label.closest(".row");
+    const button = row?.querySelector("button");
+    if (!button) {
+      throw new Error("Expected highlight modified settings toggle");
+    }
+    fireEvent.click(button);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      BooleanSetting.highlight_modified_settings, true);
   });
 
   it("toggles dark mode", () => {

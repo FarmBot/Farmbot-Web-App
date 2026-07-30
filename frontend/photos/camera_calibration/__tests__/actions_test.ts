@@ -1,5 +1,6 @@
 const mockDevice = { execScript: jest.fn((..._) => Promise.resolve({})) };
 import * as deviceModule from "../../../device";
+import * as photoActions from "../../actions";
 
 import { calibrate, scanImage } from "../actions";
 
@@ -34,14 +35,11 @@ describe("scanImage()", () => {
 });
 
 describe("calibrate()", () => {
-  it.each<[boolean, string]>([
-    [true, "\"TRUE\""],
-    [false, "\"FALSE\""],
-  ])("calls out to the device, use grid: %s", (grid, value) => {
-    calibrate(grid)();
-    expect(mockDevice.execScript).toHaveBeenCalledWith("camera-calibration", [{
-      args: { label: "CAMERA_CALIBRATION_easy_calibration", value },
-      kind: "pair"
-    }]);
+  it("runs camera calibration", () => {
+    const calibrateCamera = jest.spyOn(photoActions, "calibrateCamera")
+      .mockImplementation(jest.fn());
+    calibrate(true)();
+    expect(calibrateCamera).toHaveBeenCalled();
+    calibrateCamera.mockRestore();
   });
 });

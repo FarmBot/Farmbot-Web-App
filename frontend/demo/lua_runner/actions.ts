@@ -8,62 +8,29 @@ import { error, info } from "../../toast/toast";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { TOAST_OPTIONS } from "../../toast/constants";
-import { Action, XyzNumber } from "./interfaces";
+import {
+  Action, DemoMovementCommand, XyzNumber,
+} from "./interfaces";
 import * as crud from "../../api/crud";
 import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
-import { getFirmwareSettings, getGardenSize } from "./stubs";
-import { clamp, random } from "lodash";
-import { validBotLocationData } from "../../util/location";
+import {
+  getFbosSettings, getFirmwareSettings, getGardenSize, getSoilHeight,
+} from "./stubs";
+import { clamp, random, range } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { calculateMove } from "./calculate_move";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
 import { isMessageType } from "../../sequences/interfaces";
-
-const DEFAULT_TIME_STEP_MS = 33.33;
-
-const almostEqual = (a: XyzNumber, b: XyzNumber) => {
-  const epsilon = 0.01;
-  return Math.abs(a.x - b.x) < epsilon &&
-    Math.abs(a.y - b.y) < epsilon &&
-    Math.abs(a.z - b.z) < epsilon;
-};
-
-const movementChunks = (
-  current: XyzNumber,
-  target: XyzNumber,
-  mmPerTimeStep: number,
-  disableChunking: boolean,
-): XyzNumber[] => {
-  const dx = target.x - current.x;
-  const dy = target.y - current.y;
-  const dz = target.z - current.z;
-
-  const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
-  if (length === 0) { return [target]; }
-  const direction = {
-    x: dx / length,
-    y: dy / length,
-    z: dz / length,
-  };
-  const steps = disableChunking
-    ? 0
-    : Math.floor(length / mmPerTimeStep);
-  const chunks: XyzNumber[] = [];
-  for (let i = 1; i <= steps; i++) {
-    const step = {
-      x: current.x + direction.x * mmPerTimeStep * i,
-      y: current.y + direction.y * mmPerTimeStep * i,
-      z: current.z + direction.z * mmPerTimeStep * i,
-    };
-    chunks.push(step);
-  }
-  if (chunks.length === 0 || !almostEqual(chunks[chunks.length - 1], target)) {
-    chunks.push(target);
-  }
-  return chunks;
-};
+import {
+  cancelDemoMovement, demoMovementActive, startDemoMovement,
+} from "./movement";
+import { perfCount } from "../../performance/perf";
+import { DEMO_CAMERA_OPERATION_DURATION_MS } from
+  "../../three_d_garden/config";
+import { getEnv } from "../../farmware/state_to_props";
+import { envGet, prepopulateEnv } from "../../photos/remote_env/selectors";
 
 const clampTarget = (target: XyzNumber): XyzNumber => {
   const firmwareConfig = getFirmwareSettings();
@@ -82,6 +49,64 @@ const current = {
   x: 0,
   y: 0,
   z: 0,
+};
+
+// The TOP_LEFT demo camera origin rotates the 640x480 image footprint 90deg.
+const DEMO_CAMERA_VIEW_HALF_X = 240;
+const DEMO_CAMERA_VIEW_HALF_Y = 320;
+
+const weedDetectorUsesGardenBounds = () => !!envGet(
+  "WEED_DETECTOR_use_bounds",
+  prepopulateEnv(getEnv(store.getState().resources.index)),
+);
+
+const cameraViewAxisRange = (
+  center: number,
+  radius: number,
+  axisLength: number,
+) => [
+  clamp(center - radius, 0, axisLength),
+  clamp(center + radius, 0, axisLength),
+];
+
+const randomPointInCameraView = (
+  center: XyzNumber,
+  useGardenBounds: boolean,
+) => {
+  if (!useGardenBounds) {
+    return {
+      x: center.x + random(
+        -DEMO_CAMERA_VIEW_HALF_X,
+        DEMO_CAMERA_VIEW_HALF_X,
+      ),
+      y: center.y + random(
+        -DEMO_CAMERA_VIEW_HALF_Y,
+        DEMO_CAMERA_VIEW_HALF_Y,
+      ),
+    };
+  }
+  const gardenSize = getGardenSize();
+  const [xMin, xMax] = cameraViewAxisRange(
+    center.x,
+    DEMO_CAMERA_VIEW_HALF_X,
+    gardenSize.x,
+  );
+  const [yMin, yMax] = cameraViewAxisRange(
+    center.y,
+    DEMO_CAMERA_VIEW_HALF_Y,
+    gardenSize.y,
+  );
+  return {
+    x: random(xMin, xMax),
+    y: random(yMin, yMax),
+  };
+};
+
+const addPoint = (expanded: Action[], body: Point) => {
+  expanded.push({
+    type: "create_point",
+    args: [JSON.stringify(body)],
+  });
 };
 
 export const setCurrent = (position: XyzNumber) => {
@@ -107,23 +132,14 @@ export const expandActionsFromPosition = (
     expansionCurrent.y = position.y;
     expansionCurrent.z = position.z;
   };
-  const storedTimeStepMs = localStorage.getItem("timeStepMs");
-  const timeStepMs = storedTimeStepMs
-    ? parseFloat(storedTimeStepMs)
-    : DEFAULT_TIME_STEP_MS;
-  const mmPerSecond = parseInt(localStorage.getItem("mmPerSecond") || "500");
-  const disableChunking = localStorage.getItem("DISABLE_CHUNKING") === "true";
-  const mmPerTimeStep = (mmPerSecond * timeStepMs) / 1000;
   const addPosition = (position: XyzNumber) => {
     expanded.push({
-      type: "wait_ms",
-      args: [timeStepMs],
-    });
-    expanded.push({
-      type: "expanded_move_absolute",
+      type: "animated_move_absolute",
       args: [position.x, position.y, position.z],
     });
   };
+  const start = () => { expanded.push({ type: "busy", args: [1] }); };
+  const stop = () => { expanded.push({ type: "busy", args: [0] }); };
   // eslint-disable-next-line complexity
   actions.map(action => {
     switch (action.type) {
@@ -133,9 +149,9 @@ export const expandActionsFromPosition = (
           y: action.args[1] as number,
           z: action.args[2] as number,
         });
-        movementChunks(
-          expansionCurrent, moveAbsoluteTarget, mmPerTimeStep, disableChunking)
-          .map(addPosition);
+        start();
+        addPosition(moveAbsoluteTarget);
+        stop();
         setExpansionCurrent(moveAbsoluteTarget);
         break;
       case "move_relative":
@@ -144,9 +160,9 @@ export const expandActionsFromPosition = (
           y: expansionCurrent.y + (action.args[1] as number),
           z: expansionCurrent.z + (action.args[2] as number),
         });
-        movementChunks(
-          expansionCurrent, moveRelativeTarget, mmPerTimeStep, disableChunking)
-          .map(addPosition);
+        start();
+        addPosition(moveRelativeTarget);
+        stop();
         setExpansionCurrent(moveRelativeTarget);
         break;
       case "_move":
@@ -163,12 +179,12 @@ export const expandActionsFromPosition = (
           ],
         });
         const actualMoveTargets = moves.map(clampTarget);
+        start();
         actualMoveTargets.map(actualMoveTarget => {
-          movementChunks(
-            expansionCurrent, actualMoveTarget, mmPerTimeStep, disableChunking)
-            .map(addPosition);
+          addPosition(actualMoveTarget);
           setExpansionCurrent(actualMoveTarget);
         });
+        stop();
         break;
       case "send_message":
         const sendMessageArgs = [...action.args];
@@ -185,11 +201,11 @@ export const expandActionsFromPosition = (
           "detect_weeds": "Running weed detector",
           "measure_soil_height": "Executing Measure Soil Height",
         };
-        const DELAYS = {
-          "take_photo": 5,
-          "calibrate_camera": 15,
-          "detect_weeds": 15,
-          "measure_soil_height": 15,
+        const WAIT_MS = {
+          "take_photo": 2000,
+          "calibrate_camera": DEMO_CAMERA_OPERATION_DURATION_MS,
+          "detect_weeds": DEMO_CAMERA_OPERATION_DURATION_MS,
+          "measure_soil_height": DEMO_CAMERA_OPERATION_DURATION_MS,
         };
         expanded.push({
           type: "send_message",
@@ -203,69 +219,91 @@ export const expandActionsFromPosition = (
         });
         expanded.push({
           type: "wait_ms",
-          args: [(DELAYS[action.type] - 3) * 1000],
+          args: [WAIT_MS[action.type]],
         });
-        expanded.push({
-          type: "take_photo",
-          args: [
-            expansionCurrent.x,
-            expansionCurrent.y,
-            expansionCurrent.z,
-          ],
-        });
-        expanded.push({
-          type: "send_message",
-          args: [
-            "info",
-            "Uploaded image:",
-            "",
-            JSON.stringify(expansionCurrent),
-            3,
-          ],
-        });
+        if (action.type === "calibrate_camera") {
+          expanded.push({
+            type: "send_message",
+            args: [
+              "success",
+              "Camera calibration complete.",
+              "toast",
+              JSON.stringify(expansionCurrent),
+              3,
+            ],
+          });
+          break;
+        }
+        if (action.type === "take_photo") {
+          expanded.push({
+            type: "take_photo",
+            args: [
+              expansionCurrent.x,
+              expansionCurrent.y,
+              expansionCurrent.z,
+            ],
+          });
+          expanded.push({
+            type: "send_message",
+            args: [
+              "info",
+              "Uploaded image:",
+              "",
+              JSON.stringify(expansionCurrent),
+              3,
+            ],
+          });
+          break;
+        }
         if (action.type === "measure_soil_height") {
           const body: Point = {
             name: "Soil Height",
             pointer_type: "GenericPointer",
             x: expansionCurrent.x,
             y: expansionCurrent.y,
-            z: -500 + random(-10, 10),
+            z: (getFbosSettings().soil_height ?? -500)
+              + random(-50, 50),
             meta: { at_soil_level: "true" },
             radius: 0,
           };
-          const point = JSON.stringify(body);
-          expanded.push({ type: "create_point", args: [point] });
+          addPoint(expanded, body);
         }
         if (action.type === "detect_weeds") {
-          const body: Point = {
-            name: "Weed",
-            pointer_type: "Weed",
-            x: expansionCurrent.x,
-            y: expansionCurrent.y,
-            z: -500,
-            meta: { color: "red", created_by: "plant-detection" },
-            radius: 50,
-            plant_stage: "pending",
-          };
-          const point = JSON.stringify(body);
-          expanded.push({ type: "create_point", args: [point] });
+          const useGardenBounds = weedDetectorUsesGardenBounds();
+          range(random(2, 5)).map(() => {
+            const position = randomPointInCameraView(
+              expansionCurrent,
+              useGardenBounds,
+            );
+            const body: Point = {
+              name: "Weed",
+              pointer_type: "Weed",
+              x: position.x,
+              y: position.y,
+              z: getSoilHeight(position.x, position.y),
+              meta: { color: "red", created_by: "plant-detection" },
+              radius: random(10, 30),
+              plant_stage: "pending",
+            };
+            addPoint(expanded, body);
+          });
         }
         break;
       case "find_home":
       case "go_to_home":
         const axisInput = action.args[0] as string;
         const axes = axisInput == "all" ? ["z", "y", "x"] : [axisInput];
+        start();
         axes.map(axis => {
           const homeTarget = {
             x: axis == "x" ? 0 : expansionCurrent.x,
             y: axis == "y" ? 0 : expansionCurrent.y,
             z: axis == "z" ? 0 : expansionCurrent.z,
           };
-          movementChunks(
-            expansionCurrent, homeTarget, mmPerTimeStep, disableChunking)
-            .map(addPosition);
+          addPosition(homeTarget);
           setExpansionCurrent(homeTarget);
         });
+        stop();
         break;
       case "read_pin":
         const pin = action.args[0] as number;
@@ -279,14 +317,14 @@ export const expandActionsFromPosition = (
           ],
         });
         break;
-      case "expanded_move_absolute":
+      case "animated_move_absolute":
         const expandedMoveTarget = {
           x: action.args[0] as number,
           y: action.args[1] as number,
           z: action.args[2] as number,
         };
         expanded.push({
-          type: "expanded_move_absolute",
+          type: "animated_move_absolute",
           args: [
             expandedMoveTarget.x,
             expandedMoveTarget.y,
@@ -318,15 +356,17 @@ export const expandActions = (
 };
 
 interface Scheduled {
-  func(): void;
-  timestamp: number;
+  func(done: () => void): (() => void) | undefined;
+  delay: number;
 }
 const pending: Scheduled[] = [];
-let latestActionMs = Date.now();
 let currentTimer: ReturnType<typeof setTimeout> | undefined = undefined;
+let activeCancellation: (() => void) | undefined;
+let activeToken = 0;
+let actionRunning = false;
 
 export const syncCurrentFromBotPosition = () => {
-  if (pending.length > 0) { return; }
+  if (pending.length > 0 || actionRunning || demoMovementActive()) { return; }
   const position = store.getState().bot.hardware.location_data?.position;
   if (typeof position?.x != "number" ||
     typeof position.y != "number" ||
@@ -335,17 +375,26 @@ export const syncCurrentFromBotPosition = () => {
 };
 
 export const eStop = () => {
-  latestActionMs = 0;
+  activeToken++;
   pending.length = 0;
+  actionRunning = false;
+  currentTimer && clearTimeout(currentTimer);
+  currentTimer = undefined;
+  activeCancellation?.();
+  activeCancellation = undefined;
+  const stoppedPosition = cancelDemoMovement();
+  if (stoppedPosition) {
+    perfCount("bot.demoPositionPublish");
+    store.dispatch({
+      type: Actions.DEMO_SET_POSITION,
+      payload: stoppedPosition,
+    });
+    setCurrent(stoppedPosition);
+  }
   store.dispatch({
     type: Actions.DEMO_SET_ESTOP,
     payload: true,
   });
-  const { position } = validBotLocationData(
-    store.getState().bot.hardware.location_data);
-  current.x = position.x as number;
-  current.y = position.y as number;
-  current.z = position.z as number;
 };
 
 export const runActions = (
@@ -354,24 +403,39 @@ export const runActions = (
   let delay = 0;
   let notified = false;
   actions.map(action => {
+    const estopped =
+      store.getState().bot.hardware.informational_settings.locked;
+    if (estopped && action.type !== "emergency_unlock") {
+      if (!notified) {
+        info(t("Command not available while locked."), {
+          ...TOAST_OPTIONS().error,
+          title: t("Emergency stop active"),
+        });
+        notified = true;
+      }
+      return;
+    }
+    if (action.type == "wait_ms") {
+      delay += action.args[0] as number;
+      return;
+    }
+    if (action.type == "animated_move_absolute") {
+      const position = {
+        x: action.args[0] as number,
+        y: action.args[1] as number,
+        z: action.args[2] as number,
+      };
+      pending.push({
+        delay,
+        func: done => startDemoMovement(position, done),
+      });
+      delay = 0;
+      runNext();
+      return;
+    }
     // eslint-disable-next-line complexity
     const getFunc = () => {
-      const estopped = store.getState().bot.hardware.informational_settings.locked;
-      if (estopped && action.type !== "emergency_unlock") {
-        if (!notified) {
-          info(t("Command not available while locked."), {
-            ...TOAST_OPTIONS().error,
-            title: t("Emergency stop active"),
-          });
-          notified = true;
-        }
-        return;
-      }
       switch (action.type) {
-        case "wait_ms":
-          const ms = action.args[0] as number;
-          delay += ms;
-          return undefined;
         case "send_message":
           const type = "" + action.args[0];
           if (!isMessageType(type)) {
@@ -428,15 +492,12 @@ export const runActions = (
               payload: false,
             });
           };
-        case "expanded_move_absolute":
-          const x = action.args[0] as number;
-          const y = action.args[1] as number;
-          const z = action.args[2] as number;
-          const position = { x, y, z };
+        case "busy":
+          const busy = action.args[0] as number;
           return () => {
             store.dispatch({
-              type: Actions.DEMO_SET_POSITION,
-              payload: position,
+              type: Actions.DEMO_SET_BUSY,
+              payload: !!busy,
             });
           };
         case "toggle_pin":
@@ -508,30 +569,63 @@ export const runActions = (
     };
     const func = getFunc();
     if (func) {
-      latestActionMs = Math.max(latestActionMs, Date.now()) + delay;
-      const item = { func, timestamp: latestActionMs };
-      pending.push(item);
+      pending.push({
+        delay,
+        func: done => {
+          func();
+          done();
+          return undefined;
+        },
+      });
       delay = 0;
       runNext();
     }
   });
 };
 
+export const runDemoMovementCommand = (
+  command: DemoMovementCommand,
+) => {
+  syncCurrentFromBotPosition();
+  const action: Action = "position" in command
+    ? {
+      type: command.type,
+      args: [
+        command.position.x,
+        command.position.y,
+        command.position.z,
+      ],
+    }
+    : {
+      type: command.type,
+      args: [command.axis],
+    };
+  runActions(expandActions([action], []));
+};
+
 const runNext = () => {
-  if (currentTimer || pending.length === 0) {
+  if (currentTimer || actionRunning || pending.length === 0) {
     return;
   }
-  const next = pending[0];
-  const delay = Math.max(next.timestamp - Date.now(), 0);
-
+  const next = pending.shift() as Scheduled;
+  const token = ++activeToken;
+  actionRunning = true;
   currentTimer = setTimeout(() => {
     currentTimer = undefined;
-    const task = pending.shift();
-    task?.func();
-    store.dispatch({
-      type: Actions.DEMO_SET_QUEUE_LENGTH,
-      payload: pending.length,
-    });
-    runNext();
-  }, delay);
+    if (!actionRunning || token != activeToken) { return; }
+    const done = () => {
+      if (!actionRunning || token != activeToken) { return; }
+      actionRunning = false;
+      activeCancellation = undefined;
+      store.dispatch({
+        type: Actions.DEMO_SET_QUEUE_LENGTH,
+        payload: pending.length,
+      });
+      runNext();
+    };
+    const cancellation = next.func(done);
+    if (actionRunning && token == activeToken) {
+      activeCancellation = cancellation;
+    }
+  }, next.delay);
 };

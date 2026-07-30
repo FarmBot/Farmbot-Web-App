@@ -1,0 +1,49 @@
+{
+  "origin": "http://localhost:3000",
+  "localStorage": {
+    "PROMO_RESOURCES": {
+      "plants": [
+        {
+          "name": "Plant",
+          "x": 1500,
+          "y": 700,
+          "z": -500,
+          "openfarm_slug": "mint",
+          "radius": 100
+        }
+      ],
+      "weeds": [
+        {
+          "name": "Weed",
+          "x": 2000,
+          "y": 700,
+          "z": -500,
+          "radius": 100
+        }
+      ],
+      "points": [
+        {
+          "name": "Soil Height Point",
+          "x": 500,
+          "y": 700,
+          "z": -100,
+          "radius": 100,
+          "meta": {
+            "color": "green",
+            "at_soil_level": "true"
+          }
+        },
+        {
+          "name": "Point",
+          "x": 1000,
+          "y": 700,
+          "z": -500,
+          "radius": 100,
+          "meta": {
+            "color": "green"
+          }
+        }
+      ]
+    }
+  }
+}

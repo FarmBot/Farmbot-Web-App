@@ -57,8 +57,6 @@ describe("calculateMove()", () => {
     jest.spyOn(triangleFunctions, "getZFunc")
       .mockImplementation(() => () => 3);
     setCurrent({ x: 0, y: 0, z: 0 });
-    localStorage.removeItem("timeStepMs");
-    localStorage.removeItem("mmPerSecond");
     console.log = jest.fn();
     mockResources = buildResourceIndex([
       fakeFirmwareConfig(),

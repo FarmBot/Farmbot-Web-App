@@ -1,12 +1,9 @@
 import { toPairs } from "../../util";
 import { runFarmware } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
+import { calibrateCamera } from "../actions";
 
-export const calibrate = (grid: boolean) => () =>
-  runFarmware("camera-calibration",
-    toPairs({
-      CAMERA_CALIBRATION_easy_calibration: gridValue(grid),
-    }), t("Camera calibration"));
+export const calibrate = (_grid: boolean) => () => calibrateCamera();
 
 export const scanImage = (grid: boolean) => (imageId: number) =>
   runFarmware("historical-camera-calibration",

@@ -61,6 +61,10 @@ import { filterAlerts } from "../messages/alerts";
 import { BotState } from "../devices/interfaces";
 import { Alert, TaggedTelemetry } from "farmbot";
 import { PingDictionary } from "../devices/connectivity/qos";
+import {
+  commandPaletteShortcut, openCommandPalette,
+} from "../command_palette";
+import { preloadDemoMovementActions } from "../devices/actions";
 
 const createCachedSelector =
   <Input, Output>(selector: (input: Input) => Output) => {
@@ -197,6 +201,7 @@ const ConnectionStatus = (props: ConnectionStatusProps) => {
         type: Actions.DEMO_SET_STATE,
         payload: undefined,
       });
+      preloadDemoMovementActions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -210,7 +215,7 @@ const ConnectionStatus = (props: ConnectionStatusProps) => {
   return <div className={"connection-status-popover nav-popup-button-wrapper"}>
     <ErrorBoundary>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"connectivity-popover-portal"}
+        portalClassName={"nav-popover-portal connectivity-popover-portal"}
         popoverClassName={"connectivity-popover"}
         isOpen={props.isOpen}
         enforceFocus={false}
@@ -331,9 +336,10 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
       threeDGarden,
       designer: this.props.designer,
     };
-    if (!showTimeTravelButton(threeDGarden, common.device)) { return; }
+    if (!showTimeTravelButton(threeDGarden)) { return; }
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"nav-popover-portal"}
         isOpen={isOpen}
         enforceFocus={false}
         target={<TimeTravelTarget {...common}
@@ -353,7 +359,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     const remaining = movementPercentRemaining(current, movementState);
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"controls-popover-portal"}
+        portalClassName={"nav-popover-portal controls-popover-portal"}
         popoverClassName={"controls-popover"}
         isOpen={isOpen}
         enforceFocus={false}
@@ -429,7 +435,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     const isOpen = this.props.appState.popups.jobs;
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        portalClassName={"jobs-panel-portal"}
+        portalClassName={"nav-popover-portal jobs-panel-portal"}
         popoverClassName={"jobs-panel"}
         isOpen={isOpen}
         enforceFocus={false}
@@ -457,6 +463,26 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
           jobs={this.props.bot.hardware.jobs}
           device={this.props.device}
           timeSettings={this.props.timeSettings} />} />
+    </div>;
+  };
+
+  CommandPaletteButton = () => {
+    const mobile = isMobile();
+    const label = mobile
+      ? t("Commands")
+      : `${t("Commands")} ${commandPaletteShortcut()}`;
+    return <div className={[
+      "nav-popup-button-wrapper",
+      "command-palette-nav-button-wrapper",
+    ].join(" ")}>
+      <button type="button"
+        className="command-palette-nav-button"
+        title={label}
+        aria-label={label}
+        onClick={openCommandPalette}>
+        <i className="fa fa-terminal" aria-hidden={true} />
+        {!mobile && <span>{label}</span>}
+      </button>
     </div>;
   };
 
@@ -515,6 +541,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
                   <this.TimeTravel />
                   <this.Coordinates />
                   <this.JobsButton />
+                  <this.CommandPaletteButton />
                 </ErrorBoundary>
               </div>
             </div>

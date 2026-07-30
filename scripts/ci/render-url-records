@@ -15,4 +15,6 @@ for entry in entries:
         json.dumps(actions, separators=(",", ":")) if actions else "",
         entry.get("state", ""),
         json.dumps(roi, separators=(",", ":")) if roi else "",
+        "true" if entry.get("waitFor3d", False) else "",
+        str(entry["zoom"]) if "zoom" in entry else "",
     ]))

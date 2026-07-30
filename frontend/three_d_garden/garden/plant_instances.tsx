@@ -44,6 +44,7 @@ export interface PlantInstancesProps {
   config: Config;
   getZ(x: number, y: number): number;
   visible?: boolean;
+  opacity?: number;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
   iconCapacities?: Record<string, number>;
@@ -125,6 +126,7 @@ export const plantInstancesPropsEqual = (
   prev.plants === next.plants &&
   prev.getZ === next.getZ &&
   prev.visible === next.visible &&
+  prev.opacity === next.opacity &&
   prev.startTimeRef === next.startTimeRef &&
   prev.dispatch === next.dispatch &&
   prev.onSelectObject === next.onSelectObject &&
@@ -375,10 +377,9 @@ const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
     usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
+    name={"plant-icon-instances"}
     ref={instancedRef}
-    args={[getPlantIconGeometry(), undefined, props.capacity]}
-    // eslint-disable-next-line no-null/no-null
-    dispose={null}
+    args={[undefined, undefined, props.capacity]}
     count={plants.length}
     frustumCulled={false}
     userData={{ plantIndexes }}
@@ -388,16 +389,19 @@ const AtlasPlantIconInstances = (props: AtlasPlantIconInstancesProps) => {
     onPointerOver={() => props.onHoverObject?.(true)}
     onPointerOut={() => props.onHoverObject?.(false)}
     renderOrder={RenderOrder.plants}>
-    <instancedBufferAttribute
-      attach={"geometry-attributes-instanceUvOffset"}
-      args={[uvBuffers.offsets, 2]} />
-    <instancedBufferAttribute
-      attach={"geometry-attributes-instanceUvRepeat"}
-      args={[uvBuffers.repeats, 2]} />
+    <planeGeometry args={[1, 1]}>
+      <instancedBufferAttribute
+        attach={"attributes-instanceUvOffset"}
+        args={[uvBuffers.offsets, 2]} />
+      <instancedBufferAttribute
+        attach={"attributes-instanceUvRepeat"}
+        args={[uvBuffers.repeats, 2]} />
+    </planeGeometry>
     <MeshBasicMaterial
       ref={materialRef}
       map={texture}
       alphaTest={0.1}
+      opacity={props.opacity}
       transparent={true}
       onBeforeCompile={onAtlasMaterialCompile} />
   </InstancedMesh>;
@@ -426,6 +430,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     usePlantIconClick(plants, dispatch, visible, props.onSelectObject);
 
   return <InstancedMesh
+    name={"plant-icon-instances"}
     ref={instancedRef}
     args={[getPlantIconGeometry(), undefined, props.capacity]}
     // eslint-disable-next-line no-null/no-null
@@ -443,6 +448,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       ref={materialRef}
       map={texture}
       alphaTest={0.1}
+      opacity={props.opacity}
       transparent={true} />
   </InstancedMesh>;
 };
@@ -471,6 +477,7 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           capacity: props.iconCapacities[icon],
           startTimeRef: props.startTimeRef,
           visible: props.visible,
+          opacity: props.opacity,
           onSelectObject: props.onSelectObject,
           onHoverObject: props.onHoverObject,
         };
@@ -492,6 +499,7 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
           capacity: 0,
           startTimeRef: props.startTimeRef,
           visible: props.visible,
+          opacity: props.opacity,
           onSelectObject: props.onSelectObject,
           onHoverObject: props.onHoverObject,
         };
@@ -546,6 +554,7 @@ const VisiblePlantInstances = (props: PlantInstancesProps) => {
     props.iconCapacities,
     props.onHoverObject,
     props.onSelectObject,
+    props.opacity,
     props.plants,
     props.startTimeRef,
     props.visible,

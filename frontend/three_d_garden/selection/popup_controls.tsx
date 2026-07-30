@@ -1,10 +1,10 @@
 import React from "react";
 import {
   FirmwareHardware, TaggedFbosConfig, TaggedPlantPointer, TaggedSequence,
-  Vector3, Xyz,
+  TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
-import { isUndefined, round } from "lodash";
+import { isUndefined, noop, round } from "lodash";
 import { ThreeDObjectSelectionLayerProps } from "./props";
 import {
   ResolvedLocationObject, ResolvedThreeDObject,
@@ -13,11 +13,13 @@ import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { PlantOptions } from "../../farm_designer/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { t } from "../../i18next_wrapper";
-import { Content, DeviceSetting } from "../../constants";
+import { Actions, Content, DeviceSetting } from "../../constants";
 import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
-import { reboot, powerOff, takePhoto } from "../../devices/actions";
+import {
+  findHome, moveToHome, powerOff, reboot, takePhoto,
+} from "../../devices/actions";
 import { resetVirtualTrail } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
 import {
@@ -38,13 +40,24 @@ import {
   BlurableInput, DropDownItem, FBSelect, Help, ToggleButton,
 } from "../../ui";
 import { XYZ } from "../../devices/constants";
-import { betterCompact, parseIntInput } from "../../util";
+import {
+  betterCompact, parseIntInput, validFbosConfig,
+} from "../../util";
 import { getModifiedClassName } from
   "../../settings/fbos_settings/default_values";
 import { getFwHardwareValue } from
   "../../settings/firmware/firmware_hardware_support";
 import { cameraBtnProps } from
   "../../photos/capture_settings/camera_selection";
+import { ToolActionRow } from "../../tools/tool_action_row";
+import {
+  sceneObjectShowsTextureAndColor, sceneObjectTextureChoices,
+  validSceneObjectColor,
+} from "../../scene_objects/appearance";
+import { toggleSceneObjectVisibility } from "../../scene_objects/actions";
+import { BotConfigInputBox } from
+  "../../settings/fbos_settings/bot_config_input_box";
+import { sourceFbosConfigValue } from "../../settings/source_config_value";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -283,6 +296,15 @@ const UtmPopupControls = (props: PopupControlProps) => {
         filterSelectedTool={true}
         filterActiveTools={false} />
     </div>
+    <ToolActionRow
+      className={"object-popup-tool-action-row"}
+      mountedTool={mountedTool}
+      sensors={props.sensors}
+      peripherals={props.peripherals}
+      peripheralValues={props.peripheralValues}
+      botOnline={props.botOnline}
+      arduinoBusy={props.arduinoBusy}
+      locked={!!props.bot?.hardware.informational_settings.locked} />
     <div className={"object-popup-tool-verification-row"}>
       {props.bot &&
         <ToolVerification sensors={props.sensors} bot={props.bot} />}
@@ -300,6 +322,18 @@ const UtmPopupControls = (props: PopupControlProps) => {
         title={`${t("toggle")} ${t(DeviceSetting.trail)}`}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("FOLLOW UTM")}</label>
+      <ToggleButton
+        toggleValue={props.utmFollow}
+        toggleAction={() => props.dispatch?.({
+          type: Actions.SET_3D_UTM_FOLLOW,
+          payload: !props.utmFollow,
+        })}
+        disabled={!props.dispatch}
+        title={`${t("toggle")} ${t("FOLLOW UTM")}`}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
     {props.set3DConfigValue &&
       <div className={"object-popup-laser-row row grid-exp-1"}>
         <label>{t("LASER")}</label>
@@ -310,7 +344,26 @@ const UtmPopupControls = (props: PopupControlProps) => {
           title={`${t("toggle")} ${t("LASER")}`}
           customText={{ textFalse: t("off"), textTrue: t("on") }} />
       </div>}
+    <UtmHomeRow {...props} />
   </>;
+};
+
+const UtmHomeRow = (props: PopupControlProps) => {
+  const disabled = !props.botOnline || props.arduinoBusy
+    || !!props.bot?.hardware.informational_settings.locked;
+  return <div className={"object-popup-home-row row grid-exp-1"}>
+    <label>{t("HOME")}</label>
+    <div className={"object-popup-action-buttons row half-gap"}>
+      <button type={"button"} className={"fb-button gray"} disabled={disabled}
+        onClick={() => void moveToHome("all")}>
+        {t("MOVE TO HOME")}
+      </button>
+      <button type={"button"} className={"fb-button gray"} disabled={disabled}
+        onClick={() => void findHome("all")}>
+        {t("FIND HOME")}
+      </button>
+    </div>
+  </div>;
 };
 
 const CameraPopupControls = (props: PopupControlProps) => {
@@ -342,6 +395,18 @@ const CameraPopupControls = (props: PopupControlProps) => {
           BooleanSetting.show_camera_view_area, !props.config.cameraView))}
         disabled={!props.dispatch}
         title={`${t("toggle")} ${t(DeviceSetting.cameraView)}`}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("FOLLOW CAMERA VIEW")}</label>
+      <ToggleButton
+        toggleValue={props.cameraFollow}
+        toggleAction={() => props.dispatch?.({
+          type: Actions.SET_3D_CAMERA_FOLLOW,
+          payload: !props.cameraFollow,
+        })}
+        disabled={!props.dispatch}
+        title={`${t("toggle")} ${t("FOLLOW CAMERA VIEW")}`}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
   </>;
@@ -448,6 +513,120 @@ const ElectronicsPopupControls = (props: PopupControlProps) => {
   </div>;
 };
 
+const updateSceneObject = (
+  dispatch: Function,
+  sceneObject: TaggedSceneObject,
+  update: Partial<TaggedSceneObject["body"]>,
+) => {
+  dispatch(edit(sceneObject, update));
+  dispatch(save(sceneObject.uuid));
+};
+
+const SceneObjectPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "sceneObject" || !props.dispatch) {
+    return undefined;
+  }
+  const dispatch = props.dispatch;
+  const { sceneObject } = props.object;
+  if (!sceneObjectShowsTextureAndColor(sceneObject.body.shape)) {
+    return undefined;
+  }
+  const texture = sceneObjectTextureChoices.find(item =>
+    item.value == sceneObject.body.texture)
+    || sceneObjectTextureChoices[0];
+  return <>
+    <div className={"object-popup-scene-object-row row grid-2-col"}>
+      <label>{t("Texture")}</label>
+      <FBSelect
+        usePortal={false}
+        list={sceneObjectTextureChoices}
+        selectedItem={texture}
+        onChange={item => updateSceneObject(
+          dispatch,
+          sceneObject,
+          { texture: "" + item.value },
+        )} />
+    </div>
+    <div className={"object-popup-scene-object-row row grid-2-col"}>
+      <label htmlFor={"scene-object-popup-color"}>{t("Color")}</label>
+      <input
+        id={"scene-object-popup-color"}
+        name={"color"}
+        type={"color"}
+        value={validSceneObjectColor(sceneObject.body.color)}
+        onChange={event => updateSceneObject(
+          dispatch,
+          sceneObject,
+          { color: event.currentTarget.value },
+        )} />
+    </div>
+  </>;
+};
+
+const BED_POPUP_FIELDS = [
+  {
+    configKey: "bedWallThickness",
+    label: DeviceSetting.bedWallThickness,
+  },
+  {
+    configKey: "bedHeight",
+    label: DeviceSetting.bedHeight,
+  },
+  {
+    configKey: "bedZOffset",
+    label: DeviceSetting.bedZOffset,
+  },
+  {
+    configKey: "ccSupportSize",
+    label: DeviceSetting.ccSupportSize,
+  },
+  {
+    configKey: "legSize",
+    label: DeviceSetting.legSize,
+  },
+] as const;
+
+const BedPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "bed") { return undefined; }
+  return <table className={"object-popup-bed-table"}>
+    <tbody>
+      {BED_POPUP_FIELDS.map(({ configKey, label }) =>
+        <tr key={configKey}>
+          <th>
+            <label htmlFor={`bed-popup-${configKey}`}>{t(label)}</label>
+          </th>
+          <td>
+            <BlurableInput
+              id={`bed-popup-${configKey}`}
+              name={configKey}
+              type={"number"}
+              min={0}
+              disabled={!props.set3DConfigValue}
+              value={props.config[configKey]}
+              onCommit={event => props.set3DConfigValue?.(
+                configKey, event.currentTarget.value)} />
+          </td>
+        </tr>)}
+    </tbody>
+  </table>;
+};
+
+const SafeHeightPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "safeHeight") { return undefined; }
+  const sourceFbosConfig = sourceFbosConfigValue(
+    validFbosConfig(props.fbosConfig),
+    props.bot?.hardware.configuration || {},
+  );
+  return <div className={"row grid-exp-1"}>
+    <label>{t(DeviceSetting.safeHeight)}</label>
+    <BotConfigInputBox
+      setting={"safe_height"}
+      dispatch={props.dispatch || noop}
+      disabled={!props.dispatch}
+      sourceFbosConfig={sourceFbosConfig} />
+  </div>;
+};
+
 export const ObjectPopupControls = (props: PopupControlProps) => {
   switch (props.object.kind) {
     case "plant": return <PlantPopupControls {...props} />;
@@ -457,6 +636,10 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "utm": return <UtmPopupControls {...props} />;
     case "electronics": return <ElectronicsPopupControls {...props} />;
     case "camera": return <CameraPopupControls {...props} />;
+    case "connectivity": return <></>;
+    case "sceneObject": return <SceneObjectPopupControls {...props} />;
+    case "bed": return <BedPopupControls {...props} />;
+    case "safeHeight": return <SafeHeightPopupControls {...props} />;
   }
 };
 
@@ -476,9 +659,39 @@ export const ObjectPopupHeaderColor = (props: PopupControlProps) => {
     updatePoint={update} />;
 };
 
+export const ObjectPopupVisibilityButton = (props: PopupControlProps) => {
+  if (!props.dispatch || props.object.kind != "sceneObject") {
+    return undefined;
+  }
+  const dispatch = props.dispatch;
+  const { sceneObject } = props.object;
+  return <button
+    type={"button"}
+    className={[
+      "fa",
+      sceneObject.body.show ? "fa-eye" : "fa-eye-slash",
+      "fb-icon-button",
+      "invert",
+    ].join(" ")}
+    title={sceneObject.body.show ? t("hide") : t("show")}
+    onClick={() =>
+      toggleSceneObjectVisibility(dispatch, sceneObject)} />;
+};
+
+export const ObjectPopupCopyButton = (props: PopupControlProps) => {
+  if (props.object.kind != "sceneObject") { return undefined; }
+  const { sceneObject } = props.object;
+  return <button
+    type={"button"}
+    className={"fa fa-copy fb-icon-button invert"}
+    title={t("copy scene object")}
+    onClick={() => props.onCopySceneObject(sceneObject)} />;
+};
+
 type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
+  | { kind: "connectivity" } | { kind: "bed" } | { kind: "safeHeight" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -487,6 +700,7 @@ const objectUuid = (object: DeletableResolvedThreeDObject) => {
     case "point": return object.point.uuid;
     case "weed": return object.weed.uuid;
     case "slot": return object.slot.toolSlot.uuid;
+    case "sceneObject": return object.sceneObject.uuid;
   }
 };
 
@@ -495,7 +709,10 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
   if (!props.dispatch
     || object.kind == "utm"
     || object.kind == "electronics"
-    || object.kind == "camera") {
+    || object.kind == "camera"
+    || object.kind == "connectivity"
+    || object.kind == "bed"
+    || object.kind == "safeHeight") {
     return undefined;
   }
   return <button

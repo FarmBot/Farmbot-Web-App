@@ -14,8 +14,10 @@ import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 describe("unsavedCheck", () => {
   beforeEach(() => {
     localStorage.setItem("session", "YES");
-    window.addEventListener = jest.fn();
-    window.removeEventListener = jest.fn();
+    jest.spyOn(window, "addEventListener")
+      .mockImplementation(() => undefined);
+    jest.spyOn(window, "removeEventListener")
+      .mockImplementation(() => undefined);
   });
 
   function setItUp(

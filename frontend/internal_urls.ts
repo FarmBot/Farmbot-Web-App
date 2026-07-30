@@ -54,6 +54,8 @@ export namespace Path {
     designer("tool-slots") + appended(path);
   export const curves = (path?: string | number) =>
     designer("curves") + appended(path);
+  export const sceneObjects = (path?: string | number) =>
+    designer("scene_objects") + appended(path);
 
   export const messages = () => designer("messages");
   export const controls = () => designer("controls");
@@ -104,6 +106,7 @@ export namespace FilePath {
   export const icon = (icon: Icon) => `${images("icons")}/${icon}.svg`;
   export const bug = (bug?: Bug) =>
     bug ? `${images("bugs")}/${bug}.svg` : images("bugs");
+  export const bug3d = (bug: Bug) => `/3D/icons/${bug}.avif`;
   export const emptyState = (bug: string) => `${images("empty_state")}/${bug}.png`;
   export const DEFAULT_ICON = image("generic-plant");
   export const DEFAULT_WEED_ICON = image("generic-weed");
@@ -123,6 +126,7 @@ export enum Icon {
   zones = "zones",
   controls = "controls",
   sensors = "sensors",
+  scene_objects = "tool",
   photos = "photos",
   farmware = "farmware",
   tool = "tool",
@@ -170,6 +174,7 @@ export const PAGE_SLUGS = (): { [x: string]: string } => ({
   "regimens": t("Regimens"),
   "events": t("Events"),
   "sensors": t("Sensors"),
+  "scene_objects": t("Scene Objects"),
   "photos": t("Photos"),
   "tools": t("Tools"),
   "messages": t("Messages"),

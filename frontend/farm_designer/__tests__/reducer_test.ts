@@ -1,18 +1,35 @@
-import { designer } from "../reducer";
+import { designer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import { HoveredPlantPayl, DrawnPointPayl } from "../interfaces";
+import {
+  DrawnPointPayl, GridPlantingRequest, HoveredPlantPayl,
+} from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import {
   fakeDesignerState, fakeDrawnPoint,
 } from "../../__test_support__/fake_designer_state";
+import { fakeSceneObject } from "../../__test_support__/fake_state/resources";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PlantStage, PointType } from "farmbot";
 import { UUID } from "../../resources/interfaces";
 import { Path } from "../../internal_urls";
+import { SceneObjectFormValues } from "../../scene_objects/interfaces";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
+
+  it("uses 3D section defaults", () => {
+    expect(initialState.threeDSectionAxis).toEqual("x");
+    expect(initialState.threeDCameraFollow).toEqual(false);
+    expect(initialState.threeDUTMFollow).toEqual(false);
+    expect(initialState.threeDPerspective).toBeUndefined();
+    expect(initialState.threeDSectionWidth).toEqual(200);
+    expect(initialState.threeDSectionFollowBot).toEqual(true);
+    expect(initialState.threeDSectionClipAll).toEqual(true);
+    expect(initialState.threeDViewMode).toEqual("normal");
+    expect(initialState.threeDStargazingFov).toEqual(20);
+    expect(initialState.threeDViewRequest).toBeUndefined();
+  });
 
   it("sets search query", () => {
     const action: ReduxAction<string> = {
@@ -30,6 +47,18 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.selectedPoints).toEqual(["pointUuid"]);
+  });
+
+  it("clears point selection when a resource is destroyed", () => {
+    const state = oldState();
+    state.selectedPoints = ["pointUuid"];
+    state.hoveredPlant = { plantUUID: "plantUuid" };
+    const newState = designer(state, {
+      type: Actions.DESTROY_RESOURCE_OK,
+      payload: fakeSceneObject(),
+    });
+    expect(newState.selectedPoints).toBeUndefined();
+    expect(newState.hoveredPlant).toEqual({ plantUUID: undefined });
   });
 
   it("sets selection point type", () => {
@@ -61,6 +90,17 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.hoveredSpread).toEqual(100);
+  });
+
+  it("sets the highlighted 3D object", () => {
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_3D_HIGHLIGHT,
+      payload: "connectivity",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.highlighted3DObject).toEqual("connectivity");
+    const allState = designer(newState, { ...action, payload: "all" });
+    expect(allState.highlighted3DObject).toEqual("all");
   });
 
   it("sets crop water curve id", () => {
@@ -117,6 +157,34 @@ describe("designer reducer", () => {
     expect(newState.cropRadius).toEqual(100);
   });
 
+  it("sets drawn scene object data", () => {
+    const sceneObject: SceneObjectFormValues = fakeSceneObject().body;
+    const action: ReduxAction<SceneObjectFormValues | undefined> = {
+      type: Actions.SET_DRAWN_SCENE_OBJECT_DATA,
+      payload: sceneObject,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.drawnSceneObject).toEqual(sceneObject);
+  });
+
+  it("sets focused scene object field", () => {
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_FOCUSED_SCENE_OBJECT_FIELD,
+      payload: "x_size",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.focusedSceneObjectField).toEqual("x_size");
+  });
+
+  it("sets unified scene object size", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.SET_UNIFIED_SCENE_OBJECT_SIZE,
+      payload: "SceneObject.1.2",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.unifiedSceneObjectSize).toEqual("SceneObject.1.2");
+  });
+
   it("sets distance indicator", () => {
     const action: ReduxAction<string> = {
       type: Actions.SET_DISTANCE_INDICATOR,
@@ -124,15 +192,6 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.distanceIndicator).toEqual("setting");
-  });
-
-  it("sets top down view", () => {
-    const action: ReduxAction<boolean> = {
-      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-      payload: true,
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.threeDTopDownView).toEqual(true);
   });
 
   it("sets camera", () => {
@@ -151,6 +210,174 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.threeDExaggeratedZ).toEqual(true);
+  });
+
+  it("sets 3D area selection mode", () => {
+    const action: ReduxAction<boolean> = {
+      type: Actions.SET_3D_AREA_SELECTION_MODE,
+      payload: true,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.threeDAreaSelectionMode).toEqual(true);
+  });
+
+  it("sets 3D section open state", () => {
+    const newState = designer(oldState(), {
+      type: Actions.SET_3D_SECTION_OPEN,
+      payload: true,
+    });
+    expect(newState.threeDSectionOpen).toEqual(true);
+  });
+
+  it("sets 3D section settings", () => {
+    const viewState = designer(oldState(), {
+      type: Actions.SET_3D_SECTION_AXIS,
+      payload: "y",
+    });
+    const centerState = designer(viewState, {
+      type: Actions.SET_3D_SECTION_CENTER,
+      payload: { x: 100, y: 200 },
+    });
+    const widthState = designer(centerState, {
+      type: Actions.SET_3D_SECTION_WIDTH,
+      payload: 700,
+    });
+    const followState = designer(widthState, {
+      type: Actions.SET_3D_SECTION_FOLLOW_BOT,
+      payload: true,
+    });
+    const clipAllState = designer(followState, {
+      type: Actions.SET_3D_SECTION_CLIP_ALL,
+      payload: false,
+    });
+    expect(followState.threeDSectionAxis).toEqual("y");
+    expect(followState.threeDSectionCenter).toEqual({ x: 100, y: 200 });
+    expect(followState.threeDSectionWidth).toEqual(700);
+    expect(followState.threeDSectionFollowBot).toEqual(true);
+    expect(clipAllState.threeDSectionClipAll).toEqual(false);
+  });
+
+  it("sets 3D perspective", () => {
+    const newState = designer(oldState(), {
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+    expect(newState.threeDPerspective).toEqual(false);
+
+    newState.threeDCameraFollow = true;
+    const followingState = designer(newState, {
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+    expect(followingState.threeDPerspective).toEqual(true);
+
+    followingState.threeDCameraFollow = false;
+    followingState.threeDUTMFollow = true;
+    const followingUtmState = designer(followingState, {
+      type: Actions.SET_3D_PERSPECTIVE,
+      payload: false,
+    });
+    expect(followingUtmState.threeDPerspective).toEqual(true);
+  });
+
+  it("sets 3D camera follow mode", () => {
+    const state = oldState();
+    state.threeDCameraSelection = true;
+    state.threeDPerspective = false;
+    state.threeDUTMFollow = true;
+    const followingState = designer(state, {
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: true,
+    });
+    expect(followingState.threeDCameraFollow).toEqual(true);
+    expect(followingState.threeDCameraSelection).toEqual(false);
+    expect(followingState.threeDPerspective).toEqual(true);
+    expect(followingState.threeDUTMFollow).toEqual(false);
+
+    const inactiveState = designer(followingState, {
+      type: Actions.SET_3D_CAMERA_FOLLOW,
+      payload: false,
+    });
+    expect(inactiveState.threeDCameraFollow).toEqual(false);
+  });
+
+  it("sets 3D UTM follow mode", () => {
+    const state = oldState();
+    state.threeDCameraSelection = true;
+    state.threeDCameraFollow = true;
+    state.threeDPerspective = false;
+    const followingState = designer(state, {
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: true,
+    });
+    expect(followingState.threeDUTMFollow).toEqual(true);
+    expect(followingState.threeDCameraFollow).toEqual(false);
+    expect(followingState.threeDCameraSelection).toEqual(false);
+    expect(followingState.threeDPerspective).toEqual(true);
+
+    const inactiveState = designer(followingState, {
+      type: Actions.SET_3D_UTM_FOLLOW,
+      payload: false,
+    });
+    expect(inactiveState.threeDUTMFollow).toEqual(false);
+  });
+
+  it("changes between explicit 3D view modes", () => {
+    const state = oldState();
+    state.panelOpen = true;
+    state.threeDCameraFollow = true;
+    state.threeDUTMFollow = true;
+    state.threeDPerspective = true;
+    const activeState = designer(state, {
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "stargazing",
+    });
+    expect(activeState.threeDViewMode).toEqual("stargazing");
+    expect(activeState.threeDPerspective).toEqual(true);
+    expect(activeState.threeDCameraFollow).toEqual(false);
+    expect(activeState.threeDUTMFollow).toEqual(false);
+    expect(activeState.panelOpen).toEqual(false);
+
+    const spaceflightState = designer(activeState, {
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "spaceflight",
+    });
+    expect(spaceflightState.threeDViewMode).toEqual("spaceflight");
+
+    const inactiveState = designer(spaceflightState, {
+      type: Actions.SET_3D_VIEW_MODE,
+      payload: "normal",
+    });
+    expect(inactiveState.threeDViewMode).toEqual("normal");
+    expect(inactiveState.threeDPerspective).toEqual(true);
+    expect(inactiveState.panelOpen).toEqual(false);
+  });
+
+  it("sets the stargazing field of view within its limits", () => {
+    const setFov = (payload: number) => designer(oldState(), {
+      type: Actions.SET_3D_STARGAZING_FOV,
+      payload,
+    });
+    expect(setFov(45).threeDStargazingFov).toEqual(45);
+    expect(setFov(1).threeDStargazingFov).toEqual(20);
+    expect(setFov(100).threeDStargazingFov).toEqual(90);
+  });
+
+  it("requests a 3D view", () => {
+    const payload = {
+      direction: [1, 0, 1] as [number, number, number],
+      nonce: 1,
+    };
+    const newState = designer(oldState(), {
+      type: Actions.SET_3D_VIEW,
+      payload,
+    });
+    expect(newState.threeDViewRequest).toEqual(payload);
+    const clearedState = designer(newState, {
+      type: Actions.SET_3D_VIEW,
+      payload: undefined,
+    });
+    expect(clearedState.threeDViewRequest).toBeUndefined();
   });
 
   it("sets 3D time", () => {
@@ -207,6 +434,24 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.hoveredPoint).toEqual("uuid");
+  });
+
+  it("sets hovered scene object", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_SCENE_OBJECT,
+      payload: "sceneObjectUuid"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredSceneObject).toEqual("sceneObjectUuid");
+  });
+
+  it("sets featured scene", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.SET_FEATURED_SCENE,
+      payload: "Lab"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.featuredScene).toEqual("Lab");
   });
 
   it("sets hovered tool slot", () => {
@@ -472,6 +717,82 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.gridStart).toEqual({ x: 200, y: 300 });
+  });
+
+  it("sets the active 3D grid planting request", () => {
+    const request: GridPlantingRequest = {
+      token: "grid-token",
+      gridId: "grid-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const newState = designer(oldState(), {
+      type: Actions.SET_GRID_PLANTING,
+      payload: request,
+    });
+    expect(newState.gridPlanting).toEqual(request);
+    expect(designer(newState, {
+      type: Actions.SET_GRID_PLANTING,
+      payload: undefined,
+    }).gridPlanting).toBeUndefined();
+  });
+
+  it("only clears the matching 3D grid planting request", () => {
+    const replacement: GridPlantingRequest = {
+      token: "replacement-token",
+      gridId: "replacement-token",
+      cropSlug: "mint",
+      itemName: "Mint",
+      defaultSpacing: 250,
+    };
+    const state = oldState();
+    state.gridPlanting = replacement;
+    expect(designer(state, {
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: "outgoing-token",
+    }).gridPlanting).toEqual(replacement);
+    expect(designer(state, {
+      type: Actions.CLEAR_GRID_PLANTING,
+      payload: replacement.token,
+    }).gridPlanting).toBeUndefined();
+  });
+
+  it("sets the requested legacy crop grid editor", () => {
+    const newState = designer(oldState(), {
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: "mint",
+    });
+    expect(newState.legacyGridPlantingCrop).toEqual("mint");
+    expect(designer(newState, {
+      type: Actions.SET_LEGACY_GRID_PLANTING_CROP,
+      payload: undefined,
+    }).legacyGridPlantingCrop).toBeUndefined();
+  });
+
+  it("only clears the matching legacy crop grid editor", () => {
+    const state = oldState();
+    state.legacyGridPlantingCrop = "mint";
+    expect(designer(state, {
+      type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+      payload: "beet",
+    }).legacyGridPlantingCrop).toEqual("mint");
+    expect(designer(state, {
+      type: Actions.CLEAR_LEGACY_GRID_PLANTING_CROP,
+      payload: "mint",
+    }).legacyGridPlantingCrop).toBeUndefined();
+  });
+
+  it("sets the requested legacy point grid editor", () => {
+    const state = designer(oldState(), {
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: true,
+    });
+    expect(state.legacyPointGrid).toBeTruthy();
+    expect(designer(state, {
+      type: Actions.SET_LEGACY_POINT_GRID,
+      payload: false,
+    }).legacyPointGrid).toBeFalsy();
   });
 
   it("toggle soil height labels", () => {

@@ -29,10 +29,12 @@ import {
   TaggedWizardStepResult,
   TaggedTelemetry,
   TaggedCurve,
+  TaggedSceneObject,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
   ExecutableType, PinBindingType, Folder,
+  SceneObject,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
@@ -365,6 +367,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_points: true,
     show_soil_interpolation_map: false,
     show_weeds: true,
+    show_scene_objects: true,
+    show_controls_overlay: true,
     x_axis_inverted: false,
     y_axis_inverted: false,
     z_axis_inverted: true,
@@ -542,6 +546,30 @@ export function fakeFarmwareEnv(): TaggedFarmwareEnv {
   return fakeResource("FarmwareEnv", {
     key: "fake_FarmwareEnv_key",
     value: "fake_FarmwareEnv_value"
+  });
+}
+
+export function fakeSceneObject(
+  input: Partial<SceneObject> = {},
+): TaggedSceneObject {
+  return fakeResource("SceneObject", {
+    id: nextFakeId(),
+    name: "Scene Object 1",
+    texture: "concrete",
+    shape: "box",
+    color: "#fff",
+    show: true,
+    x_center: 50,
+    y_center: 50,
+    z_base: 0,
+    x_size: 100,
+    y_size: 100,
+    z_size: 100,
+    x_origin: "home",
+    y_origin: "home",
+    z_origin: "world",
+    rotation: 0,
+    ...input,
   });
 }
 

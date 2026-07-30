@@ -1,14 +1,21 @@
 import {
   DesignerState,
   DrawnPointPayl,
+  GridPlantingRequest,
   HoveredPlantPayl,
+  ThreeDSectionAxis,
+  ThreeDViewMode,
 } from "./interfaces";
+import type { SceneObjectFormValues } from "../scene_objects/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource, PointType, PlantStage } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
+import {
+  clampStargazingFov, STARGAZING_DEFAULT_FOV,
+} from "./stargazing_constants";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -22,12 +29,18 @@ export const initialState: DesignerState = {
   hoveredToolSlot: undefined,
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
+  hoveredSceneObject: undefined,
+  featuredScene: undefined,
+  highlighted3DObject: undefined,
   cropSearchQuery: "",
   companionIndex: undefined,
   plantTypeChangeId: undefined,
   bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
+  drawnSceneObject: undefined,
+  focusedSceneObjectField: undefined,
+  unifiedSceneObjectSize: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
@@ -45,6 +58,9 @@ export const initialState: DesignerState = {
   cameraViewGridId: undefined,
   gridIds: [],
   gridStart: { x: 100, y: 100 },
+  gridPlanting: undefined,
+  legacyGridPlantingCrop: undefined,
+  legacyPointGrid: false,
   soilHeightLabels: false,
   profileOpen: false,
   profileAxis: "x",
@@ -59,9 +75,21 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
-  threeDTopDownView: undefined,
+  threeDAreaSelectionMode: false,
+  threeDCameraFollow: false,
+  threeDUTMFollow: false,
   threeDCameraSelection: false,
   threeDExaggeratedZ: false,
+  threeDPerspective: undefined,
+  threeDSectionOpen: false,
+  threeDSectionAxis: "x",
+  threeDSectionCenter: { x: undefined, y: undefined },
+  threeDSectionWidth: 200,
+  threeDSectionFollowBot: true,
+  threeDSectionClipAll: true,
+  threeDViewMode: "normal",
+  threeDStargazingFov: STARGAZING_DEFAULT_FOV,
+  threeDViewRequest: undefined,
   threeDTime: undefined,
 };
 
@@ -127,6 +155,18 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.hoveredPoint = payload;
     return s;
   })
+  .add<string | undefined>(Actions.HOVER_SCENE_OBJECT, (s, { payload }) => {
+    s.hoveredSceneObject = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_FEATURED_SCENE, (s, { payload }) => {
+    s.featuredScene = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.SET_3D_HIGHLIGHT, (s, { payload }) => {
+    s.highlighted3DObject = payload;
+    return s;
+  })
   .add<string | undefined>(Actions.HOVER_TOOL_SLOT, (s, { payload }) => {
     s.hoveredToolSlot = payload;
     return s;
@@ -142,6 +182,21 @@ export const designer = generateReducer<DesignerState>(initialState)
   .add<DrawnPointPayl | undefined>(
     Actions.SET_DRAWN_POINT_DATA, (s, { payload }) => {
       s.drawnPoint = payload;
+      return s;
+    })
+  .add<SceneObjectFormValues | undefined>(
+    Actions.SET_DRAWN_SCENE_OBJECT_DATA, (s, { payload }) => {
+      s.drawnSceneObject = payload;
+      return s;
+    })
+  .add<string | undefined>(
+    Actions.SET_FOCUSED_SCENE_OBJECT_FIELD, (s, { payload }) => {
+      s.focusedSceneObjectField = payload;
+      return s;
+    })
+  .add<string | undefined>(
+    Actions.SET_UNIFIED_SCENE_OBJECT_SIZE, (s, { payload }) => {
+      s.unifiedSceneObjectSize = payload;
       return s;
     })
   .add<number>(Actions.SET_COMPANION_INDEX, (s, a) => {
@@ -235,6 +290,33 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.gridStart = payload;
     return s;
   })
+  .add<GridPlantingRequest | undefined>(
+    Actions.SET_GRID_PLANTING, (s, { payload }) => {
+      s.gridPlanting = payload;
+      return s;
+    })
+  .add<string>(Actions.CLEAR_GRID_PLANTING, (s, { payload }) => {
+    if (s.gridPlanting?.token == payload) {
+      s.gridPlanting = undefined;
+    }
+    return s;
+  })
+  .add<string | undefined>(
+    Actions.SET_LEGACY_GRID_PLANTING_CROP, (s, { payload }) => {
+      s.legacyGridPlantingCrop = payload;
+      return s;
+    })
+  .add<string>(
+    Actions.CLEAR_LEGACY_GRID_PLANTING_CROP, (s, { payload }) => {
+      if (s.legacyGridPlantingCrop == payload) {
+        s.legacyGridPlantingCrop = undefined;
+      }
+      return s;
+    })
+  .add<boolean>(Actions.SET_LEGACY_POINT_GRID, (s, { payload }) => {
+    s.legacyPointGrid = payload;
+    return s;
+  })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
     return s;
@@ -243,16 +325,84 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.distanceIndicator = payload;
     return s;
   })
-  .add<boolean>(Actions.TOGGLE_3D_TOP_DOWN_VIEW, (s, { payload }) => {
-    s.threeDTopDownView = payload;
-    return s;
-  })
   .add<never>(Actions.TOGGLE_3D_CAMERA_SELECTION, (s) => {
     s.threeDCameraSelection = !s.threeDCameraSelection;
     return s;
   })
+  .add<boolean>(Actions.SET_3D_CAMERA_FOLLOW, (s, { payload }) => {
+    s.threeDCameraFollow = payload;
+    if (payload) {
+      s.threeDUTMFollow = false;
+      s.threeDCameraSelection = false;
+      s.threeDPerspective = true;
+    }
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_UTM_FOLLOW, (s, { payload }) => {
+    s.threeDUTMFollow = payload;
+    if (payload) {
+      s.threeDCameraFollow = false;
+      s.threeDCameraSelection = false;
+      s.threeDPerspective = true;
+    }
+    return s;
+  })
   .add<boolean>(Actions.TOGGLE_3D_EXAGGERATED_Z, (s, { payload }) => {
     s.threeDExaggeratedZ = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_AREA_SELECTION_MODE, (s, { payload }) => {
+    s.threeDAreaSelectionMode = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_SECTION_OPEN, (s, { payload }) => {
+    s.threeDSectionOpen = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_PERSPECTIVE, (s, { payload }) => {
+    s.threeDPerspective = s.threeDCameraFollow || s.threeDUTMFollow
+      ? true
+      : payload;
+    return s;
+  })
+  .add<DesignerState["threeDViewRequest"]>(
+    Actions.SET_3D_VIEW, (s, { payload }) => {
+      s.threeDViewRequest = payload;
+      return s;
+    })
+  .add<ThreeDSectionAxis>(Actions.SET_3D_SECTION_AXIS, (s, { payload }) => {
+    s.threeDSectionAxis = payload;
+    return s;
+  })
+  .add<Record<"x" | "y", number | undefined>>(
+    Actions.SET_3D_SECTION_CENTER, (s, { payload }) => {
+      s.threeDSectionCenter = payload;
+      return s;
+    })
+  .add<number>(Actions.SET_3D_SECTION_WIDTH, (s, { payload }) => {
+    s.threeDSectionWidth = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_SECTION_FOLLOW_BOT, (s, { payload }) => {
+    s.threeDSectionFollowBot = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_3D_SECTION_CLIP_ALL, (s, { payload }) => {
+    s.threeDSectionClipAll = payload;
+    return s;
+  })
+  .add<ThreeDViewMode>(Actions.SET_3D_VIEW_MODE, (s, { payload }) => {
+    s.threeDViewMode = payload;
+    if (payload != "normal") {
+      s.threeDCameraFollow = false;
+      s.threeDUTMFollow = false;
+      s.threeDPerspective = true;
+      s.panelOpen = false;
+    }
+    return s;
+  })
+  .add<number>(Actions.SET_3D_STARGAZING_FOV, (s, { payload }) => {
+    s.threeDStargazingFov = clampStargazingFov(payload);
     return s;
   })
   .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {

@@ -22,6 +22,7 @@ import {
   selectAllSequences,
   selectAllFarmwareEnvs,
   selectAllCurves,
+  selectAllSceneObjects,
 } from "../resources/selectors";
 import { validFwConfig, validFbosConfig } from "../util";
 import { validBotLocationData } from "../util/location";
@@ -32,7 +33,7 @@ import {
 import { FarmDesignerProps, CameraCalibrationData } from "./interfaces";
 import { TaggedPlant, BotSize } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
-import { isFinite, uniq, chain } from "lodash";
+import { isFinite, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
 import { getEnv } from "../farmware/state_to_props";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
@@ -47,6 +48,7 @@ import { UserEnv } from "../devices/interfaces";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { validGoButtonAxes } from "./move_to";
+import { selectPeripheralValues } from "./peripheral_values";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -94,6 +96,7 @@ const selectSensorReadings = memoizeLast((index: RestResources["index"]) =>
     .reverse()
     .value());
 const selectSensors = memoizeLast(selectAllSensors);
+const selectSceneObjects = memoizeLast(selectAllSceneObjects);
 const selectLogs = memoizeLast(selectAllLogs);
 const selectFarmwareEnvs = memoizeLast(selectAllFarmwareEnvs);
 const selectCurves = memoizeLast(selectAllCurves);
@@ -113,43 +116,6 @@ const selectPlantsForDesigner = memoizeLast((
       x.body.saved_garden_id === openedSavedGarden)
     : onlyPlants;
 });
-
-const selectPeripheralValues = (() => {
-  let lastKey = "";
-  let lastResult: ReturnType<typeof mapPeripheralValues> | undefined;
-  return (
-    peripherals: ReturnType<typeof selectAllPeripherals>,
-    pins: Everything["bot"]["hardware"]["pins"],
-  ) => {
-    const key = peripherals
-      .map(peripheral => {
-        const pin = peripheral.body.pin;
-        const value = pin ? pins[pin]?.value : undefined;
-        return `${peripheral.uuid}:${peripheral.body.label}:${pin}:${value}`;
-      })
-      .join("|");
-    if (key === lastKey && lastResult) {
-      return lastResult;
-    }
-    lastKey = key;
-    lastResult = mapPeripheralValues(peripherals, pins);
-    return lastResult;
-  };
-})();
-
-const mapPeripheralValues = (
-  peripherals: ReturnType<typeof selectAllPeripherals>,
-  pins: Everything["bot"]["hardware"]["pins"],
-) =>
-  uniq(peripherals)
-    .map(x => {
-      const label = x.body.label;
-      const pinStatus = x.body.pin
-        ? pins[x.body.pin]
-        : undefined;
-      const value = pinStatus ? pinStatus.value > 0 : false;
-      return { label, value };
-    });
 
 export const getPlants = (resources: RestResources) => {
   const { openedSavedGarden } = resources.consumers.farm_designer;
@@ -207,9 +173,8 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   const groups = selectPointGroups(props.resources.index);
   const allPoints = selectPoints(props.resources.index);
 
-  const peripheralValues = selectPeripheralValues(
-    selectPeripherals(props.resources.index),
-    hardware.pins);
+  const peripherals = selectPeripherals(props.resources.index);
+  const peripheralValues = selectPeripheralValues(peripherals, hardware.pins);
 
   const latestImages = selectImages(props.resources.index);
 
@@ -238,6 +203,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     botMcuParams: firmwareSettings,
     botSize: botSize(props),
     peripheralValues,
+    peripherals,
     eStopStatus: hardware.informational_settings.locked,
     deviceTarget: hardware.informational_settings.target,
     latestImages,
@@ -259,6 +225,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     env,
     farmwareEnvs: selectFarmwareEnvs(props.resources.index),
     curves: selectCurves(props.resources.index),
+    sceneObjects: selectSceneObjects(props.resources.index),
   };
 }
 

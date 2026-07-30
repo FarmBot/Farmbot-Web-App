@@ -93,6 +93,7 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
       findOrCreate={findOrCreate3DConfigFunction(dispatch, props.farmwareEnvs)}
       tooltip={ToolTips.THREE_D_HEADING}
       setting={DeviceSetting.heading}
+      sceneObjectUuids={props.sceneObjectUuids}
       configKey={"heading"} />
     <ThreeDConfig
       dispatch={dispatch}
@@ -101,6 +102,16 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
       tooltip={ToolTips.THREE_D_ENVIRONMENT}
       setting={DeviceSetting.environment}
       isScene={true}
+      sceneObjectUuids={props.sceneObjectUuids}
       configKey={"scene"} />
+    <ThreeDConfig
+      dispatch={dispatch}
+      getValue={get3DConfigValueFunction(props.farmwareEnvs)}
+      findOrCreate={findOrCreate3DConfigFunction(dispatch, props.farmwareEnvs)}
+      tooltip={ToolTips.THREE_D_GROUND_TEXTURE}
+      setting={DeviceSetting.groundTexture}
+      isTexture={true}
+      sceneObjectUuids={props.sceneObjectUuids}
+      configKey={"groundTexture"} />
   </div>;
 };

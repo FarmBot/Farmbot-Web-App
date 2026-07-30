@@ -39,6 +39,8 @@ import { Path } from "../internal_urls";
 import { UTMProfile } from "../farm_designer/map/profile/tools";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../routes_helpers";
+import { ToolActionRow } from "./tool_action_row";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -86,6 +88,15 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           gantryHeight={0}
           botPosition={{ x: 0, y: 0, z: 0 }} />
       </svg>
+      <ToolActionRow
+        className={"mounted-tool-action-row"}
+        mountedTool={this.mountedTool}
+        sensors={this.props.sensors}
+        peripherals={this.props.peripherals}
+        peripheralValues={this.props.peripheralValues}
+        botOnline={isBotOnlineFromState(this.props.bot)}
+        arduinoBusy={this.props.bot.hardware.informational_settings.busy}
+        locked={this.props.bot.hardware.informational_settings.locked} />
       <ToolVerification sensors={this.props.sensors} bot={this.props.bot} />
     </div>;
 

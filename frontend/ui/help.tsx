@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  PopoverInteractionKind, PopoverPosition, Position,
+  PopoverInteractionKind, Position,
 } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 import { Markdown } from "./markdown";
@@ -9,7 +9,7 @@ import { Popover } from "./popover";
 export interface HelpProps {
   text: string;
   onHover?: boolean;
-  position?: PopoverPosition;
+  position?: Position;
   customIcon?: string;
   customClass?: string;
   links?: React.ReactElement[];
@@ -19,6 +19,8 @@ export interface HelpProps {
   isOpen?: boolean;
   setOpen?(): void;
   iconButton?: boolean;
+  usePortal?: boolean;
+  focusable?: boolean;
 }
 
 export function Help(props: HelpProps) {
@@ -32,10 +34,12 @@ export function Help(props: HelpProps) {
       : PopoverInteractionKind.CLICK}
     className={props.customClass}
     isOpen={props.isOpen}
+    usePortal={props.usePortal}
     popoverClassName={"help"}
     target={
       <i title={props.title}
-        role={"tooltip"}
+        role={props.focusable ? "button" : "tooltip"}
+        tabIndex={props.focusable ? 0 : undefined}
         aria-label={ariaLabel}
         className={[
           "fa",
@@ -43,7 +47,14 @@ export function Help(props: HelpProps) {
           "help-icon",
           props.iconButton ? "fb-icon-button" : "",
         ].filter(c => c).join(" ")}
-        onClick={props.setOpen} />}
+        onClick={props.setOpen}
+        onKeyDown={event => {
+          if (props.focusable
+            && ["Enter", " "].includes(event.key)) {
+            event.preventDefault();
+            event.currentTarget.click();
+          }
+        }} />}
     content={<div className={"help-text-content"}>
       {props.enableMarkdown
         ? <Markdown>{props.text}</Markdown>
