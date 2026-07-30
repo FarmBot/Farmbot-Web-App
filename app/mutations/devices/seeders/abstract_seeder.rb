@@ -238,9 +238,8 @@ module Devices
 
       def install_sequence_version_by_name(name)
         sv = SequenceVersion
-        .joins(Api::FeaturedSequencesController::JOIN)
+        .publicly_available
         .where(sequence_publications: { cached_author_email: ENV["AUTHORIZED_PUBLISHER"] })
-        .where(sequence_publications: { published: true })
         .order(updated_at: :desc)
         .uniq(&:sequence_publication_id)
         .filter { |x| x.name == name }[0]

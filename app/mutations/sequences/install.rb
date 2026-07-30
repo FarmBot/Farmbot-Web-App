@@ -34,7 +34,7 @@ module Sequences
     private
 
     def validate_publication
-      unless sequence_version.sequence_publication.published
+      unless sequence_version.publicly_available?
         add_error :sequence_version, :version, NOT_PUBLISHED
       end
     end
