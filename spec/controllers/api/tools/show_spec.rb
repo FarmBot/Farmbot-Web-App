@@ -15,5 +15,12 @@ describe Api::ToolsController do
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(tool.id)
     end
+
+    it "does not render another device's tool" do
+      other_tool = FactoryBot.create(:tool)
+      sign_in user
+      get :show, params: { id: other_tool.id }
+      expect(response.status).to eq(404)
+    end
   end
 end

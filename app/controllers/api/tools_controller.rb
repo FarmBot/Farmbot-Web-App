@@ -9,7 +9,7 @@ module Api
     end
 
     def destroy
-      mutate Tools::Destroy.run(tool: tool)
+      mutate Tools::Destroy.run(tool: tool, device: current_device)
     end
 
     def create
@@ -23,7 +23,7 @@ module Api
     private
 
     def update_params
-      output = raw_json.merge(tool: tool)
+      output = raw_json.merge(tool: tool, device: current_device)
       output[:name] = params[:name] if params[:name]
       output
     end
@@ -33,7 +33,8 @@ module Api
     end
 
     def tool
-      @tool ||= Tool.join_tool_slot_and_find_by_id(params.expect(:id).to_i)
+      @tool ||= Tool.join_tool_slot_and_find_by_id(params.expect(:id).to_i,
+                                                   current_device.id)
     end
   end
 end
