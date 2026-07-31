@@ -1,0 +1,8 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "6eb5910f38bccb50a3b99a622eec8d919df4605274b6c27e960356220ba5a396",
+      "note": "sanitized with File.basename"
+    }
+  ]
+}

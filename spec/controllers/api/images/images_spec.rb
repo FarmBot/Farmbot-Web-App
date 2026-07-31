@@ -56,6 +56,8 @@ describe Api::ImagesController do
   end
 
   it "Creates a policy object" do
+    allow(Google::Auth::ServiceAccountCredentials).to receive(:make_creds)
+      .and_return(double)
     allow(Google::Cloud::Storage).to receive_message_chain("new.bucket.post_object.fields")
       .and_return({ signature: "signature" })
 

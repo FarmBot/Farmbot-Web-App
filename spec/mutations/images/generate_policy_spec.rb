@@ -70,4 +70,10 @@ describe Images::GeneratePolicy do
       expect(Images::GeneratePolicy.new.send(:bucket)).to eq(bucket)
     end
   end
+
+  it "does not create a bucket without upload credentials" do
+    with_modified_env(GCS_UPLOAD_KEYFILE_JSON: nil) do
+      expect(Images::GeneratePolicy.new.send(:bucket)).to be_nil
+    end
+  end
 end

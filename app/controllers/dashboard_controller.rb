@@ -120,14 +120,15 @@ class DashboardController < ApplicationController
     render json: ""
   rescue Image::DirectUploadTooLarge
     render json: { error: "Image exceeds maximum size" },
-           status: :payload_too_large
+           status: :content_too_large
   rescue Image::InvalidDirectUploadImage
     render json: { error: "Upload must be a JPEG image" },
            status: :unsupported_media_type
   end
 
   def direct_upload_file
-    path = Image.direct_upload_path("#{params.expect(:filename)}.jpg")
+    filename = File.basename(params.expect(:filename))
+    path = Image.direct_upload_path("#{filename}.jpg")
     unless File.file?(path)
       head :not_found
       return

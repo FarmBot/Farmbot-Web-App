@@ -119,6 +119,7 @@ class Image < ApplicationRecord
     name = key.split("/").last
     src = file.tempfile.path
     raise DirectUploadTooLarge if File.size(src) > MAX_IMAGE_SIZE
+
     detected_type = Marcel::MimeType.for(Pathname.new(src))
     raise InvalidDirectUploadImage unless detected_type == "image/jpeg"
 
@@ -145,7 +146,7 @@ class Image < ApplicationRecord
   private_class_method :direct_upload_verifier
 
   def self.direct_upload_directory
-    Rails.root.join("tmp", "direct_upload")
+    Rails.root.join("tmp/direct_upload")
   end
   private_class_method :direct_upload_directory
 end
