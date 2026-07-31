@@ -494,7 +494,7 @@ DEPENDENCIES
   drb
   factory_bot_rails
   faker
-  google-cloud-storage (~> 1.11)
+  google-cloud-storage
   hashdiff
   irb
   jwt
@@ -511,7 +511,7 @@ DEPENDENCIES
   rabbitmq_http_api_client
   rack-attack
   rack-cors
-  rails (~> 8)
+  rails
   redis (~> 4.0)
   request_store
   rollbar

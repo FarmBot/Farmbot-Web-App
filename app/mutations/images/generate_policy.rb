@@ -1,5 +1,6 @@
 require "google/cloud/storage"
 require "google/cloud/storage/file"
+require "stringio"
 
 module Images
   class GeneratePolicy < Mutations::Command
@@ -33,8 +34,16 @@ module Images
     end
 
     def bucket
-      json_key = ENV["GOOGLE_CLOUD_KEYFILE_JSON"]
-      json_key && Google::Cloud::Storage.new.bucket(bucket_name)
+      json_key = ENV["GCS_UPLOAD_KEYFILE_JSON"]
+      return unless json_key
+
+      credentials = Google::Auth::ServiceAccountCredentials.make_creds(
+        json_key_io: StringIO.new(json_key),
+        scope: Google::Cloud::Storage::Credentials::SCOPE,
+      )
+      Google::Cloud::Storage.new(
+        credentials: credentials,
+      ).bucket(bucket_name, skip_lookup: true)
     end
 
     def post_object

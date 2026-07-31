@@ -61,6 +61,7 @@ describe Api::ImagesController do
 
     with_modified_env(
       GOOGLE_CLOUD_KEYFILE_JSON: "key",
+      GCS_UPLOAD_KEYFILE_JSON: "upload-key",
       GCS_BUCKET: "bucket",
     ) do
 
