@@ -197,7 +197,9 @@ module Devices
         end
         add_point_groups
         tool = device.tools.find_by(name: ToolNames::WATERING_NOZZLE)
-        Tools::Update.run(tool: tool, flow_rate_ml_per_s: 100) if tool
+        Tools::Update.run(tool: tool,
+                          device: device,
+                          flow_rate_ml_per_s: 100) if tool
         add_envs
 
         marketing_bulletin

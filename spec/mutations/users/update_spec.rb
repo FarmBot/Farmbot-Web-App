@@ -39,4 +39,46 @@ describe Users::Update do
       expect(u.confirmation_token).not_to eq(original_token)
     end
   end
+
+  it "rejects an invalid email address" do
+    user = FactoryBot.create(:user)
+    result = Users::Update.run(user: user, email: "not-an-email")
+
+    expect(result.success?).to be false
+    expect(result.errors.message_list)
+      .to include(Users::Update::INVALID_EMAIL)
+  end
+
+  it "stops users from changing to an unauthorized email domain" do
+    user = FactoryBot.create(:user)
+
+    ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io,farm.bot") do
+      result = Users::Update.run(user: user, email: "example@mailinator.com")
+
+      expect(result.success?).to be false
+      expect(result.errors.message_list)
+        .to include(Users::Update::CANT_USE_SERVER)
+    end
+  end
+
+  it "allows users to change to an authorized email domain" do
+    user = FactoryBot.create(:user)
+
+    ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io, farm.bot") do
+      result = Users::Update.run(user: user, email: "example@farm.bot")
+
+      expect(result.success?).to be true
+    end
+  end
+
+  it "does not check the domain when no email change is requested" do
+    email = "#{SecureRandom.hex(8)}@mailinator.com"
+    user = FactoryBot.create(:user, email: email)
+
+    ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io") do
+      result = Users::Update.run(user: user, name: "New Name")
+
+      expect(result.success?).to be true
+    end
+  end
 end

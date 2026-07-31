@@ -109,9 +109,35 @@ class DashboardController < ApplicationController
   # (for self hosted users) Direct image upload endpoint.
   # Do not use this if you use GCS- it will slow your app down.
   def direct_upload
+    unless Image.valid_direct_upload_token?(key: params[:key],
+                                            token: params[:signature])
+      render json: { error: "Invalid upload signature" }, status: :unauthorized
+      return
+    end
+
     Image.self_hosted_image_upload(key: params.fetch(:key),
                                    file: params.fetch(:file))
     render json: ""
+  rescue Image::DirectUploadTooLarge
+    render json: { error: "Image exceeds maximum size" },
+           status: :content_too_large
+  rescue Image::InvalidDirectUploadImage
+    render json: { error: "Upload must be a JPEG image" },
+           status: :unsupported_media_type
+  end
+
+  def direct_upload_file
+    filename = File.basename(params.expect(:filename))
+    path = Image.direct_upload_path("#{filename}.jpg")
+    unless File.file?(path)
+      head :not_found
+      return
+    end
+
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    send_file path,
+              type: "image/jpeg",
+              disposition: "inline"
   end
 
   def logout; end

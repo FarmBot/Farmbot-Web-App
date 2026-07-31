@@ -1785,7 +1785,8 @@ CREATE TABLE public.sequence_versions (
     color character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    copyright character varying(1500)
+    copyright character varying(1500),
+    withdrawn_at timestamp(6) without time zone
 );
 
 
@@ -3851,6 +3852,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260729150407'),
 ('20260728183708'),
 ('20260724204047'),
 ('20260723225144'),

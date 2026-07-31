@@ -10,9 +10,12 @@ describe Sequences::Unpublish do
     publication = Sequences::Publish.run!(sequence: sequence,
                                           device: device,
                                           copyright: "Farmbot, Inc 2021")
+    version = publication.sequence_versions.first
     expect(publication.published).to be(true)
+    expect(version.withdrawn_at).to be_nil
     Sequences::Unpublish.run!(device: device, sequence: sequence)
     expect(publication.reload.published).to be(false)
+    expect(version.reload.withdrawn_at).to be_present
   end
 
   it "prevents unpublishing other users sequences" do

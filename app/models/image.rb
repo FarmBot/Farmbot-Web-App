@@ -1,6 +1,10 @@
 require "open-uri"
+require "marcel"
 # A set of image URLs (thumbs) + Associated meta data.
 class Image < ApplicationRecord
+  class DirectUploadTooLarge < StandardError; end
+  class InvalidDirectUploadImage < StandardError; end
+
   belongs_to :device
   validates :device, presence: true
   serialize :meta, coder: YAML
@@ -23,6 +27,7 @@ class Image < ApplicationRecord
     x80: "80x80>",
   }
   MAX_IMAGE_SIZE = 7.megabytes
+  DIRECT_UPLOAD_TOKEN_TTL = 1.hour
   CONFIG = { default_url: DEFAULT_URL,
              styles: RMAGICK_STYLES,
              size: { in: 0..MAX_IMAGE_SIZE } }
@@ -113,7 +118,35 @@ class Image < ApplicationRecord
 
     name = key.split("/").last
     src = file.tempfile.path
-    dest = File.join("public", "direct_upload", "temp", name)
+    raise DirectUploadTooLarge if File.size(src) > MAX_IMAGE_SIZE
+
+    detected_type = Marcel::MimeType.for(Pathname.new(src))
+    raise InvalidDirectUploadImage unless detected_type == "image/jpeg"
+
+    FileUtils.mkdir_p(direct_upload_directory)
+    dest = direct_upload_path(name)
     FileUtils.mv(src, dest)
   end
+
+  def self.direct_upload_path(name)
+    direct_upload_directory.join(File.basename(name))
+  end
+
+  def self.direct_upload_token(key)
+    direct_upload_verifier.generate(key, expires_in: DIRECT_UPLOAD_TOKEN_TTL)
+  end
+
+  def self.valid_direct_upload_token?(key:, token:)
+    token.present? && direct_upload_verifier.verified(token) == key
+  end
+
+  def self.direct_upload_verifier
+    Rails.application.message_verifier("direct_upload")
+  end
+  private_class_method :direct_upload_verifier
+
+  def self.direct_upload_directory
+    Rails.root.join("tmp/direct_upload")
+  end
+  private_class_method :direct_upload_directory
 end

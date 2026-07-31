@@ -17,5 +17,13 @@ describe Api::ToolsController do
       expect(response.status).to eq(200)
       expect(tool.reload.name).to eq("Hi!")
     end
+
+    it "prevents updates to another device's tool" do
+      expect do
+        Tools::Update.run!(tool: tool,
+                           device: FactoryBot.create(:device),
+                           name: "Not allowed")
+      end.to raise_error(Errors::Forbidden)
+    end
   end
 end

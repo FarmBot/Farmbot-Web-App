@@ -10,9 +10,11 @@ module Tools
 
     required do
       model :tool, class: Tool
+      model :device, class: Device
     end
 
     def validate
+      validate_ownership
       any_deps?
       any_slots?
     end
@@ -23,6 +25,10 @@ module Tools
     end
 
     private
+
+    def validate_ownership
+      raise Errors::Forbidden unless tool.device_id == device.id
+    end
 
     # This one will look for other nodes that can possibly reference
     # a tool's ID, usually within the MARK AS step.

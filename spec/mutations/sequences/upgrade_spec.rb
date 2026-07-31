@@ -82,6 +82,10 @@ describe Sequences::Upgrade do
                             copyright: "FarmBot, Inc 2021")
     publication = Sequences::Unpublish.run!(device: other_device, sequence: pub_seq)
     sv = publication.sequence_versions.sample
+    Sequences::Publish.run!(device: other_device,
+                            sequence: pub_seq,
+                            copyright: "FarmBot, Inc 2021")
+    expect(publication.reload.published).to be(true)
     mut = Sequences::Upgrade.run(device: device,
                                  sequence_version: sv,
                                  sequence: FakeSequence.with_parameters(device: device))

@@ -6,7 +6,7 @@ describe Api::PasswordResetsController do
     let(:user) { FactoryBot.create(:user) }
 
     it "resets password for a user" do
-      params = { email: user.email }
+      params = { email: " #{user.email.upcase} " }
 
       old_email_count = ActionMailer::Base.deliveries.length
       run_jobs_now do
@@ -64,9 +64,14 @@ describe Api::PasswordResetsController do
       expect(json.to_json).to include(PasswordResets::Update::OLD_TOKEN)
     end
 
-    it "handles bad emails" do
+    it "does not reveal whether an email is registered" do
+      expect(PasswordResetJob)
+        .to receive(:perform_later)
+        .with("bad@wrong.com")
       result = PasswordResets::Create.run(email: "bad@wrong.com")
-      expect(result.errors["email"].message).to eq("Email not found")
+
+      expect(result.success?).to eq(true)
+      expect(result.result).to eq(status: "Check your email!")
     end
   end
 end

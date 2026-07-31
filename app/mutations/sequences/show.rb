@@ -93,24 +93,17 @@ module Sequences
     # Heuristic for determining available sequence version.
     #
     def available_version_ids
-      # First attempt:
-      #   See if the this sequence "owns" is a published upstream publication.
-      #   If it is not published, don't show anything to the author.
-      #   If it IS published, show the versions to the author.
-      if is_owner?
-        return sequence_publication&.sequence_versions&.pluck(:id) || []
-      end
+      # Authors get versions from their own publication. Consumers get versions
+      # from the publication associated with their installed upstream version.
+      publication =
+        is_owner? ? sequence_publication : sequence_version&.sequence_publication
 
-      # Second attempt:
-      # The consumer is not the author.
-      # The sequence has an upstream sequence_version
-      upstream_sp = sequence_version&.sequence_publication
-      if upstream_sp&.published
-        return upstream_sp.sequence_versions.pluck(:id)
-      end
+      # Unpublished publications expose no versions. Versions withdrawn during
+      # an earlier unpublish remain usable internally by existing installations,
+      # but are not offered for preview or upgrade after republishing.
+      return [] unless publication&.published
 
-      # All other cases: Render nothing.
-      return []
+      publication.sequence_versions.where(withdrawn_at: nil).pluck(:id)
     end
   end
 end

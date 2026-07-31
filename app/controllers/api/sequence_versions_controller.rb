@@ -24,7 +24,8 @@ module Api
     end
 
     def sequence_version
-      @sequence_version ||= SequenceVersion.find(params.expect(:id))
+      @sequence_version ||=
+        SequenceVersion.publicly_available.find(params.expect(:id))
     end
   end
 end

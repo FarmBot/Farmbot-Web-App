@@ -75,5 +75,11 @@ describe Api::ToolsController do
       expect(before).to eq(after)
       expect(json[:tool]).to include(Tools::Destroy::STILL_IN_SLOT)
     end
+
+    it "prevents destruction of another device's tool" do
+      expect do
+        Tools::Destroy.run!(tool: tool, device: FactoryBot.create(:device))
+      end.to raise_error(Errors::Forbidden)
+    end
   end
 end

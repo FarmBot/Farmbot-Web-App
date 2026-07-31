@@ -12,7 +12,13 @@ module Sequences
     end
 
     def execute
-      publication.update!(published: false)
+      SequencePublication.transaction do
+        publication
+          .sequence_versions
+          .where(withdrawn_at: nil)
+          .update_all(withdrawn_at: Time.current)
+        publication.update!(published: false)
+      end
       sequence.broadcast!(SecureRandom.uuid)
       publication
     end

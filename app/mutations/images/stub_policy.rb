@@ -3,15 +3,16 @@ module Images
     URL = "#{$API_URL}/direct_upload/"
 
     def execute
+      key = random_filename
       {
         verb: "POST",
         url: URL,
         form_data: {
-          "key" => random_filename,
+          "key" => key,
           "acl" => "public-read",
           "Content-Type" => "image/jpeg",
           "policy" => "N/A",
-          "signature" => "N/A",
+          "signature" => Image.direct_upload_token(key),
           "GoogleAccessId" => "N/A",
           "file" => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE",
         },

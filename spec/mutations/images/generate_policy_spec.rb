@@ -23,11 +23,7 @@ describe Images::GeneratePolicy do
   end
 
   it "has a policy object (GCS)" do
-    allow(Google::Cloud::Storage).to receive(:new)
-      .and_return(double(bucket: double()))
-
     with_modified_env(
-      GOOGLE_CLOUD_KEYFILE_JSON: "key",
       GCS_BUCKET: "gcs",
     ) do
       policy = Images::GeneratePolicy.new.send(:policy)
@@ -46,6 +42,38 @@ describe Images::GeneratePolicy do
       }.map do |(index, meet_expectation)|
         expect(conditions[index]).to meet_expectation
       end
+    end
+  end
+
+  it "uses dedicated upload credentials" do
+    storage = double
+    bucket = double
+    credentials = double
+
+    expect(Google::Auth::ServiceAccountCredentials).to receive(:make_creds)
+      .with(
+        json_key_io: satisfy { |io| io.read == "upload-key" },
+        scope: Google::Cloud::Storage::Credentials::SCOPE,
+      )
+      .and_return(credentials)
+    expect(Google::Cloud::Storage).to receive(:new).with(
+      credentials: credentials,
+    ).and_return(storage)
+    expect(storage).to receive(:bucket)
+      .with("bucket", skip_lookup: true)
+      .and_return(bucket)
+
+    with_modified_env(
+      GCS_BUCKET: "bucket",
+      GCS_UPLOAD_KEYFILE_JSON: "upload-key",
+    ) do
+      expect(Images::GeneratePolicy.new.send(:bucket)).to eq(bucket)
+    end
+  end
+
+  it "does not create a bucket without upload credentials" do
+    with_modified_env(GCS_UPLOAD_KEYFILE_JSON: nil) do
+      expect(Images::GeneratePolicy.new.send(:bucket)).to be_nil
     end
   end
 end

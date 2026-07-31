@@ -50,5 +50,26 @@ describe Api::SequenceVersionsController do
       expect(json[:color]).to eq(sequence.color)
       expect(json.dig(:body, 0, :comment)).to eq(comment)
     end
+
+    it "does not show versions withdrawn before republishing" do
+      publication = Sequences::Publish.run!(
+        sequence: sequence,
+        device: author_device,
+        copyright: "FarmBot, Inc. 2021")
+      withdrawn_version = publication.sequence_versions.last
+
+      Sequences::Unpublish.run!(device: author_device, sequence: sequence)
+      republished = Sequences::Publish.run!(
+        sequence: sequence,
+        device: author_device,
+        copyright: "FarmBot, Inc. 2021")
+      available_version = republished.sequence_versions.last
+
+      get :show, params: { format: :json, id: withdrawn_version.id }
+      expect(response).to have_http_status(:not_found)
+
+      get :show, params: { format: :json, id: available_version.id }
+      expect(response).to have_http_status(:ok)
+    end
   end
 end

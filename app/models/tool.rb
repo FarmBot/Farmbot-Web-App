@@ -14,7 +14,7 @@ class Tool < ApplicationRecord
                   "points" ON "points"."tool_id" = "tools"."id"
                 WHERE'
   INDEX_QUERY = BASE + ' "tools"."device_id" = %s;'
-  SHOW_QUERY = BASE + ' "tools"."id" = %s;'
+  SHOW_QUERY = BASE + ' "tools"."id" = %s AND "tools"."device_id" = %s;'
   IN_USE = "Tool in use by the following sequences: %s"
 
   belongs_to :device
@@ -26,9 +26,10 @@ class Tool < ApplicationRecord
     self.find_by_sql(INDEX_QUERY % device_id)
   end
 
-  def self.join_tool_slot_and_find_by_id(id)
+  def self.join_tool_slot_and_find_by_id(id, device_id)
     # Adding the || self.find part to raise 404 like "normal" AR queries.
     # TODO: Clean this whole thing up - RC 2-may-18
-    self.find_by_sql(SHOW_QUERY % id).first || self.find(id)
+    self.find_by_sql(format(SHOW_QUERY, id, device_id)).first ||
+      self.where(device_id: device_id).find(id)
   end
 end
