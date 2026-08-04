@@ -267,6 +267,11 @@ export const WEB_APP_BOOLEAN_SETTINGS: Record<
     help: Content.DARK_MODE,
     control: "toggle",
   },
+  [BooleanSetting.show_controls_overlay]: {
+    label: DeviceSetting.showControlsOverlay,
+    help: Content.SHOW_CONTROLS_OVERLAY,
+    control: "toggle",
+  },
 };
 
 export const WEB_APP_NUMBER_SETTINGS: Record<
