@@ -27,7 +27,7 @@ import {
   SCENE_NUM_FROM_NAME, SCENES, TEXTURE_DDIS,
 } from "../settings/three_d_settings";
 import { destroy, edit, initSave, save } from "../api/crud";
-import { FBSelect } from "../ui";
+import { FBSelect, ToggleButton } from "../ui";
 import { TaggedSceneObject } from "farmbot";
 import {
   getWebAppConfigValue, setWebAppConfigValue,
@@ -52,13 +52,22 @@ export const mapStateToProps = (props: Everything): SceneObjectsProps => ({
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   showSceneObjects: !!getWebAppConfigValue(() => props)(
     BooleanSetting.show_scene_objects),
+  threeDGarden: !!getWebAppConfigValue(() => props)(
+    BooleanSetting.three_d_garden),
 });
 
 export const RawSceneObjects = (props: SceneObjectsProps) => {
   const { dispatch } = props;
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [overlayDismissed, setOverlayDismissed] = React.useState(false);
+  const [optimisticThreeD, setOptimisticThreeD] =
+    React.useState<boolean>();
+  const threeDToggleTimeout =
+    React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const navigate = useNavigate();
+
+  React.useEffect(() => () => clearTimeout(threeDToggleTimeout.current), []);
 
   const navigateById = (id: number) => {
     navigate(Path.sceneObjects(id));
@@ -184,10 +193,44 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
       "" + GROUND_TEXTURE_NUM_FROM_SCENE_NUM[newSceneNum]);
     if (newSceneName == "Custom") { setShowSceneSelection(false); }
   };
+  const threeDRequiredOverlay = !props.threeDGarden && !overlayDismissed
+    ? <div className={"scene-objects-3d-required-overlay"}
+      role={"dialog"}
+      aria-modal={true}
+      aria-label={t("3D Garden required")}>
+      <div className={"scene-objects-3d-required-content"}>
+        <p>{t("Only available in 3D")}</p>
+        <div className={"scene-objects-3d-required-toggle"}>
+          <label>{t("2D")}</label>
+          <ToggleButton
+            title={t("toggle 3D Garden")}
+            toggleValue={optimisticThreeD ?? props.threeDGarden}
+            customText={{ textTrue: "", textFalse: "" }}
+            toggleAction={() => {
+              const nextValue = !(optimisticThreeD ?? props.threeDGarden);
+              setOptimisticThreeD(nextValue);
+              clearTimeout(threeDToggleTimeout.current);
+              threeDToggleTimeout.current = setTimeout(() => {
+                dispatch(setWebAppConfigValue(
+                  BooleanSetting.three_d_garden, nextValue));
+                setOptimisticThreeD(undefined);
+              }, 500);
+            }} />
+          <label>{t("3D")}</label>
+        </div>
+        <button type={"button"}
+          className={"fb-button gray"}
+          onClick={() => setOverlayDismissed(true)}>
+          {t("Dismiss")}
+        </button>
+      </div>
+    </div>
+    : undefined;
   if (sceneName != "Custom" || showSceneSelection) {
     return <DesignerPanel
       panelName={"scene-objects-inventory"}
       panel={Panel.SceneObjects}>
+      {threeDRequiredOverlay}
       <DesignerPanelContent panelName={"scene-objects-inventory"}>
         <div className={"scene-selection-grid"}>
           {SCENE_CHOICES().map(scene =>
@@ -211,6 +254,7 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
   return <DesignerPanel
     panelName={"scene-objects-inventory"}
     panel={Panel.SceneObjects}>
+    {threeDRequiredOverlay}
     <DesignerPanelTop panel={Panel.SceneObjects} withButton={true}>
       <button type={"button"}
         className={"fb-button gray scene-selection-return"}

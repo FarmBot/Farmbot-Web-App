@@ -153,6 +153,33 @@
 }
 
 .scene-objects-inventory-panel {
+  position: relative;
+  .scene-objects-3d-required-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--main-bg);
+  }
+  .scene-objects-3d-required-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    max-width: 30rem;
+    text-align: center;
+    p {
+      margin: 0;
+    }
+  }
+  .scene-objects-3d-required-toggle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
   .scene-object-select-row {
     margin-left: 1rem;
     grid-template-columns: minmax(0, 1fr) 15rem;

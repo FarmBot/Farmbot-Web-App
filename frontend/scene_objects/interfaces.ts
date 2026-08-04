@@ -24,6 +24,7 @@ export interface SceneObjectsProps {
   dispatch: Function;
   farmwareEnvs: TaggedFarmwareEnv[];
   showSceneObjects: boolean;
+  threeDGarden: boolean;
 }
 
 export interface AddSceneObjectProps {
