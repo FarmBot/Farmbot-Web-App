@@ -171,13 +171,11 @@ const useStaticPlantIconInstances = (
         y: position.y,
         groundZ: zBase + getZ(plant.x, plant.y),
         scale: plant.size,
-        visible: plant.x >= 0 && plant.y >= 0
-          && plant.x <= config.botSizeX
-          && plant.y <= config.botSizeY,
+        visible: plant.x >= 0 && plant.y >= 0,
       };
     }
     return instances;
-  }, [config.botSizeX, config.botSizeY, get3DPosition, getZ, plants, zBase]);
+  }, [get3DPosition, getZ, plants, zBase]);
 };
 
 interface UsePlantIconFrameProps {
