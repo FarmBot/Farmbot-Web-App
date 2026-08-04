@@ -18,6 +18,7 @@ export interface PaletteSettingMetadata {
   inverted?: boolean;
   defaultOn?: boolean;
   mapLayer?: boolean;
+  requires3D?: boolean;
   callback?: "resetVirtualTrail";
   min?: number;
   max?: number;
@@ -154,6 +155,7 @@ export const WEB_APP_BOOLEAN_SETTINGS: Record<
     label: DeviceSetting.showSceneObjectsMapLayer,
     control: "toggle",
     mapLayer: true,
+    requires3D: true,
   },
   [BooleanSetting.x_axis_inverted]: {
     label: DeviceSetting.invertXAxisJogButton,
@@ -271,6 +273,7 @@ export const WEB_APP_BOOLEAN_SETTINGS: Record<
     label: DeviceSetting.showControlsOverlay,
     help: Content.SHOW_CONTROLS_OVERLAY,
     control: "toggle",
+    requires3D: true,
   },
 };
 

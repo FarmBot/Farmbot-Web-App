@@ -44,6 +44,7 @@ import { getWebAppConfig } from "../../resources/getters";
 import * as photoActions from "../../photos/actions";
 import * as screenSize from "../../screen_size";
 import * as toast from "../../toast/toast";
+import { THREE_D_SETTINGS } from "../../settings/setting_metadata";
 
 const firstInputOptions = (command: Command | undefined) =>
   command?.actions?.[0].input?.fields[0].options || [];
@@ -379,6 +380,20 @@ describe("buildCommands()", () => {
     expect(navigate).toHaveBeenCalledWith(Path.sensors());
     expect(navigate).toHaveBeenCalledWith(Path.tools("add"));
     expect(navigate).toHaveBeenCalledWith(Path.toolSlots("add"));
+  });
+
+  it("disables the Scene Objects command when 3D is disabled", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = false;
+    state.resources = buildResourceIndex([config]);
+
+    expect(buildCommands({
+      state, dispatch: jest.fn(), navigate: jest.fn(),
+    }).find(command => command.id == "panel:scene_objects"))
+      .toMatchObject({
+        unavailable: "Enable the 3D Garden setting first.",
+      });
   });
 
   it("uses concise safety command names and emergency aliases", () => {
@@ -1093,6 +1108,37 @@ describe("buildCommands()", () => {
     expect(dispatch).toHaveBeenCalledWith("destroy-action");
     expect(set3DConfigValue).toHaveBeenCalledWith("groundTexture", "2");
     expect(set3DConfigValue).toHaveBeenCalledWith("scene", "2");
+  });
+
+  it("disables 3D settings when 3D is disabled", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = false;
+    state.resources = buildResourceIndex([config]);
+    const commands = buildCommands({
+      state, dispatch: jest.fn(), navigate: jest.fn(),
+    }).filter(command => command.id.startsWith("setting:3d:")
+      || command.id == "camera:bounds");
+
+    expect(commands).toHaveLength(THREE_D_SETTINGS.length);
+    commands.map(command => expect(command.unavailable)
+      .toEqual("Enable the 3D Garden setting first."));
+  });
+
+  it("disables 3D-only boolean settings when 3D is disabled", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = false;
+    state.resources = buildResourceIndex([config]);
+    const commands = buildCommands({
+      state, dispatch: jest.fn(), navigate: jest.fn(),
+    });
+
+    [BooleanSetting.show_controls_overlay,
+      BooleanSetting.show_scene_objects].map(setting =>
+      expect(commands.find(command =>
+        command.id == `setting:${setting}:toggle`)?.unavailable)
+        .toEqual("Enable the 3D Garden setting first."));
   });
 
   it("converts motor current percentages before updating firmware", () => {
