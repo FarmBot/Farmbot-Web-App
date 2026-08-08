@@ -76,7 +76,11 @@ module FarmBot
     # ¯\_(ツ)_/¯
     $API_URL = "//#{Rails.application.routes.default_url_options[:host]}:#{Rails.application.routes.default_url_options[:port]}"
     ALL_LOCAL_URIS = ([ENV["API_HOST"]] + (ENV["EXTRA_DOMAINS"] || "").split(","))
-      .map { |x| x.present? ? "#{x}:#{ENV["API_PORT"]}" : nil }.compact
+      .map(&:presence)
+      .compact
+      .flat_map { |host| [host, API_PORT.present? ? "#{host}:#{API_PORT}" : nil] }
+      .compact
+      .uniq
     SecureHeaders::Configuration.default do |config|
       config.hsts = "max-age=#{1.week.to_i}"
       # We need this off in dev mode otherwise email previews won't show up.
