@@ -380,6 +380,34 @@ describe("<DrawnPoint />", () => {
     expect(container).not.toContainHTML("position=\"0,0,0\"");
   });
 
+  it("uses soil height for an ordinary point preview", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.usePosition = true;
+    p.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      z: 50,
+      at_soil_level: false,
+    };
+    p.getZ = jest.fn(() => -100);
+    render(<DrawnPoint {...p} />);
+    expect(p.getZ).toHaveBeenCalledWith(10, 20);
+  });
+
+  it("uses point z for a soil-height point preview", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.usePosition = true;
+    p.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      z: 50,
+      at_soil_level: true,
+    };
+    p.getZ = jest.fn(() => -100);
+    render(<DrawnPoint {...p} />);
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
   it("draws weed", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
@@ -429,6 +457,16 @@ describe("<DrawnPoint />", () => {
       designer: {
         ...props.designer,
         drawnPoint: changedDrawnPoint,
+      },
+    })).toBeFalsy();
+    expect(drawnPointPropsEqual(props, {
+      ...props,
+      designer: {
+        ...props.designer,
+        drawnPoint: {
+          ...props.designer.drawnPoint!,
+          at_soil_level: !props.designer.drawnPoint?.at_soil_level,
+        },
       },
     })).toBeFalsy();
   });

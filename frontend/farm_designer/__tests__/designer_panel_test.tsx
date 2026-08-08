@@ -6,10 +6,13 @@ import {
   DesignerPanelTop,
   DesignerPanelContent,
   DesignerPanelContentProps,
+  LayerVisibilityToggle,
   DesignerPanelTopProps,
 } from "../designer_panel";
 import { SpecialStatus } from "farmbot";
 import { Panel } from "../panel_header";
+import { BooleanSetting } from "../../session_keys";
+import * as configStorageActions from "../../config_storage/actions";
 
 describe("<DesignerPanel />", () => {
   const wrappers: Array<{ unmount: () => void }> = [];
@@ -107,6 +110,25 @@ describe("<DesignerPanelTop />", () => {
     expect(className).toContain("panel-top");
     expect(className.includes("with-button") ||
       className.includes("designer-panel-top")).toBeTruthy();
+  });
+});
+
+describe("<LayerVisibilityToggle />", () => {
+  it("toggles the layer", () => {
+    const setConfig = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    const dispatch = jest.fn();
+    const { container } = render(<LayerVisibilityToggle
+      dispatch={dispatch}
+      setting={BooleanSetting.show_points}
+      value={false} />);
+
+    fireEvent.click(container.querySelector("i") as HTMLElement);
+
+    expect(setConfig).toHaveBeenCalledWith(
+      BooleanSetting.show_points, true);
+    expect(dispatch).toHaveBeenCalledWith(setConfig.mock.results[0].value);
+    setConfig.mockRestore();
   });
 });
 

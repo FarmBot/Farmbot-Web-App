@@ -77,6 +77,7 @@ export const boundaryPoints = (config: SoilBoundaryConfig) => {
 export interface FilterSoilPointsProps {
   config: SoilPointConfig;
   points: TaggedGenericPointer[] | undefined;
+  previewPoints?: [number, number, number][];
 }
 
 export const filterSoilPoints = (props: FilterSoilPointsProps) => {
@@ -85,9 +86,7 @@ export const filterSoilPoints = (props: FilterSoilPointsProps) => {
 
   const soilHeightPoints: [number, number, number][] = [];
   const { outer } = boundaryParams;
-  (props.points || []).forEach(p => {
-    const { x, y, z } = p.body;
-    if (!soilHeightPoint(p)) { return; }
+  const addPoint = (x: number, y: number, z: number) => {
     if (x <= outer.x.min || x >= outer.x.max) { return; }
     if (y <= outer.y.min || y >= outer.y.max) { return; }
     soilHeightPoints.push([
@@ -97,7 +96,12 @@ export const filterSoilPoints = (props: FilterSoilPointsProps) => {
         ? (-config.soilHeight + (z + config.soilHeight) * 10)
         : z,
     ]);
+  };
+  (props.points || []).forEach(p => {
+    if (!soilHeightPoint(p)) { return; }
+    addPoint(p.body.x, p.body.y, p.body.z);
   });
+  (props.previewPoints || []).forEach(([x, y, z]) => addPoint(x, y, z));
 
   const hasPoints = soilHeightPoints.length > 0;
 

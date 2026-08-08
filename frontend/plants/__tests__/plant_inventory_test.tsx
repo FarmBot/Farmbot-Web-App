@@ -25,7 +25,7 @@ import { plantsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import * as configStorageActions from "../../config_storage/actions";
-import { NumericSetting } from "../../session_keys";
+import { BooleanSetting, NumericSetting } from "../../session_keys";
 import * as popover from "../../ui/popover";
 import { NavigationContext } from "../../routes_helpers";
 import { WebAppNumberSetting } from "../../settings/farm_designer_settings";
@@ -98,6 +98,18 @@ describe("<PlantInventory />", () => {
     openedSavedGarden: undefined,
     plantsPanelState: plantsPanelState(),
     getConfigValue: () => 0,
+  });
+
+  it.each([true, false])("toggles plant layer from %s", show => {
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(() => show);
+    const { container } = render(<Plants {...p} />);
+
+    fireEvent.click(container.querySelector(
+      show ? ".fa-eye" : ".fa-eye-slash") as Element);
+
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      BooleanSetting.show_plants, !show);
   });
 
   it("renders", () => {

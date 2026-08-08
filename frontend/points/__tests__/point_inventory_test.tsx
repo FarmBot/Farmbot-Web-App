@@ -22,6 +22,8 @@ import { PointSortMenu } from "../../farm_designer/sort_options";
 import {
   actRenderer, createRenderer, unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import * as configStorageActions from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 let createGroupSpy: jest.SpyInstance;
 let deletePointsSpy: jest.SpyInstance;
@@ -55,6 +57,7 @@ describe("<Points />", () => {
     groups: [],
     allPoints: [],
     pointsPanelState: pointsPanelState(),
+    getConfigValue: jest.fn(),
   });
 
   const renderWithRef = (props: PointsProps) => {
@@ -78,6 +81,21 @@ describe("<Points />", () => {
   it("renders no points", () => {
     const { container } = render(<Points {...fakeProps()} />);
     expect(container.textContent).toContain("No points yet.");
+  });
+
+  it.each([true, false])("toggles point layer from %s", show => {
+    const setConfig = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(() => show);
+    const { container } = render(<Points {...p} />);
+
+    fireEvent.click(container.querySelector(
+      show ? ".fa-eye" : ".fa-eye-slash") as Element);
+
+    expect(setConfig).toHaveBeenCalledWith(
+      BooleanSetting.show_points, !show);
+    setConfig.mockRestore();
   });
 
   it("renders points", () => {
@@ -401,5 +419,6 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([point, discarded]);
     const props = mapStateToProps(state);
     expect(props.genericPoints).toEqual([point, discarded]);
+    expect(props.getConfigValue(BooleanSetting.show_points)).toBeUndefined();
   });
 });

@@ -101,6 +101,12 @@ describe("filterSoilPoints()", () => {
     p.points = [point0, point1];
     expect(filterSoilPoints(p).length).toEqual(5);
   });
+
+  it("includes preview soil points", () => {
+    const p = fakeProps();
+    p.previewPoints = [[500, 500, -300]];
+    expect(filterSoilPoints(p)).toContainEqual([500, 500, -300]);
+  });
 });
 
 describe("filterMoisturePoints()", () => {

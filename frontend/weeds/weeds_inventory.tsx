@@ -8,6 +8,7 @@ import {
 import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
+  LayerVisibilityToggle,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { TaggedPoint, TaggedPointGroup, TaggedWeedPointer } from "farmbot";
@@ -230,18 +231,23 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
   };
 
   render() {
+    const showWeeds = !!this.props.getConfigValue(BooleanSetting.show_weeds);
     const weedGroups = pointGroupSubset(this.props.groups, "Weed");
     const filteredGroups = weedGroups
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
-      <DesignerPanelTop panel={Panel.Weeds}>
+      <DesignerPanelTop panel={Panel.Weeds} withButton={true}>
         <SearchField nameKey={"weeds"}
           searchTerm={this.state.searchTerm}
           placeholder={t("Search your weeds...")}
           customLeftIcon={<PointSortMenu
             sortOptions={this.state} onChange={u => this.setState(u)} />}
           onChange={searchTerm => this.setState({ searchTerm })} />
+        <LayerVisibilityToggle
+          dispatch={this.props.dispatch}
+          setting={BooleanSetting.show_weeds}
+          value={showWeeds} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
         <PanelSection isOpen={this.props.weedsPanelState.groups}

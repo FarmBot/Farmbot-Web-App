@@ -391,6 +391,7 @@ export interface DrawnPointProps {
   designer: ThreeDDesignerState;
   usePosition: boolean;
   config: Config;
+  getZ?(x: number, y: number): number;
   radiusRef?: RadiusRef;
   torusRef?: TorusRef;
   billboardRef?: BillboardRef;
@@ -424,7 +425,8 @@ const sameDrawnPoint = (
     prev.cy === next.cy &&
     prev.z === next.z &&
     prev.r === next.r &&
-    prev.color === next.color);
+    prev.color === next.color &&
+    prev.at_soil_level === next.at_soil_level);
 
 export const drawnPointPropsEqual = (
   prev: DrawnPointPreviewProps,
@@ -436,16 +438,24 @@ export const drawnPointPropsEqual = (
   prev.torusRef === next.torusRef &&
   prev.billboardRef === next.billboardRef &&
   prev.imageRef === next.imageRef &&
+  prev.getZ === next.getZ &&
   sameDrawnPoint(prev.designer.drawnPoint, next.designer.drawnPoint) &&
   DRAWN_POINT_CONFIG_FIELDS.every(field =>
     prev.config[field] === next.config[field]);
 
+// eslint-disable-next-line complexity
 const DrawnPointPreview = (props: DrawnPointPreviewProps) => {
   const { config } = props;
   const { drawnPoint } = props.designer;
   const drawnPointPosition =
     drawnPoint && !isUndefined(drawnPoint.cx) && !isUndefined(drawnPoint.cy)
-      ? { x: drawnPoint.cx, y: drawnPoint.cy, z: drawnPoint.z }
+      ? {
+        x: drawnPoint.cx,
+        y: drawnPoint.cy,
+        z: drawnPoint.at_soil_level
+          ? drawnPoint.z ?? 0
+          : props.getZ?.(drawnPoint.cx, drawnPoint.cy) ?? 0,
+      }
       : undefined;
   if (props.usePosition && isUndefined(drawnPointPosition)) { return <></>; }
   const Base = props.mode == Mode.createWeed ? WeedBase : PointBase;

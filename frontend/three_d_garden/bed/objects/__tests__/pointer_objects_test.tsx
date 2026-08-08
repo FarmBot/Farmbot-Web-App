@@ -131,6 +131,38 @@ describe("<PointerObjects />", () => {
     expect(screen.getByText("(320, 470)")).toBeInTheDocument();
   });
 
+  it("clears the cursor offset when form coordinates are complete", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.activePositionRef.current =
+      get3DPositionFunc(p.config)({ x: 320, y: 470 });
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: undefined,
+      cy: undefined,
+    };
+    const view = render(<PointerObjects {...p} />);
+    const setPosition =
+      p.pointerPlantRef.current?.position.set as jest.Mock;
+    expect(setPosition).toHaveBeenCalled();
+    setPosition.mockClear();
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        drawnPoint: {
+          ...p.addPlantProps.designer.drawnPoint,
+          cx: 100,
+          cy: 200,
+        },
+      },
+    };
+    view.rerender(<PointerObjects {...p} />);
+
+    expect(setPosition).toHaveBeenCalledWith(0, 0, 0);
+  });
+
   it.each([
     ["point", Path.points("add")],
     ["weed", Path.weeds("add")],
@@ -215,6 +247,42 @@ describe("<PointerObjects />", () => {
     rerender(<PointerObjects {...p} />);
     expect(container.querySelector("[name='single-point-radius-arrow']")
       ?.querySelector("[color='blue']")).toBeInTheDocument();
+  });
+
+  it("retains form changes when updating the point preview", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: 100,
+      cy: 200,
+      at_soil_level: false,
+    };
+    const wrapper = createRenderer(<PointerObjects {...p} />);
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        drawnPoint: {
+          ...p.addPlantProps.designer.drawnPoint,
+          at_soil_level: true,
+        },
+      },
+    };
+    actRenderer(() => wrapper.update(<PointerObjects {...p} />));
+    const radiusControl = wrapper.root.findByType(SinglePointRadiusControl);
+    expect(radiusControl.props.point.at_soil_level).toEqual(true);
+
+    actRenderer(() => radiusControl.props.onChange(50));
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expect.objectContaining({
+        r: 50,
+        at_soil_level: true,
+      }),
+    });
+    unmountRenderer(wrapper);
   });
 
   it("moves the radius arrow around the cursor radius", () => {
@@ -339,13 +407,14 @@ describe("<PointerObjects />", () => {
     expect(createPointSpy).toHaveBeenCalled();
   });
 
-  it("quantizes independent X and Y final position controls", () => {
+  it("quantizes XY controls without changing z", () => {
     const config = clone(INITIAL);
     const onChange = jest.fn();
     const point = {
       ...fakeDrawnPoint(),
       cx: 100,
       cy: 200,
+      z: 50,
       placementPhase: "finalize" as const,
     };
     const wrapper = createRenderer(<SinglePointFinalControls
@@ -381,7 +450,6 @@ describe("<PointerObjects />", () => {
       ...point,
       cx: 120,
       cy: 200,
-      z: 12,
     });
     expect(wrapper.root.findByType(ControlSphere).props.colorType)
       .toEqual("origin");
@@ -669,6 +737,28 @@ describe("soilClick()", () => {
     expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
   });
 
+  it("doesn't sample soil height when point z is unset", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    point.z = undefined;
+    p.addPlantProps.designer.drawnPoint = point;
+    p.getZ = jest.fn(() => 123);
+
+    soilClick(p)({
+      stopPropagation: jest.fn(),
+      point: new Vector3(),
+    } as unknown as ThreeEvent<MouseEvent>);
+
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: expect.objectContaining({ z: undefined }),
+    });
+    expect(p.getZ).not.toHaveBeenCalled();
+  });
+
   it("handles a zero-radius weed", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     mockIsMobile = false;
@@ -722,7 +812,9 @@ describe("soilClick()", () => {
       ...fakeDrawnPoint(),
       cx: undefined,
       cy: undefined,
+      z: 50,
     };
+    p.getZ = jest.fn(() => 123);
 
     soilClick(p)({
       stopPropagation: jest.fn(),
@@ -734,8 +826,10 @@ describe("soilClick()", () => {
       payload: expect.objectContaining({
         cx: 1350,
         cy: 660,
+        z: 50,
       }),
     });
+    expect(p.getZ).not.toHaveBeenCalled();
     expect(createPointSpy).not.toHaveBeenCalled();
   });
 

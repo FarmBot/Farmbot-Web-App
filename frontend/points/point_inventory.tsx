@@ -9,6 +9,7 @@ import {
 import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
+  LayerVisibilityToggle,
 } from "../farm_designer/designer_panel";
 import {
   selectAllActivePoints, selectAllGenericPointers, selectAllPointGroups,
@@ -44,6 +45,10 @@ import { deleteAllIds } from "../api/delete_points_handler";
 import { NavigationContext } from "../routes_helpers";
 import { GetColor } from "../farm_designer/map/layers/points/interpolation_map";
 import { NavigateFunction } from "react-router";
+import {
+  GetWebAppConfigValue, getWebAppConfigValue,
+} from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 interface PointsSectionProps {
   title: string;
@@ -70,7 +75,7 @@ const PointsSection = (props: PointsSectionProps) => {
       onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      {isOpen && toggleAction && <ToggleButton
+      {toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         toggleAction={e => { e.stopPropagation(); toggleAction(); }} />}
@@ -114,6 +119,7 @@ export interface PointsProps {
   groups: TaggedPointGroup[];
   allPoints: TaggedPoint[];
   pointsPanelState: PointsPanelState;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 interface PointsState extends SortOptions {
@@ -138,6 +144,7 @@ export function mapStateToProps(props: Everything): PointsProps {
     groups: selectAllPointGroups(props.resources.index),
     allPoints: selectAllActivePoints(props.resources.index),
     pointsPanelState: props.app.pointsPanelState,
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }
 
@@ -175,6 +182,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 
   render() {
     const { dispatch } = this.props;
+    const showPoints = !!this.props.getConfigValue(BooleanSetting.show_points);
     const gridIds = compact(uniq(this.props.genericPoints
       .map(p => p.body.meta.gridId)));
     const points = orderedPoints(this.props.genericPoints, this.state)
@@ -194,13 +202,17 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       .filter(p => !soilHeightPoint(p))
       .filter(p => !p.body.meta.gridId);
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
-      <DesignerPanelTop panel={Panel.Points}>
+      <DesignerPanelTop panel={Panel.Points} withButton={true}>
         <SearchField nameKey={"points"}
           searchTerm={this.state.searchTerm}
           placeholder={t("Search your points...")}
           customLeftIcon={<PointSortMenu
             sortOptions={this.state} onChange={u => this.setState(u)} />}
           onChange={searchTerm => this.setState({ searchTerm })} />
+        <LayerVisibilityToggle
+          dispatch={dispatch}
+          setting={BooleanSetting.show_points}
+          value={showPoints} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
         <PanelSection isOpen={this.props.pointsPanelState.groups}

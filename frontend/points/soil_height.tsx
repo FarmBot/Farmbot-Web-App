@@ -51,11 +51,13 @@ export const EditSoilHeight = (props: EditSoilHeightProps) => {
     </Row>
     {!isUndefined(props.minZ) && <Row className={"grid-exp-1"}>
       <label>{t("Min soil z")}</label>
-      <input type={"number"} value={props.minZ} disabled={true} />
+      <input className={"soil-height-limit"}
+        type={"number"} value={props.minZ} disabled={true} />
     </Row>}
     {!isUndefined(props.maxZ) && <Row className={"grid-exp-1"}>
       <label>{t("Max soil z")}</label>
-      <input type={"number"} value={props.maxZ} disabled={true} />
+      <input className={"soil-height-limit"}
+        type={"number"} value={props.maxZ} disabled={true} />
     </Row>}
   </div>;
 };

@@ -190,9 +190,11 @@ const sameDrawnPoint = (
   !!prev && !!next &&
   prev.cx === next.cx &&
   prev.cy === next.cy &&
+  prev.name === next.name &&
   prev.z === next.z &&
   prev.r === next.r &&
   prev.color === next.color &&
+  prev.at_soil_level === next.at_soil_level &&
   prev.placementPhase === next.placementPhase;
 
 const samePreviewRefs = (
@@ -313,6 +315,7 @@ const radiusDirectionFromCursor = (
 interface SinglePointRadiusControlProps {
   config: Config;
   point: DrawnPointPayl;
+  getZ?(x: number, y: number): number;
   editable?: boolean;
   onChange?(radius: number): void;
 }
@@ -360,8 +363,11 @@ export const SinglePointRadiusControl = React.forwardRef<
   const get3DPosition = get3DPositionFunc(props.config);
   const start = get3DPosition(startGarden);
   const end = get3DPosition(endGarden);
+  const previewZ = props.point.at_soil_level
+    ? props.point.z ?? 0
+    : props.getZ?.(center.x, center.y) ?? 0;
   const z = zZero(props.config)
-    + props.point.z
+    + previewZ
     + SINGLE_POINT_RADIUS_CONTROL_Z;
   const getGardenPosition = React.useMemo(
     () => getGardenPositionFunc(props.config, false),
@@ -506,7 +512,6 @@ export const SinglePointFinalControls = (
       ...props.point,
       cx: next.x,
       cy: next.y,
-      z: mathRound(props.getZ(next.x, next.y), 1),
     });
   };
   const finishDrag = () => {
@@ -672,7 +677,11 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
   const gridPreview = hasDirtyGridPreview(mapPoints);
   React.useLayoutEffect(() => {
     const activePosition = activePositionRef.current;
-    if (!activePosition || hasCenter || gridPreview) { return; }
+    if (hasCenter) {
+      pointerPlantRef.current?.position?.set(0, 0, 0);
+      return;
+    }
+    if (!activePosition || gridPreview) { return; }
     const gardenPosition = getGardenPositionFunc(config)(activePosition);
     const gardenZ = getZ(gardenPosition.x, gardenPosition.y);
     const [x, y, z] = getWorldPositionFunc(config)({
@@ -748,6 +757,7 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
               billboardRef={billboardRef}
               imageRef={imageRef}
               config={config}
+              getZ={getZ}
               designer={addPlantProps.designer}
               usePosition={hasCenter} />}
           {mode == Mode.createPoint && hasCenter && drawnPoint &&
@@ -755,6 +765,7 @@ const ActivePointerObjects = React.memo((props: ActivePointerObjectsProps) => {
               ref={singlePointRadiusRef}
               config={config}
               point={drawnPoint}
+              getZ={getZ}
               editable={finalizingPoint}
               onChange={finalizingPoint
                 ? radius => addPlantProps.dispatch({
@@ -825,20 +836,17 @@ interface DrawPointSoilClickProps extends SoilClickProps {
 const pointLocationPayload = (
   point: DrawnPointPayl,
   cursor: { x: number, y: number },
-  getZ: SoilClickProps["getZ"],
 ): DrawnPointPayl => ({
   ...point,
   cx: cursor.x,
   cy: cursor.y,
   r: 0,
-  z: mathRound(getZ(cursor.x, cursor.y), 1),
   placementPhase: "finalize",
 });
 
 const weedClickPayload = (
   point: DrawnPointPayl,
   cursor: { x: number, y: number },
-  getZ: SoilClickProps["getZ"],
   hasCenter: boolean,
 ): DrawnPointPayl => hasCenter
   ? {
@@ -852,12 +860,11 @@ const weedClickPayload = (
     ...point,
     cx: cursor.x,
     cy: cursor.y,
-    z: mathRound(getZ(cursor.x, cursor.y), 1),
   };
 
 const drawPointSoilClick = (props: DrawPointSoilClickProps) => {
   const {
-    addPlantProps, cursor, getZ, mode, navigate, pointerPlantRef,
+    addPlantProps, cursor, mode, navigate, pointerPlantRef,
   } = props;
   const { drawnPoint } = addPlantProps.designer;
   if (isUndefined(drawnPoint)) { return; }
@@ -869,12 +876,11 @@ const drawPointSoilClick = (props: DrawPointSoilClickProps) => {
   if (mode == Mode.createPoint) {
     addPlantProps.dispatch({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: pointLocationPayload(drawnPoint, cursor, getZ),
+      payload: pointLocationPayload(drawnPoint, cursor),
     });
     return;
   }
-  const payload =
-    weedClickPayload(drawnPoint, cursor, getZ, hasCenter);
+  const payload = weedClickPayload(drawnPoint, cursor, hasCenter);
   addPlantProps.dispatch({
     type: Actions.SET_DRAWN_POINT_DATA,
     payload,

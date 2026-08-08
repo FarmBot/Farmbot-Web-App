@@ -16,6 +16,13 @@
   align-items: end;
 }
 
+.soil-height-limit:disabled {
+  color: $dark_gray;
+  background: $translucent8_white !important;
+  opacity: 1;
+  -webkit-text-fill-color: $dark_gray;
+}
+
 .point-creation-panel {
   .point-creation-header-actions {
     display: flex;

@@ -78,8 +78,11 @@ import { AxesHelper, Primitive } from "../components";
 import { Clouds } from "../garden/clouds";
 import { GROUND_TEXTURE_URLS, Ground } from "../garden/ground";
 import { NorthArrow } from "../garden/north_arrow";
+import { PointInstances } from "../garden/point";
+import { PlantInstances } from "../garden/plant_instances";
 import { LegacySolar } from "../garden/solar";
 import { Sun } from "../garden/sun";
+import { WeedInstances } from "../garden/weed";
 import { configureStore, store } from "../../redux/store";
 import { resourceReady } from "../../sync/actions";
 import { get3DPositionFunc, getGardenPositionFunc } from "../helpers";
@@ -99,6 +102,7 @@ import {
 } from "../view_prism";
 import { success } from "../../toast/toast";
 import * as toast from "../../toast/toast";
+import { tagAsSoilHeight } from "../../points/soil_height";
 import {
   Color, Group as ThreeGroup,
   PerspectiveCamera as ThreePerspectiveCamera, Vector3,
@@ -492,6 +496,18 @@ describe("<GardenModel />", () => {
     expect(bedProps.showWeeds).toBeTruthy();
   });
 
+  it("shows the plant layer while adding a plant", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.activeFocus = "Planter bed";
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(Bed).props.showPlants).toBeTruthy();
+  });
+
   it("keeps the existing plant layer visible during grid placement", () => {
     const p = fakeProps();
     p.activeFocus = "Planter bed";
@@ -501,6 +517,7 @@ describe("<GardenModel />", () => {
     p.addPlantProps.designer.gridPlanting = {
       token: "grid-token",
       gridId: "grid-token",
+      gridType: "plant",
       cropSlug: "mint",
       itemName: "Mint",
       defaultSpacing: 250,
@@ -547,6 +564,39 @@ describe("<GardenModel />", () => {
       {...p}
       config={{ ...p.config, soilHeight: p.config.soilHeight + 1 }} />));
     expect(findBedProps().soilSurfaceGeometry).not.toBe(before);
+  });
+
+  it("updates the soil surface with the preview soil point", () => {
+    const p = fakeProps();
+    p.mapPoints = [
+      tagAsSoilHeight(fakePoint()),
+      tagAsSoilHeight(fakePoint()),
+    ];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.drawnPoint = {
+      ...fakeDrawnPoint(),
+      cx: 500,
+      cy: 500,
+      z: -100,
+      at_soil_level: false,
+    };
+    const wrapper = createWrapper(p);
+    const geometry = () => wrapper.root.findByType(Bed)
+      .props.soilSurfaceGeometry;
+    const before = geometry();
+
+    p.addPlantProps = {
+      ...p.addPlantProps,
+      designer: {
+        ...p.addPlantProps.designer,
+        drawnPoint: {
+          ...p.addPlantProps.designer.drawnPoint,
+          at_soil_level: true,
+        },
+      },
+    };
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    expect(geometry()).not.toBe(before);
   });
 
   it("reuses plant label nodes across unrelated config updates", () => {
@@ -1759,6 +1809,115 @@ describe("<GardenModel />", () => {
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("marker");
     expect(container.innerHTML).toContain("weed-icons");
+  });
+
+  it("shows only the viewed plant when the plant layer is hidden", () => {
+    location.pathname = Path.mock(Path.plants(1));
+    const viewedPlant = fakePlant();
+    viewedPlant.body.id = 1;
+    const hiddenPlant = fakePlant();
+    hiddenPlant.body.id = 2;
+    const p = fakeProps();
+    p.plants = [viewedPlant, hiddenPlant];
+    p.threeDPlants = convertPlants(p.config, p.plants);
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PlantInstances).props.plants)
+      .toEqual([expect.objectContaining({ id: 1 })]);
+  });
+
+  it("shows only the viewed weed when the weed layer is hidden", () => {
+    location.pathname = Path.mock(Path.weeds(1));
+    const viewedWeed = fakeWeed();
+    viewedWeed.body.id = 1;
+    const hiddenWeed = fakeWeed();
+    hiddenWeed.body.id = 2;
+    const p = fakeProps();
+    p.weeds = [viewedWeed, hiddenWeed];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(WeedInstances).props.weeds)
+      .toEqual([viewedWeed]);
+  });
+
+  it("shows only the viewed point when the point layer is hidden", () => {
+    location.pathname = Path.mock(Path.points(1));
+    const viewedPoint = fakePoint();
+    viewedPoint.body.id = 1;
+    const hiddenPoint = fakePoint();
+    hiddenPoint.body.id = 2;
+    const p = fakeProps();
+    p.mapPoints = [viewedPoint, hiddenPoint];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PointInstances).props.points)
+      .toEqual([viewedPoint]);
+  });
+
+  it("shows a viewed soil point when soil height points are hidden", () => {
+    location.pathname = Path.mock(Path.points(1));
+    const viewedPoint = tagAsSoilHeight(fakePoint());
+    viewedPoint.body.id = 1;
+    const secondSoilPoint = tagAsSoilHeight(fakePoint());
+    secondSoilPoint.body.id = 2;
+    const regularPoint = fakePoint();
+    regularPoint.body.id = 3;
+    const p = fakeProps();
+    p.mapPoints = [viewedPoint, secondSoilPoint, regularPoint];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.soilHeightLabels = false;
+    p.addPlantProps.getConfigValue = jest.fn(setting =>
+      setting == BooleanSetting.show_points);
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PointInstances).props.points)
+      .toEqual([regularPoint, viewedPoint]);
+  });
+
+  it("hides grid points selected in the designer", () => {
+    const p = fakeProps();
+    const point = fakePoint();
+    const gridPoint = fakePoint();
+    gridPoint.body.meta.gridId = "123";
+    const visibleGridPoint = fakePoint();
+    visibleGridPoint.body.meta.gridId = "456";
+    p.mapPoints = [point, gridPoint, visibleGridPoint];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.designer.gridIds = ["123"];
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PointInstances).props.points)
+      .toEqual([point, visibleGridPoint]);
+    expect(wrapper.root.findByType(Bed).props.mapPoints).toBe(p.mapPoints);
+  });
+
+  it("toggles soil height point visibility from the designer", () => {
+    const hiddenProps = fakeProps();
+    const soilHeight = tagAsSoilHeight(fakePoint());
+    const secondSoilHeight = tagAsSoilHeight(fakePoint());
+    const regularPoint = fakePoint();
+    hiddenProps.mapPoints = [soilHeight, secondSoilHeight, regularPoint];
+    hiddenProps.addPlantProps = fakeAddPlantProps();
+    hiddenProps.addPlantProps.designer.soilHeightLabels = false;
+    const hiddenWrapper = createWrapper(hiddenProps);
+
+    expect(hiddenWrapper.root.findByType(PointInstances).props.points)
+      .toEqual([regularPoint]);
+
+    const visibleProps = fakeProps();
+    visibleProps.mapPoints = [soilHeight, secondSoilHeight, regularPoint];
+    visibleProps.addPlantProps = fakeAddPlantProps();
+    visibleProps.addPlantProps.designer.soilHeightLabels = true;
+    const visibleWrapper = createWrapper(visibleProps);
+
+    expect(visibleWrapper.root.findByType(PointInstances).props.points)
+      .toEqual([soilHeight, secondSoilHeight, regularPoint]);
   });
 
   it("renders drawn point", () => {

@@ -268,7 +268,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
               name="cx"
               type="number"
               onCommit={this.updateValue("cx")}
-              value={drawnPoint.cx || ""} />
+              value={drawnPoint.cx ?? ""} />
           </div>
           <div>
             <label>{t("Y")}</label>
@@ -276,7 +276,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
               name="cy"
               type="number"
               onCommit={this.updateValue("cy")}
-              value={drawnPoint.cy || ""} />
+              value={drawnPoint.cy ?? ""} />
           </div>
           <div>
             <label>{t("Z")}</label>
@@ -284,7 +284,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
               name="z"
               type="number"
               onCommit={this.updateValue("z")}
-              value={drawnPoint.z || ""} />
+              value={drawnPoint.z ?? ""} />
           </div>
           <UseCurrentLocation botPosition={this.props.botPosition}
             onChange={() => {
@@ -366,7 +366,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
             radius={drawnPoint.r}
             dispatch={this.props.dispatch}
             botPosition={this.props.botPosition}
-            z={drawnPoint.z || this.props.botPosition.z}
+            z={drawnPoint.z ?? this.props.botPosition.z}
             meta={{
               color: drawnPoint.color,
               at_soil_level: "" + drawnPoint.at_soil_level,

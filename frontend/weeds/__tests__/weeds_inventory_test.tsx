@@ -36,6 +36,7 @@ import {
   getRendererInstance,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import * as configStorageActions from "../../config_storage/actions";
 
 const originalConfirm = window.confirm;
 const wrappers: ReturnType<typeof createRenderer>[] = [];
@@ -87,6 +88,21 @@ describe("<Weeds> />", () => {
     groups: [],
     allPoints: [],
     weedsPanelState: weedsPanelState(),
+  });
+
+  it.each([true, false])("toggles weed layer from %s", show => {
+    const setConfig = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(() => show);
+    const { container } = render(<Weeds {...p} />);
+
+    fireEvent.click(container.querySelector(
+      show ? ".fa-eye" : ".fa-eye-slash") as Element);
+
+    expect(setConfig).toHaveBeenCalledWith(
+      BooleanSetting.show_weeds, !show);
+    setConfig.mockRestore();
   });
 
   it("renders no points", () => {
@@ -214,6 +230,7 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([config]);
     const props = mapStateToProps(state);
     expect(typeof props.getConfigValue).toEqual("function");
+    expect(props.getConfigValue(BooleanSetting.show_weeds)).toEqual(true);
   });
 });
 

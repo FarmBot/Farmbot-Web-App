@@ -8,6 +8,7 @@ import {
 import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
+  LayerVisibilityToggle,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import {
@@ -266,14 +267,12 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         searchTerm={searchTerm}
         placeholder={t("Search your scene objects...")}
         onChange={setSearchTerm} />
-      <div className={"scene-object-layer-controls"}>
-        <i
-          className={`fa fb-icon-button invert ${props.showSceneObjects
-            ? "fa-eye"
-            : "fa-eye-slash"}`}
-          title={props.showSceneObjects ? t("hide") : t("show")}
-          onClick={() => dispatch(setWebAppConfigValue(
-            BooleanSetting.show_scene_objects, !props.showSceneObjects))} />
+      <div className={
+        "scene-object-layer-controls panel-top-layer-controls"}>
+        <LayerVisibilityToggle
+          dispatch={dispatch}
+          setting={BooleanSetting.show_scene_objects}
+          value={props.showSceneObjects} />
       </div>
     </DesignerPanelTop>
     <DesignerPanelContent panelName={"scene-objects-inventory"}>
