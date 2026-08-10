@@ -21,12 +21,19 @@ const INNER_STYLE: React.CSSProperties = {
   padding: "1rem",
 };
 
-export function Apology(_: {}) {
+interface ApologyProps {
+  error?: Error;
+}
+
+export function Apology({ error }: ApologyProps) {
   return <div style={OUTER_STYLE}>
     <div style={INNER_STYLE}>
       <h1 style={{ fontSize: "175%" }}>Page Error</h1>
       <span>
         {"We can't render this part of the page due to an unrecoverable error."}
+      </span>
+      {error && <pre>{error.message}</pre>}
+      <span>
         &nbsp;Here are some things you can try:
       </span>
       <ol>
