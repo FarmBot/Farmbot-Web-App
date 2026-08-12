@@ -302,6 +302,7 @@ jest.mock("@react-three/fiber", () => ({
 }));
 
 jest.mock("@react-spring/three", () => ({
+  __esModule: true,
   useSpring: (props: UseSpringProps) => {
     const springProps = typeof props == "function"
       ? (props as Function)()

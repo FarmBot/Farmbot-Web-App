@@ -1012,8 +1012,13 @@ describe("scene object placement helpers", () => {
     }));
     const fadedObjects = wrapper.root.findAll(node =>
       node.props.show === false && node.props.visible === true);
+    const renderedObjects = wrapper.root.findAll(node =>
+      node.type == "group" as ElementType &&
+      node.props.name == "scene-object-opacity");
 
     expect(fadedObjects).toHaveLength(1);
+    expect(renderedObjects).toHaveLength(1);
+    expect(renderedObjects[0].props.onClick).toBeUndefined();
     unmountRenderer(wrapper);
   });
 

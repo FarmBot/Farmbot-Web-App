@@ -29,7 +29,7 @@ import { Path } from "../../internal_urls";
 import * as deletePoints from "../../api/delete_points";
 import { renderWithContext } from "../../__test_support__/mount_with_context";
 import { API } from "../../api";
-import { ToggleButton } from "../../ui";
+import { VisibilityToggle } from "../../farm_designer/designer_panel";
 import {
   actRenderer,
   createRenderer,
@@ -292,7 +292,7 @@ describe("<WeedsSection />", () => {
     p.layerSetting = BooleanSetting.show_weeds;
     p.layerDisabled = false;
     const wrapper = createWrapper(<WeedsSection {...p} />);
-    wrapper.root.findByType(ToggleButton).props.toggleAction({
+    wrapper.root.findByType(VisibilityToggle).props.click({
       stopPropagation: jest.fn(),
     });
     expect(p.dispatch).toHaveBeenCalled();

@@ -1828,6 +1828,23 @@ describe("<GardenModel />", () => {
       .toEqual([expect.objectContaining({ id: 1 })]);
   });
 
+  it("shows only the hovered plant when the plant layer is hidden", () => {
+    const hoveredPlant = fakePlant();
+    hoveredPlant.body.id = 1;
+    const hiddenPlant = fakePlant();
+    hiddenPlant.body.id = 2;
+    const p = fakeProps();
+    p.plants = [hoveredPlant, hiddenPlant];
+    p.threeDPlants = convertPlants(p.config, p.plants);
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.addPlantProps.designer.hoveredPlant.plantUUID = hoveredPlant.uuid;
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PlantInstances).props.plants)
+      .toEqual([expect.objectContaining({ id: 1 })]);
+  });
+
   it("shows only the viewed weed when the weed layer is hidden", () => {
     location.pathname = Path.mock(Path.weeds(1));
     const viewedWeed = fakeWeed();
@@ -1844,6 +1861,20 @@ describe("<GardenModel />", () => {
       .toEqual([viewedWeed]);
   });
 
+  it("shows only the hovered weed when the weed layer is hidden", () => {
+    const hoveredWeed = fakeWeed();
+    const hiddenWeed = fakeWeed();
+    const p = fakeProps();
+    p.weeds = [hoveredWeed, hiddenWeed];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.addPlantProps.designer.hoveredPoint = hoveredWeed.uuid;
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(WeedInstances).props.weeds)
+      .toEqual([hoveredWeed]);
+  });
+
   it("shows only the viewed point when the point layer is hidden", () => {
     location.pathname = Path.mock(Path.points(1));
     const viewedPoint = fakePoint();
@@ -1858,6 +1889,20 @@ describe("<GardenModel />", () => {
 
     expect(wrapper.root.findByType(PointInstances).props.points)
       .toEqual([viewedPoint]);
+  });
+
+  it("shows only the hovered point when the point layer is hidden", () => {
+    const hoveredPoint = fakePoint();
+    const hiddenPoint = fakePoint();
+    const p = fakeProps();
+    p.mapPoints = [hoveredPoint, hiddenPoint];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.addPlantProps.designer.hoveredPoint = hoveredPoint.uuid;
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PointInstances).props.points)
+      .toEqual([hoveredPoint]);
   });
 
   it("shows a viewed soil point when soil height points are hidden", () => {
@@ -2840,6 +2885,26 @@ describe("<GardenModel />", () => {
     expect(destroySpy).toHaveBeenCalledWith(plant.uuid, true);
     expect(dispatch).toHaveBeenCalledWith("destroy point");
     expect(confirmSpy).toHaveBeenCalled();
+    destroySpy.mockRestore();
+    confirmSpy.mockRestore();
+  });
+
+  it("doesn't delete objects when area selection deletion is cancelled", () => {
+    const { dispatch, p } = areaSelectionActionProps();
+    const destroySpy = jest.spyOn(crud, "destroy");
+    const confirmSpy = jest.spyOn(window, "confirm")
+      .mockReturnValue(false);
+    const { wrapper, overlay } = renderCompletedAreaSelection(p);
+    expect(overlay().props.selectedCount).toEqual(1);
+    dispatch.mockClear();
+
+    actRenderer(() => wrapper.root.findByProps({
+      title: "Delete",
+    }).props.onClick());
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(destroySpy).not.toHaveBeenCalled();
+    expect(dispatch).not.toHaveBeenCalled();
     destroySpy.mockRestore();
     confirmSpy.mockRestore();
   });

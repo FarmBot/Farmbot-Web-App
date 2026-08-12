@@ -1064,6 +1064,8 @@ interface StaticGardenLayersProps {
   weeds: TaggedWeedPointer[];
   showPoints: boolean;
   viewedSelection: ThreeDObjectSelection | undefined;
+  hoveredPlantId: number | undefined;
+  hoveredPointUuid: string | undefined;
   plantsSelectable: boolean;
   pointsSelectable: boolean;
   weedsSelectable: boolean;
@@ -1093,7 +1095,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     constellationDiscoveryEnabled, onTelescopeActivate, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
     showPoints, viewedSelection, plantsSelectable, pointsSelectable,
-    weedsSelectable,
+    weedsSelectable, hoveredPlantId, hoveredPointUuid,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
     sceneObjectClick, sceneObjectPointerMove, sceneObjectPreview,
   } = props;
@@ -1106,17 +1108,17 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     : undefined;
   const visiblePlants = React.useMemo(() => {
     if (plantsVisible) { return threeDPlants; }
-    if (viewedPlantId == undefined) { return []; }
-    return threeDPlants.filter(plant => plant.id == viewedPlantId);
-  }, [plantsVisible, threeDPlants, viewedPlantId]);
+    return threeDPlants.filter(plant =>
+      plant.id == viewedPlantId || plant.id == hoveredPlantId);
+  }, [hoveredPlantId, plantsVisible, threeDPlants, viewedPlantId]);
   const viewedWeedId = viewedSelection?.kind == "weed"
     ? viewedSelection.id
     : undefined;
   const visibleWeeds = React.useMemo(() => {
     if (showWeeds) { return weeds; }
-    if (viewedWeedId == undefined) { return []; }
-    return weeds.filter(weed => weed.body.id == viewedWeedId);
-  }, [showWeeds, viewedWeedId, weeds]);
+    return weeds.filter(weed =>
+      weed.body.id == viewedWeedId || weed.uuid == hoveredPointUuid);
+  }, [hoveredPointUuid, showWeeds, viewedWeedId, weeds]);
   const viewedPointId = viewedSelection?.kind == "point"
     ? viewedSelection.id
     : undefined;
@@ -1130,15 +1132,14 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         (!soilHeightPoint(point) || soilHeightLabels)
         && (!point.body.meta.gridId
           || !hiddenGridIds?.includes(point.body.meta.gridId)));
-    const viewedPoint = viewedPointId == undefined
-      ? []
-      : mapPoints.filter(point => point.body.id == viewedPointId);
-    if (!showPoints) { return viewedPoint; }
-    return viewedPoint.some(point => !layerPoints.includes(point))
-      ? layerPoints.concat(viewedPoint)
-      : layerPoints;
+    const highlightedPoints = mapPoints.filter(point =>
+      point.body.id == viewedPointId || point.uuid == hoveredPointUuid);
+    if (!showPoints) { return highlightedPoints; }
+    return layerPoints.concat(highlightedPoints.filter(point =>
+      !layerPoints.includes(point)));
   }, [
     hiddenGridIds,
+    hoveredPointUuid,
     mapPoints,
     showPoints,
     soilHeightLabels,
@@ -3018,6 +3019,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
+  const hoveredPlantId = plants.find(plant =>
+    plant.uuid == sectionDesigner?.hoveredPlant.plantUUID)?.body.id;
   const shadowSceneObjects = React.useMemo(() => {
     const featuredScene = sectionDesigner?.featuredScene;
     const sceneObjects = featuredScene
@@ -4241,6 +4244,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           showWeeds={showWeeds}
           weeds={weeds}
           viewedSelection={routeSelection}
+          hoveredPlantId={hoveredPlantId}
+          hoveredPointUuid={sectionDesigner?.hoveredPoint}
           plantsSelectable={plantsSelectable && !areaSelectionDrawing}
           pointsSelectable={pointsSelectable && !areaSelectionDrawing}
           weedsSelectable={weedsSelectable && !areaSelectionDrawing}

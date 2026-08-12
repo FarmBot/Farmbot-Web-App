@@ -72,10 +72,9 @@ describe("<Points />", () => {
       .find(element => element.textContent
         ?.toLowerCase().includes(sectionName.toLowerCase()));
     expect(section).toBeTruthy();
-    const toggleButton = section?.querySelector("button:not(.delete)")
-      || section?.querySelector("button");
-    expect(toggleButton).toBeTruthy();
-    fireEvent.click(toggleButton as Element);
+    const visibilityToggle = section?.querySelector(".fb-icon-button");
+    expect(visibilityToggle).toBeTruthy();
+    fireEvent.click(visibilityToggle as Element);
   };
 
   it("renders no points", () => {

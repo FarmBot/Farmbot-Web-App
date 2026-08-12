@@ -124,9 +124,11 @@ export const RawSceneObjects = (props: SceneObjectsProps) => {
         {sceneObject.body.name}
       </span>
       <i
-        className={`fa fb-icon-button invert ${sceneObject.body.show
-          ? "fa-eye"
-          : "fa-eye-slash"}`}
+        className={[
+          "fa fb-icon-button invert",
+          sceneObject.body.show ? "fa-eye" : "fa-eye-slash",
+          props.showSceneObjects ? "" : "pseudo-disabled",
+        ].join(" ")}
         title={sceneObject.body.show ? t("hide") : t("show")}
         onClick={e => {
           e.stopPropagation();

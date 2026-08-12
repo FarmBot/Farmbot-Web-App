@@ -49,7 +49,7 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
       props.resources.consumers.farm_designer.gridPlanting,
     legacyPointGrid:
       props.resources.consumers.farm_designer.legacyPointGrid,
-    threeDGrid: !!getConfigValue(BooleanSetting.three_d_garden),
+    is3D: !!getConfigValue(BooleanSetting.three_d_garden),
     xySwap: !!getConfigValue(BooleanSetting.xy_swap),
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   };
@@ -76,7 +76,7 @@ export interface CreatePointsProps {
   drawnPoint: DrawnPointPayl | undefined;
   gridPlanting?: GridPlantingRequest;
   legacyPointGrid?: boolean;
-  threeDGrid?: boolean;
+  is3D?: boolean;
   xySwap: boolean;
   botPosition: BotPosition;
 }
@@ -219,7 +219,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
     const enteringText = target instanceof HTMLElement
       && (target.matches("input, textarea, select")
         || target.isContentEditable);
-    if (!this.props.threeDGrid
+    if (!this.props.is3D
       || this.panel != "points"
       || event.repeat
       || event.defaultPrevented
@@ -318,9 +318,12 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
+    const pointDescription = this.props.is3D
+      ? ""
+      : Content.CREATE_POINTS_DESCRIPTION_2D;
     const panelDescription = this.panel == "weeds"
       ? Content.CREATE_WEEDS_DESCRIPTION
-      : Content.CREATE_POINTS_DESCRIPTION;
+      : pointDescription;
     const { drawnPoint } = this.props;
     if (isUndefined(drawnPoint)) { return <></>; }
     return <DesignerPanel panelName={"point-creation"} panel={panelType}>
@@ -331,7 +334,17 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
         backTo={Path.designer(this.panel)}
         description={panelDescription}>
         <div className={"point-creation-header-actions"}>
-          {panelType == Panel.Points && this.props.threeDGrid &&
+          {!this.pointGridRequest &&
+            <button className="fb-button green save"
+              title={t("save")}
+              onClick={() => createPoint({
+                drawnPoint,
+                navigate: this.navigate,
+                dispatch: this.props.dispatch,
+              })}>
+              {t("Save")}
+            </button>}
+          {panelType == Panel.Points && this.props.is3D &&
             <button
               type={"button"}
               aria-pressed={!!this.pointGridRequest}
@@ -344,22 +357,12 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
               onClick={this.toggleThreeDGrid}>
               + {t("grid")}
             </button>}
-          {(panelType != Panel.Points || !this.props.threeDGrid) &&
-            <button className="fb-button green save"
-              title={t("save")}
-              onClick={() => createPoint({
-                drawnPoint,
-                navigate: this.navigate,
-                dispatch: this.props.dispatch,
-              })}>
-              {t("Save")}
-            </button>}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties drawnPoint={drawnPoint} />
         {panelType == Panel.Points && <hr />}
-        {panelType == Panel.Points && !this.props.threeDGrid &&
+        {panelType == Panel.Points && !this.props.is3D &&
           <PlantGrid
             xy_swap={this.props.xySwap}
             itemName={drawnPoint.name}

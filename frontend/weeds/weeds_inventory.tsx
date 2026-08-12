@@ -9,6 +9,7 @@ import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
   LayerVisibilityToggle,
+  VisibilityToggle,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { TaggedPoint, TaggedPointGroup, TaggedWeedPointer } from "farmbot";
@@ -20,7 +21,6 @@ import { SearchField } from "../ui/search_field";
 import {
   SortOptions, PointSortMenu, orderedPoints,
 } from "../farm_designer/sort_options";
-import { ToggleButton } from "../ui";
 import {
   setWebAppConfigValue, GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
@@ -105,11 +105,11 @@ export const WeedsSection = (props: WeedsSectionProps) => {
               <i className={"fa fa-times"} />{t("all")}
             </button>
           </div>}
-        {layerSetting && props.open &&
-          <ToggleButton disabled={props.layerDisabled}
-            toggleValue={props.layerValue}
-            customText={{ textFalse: t("off"), textTrue: t("on") }}
-            toggleAction={e => {
+        {layerSetting &&
+          <VisibilityToggle
+            disabled={props.layerDisabled}
+            value={!!props.layerValue}
+            click={e => {
               e.stopPropagation();
               props.dispatch(setWebAppConfigValue(
                 layerSetting, !props.layerValue));
@@ -175,7 +175,6 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       open={this.props.weedsPanelState.active}
       hoveredPoint={this.props.hoveredPoint}
       clickOpen={this.toggleOpen("active")}
-      layerSetting={BooleanSetting.show_weeds}
       layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
       allWeeds={this.props.weeds}
       dispatch={this.props.dispatch}>

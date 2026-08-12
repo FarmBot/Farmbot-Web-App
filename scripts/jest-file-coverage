@@ -17,6 +17,7 @@ source_file="$2"
 coverage_dir="coverage_jest_file"
 config_file=".jest-file-coverage.config.cjs"
 setup_file=".jest-file-coverage.setup.ts"
+asset_stub=".jest-file-coverage.asset.cjs"
 resolver_binding="node_modules/@unrs/resolver-binding-linux-x64-gnu"
 
 if [ ! -d "$resolver_binding" ]; then
@@ -34,13 +35,13 @@ fi
 
 rm -rf "$coverage_dir"
 mkdir -p "$coverage_dir"
-trap 'rm -f "$config_file" "$setup_file"' EXIT
+trap 'rm -f "$config_file" "$setup_file" "$asset_stub"' EXIT
 
-node - "$config_file" "$setup_file" <<'NODE'
+node - "$config_file" "$setup_file" "$asset_stub" <<'NODE'
 const fs = require("fs");
 const path = require("path");
 
-const [configFile, setupFile] = process.argv.slice(2);
+const [configFile, setupFile, assetStub] = process.argv.slice(2);
 const rootDir = process.cwd();
 const base = require(path.join(rootDir, "jest.config.js"));
 const absolute = file => path.join(rootDir, file);
@@ -56,6 +57,7 @@ fs.writeFileSync(setupFile, [
   "import { TextDecoder, TextEncoder } from 'util';",
   "Object.assign(globalThis, { TextDecoder, TextEncoder });",
   "globalThis.mockNavigate = jest.fn();",
+  "jest.mock('browser-speech', () => ({ talk: jest.fn() }));",
   "const originalConsoleError = console.error.bind(console);",
   "jest.spyOn(console, 'error').mockImplementation((...args) => {",
   "  const message = String(args[0] ?? '');",
@@ -90,6 +92,8 @@ fs.writeFileSync(setupFile, [
   "}));",
   "window.alert = jest.fn();",
   "globalThis.alert = window.alert;",
+  "window.confirm = jest.fn();",
+  "globalThis.confirm = window.confirm;",
   "class MockResizeObserver {",
   "  observe = jest.fn(); unobserve = jest.fn(); disconnect = jest.fn();",
   "}",
@@ -99,22 +103,38 @@ fs.writeFileSync(setupFile, [
   "const threeFiber = require('@react-three/fiber');",
   "const defaultUseFrame = threeFiber.useFrame.getMockImplementation();",
   "const defaultUseThree = threeFiber.useThree.getMockImplementation();",
+  "const reactSpring = require('@react-spring/three');",
+  "const defaultUseSpring = reactSpring.useSpring;",
   "beforeEach(() => {",
   "  threeFiber.useFrame.mockImplementation(defaultUseFrame);",
   "  threeFiber.useThree.mockImplementation(defaultUseThree);",
+  "  reactSpring.useSpring = defaultUseSpring;",
   "});",
+  "console.error = jest.fn();",
 ].join("\n") + "\n");
+fs.writeFileSync(assetStub, "module.exports = 'test-file-stub';\n");
 
 const config = {
   ...base,
   rootDir,
   transform: {
-    "^.+\\.(ts|tsx)$": ["ts-jest", {
+    "^.+\\.(js|ts|tsx)$": ["ts-jest", {
       diagnostics: false,
       tsconfig: path.join(rootDir, "tsconfig.tests.json"),
     }],
   },
-  setupFiles: [],
+  transformIgnorePatterns: [
+    "/node_modules/(?!(@happy-dom/global-registrator|delaunator|happy-dom|" +
+      "robust-predicates|three/examples/jsm)/)",
+  ],
+  moduleNameMapper: {
+    ...base.moduleNameMapper,
+    "\\.bin$": path.join(rootDir, assetStub),
+  },
+  testEnvironment: "node",
+  setupFiles: [
+    path.join(rootDir, "frontend/__test_support__/happydom.ts"),
+  ],
   setupFilesAfterEnv: [path.join(rootDir, setupFile)],
   coverageDirectory: path.join(rootDir, "coverage_jest_file"),
   testEnvironmentOptions: {
