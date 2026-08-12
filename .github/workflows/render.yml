@@ -12,6 +12,9 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   CACHE_KEY_SUFFIX: ${{ github.run_id }}-${{ github.run_attempt }}
   FPS_METRICS_CACHE_KEY: fps-metrics-${{ github.ref_name }}
+  FPS_HISTORY_CACHE_KEY: fps-history-${{ github.ref_name }}
+  STAGING_FPS_METRICS_CACHE_KEY: fps-metrics-staging
+  STAGING_FPS_HISTORY_CACHE_KEY: fps-history-staging
   FE_COVERAGE_CACHE_KEY: fe-coverage-p-${{ github.ref_name }}
 
 jobs:
@@ -24,6 +27,12 @@ jobs:
 
       - name: Set render env
         run: scripts/ci/export-render-env
+
+      - name: Set cache baseline
+        run: |
+          baseline_sha=$(git ls-remote origin refs/heads/staging | awk '{print $1}')
+          : "${baseline_sha:?Unable to determine staging SHA}"
+          echo "CACHE_BASELINE_SHA=$baseline_sha" >> "$GITHUB_ENV"
 
       - name: Set up CI
         uses: ./.github/actions/setup-ci
@@ -86,31 +95,65 @@ jobs:
           echo "mqtt auth did not become ready"
           exit 1
 
-      - name: Restore metric history
+      - name: Restore branch metric history cache
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-
+
+      - name: Restore metric history from artifact branch
         id: restore_metric_history
         run: |
+          if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
+            echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           scripts/ci/git-restore-artifact-branch-file "$SCENE_METRICS_NAME*.csv"
           if compgen -G "/tmp/$SCENE_METRICS_NAME*.csv" >/dev/null; then
             echo "scene_metrics_found=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Restore fps history
-        id: restore_fps_history
-        run: |
-          scripts/ci/git-restore-artifact-branch-file "$FPS_HISTORY.csv"
-          if compgen -G "/tmp/$FPS_HISTORY.csv" >/dev/null; then
-            echo "fps_history_found=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Restore FPS metrics
+      - name: Restore staging metric history cache fallback
         if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
         uses: actions/cache/restore@v5
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
-          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          key: ${{ env.STAGING_FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
           restore-keys: |
-            ${{ env.FPS_METRICS_CACHE_KEY }}-
+            ${{ env.STAGING_FPS_METRICS_CACHE_KEY }}-
+
+      - name: Restore branch FPS history cache
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/${{ env.FPS_HISTORY }}.csv
+          key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-
+
+      - name: Restore FPS history from artifact branch
+        id: restore_fps_history
+        run: |
+          if [ -f "/tmp/$FPS_HISTORY.csv" ]; then
+            echo "fps_history_found=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          scripts/ci/git-restore-artifact-branch-file "$FPS_HISTORY.csv"
+          if [ -f "/tmp/$FPS_HISTORY.csv" ]; then
+            echo "fps_history_found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore staging FPS history cache fallback
+        if: steps.restore_fps_history.outputs.fps_history_found != 'true'
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/${{ env.FPS_HISTORY }}.csv
+          key: ${{ env.STAGING_FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          restore-keys: |
+            ${{ env.STAGING_FPS_HISTORY_CACHE_KEY }}-
 
       - name: Restore frontend coverage value
         if: always()
@@ -152,7 +195,13 @@ jobs:
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
-          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
+          key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
+
+      - name: Save FPS history
+        uses: actions/cache/save@v5
+        with:
+          path: /tmp/${{ env.FPS_HISTORY }}.csv
+          key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
 
       - name: View values
         if: always()
@@ -174,24 +223,27 @@ jobs:
             !/tmp/render_summary_plots.png
             !/tmp/render_summary_screenshots.png
           if-no-files-found: warn
+          compression-level: 0
 
       - name: Upload summary plots image artifact
-        if: always()
+        if: ${{ always() && (env.STAGING != 'true' || failure()) }}
         uses: actions/upload-artifact@v7
         with:
           name: render_summary_plots
           path: |
             /tmp/render_summary_plots.png
           if-no-files-found: warn
+          compression-level: 0
 
       - name: Upload summary screenshots image artifact
-        if: always()
+        if: ${{ always() && (env.STAGING != 'true' || failure()) }}
         uses: actions/upload-artifact@v7
         with:
           name: render_summary_screenshots
           path: |
             /tmp/render_summary_screenshots.png
           if-no-files-found: warn
+          compression-level: 0
 
       - name: Upload csv artifacts
         if: always()

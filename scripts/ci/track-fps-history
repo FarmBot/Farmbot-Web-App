@@ -9,9 +9,10 @@ fps_history = os.environ["FPS_HISTORY"]
 fps_value = os.environ["FPS_VALUE"]
 load_duration = os.environ["LOAD_DURATION"]
 commit_sha = os.environ["GITHUB_SHA"][:10]
+source = "staging" if os.environ.get("GITHUB_REF_NAME") == "staging" else "dev"
 github_env = os.environ["GITHUB_ENV"]
 csv_path = Path("/tmp") / f"{fps_history}.csv"
-csv_header = ["fps", "% change", "load duration", "commit sha"]
+csv_header = ["fps", "% change", "load duration", "commit sha", "source"]
 
 previous = subprocess.check_output(
     ["scripts/ci/previous-fps-value"],
@@ -33,7 +34,17 @@ with open(github_env, "a") as env_file:
 
 if not csv_path.exists():
     csv_path.write_text(",".join(csv_header) + "\n")
+else:
+    with csv_path.open(newline="") as csv_file:
+        rows = list(csv.reader(csv_file))
+    if rows and rows[0] != csv_header:
+        rows[0] = csv_header
+        for row in rows[1:]:
+            while len(row) < len(csv_header):
+                row.append("")
+        with csv_path.open("w", newline="") as csv_file:
+            csv.writer(csv_file).writerows(rows)
 
 with csv_path.open("a", newline="") as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow([fps_value, percent_change, load_duration, commit_sha])
+    writer.writerow([fps_value, percent_change, load_duration, commit_sha, source])

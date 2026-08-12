@@ -14,6 +14,7 @@ csv_header = [
     "total lines",
     "percent change",
     "commit sha",
+    "source",
 ]
 commit_sha = os.environ.get("GITHUB_SHA")
 if not commit_sha:
@@ -22,6 +23,7 @@ if not commit_sha:
         text=True,
     ).strip()
 commit_sha = commit_sha[:10]
+source = "staging" if os.environ.get("GITHUB_REF_NAME") == "staging" else "dev"
 
 covered = 0
 total = 0
@@ -69,6 +71,6 @@ else:
 
 with csv_path.open("a", newline="") as csv_file:
     writer = csv.writer(csv_file)
-    writer.writerow([value, covered, total, percent_change, commit_sha])
+    writer.writerow([value, covered, total, percent_change, commit_sha, source])
 
 print(csv_path.read_text(), end="")
