@@ -135,12 +135,9 @@ jobs:
         env:
           GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
         run: |
-          touch "/tmp/$FE_COVERAGE_NAME.csv"
           sudo docker compose run --rm \
-            --volume "/tmp/$FE_COVERAGE_NAME.csv:/tmp/$FE_COVERAGE_NAME.csv:ro" \
             -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" \
             -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" \
-            -e FE_COVERAGE_NAME="$FE_COVERAGE_NAME" \
             web bundle exec rake coverage:run || [ "$STAGING" = "true" ]
 
       - name: Track frontend coverage value

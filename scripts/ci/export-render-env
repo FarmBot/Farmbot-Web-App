@@ -9,12 +9,6 @@ set -a
 . "$render_env"
 set +a
 
-while IFS= read -r line; do
-  case "$line" in
-    ': "${'*':='*'}"')
-      name="${line#*: \"\$\{}"
-      name="${name%%:=*}"
-      echo "$name=${!name}" >> "$github_env"
-      ;;
-  esac
-done < "$render_env"
+for name in "${RENDER_ENV_NAMES[@]}"; do
+  echo "$name=${!name}" >> "$github_env"
+done
