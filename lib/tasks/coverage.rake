@@ -1,4 +1,5 @@
 require "find"
+require "csv"
 
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 JSON_COVERAGE_FILE_PATH = "./coverage_fe/coverage-final.json"
@@ -137,6 +138,21 @@ def latest_build_data(build_history, branch)
   else
     { branch: branch, commit: nil, percent: nil }
   end
+end
+
+def latest_csv_coverage(branch)
+  path = "/tmp/#{ENV.fetch("FE_COVERAGE_NAME", "fe_coverage")}.csv"
+  row = nil
+  CSV.foreach(path, headers: true) { |csv_row| row = csv_row }
+  return { branch: branch, commit: nil, percent: nil } if row.nil?
+
+  {
+    branch: branch,
+    commit: row["commit sha"],
+    percent: row["percent"].to_f,
+  }
+rescue Errno::ENOENT, CSV::MalformedCSVError
+  { branch: branch, commit: nil, percent: nil }
 end
 
 # Calculate coverage results from JSON coverage report.
@@ -419,6 +435,12 @@ namespace :coverage do
 
     if remote[:percent].nil?
       puts "No override available."
+      puts "Attempting to use CSV coverage history."
+      remote = latest_csv_coverage(base_branch)
+    end
+
+    if remote[:percent].nil?
+      puts "CSV coverage history not available."
       puts "Using 100 instead of nil for remote coverage value."
       remote = { branch: "N/A", commit: "", percent: 100 }
     end
