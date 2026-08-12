@@ -25,6 +25,7 @@ describe("<RawSceneObjects />", () => {
     sceneObjects: [fakeSceneObject()],
     farmwareEnvs: [],
     showSceneObjects: true,
+    threeDGarden: true,
   });
 
   const setScene = (props: SceneObjectsProps, value: string) => {
@@ -43,6 +44,32 @@ describe("<RawSceneObjects />", () => {
 
     expect(getByPlaceholderText("Search your scene objects...")).toBeTruthy();
     expect(container.querySelector(".scene-selection-grid")).toBeFalsy();
+  });
+
+  it("shows, enables, and dismisses the 3D requirement overlay", () => {
+    jest.useFakeTimers();
+    const setWebAppConfigValue = jest.spyOn(
+      configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    const p = fakeProps();
+    p.threeDGarden = false;
+    const { getByText, getByTitle, queryByText } =
+      render(<RawSceneObjects {...p} />);
+
+    expect(getByText("Only available in 3D")).toBeTruthy();
+    const toggle = getByTitle("toggle 3D Garden");
+    expect(toggle).toHaveClass("red");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveClass("green");
+    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+    act(() => jest.advanceTimersByTime(500));
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.three_d_garden, true);
+
+    fireEvent.click(getByText("Dismiss"));
+    expect(queryByText("Only available in 3D")).toBeFalsy();
+    setWebAppConfigValue.mockRestore();
+    jest.useRealTimers();
   });
 
   it("returns to the scene tiles from the inventory", () => {
@@ -573,6 +600,9 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([resource]);
 
-    expect(mapStateToProps(state).sceneObjects).toEqual([resource]);
+    expect(mapStateToProps(state)).toMatchObject({
+      sceneObjects: [resource],
+      threeDGarden: false,
+    });
   });
 });

@@ -7,6 +7,8 @@ import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 import { maybeBeacon } from "../help/tours";
 import { SpecialStatus } from "farmbot";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { setWebAppConfigValue } from "../config_storage/actions";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -125,6 +127,37 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
       </Link>}
   </div>;
 };
+
+export interface VisibilityToggleProps {
+  click(e: React.MouseEvent): void;
+  value: boolean;
+  disabled?: boolean;
+}
+
+export const VisibilityToggle =
+  (props: VisibilityToggleProps) =>
+    <i
+      className={[
+        "fa fb-icon-button invert",
+        props.value ? "fa-eye" : "fa-eye-slash",
+        props.disabled ? "pseudo-disabled" : "",
+        props.value ? "" : "warn-off",
+      ].join(" ")}
+      title={props.value ? t("hide") : t("show")}
+      onClick={props.click} />;
+
+export interface LayerVisibilityToggleProps {
+  dispatch: Function;
+  setting: BooleanConfigKey;
+  value: boolean;
+}
+
+export const LayerVisibilityToggle =
+  (props: LayerVisibilityToggleProps) =>
+    <VisibilityToggle
+      value={props.value}
+      click={() => props.dispatch(setWebAppConfigValue(
+        props.setting, !props.value))} />;
 
 export interface DesignerPanelContentProps {
   panelName: string;

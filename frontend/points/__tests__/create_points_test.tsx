@@ -130,11 +130,11 @@ describe("<CreatePoints />", () => {
   it("uses the panel header for 3D point grid mode", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    p.threeDGrid = true;
+    p.is3D = true;
     const { container } = render(<CreatePoints {...p} />);
 
     expect(container).not.toHaveTextContent("Add Grid or Row");
-    expect(container.querySelector(".save")).not.toBeInTheDocument();
+    expect(container.querySelector(".save")).toBeInTheDocument();
     const gridButton =
       container.querySelector(".plus-grid-btn") as HTMLButtonElement;
     expect(gridButton).toHaveAttribute("aria-pressed", "false");
@@ -161,7 +161,7 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    p.threeDGrid = true;
+    p.is3D = true;
 
     const { container } = render(<CreatePoints {...p} />);
 
@@ -204,7 +204,7 @@ describe("<CreatePoints />", () => {
   it("exits active 3D point grid mode from the header", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    p.threeDGrid = true;
+    p.is3D = true;
     p.gridPlanting = {
       token: "point-grid",
       gridId: "point-grid",
@@ -214,6 +214,7 @@ describe("<CreatePoints />", () => {
       radius: 30,
     };
     const { container } = render(<CreatePoints {...p} />);
+    expect(container.querySelector(".save")).not.toBeInTheDocument();
     const gridButton =
       container.querySelector(".plus-grid-btn") as HTMLButtonElement;
     expect(gridButton).toHaveAttribute("aria-pressed", "true");
@@ -229,7 +230,7 @@ describe("<CreatePoints />", () => {
   it("toggles 3D point grid mode with the g hotkey", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    p.threeDGrid = true;
+    p.is3D = true;
     render(<CreatePoints {...p} />);
     jest.clearAllMocks();
 
@@ -247,7 +248,7 @@ describe("<CreatePoints />", () => {
   it("exits 3D point grid mode with the g hotkey", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    p.threeDGrid = true;
+    p.is3D = true;
     p.gridPlanting = {
       token: "point-grid",
       gridId: "point-grid",
@@ -277,7 +278,7 @@ describe("<CreatePoints />", () => {
 
   it("does not start a point grid without point data", () => {
     const p = fakeProps();
-    p.threeDGrid = true;
+    p.is3D = true;
     const { ref } = renderCreatePoints(p);
     jest.clearAllMocks();
 

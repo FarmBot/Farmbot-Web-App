@@ -68,6 +68,10 @@ describe("<EditSoilHeight />", () => {
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
     expect(container).toHaveTextContent("Min soil z");
     expect(container).toHaveTextContent("Max soil z");
+    const limits = container.querySelectorAll(".soil-height-limit");
+    expect([...limits].map(input => (input as HTMLInputElement).value))
+      .toEqual(["-550", "-450"]);
+    limits.forEach(input => expect(input).toBeDisabled());
   });
 
   it("changes soil height", () => {

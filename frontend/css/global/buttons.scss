@@ -288,6 +288,16 @@
     filter: invert(0.5);
     cursor: not-allowed;
   }
+  &.pseudo-disabled {
+    filter: invert(0.4);
+  }
+  &.warn-off {
+    background: $darkest_red;
+    color: $off_white;
+    &:hover {
+      background: color.adjust($darkest_red, $lightness: 10%) !important;
+    }
+  }
 }
 
 .header-button-group {

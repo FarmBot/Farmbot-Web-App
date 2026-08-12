@@ -1,7 +1,7 @@
 import React from "react";
 import { Row } from "../ui";
 import { AxisDisplayGroupProps, AxisProps } from "./interfaces";
-import { isNumber, isUndefined } from "lodash";
+import { isNumber, isUndefined, round } from "lodash";
 import { t } from "../i18next_wrapper";
 import { MissedStepIndicator } from "./move/missed_step_indicator";
 import { DevSettings } from "../settings/dev/dev_support";
@@ -16,7 +16,7 @@ const Axis = (props: AxisProps) => {
     {!props.noValues &&
       <input disabled name={axis}
         style={props.highlight ? { border: "2px solid #fd6" } : {}}
-        value={isNumber(val) ? val : "---"} />}
+        value={isNumber(val) ? round(val, 2) : "---"} />}
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
       <p>{t(axisState)}</p>}
   </div>;

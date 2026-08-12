@@ -1203,11 +1203,14 @@ const booleanSettingCommands = (props: BuildCommandProps): Command[] => {
           englishName: removeShowPrefix(settingLabel.englishName, "Show"),
         }
         : settingLabel;
-      const unavailable =
-        setting == BooleanSetting.display_map_missed_steps
-          && !getValue(BooleanSetting.display_trail)
-          ? t("Enable Trail first.")
-          : undefined;
+      let unavailable: string | undefined;
+      if (setting == BooleanSetting.display_map_missed_steps
+        && !getValue(BooleanSetting.display_trail)) {
+        unavailable = t("Enable Trail first.");
+      } else if (metadata.requires3D
+        && !getValue(BooleanSetting.three_d_garden)) {
+        unavailable = t("Enable the 3D Garden setting first.");
+      }
       return {
         id: `setting:${setting}:toggle`,
         ...text,
@@ -1714,6 +1717,10 @@ const threeDSettingCommands = (props: BuildCommandProps): Command[] => {
   const getValue = get3DConfigValueFunction(envs);
   const setValue = findOrCreate3DConfigFunction(props.dispatch, envs);
   const sceneObjects = selectAllSceneObjects(index);
+  const unavailable = getWebAppConfigValueFromResources(index)(
+    BooleanSetting.three_d_garden)
+    ? undefined
+    : t("Enable the 3D Garden setting first.");
   return THREE_D_SETTINGS.map(setting => {
     const key = setting.key as keyof Config;
     const value = getValue(key);
@@ -1730,6 +1737,7 @@ const threeDSettingCommands = (props: BuildCommandProps): Command[] => {
       group: "settings" as const,
       imageIcon: TAB_ICON[Panel.Settings],
       themeAwareImageIcon: true,
+      unavailable,
     };
     if (setting.control == "toggle") {
       const enabled = !!value;
@@ -1741,7 +1749,7 @@ const threeDSettingCommands = (props: BuildCommandProps): Command[] => {
         ...base,
         execute,
         toggleValue: enabled,
-        accessory: toggleAccessory(enabled),
+        accessory: toggleAccessory(enabled, !!unavailable),
       };
     }
     let options: SettingValueMetadata["options"];
@@ -2011,12 +2019,18 @@ const simplePanelCommands = (props: BuildCommandProps): Command[] => {
       ...additionalActions,
       panelAction(props, panel),
     ];
+    const unavailable = panel == Panel.SceneObjects
+      && !getWebAppConfigValueFromResources(index)(
+        BooleanSetting.three_d_garden)
+      ? t("Enable the 3D Garden setting first.")
+      : undefined;
     return {
       id: `panel:${PANEL_SLUG[panel]}`,
       ...combinedPanelCommandText(panel, PANEL_TITLE()[panel]),
       group: "resources",
       imageIcon: TAB_ICON[panel],
       themeAwareImageIcon: true,
+      unavailable,
       actions,
       execute: actions[0].execute,
     };

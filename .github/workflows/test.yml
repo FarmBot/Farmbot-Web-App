@@ -99,12 +99,6 @@ jobs:
           fi
           exit $status
 
-      - name: Check frontend coverage status
-        if: ${{ always() && (hashFiles('coverage_fe/index.html') != '' || hashFiles('coverage_fe/coverage-final.json') != '' || hashFiles('coverage_fe/lcov.info') != '') }}
-        env:
-          GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
-        run: sudo docker compose run --rm -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" web bundle exec rake coverage:run || [ "$STAGING" = "true" ]
-
       - name: Check frontend file coverage status
         if: always()
         run: scripts/ci/check-frontend-file-coverage || true
@@ -135,6 +129,16 @@ jobs:
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
           restore-keys: |
             ${{ env.FE_COVERAGE_CACHE_KEY }}-
+
+      - name: Check frontend coverage status
+        if: ${{ always() && (hashFiles('coverage_fe/index.html') != '' || hashFiles('coverage_fe/coverage-final.json') != '' || hashFiles('coverage_fe/lcov.info') != '') }}
+        env:
+          GITHUB_PULL_REQUEST: ${{ github.event.pull_request.html_url || '/0' }}
+        run: |
+          sudo docker compose run --rm \
+            -e GITHUB_SHA="$GITHUB_SHA" -e GITHUB_REF_NAME="$GITHUB_REF_NAME" \
+            -e GITHUB_PULL_REQUEST="$GITHUB_PULL_REQUEST" \
+            web bundle exec rake coverage:run || [ "$STAGING" = "true" ]
 
       - name: Track frontend coverage value
         if: always()

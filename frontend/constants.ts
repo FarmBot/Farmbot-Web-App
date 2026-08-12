@@ -1209,7 +1209,7 @@ export namespace Content {
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
 
-  export const CREATE_POINTS_DESCRIPTION =
+  export const CREATE_POINTS_DESCRIPTION_2D =
     trim(`Click and drag or use the inputs to draw a point.`);
 
   export const CREATE_WEEDS_DESCRIPTION =

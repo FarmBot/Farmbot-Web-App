@@ -34,7 +34,7 @@ export const createPoint = (props: CreatePointProps) => {
     },
     x: drawnPoint.cx || 0,
     y: drawnPoint.cy || 0,
-    z: drawnPoint.z,
+    z: drawnPoint.z ?? 0,
     plant_stage: "active",
     radius: drawnPoint.r,
   };

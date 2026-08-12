@@ -269,7 +269,7 @@ const PlantSpreadInstancesBase = (props: PlantSpreadInstancesProps) => {
         id: plant.id,
         x: plant.x,
         y: plant.y,
-        z: zBase + getZ(plant.x, plant.y) + plant.size / 2,
+        z: zBase + getZ(plant.x, plant.y),
         positionX: position.x,
         positionY: position.y,
         size: plant.size,

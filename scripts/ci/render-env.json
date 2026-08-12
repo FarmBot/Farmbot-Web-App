@@ -1,0 +1,15 @@
+{
+  "CHOSEN_NAME": "promo_xl",
+  "SCREENSHOT_NAME": "screenshot",
+  "FPS_SAMPLES_NAME": "fps_samples",
+  "SCENE_METRICS_NAME": "scene_metrics",
+  "FPS_HISTORY": "fps_history",
+  "LOAD_DURATION_NAME": "load_duration",
+  "COMBINED_RENDER_IMAGE": "render_summary",
+  "COMBINED_RENDER_IMAGE_SCALE": "3",
+  "FE_COVERAGE_NAME": "fe_coverage",
+  "SCENE_METRICS_HEADER": "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes, commit sha",
+  "ARTIFACT_BRANCH": "ci-artifacts",
+  "FALLBACK_FPS_VALUE": "100",
+  "FALLBACK_FE_COVERAGE_VALUE": "99.9"
+}

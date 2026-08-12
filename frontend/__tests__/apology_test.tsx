@@ -20,4 +20,9 @@ describe("<Apology />", () => {
     fireEvent.click(screen.getByText("Restart the app by clicking here."));
     expect(Session.clear).toHaveBeenCalled();
   });
+
+  it("displays the error message", () => {
+    render(<Apology error={new Error("Something went wrong.")} />);
+    expect(screen.getByText("Something went wrong.")).toBeInTheDocument();
+  });
 });

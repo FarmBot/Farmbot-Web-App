@@ -24,6 +24,7 @@ import {
 import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
 import { perfCount, perfMeasure } from "../../performance/perf";
+import { ErrorBoundary } from "../../error_boundary";
 
 interface BaseProps {
   config: Config;
@@ -319,14 +320,16 @@ const Images = (props: ImagesProps) => {
       const { x, y } = image.body.meta;
       if (isNumber(x) && isNumber(y)) {
         return <React.Suspense key={image.uuid}>
-          <ImageWrapper
-            image={image}
-            x={x}
-            y={y}
-            z={props.z}
-            xOffset={props.xOffset}
-            yOffset={props.yOffset}
-            config={props.config} />
+          <ErrorBoundary fallback={<></>}>
+            <ImageWrapper
+              image={image}
+              x={x}
+              y={y}
+              z={props.z}
+              xOffset={props.xOffset}
+              yOffset={props.yOffset}
+              config={props.config} />
+          </ErrorBoundary>
         </React.Suspense>;
       }
     })}
@@ -394,14 +397,15 @@ type ImageClippingConfig = Pick<Config,
 
 export const getImageClippingPlanes = (
   config: ImageClippingConfig,
-): ThreePlane[] | undefined => config.clipImages
-  ? [
-    new ThreePlane(new Vector3(1, 0, 0), 0),
-    new ThreePlane(new Vector3(-1, 0, 0), config.botSizeX),
-    new ThreePlane(new Vector3(0, 1, 0), 0),
-    new ThreePlane(new Vector3(0, -1, 0), config.botSizeY),
-  ]
-  : undefined;
+): ThreePlane[] | undefined =>
+  config.clipImages
+    ? [
+      new ThreePlane(new Vector3(1, 0, 0), 0),
+      new ThreePlane(new Vector3(-1, 0, 0), config.botSizeX),
+      new ThreePlane(new Vector3(0, 1, 0), 0),
+      new ThreePlane(new Vector3(0, -1, 0), config.botSizeY),
+    ]
+    : undefined;
 
 const CIRCLE_MASK_SIZE = 64;
 

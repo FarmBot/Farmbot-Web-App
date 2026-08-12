@@ -176,6 +176,7 @@ import {
   VIEW_PRISM_TOP_CENTER, VIEW_PRISM_TOP_CENTER_BOUNDING_RADIUS,
 } from "./view_prism";
 import { t } from "../i18next_wrapper";
+import { soilHeightPoint } from "../points/soil_height";
 import { STARGAZING_DEFAULT_FOV } from
   "../farm_designer/stargazing_constants";
 import { markConstellationFound } from
@@ -966,6 +967,7 @@ interface GardenLayerVisibilityParams {
   addPlantProps: AddPlantProps | undefined;
   activeFocus: string;
   botVisibleInConfig: boolean;
+  plantAddMode: boolean;
   showSoilPoints: boolean;
   showSceneObjects: boolean;
 }
@@ -977,13 +979,12 @@ function getGardenLayerVisibility(
   const getConfigValue = params.addPlantProps?.getConfigValue;
   const gridPlantingRequest =
     params.addPlantProps?.designer.gridPlanting;
-  const gridPlanting = !!gridPlantingRequest;
-  const pointGridPlanting =
-    gridPlantingRequest?.gridType == "point";
-  const showPlants = gridPlanting
+  const gridPlantingType = gridPlantingRequest?.gridType;
+  const plantPlacement = params.plantAddMode || gridPlantingType == "plant";
+  const showPlants = plantPlacement
     || !params.addPlantProps
     || !!getConfigValue?.(BooleanSetting.show_plants);
-  const plantsVisible = gridPlanting
+  const plantsVisible = plantPlacement
     || (params.activeFocus != "Planter bed" && showPlants);
   const showFarmbot = !params.addPlantProps
     || !!getConfigValue?.(BooleanSetting.show_farmbot);
@@ -991,7 +992,7 @@ function getGardenLayerVisibility(
     params.activeFocus != "Planter bed"
     && showFarmbot
     && params.botVisibleInConfig;
-  const showPoints = pointGridPlanting
+  const showPoints = gridPlantingType == "point"
     || params.showSoilPoints
     || !!getConfigValue?.(BooleanSetting.show_points);
   const showWeeds = !params.addPlantProps
@@ -1033,6 +1034,8 @@ interface StaticGardenLayersProps {
   images: TaggedImage[];
   activeFocus: string;
   mapPoints: TaggedGenericPointer[];
+  hiddenGridIds: string[] | undefined;
+  soilHeightLabels: boolean;
   showMoistureMap: boolean;
   showMoistureReadings: boolean;
   showTelescope: boolean;
@@ -1060,6 +1063,9 @@ interface StaticGardenLayersProps {
   showWeeds: boolean;
   weeds: TaggedWeedPointer[];
   showPoints: boolean;
+  viewedSelection: ThreeDObjectSelection | undefined;
+  hoveredPlantId: number | undefined;
+  hoveredPointUuid: string | undefined;
   plantsSelectable: boolean;
   pointsSelectable: boolean;
   weedsSelectable: boolean;
@@ -1079,7 +1085,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     config, markStep, environmentReveal, bedReveal, gridReveal,
     plantsReveal, weedsReveal, pointsReveal, backgroundColor,
     activePositionRef,
-    soilSurfaceGeometry, getZ, images, activeFocus, mapPoints,
+    soilSurfaceGeometry, getZ, images, activeFocus, mapPoints, hiddenGridIds,
+    soilHeightLabels,
     showMoistureMap, showMoistureReadings, showTelescope,
     sensors, sensorReadings,
     addPlantProps, plantLabelNodes, plantsVisible,
@@ -1087,7 +1094,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
     dispatch, stargazing, spaceflight, cameraSideStarClipEnabled,
     constellationDiscoveryEnabled, onTelescopeActivate, showSpread,
     plantInstanceCapacity, routeKey, seasonResetKey, showWeeds, weeds,
-    showPoints, plantsSelectable, pointsSelectable, weedsSelectable,
+    showPoints, viewedSelection, plantsSelectable, pointsSelectable,
+    weedsSelectable, hoveredPlantId, hoveredPointUuid,
     onSelectObject, onHoverObject, onHoverLabel, onPlantHoverChange,
     sceneObjectClick, sceneObjectPointerMove, sceneObjectPreview,
   } = props;
@@ -1095,14 +1103,52 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
   const gridVisible = config.grid
     && activeFocus != "Planter bed"
     && !spaceflight;
-  const plantLayerHasWork =
-    threeDPlants.length > 0
-    || React.Children.count(plantLabelNodes) > 0;
-  const weedLayerHasWork = weeds.length > 0;
-  const pointLayerHasWork = mapPoints.length > 0;
-  const plantsLayerReveal = plantsReveal && plantsVisible;
-  const weedsLayerReveal = weedsReveal && showWeeds;
-  const pointsLayerReveal = pointsReveal && showPoints;
+  const viewedPlantId = viewedSelection?.kind == "plant"
+    ? viewedSelection.id
+    : undefined;
+  const visiblePlants = React.useMemo(() => {
+    if (plantsVisible) { return threeDPlants; }
+    return threeDPlants.filter(plant =>
+      plant.id == viewedPlantId || plant.id == hoveredPlantId);
+  }, [hoveredPlantId, plantsVisible, threeDPlants, viewedPlantId]);
+  const viewedWeedId = viewedSelection?.kind == "weed"
+    ? viewedSelection.id
+    : undefined;
+  const visibleWeeds = React.useMemo(() => {
+    if (showWeeds) { return weeds; }
+    return weeds.filter(weed =>
+      weed.body.id == viewedWeedId || weed.uuid == hoveredPointUuid);
+  }, [hoveredPointUuid, showWeeds, viewedWeedId, weeds]);
+  const viewedPointId = viewedSelection?.kind == "point"
+    ? viewedSelection.id
+    : undefined;
+  const plantLayerHasWork = visiblePlants.length > 0
+    || (plantsVisible && React.Children.count(plantLabelNodes) > 0);
+  const weedLayerHasWork = visibleWeeds.length > 0;
+  const visibleMapPoints = React.useMemo(() => {
+    const layerPoints = soilHeightLabels && !hiddenGridIds?.length
+      ? mapPoints
+      : mapPoints.filter(point =>
+        (!soilHeightPoint(point) || soilHeightLabels)
+        && (!point.body.meta.gridId
+          || !hiddenGridIds?.includes(point.body.meta.gridId)));
+    const highlightedPoints = mapPoints.filter(point =>
+      point.body.id == viewedPointId || point.uuid == hoveredPointUuid);
+    if (!showPoints) { return highlightedPoints; }
+    return layerPoints.concat(highlightedPoints.filter(point =>
+      !layerPoints.includes(point)));
+  }, [
+    hiddenGridIds,
+    hoveredPointUuid,
+    mapPoints,
+    showPoints,
+    soilHeightLabels,
+    viewedPointId,
+  ]);
+  const pointLayerHasWork = visibleMapPoints.length > 0;
+  const plantsLayerReveal = plantsReveal && plantLayerHasWork;
+  const weedsLayerReveal = weedsReveal && weedLayerHasWork;
+  const pointsLayerReveal = pointsReveal && pointLayerHasWork;
   const [sunIsSet, setSunIsSet] =
     React.useState<boolean | undefined>(undefined);
   const handlePlantPointerEnter = React.useCallback((e: ThreeEvent<PointerEvent>) => {
@@ -1203,7 +1249,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"plants"}
       markStep={markStep}
       reveal={plantsReveal}
-      markReadyOnMount={!plantLayerHasWork || !plantsVisible}
+      markReadyOnMount={!plantLayerHasWork}
       markName={"three_d_core_ready"}>
       {plantLayerHasWork &&
         <PopInGroup
@@ -1216,7 +1262,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           hideAfterExit={true}>
           <FocusVisibilityGroup
             name={"plant-labels"}
-            visible={!activeFocus}>
+            visible={plantsVisible && !activeFocus}>
             {plantLabelNodes}
           </FocusVisibilityGroup>
           <FocusVisibilityGroup name={"plants"}
@@ -1226,7 +1272,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
             onPointerMove={plantsSelectable ? handlePlantPointerMove : undefined}
             onPointerLeave={plantsSelectable ? handlePlantPointerLeave : undefined}>
             <PlantInstances
-              plants={threeDPlants}
+              plants={visiblePlants}
               config={config}
               getZ={getZ}
               visible={true}
@@ -1237,7 +1283,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
               onHoverObject={plantsSelectable ? onPlantHoverChange : undefined}
               dispatch={plantsSelectable ? dispatch : undefined} />
             <PlantSpreadInstances
-              plants={threeDPlants}
+              plants={visiblePlants}
               visible={true}
               spreadVisible={showSpread}
               config={config}
@@ -1255,7 +1301,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"weeds"}
       markStep={markStep}
       reveal={weedsReveal}
-      markReadyOnMount={!weedLayerHasWork || !showWeeds}
+      markReadyOnMount={!weedLayerHasWork}
       markName={"three_d_weeds_ready"}>
       {weedLayerHasWork &&
         <PopInGroup
@@ -1268,7 +1314,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           <Group name={"weeds"}
             visible={true}>
             <WeedInstances
-              weeds={weeds}
+              weeds={visibleWeeds}
               visible={true}
               config={config}
               getZ={getZ}
@@ -1284,7 +1330,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
       loadStep={"points"}
       markStep={markStep}
       reveal={pointsReveal}
-      markReadyOnMount={!pointLayerHasWork || !showPoints}
+      markReadyOnMount={!pointLayerHasWork}
       markName={"three_d_points_ready"}>
       {pointLayerHasWork &&
         <PopInGroup
@@ -1297,7 +1343,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
           <Group name={"points"}
             visible={true}>
             <PointInstances
-              points={mapPoints}
+              points={visibleMapPoints}
               visible={true}
               config={config}
               getZ={getZ}
@@ -2973,6 +3019,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const sensors = props.sensors || EMPTY_SENSORS;
   const sensorReadings = props.sensorReadings || EMPTY_SENSOR_READINGS;
   const sectionDesigner = addPlantProps?.designer;
+  const hoveredPlantId = plants.find(plant =>
+    plant.uuid == sectionDesigner?.hoveredPlant.plantUUID)?.body.id;
   const shadowSceneObjects = React.useMemo(() => {
     const featuredScene = sectionDesigner?.featuredScene;
     const sceneObjects = featuredScene
@@ -3521,6 +3569,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     addPlantProps,
     activeFocus: props.activeFocus,
     botVisibleInConfig: config.bot,
+    plantAddMode: props.route.mode == Mode.clickToAdd,
     showSoilPoints: config.showSoilPoints,
   }), [
     addPlantProps,
@@ -3528,6 +3577,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     config.showSoilPoints,
     config.sceneObjects,
     props.activeFocus,
+    props.route.mode,
   ]);
   const {
     plantsVisible, farmbotVisible, showPoints, showWeeds,
@@ -3804,10 +3854,22 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     config.soilHeight,
     config.zGantryOffset,
   ]);
+  const drawnSoilPoint = addPlantProps?.designer.drawnPoint;
+  const previewSoilPoints = React.useMemo<[number, number, number][]>(() =>
+    drawnSoilPoint?.at_soil_level
+      && !isUndefined(drawnSoilPoint.cx)
+      && !isUndefined(drawnSoilPoint.cy)
+      && !isUndefined(drawnSoilPoint.z)
+      ? [[drawnSoilPoint.cx, drawnSoilPoint.cy, drawnSoilPoint.z]]
+      : [], [drawnSoilPoint]);
   const soilPoints = React.useMemo(
     () => perfMeasure("soilPointFilterMs", () =>
-      filterSoilPoints({ points: mapPoints, config: soilPointConfig })),
-    [mapPoints, soilPointConfig]);
+      filterSoilPoints({
+        points: mapPoints,
+        previewPoints: previewSoilPoints,
+        config: soilPointConfig,
+      })),
+    [mapPoints, previewSoilPoints, soilPointConfig]);
   const soilSurface = React.useMemo(() =>
     perfMeasure("soilSurfaceMs", () => getSurface(soilPoints)), [soilPoints]);
   React.useEffect(() => {
@@ -4149,6 +4211,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           images={images}
           activeFocus={props.activeFocus}
           mapPoints={mapPoints}
+          hiddenGridIds={addPlantProps?.designer.gridIds}
+          soilHeightLabels={
+            addPlantProps?.designer.soilHeightLabels ?? true}
           showMoistureMap={showMoistureMap}
           showMoistureReadings={showMoistureReadings}
           showTelescope={
@@ -4178,6 +4243,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           seasonResetKey={props.seasonResetKey}
           showWeeds={showWeeds}
           weeds={weeds}
+          viewedSelection={routeSelection}
+          hoveredPlantId={hoveredPlantId}
+          hoveredPointUuid={sectionDesigner?.hoveredPoint}
           plantsSelectable={plantsSelectable && !areaSelectionDrawing}
           pointsSelectable={pointsSelectable && !areaSelectionDrawing}
           weedsSelectable={weedsSelectable && !areaSelectionDrawing}

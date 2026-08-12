@@ -1,16 +1,17 @@
-: "${CHOSEN_NAME:=promo_xl}"
-: "${SCREENSHOT_NAME:=screenshot}"
+render_env_config="${RENDER_ENV_CONFIG:-scripts/ci/render-env.json}"
+RENDER_ENV_NAMES=()
+while IFS=$'\t' read -r name default_value; do
+  RENDER_ENV_NAMES+=("$name")
+  if [ -z "${!name:-}" ]; then
+    printf -v "$name" '%s' "$default_value"
+  fi
+done < <(
+  python3 -c \
+    'import json, sys; print("\n".join(f"{key}\t{value}" for key, value in json.load(open(sys.argv[1])).items()))' \
+    "$render_env_config"
+)
+
 : "${CHOSEN_IMAGE:=${SCREENSHOT_NAME}_${CHOSEN_NAME}}"
-: "${FPS_SAMPLES_NAME:=fps_samples}"
 : "${CHOSEN_FPS:=${FPS_SAMPLES_NAME}_${CHOSEN_NAME}}"
-: "${SCENE_METRICS_NAME:=scene_metrics}"
 : "${CHOSEN_METRICS:=${SCENE_METRICS_NAME}_${CHOSEN_NAME}}"
-: "${FPS_HISTORY:=fps_history}"
-: "${LOAD_DURATION_NAME:=load_duration}"
-: "${COMBINED_RENDER_IMAGE:=render_summary}"
-: "${COMBINED_RENDER_IMAGE_SCALE:=3}"
-: "${FE_COVERAGE_NAME:=fe_coverage}"
-: "${SCENE_METRICS_HEADER:=epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes, commit sha}"
-: "${ARTIFACT_BRANCH:=ci-artifacts}"
-: "${FALLBACK_FPS_VALUE:=100}"
-: "${FALLBACK_FE_COVERAGE_VALUE:=99.4}"
+RENDER_ENV_NAMES+=(CHOSEN_IMAGE CHOSEN_FPS CHOSEN_METRICS)

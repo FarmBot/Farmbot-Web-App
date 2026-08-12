@@ -3,19 +3,30 @@ set -euo pipefail
 
 source_pattern="${1:?source path is required}"
 : "${ARTIFACT_BRANCH:?ARTIFACT_BRANCH is required}"
+: "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 
-if ! git ls-remote --exit-code --heads origin "$ARTIFACT_BRANCH" >/dev/null; then
-  exit 0
+restore_file() {
+  local source_path="$1"
+  local destination_path="/tmp/$source_path"
+  local download_path="${destination_path}.download"
+  local raw_url="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${ARTIFACT_BRANCH}/${source_path}"
+
+  mkdir -p "$(dirname "$destination_path")"
+  if curl --fail --location --silent --show-error \
+    --output "$download_path" "$raw_url"; then
+    mv "$download_path" "$destination_path"
+    echo "Restored $destination_path"
+  else
+    rm -f "$download_path"
+  fi
+}
+
+if [ "$source_pattern" = "${SCENE_METRICS_NAME:-scene_metrics}*.csv" ]; then
+  while IFS=$'\034' read -r name mode _; do
+    if [ "$mode" = "fps" ]; then
+      restore_file "${SCENE_METRICS_NAME:-scene_metrics}_${name}.csv"
+    fi
+  done < <(scripts/ci/render-url-records scripts/ci/render-urls.json)
+else
+  restore_file "$source_pattern"
 fi
-
-git fetch origin "$ARTIFACT_BRANCH"
-
-git ls-tree -r --name-only "origin/$ARTIFACT_BRANCH" | while IFS= read -r source_path; do
-  case "$source_path" in
-    $source_pattern)
-      destination_path="/tmp/$source_path"
-      mkdir -p "$(dirname "$destination_path")"
-      git show "origin/$ARTIFACT_BRANCH:$source_path" > "$destination_path"
-      ;;
-  esac
-done

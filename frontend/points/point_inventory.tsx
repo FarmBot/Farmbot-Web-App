@@ -9,6 +9,8 @@ import {
 import { Actions, Content } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
+  LayerVisibilityToggle,
+  VisibilityToggle,
 } from "../farm_designer/designer_panel";
 import {
   selectAllActivePoints, selectAllGenericPointers, selectAllPointGroups,
@@ -33,7 +35,7 @@ import { SourceFbosConfig } from "../devices/interfaces";
 import { validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
-import { Saucer, ToggleButton } from "../ui";
+import { Saucer } from "../ui";
 import { PanelSection } from "../plants/plant_inventory";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
@@ -44,6 +46,10 @@ import { deleteAllIds } from "../api/delete_points_handler";
 import { NavigationContext } from "../routes_helpers";
 import { GetColor } from "../farm_designer/map/layers/points/interpolation_map";
 import { NavigateFunction } from "react-router";
+import {
+  GetWebAppConfigValue, getWebAppConfigValue,
+} from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 interface PointsSectionProps {
   title: string;
@@ -53,6 +59,7 @@ interface PointsSectionProps {
   toggleValue?: boolean;
   toggleAction?(): void;
   genericPoints: TaggedGenericPointer[];
+  layerDisabled: boolean;
   hoveredPoint: UUID | undefined;
   dispatch: Function;
   metaQuery: Record<string, string>;
@@ -70,10 +77,6 @@ const PointsSection = (props: PointsSectionProps) => {
       onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      {isOpen && toggleAction && <ToggleButton
-        toggleValue={props.toggleValue}
-        customText={{ textFalse: t("off"), textTrue: t("on") }}
-        toggleAction={e => { e.stopPropagation(); toggleAction(); }} />}
       {isOpen && <button className={"fb-button red delete"}
         title={t("delete all")}
         onClick={e => {
@@ -84,6 +87,11 @@ const PointsSection = (props: PointsSectionProps) => {
         }}>
         {t("delete all")}
       </button>}
+      {toggleAction && <VisibilityToggle
+        disabled={props.layerDisabled}
+        value={!!props.toggleValue}
+        click={e => { e.stopPropagation(); toggleAction(); }} />}
+
       <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
     </div>
     <Collapse isOpen={isOpen}>
@@ -114,6 +122,7 @@ export interface PointsProps {
   groups: TaggedPointGroup[];
   allPoints: TaggedPoint[];
   pointsPanelState: PointsPanelState;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 interface PointsState extends SortOptions {
@@ -138,6 +147,7 @@ export function mapStateToProps(props: Everything): PointsProps {
     groups: selectAllPointGroups(props.resources.index),
     allPoints: selectAllActivePoints(props.resources.index),
     pointsPanelState: props.app.pointsPanelState,
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }
 
@@ -175,6 +185,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 
   render() {
     const { dispatch } = this.props;
+    const showPoints = !!this.props.getConfigValue(BooleanSetting.show_points);
     const gridIds = compact(uniq(this.props.genericPoints
       .map(p => p.body.meta.gridId)));
     const points = orderedPoints(this.props.genericPoints, this.state)
@@ -194,13 +205,17 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       .filter(p => !soilHeightPoint(p))
       .filter(p => !p.body.meta.gridId);
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
-      <DesignerPanelTop panel={Panel.Points}>
+      <DesignerPanelTop panel={Panel.Points} withButton={true}>
         <SearchField nameKey={"points"}
           searchTerm={this.state.searchTerm}
           placeholder={t("Search your points...")}
           customLeftIcon={<PointSortMenu
             sortOptions={this.state} onChange={u => this.setState(u)} />}
           onChange={searchTerm => this.setState({ searchTerm })} />
+        <LayerVisibilityToggle
+          dispatch={dispatch}
+          setting={BooleanSetting.show_points}
+          value={showPoints} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
         <PanelSection isOpen={this.props.pointsPanelState.groups}
@@ -275,6 +290,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
             maxZ={Math.max(...sortedSoilHeightPoints.map(p => p.body.z))}
             sourceFbosConfig={this.props.sourceFbosConfig}
             hoveredPoint={this.props.hoveredPoint}
+            layerDisabled={!showPoints}
             dispatch={dispatch} />}
         {soilHeightPointColors.length > 1 &&
           soilHeightPointColors.map(color =>
@@ -290,6 +306,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               averageZ={round(mean(sortedSoilHeightPoints
                 .filter(p => p.body.meta.color == color).map(p => p.body.z)))}
               hoveredPoint={this.props.hoveredPoint}
+              layerDisabled={!showPoints}
               dispatch={dispatch} />)}
         {gridIds.map(gridId => {
           const gridPoints = points.filter(p => p.body.meta.gridId == gridId);
@@ -305,6 +322,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               type: Actions.TOGGLE_GRID_ID, payload: gridId
             })}
             genericPoints={gridPoints}
+            layerDisabled={!showPoints}
             metaQuery={{ gridId }}
             hoveredPoint={this.props.hoveredPoint}
             dispatch={dispatch} />;

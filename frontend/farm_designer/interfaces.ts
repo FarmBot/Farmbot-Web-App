@@ -431,7 +431,7 @@ export interface DrawnPointPayl {
   name: string;
   cx: number | undefined;
   cy: number | undefined;
-  z: number;
+  z: number | undefined;
   r: number;
   color: string;
   at_soil_level: boolean;

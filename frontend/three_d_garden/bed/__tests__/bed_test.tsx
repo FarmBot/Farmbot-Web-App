@@ -495,6 +495,7 @@ describe("<Bed />", () => {
     const point = fakeDrawnPoint();
     point.cx = undefined;
     point.cy = undefined;
+    point.z = 50;
     point.r = 0;
     addPlantProps.designer.drawnPoint = point;
     p.addPlantProps = addPlantProps;
@@ -507,7 +508,7 @@ describe("<Bed />", () => {
         ...point,
         cx: 1350,
         cy: 660,
-        z: 0,
+        z: 50,
         placementPhase: "finalize",
       },
     });

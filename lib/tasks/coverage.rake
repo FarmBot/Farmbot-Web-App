@@ -12,6 +12,13 @@ PULL_REQUEST = ENV.fetch("GITHUB_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("GITHUB_REF_NAME", "staging") # "staging" or "pull/11"
 BASE_BRANCHES = ["main", "staging"]
 CURRENT_COMMIT = ENV.fetch("GITHUB_SHA", "")
+RENDER_ENV = JSON.parse(File.read(File.expand_path(
+  "../../scripts/ci/render-env.json", __dir__
+)))
+FE_COVERAGE_HISTORY_URL =
+  "https://raw.githubusercontent.com/FarmBot/Farmbot-Web-App/" \
+  "#{RENDER_ENV.fetch("ARTIFACT_BRANCH")}/" \
+  "#{RENDER_ENV.fetch("FE_COVERAGE_NAME")}.csv"
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
 REMOTE_COVERAGE_OVERRIDE = ENV.fetch('REMOTE_COVERAGE_OVERRIDE', '0').to_f
@@ -137,6 +144,40 @@ def latest_build_data(build_history, branch)
   else
     { branch: branch, commit: nil, percent: nil }
   end
+end
+
+def latest_csv_coverage(branch)
+  require "csv"
+  csv_rows = []
+  csv = CSV.parse(URI.parse(FE_COVERAGE_HISTORY_URL).open.read, headers: true)
+  csv.each do |csv_row|
+    csv_rows.push(csv_row)
+    csv_rows.shift if csv_rows.length > 10
+  end
+  row = csv_rows.last
+  return { branch: branch, commit: nil, percent: nil } if row.nil?
+
+  puts "\nCoverage history (oldest to newest):\n\n"
+  puts format("%-8s %7s %7s %5s  %s",
+              "coverage", "change", "lines", "miss", "commit")
+  csv_rows.each do |csv_row|
+    total = csv_row["total lines"].to_i
+    uncovered = total - csv_row["covered lines"].to_i
+    puts format("%7.2f%% %6.2f%% %7d %5d  %s",
+                csv_row["percent"].to_f,
+                csv_row["percent change"].to_f,
+                total,
+                uncovered,
+                csv_row["commit sha"])
+  end
+
+  {
+    branch: branch,
+    commit: row["commit sha"],
+    percent: row["percent"].to_f,
+  }
+rescue OpenURI::HTTPError, SocketError, CSV::MalformedCSVError
+  { branch: branch, commit: nil, percent: nil }
 end
 
 # Calculate coverage results from JSON coverage report.
@@ -419,6 +460,12 @@ namespace :coverage do
 
     if remote[:percent].nil?
       puts "No override available."
+      puts "Attempting to use CSV coverage history."
+      remote = latest_csv_coverage(base_branch)
+    end
+
+    if remote[:percent].nil?
+      puts "CSV coverage history not available."
       puts "Using 100 instead of nil for remote coverage value."
       remote = { branch: "N/A", commit: "", percent: 100 }
     end

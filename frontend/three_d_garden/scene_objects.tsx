@@ -2463,7 +2463,7 @@ const SceneObjectOpacity = (props: SceneObjectOpacityProps) => {
     name={"scene-object-opacity"}
     ref={group}
     visible={props.visible ?? true}
-    onClick={props.onClick}>
+    onClick={props.show ? props.onClick : undefined}>
     {props.children}
   </Group>;
 };

@@ -11,6 +11,7 @@ import {
 import { Actions, Content, DeviceSetting } from "../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
+  LayerVisibilityToggle,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
@@ -32,7 +33,7 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { deletePoints } from "../api/delete_points";
 import { Path } from "../internal_urls";
 import { WebAppNumberSetting } from "../settings/farm_designer_settings";
-import { NumericSetting } from "../session_keys";
+import { NumericSetting, BooleanSetting } from "../session_keys";
 import { Help, Popover, Row } from "../ui";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
@@ -111,6 +112,7 @@ export class RawPlants
 
   render() {
     const { dispatch, plantsPanelState, plants } = this.props;
+    const showPlants = !!this.props.getConfigValue(BooleanSetting.show_plants);
     const filteredPlants = plants
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
@@ -126,23 +128,29 @@ export class RawPlants
           searchTerm={this.state.searchTerm}
           placeholder={t("Search your plants...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
-        <Popover
-          position={Position.BOTTOM}
-          popoverClassName={"plants-panel-settings-menu"}
-          target={<button type="button"
-            className={"fb-icon-button invert"}
-            title={t("open plant settings menu")}
-            aria-label={t("open plant settings menu")}
-            aria-haspopup="menu">
-            <i className={"fa fa-gear"} aria-hidden={true} />
-          </button>}
-          content={<Row>
-            <label>{t(DeviceSetting.defaultPlantDepth)}</label>
-            <Help text={Content.DEFAULT_PLANT_DEPTH} />
-            <WebAppNumberSetting dispatch={dispatch}
-              getConfigValue={this.props.getConfigValue}
-              numberSetting={NumericSetting.default_plant_depth} />
-          </Row>} />
+        <div className={"panel-top-layer-controls"}>
+          <LayerVisibilityToggle
+            dispatch={dispatch}
+            setting={BooleanSetting.show_plants}
+            value={showPlants} />
+          <Popover
+            position={Position.BOTTOM}
+            popoverClassName={"plants-panel-settings-menu"}
+            target={<button type="button"
+              className={"fb-icon-button invert"}
+              title={t("open plant settings menu")}
+              aria-label={t("open plant settings menu")}
+              aria-haspopup="menu">
+              <i className={"fa fa-gear"} aria-hidden={true} />
+            </button>}
+            content={<Row>
+              <label>{t(DeviceSetting.defaultPlantDepth)}</label>
+              <Help text={Content.DEFAULT_PLANT_DEPTH} />
+              <WebAppNumberSetting dispatch={dispatch}
+                getConfigValue={this.props.getConfigValue}
+                numberSetting={NumericSetting.default_plant_depth} />
+            </Row>} />
+        </div>
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
         <PanelSection isOpen={plantsPanelState.groups}
