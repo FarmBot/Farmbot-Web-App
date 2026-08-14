@@ -1,4 +1,5 @@
 require "shellwords"
+require_relative "../rollbar_source_maps"
 
 def check_for_digests
   Log
@@ -183,6 +184,11 @@ namespace :api do
     add_monaco
     patch_three_stdlib
     run_bun_assets "scripts/bun/build.ts"
+    begin
+      RollbarSourceMaps.upload
+    rescue StandardError => error
+      warn error.message
+    end
   end
 
   desc "Don't call this directly. Use `rake assets:clean`."
