@@ -87,20 +87,15 @@ const bunArgs = [
   "--splitting",
   "--public-path",
   publicPath,
-  "--define",
-  `process.env.NODE_ENV="${nodeEnv}"`,
   "--entry-naming",
   "[dir]-[name].[ext]",
   "--chunk-naming",
-  "[name]-[hash].js",
+  "[name]-[hash].[ext]",
+  "--sourcemap=linked",
 ];
 
-if (!isProd) {
-  bunArgs.push("--sourcemap");
-}
-
 if (isProd) {
-  bunArgs.push("--minify");
+  bunArgs.push("--production");
 }
 
 console.log(`bun ${bunArgs.join(" ")}`);
