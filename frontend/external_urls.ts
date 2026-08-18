@@ -11,14 +11,8 @@ export enum FarmBotRepo {
   FarmBotArduinoFirmware = "farmbot-arduino-firmware",
 }
 
-enum FbosFile {
-  featureMinVersions = "FEATURE_MIN_VERSIONS.json",
-  osReleaseNotes = "RELEASE_NOTES.md",
-}
-
 export namespace ExternalUrl {
   const GITHUB = "https://github.com";
-  const GITHUB_RAW = "https://raw.githubusercontent.com";
   const DOCS_HUB = "https://docs.farm.bot";
   const GENESIS_DOCS = "https://genesis.farm.bot";
   const EXPRESS_DOCS = "https://express.farm.bot";
@@ -50,10 +44,10 @@ export namespace ExternalUrl {
 
   export const myFarmBot = MY_FARMBOT_WEB_APP;
 
-  const FBOS_RAW =
-    `${GITHUB_RAW}/${Org.FarmBot}/${FarmBotRepo.FarmBotOS}/staging`;
-  export const featureMinVersions = `${FBOS_RAW}/${FbosFile.featureMinVersions}`;
-  export const osReleaseNotes = `${FBOS_RAW}/${FbosFile.osReleaseNotes}`;
+  /** Fetched from GitHub upon build. */
+  export const featureMinVersions = "/FEATURE_MIN_VERSIONS.json";
+  /** Fetched from GitHub upon build. */
+  export const osReleaseNotes = "/RELEASE_NOTES.md";
 
   export const gitHubFarmBot = `${GITHUB}/${Org.FarmBot}`;
   export const webAppRepo = `${gitHubFarmBot}/${FarmBotRepo.FarmBotWebApp}`;

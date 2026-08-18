@@ -1,4 +1,5 @@
 require "shellwords"
+require_relative "../farmbot_os_assets"
 require_relative "../rollbar_source_maps"
 
 def check_for_digests
@@ -173,6 +174,7 @@ namespace :api do
   desc "Serve javascript assets (via Bun bundler)."
   task serve_assets: :environment do
     clean_assets
+    FarmBotOsAssets.download(fallback: true)
     add_monaco
     patch_three_stdlib
     run_bun_assets "scripts/bun/dev_server.ts"
@@ -181,6 +183,7 @@ namespace :api do
   desc "Don't call this directly. Use `rake assets:precompile`."
   task assets_compile: :environment do
     clean_assets
+    FarmBotOsAssets.download
     add_monaco
     patch_three_stdlib
     run_bun_assets "scripts/bun/build.ts"

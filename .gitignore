@@ -23,6 +23,8 @@ log/
 node_modules
 package-lock.json
 public/assets/
+public/FEATURE_MIN_VERSIONS.json
+public/RELEASE_NOTES.md
 public/direct_upload/temp/*.jpg
 public/dist
 core
