@@ -163,7 +163,9 @@ const onError = (reason: string) => (dispatch: Function) => {
 export const fetchOsUpdateVersion =
   (target: string | undefined) => (dispatch: Function) => {
     const platform = target == "---" ? undefined : target;
-    if (!platform) { return dispatch(onError("Platform not available.")); }
+    if (!platform) {
+      return dispatch(onError(`Platform not available: '${target}'`));
+    }
     return axios.get<{ version: string }>(API.current.releasesPath + platform)
       .then(resp => dispatch({
         type: Actions.FETCH_OS_UPDATE_INFO_OK,

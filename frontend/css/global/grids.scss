@@ -73,10 +73,13 @@
   align-items: start;
 }
 
-.change-ownership-grid {
-  grid-auto-flow: unset;
-  grid-template-columns: auto 1fr;
-  row-gap: 0.25rem;
+.change-ownership-grid-wrapper {
+  margin: 1.25rem;
+  .change-ownership-grid {
+    grid-auto-flow: unset;
+    grid-template-columns: auto 1fr;
+    row-gap: 0.25rem;
+  }
 }
 
 fieldset {

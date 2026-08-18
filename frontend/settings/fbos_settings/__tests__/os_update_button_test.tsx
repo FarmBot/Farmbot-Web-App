@@ -302,7 +302,7 @@ describe("fetchOsUpdateVersion()", () => {
     console.error = jest.fn();
     await fetchOsUpdateVersion("---")(outerDispatch);
     await expect(axios.get).not.toHaveBeenCalled();
-    expect(console.error).toHaveBeenCalledWith("Platform not available.");
+    expect(console.error).toHaveBeenCalledWith("Platform not available: '---'");
     expect(innerDispatch).toHaveBeenCalledWith({
       type: Actions.FETCH_OS_UPDATE_INFO_OK,
       payload: { version: undefined },
