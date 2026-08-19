@@ -61,7 +61,15 @@ module RollbarSourceMaps
     puts "Uploading Rollbar source maps for revision #{revision}..."
 
     version = revision.first(8)
-    asset_host = "https://#{ENV.fetch("API_HOST")}"
+    asset_hosts = [
+      ENV.fetch("API_HOST"),
+      *ENV.fetch("ROLLBAR_ASSET_HOSTS", "").split(","),
+    ]
+      .compact
+      .map(&:strip)
+      .reject(&:empty?)
+      .uniq
+      .map { |host| "https://#{host}" }
     map_glob = File.join(
       DashboardController::PUBLIC_OUTPUT_DIR,
       "**/*.js.map",
@@ -73,13 +81,14 @@ module RollbarSourceMaps
       raise "Missing minified file for #{map_path}" unless File.exist?(js_path)
 
       public_path = js_path.delete_prefix("public/")
-      minified_url = "#{asset_host}/#{public_path}"
-      upload_map(
-        token: token,
-        version: version,
-        minified_url: minified_url,
-        map_path: map_path,
-      )
+      asset_hosts.each do |asset_host|
+        upload_map(
+          token: token,
+          version: version,
+          minified_url: "#{asset_host}/#{public_path}",
+          map_path: map_path,
+        )
+      end
       filename = public_path.delete_prefix("assets/dist/")
       progress = format("%#{progress_width}d", index + 1)
       puts "  (#{progress} / #{map_paths.length}) #{filename}"
