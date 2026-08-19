@@ -2998,6 +2998,7 @@ describe("<GardenModel />", () => {
       staticLayers.props.onSelectObject({ kind: "plant", id: 1 });
       selectionLayer.props.onUpdateLocationSelection(location);
       selectionLayer.props.onOpenPanel({ kind: "plant", id: 1 });
+      selectionLayer.props.onOpenPanel({ kind: "soilHeight", id: 0 });
       selectionLayer.props.onOpenPanel({ kind: "connectivity", id: 0 });
       selectionLayer.props.onOpenLocationPanel(location);
       selectionLayer.props.onCopySceneObject(sceneObject);
@@ -3014,6 +3015,11 @@ describe("<GardenModel />", () => {
       type: Actions.OPEN_POPUP,
       payload: "connectivity",
     });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_POINTS_PANEL_OPTION,
+      payload: "soilHeight",
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points());
     expect(copySceneObjectSpy).toHaveBeenCalledWith(
       sceneObject, expect.any(Function));
     expect(dispatch).toHaveBeenCalledWith("copy scene object");

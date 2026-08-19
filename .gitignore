@@ -15,6 +15,7 @@ config/credentials.yml.enc
 coverage_api
 coverage_fe
 coverage_jest_file
+.jest-file-coverage.*
 docker_volumes
 erd_diagram.png
 erd.pdf

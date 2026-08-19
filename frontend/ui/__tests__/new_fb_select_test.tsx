@@ -9,6 +9,7 @@ const renderedElement = (props: FBSelectProps) =>
       nullChoice: { label: string; value: string };
       items: { label: string; value: string }[];
       itemListFilter?: FBSelectProps["itemListFilter"];
+      matchTargetWidth?: boolean;
     }>;
   }>;
 
@@ -77,6 +78,13 @@ describe("<FBSelect />", () => {
     const element = renderedElement(p);
     expect(element.props.children.props.itemListFilter)
       .toEqual(p.itemListFilter);
+  });
+
+  it("passes the match target width option", () => {
+    const p = fakeProps();
+    p.matchTargetWidth = true;
+    const element = renderedElement(p);
+    expect(element.props.children.props.matchTargetWidth).toBeTruthy();
   });
 
   it("only updates when props change", () => {

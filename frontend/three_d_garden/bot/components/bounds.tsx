@@ -8,7 +8,7 @@ import {
   zero as zeroFunc,
   zDir as zDirFunc,
 } from "../../helpers";
-import { DistanceIndicator } from "../../elements";
+import { DistanceIndicator, Highlight } from "../../elements";
 import { ControlPillButton, noControlRaycast } from "../../controls";
 import { ThreeDObjectSelectionHandler } from "../../selection_types";
 import { t } from "../../../i18next_wrapper";
@@ -177,30 +177,36 @@ const BoundsComponent = (props: BoundsProps) => {
       lineWidth={1.1}
       color={"white"}
       raycast={noControlRaycast} />
-    {bounds && <HeightPlane
-      name={"safe-height"}
-      label={"Safe height"}
-      color={"green"}
-      config={props.config}
-      z={props.config.safeHeight}
-      pillYOffset={0}
-      onClick={() => props.onSelectObject?.({ kind: "safeHeight", id: 0 })} />}
-    {bounds && <HeightPlane
-      name={"min-soil"}
-      label={"Min soil"}
-      color={"#8b5a2b"}
-      config={props.config}
-      z={props.config.minSoilZ}
-      pillYOffset={-120}
-      onClick={() => undefined} />}
-    {bounds && <HeightPlane
-      name={"max-soil"}
-      label={"Max soil"}
-      color={"#8b5a2b"}
-      config={props.config}
-      z={props.config.maxSoilZ}
-      pillYOffset={120}
-      onClick={() => undefined} />}
+    {bounds && <Highlight highlightName={"safe-height"}>
+      <HeightPlane
+        name={"safe-height"}
+        label={"Safe height"}
+        color={"green"}
+        config={props.config}
+        z={props.config.safeHeight}
+        pillYOffset={0}
+        onClick={() => props.onSelectObject?.({ kind: "safeHeight", id: 0 })} />
+    </Highlight>}
+    {bounds && <Highlight highlightName={"soil-height"}>
+      <HeightPlane
+        name={"min-soil"}
+        label={"Min soil"}
+        color={"#8b5a2b"}
+        config={props.config}
+        z={props.config.minSoilZ}
+        pillYOffset={-120}
+        onClick={() => props.onSelectObject?.({ kind: "soilHeight", id: 1 })} />
+    </Highlight>}
+    {bounds && <Highlight highlightName={"soil-height"}>
+      <HeightPlane
+        name={"max-soil"}
+        label={"Max soil"}
+        color={"#8b5a2b"}
+        config={props.config}
+        z={props.config.maxSoilZ}
+        pillYOffset={120}
+        onClick={() => props.onSelectObject?.({ kind: "soilHeight", id: 0 })} />
+    </Highlight>}
     <Group visible={props.config.zDimension}>
       <DistanceIndicator
         start={{

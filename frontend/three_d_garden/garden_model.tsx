@@ -3516,6 +3516,12 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       closePopup();
       return;
     }
+    if (selection.kind == "soilHeight") {
+      dispatch?.({
+        type: Actions.OPEN_POINTS_PANEL_OPTION,
+        payload: "soilHeight",
+      });
+    }
     dispatch?.(setPanelOpen3D(true));
     navigate(pathForThreeDSelection(selection));
     closePopup();

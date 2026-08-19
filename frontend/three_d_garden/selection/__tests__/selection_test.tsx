@@ -163,7 +163,8 @@ const objectBase = (
   locationCoordinate: { x: 10, y: 20, z: 30 },
 });
 
-const plantObject = (): ResolvedThreeDObject => {
+const plantObject = ():
+  Extract<ResolvedThreeDObject, { kind: "plant" }> => {
   const plant = fakePlant();
   plant.body.id = 1;
   plant.body.planted_at = "2024-01-01T00:00:00.000Z";
@@ -425,6 +426,8 @@ describe("selection routes", () => {
       .toEqual(Path.settings("3d_garden"));
     expect(pathForThreeDSelection({ kind: "safeHeight", id: 0 }))
       .toEqual(Path.settings("farmbot"));
+    expect(pathForThreeDSelection({ kind: "soilHeight", id: 0 }))
+      .toEqual(Path.points());
     expect(pathForThreeDSelection({ kind: "gantryBeam", id: 0 }))
       .toEqual(Path.settings("3d_garden"));
   });
@@ -552,6 +555,30 @@ describe("selection resolve", () => {
       },
     }));
     expect(objectHasSelectionOverlay(safeHeight)).toBeFalsy();
+  });
+
+  it("resolves soil height at the max soil plane", () => {
+    const props = resolveProps();
+    props.config.maxSoilZ = -80;
+    const soilHeight = resolveSelectedObject(
+      props,
+      { kind: "soilHeight", id: 0 },
+    );
+    expect(soilHeight).toEqual(expect.objectContaining({
+      kind: "soilHeight",
+      name: "Soil height",
+      locationCoordinate: {
+        x: 0,
+        y: props.config.botSizeY / 2,
+        z: -80,
+      },
+    }));
+    expect(objectHasSelectionOverlay(soilHeight)).toBeFalsy();
+    props.config.minSoilZ = -120;
+    expect(resolveSelectedObject(
+      props,
+      { kind: "soilHeight", id: 1 },
+    )?.locationCoordinate.z).toEqual(-120);
   });
 
   it("resolves the gantry beam", () => {
@@ -969,6 +996,41 @@ describe("selection popup controls", () => {
     expect(container.querySelector("input[type='number']")).toBeTruthy();
   });
 
+  it("renders soil height controls", () => {
+    const object = resolveSelectedObject(
+      resolveProps(),
+      { kind: "soilHeight", id: 0 },
+    );
+    if (!object) { throw new Error("Soil height was not resolved"); }
+    const p = layerProps();
+    const low = fakePoint();
+    low.body.z = -100;
+    low.body.meta.at_soil_level = "true";
+    const high = fakePoint();
+    high.body.z = -80;
+    high.body.meta.at_soil_level = "true";
+    p.points = [low, high];
+    p.config.minSoilZ = -100;
+    p.config.maxSoilZ = -80;
+    const { container, rerender } = render(<ObjectPopup
+      {...p}
+      object={object}
+      visible={true} />);
+    expect(container).toHaveTextContent("FarmBot soil z");
+    expect(container).toHaveTextContent("use average z: -90");
+    expect(container).toHaveTextContent("Min soil z");
+    expect(container).toHaveTextContent("Max soil z");
+    expect(container.querySelector("input[type='number']")).toBeTruthy();
+    expect(container.querySelector(".object-popup-location-row")).toBeNull();
+    fireEvent.click(container.querySelector(".fa-external-link") as Element);
+    expect(p.onOpenPanel).toHaveBeenCalledWith({ kind: "soilHeight", id: 0 });
+    p.points = [];
+    p.bot = fakeBot;
+    p.dispatch = undefined;
+    rerender(<ObjectPopup {...p} object={object} visible={true} />);
+    expect(container).toHaveTextContent("use average z: -80");
+  });
+
   it("updates scene object texture and color", () => {
     const edit = jest.spyOn(crud, "edit")
       .mockImplementation(() => "edit action" as never);
@@ -1002,6 +1064,14 @@ describe("selection popup controls", () => {
       { color: "#999999" },
     );
     expect(save).toHaveBeenCalledWith(object.sceneObject.uuid);
+    object.sceneObject.body.texture = "unknown";
+    controls.rerender(<ObjectPopupControls
+      {...p}
+      object={object} />);
+    const lastSelectCall = fbSelectSpy.mock.calls[
+      fbSelectSpy.mock.calls.length - 1];
+    expect(lastSelectCall?.[0].selectedItem)
+      .toEqual(expect.objectContaining({ value: "grass" }));
     object.sceneObject.body.shape = "plant";
     controls.rerender(<ObjectPopupControls
       {...p}
@@ -1066,13 +1136,69 @@ describe("selection popup controls", () => {
   });
 
   it("disables unavailable gantry beam controls", () => {
+    const p = layerProps();
+    p.bot = clone(fakeBot);
+    p.bot.hardware.informational_settings.locked = true;
+    const lighting = fakePeripheral();
+    lighting.body.label = "Lighting";
+    lighting.body.pin = 7;
+    p.peripherals = [lighting];
     const controls = render(<ObjectPopupControls
-      {...layerProps()}
+      {...p}
       set3DConfigValue={undefined}
       object={gantryBeamObject()} />);
     expect(controls.container.querySelector(".fb-toggle-button"))
       .toBeDisabled();
     expect(controls.getByLabelText("Beam Length")).toBeDisabled();
+    const wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      set3DConfigValue={undefined}
+      object={gantryBeamObject()} />);
+    commit(wrapper, "beamLength", "1000");
+    unmountRenderer(wrapper);
+  });
+
+  it("handles unavailable optional popup actions", () => {
+    const p = layerProps();
+    p.dispatch = undefined;
+    p.bot = clone(fakeBot);
+    p.bot.hardware.informational_settings.locked = true;
+    p.deviceAccount = undefined;
+
+    let wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "utm",
+        ...objectBase({ kind: "utm", id: 0 }),
+      }} />);
+    wrapper.root.findAllByType(ui.ToggleButton)
+      .forEach(toggle => toggle.props.toggleAction());
+    expect(wrapper.toJSON()).toBeTruthy();
+    unmountRenderer(wrapper);
+
+    wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      object={cameraObject()} />);
+    wrapper.root.findAllByType(ui.ToggleButton)
+      .forEach(toggle => toggle.props.toggleAction());
+    unmountRenderer(wrapper);
+
+    wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      object={bedObject()} />);
+    commit(wrapper, "bedHeight", "100");
+    unmountRenderer(wrapper);
+
+    const safeHeight = resolveSelectedObject(
+      resolveProps(),
+      { kind: "safeHeight", id: 0 },
+    );
+    if (!safeHeight) { throw new Error("Safe height was not resolved"); }
+    wrapper = createRenderer(<ObjectPopupControls
+      {...p}
+      object={safeHeight} />);
+    expect(wrapper.toJSON()).toBeTruthy();
+    unmountRenderer(wrapper);
   });
 
   it("updates plant values", () => {
@@ -1093,6 +1219,139 @@ describe("selection popup controls", () => {
     });
     expect(p.dispatch).toHaveBeenCalled();
     controls.unmount();
+  });
+
+  it("runs plant sequences with the plant location", () => {
+    const execSequence = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+    const fbSelect = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button
+          data-testid={"plant-sequence"}
+          onClick={() => {
+            props.onChange(props.list[0]);
+            props.onChange({ label: "Missing", value: -1 });
+          }}>
+          {props.list.map(item => item.label).join(", ")}
+        </button>) as never);
+    const p = layerProps();
+    p.timeSettings = undefined;
+    const matching = fakeSequence({ id: 10, name: "Water plant" });
+    matching.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "plant_location",
+        default_value: {
+          kind: "coordinate",
+          args: { x: 0, y: 0, z: 0 },
+        },
+      },
+    }];
+    const other = fakeSequence({ id: 11, name: "Other sequence" });
+    other.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "duration",
+        default_value: { kind: "numeric", args: { number: 1 } },
+      },
+    }];
+    const multiple = fakeSequence({ id: 12, name: "Multiple variables" });
+    multiple.body.args.locals.body = [
+      matching.body.args.locals.body[0],
+      other.body.args.locals.body[0],
+    ];
+    const noLocals = fakeSequence({ id: 13, name: "No locals" });
+    noLocals.body.args.locals.body = undefined;
+    const noId = fakeSequence({ id: 0, name: "No id" });
+    noId.body.id = undefined;
+    p.sequences = [matching, other, multiple, noLocals, noId];
+    const object = plantObject();
+    object.plant.body.id = 123;
+    const controls = render(<ObjectPopupControls {...p} object={object} />);
+
+    expect(controls.getByTestId("plant-sequence"))
+      .toHaveTextContent("Water plant");
+    expect(controls.getByTestId("plant-sequence"))
+      .not.toHaveTextContent("Other sequence");
+    expect(controls.getByTestId("plant-sequence"))
+      .not.toHaveTextContent("Multiple variables");
+    fireEvent.click(controls.getByTestId("plant-sequence"));
+    expect(execSequence).toHaveBeenCalledWith(10, [{
+      kind: "parameter_application",
+      args: {
+        label: "plant_location",
+        data_value: {
+          kind: "point",
+          args: { pointer_type: "Plant", pointer_id: 123 },
+        },
+      },
+    }]);
+    controls.unmount();
+    object.plant.body.id = undefined;
+    const noVariable = render(<ObjectPopupControls {...p} object={object} />);
+    expect(noVariable.queryByTestId("plant-sequence")).not.toBeInTheDocument();
+    noVariable.unmount();
+    fbSelect.mockRestore();
+    execSequence.mockRestore();
+  });
+
+  it("runs slot sequences with the tool location", () => {
+    const execSequence = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+    const fbSelect = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button
+          data-testid={props.customNullLabel == "Run sequence"
+            ? "slot-sequence"
+            : "tool-selection"}
+          onClick={() => props.onChange(props.list[0])}>
+          {props.list.map(item => item.label).join(", ")}
+        </button>) as never);
+    const p = layerProps();
+    const matching = fakeSequence({ id: 20, name: "Pick up tool" });
+    matching.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "tool_location",
+        default_value: { kind: "location_placeholder", args: {} },
+      },
+    }];
+    const other = fakeSequence({ id: 21, name: "Coordinate sequence" });
+    other.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "location",
+        default_value: {
+          kind: "coordinate",
+          args: { x: 0, y: 0, z: 0 },
+        },
+      },
+    }];
+    p.sequences = [matching, other];
+    const controls = render(<ObjectPopupControls
+      {...p}
+      object={slotObject()} />);
+
+    expect(controls.getByTestId("slot-sequence"))
+      .toHaveTextContent("Pick up tool");
+    expect(controls.getByTestId("slot-sequence"))
+      .not.toHaveTextContent("Coordinate sequence");
+    fireEvent.click(controls.getByTestId("slot-sequence"));
+    expect(execSequence).toHaveBeenCalledWith(20, [{
+      kind: "parameter_application",
+      args: {
+        label: "tool_location",
+        data_value: { kind: "tool", args: { tool_id: 4 } },
+      },
+    }]);
+    controls.unmount();
+    const object = slotObject();
+    object.slot.tool = undefined;
+    const noVariable = render(<ObjectPopupControls {...p} object={object} />);
+    expect(noVariable.queryByTestId("slot-sequence")).not.toBeInTheDocument();
+    noVariable.unmount();
+    fbSelect.mockRestore();
+    execSequence.mockRestore();
   });
 
   it("updates slot and mounted tool selections", () => {
@@ -1217,6 +1476,8 @@ describe("selection popup controls", () => {
   });
 
   it("uses UTM home and mounted tool actions", () => {
+    const sendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
+      .mockImplementation(jest.fn());
     const moveToHomeSpy = jest.spyOn(deviceActions, "moveToHome")
       .mockImplementation(jest.fn());
     const findHomeSpy = jest.spyOn(deviceActions, "findHome")
@@ -1244,8 +1505,13 @@ describe("selection popup controls", () => {
     expect(controls.container.querySelector(
       ".object-popup-tool-action-row .fb-toggle-button"))
       .toHaveTextContent("on");
+    fireEvent.click(controls.getByText("Dismount"));
     fireEvent.click(controls.getByText("MOVE TO HOME"));
     fireEvent.click(controls.getByText("FIND HOME"));
+    expect(sendRPCSpy).toHaveBeenCalledWith({
+      kind: "lua",
+      args: { lua: "dismount_tool()" },
+    });
     expect(moveToHomeSpy).toHaveBeenCalledWith("all");
     expect(findHomeSpy).toHaveBeenCalledWith("all");
     controls.unmount();
@@ -1253,8 +1519,19 @@ describe("selection popup controls", () => {
 
   it("toggles the UTM laser", () => {
     const p = layerProps();
+    p.config.laser = true;
     p.set3DConfigValue = jest.fn();
     const controls = render(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "utm",
+        ...objectBase({ kind: "utm", id: 0 }),
+      }} />);
+    fireEvent.click(controls.container.querySelector(
+      ".object-popup-laser-row .fb-toggle-button") as Element);
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("laser", "0");
+    p.config.laser = false;
+    controls.rerender(<ObjectPopupControls
       {...p}
       object={{
         kind: "utm",
@@ -1294,6 +1571,8 @@ describe("selection popup controls", () => {
       .mockImplementation(() => <div className={"mock-box-top"} />);
     const p = layerProps();
     p.fbosConfig = fakeFbosConfig();
+    p.fbosConfig.body.firmware_hardware = "farmduino_k15";
+    p.fbosConfig.body.boot_sequence_id = 7;
     p.bot = fakeBot;
     p.resources = buildResourceIndex().index;
     p.getConfigValue = jest.fn(() => true);
@@ -1312,6 +1591,28 @@ describe("selection popup controls", () => {
       isEditing: false,
       botOnline: true,
     }));
+    controls.unmount();
+
+    p.getConfigValue = undefined;
+    controls = render(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "electronics",
+        ...objectBase({ kind: "electronics", id: 0 }),
+      }} />);
+    const lastBoxTopCall = boxTopSpy.mock.calls[
+      boxTopSpy.mock.calls.length - 1];
+    expect(lastBoxTopCall?.[0].threeDimensions).toBeFalsy();
+    controls.unmount();
+
+    p.fbosConfig.body.firmware_hardware = "arduino";
+    controls = render(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "electronics",
+        ...objectBase({ kind: "electronics", id: 0 }),
+      }} />);
+    expect(controls.container.querySelector(".mock-box-top")).toBeFalsy();
     controls.unmount();
 
     p.dispatch = undefined;
@@ -1417,6 +1718,15 @@ describe("selection popup controls", () => {
     expect(p.dispatch).toHaveBeenCalled();
     unmountRenderer(visibility);
 
+    object.sceneObject.body.show = false;
+    const hidden = createRenderer(<ObjectPopupVisibilityButton
+      {...p}
+      object={object} />);
+    expect(hidden.root.findByType("button").props.className)
+      .toContain("fa-eye-slash");
+    expect(hidden.root.findByType("button").props.title).toEqual("show");
+    unmountRenderer(hidden);
+
     const copy = createRenderer(<ObjectPopupCopyButton
       {...p}
       object={object} />);
@@ -1449,5 +1759,13 @@ describe("selection popup controls", () => {
       expect(wrapper.toJSON()).toBeNull();
       unmountRenderer(wrapper);
     });
+    const connectivity = createRenderer(<ObjectPopupControls
+      {...p}
+      object={{
+        kind: "connectivity",
+        ...objectBase({ kind: "connectivity", id: 0 }),
+      }} />);
+    expect(connectivity.toJSON()).toBeNull();
+    unmountRenderer(connectivity);
   });
 });

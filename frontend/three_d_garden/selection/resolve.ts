@@ -93,6 +93,10 @@ interface ResolvedSafeHeightObject extends ResolvedThreeDObjectBase {
   kind: "safeHeight";
 }
 
+interface ResolvedSoilHeightObject extends ResolvedThreeDObjectBase {
+  kind: "soilHeight";
+}
+
 interface ResolvedGantryBeamObject extends ResolvedThreeDObjectBase {
   kind: "gantryBeam";
 }
@@ -109,6 +113,7 @@ export type ResolvedThreeDObject =
   | ResolvedSceneObject
   | ResolvedBedObject
   | ResolvedSafeHeightObject
+  | ResolvedSoilHeightObject
   | ResolvedGantryBeamObject;
 
 export interface ResolvedLocationObject {
@@ -131,6 +136,7 @@ export const objectHasSelectionOverlay = (
   && object.kind != "utm"
   && object.kind != "electronics"
   && object.kind != "safeHeight"
+  && object.kind != "soilHeight"
   && object.kind != "camera"
   && object.kind != "connectivity"
   && object.kind != "sceneObject"
@@ -450,6 +456,32 @@ const resolveSafeHeightObject = (
   };
 };
 
+const resolveSoilHeightObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedSoilHeightObject => {
+  const { botSizeY, minSoilZ, maxSoilZ } = props.config;
+  const position = get3DPositionNoMirrorFunc(props.config)({
+    x: 0,
+    y: botSizeY / 2,
+  });
+  const z = selection.id == 1 ? minSoilZ : maxSoilZ;
+  const worldPosition: [number, number, number] = [
+    position.x,
+    position.y,
+    zZero(props.config) + z,
+  ];
+  return {
+    kind: "soilHeight",
+    selection,
+    name: t("Soil height"),
+    worldPosition,
+    popupPosition: [worldPosition[0], worldPosition[1], worldPosition[2] + 75],
+    ringRadius: MIN_RING_RADIUS,
+    locationCoordinate: { x: 0, y: botSizeY / 2, z },
+  };
+};
+
 const resolveGantryBeamObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection,
@@ -487,6 +519,7 @@ const resolveGantryBeamObject = (
 export const resolveSelectedObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection | undefined,
+  // eslint-disable-next-line complexity
 ): ResolvedThreeDObject | undefined => {
   if (!selection) { return undefined; }
   switch (selection.kind) {
@@ -501,6 +534,7 @@ export const resolveSelectedObject = (
     case "sceneObject": return resolveSceneObject(props, selection);
     case "bed": return resolveBedObject(props, selection);
     case "safeHeight": return resolveSafeHeightObject(props, selection);
+    case "soilHeight": return resolveSoilHeightObject(props, selection);
     case "gantryBeam": return resolveGantryBeamObject(props, selection);
   }
 };

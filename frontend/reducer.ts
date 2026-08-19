@@ -122,6 +122,10 @@ export const appReducer =
       s.pointsPanelState[a.payload] = !s.pointsPanelState[a.payload];
       return s;
     })
+    .add<keyof PointsPanelState>(Actions.OPEN_POINTS_PANEL_OPTION, (s, a) => {
+      s.pointsPanelState[a.payload] = true;
+      return s;
+    })
     .add<keyof CurvesPanelState>(Actions.TOGGLE_CURVES_PANEL_OPTION, (s, a) => {
       s.curvesPanelState[a.payload] = !s.curvesPanelState[a.payload];
       return s;

@@ -46,6 +46,7 @@ const objectShowsLocation = (object: ResolvedThreeDObject) =>
     "sceneObject",
     "bed",
     "safeHeight",
+    "soilHeight",
     "gantryBeam",
   ].includes(object.kind);
 

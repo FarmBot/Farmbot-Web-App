@@ -12,6 +12,7 @@ export interface FilterSearchProps {
   onChange: (item: DropDownItem) => void;
   nullChoice: DropDownItem;
   itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
+  matchTargetWidth?: boolean;
   usePortal?: boolean;
   title?: string;
 }
@@ -51,6 +52,7 @@ export class FilterSearch
           items.length < 4 ? "few-items" : "",
         ].join(" "),
         modifiers: { offset: { options: { offset: [0, 0] } } },
+        matchTargetWidth: this.props.matchTargetWidth,
         usePortal: this.props.usePortal,
       }}>
       <i className="fa fa-caret-down fa-md" />

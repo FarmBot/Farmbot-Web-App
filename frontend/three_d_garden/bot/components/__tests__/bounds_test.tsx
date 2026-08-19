@@ -32,6 +32,8 @@ describe("<Bounds />", () => {
     expect(container).toHaveTextContent("Safe height");
     expect(container).toHaveTextContent("Min soil");
     expect(container).toHaveTextContent("Max soil");
+    expect(container).toContainHTML("safe-height-highlight");
+    expect(container).toContainHTML("soil-height-highlight");
     const wrapper = createRenderer(<Bounds {...p} />);
     const pills = wrapper.root.findAllByType(ControlPillButton);
     pills.forEach(pill => {
@@ -43,7 +45,7 @@ describe("<Bounds />", () => {
       ?.props.length).toEqual(heightPlanePillLength("Safe height", 24));
     expect(heightPlanePillLength("A much longer translation", 24))
       .toBeGreaterThan(heightPlanePillLength("Safe height", 24));
-    expect(p.onSelectObject).toHaveBeenCalledTimes(1);
+    expect(p.onSelectObject).toHaveBeenCalledTimes(3);
     unmountRenderer(wrapper);
   });
 
@@ -76,6 +78,25 @@ describe("<Bounds />", () => {
       kind: "safeHeight",
       id: 0,
     });
+  });
+
+  it("opens the soil height popup from both soil planes", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
+    p.onSelectObject = jest.fn();
+    const { container } = render(<Bounds {...p} />);
+    ["min-soil-pill", "max-soil-pill"].map(name => {
+      const pill = container.querySelector(`[name='${name}']`);
+      if (!pill) { throw new Error(`${name} not found`); }
+      fireEvent.pointerDown(pill);
+      fireEvent.pointerUp(pill);
+      fireEvent.click(pill);
+    });
+    expect(p.onSelectObject).toHaveBeenCalledTimes(2);
+    expect(p.onSelectObject).toHaveBeenNthCalledWith(
+      1, { kind: "soilHeight", id: 1 });
+    expect(p.onSelectObject).toHaveBeenNthCalledWith(
+      2, { kind: "soilHeight", id: 0 });
   });
 
   it("skips unrelated enabled overlay config churn", () => {
