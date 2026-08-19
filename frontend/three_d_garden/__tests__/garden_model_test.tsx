@@ -1829,6 +1829,7 @@ describe("<GardenModel />", () => {
   });
 
   it("shows only the hovered plant when the plant layer is hidden", () => {
+    location.pathname = Path.mock(Path.designer());
     const hoveredPlant = fakePlant();
     hoveredPlant.body.id = 1;
     const hiddenPlant = fakePlant();

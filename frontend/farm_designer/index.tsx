@@ -33,6 +33,7 @@ import {
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
 import { StargazingControls } from "../three_d_garden/stargazing/stargazing";
+import { ThreeDGuard } from "../three_d_garden/three_d_required_overlay";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -233,52 +234,55 @@ export class RawFarmDesigner
       </div>
 
       {threeDGarden
-        ? <ThreeDGardenMap
-          designer={this.props.designer}
-          resources={this.props.resources}
-          device={this.props.device}
-          deviceAccount={this.props.deviceAccount}
-          bot={this.props.bot}
-          plants={this.props.plants}
-          gardenSize={this.mapTransformProps.gridSize}
-          firmwareHardware={
-            this.props.sourceFbosConfig("firmware_hardware").value}
-          firmwareSettings={this.props.botMcuParams}
-          gantryHeight={
-            this.props.sourceFbosConfig("gantry_height").value as number}
-          soilHeight={
-            this.props.sourceFbosConfig("soil_height").value as number}
-          negativeZ={!!this.props.botMcuParams.movement_home_up_z}
-          dispatch={this.props.dispatch}
-          curves={this.props.curves}
-          mapPoints={this.props.genericPoints}
-          weeds={this.props.weeds}
-          tools={this.props.tools}
-          sequences={this.props.sequences}
-          fbosConfig={this.props.fbosConfig}
-          timeSettings={this.props.timeSettings}
-          botOnline={this.props.botOnline}
-          arduinoBusy={this.props.arduinoBusy}
-          currentBotLocation={this.props.currentBotLocation}
-          movementState={this.props.movementState}
-          defaultAxes={this.props.defaultAxes}
-          noUTM={this.props.mountedToolInfo.noUTM}
-          toolSlots={this.props.toolSlots}
-          mountedToolName={this.props.mountedToolInfo.name}
-          botPosition={this.props.botLocationData.position}
-          peripheralValues={this.props.peripheralValues}
-          peripherals={this.props.peripherals}
-          allPoints={this.props.allPoints}
-          groups={this.props.groups}
-          images={this.props.latestImages}
-          sensorReadings={this.props.sensorReadings}
-          sensors={this.props.sensors}
-          env={this.props.env}
-          sceneObjects={this.props.sceneObjects}
-          farmwareEnvs={this.props.farmwareEnvs}
-          logs={this.props.logs}
-          cameraCalibrationData={this.props.cameraCalibrationData}
-          getWebAppConfigValue={this.props.getConfigValue} />
+        ? <ThreeDGuard onSwitchTo2D={() => this.props.dispatch(
+          setWebAppConfigValue(BooleanSetting.three_d_garden, false))}>
+          <ThreeDGardenMap
+            designer={this.props.designer}
+            resources={this.props.resources}
+            device={this.props.device}
+            deviceAccount={this.props.deviceAccount}
+            bot={this.props.bot}
+            plants={this.props.plants}
+            gardenSize={this.mapTransformProps.gridSize}
+            firmwareHardware={
+              this.props.sourceFbosConfig("firmware_hardware").value}
+            firmwareSettings={this.props.botMcuParams}
+            gantryHeight={
+              this.props.sourceFbosConfig("gantry_height").value as number}
+            soilHeight={
+              this.props.sourceFbosConfig("soil_height").value as number}
+            negativeZ={!!this.props.botMcuParams.movement_home_up_z}
+            dispatch={this.props.dispatch}
+            curves={this.props.curves}
+            mapPoints={this.props.genericPoints}
+            weeds={this.props.weeds}
+            tools={this.props.tools}
+            sequences={this.props.sequences}
+            fbosConfig={this.props.fbosConfig}
+            timeSettings={this.props.timeSettings}
+            botOnline={this.props.botOnline}
+            arduinoBusy={this.props.arduinoBusy}
+            currentBotLocation={this.props.currentBotLocation}
+            movementState={this.props.movementState}
+            defaultAxes={this.props.defaultAxes}
+            noUTM={this.props.mountedToolInfo.noUTM}
+            toolSlots={this.props.toolSlots}
+            mountedToolName={this.props.mountedToolInfo.name}
+            botPosition={this.props.botLocationData.position}
+            peripheralValues={this.props.peripheralValues}
+            peripherals={this.props.peripherals}
+            allPoints={this.props.allPoints}
+            groups={this.props.groups}
+            images={this.props.latestImages}
+            sensorReadings={this.props.sensorReadings}
+            sensors={this.props.sensors}
+            env={this.props.env}
+            sceneObjects={this.props.sceneObjects}
+            farmwareEnvs={this.props.farmwareEnvs}
+            logs={this.props.logs}
+            cameraCalibrationData={this.props.cameraCalibrationData}
+            getWebAppConfigValue={this.props.getConfigValue} />
+        </ThreeDGuard>
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}
           style={{

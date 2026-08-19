@@ -2,7 +2,7 @@ import React from "react";
 import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
 } from "../index";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { FarmDesignerProps, GardenMapProps } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
@@ -30,6 +30,7 @@ import { NavigationContext } from "../../routes_helpers";
 import * as mapLegend from "../map/legend/garden_map_legend";
 import * as gardenMap from "../map/garden_map";
 import { GardenMapLegendProps } from "../map/interfaces";
+import * as configActions from "../../config_storage/actions";
 
 let lastLegendProps: GardenMapLegendProps | undefined;
 let lastGardenMapProps: GardenMapProps | undefined;
@@ -220,6 +221,23 @@ describe("<FarmDesigner />", () => {
     p.designer.threeDTime = "12:00";
     const { container } = render(<FarmDesigner {...p} />);
     expect(container.innerHTML).toContain("three-d-garden");
+  });
+
+  it("falls back when WebGL is unavailable", () => {
+    const webGLSpy = jest.spyOn(HTMLCanvasElement.prototype, "getContext")
+      // eslint-disable-next-line no-null/no-null
+      .mockImplementation((() => null) as never);
+    const setConfig = jest.spyOn(configActions, "setWebAppConfigValue");
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.textContent).toContain("3D graphics unavailable");
+    const toggle = container.querySelector(".fb-toggle-button");
+    toggle && fireEvent.click(toggle);
+    expect(setConfig).toHaveBeenCalledWith(
+      BooleanSetting.three_d_garden, false);
+    webGLSpy.mockRestore();
+    setConfig.mockRestore();
   });
 
   it("navigates from context", () => {
