@@ -4,6 +4,8 @@ import {
 
 const maxArcSegmentLength = 2;
 
+export class InvalidBeltPathError extends Error { }
+
 interface BeltPoint {
   x: number;
   y: number;
@@ -111,7 +113,9 @@ const pointToPulleyTangent = (
   const distanceSquared = dx * dx + dy * dy;
   const radiusSquared = pulley.radius * pulley.radius;
   if (distanceSquared <= radiusSquared) {
-    throw new Error("Belt point must be outside the pulley.");
+    throw new InvalidBeltPathError(
+      "Belt point must be outside the pulley.",
+    );
   }
   const distance = Math.sqrt(distanceSquared);
   const along = pulley.radius / distance;
@@ -218,7 +222,9 @@ const pulleyContactSide = (
 
 const selectTangent = (candidates: BeltSpan[]): BeltSpan => {
   if (candidates.length != 1) {
-    throw new Error("Belt route does not have one valid tangent.");
+    throw new InvalidBeltPathError(
+      "Belt route does not have one valid tangent.",
+    );
   }
   return candidates[0];
 };
@@ -314,7 +320,9 @@ const beltProjection = (nodes: BeltPathNode3D[]): BeltProjection => {
       origin,
     };
   }
-  throw new Error("Belt path must lie in one axis-aligned plane.");
+  throw new InvalidBeltPathError(
+    "Belt path must lie in one axis-aligned plane.",
+  );
 };
 
 const projectBeltPoint = (

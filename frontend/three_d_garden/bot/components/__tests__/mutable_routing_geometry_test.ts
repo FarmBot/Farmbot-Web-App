@@ -39,18 +39,22 @@ describe("mutable routing geometry", () => {
     geometry.dispose();
   });
 
-  it("rejects carrier and belt topology changes", () => {
+  it("rebuilds carrier geometry when its topology changes", () => {
     const shape = new Shape();
     shape.moveTo(0, 0);
     shape.lineTo(10, 0);
     shape.lineTo(10, 10);
     shape.closePath();
     const carrier = new MutableCarrierGeometry(shape, 5);
+    const position = carrier.getAttribute("position");
     const changedShape = shape.clone();
     changedShape.lineTo(0, 5);
-    expect(() => carrier.update(changedShape)).toThrow("topology changed");
+    carrier.update(changedShape);
+    expect(carrier.getAttribute("position")).not.toBe(position);
     carrier.dispose();
+  });
 
+  it("rejects belt topology changes", () => {
     const belt = new MutableBeltGeometry(
       buildXAxisBeltPath("v1.9", 500, 2987, 300),
     );

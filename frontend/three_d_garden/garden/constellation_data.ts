@@ -87,8 +87,11 @@ export const createCropConstellationCatalogResource = (
   let catalogPromise: Promise<CropConstellationCatalog> | undefined;
   let catalogError: Error | undefined;
 
-  const load = () => {
-    catalogPromise ||= fetchCatalog(url)
+  const fetchAndDecode = (reload = false) => {
+    const request = reload
+      ? fetchCatalog(url, { cache: "reload" })
+      : fetchCatalog(url);
+    return request
       .then(response => {
         if (!response.ok) {
           throw new Error(
@@ -97,7 +100,15 @@ export const createCropConstellationCatalogResource = (
         }
         return response.arrayBuffer();
       })
-      .then(decodeCropConstellationCatalog)
+      .then(decodeCropConstellationCatalog);
+  };
+
+  const load = () => {
+    catalogPromise ||= fetchAndDecode()
+      .catch(error => error instanceof Error &&
+        error.message == "Constellation data is truncated."
+        ? fetchAndDecode(true)
+        : Promise.reject(error))
       .then(decodedCatalog => catalog = decodedCatalog)
       .catch(error => {
         const loadError = error instanceof Error

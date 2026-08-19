@@ -123,6 +123,32 @@ describe("createCropConstellationCatalogResource()", () => {
     expect(fetchCatalog).toHaveBeenCalledWith("/constellations.bin");
   });
 
+  it("retries a truncated catalog without using the cached response", async () => {
+    const fetchCatalog = jest.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(catalogBuffer()),
+      }) as unknown as typeof fetch;
+    const resource = createCropConstellationCatalogResource(
+      "/constellations.bin",
+      fetchCatalog,
+    );
+    const load = thrownBy(resource.read) as Promise<unknown>;
+
+    await load;
+    expect(resource.read().constellations[0].cropSlug).toEqual("crop");
+    expect(fetchCatalog).toHaveBeenNthCalledWith(1, "/constellations.bin");
+    expect(fetchCatalog).toHaveBeenNthCalledWith(
+      2,
+      "/constellations.bin",
+      { cache: "reload" },
+    );
+  });
+
   it("reports HTTP failures", async () => {
     const fetchCatalog = jest.fn(() => Promise.resolve({
       ok: false,

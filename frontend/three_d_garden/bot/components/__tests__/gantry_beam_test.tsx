@@ -34,7 +34,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { useHelper } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
-import { clone } from "lodash";
+import { clone, range } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
 import * as threeFiber from "@react-three/fiber";
@@ -88,23 +88,42 @@ describe("<GantryBeam />", () => {
     expect(container).toContainHTML("light");
   });
 
-  it("renders lights without frame callbacks", () => {
+  it("updates light targets in render frames", () => {
+    const frameCallbacks: Parameters<typeof threeFiber.useFrame>[0][] = [];
+    const helperUpdate = jest.fn();
+    const helperMock = useHelper as unknown as jest.Mock;
+    range(5).forEach(() => helperMock.mockReturnValueOnce({
+      current: { update: helperUpdate },
+    }));
+    useFrameSpy.mockImplementation(
+      (callback: Parameters<typeof threeFiber.useFrame>[0]) => {
+        frameCallbacks.push(callback);
+        return undefined;
+      });
     const p = fakeProps();
     p.config.light = true;
     p.config.kitVersion = "v1.8";
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("light");
-    expect(useFrameSpy).not.toHaveBeenCalled();
+    expect(frameCallbacks).toHaveLength(5);
+    jest.clearAllMocks();
+
+    frameCallbacks.forEach(callback => callback({} as never, 0));
+
+    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(5);
+    expect(helperUpdate).toHaveBeenCalledTimes(5);
   });
 
   it("updates light targets", () => {
     const p = fakeProps();
     p.config.light = true;
     render(<GantryBeam {...p} />);
-    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.copy).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.copy).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(10);
   });
 
   it("renders debug helpers", () => {

@@ -1,4 +1,5 @@
 import { Cylinder, Extrude, useHelper } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import React from "react";
 import { get3DPositionNoMirrorFunc } from "../../helpers";
 import { Group, MeshPhongMaterial, SpotLight } from "../../components";
@@ -110,11 +111,15 @@ export const EMISSIVE_PROPS = {
 const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
   // eslint-disable-next-line no-null/no-null
   const lightRef = React.useRef<ThreeSpotLight>(null!);
-  useHelper(debug ? lightRef : undefined, SpotLightHelper, "white");
+  const helperRef = useHelper(
+    debug ? lightRef : undefined,
+    SpotLightHelper,
+    "white",
+  );
   const worldPosRef = React.useRef<Vector3>(new Vector3());
   const targetPosRef = React.useRef<Vector3>(new Vector3());
   const downVector = React.useMemo(() => new Vector3(0, 0, -1), []);
-  React.useLayoutEffect(() => {
+  const updateTarget = React.useCallback(() => {
     const light = lightRef.current;
     if (!light || typeof light.getWorldPosition != "function") { return; }
     const worldPos = worldPosRef.current;
@@ -123,7 +128,10 @@ const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
     targetPos.copy(worldPos).add(downVector);
     light.target.position.copy(targetPos);
     light.target.updateMatrixWorld();
-  });
+    helperRef?.current?.update();
+  }, [downVector, helperRef]);
+  React.useLayoutEffect(updateTarget);
+  useFrame(updateTarget);
   return <SpotLight
     ref={lightRef}
     position={[0, 0, yOffset]}

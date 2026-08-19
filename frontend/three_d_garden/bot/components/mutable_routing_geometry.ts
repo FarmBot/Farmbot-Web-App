@@ -59,8 +59,15 @@ export class MutableCarrierGeometry extends BufferGeometry {
 
   constructor(shape: Shape, depth: number) {
     super();
-    const points = shapePoints(shape);
     this.depth = depth;
+    this.faces = [];
+    this.pointCount = 0;
+    this.rebuild(shape);
+    this.update(shape);
+  }
+
+  private rebuild(shape: Shape) {
+    const points = shapePoints(shape);
     this.faces = ShapeUtils.triangulateShape(points, []);
     this.pointCount = points.length;
     const vertexCount = this.faces.length * 6 + this.pointCount * 6;
@@ -70,13 +77,13 @@ export class MutableCarrierGeometry extends BufferGeometry {
     );
     attribute.setUsage(DynamicDrawUsage);
     this.setAttribute("position", attribute);
-    this.update(shape);
   }
 
   update(shape: Shape) {
-    const points = shapePoints(shape);
-    if (points.length !== this.pointCount) {
-      throw new Error("Cable carrier outline topology changed.");
+    let points = shapePoints(shape);
+    if (points.length != this.pointCount) {
+      this.rebuild(shape);
+      points = shapePoints(shape);
     }
     const array = this.getAttribute("position").array as Float32Array;
     let offset = 0;

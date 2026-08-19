@@ -7,7 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { mergeGeometries } from
   "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
-import { BeltPath } from "./belt_path";
+import { BeltPath, InvalidBeltPathError } from "./belt_path";
 import { getBotVersion } from "./bot_versions";
 import {
   millimetreGeometryKey, useOwnedBufferGeometries,
@@ -70,7 +70,12 @@ const FrameBelt = (props: FrameBeltProps) => {
   const initialPosition = props.positionRef.current;
   const [initialGeometry] = React.useState(() => {
     perfCount(props.metric);
-    return new MutableBeltGeometry(props.createPath(initialPosition));
+    try {
+      return new MutableBeltGeometry(props.createPath(initialPosition));
+    } catch (error) {
+      if (!(error instanceof InvalidBeltPathError)) { throw error; }
+      return new MutableBeltGeometry(props.createPath({ x: 0, y: 0, z: 0 }));
+    }
   });
   const lastDeformationKey = React.useRef(
     props.deformationKey(initialPosition),
@@ -85,8 +90,14 @@ const FrameBelt = (props: FrameBeltProps) => {
     const deformationKey = props.deformationKey(position);
     if (deformationKey === lastDeformationKey.current) { return; }
     perfCount(`${props.metric}.update`);
-    initialGeometry.update(props.createPath(position));
-    lastDeformationKey.current = deformationKey;
+    try {
+      initialGeometry.update(props.createPath(position));
+      lastDeformationKey.current = deformationKey;
+    } catch (error) {
+      if (!(error instanceof InvalidBeltPathError)) {
+        throw error;
+      }
+    }
   });
 
   React.useLayoutEffect(() => () => {
