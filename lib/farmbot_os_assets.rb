@@ -12,6 +12,7 @@ module FarmBotOsAssets
 
   def fetch(filename)
     uri = URI("#{BASE_URL}/#{filename}")
+    puts "Fetching FarmBot OS asset: #{uri}"
     response = Net::HTTP.get_response(uri)
     return response.body if response.is_a?(Net::HTTPSuccess)
 
