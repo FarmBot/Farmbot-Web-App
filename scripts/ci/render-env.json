@@ -8,7 +8,7 @@
   "COMBINED_RENDER_IMAGE": "render_summary",
   "COMBINED_RENDER_IMAGE_SCALE": "3",
   "FE_COVERAGE_NAME": "fe_coverage",
-  "SCENE_METRICS_HEADER": "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes, commit sha",
+  "SCENE_METRICS_HEADER": "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes, commit sha, source",
   "ARTIFACT_BRANCH": "ci-artifacts",
   "FALLBACK_FPS_VALUE": "100",
   "FALLBACK_FE_COVERAGE_VALUE": "99.9"

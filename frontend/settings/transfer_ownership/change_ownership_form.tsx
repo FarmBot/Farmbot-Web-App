@@ -35,14 +35,14 @@ export const ChangeOwnershipForm = () => {
   // eslint-disable-next-line no-null/no-null
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  return <Highlight className={"section"}
+  return <Highlight className={"section advanced"}
     settingName={DeviceSetting.changeOwnership}>
     <ExpandableHeader
       expanded={open}
       title={t(DeviceSetting.changeOwnership)}
       onClick={() => setOpen(!open)} />
     <Collapse isOpen={!!open}>
-      <div className={"change-ownership-grid"}>
+      <div className={"change-ownership-grid-wrapper"}>
         <div>
           <p>
             {t("Change the account FarmBot is connected to.")}

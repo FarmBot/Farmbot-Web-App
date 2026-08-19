@@ -61,6 +61,8 @@ URLS_JSON="${URLS_JSON:-scripts/ci/render-urls.json}"
 STORAGE_STATES_DIR="${STORAGE_STATES_DIR:-scripts/ci/storage-states}"
 commit_sha="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 commit_sha="${commit_sha:0:10}"
+history_source=dev
+[ "${GITHUB_REF_NAME:-}" = "staging" ] && history_source=staging
 chosen_seen=false
 
 ensure_scene_metrics_header() {
@@ -73,12 +75,12 @@ ensure_scene_metrics_header() {
 
   local header
   header=$(head -n 1 "$path")
-  local needs_commit_sha=false
-  [ "$header" = "$SCENE_METRICS_HEADER" ] || needs_commit_sha=true
+  local needs_header_migration=false
+  [ "$header" = "$SCENE_METRICS_HEADER" ] || needs_header_migration=true
 
   {
     printf '%s\n' "$SCENE_METRICS_HEADER"
-    if [ "$needs_commit_sha" = "true" ]; then
+    if [ "$needs_header_migration" = "true" ]; then
       tail -n +2 "$path" | awk 'NF && $0 != "undefined" && $0 != "null" {print $0 ", "}'
     else
       tail -n +2 "$path" | awk 'NF && $0 != "undefined" && $0 != "null" {print}'
@@ -155,7 +157,7 @@ while IFS=$'\034' read -r -u 3 \
       echo "Missing scene metrics for ${url}"
       continue
     fi
-    scene_metrics="${scene_metrics}, ${commit_sha}"
+    scene_metrics="${scene_metrics}, ${commit_sha}, ${history_source}"
     ensure_scene_metrics_header "$scene_metrics_path"
     printf '%s\n' "$scene_metrics" >> "$scene_metrics_path"
     echo "SCENE_METRICS=${scene_metrics_path}"

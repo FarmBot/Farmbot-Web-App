@@ -5,9 +5,9 @@ import { ExternalUrl } from "../external_urls";
 describe("ExternalUrl", () => {
   it("returns urls", () => {
     expect(ExternalUrl.featureMinVersions)
-      .toEqual("https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/FEATURE_MIN_VERSIONS.json");
+      .toEqual("/FEATURE_MIN_VERSIONS.json");
     expect(ExternalUrl.osReleaseNotes)
-      .toEqual("https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/RELEASE_NOTES.md");
+      .toEqual("/RELEASE_NOTES.md");
     expect(ExternalUrl.webAppRepo)
       .toEqual("https://github.com/FarmBot/Farmbot-Web-App");
     expect(ExternalUrl.gitHubFarmBot)

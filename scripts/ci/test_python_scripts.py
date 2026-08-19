@@ -107,6 +107,7 @@ class CiPythonScriptTest(unittest.TestCase):
                 "FALLBACK_FPS_VALUE": "100",
                 "LOAD_DURATION": "5.00",
                 "GITHUB_SHA": "0123456789abcdef",
+                "GITHUB_REF_NAME": "dev-branch",
                 "GITHUB_ENV": str(github_env),
                 "PATH": os.environ["PATH"],
             })
@@ -118,9 +119,9 @@ class CiPythonScriptTest(unittest.TestCase):
             self.assertEqual(stderr, "")
             self.assertEqual(
                 path.read_text(),
-                "fps,% change,load duration,commit sha\n"
-                "100.00,0.00,5.00,old123\n"
-                "106.04,6.04,5.00,0123456789\n")
+                "fps,% change,load duration,commit sha,source\n"
+                "100.00,0.00,5.00,old123,\n"
+                "106.04,6.04,5.00,0123456789,dev\n")
             self.assertEqual(github_env.read_text(), "PERCENT_CHANGE=6.04\n")
         finally:
             path.unlink(missing_ok=True)
@@ -269,6 +270,7 @@ class CiPythonScriptTest(unittest.TestCase):
                 "FALLBACK_FE_COVERAGE_VALUE": "75",
                 "FE_LCOV_PATH": lcov_path,
                 "GITHUB_SHA": "0123456789abcdef",
+                "GITHUB_REF_NAME": "dev-branch",
                 "PATH": os.environ["PATH"],
             })
         finally:
@@ -280,8 +282,8 @@ class CiPythonScriptTest(unittest.TestCase):
             "Covered lines: 12, Total lines: 15, Coverage: 80.00%", stdout)
         self.assertIn("80.00% (6.67% change)", stdout)
         self.assertIn(
-            "percent,covered lines,total lines,percent change,commit sha\n"
-            "80.00,12,15,6.67,0123456789\n", stdout)
+            "percent,covered lines,total lines,percent change,commit sha,source\n"
+            "80.00,12,15,6.67,0123456789,dev\n", stdout)
         self.assertEqual(stderr, "")
 
     def test_track_fe_coverage_migrates_csv_header(self):
@@ -300,6 +302,7 @@ class CiPythonScriptTest(unittest.TestCase):
                 "FALLBACK_FE_COVERAGE_VALUE": "70",
                 "FE_LCOV_PATH": lcov_path,
                 "GITHUB_SHA": "abcdef0123456789",
+                "GITHUB_REF_NAME": "dev-branch",
                 "PATH": os.environ["PATH"],
             })
         finally:
@@ -308,9 +311,9 @@ class CiPythonScriptTest(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertIn(
-            "percent,covered lines,total lines,percent change,commit sha\n"
-            "75.00,3,4,n/a,\n"
-            "80.00,8,10,6.67,abcdef0123\n", stdout)
+            "percent,covered lines,total lines,percent change,commit sha,source\n"
+            "75.00,3,4,n/a,,\n"
+            "80.00,8,10,6.67,abcdef0123,dev\n", stdout)
         self.assertEqual(stderr, "")
 
 

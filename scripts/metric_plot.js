@@ -262,6 +262,20 @@ function buildMetricPlotSvg(samples, options = {}) {
             ].join('');
         })
         .join('');
+    const historyBoundaryIndex = Number(options.historyBoundaryIndex);
+    const historyBoundarySample = Number.isInteger(historyBoundaryIndex)
+        ? series[0]?.samples.find(({ index }) => index === historyBoundaryIndex)
+        : undefined;
+    const historyBoundaryMarker = historyBoundarySample
+        ? (() => {
+            const markerX = xFor(historyBoundarySample.x);
+            const labelOnLeft = markerX > width - margin.right - 64;
+            return [
+                `<line x1="${formatPoint(markerX)}" y1="${margin.top}" x2="${formatPoint(markerX)}" y2="${height - margin.bottom}" stroke="#8250df" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round" />`,
+                `<text x="${formatPoint(markerX + (labelOnLeft ? -6 : 6))}" y="${margin.top + 16}" text-anchor="${labelOnLeft ? 'end' : 'start'}" fill="#8250df" font-family="Arial, sans-serif" font-size="12" font-weight="700">staging</text>`,
+            ].join('');
+        })()
+        : '';
     const firstLoaded = series[0]?.samples.find(({ loading }) => loading === false);
     const loadedLabel = firstLoaded
         ? escapeSvgText(`Loaded ${formatStat(firstLoaded.x)}s`)
@@ -315,6 +329,7 @@ function buildMetricPlotSvg(samples, options = {}) {
     ${hasRightAxis ? `<text x="${width - 16}" y="${formatPoint((margin.top + height - margin.bottom) / 2)}" transform="rotate(90 ${width - 16} ${formatPoint((margin.top + height - margin.bottom) / 2)})" text-anchor="middle" fill="${rightAxisColor}" font-family="Arial, sans-serif" font-size="12" font-weight="700">${rightAxisLabel}</text>` : ''}
     <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#8c959f" />
     ${xTicks}
+    ${historyBoundaryMarker}
     ${loadedMarker}
     ${averageLine}
     ${lines}
@@ -377,6 +392,14 @@ const latestCommitShaFor = (rows, valueHeaders) => [...rows]
     .find(row => row['commit sha'] && valueHeaders.some(header =>
         Number.isFinite(Number(row[header]))))?.['commit sha'];
 
+const historyBoundaryIndexFor = rows => {
+    for (let index = rows.length - 1; index >= 0; index--) {
+        const source = rows[index].source?.trim();
+        if (!source || source === 'staging') { return index; }
+    }
+    return undefined;
+};
+
 const addLatestCommitSha = (svg, latestCommitSha) => {
     if (!latestCommitSha) { return svg; }
     const label = escapeSvgText(latestCommitSha);
@@ -399,7 +422,13 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
     const firstHeader = headers[0];
     const xHeader = headers.find(header =>
         ['elapsed seconds', 'elapsedSeconds'].includes(header));
-    const sceneMetricExcludedHeaders = ['epoch', 'Points', 'Lines', 'commit sha'];
+    const sceneMetricExcludedHeaders = [
+        'epoch',
+        'Points',
+        'Lines',
+        'commit sha',
+        'source',
+    ];
     const sceneMetricValueFor = (row, header) => {
         const value = Number(row[header]);
         if (header === 'FPS') { return value ? 1000 / value : NaN; }
@@ -428,6 +457,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             yTickInterval: 0.1,
             decimalValues: true,
             samples: rows.map((row, index) => sampleFor(row, index, 'percent')),
+            historyBoundaryIndex: historyBoundaryIndexFor(rows),
             latestCommitSha: latestCommitShaFor(rows, ['percent']),
         };
     }
@@ -440,6 +470,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
             yTickInterval: 100,
             decimalValues: false,
             samples: rows.map((row, index) => sampleFor(row, index, 'fps')),
+            historyBoundaryIndex: historyBoundaryIndexFor(rows),
             latestCommitSha: latestCommitShaFor(rows, ['fps']),
         };
     }
@@ -463,6 +494,7 @@ const inferCsvPlot = ({ headers, rows }, filename = '') => {
                         value: sceneMetricValueFor(row, header),
                     })),
                 })),
+                historyBoundaryIndex: historyBoundaryIndexFor(rows),
                 latestCommitSha: latestCommitShaFor(rows, plottableHeaders),
             };
         }
@@ -555,6 +587,7 @@ async function saveLoadDurationPlot(browser, csvPath, destination) {
                 x: index,
                 value: Number(row['load duration']),
             })),
+            historyBoundaryIndex: historyBoundaryIndexFor(rows),
             latestCommitSha: latestCommitShaFor(rows, ['load duration']),
         },
     });
@@ -613,6 +646,7 @@ module.exports = {
     buildCsvPlotSvg,
     buildMetricPlotSvg,
     escapeSvgText,
+    historyBoundaryIndexFor,
     inferCsvPlot,
     parseCsv,
     saveCsvPlot,
