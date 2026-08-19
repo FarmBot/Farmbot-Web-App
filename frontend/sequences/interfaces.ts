@@ -83,6 +83,7 @@ export interface ActiveMiddleState {
 
 export interface SequenceHeaderProps extends SequencePropsBase {
   sequence: TaggedSequence;
+  disableViewSequenceCeleryScript: () => void;
   toggleViewSequenceCeleryScript: () => void;
   viewCeleryScript: boolean;
   showName: boolean;
@@ -90,6 +91,7 @@ export interface SequenceHeaderProps extends SequencePropsBase {
 
 export interface SequenceBtnGroupProps extends SequencePropsBase {
   sequence: TaggedSequence;
+  disableViewSequenceCeleryScript(): void;
   toggleViewSequenceCeleryScript(): void;
   viewCeleryScript: boolean;
 }
@@ -97,6 +99,7 @@ export interface SequenceBtnGroupProps extends SequencePropsBase {
 export interface SequenceSettingsMenuProps {
   dispatch: Function;
   getWebAppConfigValue: GetWebAppConfigValue;
+  disableViewSequenceCeleryScript(): void;
 }
 
 export interface SequenceShareMenuProps {
@@ -111,6 +114,7 @@ export interface SequenceSettingProps {
   getWebAppConfigValue: GetWebAppConfigValue;
   confirmation?: string;
   defaultOn?: boolean;
+  onChange?: () => void;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;

@@ -479,6 +479,16 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(ref.current?.state.sequencePreview).toEqual(sequence);
   });
 
+  it("disables view sequence celery script", () => {
+    location.pathname = Path.mock(Path.sequences("1"));
+    const p = fakeProps();
+    const ref = React.createRef<SequenceEditorMiddleActive>();
+    render(<SequenceEditorMiddleActive {...p} ref={ref} />);
+    ref.current?.setState({ viewSequenceCeleryScript: true });
+    act(() => ref.current?.disableViewSequenceCeleryScript());
+    expect(ref.current?.state.viewSequenceCeleryScript).toEqual(false);
+  });
+
   it("sets error", () => {
     location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
@@ -725,6 +735,7 @@ describe("<SequenceBtnGroup />", () => {
     resources: buildResourceIndex().index,
     syncStatus: "synced",
     getWebAppConfigValue: jest.fn(),
+    disableViewSequenceCeleryScript: jest.fn(),
     toggleViewSequenceCeleryScript: jest.fn(),
     sequencesState: emptyState().consumers.sequences,
     viewCeleryScript: true,
@@ -891,6 +902,7 @@ describe("<SequenceSettingsMenu />", () => {
   const fakeProps = (): SequenceSettingsMenuProps => ({
     dispatch: jest.fn(),
     getWebAppConfigValue: jest.fn(),
+    disableViewSequenceCeleryScript: jest.fn(),
   });
 
   it("renders settings", () => {
