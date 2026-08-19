@@ -27,6 +27,7 @@ import { t } from "../../i18next_wrapper";
 import { getWifiRouterWorldPosition } from
   "../bed/objects/utilities_post_position";
 import { sceneObjectPosition } from "../scene_objects";
+import { getBotVersion } from "../bot/bot_versions";
 
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
@@ -92,6 +93,10 @@ interface ResolvedSafeHeightObject extends ResolvedThreeDObjectBase {
   kind: "safeHeight";
 }
 
+interface ResolvedGantryBeamObject extends ResolvedThreeDObjectBase {
+  kind: "gantryBeam";
+}
+
 export type ResolvedThreeDObject =
   | ResolvedPlantObject
   | ResolvedPointObject
@@ -103,7 +108,8 @@ export type ResolvedThreeDObject =
   | ResolvedConnectivityObject
   | ResolvedSceneObject
   | ResolvedBedObject
-  | ResolvedSafeHeightObject;
+  | ResolvedSafeHeightObject
+  | ResolvedGantryBeamObject;
 
 export interface ResolvedLocationObject {
   kind: "location";
@@ -128,7 +134,8 @@ export const objectHasSelectionOverlay = (
   && object.kind != "camera"
   && object.kind != "connectivity"
   && object.kind != "sceneObject"
-  && object.kind != "bed";
+  && object.kind != "bed"
+  && object.kind != "gantryBeam";
 
 const objectName = (
   resource: { body: { name?: string, id?: number } },
@@ -167,7 +174,9 @@ const resolvePlantObject = (
     plant,
     name: objectName(plant, t("Plant")),
     worldPosition,
-    popupPosition: [worldPosition[0], worldPosition[1],
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
       worldPosition[2] + popupZOffset(plant.body.radius, 2)],
     ringRadius: Math.max(plant.body.radius, MIN_RING_RADIUS),
     locationCoordinate: {
@@ -193,7 +202,9 @@ const resolvePointObject = (
     point,
     name: objectName(point, t("Point")),
     worldPosition,
-    popupPosition: [worldPosition[0], worldPosition[1],
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
       worldPosition[2] + FIXED_POPUP_Z_OFFSET],
     ringRadius: Math.max(point.body.radius, MIN_RING_RADIUS),
     locationCoordinate: {
@@ -220,7 +231,9 @@ const resolveWeedObject = (
     weed,
     name: objectName(weed, t("Weed")),
     worldPosition,
-    popupPosition: [worldPosition[0], worldPosition[1],
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
       worldPosition[2] + popupZOffset(weed.body.radius)],
     ringRadius: Math.max(weedSize, MIN_RING_RADIUS),
     locationCoordinate: {
@@ -254,7 +267,9 @@ const resolveSlotObject = (
       worldPosition.y + ringYOffset,
       worldPosition.z,
     ],
-    popupPosition: [worldPosition.x, worldPosition.y + ringYOffset,
+    popupPosition: [
+      worldPosition.x,
+      worldPosition.y + ringYOffset,
       worldPosition.z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
@@ -280,7 +295,9 @@ const resolveUtmObject = (
     selection,
     name: t("UTM"),
     worldPosition,
-    popupPosition: [worldPosition[0], worldPosition[1],
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
       worldPosition[2] + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
@@ -302,7 +319,9 @@ const resolveElectronicsObject = (
     selection,
     name: props.deviceAccount?.body.name || t("FarmBot"),
     worldPosition: [worldPosition.x, worldPosition.y, worldPosition.z],
-    popupPosition: [worldPosition.x, worldPosition.y,
+    popupPosition: [
+      worldPosition.x,
+      worldPosition.y,
       worldPosition.z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: {
@@ -347,7 +366,9 @@ const resolveConnectivityObject = (
     selection,
     name: t("Connectivity"),
     worldPosition,
-    popupPosition: [worldPosition[0], worldPosition[1],
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
       worldPosition[2] + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
     locationCoordinate: { x: 0, y: 0, z: 0 },
@@ -429,6 +450,40 @@ const resolveSafeHeightObject = (
   };
 };
 
+const resolveGantryBeamObject = (
+  props: ResolveSelectedObjectProps,
+  selection: ThreeDObjectSelection,
+): ResolvedGantryBeamObject => {
+  const { beamLength, columnLength, kitVersion } = props.config;
+  const beamEndOffset = getBotVersion(kitVersion).beamEndOffset;
+  const position = get3DPositionNoMirrorFunc(props.config)({
+    x: props.configPosition.x - 39,
+    y: beamLength / 2 - beamEndOffset,
+  });
+  const worldPosition: [number, number, number] = [
+    position.x,
+    position.y,
+    columnLength + 40,
+  ];
+  return {
+    kind: "gantryBeam",
+    selection,
+    name: t("Gantry Beam"),
+    worldPosition,
+    popupPosition: [
+      worldPosition[0],
+      worldPosition[1],
+      worldPosition[2] + FIXED_POPUP_Z_OFFSET,
+    ],
+    ringRadius: MIN_RING_RADIUS,
+    locationCoordinate: {
+      x: props.configPosition.x,
+      y: beamLength / 2,
+      z: columnLength,
+    },
+  };
+};
+
 export const resolveSelectedObject = (
   props: ResolveSelectedObjectProps,
   selection: ThreeDObjectSelection | undefined,
@@ -446,6 +501,7 @@ export const resolveSelectedObject = (
     case "sceneObject": return resolveSceneObject(props, selection);
     case "bed": return resolveBedObject(props, selection);
     case "safeHeight": return resolveSafeHeightObject(props, selection);
+    case "gantryBeam": return resolveGantryBeamObject(props, selection);
   }
 };
 

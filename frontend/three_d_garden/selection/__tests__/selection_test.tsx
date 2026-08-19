@@ -232,6 +232,12 @@ const bedObject = (): ResolvedThreeDObject => ({
   name: "Bed",
 });
 
+const gantryBeamObject = (): ResolvedThreeDObject => ({
+  ...objectBase({ kind: "gantryBeam", id: 0 }),
+  kind: "gantryBeam",
+  name: "Gantry Beam",
+});
+
 const sceneObjectObject = (): Extract<
   ResolvedThreeDObject,
   { kind: "sceneObject" }
@@ -419,6 +425,8 @@ describe("selection routes", () => {
       .toEqual(Path.settings("3d_garden"));
     expect(pathForThreeDSelection({ kind: "safeHeight", id: 0 }))
       .toEqual(Path.settings("farmbot"));
+    expect(pathForThreeDSelection({ kind: "gantryBeam", id: 0 }))
+      .toEqual(Path.settings("3d_garden"));
   });
 });
 
@@ -544,6 +552,24 @@ describe("selection resolve", () => {
       },
     }));
     expect(objectHasSelectionOverlay(safeHeight)).toBeFalsy();
+  });
+
+  it("resolves the gantry beam", () => {
+    const props = resolveProps();
+    const gantryBeam = resolveSelectedObject(
+      props,
+      { kind: "gantryBeam", id: 0 },
+    );
+    expect(gantryBeam).toEqual(expect.objectContaining({
+      kind: "gantryBeam",
+      name: "Gantry Beam",
+      locationCoordinate: {
+        x: props.configPosition.x,
+        y: props.config.beamLength / 2,
+        z: props.config.columnLength,
+      },
+    }));
+    expect(objectHasSelectionOverlay(gantryBeam)).toBeFalsy();
   });
 
   it("resolves selected locations and overlay eligibility", () => {
@@ -1010,6 +1036,45 @@ describe("selection popup controls", () => {
     unmountRenderer(wrapper);
   });
 
+  it("controls gantry beam lighting and length", () => {
+    const pinToggleSpy = jest.spyOn(deviceActions, "pinToggle")
+      .mockImplementation(jest.fn());
+    const p = layerProps();
+    p.set3DConfigValue = jest.fn();
+    const lighting = fakePeripheral();
+    lighting.body.label = "Lighting";
+    lighting.body.pin = 7;
+    p.peripherals = [lighting];
+    p.peripheralValues = [{ label: "Lighting", value: true }];
+    const controls = render(<ObjectPopupControls
+      {...p}
+      object={gantryBeamObject()} />);
+
+    expect(controls.getByText("Lighting")).toBeInTheDocument();
+    expect(controls.getByText("Beam Length")).toBeInTheDocument();
+    const toggle = controls.container.querySelector(".fb-toggle-button");
+    expect(toggle).toHaveClass("green");
+    toggle && fireEvent.click(toggle);
+    expect(pinToggleSpy).toHaveBeenCalledWith(7);
+    const input = controls.getByLabelText("Beam Length");
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "1800" } });
+    fireEvent.blur(input);
+    expect(p.set3DConfigValue).toHaveBeenCalledWith("beamLength", "1800");
+    controls.unmount();
+    pinToggleSpy.mockRestore();
+  });
+
+  it("disables unavailable gantry beam controls", () => {
+    const controls = render(<ObjectPopupControls
+      {...layerProps()}
+      set3DConfigValue={undefined}
+      object={gantryBeamObject()} />);
+    expect(controls.container.querySelector(".fb-toggle-button"))
+      .toBeDisabled();
+    expect(controls.getByLabelText("Beam Length")).toBeDisabled();
+  });
+
   it("updates plant values", () => {
     const p = layerProps();
     const controls = render(<ObjectPopupControls
@@ -1337,6 +1402,9 @@ describe("selection popup controls", () => {
     expect(createRenderer(<ObjectPopupDeleteButton
       {...layerProps()}
       object={bedObject()} />).toJSON()).toBeNull();
+    expect(createRenderer(<ObjectPopupDeleteButton
+      {...layerProps()}
+      object={gantryBeamObject()} />).toJSON()).toBeNull();
   });
 
   it("renders scene object visibility and copy buttons", () => {

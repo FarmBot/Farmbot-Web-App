@@ -255,6 +255,8 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
       configPosition={props.configPosition}
       aluminumTexture={aluminumTexture}
       beamShape={props.beamShape}
+      onSelectObject={props.onSelectObject}
+      onHoverObject={props.onHoverObject}
       local={true} />
     {version.number == "v1.9" && <V19YIdler
       position={[-39, beamLength - 70, columnLength + 71]} />}

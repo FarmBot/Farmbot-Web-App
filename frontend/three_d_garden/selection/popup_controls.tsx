@@ -4,7 +4,7 @@ import {
   TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
-import { isUndefined, noop, round } from "lodash";
+import { isNumber, isUndefined, noop, round } from "lodash";
 import { ThreeDObjectSelectionLayerProps } from "./props";
 import {
   ResolvedLocationObject, ResolvedThreeDObject,
@@ -18,7 +18,7 @@ import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
 import {
-  findHome, moveToHome, powerOff, reboot, takePhoto,
+  findHome, moveToHome, pinToggle, powerOff, reboot, takePhoto,
 } from "../../devices/actions";
 import { resetVirtualTrail } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
@@ -640,6 +640,46 @@ const SafeHeightPopupControls = (props: PopupControlProps) => {
   </div>;
 };
 
+const GantryBeamPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "gantryBeam") { return undefined; }
+  const lighting = props.peripherals.find(peripheral =>
+    peripheral.body.label.toLowerCase().includes("light"));
+  const pin = lighting?.body.pin;
+  const value = lighting
+    ? props.peripheralValues.find(peripheral =>
+      peripheral.label == lighting.body.label)?.value
+    : undefined;
+  const disabled = !isNumber(pin)
+    || !props.botOnline
+    || props.arduinoBusy
+    || !!props.bot?.hardware.informational_settings.locked;
+  return <div className={"object-popup-gantry-beam-controls grid"}>
+    <div className={"object-popup-gantry-beam-row row grid-2-col"}>
+      <label>{t("Lighting")}</label>
+      <ToggleButton
+        toggleValue={value}
+        toggleAction={() => { if (isNumber(pin)) { void pinToggle(pin); } }}
+        disabled={disabled}
+        title={t("Toggle Lighting")}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
+    <div className={"object-popup-gantry-beam-row row grid-2-col"}>
+      <label htmlFor={"gantry-beam-popup-length"}>
+        {t(DeviceSetting.beamLength)}
+      </label>
+      <BlurableInput
+        id={"gantry-beam-popup-length"}
+        name={"beamLength"}
+        type={"number"}
+        min={0}
+        disabled={!props.set3DConfigValue}
+        value={props.config.beamLength}
+        onCommit={event => props.set3DConfigValue?.(
+          "beamLength", event.currentTarget.value)} />
+    </div>
+  </div>;
+};
+
 export const ObjectPopupControls = (props: PopupControlProps) => {
   switch (props.object.kind) {
     case "plant": return <PlantPopupControls {...props} />;
@@ -653,6 +693,7 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "sceneObject": return <SceneObjectPopupControls {...props} />;
     case "bed": return <BedPopupControls {...props} />;
     case "safeHeight": return <SafeHeightPopupControls {...props} />;
+    case "gantryBeam": return <GantryBeamPopupControls {...props} />;
   }
 };
 
@@ -705,6 +746,7 @@ type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
   | { kind: "connectivity" } | { kind: "bed" } | { kind: "safeHeight" }
+  | { kind: "gantryBeam" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -725,7 +767,8 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
     || object.kind == "camera"
     || object.kind == "connectivity"
     || object.kind == "bed"
-    || object.kind == "safeHeight") {
+    || object.kind == "safeHeight"
+    || object.kind == "gantryBeam") {
     return undefined;
   }
   return <button
