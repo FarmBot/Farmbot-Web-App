@@ -15,15 +15,10 @@ import { bot } from "../../__test_support__/fake_state/bot";
 import { buildResourceIndex } from
   "../../__test_support__/resource_index_builder";
 
-const useThreeImplementation =
-  (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
-
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
-  jest.spyOn(reactThreeFiber, "useThree")
-    .mockImplementation(useThreeImplementation);
 });
 
 afterEach(() => {
