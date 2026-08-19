@@ -566,8 +566,27 @@
       }
 
       .object-popup-electronics-controls {
+        min-width: 0;
+
         .row {
           align-items: center;
+        }
+
+        .electronics-box-top,
+        .electronics-box-3d-model,
+        .box-top-2d-wrapper {
+          width: 100%;
+          min-width: 0;
+          max-width: 100%;
+        }
+
+        .electronics-box-3d-model {
+          overflow: hidden;
+
+          canvas {
+            width: 100% !important;
+            height: 14rem !important;
+          }
         }
 
         button:not(.bp6-button) {

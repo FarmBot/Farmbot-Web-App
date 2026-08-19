@@ -16,7 +16,9 @@ import {
 } from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
 import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_data";
 import * as threeDGarden from "../../three_d_garden";
 import * as SunCalc from "suncalc";
@@ -96,6 +98,7 @@ describe("<ThreeDGardenMap />", () => {
 
   const fakeProps = (): ThreeDGardenMapProps => ({
     gardenSize: fakeMapTransformProps().gridSize,
+    resources: buildResourceIndex().index,
     device: fakeDevice().body,
     firmwareHardware: 0,
     firmwareSettings: fakeBot.hardware.mcu_params,
@@ -201,6 +204,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
+      resources: p.resources,
       configPosition: { x: 2999, y: 1498, z: 3 },
       panelCameraStore: expect.objectContaining({
         getSnapshot: expect.any(Function),

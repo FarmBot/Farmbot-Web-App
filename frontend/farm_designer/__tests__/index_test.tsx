@@ -68,6 +68,7 @@ describe("<FarmDesigner />", () => {
 
   const fakeProps = (): FarmDesignerProps => ({
     dispatch: jest.fn(),
+    resources: buildResourceIndex().index,
     device: fakeDevice().body,
     selectedPlant: undefined,
     designer: fakeDesignerState(),

@@ -91,6 +91,7 @@ export interface MountedToolInfo {
 
 export interface FarmDesignerProps {
   dispatch: Function;
+  resources: ResourceIndex;
   device: DeviceAccountSettings;
   deviceAccount?: TaggedDevice;
   bot?: BotState;

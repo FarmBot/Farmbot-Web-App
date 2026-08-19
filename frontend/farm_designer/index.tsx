@@ -235,6 +235,7 @@ export class RawFarmDesigner
       {threeDGarden
         ? <ThreeDGardenMap
           designer={this.props.designer}
+          resources={this.props.resources}
           device={this.props.device}
           deviceAccount={this.props.deviceAccount}
           bot={this.props.bot}

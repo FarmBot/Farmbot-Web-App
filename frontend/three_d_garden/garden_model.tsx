@@ -62,7 +62,7 @@ import { BooleanSetting } from "../session_keys";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { Actions, Content } from "../constants";
-import { SlotWithTool } from "../resources/interfaces";
+import { ResourceIndex, SlotWithTool } from "../resources/interfaces";
 import {
   applyCameraClippingRange, applyCameraViewOffset, cameraInit,
   cameraPositionForFov, CameraViewOffset, CameraViewport, canonicalCamera,
@@ -810,6 +810,7 @@ const SceneBoundary = (props: SceneBoundaryProps) => {
 
 export interface GardenModelProps {
   config: Config;
+  resources?: ResourceIndex;
   configPosition: PositionConfig;
   activeFocus: string;
   setActiveFocus(focus: string): void;
@@ -4370,6 +4371,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           visible={farmbotVisible} />
         <ThreeDObjectSelectionLayer
           config={config}
+          resources={props.resources}
+          getConfigValue={addPlantProps?.getConfigValue}
           configPosition={props.configPosition}
           selection={visualSelection}
           panelSelection={panelVisualSelection}

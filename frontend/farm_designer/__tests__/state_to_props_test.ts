@@ -30,6 +30,7 @@ describe("mapStateToProps()", () => {
       plantUUID: "x"
     };
     expect(mapStateToProps(state).hoveredPlant).toBeFalsy();
+    expect(mapStateToProps(state).resources).toBe(state.resources.index);
   });
 
   it("reuses resource array props across bot-only updates", () => {

@@ -58,6 +58,7 @@ import { toggleSceneObjectVisibility } from "../../scene_objects/actions";
 import { BotConfigInputBox } from
   "../../settings/fbos_settings/bot_config_input_box";
 import { sourceFbosConfigValue } from "../../settings/source_config_value";
+import { BoxTop } from "../../settings/pin_bindings/box_top";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -491,6 +492,7 @@ const PopupBootSequenceSelector = (props: PopupBootSequenceSelectorProps) => {
 
 const ElectronicsPopupControls = (props: PopupControlProps) => {
   if (props.object.kind != "electronics") { return undefined; }
+  const firmwareHardware = getFwHardwareValue(props.fbosConfig);
   return <div className={"object-popup-electronics-controls grid"}>
     <ElectronicsPopupButtonRow
       botOnline={props.botOnline}
@@ -510,6 +512,17 @@ const ElectronicsPopupControls = (props: PopupControlProps) => {
       dispatch={props.dispatch}
       fbosConfig={props.fbosConfig}
       sequences={props.sequences} />
+    {props.dispatch && props.resources && props.bot &&
+      <BoxTop
+        shortViewport={true}
+        threeDimensions={!!props.getConfigValue?.(
+          BooleanSetting.enable_3d_electronics_box_top)}
+        isEditing={false}
+        dispatch={props.dispatch}
+        resources={props.resources}
+        firmwareHardware={firmwareHardware}
+        bot={props.bot}
+        botOnline={props.botOnline} />}
   </div>;
 };
 

@@ -262,8 +262,9 @@ export const Model = (props: BoxTopBaseProps) => {
   };
   return <Group dispose={null}
     rotation={[0, 0, Math.PI / 2]}>
-    <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
-      position={[-150, 0, 300]}
+    <PerspectiveCamera makeDefault name="camera"
+      fov={props.shortViewport ? 20 : 30} near={0.1} far={1000}
+      position={[props.shortViewport ? -130 : -150, 0, 300]}
       rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
     <PointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
       distance={0} decay={0} />

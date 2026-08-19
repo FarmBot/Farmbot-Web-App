@@ -19,7 +19,7 @@ import {
 } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
-import { SlotWithTool } from "../resources/interfaces";
+import { ResourceIndex, SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
@@ -47,6 +47,7 @@ import { soilHeightPoint } from "../points/soil_height_helpers";
 
 export interface ThreeDGardenMapProps {
   gardenSize: AxisNumberProperty;
+  resources: ResourceIndex;
   firmwareHardware: unknown;
   firmwareSettings: McuParams;
   gantryHeight: number;
@@ -562,6 +563,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
 
   return <ThreeDGarden
     config={config}
+    resources={props.resources}
     configPosition={position}
     panelCameraStore={props.panelCameraStore}
     threeDPlants={threeDPlants}

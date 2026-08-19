@@ -6,7 +6,9 @@ import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
   fakeToolSlot, fakeWeed, fakeSceneObject, fakePeripheral,
 } from "../../../__test_support__/fake_state/resources";
-import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../../__test_support__/resource_index_builder";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeDesignerState } from
@@ -54,6 +56,7 @@ import { createPanelCameraStore } from "../../panel_camera";
 import * as crud from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { ThreeDPopup } from "../../controls";
+import * as boxTop from "../../../settings/pin_bindings/box_top";
 
 const layerProps = (): ThreeDObjectSelectionLayerProps => ({
   config: clone(INITIAL),
@@ -1222,8 +1225,13 @@ describe("selection popup controls", () => {
   });
 
   it("renders electronics controls and boot sequence selector states", () => {
+    const boxTopSpy = jest.spyOn(boxTop, "BoxTop")
+      .mockImplementation(() => <div className={"mock-box-top"} />);
     const p = layerProps();
     p.fbosConfig = fakeFbosConfig();
+    p.bot = fakeBot;
+    p.resources = buildResourceIndex().index;
+    p.getConfigValue = jest.fn(() => true);
     p.sequences = [fakeSequence({ id: 7, name: "Boot" })];
     let controls = render(<ObjectPopupControls
       {...p}
@@ -1232,6 +1240,13 @@ describe("selection popup controls", () => {
         ...objectBase({ kind: "electronics", id: 0 }),
       }} />);
     expect(controls.container).toContainHTML("BOOT SEQUENCE");
+    expect(controls.container.querySelector(".mock-box-top")).toBeTruthy();
+    expect(boxTopSpy.mock.calls[0][0]).toEqual(expect.objectContaining({
+      shortViewport: true,
+      threeDimensions: true,
+      isEditing: false,
+      botOnline: true,
+    }));
     controls.unmount();
 
     p.dispatch = undefined;
@@ -1242,7 +1257,9 @@ describe("selection popup controls", () => {
         ...objectBase({ kind: "electronics", id: 0 }),
       }} />);
     expect(controls.container).toContainHTML("Unavailable");
+    expect(controls.container.querySelector(".mock-box-top")).toBeFalsy();
     controls.unmount();
+    boxTopSpy.mockRestore();
   });
 
   it("updates boot sequence selection", () => {

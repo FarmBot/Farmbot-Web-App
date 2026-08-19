@@ -8,7 +8,8 @@ import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
-import { SlotWithTool } from "../../resources/interfaces";
+import { ResourceIndex, SlotWithTool } from "../../resources/interfaces";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
 import { MovementState, TimeSettings } from "../../interfaces";
 import { PeripheralValues } from
@@ -17,6 +18,8 @@ import type { PanelCameraStore } from "../panel_camera";
 
 export interface ThreeDObjectSelectionLayerProps {
   config: Config;
+  resources?: ResourceIndex;
+  getConfigValue?: GetWebAppConfigValue;
   configPosition: PositionConfig;
   selection: ThreeDObjectSelection | undefined;
   panelSelection?: ThreeDObjectSelection;

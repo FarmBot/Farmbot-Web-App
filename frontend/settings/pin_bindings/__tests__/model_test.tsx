@@ -116,6 +116,15 @@ describe("<ElectronicsBoxModel />", () => {
     }
   });
 
+  it("preserves scale in a short viewport", () => {
+    const p = fakeProps();
+    p.shortViewport = true;
+    const wrapper = createRenderer(<Model {...p} />);
+    const camera = wrapper.root.findByProps({ name: "camera" });
+    expect(camera.props.fov).toEqual(20);
+    expect(camera.props.position).toEqual([-130, 0, 300]);
+  });
+
   it("triggers binding", () => {
     const e = fakeEvent();
     const p = fakeProps();
