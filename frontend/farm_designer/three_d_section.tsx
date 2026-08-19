@@ -3,9 +3,9 @@ import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
 import { BlurableInput, ToggleButton } from "../ui";
 import { BotPosition } from "../devices/interfaces";
-import { AxisNumberProperty } from "./map/interfaces";
-import { DesignerState, ThreeDDesignerState } from "./interfaces";
-import { BugsButton } from "./map/easter_eggs/bugs";
+import { AxisNumberProperty } from "../farm_designer/map/interfaces";
+import { DesignerState, ThreeDDesignerState } from "../farm_designer/interfaces";
+import { BugsButton } from "../farm_designer/map/easter_eggs/bugs";
 
 export const SECTION_STEP = 1;
 export const SECTION_WIDTH_MIN = 1;

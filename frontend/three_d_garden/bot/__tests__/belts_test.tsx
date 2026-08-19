@@ -153,7 +153,7 @@ describe("belts", () => {
       (callback: Parameters<typeof useFrame>[0]) => {
         frameCallbacks.push(callback);
         return undefined;
-    });
+      });
     const positionRef = {
       current: { x: -50, y: 0, z: 0 },
     };

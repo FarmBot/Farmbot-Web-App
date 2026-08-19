@@ -1,7 +1,7 @@
 import { CROPS } from "../frontend/crops/constants";
 import {
   decodeCropConstellationCatalog,
-} from "../frontend/three_d_garden/garden/constellation_data";
+} from "../frontend/three_d_garden/stargazing/constellation_data";
 import {
   distanceToSegment,
   encodeConstellations,
@@ -145,7 +145,7 @@ describe("generated_constellations.bin", () => {
 
   it("contains one valid contour for every catalog crop", async () => {
     const file = Bun.file(
-      "frontend/three_d_garden/garden/generated_constellations.bin",
+      "frontend/three_d_garden/stargazing/generated_constellations.bin",
     );
     const catalog = decodeCropConstellationCatalog(await file.arrayBuffer());
     expect(catalog.constellations.map(constellation => constellation.cropSlug))

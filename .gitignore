@@ -33,5 +33,6 @@ upgrade_deps.sh
 # ActiveStorage blobs:
 storage/*
 tmp
-module_graph.*
+scripts/graphs/*.svg
+scripts/graphs/*.dot
 scripts/ci/__pycache__

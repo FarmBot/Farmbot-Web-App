@@ -1,8 +1,8 @@
 import React from "react";
-import { Actions } from "../constants";
-import { findCropIcon, findCropMetadata } from "../crops/metadata";
-import { t } from "../i18next_wrapper";
-import { ThreeDViewMode } from "./interfaces";
+import { Actions } from "../../constants";
+import { findCropIcon, findCropMetadata } from "../../crops/metadata";
+import { t } from "../../i18next_wrapper";
+import { ThreeDViewMode } from "../../farm_designer/interfaces";
 import {
   clampStargazingFov, STARGAZING_MAX_FOV, STARGAZING_MIN_FOV,
 } from "./stargazing_constants";
@@ -296,17 +296,21 @@ export const StargazingControls = (props: StargazingControlsProps) => {
             disabled={spaceflight || zoomUnlockedFraction == 0}
             style={sliderStyle}
             tabIndex={active ? 0 : -1}
-            title={`${t("Field of view")}: ${displayedFov}°. ${
-              t("Maximum unlocked field of view")}: ${maxFov}°`}
+            title={[
+              `${t("Field of view")}: ${displayedFov}°.`,
+              `${t("Maximum unlocked field of view")}: ${maxFov}°`,
+            ].join(" ")}
             onChange={setFov} />
           {zoomUnlockedFraction < 1 &&
-          <span className={[
-            "stargazing-zoom-lock",
-            zoomUnlockedFraction == 0 ? "fully-locked" : "",
-          ].join(" ")} aria-hidden={true}
-          style={sliderStyle}>
-            <i className={"fa fa-lock"} />
-          </span>}
+            <span
+              className={[
+                "stargazing-zoom-lock",
+                zoomUnlockedFraction == 0 ? "fully-locked" : "",
+              ].join(" ")}
+              aria-hidden={true}
+              style={sliderStyle}>
+              <i className={"fa fa-lock"} />
+            </span>}
         </span>
         <span className={"stargazing-zoom-label"}>{t("Zoom")}</span>
       </label>

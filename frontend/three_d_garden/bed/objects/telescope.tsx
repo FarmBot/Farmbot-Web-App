@@ -15,7 +15,7 @@ import {
 } from "../../components";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
 import { Camera } from "../../zoom_beacons_constants";
-import { setStargazingMode } from "../../../farm_designer/stargazing";
+import { setStargazingMode } from "../../stargazing/stargazing";
 import { getUtilitiesPostWorldPosition } from "./utilities_post_position";
 import { RenderOrder } from "../../constants";
 import { t } from "../../../i18next_wrapper";
@@ -207,7 +207,7 @@ const telescopeBodyPoint = (
     rootX + Math.cos(DEFAULT_TELESCOPE_HEADING) * horizontalOffset,
     rootY + Math.sin(DEFAULT_TELESCOPE_HEADING) * horizontalOffset,
     rootZ + telescopeBodyZ(config)
-      - Math.sin(DEFAULT_TELESCOPE_TILT) * localX,
+    - Math.sin(DEFAULT_TELESCOPE_TILT) * localX,
   ];
 };
 

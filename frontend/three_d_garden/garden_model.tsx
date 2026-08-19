@@ -177,10 +177,8 @@ import {
 } from "./view_prism";
 import { t } from "../i18next_wrapper";
 import { soilHeightPoint } from "../points/soil_height";
-import { STARGAZING_DEFAULT_FOV } from
-  "../farm_designer/stargazing_constants";
-import { markConstellationFound } from
-  "../farm_designer/stargazing_progress";
+import { STARGAZING_DEFAULT_FOV } from "./stargazing/stargazing_constants";
+import { markConstellationFound } from "./stargazing/stargazing_progress";
 import { ControlCursorProvider } from "./controls";
 import { CameraFollowController } from "./camera_follow";
 import { UtmFollowController } from "./utm_follow";

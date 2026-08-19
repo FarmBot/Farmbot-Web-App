@@ -56,19 +56,21 @@ const pointForAxis = (
   axisPosition: number,
   transversePosition: number,
   z: number,
-): Point => axis == "x"
-  ? [axisPosition, transversePosition, z]
-  : [transversePosition, axisPosition, z];
+): Point =>
+  axis == "x"
+    ? [axisPosition, transversePosition, z]
+    : [transversePosition, axisPosition, z];
 
 const guideLine = (
   axis: ThreeDSectionAxis,
   position: number,
   extent: number,
   z: number,
-): [Point, Point] => [
-  pointForAxis(axis, position, -extent, z),
-  pointForAxis(axis, position, extent, z),
-];
+): [Point, Point] =>
+  [
+    pointForAxis(axis, position, -extent, z),
+    pointForAxis(axis, position, extent, z),
+  ];
 
 export interface SectionControlLayoutProps {
   config: Config;
@@ -125,10 +127,11 @@ export const getSectionControlLayout = (
   const atBothSides = (
     axisPosition: number,
     extent: number,
-  ): [Point, Point] => [
-    pointForAxis(axis, axisPosition, -extent, z),
-    pointForAxis(axis, axisPosition, extent, z),
-  ];
+  ): [Point, Point] =>
+    [
+      pointForAxis(axis, axisPosition, -extent, z),
+      pointForAxis(axis, axisPosition, extent, z),
+    ];
   const centerHandles = atBothSides(centerPosition, centerExtent);
   const transverseIndex = axis == "x" ? 1 : 0;
   const axisTogglePositions = centerHandles.map((handle, index) => {
@@ -168,10 +171,11 @@ export const sectionCameraDirection = (
   nearPlane: Plane,
   farPlane: Plane,
   axis: ThreeDSectionAxis,
-): 1 | -1 => getSectionNearPosition(nearPlane, axis)
-  >= getSectionNearPosition(farPlane, axis)
-  ? 1
-  : -1;
+): 1 | -1 =>
+  getSectionNearPosition(nearPlane, axis)
+    >= getSectionNearPosition(farPlane, axis)
+    ? 1
+    : -1;
 
 export interface SectionControlsProps {
   config: Config;

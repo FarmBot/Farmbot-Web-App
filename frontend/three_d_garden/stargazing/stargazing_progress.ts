@@ -1,5 +1,5 @@
 import React from "react";
-import { CROP_SLUGS } from "../crops/metadata";
+import { CROP_SLUGS } from "../../crops/metadata";
 import {
   STARGAZING_MAX_FOV, STARGAZING_MIN_FOV,
 } from "./stargazing_constants";

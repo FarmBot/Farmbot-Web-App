@@ -848,29 +848,30 @@ const settingsSectionCommands = (props: BuildCommandProps): Command[] => {
   const sections: {
     key: keyof SettingsPanelState;
     title: DeviceSetting;
-  }[] = [
-    { key: "farmbot_settings", title: DeviceSetting.farmbotSettings },
-    { key: "power_and_reset", title: DeviceSetting.powerAndReset },
-    { key: "axis_settings", title: DeviceSetting.axisSettings },
-    { key: "motors", title: DeviceSetting.motors },
-    {
-      key: "encoders_or_stall_detection",
-      title: DeviceSetting.encoders,
-    },
-    { key: "limit_switches", title: DeviceSetting.limitSwitchSettings },
-    { key: "error_handling", title: DeviceSetting.errorHandling },
-    { key: "pin_bindings", title: DeviceSetting.pinBindings },
-    { key: "pin_guard", title: DeviceSetting.pinGuard },
-    {
-      key: "parameter_management",
-      title: DeviceSetting.parameterManagement,
-    },
-    { key: "custom_settings", title: DeviceSetting.customSettings },
-    { key: "farm_designer", title: DeviceSetting.farmDesigner },
-    { key: "three_d", title: DeviceSetting.threeDGarden },
-    { key: "account", title: DeviceSetting.accountSettings },
-    { key: "other_settings", title: DeviceSetting.otherSettings },
-  ];
+  }[] =
+    [
+      { key: "farmbot_settings", title: DeviceSetting.farmbotSettings },
+      { key: "power_and_reset", title: DeviceSetting.powerAndReset },
+      { key: "axis_settings", title: DeviceSetting.axisSettings },
+      { key: "motors", title: DeviceSetting.motors },
+      {
+        key: "encoders_or_stall_detection",
+        title: DeviceSetting.encoders,
+      },
+      { key: "limit_switches", title: DeviceSetting.limitSwitchSettings },
+      { key: "error_handling", title: DeviceSetting.errorHandling },
+      { key: "pin_bindings", title: DeviceSetting.pinBindings },
+      { key: "pin_guard", title: DeviceSetting.pinGuard },
+      {
+        key: "parameter_management",
+        title: DeviceSetting.parameterManagement,
+      },
+      { key: "custom_settings", title: DeviceSetting.customSettings },
+      { key: "farm_designer", title: DeviceSetting.farmDesigner },
+      { key: "three_d", title: DeviceSetting.threeDGarden },
+      { key: "account", title: DeviceSetting.accountSettings },
+      { key: "other_settings", title: DeviceSetting.otherSettings },
+    ];
   return sections.map(({ key, title }) => ({
     id: `settings-section:${key}`,
     ...sectionCommandText(`Settings > ${title}`,
@@ -1069,15 +1070,16 @@ const boolSettingConfirmations: Partial<Record<string, string>> = {
 const toggleAccessory = (
   current: boolean,
   disabled = false,
-) => (run: () => void, recentValue?: boolean) =>
-  <ToggleButton
-    toggleValue={recentValue ?? current}
-    disabled={disabled}
-    toggleAction={event => {
-      event.stopPropagation();
-      run();
-    }}
-    customText={{ textFalse: t("off"), textTrue: t("on") }} />;
+) =>
+  (run: () => void, recentValue?: boolean) =>
+    <ToggleButton
+      toggleValue={recentValue ?? current}
+      disabled={disabled}
+      toggleAction={event => {
+        event.stopPropagation();
+        run();
+      }}
+      customText={{ textFalse: t("off"), textTrue: t("on") }} />;
 
 const laserCommand = (props: BuildCommandProps): Command => {
   const index = props.state.resources.index;
@@ -1877,7 +1879,8 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
   const axisActions = <T extends Axis>(
     axes: T[],
     execute: (axis: T) => unknown,
-  ): CommandAction[] => axes.map(axis => {
+  ): CommandAction[] => {
+    return axes.map(axis => {
       const label = axis == "all" ? "All" : axis.toUpperCase();
       return {
         id: axis,
@@ -1886,6 +1889,7 @@ const homeCommands = (props: BuildCommandProps): Command[] => {
         execute: () => execute(axis),
       };
     });
+  };
   const findActions = axisActions(allAxes, findHome);
   const moveActions = axisActions(allAxes, moveToHome);
   const lengthActions = axisActions(allAxes, findAxisLength);
@@ -1986,31 +1990,32 @@ const simplePanelCommands = (props: BuildCommandProps): Command[] => {
     panel: Panel;
     addAction: CommandAction;
     additionalActions?: CommandAction[];
-  }[] = [
-    {
-      panel: Panel.SceneObjects,
-      addAction: add("add-new", "Add New",
-        () => openAddPage(props, Path.sceneObjects("catalog"))),
-      additionalActions: [add("add-custom", "Add Custom",
-        () => openAddPage(props, Path.sceneObjects("add"))),
-      ],
-    },
-    {
-      panel: Panel.Regimens,
-      addAction: add("add-new", "Add New", () => props.dispatch(addRegimen(
-        selectAllRegimens(index).length, props.navigate))),
-    },
-    {
-      panel: Panel.FarmEvents,
-      addAction: add("add-new", "Add New",
-        () => openAddPage(props, Path.farmEvents("add"))),
-    },
-    {
-      panel: Panel.Sensors,
-      addAction: add("add-new", "Add New",
-        () => openAddPage(props, Path.sensors())),
-    },
-  ];
+  }[] =
+    [
+      {
+        panel: Panel.SceneObjects,
+        addAction: add("add-new", "Add New",
+          () => openAddPage(props, Path.sceneObjects("catalog"))),
+        additionalActions: [add("add-custom", "Add Custom",
+          () => openAddPage(props, Path.sceneObjects("add"))),
+        ],
+      },
+      {
+        panel: Panel.Regimens,
+        addAction: add("add-new", "Add New", () => props.dispatch(addRegimen(
+          selectAllRegimens(index).length, props.navigate))),
+      },
+      {
+        panel: Panel.FarmEvents,
+        addAction: add("add-new", "Add New",
+          () => openAddPage(props, Path.farmEvents("add"))),
+      },
+      {
+        panel: Panel.Sensors,
+        addAction: add("add-new", "Add New",
+          () => openAddPage(props, Path.sensors())),
+      },
+    ];
   const commands = definitions.map(({
     panel, addAction, additionalActions = [],
   }): Command => {
@@ -2173,12 +2178,13 @@ const directDeviceCommands = (props: BuildCommandProps): Command[] => {
   };
   const emergencyButton = (
     id: "estop" | "unlock",
-  ) => (execute: () => void) =>
-    <button type="button"
-      className={`fb-button red e-stop${id == "unlock" ? " yellow" : ""}`}
-      onClick={execute}>
-      {t(id == "unlock" ? "UNLOCK" : "E-STOP")}
-    </button>;
+  ) =>
+    (execute: () => void) =>
+      <button type="button"
+        className={`fb-button red e-stop${id == "unlock" ? " yellow" : ""}`}
+        onClick={execute}>
+        {t(id == "unlock" ? "UNLOCK" : "E-STOP")}
+      </button>;
   return commands.map(([id, name, execute, reason]) => ({
     id: `farmbot:${id}`,
     priority: priorities[id],

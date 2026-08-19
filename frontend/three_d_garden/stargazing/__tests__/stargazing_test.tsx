@@ -6,8 +6,8 @@ import {
   setSpaceflightMode, setStargazingFov, setStargazingMode,
   StargazingControls,
 } from "../stargazing";
-import { Actions } from "../../constants";
-import { CROP_SLUGS } from "../../crops/metadata";
+import { Actions } from "../../../constants";
+import { CROP_SLUGS } from "../../../crops/metadata";
 import { STARGAZING_PROGRESS_STORAGE_KEY } from
   "../stargazing_progress_key";
 

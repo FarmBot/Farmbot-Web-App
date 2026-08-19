@@ -7,7 +7,7 @@ import {
 } from "../stargazing_progress";
 import { STARGAZING_PROGRESS_STORAGE_KEY } from
   "../stargazing_progress_key";
-import { CROP_SLUGS } from "../../crops/metadata";
+import { CROP_SLUGS } from "../../../crops/metadata";
 
 describe("stargazing progress", () => {
   it("reads unique valid crop slugs in discovery order", () => {

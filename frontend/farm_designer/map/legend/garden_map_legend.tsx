@@ -29,7 +29,7 @@ import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
 import { isMobile } from "../../../screen_size";
 import type { Config } from "../../../three_d_garden/config";
-import { ThreeDSectionSettings } from "../../three_d_section";
+import { ThreeDSectionSettings } from "../../../farm_designer/three_d_section";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;

@@ -32,7 +32,7 @@ import {
 } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
-import { StargazingControls } from "./stargazing";
+import { StargazingControls } from "../three_d_garden/stargazing/stargazing";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
