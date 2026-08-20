@@ -15,6 +15,32 @@ import { App } from "./app";
 
 interface RootComponentProps { store: Store; }
 
+interface RollbarTrace {
+  frames?: { filename?: string }[];
+}
+
+interface RollbarPayload {
+  body?: {
+    trace?: RollbarTrace;
+    trace_chain?: RollbarTrace[];
+  };
+}
+
+export const normalizeRollbarAssetUrls = (payload: RollbarPayload) => {
+  const traces = [payload.body?.trace, ...(payload.body?.trace_chain || [])];
+  traces.forEach(trace => {
+    trace?.frames?.forEach(frame => {
+      const filename = frame.filename;
+      if (filename) {
+        frame.filename = filename.replace(
+          /^(https?):\/\/[^/]+(\/assets\/dist\/)/,
+          "$1://dynamichost$2",
+        );
+      }
+    });
+  });
+};
+
 export const attachAppToDom = () => {
   attachToRoot(RootComponent, { store: _store });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,6 +64,8 @@ export class RootComponent
           accessToken: globalConfig.ROLLBAR_CLIENT_TOKEN,
           captureUncaught: true,
           captureUnhandledRejections: true,
+          transform: (payload: RollbarPayload) =>
+            normalizeRollbarAssetUrls(payload),
           payload: {
             person: { id: "" + (Session.fetchStoredToken()?.user.id || 0) },
             environment: window.location.host,

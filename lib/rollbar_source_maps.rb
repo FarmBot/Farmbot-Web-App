@@ -52,7 +52,7 @@ module RollbarSourceMaps
 
   def upload
     token = ENV["ROLLBAR_SRCMAP_TOKEN"]
-    revision = ENV["BUILT_AT"] || ENV["SOURCE_VERSION"] || ENV["HEROKU_BUILD_COMMIT"]
+    revision = ENV["SOURCE_VERSION"]
     unless token && revision
       puts "Skipping Rollbar source map upload: configuration incomplete."
       return
@@ -61,15 +61,6 @@ module RollbarSourceMaps
     puts "Uploading Rollbar source maps for revision #{revision}..."
 
     version = revision.first(8)
-    asset_hosts = [
-      ENV.fetch("API_HOST"),
-      *ENV.fetch("ROLLBAR_ASSET_HOSTS", "").split(","),
-    ]
-      .compact
-      .map(&:strip)
-      .reject(&:empty?)
-      .uniq
-      .map { |host| "https://#{host}" }
     map_glob = File.join(
       DashboardController::PUBLIC_OUTPUT_DIR,
       "**/*.js.map",
@@ -81,14 +72,12 @@ module RollbarSourceMaps
       raise "Missing minified file for #{map_path}" unless File.exist?(js_path)
 
       public_path = js_path.delete_prefix("public/")
-      asset_hosts.each do |asset_host|
-        upload_map(
-          token: token,
-          version: version,
-          minified_url: "#{asset_host}/#{public_path}",
-          map_path: map_path,
-        )
-      end
+      upload_map(
+        token: token,
+        version: version,
+        minified_url: "https://dynamichost/#{public_path}",
+        map_path: map_path,
+      )
       filename = public_path.delete_prefix("assets/dist/")
       progress = format("%#{progress_width}d", index + 1)
       puts "  (#{progress} / #{map_paths.length}) #{filename}"
