@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set render env
         run: scripts/ci/export-render-env
@@ -71,7 +71,7 @@ jobs:
 
       - name: Restore Playwright apt downloads
         id: playwright_apt_cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .cache/playwright-apt
           key: playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-${{ hashFiles('bun.lock') }}-${{ steps.playwright_apt_cache_key.outputs.week }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: Save Playwright apt downloads
         if: steps.playwright_apt_cache.outputs.cache-hit != 'true' && steps.prepare_playwright_apt_cache.outputs.has_packages == 'true'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: .cache/playwright-apt
           key: playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-${{ hashFiles('bun.lock') }}-${{ steps.playwright_apt_cache_key.outputs.week }}
@@ -162,7 +162,7 @@ jobs:
           exit 1
 
       - name: Restore branch metric history cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
@@ -184,7 +184,7 @@ jobs:
 
       - name: Restore staging metric history cache fallback
         if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
@@ -193,7 +193,7 @@ jobs:
             ${{ env.STAGING_FPS_METRICS_CACHE_KEY }}-
 
       - name: Restore branch FPS history cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -214,7 +214,7 @@ jobs:
 
       - name: Restore staging FPS history cache fallback
         if: steps.restore_fps_history.outputs.fps_history_found != 'true'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.STAGING_FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -223,7 +223,7 @@ jobs:
 
       - name: Restore frontend coverage value
         if: always()
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -257,14 +257,14 @@ jobs:
           bun scripts/ci/combine-render-images
 
       - name: Save FPS metrics
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
           key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
 
       - name: Save FPS history
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
