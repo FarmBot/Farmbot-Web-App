@@ -28,10 +28,8 @@
 services:
   redis:
     env_file: ".env"
-    image: redis:7
-    volumes:
-      - "./docker_volumes/redis/data:/data"
-      - "./docker_volumes/redis/conf:/usr/local/etc/redis"
+    image: valkey/valkey:9.0
+    volumes: ["./docker_volumes/valkey/data:/data"]
     expose: ["6379"]
 
   db:
