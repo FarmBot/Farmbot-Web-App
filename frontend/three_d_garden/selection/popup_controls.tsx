@@ -392,7 +392,8 @@ const UtmPopupControls = (props: PopupControlProps) => {
         botOnline={props.botOnline}
         arduinoBusy={props.arduinoBusy}
         locked={!!props.bot?.hardware.informational_settings.locked} />
-      <div className={"object-popup-dismount-tool-row row"}>
+      <div className={"object-popup-dismount-tool-row row grid-exp-1"}>
+        <label></label>
         <button
           type={"button"}
           className={"fb-button yellow"}
@@ -528,7 +529,7 @@ const ElectronicsPopupButtonRow = (props: ElectronicsPopupButtonRowProps) =>
   <div className={"row grid-exp-1"}>
     <div className={"row half-gap grid-exp-2"}>
       <label>{t(props.label)}</label>
-      <Help text={props.description} />
+      <Help text={props.description} usePortal={false} />
     </div>
     <button
       className={`fb-button ${props.color}`}
