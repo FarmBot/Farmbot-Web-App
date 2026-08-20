@@ -95,8 +95,12 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
     <ToggleButton
       className={getModifiedClassName(props.setting)}
       toggleValue={value}
-      toggleAction={() => proceed() &&
-        props.dispatch(setWebAppConfigValue(props.setting, !value))} />
+      toggleAction={() => {
+        if (proceed()) {
+          props.onChange?.();
+          props.dispatch(setWebAppConfigValue(props.setting, !value));
+        }
+      }} />
   </fieldset>;
 };
 
@@ -130,6 +134,7 @@ export const SequenceSettingsMenu =
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.view_celery_script}
         label={DeviceSetting.viewCeleryScript}
+        onChange={props.disableViewSequenceCeleryScript}
         description={Content.VIEW_CELERY_SCRIPT} />
     </div>;
   };
@@ -261,6 +266,7 @@ export const SequenceBtnGroup = ({
   resources,
   sequencesState,
   getWebAppConfigValue,
+  disableViewSequenceCeleryScript,
   toggleViewSequenceCeleryScript,
   viewCeleryScript,
   visualized,
@@ -279,6 +285,7 @@ export const SequenceBtnGroup = ({
           title={t("settings")} />}
         content={<SequenceSettingsMenu
           dispatch={dispatch}
+          disableViewSequenceCeleryScript={disableViewSequenceCeleryScript}
           getWebAppConfigValue={getWebAppConfigValue} />} />
       <i className={"fa fa-trash fb-icon-button invert"}
         title={t("delete sequence")}
@@ -407,6 +414,7 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       syncStatus={props.syncStatus}
       resources={props.resources}
       getWebAppConfigValue={props.getWebAppConfigValue}
+      disableViewSequenceCeleryScript={props.disableViewSequenceCeleryScript}
       toggleViewSequenceCeleryScript={props.toggleViewSequenceCeleryScript}
       viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
@@ -455,6 +463,8 @@ export class SequenceEditorMiddleActive extends
 
   toggleSection = (key: keyof ActiveMiddleState) => () =>
     this.setState({ ...this.state, [key]: !this.state[key] });
+  disableViewSequenceCeleryScript = () =>
+    this.setState({ viewSequenceCeleryScript: false });
   setSequencePreview = (sequencePreview: TaggedSequence) =>
     this.setState({
       sequencePreview,
@@ -525,6 +535,7 @@ export class SequenceEditorMiddleActive extends
           sequence={sequence}
           resources={this.props.resources}
           syncStatus={this.props.syncStatus}
+          disableViewSequenceCeleryScript={this.disableViewSequenceCeleryScript}
           toggleViewSequenceCeleryScript={
             this.toggleSection("viewSequenceCeleryScript")}
           viewCeleryScript={viewSequenceCeleryScript}

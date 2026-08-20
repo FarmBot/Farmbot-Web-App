@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  FirmwareHardware, TaggedFbosConfig, TaggedPlantPointer, TaggedSequence,
-  TaggedSceneObject, Vector3, Xyz,
+  FirmwareHardware, ParameterDeclaration, TaggedFbosConfig,
+  TaggedPlantPointer, TaggedSequence, TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
-import { isUndefined, noop, round } from "lodash";
+import { isNumber, isUndefined, mean, noop, round } from "lodash";
 import { ThreeDObjectSelectionLayerProps } from "./props";
 import {
   ResolvedLocationObject, ResolvedThreeDObject,
@@ -18,7 +18,8 @@ import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
 import {
-  findHome, moveToHome, powerOff, reboot, takePhoto,
+  execSequence, findHome, moveToHome, pinToggle, powerOff, reboot, takePhoto,
+  sendRPC,
 } from "../../devices/actions";
 import { resetVirtualTrail } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
@@ -45,7 +46,7 @@ import {
 } from "../../util";
 import { getModifiedClassName } from
   "../../settings/fbos_settings/default_values";
-import { getFwHardwareValue } from
+import { btnIndexList, getFwHardwareValue, hasUTM } from
   "../../settings/firmware/firmware_hardware_support";
 import { cameraBtnProps } from
   "../../photos/capture_settings/camera_selection";
@@ -58,6 +59,13 @@ import { toggleSceneObjectVisibility } from "../../scene_objects/actions";
 import { BotConfigInputBox } from
   "../../settings/fbos_settings/bot_config_input_box";
 import { sourceFbosConfigValue } from "../../settings/source_config_value";
+import { BoxTop } from "../../settings/pin_bindings/box_top";
+import { convertDDItoVariable } from
+  "../../sequences/locals_list/handle_select";
+import {
+  AllowedVariableNodes, VariableType,
+} from "../../sequences/locals_list/locals_list_support";
+import { EditSoilHeight, soilHeightPoint } from "../../points/soil_height";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -185,6 +193,63 @@ export const PopupSelectedLocationRow = (props: LocationControlProps) =>
         [axis]: round(parseIntInput(value)),
       })} />;
 
+type ParameterDefaultValueKind =
+  ParameterDeclaration["args"]["default_value"]["kind"];
+
+const sequenceParameter = (
+  sequence: TaggedSequence,
+  defaultValueKinds: ParameterDefaultValueKind[],
+) => {
+  const variables = sequence.body.args.locals.body || [];
+  const variable = variables[0];
+  return variables.length == 1
+    && variable?.kind == "parameter_declaration"
+    && defaultValueKinds.includes(variable.args.default_value.kind)
+    ? variable
+    : undefined;
+};
+
+interface SequenceDropdownProps {
+  sequences: TaggedSequence[];
+  defaultValueKinds: ParameterDefaultValueKind[];
+  variable: DropDownItem | undefined;
+}
+
+const SequenceDropdown = (props: SequenceDropdownProps) => {
+  const { variable } = props;
+  if (!variable) { return undefined; }
+  const sequences = betterCompact(props.sequences.map(sequence => {
+    return sequenceParameter(sequence, props.defaultValueKinds)
+      && isNumber(sequence.body.id)
+      ? { label: sequence.body.name, value: sequence.body.id }
+      : undefined;
+  }));
+  return <div className={"row"}>
+    <FBSelect
+      usePortal={false}
+      extraClass={"full-width"}
+      matchTargetWidth={true}
+      list={sequences}
+      selectedItem={undefined}
+      customNullLabel={t("Run sequence")}
+      onChange={item => {
+        const sequence = props.sequences.find(candidate =>
+          candidate.body.id == item.value);
+        const declaration = sequence && sequenceParameter(
+          sequence, props.defaultValueKinds);
+        const bodyVariable = declaration && convertDDItoVariable({
+          identifierLabel: declaration.args.label,
+          allowedVariableNodes: AllowedVariableNodes.variable,
+          dropdown: variable,
+          variableType: VariableType.Location,
+        });
+        if (sequence && bodyVariable?.kind == "parameter_application") {
+          execSequence(sequence.body.id, [bodyVariable]);
+        }
+      }} />
+  </div>;
+};
+
 const PlantPopupControls = (props: PopupControlProps) => {
   if (props.object.kind != "plant" || !props.dispatch) { return undefined; }
   const { plant } = props.object;
@@ -219,6 +284,16 @@ const PlantPopupControls = (props: PopupControlProps) => {
           {...commonProps}
           depth={plant.body.depth} />}
     </div>
+    <SequenceDropdown
+      sequences={props.sequences}
+      defaultValueKinds={["coordinate", "point"]}
+      variable={isNumber(plant.body.id)
+        ? {
+          label: "",
+          value: plant.body.id,
+          headingId: "Plant",
+        }
+        : undefined} />
   </>;
 };
 
@@ -269,6 +344,16 @@ const SlotPopupControls = (props: PopupControlProps) => {
       selectedTool={slot.tool}
       isActive={isActive}
       onChange={update => updateToolSlot(props, slot, update)} />
+    <SequenceDropdown
+      sequences={props.sequences}
+      defaultValueKinds={["location_placeholder", "tool"]}
+      variable={slot.tool && isNumber(slot.tool.body.id)
+        ? {
+          label: "",
+          value: slot.tool.body.id,
+          headingId: "Tool",
+        }
+        : undefined} />
   </>;
 };
 
@@ -279,36 +364,55 @@ const UtmPopupControls = (props: PopupControlProps) => {
   const isActive = (id: number | undefined) =>
     props.toolSlots.some(toolSlot =>
       toolSlot.toolSlot.body.tool_id == id);
+  const hasTools = hasUTM(getFwHardwareValue(props.fbosConfig));
   return <>
-    <div className={"object-popup-mounted-tool-row row grid-2-col"}>
-      <label>{t("Mounted Tool")}</label>
-      <ToolSelection
-        usePortal={false}
-        tools={props.tools}
-        selectedTool={mountedTool}
-        onChange={({ tool_id }) => {
-          if (!props.dispatch || !props.deviceAccount) { return; }
-          props.dispatch(edit(props.deviceAccount, { mounted_tool_id: tool_id }));
-          props.dispatch(save(props.deviceAccount.uuid));
-        }}
-        noUTM={props.noUTM}
-        isActive={isActive}
-        filterSelectedTool={true}
-        filterActiveTools={false} />
-    </div>
-    <ToolActionRow
-      className={"object-popup-tool-action-row"}
-      mountedTool={mountedTool}
-      sensors={props.sensors}
-      peripherals={props.peripherals}
-      peripheralValues={props.peripheralValues}
-      botOnline={props.botOnline}
-      arduinoBusy={props.arduinoBusy}
-      locked={!!props.bot?.hardware.informational_settings.locked} />
-    <div className={"object-popup-tool-verification-row"}>
-      {props.bot &&
-        <ToolVerification sensors={props.sensors} bot={props.bot} />}
-    </div>
+    {hasTools && <>
+      <div className={"object-popup-mounted-tool-row row grid-2-col"}>
+        <label>{t("Mounted Tool")}</label>
+        <ToolSelection
+          usePortal={false}
+          tools={props.tools}
+          selectedTool={mountedTool}
+          onChange={({ tool_id }) => {
+            if (!props.dispatch || !props.deviceAccount) { return; }
+            props.dispatch(edit(props.deviceAccount, { mounted_tool_id: tool_id }));
+            props.dispatch(save(props.deviceAccount.uuid));
+          }}
+          noUTM={props.noUTM}
+          isActive={isActive}
+          filterSelectedTool={true}
+          filterActiveTools={false} />
+      </div>
+      <ToolActionRow
+        className={"object-popup-tool-action-row"}
+        mountedTool={mountedTool}
+        sensors={props.sensors}
+        peripherals={props.peripherals}
+        peripheralValues={props.peripheralValues}
+        botOnline={props.botOnline}
+        arduinoBusy={props.arduinoBusy}
+        locked={!!props.bot?.hardware.informational_settings.locked} />
+      <div className={"object-popup-dismount-tool-row row grid-exp-1"}>
+        <label></label>
+        <button
+          type={"button"}
+          className={"fb-button yellow"}
+          disabled={!props.botOnline || props.arduinoBusy
+            || !!props.bot?.hardware.informational_settings.locked || !mountedTool}
+          onClick={() => {
+            sendRPC({
+              kind: "lua",
+              args: { lua: "dismount_tool()" },
+            });
+          }}>
+          {t("Dismount")}
+        </button>
+      </div>
+      <div className={"object-popup-tool-verification-row"}>
+        {props.bot &&
+          <ToolVerification sensors={props.sensors} bot={props.bot} />}
+      </div>
+    </>}
     <div className={"object-popup-trail-row row grid-exp-1"}>
       <label>{t(DeviceSetting.trail)}</label>
       <ToggleButton
@@ -425,7 +529,7 @@ const ElectronicsPopupButtonRow = (props: ElectronicsPopupButtonRowProps) =>
   <div className={"row grid-exp-1"}>
     <div className={"row half-gap grid-exp-2"}>
       <label>{t(props.label)}</label>
-      <Help text={props.description} />
+      <Help text={props.description} usePortal={false} />
     </div>
     <button
       className={`fb-button ${props.color}`}
@@ -491,6 +595,8 @@ const PopupBootSequenceSelector = (props: PopupBootSequenceSelectorProps) => {
 
 const ElectronicsPopupControls = (props: PopupControlProps) => {
   if (props.object.kind != "electronics") { return undefined; }
+  const firmwareHardware = getFwHardwareValue(props.fbosConfig);
+  const hasButtons = btnIndexList(firmwareHardware).btns.length > 0;
   return <div className={"object-popup-electronics-controls grid"}>
     <ElectronicsPopupButtonRow
       botOnline={props.botOnline}
@@ -510,6 +616,17 @@ const ElectronicsPopupControls = (props: PopupControlProps) => {
       dispatch={props.dispatch}
       fbosConfig={props.fbosConfig}
       sequences={props.sequences} />
+    {props.dispatch && props.resources && props.bot && hasButtons &&
+      <BoxTop
+        shortViewport={true}
+        threeDimensions={!!props.getConfigValue?.(
+          BooleanSetting.enable_3d_electronics_box_top)}
+        isEditing={false}
+        dispatch={props.dispatch}
+        resources={props.resources}
+        firmwareHardware={firmwareHardware}
+        bot={props.bot}
+        botOnline={props.botOnline} />}
   </div>;
 };
 
@@ -627,6 +744,68 @@ const SafeHeightPopupControls = (props: PopupControlProps) => {
   </div>;
 };
 
+const SoilHeightPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "soilHeight") { return undefined; }
+  const soilZ = props.points.filter(soilHeightPoint).map(point => point.body.z);
+  const averageZ = soilZ.length > 0
+    ? round(mean(soilZ))
+    : props.config.maxSoilZ;
+  const sourceFbosConfig = sourceFbosConfigValue(
+    validFbosConfig(props.fbosConfig),
+    props.bot?.hardware.configuration || {},
+  );
+  return <div className={"grid"}>
+    <div className={"row grid-exp-1"}>
+      <EditSoilHeight
+        dispatch={props.dispatch || noop}
+        averageZ={averageZ}
+        sourceFbosConfig={sourceFbosConfig}
+        minZ={props.config.minSoilZ}
+        maxZ={props.config.maxSoilZ} />
+    </div>
+  </div>;
+};
+
+const GantryBeamPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "gantryBeam") { return undefined; }
+  const lighting = props.peripherals.find(peripheral =>
+    peripheral.body.label.toLowerCase().includes("light"));
+  const pin = lighting?.body.pin;
+  const value = lighting
+    ? props.peripheralValues.find(peripheral =>
+      peripheral.label == lighting.body.label)?.value
+    : undefined;
+  const disabled = !isNumber(pin)
+    || !props.botOnline
+    || props.arduinoBusy
+    || !!props.bot?.hardware.informational_settings.locked;
+  return <div className={"object-popup-gantry-beam-controls grid"}>
+    <div className={"object-popup-gantry-beam-row row grid-2-col"}>
+      <label>{t("Lighting")}</label>
+      <ToggleButton
+        toggleValue={value}
+        toggleAction={() => { if (isNumber(pin)) { void pinToggle(pin); } }}
+        disabled={disabled}
+        title={t("Toggle Lighting")}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
+    </div>
+    <div className={"object-popup-gantry-beam-row row grid-2-col"}>
+      <label htmlFor={"gantry-beam-popup-length"}>
+        {t(DeviceSetting.beamLength)}
+      </label>
+      <BlurableInput
+        id={"gantry-beam-popup-length"}
+        name={"beamLength"}
+        type={"number"}
+        min={0}
+        disabled={!props.set3DConfigValue}
+        value={props.config.beamLength}
+        onCommit={event => props.set3DConfigValue?.(
+          "beamLength", event.currentTarget.value)} />
+    </div>
+  </div>;
+};
+
 export const ObjectPopupControls = (props: PopupControlProps) => {
   switch (props.object.kind) {
     case "plant": return <PlantPopupControls {...props} />;
@@ -640,6 +819,8 @@ export const ObjectPopupControls = (props: PopupControlProps) => {
     case "sceneObject": return <SceneObjectPopupControls {...props} />;
     case "bed": return <BedPopupControls {...props} />;
     case "safeHeight": return <SafeHeightPopupControls {...props} />;
+    case "soilHeight": return <SoilHeightPopupControls {...props} />;
+    case "gantryBeam": return <GantryBeamPopupControls {...props} />;
   }
 };
 
@@ -692,6 +873,7 @@ type DeletableResolvedThreeDObject = Exclude<
   ResolvedThreeDObject,
   { kind: "utm" } | { kind: "electronics" } | { kind: "camera" }
   | { kind: "connectivity" } | { kind: "bed" } | { kind: "safeHeight" }
+  | { kind: "soilHeight" } | { kind: "gantryBeam" }
 >;
 
 const objectUuid = (object: DeletableResolvedThreeDObject) => {
@@ -712,7 +894,9 @@ export const ObjectPopupDeleteButton = (props: PopupControlProps) => {
     || object.kind == "camera"
     || object.kind == "connectivity"
     || object.kind == "bed"
-    || object.kind == "safeHeight") {
+    || object.kind == "safeHeight"
+    || object.kind == "soilHeight"
+    || object.kind == "gantryBeam") {
     return undefined;
   }
   return <button

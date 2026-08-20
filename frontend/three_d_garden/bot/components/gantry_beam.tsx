@@ -1,4 +1,5 @@
 import { Cylinder, Extrude, useHelper } from "@react-three/drei";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
 import React from "react";
 import { get3DPositionNoMirrorFunc } from "../../helpers";
 import { Group, MeshPhongMaterial, SpotLight } from "../../components";
@@ -8,6 +9,14 @@ import {
 } from "three";
 import { range } from "lodash";
 import { getBotVersion } from "../bot_versions";
+import {
+  ThreeDObjectHoverHandler, ThreeDObjectSelectionHandler,
+} from "../../selection_types";
+import { clickWasDragged } from "../../click_event";
+import { HOVER_OBJECT_MODES } from "../../constants";
+import { Mode } from "../../../farm_designer/map/interfaces";
+import { getMode } from "../../../farm_designer/map/util";
+import { Highlight } from "../../elements";
 
 export interface GantryBeamProps {
   config: Config;
@@ -15,11 +24,14 @@ export interface GantryBeamProps {
   beamShape: Shape | undefined;
   aluminumTexture: Texture;
   local?: boolean;
+  onSelectObject?: ThreeDObjectSelectionHandler;
+  onHoverObject?: ThreeDObjectHoverHandler;
 }
 
 const gantryBeamPropsEqual = (
   prevProps: GantryBeamProps,
   nextProps: GantryBeamProps,
+  // eslint-disable-next-line complexity
 ): boolean => {
   const prevConfig = prevProps.config;
   const nextConfig = nextProps.config;
@@ -27,6 +39,8 @@ const gantryBeamPropsEqual = (
     && prevProps.beamShape == nextProps.beamShape
     && prevProps.aluminumTexture == nextProps.aluminumTexture
     && prevProps.local == nextProps.local
+    && prevProps.onSelectObject == nextProps.onSelectObject
+    && prevProps.onHoverObject == nextProps.onHoverObject
     && prevConfig.beamLength == nextConfig.beamLength
     && prevConfig.columnLength == nextConfig.columnLength
     && prevConfig.bedYOffset == nextConfig.bedYOffset
@@ -51,30 +65,53 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
       x: x - 39,
       y: beamLength - version.beamEndOffset,
     });
-  return <Group name={"gantry-beam"}
-    position={[
-      position.x,
-      position.y,
-      columnLength + 40,
-    ]}
-    rotation={[Math.PI / 2, 0, 0]}>
-    <Extrude name={"gantry-beam-extrusion"}
-      castShadow={true}
-      args={[
-        props.beamShape,
-        { steps: 1, depth: beamLength, bevelEnabled: false },
-      ]}>
-      <MeshPhongMaterial
-        color={"white"}
-        map={props.aluminumTexture}
-        side={DoubleSide} />
-    </Extrude>
-    {props.config.light &&
-      <LightStrip
-        width={beamLength}
-        debug={props.config.lightsDebug}
-        ledsUnderBeam={version.ledsUnderBeam} />}
-  </Group>;
+  const { onSelectObject, onHoverObject } = props;
+  const selectBeam = React.useCallback((event: ThreeEvent<MouseEvent>) => {
+    if (clickWasDragged(event)
+      || [...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
+      return;
+    }
+    if (onSelectObject) {
+      onSelectObject({ kind: "gantryBeam", id: 0 }) !== false
+        && event.stopPropagation?.();
+    }
+  }, [onSelectObject]);
+  const hoverBeam = React.useCallback((
+    hovered: boolean,
+    event: ThreeEvent<PointerEvent>,
+  ) => {
+    event.stopPropagation?.();
+    onHoverObject?.(hovered);
+  }, [onHoverObject]);
+  return <Highlight highlightName={"gantry-beam"}>
+    <Group name={"gantry-beam"}
+      onClick={selectBeam}
+      onPointerOver={event => hoverBeam(true, event)}
+      onPointerOut={event => hoverBeam(false, event)}
+      position={[
+        position.x,
+        position.y,
+        columnLength + 40,
+      ]}
+      rotation={[Math.PI / 2, 0, 0]}>
+      <Extrude name={"gantry-beam-extrusion"}
+        castShadow={true}
+        args={[
+          props.beamShape,
+          { steps: 1, depth: beamLength, bevelEnabled: false },
+        ]}>
+        <MeshPhongMaterial
+          color={"white"}
+          map={props.aluminumTexture}
+          side={DoubleSide} />
+      </Extrude>
+      {props.config.light &&
+        <LightStrip
+          width={beamLength}
+          debug={props.config.lightsDebug}
+          ledsUnderBeam={version.ledsUnderBeam} />}
+    </Group>
+  </Highlight>;
 };
 
 export const GantryBeam = React.memo(GantryBeamComponent,
@@ -110,11 +147,15 @@ export const EMISSIVE_PROPS = {
 const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
   // eslint-disable-next-line no-null/no-null
   const lightRef = React.useRef<ThreeSpotLight>(null!);
-  useHelper(debug ? lightRef : undefined, SpotLightHelper, "white");
+  const helperRef = useHelper(
+    debug ? lightRef : undefined,
+    SpotLightHelper,
+    "white",
+  );
   const worldPosRef = React.useRef<Vector3>(new Vector3());
   const targetPosRef = React.useRef<Vector3>(new Vector3());
   const downVector = React.useMemo(() => new Vector3(0, 0, -1), []);
-  React.useLayoutEffect(() => {
+  const updateTarget = React.useCallback(() => {
     const light = lightRef.current;
     if (!light || typeof light.getWorldPosition != "function") { return; }
     const worldPos = worldPosRef.current;
@@ -123,7 +164,10 @@ const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
     targetPos.copy(worldPos).add(downVector);
     light.target.position.copy(targetPos);
     light.target.updateMatrixWorld();
-  });
+    helperRef?.current?.update();
+  }, [downVector, helperRef]);
+  React.useLayoutEffect(updateTarget);
+  useFrame(updateTarget);
   return <SpotLight
     ref={lightRef}
     position={[0, 0, yOffset]}

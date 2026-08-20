@@ -23,7 +23,7 @@ import { ASSETS, BigDistance } from "../constants";
 import { SECTION_CLIPPING_EXEMPT } from "../section";
 import {
   Constellations, ConstellationsHandle,
-} from "./constellations";
+} from "../stargazing/constellations";
 import { polarToCartesian } from "./celestial_coordinates";
 import { TaggedSceneObject } from "farmbot";
 

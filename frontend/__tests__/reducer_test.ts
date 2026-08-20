@@ -83,6 +83,16 @@ describe("resource reducer", () => {
       .toBe(!state.pointsPanelState.groups);
   });
 
+  it("opens points panel options", () => {
+    const state = buildState();
+    state.pointsPanelState.soilHeight = false;
+    const newState = appReducer(state, {
+      type: Actions.OPEN_POINTS_PANEL_OPTION,
+      payload: "soilHeight",
+    });
+    expect(newState.pointsPanelState.soilHeight).toBeTruthy();
+  });
+
   it("toggles curves panel options", () => {
     const payload: keyof CurvesPanelState = "water";
     const state = buildState();

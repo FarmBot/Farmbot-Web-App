@@ -12,16 +12,13 @@ import { createPanelCameraStore } from "../panel_camera";
 import { filterSectionIntersections } from "../section";
 import { Actions } from "../../constants";
 import { bot } from "../../__test_support__/fake_state/bot";
-
-const useThreeImplementation =
-  (reactThreeFiber.useThree as jest.Mock).getMockImplementation();
+import { buildResourceIndex } from
+  "../../__test_support__/resource_index_builder";
 
 beforeEach(() => {
   console.log = jest.fn();
   window.localStorage.clear();
   delete window.__fbPerf;
-  jest.spyOn(reactThreeFiber, "useThree")
-    .mockImplementation(useThreeImplementation);
 });
 
 afterEach(() => {
@@ -33,6 +30,7 @@ afterEach(() => {
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: { ...clone(INITIAL), viewCube: true },
+    resources: buildResourceIndex().index,
     configPosition: clone(INITIAL_POSITION),
     firmwareSettings: bot.hardware.mcu_params,
     panelCameraStore: createPanelCameraStore(true),

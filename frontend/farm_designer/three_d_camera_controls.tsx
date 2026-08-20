@@ -4,8 +4,8 @@ import {
   UTM_FOLLOW_PERSPECTIVE_REQUIRED,
 } from "../constants";
 import { t } from "../i18next_wrapper";
-import { DesignerState } from "./interfaces";
-import { Panel, TAB_ICON } from "./panel_header";
+import { DesignerState } from "../farm_designer/interfaces";
+import { Panel, TAB_ICON } from "../farm_designer/panel_header";
 import { info } from "../toast/toast";
 
 export interface ThreeDCameraControlsProps {

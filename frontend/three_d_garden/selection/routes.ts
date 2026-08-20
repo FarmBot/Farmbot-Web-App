@@ -181,5 +181,7 @@ export const pathForThreeDSelection = (
     case "sceneObject": return Path.sceneObjects(selection.id);
     case "bed": return Path.settings("3d_garden");
     case "safeHeight": return Path.settings("farmbot");
+    case "soilHeight": return Path.points();
+    case "gantryBeam": return Path.settings("3d_garden");
   }
 };

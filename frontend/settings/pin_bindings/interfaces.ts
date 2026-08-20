@@ -50,6 +50,7 @@ export interface PinBindingInputGroupState {
 }
 
 export interface BoxTopBaseProps {
+  shortViewport?: boolean;
   isEditing: boolean;
   dispatch: Function;
   resources: ResourceIndex;

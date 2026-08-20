@@ -18,8 +18,8 @@ import {
 } from "./constellation_data";
 import {
   getPlantIconTextureTransform, getPlantIconTextureUrl,
-} from "./plant_icon_atlas";
-import { polarToCartesian, toRad } from "./celestial_coordinates";
+} from "../garden/plant_icon_atlas";
+import { polarToCartesian, toRad } from "../garden/celestial_coordinates";
 import { ErrorBoundary } from "../../error_boundary";
 
 export interface StarData {
@@ -635,8 +635,7 @@ export const advanceConstellationAnimation = (
 
 export const cameraSideShaderModification = (
   shader: WebGLProgramParametersWithUniforms,
-  cameraSideClipUniform: CameraSideClipUniform =
-  defaultCameraSideClipUniform,
+  cameraSideClipUniform: CameraSideClipUniform = defaultCameraSideClipUniform,
 ) => {
   shader.uniforms.cameraSideClipEnabled = cameraSideClipUniform;
   shader.vertexShader = shader.vertexShader
@@ -664,10 +663,8 @@ export const cameraSideShaderModification = (
 
 export const constellationLineShaderModification = (
   shader: WebGLProgramParametersWithUniforms,
-  cameraSideClipUniform: CameraSideClipUniform =
-  defaultCameraSideClipUniform,
-  constellationDebugUniform: ConstellationDebugUniform =
-  defaultConstellationDebugUniform,
+  cameraSideClipUniform: CameraSideClipUniform = defaultCameraSideClipUniform,
+  constellationDebugUniform: ConstellationDebugUniform = defaultConstellationDebugUniform,
 ) => {
   shader.uniforms.constellationTime = constellationTimeUniform;
   shader.uniforms.cameraSideClipEnabled = cameraSideClipUniform;
@@ -754,10 +751,8 @@ export const constellationLineShaderModification = (
 
 export const constellationImageShaderModification = (
   shader: WebGLProgramParametersWithUniforms,
-  cameraSideClipUniform: CameraSideClipUniform =
-  defaultCameraSideClipUniform,
-  constellationDebugUniform: ConstellationDebugUniform =
-  defaultConstellationDebugUniform,
+  cameraSideClipUniform: CameraSideClipUniform = defaultCameraSideClipUniform,
+  constellationDebugUniform: ConstellationDebugUniform = defaultConstellationDebugUniform,
 ) => {
   shader.uniforms.constellationTime = constellationTimeUniform;
   shader.uniforms.cameraSideClipEnabled = cameraSideClipUniform;
@@ -836,8 +831,7 @@ export const constellationImageShaderModification = (
 
 export const starShaderModification = (
   shader: WebGLProgramParametersWithUniforms,
-  cameraSideClipUniform: CameraSideClipUniform =
-  defaultCameraSideClipUniform,
+  cameraSideClipUniform: CameraSideClipUniform = defaultCameraSideClipUniform,
 ) => {
   cameraSideShaderModification(shader, cameraSideClipUniform);
   shader.vertexShader = shader.vertexShader.replace(

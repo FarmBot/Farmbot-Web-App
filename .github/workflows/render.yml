@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set render env
         run: scripts/ci/export-render-env
@@ -52,7 +52,7 @@ jobs:
           sudo docker compose up -d
           sudo docker compose ps
 
-      - name: Install playwright
+      - name: Install Playwright tooling
         run: |
           curl -fsSL https://bun.sh/install | bash
           export BUN_INSTALL="$HOME/.bun"
@@ -61,7 +61,73 @@ jobs:
           echo "BUN_INSTALL=$BUN_INSTALL" >> "$GITHUB_ENV"
           echo "$BUN_INSTALL/bin" >> "$GITHUB_PATH"
           echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
-          bun run playwright install chromium --with-deps
+
+      - name: Set Playwright apt cache key
+        id: playwright_apt_cache_key
+        run: |
+          . /etc/os-release
+          echo "platform=${ID}-${VERSION_ID}-${{ runner.arch }}" >> "$GITHUB_OUTPUT"
+          echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Playwright apt downloads
+        id: playwright_apt_cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .cache/playwright-apt
+          key: playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-${{ hashFiles('bun.lock') }}-${{ steps.playwright_apt_cache_key.outputs.week }}
+          restore-keys: |
+            playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-${{ hashFiles('bun.lock') }}-
+            playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-
+
+      - name: Configure Playwright apt download cache
+        run: |
+          sudo install -d -m 755 "$GITHUB_WORKSPACE/.cache/playwright-apt"
+          sudo install -d -o _apt -g root -m 700 "$GITHUB_WORKSPACE/.cache/playwright-apt/partial"
+          sudo tee /etc/apt/apt.conf.d/99-playwright-ci-cache >/dev/null <<EOF
+          Dir::Cache::archives "$GITHUB_WORKSPACE/.cache/playwright-apt";
+          Binary::apt::APT::Keep-Downloaded-Packages "true";
+          Binary::apt-get::APT::Keep-Downloaded-Packages "true";
+          APT::Update::Post-Invoke-Success {
+            "install -d -o _apt -g root -m 700 $GITHUB_WORKSPACE/.cache/playwright-apt/partial";
+          };
+          EOF
+
+      - name: Install cached Playwright system dependencies
+        run: |
+          shopt -s nullglob
+          packages=("$GITHUB_WORKSPACE/.cache/playwright-apt/"*.deb)
+          if [ "${#packages[@]}" -gt 0 ]; then
+            sudo apt-get install -y --no-install-recommends "${packages[@]}"
+          fi
+
+      - name: Install missing Playwright system dependencies
+        run: |
+          if ! bun run playwright install-deps chromium --dry-run; then
+            bun run playwright install-deps chromium
+          fi
+
+      - name: Prepare Playwright apt cache
+        id: prepare_playwright_apt_cache
+        run: |
+          sudo chmod -R a+rX "$GITHUB_WORKSPACE/.cache/playwright-apt"
+          du -sh "$GITHUB_WORKSPACE/.cache/playwright-apt"
+          shopt -s nullglob
+          packages=("$GITHUB_WORKSPACE/.cache/playwright-apt/"*.deb)
+          if [ "${#packages[@]}" -gt 0 ]; then
+            echo "has_packages=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_packages=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save Playwright apt downloads
+        if: steps.playwright_apt_cache.outputs.cache-hit != 'true' && steps.prepare_playwright_apt_cache.outputs.has_packages == 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .cache/playwright-apt
+          key: playwright-apt-${{ steps.playwright_apt_cache_key.outputs.platform }}-${{ hashFiles('bun.lock') }}-${{ steps.playwright_apt_cache_key.outputs.week }}
+
+      - name: Install Playwright Chromium
+        run: bun run playwright install chromium
 
       - name: Set up GPU
         run: |
@@ -96,7 +162,7 @@ jobs:
           exit 1
 
       - name: Restore branch metric history cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
@@ -118,7 +184,7 @@ jobs:
 
       - name: Restore staging metric history cache fallback
         if: steps.restore_metric_history.outputs.scene_metrics_found != 'true'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
@@ -127,7 +193,7 @@ jobs:
             ${{ env.STAGING_FPS_METRICS_CACHE_KEY }}-
 
       - name: Restore branch FPS history cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -148,7 +214,7 @@ jobs:
 
       - name: Restore staging FPS history cache fallback
         if: steps.restore_fps_history.outputs.fps_history_found != 'true'
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.STAGING_FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -157,7 +223,7 @@ jobs:
 
       - name: Restore frontend coverage value
         if: always()
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -191,14 +257,14 @@ jobs:
           bun scripts/ci/combine-render-images
 
       - name: Save FPS metrics
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: |
             /tmp/${{ env.SCENE_METRICS_NAME }}*.csv
           key: ${{ env.FPS_METRICS_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}
 
       - name: Save FPS history
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: /tmp/${{ env.FPS_HISTORY }}.csv
           key: ${{ env.FPS_HISTORY_CACHE_KEY }}-${{ env.CACHE_BASELINE_SHA }}-${{ env.CACHE_KEY_SUFFIX }}

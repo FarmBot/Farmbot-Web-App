@@ -51,9 +51,10 @@ describe Users::Update do
 
   it "stops users from changing to an unauthorized email domain" do
     user = FactoryBot.create(:user)
+    email = "#{SecureRandom.hex(8)}@mailinator.com"
 
     ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io,farm.bot") do
-      result = Users::Update.run(user: user, email: "example@mailinator.com")
+      result = Users::Update.run(user: user, email: email)
 
       expect(result.success?).to be false
       expect(result.errors.message_list)

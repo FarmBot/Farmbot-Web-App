@@ -144,7 +144,7 @@ const LedIndicators = () => {
       instanceColor={lightAttributes.instanceColor}
       instanceMatrix={lightAttributes.instanceMatrix}>
       <cylinderGeometry args={[6.75, 6.75, 3]} />
-      <MeshBasicMaterial color={"white"} vertexColors={true} />
+      <MeshBasicMaterial color={"white"} toneMapped={false} />
     </InstancedMesh>
   </Group>;
 };
@@ -179,7 +179,7 @@ const ButtonInstances = (props: {
       instanceColor={buttonAttributes.instanceColor}
       instanceMatrix={buttonAttributes.instanceMatrix}>
       <cylinderGeometry args={[9, 0, 3.5]} />
-      <MeshBasicMaterial color={"white"} vertexColors={true} />
+      <MeshBasicMaterial color={"white"} toneMapped={false} />
     </InstancedMesh>
     <InstancedMesh name={"button-centers"}
       args={[undefined, undefined, buttonInstances.length]}

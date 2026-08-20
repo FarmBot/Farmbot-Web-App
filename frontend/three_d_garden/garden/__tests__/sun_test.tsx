@@ -17,7 +17,7 @@ import * as SunCalc from "suncalc";
 import {
   Constellations, generateStars, projectConstellationPoint,
   starShaderModification,
-} from "../constellations";
+} from "../../stargazing/constellations";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
@@ -29,7 +29,7 @@ import {
   unmountRenderer,
 } from "../../../__test_support__/test_renderer";
 import { SECTION_CLIPPING_EXEMPT } from "../../section";
-import { CropConstellationCatalog } from "../constellation_data";
+import { CropConstellationCatalog } from "../../stargazing/constellation_data";
 import { fakeSceneObject } from
   "../../../__test_support__/fake_state/resources";
 

@@ -15,6 +15,7 @@ config/credentials.yml.enc
 coverage_api
 coverage_fe
 coverage_jest_file
+.jest-file-coverage.*
 docker_volumes
 erd_diagram.png
 erd.pdf
@@ -33,5 +34,6 @@ upgrade_deps.sh
 # ActiveStorage blobs:
 storage/*
 tmp
-module_graph.*
+scripts/graphs/*.svg
+scripts/graphs/*.dot
 scripts/ci/__pycache__

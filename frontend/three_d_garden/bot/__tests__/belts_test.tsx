@@ -155,7 +155,7 @@ describe("belts", () => {
         return undefined;
       });
     const positionRef = {
-      current: { x: 300, y: 0, z: 0 },
+      current: { x: -50, y: 0, z: 0 },
     };
     const disposeSpy = jest.spyOn(BufferGeometry.prototype, "dispose");
     const { container, unmount } = render(<XAxisBelt

@@ -75,6 +75,22 @@ describe("<Promo />", () => {
     unmount();
   });
 
+  it("shows guidance when WebGL is unavailable", () => {
+    const webGLSpy = jest.spyOn(HTMLCanvasElement.prototype, "getContext")
+      // eslint-disable-next-line no-null/no-null
+      .mockImplementation((() => null) as never);
+    const { container, unmount } = render(<Promo />);
+    expect(container.textContent).toContain("3D graphics unavailable");
+    expect(container.textContent).toContain("Enable WebGL");
+    expect(container.querySelector(".three-d-required-toggle")).toBeFalsy();
+    expect(container.querySelector(".overlay")).toBeTruthy();
+    expect(container.querySelector(".settings-bar-loaded")).toBeTruthy();
+    expect(container.querySelector(".gear")).toBeTruthy();
+    expect(canvasSpy).not.toHaveBeenCalled();
+    webGLSpy.mockRestore();
+    unmount();
+  });
+
   it("shows the view prism when viewCube is enabled", () => {
     window.location.search = "?viewCube=true";
     const { container, unmount } = render(<Promo />);

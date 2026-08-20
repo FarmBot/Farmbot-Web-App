@@ -34,16 +34,19 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { useHelper } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION, PRESETS } from "../../../config";
-import { clone } from "lodash";
+import { clone, range } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
 import * as threeFiber from "@react-three/fiber";
 import {
   createRenderer, unmountRenderer,
 } from "../../../../__test_support__/test_renderer";
+import * as mapUtil from "../../../../farm_designer/map/util";
+import { Mode } from "../../../../farm_designer/map/interfaces";
 
 let reactUseRefSpy: jest.SpyInstance;
 let useFrameSpy: jest.SpyInstance;
+let getModeSpy: jest.SpyInstance;
 
 describe("<GantryBeam />", () => {
   beforeEach(() => {
@@ -51,11 +54,13 @@ describe("<GantryBeam />", () => {
     reactUseRefSpy = jest.spyOn(React, "useRef")
       .mockImplementation(() => mockRef);
     useFrameSpy = jest.spyOn(threeFiber, "useFrame");
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
   });
 
   afterEach(() => {
     reactUseRefSpy.mockRestore();
     useFrameSpy.mockRestore();
+    getModeSpy.mockRestore();
   });
 
   const fakeProps = (): GantryBeamProps => ({
@@ -65,10 +70,15 @@ describe("<GantryBeam />", () => {
     aluminumTexture: new Texture(),
   });
 
+  const lightStrip = (container: HTMLElement) =>
+    container.querySelector("[name='gantry-beam-light-strip']");
+
   it("renders beam", () => {
     const { container } = render(<GantryBeam {...fakeProps()} />);
     expect(container).toContainHTML("beam");
-    expect(container).not.toContainHTML("light");
+    expect(container.querySelector("[name='gantry-beam-highlight']"))
+      .toBeTruthy();
+    expect(lightStrip(container)).toBeNull();
   });
 
   it("renders lights", () => {
@@ -76,7 +86,7 @@ describe("<GantryBeam />", () => {
     p.config.light = true;
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
-    expect(container).toContainHTML("light");
+    expect(lightStrip(container)).toBeTruthy();
   });
 
   it("renders alternative lights", () => {
@@ -85,26 +95,45 @@ describe("<GantryBeam />", () => {
     p.config.kitVersion = "v1.8";
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
-    expect(container).toContainHTML("light");
+    expect(lightStrip(container)).toBeTruthy();
   });
 
-  it("renders lights without frame callbacks", () => {
+  it("updates light targets in render frames", () => {
+    const frameCallbacks: Parameters<typeof threeFiber.useFrame>[0][] = [];
+    const helperUpdate = jest.fn();
+    const helperMock = useHelper as unknown as jest.Mock;
+    range(5).forEach(() => helperMock.mockReturnValueOnce({
+      current: { update: helperUpdate },
+    }));
+    useFrameSpy.mockImplementation(
+      (callback: Parameters<typeof threeFiber.useFrame>[0]) => {
+        frameCallbacks.push(callback);
+        return undefined;
+      });
     const p = fakeProps();
     p.config.light = true;
     p.config.kitVersion = "v1.8";
     const { container } = render(<GantryBeam {...p} />);
-    expect(container).toContainHTML("light");
-    expect(useFrameSpy).not.toHaveBeenCalled();
+    expect(lightStrip(container)).toBeTruthy();
+    expect(frameCallbacks).toHaveLength(5);
+    jest.clearAllMocks();
+
+    frameCallbacks.forEach(callback => callback({} as never, 0));
+
+    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(5);
+    expect(helperUpdate).toHaveBeenCalledTimes(5);
   });
 
   it("updates light targets", () => {
     const p = fakeProps();
     p.config.light = true;
     render(<GantryBeam {...p} />);
-    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.copy).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(5);
-    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(5);
+    expect(mockRef.current?.getWorldPosition).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.copy).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.target.position.copy).toHaveBeenCalledTimes(10);
+    expect(mockRef.current?.target.updateMatrixWorld).toHaveBeenCalledTimes(10);
   });
 
   it("renders debug helpers", () => {
@@ -113,7 +142,7 @@ describe("<GantryBeam />", () => {
     p.config.lightsDebug = true;
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
-    expect(container).toContainHTML("light");
+    expect(lightStrip(container)).toBeTruthy();
   });
 
   it("handles missing ref", () => {
@@ -122,7 +151,51 @@ describe("<GantryBeam />", () => {
     p.config.light = true;
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
-    expect(container).toContainHTML("light");
+    expect(lightStrip(container)).toBeTruthy();
+  });
+
+  it("selects and hovers the beam", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    p.onHoverObject = jest.fn();
+    const wrapper = createRenderer(<GantryBeam {...p} />);
+    const beam = wrapper.root.find(node =>
+      node.props.name == "gantry-beam");
+    const stopPropagation = jest.fn();
+
+    beam.props.onClick({ delta: 0, stopPropagation });
+    beam.props.onPointerOver({ stopPropagation });
+    beam.props.onPointerOut({ stopPropagation });
+
+    expect(p.onSelectObject).toHaveBeenCalledWith({
+      kind: "gantryBeam",
+      id: 0,
+    });
+    expect(p.onHoverObject).toHaveBeenNthCalledWith(1, true);
+    expect(p.onHoverObject).toHaveBeenNthCalledWith(2, false);
+    expect(stopPropagation).toHaveBeenCalledTimes(3);
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't select the beam after a drag", () => {
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    const wrapper = createRenderer(<GantryBeam {...p} />);
+    wrapper.root.find(node => node.props.name == "gantry-beam")
+      .props.onClick({ delta: 2 });
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
+  it("doesn't select the beam in camera selection mode", () => {
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
+    const p = fakeProps();
+    p.onSelectObject = jest.fn();
+    const wrapper = createRenderer(<GantryBeam {...p} />);
+    wrapper.root.find(node => node.props.name == "gantry-beam")
+      .props.onClick({ delta: 0 });
+    expect(p.onSelectObject).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
   });
 });
 

@@ -185,6 +185,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   return {
     crops: selectCrops(props.resources.index),
     dispatch: props.dispatch,
+    resources: props.resources.index,
     device,
     deviceAccount,
     bot: props.bot,

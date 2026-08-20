@@ -86,6 +86,19 @@ describe("<FilterSearch />", () => {
     expect(itemListFilter).toHaveBeenLastCalledWith(p.items, "stress");
   });
 
+  it("updates the search query", () => {
+    const instance = createInstance();
+    instance["handleQueryChange"]("mint");
+    expect(instance.state.query).toEqual("mint");
+  });
+
+  it("matches the popover width to the target", () => {
+    const p = fakeProps();
+    p.matchTargetWidth = true;
+    const element = createInstance(p).render();
+    expect(element.props.popoverProps.matchTargetWidth).toBeTruthy();
+  });
+
   it("shows section headings only when a child item matches", () => {
     const instance = createInstance();
     const items = [

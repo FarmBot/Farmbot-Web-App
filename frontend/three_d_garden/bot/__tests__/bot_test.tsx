@@ -609,19 +609,20 @@ describe("<Bot />", () => {
       .not.toBeInTheDocument();
   });
 
-  it("highlights all clickable FarmBot objects without labels", () => {
+  it("highlights all clickable FarmBot objects", () => {
+    const p = fakeProps();
+    p.config.bounds = true;
     const wrapper = createRenderer(
       <HighlightProvider highlighted3DObject={"all"}>
-        <Bot {...fakeProps()} />
+        <Bot {...p} />
       </HighlightProvider>,
     );
     const named = (name: string) => wrapper.root.findAll(node =>
       typeof node.type == "string" && node.props.name == name);
     expect(named("jog-controls-highlight")).toHaveLength(4);
     expect(named("utm-highlight").length).toBeGreaterThanOrEqual(2);
-    expect(wrapper.root.findAll(node =>
-      typeof node.props.name == "string"
-      && node.props.name.endsWith("-label"))).toHaveLength(0);
+    expect(named("safe-height-highlight")).toHaveLength(1);
+    expect(named("soil-height-highlight")).toHaveLength(2);
     unmountRenderer(wrapper);
   });
 

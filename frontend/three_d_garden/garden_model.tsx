@@ -62,7 +62,7 @@ import { BooleanSetting } from "../session_keys";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 import { Actions, Content } from "../constants";
-import { SlotWithTool } from "../resources/interfaces";
+import { ResourceIndex, SlotWithTool } from "../resources/interfaces";
 import {
   applyCameraClippingRange, applyCameraViewOffset, cameraInit,
   cameraPositionForFov, CameraViewOffset, CameraViewport, canonicalCamera,
@@ -177,10 +177,8 @@ import {
 } from "./view_prism";
 import { t } from "../i18next_wrapper";
 import { soilHeightPoint } from "../points/soil_height";
-import { STARGAZING_DEFAULT_FOV } from
-  "../farm_designer/stargazing_constants";
-import { markConstellationFound } from
-  "../farm_designer/stargazing_progress";
+import { STARGAZING_DEFAULT_FOV } from "./stargazing/stargazing_constants";
+import { markConstellationFound } from "./stargazing/stargazing_progress";
 import { ControlCursorProvider } from "./controls";
 import { CameraFollowController } from "./camera_follow";
 import { UtmFollowController } from "./utm_follow";
@@ -812,6 +810,7 @@ const SceneBoundary = (props: SceneBoundaryProps) => {
 
 export interface GardenModelProps {
   config: Config;
+  resources?: ResourceIndex;
   configPosition: PositionConfig;
   activeFocus: string;
   setActiveFocus(focus: string): void;
@@ -3517,6 +3516,12 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
       closePopup();
       return;
     }
+    if (selection.kind == "soilHeight") {
+      dispatch?.({
+        type: Actions.OPEN_POINTS_PANEL_OPTION,
+        payload: "soilHeight",
+      });
+    }
     dispatch?.(setPanelOpen3D(true));
     navigate(pathForThreeDSelection(selection));
     closePopup();
@@ -4372,6 +4377,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           visible={farmbotVisible} />
         <ThreeDObjectSelectionLayer
           config={config}
+          resources={props.resources}
+          getConfigValue={addPlantProps?.getConfigValue}
           configPosition={props.configPosition}
           selection={visualSelection}
           panelSelection={panelVisualSelection}

@@ -42,13 +42,13 @@ runs:
         cache-to: type=gha,mode=max,scope=farmbot-web
 
     - name: Cache bundle
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: docker_volumes/bundle_cache
         key: bundle-${{ runner.os }}-${{ hashFiles('Gemfile.lock') }}
 
     - name: Cache node modules
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: node_modules
         key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { BoxTop } from "../box_top";
 import { BoxTopProps } from "../interfaces";
 import {
@@ -8,6 +8,8 @@ import {
 import { bot } from "../../../__test_support__/fake_state/bot";
 import * as model from "../model";
 import * as boxTopGpioDiagram from "../box_top_gpio_diagram";
+import * as configActions from "../../../config_storage/actions";
+import { BooleanSetting } from "../../../session_keys";
 
 let electronicsBoxModelSpy: jest.SpyInstance;
 let boxTopButtonsSpy: jest.SpyInstance;
@@ -52,5 +54,23 @@ describe("<BoxTop />", () => {
     expect(container.querySelectorAll(".box-top-2d-wrapper").length).toEqual(0);
     expect(container.querySelectorAll(".electronics-box-3d-model").length)
       .toEqual(1);
+  });
+
+  it("falls back when WebGL is unavailable", () => {
+    const webGLSpy = jest.spyOn(HTMLCanvasElement.prototype, "getContext")
+      // eslint-disable-next-line no-null/no-null
+      .mockImplementation((() => null) as never);
+    const setConfig = jest.spyOn(configActions, "setWebAppConfigValue");
+    const p = fakeProps();
+    p.threeDimensions = true;
+    const { container } = render(<BoxTop {...p} />);
+    expect(container.textContent).toContain("3D graphics unavailable");
+    expect(electronicsBoxModelSpy).not.toHaveBeenCalled();
+    const toggle = container.querySelector(".fb-toggle-button");
+    toggle && fireEvent.click(toggle);
+    expect(setConfig).toHaveBeenCalledWith(
+      BooleanSetting.enable_3d_electronics_box_top, false);
+    webGLSpy.mockRestore();
+    setConfig.mockRestore();
   });
 });

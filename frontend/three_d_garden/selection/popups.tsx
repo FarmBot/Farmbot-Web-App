@@ -46,6 +46,8 @@ const objectShowsLocation = (object: ResolvedThreeDObject) =>
     "sceneObject",
     "bed",
     "safeHeight",
+    "soilHeight",
+    "gantryBeam",
   ].includes(object.kind);
 
 export const scaledObjectPopupPosition = (
@@ -57,8 +59,8 @@ export const scaledObjectPopupPosition = (
     object.popupPosition[0],
     object.popupPosition[1],
     object.worldPosition[2]
-      + object.sceneObject.body.z_size / 2
-      + SCENE_OBJECT_POPUP_Z_OFFSET * scale,
+    + object.sceneObject.body.z_size / 2
+    + SCENE_OBJECT_POPUP_Z_OFFSET * scale,
   ];
 };
 
@@ -85,8 +87,8 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
   const popupPosition = useScaledObjectPopupPosition(props.object);
   const coordinates = props.object.kind == "utm"
     ? `(${Math.round(props.object.locationCoordinate.x)}, `
-      + `${Math.round(props.object.locationCoordinate.y)}, `
-      + `${Math.round(props.object.locationCoordinate.z)})`
+    + `${Math.round(props.object.locationCoordinate.y)}, `
+    + `${Math.round(props.object.locationCoordinate.z)})`
     : undefined;
   const connectivity = popupConnectivityData(props);
   let popupContent = <ObjectPopupControls {...props} />;
@@ -103,12 +105,12 @@ export const ObjectPopup = (props: ObjectPopupProps) => {
       <span className={"row"}>
         {props.object.name}
         {connectivity &&
-            <DiagnosisSaucer {...connectivity.flags}
-              className={"three-d-connectivity"} />}
+          <DiagnosisSaucer {...connectivity.flags}
+            className={"three-d-connectivity"} />}
         {coordinates &&
-            <span className={"object-popup-title-coordinates"}>
-              {` ${coordinates}`}
-            </span>}
+          <span className={"object-popup-title-coordinates"}>
+            {` ${coordinates}`}
+          </span>}
       </span>}
     headerActions={
       <>

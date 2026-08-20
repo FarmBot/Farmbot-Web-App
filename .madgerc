@@ -1,14 +1,33 @@
 {
     "excludeRegExp": [
-        "^(?!.*three_d_garden)",
-        "[/\\\\]components\\.tsx$",
-        "[/\\\\]config\\.ts$",
-        "[/\\\\]helpers\\.ts$",
-        "[/\\\\]constants\\.ts$",
-        "[/\\\\]__tests__[/\\\\]"
+        "(^|[/\\\\])i18next_wrapper\\.tsx$",
+        "(^|[/\\\\])components\\.tsx$",
+        "(^|[/\\\\])config\\.ts$",
+        "(^|[/\\\\])helpers\\.ts$",
+        "(^|[/\\\\])constants\\.ts$",
+        "(^|[/\\\\])interfaces\\.ts$",
+        "/util/index.ts",
+        "internal_urls.ts",
+        "api/crud.ts",
+        "toast/toast.ts",
+        "redux/store.ts",
+        "resources/selectors.ts",
+        "session_keys.ts",
+        "farm_designer/map/util.ts",
+        "performance/perf.ts",
+        "config_storage/actions.ts",
+        "devices/actions.ts",
+        "link.tsx",
+        "error_boundary.tsx",
+        "(^|[/\\\\])__tests__[/\\\\]",
+        "(^|[/\\\\])__test_support__[/\\\\]",
+        "(^|[/\\\\])crops[/\\\\]",
+        "(^|[/\\\\])ui[/\\\\]"
     ],
     "fileExtensions": [
         "ts",
         "tsx"
-    ]
+    ],
+    "tsConfig": "./tsconfig.json",
+    "layout": "sfdp"
 }

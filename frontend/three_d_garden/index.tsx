@@ -21,7 +21,7 @@ import {
   TaggedPeripheral,
   TaggedSceneObject,
 } from "farmbot";
-import { SlotWithTool } from "../resources/interfaces";
+import { ResourceIndex, SlotWithTool } from "../resources/interfaces";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import { ThreeDGardenPlant } from "./garden";
 import { perfMark, usePerfRenderCount } from "../performance/perf";
@@ -45,6 +45,7 @@ const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
 
 export interface ThreeDGardenProps {
   config: Config;
+  resources: ResourceIndex;
   configPosition: PositionConfig;
   panelCameraStore: PanelCameraStore;
   threeDPlants: ThreeDGardenPlant[];
@@ -135,6 +136,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
           props.addPlantProps.designer.highlighted3DObject}>
           <GardenModel
             config={props.config}
+            resources={props.resources}
             configPosition={props.configPosition}
             panelCamera={true}
             panelCameraStore={props.panelCameraStore}

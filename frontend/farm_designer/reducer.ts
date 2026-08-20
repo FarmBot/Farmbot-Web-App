@@ -15,7 +15,7 @@ import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
 import {
   clampStargazingFov, STARGAZING_DEFAULT_FOV,
-} from "./stargazing_constants";
+} from "../three_d_garden/stargazing/stargazing_constants";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,

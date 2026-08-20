@@ -30,6 +30,8 @@ import {
   getPromoResourcePlants, getPromoResourcePoints, getPromoResourceWeeds,
 } from "./resources";
 import { clearCameraUrlParams } from "../three_d_garden/camera";
+import { isWebGLAvailable, ThreeDRequiredOverlay } from
+  "../three_d_garden/three_d_required_overlay";
 
 const PROMO_BED_SIZES = [
   {
@@ -231,39 +233,42 @@ export const Promo = () => {
     seasonAnimationPaused
       ? { ...config, animateSeasons: true }
       : config, [config, seasonAnimationPaused]);
+  const webGLAvailable = React.useMemo(() => isWebGLAvailable(), []);
 
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <FocusTransitionProvider enabled={config.animate}>
-        <MemoryRouter>
-          <Canvas
-            shadows={"variance"}
-            onCreated={({ gl }) => {
-              gl.localClippingEnabled = true;
-            }}>
-            <GardenModel {...common}
-              config={gardenConfig}
-              configPosition={{ x: config.x, y: config.y, z: config.z }}
-              startTimeRef={startTimeRef}
-              threeDPlants={threeDPlants}
-              mapPoints={mapPoints}
-              weeds={weeds}
-              plantIconCapacities={plantCapacities.iconCapacities}
-              plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
-              plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
-              seasonResetKey={seasonResetKey}
-              promo={true}
-              preloadEnvironmentScenes={true}
-              showFarmbotLayerLoadProgress={false}
-              onDetailsRevealStart={handleThreeDLoadComplete}
-              smoothFocusTransitions={true}
-              smoothConfigTransitions={true}
-              viewPrismBridgeRef={viewPrismBridgeRef} />
-          </Canvas>
-        </MemoryRouter>
+        {webGLAvailable
+          ? <MemoryRouter>
+            <Canvas
+              shadows={"variance"}
+              onCreated={({ gl }) => {
+                gl.localClippingEnabled = true;
+              }}>
+              <GardenModel {...common}
+                config={gardenConfig}
+                configPosition={{ x: config.x, y: config.y, z: config.z }}
+                startTimeRef={startTimeRef}
+                threeDPlants={threeDPlants}
+                mapPoints={mapPoints}
+                weeds={weeds}
+                plantIconCapacities={plantCapacities.iconCapacities}
+                plantIconAtlas={PROMO_PLANT_ICON_ATLAS}
+                plantInstanceCapacity={plantCapacities.plantInstanceCapacity}
+                seasonResetKey={seasonResetKey}
+                promo={true}
+                preloadEnvironmentScenes={true}
+                showFarmbotLayerLoadProgress={false}
+                onDetailsRevealStart={handleThreeDLoadComplete}
+                smoothFocusTransitions={true}
+                smoothConfigTransitions={true}
+                viewPrismBridgeRef={viewPrismBridgeRef} />
+            </Canvas>
+          </MemoryRouter>
+          : <ThreeDRequiredOverlay />}
         <PublicOverlay {...common}
           publicContentVisible={!activeFocus}
-          loadComplete={threeDLoaded}
+          loadComplete={threeDLoaded || !webGLAvailable}
           startTimeRef={startTimeRef}
           seasonAnimationElapsedRef={seasonAnimationElapsedRef}
           seasonAnimationPaused={seasonAnimationPaused}
@@ -284,7 +289,7 @@ export const Promo = () => {
         </span>
       </FocusTransitionProvider>
     </div>
-    {config.viewCube &&
+    {config.viewCube && webGLAvailable &&
       <ViewPrismViewport bridgeRef={viewPrismBridgeRef} />}
   </div>;
 };

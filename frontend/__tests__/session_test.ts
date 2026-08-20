@@ -5,7 +5,7 @@ import {
 } from "../session";
 import { auth } from "../__test_support__/fake_state/token";
 import { STARGAZING_PROGRESS_STORAGE_KEY } from
-  "../farm_designer/stargazing_progress_key";
+  "../three_d_garden/stargazing/stargazing_progress_key";
 
 beforeEach(() => {
   localStorage.clear();

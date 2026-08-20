@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 100
 
@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload app coverage to Codecov
         if: ${{ hashFiles('coverage_api/coverage.xml') != '' }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage_api/coverage.xml
@@ -123,7 +123,7 @@ jobs:
 
       - name: Restore frontend coverage cache fallback
         if: ${{ always() && steps.restore_fe_coverage_history.outputs.fe_coverage_found != 'true' }}
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Save frontend coverage value
         if: ${{ always() && env.COVERAGE_AVAILABLE == 'true' }}
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: /tmp/${{ env.FE_COVERAGE_NAME }}.csv
           key: ${{ env.FE_COVERAGE_CACHE_KEY }}-${{ env.CACHE_KEY_SUFFIX }}

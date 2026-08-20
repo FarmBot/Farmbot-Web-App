@@ -91,6 +91,24 @@ describe("moving cable carriers", () => {
     moveToSpy.mockRestore();
   });
 
+  it("sizes the Y carrier by beam length", () => {
+    const p = fakeProps();
+    const moveToSpy = jest.spyOn(Shape.prototype, "moveTo");
+    const { rerender } = render(<CableCarrierY {...p} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(1);
+    rerender(<CableCarrierY {...p} config={{
+      ...p.config,
+      botSizeY: p.config.botSizeY + 10,
+    }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(1);
+    rerender(<CableCarrierY {...p} config={{
+      ...p.config,
+      beamLength: p.config.beamLength + 10,
+    }} />);
+    expect(moveToSpy).toHaveBeenCalledTimes(2);
+    moveToSpy.mockRestore();
+  });
+
   it("disposes replaced and unmounted moving carrier geometry", () => {
     const p = fakeProps();
     const disposeSpy = jest.spyOn(ExtrudeGeometry.prototype, "dispose");

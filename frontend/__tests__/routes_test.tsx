@@ -5,7 +5,7 @@ import { AuthState } from "../auth/interfaces";
 import { auth } from "../__test_support__/fake_state/token";
 import { Session } from "../session";
 import { Path } from "../internal_urls";
-import { RootComponent } from "../routes";
+import { normalizeRollbarAssetUrls, RootComponent } from "../routes";
 
 describe("<RootComponent />", () => {
   let mockAuth: AuthState | undefined = undefined;
@@ -42,5 +42,41 @@ describe("<RootComponent />", () => {
     const { container } = render(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
     expect(container.innerHTML).not.toContain("rollbar");
+  });
+});
+
+describe("normalizeRollbarAssetUrls()", () => {
+  it("uses the shared Rollbar host for FarmBot assets", () => {
+    const payload = {
+      body: {
+        trace: {
+          frames: [
+            { filename: "https://my.farm.bot/assets/dist/app.js" },
+            { filename: "https://example.com/other.js" },
+            {},
+          ],
+        },
+        trace_chain: [{
+          frames: [
+            { filename: "https://custom.farm.bot/assets/dist/chunk.js" },
+          ],
+        }],
+      },
+    };
+
+    normalizeRollbarAssetUrls(payload);
+
+    expect(payload.body.trace.frames).toEqual([
+      { filename: "https://dynamichost/assets/dist/app.js" },
+      { filename: "https://example.com/other.js" },
+      {},
+    ]);
+    expect(payload.body.trace_chain[0].frames).toEqual([
+      { filename: "https://dynamichost/assets/dist/chunk.js" },
+    ]);
+  });
+
+  it("handles payloads without a trace", () => {
+    expect(() => normalizeRollbarAssetUrls({})).not.toThrow();
   });
 });

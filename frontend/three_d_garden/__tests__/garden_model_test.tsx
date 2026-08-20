@@ -1829,6 +1829,7 @@ describe("<GardenModel />", () => {
   });
 
   it("shows only the hovered plant when the plant layer is hidden", () => {
+    location.pathname = Path.mock(Path.designer());
     const hoveredPlant = fakePlant();
     hoveredPlant.body.id = 1;
     const hiddenPlant = fakePlant();
@@ -2406,17 +2407,17 @@ describe("<GardenModel />", () => {
       stopPropagation: jest.fn(),
     }));
 
-    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
-      .props.selection).toEqual({
-      phase: "complete",
-      pointType: "Plant",
-      box: {
-        x0: 100,
-        y0: 100,
-        x1: 0,
-        y1: p.config.botSizeY,
-      },
-    });
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay).props.selection)
+      .toEqual({
+        phase: "complete",
+        pointType: "Plant",
+        box: {
+          x0: 100,
+          y0: 100,
+          x1: 0,
+          y1: p.config.botSizeY,
+        },
+      });
     actRenderer(() => {
       window.dispatchEvent(new KeyboardEvent("keyup", {
         key: "Shift",
@@ -2642,13 +2643,13 @@ describe("<GardenModel />", () => {
 
     const beyondX = get3DPositionFunc(p.config)({ x: -100, y: 300 });
     actRenderer(() => hoverTarget.props.onPointerMove({ point: beyondX }));
-    expect(wrapper.root.findByType(GardenAreaSelectionOverlay)
-      .props.selection.box).toEqual({
-      x0: 100,
-      y0: 100,
-      x1: 0,
-      y1: 300,
-    });
+    expect(wrapper.root.findByType(GardenAreaSelectionOverlay).props.selection.box)
+      .toEqual({
+        x0: 100,
+        y0: 100,
+        x1: 0,
+        y1: 300,
+      });
 
     actRenderer(() => hoverTarget.props.onPointerMove({ point: end }));
     let overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
@@ -2998,6 +2999,7 @@ describe("<GardenModel />", () => {
       staticLayers.props.onSelectObject({ kind: "plant", id: 1 });
       selectionLayer.props.onUpdateLocationSelection(location);
       selectionLayer.props.onOpenPanel({ kind: "plant", id: 1 });
+      selectionLayer.props.onOpenPanel({ kind: "soilHeight", id: 0 });
       selectionLayer.props.onOpenPanel({ kind: "connectivity", id: 0 });
       selectionLayer.props.onOpenLocationPanel(location);
       selectionLayer.props.onCopySceneObject(sceneObject);
@@ -3014,6 +3016,11 @@ describe("<GardenModel />", () => {
       type: Actions.OPEN_POPUP,
       payload: "connectivity",
     });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.OPEN_POINTS_PANEL_OPTION,
+      payload: "soilHeight",
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points());
     expect(copySceneObjectSpy).toHaveBeenCalledWith(
       sceneObject, expect.any(Function));
     expect(dispatch).toHaveBeenCalledWith("copy scene object");

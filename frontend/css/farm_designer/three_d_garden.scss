@@ -525,6 +525,7 @@
       .object-popup-laser-row,
       .object-popup-camera-row,
       .object-popup-scene-object-row,
+      .object-popup-gantry-beam-row,
       .object-popup-home-row,
       .object-popup-tool-action-row {
         align-items: center;
@@ -566,8 +567,27 @@
       }
 
       .object-popup-electronics-controls {
+        min-width: 0;
+
         .row {
           align-items: center;
+        }
+
+        .electronics-box-top,
+        .electronics-box-3d-model,
+        .box-top-2d-wrapper {
+          width: 100%;
+          min-width: 0;
+          max-width: 100%;
+        }
+
+        .electronics-box-3d-model {
+          overflow: hidden;
+
+          canvas {
+            width: 100% !important;
+            height: 14rem !important;
+          }
         }
 
         button:not(.bp6-button) {
@@ -1341,6 +1361,46 @@
         }
       }
     }
+  }
+}
+
+.three-d-required-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  height: 100%;
+  min-height: 23rem;
+  padding: 3rem;
+  color: var(--text-color);
+  background: var(--main-bg);
+  text-align: center;
+  cursor: default;
+
+  > .fa {
+    color: $yellow;
+    font-size: 4rem;
+  }
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  p {
+    max-width: 44rem;
+  }
+}
+
+.three-d-required-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  label {
+    margin: 0;
   }
 }
 

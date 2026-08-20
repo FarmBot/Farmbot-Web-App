@@ -118,7 +118,11 @@ interface ButtonOrLedItem {
   ref?: React.RefObject<MeshObject | null>;
 }
 
-export const Model = (props: BoxTopBaseProps) => {
+interface ModelProps extends BoxTopBaseProps {
+  setCanvasCursor?(cursor: string): void;
+}
+
+export const Model = (props: ModelProps) => {
   const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
   const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
   const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
@@ -258,12 +262,13 @@ export const Model = (props: BoxTopBaseProps) => {
   const leave = (e: ThreeEvent<PointerEvent>) => {
     setHovered(undefined);
     setZForAllInGroup(e, Z);
-    document.body.style.cursor = "default";
+    props.setCanvasCursor?.("");
   };
   return <Group dispose={null}
     rotation={[0, 0, Math.PI / 2]}>
-    <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
-      position={[-150, 0, 300]}
+    <PerspectiveCamera makeDefault name="camera"
+      fov={props.shortViewport ? 20 : 30} near={0.1} far={1000}
+      position={[props.shortViewport ? -130 : -150, 0, 300]}
       rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
     <PointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
       distance={0} decay={0} />
@@ -298,7 +303,9 @@ export const Model = (props: BoxTopBaseProps) => {
         const isHovered = hovered == pinNumber;
         const click = debounce(clickBinding(pinNumber));
         const setCursor = () =>
-          document.body.style.cursor = binding ? "pointer" : "not-allowed";
+          props.setCanvasCursor?.(binding
+            ? "pointer"
+            : "not-allowed");
         const enter = () => {
           !props.isEditing && setHovered(pinNumber);
           setCursor();
@@ -387,9 +394,10 @@ export const Model = (props: BoxTopBaseProps) => {
 };
 
 export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
+  const [cursor, setCanvasCursor] = React.useState("");
   return <div className={"electronics-box-3d-model"}>
-    <Canvas>
-      <Model {...props} />
+    <Canvas style={{ cursor }}>
+      <Model {...props} setCanvasCursor={setCanvasCursor} />
     </Canvas>
   </div>;
 };

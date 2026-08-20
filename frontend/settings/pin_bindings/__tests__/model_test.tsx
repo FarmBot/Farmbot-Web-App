@@ -58,7 +58,6 @@ describe("<ElectronicsBoxModel />", () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    document.body.style.cursor = "default";
     reactUseRefSpy = jest.spyOn(ReactModule, "useRef")
       .mockImplementation(() => ({
         current: {
@@ -83,7 +82,6 @@ describe("<ElectronicsBoxModel />", () => {
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
-    document.body.style.cursor = "default";
     reactUseRefSpy.mockRestore();
     useFrameSpy.mockRestore();
     fbSelectSpy.mockRestore();
@@ -116,6 +114,15 @@ describe("<ElectronicsBoxModel />", () => {
     }
   });
 
+  it("preserves scale in a short viewport", () => {
+    const p = fakeProps();
+    p.shortViewport = true;
+    const wrapper = createRenderer(<Model {...p} />);
+    const camera = wrapper.root.findByProps({ name: "camera" });
+    expect(camera.props.fov).toEqual(20);
+    expect(camera.props.position).toEqual([-130, 0, 300]);
+  });
+
   it("triggers binding", () => {
     const e = fakeEvent();
     const p = fakeProps();
@@ -146,12 +153,19 @@ describe("<ElectronicsBoxModel />", () => {
 
   it("un-hovers button", () => {
     const e = fakeEvent();
-    const wrapper = createRenderer(<Model {...fakeProps()} />);
+    const setCanvasCursor = jest.fn();
+    const wrapper = createRenderer(<Model {...fakeProps()}
+      setCanvasCursor={setCanvasCursor} />);
     const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[0]?.props.onPointerOver(e);
+    });
+    expect(setCanvasCursor).toHaveBeenCalledWith("pointer");
     actRenderer(() => {
       actionGroups[0]?.props.onPointerOut(e);
     });
     expect(e.object.parent?.children[0].position.z).toEqual(131);
+    expect(setCanvasCursor).toHaveBeenCalledWith("");
   });
 
   it("resets z", () => {
@@ -165,25 +179,25 @@ describe("<ElectronicsBoxModel />", () => {
   });
 
   it("changes cursor: bound", () => {
-    const wrapper = createRenderer(<Model {...fakeProps()} />);
-    expect(document.body.style.cursor).toEqual("default");
+    const setCanvasCursor = jest.fn();
+    const wrapper = createRenderer(<Model {...fakeProps()}
+      setCanvasCursor={setCanvasCursor} />);
     const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
     actRenderer(() => {
       actionGroups[0]?.props.onPointerMove();
     });
-    expect(document.body.style.cursor).toEqual("pointer");
-    document.body.style.cursor = "default";
+    expect(setCanvasCursor).toHaveBeenCalledWith("pointer");
   });
 
   it("changes cursor: unbound", () => {
-    const wrapper = createRenderer(<Model {...fakeProps()} />);
-    expect(document.body.style.cursor).toEqual("default");
+    const setCanvasCursor = jest.fn();
+    const wrapper = createRenderer(<Model {...fakeProps()}
+      setCanvasCursor={setCanvasCursor} />);
     const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
     actRenderer(() => {
       actionGroups[actionGroups.length - 1]?.props.onPointerMove();
     });
-    expect(document.body.style.cursor).toEqual("not-allowed");
-    document.body.style.cursor = "default";
+    expect(setCanvasCursor).toHaveBeenCalledWith("not-allowed");
   });
 
   it("renders: off", () => {

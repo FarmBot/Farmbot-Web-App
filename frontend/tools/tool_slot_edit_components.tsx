@@ -107,6 +107,7 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
         onChange={props.onChange}
         isActive={props.isActive}
         noUTM={props.noUTM}
+        usePortal={false}
         filterSelectedTool={false}
         filterActiveTools={true} />
     </Row>

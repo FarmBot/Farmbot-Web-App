@@ -25,7 +25,7 @@ export interface BoundaryEdge {
 const ROOT = process.cwd();
 const OUTPUT_PATH = resolve(
   ROOT,
-  "frontend/three_d_garden/garden/generated_constellations.bin",
+  "frontend/three_d_garden/stargazing/generated_constellations.bin",
 );
 const CATALOG_CROPS = Object.entries(CROPS).map(([cropSlug, crop]) => ({
   cropSlug,

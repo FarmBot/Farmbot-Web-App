@@ -135,6 +135,7 @@ export const ROUTE_DATA: RouteObject[] = [
   { path: Path.app("messages"), element: <Navigate to={Path.messages()} /> },
   { path: Path.logs(), element: <Logs /> },
   { path: Path.sequencePage(":sequence_name"), element: <Sequences /> },
+  { path: Path.sequencePage(), element: <Sequences /> },
   {
     path: Path.sequenceVersion(), element: <FarmDesigner />,
     children: [{ path: "", element: <DesignerSequencePreview /> }],
