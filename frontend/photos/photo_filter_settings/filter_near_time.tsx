@@ -21,7 +21,7 @@ export class FilterNearTime
         <p>{t("minutes of")}</p>
         <button
           className={"fb-button yellow"}
-          disabled={!(flags.zMatch && flags.notHidden)}
+          disabled={!(flags.zMatch.value && flags.notHidden.value)}
           title={t("this photo")}
           onClick={() => image && dispatch(photoFilterActions.setWebAppConfigValues({
             photo_filter_begin: filterTime("before", this.state.seconds)(image),

@@ -127,6 +127,7 @@ module Devices
       def add_envs
         [
           %w[CAMERA_CALIBRATION_coord_scale 1],
+          %w[CAMERA_CALIBRATION_camera_z 0],
           %w[CAMERA_CALIBRATION_center_pixel_location_x 320],
           %w[CAMERA_CALIBRATION_center_pixel_location_y 240],
         ].each do |key, value|

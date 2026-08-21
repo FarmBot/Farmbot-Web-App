@@ -80,7 +80,6 @@ export interface PhotoButtonsProps {
   canTransform: boolean;
   imageUrl: string | undefined;
   image: TaggedImage | undefined;
-  size: Record<"width" | "height", number | undefined>;
   dispatch: Function;
   flags: ImageShowFlags | undefined;
 }
@@ -100,7 +99,6 @@ export interface ImageFilterProps {
 }
 
 export interface ImageShowProps extends ImageFilterProps {
-  size: Record<"height" | "width", number | undefined>;
 }
 
 export interface FlagDisplayRowProps {
@@ -112,7 +110,11 @@ export interface FlagDisplayRowProps {
 
 type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch"
   | "typeShown";
-export type ImageShowFlags = Record<FlagKey, boolean>;
+export interface FlagValue {
+  value: boolean;
+  reason: string;
+}
+export type ImageShowFlags = Record<FlagKey, FlagValue>;
 
 export interface GetImageShownStatusFlagsProps {
   image: TaggedImage | undefined;

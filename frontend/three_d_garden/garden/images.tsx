@@ -25,6 +25,7 @@ import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
 import { perfCount, perfMeasure } from "../../performance/perf";
 import { ErrorBoundary } from "../../error_boundary";
+import { UserEnv } from "../../devices/interfaces";
 
 interface BaseProps {
   config: Config;
@@ -91,6 +92,7 @@ export interface ImageTextureProps extends BaseProps {
   sensorReadings: TaggedSensorReading[];
   showMoistureReadings: boolean;
   showMoistureMap: boolean;
+  env: UserEnv | undefined;
 }
 
 const IMAGE_TEXTURE_CONFIG_FIELDS: (keyof Config)[] = [
@@ -156,6 +158,8 @@ const imageTexturePropsEqual = (
   && prev.xOffset === next.xOffset
   && prev.yOffset === next.yOffset
   && prev.z === next.z
+  && prev.env?.["CAMERA_CALIBRATION_camera_z"]
+  === next.env?.["CAMERA_CALIBRATION_camera_z"]
   && imageTextureConfigFieldsEqual(prev.config, next.config)
   && imageTextureSettingFieldsEqual(prev, next);
 
@@ -192,6 +196,7 @@ const getPhotoFilterKey = (props: ImageTextureProps) => {
     designer?.showDetectionImages,
     designer?.showHeightImages,
     designer?.hoveredMapImage,
+    props.env?.["CAMERA_CALIBRATION_camera_z"],
     IMAGE_TEXTURE_SETTING_FIELDS.map(field => getConfigValue?.(field)).join(","),
   ].join(":");
 };
@@ -251,7 +256,7 @@ const ImageTextureBase = (props: ImageTextureProps) => {
         designer,
         images,
         getConfigValue,
-        calibrationZ: "" + props.config.imgCalZ,
+        calibrationZ: props.env?.["CAMERA_CALIBRATION_camera_z"],
       });
       return splitFilteredImages(filteredImages);
     });

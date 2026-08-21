@@ -181,6 +181,7 @@ describe("<Bed />", () => {
     sensorReadings: [],
     showMoistureReadings: true,
     activePositionRef: { current: { x: 0, y: 0 } },
+    env: {},
   });
 
   it("renders bed", () => {

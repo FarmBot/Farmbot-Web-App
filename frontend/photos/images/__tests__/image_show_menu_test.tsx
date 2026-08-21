@@ -11,7 +11,6 @@ describe("<ImageShowMenu />", () => {
     image: fakeImage(),
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
   });
 
   it("renders as shown in map", () => {
@@ -28,7 +27,7 @@ describe("<ImageShowMenu />", () => {
 
   it("renders as not shown in map", () => {
     const p = fakeProps();
-    p.flags.inRange = false;
+    p.flags.inRange.value = false;
     render(<ImageShowMenu {...p} />);
     expect(screen.getByText(/not shown in map/i)).toBeInTheDocument();
   });
@@ -81,7 +80,7 @@ describe("<ImageShowMenu />", () => {
   it("shows map image", () => {
     const p = fakeProps();
     p.image && (p.image.body.id = 1);
-    p.flags.notHidden = false;
+    p.flags.notHidden.value = false;
     render(<ImageShowMenu {...p} />);
     fireEvent.click(screen.getByRole("button", { name: /show/i }));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -95,7 +94,6 @@ describe("<ImageShowMenuTarget />", () => {
     image: undefined,
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
   });
 
   it("handles missing image", () => {

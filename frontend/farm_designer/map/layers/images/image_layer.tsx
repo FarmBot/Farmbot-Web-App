@@ -10,7 +10,7 @@ import { equals } from "../../../../util";
 import { BooleanSetting, StringSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import {
-  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, imageIsHidden,
+  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, notHidden,
   filterImagesByType,
 } from "../../../../photos/photo_filter_settings/util";
 
@@ -42,10 +42,10 @@ export const filterImages = (props: FilterImagesProps): TaggedImagePlus[] => {
   const filteredImages = images.slice().reverse()
     .filter(img =>
       (rangeOverride && shownImages.includes(img.body.id || 0))
-      || imageInRange(img, imageFilterBegin, imageFilterEnd))
-    .filter(img => !imageIsHidden(
-      hiddenImages, shownImages, hideUnShownImages, img.body.id))
-    .filter(filterImagesByType(designer))
+      || imageInRange(img, imageFilterBegin, imageFilterEnd).value)
+    .filter(img => notHidden(
+      hiddenImages, shownImages, hideUnShownImages, img.body.id).value)
+    .filter(img => filterImagesByType(designer)(img).value)
     .filter(img => !img.body.attachment_url.includes("placeholder"))
     .filter(img => !hoveredImage || (img.body.id != hoveredImage.body.id))
     .filter(img => cameraZCheck(img.body.meta.z, calibrationZ))

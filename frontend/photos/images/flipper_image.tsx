@@ -65,6 +65,8 @@ export class FlipperImage
     };
     const cameraCalibrationData = getCameraCalibrationData(this.props.env);
     cameraCalibrationData.scale = "1";
+    cameraCalibrationData.calibrationZ = undefined;
+    cameraCalibrationData.center = { x: undefined, y: undefined };
     const img = cloneDeep(this.props.image);
     img.body.meta.x = 0;
     img.body.meta.y = 0;

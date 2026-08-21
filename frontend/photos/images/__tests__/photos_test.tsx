@@ -121,7 +121,7 @@ describe("<Photos />", () => {
     p.currentImage = images[1];
     p.currentImage.body.meta.z = 100;
     p.env["CAMERA_CALIBRATION_camera_z"] = "0";
-    p.flags.zMatch = false;
+    p.flags.zMatch.value = false;
     const { container } = render(<Photos {...p} />);
     expect(screen.getByText(/June 1st, 2017/)).toBeInTheDocument();
     expect(screen.getByText("(632, 347, 100)")).toBeInTheDocument();
@@ -252,7 +252,6 @@ describe("<PhotoButtons />", () => {
     image: undefined,
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
     deletePhoto: jest.fn(),
     toggleCrop: jest.fn(),
     toggleRotation: jest.fn(),

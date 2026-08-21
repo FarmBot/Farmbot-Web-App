@@ -32,7 +32,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     showCalibrationImages, showDetectionImages, showHeightImages,
     showPhotoImages,
   } = props.designer;
-  const layerOff = !flags.layerOn;
+  const layerOff = !flags.layerOn.value;
   const image = props.currentImage;
   const commonProps = { dispatch, image, flags };
   const className = [

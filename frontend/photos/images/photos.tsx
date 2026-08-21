@@ -26,8 +26,8 @@ import {
 
 export const PhotoButtons = (props: PhotoButtonsProps) => {
   const { imageUrl } = props;
-  const { image, dispatch, flags, size } = props;
-  const imageShowMenuProps = { dispatch, flags, image, size };
+  const { image, dispatch, flags } = props;
+  const imageShowMenuProps = { dispatch, flags, image };
   return <div className={"photo-action-buttons"}>
     {flags && image &&
       <Popover className={"image-show-menu-target"}
@@ -138,7 +138,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
   toggleFullscreen = () => this.setState({ fullscreen: !this.state.fullscreen });
 
   get canTransform() {
-    return this.props.flags.sizeMatch && this.props.flags.zMatch;
+    return this.props.flags.sizeMatch.value && this.props.flags.zMatch.value;
   }
   get canCrop() { return this.canTransform && this.state.rotate; }
 
@@ -195,7 +195,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
           imageUrl={this.props.currentImage?.body.attachment_url}
           image={this.props.currentImage}
           flags={this.props.flags}
-          size={this.props.currentImageSize}
           dispatch={this.props.dispatch}
           canTransform={this.canTransform}
           canCrop={this.canCrop} />

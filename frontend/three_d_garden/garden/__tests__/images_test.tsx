@@ -37,6 +37,7 @@ describe("<ImageTexture />", () => {
     sensorReadings: [],
     showMoistureReadings: true,
     showMoistureMap: true,
+    env: {},
   });
 
   it("crops camera images when enabled", () => {

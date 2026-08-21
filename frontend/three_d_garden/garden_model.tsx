@@ -1019,6 +1019,7 @@ function getGardenLayerVisibility(
 
 interface StaticGardenLayersProps {
   config: Config;
+  env: UserEnv | undefined;
   markStep: ThreeDLoadProgress["markStep"];
   environmentReveal: boolean;
   bedReveal: boolean;
@@ -1208,6 +1209,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         distance={config.bedHeight + config.bedZOffset}>
         <Bed
           config={config}
+          env={props.env}
           soilSurfaceGeometry={soilSurfaceGeometry}
           getZ={getZ}
           images={images}
@@ -4201,6 +4203,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           modelRoot={modelRoot} />
         <StaticGardenLayers
           config={config}
+          env={props.env}
           sceneObjects={shadowSceneObjects}
           markStep={markLoadStep}
           environmentReveal={environmentReveal}

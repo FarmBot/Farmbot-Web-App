@@ -114,7 +114,7 @@ describe("<PhotoFilterSettings />", () => {
 
   it("displays image layer off mode", () => {
     const p = fakeProps();
-    p.flags.layerOn = false;
+    p.flags.layerOn.value = false;
     const { container } = render(<PhotoFilterSettings {...p} />);
     expect(container.querySelector(".filter-controls")?.classList
       .contains("image-layer-disabled")).toBeTruthy();

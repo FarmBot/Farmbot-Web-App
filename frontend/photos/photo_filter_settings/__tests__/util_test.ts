@@ -1,5 +1,5 @@
 import {
-  parseFilterSetting, imageInRange, imageIsHidden, getImageShownStatusFlags,
+  parseFilterSetting, imageInRange, notHidden, getImageShownStatusFlags,
   calculateImageAgeInfo,
   filterImagesByType,
   getImageTypeLabel,
@@ -48,7 +48,7 @@ describe("imageInRange()", () => {
     image.body.created_at = "2018-01-22T05:00:00.000Z";
     const begin = "2018-01-23T05:00:00.000Z";
     const end = "";
-    expect(imageInRange(image, begin, end)).toEqual(false);
+    expect(imageInRange(image, begin, end).value).toEqual(false);
   });
 
   it("is after", () => {
@@ -56,7 +56,7 @@ describe("imageInRange()", () => {
     image.body.created_at = "2018-01-24T05:00:00.000Z";
     const begin = "";
     const end = "2018-01-23T05:00:00.000Z";
-    expect(imageInRange(image, begin, end)).toEqual(false);
+    expect(imageInRange(image, begin, end).value).toEqual(false);
   });
 
   it("is within", () => {
@@ -64,26 +64,26 @@ describe("imageInRange()", () => {
     image.body.created_at = "2018-01-24T05:00:00.000Z";
     const begin = "2018-01-23T05:00:00.000Z";
     const end = "2018-01-25T05:00:00.000Z";
-    expect(imageInRange(image, begin, end)).toEqual(true);
+    expect(imageInRange(image, begin, end).value).toEqual(true);
   });
 });
 
-describe("imageIsHidden()", () => {
+describe("notHidden()", () => {
   it.each<[
     number, number[], number[], boolean, number | undefined, boolean | undefined,
   ]>([
-    [1, [], [], false, undefined, undefined],
-    [2, [], [], false, 1, false],
-    [3, [], [1], false, 1, false],
-    [4, [], [1], true, 1, false],
-    [5, [], [], true, 1, true],
-    [6, [1], [], true, 1, true],
-    [7, [1], [1], true, 1, true],
-    [8, [1], [1], false, 1, true],
-  ])("is hidden: case %s",
+    [1, [], [], false, undefined, true],
+    [2, [], [], false, 1, true],
+    [3, [], [1], false, 1, true],
+    [4, [], [1], true, 1, true],
+    [5, [], [], true, 1, false],
+    [6, [1], [], true, 1, false],
+    [7, [1], [1], true, 1, false],
+    [8, [1], [1], false, 1, false],
+  ])("is hidden: case %i",
     (_, hiddenImages, shownImages, hideUnShownImages, imageId, expected) => {
-      expect(imageIsHidden(
-        hiddenImages, shownImages, hideUnShownImages, imageId))
+      expect(notHidden(
+        hiddenImages, shownImages, hideUnShownImages, imageId).value)
         .toEqual(expected);
     });
 });
@@ -112,8 +112,13 @@ describe("getImageShownStatusFlags()", () => {
     p.image = fakeImage();
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
+    expectedFlags.notHidden.reason = expect.stringContaining(
+      "hidden: []\nshown: []");
+    expectedFlags.zMatch.reason = "image z: 0\ncalibration z: none";
+    expectedFlags.inRange.reason = expect.stringContaining(
+      "begin: none\nend: none\nafterBegin: true\nbeforeEnd: true");
     Object.keys(expectedFlags).map(key => {
-      expectedFlags[key as keyof ImageShowFlags] = true;
+      expectedFlags[key as keyof ImageShowFlags].value = true;
     });
     expect(flags).toEqual(expectedFlags);
   });
@@ -124,9 +129,9 @@ describe("getImageShownStatusFlags()", () => {
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
     Object.keys(expectedFlags).map(key => {
-      expectedFlags[key as keyof ImageShowFlags] = true;
+      expectedFlags[key as keyof ImageShowFlags].value = true;
     });
-    expectedFlags.inRange = false;
+    expectedFlags.inRange.value = false;
     expect(flags).toEqual(expectedFlags);
   });
 
@@ -149,8 +154,18 @@ describe("getImageShownStatusFlags()", () => {
     p.designer.showCalibrationImages = false;
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
+    expectedFlags.layerOn.reason = "show_images: false";
+    expectedFlags.notHidden.reason = "1\nhidden: [1]\nshown: []";
+    expectedFlags.zMatch.reason = "image z: 0\ncalibration z: 100";
+    expectedFlags.inRange.reason = expect.stringContaining(
+      "afterBegin: true\nbeforeEnd: false");
+    expectedFlags.sizeMatch.reason =
+      "image size: {}\ncalibration size: {\"width\":200,\"height\":200}";
+    expectedFlags.typeShown.reason = "calibration: calibration\nshowPhotoImages: "
+      + "true\nshowCalibrationImages: false\nshowDetectionImages: true\n"
+      + "showHeightImages: true";
     Object.keys(expectedFlags).map(key => {
-      expectedFlags[key as keyof ImageShowFlags] = false;
+      expectedFlags[key as keyof ImageShowFlags].value = false;
     });
     expect(flags).toEqual(expectedFlags);
   });
@@ -187,6 +202,6 @@ describe("filterImagesByType()", () => {
     designer.showHeightImages = expected;
     const image = fakeImage();
     image.body.meta.name = imageName;
-    expect(filterImagesByType(designer)(image)).toEqual(expected);
+    expect(filterImagesByType(designer)(image).value).toEqual(expected);
   });
 });
