@@ -9,37 +9,11 @@ import { Route, BrowserRouter, Routes } from "react-router";
 import { ROUTE_DATA } from "./route_config";
 import { Provider } from "react-redux";
 import { BlueprintProvider } from "@blueprintjs/core";
-import { Provider as RollbarProvider } from "@rollbar/react";
 import { NavigationProvider } from "./routes_helpers";
 import { App } from "./app";
+import { RollbarWrapper } from "./rollbar";
 
 interface RootComponentProps { store: Store; }
-
-interface RollbarTrace {
-  frames?: { filename?: string }[];
-}
-
-interface RollbarPayload {
-  body?: {
-    trace?: RollbarTrace;
-    trace_chain?: RollbarTrace[];
-  };
-}
-
-export const normalizeRollbarAssetUrls = (payload: RollbarPayload) => {
-  const traces = [payload.body?.trace, ...(payload.body?.trace_chain || [])];
-  traces.forEach(trace => {
-    trace?.frames?.forEach(frame => {
-      const filename = frame.filename;
-      if (filename) {
-        frame.filename = filename.replace(
-          /^(https?):\/\/[^/]+(\/assets\/dist\/)/,
-          "$1://dynamichost$2",
-        );
-      }
-    });
-  });
-};
 
 export const attachAppToDom = () => {
   attachToRoot(RootComponent, { store: _store });
@@ -58,29 +32,7 @@ export class RootComponent
   }
 
   render() {
-    const OuterWrapper = ({ children }: { children: React.ReactNode }) =>
-      globalConfig.ROLLBAR_CLIENT_TOKEN
-        ? <RollbarProvider config={{
-          accessToken: globalConfig.ROLLBAR_CLIENT_TOKEN,
-          captureUncaught: true,
-          captureUnhandledRejections: true,
-          transform: (payload: RollbarPayload) =>
-            normalizeRollbarAssetUrls(payload),
-          payload: {
-            person: { id: "" + (Session.fetchStoredToken()?.user.id || 0) },
-            environment: window.location.host,
-            client: {
-              javascript: {
-                source_map_enabled: true,
-                code_version: globalConfig.SHORT_REVISION,
-                guess_uncaught_frames: true,
-              },
-            },
-          },
-        }}>{children}</RollbarProvider>
-        : <>{children}</>;
-
-    return <OuterWrapper>
+    return <RollbarWrapper>
       <ErrorBoundary>
         <Provider store={_store}>
           <BlueprintProvider>
@@ -109,6 +61,6 @@ export class RootComponent
           </BlueprintProvider>
         </Provider>
       </ErrorBoundary>
-    </OuterWrapper>;
+    </RollbarWrapper>;
   }
 }
