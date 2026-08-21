@@ -41,7 +41,7 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
   React.useEffect(() => {
     if (!perspectiveChangeAllowed) { return; }
     const togglePerspectiveOnP = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() != "p"
+      if (event.key?.toLowerCase() != "p"
         || event.altKey
         || event.ctrlKey
         || event.metaKey
