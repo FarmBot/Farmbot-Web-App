@@ -22,6 +22,7 @@ export const fakeCameraCalibrationDataFull = (): CameraCalibrationData => ({
 
 export const fakeImageShowFlags = (): ImageShowFlags => ({
   layerOn: { value: true, reason: "show_images: true" },
+  alwaysShow: { value: false, reason: "alwaysHighlightImage: false" },
   inRange: { value: true, reason: "no image" },
   notHidden: { value: true, reason: "\nhidden: []\nshown: []" },
   zMatch: { value: true, reason: "image z: undefined\ncalibration z: none" },

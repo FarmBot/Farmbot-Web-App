@@ -210,6 +210,51 @@ describe("<Photos />", () => {
     });
   });
 
+  it("highlights a newly selected photo", () => {
+    const p = fakeProps();
+    const previousImage = fakeImage();
+    const currentImage = fakeImage();
+    p.currentImage = previousImage;
+    p.images = [previousImage];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [previousImage.body.id || 0];
+    const { rerender } = render(<Photos {...p} />);
+
+    rerender(<Photos {...p}
+      currentImage={currentImage}
+      images={[currentImage, previousImage]} />);
+
+    expect(setShownMapImagesSpy).toHaveBeenCalledWith(currentImage);
+  });
+
+  it("doesn't re-highlight an already shown photo", () => {
+    const p = fakeProps();
+    const previousImage = fakeImage();
+    const currentImage = fakeImage();
+    p.currentImage = previousImage;
+    p.images = [previousImage];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [currentImage.body.id || 0];
+    const { rerender } = render(<Photos {...p} />);
+
+    rerender(<Photos {...p}
+      currentImage={currentImage}
+      images={[currentImage, previousImage]} />);
+
+    expect(setShownMapImagesSpy).not.toHaveBeenCalled();
+  });
+
+  it("doesn't highlight without the setting or a current photo", () => {
+    const p = fakeProps();
+    p.currentImage = fakeImage();
+    new Photos(p).componentDidUpdate();
+    p.designer.alwaysHighlightImage = true;
+    p.currentImage = undefined;
+    new Photos(p).componentDidUpdate();
+
+    expect(setShownMapImagesSpy).not.toHaveBeenCalled();
+  });
+
   it("returns slider label", () => {
     const p = fakeProps();
     p.images = [fakeImage(), fakeImage(), fakeImage()];

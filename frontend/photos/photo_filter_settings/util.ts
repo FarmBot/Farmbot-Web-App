@@ -189,6 +189,16 @@ const sizeMatch = (
   };
 };
 
+const alwaysShow = (
+  designer: DesignerState,
+): FlagValue => {
+  const value = designer.alwaysHighlightImage;
+  return {
+    value: value,
+    reason: `alwaysHighlightImage: ${value}`,
+  };
+};
+
 export const getImageShownStatusFlags =
   (props: GetImageShownStatusFlagsProps): ImageShowFlags => {
     const { image, designer, getConfigValue, env, size } = props;
@@ -196,6 +206,7 @@ export const getImageShownStatusFlags =
     const getFilterValue = parseFilterSetting(getConfigValue);
     return {
       layerOn: layerOn(getConfigValue),
+      alwaysShow: alwaysShow(designer),
       inRange: imageInRange(image,
         getFilterValue(StringSetting.photo_filter_begin),
         getFilterValue(StringSetting.photo_filter_end)),

@@ -120,6 +120,7 @@ describe("getImageShownStatusFlags()", () => {
     Object.keys(expectedFlags).map(key => {
       expectedFlags[key as keyof ImageShowFlags].value = true;
     });
+    expectedFlags.alwaysShow.value = false;
     expect(flags).toEqual(expectedFlags);
   });
 
@@ -132,6 +133,7 @@ describe("getImageShownStatusFlags()", () => {
       expectedFlags[key as keyof ImageShowFlags].value = true;
     });
     expectedFlags.inRange.value = false;
+    expectedFlags.alwaysShow.value = false;
     expect(flags).toEqual(expectedFlags);
   });
 

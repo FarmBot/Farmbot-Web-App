@@ -132,4 +132,25 @@ describe("<ImageLayer/>", () => {
     expect(filtered.map(image => image.body.id)).toEqual([2, 1]);
     expect(p.images.map(image => image.body.id)).toEqual([1, 2]);
   });
+
+  it("doesn't highlight an image with a processing placeholder", () => {
+    const p = fakeProps();
+    const image = fakeImage();
+    image.body.id = 1;
+    image.body.attachment_url =
+      "/placeholder_farmbot.jpg?text=Processing";
+    p.images = [image];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [1];
+
+    const filtered = filterImages({
+      visible: true,
+      images: p.images,
+      designer: p.designer,
+      getConfigValue: p.getConfigValue,
+      calibrationZ: "0",
+    });
+
+    expect(filtered).toEqual([]);
+  });
 });

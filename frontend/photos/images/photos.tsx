@@ -117,6 +117,19 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
     crop: true, rotate: true, fullscreen: false,
   };
 
+  componentDidUpdate() {
+    const currentImage = this.props.currentImage;
+    const currentImageId = currentImage?.body.id;
+    const alreadyShown = currentImageId
+      ? this.props.designer.shownImages.includes(currentImageId)
+      : false;
+    if (this.props.designer.alwaysHighlightImage
+      && currentImageId
+      && !alreadyShown) {
+      this.props.dispatch(setShownMapImages(currentImage));
+    }
+  }
+
   componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
 
   deletePhoto = () => {

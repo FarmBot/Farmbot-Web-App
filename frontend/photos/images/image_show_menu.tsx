@@ -8,19 +8,28 @@ import {
 } from "./interfaces";
 
 const shownInMapGen = (flags: ImageShowFlags) =>
-  every(Object.values(flags).map(f => f.value));
+  every(Object.entries(flags).filter(([k, _]) => k != "alwaysShow")
+    .map(([_, v]) => v.value));
+
+const temporarilyShown = (flags: ImageShowFlags) =>
+  flags.layerOn.value && flags.alwaysShow.value && !shownInMapGen(flags);
 
 export const ImageShowMenuTarget = (props: ImageFilterProps) => {
   const shownInMap = shownInMapGen(props.flags);
+  const temp = temporarilyShown(props.flags);
+  const colorNo = temp ? "orange" : "gray";
+  const notShownText = temp
+    ? t("temporarily in map")
+    : t("not in map");
   return <i
     className={shownInMap
       ? "fa fa-eye green fb-icon-button"
-      : "fa fa-eye-slash gray fb-icon-button"}
+      : `fa fa-eye-slash ${colorNo} fb-icon-button`}
     onMouseEnter={() => shownInMap &&
       props.dispatch(highlightMapImage(props.image?.body.id))}
     onMouseLeave={() => shownInMap &&
       props.dispatch(highlightMapImage(undefined))}
-    title={shownInMap ? t("in map") : t("not in map")} />;
+    title={shownInMap ? t("in map") : notShownText} />;
 };
 
 export const ImageShowMenu = (props: ImageShowProps) =>
@@ -32,13 +41,29 @@ export const ImageShowMenu = (props: ImageShowProps) =>
 const ShownInMapDetails = (props: ImageShowProps) => {
   const { dispatch, image, flags } = props;
   const shownInMap = shownInMapGen(flags);
+  const temp = temporarilyShown(flags);
+  const notShownText = temp
+    ? t("not typically shown in map")
+    : t("not shown in map");
   return <div className={`shown-in-map-details ${shownInMap ? "shown" : ""}`}
     onMouseEnter={() => shownInMap && dispatch(highlightMapImage(image?.body.id))}
     onMouseLeave={() => shownInMap && dispatch(highlightMapImage(undefined))}>
+    {temp &&
+      <>
+        <label>
+          {t("temporarily shown in map")}
+        </label>
+        <FlagDisplayRow flag={flags.alwaysShow.value}
+          overrideColor={"orange"}
+          title={flags.alwaysShow.reason}
+          labelOk={t("'Always highlight' enabled")}
+          labelNo={t("")} />
+        <hr />
+      </>}
     <label>
       {shownInMap
         ? t("shown in map")
-        : t("not shown in map")}
+        : notShownText}
     </label>
     <FlagDisplayRow flag={flags.layerOn.value}
       title={flags.layerOn.reason}
@@ -67,13 +92,15 @@ const ShownInMapDetails = (props: ImageShowProps) => {
   </div>;
 };
 
-const FlagDisplayRow = (props: FlagDisplayRowProps) =>
-  <div className={"image-flag-display"} title={props.title}>
+const FlagDisplayRow = (props: FlagDisplayRowProps) => {
+  const colorOk = props.overrideColor ?? "green";
+  return <div className={"image-flag-display"} title={props.title}>
     {props.flag
-      ? <i className={"fa fa-check-circle green"} />
+      ? <i className={`fa fa-check-circle ${colorOk}`} />
       : <i className={"fa fa-times-circle gray"} />}
     <p>{props.flag ? t(props.labelOk) : t(props.labelNo)}</p>
   </div>;
+};
 
 const HideImage =
   ({ flags, image, dispatch }: ImageFilterProps) =>

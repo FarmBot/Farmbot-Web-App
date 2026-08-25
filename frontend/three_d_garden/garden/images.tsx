@@ -26,6 +26,7 @@ import { MoistureSurface } from "./moisture_texture";
 import { perfCount, perfMeasure } from "../../performance/perf";
 import { ErrorBoundary } from "../../error_boundary";
 import { UserEnv } from "../../devices/interfaces";
+import { Color } from "../../ui";
 
 interface BaseProps {
   config: Config;
@@ -186,7 +187,9 @@ const getPhotoFilterKey = (props: ImageTextureProps) => {
   const designer = props.addPlantProps?.designer;
   const getConfigValue = props.addPlantProps?.getConfigValue;
   return [
-    props.images?.map(image => image.uuid).join(","),
+    props.images
+      ?.map(image => `${image.uuid},${image.body.attachment_url}`)
+      .join(","),
     designer?.hiddenImages.join(","),
     designer?.shownImages.join(","),
     designer?.hideUnShownImages,
@@ -287,10 +290,6 @@ const ImageTextureBase = (props: ImageTextureProps) => {
           : soilTexture} />
       <Images {...props} images={imageArray} />
     </PlaneWrapper>
-    {highlightActive &&
-      <PlaneWrapper {...commonProps} z={1}>
-        <MeshBasicMaterial side={DoubleSide} color={"orange"} />
-      </PlaneWrapper>}
     {highlightActive &&
       <PlaneWrapper {...commonProps} z={2}>
         <MeshBasicMaterial opacity={0} transparent={true} />
@@ -413,6 +412,7 @@ export const getImageClippingPlanes = (
     : undefined;
 
 const CIRCLE_MASK_SIZE = 64;
+const IMAGE_HIGHLIGHT_BORDER_WIDTH = 10;
 
 export const createCircleCropMask = () => {
   const data = new Uint8Array(CIRCLE_MASK_SIZE * CIRCLE_MASK_SIZE * 4);
@@ -490,20 +490,48 @@ const ImageWrapperBase = (props: ImageWrapperProps) => {
     const alreadyRotated = isRotated(props.image.body.meta.name);
     const initialRotation = alreadyRotated ? 0 : config.imgRotation;
     const rotation = (initialRotation + extraRotation(config)) * Math.PI / 180;
+    const position = getImagePosition(
+      config, props.x, props.y, props.xOffset, props.yOffset, props.z);
+    const imageWidth = crop?.width || width;
+    const imageHeight = crop?.height || height;
 
-    return <Decal
-      name={"image"}
-      map={map}
-      position={getImagePosition(
-        config, props.x, props.y, props.xOffset, props.yOffset, props.z)}
-      debug={config.lightsDebug}
-      material-side={DoubleSide}
-      material-alphaMap={crop?.circle ? CIRCLE_CROP_MASK : undefined}
-      material-transparent={true}
-      material-clippingPlanes={clippingPlanes}
-      depthTest={true}
-      rotation={[0, 0, rotation]}
-      scale={[crop?.width || width, crop?.height || height, 1000]} />;
+    return <>
+      {props.image.highlighted &&
+        <Decal
+          name={"image-border"}
+          position={position}
+          polygonOffsetFactor={-10}
+          rotation={[0, 0, rotation]}
+          scale={[
+            imageWidth + IMAGE_HIGHLIGHT_BORDER_WIDTH * 2,
+            imageHeight + IMAGE_HIGHLIGHT_BORDER_WIDTH * 2,
+            1000,
+          ]}>
+          <MeshBasicMaterial
+            color={Color.orange}
+            toneMapped={false}
+            side={DoubleSide}
+            polygonOffset={true}
+            polygonOffsetFactor={-10}
+            alphaMap={crop?.circle ? CIRCLE_CROP_MASK : undefined}
+            transparent={true}
+            clippingPlanes={clippingPlanes}
+            depthTest={true} />
+        </Decal>}
+      <Decal
+        name={"image"}
+        map={map}
+        position={position}
+        debug={config.lightsDebug}
+        material-side={DoubleSide}
+        material-alphaMap={crop?.circle ? CIRCLE_CROP_MASK : undefined}
+        material-transparent={true}
+        material-clippingPlanes={clippingPlanes}
+        depthTest={true}
+        polygonOffsetFactor={-20}
+        rotation={[0, 0, rotation]}
+        scale={[imageWidth, imageHeight, 1000]} />
+    </>;
   });
 };
 

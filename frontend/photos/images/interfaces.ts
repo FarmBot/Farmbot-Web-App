@@ -106,10 +106,11 @@ export interface FlagDisplayRowProps {
   labelOk: string;
   labelNo: string;
   title?: string;
+  overrideColor?: string;
 }
 
 type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch"
-  | "typeShown";
+  | "typeShown" | "alwaysShow";
 export interface FlagValue {
   value: boolean;
   reason: string;

@@ -5,11 +5,22 @@ import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
 import { ImageFlipperProps, FlipperImageProps } from "../interfaces";
 import { Actions } from "../../../constants";
-import { UUID } from "../../../resources/interfaces";
 import * as flipperImageModule from "../flipper_image";
 
 let flipperImageProps: { onImageLoad?: (img: HTMLImageElement) => void } | undefined;
 let flipperImageSpy: jest.SpyInstance;
+let flipperImageMounts = 0;
+
+class FlipperImageMock extends React.Component<FlipperImageProps> {
+  componentDidMount() {
+    flipperImageMounts++;
+  }
+
+  render() {
+    flipperImageProps = this.props;
+    return <div className={"flipper-image-mock"} />;
+  }
+}
 
 const {
   ImageFlipper,
@@ -27,12 +38,11 @@ type TestProps = Omit<ImageFlipperProps, "dispatch"> & {
 describe("<ImageFlipper/>", () => {
   beforeEach(() => {
     flipperImageProps = undefined;
+    flipperImageMounts = 0;
     jest.clearAllMocks();
     flipperImageSpy = jest.spyOn(flipperImageModule, "FlipperImage")
-      .mockImplementation(((props: FlipperImageProps) => {
-        flipperImageProps = props;
-        return <div className={"flipper-image-mock"} />;
-      }) as never);
+      .mockImplementation(((props: FlipperImageProps) =>
+        <FlipperImageMock {...props} />) as never);
   });
 
   afterEach(() => {
@@ -69,28 +79,26 @@ describe("<ImageFlipper/>", () => {
     };
   };
 
-  const expectFlip = (p: TestProps, expectedUuid: UUID) => {
+  const expectFlip = (p: TestProps, expectedImage: TaggedImage) => {
     const firstDispatchArg = p.dispatch.mock.calls[0]?.[0];
     if (typeof firstDispatchArg === "function") {
       expect(p.innerDispatch).toHaveBeenNthCalledWith(1, {
         type: Actions.SELECT_IMAGE,
-        payload: expectedUuid,
+        payload: expectedImage.uuid,
       });
       const shown = p.innerDispatch.mock.calls[1]?.[0];
       expect(shown?.type).toEqual(Actions.SET_SHOWN_MAP_IMAGES);
-      expect(Array.isArray(shown?.payload)).toBeTruthy();
-      expect(shown?.payload?.length).toEqual(1);
+      expect(shown?.payload).toEqual([expectedImage.body.id]);
       return;
     }
 
     expect(p.dispatch).toHaveBeenNthCalledWith(1, {
       type: Actions.SELECT_IMAGE,
-      payload: expectedUuid,
+      payload: expectedImage.uuid,
     });
     const shown = p.dispatch.mock.calls[1]?.[0];
     expect(shown?.type).toEqual(Actions.SET_SHOWN_MAP_IMAGES);
-    expect(Array.isArray(shown?.payload)).toBeTruthy();
-    expect(shown?.payload?.length).toEqual(1);
+    expect(shown?.payload).toEqual([expectedImage.body.id]);
   };
 
   const expectNoFlip = (p: TestProps) => {
@@ -102,7 +110,7 @@ describe("<ImageFlipper/>", () => {
     const p = fakeProps();
     const { nextIndex } = getNextIndexes(p.images, p.currentImage?.uuid, 1);
     selectNextImage(p.images, nextIndex)(p.dispatch);
-    expectFlip(p, p.images[1].uuid);
+    expectFlip(p, p.images[1]);
   });
 
   it("flips down", () => {
@@ -110,7 +118,7 @@ describe("<ImageFlipper/>", () => {
     p.currentImage = p.images[1];
     const { nextIndex } = getNextIndexes(p.images, p.currentImage.uuid, -1);
     selectNextImage(p.images, nextIndex)(p.dispatch);
-    expectFlip(p, p.images[0].uuid);
+    expectFlip(p, p.images[0]);
   });
 
   it("flips down: alternative action", () => {
@@ -128,7 +136,7 @@ describe("<ImageFlipper/>", () => {
     p.currentImage = p.images[1];
     const { nextIndex } = getNextIndexes(p.images, p.currentImage.uuid, -1);
     selectNextImage(p.images, nextIndex)(p.dispatch);
-    expectFlip(p, p.images[0].uuid);
+    expectFlip(p, p.images[0]);
   });
 
   it("flips up: arrow key", () => {
@@ -136,7 +144,7 @@ describe("<ImageFlipper/>", () => {
     p.currentImage = p.images[1];
     const { nextIndex } = getNextIndexes(p.images, p.currentImage.uuid, 1);
     selectNextImage(p.images, nextIndex)(p.dispatch);
-    expectFlip(p, p.images[2].uuid);
+    expectFlip(p, p.images[2]);
   });
 
   it("stops at upper end", () => {
@@ -175,6 +183,66 @@ describe("<ImageFlipper/>", () => {
     expect(container.querySelectorAll("button.image-flipper-right").length).toEqual(0);
   });
 
+  it("keeps the image mounted when processing updates its URL", () => {
+    const p = fakeProps();
+    const image = p.images[0];
+    image.body.attachment_url =
+      "/placeholder_farmbot.jpg?text=Processing";
+    p.currentImage = image;
+    const { rerender } = render(<ImageFlipper {...p} />);
+    expect(flipperImageMounts).toEqual(1);
+
+    const processedImage = defensiveClone(image);
+    processedImage.body.attachment_url = "https://example.com/processed.jpg";
+    rerender(<ImageFlipper {...p}
+      images={[processedImage]}
+      currentImage={processedImage} />);
+
+    expect(flipperImageMounts).toEqual(1);
+  });
+
+  it("updates the image size when the image loads", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    render(<ImageFlipper {...p} />);
+    const image = {
+      naturalWidth: 640,
+      naturalHeight: 480,
+    } as HTMLImageElement;
+
+    flipperImageProps?.onImageLoad?.(image);
+
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_IMAGE_SIZE,
+      payload: { width: 640, height: 480 },
+    });
+  });
+
+  it.each<[string, number]>([
+    ["ArrowLeft", 2],
+    ["ArrowRight", 0],
+  ])("flips with the %s key", (key, expectedIndex) => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const { container } = render(<ImageFlipper {...p} />);
+    const flipper = container.querySelector(".image-flipper");
+
+    fireEvent.keyDown(flipper as HTMLElement, { key });
+
+    expectFlip(p, p.images[expectedIndex]);
+  });
+
+  it("ignores other keys", () => {
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const { container } = render(<ImageFlipper {...p} />);
+    const flipper = container.querySelector(".image-flipper");
+
+    fireEvent.keyDown(flipper as HTMLElement, { key: "Escape" });
+
+    expectNoFlip(p);
+  });
+
   it("hides next flipper on load", () => {
     const { container } = render(<ImageFlipper {...fakeProps()} />);
     const buttons = container.querySelectorAll("button");
@@ -195,7 +263,7 @@ describe("<ImageFlipper/>", () => {
       const { nextIndex } = getNextIndexes(p.images, p.currentImage.uuid, 1);
       selectNextImage(p.images, nextIndex)(p.dispatch);
     }
-    expectFlip(p, p.images[2].uuid);
+    expectFlip(p, p.images[2]);
   });
 
   it("renders placeholder", () => {
