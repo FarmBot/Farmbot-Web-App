@@ -117,6 +117,11 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
     crop: true, rotate: true, fullscreen: false,
   };
 
+  fullscreenFlipperRef = React.createRef<ImageFlipper>();
+
+  componentDidMount = () =>
+    window.addEventListener("keydown", this.handleFullscreenKeyDown);
+
   componentDidUpdate() {
     const currentImage = this.props.currentImage;
     const currentImageId = currentImage?.body.id;
@@ -130,7 +135,20 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
     }
   }
 
-  componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
+  componentWillUnmount = () => {
+    window.removeEventListener("keydown", this.handleFullscreenKeyDown);
+    this.props.dispatch(setShownMapImages(undefined));
+  };
+
+  handleFullscreenKeyDown = (event: KeyboardEvent) => {
+    if (!this.state.fullscreen
+      || !["ArrowLeft", "ArrowRight"].includes(event.key)) {
+      return;
+    }
+    event.preventDefault();
+    this.fullscreenFlipperRef.current
+      ?.go(event.key == "ArrowLeft" ? 1 : -1)();
+  };
 
   deletePhoto = () => {
     const { dispatch, images } = this.props;
@@ -157,6 +175,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
 
   ImageFlipper = ({ id }: { id: string }) =>
     <ImageFlipper id={id}
+      ref={id == "fullscreen-flipper" ? this.fullscreenFlipperRef : undefined}
       autoFocus={true}
       currentImage={this.props.currentImage}
       dispatch={this.props.dispatch}
@@ -165,6 +184,8 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       getConfigValue={this.props.getConfigValue}
       env={this.props.env}
       crop={this.state.crop}
+      stopKeyDownPropagation={this.state.fullscreen
+        && id == "fullscreen-flipper"}
       images={this.props.images} />;
 
   get highestIndex() { return this.props.images.length - 1; }

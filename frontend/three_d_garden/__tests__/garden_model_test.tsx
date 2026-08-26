@@ -4424,6 +4424,17 @@ describe("useGardenCameraController()", () => {
       dialog.remove();
     }
 
+    const fullscreenFlipper = document.createElement("div");
+    fullscreenFlipper.id = "fullscreen-flipper";
+    document.body.appendChild(fullscreenFlipper);
+    try {
+      expect(handleKeyboardEvent(
+        "ArrowRight",
+      ).defaultPrevented).toBeFalsy();
+    } finally {
+      fullscreenFlipper.remove();
+    }
+
     expect(result.current.cameraRequest).toBe(initialRequest);
   });
 

@@ -19,6 +19,7 @@ export interface ImageFlipperProps {
   target?: Record<"x" | "y", number> | undefined;
   flipActionOverride?(nextIndex: number): void;
   autoFocus?: boolean;
+  stopKeyDownPropagation?: boolean;
 }
 
 export interface ImageFlipperState {

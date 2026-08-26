@@ -1954,6 +1954,9 @@ const viewPrismKeyboardTargetIsEditable = (
 const commandPaletteIsOpen = () =>
   !!document.querySelector(".command-palette-dialog[open]");
 
+const fullscreenPhotoViewerIsOpen = () =>
+  !!document.querySelector("#fullscreen-flipper");
+
 export const useGardenCameraController = (
   props: GardenCameraControllerProps,
 ) => {
@@ -2282,7 +2285,8 @@ export const useGardenCameraController = (
         || event.shiftKey
         || event.repeat
         || viewPrismKeyboardTargetIsEditable(event.target)
-        || commandPaletteIsOpen()) {
+        || commandPaletteIsOpen()
+        || fullscreenPhotoViewerIsOpen()) {
         return;
       }
       event.preventDefault();

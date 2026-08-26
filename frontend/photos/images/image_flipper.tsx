@@ -80,6 +80,9 @@ export class ImageFlipper extends
       onKeyDown={e => {
         if (["ArrowLeft", "ArrowRight"].includes(e.key)) {
           this.go(e.key == "ArrowLeft" ? 1 : -1)();
+          if (this.props.stopKeyDownPropagation) {
+            e.stopPropagation();
+          }
         }
       }}>
       {currentImage && images.length > 0

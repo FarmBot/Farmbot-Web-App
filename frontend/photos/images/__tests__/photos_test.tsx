@@ -200,6 +200,37 @@ describe("<Photos />", () => {
     expect(instance.state.fullscreen).toEqual(true);
   });
 
+  it("stops fullscreen arrow key propagation", () => {
+    const p = fakeProps();
+    p.images = clonedImages();
+    p.currentImage = p.images[1];
+    const { container } = render(<Photos {...p} />);
+    fireEvent.click(container.querySelector(".fa-arrows-alt") as HTMLElement);
+    const flipper = document.querySelector("#fullscreen-flipper");
+    const parentKeyDown = jest.fn();
+    window.addEventListener("keydown", parentKeyDown);
+
+    fireEvent.keyDown(flipper as HTMLElement, { key: "ArrowLeft" });
+
+    expect(selectNextImageSpy).toHaveBeenCalledTimes(1);
+    expect(parentKeyDown).not.toHaveBeenCalled();
+    window.removeEventListener("keydown", parentKeyDown);
+  });
+
+  it("handles fullscreen arrow keys after focus is lost", () => {
+    const p = fakeProps();
+    p.images = clonedImages();
+    p.currentImage = p.images[1];
+    const { container } = render(<Photos {...p} />);
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+    fireEvent.click(container.querySelector(".fa-arrows-alt") as HTMLElement);
+    fireEvent.keyDown(window, { key: "Enter" });
+
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+
+    expect(selectNextImageSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("unselects photos upon exit", () => {
     const p = fakeProps();
     const { unmount } = render(<Photos {...p} />);
