@@ -93,16 +93,23 @@ jobs:
           EOF
 
       - name: Install cached Playwright system dependencies
+        id: install_cached_playwright_deps
         run: |
           shopt -s nullglob
           packages=("$GITHUB_WORKSPACE/.cache/playwright-apt/"*.deb)
-          if [ "${#packages[@]}" -gt 0 ]; then
-            sudo apt-get install -y --no-install-recommends "${packages[@]}"
+          if [ "${#packages[@]}" -eq 0 ]; then
+            echo "installed=false" >> "$GITHUB_OUTPUT"
+          elif sudo dpkg -i "${packages[@]}"; then
+            echo "installed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "installed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install missing Playwright system dependencies
         run: |
-          if ! bun run playwright install-deps chromium --dry-run; then
+          if [ "${{ steps.install_cached_playwright_deps.outputs.installed }}" != "true" ]; then
+            bun run playwright install-deps chromium
+          elif ! bun run playwright install-deps chromium --dry-run; then
             bun run playwright install-deps chromium
           fi
 
