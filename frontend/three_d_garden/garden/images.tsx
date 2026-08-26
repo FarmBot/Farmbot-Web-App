@@ -269,7 +269,7 @@ const ImageTextureBase = (props: ImageTextureProps) => {
   return <RenderTexture
     key={textureKey}
     attach={"map"}
-    frames={1}
+    frames={2}
     width={textureWidth}
     height={textureHeight}
     repeat={mirrorTextureProps.repeat}

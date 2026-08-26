@@ -134,7 +134,7 @@ describe("<ImageTexture />", () => {
     expect(screen.getAllByText("image").length).toEqual(3);
     expect(screen.getAllByText("image-border").length).toEqual(1);
     expect(document.querySelector(".render-texture"))
-      .toHaveAttribute("data-frames", "1");
+      .toHaveAttribute("data-frames", "2");
   });
 
   it("renders when images missing", () => {
