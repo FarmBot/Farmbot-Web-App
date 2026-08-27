@@ -1,7 +1,7 @@
 import {
   Identifier, Point, Tool, TaggedSequence, Move, Xyz, AxisOverwrite,
   ALLOWED_GROUPING,
-  ALLOWED_ROUTE,
+  ALLOWED_ROUTE, Vector3,
 } from "farmbot";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import { BotPosition } from "../../../devices/interfaces";
@@ -24,6 +24,7 @@ export interface ComputedMoveState {
   safeZ: boolean;
   axisGrouping: AxisGrouping;
   axisRoute: AxisRoute;
+  mapSelectionActive: boolean;
   viewRaw?: boolean;
 }
 
@@ -74,6 +75,9 @@ export interface LocationSelectionProps {
   }): void;
   sequence: TaggedSequence;
   sequenceUuid: UUID;
+  threeDGarden: boolean;
+  mapSelectionActive: boolean;
+  selectInMap(): void;
 }
 
 interface InputRowBase {
@@ -113,6 +117,12 @@ export interface OverwriteInputRowProps extends InputRowBase {
   locationSelection: LocSelection | undefined;
   setAxisState: SetAxisState;
   setAxisOverwriteState(axis: Xyz, value: AxisSelection): void;
+}
+
+export interface MapLocationState {
+  locationNode: LocationNode | undefined;
+  locationSelection: LocSelection;
+  coordinate?: Vector3;
 }
 
 export interface ComputeCoordinateProps {

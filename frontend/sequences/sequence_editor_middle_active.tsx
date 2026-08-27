@@ -327,8 +327,13 @@ export const SequenceBtnGroup = ({
             "fb-icon-button invert",
           ].join(" ")}
           title={visualized ? t("unvisualize") : t("visualize")}
-          onClick={() =>
-            dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
+          onClick={() => {
+            if (!sequence.body.id) {
+              error(t("Save sequence first."));
+            }
+            dispatch(visualizeInMap(
+              visualized ? undefined : sequence.uuid));
+          }} />}
       {!Path.inDesigner() &&
         <Popover className={"color-picker"}
           position={Position.BOTTOM}

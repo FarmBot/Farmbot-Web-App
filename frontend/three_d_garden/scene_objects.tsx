@@ -2539,11 +2539,10 @@ export const SceneObjects = (props: SceneObjectsProps) => {
           || clickWasDragged(event)) {
           return;
         }
-        event.stopPropagation();
         props.onSelectObject({
           kind: "sceneObject",
           id: sceneObject.body.id,
-        });
+        }) !== false && event.stopPropagation();
       };
       const renderHoverEdges = (
         edgePosition: [number, number, number],

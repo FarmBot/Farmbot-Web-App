@@ -418,6 +418,15 @@ describe("<SequenceEditorMiddleActive />", () => {
     });
   });
 
+  it("doesn't visualize an unsaved sequence", () => {
+    location.pathname = Path.mock(Path.designerSequences("1"));
+    const p = fakeProps();
+    p.sequence.body.id = undefined;
+    const { container } = render(<SequenceEditorMiddleActive {...p} />);
+    fireEvent.click(container.querySelector(".fa-eye-slash") as Element);
+    expect(error).toHaveBeenCalledWith("Save sequence first.");
+  });
+
   it("un-visualizes", () => {
     location.pathname = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();

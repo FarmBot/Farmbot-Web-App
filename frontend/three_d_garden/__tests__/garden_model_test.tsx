@@ -112,6 +112,7 @@ import * as sceneObjectActions from "../../scene_objects/actions";
 import * as pointGroupActions from "../../point_groups/actions";
 import * as crud from "../../api/crud";
 import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
+import { requestMapSelection } from "../location_selection";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -2930,6 +2931,9 @@ describe("<GardenModel />", () => {
     useStateSpy = jest.spyOn(React, "useState")
       .mockImplementation(actualUseState);
     const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.plants = [plant];
     const wrapper = createWrapper(p);
     const staticLayers = wrapper.root.findAll(node =>
       typeof node.props.onSelectObject == "function"
@@ -2959,6 +2963,31 @@ describe("<GardenModel />", () => {
     }));
     expect(getSelectionLayer().locationSelection).toEqual(locationSelection);
     actRenderer(() => hoverTarget.props.onClick(event));
+    expect(getSelectionLayer().locationSelection).toBeUndefined();
+
+    const onMapSelection = jest.fn();
+    requestMapSelection(onMapSelection, jest.fn());
+    let objectSelected = false;
+    actRenderer(() => {
+      objectSelected = selectObject({ kind: "plant", id: 1 });
+    });
+    expect(objectSelected).toBeTruthy();
+    expect(onMapSelection).toHaveBeenCalledWith({
+      selection: { kind: "plant", id: 1 },
+      coordinate: expect.objectContaining({
+        x: plant.body.x,
+        y: plant.body.y,
+      }),
+    });
+    expect(getSelectionLayer().popupSelection).toBeUndefined();
+
+    const onSoilSelection = jest.fn();
+    requestMapSelection(onSoilSelection, jest.fn());
+    actRenderer(() => hoverTarget.props.onClick(event));
+    expect(onSoilSelection).toHaveBeenCalledWith({
+      selection: locationSelection,
+      coordinate: { x: 100, y: 100, z: -500 },
+    });
     expect(getSelectionLayer().locationSelection).toBeUndefined();
   });
 

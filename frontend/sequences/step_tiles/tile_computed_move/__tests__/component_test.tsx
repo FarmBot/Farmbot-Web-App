@@ -18,7 +18,11 @@ import { StepParams } from "../../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
-import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import { fakeFbosConfig, fakeWebAppConfig, fakeToolSlot, fakePlant } from
+  "../../../../__test_support__/fake_state/resources";
+import { completeMapSelection } from
+  "../../../../three_d_garden/location_selection";
+import { Path } from "../../../../internal_urls";
 
 let editStepSpy: jest.SpyInstance;
 
@@ -57,6 +61,25 @@ describe("<ComputedMove />", () => {
     const p = fakeProps();
     const { container } = render(<ComputedMove {...p} />);
     expect(container.textContent?.toLowerCase()).toContain("location");
+  });
+
+  it("detects the 3D map setting", () => {
+    const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    p.resources = buildResourceIndex([config]).index;
+    expect(new ComputedMove(p).threeDGarden).toBeTruthy();
+  });
+
+  it("shows map selection only in the designer", () => {
+    const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    p.resources = buildResourceIndex([config]).index;
+    location.pathname = Path.mock(Path.designerSequences("1"));
+    expect(new ComputedMove(p).showMapSelection).toBeTruthy();
+    location.pathname = Path.mock(Path.sequencePage("1"));
+    expect(new ComputedMove(p).showMapSelection).toBeFalsy();
   });
 
   it("deconstructs step: numeric", () => {
@@ -302,6 +325,124 @@ describe("<ComputedMove />", () => {
         }
       }]
     });
+  });
+
+  it("updates the soil map position", () => {
+    const p = fakeProps();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setLocationFromMap({
+      selection: { kind: "location", x: 100, y: 200, z: -30 },
+      coordinate: { x: 100, y: 200, z: -30 },
+    });
+    expect(instance.state.selection).toEqual({
+      x: AxisSelection.custom,
+      y: AxisSelection.custom,
+      z: AxisSelection.custom,
+    });
+    expect(instance.state.overwrite).toEqual({
+      x: 100,
+      y: 200,
+      z: -30,
+    });
+    expect(crud.editStep).toHaveBeenCalled();
+    mockEditStep.mock.calls[0][0].executor(p.currentStep);
+    expect(p.currentStep.body).toEqual([
+      {
+        kind: "axis_overwrite",
+        args: {
+          axis: "x",
+          axis_operand: { kind: "numeric", args: { number: 100 } },
+        },
+      },
+      {
+        kind: "axis_overwrite",
+        args: {
+          axis: "y",
+          axis_operand: { kind: "numeric", args: { number: 200 } },
+        },
+      },
+      {
+        kind: "axis_overwrite",
+        args: {
+          axis: "z",
+          axis_operand: { kind: "numeric", args: { number: -30 } },
+        },
+      },
+    ]);
+  });
+
+  it("updates the selected map object", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 123;
+    p.resources = buildResourceIndex([plant]).index;
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setLocationFromMap({
+      selection: { kind: "plant", id: 123 },
+      coordinate: { x: 100, y: 200, z: -30 },
+    });
+    expect(instance.state.location).toEqual({
+      kind: "point",
+      args: { pointer_type: "Plant", pointer_id: 123 },
+    });
+    expect(instance.state.locationSelection).toEqual(LocSelection.point);
+    expect(instance.state.overwrite).toEqual({
+      x: undefined, y: undefined, z: undefined,
+    });
+    mockEditStep.mock.calls[0][0].executor(p.currentStep);
+    expect(p.currentStep.body).toEqual(["x", "y", "z"].map(axis => ({
+      kind: "axis_overwrite",
+      args: {
+        axis,
+        axis_operand: {
+          kind: "point",
+          args: { pointer_type: "Plant", pointer_id: 123 },
+        },
+      },
+    })));
+  });
+
+  it("updates a selected map tool slot as a tool", () => {
+    const p = fakeProps();
+    const slot = fakeToolSlot();
+    slot.body.id = 123;
+    slot.body.tool_id = 456;
+    p.resources = buildResourceIndex([slot]).index;
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setLocationFromMap({
+      selection: { kind: "slot", id: 123 },
+      coordinate: { x: 100, y: 200, z: -30 },
+    });
+    expect(instance.state.location).toEqual({
+      kind: "tool", args: { tool_id: 456 },
+    });
+    expect(instance.state.locationSelection).toEqual(LocSelection.tool);
+    mockEditStep.mock.calls[0][0].executor(p.currentStep);
+    expect(p.currentStep.body).toEqual(["x", "y", "z"].map(axis => ({
+      kind: "axis_overwrite",
+      args: {
+        axis,
+        axis_operand: { kind: "tool", args: { tool_id: 456 } },
+      },
+    })));
+  });
+
+  it("toggles map selection", () => {
+    const first = setStateSync(new ComputedMove(fakeProps()));
+    const second = setStateSync(new ComputedMove(fakeProps()));
+    first.selectInMap();
+    expect(first.state.mapSelectionActive).toEqual(true);
+    second.selectInMap();
+    expect(first.state.mapSelectionActive).toEqual(false);
+    expect(second.state.mapSelectionActive).toEqual(true);
+    second.componentWillUnmount();
+    expect(completeMapSelection({
+      selection: { kind: "location", x: 1, y: 2, z: 3 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    })).toBeFalsy();
+    first.selectInMap();
+    first.selectInMap();
+    expect(first.state.mapSelectionActive).toEqual(false);
   });
 
   it("updates axis to default", () => {
