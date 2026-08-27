@@ -8,6 +8,7 @@ import {
 } from "../three_d_garden/garden_model";
 import { ViewPrismViewport } from "../three_d_garden";
 import { Canvas } from "@react-three/fiber";
+import { safePointerEvents } from "../three_d_garden/pointer_events";
 import {
   PrivateOverlay, PublicOverlay, ToolTip,
 } from "../three_d_garden/config_overlays";
@@ -241,6 +242,7 @@ export const Promo = () => {
         {webGLAvailable
           ? <MemoryRouter>
             <Canvas
+              events={safePointerEvents}
               shadows={"variance"}
               onCreated={({ gl }) => {
                 gl.localClippingEnabled = true;

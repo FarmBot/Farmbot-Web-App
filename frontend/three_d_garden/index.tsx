@@ -37,9 +37,10 @@ import { filterSectionIntersections } from "./section";
 import { Actions } from "../constants";
 import type { NativeJogEncoderVisibility } from
   "./bot/native_jog_controls";
+import { safePointerEvents } from "./pointer_events";
 
 const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
-  ...ReactThreeFiber.events(store),
+  ...safePointerEvents(store),
   filter: filterSectionIntersections,
 });
 
@@ -98,6 +99,7 @@ export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
     }}
     aria-hidden={true}>
     <Canvas
+      events={safePointerEvents}
       gl={{ alpha: true }}
       camera={{
         position: [0, 0, viewPrismCamera.distance],

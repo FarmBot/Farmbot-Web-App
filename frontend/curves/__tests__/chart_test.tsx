@@ -71,6 +71,13 @@ describe("<CurveSvg />", () => {
     expect(container.querySelectorAll("text").length).toEqual(16);
   });
 
+  it("limits oversized curve data", () => {
+    const p = fakeProps();
+    p.curve.body.data = { 1: 0, 1000: 100 };
+    const { container } = render(<CurveSvg {...p} />);
+    expect(container.querySelectorAll("#hover-bar").length).toEqual(201);
+  });
+
   it("hovers bar", () => {
     const p = fakeProps();
     p.editable = true;

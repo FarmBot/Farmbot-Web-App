@@ -22,6 +22,8 @@ import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { error } from "../../toast/toast";
 import { SpecialStatus, TaggedCurve } from "farmbot";
 import { Path } from "../../internal_urls";
+import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
 
 let overwriteSpy: jest.SpyInstance;
 let initSpy: jest.SpyInstance;
@@ -491,5 +493,31 @@ describe("<TemplatesMenu />", () => {
     const button = buttons[buttons.length - 1];
     button && fireEvent.click(button);
     expect(p.click).toHaveBeenCalled();
+  });
+
+  it("changes template shape", () => {
+    const fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: FBSelectProps) =>
+        <button className={"shape-select"}
+          onClick={() => props.onChange({
+            label: "Linear Ramp", value: "linear",
+          })}>
+          {props.selectedItem?.value}
+        </button>) as never);
+    localStorage.removeItem("water_shape");
+    try {
+      const p = fakeProps();
+      const { container } = render(<TemplatesMenu {...p} />);
+      const shapeSelect = container.querySelector(".shape-select");
+
+      expect(shapeSelect?.textContent).toEqual("table");
+      shapeSelect && fireEvent.click(shapeSelect);
+      expect(container.querySelector(".shape-select")?.textContent)
+        .toEqual("linear");
+      expect(localStorage.getItem("water_shape")).toEqual("linear");
+    } finally {
+      fbSelectSpy.mockRestore();
+      localStorage.removeItem("water_shape");
+    }
   });
 });

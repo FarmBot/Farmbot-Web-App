@@ -5,6 +5,7 @@ import {
   Cylinder, Html, PerspectiveCamera, useGLTF,
 } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
+import { safePointerEvents } from "../../three_d_garden/pointer_events";
 import type { GLTF } from "three-stdlib";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
 import { BoxTopBaseProps, PinBindingListItems } from "./interfaces";
@@ -396,7 +397,7 @@ export const Model = (props: ModelProps) => {
 export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
   const [cursor, setCanvasCursor] = React.useState("");
   return <div className={"electronics-box-3d-model"}>
-    <Canvas style={{ cursor }}>
+    <Canvas events={safePointerEvents} style={{ cursor }}>
       <Model {...props} setCanvasCursor={setCanvasCursor} />
     </Canvas>
   </div>;

@@ -14,6 +14,10 @@ describe("maxDay()", () => {
     expect(maxDay({ 1: 1, 100: 100 })).toEqual(100);
     expect(maxDay({})).toEqual(1);
   });
+
+  it("limits day", () => {
+    expect(maxDay({ 1: 1, 1000: 1000 })).toEqual(200);
+  });
 });
 
 describe("maxValue()", () => {
@@ -66,6 +70,12 @@ describe("populatedData()", () => {
   it("handles empty data", () => {
     expect(populatedData({})).toEqual({ 1: 0 });
   });
+
+  it("limits oversized data", () => {
+    const data = populatedData({ 1: 1, 1000: 1000 });
+    expect(Object.keys(data).length).toEqual(200);
+    expect(data[200]).toEqual(200);
+  });
 });
 
 describe("interpolateDay()", () => {
@@ -101,5 +111,10 @@ describe("scaleData()", () => {
 
   it("returns scaled data from single data point", () => {
     expect(scaleData({ 1: 1 }, 4, 8)).toEqual({ 1: 8, 4: 8 });
+  });
+
+  it("scales oversized data", () => {
+    expect(scaleData({ 1: 1, 1000: 1000 }, 100, 100))
+      .toEqual({ 1: 0, 100: 100 });
   });
 });
