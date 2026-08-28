@@ -281,6 +281,82 @@ describe("calculateMove()", () => {
       .toEqual({ moves: [{ x: 0, y: 0, z: 0 }], warnings: [] });
   });
 
+  it("handles point all axis overwrite", () => {
+    const point = fakePlant();
+    point.body.id = 1;
+    point.body.x = 1;
+    point.body.y = 2;
+    point.body.z = 3;
+    mockResources = buildResourceIndex([point]);
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "all",
+            axis_operand: {
+              kind: "point",
+              args: { pointer_id: 1, pointer_type: "Plant" },
+            },
+          },
+        },
+      ],
+    };
+    expect(calculateMove(command.body, { x: 0, y: 0, z: 0 }, []))
+      .toEqual({ moves: [{ x: 1, y: 2, z: 3 }], warnings: [] });
+  });
+
+  it("handles point single axis overwrite", () => {
+    const point = fakePlant();
+    point.body.id = 1;
+    point.body.x = 1;
+    point.body.y = 2;
+    point.body.z = 3;
+    mockResources = buildResourceIndex([point]);
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "y",
+            axis_operand: {
+              kind: "point",
+              args: { pointer_id: 1, pointer_type: "Plant" },
+            },
+          },
+        },
+      ],
+    };
+    expect(calculateMove(command.body, { x: 4, y: 5, z: 6 }, []))
+      .toEqual({ moves: [{ x: 4, y: 2, z: 6 }], warnings: [] });
+  });
+
+  it("handles missing point all axis overwrite", () => {
+    mockResources = buildResourceIndex([]);
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "all",
+            axis_operand: {
+              kind: "point",
+              args: { pointer_id: 1, pointer_type: "Plant" },
+            },
+          },
+        },
+      ],
+    };
+    expect(calculateMove(command.body, { x: 4, y: 5, z: 6 }, []))
+      .toEqual({ moves: [{ x: 4, y: 5, z: 6 }], warnings: [] });
+  });
+
   it("handles coordinate identifier all axis overwrite", () => {
     mockResources = buildResourceIndex([]);
     const variables: ParameterApplication[] = [
