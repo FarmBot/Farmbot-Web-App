@@ -1176,6 +1176,25 @@ describe("runDemoLuaCode()", () => {
     expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().info);
   });
 
+  it("interpolates position in send_message", () => {
+    setCurrent({ x: 1, y: 2, z: 3 });
+    runDemoLuaCode(`send_message(
+      "info",
+      "FarmBot is at position {{ x }}, {{ y }}, {{ z }}.",
+      "toast"
+    )`);
+    jest.runAllTimers();
+    const message = "FarmBot is at position 1, 2, 3.";
+    expect(error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith(message, TOAST_OPTIONS().info);
+    expect(init).toHaveBeenCalledWith("Log", expect.objectContaining({
+      message,
+      x: 1,
+      y: 2,
+      z: 3,
+    }));
+  });
+
   it("runs send_message: multiple channels", () => {
     runDemoLuaCode("send_message(\"info\", \"test\", {\"email\", \"toast\"})");
     jest.runAllTimers();

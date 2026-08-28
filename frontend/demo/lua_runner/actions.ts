@@ -63,6 +63,14 @@ const isSerializedPosition = (value: unknown): boolean => {
   }
 };
 
+const interpolatePosition = (
+  message: string,
+  position: XyzNumber,
+): string => message.replace(
+  /{{\s*([xyz])\s*}}/g,
+  (_, axis: keyof XyzNumber) => `${position[axis]}`,
+);
+
 // The TOP_LEFT demo camera origin rotates the 640x480 image footprint 90deg.
 const DEMO_CAMERA_VIEW_HALF_X = 240;
 const DEMO_CAMERA_VIEW_HALF_Y = 320;
@@ -468,10 +476,10 @@ export const runActions = (
               error(`Invalid message type: ${type}`);
             };
           }
-          const msg = "" + action.args[1];
           const channelsStr = "" + action.args[2];
           const channels = channelsStr.split(",") as ALLOWED_CHANNEL_NAMES[];
           const logPosition = JSON.parse("" + action.args[3]) as XyzNumber;
+          const msg = interpolatePosition("" + action.args[1], logPosition);
           const verbosity = action.args[4] as number;
           return () => {
             if (channels.includes("toast")) {
