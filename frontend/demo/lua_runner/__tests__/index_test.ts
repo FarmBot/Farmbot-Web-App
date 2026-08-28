@@ -1110,7 +1110,7 @@ describe("runDemoLuaCode()", () => {
     }];
     mockResources = buildResourceIndex([sequence]);
     setCurrent({ x: 1, y: 2, z: 3 });
-    runDemoLuaCode(`
+    const lua = `
       cs_eval{
         kind = "rpc_request",
         args = { label = "", priority = 0 },
@@ -1118,7 +1118,10 @@ describe("runDemoLuaCode()", () => {
           { kind = "execute", args = { sequence_id = ${sequenceId} } }
         }
       }
-    `);
+    `;
+    expect(runModule.runLua(0, lua, [], { x: 1, y: 2, z: 3 }).length)
+      .toBeGreaterThan(0);
+    runDemoLuaCode(lua);
     for (let i = 0; i < 4; i++) {
       jest.runOnlyPendingTimers();
       await Promise.resolve();

@@ -429,6 +429,37 @@ describe("expandActions()", () => {
     ]);
   });
 
+  it("expands a move with its captured variables", () => {
+    const moveItems = JSON.stringify([{
+      kind: "axis_overwrite",
+      args: {
+        axis: "all",
+        axis_operand: {
+          kind: "identifier",
+          args: { label: "Location" },
+        },
+      },
+    }]);
+    expect(expandActions([{
+      type: "_move",
+      args: [moveItems],
+      variables: [{
+        kind: "parameter_application",
+        args: {
+          label: "Location",
+          data_value: {
+            kind: "coordinate",
+            args: { x: 100, y: 200, z: -300 },
+          },
+        },
+      }],
+    }], [])).toEqual([
+      { type: "busy", args: [1] },
+      defaultMove(100, 200, -300),
+      { type: "busy", args: [0] },
+    ]);
+  });
+
   it("expands movement warnings", () => {
     expect(expandActions([
       { type: "_move", args: [JSON.stringify([{ kind: "foo", args: {} }])] },
@@ -475,6 +506,34 @@ describe("expandActions()", () => {
         ],
       },
     ]);
+  });
+
+  it("doesn't re-expand take_photo", () => {
+    const expanded = expandActions([
+      { type: "take_photo", args: [] },
+    ], []);
+    expect(expandActions(expanded, [])).toEqual(expanded);
+  });
+
+  it("doesn't replace resolved message positions", () => {
+    setCurrent({ x: 0, y: 0, z: 0 });
+    const expanded = expandActions([
+      { type: "send_message", args: ["info", "message", "toast"] },
+      { type: "move_absolute", args: [100, 0, 0] },
+    ], []);
+    setCurrent({ x: 100, y: 0, z: 0 });
+    expect(expandActions(expanded, [])).toEqual(expanded);
+  });
+
+  it("replaces invalid resolved message positions", () => {
+    setCurrent({ x: 1, y: 2, z: 3 });
+    expect(expandActions([{
+      type: "send_message",
+      args: ["info", "message", "toast", "{"],
+    }], [])).toEqual([{
+      type: "send_message",
+      args: ["info", "message", "toast", "{\"x\":1,\"y\":2,\"z\":3}"],
+    }]);
   });
 
   it("expands calibrate_camera", () => {

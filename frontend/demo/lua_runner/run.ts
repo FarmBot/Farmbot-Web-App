@@ -529,7 +529,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const arg = luaToJs(L, 1) as string;
-      actions.push({ type: "_move", args: [arg] });
+      actions.push({ type: "_move", args: [arg], variables });
       return 0;
     });
     lua.lua_setfield(L, envIndex, to_luastring("_move"));

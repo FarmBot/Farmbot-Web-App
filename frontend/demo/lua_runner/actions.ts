@@ -51,6 +51,18 @@ const current = {
   z: 0,
 };
 
+const isSerializedPosition = (value: unknown): boolean => {
+  if (typeof value != "string") { return false; }
+  try {
+    const position = JSON.parse(value) as Partial<XyzNumber>;
+    return typeof position.x == "number"
+      && typeof position.y == "number"
+      && typeof position.z == "number";
+  } catch {
+    return false;
+  }
+};
+
 // The TOP_LEFT demo camera origin rotates the 640x480 image footprint 90deg.
 const DEMO_CAMERA_VIEW_HALF_X = 240;
 const DEMO_CAMERA_VIEW_HALF_Y = 320;
@@ -168,7 +180,11 @@ export const expandActionsFromPosition = (
       case "_move":
         const moveItems = JSON.parse("" + action.args[0]) as MoveBodyItem[];
         const { moves, warnings } =
-          calculateMove(moveItems, expansionCurrent, variables);
+          calculateMove(
+            moveItems,
+            expansionCurrent,
+            action.variables || variables,
+          );
         warnings.length > 0 && expanded.push({
           type: "send_message",
           args: [
@@ -188,13 +204,22 @@ export const expandActionsFromPosition = (
         break;
       case "send_message":
         const sendMessageArgs = [...action.args];
-        sendMessageArgs[3] = JSON.stringify(expansionCurrent);
+        if (!isSerializedPosition(sendMessageArgs[3])) {
+          sendMessageArgs[3] = JSON.stringify(expansionCurrent);
+        }
         expanded.push({ type: "send_message", args: sendMessageArgs });
         break;
       case "take_photo":
       case "calibrate_camera":
       case "detect_weeds":
       case "measure_soil_height":
+        if (action.type == "take_photo" && action.args.length == 3) {
+          expanded.push({
+            type: action.type,
+            args: [...action.args],
+          });
+          break;
+        }
         const MSGS = {
           "take_photo": "Taking photo",
           "calibrate_camera": "Calibrating camera",
