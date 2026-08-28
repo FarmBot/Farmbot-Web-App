@@ -45,6 +45,7 @@ import { ThreeDObjectSelectionLayerProps } from "../props";
 import * as toolSlotEditComponents from "../../../tools/tool_slot_edit_components";
 import * as ui from "../../../ui";
 import * as deviceActions from "../../../devices/actions";
+import * as photoActions from "../../../photos/actions";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { Path } from "../../../internal_urls";
 import {
@@ -1415,19 +1416,33 @@ describe("selection popup controls", () => {
   it("uses camera controls", () => {
     const takePhotoSpy = jest.spyOn(deviceActions, "takePhoto")
       .mockImplementation(jest.fn());
+    const detectWeedsSpy = jest.spyOn(photoActions, "detectWeeds")
+      .mockImplementation(jest.fn());
+    const measureSoilHeightSpy = jest.spyOn(
+      photoActions, "measureSoilHeight")
+      .mockImplementation(jest.fn());
     const p = layerProps();
     p.config.cameraView = false;
+    p.env.CAMERA_CALIBRATION_coord_scale = "1";
     const controls = render(<ObjectPopupControls
       {...p}
       object={cameraObject()} />);
     const takePhotoButton = controls.container
       .querySelector("button[title='Take a photo']");
+    const detectWeedsButton = controls.getByRole(
+      "button", { name: "Detect" });
+    const measureSoilHeightButton = controls.getByRole(
+      "button", { name: "Measure" });
     const cameraToggles = controls.container
       .querySelectorAll(".fb-toggle-button");
     takePhotoButton && fireEvent.click(takePhotoButton);
+    fireEvent.click(detectWeedsButton);
+    fireEvent.click(measureSoilHeightButton);
     fireEvent.click(cameraToggles[0]);
     fireEvent.click(cameraToggles[1]);
     expect(takePhotoSpy).toHaveBeenCalled();
+    expect(detectWeedsSpy).toHaveBeenCalled();
+    expect(measureSoilHeightSpy).toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_CAMERA_FOLLOW,
@@ -1442,9 +1457,35 @@ describe("selection popup controls", () => {
     const disabledTakePhotoButton = disabledControls.container
       .querySelector("button.pseudo-disabled");
     disabledTakePhotoButton && fireEvent.click(disabledTakePhotoButton);
+    const disabledDetectWeedsButton = disabledControls.getByRole(
+      "button", { name: "Detect" });
+    expect(disabledDetectWeedsButton).toHaveClass("pseudo-disabled");
+    fireEvent.click(disabledDetectWeedsButton);
     expect(takePhotoSpy).toHaveBeenCalledTimes(1);
+    expect(detectWeedsSpy).toHaveBeenCalledTimes(1);
     disabledControls.unmount();
+
+    p.env = {};
+    const uncalibratedControls = render(<ObjectPopupControls
+      {...p}
+      object={cameraObject()} />);
+    fireEvent.click(uncalibratedControls.getByRole(
+      "button", { name: "Detect" }));
+    expect(detectWeedsSpy).toHaveBeenCalledTimes(1);
+    uncalibratedControls.unmount();
+
+    p.botOnline = false;
+    const offlineControls = render(<ObjectPopupControls
+      {...p}
+      object={cameraObject()} />);
+    expect(offlineControls.getByRole(
+      "button", { name: "Measure" })).toBeDisabled();
+    expect(offlineControls.getByRole(
+      "button", { name: "Detect" })).toHaveClass("pseudo-disabled");
+    offlineControls.unmount();
     takePhotoSpy.mockRestore();
+    detectWeedsSpy.mockRestore();
+    measureSoilHeightSpy.mockRestore();
   });
 
   it("updates mounted tool selection", () => {

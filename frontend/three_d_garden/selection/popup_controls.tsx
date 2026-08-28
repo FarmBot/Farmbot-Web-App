@@ -50,6 +50,8 @@ import { btnIndexList, getFwHardwareValue, hasUTM } from
   "../../settings/firmware/firmware_hardware_support";
 import { cameraBtnProps } from
   "../../photos/capture_settings/camera_selection";
+import { measureSoilHeight } from "../../photos/actions";
+import { detectPlants } from "../../photos/weed_detector/actions";
 import { ToolActionRow } from "../../tools/tool_action_row";
 import {
   sceneObjectShowsTextureAndColor, sceneObjectTextureChoices,
@@ -473,10 +475,13 @@ const UtmHomeRow = (props: PopupControlProps) => {
 const CameraPopupControls = (props: PopupControlProps) => {
   if (props.object.kind != "camera") { return undefined; }
   const cameraButton = cameraBtnProps(props.env, props.botOnline);
+  const coordScale = Number(
+    props.env.CAMERA_CALIBRATION_coord_scale || 0);
   const photoTitle = cameraButton.title || t("Take a photo");
   const takePhotoClick = () => cameraButton.click
     ? cameraButton.click()
     : void takePhoto();
+  const detectWeedsClick = cameraButton.click || detectPlants(coordScale);
   return <>
     <div className={"object-popup-camera-row row grid-exp-1"}>
       <label>{t("Take photo")}</label>
@@ -489,6 +494,29 @@ const CameraPopupControls = (props: PopupControlProps) => {
         onClick={takePhotoClick}
         title={photoTitle}>
         {t("Take photo")}
+      </button>
+    </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("Detect weeds")}</label>
+      <button
+        className={betterCompact([
+          "fb-button green no-float",
+          cameraButton.class,
+        ]).join(" ")}
+        type={"button"}
+        onClick={detectWeedsClick}
+        title={cameraButton.title}>
+        {t("Detect")}
+      </button>
+    </div>
+    <div className={"object-popup-camera-row row grid-exp-1"}>
+      <label>{t("Measure soil height")}</label>
+      <button
+        className={"fb-button green no-float"}
+        type={"button"}
+        disabled={!props.botOnline}
+        onClick={() => { void measureSoilHeight(); }}>
+        {t("Measure")}
       </button>
     </div>
     <div className={"object-popup-camera-row row grid-exp-1"}>
