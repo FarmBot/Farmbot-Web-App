@@ -60,6 +60,15 @@
   }
 }
 
+.map-selection-popover {
+  display: block;
+  width: 100%;
+  .bp6-popover-target {
+    display: block;
+    width: 100%;
+  }
+}
+
 .title-help {
   display: inline;
   .title-help-icon {

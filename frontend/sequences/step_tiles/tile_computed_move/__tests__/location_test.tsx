@@ -20,7 +20,7 @@ import { Move, VariableDeclaration } from "farmbot";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
 import { COORDINATE_DDI } from "../../../locals_list/variable_form_list";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 describe("<LocationSelection />", () => {
   const fakeProps = (): LocationSelectionProps => ({
@@ -69,7 +69,7 @@ describe("<LocationSelection />", () => {
   ])("changes location: %s", (ddi, locationNode, locationSelection) => {
     const p = fakeProps();
     const wrapper = LocationSelection(p);
-    wrapper.props.onChange(ddi);
+    wrapper.props.target.props.onChange(ddi);
     expect(p.onChange).toHaveBeenCalledWith({
       locationNode, locationSelection,
     });
@@ -78,7 +78,7 @@ describe("<LocationSelection />", () => {
   it("starts map selection", () => {
     const p = fakeProps();
     const wrapper = LocationSelection(p);
-    wrapper.props.onChange({
+    wrapper.props.target.props.onChange({
       headingId: "Map", label: "Choose in map", value: "map",
     });
     expect(p.selectInMap).toHaveBeenCalled();
@@ -88,9 +88,17 @@ describe("<LocationSelection />", () => {
   it("shows the map selection prompt", () => {
     const p = fakeProps();
     p.mapSelectionActive = true;
-    render(<LocationSelection {...p} />);
+    const { container } = render(<LocationSelection {...p} />);
     expect(screen.getByText("Choose in map")).toBeTruthy();
     expect(screen.getByText("Choose a location in the map")).toBeTruthy();
+    expect(container.querySelector(".map-selection-popover")).toBeTruthy();
+    fireEvent.keyDown(document.body, { key: "Enter" });
+    expect(p.selectInMap).not.toHaveBeenCalled();
+    const eventAllowed = fireEvent.keyDown(document.body, { key: "Escape" });
+    expect(eventAllowed).toBeFalsy();
+    expect(p.selectInMap).toHaveBeenCalledTimes(1);
+    fireEvent.click(container.querySelector(".fa-times") as Element);
+    expect(p.selectInMap).toHaveBeenCalledTimes(2);
   });
 
   it.each<[
@@ -129,7 +137,7 @@ describe("<LocationSelection />", () => {
     p.locationNode = locationNode;
     p.locationSelection = locationSelection;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.selectedItem).toEqual(ddi);
+    expect(wrapper.props.target.props.selectedItem).toEqual(ddi);
   });
 
   it("shows selection: variable", () => {
@@ -140,7 +148,7 @@ describe("<LocationSelection />", () => {
     p.resources = buildResourceIndex([]).index;
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.selectedItem).toEqual({
+    expect(wrapper.props.target.props.selectedItem).toEqual({
       label: "variable - fake variable info label", value: "variable",
     });
   });
@@ -163,7 +171,7 @@ describe("<LocationSelection />", () => {
     variables["other"] = undefined;
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.list).toEqual([
+    expect(wrapper.props.target.props.list).toEqual([
       {
         headingId: "Coordinate",
         label: "Custom coordinates",
@@ -226,7 +234,7 @@ describe("<LocationSelection />", () => {
     const p = fakeProps();
     p.threeDGarden = false;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.list).not.toContainEqual({
+    expect(wrapper.props.target.props.list).not.toContainEqual({
       headingId: "Map", label: "Choose in map", value: "map",
     });
   });

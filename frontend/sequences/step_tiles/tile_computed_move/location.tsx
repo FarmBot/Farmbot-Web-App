@@ -1,6 +1,5 @@
 import React from "react";
-import { FBSelect, DropDownItem, Popover } from "../../../ui";
-import { Position } from "@blueprintjs/core";
+import { FBSelect, DropDownItem } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import {
   LocationNode, LocSelection, LocationSelectionProps, AxisSelection,
@@ -22,6 +21,7 @@ import {
 } from "../../locals_list/locals_list_support";
 import type { MapSelectionResult } from
   "../../../three_d_garden/location_selection";
+import { MapSelectionPopover } from "../../locals_list/map_selection_popover";
 
 export const LocationSelection = (props: LocationSelectionProps) => {
   const { resources, sequenceUuid } = props;
@@ -52,16 +52,10 @@ export const LocationSelection = (props: LocationSelectionProps) => {
         props.resources,
         props.sequenceUuid,
       )} />;
-  return props.mapSelectionActive
-    ? <Popover
-      position={Position.TOP}
-      usePortal={false}
-      isOpen={true}
-      content={<div className="help-text-content">
-        {t("Choose a location in the map")}
-      </div>}
-      target={input} />
-    : input;
+  return <MapSelectionPopover
+    active={props.mapSelectionActive}
+    onCancel={props.selectInMap}
+    target={input} />;
 };
 
 export const mapSelectionToLocation = (

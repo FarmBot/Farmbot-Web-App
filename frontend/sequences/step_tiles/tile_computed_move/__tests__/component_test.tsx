@@ -371,12 +371,17 @@ describe("<ComputedMove />", () => {
     ]);
   });
 
-  it("updates the selected map object", () => {
+  it("replaces map coordinates with a selected map object", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.id = 123;
     p.resources = buildResourceIndex([plant]).index;
     const instance = setStateSync(new ComputedMove(p));
+    instance.setLocationFromMap({
+      selection: { kind: "location", x: 10, y: 20, z: 30 },
+      coordinate: { x: 10, y: 20, z: 30 },
+    });
+    mockEditStep.mockClear();
     instance.setLocationFromMap({
       selection: { kind: "plant", id: 123 },
       coordinate: { x: 100, y: 200, z: -30 },
@@ -386,6 +391,9 @@ describe("<ComputedMove />", () => {
       args: { pointer_type: "Plant", pointer_id: 123 },
     });
     expect(instance.state.locationSelection).toEqual(LocSelection.point);
+    expect(instance.state.selection).toEqual({
+      x: undefined, y: undefined, z: undefined,
+    });
     expect(instance.state.overwrite).toEqual({
       x: undefined, y: undefined, z: undefined,
     });
@@ -400,6 +408,46 @@ describe("<ComputedMove />", () => {
         },
       },
     })));
+  });
+
+  it("preserves non-numeric overrides for new map locations", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 123;
+    p.resources = buildResourceIndex([plant]).index;
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState({
+      selection: {
+        x: AxisSelection.lua,
+        y: AxisSelection.soil_height,
+        z: AxisSelection.custom,
+      },
+      overwrite: { x: "return 1", y: undefined, z: 123 },
+    });
+    instance.setLocationFromMap({
+      selection: { kind: "location", x: 10, y: 20, z: 30 },
+      coordinate: { x: 10, y: 20, z: 30 },
+    });
+    expect(instance.state.selection).toEqual({
+      x: AxisSelection.lua,
+      y: AxisSelection.soil_height,
+      z: AxisSelection.custom,
+    });
+    expect(instance.state.overwrite).toEqual({
+      x: "return 1", y: undefined, z: 30,
+    });
+    instance.setLocationFromMap({
+      selection: { kind: "plant", id: 123 },
+      coordinate: { x: 100, y: 200, z: -30 },
+    });
+    expect(instance.state.selection).toEqual({
+      x: AxisSelection.lua,
+      y: AxisSelection.soil_height,
+      z: undefined,
+    });
+    expect(instance.state.overwrite).toEqual({
+      x: "return 1", y: undefined, z: undefined,
+    });
   });
 
   it("updates a selected map tool slot as a tool", () => {

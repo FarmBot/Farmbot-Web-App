@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Row, FBSelect, Color, BlurableInput, Help, Popover,
+  Row, FBSelect, Color, BlurableInput, Help,
   DropDownItem,
 } from "../../ui";
 import {
@@ -43,6 +43,7 @@ import {
   requestMapSelection, type MapSelectionResult,
 } from "../../three_d_garden/location_selection";
 import { Path } from "../../internal_urls";
+import { MapSelectionPopover } from "./map_selection_popover";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -210,16 +211,10 @@ export const VariableForm =
               <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                 customIcon={"fa-exclamation-triangle"} onHover={true} />}
           </div>
-          {mapSelectionActive
-            ? <Popover
-              position={Position.TOP}
-              usePortal={false}
-              isOpen={true}
-              content={<div className="help-text-content">
-                {t("Choose a location in the map")}
-              </div>}
-              target={dropdownInput} />
-            : dropdownInput}
+          <MapSelectionPopover
+            active={mapSelectionActive}
+            onCancel={selectInMap}
+            target={dropdownInput} />
           {variableType == VariableType.Number && isDefaultValueForm &&
             <NumericInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}

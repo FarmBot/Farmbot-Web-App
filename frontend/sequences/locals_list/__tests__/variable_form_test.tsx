@@ -238,7 +238,10 @@ describe("<VariableForm />", () => {
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     expect(locationSelectionActive()).toBeTruthy();
     expect(container.textContent).toContain("Choose a location in the map");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
+    expect(locationSelectionActive()).toBeFalsy();
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    fireEvent.keyDown(window, { key: "Escape" });
     expect(locationSelectionActive()).toBeFalsy();
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     act(() => {

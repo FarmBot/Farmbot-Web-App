@@ -255,14 +255,32 @@ export class ComputedMove
     const { locationNode, locationSelection, coordinate } =
       mapSelectionToLocation(result, this.props.resources);
     const { selection, overwrite, offset } = this.state;
+    const preserve = (axis: Xyz) => !!selection[axis]
+      && selection[axis] != AxisSelection.custom;
+    const mapSelection = (axis: Xyz) => {
+      if (preserve(axis)) { return selection[axis]; }
+      if (coordinate) { return AxisSelection.custom; }
+      return undefined;
+    };
+    const mapOverwrite = (axis: Xyz) => {
+      if (preserve(axis)) { return overwrite[axis]; }
+      return coordinate?.[axis];
+    };
     this.cancelMapSelection = undefined;
     this.setState({
       mapSelectionActive: false,
       locationSelection,
       location: locationNode,
-      selection: setSelectionFromLocation(locationSelection, selection),
-      overwrite: coordinate ||
-        setOverwriteFromLocation(locationSelection, overwrite),
+      selection: {
+        x: mapSelection("x"),
+        y: mapSelection("y"),
+        z: mapSelection("z"),
+      },
+      overwrite: {
+        x: mapOverwrite("x"),
+        y: mapOverwrite("y"),
+        z: mapOverwrite("z"),
+      },
       offset: setOffsetFromLocation(locationSelection, offset),
     }, this.update);
   };
