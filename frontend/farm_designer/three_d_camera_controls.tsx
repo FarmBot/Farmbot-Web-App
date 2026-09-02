@@ -20,7 +20,13 @@ export const effectiveThreeDPerspective = (
 const perspectiveShortcutTargetIsEditable = (
   target: EventTarget | null,
 ) => target instanceof Element
-  && !!target.closest("input, textarea, select, [contenteditable]");
+  && !!target.closest([
+    "input",
+    "textarea",
+    "select",
+    "[contenteditable]",
+    ".monaco-editor",
+  ].join(", "));
 
 const commandPaletteIsOpen = () =>
   !!document.querySelector(".command-palette-dialog[open]");
@@ -48,6 +54,7 @@ export const ThreeDCameraControls = (props: ThreeDCameraControlsProps) => {
         || event.shiftKey
         || event.repeat
         || perspectiveShortcutTargetIsEditable(event.target)
+        || perspectiveShortcutTargetIsEditable(document.activeElement)
         || commandPaletteIsOpen()) {
         return;
       }

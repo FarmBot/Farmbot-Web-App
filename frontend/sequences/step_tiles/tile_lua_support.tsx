@@ -69,7 +69,8 @@ export class LuaTextArea<Step extends Lua | Assertion>
       <div className={["lua-editor",
         Path.inDesigner() ? "" : "full",
         expanded ? "expanded" : "",
-      ].join(" ")}>
+      ].join(" ")}
+      onKeyDown={event => event.stopPropagation()}>
         {monaco && !this.luaCodeBuffer
           ? <Editor
             language={"lua"}

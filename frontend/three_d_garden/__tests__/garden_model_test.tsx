@@ -3575,7 +3575,7 @@ describe("<GardenModel />", () => {
       expect(loadedTextures).toContain(texture));
   });
 
-  it("adds a scene object from ground clicks", () => {
+  it("adds a scene object from ground clicks", async () => {
     useStateSpy.mockRestore();
     location.pathname = Path.sceneObjects("add");
     const p = fakeProps();
@@ -3587,10 +3587,11 @@ describe("<GardenModel />", () => {
     }]>(() => Promise.resolve());
     p.addPlantProps.dispatch = dispatch;
     const wrapper = createWrapper(p);
-    expect(wrapper.root.findByType(SceneObjects).props.onSelectObject)
-      .toBeUndefined();
-    expect(wrapper.root.findByType(SceneObjects).props.selection)
-      .toBeUndefined();
+    await waitFor(() =>
+      expect(wrapper.root.findAllByType(SceneObjects)).toHaveLength(1));
+    const sceneObjects = wrapper.root.findByType(SceneObjects);
+    expect(sceneObjects.props.onSelectObject).toBeUndefined();
+    expect(sceneObjects.props.selection).toBeUndefined();
     const ground = () => wrapper.root.findAll(node =>
       `${node.props.name}`.startsWith("ground "))[0];
     const stopPropagation = jest.fn();
