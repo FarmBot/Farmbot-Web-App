@@ -564,7 +564,12 @@ export const runLua =
         const toolMounted =
           !!getDeviceAccountSettings(store.getState().resources.index)
             .body.mounted_tool_id;
-        jsToLua(L, toolMounted ? 0 : 1);
+        const value = toolMounted ? 0 : 1;
+        actions.push({
+          type: "write_pin",
+          args: [pin, "digital", value],
+        });
+        jsToLua(L, value);
         return 1;
       }
       actions.push({ type: "read_pin", args: [pin] });

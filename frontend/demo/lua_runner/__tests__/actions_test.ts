@@ -377,6 +377,17 @@ describe("expandActions()", () => {
     ]);
   });
 
+  it("expands an analog pin read", () => {
+    randomSpy.mockReturnValue(1024);
+    expect(expandActions([
+      { type: "read_pin", args: [5] },
+    ], [])).toEqual([
+      { type: "sensor_reading", args: [5, 0, 0, 0] },
+      { type: "write_pin", args: [5, "analog", 1024] },
+    ]);
+    expect(randomSpy).toHaveBeenCalledWith(0, 1024);
+  });
+
   it("expands a relative movement to one target", () => {
     setCurrent({ x: 100, y: 200, z: 0 });
     expect(expandActions([

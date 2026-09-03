@@ -1597,6 +1597,10 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("0");
     expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 63, mode: "digital", value: 0 },
+    });
   });
 
   it("runs read_pin 63: 1", () => {
@@ -1608,6 +1612,10 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("1");
     expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 63, mode: "digital", value: 1 },
+    });
   });
 
   it("runs read_pin 5", () => {

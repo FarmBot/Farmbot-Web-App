@@ -105,6 +105,10 @@ fieldset {
   grid-template-columns: 2fr 1fr 1fr 1fr auto;
 }
 
+.sensor-grid-row {
+  grid-template-columns: 1fr auto 1fr auto;
+}
+
 .criteria-operators-grid {
   gap: 0;
   text-align: center;

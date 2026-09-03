@@ -84,10 +84,11 @@ const cameraViewAxisRange = (
   center: number,
   radius: number,
   axisLength: number,
-) => [
-  clamp(center - radius, 0, axisLength),
-  clamp(center + radius, 0, axisLength),
-];
+) =>
+  [
+    clamp(center - radius, 0, axisLength),
+    clamp(center + radius, 0, axisLength),
+  ];
 
 const randomPointInCameraView = (
   center: XyzNumber,
@@ -347,6 +348,14 @@ export const expandActionsFromPosition = (
             expansionCurrent.x,
             expansionCurrent.y,
             expansionCurrent.z,
+          ],
+        });
+        expanded.push({
+          type: "write_pin",
+          args: [
+            pin,
+            "analog",
+            random(0, 1024),
           ],
         });
         break;
