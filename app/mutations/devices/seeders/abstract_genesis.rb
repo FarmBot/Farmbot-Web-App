@@ -1,14 +1,6 @@
 module Devices
   module Seeders
     class AbstractGenesis < AbstractSeeder
-      def peripherals_vacuum
-        add_peripheral(9, ToolNames::VACUUM)
-      end
-
-      def peripherals_water
-        add_peripheral(8, ToolNames::WATER)
-      end
-
       def sensors_soil_sensor
         add_sensor(59, ToolNames::SOIL_SENSOR, ANALOG)
       end
@@ -67,10 +59,6 @@ module Devices
                       tool: tools_weeder)
       end
 
-      def tool_slots_slot_7; end
-      def tool_slots_slot_8; end
-      def tool_slots_slot_9; end
-
       def tools_seed_bin
         @tools_seed_bin ||=
           add_tool(ToolNames::SEED_BIN)
@@ -80,9 +68,6 @@ module Devices
         @tools_seed_tray ||=
           add_tool(ToolNames::SEED_TRAY)
       end
-
-      def tools_seed_trough_1; end
-      def tools_seed_trough_2; end
 
       def tools_seeder
         @tools_seeder ||=
@@ -98,8 +83,6 @@ module Devices
         @tools_weeder ||=
           add_tool(ToolNames::WEEDER)
       end
-
-      def tools_rotary; end
 
       def sequences_mount_tool
         success = install_sequence_version_by_name(PublicSequenceNames::MOUNT_TOOL)
@@ -141,8 +124,6 @@ module Devices
         end
       end
 
-      def sequences_pick_up_seed; end
-
       def sequences_plant_seed
         s = SequenceSeeds::PLANT_SEED_GENESIS.deep_dup
 
@@ -159,20 +140,8 @@ module Devices
         device.fbos_config.update!(gantry_height: 120)
       end
 
-      def settings_default_map_size_x
-        device.web_app_config.update!(map_size_x: 2_900)
-      end
-
       def settings_default_map_size_y
         device.web_app_config.update!(map_size_y: 1_230)
-      end
-
-      def pin_bindings_button_1
-        add_pin_binding 16, "Emergency Lock", :emergency_lock
-      end
-
-      def pin_bindings_button_2
-        add_pin_binding 22, "Unlock", :emergency_unlock
       end
     end
   end

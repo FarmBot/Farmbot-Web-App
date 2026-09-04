@@ -1,11 +1,7 @@
 module Devices
   module Seeders
-    class GenesisOneSix < AbstractGenesis
-      def settings_firmware
-        device
-          .fbos_config
-          .update!(firmware_hardware: FbosConfig::FARMDUINO_K16)
-      end
+    class GenesisOneSix < GenesisOneFive
+      FIRMWARE_HARDWARE = FbosConfig::FARMDUINO_K16
 
       def peripherals_rotary_tool
         add_peripheral(2, ToolNames::ROTARY_TOOL)
@@ -43,16 +39,6 @@ module Devices
       def tools_rotary
         @tools_rotary ||=
           add_tool(ToolNames::ROTARY_TOOL)
-      end
-
-      def tools_seed_trough_1
-        @tools_seed_trough_1 ||=
-          add_tool(ToolNames::SEED_TROUGH_1)
-      end
-
-      def tools_seed_trough_2
-        @tools_seed_trough_2 ||=
-          add_tool(ToolNames::SEED_TROUGH_2)
       end
 
       def sequences_mow_all_weeds
