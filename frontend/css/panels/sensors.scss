@@ -77,34 +77,44 @@
   }
 }
 
-.sensors-widget {
-  p {
-    margin-top: 0.75rem;
-  }
-  .sensor-reading-display {
-    border-style: solid;
-    border-color: $dark_gray;
-    border-width: 0.1px;
-    height: 2rem;
-    width: 100%;
-    margin-top: 0.5rem;
-    &.moisture-sensor {
-      background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
-    }
-    &.digital {
-      .indicator {
-        text-align: center;
-      }
+.sensor-reading-display {
+  border-style: solid;
+  border-color: $dark_gray;
+  border-width: 0.1px;
+  height: 2rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  line-height: 1.75rem;
+  &.moisture-sensor {
+    background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
+    span {
+      padding: 1px;
+      border-radius: 2px;
+      background: $dark_gray;
+      font-size: 1.2rem;
     }
     .indicator {
+      border: 1px solid $off_white;
+    }
+  }
+  &.tool-verification-sensor {
+    span {
+      font-size: 1.1rem;
+    }
+  }
+  &.digital {
+    .indicator {
+      text-align: center;
+    }
+  }
+  .indicator {
+    position: relative;
+    background: $dark_gray;
+    height: 100%;
+    span {
       position: relative;
-      background: $dark_gray;
-      height: 2rem;
-      span {
-        position: relative;
-        top: -0.1rem;
-        font-size: 1.3rem;
-      }
+      top: -0.1rem;
+      color: $off_white;
     }
   }
 }

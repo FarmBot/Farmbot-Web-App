@@ -72,7 +72,7 @@ import {
 import {
   SECTION_CLIPPING_EXEMPT, SECTION_FAR_CLIPPING_EXEMPT,
 } from "../section";
-import { BotPosition } from "../../devices/interfaces";
+import { BotPosition, UserEnv } from "../../devices/interfaces";
 import { clickWasDragged } from "../click_event";
 
 const soil = (
@@ -444,6 +444,7 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
   const soilTexture = React.useMemo(
     () => <ImageTexture
       images={bedProps.images}
+      env={bedProps.env}
       config={bedProps.config}
       addPlantProps={bedProps.addPlantProps}
       sensors={bedProps.sensors}
@@ -458,6 +459,7 @@ const DetailedSoilLayer = (props: DetailedSoilLayerProps) => {
     [
       bedProps.images,
       bedProps.config,
+      bedProps.env,
       bedProps.addPlantProps,
       bedProps.sensors,
       bedProps.sensorReadings,
@@ -510,6 +512,7 @@ export interface AddPlantProps {
 
 export interface BedProps {
   config: Config;
+  env: UserEnv | undefined;
   activeFocus: string;
   mapPoints: TaggedGenericPointer[];
   plants: ThreeDGardenPlant[];
@@ -612,11 +615,14 @@ const bedAlignmentPropsEqual = (
   && prev.showPoints === next.showPoints
   && prev.showWeeds === next.showWeeds;
 
+// eslint-disable-next-line complexity
 const bedPropsEqual = (prev: Readonly<BedProps>, next: Readonly<BedProps>) =>
   prev.activeFocus === next.activeFocus
   && bedAlignmentPropsEqual(prev, next)
   && prev.addPlantProps === next.addPlantProps
   && prev.getZ === next.getZ
+  && prev.env?.["CAMERA_CALIBRATION_camera_z"]
+  === next.env?.["CAMERA_CALIBRATION_camera_z"]
   && prev.images === next.images
   && prev.soilSurfaceGeometry === next.soilSurfaceGeometry
   && prev.showMoistureMap === next.showMoistureMap

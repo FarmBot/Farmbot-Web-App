@@ -116,6 +116,10 @@ import {
   ThreeDLocationSelection, ThreeDObjectHoverHandler, ThreeDObjectSelection,
   ThreeDObjectSelectionHandler,
 } from "./selection_types";
+import {
+  completeMapSelection, locationSelectionActive,
+} from "./location_selection";
+import { resolveSelectedObject } from "./selection/resolve";
 import { setPanelOpen3D } from "./panel_actions";
 import type { PanelCameraStore } from "./panel_camera";
 import type {
@@ -1019,6 +1023,7 @@ function getGardenLayerVisibility(
 
 interface StaticGardenLayersProps {
   config: Config;
+  env: UserEnv | undefined;
   markStep: ThreeDLoadProgress["markStep"];
   environmentReveal: boolean;
   bedReveal: boolean;
@@ -1208,6 +1213,7 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         distance={config.bedHeight + config.bedZOffset}>
         <Bed
           config={config}
+          env={props.env}
           soilSurfaceGeometry={soilSurfaceGeometry}
           getZ={getZ}
           images={images}
@@ -1767,7 +1773,8 @@ const GridHoverTarget = (props: GridHoverTargetProps) => {
     event.stopPropagation?.();
     const x = round(position.x);
     const y = round(position.y);
-    if (onAreaSelect({ x, y }, event.shiftKey || areaSelectionMode)) {
+    if (!locationSelectionActive()
+      && onAreaSelect({ x, y }, event.shiftKey || areaSelectionMode)) {
       return;
     }
     onLocationSelect({
@@ -1951,6 +1958,9 @@ const viewPrismKeyboardTargetIsEditable = (
 
 const commandPaletteIsOpen = () =>
   !!document.querySelector(".command-palette-dialog[open]");
+
+const fullscreenPhotoViewerIsOpen = () =>
+  !!document.querySelector("#fullscreen-flipper");
 
 export const useGardenCameraController = (
   props: GardenCameraControllerProps,
@@ -2280,7 +2290,8 @@ export const useGardenCameraController = (
         || event.shiftKey
         || event.repeat
         || viewPrismKeyboardTargetIsEditable(event.target)
-        || commandPaletteIsOpen()) {
+        || commandPaletteIsOpen()
+        || fullscreenPhotoViewerIsOpen()) {
         return;
       }
       event.preventDefault();
@@ -3436,9 +3447,34 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     routeSelection,
     selectionLookup,
   ]);
+  const mapSelectionGetZ = React.useRef<(x: number, y: number) => number>(
+    () => -config.soilHeight);
   const onSelectObject = React.useCallback((
     selection: ThreeDObjectSelection,
+    // eslint-disable-next-line complexity
   ) => {
+    if (locationSelectionActive()) {
+      const object = resolveSelectedObject({
+        config,
+        configPosition: props.configPosition,
+        currentBotLocation,
+        deviceAccount: props.deviceAccount,
+        getZ: mapSelectionGetZ.current,
+        plants,
+        points: mapPoints,
+        sceneObjects: shadowSceneObjects,
+        toolSlots,
+        weeds,
+      }, selection);
+      if (object && completeMapSelection({
+        selection,
+        coordinate: object.locationCoordinate,
+      })) {
+        setLocationSelection(undefined);
+        setPopupSelection(undefined);
+        return true;
+      }
+    }
     if (promoPopupDisabled(props.promo, selection)) {
       setLocationSelection(undefined);
       setPopupSelection(undefined);
@@ -3473,19 +3509,36 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     return true;
   }, [
     closePopup,
+    config,
+    currentBotLocation,
     dispatch,
+    mapPoints,
     multiSelectModifier,
     navigate,
     objectSelectionMode,
     openMultiSelectPanel,
     props.promo,
+    props.configPosition,
+    props.deviceAccount,
     props.route.editingSceneObject,
+    plants,
     selectionLookup,
     selectionPointType,
+    shadowSceneObjects,
+    toolSlots,
+    weeds,
   ]);
   const onSelectLocation = React.useCallback((
     selection: ThreeDLocationSelection,
   ) => {
+    if (completeMapSelection({
+      selection,
+      coordinate: { x: selection.x, y: selection.y, z: selection.z },
+    })) {
+      setPopupSelection(undefined);
+      setLocationSelection(undefined);
+      return;
+    }
     const activeSelection = activeLocationSelectionRef.current;
     if (activeSelection?.x == selection.x &&
       activeSelection.y == selection.y &&
@@ -3886,6 +3939,9 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   const getZ = React.useMemo(
     () => getZFunc(soilSurface.triangles, -config.soilHeight),
     [soilSurface.triangles, config.soilHeight]);
+  React.useLayoutEffect(() => {
+    mapSelectionGetZ.current = getZ;
+  }, [getZ]);
   const addingSceneObject = props.route.addingSceneObject;
   const editingSceneObject = props.route.editingSceneObject;
   const sceneObjectPlacement = useSceneObjectPlacement({
@@ -4201,6 +4257,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           modelRoot={modelRoot} />
         <StaticGardenLayers
           config={config}
+          env={props.env}
           sceneObjects={shadowSceneObjects}
           markStep={markLoadStep}
           environmentReveal={environmentReveal}

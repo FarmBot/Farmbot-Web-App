@@ -529,7 +529,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const arg = luaToJs(L, 1) as string;
-      actions.push({ type: "_move", args: [arg] });
+      actions.push({ type: "_move", args: [arg], variables });
       return 0;
     });
     lua.lua_setfield(L, envIndex, to_luastring("_move"));
@@ -564,7 +564,12 @@ export const runLua =
         const toolMounted =
           !!getDeviceAccountSettings(store.getState().resources.index)
             .body.mounted_tool_id;
-        jsToLua(L, toolMounted ? 0 : 1);
+        const value = toolMounted ? 0 : 1;
+        actions.push({
+          type: "write_pin",
+          args: [pin, "digital", value],
+        });
+        jsToLua(L, value);
         return 1;
       }
       actions.push({ type: "read_pin", args: [pin] });

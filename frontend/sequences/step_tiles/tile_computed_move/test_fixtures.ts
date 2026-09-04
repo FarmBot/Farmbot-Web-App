@@ -17,6 +17,7 @@ export const fakeNumericMoveStepState: ComputedMoveState = ({
   safeZ: true,
   axisGrouping: undefined,
   axisRoute: undefined,
+  mapSelectionActive: false,
 });
 
 export const fakeNumericMoveStepCeleryScript: Move = {
@@ -148,6 +149,7 @@ export const fakeLuaMoveStepState: ComputedMoveState = ({
   safeZ: true,
   axisGrouping: undefined,
   axisRoute: undefined,
+  mapSelectionActive: false,
 });
 
 export const fakeLuaMoveStepCeleryScript: Move = {

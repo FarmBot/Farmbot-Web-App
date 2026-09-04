@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-changed=$(git diff --name-only "$(git merge-base staging HEAD)" | tr '\n' ',' | sed 's/,$//') || changed=""
+merge_base=$(git merge-base origin/staging HEAD 2>/dev/null) || merge_base=""
+changed=""
+if [ -n "$merge_base" ]; then
+  changed=$(git diff --name-only "$merge_base" -- | tr '\n' ',' | sed 's/,$//')
+fi
 
 sudo docker compose run --rm \
   -e CHANGED_FILES="$changed" \

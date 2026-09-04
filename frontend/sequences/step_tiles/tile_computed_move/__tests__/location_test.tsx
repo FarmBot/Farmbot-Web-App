@@ -4,6 +4,7 @@ import {
   setSelectionFromLocation,
   setOverwriteFromLocation,
   setOffsetFromLocation,
+  mapSelectionToLocation,
 } from "../location";
 import {
   LocationSelectionProps, LocationNode, LocSelection, AxisSelection,
@@ -12,12 +13,14 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import {
-  fakeSequence, fakeToolSlot, fakeTool,
+  fakeSequence, fakeToolSlot, fakeTool, fakePlant, fakePoint, fakeWeed,
 } from "../../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../../ui";
 import { Move, VariableDeclaration } from "farmbot";
 import { fakeVariableNameSet } from "../../../../__test_support__/fake_variables";
 import { COORDINATE_DDI } from "../../../locals_list/variable_form_list";
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 describe("<LocationSelection />", () => {
   const fakeProps = (): LocationSelectionProps => ({
@@ -27,6 +30,9 @@ describe("<LocationSelection />", () => {
     onChange: jest.fn(),
     sequence: fakeSequence(),
     sequenceUuid: "uuid",
+    threeDGarden: true,
+    mapSelectionActive: false,
+    selectInMap: jest.fn(),
   });
 
   it.each<[
@@ -63,10 +69,36 @@ describe("<LocationSelection />", () => {
   ])("changes location: %s", (ddi, locationNode, locationSelection) => {
     const p = fakeProps();
     const wrapper = LocationSelection(p);
-    wrapper.props.onChange(ddi);
+    wrapper.props.target.props.onChange(ddi);
     expect(p.onChange).toHaveBeenCalledWith({
       locationNode, locationSelection,
     });
+  });
+
+  it("starts map selection", () => {
+    const p = fakeProps();
+    const wrapper = LocationSelection(p);
+    wrapper.props.target.props.onChange({
+      headingId: "Map", label: "Choose in map", value: "map",
+    });
+    expect(p.selectInMap).toHaveBeenCalled();
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
+
+  it("shows the map selection prompt", () => {
+    const p = fakeProps();
+    p.mapSelectionActive = true;
+    const { container } = render(<LocationSelection {...p} />);
+    expect(screen.getByText("Choose in map")).toBeTruthy();
+    expect(screen.getByText("Choose a location in the map")).toBeTruthy();
+    expect(container.querySelector(".map-selection-popover")).toBeTruthy();
+    fireEvent.keyDown(document.body, { key: "Enter" });
+    expect(p.selectInMap).not.toHaveBeenCalled();
+    const eventAllowed = fireEvent.keyDown(document.body, { key: "Escape" });
+    expect(eventAllowed).toBeFalsy();
+    expect(p.selectInMap).toHaveBeenCalledTimes(1);
+    fireEvent.click(container.querySelector(".fa-times") as Element);
+    expect(p.selectInMap).toHaveBeenCalledTimes(2);
   });
 
   it.each<[
@@ -105,7 +137,7 @@ describe("<LocationSelection />", () => {
     p.locationNode = locationNode;
     p.locationSelection = locationSelection;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.selectedItem).toEqual(ddi);
+    expect(wrapper.props.target.props.selectedItem).toEqual(ddi);
   });
 
   it("shows selection: variable", () => {
@@ -116,7 +148,7 @@ describe("<LocationSelection />", () => {
     p.resources = buildResourceIndex([]).index;
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.selectedItem).toEqual({
+    expect(wrapper.props.target.props.selectedItem).toEqual({
       label: "variable - fake variable info label", value: "variable",
     });
   });
@@ -139,7 +171,7 @@ describe("<LocationSelection />", () => {
     variables["other"] = undefined;
     p.resources.sequenceMetas["uuid"] = variables;
     const wrapper = LocationSelection(p);
-    expect(wrapper.props.list).toEqual([
+    expect(wrapper.props.target.props.list).toEqual([
       {
         headingId: "Coordinate",
         label: "Custom coordinates",
@@ -149,6 +181,11 @@ describe("<LocationSelection />", () => {
         headingId: "Offset",
         label: "Offset from current location",
         value: "",
+      },
+      {
+        headingId: "Map",
+        label: "Choose in map",
+        value: "map",
       },
       {
         headingId: "Identifier",
@@ -191,6 +228,80 @@ describe("<LocationSelection />", () => {
         heading: true,
       },
     ]);
+  });
+
+  it("hides map selection when the 3D map is disabled", () => {
+    const p = fakeProps();
+    p.threeDGarden = false;
+    const wrapper = LocationSelection(p);
+    expect(wrapper.props.target.props.list).not.toContainEqual({
+      headingId: "Map", label: "Choose in map", value: "map",
+    });
+  });
+});
+
+describe("mapSelectionToLocation()", () => {
+  it.each([
+    ["plant", "Plant"],
+    ["point", "GenericPointer"],
+    ["weed", "Weed"],
+  ] as const)("maps a %s", (kind, pointerType) => {
+    const pointByKind = {
+      plant: fakePlant(),
+      point: fakePoint(),
+      weed: fakeWeed(),
+    };
+    const point = pointByKind[kind];
+    point.body.id = 123;
+    expect(mapSelectionToLocation({
+      selection: { kind, id: 123 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, buildResourceIndex([point]).index)).toEqual({
+      locationNode: {
+        kind: "point",
+        args: { pointer_type: pointerType, pointer_id: 123 },
+      },
+      locationSelection: LocSelection.point,
+    });
+  });
+
+  it("maps an occupied slot to its tool", () => {
+    const slot = fakeToolSlot();
+    slot.body.id = 123;
+    slot.body.tool_id = 456;
+    const resources = buildResourceIndex([slot]).index;
+    expect(mapSelectionToLocation({
+      selection: { kind: "slot", id: 123 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, resources)).toEqual({
+      locationNode: { kind: "tool", args: { tool_id: 456 } },
+      locationSelection: LocSelection.tool,
+    });
+  });
+
+  it("maps an empty slot to its coordinates", () => {
+    const slot = fakeToolSlot();
+    slot.body.id = 123;
+    const resources = buildResourceIndex([slot]).index;
+    expect(mapSelectionToLocation({
+      selection: { kind: "slot", id: 123 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, resources)).toEqual({
+      locationNode: undefined,
+      locationSelection: LocSelection.custom,
+      coordinate: { x: 1, y: 2, z: 3 },
+    });
+  });
+
+  it("maps other selections to coordinates", () => {
+    expect(mapSelectionToLocation({
+      selection: { kind: "sceneObject", id: 123 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, buildResourceIndex().index)).toEqual({
+      locationNode: undefined,
+      locationSelection: LocSelection.custom,
+      coordinate: { x: 1, y: 2, z: 3 },
+    });
   });
 });
 

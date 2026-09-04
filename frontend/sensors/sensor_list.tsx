@@ -3,7 +3,7 @@ import { readPin } from "../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../util";
 import { Row } from "../ui";
-import { isNumber } from "lodash";
+import { isNumber, some } from "lodash";
 import { ALLOWED_PIN_MODES } from "farmbot";
 import { t } from "../i18next_wrapper";
 
@@ -35,9 +35,10 @@ const calcValueStyle = ({ value, mode }: CalcStyleProps) => ({
 
 const SensorReadingDisplay =
   ({ label, value, mode }: SensorReadingDisplayProps) => {
-    const moistureSensor = label.toLowerCase().includes("moisture")
-      ? "moisture-sensor"
-      : "";
+    const moistureSensor =
+      some(["soil", "moisture"].map(l => label.toLowerCase().includes(l)))
+        ? "moisture-sensor"
+        : "";
     const toolSensor = label.toLowerCase().includes("verification")
       ? "tool-verification-sensor"
       : "";
@@ -65,7 +66,7 @@ export const SensorList = (props: SensorListProps) =>
       const { label, mode, pin } = sensor.body;
       const pinNumber = (isNumber(pin) && isFinite(pin)) ? pin : -1;
       const value = (props.pins[pinNumber] || { value: undefined }).value;
-      return <Row key={sensor.uuid} className="grid-exp-1">
+      return <Row key={sensor.uuid} className={"sensor-grid-row"}>
         <label>{label}</label>
         <p>{pinNumber}</p>
         <SensorReadingDisplay label={label} value={value} mode={mode} />

@@ -19,6 +19,7 @@ export interface ImageFlipperProps {
   target?: Record<"x" | "y", number> | undefined;
   flipActionOverride?(nextIndex: number): void;
   autoFocus?: boolean;
+  stopKeyDownPropagation?: boolean;
 }
 
 export interface ImageFlipperState {
@@ -80,7 +81,6 @@ export interface PhotoButtonsProps {
   canTransform: boolean;
   imageUrl: string | undefined;
   image: TaggedImage | undefined;
-  size: Record<"width" | "height", number | undefined>;
   dispatch: Function;
   flags: ImageShowFlags | undefined;
 }
@@ -100,7 +100,6 @@ export interface ImageFilterProps {
 }
 
 export interface ImageShowProps extends ImageFilterProps {
-  size: Record<"height" | "width", number | undefined>;
 }
 
 export interface FlagDisplayRowProps {
@@ -108,11 +107,16 @@ export interface FlagDisplayRowProps {
   labelOk: string;
   labelNo: string;
   title?: string;
+  overrideColor?: string;
 }
 
 type FlagKey = "layerOn" | "inRange" | "notHidden" | "zMatch" | "sizeMatch"
-  | "typeShown";
-export type ImageShowFlags = Record<FlagKey, boolean>;
+  | "typeShown" | "alwaysShow";
+export interface FlagValue {
+  value: boolean;
+  reason: string;
+}
+export type ImageShowFlags = Record<FlagKey, FlagValue>;
 
 export interface GetImageShownStatusFlagsProps {
   image: TaggedImage | undefined;

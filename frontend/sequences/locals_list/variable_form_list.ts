@@ -4,6 +4,8 @@ import {
   selectAllActivePoints,
   maybeFindToolById,
   selectAllPointGroups,
+  findPointerByTypeAndId,
+  maybeFindToolSlotById,
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
@@ -18,6 +20,8 @@ import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { VariableType } from "./locals_list_support";
+import type { MapSelectionResult } from
+  "../../three_d_garden/location_selection";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -197,6 +201,42 @@ export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   value: vector ? JSON.stringify(vector) : "",
   headingId: "Coordinate"
 });
+
+export const CHOOSE_IN_MAP_DDI = (): DropDownItem => ({
+  headingId: "Map",
+  label: t("Choose in map"),
+  value: "map",
+});
+
+export const mapSelectionToDDI = (
+  result: MapSelectionResult,
+  resources: ResourceIndex,
+): DropDownItem => {
+  switch (result.selection.kind) {
+    case "plant":
+      return formatPoint(findPointerByTypeAndId(
+        resources, "Plant", result.selection.id));
+    case "point":
+      return formatPoint(findPointerByTypeAndId(
+        resources, "GenericPointer", result.selection.id));
+    case "weed":
+      return formatPoint(findPointerByTypeAndId(
+        resources, "Weed", result.selection.id));
+    case "slot": {
+      const slot = maybeFindToolSlotById(resources, result.selection.id);
+      const tool = maybeFindToolById(resources, slot?.body.tool_id);
+      if (slot && tool) { return formatTool(tool, slot); }
+      if (slot?.body.tool_id) {
+        return {
+          label: t("Tool"),
+          value: "" + slot.body.tool_id,
+          headingId: "Tool",
+        };
+      }
+    }
+  }
+  return COORDINATE_DDI(result.coordinate);
+};
 
 const NUMBER_DDI = (): DropDownItem =>
   ({ label: t("Custom number"), value: 0, headingId: "Numeric" });

@@ -343,7 +343,7 @@ export const RawCropInfo = (props: CropInfoProps) => {
         || event.metaKey
         || event.altKey
         || enteringText
-        || event.key.toLowerCase() != "g") {
+        || event.key?.toLowerCase() != "g") {
         return;
       }
       event.preventDefault();

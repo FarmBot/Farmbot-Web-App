@@ -227,7 +227,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
       || event.metaKey
       || event.altKey
       || enteringText
-      || event.key.toLowerCase() != "g") {
+      || event.key?.toLowerCase() != "g") {
       return;
     }
     event.preventDefault();

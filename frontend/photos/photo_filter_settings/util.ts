@@ -9,6 +9,7 @@ import { TaggedImage } from "farmbot";
 import { last } from "lodash";
 import { UserEnv } from "../../devices/interfaces";
 import {
+  FlagValue,
   GetImageShownStatusFlagsProps, ImageShowFlags,
 } from "../images/interfaces";
 import {
@@ -48,26 +49,47 @@ export const calculateImageAgeInfo = (latestImages: TaggedImage[]) => {
   return { newestDate, toOldest };
 };
 
+const format = (input: string | undefined): string =>
+  JSON.stringify(input || "none").replace(/"/g, "");
+
 export const imageInRange =
   (image: TaggedImage | undefined,
     imageFilterBegin: string | undefined,
     imageFilterEnd: string | undefined,
-  ) => {
-    if (!image) { return false; }
+  ): FlagValue => {
+    if (!image) { return { value: false, reason: "no image" }; }
     const createdAt = moment(image.body.created_at);
     const afterBegin = !imageFilterBegin || createdAt.isAfter(imageFilterBegin);
     const beforeEnd = !imageFilterEnd || createdAt.isBefore(imageFilterEnd);
-    return afterBegin && beforeEnd;
+    return {
+      value: afterBegin && beforeEnd,
+      reason: [
+        createdAt.format(),
+        `begin: ${format(imageFilterBegin)}`,
+        `end: ${format(imageFilterEnd)}`,
+        `afterBegin: ${afterBegin}`,
+        `beforeEnd: ${beforeEnd}`,
+      ].join("\n"),
+    };
   };
 
-export const imageIsHidden = (
+export const notHidden = (
   hiddenImages: number[],
   shownImages: number[],
   hideUnShownImages: boolean,
   imageId: number | undefined,
-) =>
-  imageId && (hiddenImages.includes(imageId)
+): FlagValue => {
+  const value = imageId && (hiddenImages.includes(imageId)
     || (hideUnShownImages && !shownImages.includes(imageId)));
+  return {
+    value: !value,
+    reason: [
+      imageId,
+      `hidden: ${JSON.stringify(hiddenImages)}`,
+      `shown: ${JSON.stringify(shownImages)}`,
+    ].join("\n"),
+  };
+};
 
 export const getCalibratedImageCenter = (env: UserEnv) => ({
   x: env["CAMERA_CALIBRATION_center_pixel_location_x"],
@@ -105,15 +127,77 @@ type ImageTypeVisibility = Pick<DesignerState,
   | "showDetectionImages" | "showHeightImages">;
 
 export const filterImagesByType = (designer: ImageTypeVisibility) =>
-  (img: TaggedImage | undefined) => {
+  (img: TaggedImage | undefined): FlagValue => {
     const {
       showPhotoImages, showCalibrationImages, showDetectionImages, showHeightImages,
     } = designer;
-    return (showPhotoImages || !(getImageType(img) == ImageType.none))
+    const value = (showPhotoImages || !(getImageType(img) == ImageType.none))
       && (showCalibrationImages || !(getImageType(img) == ImageType.calibration))
       && (showDetectionImages || !(getImageType(img) == ImageType.detection))
       && (showHeightImages || !(getImageType(img) == ImageType.height));
+    const imgTypeRaw = getImageType(img);
+    const imgType = imgTypeRaw == ImageType.none ? "photo" : imgTypeRaw;
+    return {
+      value: value,
+      reason: [
+        `${img?.body.meta.name}: ${imgType}`,
+        `showPhotoImages: ${showPhotoImages}`,
+        `showCalibrationImages: ${showCalibrationImages}`,
+        `showDetectionImages: ${showDetectionImages}`,
+        `showHeightImages: ${showHeightImages}`,
+      ].join("\n"),
+    };
   };
+
+const layerOn = (getConfigValue: GetWebAppConfigValue): FlagValue => {
+  const value = !!getConfigValue(BooleanSetting.show_images);
+  return {
+    value: value,
+    reason: `show_images: ${value}`,
+  };
+};
+
+const zMatch = (image: TaggedImage | undefined, env: UserEnv): FlagValue => {
+  const value = cameraZCheck(image?.body.meta.z, env["CAMERA_CALIBRATION_camera_z"]);
+  return {
+    value: value,
+    reason: [
+      `image z: ${image?.body.meta.z}`,
+      `calibration z: ${format(env["CAMERA_CALIBRATION_camera_z"])}`,
+    ].join("\n"),
+  };
+};
+
+const sizeMatch = (
+  size: Record<"width" | "height", number | undefined>,
+  env: UserEnv,
+): FlagValue => {
+  const calibCenter = getCalibratedImageCenter(env);
+  const x = parseInt("" + calibCenter.x);
+  const y = parseInt("" + calibCenter.y);
+  const calibSize = {
+    width: x ? x * 2 : undefined,
+    height: y ? y * 2 : undefined,
+  };
+  const value = imageSizeCheck(size, calibCenter);
+  return {
+    value: value,
+    reason: [
+      `image size: ${JSON.stringify(size)}`,
+      `calibration size: ${JSON.stringify(calibSize)}`,
+    ].join("\n"),
+  };
+};
+
+const alwaysShow = (
+  designer: DesignerState,
+): FlagValue => {
+  const value = designer.alwaysHighlightImage;
+  return {
+    value: value,
+    reason: `alwaysHighlightImage: ${value}`,
+  };
+};
 
 export const getImageShownStatusFlags =
   (props: GetImageShownStatusFlagsProps): ImageShowFlags => {
@@ -121,15 +205,14 @@ export const getImageShownStatusFlags =
     const { hiddenImages } = designer;
     const getFilterValue = parseFilterSetting(getConfigValue);
     return {
-      layerOn: !!getConfigValue(BooleanSetting.show_images),
-      inRange: !!imageInRange(image,
+      layerOn: layerOn(getConfigValue),
+      alwaysShow: alwaysShow(designer),
+      inRange: imageInRange(image,
         getFilterValue(StringSetting.photo_filter_begin),
         getFilterValue(StringSetting.photo_filter_end)),
-      notHidden: !imageIsHidden(hiddenImages, [], false, image?.body.id),
-      zMatch: cameraZCheck(image?.body.meta.z,
-        env["CAMERA_CALIBRATION_camera_z"]),
-      sizeMatch: imageSizeCheck(size,
-        getCalibratedImageCenter(env)),
+      notHidden: notHidden(hiddenImages, [], false, image?.body.id),
+      zMatch: zMatch(image, env),
+      sizeMatch: sizeMatch(size, env),
       typeShown: filterImagesByType(designer)(image),
     };
   };

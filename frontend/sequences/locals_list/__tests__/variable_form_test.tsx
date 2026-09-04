@@ -5,9 +5,9 @@ import {
   VariableForm, NumericInput, NumericInputProps, TextInput, TextInputProps,
 } from "../variable_form";
 import {
-  fakeSequence,
+  fakeSequence, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
-import { render, fireEvent } from "@testing-library/react";
+import { act, render, fireEvent } from "@testing-library/react";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -16,7 +16,9 @@ import {
   VariableFormProps, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
 import { cloneDeep, difference } from "lodash";
-import { variableFormList } from "../variable_form_list";
+import {
+  CHOOSE_IN_MAP_DDI, variableFormList,
+} from "../variable_form_list";
 import { convertDDItoVariable } from "../handle_select";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
@@ -26,6 +28,10 @@ import * as ui from "../../../ui";
 import { FBSelectProps } from "../../../ui/new_fb_select";
 import { BIProps } from "../../../ui/blurable_input";
 import { DropDownItem } from "../../../ui/fb_select";
+import {
+  completeMapSelection, locationSelectionActive,
+} from "../../../three_d_garden/location_selection";
+import { Path } from "../../../internal_urls";
 
 let mockSelectChangeArg: unknown;
 let mockKeyCallback = { key: "", buffer: "" };
@@ -39,7 +45,8 @@ beforeEach(() => {
       className={"fb-select-mock"}
       data-list={JSON.stringify(props.list)}
       data-selected-item={JSON.stringify(props.selectedItem)}
-      onClick={() => props.onChange(mockSelectChangeArg as DropDownItem)} />) as never);
+      onClick={() =>
+        props.onChange(mockSelectChangeArg as DropDownItem)} />) as never);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
     .mockImplementation(((props: BIProps) => {
       const [value, setValue] = React.useState(String(props.value));
@@ -217,6 +224,72 @@ describe("<VariableForm />", () => {
       label: "Custom coordinates",
       value: ""
     });
+  });
+
+  it("selects a location in the map", () => {
+    location.pathname = Path.mock(Path.designerSequences("1"));
+    const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    p.resources = buildResourceIndex([config]).index;
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toContainEqual(CHOOSE_IN_MAP_DDI());
+    mockSelectChangeArg = CHOOSE_IN_MAP_DDI();
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    expect(locationSelectionActive()).toBeTruthy();
+    expect(container.textContent).toContain("Choose a location in the map");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
+    expect(locationSelectionActive()).toBeFalsy();
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(locationSelectionActive()).toBeFalsy();
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    act(() => {
+      completeMapSelection({
+        selection: { kind: "location", x: 10, y: 20, z: 30 },
+        coordinate: { x: 10, y: 20, z: 30 },
+      });
+    });
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "coordinate",
+          args: { x: 10, y: 20, z: 30 },
+        },
+      },
+    }, "label");
+  });
+
+  it("cancels map selection when unmounted", () => {
+    location.pathname = Path.mock(Path.designerSequences("1"));
+    const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    p.resources = buildResourceIndex([config]).index;
+    const { container, unmount } = render(<VariableForm {...p} />);
+    mockSelectChangeArg = CHOOSE_IN_MAP_DDI();
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    expect(locationSelectionActive()).toBeTruthy();
+    unmount();
+    expect(locationSelectionActive()).toBeFalsy();
+  });
+
+  it("hides map selection when the 3D map is disabled", () => {
+    location.pathname = Path.mock(Path.designerSequences("1"));
+    const { container } = render(<VariableForm {...fakeProps()} />);
+    expect(listAt(container)).not.toContainEqual(CHOOSE_IN_MAP_DDI());
+  });
+
+  it("hides map selection outside of the designer", () => {
+    location.pathname = Path.mock(Path.sequencePage("1"));
+    const p = fakeProps();
+    const config = fakeWebAppConfig();
+    config.body.three_d_garden = true;
+    p.resources = buildResourceIndex([config]).index;
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).not.toContainEqual(CHOOSE_IN_MAP_DDI());
   });
 
   it("shows coordinate input boxes", () => {

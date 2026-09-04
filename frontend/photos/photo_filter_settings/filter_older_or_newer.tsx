@@ -10,7 +10,7 @@ export const FilterOlderOrNewer = ({ dispatch, image, flags }: ImageFilterProps)
     <div className={"buttons"}>
       <button
         className={"fb-button yellow"}
-        disabled={!(flags.zMatch && flags.notHidden)}
+        disabled={!(flags.zMatch.value && flags.notHidden.value)}
         title={t("older")}
         onClick={() => image && dispatch(setWebAppConfigValues({
           photo_filter_begin: "", photo_filter_end: filterTime("after")(image),
@@ -20,7 +20,7 @@ export const FilterOlderOrNewer = ({ dispatch, image, flags }: ImageFilterProps)
       </button>
       <button
         className={"fb-button yellow"}
-        disabled={!(flags.zMatch && flags.notHidden)}
+        disabled={!(flags.zMatch.value && flags.notHidden.value)}
         title={t("newer")}
         onClick={() => image && dispatch(setWebAppConfigValues({
           photo_filter_begin: filterTime("before")(image), photo_filter_end: "",

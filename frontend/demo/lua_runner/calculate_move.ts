@@ -96,6 +96,19 @@ export const calculateMove = (
               pos[item.args.axis] = toolSlotBody[item.args.axis];
             }
             break;
+          case "point":
+            const point = maybeFindPointById(
+              store.getState().resources.index,
+              item.args.axis_operand.args.pointer_id);
+            if (!point) { break; }
+            if (item.args.axis == "all") {
+              pos.x = point.body.x;
+              pos.y = point.body.y;
+              pos.z = point.body.z;
+            } else {
+              pos[item.args.axis] = point.body[item.args.axis];
+            }
+            break;
           case "identifier":
             const location = (variables || []).filter(v => {
               const identifier = item.args.axis_operand as Identifier;

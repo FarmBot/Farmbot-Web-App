@@ -21,12 +21,17 @@ export const fakeCameraCalibrationDataFull = (): CameraCalibrationData => ({
 });
 
 export const fakeImageShowFlags = (): ImageShowFlags => ({
-  layerOn: true,
-  inRange: true,
-  notHidden: true,
-  zMatch: true,
-  sizeMatch: true,
-  typeShown: true,
+  layerOn: { value: true, reason: "show_images: true" },
+  alwaysShow: { value: false, reason: "alwaysHighlightImage: false" },
+  inRange: { value: true, reason: "no image" },
+  notHidden: { value: true, reason: "\nhidden: []\nshown: []" },
+  zMatch: { value: true, reason: "image z: undefined\ncalibration z: none" },
+  sizeMatch: { value: true, reason: "image size: {}\ncalibration size: {}" },
+  typeShown: {
+    value: true, reason: "undefined: photo\nshowPhotoImages: true"
+      + "\nshowCalibrationImages: true\nshowDetectionImages: true\n"
+      + "showHeightImages: true"
+  },
 });
 
 export const fakePhotosPanelState = (): PhotosPanelState => ({

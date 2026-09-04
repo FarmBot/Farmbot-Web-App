@@ -1,7 +1,7 @@
 import React from "react";
 import * as reactSpring from "@react-spring/three";
 import * as THREE from "three";
-import { render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import {
@@ -41,7 +41,6 @@ describe("<CameraView />", () => {
 
   it("renders capture animation", () => {
     const p = fakeProps();
-    p.config.cameraView = true;
     p.config.lastImageCapture = 123;
     const { container } = render(<CameraView {...p} />);
     expect(container).toContainHTML("camera-view");
@@ -49,7 +48,6 @@ describe("<CameraView />", () => {
 
   it("renders camera operation animations", () => {
     const p = fakeProps();
-    p.config.cameraView = true;
     p.config.cameraOperation = "calibration";
     p.config.lastCameraOperation = 123;
     const wrapper = createRenderer(<CameraView {...p} />);
@@ -75,12 +73,12 @@ describe("<CameraView />", () => {
     const start = jest.fn((config: { to(callback: typeof next): Promise<void> }) =>
       config.to(next));
     jest.spyOn(reactSpring, "useSpring")
-      .mockImplementationOnce(() => [
-        { opacity: 0.25 },
-        { start },
-      ] as never);
+      .mockImplementationOnce(() =>
+        [
+          { opacity: 0.25 },
+          { start },
+        ] as never);
     const p = fakeProps();
-    p.config.cameraView = true;
     p.config.lastImageCapture = 123;
 
     render(<CameraView {...p} />);
@@ -91,9 +89,58 @@ describe("<CameraView />", () => {
       immediate: true,
     });
     expect(next).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      opacity: 0.25,
+      opacity: 0,
       delay: 0,
     }));
+  });
+
+  it("hides an operation after its display window", () => {
+    jest.useFakeTimers();
+    const start = jest.fn();
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(() => [
+        { opacity: 0.25 },
+        { start },
+      ] as never);
+    const p = fakeProps();
+    p.config.cameraOperation = "weeds";
+    p.config.lastCameraOperation = 123;
+
+    render(<CameraView {...p} />);
+    act(() => {
+      jest.advanceTimersByTime(p.config.cameraOperationDurationMs);
+    });
+
+    expect(start).toHaveBeenCalledWith({ opacity: 0, immediate: true });
+    springSpy.mockRestore();
+    jest.useRealTimers();
+  });
+
+  it("updates opacity when the camera view is toggled off", () => {
+    jest.useFakeTimers();
+    const start = jest.fn();
+    const springSpy = jest.spyOn(reactSpring, "useSpring")
+      .mockImplementation(() => [
+        { opacity: 0.25 },
+        { start },
+      ] as never);
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.cameraOperation = "weeds";
+    p.config.lastCameraOperation = 123;
+    const { rerender } = render(<CameraView {...p} />);
+    act(() => {
+      jest.advanceTimersByTime(p.config.cameraOperationDurationMs);
+    });
+
+    rerender(<CameraView {...p} config={{
+      ...p.config,
+      cameraView: false,
+    }} />);
+
+    expect(start).toHaveBeenCalledWith({ opacity: 0, immediate: true });
+    springSpy.mockRestore();
+    jest.useRealTimers();
   });
 
   it("computes camera view points from props", () => {

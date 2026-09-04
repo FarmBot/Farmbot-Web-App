@@ -1,4 +1,5 @@
 import { runLua } from "../run";
+import { ParameterApplication } from "farmbot";
 
 describe("runLua()", () => {
   it("returns actions", () => {
@@ -14,12 +15,28 @@ describe("runLua()", () => {
       { type: "go_to_home", args: ["all"] },
       {
         type: "_move",
+        variables: [],
         args: [
           "[{\"kind\":\"axis_overwrite\",\"args\":{\"axis\":\"y\",\""
           + "axis_operand\":{\"kind\":\"numeric\",\"args\":{\"number\":1}}}}]",
         ],
       },
     ]);
+  });
+
+  it("captures move variables", () => {
+    const variables: ParameterApplication[] = [{
+      kind: "parameter_application",
+      args: {
+        label: "Location",
+        data_value: {
+          kind: "coordinate",
+          args: { x: 1, y: 2, z: 3 },
+        },
+      },
+    }];
+    expect(runLua(0, "move{x = 1}", variables)[0])
+      .toEqual(expect.objectContaining({ variables }));
   });
 
   it("posts points through the api shim", () => {

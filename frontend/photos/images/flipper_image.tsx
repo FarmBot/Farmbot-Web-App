@@ -65,12 +65,19 @@ export class FlipperImage
     };
     const cameraCalibrationData = getCameraCalibrationData(this.props.env);
     cameraCalibrationData.scale = "1";
+    cameraCalibrationData.calibrationZ = undefined;
+    cameraCalibrationData.center = { x: undefined, y: undefined };
     const img = cloneDeep(this.props.image);
     img.body.meta.x = 0;
     img.body.meta.y = 0;
     img.body.id = -(this.props.image.body.id || 0);
     const { width, height } = this.state;
-    return <svg viewBox={`0 0 ${width || 0} ${height || 0}`}>
+    const fullscreenSize = this.props.dark
+      ? { width, height }
+      : {};
+    return <svg
+      {...fullscreenSize}
+      viewBox={`0 0 ${width || 0} ${height || 0}`}>
       <MapImage
         image={img}
         callback={this.onImageLoad}

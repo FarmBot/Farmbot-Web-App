@@ -270,14 +270,15 @@ const CameraViewBase = (props: CameraViewProps) => {
     kitVersion,
     negativeZ,
   ]);
-  return config.cameraView
+  return config.cameraView || config.lastImageCapture ||
+    config.lastCameraOperation
     ? <>
       <Frustum
         points={points}
         position={cameraLensPosition}
         config={config}
         getZ={props.getZ} />
-      {uncroppedPoints &&
+      {config.cameraView && uncroppedPoints &&
         <FrustumOutline
           points={uncroppedPoints}
           position={cameraLensPosition} />}
@@ -408,9 +409,39 @@ const Frustum = (props: FrustumProps) => {
     edgesGeometry.dispose();
   }, [edgesGeometry, geometry]);
 
-  const baseOpacity = 0.25;
+  const {
+    cameraOperation,
+    cameraOperationDurationMs,
+    cameraView,
+    lastCameraOperation,
+    lastImageCapture,
+  } = props.config;
+  const operationEvent = !!cameraOperation &&
+    lastCameraOperation > lastImageCapture;
+  const [completedOperation, setCompletedOperation] = React.useState(0);
+  const operationVisible = operationEvent &&
+    completedOperation != lastCameraOperation;
+  React.useEffect(() => {
+    if (!operationEvent) { return; }
+    const timer = window.setTimeout(
+      () => setCompletedOperation(lastCameraOperation),
+      cameraOperationDurationMs,
+    );
+    return () => window.clearTimeout(timer);
+  }, [
+    cameraOperationDurationMs,
+    lastCameraOperation,
+    operationEvent,
+  ]);
+  const show = cameraView || operationVisible;
+  const baseOpacity = show ? 0.25 : 0;
   const [spring, api] = useSpring(() => ({ opacity: baseOpacity }));
-  const { lastImageCapture } = props.config;
+  const baseOpacityRef = React.useRef(baseOpacity);
+  React.useEffect(() => {
+    if (baseOpacityRef.current == baseOpacity) { return; }
+    baseOpacityRef.current = baseOpacity;
+    api.start({ opacity: baseOpacity, immediate: true });
+  }, [api, baseOpacity]);
   React.useEffect(() => {
     if (!lastImageCapture) { return; }
     api.start({
@@ -445,14 +476,13 @@ const Frustum = (props: FrustumProps) => {
         linewidth={1.1}
         color={"white"}
         transparent={true}
-        opacity={0.75} />
+        opacity={show ? 0.75 : 0} />
     </LineSegments>
-    {props.config.cameraOperation &&
+    {operationVisible && cameraOperation &&
       <CameraOperationAnimations
-        key={`${props.config.cameraOperation}-` +
-          props.config.lastCameraOperation}
-        operation={props.config.cameraOperation}
-        operationId={props.config.lastCameraOperation}
+        key={`${cameraOperation}-${lastCameraOperation}`}
+        operation={cameraOperation}
+        operationId={lastCameraOperation}
         points={props.points}
         cameraPosition={props.position}
         config={props.config}

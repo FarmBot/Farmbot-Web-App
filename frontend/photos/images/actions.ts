@@ -1,3 +1,4 @@
+import { TaggedImage } from "farmbot";
 import { Actions } from "../../constants";
 import { UUID } from "../../resources/interfaces";
 import { unpackUUID } from "../../util";
@@ -11,7 +12,14 @@ export const highlightMapImage = (imageId: number | undefined) => ({
   payload: imageId,
 });
 
-export const setShownMapImages = (uuid: UUID | undefined) => ({
-  type: Actions.SET_SHOWN_MAP_IMAGES,
-  payload: uuid ? [unpackUUID(uuid).remoteId] : [],
-});
+export const setShownMapImages = (
+  image: UUID | TaggedImage | undefined,
+) => {
+  const imageId = typeof image == "string"
+    ? unpackUUID(image).remoteId
+    : image?.body.id;
+  return {
+    type: Actions.SET_SHOWN_MAP_IMAGES,
+    payload: imageId ? [imageId] : [],
+  };
+};

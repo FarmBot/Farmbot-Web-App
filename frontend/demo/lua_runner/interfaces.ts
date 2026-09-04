@@ -1,4 +1,4 @@
-import { Xyz } from "farmbot";
+import { ParameterApplication, Xyz } from "farmbot";
 
 export interface Action {
     type:
@@ -27,6 +27,7 @@ export interface Action {
     | "write_pin"
     | "set_job_progress";
     args: (number | string | undefined)[];
+    variables?: ParameterApplication[];
 }
 
 export type XyzNumber = Record<Xyz, number>;

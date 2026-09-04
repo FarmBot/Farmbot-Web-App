@@ -5,9 +5,14 @@ import { Curve } from "farmbot/dist/resources/api_resources";
 import { error } from "../toast/toast";
 import { t } from "../i18next_wrapper";
 
+export const MAX_CURVE_DAY = 200;
+
+const dataMaxDay = (data: Curve["data"]): number =>
+  max(Object.keys(data).map(key => parseInt(key))) || 1;
+
 /** Return the maximum day in curve data. */
 export const maxDay = (data: Curve["data"]): number =>
-  max(Object.keys(data).map(key => parseInt(key))) || 1;
+  Math.min(dataMaxDay(data), MAX_CURVE_DAY);
 
 /** Return the maximum value in curve data. */
 export const maxValue = (data: Curve["data"]): number =>
@@ -77,7 +82,7 @@ export const interpolateDay =
 export const scaleData = (
   data: Curve["data"], dayInput: number, valueInput: number, startAt1 = false,
 ): Curve["data"] => {
-  const dayScale = dayInput / maxDay(data);
+  const dayScale = dayInput / dataMaxDay(data);
   const valueScale = valueInput / maxValue(data);
   const newData: Curve["data"] = {};
   Object.entries(data).map(([key, val]) => {

@@ -26,8 +26,8 @@ import {
 
 export const PhotoButtons = (props: PhotoButtonsProps) => {
   const { imageUrl } = props;
-  const { image, dispatch, flags, size } = props;
-  const imageShowMenuProps = { dispatch, flags, image, size };
+  const { image, dispatch, flags } = props;
+  const imageShowMenuProps = { dispatch, flags, image };
   return <div className={"photo-action-buttons"}>
     {flags && image &&
       <Popover className={"image-show-menu-target"}
@@ -117,7 +117,38 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
     crop: true, rotate: true, fullscreen: false,
   };
 
-  componentWillUnmount = () => this.props.dispatch(setShownMapImages(undefined));
+  fullscreenFlipperRef = React.createRef<ImageFlipper>();
+
+  componentDidMount = () =>
+    window.addEventListener("keydown", this.handleFullscreenKeyDown);
+
+  componentDidUpdate() {
+    const currentImage = this.props.currentImage;
+    const currentImageId = currentImage?.body.id;
+    const alreadyShown = currentImageId
+      ? this.props.designer.shownImages.includes(currentImageId)
+      : false;
+    if (this.props.designer.alwaysHighlightImage
+      && currentImageId
+      && !alreadyShown) {
+      this.props.dispatch(setShownMapImages(currentImage));
+    }
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener("keydown", this.handleFullscreenKeyDown);
+    this.props.dispatch(setShownMapImages(undefined));
+  };
+
+  handleFullscreenKeyDown = (event: KeyboardEvent) => {
+    if (!this.state.fullscreen
+      || !["ArrowLeft", "ArrowRight"].includes(event.key)) {
+      return;
+    }
+    event.preventDefault();
+    this.fullscreenFlipperRef.current
+      ?.go(event.key == "ArrowLeft" ? 1 : -1)();
+  };
 
   deletePhoto = () => {
     const { dispatch, images } = this.props;
@@ -138,12 +169,13 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
   toggleFullscreen = () => this.setState({ fullscreen: !this.state.fullscreen });
 
   get canTransform() {
-    return this.props.flags.sizeMatch && this.props.flags.zMatch;
+    return this.props.flags.sizeMatch.value && this.props.flags.zMatch.value;
   }
   get canCrop() { return this.canTransform && this.state.rotate; }
 
   ImageFlipper = ({ id }: { id: string }) =>
     <ImageFlipper id={id}
+      ref={id == "fullscreen-flipper" ? this.fullscreenFlipperRef : undefined}
       autoFocus={true}
       currentImage={this.props.currentImage}
       dispatch={this.props.dispatch}
@@ -152,6 +184,8 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
       getConfigValue={this.props.getConfigValue}
       env={this.props.env}
       crop={this.state.crop}
+      stopKeyDownPropagation={this.state.fullscreen
+        && id == "fullscreen-flipper"}
       images={this.props.images} />;
 
   get highestIndex() { return this.props.images.length - 1; }
@@ -195,7 +229,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
           imageUrl={this.props.currentImage?.body.attachment_url}
           image={this.props.currentImage}
           flags={this.props.flags}
-          size={this.props.currentImageSize}
           dispatch={this.props.dispatch}
           canTransform={this.canTransform}
           canCrop={this.canCrop} />

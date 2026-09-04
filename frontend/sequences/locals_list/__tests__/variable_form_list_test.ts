@@ -1,6 +1,6 @@
 import {
   variableFormList, dropDownName, formatTool, groups2Ddi, activeToolDDIs,
-  sequences2Ddi,
+  sequences2Ddi, mapSelectionToDDI,
 } from "../variable_form_list";
 import {
   fakeToolSlot, fakeTool, fakePointGroup, fakeSequence, fakeWeed, fakePoint,
@@ -124,6 +124,58 @@ describe("formatTool()", () => {
     toolSlot.body.gantry_mounted = true;
     const ddi = formatTool(fakeTool(), toolSlot);
     expect(ddi.label).toEqual("Foo (gantry, 0, 0)");
+  });
+});
+
+describe("mapSelectionToDDI()", () => {
+  it("returns map object dropdown items", () => {
+    const plant = fakePlant();
+    plant.body.id = 1;
+    const point = fakePoint();
+    point.body.id = 2;
+    const weed = fakeWeed();
+    weed.body.id = 3;
+    const resources = buildResourceIndex([plant, point, weed]).index;
+    const coordinate = { x: 10, y: 20, z: 30 };
+    expect(mapSelectionToDDI({
+      selection: { kind: "plant", id: 1 }, coordinate,
+    }, resources).headingId).toEqual("Plant");
+    expect(mapSelectionToDDI({
+      selection: { kind: "point", id: 2 }, coordinate,
+    }, resources).headingId).toEqual("GenericPointer");
+    expect(mapSelectionToDDI({
+      selection: { kind: "weed", id: 3 }, coordinate,
+    }, resources).headingId).toEqual("Weed");
+  });
+
+  it("returns the tool in a selected slot", () => {
+    const slot = fakeToolSlot();
+    slot.body.id = 123;
+    slot.body.tool_id = 456;
+    const tool = fakeTool();
+    tool.body.id = 456;
+    const resources = buildResourceIndex([slot, tool]).index;
+    expect(mapSelectionToDDI({
+      selection: { kind: "slot", id: 123 },
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, resources)).toEqual({
+      label: "Foo (0, 0, 0)", value: "456", headingId: "Tool",
+    });
+  });
+
+  it.each([
+    { kind: "location" as const, x: 1, y: 2, z: 3 },
+    { kind: "sceneObject" as const, id: 1 },
+    { kind: "slot" as const, id: 1 },
+  ])("returns coordinates for $kind", selection => {
+    expect(mapSelectionToDDI({
+      selection,
+      coordinate: { x: 1, y: 2, z: 3 },
+    }, buildResourceIndex().index)).toEqual({
+      label: "Coordinate (1, 2, 3)",
+      value: JSON.stringify({ x: 1, y: 2, z: 3 }),
+      headingId: "Coordinate",
+    });
   });
 });
 

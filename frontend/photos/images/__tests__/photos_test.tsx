@@ -121,7 +121,7 @@ describe("<Photos />", () => {
     p.currentImage = images[1];
     p.currentImage.body.meta.z = 100;
     p.env["CAMERA_CALIBRATION_camera_z"] = "0";
-    p.flags.zMatch = false;
+    p.flags.zMatch.value = false;
     const { container } = render(<Photos {...p} />);
     expect(screen.getByText(/June 1st, 2017/)).toBeInTheDocument();
     expect(screen.getByText("(632, 347, 100)")).toBeInTheDocument();
@@ -200,6 +200,37 @@ describe("<Photos />", () => {
     expect(instance.state.fullscreen).toEqual(true);
   });
 
+  it("stops fullscreen arrow key propagation", () => {
+    const p = fakeProps();
+    p.images = clonedImages();
+    p.currentImage = p.images[1];
+    const { container } = render(<Photos {...p} />);
+    fireEvent.click(container.querySelector(".fa-arrows-alt") as HTMLElement);
+    const flipper = document.querySelector("#fullscreen-flipper");
+    const parentKeyDown = jest.fn();
+    window.addEventListener("keydown", parentKeyDown);
+
+    fireEvent.keyDown(flipper as HTMLElement, { key: "ArrowLeft" });
+
+    expect(selectNextImageSpy).toHaveBeenCalledTimes(1);
+    expect(parentKeyDown).not.toHaveBeenCalled();
+    window.removeEventListener("keydown", parentKeyDown);
+  });
+
+  it("handles fullscreen arrow keys after focus is lost", () => {
+    const p = fakeProps();
+    p.images = clonedImages();
+    p.currentImage = p.images[1];
+    const { container } = render(<Photos {...p} />);
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+    fireEvent.click(container.querySelector(".fa-arrows-alt") as HTMLElement);
+    fireEvent.keyDown(window, { key: "Enter" });
+
+    fireEvent.keyDown(window, { key: "ArrowLeft" });
+
+    expect(selectNextImageSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("unselects photos upon exit", () => {
     const p = fakeProps();
     const { unmount } = render(<Photos {...p} />);
@@ -208,6 +239,51 @@ describe("<Photos />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
+  });
+
+  it("highlights a newly selected photo", () => {
+    const p = fakeProps();
+    const previousImage = fakeImage();
+    const currentImage = fakeImage();
+    p.currentImage = previousImage;
+    p.images = [previousImage];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [previousImage.body.id || 0];
+    const { rerender } = render(<Photos {...p} />);
+
+    rerender(<Photos {...p}
+      currentImage={currentImage}
+      images={[currentImage, previousImage]} />);
+
+    expect(setShownMapImagesSpy).toHaveBeenCalledWith(currentImage);
+  });
+
+  it("doesn't re-highlight an already shown photo", () => {
+    const p = fakeProps();
+    const previousImage = fakeImage();
+    const currentImage = fakeImage();
+    p.currentImage = previousImage;
+    p.images = [previousImage];
+    p.designer.alwaysHighlightImage = true;
+    p.designer.shownImages = [currentImage.body.id || 0];
+    const { rerender } = render(<Photos {...p} />);
+
+    rerender(<Photos {...p}
+      currentImage={currentImage}
+      images={[currentImage, previousImage]} />);
+
+    expect(setShownMapImagesSpy).not.toHaveBeenCalled();
+  });
+
+  it("doesn't highlight without the setting or a current photo", () => {
+    const p = fakeProps();
+    p.currentImage = fakeImage();
+    new Photos(p).componentDidUpdate();
+    p.designer.alwaysHighlightImage = true;
+    p.currentImage = undefined;
+    new Photos(p).componentDidUpdate();
+
+    expect(setShownMapImagesSpy).not.toHaveBeenCalled();
   });
 
   it("returns slider label", () => {
@@ -252,7 +328,6 @@ describe("<PhotoButtons />", () => {
     image: undefined,
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
     deletePhoto: jest.fn(),
     toggleCrop: jest.fn(),
     toggleRotation: jest.fn(),

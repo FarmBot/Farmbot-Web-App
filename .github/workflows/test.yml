@@ -25,6 +25,9 @@ jobs:
         with:
           fetch-depth: 100
 
+      - name: Fetch staging comparison branch
+        run: git fetch --no-tags --depth=100 origin +refs/heads/staging:refs/remotes/origin/staging
+
       - name: Set render env
         run: scripts/ci/export-render-env
 

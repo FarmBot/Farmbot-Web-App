@@ -1,8 +1,11 @@
 import React from "react";
-import { Row, FBSelect, Color, BlurableInput, Help } from "../../ui";
+import {
+  Row, FBSelect, Color, BlurableInput, Help,
+  DropDownItem,
+} from "../../ui";
 import {
   variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
-  LOCATION_PLACEHOLDER_DDI,
+  LOCATION_PLACEHOLDER_DDI, CHOOSE_IN_MAP_DDI, mapSelectionToDDI,
   peripherals2Ddi,
   sensors2Ddi,
 } from "./variable_form_list";
@@ -33,6 +36,14 @@ import {
   selectAllPeripherals, selectAllSensors, selectAllSequences,
 } from "../../resources/selectors_by_kind";
 import { PERIPHERAL_HEADING, SENSOR_HEADING } from "../step_tiles/pin_support";
+import { getWebAppConfigValueFromResources } from
+  "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
+import {
+  requestMapSelection, type MapSelectionResult,
+} from "../../three_d_garden/location_selection";
+import { Path } from "../../internal_urls";
+import { MapSelectionPopover } from "./map_selection_popover";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -72,7 +83,13 @@ export const VariableForm =
       allowedVariableNodes, resources, sequenceUuid, variableType,
     });
     const displayGroups = !hideGroups;
-    const list = variableFormList(resources, [], variableListItems,
+    const threeDGarden = !!getWebAppConfigValueFromResources(
+      resources)(BooleanSetting.three_d_garden);
+    const mapSelectionEnabled = variableType == VariableType.Location
+      && threeDGarden
+      && Path.inDesigner();
+    const list = variableFormList(resources,
+      mapSelectionEnabled ? [CHOOSE_IN_MAP_DDI()] : [], variableListItems,
       displayGroups, variableType);
     /** Variable name. */
     const { label } = celeryNode.args;
@@ -127,6 +144,55 @@ export const VariableForm =
     }
     const narrowLabel = !!removeVariable;
     const [isCustom, setIsCustom] = React.useState(false);
+    const [mapSelectionActive, setMapSelectionActive] = React.useState(false);
+    const cancelMapSelection =
+      React.useRef<(() => void) | undefined>(undefined);
+    React.useEffect(() => () => cancelMapSelection.current?.(), []);
+    const updateFromDropdown = (ddi: DropDownItem) => {
+      cancelMapSelection.current?.();
+      cancelMapSelection.current = undefined;
+      setMapSelectionActive(false);
+      setIsCustom(
+        [t("Custom number"), t("Custom text")].includes(ddi.label));
+      onChange(convertDDItoVariable({
+        identifierLabel: label,
+        allowedVariableNodes,
+        dropdown: ddi,
+        variableType,
+      }), label);
+    };
+    const completeMapSelection = (result: MapSelectionResult) => {
+      cancelMapSelection.current = undefined;
+      setMapSelectionActive(false);
+      updateFromDropdown(mapSelectionToDDI(result, resources));
+    };
+    const selectInMap = () => {
+      if (mapSelectionActive) {
+        cancelMapSelection.current?.();
+        cancelMapSelection.current = undefined;
+        setMapSelectionActive(false);
+        return;
+      }
+      cancelMapSelection.current?.();
+      setMapSelectionActive(true);
+      cancelMapSelection.current = requestMapSelection(
+        completeMapSelection,
+        () => setMapSelectionActive(false));
+    };
+    const showDropdown = [VariableType.Location, VariableType.Resource]
+      .includes(variableType) || !isDefaultValueForm;
+    const dropdownInput = showDropdown
+      ? <FBSelect
+        key={props.locationDropdownKey}
+        list={list}
+        selectedItem={mapSelectionActive ? CHOOSE_IN_MAP_DDI() : dropdown}
+        customNullLabel={isDefaultValueForm
+          ? LOCATION_PLACEHOLDER_DDI().label
+          : NO_VALUE_SELECTED_DDI().label}
+        onChange={ddi => ddi.headingId == "Map"
+          ? selectInMap()
+          : updateFromDropdown(ddi)} />
+      : undefined;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
         <Row className={isDefaultValueForm ? "grid-exp-2" : "grid-exp-3"}>
@@ -145,26 +211,10 @@ export const VariableForm =
               <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                 customIcon={"fa-exclamation-triangle"} onHover={true} />}
           </div>
-          {([VariableType.Location, VariableType.Resource]
-            .includes(variableType)
-            || !isDefaultValueForm) &&
-            <FBSelect
-              key={props.locationDropdownKey}
-              list={list}
-              selectedItem={dropdown}
-              customNullLabel={isDefaultValueForm
-                ? LOCATION_PLACEHOLDER_DDI().label
-                : NO_VALUE_SELECTED_DDI().label}
-              onChange={ddi => {
-                setIsCustom(
-                  [t("Custom number"), t("Custom text")].includes(ddi.label));
-                onChange(convertDDItoVariable({
-                  identifierLabel: label,
-                  allowedVariableNodes,
-                  dropdown: ddi,
-                  variableType,
-                }), label);
-              }} />}
+          <MapSelectionPopover
+            active={mapSelectionActive}
+            onCancel={selectInMap}
+            target={dropdownInput} />
           {variableType == VariableType.Number && isDefaultValueForm &&
             <NumericInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}

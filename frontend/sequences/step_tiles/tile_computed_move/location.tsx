@@ -3,6 +3,7 @@ import { FBSelect, DropDownItem } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import {
   LocationNode, LocSelection, LocationSelectionProps, AxisSelection,
+  MapLocationState,
 } from "./interfaces";
 import { ResourceIndex, UUID } from "../../../resources/interfaces";
 import {
@@ -11,16 +12,20 @@ import {
 import { maybeFindVariable, SequenceMeta } from "../../../resources/sequence_meta";
 import {
   formatPoint, variableFormList, formatTool, COORDINATE_DDI,
+  CHOOSE_IN_MAP_DDI, mapSelectionToDDI,
 } from "../../locals_list/variable_form_list";
 import { Move, Xyz } from "farmbot";
 import { generateVariableListItems } from "../../locals_list/variable_form";
 import {
   AllowedVariableNodes, VariableType,
 } from "../../locals_list/locals_list_support";
+import type { MapSelectionResult } from
+  "../../../three_d_garden/location_selection";
+import { MapSelectionPopover } from "../../locals_list/map_selection_popover";
 
 export const LocationSelection = (props: LocationSelectionProps) => {
   const { resources, sequenceUuid } = props;
-  return <FBSelect
+  const input = <FBSelect
     key={JSON.stringify(props.sequence)}
     list={variableFormList(
       resources,
@@ -28,7 +33,7 @@ export const LocationSelection = (props: LocationSelectionProps) => {
         headingId: "Offset",
         label: t("Offset from current location"),
         value: "",
-      }],
+      }, ...(props.threeDGarden ? [CHOOSE_IN_MAP_DDI()] : [])],
       generateVariableListItems({
         allowedVariableNodes: AllowedVariableNodes.identifier,
         resources, sequenceUuid, headingId: "Identifier",
@@ -36,13 +41,36 @@ export const LocationSelection = (props: LocationSelectionProps) => {
       }),
     )}
     customNullLabel={t("Choose location")}
-    onChange={ddi => props.onChange(prepareLocation(ddi))}
-    selectedItem={getSelectedLocation(
-      props.locationNode,
-      props.locationSelection,
-      props.resources,
-      props.sequenceUuid,
-    )} />;
+    onChange={ddi => ddi.headingId == "Map"
+      ? props.selectInMap()
+      : props.onChange(prepareLocation(ddi))}
+    selectedItem={props.mapSelectionActive
+      ? CHOOSE_IN_MAP_DDI()
+      : getSelectedLocation(
+        props.locationNode,
+        props.locationSelection,
+        props.resources,
+        props.sequenceUuid,
+      )} />;
+  return <MapSelectionPopover
+    active={props.mapSelectionActive}
+    onCancel={props.selectInMap}
+    target={input} />;
+};
+
+export const mapSelectionToLocation = (
+  result: MapSelectionResult,
+  resources: ResourceIndex,
+): MapLocationState => {
+  const ddi = mapSelectionToDDI(result, resources);
+  const { locationNode, locationSelection } = prepareLocation(ddi);
+  return {
+    locationNode,
+    locationSelection: locationSelection || LocSelection.custom,
+    coordinate: ddi.headingId == "Coordinate"
+      ? result.coordinate
+      : undefined,
+  };
 };
 
 const prepareLocation = (ddi: DropDownItem): {

@@ -79,6 +79,18 @@ describe("effects dependency matrix", () => {
     expect(p.getZ).toHaveBeenCalled();
   });
 
+  it("renders a camera operation when the camera view is disabled", () => {
+    const p = fakeProps();
+    p.config.cameraOperation = "weeds";
+    p.config.lastCameraOperation = 123;
+    p.getZ = jest.fn(() => -25);
+    const { container } = render(React.createElement(EffectsAssembly, p));
+
+    expect(container.querySelector("[name='camera-operation-animation']"))
+      .toBeTruthy();
+    expect(p.getZ).toHaveBeenCalled();
+  });
+
   it("renders watering effects", () => {
     const wateringSpy = jest.spyOn(
       wateringAnimationsModule,
@@ -126,5 +138,24 @@ describe("effects dependency matrix", () => {
     expect(effectsAssemblyPropsEqual(p, move(p, "x"))).toBeTruthy();
     p.config.zDimension = true;
     expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeFalsy();
+  });
+
+  it("updates camera operations with bot movement", () => {
+    const p = fakeProps();
+    p.config.cameraOperation = "weeds";
+    p.config.lastCameraOperation = 123;
+    p.version = getBotVersion("v1.8");
+    expect(effectsAssemblyPropsEqual(p, move(p, "x"))).toBeFalsy();
+    expect(effectsAssemblyPropsEqual(p, move(p, "y"))).toBeFalsy();
+    expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeFalsy();
+  });
+
+  it("renders photo capture effects when the camera view is disabled", () => {
+    const p = fakeProps();
+    p.config.lastImageCapture = 123;
+    p.getZ = jest.fn(() => -25);
+    render(React.createElement(EffectsAssembly, p));
+
+    expect(p.getZ).toHaveBeenCalled();
   });
 });

@@ -11,7 +11,6 @@ describe("<ImageShowMenu />", () => {
     image: fakeImage(),
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
   });
 
   it("renders as shown in map", () => {
@@ -28,9 +27,22 @@ describe("<ImageShowMenu />", () => {
 
   it("renders as not shown in map", () => {
     const p = fakeProps();
-    p.flags.inRange = false;
+    p.flags.inRange.value = false;
     render(<ImageShowMenu {...p} />);
     expect(screen.getByText(/not shown in map/i)).toBeInTheDocument();
+  });
+
+  it("renders as temporarily shown in map", () => {
+    const p = fakeProps();
+    p.flags.alwaysShow.value = true;
+    p.flags.inRange.value = false;
+    const { container } = render(<ImageShowMenu {...p} />);
+
+    expect(screen.getByText("temporarily shown in map")).toBeInTheDocument();
+    expect(screen.getByText("not typically shown in map")).toBeInTheDocument();
+    expect(screen.getByText("'Always highlight' enabled"))
+      .toBeInTheDocument();
+    expect(container.querySelector(".fa-check-circle.orange")).toBeTruthy();
   });
 
   it("sets map image highlight", () => {
@@ -81,7 +93,7 @@ describe("<ImageShowMenu />", () => {
   it("shows map image", () => {
     const p = fakeProps();
     p.image && (p.image.body.id = 1);
-    p.flags.notHidden = false;
+    p.flags.notHidden.value = false;
     render(<ImageShowMenu {...p} />);
     fireEvent.click(screen.getByRole("button", { name: /show/i }));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -95,7 +107,6 @@ describe("<ImageShowMenuTarget />", () => {
     image: undefined,
     dispatch: jest.fn(),
     flags: fakeImageShowFlags(),
-    size: { width: 0, height: 0 },
   });
 
   it("handles missing image", () => {
@@ -107,5 +118,28 @@ describe("<ImageShowMenuTarget />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
+  });
+
+  it("shows the temporary map state", () => {
+    const p = fakeProps();
+    p.flags.alwaysShow.value = true;
+    p.flags.inRange.value = false;
+    const { container } = render(<ImageShowMenuTarget {...p} />);
+    const icon = container.querySelector("i");
+
+    expect(icon?.className).toContain("fa-eye-slash");
+    expect(icon?.className).toContain("orange");
+    expect(icon?.title).toEqual("temporarily in map");
+  });
+
+  it("doesn't show the temporary state when the layer is off", () => {
+    const p = fakeProps();
+    p.flags.layerOn.value = false;
+    p.flags.alwaysShow.value = true;
+    const { container } = render(<ImageShowMenuTarget {...p} />);
+    const icon = container.querySelector("i");
+
+    expect(icon?.className).toContain("gray");
+    expect(icon?.title).toEqual("not in map");
   });
 });

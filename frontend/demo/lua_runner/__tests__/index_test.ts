@@ -1110,7 +1110,7 @@ describe("runDemoLuaCode()", () => {
     }];
     mockResources = buildResourceIndex([sequence]);
     setCurrent({ x: 1, y: 2, z: 3 });
-    runDemoLuaCode(`
+    const lua = `
       cs_eval{
         kind = "rpc_request",
         args = { label = "", priority = 0 },
@@ -1118,7 +1118,10 @@ describe("runDemoLuaCode()", () => {
           { kind = "execute", args = { sequence_id = ${sequenceId} } }
         }
       }
-    `);
+    `;
+    expect(runModule.runLua(0, lua, [], { x: 1, y: 2, z: 3 }).length)
+      .toBeGreaterThan(0);
+    runDemoLuaCode(lua);
     for (let i = 0; i < 4; i++) {
       jest.runOnlyPendingTimers();
       await Promise.resolve();
@@ -1171,6 +1174,25 @@ describe("runDemoLuaCode()", () => {
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().info);
+  });
+
+  it("interpolates position in send_message", () => {
+    setCurrent({ x: 1, y: 2, z: 3 });
+    runDemoLuaCode(`send_message(
+      "info",
+      "FarmBot is at position {{ x }}, {{ y }}, {{ z }}.",
+      "toast"
+    )`);
+    jest.runAllTimers();
+    const message = "FarmBot is at position 1, 2, 3.";
+    expect(error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith(message, TOAST_OPTIONS().info);
+    expect(init).toHaveBeenCalledWith("Log", expect.objectContaining({
+      message,
+      x: 1,
+      y: 2,
+      z: 3,
+    }));
   });
 
   it("runs send_message: multiple channels", () => {
@@ -1575,6 +1597,10 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("0");
     expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 63, mode: "digital", value: 0 },
+    });
   });
 
   it("runs read_pin 63: 1", () => {
@@ -1586,6 +1612,10 @@ describe("runDemoLuaCode()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("1");
     expect(info).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 63, mode: "digital", value: 1 },
+    });
   });
 
   it("runs read_pin 5", () => {

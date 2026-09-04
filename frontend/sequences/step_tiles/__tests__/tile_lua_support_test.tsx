@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
 import { Editor as _Editor } from "@monaco-editor/react";
@@ -48,6 +48,25 @@ describe("<LuaTextArea />", () => {
     component.onChange(undefined);
     expect(updateStep).toHaveBeenCalledWith("");
     expect(component.state.lua).toEqual("");
+  });
+
+  it("updates the step", () => {
+    const p = fakeProps();
+    const component = fakeComponent(p);
+    component.updateStep("new lua");
+    component.updateStep.flush?.();
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    const action = (p.dispatch as jest.Mock).mock.calls[0][0];
+    expect(action.payload.update.body[p.index].args.lua).toEqual("new lua");
+  });
+
+  it("doesn't update the step when read-only", () => {
+    const p = fakeProps();
+    p.readOnly = true;
+    const component = fakeComponent(p);
+    component.updateStep("new lua");
+    component.updateStep.flush?.();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("makes change in fallback editor", () => {
@@ -114,5 +133,14 @@ describe("<LuaTextArea />", () => {
       { enabled: true, toggle: jest.fn() };
     const { container } = render(<LuaTextArea {...p} />);
     expect(container.querySelector(".lua-editor.expanded")).not.toBeNull();
+  });
+
+  it("keeps editor keyboard events local", () => {
+    const onKeyDown = jest.fn();
+    window.addEventListener("keydown", onKeyDown);
+    const { container } = render(<LuaTextArea {...fakeProps()} />);
+    fireEvent.keyDown(container.querySelector("textarea")!, { key: "p" });
+    window.removeEventListener("keydown", onKeyDown);
+    expect(onKeyDown).not.toHaveBeenCalled();
   });
 });

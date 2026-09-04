@@ -212,8 +212,15 @@ describe("<ThreeDCameraControls />", () => {
 
     const input = document.createElement("input");
     document.body.appendChild(input);
-    fireEvent.keyDown(input, { key: "p" });
+    input.focus();
+    fireEvent.keyDown(window, { key: "p" });
     input.remove();
+
+    const monaco = document.createElement("div");
+    monaco.className = "monaco-editor";
+    document.body.appendChild(monaco);
+    fireEvent.keyDown(monaco, { key: "p" });
+    monaco.remove();
 
     const dialog = document.createElement("dialog");
     dialog.className = "command-palette-dialog";

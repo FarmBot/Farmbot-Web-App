@@ -17,7 +17,7 @@ import { BlurableInput, FBSelect, Popover } from "../ui";
 import { CurveSvgWithPopover } from "./chart";
 import {
   populatedData, scaleData, addOrRemoveItem, curveSum, inData, maxDay,
-  maxValue, dataFull,
+  maxValue, dataFull, MAX_CURVE_DAY,
 } from "./data_actions";
 import {
   ActionMenuProps, CurveDataTableRowProps, EditCurveProps, EditCurveState,
@@ -250,10 +250,10 @@ export const ScaleMenu = (props: ActionMenuProps) => {
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDayNum}
-        min={1} max={200}
+        min={1} max={MAX_CURVE_DAY}
         onChange={e => {
           const day = parseInt(e.currentTarget.value);
-          isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
+          isFinite(day) && day > 0 && day <= MAX_CURVE_DAY && setMaxDay(day);
         }} />
     </div>
     <div className={"row grid-2-col"}>
@@ -313,10 +313,10 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDay}
-        min={1} max={200}
+        min={1} max={MAX_CURVE_DAY}
         onChange={e => {
           const day = parseInt(e.currentTarget.value);
-          isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
+          isFinite(day) && day > 0 && day <= MAX_CURVE_DAY && setMaxDay(day);
         }} />
     </div>
     <div className={"row grid-2-col"}>

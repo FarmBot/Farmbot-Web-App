@@ -42,7 +42,8 @@
 }
 
 body:has(.app.dark) {
-  .image-flipper-image {
+  // sass-lint:disable no-ids
+  .image-flipper:not(#fullscreen-flipper) .image-flipper-image {
     &.placeholder {
       filter: invert(1);
     }
@@ -217,6 +218,9 @@ body:has(.app.darl) {
     background: none !important;
     &.green {
       color: $green;
+    }
+    &.orange {
+      color: $orange;
     }
     &.gray {
       color: $medium_gray;

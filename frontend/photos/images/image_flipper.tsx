@@ -28,9 +28,9 @@ export const getNextIndexes = (
 
 export const selectNextImage = (images: TaggedImage[], index: number) =>
   (dispatch: Function) => {
-    const nextImageUuid = images.map(x => x.uuid)[index];
-    dispatch(selectImage(nextImageUuid));
-    dispatch(setShownMapImages(nextImageUuid));
+    const nextImage = images[index];
+    dispatch(selectImage(nextImage?.uuid));
+    dispatch(setShownMapImages(nextImage));
   };
 
 /** Placeholder image with text overlay. */
@@ -80,11 +80,14 @@ export class ImageFlipper extends
       onKeyDown={e => {
         if (["ArrowLeft", "ArrowRight"].includes(e.key)) {
           this.go(e.key == "ArrowLeft" ? 1 : -1)();
+          if (this.props.stopKeyDownPropagation) {
+            e.stopPropagation();
+          }
         }
       }}>
       {currentImage && images.length > 0
         ? <FlipperImage
-          key={currentImage.body.attachment_url}
+          key={currentImage.uuid}
           crop={this.props.crop}
           transformImage={this.props.transformImage}
           dispatch={this.props.dispatch}

@@ -5,6 +5,7 @@ import { Curve } from "farmbot/dist/resources/api_resources";
 import { Color, Popover } from "../ui";
 import {
   maxValue, maxDay, populatedData, inData, addOrRemoveItem, dataFull, scaleData,
+  interpolateDay,
 } from "./data_actions";
 import {
   CurveIconProps,
@@ -175,7 +176,10 @@ const Data = (props: DataProps) => {
     </defs>
     <g id={"bars"} stroke={"none"} fill={`url(#${type}-bar-fill)`}>
       {Object.entries(populatedData(data)).map(bar())}
-      {bar(true)(["" + lastDay, data[maxDay(data)]])}
+      {bar(true)([
+        "" + lastDay,
+        interpolateDay(data, maxDay(data), false),
+      ])}
     </g>
     {props.editable &&
       <path id={"line"}
@@ -258,7 +262,10 @@ const DataLabels = (props: DataLabelsProps) => {
     };
   return <g id={"data-labels"} className={"data-labels"}>
     {Object.entries(populatedData(data)).map(label(""))}
-    {label("+")(["" + (maxDay(data) + 1), data[maxDay(data)]])}
+    {label("+")([
+      "" + (maxDay(data) + 1),
+      interpolateDay(data, maxDay(data), false),
+    ])}
   </g>;
 };
 

@@ -75,7 +75,11 @@ const WaterEffect = (props: EffectsAssemblyProps) => {
   </React.Suspense>;
 };
 
-const activeEffects = (config: Config) => config.cameraView ||
+const cameraEffectActive = (config: Config) =>
+  config.cameraView || !!config.lastImageCapture ||
+  !!config.lastCameraOperation;
+
+const activeEffects = (config: Config) => cameraEffectActive(config) ||
   config.laser || config.waterFlow || config.bounds || config.zDimension ||
   !!config.distanceIndicator;
 
@@ -84,14 +88,16 @@ const effectPositionDependencies = (
   version: BotVersion,
 ): PositionConfig => {
   const indicator = config.distanceIndicator;
-  const movingEffect = config.cameraView || config.laser || config.waterFlow;
+  const movingEffect = cameraEffectActive(config) ||
+    config.laser || config.waterFlow;
   return {
     x: Number(movingEffect || indicator == "beamLength" ||
       indicator == "columnLength" || indicator == "zAxisLength"),
     y: Number(movingEffect || indicator == "zAxisLength"),
     z: Number(config.laser || config.zDimension ||
       indicator == "zAxisLength" ||
-      version.number != "v1.9" && (config.cameraView || config.waterFlow)),
+      version.number != "v1.9" &&
+      (cameraEffectActive(config) || config.waterFlow)),
   };
 };
 
@@ -125,7 +131,7 @@ const EffectsAssemblyBase = (props: EffectsAssemblyProps) => {
   usePerfRenderCount("BotEffects");
   const { config, configPosition } = props;
   return <Group name={"effects-and-diagnostics"}>
-    {config.cameraView && <CameraEffect {...props} />}
+    {cameraEffectActive(config) && <CameraEffect {...props} />}
     {config.laser && <LaserEffect {...props} />}
     {config.waterFlow && <WaterEffect {...props} />}
     {(config.bounds || config.zDimension || !!config.distanceIndicator) &&

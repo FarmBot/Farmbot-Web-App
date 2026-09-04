@@ -926,6 +926,27 @@ describe("scene object placement helpers", () => {
     unmountRenderer(wrapper);
   });
 
+  it("allows scene object clicks to pass through", () => {
+    const onSelectObject = jest.fn(() => false);
+    const wrapper = createRenderer(React.createElement(SceneObjects, {
+      config: clone(INITIAL),
+      activeFocus: "",
+      sceneObjects: [fakeSceneObject({ id: 7 })],
+      onSelectObject,
+      visible: true,
+    }));
+    const clickable = wrapper.root.findAll(node =>
+      node.props.visible === true
+      && typeof node.props.onClick == "function")[0];
+    const event = { delta: 0, stopPropagation: jest.fn() };
+
+    act(() => clickable.props.onClick(event));
+
+    expect(onSelectObject).toHaveBeenCalled();
+    expect(event.stopPropagation).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
+  });
+
   it("shows edit controls for a popup-selected scene object", () => {
     location.pathname = Path.mock(Path.designer());
     const sceneObject = fakeSceneObject({ id: 7 });

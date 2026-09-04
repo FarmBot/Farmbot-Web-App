@@ -10,7 +10,7 @@ import { equals } from "../../../../util";
 import { BooleanSetting, StringSetting } from "../../../../session_keys";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import {
-  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, imageIsHidden,
+  parseFilterSetting, IMAGE_LAYER_CONFIG_KEYS, imageInRange, notHidden,
   filterImagesByType,
 } from "../../../../photos/photo_filter_settings/util";
 
@@ -26,6 +26,9 @@ export interface TaggedImagePlus extends TaggedImage {
   highlighted: boolean;
 }
 
+const hasProcessedAttachment = (image: TaggedImage) =>
+  !image.body.attachment_url.includes("placeholder");
+
 export const filterImages = (props: FilterImagesProps): TaggedImagePlus[] => {
   const { visible, images, designer, getConfigValue, calibrationZ } = props;
   if (!images || !visible || !designer || !getConfigValue) { return []; }
@@ -37,16 +40,18 @@ export const filterImages = (props: FilterImagesProps): TaggedImagePlus[] => {
   const imageFilterEnd = getFilterValue(StringSetting.photo_filter_end);
   const rangeOverride = alwaysHighlightImage || hideUnShownImages;
   const hoveredImage: TaggedImage | undefined =
-    images.filter(img => hoveredMapImage && img.body.id == hoveredMapImage
-      || (alwaysHighlightImage && shownImages.includes(img.body.id || 0)))[0];
+    images.filter(img => hasProcessedAttachment(img)
+      && (hoveredMapImage && img.body.id == hoveredMapImage
+        || (alwaysHighlightImage
+          && shownImages.includes(img.body.id || 0))))[0];
   const filteredImages = images.slice().reverse()
     .filter(img =>
       (rangeOverride && shownImages.includes(img.body.id || 0))
-      || imageInRange(img, imageFilterBegin, imageFilterEnd))
-    .filter(img => !imageIsHidden(
-      hiddenImages, shownImages, hideUnShownImages, img.body.id))
-    .filter(filterImagesByType(designer))
-    .filter(img => !img.body.attachment_url.includes("placeholder"))
+      || imageInRange(img, imageFilterBegin, imageFilterEnd).value)
+    .filter(img => notHidden(
+      hiddenImages, shownImages, hideUnShownImages, img.body.id).value)
+    .filter(img => filterImagesByType(designer)(img).value)
+    .filter(hasProcessedAttachment)
     .filter(img => !hoveredImage || (img.body.id != hoveredImage.body.id))
     .filter(img => cameraZCheck(img.body.meta.z, calibrationZ))
     .map(img => ({ ...img, highlighted: false }));

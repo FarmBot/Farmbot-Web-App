@@ -14,7 +14,7 @@ import {
 import { computeCoordinate } from "./compute";
 import {
   LocationSelection, getLocationState, setSelectionFromLocation,
-  setOverwriteFromLocation, setOffsetFromLocation,
+  setOverwriteFromLocation, setOffsetFromLocation, mapSelectionToLocation,
 } from "./location";
 import {
   getOverwriteState, getOverwriteNode, setOverwrite, overwriteAxis,
@@ -34,6 +34,12 @@ import {
 } from "./axis_order";
 import { StepParams } from "../../interfaces";
 import { getFbosConfig } from "../../../resources/getters";
+import { getWebAppConfigValueFromResources } from
+  "../../../config_storage/actions";
+import { BooleanSetting } from "../../../session_keys";
+import { requestMapSelection, type MapSelectionResult } from
+  "../../../three_d_garden/location_selection";
+import { Path } from "../../../internal_urls";
 
 /**
  * _Computed move_
@@ -105,7 +111,14 @@ export class ComputedMove
     safeZ: getSafeZState(this.step),
     axisGrouping: getAxisGroupingState(this.step),
     axisRoute: getAxisRouteState(this.step),
+    mapSelectionActive: false,
   };
+
+  cancelMapSelection: (() => void) | undefined;
+
+  componentWillUnmount() {
+    this.cancelMapSelection?.();
+  }
 
   get step() { return this.props.currentStep; }
 
@@ -115,6 +128,15 @@ export class ComputedMove
       y: this.state.selection.y == AxisSelection.disable,
       z: this.state.selection.z == AxisSelection.disable,
     };
+  }
+
+  get threeDGarden() {
+    return !!getWebAppConfigValueFromResources(
+      this.props.resources)(BooleanSetting.three_d_garden);
+  }
+
+  get showMapSelection() {
+    return this.threeDGarden && Path.inDesigner();
   }
 
   get overwriteNodes() {
@@ -217,7 +239,10 @@ export class ComputedMove
       locationSelection: LocSelection | undefined,
     }) => {
       const { selection, overwrite, offset } = this.state;
+      this.cancelMapSelection?.();
+      this.cancelMapSelection = undefined;
       this.setState({
+        mapSelectionActive: false,
         locationSelection,
         location: locationNode,
         selection: setSelectionFromLocation(locationSelection, selection),
@@ -225,6 +250,58 @@ export class ComputedMove
         offset: setOffsetFromLocation(locationSelection, offset),
       }, this.update);
     };
+
+  setLocationFromMap = (result: MapSelectionResult) => {
+    const { locationNode, locationSelection, coordinate } =
+      mapSelectionToLocation(result, this.props.resources);
+    const { selection, overwrite, offset } = this.state;
+    const preserve = (axis: Xyz) => !!selection[axis]
+      && selection[axis] != AxisSelection.custom;
+    const mapSelection = (axis: Xyz) => {
+      if (preserve(axis)) { return selection[axis]; }
+      if (coordinate) { return AxisSelection.custom; }
+      return undefined;
+    };
+    const mapOverwrite = (axis: Xyz) => {
+      if (preserve(axis)) { return overwrite[axis]; }
+      return coordinate?.[axis];
+    };
+    this.cancelMapSelection = undefined;
+    this.setState({
+      mapSelectionActive: false,
+      locationSelection,
+      location: locationNode,
+      selection: {
+        x: mapSelection("x"),
+        y: mapSelection("y"),
+        z: mapSelection("z"),
+      },
+      overwrite: {
+        x: mapOverwrite("x"),
+        y: mapOverwrite("y"),
+        z: mapOverwrite("z"),
+      },
+      offset: setOffsetFromLocation(locationSelection, offset),
+    }, this.update);
+  };
+
+  selectInMap = () => {
+    if (this.state.mapSelectionActive) {
+      this.cancelMapSelection?.();
+      this.cancelMapSelection = undefined;
+      this.setState({ mapSelectionActive: false });
+      return;
+    }
+    this.cancelMapSelection?.();
+    this.setState({ mapSelectionActive: true });
+    this.cancelMapSelection = requestMapSelection(
+      this.setLocationFromMap,
+      () => {
+        this.cancelMapSelection = undefined;
+        this.setState({ mapSelectionActive: false });
+      },
+    );
+  };
 
   setAxisOverwriteState = (axis: Xyz, value: AxisSelection) =>
     this.setState({
@@ -264,7 +341,10 @@ export class ComputedMove
           resources={this.props.resources}
           onChange={this.setLocationState}
           sequence={this.props.currentSequence}
-          sequenceUuid={this.props.currentSequence.uuid} />
+          sequenceUuid={this.props.currentSequence.uuid}
+          threeDGarden={this.showMapSelection}
+          mapSelectionActive={this.state.mapSelectionActive}
+          selectInMap={this.selectInMap} />
         <ExpandableHeader
           expanded={this.state.more}
           title={""}

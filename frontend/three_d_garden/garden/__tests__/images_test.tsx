@@ -37,6 +37,7 @@ describe("<ImageTexture />", () => {
     sensorReadings: [],
     showMoistureReadings: true,
     showMoistureMap: true,
+    env: {},
   });
 
   it("crops camera images when enabled", () => {
@@ -131,8 +132,9 @@ describe("<ImageTexture />", () => {
     p.addPlantProps = apProps;
     render(<ImageTexture {...p} />);
     expect(screen.getAllByText("image").length).toEqual(3);
+    expect(screen.getAllByText("image-border").length).toEqual(1);
     expect(document.querySelector(".render-texture"))
-      .toHaveAttribute("data-frames", "1");
+      .toHaveAttribute("data-frames", "2");
   });
 
   it("renders when images missing", () => {
@@ -277,6 +279,18 @@ describe("<ImageTexture />", () => {
       ...p.addPlantProps.designer,
       showDetectionImages: false,
     };
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key when image processing finishes", () => {
+    const p = fakeProps();
+    const image = fakeImage();
+    image.body.attachment_url = "/placeholder_farmbot.jpg?text=Processing";
+    p.images = [image];
+    const key = getImageTextureKey(p);
+
+    image.body.attachment_url = "https://example.com/processed.jpg";
+
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 
