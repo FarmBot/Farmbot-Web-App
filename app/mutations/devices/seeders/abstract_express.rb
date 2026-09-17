@@ -1,15 +1,29 @@
 module Devices
   module Seeders
-    class AbstractExpress < AbstractGenesis
+    class AbstractExpress < AbstractSeeder
+      def peripherals_vacuum
+        add_peripheral(9, ToolNames::VACUUM)
+      end
+
+      def peripherals_water
+        add_peripheral(8, ToolNames::WATER)
+      end
+
+      def peripherals_lighting
+        add_peripheral(7, ToolNames::LIGHTING)
+      end
+
+      def pin_bindings_button_1
+        add_pin_binding 16, "Emergency Lock", :emergency_lock
+      end
+
+      def pin_bindings_button_2
+        add_pin_binding 22, "Unlock", :emergency_unlock
+      end
+
       def settings_device_name
         device.update!(name: Names::EXPRESS)
       end
-
-      def peripherals_peripheral_4; end
-      def peripherals_peripheral_5; end
-
-      def sensors_soil_sensor; end
-      def sensors_tool_verification; end
 
       def settings_change_firmware_config_defaults
         device.firmware_config.update!(encoder_enabled_z: 0,
@@ -45,16 +59,6 @@ module Devices
                       gantry_mounted: true)
       end
 
-      def tool_slots_slot_3; end
-      def tool_slots_slot_4; end
-      def tool_slots_slot_5; end
-      def tool_slots_slot_6; end
-      def tool_slots_slot_7; end
-      def tool_slots_slot_8; end
-      def tool_slots_slot_9; end
-      def tools_seed_bin; end
-      def tools_seed_tray; end
-
       def tools_seed_trough_1
         @tools_seed_trough_1 ||=
           add_tool(ToolNames::SEED_TROUGH_1)
@@ -64,17 +68,6 @@ module Devices
         @tools_seed_trough_2 ||=
           add_tool(ToolNames::SEED_TROUGH_2)
       end
-
-      def tools_seeder; end
-      def tools_soil_sensor; end
-      def tools_weeder; end
-      def tools_rotary; end
-      def sequences_mount_tool; end
-      def sequences_dismount_tool; end
-      def sequences_mow_all_weeds; end
-      def sequences_pick_from_seed_tray; end
-      def sequences_pick_from_seed_trough; end
-      def sequences_pick_from_seed_bin; end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup

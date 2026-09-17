@@ -1907,6 +1907,22 @@ describe("<GardenModel />", () => {
       .toEqual([hoveredPoint]);
   });
 
+  it("shows only the hovered ID-less point when the point layer is hidden", () => {
+    const hoveredPoint = fakePoint();
+    hoveredPoint.body.id = undefined;
+    const hiddenPoint = fakePoint();
+    hiddenPoint.body.id = undefined;
+    const p = fakeProps();
+    p.mapPoints = [hoveredPoint, hiddenPoint];
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(() => false);
+    p.addPlantProps.designer.hoveredPoint = hoveredPoint.uuid;
+    const wrapper = createWrapper(p);
+
+    expect(wrapper.root.findByType(PointInstances).props.points)
+      .toEqual([hoveredPoint]);
+  });
+
   it("shows a viewed soil point when soil height points are hidden", () => {
     location.pathname = Path.mock(Path.points(1));
     const viewedPoint = tagAsSoilHeight(fakePoint());

@@ -12,7 +12,7 @@ module CeleryScript
     FRIENDLY_ERRORS = CeleryScript::Checker::FRIENDLY_ERRORS
     BAD_LEAF = CeleryScript::Checker::BAD_LEAF
 
-    # rubocop:disable Lint/UnusedMethodArgument
+    # rubocop:disable-next Lint/UnusedMethodArgument
     def initialize(parent = nil, args:, body: nil, comment: "", kind:, uuid: nil)
       @comment = comment
       @kind = kind
@@ -28,7 +28,6 @@ module CeleryScript
         maybe_initialize(self, e)
       end if body
     end
-    # rubocop:enable Lint/UnusedMethodArgument
 
     def maybe_initialize(parent, leaf_or_node, key = NEVER)
       if is_node?(leaf_or_node)

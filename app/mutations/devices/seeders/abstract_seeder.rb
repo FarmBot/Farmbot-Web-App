@@ -88,20 +88,11 @@ module Devices
 
       def settings_hide_sensors; end
 
-      def peripherals_lighting
-        add_peripheral(7, ToolNames::LIGHTING)
-      end
-
-      def peripherals_peripheral_4
-        add_peripheral(10, "Peripheral 4")
-      end
-
-      def peripherals_peripheral_5
-        add_peripheral(12, "Peripheral 5")
-      end
-
       def peripherals_vacuum; end
       def peripherals_water; end
+      def peripherals_lighting; end
+      def peripherals_peripheral_4; end
+      def peripherals_peripheral_5; end
       def peripherals_rotary_tool; end
       def peripherals_rotary_tool_reverse; end
       def pin_bindings_button_1; end
@@ -203,10 +194,19 @@ module Devices
         end
       end
 
-      def settings_default_map_size_x; end
+      def settings_default_map_size_x
+        device.web_app_config.update!(map_size_x: 2_900)
+      end
+
       def settings_default_map_size_y; end
       def settings_device_name; end
       def settings_change_firmware_config_defaults; end
+
+      def settings_firmware
+        device
+          .fbos_config
+          .update!(firmware_hardware: self.class::FIRMWARE_HARDWARE)
+      end
 
       def settings_three_d; end
 

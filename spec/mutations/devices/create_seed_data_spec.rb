@@ -1,6 +1,52 @@
 require "spec_helper"
 
 describe Devices::CreateSeedData do
+  describe "seeder inheritance" do
+    it "separates the Express and Genesis families" do
+      expect(Devices::Seeders::AbstractExpress.superclass)
+        .to eq(Devices::Seeders::AbstractSeeder)
+    end
+
+    it "builds Genesis seeders on the preceding version" do
+      {
+        Devices::Seeders::GenesisOneThree => Devices::Seeders::GenesisOneTwo,
+        Devices::Seeders::GenesisOneFour => Devices::Seeders::GenesisOneThree,
+        Devices::Seeders::GenesisOneFive => Devices::Seeders::GenesisOneFour,
+        Devices::Seeders::GenesisOneSix => Devices::Seeders::GenesisOneFive,
+        Devices::Seeders::GenesisOneSeven => Devices::Seeders::GenesisOneSix,
+        Devices::Seeders::GenesisOneEight => Devices::Seeders::GenesisOneSeven,
+        Devices::Seeders::GenesisOneNine => Devices::Seeders::GenesisOneEight,
+      }.each do |seeder, previous_seeder|
+        expect(seeder.superclass).to eq(previous_seeder)
+      end
+    end
+
+    it "builds Express XL seeders on their matching Express versions" do
+      {
+        Devices::Seeders::ExpressXlOneZero => Devices::Seeders::ExpressOneZero,
+        Devices::Seeders::ExpressXlOneOne => Devices::Seeders::ExpressOneOne,
+        Devices::Seeders::ExpressXlOneTwo => Devices::Seeders::ExpressOneTwo,
+      }.each do |xl_seeder, seeder|
+        expect(xl_seeder.superclass).to eq(seeder)
+        expect(xl_seeder.ancestors).to include(Devices::Seeders::ExpressXl)
+      end
+    end
+
+    it "builds Genesis XL seeders on their matching Genesis versions" do
+      {
+        Devices::Seeders::GenesisXlOneFour => Devices::Seeders::GenesisOneFour,
+        Devices::Seeders::GenesisXlOneFive => Devices::Seeders::GenesisOneFive,
+        Devices::Seeders::GenesisXlOneSix => Devices::Seeders::GenesisOneSix,
+        Devices::Seeders::GenesisXlOneSeven => Devices::Seeders::GenesisOneSeven,
+        Devices::Seeders::GenesisXlOneEight => Devices::Seeders::GenesisOneEight,
+        Devices::Seeders::GenesisXlOneNine => Devices::Seeders::GenesisOneNine,
+      }.each do |xl_seeder, seeder|
+        expect(xl_seeder.superclass).to eq(seeder)
+        expect(xl_seeder.ancestors).to include(Devices::Seeders::GenesisXl)
+      end
+    end
+  end
+
   it "accepts stress demo product lines" do
     expect(described_class::PRODUCT_LINES.fetch("genesis_xl_1.8_stress_250"))
       .to eq(Devices::Seeders::GenesisXlOneEight)

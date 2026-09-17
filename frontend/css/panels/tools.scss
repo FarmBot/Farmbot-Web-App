@@ -196,12 +196,15 @@
 
 .add-tool-slot-panel-content,
 .edit-tool-slot-panel-content {
-  svg {
-    display: block;
-    margin: auto;
-    width: 10rem;
-    height: 10rem;
-    margin-top: 2rem;
+  .tool-slot-svg,
+  .tool-svg {
+    svg {
+      display: block;
+      margin: auto;
+      width: 10rem;
+      height: 10rem;
+      margin-top: 2rem;
+    }
   }
 }
 
