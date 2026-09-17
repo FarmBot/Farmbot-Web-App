@@ -1137,7 +1137,8 @@ const StaticGardenLayersBase = (props: StaticGardenLayersProps) => {
         && (!point.body.meta.gridId
           || !hiddenGridIds?.includes(point.body.meta.gridId)));
     const highlightedPoints = mapPoints.filter(point =>
-      point.body.id == viewedPointId || point.uuid == hoveredPointUuid);
+      (point.body.id && (point.body.id == viewedPointId))
+      || point.uuid == hoveredPointUuid);
     if (!showPoints) { return highlightedPoints; }
     return layerPoints.concat(highlightedPoints.filter(point =>
       !layerPoints.includes(point)));
