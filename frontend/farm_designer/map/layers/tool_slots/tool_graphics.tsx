@@ -92,13 +92,15 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
   const pulloutDirection = props.toolSlot.body.pullout_direction;
   const size = `${props.size || 3}rem`;
   return props.toolSlot.body.gantry_mounted
-    ? <svg width={size} height={size} viewBox={"-40 0 80 1"}>
-      <GantryToolSlot x={0} y={0} xySwap={props.toolTransformProps.xySwap} />
-      {props.toolSlot.body.tool_id &&
-        <RotatedTool
-          tool={reduceToolName(props.toolName)}
-          toolProps={toolProps} />}
-    </svg>
+    ? <div className={"tool-slot-svg"}>
+      <svg width={size} height={size} viewBox={"-40 0 80 1"}>
+        <GantryToolSlot x={0} y={0} xySwap={props.toolTransformProps.xySwap} />
+        {props.toolSlot.body.tool_id &&
+          <RotatedTool
+            tool={reduceToolName(props.toolName)}
+            toolProps={toolProps} />}
+      </svg>
+    </div>
     : <div className={"tool-svg"}>
       <div className={"top"}>
         <svg width={size} height={size} viewBox={"-50 0 100 1"}>
