@@ -13,6 +13,7 @@ import { threeWayComparison as compare3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   id: 415,
@@ -173,6 +174,7 @@ const tr6: TaggedResource = {
     "pin": 13,
     "label": "LED",
     "mode": 0,
+    "type": "lighting",
   },
   "uuid": "Peripheral.11.5"
 };
@@ -278,11 +280,15 @@ const tr11: TaggedPoint = {
     "name": "Slot One.",
     "pointer_type": "ToolSlot",
     "pullout_direction": 0,
-    "gantry_mounted": false,
+    gantry_mounted: false,
     "x": 10,
     "y": 10,
     "z": 10,
-    "tool_id": 14
+    "tool_id": 14,
+    "mount_stage": MountStage.NONE,
+    "mount_offset_x": 0,
+    "mount_offset_y": 0,
+    "mount_offset_z": 0,
   },
   "uuid": "Point.1396.10"
 };
@@ -315,6 +321,11 @@ const tr14: TaggedResource = {
     "name": "Trench Digging Tool",
     "flow_rate_ml_per_s": 0,
     "seeder_tip_z_offset": 80,
+    "type": "none",
+    "utm_mountable": true,
+    "effector_offset_x": 0,
+    "effector_offset_y": 0,
+    "effector_offset_z": 0,
   },
   "uuid": "Tool.14.49"
 };
@@ -327,6 +338,11 @@ const tr15: TaggedResource = {
     "name": "Berry Picking Tool",
     "flow_rate_ml_per_s": 0,
     "seeder_tip_z_offset": 80,
+    "type": "none",
+    "utm_mountable": true,
+    "effector_offset_x": 0,
+    "effector_offset_y": 0,
+    "effector_offset_z": 0,
   },
   "uuid": "Tool.15.50"
 };
@@ -361,6 +377,7 @@ const tr17: TaggedResource = {
     pin: 14,
     label: "Sensor",
     mode: 0,
+    type: "none",
   },
   uuid: "Sensor.11.5"
 };

@@ -9,6 +9,7 @@ module Peripherals
       integer :pin
       integer :mode
       string :label
+      string :type, in: Peripheral::TYPES
     end
 
     def execute

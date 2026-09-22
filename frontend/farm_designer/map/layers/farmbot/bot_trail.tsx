@@ -5,6 +5,7 @@ import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
 import { get, isNumber, takeRight, isEqual, round } from "lodash";
 import { Xyz } from "farmbot";
+import { PeripheralType } from "farmbot/dist/resources/api_resources";
 import { indicatorColor } from "../../../../controls/move/missed_step_indicator";
 import { GetProfileX } from "../../profile/interfaces";
 import { definedPosition } from "../../../../tools/tool_slot_edit_components";
@@ -43,7 +44,12 @@ function getNewTrailArray(
   return takeRight(arr, trailLength);
 }
 
-export type PeripheralValues = { label: string, value: boolean }[];
+export type PeripheralValues = {
+  uuid: string;
+  type: PeripheralType;
+  pin: number | undefined;
+  value: boolean;
+}[];
 
 export interface BotTrailProps {
   position: BotPosition;

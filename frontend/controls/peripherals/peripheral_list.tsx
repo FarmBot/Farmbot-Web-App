@@ -5,39 +5,57 @@ import { sortResourcesById } from "../../util";
 import { Row, ToggleButton } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
-import { ANALOG } from "farmbot";
+import { ANALOG, Pins, TaggedPeripheral } from "farmbot";
 import { lockedClass } from "../locked_class";
 import { isUndefined } from "lodash";
 import { forceOnline } from "../../devices/must_be_online";
+import { PinTypeEmoji } from "../pin_form_fields";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list grid">
     {sortResourcesById(props.peripherals).map(peripheral => {
-      const actualToggleValue =
-        (props.pins[peripheral.body.pin || -1] || { value: undefined }).value;
-      const toggleValue = (isUndefined(actualToggleValue) && forceOnline())
-        ? 0
-        : actualToggleValue;
       return <Row key={peripheral.uuid} className="grid-exp-1">
         <label>{peripheral.body.label}</label>
+        <PinTypeEmoji type={peripheral.body.type} />
         <p>{"" + peripheral.body.pin}</p>
-        {peripheral.body.mode == 1
-          ? <AnalogSlider
-            initialValue={toggleValue}
-            pin={peripheral.body.pin}
-            disabled={props.disabled || props.locked} />
-          : <ToggleButton
-            toggleValue={toggleValue}
-            toggleAction={() => {
-              peripheral.body.pin && pinToggle(peripheral.body.pin);
-            }}
-            title={t(`Toggle ${peripheral.body.label}`)}
-            customText={{ textFalse: t("off"), textTrue: t("on") }}
-            className={lockedClass(props.locked)}
-            disabled={!!props.disabled} />}
+        <PeripheralControl
+          peripheral={peripheral}
+          pins={props.pins}
+          disabled={props.disabled}
+          locked={props.locked} />
       </Row>;
     })}
   </div>;
+
+export interface PeripheralControlProps {
+  peripheral: TaggedPeripheral;
+  pins: Pins;
+  disabled: boolean | undefined;
+  locked: boolean;
+}
+
+export const PeripheralControl = (props: PeripheralControlProps) => {
+  const { peripheral } = props;
+  const actualToggleValue =
+    (props.pins[peripheral.body.pin || -1] || { value: undefined }).value;
+  const toggleValue = (isUndefined(actualToggleValue) && forceOnline())
+    ? 0
+    : actualToggleValue;
+  return peripheral.body.mode == 1
+    ? <AnalogSlider
+      initialValue={toggleValue}
+      pin={peripheral.body.pin}
+      disabled={props.disabled || props.locked} />
+    : <ToggleButton
+      toggleValue={toggleValue}
+      toggleAction={() => {
+        peripheral.body.pin && pinToggle(peripheral.body.pin);
+      }}
+      title={t(`Toggle ${peripheral.body.label}`)}
+      customText={{ textFalse: t("off"), textTrue: t("on") }}
+      className={lockedClass(props.locked)}
+      disabled={!!props.disabled} />;
+};
 
 export interface AnalogSliderProps {
   disabled: boolean | undefined;

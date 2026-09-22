@@ -9,11 +9,12 @@ import {
 import { Actions } from "../../../../../constants";
 import { Path } from "../../../../../internal_urls";
 import { fireEvent, render } from "@testing-library/react";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 describe("<ToolSlotPoint/>", () => {
   const fakeProps = (): TSPProps => ({
     mapTransformProps: fakeMapTransformProps(),
-    botPositionX: undefined,
+    botPosition: { x: undefined, y: undefined, z: undefined },
     slot: { toolSlot: fakeToolSlot(), tool: fakeTool() },
     dispatch: jest.fn(),
     hoveredToolSlot: undefined,
@@ -43,6 +44,7 @@ describe("<ToolSlotPoint/>", () => {
   ])("renders %s tool and %s slot", (tool, slot) => {
     if (!tool && !slot) { tool = 1; }
     const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.type = "none"; }
     if (!tool) { p.slot.tool = undefined; }
     p.slot.toolSlot.body.pullout_direction = slot;
     const { container } = renderPoint(p);
@@ -85,57 +87,57 @@ describe("<ToolSlotPoint/>", () => {
 
   it("renders rotary tool", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "rotary tool"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "rotary_tool"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#rotary-tool").length).toEqual(1);
   });
 
   it("renders weeder", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "weeder"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "weeder"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#weeder").length).toEqual(1);
   });
 
   it("renders watering nozzle", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "watering nozzle"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "watering_nozzle"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#watering-nozzle").length).toEqual(1);
   });
 
   it("renders seeder", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "seeder"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "seeder"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#seeder").length).toEqual(1);
   });
 
   it("renders soil sensor", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "soil sensor"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "soil_sensor"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#soil-sensor").length).toEqual(1);
   });
 
   it("renders bin", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "seed bin"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "seed_bin"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#SeedBinGradient").length).toEqual(1);
   });
 
   it("renders tray", () => {
     const p = fakeProps();
-    if (p.slot.tool) { p.slot.tool.body.name = "seed tray"; }
+    if (p.slot.tool) { p.slot.tool.body.type = "seed_tray"; }
     const { container } = renderPoint(p);
     expect(container.querySelectorAll("#SeedTrayPattern").length).toEqual(1);
   });
 
   it("renders trough", () => {
     const p = fakeProps();
-    p.slot.toolSlot.body.gantry_mounted = true;
-    if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
+    p.slot.toolSlot.body.mount_stage = MountStage.X;
+    if (p.slot.tool) { p.slot.tool.body.type = "seed_trough"; }
     const { container } = renderPoint(p);
     expect(container.querySelector("#seed-trough rect")?.getAttribute("width"))
       .toEqual("13.5");
@@ -147,14 +149,28 @@ describe("<ToolSlotPoint/>", () => {
   it("renders rotated trough", () => {
     const p = fakeProps();
     p.mapTransformProps.xySwap = true;
-    p.slot.toolSlot.body.gantry_mounted = true;
-    if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
+    p.slot.toolSlot.body.mount_stage = MountStage.X;
+    if (p.slot.tool) { p.slot.tool.body.type = "seed_trough"; }
     const { container } = renderPoint(p);
     expect(container.querySelector("#seed-trough rect")?.getAttribute("width"))
       .toEqual("13.5");
     expect(
       container.querySelector("#gantry-toolbay-slot rect")?.getAttribute("width"),
     ).toEqual("22.5");
+  });
+
+  it("renders and positions a Y-stage slot", () => {
+    const p = fakeProps();
+    p.slot.toolSlot.body.mount_stage = MountStage.Y;
+    p.slot.toolSlot.body.mount_offset_x = 10;
+    p.slot.toolSlot.body.mount_offset_y = -20;
+    p.botPosition = { x: 100, y: 200, z: 300 };
+    const { container } = renderPoint(p);
+    expect(container.querySelector("#gantry-toolbay-slot")).toBeTruthy();
+    expect(container.querySelector("[id^='toolslot-']")?.innerHTML)
+      .toContain("110");
+    expect(container.querySelector("[id^='toolslot-']")?.innerHTML)
+      .toContain("180");
   });
 
   it("animates tool", () => {

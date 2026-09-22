@@ -4,9 +4,7 @@ import { BlurableInput } from "../ui";
 import { DevSettings } from "../settings/dev/dev_support";
 import { UserEnv } from "../devices/interfaces";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
-import {
-  reduceToolName, ToolName,
-} from "../farm_designer/map/tool_graphics/all_tools";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 import {
   getCustomToolGraphics,
   getCustomToolGraphicsKey,
@@ -30,6 +28,7 @@ export interface CustomToolGraphics {
 
 export interface CustomToolGraphicsInputProps {
   toolName: string;
+  toolType: ToolType;
   dispatch: Function;
   saveFarmwareEnv: SaveFarmwareEnv;
   env: UserEnv;
@@ -48,7 +47,7 @@ export const CustomToolGraphicsInput =
     const customToolGraphics = getCustomToolGraphics(toolName, props.env) || {};
     const saveGraphics = (graphics: CustomToolGraphics) => props.saveFarmwareEnv(
       getCustomToolGraphicsKey(toolName), JSON.stringify(graphics));
-    const customTool = reduceToolName(toolName) == ToolName.tool;
+    const customTool = props.toolType == "none";
     return (DevSettings.futureFeaturesEnabled() && customTool && toolName)
       ? <details className={"custom-tool-graphics-input"}>
         <summary><label>{t("custom tool graphics")}</label></summary>

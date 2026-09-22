@@ -24,6 +24,10 @@ module Points
       integer :water_curve_id, nils: true
       integer :spread_curve_id, nils: true
       integer :height_curve_id, nils: true
+      float :mount_offset_x
+      float :mount_offset_y
+      float :mount_offset_z
+      integer :mount_stage, in: ToolSlot::MOUNT_STAGES
     end
 
     def validate

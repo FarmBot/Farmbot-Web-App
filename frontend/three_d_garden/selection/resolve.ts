@@ -17,9 +17,6 @@ import { getBotKinematics } from "../bot/kinematics";
 import {
   ThreeDLocationSelection, ThreeDObjectSelection,
 } from "../selection_types";
-import {
-  reduceToolName, ToolName,
-} from "../../farm_designer/map/tool_graphics/all_tools";
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { SlotWithTool } from "../../resources/interfaces";
 import { BotPosition } from "../../devices/interfaces";
@@ -28,6 +25,7 @@ import { getWifiRouterWorldPosition } from
   "../bed/objects/utilities_post_position";
 import { sceneObjectPosition } from "../scene_objects";
 import { getBotVersion } from "../bot/bot_versions";
+import { resolveMountPosition } from "../../tools/mount_stage";
 
 const MIN_RING_RADIUS = 35;
 const POPUP_Z_PADDING = 25;
@@ -259,10 +257,12 @@ const resolveSlotObject = (
   if (!slot) { return undefined; }
   const worldPosition =
     getToolSlotRenderPosition(props.config, props.configPosition, slot);
-  const ringYOffset = reduceToolName(slot.tool?.body.name) == ToolName.seedTrough
+  const ringYOffset = slot.tool?.body.type == "seed_trough"
     ? SEED_TROUGH_RING_Y_OFFSET
     : 0;
   const slotBody = slot.toolSlot.body;
+  const locationCoordinate = resolveMountPosition(
+    slotBody, props.currentBotLocation, slotBody.mount_stage);
   return {
     kind: "slot",
     selection,
@@ -278,13 +278,7 @@ const resolveSlotObject = (
       worldPosition.y + ringYOffset,
       worldPosition.z + FIXED_POPUP_Z_OFFSET],
     ringRadius: SLOT_RING_RADIUS,
-    locationCoordinate: {
-      x: slotBody.gantry_mounted
-        ? props.currentBotLocation.x ?? slotBody.x
-        : slotBody.x,
-      y: slotBody.y,
-      z: slotBody.z,
-    },
+    locationCoordinate,
   };
 };
 

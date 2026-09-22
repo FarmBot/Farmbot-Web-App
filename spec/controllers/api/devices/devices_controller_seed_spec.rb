@@ -322,6 +322,13 @@ describe Api::DevicesController do
       else
         expect(slot.tool).to be(nil)
       end
+
+      expected_stage = if slot.gantry_mounted
+                         ToolSlot::MOUNT_STAGE_X
+                       else
+                         ToolSlot::MOUNT_STAGE_NONE
+                       end
+      expect(slot.mount_stage).to eq(expected_stage)
     end
 
     it "seeds accounts with Genesis 1.2 data" do
@@ -637,11 +644,30 @@ describe Api::DevicesController do
       expect(peripherals_water?(device).pin).to be(8)
       expect(peripherals_rotary_tool?(device).pin).to eq(2)
       expect(peripherals_rotary_tool_reverse?(device).pin).to eq(3)
+      expect(device.peripherals.pluck(:label, :type).to_h).to include(
+        "Lighting" => "lighting",
+        "Peripheral 4" => "none",
+        "Peripheral 5" => "none",
+        "Rotary Tool" => "rotary_tool",
+        "Rotary Tool Reverse" => "rotary_tool",
+        "Vacuum" => "vacuum",
+        "Water" => "water",
+      )
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
       expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
       expect(plant_count?(device)).to eq(0)
       expect(sensors_soil_sensor?(device).pin).to eq(59)
       expect(sensors_tool_verification?(device).pin).to eq(63)
+      expect(device.sensors.pluck(:pin, :type).to_h).to include(
+        54 => "current",
+        55 => "current",
+        56 => "current",
+        57 => "current",
+        58 => "current",
+        59 => "soil_moisture",
+        60 => "current",
+        63 => "tool_verification",
+      )
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
       expect(settings_gantry_height?(device)).to eq(120)
@@ -657,6 +683,12 @@ describe Api::DevicesController do
       expect(tool_slots_slot_7?(device).name).to eq("Slot")
       expect(tool_slots_slot_8?(device).name).to eq("Slot")
       expect(tool_slots_slot_9?(device).name).to eq("Slot")
+      expect(tool_slots_slot_1?(device).mount_stage)
+        .to eq(ToolSlot::MOUNT_STAGE_NONE)
+      expect(tool_slots_slot_8?(device).mount_stage)
+        .to eq(ToolSlot::MOUNT_STAGE_X)
+      expect(tool_slots_slot_9?(device).mount_stage)
+        .to eq(ToolSlot::MOUNT_STAGE_X)
 
       check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
       check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
@@ -677,6 +709,24 @@ describe Api::DevicesController do
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
       expect(tools_weeder?(device)).to be_kind_of(Tool)
       expect(tools_rotary?(device)).to be_kind_of(Tool)
+      expect(device.tools.pluck(:name, :type).to_h).to include(
+        "Rotary Tool" => "rotary_tool",
+        "Seed Bin" => "seed_bin",
+        "Seed Tray" => "seed_tray",
+        "Seed Trough 1" => "seed_trough",
+        "Seed Trough 2" => "seed_trough",
+        "Seeder" => "seeder",
+        "Soil Sensor" => "soil_sensor",
+        "Watering Nozzle" => "watering_nozzle",
+        "Weeder" => "weeder",
+      )
+      expect(tools_seeder?(device).attributes).to include(
+        "effector_offset_x" => 17.5,
+        "effector_offset_y" => 0.0,
+        "effector_offset_z" => 80.0,
+      )
+      expect(tools_soil_sensor?(device).effector_offset_z).to eq(60)
+      expect(tools_rotary?(device).effector_offset_z).to eq(80)
       expect(sequences_pickup_seed?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)

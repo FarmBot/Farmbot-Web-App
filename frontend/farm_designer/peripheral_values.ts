@@ -9,12 +9,16 @@ export const mapPeripheralValues = (
 ): PeripheralValues =>
   uniq(peripherals)
     .map(peripheral => {
-      const label = peripheral.body.label;
       const pinStatus = isNumber(peripheral.body.pin)
         ? pins[peripheral.body.pin]
         : undefined;
       const value = pinStatus ? pinStatus.value > 0 : false;
-      return { label, value };
+      return {
+        uuid: peripheral.uuid,
+        type: peripheral.body.type,
+        pin: peripheral.body.pin,
+        value,
+      };
     });
 
 export const selectPeripheralValues = (() => {
@@ -28,7 +32,7 @@ export const selectPeripheralValues = (() => {
       .map(peripheral => {
         const pin = peripheral.body.pin;
         const value = isNumber(pin) ? pins[pin]?.value : undefined;
-        return `${peripheral.uuid}:${peripheral.body.label}:${pin}:${value}`;
+        return `${peripheral.uuid}:${peripheral.body.type}:${pin}:${value}`;
       })
       .join("|");
     if (key === lastKey && lastResult) { return lastResult; }

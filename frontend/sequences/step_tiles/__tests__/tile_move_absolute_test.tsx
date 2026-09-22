@@ -24,6 +24,7 @@ import { CollapseProps } from "@blueprintjs/core";
 import {
   findElementByType,
 } from "../../../__test_support__/react_element_search";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 let overwriteSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
@@ -104,7 +105,7 @@ describe("<TileMoveAbsolute />", () => {
   it("disables x-offset", () => {
     const p = fakeProps();
     const toolSlot = fakeToolSlot();
-    toolSlot.body.gantry_mounted = true;
+    toolSlot.body.mount_stage = MountStage.X;
     toolSlot.body.tool_id = 1;
     const tool = fakeTool();
     tool.body.id = 1;
@@ -112,7 +113,7 @@ describe("<TileMoveAbsolute />", () => {
     const toolKind: Tool = { kind: "tool", args: { tool_id: 1 } };
     p.currentStep.args.location = toolKind;
     const block = new TileMoveAbsolute(p);
-    expect(block.gantryMounted).toBeTruthy();
+    expect(block.mountStage).toEqual(MountStage.X);
     const xOffset = block.OffsetInput("x") as React.ReactElement<{
       children: [React.ReactNode, React.ReactElement<{ disabled: boolean }>];
     }>;
@@ -121,6 +122,25 @@ describe("<TileMoveAbsolute />", () => {
       children: [React.ReactNode, React.ReactElement<{ disabled: boolean }>];
     }>;
     expect(yOffset.props.children[1].props.disabled).toBeFalsy();
+  });
+
+  it("disables offsets through the selected mount stage", () => {
+    const p = fakeProps();
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.mount_stage = MountStage.Y;
+    toolSlot.body.tool_id = 1;
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.resources = buildResourceIndex([toolSlot, tool]).index;
+    p.currentStep.args.location = { kind: "tool", args: { tool_id: 1 } };
+    const block = new TileMoveAbsolute(p);
+    const disabled = (["x", "y", "z"] as const).map(axis => {
+      const input = block.OffsetInput(axis) as React.ReactElement<{
+        children: [React.ReactNode, React.ReactElement<{ disabled: boolean }>];
+      }>;
+      return input.props.children[1].props.disabled;
+    });
+    expect(disabled).toEqual([true, true, false]);
   });
 
   it("renders options on wide screens", () => {

@@ -45,7 +45,9 @@ import { getToolSlotRenderPosition } from "../tool_slot_position";
 import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
@@ -53,6 +55,9 @@ import * as suctionAnimationModule from "../suction_animation";
 import * as wateringAnimationsModule from "../watering_animations";
 import * as mapUtil from "../../../../farm_designer/map/util";
 import { Mode } from "../../../../farm_designer/map/interfaces";
+import {
+  curveTextGeometry, disableCustomToolRaycast,
+} from "../custom_tool";
 
 describe("<Tools />", () => {
   let getModeSpy: jest.SpyInstance;
@@ -89,21 +94,27 @@ describe("<Tools />", () => {
     const tool0 = fakeTool();
     tool0.body.id = 1;
     tool0.body.name = "soil sensor";
+    tool0.body.type = "soil_sensor";
     const tool1 = fakeTool();
     tool1.body.id = 2;
     tool1.body.name = undefined;
+    tool1.body.type = "none";
     const tool2 = fakeTool();
     tool2.body.id = 3;
     tool2.body.name = "weeder";
+    tool2.body.type = "weeder";
     const tool3 = fakeTool();
     tool3.body.id = 4;
     tool3.body.name = "seeder";
+    tool3.body.type = "seeder";
     const tool5 = fakeTool();
     tool5.body.id = 6;
     tool5.body.name = "seed trough 1";
+    tool5.body.type = "seed_trough";
     const tool6 = fakeTool();
     tool6.body.id = 7;
     tool6.body.name = "seed trough 2";
+    tool6.body.type = "seed_trough";
     const toolSlot0 = fakeToolSlot();
     toolSlot0.body.tool_id = tool0.body.id;
     toolSlot0.body.pullout_direction = ToolPulloutDirection.NONE;
@@ -121,10 +132,16 @@ describe("<Tools />", () => {
     toolSlot4.body.pullout_direction = ToolPulloutDirection.NEGATIVE_Y;
     const toolSlot5 = fakeToolSlot();
     toolSlot5.body.tool_id = tool5.body.id;
-    toolSlot5.body.gantry_mounted = true;
+    toolSlot5.body.mount_stage = MountStage.X;
     const toolSlot6 = fakeToolSlot();
     toolSlot6.body.tool_id = tool6.body.id;
-    toolSlot6.body.gantry_mounted = true;
+    toolSlot6.body.mount_stage = MountStage.X;
+    const toolSlot7 = fakeToolSlot();
+    toolSlot7.body.mount_stage = MountStage.Y;
+    toolSlot7.body.mount_offset_x = 12;
+    toolSlot7.body.mount_offset_y = -34;
+    const toolSlot8 = fakeToolSlot();
+    toolSlot8.body.mount_stage = MountStage.Z;
     return [
       { toolSlot: toolSlot0, tool: tool0 },
       { toolSlot: toolSlot1, tool: tool1 },
@@ -133,14 +150,17 @@ describe("<Tools />", () => {
       { toolSlot: toolSlot4, tool: undefined },
       { toolSlot: toolSlot5, tool: tool5 },
       { toolSlot: toolSlot6, tool: tool6 },
+      { toolSlot: toolSlot7, tool: undefined },
+      { toolSlot: toolSlot8, tool: undefined },
     ];
   };
 
-  const savedToolSlots = (toolNames: string[]) =>
-    toolNames.map((name, index) => {
+  const savedToolSlots = (toolTypes: ToolType[]) =>
+    toolTypes.map((toolType, index) => {
       const tool = fakeTool();
       tool.body.id = index + 1;
-      tool.body.name = name;
+      tool.body.name = `tool-${index}`;
+      tool.body.type = toolType;
       const toolSlot = fakeToolSlot();
       toolSlot.body.id = index + 1;
       toolSlot.body.tool_id = tool.body.id;
@@ -257,12 +277,43 @@ describe("<Tools />", () => {
     expect(zAxis.container.querySelector("[name='slot']")).toBeNull();
   });
 
+  it("renders configured slots in their owning frames", () => {
+    const p = fakeProps();
+    p.toolSlots = configuredUserTools();
+    const expectedCounts = [
+      ["stationary", 5],
+      ["y-axis", 1],
+      ["z-axis", 1],
+    ] as const;
+    expectedCounts.forEach(([frame, count]) => {
+      const result = render(<Tools {...p} frame={frame} />);
+      expect(result.container.querySelectorAll("[name='slot']"))
+        .toHaveLength(count);
+      result.unmount();
+    });
+  });
+
   it("normalizes resource slots to explicit mount frames", () => {
     const tools = convertSlotsWithTools(configuredUserTools());
     expect(tools.filter(tool => tool.mountFrame == "stationary"))
       .toHaveLength(5);
     expect(tools.filter(tool => tool.mountFrame == "gantry"))
       .toHaveLength(2);
+    expect(tools.filter(tool => tool.mountFrame == "y-axis"))
+      .toHaveLength(1);
+    expect(tools.filter(tool => tool.mountFrame == "z-axis"))
+      .toHaveLength(1);
+    expect(tools.find(tool => tool.mountFrame == "y-axis"))
+      .toEqual(expect.objectContaining({
+        mount_offset_x: 12,
+        mount_offset_y: -34,
+        mount_offset_z: 0,
+      }));
+    expect(tools.filter(tool => tool.toolType == "seed_trough")
+      .map(tool => tool.toolId))
+      .toEqual([6, 7]);
+    expect(tools.find(tool => tool.toolId == 1)?.toolName)
+      .toEqual("soil sensor");
   });
 
   it("renders user tools", () => {
@@ -270,7 +321,8 @@ describe("<Tools />", () => {
     const useGltfMock = useGLTF as unknown as jest.Mock;
     useGltfMock.mockClear();
     p.toolSlots = configuredUserTools();
-    p.mountedToolName = "weeder";
+    p.mountedToolId = 3;
+    p.mountedToolType = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
     expect(useGltfMock).not.toHaveBeenCalledWith(ASSETS.models.toolbay3, expect.anything());
@@ -282,10 +334,40 @@ describe("<Tools />", () => {
     expect(container).toContainHTML("seedTroughWithAssembly");
   });
 
+  it("renders the custom tool name on the mounted nozzle model", () => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots(["none"]);
+    p.mountedToolId = 1;
+    p.mountedToolType = "none";
+    const { container } = render(<Tools {...p} />);
+    expect(container.querySelectorAll(".text")).toHaveLength(2);
+  });
+
+  it("curves the custom tool name geometry", () => {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute([
+      -10, -5, 0,
+      10, -5, 0,
+      0, 5, 0,
+    ], 3));
+    curveTextGeometry(geometry);
+    const positions = geometry.getAttribute("position");
+    expect(positions.getX(1)).toBeLessThan(10);
+    expect(positions.getZ(1)).toBeLessThan(0);
+    const curvedPosition = positions.getZ(1);
+    curveTextGeometry(geometry);
+    expect(positions.getZ(1)).toEqual(curvedPosition);
+  });
+
+  it("disables custom tool name raycasting", () => {
+    expect(disableCustomToolRaycast()).toBeUndefined();
+  });
+
   it("skips frame callbacks for non-rotary tools", () => {
     const p = fakeProps();
-    p.toolSlots = savedToolSlots(["soil sensor", "weeder", "seeder"]);
-    p.mountedToolName = "weeder";
+    p.toolSlots = savedToolSlots(["soil_sensor", "weeder", "seeder"]);
+    p.mountedToolId = 2;
+    p.mountedToolType = "weeder";
     (threeFiber.useFrame as unknown as jest.Mock).mockClear();
     render(<Tools {...p} />);
     expect(threeFiber.useFrame).not.toHaveBeenCalled();
@@ -293,7 +375,7 @@ describe("<Tools />", () => {
 
   it("keeps frame callback for active rotary tool", () => {
     const p = fakeProps();
-    p.config.tool = "rotaryTool";
+    p.config.tool = "rotary_tool";
     p.config.rotary = 1;
     p.toolSlots = undefined;
     (threeFiber.useFrame as unknown as jest.Mock).mockClear();
@@ -304,7 +386,8 @@ describe("<Tools />", () => {
   it("compares only tools inputs that affect rendering", () => {
     const previous = fakeProps();
     previous.toolSlots = configuredUserTools();
-    previous.mountedToolName = "weeder";
+    previous.mountedToolId = 3;
+    previous.mountedToolType = "weeder";
     previous.dispatch = mockDispatch;
     const unrelatedConfig = {
       ...previous,
@@ -313,7 +396,11 @@ describe("<Tools />", () => {
     expect(toolsPropsEqual(previous, unrelatedConfig)).toBeTruthy();
     expect(toolsPropsEqual(previous, {
       ...previous,
-      mountedToolName: "seeder",
+      mountedToolId: 4,
+    })).toBeFalsy();
+    expect(toolsPropsEqual(previous, {
+      ...previous,
+      mountedToolType: "seeder",
     })).toBeFalsy();
     expect(toolsPropsEqual(previous, {
       ...previous,
@@ -349,7 +436,8 @@ describe("<Tools />", () => {
     const p = fakeProps();
     const useGltfMock = useGLTF as unknown as jest.Mock;
     p.toolSlots = configuredUserTools();
-    p.mountedToolName = "weeder";
+    p.mountedToolId = 3;
+    p.mountedToolType = "weeder";
     useGltfMock.mockClear();
     const { rerender } = render(<Tools {...p} />);
     const initialCalls = useGltfMock.mock.calls.length;
@@ -363,7 +451,8 @@ describe("<Tools />", () => {
     const p = fakeProps();
     const useGltfMock = useGLTF as unknown as jest.Mock;
     p.toolSlots = [];
-    p.mountedToolName = "seeder";
+    p.mountedToolId = 1;
+    p.mountedToolType = "seeder";
     useGltfMock.mockClear();
     const { rerender } = render(<Tools {...p} />);
     const initialSeederCalls = useGltfMock.mock.calls
@@ -383,9 +472,11 @@ describe("<Tools />", () => {
     const staticTool = fakeTool();
     staticTool.body.id = 1;
     staticTool.body.name = "soil sensor";
+    staticTool.body.type = "soil_sensor";
     const gantryTool = fakeTool();
     gantryTool.body.id = 2;
     gantryTool.body.name = "weeder";
+    gantryTool.body.type = "weeder";
     const staticSlot = fakeToolSlot();
     staticSlot.body.id = 1;
     staticSlot.body.tool_id = staticTool.body.id;
@@ -395,12 +486,13 @@ describe("<Tools />", () => {
     gantrySlot.body.id = 2;
     gantrySlot.body.tool_id = gantryTool.body.id;
     gantrySlot.body.y = 200;
-    gantrySlot.body.gantry_mounted = true;
+    gantrySlot.body.mount_stage = MountStage.X;
     p.toolSlots = [
       { toolSlot: staticSlot, tool: staticTool },
       { toolSlot: gantrySlot, tool: gantryTool },
     ];
-    p.mountedToolName = "weeder";
+    p.mountedToolId = 2;
+    p.mountedToolType = "weeder";
 
     const { container, rerender } = render(<Tools {...p} />);
     const mountedBefore =
@@ -432,6 +524,7 @@ describe("<Tools />", () => {
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.x = 100;
     toolSlot.body.y = 200;
@@ -448,6 +541,7 @@ describe("<Tools />", () => {
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
@@ -457,28 +551,31 @@ describe("<Tools />", () => {
     expect(container).toContainHTML(`rotation="0,0,${Math.PI / 2}"`);
   });
 
-  it("uses mirrored bot x for gantry-mounted tools when mirrorX is active", () => {
+  it("uses mirrored bot x for X-stage tools when mirrorX is active", () => {
     const p = fakeProps();
     p.config.mirrorX = true;
     p.configPosition.x = p.config.botSizeX - p.configPosition.x;
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
-    toolSlot.body.gantry_mounted = true;
+    toolSlot.body.mount_stage = MountStage.X;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
     expect(container).toContainHTML("position=\"1050,-680,391\"");
   });
 
-  it("calculates static and gantry tool slot render positions", () => {
+  it("calculates mount-stage tool slot render positions", () => {
     const config = clone(INITIAL);
     const configPosition = clone(INITIAL_POSITION);
     config.mirrorX = true;
     config.botSizeX = 1000;
     configPosition.x = 200;
+    configPosition.y = 300;
+    configPosition.z = 40;
     const toolSlot = fakeToolSlot();
     toolSlot.body.x = 100;
     toolSlot.body.y = 200;
@@ -487,24 +584,47 @@ describe("<Tools />", () => {
       toolSlot,
       tool: undefined,
     }).z).toEqual(421);
-    toolSlot.body.gantry_mounted = true;
-    expect(getToolSlotRenderPosition(config, configPosition, {
+    toolSlot.body.mount_stage = MountStage.X;
+    const xPosition = getToolSlotRenderPosition(config, configPosition, {
       toolSlot,
       tool: undefined,
-    }).x).toEqual(550);
+    });
+    expect(xPosition.x).toEqual(550);
+    toolSlot.body.mount_offset_x = 25;
+    const offsetXPosition = getToolSlotRenderPosition(config, configPosition, {
+      toolSlot,
+      tool: undefined,
+    });
+    expect(Math.abs(offsetXPosition.x - xPosition.x)).toEqual(25);
+    toolSlot.body.mount_stage = MountStage.Y;
+    toolSlot.body.mount_offset_y = -15;
+    const yPosition = getToolSlotRenderPosition(config, configPosition, {
+      toolSlot,
+      tool: undefined,
+    });
+    expect(yPosition.x).toEqual(offsetXPosition.x);
+    expect(yPosition.y).not.toEqual(xPosition.y);
+    toolSlot.body.mount_stage = MountStage.Z;
+    toolSlot.body.mount_offset_z = 6;
+    const zPosition = getToolSlotRenderPosition(config, configPosition, {
+      toolSlot,
+      tool: undefined,
+    });
+    expect(zPosition.z).not.toEqual(yPosition.z);
   });
 
-  it("doesn't mirror gantry-mounted tool y when mirrorY is active", () => {
+  it("doesn't mirror X-stage tool y when mirrorY is active", () => {
     const p = fakeProps();
     p.config.mirrorY = true;
     p.configPosition.y = p.config.botSizeY - p.configPosition.y;
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
-    toolSlot.body.gantry_mounted = true;
+    toolSlot.body.mount_stage = MountStage.X;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
     expect(container).toContainHTML("position=\"-1050,-680,391\"");
@@ -515,8 +635,10 @@ describe("<Tools />", () => {
     p.config.vacuum = true;
     const tool = fakeTool();
     tool.body.name = "seeder";
+    tool.body.type = "seeder";
     p.toolSlots = [];
-    p.mountedToolName = "seeder";
+    p.mountedToolId = 1;
+    p.mountedToolType = "seeder";
     render(<Tools {...p} />);
     expect(suctionAnimationSpy).toHaveBeenCalled();
     expect(suctionAnimationSpy).toHaveBeenCalledWith(
@@ -537,8 +659,10 @@ describe("<Tools />", () => {
       p.config.rotary = input;
       const tool = fakeTool();
       tool.body.name = "rotary tool";
+      tool.body.type = "rotary_tool";
       p.toolSlots = [];
-      p.mountedToolName = "rotary tool";
+      p.mountedToolId = 1;
+      p.mountedToolType = "rotary_tool";
       render(<Tools {...p} />);
       expect(mockRotation.z).toEqual(expected);
       dateSpy.mockRestore();
@@ -550,8 +674,10 @@ describe("<Tools />", () => {
     p.config.waterFlow = false;
     const tool = fakeTool();
     tool.body.name = "watering nozzle";
+    tool.body.type = "watering_nozzle";
     p.toolSlots = [];
-    p.mountedToolName = "watering nozzle";
+    p.mountedToolId = 1;
+    p.mountedToolType = "watering_nozzle";
     render(<Tools {...p} />);
     expect(wateringAnimationsSpy).not.toHaveBeenCalled();
   });
@@ -561,6 +687,7 @@ describe("<Tools />", () => {
     p.config.waterFlow = true;
     const tool = fakeTool();
     tool.body.name = "watering nozzle";
+    tool.body.type = "watering_nozzle";
     const toolSlot = fakeToolSlot();
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
@@ -575,6 +702,7 @@ describe("<Tools />", () => {
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
@@ -595,6 +723,7 @@ describe("<Tools />", () => {
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
@@ -674,6 +803,7 @@ describe("<Tools />", () => {
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
+    tool.body.type = "soil_sensor";
     const toolSlot = fakeToolSlot();
     toolSlot.body.id = 1;
     toolSlot.body.tool_id = tool.body.id;
@@ -687,15 +817,16 @@ describe("<Tools />", () => {
   it("doesn't clone materials for initially opaque tools", () => {
     const p = fakeProps();
     p.toolSlots = savedToolSlots([
-      "soil sensor",
+      "soil_sensor",
       "weeder",
       "seeder",
-      "watering nozzle",
-      "rotary tool",
-      "seed bin",
-      "seed tray",
+      "watering_nozzle",
+      "rotary_tool",
+      "seed_bin",
+      "seed_tray",
     ]);
-    p.mountedToolName = "weeder";
+    p.mountedToolId = 2;
+    p.mountedToolType = "weeder";
     const metrics: OpacityMetrics = {
       traversals: 0,
       clones: 0,
@@ -727,7 +858,8 @@ describe("<Tools />", () => {
   it("restores opacity when a faded tool becomes opaque", () => {
     const p = fakeProps();
     p.toolSlots = savedToolSlots(["weeder"]);
-    p.mountedToolName = "weeder";
+    p.mountedToolId = 1;
+    p.mountedToolType = "weeder";
     const metrics: OpacityMetrics = {
       traversals: 0,
       clones: 0,
@@ -743,7 +875,7 @@ describe("<Tools />", () => {
       });
     });
     TestRenderer.act(() => {
-      view?.update(<Tools {...p} mountedToolName={"seeder"} />);
+      view?.update(<Tools {...p} mountedToolId={2} />);
     });
 
     expect(metrics.traversals).toEqual(2);

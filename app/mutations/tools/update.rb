@@ -9,6 +9,11 @@ module Tools
       string :name
       integer :flow_rate_ml_per_s
       float :seeder_tip_z_offset
+      string :type, in: Tool::TYPES
+      float :effector_offset_x
+      float :effector_offset_y
+      float :effector_offset_z
+      boolean :utm_mountable
     end
 
     def validate

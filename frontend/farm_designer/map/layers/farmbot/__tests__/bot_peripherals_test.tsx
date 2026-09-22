@@ -9,7 +9,9 @@ describe("<BotPeripherals/>", () => {
   const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
 
   const fakeProps = (): BotPeripheralsProps => ({
-    peripheralValues: [{ label: "", value: false }],
+    peripheralValues: [{
+      uuid: "Peripheral.1.1", type: "none", pin: 1, value: false,
+    }],
     position: { x: 0, y: 0, z: 0 },
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
@@ -31,14 +33,14 @@ describe("<BotPeripherals/>", () => {
     return Number(value);
   };
 
-  it.each<[string]>([
-    ["lights"],
-    ["vacuum"],
-    ["water"],
-    ["rotary"],
-  ])("doesn't display %s", (peripheralName) => {
+  it.each<[string, "lighting" | "vacuum" | "water" | "rotary_tool"]>([
+    ["lights", "lighting"],
+    ["vacuum", "vacuum"],
+    ["water", "water"],
+    ["rotary", "rotary_tool"],
+  ])("doesn't display %s", (peripheralName, type) => {
     const p = fakeProps();
-    p.peripheralValues[0].label = peripheralName;
+    p.peripheralValues[0].type = type;
     p.peripheralValues[0].value = false;
     const { container } = renderPeripherals(p);
     expect(container.querySelectorAll(`#${peripheralName}`).length).toEqual(0);
@@ -59,7 +61,7 @@ describe("<BotPeripherals/>", () => {
 
   it("displays light", () => {
     const p = fakeProps();
-    p.peripheralValues[0].label = "lights";
+    p.peripheralValues[0].type = "lighting";
     p.peripheralValues[0].value = true;
     const { container } = renderPeripherals(p);
     expect(container.querySelectorAll("#lights").length).toEqual(1);
@@ -84,7 +86,7 @@ describe("<BotPeripherals/>", () => {
 
   it("displays light: X&Y swapped", () => {
     const p = fakeProps();
-    p.peripheralValues[0].label = "lights";
+    p.peripheralValues[0].type = "lighting";
     p.peripheralValues[0].value = true;
     p.mapTransformProps.xySwap = true;
     const { container } = renderPeripherals(p);
@@ -110,7 +112,7 @@ describe("<BotPeripherals/>", () => {
 
   it("displays water", () => {
     const p = fakeProps();
-    p.peripheralValues[0].label = "water valve";
+    p.peripheralValues[0].type = "water";
     p.peripheralValues[0].value = true;
     const { container } = renderPeripherals(p);
     expect(container.querySelectorAll("#water").length).toEqual(1);
@@ -125,7 +127,7 @@ describe("<BotPeripherals/>", () => {
 
   it("displays vacuum", () => {
     const p = fakeProps();
-    p.peripheralValues[0].label = "vacuum pump";
+    p.peripheralValues[0].type = "vacuum";
     p.peripheralValues[0].value = true;
     const { container } = renderPeripherals(p);
     expect(container.querySelectorAll("#vacuum").length).toEqual(1);
@@ -139,7 +141,7 @@ describe("<BotPeripherals/>", () => {
 
   it("displays rotary", () => {
     const p = fakeProps();
-    p.peripheralValues[0].label = "rotary tool";
+    p.peripheralValues[0].type = "rotary_tool";
     p.peripheralValues[0].value = true;
     const { container } = renderPeripherals(p);
     expect(container.querySelectorAll("#rotary").length).toEqual(1);

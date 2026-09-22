@@ -5,7 +5,11 @@ require "simplecov"
 #Ignore anything with the word "spec" in it. No need to test your tests.
 SimpleCov.start do
   skip "/spec/"
-  skip "lib/tasks"
+  skip do |source_file|
+    path = source_file.project_filename.to_s
+    path.start_with?("lib/") &&
+      path != "lib/rabbit_workers.rb"
+  end
   skip "config/initializers"
 end
 SimpleCov.coverage_dir("coverage_api")

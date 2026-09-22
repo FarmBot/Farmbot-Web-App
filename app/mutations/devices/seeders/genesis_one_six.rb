@@ -3,6 +3,15 @@ module Devices
     class GenesisOneSix < GenesisOneFive
       FIRMWARE_HARDWARE = FbosConfig::FARMDUINO_K16
 
+      def sensors_all_current
+        add_sensor(55, ToolNames::WATER_LOAD_SENSE, ANALOG)
+        add_sensor(54, ToolNames::LIGHTING_LOAD_SENSE, ANALOG)
+        add_sensor(58, ToolNames::VACUUM_LOAD_SENSE, ANALOG)
+        add_sensor(57, ToolNames::PERIPHERAL_4_LOAD_SENSE, ANALOG)
+        add_sensor(56, ToolNames::PERIPHERAL_5_LOAD_SENSE, ANALOG)
+        add_sensor(60, ToolNames::ROTARY_TOOL_LOAD_SENSE, ANALOG)
+      end
+
       def peripherals_rotary_tool
         add_peripheral(2, ToolNames::ROTARY_TOOL)
       end
@@ -24,7 +33,8 @@ module Devices
                       z: TROUGH_Z,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
-                      gantry_mounted: true)
+                      gantry_mounted: true,
+                      mount_stage: MountStage::X)
       end
 
       def tool_slots_slot_9
@@ -33,12 +43,16 @@ module Devices
                       z: TROUGH_Z,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
-                      gantry_mounted: true)
+                      gantry_mounted: true,
+                      mount_stage: MountStage::X)
       end
 
       def tools_rotary
         @tools_rotary ||=
-          add_tool(ToolNames::ROTARY_TOOL)
+          add_tool(ToolNames::ROTARY_TOOL,
+                   effector_offset_x: 0,
+                   effector_offset_y: 0,
+                   effector_offset_z: 80)
       end
 
       def sequences_mow_all_weeds

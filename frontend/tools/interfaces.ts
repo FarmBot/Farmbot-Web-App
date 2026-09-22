@@ -6,7 +6,9 @@ import {
 } from "farmbot";
 import { BotOriginQuadrant } from "../farm_designer/interfaces";
 import { BotState, BotPosition, UserEnv } from "../devices/interfaces";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 import { MovementState } from "../interfaces";
 import { PeripheralValues } from
@@ -26,10 +28,12 @@ export interface AddToolProps {
 
 export interface AddToolState {
   toolName: string;
+  toolType: ToolType;
+  utmMountable: boolean;
   toAdd: string[];
   uuid: UUID | undefined;
   flowRate: number;
-  tipZOffset: number;
+  effectorOffset: Record<Xyz, number>;
 }
 
 export interface EditToolProps {
@@ -44,8 +48,10 @@ export interface EditToolProps {
 
 export interface EditToolState {
   toolName: string;
+  toolType: ToolType;
+  utmMountable: boolean;
   flowRate: number;
-  tipZOffset: number;
+  effectorOffset: Record<Xyz, number>;
 }
 
 export interface ToolTransformProps {
@@ -90,6 +96,7 @@ export interface ToolSlotInventoryItemProps {
 
 export interface ToolInventoryItemProps {
   toolName: string;
+  toolType: ToolType;
   toolId: number | undefined;
   mounted: boolean;
   active: boolean;
@@ -121,9 +128,15 @@ export interface EditToolSlotState {
   saveError?: boolean;
 }
 
-export interface GantryMountedInputProps {
-  gantryMounted: boolean;
-  onChange(update: { gantry_mounted: boolean }): void;
+export interface MountStageInputProps {
+  mountStage: MountStage;
+  onChange(update: { mount_stage: MountStage }): void;
+}
+
+export interface MountOffsetInputProps {
+  mountStage: MountStage;
+  value: Record<Xyz, number>;
+  onChange(update: Partial<TaggedToolSlotPointer["body"]>): void;
 }
 
 export interface EditToolSlotMetaProps {
@@ -147,6 +160,7 @@ interface ToolInputPropsBase {
 export interface ToolSelectionProps extends ToolInputPropsBase {
   filterSelectedTool: boolean;
   filterActiveTools: boolean;
+  filterUtmMountable: boolean;
   usePortal?: boolean;
 }
 
@@ -156,7 +170,7 @@ export interface ToolInputRowProps extends ToolInputPropsBase {
 
 export interface SlotLocationInputRowProps {
   slotLocation: Record<Xyz, number>;
-  gantryMounted: boolean;
+  mountStage: MountStage;
   onChange(update: Partial<Record<Xyz, number>>): void;
   botPosition: BotPosition;
   botOnline?: boolean;

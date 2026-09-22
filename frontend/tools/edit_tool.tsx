@@ -5,30 +5,33 @@ import {
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
-import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
+import {
+  TaggedTool, SpecialStatus, TaggedToolSlotPointer, Xyz,
+} from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
   selectAllTools,
 } from "../resources/selectors";
-import { Help, SaveBtn } from "../ui";
+import { DropDownItem, FBSelect, Help, SaveBtn } from "../ui";
 import { edit, destroy, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { error } from "../toast/toast";
-import { EditToolProps, EditToolState } from "./interfaces";
+import {
+  EditToolProps, EditToolState,
+} from "./interfaces";
 import { betterCompact } from "../util";
 import { CustomToolGraphicsInput } from "./custom_tool_graphics";
 import {
   reduceFarmwareEnv, saveOrEditFarmwareEnv,
 } from "../farmware/state_to_props";
 import { Path } from "../internal_urls";
-import {
-  reduceToolName, ToolName,
-} from "../farm_designer/map/tool_graphics/all_tools";
 import { ToolTips } from "../constants";
 import * as deviceActions from "../devices/actions";
 import { NavigationContext } from "../routes_helpers";
 import { Navigate, NavigateFunction } from "react-router";
+import { XYZ } from "../devices/constants";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -66,20 +69,72 @@ export const WaterFlowRateInput = (props: WaterFlowRateInputProps) => {
   </div>;
 };
 
-export interface TipZOffsetInputProps {
-  value: number;
-  onChange(value: number): void;
+export interface EffectorOffsetInputProps {
+  value: Record<Xyz, number>;
+  onChange(axis: Xyz, value: number): void;
 }
 
-export const TipZOffsetInput = (props: TipZOffsetInputProps) => {
-  return <div className={"row grid-exp-3"}>
-    <label>{t("Seeder Tip Z Offset (mm)")}</label>
-    <input
-      value={props.value}
-      type={"number"}
-      onChange={e => props.onChange(parseInt(e.currentTarget.value))} />
+export const EffectorOffsetInput = (props: EffectorOffsetInputProps) => {
+  return <div className={"effector-offset-input row grid-4-col"}>
+    <label>{t("Effector Offset")}</label>
+    {XYZ.map(axis =>
+      <div key={axis}>
+        <label>
+          {t("{{axis}} (mm)", { axis: axis.toUpperCase() })}
+        </label>
+        <input
+          name={`effectorOffset${axis.toUpperCase()}`}
+          value={props.value[axis]}
+          type={"number"}
+          step={"any"}
+          onChange={e =>
+            props.onChange(axis, parseFloat(e.currentTarget.value))} />
+      </div>)}
   </div>;
 };
+
+export const TOOL_TYPE_CHOICES = (): DropDownItem[] => [
+  { label: t("Rotary Tool"), value: "rotary_tool" },
+  { label: t("Seed Bin"), value: "seed_bin" },
+  { label: t("Seed Tray"), value: "seed_tray" },
+  { label: t("Seed Trough"), value: "seed_trough" },
+  { label: t("Seeder"), value: "seeder" },
+  { label: t("Soil Sensor"), value: "soil_sensor" },
+  { label: t("Watering Nozzle"), value: "watering_nozzle" },
+  { label: t("Weeder"), value: "weeder" },
+  { label: t("None"), value: "none" },
+];
+
+export interface ToolTypeInputProps {
+  value: ToolType;
+  onChange(value: ToolType): void;
+}
+
+export const ToolTypeInput = (props: ToolTypeInputProps) => {
+  const choices = TOOL_TYPE_CHOICES();
+  return <div className="tool-type-input row grid-exp-2">
+    <label>{t("Type")}</label>
+    <FBSelect
+      list={choices}
+      selectedItem={choices.find(choice => choice.value == props.value)}
+      onChange={choice => props.onChange(choice.value as ToolType)} />
+  </div>;
+};
+
+export interface UtmMountableInputProps {
+  value: boolean;
+  onChange(value: boolean): void;
+}
+
+export const UtmMountableInput = (props: UtmMountableInputProps) =>
+  <div className="utm-mountable-input row grid-exp-1">
+    <label>{t("UTM Mountable")}</label>
+    <input
+      name="utmMountable"
+      type="checkbox"
+      checked={props.value}
+      onChange={() => props.onChange(!props.value)} />
+  </div>;
 
 export const mapStateToProps = (props: Everything): EditToolProps => ({
   findTool: (id: string) =>
@@ -95,10 +150,17 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
 });
 
 export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
+  // eslint-disable-next-line complexity
   state: EditToolState = {
     toolName: this.tool?.body.name || "",
+    toolType: this.tool?.body.type ?? "none",
+    utmMountable: this.tool?.body.utm_mountable ?? true,
     flowRate: this.tool?.body.flow_rate_ml_per_s || 0,
-    tipZOffset: this.tool?.body.seeder_tip_z_offset || 0,
+    effectorOffset: {
+      x: this.tool?.body.effector_offset_x ?? 0,
+      y: this.tool?.body.effector_offset_y ?? 0,
+      z: this.tool?.body.effector_offset_z ?? 0,
+    },
   };
 
   get stringyID() { return Path.getSlug(Path.tools()); }
@@ -118,7 +180,11 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   };
 
   changeFlowRate = (flowRate: number) => this.setState({ flowRate });
-  changeTipZOffset = (tipZOffset: number) => this.setState({ tipZOffset });
+  changeToolType = (toolType: ToolType) => this.setState({ toolType });
+  changeEffectorOffset = (axis: Xyz, value: number) =>
+    this.setState(state => ({
+      effectorOffset: { ...state.effectorOffset, [axis]: value },
+    }));
 
   default = (tool: TaggedTool) => {
     const { dispatch } = this.props;
@@ -136,8 +202,12 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           onClick={() => {
             this.props.dispatch(edit(tool, {
               name: toolName,
+              type: this.state.toolType,
+              utm_mountable: this.state.utmMountable,
               flow_rate_ml_per_s: this.state.flowRate,
-              seeder_tip_z_offset: this.state.tipZOffset,
+              effector_offset_x: this.state.effectorOffset.x,
+              effector_offset_y: this.state.effectorOffset.y,
+              effector_offset_z: this.state.effectorOffset.z,
             }));
             this.props.dispatch(save(tool.uuid));
             this.navigate(Path.tools());
@@ -154,9 +224,11 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
             : dispatch(destroy(tool.uuid))} />
       </div>}>
       <div className="edit-tool grid">
-        <ToolSVG toolName={toolName} profile={true} />
+        <ToolSVG toolName={toolName}
+          toolType={this.state.toolType} profile={true} />
         <CustomToolGraphicsInput
           toolName={toolName}
+          toolType={this.state.toolType}
           dispatch={this.props.dispatch}
           saveFarmwareEnv={this.props.saveFarmwareEnv}
           env={this.props.env} />
@@ -166,12 +238,15 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
             value={toolName}
             onChange={e => this.setState({ toolName: e.currentTarget.value })} />
         </div>
-        {reduceToolName(toolName) == ToolName.wateringNozzle &&
+        <ToolTypeInput value={this.state.toolType}
+          onChange={this.changeToolType} />
+        <UtmMountableInput value={this.state.utmMountable}
+          onChange={utmMountable => this.setState({ utmMountable })} />
+        <EffectorOffsetInput value={this.state.effectorOffset}
+          onChange={this.changeEffectorOffset} />
+        {this.state.toolType == "watering_nozzle" &&
           <WaterFlowRateInput value={this.state.flowRate}
             onChange={this.changeFlowRate} />}
-        {reduceToolName(toolName) == ToolName.seeder &&
-          <TipZOffsetInput value={this.state.tipZOffset}
-            onChange={this.changeTipZOffset} />}
         <p className="name-error">
           {nameTaken ? t("Name already taken.") : ""}
         </p>

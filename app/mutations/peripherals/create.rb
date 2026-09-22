@@ -4,6 +4,7 @@ module Peripherals
       model :device, class: Device
       integer :pin
       string :label
+      string :type, in: Peripheral::TYPES
     end
 
     def execute

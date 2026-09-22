@@ -51,6 +51,7 @@ describe("<PeripheralList />", () => {
           pin: 13,
           label: "GPIO 13 - LED",
           mode: 0,
+          type: "lighting",
         }
       },
       {
@@ -62,6 +63,7 @@ describe("<PeripheralList />", () => {
           pin: 2,
           label: "GPIO 2",
           mode: 0,
+          type: "none",
         }
       },
     ];
@@ -105,6 +107,9 @@ describe("<PeripheralList />", () => {
     expect(last?.textContent).toEqual("GPIO 13 - LED");
     expect(pinNumbers[pinNumbers.length - 1]?.textContent).toEqual("13");
     expect(buttons[buttons.length - 1]?.textContent).toMatch(/^(1|on)$/);
+    const typeEmojis = container.querySelectorAll(".pin-type-emoji");
+    expect(Array.from(typeEmojis).map(emoji => emoji.textContent))
+      .toEqual(["", "💡"]);
   });
 
   it("renders analog peripherals", () => {

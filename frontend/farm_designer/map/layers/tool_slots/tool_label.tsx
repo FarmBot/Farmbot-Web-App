@@ -1,7 +1,9 @@
 import React from "react";
 import { Color } from "../../../../ui";
 import { BotOriginQuadrant } from "../../../interfaces";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 
 enum Anchor {
   start = 0,
@@ -14,10 +16,10 @@ export const textAnchorPosition = (
   pulloutDirection: ToolPulloutDirection,
   quadrant: BotOriginQuadrant,
   xySwap: boolean,
-  gantryMounted: boolean,
+  mountStage: MountStage,
 ): { x: number, y: number, anchor: "start" | "middle" | "end" } => {
   const rawAnchor = () => {
-    const noDirection = !pulloutDirection || gantryMounted;
+    const noDirection = !pulloutDirection || mountStage != MountStage.NONE;
     const noDirectionXY = xySwap
       ? ToolPulloutDirection.POSITIVE_Y
       : ToolPulloutDirection.POSITIVE_X;
@@ -60,15 +62,15 @@ interface ToolLabelProps {
   pulloutDirection: ToolPulloutDirection;
   quadrant: BotOriginQuadrant;
   xySwap: boolean;
-  gantryMounted: boolean;
+  mountStage: MountStage;
 }
 
 export const ToolLabel = (props: ToolLabelProps) => {
   const {
-    toolName, hovered, x, y, pulloutDirection, quadrant, xySwap, gantryMounted,
+    toolName, hovered, x, y, pulloutDirection, quadrant, xySwap, mountStage,
   } = props;
   const labelAnchor =
-    textAnchorPosition(pulloutDirection, quadrant, xySwap, gantryMounted);
+    textAnchorPosition(pulloutDirection, quadrant, xySwap, mountStage);
   return <text textAnchor={labelAnchor.anchor}
     visibility={hovered ? "visible" : "hidden"}
     x={x}

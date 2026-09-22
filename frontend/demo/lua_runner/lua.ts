@@ -276,8 +276,8 @@ function dismount_tool()
     elseif slot_dir == 0 then
         toast("Tool slot must have a direction", "error")
         return
-    elseif slot.gantry_mounted then
-        toast("Tool slot cannot be gantry mounted", "error")
+    elseif (slot.mount_stage or 0) ~= 0 then
+        toast("Tool slot cannot be axis mounted", "error")
         return
     end
 
@@ -566,8 +566,8 @@ function mount_tool(input)
     elseif slot_dir == 0 then
         toast("Tool slot must have a direction", "error")
         return
-    elseif slot.gantry_mounted then
-        toast("Tool slot cannot be gantry mounted", "error")
+    elseif (slot.mount_stage or 0) ~= 0 then
+        toast("Tool slot cannot be axis mounted", "error")
         return
     end
 

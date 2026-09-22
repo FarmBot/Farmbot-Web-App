@@ -16,11 +16,15 @@ class Tool < ApplicationRecord
   INDEX_QUERY = BASE + ' "tools"."device_id" = %s;'
   SHOW_QUERY = BASE + ' "tools"."id" = %s AND "tools"."device_id" = %s;'
   IN_USE = "Tool in use by the following sequences: %s"
+  TYPES = %w[rotary_tool seed_bin seed_tray seed_trough seeder soil_sensor watering_nozzle weeder none].freeze
+  TYPES_ERR = "must be one of #{TYPES.join(", ")}. %{value} is not valid."
 
+  self.inheritance_column = "none"
   belongs_to :device
   has_one :tool_slot
   validates :device, presence: true
   validates :name, uniqueness: { scope: :device }
+  validates :type, inclusion: { in: TYPES, message: TYPES_ERR }
 
   def self.outer_join_slots(device_id)
     self.find_by_sql(INDEX_QUERY % device_id)

@@ -167,7 +167,7 @@ const imageTexturePropsEqual = (
 const getSensorKey = (sensors: TaggedSensor[]) => {
   let key = "";
   sensors.map(sensor => {
-    key += `${sensor.uuid},${sensor.body.label},`;
+    key += `${sensor.uuid},${sensor.body.label},${sensor.body.type},`;
     key += `${sensor.body.mode},${sensor.body.pin}|`;
   });
   return key;

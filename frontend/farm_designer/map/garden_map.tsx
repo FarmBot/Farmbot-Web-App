@@ -607,7 +607,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredToolSlot={this.props.designer.hoveredToolSlot}
     currentPoint={this.currentPoint}
-    botPositionX={this.props.botLocationData.position.x}
+    botPosition={this.props.botLocationData.position}
     interactions={this.interactions("ToolSlot")}
     animate={this.animate}
     slots={this.props.toolSlots} />;

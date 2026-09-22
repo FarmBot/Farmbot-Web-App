@@ -35,6 +35,7 @@ const validFields = (resource: MaybeResourceArg): string[] => {
     case "Device": return DEVICE_FIELDS;
     case "Weed": return WEED_FIELDS;
     case "GenericPointer": return GENERIC_POINTER_FIELDS;
+    case "ToolSlot": return TOOL_SLOT_FIELDS;
     default: return PLANT_FIELDS;
   }
 };
@@ -56,7 +57,10 @@ const BASE_FIELDS: BaseFields =
 const PLANT_FIELDS: PlantFields = (BASE_FIELDS as PlantFields)
   .concat(["openfarm_slug", "plant_stage", "planted_at", "radius"]);
 const TOOL_SLOT_FIELDS: ToolSlotFields = (BASE_FIELDS as ToolSlotFields)
-  .concat(["tool_id", "pullout_direction", "gantry_mounted"]);
+  .concat([
+    "tool_id", "pullout_direction", "mount_stage",
+    "mount_offset_x", "mount_offset_y", "mount_offset_z",
+  ]);
 const GENERIC_POINTER_FIELDS: GenericPointerFields =
   (BASE_FIELDS as GenericPointerFields).concat(["radius"]);
 const WEED_FIELDS: WeedFields = (BASE_FIELDS as WeedFields)

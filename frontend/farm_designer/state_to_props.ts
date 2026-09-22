@@ -156,15 +156,16 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   const deviceAccount = getDeviceAccountSettings(props.resources.index);
   const device = deviceAccount.body;
   const mountedToolId = device.mounted_tool_id;
-  const mountedToolName =
-    maybeFindToolById(props.resources.index, mountedToolId)?.body.name;
+  const mountedTool = maybeFindToolById(props.resources.index, mountedToolId);
   const mountedToolSlotInfo =
     selectAllToolSlotPointers(props.resources.index).filter(slot =>
       slot.body.tool_id == mountedToolId)[0]?.body;
   const firmwareHardware =
     getFwHardwareValue(getFbosConfig(props.resources.index));
   const mountedToolInfo = {
-    name: mountedToolName,
+    id: mountedTool?.body.id,
+    name: mountedTool?.body.name,
+    type: mountedTool?.body.type,
     pulloutDirection: mountedToolSlotInfo?.pullout_direction,
     noUTM: !hasUTM(firmwareHardware),
     flipped: isToolFlipped(mountedToolSlotInfo?.meta),

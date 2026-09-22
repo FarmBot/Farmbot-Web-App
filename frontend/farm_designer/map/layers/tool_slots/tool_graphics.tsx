@@ -1,16 +1,17 @@
 import React from "react";
 import { t } from "../../../../i18next_wrapper";
 import { BotOriginQuadrant } from "../../../interfaces";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../../../constants";
 import { TaggedToolSlotPointer } from "farmbot";
 import { noop } from "lodash";
 import { ToolTransformProps } from "../../../../tools/interfaces";
 import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 import { ToolbaySlot } from "../../tool_graphics/slot";
-import { GantryToolSlot } from "../../tool_graphics/seed_trough";
 import { ToolGraphicProps, ToolProps } from "../../tool_graphics/interfaces";
-import { reduceToolName, Tool } from "../../tool_graphics/all_tools";
+import { Tool } from "../../tool_graphics/all_tools";
 import {
   getToolDirection, slotPulloutAxis, ToolProfile,
 } from "../../profile/tools";
@@ -52,7 +53,7 @@ export const RotatedTool = (props: ToolProps) => {
   return <g id={`rotated-tool-${uuid}`}>
     <defs id="unrotated-tool-source">
       <g id={`unrotated-tool-${uuid}`}>
-        <Tool tool={props.tool}
+        <Tool toolType={props.toolType}
           toolProps={props.toolProps} />
       </g>
     </defs>
@@ -70,6 +71,7 @@ export const setToolHover = (payload: string | undefined) =>
 export interface ToolSlotSVGProps {
   toolSlot: TaggedToolSlotPointer;
   toolName: string | undefined;
+  toolType: ToolType | undefined;
   toolTransformProps: ToolTransformProps;
   profile?: boolean;
   size?: number;
@@ -91,54 +93,46 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
   };
   const pulloutDirection = props.toolSlot.body.pullout_direction;
   const size = `${props.size || 3}rem`;
-  return props.toolSlot.body.gantry_mounted
-    ? <div className={"tool-slot-svg"}>
-      <svg width={size} height={size} viewBox={"-40 0 80 1"}>
-        <GantryToolSlot x={0} y={0} xySwap={props.toolTransformProps.xySwap} />
-        {props.toolSlot.body.tool_id &&
+  return <div className={"tool-svg"}>
+    <div className={"top"}>
+      <svg width={size} height={size} viewBox={"-50 0 100 1"}>
+        {pulloutDirection &&
+          <ToolbaySlot
+            id={-(props.toolSlot.body.id || 1)}
+            x={0}
+            y={0}
+            pulloutDirection={pulloutDirection}
+            quadrant={props.toolTransformProps.quadrant}
+            occupied={false}
+            xySwap={props.toolTransformProps.xySwap} />}
+        {(props.toolSlot.body.tool_id || !pulloutDirection) &&
           <RotatedTool
-            tool={reduceToolName(props.toolName)}
+            toolType={props.toolType}
             toolProps={toolProps} />}
       </svg>
+      {props.profile && <p>{t("top")}</p>}
     </div>
-    : <div className={"tool-svg"}>
-      <div className={"top"}>
-        <svg width={size} height={size} viewBox={"-50 0 100 1"}>
-          {pulloutDirection &&
-            <ToolbaySlot
-              id={-(props.toolSlot.body.id || 1)}
-              x={0}
-              y={0}
-              pulloutDirection={pulloutDirection}
-              quadrant={props.toolTransformProps.quadrant}
-              occupied={false}
-              xySwap={props.toolTransformProps.xySwap} />}
-          {(props.toolSlot.body.tool_id || !pulloutDirection) &&
-            <RotatedTool
-              tool={reduceToolName(props.toolName)}
-              toolProps={toolProps} />}
+    {props.profile &&
+      <div className={"front"}>
+        <svg width={size} height={size} viewBox={"-15 40 100 1"}>
+          <ToolProfile toolName={props.toolName} toolType={props.toolType}
+            reversed={false} x={0} y={0}
+            width={ToolDimensions.diameter} height={ToolDimensions.thickness}
+            sideView={"y" == slotPulloutAxis(pulloutDirection)}
+            slotDirection={pulloutDirection} coordinate={false}
+            toolFlipped={getToolDirection(
+              pulloutDirection,
+              isToolFlipped(props.toolSlot.body.meta),
+              false)} />
         </svg>
-        {props.profile && <p>{t("top")}</p>}
-      </div>
-      {props.profile &&
-        <div className={"front"}>
-          <svg width={size} height={size} viewBox={"-15 40 100 1"}>
-            <ToolProfile toolName={props.toolName} reversed={false} x={0} y={0}
-              width={ToolDimensions.diameter} height={ToolDimensions.thickness}
-              sideView={"y" == slotPulloutAxis(pulloutDirection)}
-              slotDirection={pulloutDirection} coordinate={false}
-              toolFlipped={getToolDirection(
-                pulloutDirection,
-                isToolFlipped(props.toolSlot.body.meta),
-                false)} />
-          </svg>
-          <p>{t("front")}</p>
-        </div>}
-    </div>;
+        <p>{t("front")}</p>
+      </div>}
+  </div>;
 };
 
 export interface ToolSVGProps {
   toolName: string | undefined;
+  toolType: ToolType | undefined;
   profile?: boolean;
 }
 
@@ -152,14 +146,15 @@ export const ToolSVG = (props: ToolSVGProps) => {
   return <div className={"tool-svg"}>
     <div className={"top"}>
       <svg width="3rem" height="3rem" viewBox={viewBox}>
-        <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />
+        <Tool toolType={props.toolType} toolProps={toolProps} />
       </svg>
       {props.profile && <p>{t("top")}</p>}
     </div>
     {props.profile &&
       <div className={"front"}>
         <svg width="3rem" height="3rem" viewBox={"-5 40 80 1"}>
-          <ToolProfile toolName={props.toolName} reversed={false} x={0} y={0}
+          <ToolProfile toolName={props.toolName} toolType={props.toolType}
+            reversed={false} x={0} y={0}
             width={ToolDimensions.diameter} height={ToolDimensions.thickness}
             sideView={false} slotDirection={ToolPulloutDirection.NONE}
             toolFlipped={false} coordinate={false} />

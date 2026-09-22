@@ -5,6 +5,37 @@ import { pinDropdowns, getPinModes } from "../sequences/step_tiles/pin_support";
 import { t } from "../i18next_wrapper";
 import { TaggedPeripheral, TaggedSensor } from "farmbot";
 import { isNumber } from "lodash";
+import {
+  PeripheralType, SensorType,
+} from "farmbot/dist/resources/api_resources";
+
+type PinType = PeripheralType | SensorType;
+
+const PIN_TYPE_INFO: Record<PinType, { emoji: string; label: string }> = {
+  lighting: { emoji: "💡", label: "Lighting" },
+  rotary_tool: { emoji: "꩜", label: "Rotary Tool" },
+  vacuum: { emoji: "💨", label: "Vacuum" },
+  water: { emoji: "💧", label: "Water" },
+  soil_moisture: { emoji: "💧", label: "Soil Moisture" },
+  tool_verification: { emoji: "🔧", label: "Tool Verification" },
+  current: { emoji: "⚡", label: "Current" },
+  none: { emoji: "", label: "None" },
+};
+
+interface PinTypeEmojiProps {
+  type: PinType | undefined;
+}
+
+export const PinTypeEmoji = (props: PinTypeEmojiProps) => {
+  const info = props.type ? PIN_TYPE_INFO[props.type] : undefined;
+  const label = info ? t(info.label) : undefined;
+  return <span className={"pin-type-emoji"}
+    role={info ? "img" : undefined}
+    aria-label={label}
+    title={label}>
+    {info?.emoji}
+  </span>;
+};
 
 const MODES = (): { [s: string]: string } => ({
   0: t("Digital"),

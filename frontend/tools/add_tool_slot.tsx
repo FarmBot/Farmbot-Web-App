@@ -8,7 +8,9 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import { init, save, edit, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsAdd } from "./state_to_props";
@@ -25,8 +27,11 @@ export class RawAddToolSlot
     const action = init("Point", {
       pointer_type: "ToolSlot", name: t("Slot"), meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
+      mount_offset_x: 0, mount_offset_y: 0, mount_offset_z: 0,
       pullout_direction: ToolPulloutDirection.NONE,
-      gantry_mounted: !hasUTM(this.props.firmwareHardware),
+      mount_stage: hasUTM(this.props.firmwareHardware)
+        ? MountStage.NONE
+        : MountStage.X,
     });
     this.setState({ uuid: action.payload.uuid });
     this.props.dispatch(action);

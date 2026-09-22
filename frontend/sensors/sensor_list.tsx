@@ -2,13 +2,20 @@ import React from "react";
 import { readPin } from "../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../util";
-import { Row } from "../ui";
-import { isNumber, some } from "lodash";
-import { ALLOWED_PIN_MODES } from "farmbot";
+import { Popover, Row } from "../ui";
+import { isNumber } from "lodash";
+import { ALLOWED_PIN_MODES, TaggedPeripheral } from "farmbot";
+import { Position } from "@blueprintjs/core";
+import { SensorType } from "farmbot/dist/resources/api_resources";
 import { t } from "../i18next_wrapper";
+import { PinTypeEmoji } from "../controls/pin_form_fields";
+import { currentSensorPeripherals } from
+  "../controls/current_sensor_mapping";
+import { PeripheralControl } from
+  "../controls/peripherals/peripheral_list";
 
-interface SensorReadingDisplayProps {
-  label: string;
+export interface SensorReadingDisplayProps {
+  type: SensorType;
   value: number | undefined;
   mode: number;
 }
@@ -33,13 +40,12 @@ const calcValueStyle = ({ value, mode }: CalcStyleProps) => ({
   color: `${mode ? "" : "white"}`
 });
 
-const SensorReadingDisplay =
-  ({ label, value, mode }: SensorReadingDisplayProps) => {
-    const moistureSensor =
-      some(["soil", "moisture"].map(l => label.toLowerCase().includes(l)))
-        ? "moisture-sensor"
-        : "";
-    const toolSensor = label.toLowerCase().includes("verification")
+export const SensorReadingDisplay =
+  ({ type, value, mode }: SensorReadingDisplayProps) => {
+    const moistureSensor = type == "soil_moisture"
+      ? "moisture-sensor"
+      : "";
+    const toolSensor = type == "tool_verification"
       ? "tool-verification-sensor"
       : "";
     const valueLabel = toolSensor
@@ -63,13 +69,23 @@ const SensorReadingDisplay =
 export const SensorList = (props: SensorListProps) =>
   <div className="grid">
     {sortResourcesById(props.sensors).map(sensor => {
-      const { label, mode, pin } = sensor.body;
+      const { label, mode, pin, type } = sensor.body;
       const pinNumber = (isNumber(pin) && isFinite(pin)) ? pin : -1;
       const value = (props.pins[pinNumber] || { value: undefined }).value;
+      const peripherals = currentSensorPeripherals(
+        sensor, props.peripherals);
       return <Row key={sensor.uuid} className={"sensor-grid-row"}>
         <label>{label}</label>
+        <div className={"sensor-type-emojis"}>
+          <PinTypeEmoji type={type} />
+          <PeripheralEmojiToggle
+            peripherals={peripherals}
+            pins={props.pins}
+            disabled={props.disabled}
+            locked={props.locked} />
+        </div>
         <p>{pinNumber}</p>
-        <SensorReadingDisplay label={label} value={value} mode={mode} />
+        <SensorReadingDisplay type={type} value={value} mode={mode} />
         <ReadSensorButton
           disabled={!!props.disabled}
           sensorLabel={label}
@@ -78,6 +94,42 @@ export const SensorList = (props: SensorListProps) =>
       </Row>;
     })}
   </div>;
+
+interface PeripheralEmojiToggleProps {
+  peripherals: TaggedPeripheral[];
+  pins: SensorListProps["pins"];
+  disabled: boolean | undefined;
+  locked: boolean;
+}
+
+const PeripheralEmojiToggle = (props: PeripheralEmojiToggleProps) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const firstPeripheral = props.peripherals[0];
+  if (!firstPeripheral) { return <PinTypeEmoji type={undefined} />; }
+  const { label, type } = firstPeripheral.body;
+  return <Popover
+    position={Position.TOP}
+    isOpen={isOpen}
+    target={<button
+      type={"button"}
+      className={"sensor-peripheral-emoji-button"}
+      title={t("Show {{peripheral}} controls", { peripheral: label })}
+      onClick={() => setIsOpen(!isOpen)}>
+      <PinTypeEmoji type={type} />
+    </button>}
+    content={<div className={"sensor-peripheral-toggle grid"}>
+      {props.peripherals.map(peripheral =>
+        <div className={"sensor-peripheral-toggle-row row"}
+          key={peripheral.uuid}>
+          <label>{peripheral.body.label}</label>
+          <PeripheralControl
+            peripheral={peripheral}
+            pins={props.pins}
+            disabled={props.disabled}
+            locked={props.locked} />
+        </div>)}
+    </div>} />;
+};
 
 interface ReadSensorButtonProps {
   disabled: boolean;
@@ -95,6 +147,6 @@ const ReadSensorButton = (props: ReadSensorButtonProps) => {
     onClick={() => {
       readPin(pinNumber, `pin${pinNumber}`, mode as ALLOWED_PIN_MODES);
     }}>
-    {t("read sensor")}
+    {t("read")}
   </button>;
 };

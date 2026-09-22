@@ -4,7 +4,9 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../../__test_support__/fake_resource";
-import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolSlotPointer,
+} from "farmbot/dist/resources/api_resources";
 import { TaggedToolSlotPointer } from "farmbot";
 import { Path } from "../../../../../internal_urls";
 import { fireEvent, render } from "@testing-library/react";
@@ -21,12 +23,16 @@ describe("<ToolSlotLayer/>", () => {
       meta: {},
       pullout_direction: 0,
       gantry_mounted: false,
+      mount_stage: MountStage.NONE,
+      mount_offset_x: 0,
+      mount_offset_y: 0,
+      mount_offset_z: 0,
     };
     const toolSlot: TaggedToolSlotPointer = fakeResource("Point", ts);
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
-      botPositionX: undefined,
+      botPosition: { x: undefined, y: undefined, z: undefined },
       mapTransformProps: fakeMapTransformProps(),
       dispatch: jest.fn(),
       hoveredToolSlot: undefined,

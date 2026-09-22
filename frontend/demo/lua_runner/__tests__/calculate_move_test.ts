@@ -18,6 +18,7 @@ import { addDefaults, calculateMove } from "../calculate_move";
 import { setCurrent } from "../actions";
 import { store } from "../../../redux/store";
 import * as triangleFunctions from "../../../three_d_garden/triangle_functions";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 const originalGetState = store.getState;
 const mockGetState = () => ({
@@ -235,7 +236,11 @@ describe("calculateMove()", () => {
       .toEqual({ moves: [{ x: 1, y: 0, z: 0 }], warnings: [] });
   });
 
-  it("handles tool all axis overwrite", () => {
+  it.each<[MountStage, { x: number, y: number, z: number }]>([
+    [MountStage.X, { x: 14, y: 2, z: 3 }],
+    [MountStage.Y, { x: 14, y: 15, z: 3 }],
+    [MountStage.Z, { x: 14, y: 15, z: 36 }],
+  ])("handles tool all axis overwrite: stage %s", (mountStage, expected) => {
     const tool = fakeTool();
     tool.body.id = 1;
     const slot = fakeToolSlot();
@@ -243,7 +248,10 @@ describe("calculateMove()", () => {
     slot.body.x = 1;
     slot.body.y = 2;
     slot.body.z = 3;
-    slot.body.gantry_mounted = true;
+    slot.body.mount_offset_x = 4;
+    slot.body.mount_offset_y = -5;
+    slot.body.mount_offset_z = 6;
+    slot.body.mount_stage = mountStage;
     mockResources = buildResourceIndex([tool, slot]);
     const command: Move = {
       kind: "move",
@@ -258,8 +266,8 @@ describe("calculateMove()", () => {
         },
       ],
     };
-    expect(calculateMove(command.body, { x: 0, y: 0, z: 0 }, []))
-      .toEqual({ moves: [{ x: 0, y: 2, z: 3 }], warnings: [] });
+    expect(calculateMove(command.body, { x: 10, y: 20, z: 30 }, []))
+      .toEqual({ moves: [expected], warnings: [] });
   });
 
   it("handles missing tool", () => {

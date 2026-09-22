@@ -16,8 +16,8 @@ const toolStatus = (value: number | undefined): string => {
 };
 
 export const getToolVerificationPin = (sensors: TaggedSensor[]) => {
-  const sensor = sensors.find(sensor => sensor.body.label.toLowerCase()
-    .includes("tool verification"));
+  const sensor = sensors.find(sensor =>
+    sensor.body.type == "tool_verification");
   return sensor?.body.pin || 63;
 };
 

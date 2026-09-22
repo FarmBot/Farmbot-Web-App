@@ -14,6 +14,7 @@ import {
 } from "../../resources/selectors";
 import { getDefaultAxisOrder, getSafeZ, getSoilHeight } from "./stubs";
 import { clone } from "lodash";
+import { resolveMountPosition } from "../../tools/mount_stage";
 
 export const addDefaults = (body: MoveBodyItem[]): MoveBodyItem[] => {
   if (body.some(item => item.kind === "axis_order")) {
@@ -87,7 +88,8 @@ export const calculateMove = (
               break;
             }
             const toolSlotBody = clone(toolSlot.body);
-            if (toolSlotBody.gantry_mounted) { toolSlotBody.x = pos.x; }
+            Object.assign(toolSlotBody, resolveMountPosition(
+              toolSlotBody, pos, toolSlotBody.mount_stage));
             if (item.args.axis == "all") {
               pos.x = toolSlotBody.x;
               pos.y = toolSlotBody.y;

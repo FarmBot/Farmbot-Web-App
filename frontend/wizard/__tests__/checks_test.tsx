@@ -91,6 +91,7 @@ import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { createRenderer } from "../../__test_support__/test_renderer";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 // Extend globalConfig with missing RPI properties - declared in hacks.d.ts
 declare const globalConfig: Record<string, string>;
@@ -954,13 +955,17 @@ describe("<FlowRateInput />", () => {
     p.resources = buildResourceIndex([]).index;
     const { container } = render(<FlowRateInput {...p} />);
     fireEvent.click(container.querySelector("button") as Element);
-    expect(initSave).toHaveBeenCalledWith("Tool", { name: "Watering Nozzle" });
+    expect(initSave).toHaveBeenCalledWith("Tool", {
+      name: "Watering Nozzle",
+      type: "watering_nozzle",
+    });
   });
 
   it("changes flow rate", () => {
     const p = fakeProps();
     const tool = fakeTool();
     tool.body.name = "watering nozzle";
+    tool.body.type = "watering_nozzle";
     p.resources = buildResourceIndex([tool]).index;
     const { container } = render(<FlowRateInput {...p} />);
     const input = container.querySelector("input") as HTMLInputElement;
@@ -1024,6 +1029,28 @@ describe("<SlotCoordinateRows />", () => {
     p.indexValues = [0, 1];
     const { container } = render(<SlotCoordinateRows {...p} />);
     expect(container.textContent).toContain("Slot 1");
+  });
+
+  it("disables X for an X-stage slot", () => {
+    const p = fakeProps();
+    const slot = fakeToolSlot();
+    slot.body.mount_stage = MountStage.X;
+    p.resources = buildResourceIndex([fakeDevice(), slot]).index;
+    const { container } = render(<SlotCoordinateRows {...p} />);
+    const xInput = container.querySelector("input[name='x']");
+    expect(xInput).toBeDisabled();
+    expect(xInput).toHaveValue("X axis");
+    const offsetInputs = container.querySelectorAll(
+      ".mount-offset-input input");
+    expect(offsetInputs).toHaveLength(3);
+    expect(offsetInputs[0]).toBeEnabled();
+    expect(offsetInputs[1]).toBeDisabled();
+    expect(offsetInputs[2]).toBeDisabled();
+    changeBlurableInputRTL(offsetInputs[0] as HTMLElement, "-12.5");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      mount_offset_x: -12.5,
+    });
+    expect(save).toHaveBeenCalledWith(expect.any(String));
   });
 });
 

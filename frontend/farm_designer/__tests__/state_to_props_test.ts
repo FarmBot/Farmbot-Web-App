@@ -74,6 +74,7 @@ describe("mapStateToProps()", () => {
     const peripheral1 = fakePeripheral();
     peripheral1.body.pin = 13;
     peripheral1.body.label = "LED";
+    peripheral1.body.type = "lighting";
     const peripheral2 = fakePeripheral();
     peripheral2.body.pin = undefined;
     peripheral2.body.label = "none";
@@ -86,7 +87,8 @@ describe("mapStateToProps()", () => {
     function checkValue(input: number, value: boolean) {
       state.bot.hardware.pins = { 13: { value: input, mode: 0 } };
       const peripheralPin = mapStateToProps(state).peripheralValues[0];
-      expect(peripheralPin.label).toEqual("LED");
+      expect(peripheralPin.uuid).toEqual(peripheral1.uuid);
+      expect(peripheralPin.type).toEqual("lighting");
       expect(peripheralPin.value).toEqual(value);
     }
     checkValue(0, false);
@@ -94,10 +96,12 @@ describe("mapStateToProps()", () => {
     checkValue(1, true);
     checkValue(2, true);
     expect(mapStateToProps(state).peripheralValues[1])
-      .toEqual({ label: "none", value: false });
+      .toEqual({
+        uuid: peripheral2.uuid, type: "none", pin: undefined, value: false,
+      });
     state.bot.hardware.pins[0] = { value: 1, mode: 0 };
     expect(mapStateToProps(state).peripheralValues[2])
-      .toEqual({ label: "zero", value: true });
+      .toEqual({ uuid: peripheral3.uuid, type: "none", pin: 0, value: true });
   });
 
   it("returns selected plant", () => {
@@ -166,7 +170,9 @@ describe("mapStateToProps()", () => {
     device.body.mounted_tool_id = tool.body.id;
     state.resources = buildResourceIndex([tool, slot, device]);
     const props = mapStateToProps(state);
+    expect(props.mountedToolInfo.id).toEqual(1);
     expect(props.mountedToolInfo.name).toEqual("tool");
+    expect(props.mountedToolInfo.type).toEqual("seeder");
     expect(props.mountedToolInfo.pulloutDirection).toEqual(1);
   });
 

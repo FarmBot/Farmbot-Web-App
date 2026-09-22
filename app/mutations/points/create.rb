@@ -46,9 +46,7 @@ module Points
       hstore :meta
       float :radius, default: 25
       integer :depth, default: 0
-      integer :pullout_direction,
-              min: ToolSlot::PULLOUT_DIRECTIONS.min,
-              max: ToolSlot::PULLOUT_DIRECTIONS.max
+      integer :pullout_direction, in: ToolSlot::PULLOUT_DIRECTIONS
       integer :tool_id, empty: true
       string :name
       string :openfarm_slug, default: "not-set"
@@ -59,6 +57,10 @@ module Points
       integer :water_curve_id
       integer :spread_curve_id
       integer :height_curve_id
+      float :mount_offset_x, default: 0
+      float :mount_offset_y, default: 0
+      float :mount_offset_z, default: 0
+      integer :mount_stage, in: ToolSlot::MOUNT_STAGES
     end
 
     def validate

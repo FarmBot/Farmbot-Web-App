@@ -2,11 +2,12 @@ import React from "react";
 import { SlotWithTool, UUID } from "../../../../resources/interfaces";
 import { ToolSlotPoint } from "./tool_slot_point";
 import { MapTransformProps } from "../../interfaces";
+import { BotPosition } from "../../../../devices/interfaces";
 
 export interface ToolSlotLayerProps {
   visible: boolean;
   slots: SlotWithTool[];
-  botPositionX: number | undefined;
+  botPosition: BotPosition;
   mapTransformProps: MapTransformProps;
   dispatch: Function;
   hoveredToolSlot: UUID | undefined;
@@ -32,7 +33,7 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
           current={slot.toolSlot.uuid === props.currentPoint}
           animate={props.animate}
           dispatch={props.dispatch}
-          botPositionX={props.botPositionX}
+          botPosition={props.botPosition}
           mapTransformProps={mapTransformProps} />)}
   </g>;
 }

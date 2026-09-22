@@ -23,6 +23,8 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
 import { isDesktop } from "../../screen_size";
 import { XYZ } from "../../devices/constants";
+import { MountStage } from "farmbot/dist/resources/api_resources";
+import { axisIsMounted } from "../../tools/mount_stage";
 
 export class TileMoveAbsolute
   extends React.Component<StepParams<MoveAbsolute>, MoveAbsState> {
@@ -84,9 +86,10 @@ export class TileMoveAbsolute
     return determineVector(this.celeryNode, this.props.resources, sequenceUuid);
   }
 
-  get gantryMounted() {
-    return this.vector && ("gantry_mounted" in this.vector)
-      && this.vector.gantry_mounted;
+  get mountStage() {
+    return this.vector && ("mount_stage" in this.vector)
+      ? this.vector.mount_stage
+      : MountStage.NONE;
   }
 
   LocationForm = () =>
@@ -127,7 +130,7 @@ export class TileMoveAbsolute
         {t("{{axis}}-Offset", { axis })}
       </label>
       <BlurableInput type="number"
-        disabled={axis == "x" && this.gantryMounted}
+        disabled={axisIsMounted(this.mountStage, axis)}
         onCommit={this.updateInputValue(axis, "offset")}
         name={`offset-${axis}`}
         value={(this.args.offset.args[axis] || 0).toString()} />

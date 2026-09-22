@@ -49,7 +49,7 @@ export class FilterSearch
         popoverClassName: [
           "filter-search-popover",
           Classes.MINIMAL,
-          items.length < 4 ? "few-items" : "",
+          !query && items.length < 4 ? "few-items" : "",
         ].join(" "),
         modifiers: { offset: { options: { offset: [0, 0] } } },
         matchTargetWidth: this.props.matchTargetWidth,

@@ -24,6 +24,7 @@ import {
   fetchInterpolationOptions, getInterpolationData,
 } from "../layers/points/interpolation_map";
 import { BotTrail } from "../layers/farmbot/bot_trail";
+import { resolveMountPosition } from "../../../tools/mount_stage";
 
 /** Profile lines drawn through points of the same color in the selected region. */
 export const ProfileSvg = (props: ProfileSvgProps) => {
@@ -36,7 +37,7 @@ export const ProfileSvg = (props: ProfileSvgProps) => {
     axis: lineAxis,
     position: position,
     selectionWidth,
-    botPositionX: props.botLocationData.position.x,
+    botPosition: props.botLocationData.position,
   });
   const byColor = groupByColor(profilePoints, profileAxis);
   const width = ceil(props.botSize[profileAxis].value + 1, -2);
@@ -256,12 +257,13 @@ export const withinProfileRange =
     location[axis] < (profilePosition[axis] + selectionWidth / 2);
 
 /** Select points within `width` of line selected in map. */
-const selectPoints = (props: SelectPointsProps) => {
-  const { allPoints, axis, position, selectionWidth, botPositionX } = props;
+export const selectPoints = (props: SelectPointsProps) => {
+  const { allPoints, axis, position, selectionWidth, botPosition } = props;
   return allPoints.map(p => {
     const point = cloneDeep(p);
-    if (p.body.pointer_type == "ToolSlot" && p.body.gantry_mounted) {
-      point.body.x = botPositionX || 0;
+    if (p.body.pointer_type == "ToolSlot") {
+      Object.assign(point.body, resolveMountPosition(
+        p.body, botPosition, p.body.mount_stage));
     }
     return point;
   }).filter((p: TaggedPoint) =>

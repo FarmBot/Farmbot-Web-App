@@ -98,7 +98,7 @@ describe("<DemoIframe />", () => {
 
   it("uses query-gated stress seed options", () => {
     const { getByTestId } = render(<DemoIframe />);
-    expect(seedDataOptionsSpy).toHaveBeenCalledWith(true);
+    expect(seedDataOptionsSpy).toHaveBeenCalledWith(false, true);
     expect(getByTestId("seed-data-select").dataset.hasQueryFilter)
       .toEqual("true");
   });

@@ -1,4 +1,5 @@
 import { botPositionLabel } from "../bot_position_label";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 describe("botPositionLabel()", () => {
   it("returns full position", () => {
@@ -11,10 +12,13 @@ describe("botPositionLabel()", () => {
     expect(botPositionLabel(position, { rounded: true })).toEqual("(1, 2, 3)");
   });
 
-  it("returns gantry position", () => {
+  it.each<[MountStage, string]>([
+    [MountStage.X, "(X axis, 2, 3)"],
+    [MountStage.Y, "(Y axis, Y axis, 3)"],
+    [MountStage.Z, "(Z axis, Z axis, Z axis)"],
+  ])("returns stage position: %s", (mountStage, expected) => {
     const position = { x: 1.1, y: 2, z: 3 };
-    expect(botPositionLabel(position, { gantryMounted: true }))
-      .toEqual("(gantry, 2, 3)");
+    expect(botPositionLabel(position, { mountStage })).toEqual(expected);
   });
 
   it("returns partial position", () => {

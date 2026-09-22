@@ -91,6 +91,9 @@ export const hasEncoders = (firmwareHardware: FirmwareHardware | undefined) =>
 export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_SENSORS.includes(firmwareHardware);
 
+export const hasCurrentSensors = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_ROTARY.includes(firmwareHardware);
+
 export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
 

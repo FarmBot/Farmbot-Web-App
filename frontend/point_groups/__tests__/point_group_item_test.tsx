@@ -4,7 +4,7 @@ import {
   genericWeedIcon,
   svgToUrl,
 } from "../point_group_item";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import {
   fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed, fakeTool,
   fakePlantTemplate,
@@ -16,6 +16,7 @@ import * as groupActions from "../actions";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { FilePath, Path } from "../../internal_urls";
+import { NavigationContext } from "../../routes_helpers";
 
 describe("<PointGroupItem/>", () => {
   let overwriteGroupSpy: jest.SpyInstance;
@@ -201,11 +202,14 @@ describe("<PointGroupItem/>", () => {
     p.group = undefined;
     p.dispatch = undefined;
     p.navigate = true;
-    const i = new PointGroupItem(p);
-    i.navigate = jest.fn();
-    i.click();
+    const navigate = jest.fn();
+    const { container } = render(
+      <NavigationContext.Provider value={navigate}>
+        <PointGroupItem {...p} />
+      </NavigationContext.Provider>);
+    fireEvent.click(container.querySelector(".group-item-icon") as Element);
     expect(groupActions.overwriteGroup).not.toHaveBeenCalled();
     expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
-    expect(i.navigate).toHaveBeenCalledWith(Path.plants(1));
+    expect(navigate).toHaveBeenCalledWith(Path.plants(1));
   });
 });

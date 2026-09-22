@@ -267,34 +267,38 @@ const DEMO_STRESS_SEED_DATA_OPTIONS: DropDownItem[] = [
   { label: "Stress 1000", value: "genesis_xl_1.8_stress_1000" },
 ];
 
-export const SEED_DATA_OPTIONS = (displayAll = false): DropDownItem[] => [
-  { label: "Genesis v1.9", value: "genesis_1.9" },
-  { label: "Genesis XL v1.9", value: "genesis_xl_1.9" },
-  { label: "Genesis v1.8", value: "genesis_1.8" },
-  { label: "Genesis v1.8 XL", value: "genesis_xl_1.8" },
-  ...(displayAll ? DEMO_STRESS_SEED_DATA_OPTIONS : []),
-  { label: "Genesis v1.7", value: "genesis_1.7" },
-  { label: "Genesis v1.7 XL", value: "genesis_xl_1.7" },
-  { label: "Genesis v1.6", value: "genesis_1.6" },
-  { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
-  { label: "Genesis v1.5", value: "genesis_1.5" },
-  { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
-  { label: "Genesis v1.4", value: "genesis_1.4" },
-  { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
-  { label: "Genesis v1.3", value: "genesis_1.3" },
-  { label: "Genesis v1.2", value: "genesis_1.2" },
-  ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
-    ? [{ label: "Express v1.2", value: "express_1.2" }]
-    : []),
-  ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
-    ? [{ label: "Express v1.2 XL", value: "express_xl_1.2" }]
-    : []),
-  { label: "Express v1.1", value: "express_1.1" },
-  { label: "Express v1.1 XL", value: "express_xl_1.1" },
-  { label: "Express v1.0", value: "express_1.0" },
-  { label: "Express v1.0 XL", value: "express_xl_1.0" },
-  { label: "Custom Bot", value: "none" },
-];
+export const SEED_DATA_OPTIONS = (
+  displayAll = false,
+  hideNone = false,
+): DropDownItem[] =>
+  [
+    { label: "Genesis v1.9", value: "genesis_1.9" },
+    { label: "Genesis XL v1.9", value: "genesis_xl_1.9" },
+    { label: "Genesis v1.8", value: "genesis_1.8" },
+    { label: "Genesis v1.8 XL", value: "genesis_xl_1.8" },
+    ...(displayAll ? DEMO_STRESS_SEED_DATA_OPTIONS : []),
+    { label: "Genesis v1.7", value: "genesis_1.7" },
+    { label: "Genesis v1.7 XL", value: "genesis_xl_1.7" },
+    { label: "Genesis v1.6", value: "genesis_1.6" },
+    { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
+    { label: "Genesis v1.5", value: "genesis_1.5" },
+    { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
+    { label: "Genesis v1.4", value: "genesis_1.4" },
+    { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
+    { label: "Genesis v1.3", value: "genesis_1.3" },
+    { label: "Genesis v1.2", value: "genesis_1.2" },
+    ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
+      ? [{ label: "Express v1.2", value: "express_1.2" }]
+      : []),
+    ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
+      ? [{ label: "Express v1.2 XL", value: "express_xl_1.2" }]
+      : []),
+    { label: "Express v1.1", value: "express_1.1" },
+    { label: "Express v1.1 XL", value: "express_xl_1.1" },
+    { label: "Express v1.0", value: "express_1.0" },
+    { label: "Express v1.0 XL", value: "express_xl_1.0" },
+    ...(hideNone ? [] : [{ label: "Custom Bot", value: "none" }]),
+  ];
 
 export const SEED_DATA_OPTIONS_DDI = (): Record<string, DropDownItem> => {
   const options: Record<string, DropDownItem> = {};
@@ -302,25 +306,15 @@ export const SEED_DATA_OPTIONS_DDI = (): Record<string, DropDownItem> => {
   return options;
 };
 
-const stressQuery = (query: string) => query.toLowerCase().includes("stress");
-
-export const maybeShowStressSeedOptions =
+export const filterSeedOptions =
   (items: DropDownItem[], query: string): DropDownItem[] => {
-    const stressValues = DEMO_STRESS_SEED_DATA_OPTIONS.map(x => x.value);
-    const visibleItems =
-      items.filter(item => !stressValues.includes(item.value));
-    if (!stressQuery(query)) {
-      return visibleItems;
+    if (query == "custom") {
+      return [{ label: "Custom Bot", value: "none" }];
     }
-    const genesisXlIndex =
-      visibleItems.findIndex(item => item.value == "genesis_xl_1.8");
-    const insertAt =
-      genesisXlIndex < 0 ? visibleItems.length : genesisXlIndex + 1;
-    return [
-      ...visibleItems.slice(0, insertAt),
-      ...DEMO_STRESS_SEED_DATA_OPTIONS,
-      ...visibleItems.slice(insertAt),
-    ];
+    if (query.toLowerCase().includes("stress")) {
+      return DEMO_STRESS_SEED_DATA_OPTIONS;
+    }
+    return items;
   };
 
 class SeedDataMissing
@@ -348,7 +342,7 @@ class SeedDataMissing
         <FBSelect
           key={this.state.selection}
           list={SEED_DATA_OPTIONS()}
-          itemListFilter={maybeShowStressSeedOptions}
+          itemListFilter={filterSeedOptions}
           selectedItem={SEED_DATA_OPTIONS_DDI()[this.state.selection]}
           onChange={seedAccount(this.dismiss)} />
       </Row>
@@ -361,8 +355,8 @@ export const ReSeedAccount = () => {
   return <Row className={"re-seed grid-2-col"}>
     <FBSelect
       key={selection}
-      list={SEED_DATA_OPTIONS().filter(x => x.value != "none")}
-      itemListFilter={maybeShowStressSeedOptions}
+      list={SEED_DATA_OPTIONS(false, true)}
+      itemListFilter={filterSeedOptions}
       customNullLabel={t("Select a model")}
       selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
       onChange={ddi => setSelection("" + ddi.value)} />

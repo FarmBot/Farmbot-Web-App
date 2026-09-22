@@ -1,5 +1,7 @@
 import { TaggedFarmwareEnv, TaggedPoint, TaggedTool } from "farmbot";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import {
   BotLocationData, BotPosition, SourceFbosConfig,
@@ -85,7 +87,7 @@ export interface SelectPointsProps {
   axis: "x" | "y";
   selectionWidth: number;
   position: AxisNumberProperty;
-  botPositionX: number | undefined;
+  botPosition: BotPosition;
 }
 
 export type GetProfileX = (coordinate: BotPosition) => number;
@@ -129,6 +131,7 @@ export interface ProfilePointProps<T = TaggedPoint> {
 
 export interface ProfileToolProps {
   toolName: string | undefined;
+  toolType: ToolType | undefined;
   /** tool start */
   x: number;
   /** tool top */

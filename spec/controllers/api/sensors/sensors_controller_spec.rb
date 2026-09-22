@@ -12,12 +12,13 @@ RSpec.describe Api::SensorsController, type: :controller do
     sign_in user
     before = Sensor.count
     post :create,
-          body: { pin: 13, label: "LED", mode: 0 }.to_json,
+          body: { pin: 13, label: "LED", mode: 0, type: "current" }.to_json,
           params: { format: :json }
     expect(response.status).to eq(200)
     expect(json[:pin]).to      eq(13)
     expect(json[:label]).to    eq("LED")
     expect(json[:mode]).to     eq(0)
+    expect(json[:type]).to     eq("current")
     expect(before < Sensor.count).to be_truthy
   end
 
@@ -29,7 +30,7 @@ RSpec.describe Api::SensorsController, type: :controller do
     expect(response.status).to eq(200)
     expect(json.length).to  eq(2)
     expect(json.first.keys.sort)
-      .to eq([:created_at, :id, :label, :mode, :pin, :updated_at])
+      .to eq([:created_at, :id, :label, :mode, :pin, :type, :updated_at])
   end
 
   it "lists a resources" do
@@ -44,10 +45,11 @@ RSpec.describe Api::SensorsController, type: :controller do
   it "updates a resource" do
     sign_in user
     Sensor.destroy_all
-    p = { label: "The new label" }
+    p = { label: "The new label", type: "tool_verification" }
     put :update, body: p.to_json, params: {id: sensor.id, format: :json }
     expect(response.status).to eq(200)
     expect(json[:label]).to eq(p[:label])
+    expect(json[:type]).to eq(p[:type])
     expect(sensor.reload.label).to eq(p[:label])
   end
 

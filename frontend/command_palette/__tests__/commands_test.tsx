@@ -70,6 +70,7 @@ describe("buildCommands()", () => {
     vacuum.body.pin = 4;
     const sensor = fakeSensor();
     sensor.body.label = "GPIO 52 - Tool Verification";
+    sensor.body.type = "tool_verification";
     sensor.body.pin = 52;
     const regimen = fakeRegimen();
     regimen.body.id = 208;

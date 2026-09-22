@@ -1,7 +1,8 @@
 import React from "react";
 import {
-  FirmwareHardware, ParameterDeclaration, TaggedFbosConfig,
-  TaggedPlantPointer, TaggedSequence, TaggedSceneObject, Vector3, Xyz,
+  ALLOWED_PIN_MODES, FirmwareHardware, ParameterDeclaration,
+  TaggedFbosConfig, TaggedPeripheral, TaggedPlantPointer, TaggedSensor,
+  TaggedSequence, TaggedSceneObject, Vector3, Xyz,
 } from "farmbot";
 import moment from "moment";
 import { isNumber, isUndefined, mean, noop, round } from "lodash";
@@ -18,8 +19,8 @@ import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { destroy, edit, save } from "../../api/crud";
 import {
-  execSequence, findHome, moveToHome, pinToggle, powerOff, reboot, takePhoto,
-  sendRPC,
+  execSequence, findHome, moveToHome, pinToggle, powerOff, readPin, reboot,
+  takePhoto, sendRPC,
 } from "../../devices/actions";
 import { resetVirtualTrail } from
   "../../farm_designer/map/layers/farmbot/bot_trail";
@@ -68,6 +69,10 @@ import {
   AllowedVariableNodes, VariableType,
 } from "../../sequences/locals_list/locals_list_support";
 import { EditSoilHeight, soilHeightPoint } from "../../points/soil_height";
+import { currentSensorMatchesPeripheralTypes } from
+  "../../controls/current_sensor_mapping";
+import { SensorReadingDisplay } from "../../sensors/sensor_list";
+import { mountStageAxes, mountStageLabel } from "../../tools/mount_stage";
 
 interface PopupControlProps extends ThreeDObjectSelectionLayerProps {
   object: ResolvedThreeDObject;
@@ -129,11 +134,21 @@ const PopupLocationRow = (props: PopupLocationRowProps) =>
 
 const disabledObjectCoordinateAxes = (props: PopupControlProps): Xyz[] => {
   if (!props.dispatch) { return [...XYZ]; }
-  if (props.object.kind == "slot"
-    && props.object.slot.toolSlot.body.gantry_mounted) {
-    return ["x"];
+  if (props.object.kind == "slot") {
+    return mountStageAxes(props.object.slot.toolSlot.body.mount_stage);
   }
   return [];
+};
+
+const disabledObjectCoordinateValues = (
+  props: PopupControlProps,
+): Partial<Record<Xyz, string>> => {
+  if (props.object.kind != "slot") { return {}; }
+  const mountStage = props.object.slot.toolSlot.body.mount_stage;
+  return mountStageAxes(mountStage).reduce((values, axis) => ({
+    ...values,
+    [axis]: mountStageLabel(mountStage),
+  }), {});
 };
 
 const updateToolSlot = (
@@ -181,7 +196,7 @@ export const PopupObjectLocationRow = (props: PopupControlProps) =>
     {...props}
     locationCoordinate={props.object.locationCoordinate}
     disabledAxes={disabledObjectCoordinateAxes(props)}
-    disabledValues={{ x: t("Gantry") }}
+    disabledValues={disabledObjectCoordinateValues(props)}
     onCoordinateCommit={(axis, value) =>
       commitObjectCoordinate(props, axis, value)} />;
 
@@ -383,7 +398,8 @@ const UtmPopupControls = (props: PopupControlProps) => {
           noUTM={props.noUTM}
           isActive={isActive}
           filterSelectedTool={true}
-          filterActiveTools={false} />
+          filterActiveTools={false}
+          filterUtmMountable={true} />
       </div>
       <ToolActionRow
         className={"object-popup-tool-action-row"}
@@ -391,6 +407,7 @@ const UtmPopupControls = (props: PopupControlProps) => {
         sensors={props.sensors}
         peripherals={props.peripherals}
         peripheralValues={props.peripheralValues}
+        pins={props.bot?.hardware.pins || {}}
         botOnline={props.botOnline}
         arduinoBusy={props.arduinoBusy}
         locked={!!props.bot?.hardware.informational_settings.locked} />
@@ -794,29 +811,101 @@ const SoilHeightPopupControls = (props: PopupControlProps) => {
   </div>;
 };
 
-const GantryBeamPopupControls = (props: PopupControlProps) => {
-  if (props.object.kind != "gantryBeam") { return undefined; }
-  const lighting = props.peripherals.find(peripheral =>
-    peripheral.body.label.toLowerCase().includes("light"));
-  const pin = lighting?.body.pin;
-  const value = lighting
-    ? props.peripheralValues.find(peripheral =>
-      peripheral.label == lighting.body.label)?.value
-    : undefined;
+interface GantryBeamPeripheralRowProps {
+  peripheral: TaggedPeripheral;
+  peripheralValues: PopupControlProps["peripheralValues"];
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  locked: boolean;
+}
+
+const GantryBeamPeripheralRow = (props: GantryBeamPeripheralRowProps) => {
+  const pin = props.peripheral.body.pin;
+  const label = props.peripheral.body.label;
+  const value = props.peripheralValues.find(peripheral =>
+    peripheral.uuid == props.peripheral.uuid)?.value;
   const disabled = !isNumber(pin)
     || !props.botOnline
     || props.arduinoBusy
-    || !!props.bot?.hardware.informational_settings.locked;
+    || props.locked;
+  return <div className={"object-popup-gantry-beam-row row grid-2-col"}>
+    <label>{label}</label>
+    <ToggleButton
+      toggleValue={value}
+      toggleAction={() => { if (isNumber(pin)) { void pinToggle(pin); } }}
+      disabled={disabled}
+      title={t("Toggle {{peripheral}}", { peripheral: label })}
+      customText={{ textFalse: t("off"), textTrue: t("on") }} />
+  </div>;
+};
+
+interface GantryBeamCurrentSensorRowProps {
+  sensor: TaggedSensor;
+  value: number | undefined;
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  locked: boolean;
+}
+
+const GantryBeamCurrentSensorRow = (
+  props: GantryBeamCurrentSensorRowProps,
+) => {
+  const pin = props.sensor.body.pin;
+  const disabled = !isNumber(pin)
+    || !props.botOnline
+    || props.arduinoBusy
+    || props.locked;
+  return <div className={[
+    "object-popup-gantry-beam-row",
+    "object-popup-gantry-beam-sensor-row",
+    "row",
+  ].join(" ")}>
+    <label>{props.sensor.body.label}</label>
+    <SensorReadingDisplay
+      type={props.sensor.body.type}
+      value={props.value}
+      mode={props.sensor.body.mode} />
+    <button className={"fb-button gray"}
+      type={"button"}
+      disabled={disabled}
+      onClick={() => {
+        if (isNumber(pin)) {
+          readPin(pin, `pin${pin}`,
+            props.sensor.body.mode as ALLOWED_PIN_MODES);
+        }
+      }}>
+      {t("Read sensor")}
+    </button>
+  </div>;
+};
+
+const GantryBeamPopupControls = (props: PopupControlProps) => {
+  if (props.object.kind != "gantryBeam") { return undefined; }
+  const lighting = props.peripherals.filter(peripheral =>
+    peripheral.body.type == "lighting");
+  const currentSensors = props.sensors.filter(sensor =>
+    currentSensorMatchesPeripheralTypes(
+      sensor, props.peripherals, ["lighting"]));
+  const locked = !!props.bot?.hardware.informational_settings.locked;
   return <div className={"object-popup-gantry-beam-controls grid"}>
-    <div className={"object-popup-gantry-beam-row row grid-2-col"}>
-      <label>{t("Lighting")}</label>
-      <ToggleButton
-        toggleValue={value}
-        toggleAction={() => { if (isNumber(pin)) { void pinToggle(pin); } }}
-        disabled={disabled}
-        title={t("Toggle Lighting")}
-        customText={{ textFalse: t("off"), textTrue: t("on") }} />
-    </div>
+    {lighting.map(peripheral =>
+      <GantryBeamPeripheralRow
+        key={peripheral.uuid}
+        peripheral={peripheral}
+        peripheralValues={props.peripheralValues}
+        botOnline={props.botOnline}
+        arduinoBusy={props.arduinoBusy}
+        locked={locked} />)}
+    {currentSensors.map(sensor =>
+      <GantryBeamCurrentSensorRow
+        key={sensor.uuid}
+        sensor={sensor}
+        value={isNumber(sensor.body.pin)
+          ? props.bot?.hardware.pins[sensor.body.pin]?.value
+          : undefined}
+        botOnline={props.botOnline}
+        arduinoBusy={props.arduinoBusy}
+        locked={locked} />)}
     <div className={"object-popup-gantry-beam-row row grid-2-col"}>
       <label htmlFor={"gantry-beam-popup-length"}>
         {t(DeviceSetting.beamLength)}

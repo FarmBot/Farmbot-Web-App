@@ -6,7 +6,7 @@ import {
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
 import { SaveBtn } from "../ui";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedTool, Xyz } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { selectAllTools } from "../resources/selectors";
@@ -16,18 +16,20 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
 import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
-import { AddToolProps, AddToolState } from "./interfaces";
+import {
+  AddToolProps, AddToolState,
+} from "./interfaces";
 import {
   reduceFarmwareEnv, saveOrEditFarmwareEnv,
 } from "../farmware/state_to_props";
 import { CustomToolGraphicsInput } from "./custom_tool_graphics";
 import { Path } from "../internal_urls";
 import {
-  reduceToolName, ToolName,
-} from "../farm_designer/map/tool_graphics/all_tools";
-import { TipZOffsetInput, WaterFlowRateInput } from "./edit_tool";
+  EffectorOffsetInput, ToolTypeInput, UtmMountableInput, WaterFlowRateInput,
+} from "./edit_tool";
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -38,13 +40,22 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
   env: reduceFarmwareEnv(props.resources.index),
 });
 
+export type StockTool = {
+  name: string;
+  type: ToolType;
+  utm_mountable: boolean;
+} & Partial<Pick<TaggedTool["body"],
+  "effector_offset_x" | "effector_offset_y" | "effector_offset_z">>;
+
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   state: AddToolState = {
     toolName: "",
+    toolType: "none",
+    utmMountable: true,
     toAdd: [],
     uuid: undefined,
     flowRate: 0,
-    tipZOffset: 80,
+    effectorOffset: { x: 0, y: 0, z: 0 },
   };
 
   filterExisting = (n: string) => !this.props.existingToolNames.includes(n);
@@ -56,10 +67,13 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     this.setState({ toAdd: this.state.toAdd.filter(name => name != n) });
 
   componentDidMount = () => this.setState({
-    toAdd: this.stockToolNames().filter(this.filterExisting)
+    toAdd: this.stockToolNames()
+      .filter(tool => this.filterExisting(tool.name))
+      .map(tool => tool.name),
   });
 
-  newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
+  newTool = (tool: StockTool) => this.props.dispatch(initSave(
+    "Tool", tool));
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
@@ -72,8 +86,12 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   save = () => {
     const initTool = init("Tool", {
       name: this.state.toolName,
+      type: this.state.toolType,
+      utm_mountable: this.state.utmMountable,
       flow_rate_ml_per_s: this.state.flowRate,
-      seeder_tip_z_offset: this.state.tipZOffset,
+      effector_offset_x: this.state.effectorOffset.x,
+      effector_offset_y: this.state.effectorOffset.y,
+      effector_offset_z: this.state.effectorOffset.z,
     });
     this.props.dispatch(initTool);
     const { uuid } = initTool.payload;
@@ -86,20 +104,51 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   componentWillUnmount = () =>
     this.state.uuid && this.props.dispatch(destroy(this.state.uuid));
 
-  stockToolNames = () => {
-    const TROUGHS = [
-      t("Seed Trough 1"),
-      t("Seed Trough 2"),
+  stockToolNames = (): StockTool[] => {
+    const TROUGHS: StockTool[] = [
+      {
+        name: t("Seed Trough 1"),
+        type: "seed_trough",
+        utm_mountable: false,
+      },
+      {
+        name: t("Seed Trough 2"),
+        type: "seed_trough",
+        utm_mountable: false,
+      },
     ];
-    const BASE_TOOLS = [
-      t("Watering Nozzle"),
+    const BASE_TOOLS: StockTool[] = [
+      {
+        name: t("Watering Nozzle"),
+        type: "watering_nozzle",
+        utm_mountable: true,
+      },
     ];
-    const GENESIS_TOOLS = [
-      t("Seeder"),
-      t("Weeder"),
-      t("Soil Sensor"),
-      t("Seed Bin"),
-      t("Seed Tray"),
+    const GENESIS_TOOLS: StockTool[] = [
+      {
+        name: t("Seeder"),
+        type: "seeder",
+        utm_mountable: true,
+        effector_offset_x: 17.5,
+        effector_offset_z: 80,
+      },
+      { name: t("Weeder"), type: "weeder", utm_mountable: true },
+      {
+        name: t("Soil Sensor"),
+        type: "soil_sensor",
+        utm_mountable: true,
+        effector_offset_z: 60,
+      },
+      { name: t("Seed Bin"), type: "seed_bin", utm_mountable: false },
+      { name: t("Seed Tray"), type: "seed_tray", utm_mountable: false },
+    ];
+    const ROTARY_TOOL: StockTool[] = [
+      {
+        name: t("Rotary Tool"),
+        type: "rotary_tool",
+        utm_mountable: true,
+        effector_offset_z: 80,
+      },
     ];
     switch (this.props.firmwareHardware) {
       case "arduino":
@@ -122,7 +171,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       case "farmduino_k19":
         return [
           ...BASE_TOOLS,
-          t("Rotary Tool"),
+          ...ROTARY_TOOL,
           ...GENESIS_TOOLS,
           ...TROUGHS,
         ];
@@ -151,22 +200,33 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   };
 
   AddStockTools = () => {
-    const add = this.state.toAdd.filter(this.filterExisting);
+    const add = this.stockToolNames()
+      .filter(tool => this.state.toAdd.includes(tool.name))
+      .filter(tool => this.filterExisting(tool.name));
     return <div className="add-stock-tools"
       hidden={this.props.firmwareHardware == "none"}>
       <label>{t("stock names")}</label>
       <ul>
-        {this.stockToolNames().map(n =>
-          <li key={n}>
-            <this.StockToolCheckbox toolName={n} />
-            <p onClick={() => this.setState({ toolName: n })}>{n}</p>
+        {this.stockToolNames().map(tool =>
+          <li key={tool.name}>
+            <this.StockToolCheckbox toolName={tool.name} />
+            <p onClick={() => this.setState({
+              toolName: tool.name,
+              toolType: tool.type,
+              utmMountable: tool.utm_mountable,
+              effectorOffset: {
+                x: tool.effector_offset_x ?? 0,
+                y: tool.effector_offset_y ?? 0,
+                z: tool.effector_offset_z ?? 0,
+              },
+            })}>{tool.name}</p>
           </li>)}
       </ul>
       <button
         className={`fb-button green ${add.length > 0 ? "" : "pseudo-disabled"}`}
         title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
-          add.map(n => this.newTool(n));
+          add.map(tool => this.newTool(tool));
           this.navigate(Path.tools());
         }}>
         <i className="fa fa-plus" />
@@ -176,7 +236,11 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   };
 
   changeFlowRate = (flowRate: number) => this.setState({ flowRate });
-  changeTipZOffset = (tipZOffset: number) => this.setState({ tipZOffset });
+  changeToolType = (toolType: ToolType) => this.setState({ toolType });
+  changeEffectorOffset = (axis: Xyz, value: number) =>
+    this.setState(state => ({
+      effectorOffset: { ...state.effectorOffset, [axis]: value },
+    }));
 
   render() {
     const { toolName, uuid } = this.state;
@@ -197,9 +261,11 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool grid">
-          <ToolSVG toolName={this.state.toolName} profile={true} />
+          <ToolSVG toolName={this.state.toolName}
+            toolType={this.state.toolType} profile={true} />
           <CustomToolGraphicsInput
             toolName={this.state.toolName}
+            toolType={this.state.toolType}
             dispatch={this.props.dispatch}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             env={this.props.env} />
@@ -210,12 +276,15 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
               onChange={e =>
                 this.setState({ toolName: e.currentTarget.value })} />
           </div>
-          {reduceToolName(toolName) == ToolName.wateringNozzle &&
+          <ToolTypeInput value={this.state.toolType}
+            onChange={this.changeToolType} />
+          <UtmMountableInput value={this.state.utmMountable}
+            onChange={utmMountable => this.setState({ utmMountable })} />
+          <EffectorOffsetInput value={this.state.effectorOffset}
+            onChange={this.changeEffectorOffset} />
+          {this.state.toolType == "watering_nozzle" &&
             <WaterFlowRateInput value={this.state.flowRate}
               onChange={this.changeFlowRate} />}
-          {reduceToolName(toolName) == ToolName.seeder &&
-            <TipZOffsetInput value={this.state.tipZOffset}
-              onChange={this.changeTipZOffset} />}
           <p className="name-error">
             {alreadyAdded ? t("Already added.") : ""}
           </p>

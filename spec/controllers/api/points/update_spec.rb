@@ -79,6 +79,19 @@ describe Api::PointsController do
       expect(slot.reload.pullout_direction).to eq(direction)
     end
 
+    it "updates tool slot mounting attributes" do
+      body = { mount_offset_x: 1.5,
+               mount_offset_y: 2.5,
+               mount_offset_z: 3.5,
+               mount_stage: ToolSlot::MOUNT_STAGE_Z }
+      slot
+      sign_in user
+      put :update, body: body.to_json,
+                   params: { id: slot.id, format: :json }
+      expect(response.status).to eq(200)
+      body.each { |key, value| expect(json[key]).to eq(value) }
+    end
+
     it "logs failed updates" do
       ua = "FarmbotOS/17.0.0 (host) host ()"
       allow(request).to receive(:user_agent).and_return(ua)

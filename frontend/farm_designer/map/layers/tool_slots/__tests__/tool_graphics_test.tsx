@@ -2,7 +2,6 @@ import React from "react";
 import {
   RotatedTool, ToolSVG, ToolSVGProps, ToolSlotSVG, ToolSlotSVGProps,
 } from "../tool_graphics";
-import { ToolName } from "../../../tool_graphics/all_tools";
 import {
   ToolSlotGraphicProps, ToolGraphicProps, ToolProps,
 } from "../../../tool_graphics/interfaces";
@@ -13,7 +12,9 @@ import { Actions } from "../../../../../constants";
 import {
   fakeToolSlot,
 } from "../../../../../__test_support__/fake_state/resources";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import {
   fakeToolTransformProps,
 } from "../../../../../__test_support__/fake_tool_info";
@@ -116,13 +117,13 @@ describe("<RotatedTool/>", () => {
   });
 
   const fakeProps = (): ToolProps => ({
-    tool: ToolName.tool,
+    toolType: "none",
     toolProps: fakeToolProps()
   });
 
   it("sets hover state for empty tool slot", () => {
     const p = fakeProps();
-    p.tool = ToolName.tool;
+    p.toolType = "none";
     const { container } = renderSvg(<RotatedTool {...p} />);
     fireEvent.mouseOver(getUse(container));
     expect(p.toolProps.dispatch).toHaveBeenCalledWith({
@@ -136,7 +137,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders empty tool slot styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.emptyToolSlot;
+    p.toolType = undefined;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circle = getLastCircle(container);
     expect(circle.getAttribute("r")).toEqual("34");
@@ -146,7 +147,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders empty tool slot hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.emptyToolSlot;
+    p.toolType = undefined;
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const first = container.querySelector("circle");
@@ -180,14 +181,14 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: rotary tool", () => {
     const p = fakeProps();
-    p.tool = ToolName.rotaryTool;
+    p.toolType = "rotary_tool";
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#rotary-tool rect").length).toEqual(1);
   });
 
   it("renders rotary tool hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.rotaryTool;
+    p.toolType = "rotary_tool";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#rotary-tool circle");
@@ -197,14 +198,14 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: weeder", () => {
     const p = fakeProps();
-    p.tool = ToolName.weeder;
+    p.toolType = "weeder";
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#weeder rect").length).toEqual(1);
   });
 
   it("renders weeder hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.weeder;
+    p.toolType = "weeder";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#weeder circle");
@@ -214,14 +215,14 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: watering nozzle", () => {
     const p = fakeProps();
-    p.tool = ToolName.wateringNozzle;
+    p.toolType = "watering_nozzle";
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#watering-nozzle rect").length).toEqual(3);
   });
 
   it("renders watering nozzle hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.wateringNozzle;
+    p.toolType = "watering_nozzle";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#watering-nozzle circle");
@@ -231,14 +232,14 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: seeder", () => {
     const p = fakeProps();
-    p.tool = ToolName.seeder;
+    p.toolType = "seeder";
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#seeder circle").length).toEqual(4);
   });
 
   it("renders seeder hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.seeder;
+    p.toolType = "seeder";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#seeder circle");
@@ -248,14 +249,14 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: soil sensor", () => {
     const p = fakeProps();
-    p.tool = ToolName.soilSensor;
+    p.toolType = "soil_sensor";
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#soil-sensor rect").length).toEqual(5);
   });
 
   it("renders soil sensor hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.soilSensor;
+    p.toolType = "soil_sensor";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#soil-sensor circle");
@@ -265,7 +266,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: bin", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedBin;
+    p.toolType = "seed_bin";
     const { container } = renderSvg(<RotatedTool {...p} />);
     const circles = container.querySelectorAll("#seed-bin circle");
     expect(circles.length).toEqual(2);
@@ -275,7 +276,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders bin hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedBin;
+    p.toolType = "seed_bin";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#seed-bin circle").length).toEqual(3);
@@ -283,7 +284,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: tray", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedTray;
+    p.toolType = "seed_tray";
     const { container } = renderSvg(<RotatedTool {...p} />);
     const elements = container.querySelector("#seed-tray");
     if (!elements) { throw new Error("Missing seed tray"); }
@@ -295,7 +296,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders tray hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedTray;
+    p.toolType = "seed_tray";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     expect(container.querySelectorAll("#seed-tray circle").length).toEqual(3);
@@ -303,7 +304,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders special tool styling: trough", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedTrough;
+    p.toolType = "seed_trough";
     const { container } = renderSvg(<RotatedTool {...p} />);
     const elements = container.querySelector("#seed-trough");
     if (!elements) { throw new Error("Missing seed trough"); }
@@ -313,7 +314,7 @@ describe("<RotatedTool/>", () => {
 
   it("renders trough hover styling", () => {
     const p = fakeProps();
-    p.tool = ToolName.seedTrough;
+    p.toolType = "seed_trough";
     p.toolProps.hovered = true;
     const { container } = renderSvg(<RotatedTool {...p} />);
     const elements = container.querySelector("#seed-trough");
@@ -326,6 +327,7 @@ describe("<RotatedTool/>", () => {
 describe("<ToolSVG />", () => {
   const fakeProps = (): ToolSVGProps => ({
     toolName: "seed trough",
+    toolType: "seed_trough",
   });
 
   it("renders trough", () => {
@@ -339,6 +341,7 @@ describe("<ToolSlotSVG />", () => {
   const fakeProps = (): ToolSlotSVGProps => ({
     toolSlot: fakeToolSlot(),
     toolName: "seeder",
+    toolType: "seeder",
     toolTransformProps: fakeToolTransformProps(),
   });
 
@@ -348,6 +351,17 @@ describe("<ToolSlotSVG />", () => {
     const { container } = render(<ToolSlotSVG {...p} />);
     expect(container.querySelectorAll("#toolbay-slot").length).toEqual(1);
     expect(container.innerHTML).not.toContain("side");
+  });
+
+  it("renders a mounted slot with its pullout direction", () => {
+    const p = fakeProps();
+    p.toolSlot.body.mount_stage = MountStage.X;
+    p.toolSlot.body.pullout_direction = ToolPulloutDirection.POSITIVE_X;
+    const { container } = render(<ToolSlotSVG {...p} />);
+    expect(container.querySelector(".tool-svg")).toBeTruthy();
+    expect(container.querySelector("svg")?.getAttribute("viewBox"))
+      .toEqual("-50 0 100 1");
+    expect(container.querySelectorAll("#toolbay-slot")).toHaveLength(1);
   });
 
   it("renders slot side", () => {

@@ -5,7 +5,8 @@ import { BotPosition } from "../../../../devices/interfaces";
 import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";
-import { range, some } from "lodash";
+import { isNumber, range } from "lodash";
+import { PeripheralType } from "farmbot/dist/resources/api_resources";
 import { PeripheralValues } from "./bot_trail";
 
 export interface BotPeripheralsProps {
@@ -165,7 +166,7 @@ export function BotPeripherals(props: BotPeripheralsProps) {
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
 
   return <g className={"virtual-peripherals"}>
-    {isPeripheralActive("light") &&
+    {isPeripheralActive("lighting") &&
       lightsFigure({
         x: xySwap ? -plantAreaOffset.y : positionQ.qx,
         y: xySwap ? positionQ.qy : -plantAreaOffset.y,
@@ -184,7 +185,7 @@ export function BotPeripherals(props: BotPeripheralsProps) {
         cy: positionQ.qy,
         animate,
       })}
-    {isPeripheralActive("rotary") &&
+    {isPeripheralActive("rotary_tool") &&
       rotaryFigure({
         cx: positionQ.qx,
         cy: positionQ.qy,
@@ -194,8 +195,8 @@ export function BotPeripherals(props: BotPeripheralsProps) {
 }
 
 export const isPeripheralActiveFunc = (peripheralValues: PeripheralValues) =>
-  (label: string, not?: string) =>
-    some(peripheralValues,
-      p => p.label.toLowerCase().includes(label)
-        && (!not || !p.label.toLowerCase().includes(not))
-        && p.value);
+  (type: PeripheralType, pin?: number) =>
+    peripheralValues.some(peripheral =>
+      peripheral.type == type
+      && (!isNumber(pin) || peripheral.pin == pin)
+      && peripheral.value);

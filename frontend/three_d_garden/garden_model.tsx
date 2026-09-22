@@ -1,4 +1,6 @@
 import React from "react";
+import { ToolType } from "farmbot/dist/resources/api_resources";
+import { resolveMountPosition } from "../tools/mount_stage";
 import {
   RootState, ThreeEvent, useFrame, useThree,
 } from "@react-three/fiber";
@@ -838,7 +840,8 @@ export interface GardenModelProps {
   bot?: BotState;
   firmwareSettings?: McuParams;
   encoderVisibility?: NativeJogEncoderVisibility;
-  mountedToolName?: string | undefined;
+  mountedToolId?: number | undefined;
+  mountedToolType?: ToolType | undefined;
   startTimeRef?: React.RefObject<number>;
   allPoints?: TaggedPoint[];
   groups?: TaggedPointGroup[];
@@ -1444,7 +1447,7 @@ const EnvironmentScenePreloader = (props: EnvironmentScenePreloaderProps) => {
 const ignoredLoadStep = (_step: ThreeDLoadStepId) => undefined;
 const allowLoadStep = () => true;
 
-const farmbotLayerLoadProgress: ThreeDLoadProgress = {
+export const farmbotLayerLoadProgress: ThreeDLoadProgress = {
   readyStepTimes: {},
   currentStep: { id: "farmbot", label: "Loading FarmBot" },
   progress: 6 / THREE_D_LOAD_STEPS.length * 100,
@@ -1464,7 +1467,8 @@ interface FarmbotLoadInProps {
   encoderVisibility: NativeJogEncoderVisibility | undefined;
   getZ(x: number, y: number): number;
   loadInComplete: boolean;
-  mountedToolName: string | undefined;
+  mountedToolId: number | undefined;
+  mountedToolType: ToolType | undefined;
   navigate?(path: string): void;
   positionStore: BotPositionSnapshotStore;
   onExitRest?(): void;
@@ -1499,7 +1503,8 @@ const FarmbotLoadIn = (props: FarmbotLoadInProps) =>
       getZ={props.getZ}
       trailReady={props.reveal && props.detailsReveal && props.loadInComplete}
       activeFocus={props.activeFocus}
-      mountedToolName={props.mountedToolName}
+      mountedToolId={props.mountedToolId}
+      mountedToolType={props.mountedToolType}
       navigate={props.navigate}
       positionStore={props.positionStore}
       onSelectObject={props.onSelectObject}
@@ -1552,7 +1557,8 @@ const FarmbotLayer = (props: FarmbotLayerProps) => {
         encoderVisibility={props.encoderVisibility}
         getZ={props.getZ}
         loadInComplete={loadInComplete}
-        mountedToolName={props.mountedToolName}
+        mountedToolId={props.mountedToolId}
+        mountedToolType={props.mountedToolType}
         navigate={props.navigate}
         positionStore={props.positionStore}
         onExitRest={markFarmbotHidden}
@@ -3687,17 +3693,17 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
   }, [dispatch, editedGroup]);
   const areaSelectedUuids = React.useMemo(() => {
     if (!areaSelection || areaSelection.phase == "firstCorner") { return []; }
-    const selectablePoints = allPoints.map(point =>
-      point.body.pointer_type == "ToolSlot"
-        && point.body.gantry_mounted
-        ? {
-          ...point,
-          body: {
-            ...point.body,
-            x: currentBotLocation.x ?? point.body.x,
-          },
-        }
-        : point);
+    const selectablePoints = allPoints.map(point => {
+      if (point.body.pointer_type != "ToolSlot") { return point; }
+      return {
+        ...point,
+        body: {
+          ...point.body,
+          ...resolveMountPosition(
+            point.body, currentBotLocation, point.body.mount_stage),
+        },
+      };
+    });
     const points = getFilteredPoints({
       plants,
       allPoints: selectablePoints,
@@ -3714,7 +3720,7 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
     addPlantProps?.getConfigValue,
     allPoints,
     areaSelection,
-    currentBotLocation.x,
+    currentBotLocation,
     plants,
   ]);
   React.useEffect(() => {
@@ -4410,7 +4416,8 @@ const GardenModelSceneBase = (props: GardenModelSceneProps) => {
           getZ={getZ}
           loadProgress={loadProgress}
           markStep={markLoadStep}
-          mountedToolName={props.mountedToolName}
+          mountedToolId={props.mountedToolId}
+          mountedToolType={props.mountedToolType}
           navigate={navigate}
           positionStore={botPositionStore}
           reveal={farmbotReveal}
@@ -4605,9 +4612,23 @@ const MemoizedGardenModelScene = React.memo(
 
 MemoizedGardenModelScene.displayName = "MemoizedGardenModelScene";
 
+export const useStableNavigate = () => {
+  const navigate = useNavigate();
+  const navigateRef = React.useRef(navigate);
+  React.useLayoutEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
+  return React.useCallback(
+    (path: string) => {
+      void navigateRef.current(path);
+    },
+    [],
+  );
+};
+
 export const GardenModel = (props: GardenModelProps) => {
   const routeLocation = useLocation();
-  const navigate = useNavigate();
+  const stableNavigate = useStableNavigate();
   const viewportWidth = useThree(selectGardenViewportWidth);
   const viewportHeight = useThree(selectGardenViewportHeight);
   const viewport = React.useMemo<GardenViewportSnapshot>(() => ({
@@ -4620,16 +4641,6 @@ export const GardenModel = (props: GardenModelProps) => {
   React.useEffect(() => {
     perfCount("change.GardenModelAdapter.viewport");
   }, [viewportHeight, viewportWidth]);
-  const navigateRef = React.useRef(navigate);
-  React.useLayoutEffect(() => {
-    navigateRef.current = navigate;
-  }, [navigate]);
-  const stableNavigate = React.useCallback(
-    (path: string) => {
-      void navigateRef.current(path);
-    },
-    [],
-  );
   const route = createGardenRouteSnapshot(
     routeLocation.pathname,
     routeLocation.search,

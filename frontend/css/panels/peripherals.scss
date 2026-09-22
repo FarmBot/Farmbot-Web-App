@@ -82,8 +82,13 @@
   }
 }
 
+.peripheral-list .pin-type-emoji {
+  font-size: 1.6rem;
+  text-align: center;
+}
+
 .peripheral-edit-grid {
-  grid-template-columns: 1fr 20% 20% auto;
+  grid-template-columns: 1fr 15% 15% 20% auto;
 }
 
 .box-top-2d-wrapper {

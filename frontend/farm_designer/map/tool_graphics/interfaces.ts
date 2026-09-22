@@ -1,8 +1,9 @@
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { UUID } from "../../../resources/interfaces";
 import { ToolTransformProps } from "../../../tools/interfaces";
 import { BotOriginQuadrant } from "../../interfaces";
-import { ToolName } from "./all_tools";
 
 export interface ToolGraphicProps {
   toolName: string | undefined;
@@ -17,7 +18,7 @@ export interface ToolGraphicProps {
 }
 
 export interface ToolProps {
-  tool: ToolName;
+  toolType: ToolType | undefined;
   toolProps: ToolGraphicProps;
 }
 
@@ -52,7 +53,7 @@ export interface SpecificToolProfileProps {
 
 export interface ToolImplementProfileProps
   extends SpecificToolProfileProps {
-  toolName: string | undefined;
+  toolType: ToolType | undefined;
 }
 
 export interface GantryToolSlotGraphicProps {

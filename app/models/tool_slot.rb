@@ -7,13 +7,17 @@ class ToolSlot < Point
                         NEGATIVE_X = 2,
                         POSITIVE_Y = 3,
                         NEGATIVE_Y = 4]
-  MAX_PULLOUT = PULLOUT_DIRECTIONS.max
-  MIN_PULLOUT = PULLOUT_DIRECTIONS.min
-  PULLOUT_ERR = "must be a value between #{MIN_PULLOUT} and #{MAX_PULLOUT}. " \
+  PULLOUT_ERR = "must be one of #{PULLOUT_DIRECTIONS.join(", ")}. " \
                 "%{value} is not valid."
   IN_USE = "already in use by another slot. " \
            "Please un-assign the tool from its current slot" \
            " before reassigning."
+  MOUNT_STAGES = [MOUNT_STAGE_NONE = 0,
+                  MOUNT_STAGE_X = 1,
+                  MOUNT_STAGE_Y = 2,
+                  MOUNT_STAGE_Z = 3]
+  MOUNT_STAGE_ERR = "must be one of #{MOUNT_STAGES.join(", ")}. " \
+                    "%{value} is not valid."
 
   belongs_to :tool
   validates :tool,
@@ -22,4 +26,7 @@ class ToolSlot < Point
   validates :pullout_direction,
             presence: true,
             inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
+  validates :mount_stage,
+            presence: true,
+            inclusion: { in: MOUNT_STAGES, message: MOUNT_STAGE_ERR }
 end

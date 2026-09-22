@@ -40,7 +40,7 @@ import type { SelectionBoxData } from "./map/background";
 import type { GetWebAppConfigValue } from "../config_storage/actions";
 import type {
   DeviceAccountSettings,
-  ExecutableType, PlantPointer, ToolPulloutDirection,
+  ExecutableType, PlantPointer, ToolPulloutDirection, ToolType,
 } from "farmbot/dist/resources/api_resources";
 import type { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import type { MovementState, TimeSettings } from "../interfaces";
@@ -83,7 +83,9 @@ export interface State extends TypeCheckerHint {
 }
 
 export interface MountedToolInfo {
+  id: number | undefined;
   name: string | undefined;
+  type: ToolType | undefined;
   pulloutDirection: ToolPulloutDirection | undefined;
   noUTM: boolean;
   flipped: boolean;

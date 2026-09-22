@@ -593,8 +593,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
             min={props.config.negativeZ ? -props.config.botSizeZ : 0}
             max={props.config.negativeZ ? 0 : props.config.botSizeZ} />
           <Radio {...common} configKey={"tool"}
-            options={["wateringNozzle", "rotaryTool", "soilSensor", "weeder",
-              "seeder", "None"]} />
+            options={["watering_nozzle", "rotary_tool", "soil_sensor", "weeder",
+              "seeder", "none"]} />
           <Toggle {...common} configKey={"trail"} />
           <Toggle {...common} configKey={"laser"} />
           <Toggle {...common} configKey={"waterFlow"} />

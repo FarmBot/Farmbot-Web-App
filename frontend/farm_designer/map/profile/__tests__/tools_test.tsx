@@ -10,6 +10,9 @@ import { fakeMountedToolInfo } from "../../../../__test_support__/fake_tool_info
 import {
   fakeDesignerState,
 } from "../../../../__test_support__/fake_designer_state";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 
 describe("<ToolProfilePoint />", () => {
   const fakeProps = (): ProfilePointProps<TaggedToolSlotPointer> => ({
@@ -27,13 +30,22 @@ describe("<ToolProfilePoint />", () => {
     const p = fakeProps();
     const tool = fakeTool();
     tool.body.id = 1;
-    tool.body.name = "seeder";
+    tool.body.name = "arbitrary name";
+    tool.body.type = "seeder";
     const slot = fakeToolSlot();
     slot.body.tool_id = 1;
     p.point = slot;
     p.tools = [tool];
     const wrapper = svgMount(<ToolProfilePoint {...p} />);
     expect(wrapper.container.innerHTML).toContain("seeder-implement-profile");
+  });
+
+  it("treats a Y-stage slot as mounted", () => {
+    const p = fakeProps();
+    p.point.body.mount_stage = MountStage.Y;
+    p.point.body.pullout_direction = ToolPulloutDirection.POSITIVE_X;
+    const wrapper = svgMount(<ToolProfilePoint {...p} />);
+    expect(wrapper.container.innerHTML).toContain("no-slot-direction");
   });
 });
 
@@ -53,6 +65,7 @@ describe("<UTMProfile />", () => {
   it("renders front view", () => {
     const p = fakeProps();
     p.mountedToolInfo.name = "soil sensor";
+    p.mountedToolInfo.type = "soil_sensor";
     p.profileAxis = "y";
     const wrapper = svgMount(<UTMProfile {...p} />);
     expect(wrapper.container.innerHTML).toContain("front");
@@ -62,6 +75,7 @@ describe("<UTMProfile />", () => {
   it("renders side view", () => {
     const p = fakeProps();
     p.mountedToolInfo.name = "soil sensor";
+    p.mountedToolInfo.type = "soil_sensor";
     p.profileAxis = "x";
     const wrapper = svgMount(<UTMProfile {...p} />);
     expect(wrapper.container.innerHTML).not.toContain("front");

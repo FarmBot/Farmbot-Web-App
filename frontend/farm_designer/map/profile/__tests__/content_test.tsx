@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { getProfileX, ProfileSvg } from "../content";
+import { getProfileX, ProfileSvg, selectPoints } from "../content";
 import { ProfileSvgProps } from "../interfaces";
 import * as interpolationMap from "../../layers/points/interpolation_map";
 import {
@@ -17,7 +17,9 @@ import {
 } from "../../../../__test_support__/map_transform_props";
 import { BotPosition } from "../../../../devices/interfaces";
 import { BotOriginQuadrant } from "../../../interfaces";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import { ToolDimensions } from "../../tool_graphics/tool";
 import { SlotDimensions } from "../../tool_graphics/slot";
 import {
@@ -228,19 +230,22 @@ describe("<ProfileSvg />", () => {
     troughSlot.body.x = 1000;
     troughSlot.body.y = 110;
     troughSlot.body.z = 200;
-    troughSlot.body.gantry_mounted = true;
+    troughSlot.body.mount_stage = MountStage.X;
     p.allPoints = [toolSlot, troughSlot];
     const { container } = render(<ProfileSvg {...p} />);
-    const toolRects = container.querySelectorAll("#profile-tool rect");
-    expectProps(toolRects[0], {
-      id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
+    const seeder = container.querySelector(
+      "#profile-tool rect[fill='url(#tool-body-gradient-seeder)']");
+    const empty = container.querySelector(
+      "#profile-tool rect[fill='url(#tool-body-gradient-none)']");
+    expectProps(seeder ?? undefined, {
+      id: "tool-body", fill: "url(#tool-body-gradient-seeder)", opacity: 0.75,
       x: 200 - ToolDimensions.radius, y: 200,
       width: ToolDimensions.diameter,
       height: ToolDimensions.thickness,
     });
-    expectProps(toolRects[toolRects.length - 1], {
-      id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
-      x: -ToolDimensions.radius, y: 200,
+    expectProps(empty ?? undefined, {
+      id: "tool-body", fill: "url(#tool-body-gradient-none)", opacity: 0.75,
+      x: 1000 - ToolDimensions.radius, y: 200,
       width: ToolDimensions.diameter,
       height: ToolDimensions.thickness,
     });
@@ -254,13 +259,14 @@ describe("<ProfileSvg />", () => {
     const trough = fakeTool();
     trough.body.id = 1;
     trough.body.name = "Seed trough";
+    trough.body.type = "seed_trough";
     p.tools = [trough];
     const troughSlot = fakeToolSlot();
     troughSlot.body.tool_id = trough.body.id;
     troughSlot.body.x = 1000;
     troughSlot.body.y = 110;
     troughSlot.body.z = 200;
-    troughSlot.body.gantry_mounted = true;
+    troughSlot.body.mount_stage = MountStage.X;
     p.allPoints = [troughSlot];
     const { container } = render(<ProfileSvg {...p} />);
     expectProps(container.querySelector("#profile-tool rect") ?? undefined, {
@@ -274,18 +280,23 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     const rotaryTool = fakeTool();
     rotaryTool.body.name = "rotary tool";
+    rotaryTool.body.type = "rotary_tool";
     rotaryTool.body.id = 5;
     const weeder = fakeTool();
     weeder.body.name = "weeder";
+    weeder.body.type = "weeder";
     weeder.body.id = 1;
     const seeder = fakeTool();
     seeder.body.name = "seeder";
+    seeder.body.type = "seeder";
     seeder.body.id = 2;
     const seedBin = fakeTool();
     seedBin.body.name = "seed bin";
+    seedBin.body.type = "seed_bin";
     seedBin.body.id = 3;
     const soilSensor = fakeTool();
     soilSensor.body.name = "soil sensor";
+    soilSensor.body.type = "soil_sensor";
     soilSensor.body.id = 4;
     p.tools = [rotaryTool, weeder, seeder, seedBin, soilSensor];
     const rotarySlot = fakeToolSlot();
@@ -422,6 +433,7 @@ describe("<ProfileSvg />", () => {
       p.expanded = true;
       const soilSensor = fakeTool();
       soilSensor.body.name = "soil sensor";
+      soilSensor.body.type = "soil_sensor";
       soilSensor.body.id = 3;
       p.tools = [soilSensor];
       const soilSensorSlot = fakeToolSlot();
@@ -446,6 +458,29 @@ describe("<ProfileSvg />", () => {
     const { container } = render(<ProfileSvg {...p} />);
     expect(queryCount(container, "#interpolated-soil-height rect"))
       .toEqual(1);
+  });
+});
+
+describe("selectPoints()", () => {
+  it.each<[MountStage, { x: number, y: number, z: number }]>([
+    [MountStage.NONE, { x: 1, y: 2, z: 3 }],
+    [MountStage.X, { x: 14, y: 2, z: 3 }],
+    [MountStage.Y, { x: 14, y: 15, z: 3 }],
+    [MountStage.Z, { x: 14, y: 15, z: 36 }],
+  ])("resolves mount stage %s", (mountStage, expected) => {
+    const slot = fakeToolSlot();
+    Object.assign(slot.body, {
+      x: 1, y: 2, z: 3, mount_stage: mountStage,
+      mount_offset_x: 4, mount_offset_y: -5, mount_offset_z: 6,
+    });
+    const [selected] = selectPoints({
+      allPoints: [slot],
+      axis: "x",
+      selectionWidth: 100,
+      position: { x: 5, y: 5 },
+      botPosition: { x: 10, y: 20, z: 30 },
+    });
+    expect(selected?.body).toEqual(expect.objectContaining(expected));
   });
 });
 

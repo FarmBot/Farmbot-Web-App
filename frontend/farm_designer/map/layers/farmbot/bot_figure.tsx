@@ -6,7 +6,6 @@ import { Color } from "../../../../ui";
 import { botPositionLabel } from "./bot_position_label";
 import { RotatedTool } from "../tool_slots/tool_graphics";
 import { ToolGraphicProps } from "../../tool_graphics/interfaces";
-import { reduceToolName } from "../../tool_graphics/all_tools";
 import { ThreeInOneToolHead } from "../../tool_graphics/three_in_one_toolhead";
 import { noop, round } from "lodash";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -72,10 +71,10 @@ export class BotFigure extends
       this.props.mapTransformProps);
   }
 
-  MountedTool = ({ toolName }: { toolName: string | undefined }) =>
+  MountedTool = () =>
     <g id="mounted-tool">
       <RotatedTool
-        tool={reduceToolName(toolName)}
+        toolType={this.props.mountedToolInfo?.type}
         toolProps={this.getToolProps(this.positionQ)} />
       <circle
         cx={this.positionQ.qx}
@@ -120,8 +119,8 @@ export class BotFigure extends
         onMouseLeave={() => this.setHover(false)}
         fillOpacity={this.opacity}
         fill={this.color}>
-        {this.props.mountedToolInfo?.name
-          ? <this.MountedTool toolName={this.props.mountedToolInfo.name} />
+        {this.props.mountedToolInfo?.type
+          ? <this.MountedTool />
           : <this.UTM />}
       </g>
       {this.props.cameraViewArea && this.props.cameraCalibrationData &&

@@ -9,13 +9,20 @@ describe Api::ToolsController do
                     tool_slot: tool_slot,
                     device: user.device) }
 
-    it "changes the name" do
+    it "changes tool attributes" do
       sign_in user
+      body = { name: "Hi!",
+               type: "soil_sensor",
+               utm_mountable: false,
+               effector_offset_x: 4.5,
+               effector_offset_y: 5.5,
+               effector_offset_z: 6.5 }
       put :update,
-        body: { name: "Hi!" }.to_json,
+        body: body.to_json,
         params: {id: tool.id, format: :json }
       expect(response.status).to eq(200)
-      expect(tool.reload.name).to eq("Hi!")
+      tool.reload
+      body.each { |key, value| expect(tool.send(key)).to eq(value) }
     end
 
     it "prevents updates to another device's tool" do

@@ -99,7 +99,7 @@
   }
   &.tool-verification-sensor {
     span {
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
   }
   &.digital {
@@ -120,7 +120,95 @@
 }
 
 .sensor-form-grid {
-  grid-template-columns: 2fr 1fr 1fr auto;
+  grid-template-columns:
+  minmax(0, 2fr)
+  repeat(3, minmax(0, 1fr))
+  auto;
+
+  > input,
+  > .filter-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  > .filter-search {
+    .bp6-popover-wrapper,
+    .bp6-popover-target,
+    button {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+}
+
+.sensor-grid-row {
+  grid-template-columns:
+  minmax(0, 1fr)
+  3.6rem
+  1rem
+  minmax(0, 1fr)
+  auto;
+
+  > label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  > p {
+    text-align: center;
+  }
+
+  .sensor-reading-display {
+    min-width: 0;
+  }
+}
+
+.pin-type-emoji {
+  cursor: default;
+  display: block;
+  font-size: 1.6rem;
+  min-width: 2.4rem;
+  text-align: center;
+  width: 2.4rem;
+  color: $white;
+}
+
+.sensor-type-emojis {
+  display: flex;
+  gap: 0;
+  width: 3.6rem;
+
+  .pin-type-emoji {
+    min-width: 1.8rem;
+    width: 1.8rem;
+  }
+
+  .bp6-popover-wrapper {
+    width: 1.8rem;
+  }
+}
+
+button.sensor-peripheral-emoji-button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  width: 1.8rem;
+
+  .pin-type-emoji {
+    cursor: pointer;
+  }
+}
+
+.sensor-peripheral-toggle {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 16rem;
+  padding: 1rem;
+}
+
+.sensor-peripheral-toggle-row {
+  display: contents;
 }
 
 .sensors-panel-content {

@@ -950,7 +950,11 @@ CREATE TABLE public.points (
     depth integer DEFAULT 0,
     water_curve_id integer,
     spread_curve_id integer,
-    height_curve_id integer
+    height_curve_id integer,
+    mount_offset_x double precision DEFAULT 0.0 NOT NULL,
+    mount_offset_y double precision DEFAULT 0.0 NOT NULL,
+    mount_offset_z double precision DEFAULT 0.0 NOT NULL,
+    mount_stage integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1006,7 +1010,12 @@ CREATE TABLE public.tools (
     updated_at timestamp without time zone NOT NULL,
     device_id integer,
     flow_rate_ml_per_s integer DEFAULT 0,
-    seeder_tip_z_offset double precision DEFAULT 80.0
+    seeder_tip_z_offset double precision DEFAULT 80.0,
+    type character varying(15) DEFAULT 'none'::character varying NOT NULL,
+    utm_mountable boolean DEFAULT true NOT NULL,
+    effector_offset_x double precision DEFAULT 0.0 NOT NULL,
+    effector_offset_y double precision DEFAULT 0.0 NOT NULL,
+    effector_offset_z double precision DEFAULT 0.0 NOT NULL
 );
 
 
@@ -1144,7 +1153,8 @@ CREATE TABLE public.peripherals (
     label character varying(280),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    mode integer DEFAULT 0
+    mode integer DEFAULT 0,
+    type character varying(15) DEFAULT 'none'::character varying NOT NULL
 );
 
 
@@ -1698,7 +1708,8 @@ CREATE TABLE public.sensors (
     label character varying,
     mode integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    type character varying(20) DEFAULT 'none'::character varying NOT NULL
 );
 
 
@@ -3852,6 +3863,7 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260820233810'),
 ('20260729150407'),
 ('20260728183708'),
 ('20260724204047'),

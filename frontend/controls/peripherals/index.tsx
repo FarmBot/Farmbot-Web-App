@@ -14,6 +14,13 @@ import { isBotOnline } from "../../devices/must_be_online";
 import { getStatus } from "../../connectivity/reducer_support";
 import { BoxTop } from "../../settings/pin_bindings/box_top";
 import { BooleanSetting } from "../../session_keys";
+import { PeripheralType } from "farmbot/dist/resources/api_resources";
+
+interface Peripheral {
+  pin: number;
+  label: string;
+  type: PeripheralType;
+};
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {
@@ -69,29 +76,39 @@ export class Peripherals
   newPeripheral = (
     pin: number | undefined = undefined,
     label = t("New Peripheral"),
+    type: PeripheralType = "none",
   ) => {
-    this.props.dispatch(init("Peripheral", { pin, label, mode: DIGITAL }));
+    if (!this.props.peripherals.map(peripheral => peripheral.body.pin)
+      .includes(pin)) {
+      this.props.dispatch(init("Peripheral", {
+        pin,
+        label,
+        mode: DIGITAL,
+        type,
+      }));
+    }
   };
 
-  get stockPeripherals() {
-    const BASE_PERIPHERALS = [
-      { pin: 7, label: t("Lighting") },
-      { pin: 8, label: t("Water") },
-      { pin: 9, label: t("Vacuum") },
+
+  get stockPeripherals(): Peripheral[] {
+    const BASE_PERIPHERALS: Peripheral[] = [
+      { pin: 7, label: t("Lighting"), type: "lighting" },
+      { pin: 8, label: t("Water"), type: "water" },
+      { pin: 9, label: t("Vacuum"), type: "vacuum" },
     ];
-    const ROTARY_TOOL = [
-      { pin: 2, label: t("Rotary Tool") },
-      { pin: 3, label: t("Rotary Tool Reverse") },
+    const ROTARY_TOOL: Peripheral[] = [
+      { pin: 2, label: t("Rotary Tool"), type: "rotary_tool" },
+      { pin: 3, label: t("Rotary Tool Reverse"), type: "rotary_tool" },
     ];
-    const EXTRA_PERIPHERALS = [
-      { pin: 10, label: t("Peripheral ") + "4" },
-      { pin: 12, label: t("Peripheral ") + "5" },
+    const EXTRA_PERIPHERALS: Peripheral[] = [
+      { pin: 10, label: t("Peripheral ") + "4", type: "none" },
+      { pin: 12, label: t("Peripheral ") + "5", type: "none" },
     ];
     switch (this.props.firmwareHardware) {
       case "arduino":
         return [
-          { pin: 8, label: t("Water") },
-          { pin: 9, label: t("Vacuum") },
+          { pin: 9, label: t("Water"), type: "water" },
+          { pin: 10, label: t("Vacuum"), type: "vacuum" },
         ];
       case "farmduino":
       case "farmduino_k14":
@@ -168,7 +185,7 @@ export class Peripherals
           type="button"
           title={t("add stock peripherals")}
           onClick={() => this.stockPeripherals.map(p =>
-            this.newPeripheral(p.pin, p.label))}>
+            this.newPeripheral(p.pin, p.label, p.type))}>
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
           {t("Stock")}
         </button>

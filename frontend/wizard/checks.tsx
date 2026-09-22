@@ -96,15 +96,14 @@ import {
 import { getImageJobs } from "../photos/state_to_props";
 import { ResourceIndex } from "../resources/interfaces";
 import { BotState } from "../devices/interfaces";
-import {
-  reduceToolName, ToolName,
-} from "../farm_designer/map/tool_graphics/all_tools";
 import { isActive, WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 import { BoxTop } from "../settings/pin_bindings/box_top";
 import { OtaTimeSelector } from "../settings/fbos_settings/ota_time_selector";
 import { useNavigate } from "react-router";
-import { SlotLocationInputRow } from "../tools/tool_slot_edit_components";
+import {
+  MountOffsetInput, SlotLocationInputRow,
+} from "../tools/tool_slot_edit_components";
 import { ToolSlotInventoryItem } from "../tools";
 
 export const Language = (props: WizardStepComponentProps) => {
@@ -750,7 +749,7 @@ export const CameraImageOrigin = (props: WizardOutcomeComponentProps) => {
 
 export const FlowRateInput = (props: WizardStepComponentProps) => {
   const tool = selectAllTools(props.resources).filter(tool =>
-    reduceToolName(tool.body.name) == ToolName.wateringNozzle)[0];
+    tool.body.type == "watering_nozzle")[0];
   return tool
     ? <WaterFlowRateInput
       value={tool.body.flow_rate_ml_per_s}
@@ -765,7 +764,10 @@ export const FlowRateInput = (props: WizardStepComponentProps) => {
       style={{ float: "none" }}
       title={t("Add new tool")}
       onClick={() =>
-        props.dispatch(initSave("Tool", { name: "Watering Nozzle" }))}>
+        props.dispatch(initSave("Tool", {
+          name: "Watering Nozzle",
+          type: "watering_nozzle",
+        }))}>
       {t("Add watering nozzle")}
     </button>;
 };
@@ -777,6 +779,7 @@ export const ToolCheck = (props: WizardStepComponentProps) => {
 
 export const SensorsCheck = (props: WizardStepComponentProps) => {
   const sensors = uniq(selectAllSensors(props.resources));
+  const peripherals = uniq(selectAllPeripherals(props.resources));
   const botOnline = isBotOnlineFromState(props.bot);
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   return <div className={"sensors-check"}>
@@ -784,6 +787,7 @@ export const SensorsCheck = (props: WizardStepComponentProps) => {
       firmwareHardware={firmwareHardware}
       bot={props.bot}
       sensors={sensors}
+      peripherals={peripherals}
       disabled={!botOnline}
       dispatch={props.dispatch} />
   </div>;
@@ -823,8 +827,16 @@ export const SlotCoordinateRows = (props: SlotCoordinateRowsProps) => {
         <label>{`${t("Slot")} ${index + 1}`}</label>
         <SlotLocationInputRow
           slotLocation={slot.body}
-          gantryMounted={slot.body.gantry_mounted}
+          mountStage={slot.body.mount_stage}
           botPosition={locationData.position}
+          onChange={updateSlot} />
+        <MountOffsetInput
+          mountStage={slot.body.mount_stage}
+          value={{
+            x: slot.body.mount_offset_x ?? 0,
+            y: slot.body.mount_offset_y ?? 0,
+            z: slot.body.mount_offset_z ?? 0,
+          }}
           onChange={updateSlot} />
       </div>;
     })}

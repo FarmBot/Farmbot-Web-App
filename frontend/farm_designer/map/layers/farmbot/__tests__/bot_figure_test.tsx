@@ -157,6 +157,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.mountedToolInfo = fakeMountedToolInfo();
     p.mountedToolInfo.name = "Seeder";
+    p.mountedToolInfo.type = "seeder";
     const { container } = renderFigure(p);
     expect(container.querySelectorAll("#UTM-wrapper #mounted-tool").length)
       .toEqual(1);
@@ -211,6 +212,7 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo = fakeMountedToolInfo();
     p.mountedToolInfo.noUTM = true;
     p.mountedToolInfo.name = undefined;
+    p.mountedToolInfo.type = undefined;
     const { container } = renderFigure(p);
     const utm = requiredElement(container, "#UTM-wrapper");
     expect(utm.querySelectorAll("#mounted-tool").length).toEqual(0);

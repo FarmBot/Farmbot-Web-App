@@ -17,6 +17,18 @@ describe Points::Update do
     expect(point.meta["d"]).to eq("4")
   end
 
+  it "updates tool slot mounting attributes" do
+    slot = FactoryBot.create(:tool_slot, device: device)
+    attributes = { mount_offset_x: 1.5,
+                   mount_offset_y: 2.5,
+                   mount_offset_z: 3.5,
+                   mount_stage: ToolSlot::MOUNT_STAGE_Z }
+
+    result = Points::Update.run!(attributes.merge(device: device, point: slot))
+
+    attributes.each { |key, value| expect(result.send(key)).to eq(value) }
+  end
+
   it "prevents remove of tool from actively used tool slots" do
     s = Points::Scenario.new
     result = Points::Update.run(device: s.device,

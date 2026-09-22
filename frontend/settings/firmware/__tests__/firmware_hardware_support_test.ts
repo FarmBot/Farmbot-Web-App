@@ -1,5 +1,6 @@
 import {
-  boardType, getFwHardwareValue, getBoardCategory, hasSensors, isExpress, isUpgrade,
+  boardType, getFwHardwareValue, getBoardCategory, hasCurrentSensors,
+  hasSensors, isExpress, isUpgrade,
 } from "../firmware_hardware_support";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 
@@ -88,6 +89,27 @@ describe("hasSensors()", () => {
 
   it("doesn't have sensors", () => {
     expect(hasSensors("express_k10")).toEqual(false);
+  });
+});
+
+describe("hasCurrentSensors()", () => {
+  it.each([
+    "farmduino_k16",
+    "farmduino_k17",
+    "farmduino_k18",
+    "farmduino_k19",
+  ] as const)("supports %s", firmwareHardware => {
+    expect(hasCurrentSensors(firmwareHardware)).toEqual(true);
+  });
+
+  it("supports unknown hardware", () => {
+    expect(hasCurrentSensors(undefined)).toEqual(true);
+  });
+
+  it("doesn't support hardware before v1.6 or other product lines", () => {
+    expect(hasCurrentSensors("arduino")).toEqual(false);
+    expect(hasCurrentSensors("farmduino_k15")).toEqual(false);
+    expect(hasCurrentSensors("express_k12")).toEqual(false);
   });
 });
 

@@ -16,12 +16,13 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber, sortBy } from "lodash";
-import { Point } from "farmbot/dist/resources/api_resources";
+import { MountStage, Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { VariableType } from "./locals_list_support";
 import type { MapSelectionResult } from
   "../../three_d_garden/location_selection";
+import { axisIsMounted, mountStageLabel } from "../../tools/mount_stage";
 
 /** Return tool and location for all tools currently in tool slots. */
 export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
@@ -174,9 +175,9 @@ export const formatTool =
         z: slot.body.z
       }
       : undefined;
-    const gantryMounted = !!slot?.body.gantry_mounted;
+    const mountStage = slot?.body.mount_stage ?? MountStage.NONE;
     return {
-      label: dropDownName((name || "Untitled tool"), coordinate, gantryMounted),
+      label: dropDownName((name || "Untitled tool"), coordinate, mountStage),
       value: "" + id,
       headingId: "Tool",
     };
@@ -184,14 +185,16 @@ export const formatTool =
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
 export function dropDownName(name: string, v?: Record<Xyz, number | undefined>,
-  gantryMounted = false) {
-  let label = name || "untitled";
+  mountStage = MountStage.NONE) {
+  let label = capitalize(name || "untitled");
   if (v) {
     const labelFor = (axis: number | undefined) => isNumber(axis) ? axis : "---";
-    const xLabel = gantryMounted ? t("Gantry") : labelFor(v.x);
-    label += ` (${xLabel}, ${labelFor(v.y)}, ${labelFor(v.z)})`;
+    const axisLabel = (axis: Xyz) => axisIsMounted(mountStage, axis)
+      ? mountStageLabel(mountStage)
+      : labelFor(v[axis]);
+    label += ` (${axisLabel("x")}, ${axisLabel("y")}, ${axisLabel("z")})`;
   }
-  return capitalize(label);
+  return label;
 }
 
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({

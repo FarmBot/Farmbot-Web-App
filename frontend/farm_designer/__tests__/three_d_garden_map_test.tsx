@@ -113,7 +113,8 @@ describe("<ThreeDGardenMap />", () => {
     weeds: [],
     botPosition: { x: 1, y: 2, z: 3 },
     negativeZ: false,
-    mountedToolName: undefined,
+    mountedToolId: undefined,
+    mountedToolType: undefined,
     peripheralValues: [],
     peripherals: [],
     allPoints: [],
@@ -543,7 +544,9 @@ describe("<ThreeDGardenMap />", () => {
 
   it("shows active peripherals", () => {
     const p = fakeProps();
-    p.peripheralValues = [{ label: "watering nozzle", value: true }];
+    p.peripheralValues = [{
+      uuid: "Peripheral.1.1", type: "water", pin: 8, value: true,
+    }];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
@@ -561,11 +564,11 @@ describe("<ThreeDGardenMap />", () => {
     [true, false, 1],
     [false, true, -1],
     [true, true, 0],
-  ])("shows rotary tool state: fwd: %s rev: %s", (fwd, rev, exp) => {
+  ])("shows rotary tool state: first: %s second: %s", (first, second, exp) => {
     const p = fakeProps();
     p.peripheralValues = [
-      { label: "rotary tool", value: fwd },
-      { label: "rotary tool reverse", value: rev },
+      { uuid: "Peripheral.1.1", type: "rotary_tool", pin: 2, value: first },
+      { uuid: "Peripheral.2.2", type: "rotary_tool", pin: 3, value: second },
     ];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);

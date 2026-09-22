@@ -2,9 +2,10 @@ import React from "react";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import { clone } from "lodash";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
-  fakeToolSlot, fakeWeed, fakeSceneObject, fakePeripheral,
+  fakeToolSlot, fakeWeed, fakeSceneObject, fakePeripheral, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, fakeDevice,
@@ -122,7 +123,7 @@ const resolveProps = (): ResolveSelectedObjectProps => {
   const gantrySlot = fakeToolSlot();
   gantrySlot.body.id = 6;
   gantrySlot.body.tool_id = tool.body.id;
-  gantrySlot.body.gantry_mounted = true;
+  gantrySlot.body.mount_stage = MountStage.X;
   gantrySlot.body.x = 0;
   gantrySlot.body.y = 300;
   gantrySlot.body.z = 40;
@@ -197,14 +198,14 @@ const weedObject = (): ResolvedThreeDObject => {
 };
 
 const slotObject = (
-  gantryMounted = false,
+  mountStage = MountStage.NONE,
 ): Extract<ResolvedThreeDObject, { kind: "slot" }> => {
   const tool = fakeTool();
   tool.body.id = 4;
   const toolSlot = fakeToolSlot();
   toolSlot.body.id = 5;
   toolSlot.body.tool_id = tool.body.id;
-  toolSlot.body.gantry_mounted = gantryMounted;
+  toolSlot.body.mount_stage = mountStage;
   const slot: SlotWithTool = { toolSlot, tool };
   return {
     kind: "slot",
@@ -467,6 +468,7 @@ describe("selection resolve", () => {
     expect(weed?.ringRadius).toEqual(50);
   });
 
+  // eslint-disable-next-line complexity
   it("resolves slot, UTM, electronics, and camera selections", () => {
     const props = resolveProps();
     const staticSlot = resolveSelectedObject(props, { kind: "slot", id: 5 });
@@ -474,10 +476,21 @@ describe("selection resolve", () => {
     expect(staticSlot?.name).toEqual("Empty slot");
     expect(staticSlot?.locationCoordinate.x).toEqual(100);
 
+    props.toolSlots[1].toolSlot.body.mount_offset_x = 10;
+    props.toolSlots[1].toolSlot.body.mount_offset_y = -4;
+    props.toolSlots[1].toolSlot.body.mount_offset_z = 5;
     const gantrySlot = resolveSelectedObject(props, { kind: "slot", id: 6 });
     expect(gantrySlot?.kind).toEqual("slot");
     expect(gantrySlot?.name).toEqual("Seeder");
-    expect(gantrySlot?.locationCoordinate.x).toEqual(123);
+    expect(gantrySlot?.locationCoordinate.x).toEqual(133);
+    props.toolSlots[1].toolSlot.body.mount_stage = MountStage.Y;
+    props.currentBotLocation.y = 234;
+    const ySlot = resolveSelectedObject(props, { kind: "slot", id: 6 });
+    expect(ySlot?.locationCoordinate).toEqual({ x: 133, y: 230, z: 40 });
+    props.toolSlots[1].toolSlot.body.mount_stage = MountStage.Z;
+    props.currentBotLocation.z = 345;
+    const zSlot = resolveSelectedObject(props, { kind: "slot", id: 6 });
+    expect(zSlot?.locationCoordinate).toEqual({ x: 133, y: 230, z: 350 });
 
     const utm = resolveSelectedObject(props, { kind: "utm", id: 0 });
     expect(utm?.kind).toEqual("utm");
@@ -935,21 +948,27 @@ describe("selection popup controls", () => {
     });
   });
 
-  it("disables object coordinate edits without dispatch and for gantry slots", () => {
+  it("disables object coordinate edits without dispatch", () => {
     const p = layerProps();
     p.dispatch = undefined;
-    let wrapper = createRenderer(<PopupObjectLocationRow
+    const wrapper = createRenderer(<PopupObjectLocationRow
       {...p}
       object={plantObject()} />);
     expect(wrapper.root.findAll(node => node.type == "input" &&
       node.props.disabled).length).toEqual(3);
     unmountRenderer(wrapper);
-    p.dispatch = jest.fn();
-    wrapper = createRenderer(<PopupObjectLocationRow
-      {...p}
-      object={slotObject(true)} />);
-    expect(wrapper.root.findAll(node => node.type == "input" &&
-      node.props.name == "x" && node.props.disabled).length).toEqual(1);
+  });
+
+  it.each<[MountStage, string[]]>([
+    [MountStage.X, ["x"]],
+    [MountStage.Y, ["x", "y"]],
+    [MountStage.Z, ["x", "y", "z"]],
+  ])("disables mounted coordinates: stage %s", (mountStage, axes) => {
+    const { wrapper } = renderLocationRow(slotObject(mountStage));
+    const disabledAxes = wrapper.root.findAll(node =>
+      node.type == "input" && node.props.disabled)
+      .map(node => node.props.name);
+    expect(disabledAxes).toEqual(axes);
     unmountRenderer(wrapper);
   });
 
@@ -1110,23 +1129,69 @@ describe("selection popup controls", () => {
   it("controls gantry beam lighting and length", () => {
     const pinToggleSpy = jest.spyOn(deviceActions, "pinToggle")
       .mockImplementation(jest.fn());
+    const readPinSpy = jest.spyOn(deviceActions, "readPin")
+      .mockImplementation(jest.fn());
     const p = layerProps();
     p.set3DConfigValue = jest.fn();
-    const lighting = fakePeripheral();
-    lighting.body.label = "Lighting";
-    lighting.body.pin = 7;
-    p.peripherals = [lighting];
-    p.peripheralValues = [{ label: "Lighting", value: true }];
+    const firstLight = fakePeripheral();
+    firstLight.body.label = "first light";
+    firstLight.body.type = "lighting";
+    firstLight.body.pin = 7;
+    const secondLight = fakePeripheral();
+    secondLight.body.label = "second light";
+    secondLight.body.type = "lighting";
+    secondLight.body.pin = 8;
+    const water = fakePeripheral();
+    water.body.type = "water";
+    water.body.pin = 9;
+    p.peripherals = [firstLight, secondLight, water];
+    p.peripheralValues = [
+      { uuid: firstLight.uuid, type: "lighting", pin: 7, value: true },
+      { uuid: secondLight.uuid, type: "lighting", pin: 8, value: false },
+    ];
+    const firstCurrent = fakeSensor();
+    firstCurrent.body.label = "first light current";
+    firstCurrent.body.type = "current";
+    firstCurrent.body.pin = 54;
+    firstCurrent.body.mode = 1;
+    const secondCurrent = fakeSensor();
+    secondCurrent.body.label = "second light current";
+    secondCurrent.body.type = "current";
+    secondCurrent.body.pin = 55;
+    const waterCurrent = fakeSensor();
+    waterCurrent.body.label = "water current";
+    waterCurrent.body.type = "current";
+    waterCurrent.body.pin = 58;
+    p.sensors = [firstCurrent, secondCurrent, waterCurrent];
+    p.bot = clone(fakeBot);
+    p.bot.hardware.pins = {
+      54: { mode: 1, value: 500 },
+      55: { mode: 0, value: 1 },
+    };
     const controls = render(<ObjectPopupControls
       {...p}
       object={gantryBeamObject()} />);
 
-    expect(controls.getByText("Lighting")).toBeInTheDocument();
+    expect(controls.getByText("first light")).toBeInTheDocument();
+    expect(controls.getByText("second light")).toBeInTheDocument();
+    expect(controls.getByText("first light current")).toBeInTheDocument();
+    expect(controls.getByText("second light current")).toBeInTheDocument();
+    expect(controls.queryByText("water current")).not.toBeInTheDocument();
     expect(controls.getByText("Beam Length")).toBeInTheDocument();
-    const toggle = controls.container.querySelector(".fb-toggle-button");
-    expect(toggle).toHaveClass("green");
-    toggle && fireEvent.click(toggle);
-    expect(pinToggleSpy).toHaveBeenCalledWith(7);
+    const readings = controls.container.querySelectorAll(
+      ".object-popup-gantry-beam-sensor-row .sensor-reading-display");
+    expect(readings[0]).toHaveTextContent("500");
+    expect(readings[1]).toHaveTextContent("1");
+    const toggles = controls.container.querySelectorAll(".fb-toggle-button");
+    expect(toggles[0]).toHaveClass("green");
+    expect(toggles[1]).toHaveClass("red");
+    toggles.forEach(toggle => fireEvent.click(toggle));
+    expect(pinToggleSpy).toHaveBeenNthCalledWith(1, 7);
+    expect(pinToggleSpy).toHaveBeenNthCalledWith(2, 8);
+    controls.getAllByText("Read sensor")
+      .map(button => fireEvent.click(button));
+    expect(readPinSpy).toHaveBeenNthCalledWith(1, 54, "pin54", 1);
+    expect(readPinSpy).toHaveBeenNthCalledWith(2, 55, "pin55", 0);
     const input = controls.getByLabelText("Beam Length");
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: "1800" } });
@@ -1134,6 +1199,7 @@ describe("selection popup controls", () => {
     expect(p.set3DConfigValue).toHaveBeenCalledWith("beamLength", "1800");
     controls.unmount();
     pinToggleSpy.mockRestore();
+    readPinSpy.mockRestore();
   });
 
   it("disables unavailable gantry beam controls", () => {
@@ -1141,7 +1207,8 @@ describe("selection popup controls", () => {
     p.bot = clone(fakeBot);
     p.bot.hardware.informational_settings.locked = true;
     const lighting = fakePeripheral();
-    lighting.body.label = "Lighting";
+    lighting.body.label = "arbitrary peripheral";
+    lighting.body.type = "lighting";
     lighting.body.pin = 7;
     p.peripherals = [lighting];
     const controls = render(<ObjectPopupControls
@@ -1496,6 +1563,7 @@ describe("selection popup controls", () => {
         >) =>
           <button
             data-testid={"tool-selection"}
+            data-filter-utm-mountable={props.filterUtmMountable}
             onClick={() => props.onChange({ tool_id: 4 })} />));
     const p = layerProps();
     p.dispatch = jest.fn();
@@ -1509,7 +1577,9 @@ describe("selection popup controls", () => {
         kind: "utm",
         ...objectBase({ kind: "utm", id: 0 }),
       }} />);
-    const toolButton = controls.container.querySelector("[data-testid='tool-selection']");
+    const toolButton = controls.container.querySelector(
+      "[data-testid='tool-selection']");
+    expect(toolButton).toHaveAttribute("data-filter-utm-mountable", "true");
     toolButton && fireEvent.click(toolButton);
     expect(p.dispatch).toHaveBeenCalled();
     controls.unmount();
@@ -1530,15 +1600,19 @@ describe("selection popup controls", () => {
     p.deviceAccount = fakeDevice({ mounted_tool_id: 4 });
     const peripheral = fakePeripheral();
     peripheral.body.label = "Vacuum Pump";
+    peripheral.body.type = "vacuum";
     peripheral.body.pin = 9;
     p.peripherals = [peripheral];
-    p.peripheralValues = [{ label: "Vacuum Pump", value: true }];
+    p.peripheralValues = [{
+      uuid: peripheral.uuid, type: "vacuum", pin: 9, value: true,
+    }];
     const object = {
       kind: "utm" as const,
       ...objectBase({ kind: "utm", id: 0 }),
     };
 
-    tool.body.name = "Seeder";
+    tool.body.name = "arbitrary tool";
+    tool.body.type = "seeder";
     const controls = render(<ObjectPopupControls {...p} object={object} />);
     expect(controls.container.querySelector(
       ".object-popup-tool-action-row .fb-toggle-button"))

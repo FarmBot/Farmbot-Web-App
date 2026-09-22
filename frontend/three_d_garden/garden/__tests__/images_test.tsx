@@ -321,6 +321,15 @@ describe("<ImageTexture />", () => {
     expect(getImageTextureKey(p)).not.toEqual(key);
   });
 
+  it("changes texture key when sensor type changes", () => {
+    const p = fakeProps();
+    const sensor = fakeSensor();
+    p.sensors = [sensor];
+    const key = getImageTextureKey(p);
+    sensor.body.type = "soil_moisture";
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
   it("memoizes texture setup across unrelated config churn", () => {
     const p = fakeProps();
     p.config.imgCenterX = 0;

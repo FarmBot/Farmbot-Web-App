@@ -1,29 +1,70 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { Xyz } from "farmbot";
+import { TaggedToolSlotPointer, Xyz } from "farmbot";
 import {
   Row, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem, Popover,
 } from "../ui";
 import { BotPosition } from "../devices/interfaces";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { isNumber } from "lodash";
 import {
-  GantryMountedInputProps, SlotDirectionInputRowProps, ToolSelectionProps,
+  MountOffsetInputProps, MountStageInputProps, SlotDirectionInputRowProps,
+  ToolSelectionProps,
   ToolInputRowProps, SlotLocationInputRowProps, SlotEditRowsProps,
   EditToolSlotMetaProps,
 } from "./interfaces";
 import { betterMerge } from "../util";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 import { XYZ } from "../devices/constants";
+import {
+  axisIsMounted, MOUNT_STAGE_CHOICES, mountStageLabel, resolveMountPosition,
+} from "./mount_stage";
 
-export const GantryMountedInput = (props: GantryMountedInputProps) =>
+const mountOffsetUpdate = (
+  axis: Xyz,
+  value: number,
+): Partial<Pick<TaggedToolSlotPointer["body"],
+  "mount_offset_x" | "mount_offset_y" | "mount_offset_z">> => {
+  switch (axis) {
+    case "x": return { mount_offset_x: value };
+    case "y": return { mount_offset_y: value };
+    case "z": return { mount_offset_z: value };
+  }
+};
+
+export const MountStageInput = (props: MountStageInputProps) =>
   <fieldset className="row grid-exp-1">
-    <label>{t("Gantry-mounted")}</label>
-    <input type="checkbox" name="gantry_mounted"
-      onChange={() => props.onChange({ gantry_mounted: !props.gantryMounted })}
-      checked={props.gantryMounted} />
+    <label>{t("Mount stage")}</label>
+    <FBSelect
+      key={props.mountStage}
+      list={MOUNT_STAGE_CHOICES()}
+      selectedItem={MOUNT_STAGE_CHOICES().find(choice =>
+        choice.value == props.mountStage)}
+      onChange={ddi => props.onChange({
+        mount_stage: parseInt("" + ddi.value),
+      })} />
   </fieldset>;
+
+export const MountOffsetInput = (props: MountOffsetInputProps) =>
+  props.mountStage == MountStage.NONE
+    ? <></>
+    : <div className={"mount-offset-input row grid-4-col"}>
+      <label>{t("Mount offset")}</label>
+      {XYZ.map(axis =>
+        <div key={axis}>
+          <label>{t("{{axis}} (mm)", { axis: axis.toUpperCase() })}</label>
+          <BlurableInput
+            name={`mountOffset${axis.toUpperCase()}`}
+            value={props.value[axis]}
+            disabled={!axisIsMounted(props.mountStage, axis)}
+            type={"number"}
+            onCommit={e => props.onChange(mountOffsetUpdate(
+              axis, parseFloat(e.currentTarget.value)))} />
+        </div>)}
+    </div>;
 
 export const isToolFlipped =
   (toolSlotMeta: Record<string, string | undefined> | undefined) =>
@@ -76,8 +117,10 @@ export const ToolSelection = (props: ToolSelectionProps) =>
         || tool.body.id != props.selectedTool?.body.id)
       .filter(tool => !props.filterActiveTools
         || !props.isActive(tool.body.id))
+      .filter(tool => !props.filterUtmMountable
+        || tool.body.utm_mountable)
       .filter(tool => props.noUTM
-        ? tool.body.name?.toLowerCase().includes("trough")
+        ? tool.body.type == "seed_trough"
         : true)
       .map(tool => ({
         label: tool.body.name || "untitled",
@@ -109,22 +152,22 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
         noUTM={props.noUTM}
         usePortal={false}
         filterSelectedTool={false}
-        filterActiveTools={true} />
+        filterActiveTools={true}
+        filterUtmMountable={false} />
     </Row>
   </div>;
 
 export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
-  const x = props.gantryMounted
-    ? props.botPosition.x ?? props.slotLocation.x
-    : props.slotLocation.x;
-  const { y, z } = props.slotLocation;
+  const position = resolveMountPosition(
+    props.slotLocation, props.botPosition, props.mountStage);
   return <div className="tool-slot-location-input">
     <Row className="tool-slot-location-grid">
       {XYZ.map((axis: Xyz) =>
         <div key={axis}>
           <label>{t("{{axis}} (mm)", { axis })}</label>
-          {axis == "x" && props.gantryMounted
-            ? <input disabled value={t("Gantry")} name={axis} />
+          {axisIsMounted(props.mountStage, axis)
+            ? <input disabled value={mountStageLabel(props.mountStage)}
+              name={axis} />
             : <BlurableInput
               type="number"
               value={props.slotLocation[axis]}
@@ -142,7 +185,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
         && props.movementState != undefined &&
         <GoToThisLocationButton
           dispatch={props.dispatch}
-          locationCoordinate={{ x, y, z }}
+          locationCoordinate={position}
           botOnline={props.botOnline}
           arduinoBusy={props.arduinoBusy}
           currentBotLocation={props.botPosition}
@@ -180,10 +223,11 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="grid">
     <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
       toolName={props.tool ? props.tool.body.name : "Empty"}
+      toolType={props.tool?.body.type}
       toolTransformProps={props.toolTransformProps} />
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
-      gantryMounted={props.toolSlot.body.gantry_mounted}
+      mountStage={props.toolSlot.body.mount_stage}
       botPosition={props.botPosition}
       movementState={props.movementState}
       botOnline={props.botOnline}
@@ -197,15 +241,22 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       selectedTool={props.tool}
       isActive={props.isActive}
       onChange={props.updateToolSlot} />
-    {!props.toolSlot.body.gantry_mounted &&
-      <SlotDirectionInputRow
-        toolPulloutDirection={props.toolSlot.body.pullout_direction}
-        onChange={props.updateToolSlot} />}
+    <SlotDirectionInputRow
+      toolPulloutDirection={props.toolSlot.body.pullout_direction}
+      onChange={props.updateToolSlot} />
     {!props.noUTM &&
-      <GantryMountedInput
-        gantryMounted={props.toolSlot.body.gantry_mounted}
+      <MountStageInput
+        mountStage={props.toolSlot.body.mount_stage}
         onChange={props.updateToolSlot} />}
-    {!props.noUTM && !props.toolSlot.body.gantry_mounted &&
+    <MountOffsetInput
+      mountStage={props.toolSlot.body.mount_stage}
+      value={{
+        x: props.toolSlot.body.mount_offset_x ?? 0,
+        y: props.toolSlot.body.mount_offset_y ?? 0,
+        z: props.toolSlot.body.mount_offset_z ?? 0,
+      }}
+      onChange={props.updateToolSlot} />
+    {!props.noUTM &&
       <FlipToolDirection
         toolSlotMeta={props.toolSlot.body.meta}
         onChange={props.updateToolSlot} />}

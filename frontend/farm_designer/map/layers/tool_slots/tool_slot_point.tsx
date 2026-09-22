@@ -9,15 +9,17 @@ import { mapPointClickAction, selectPoint, setHoveredPlant } from "../../actions
 import { isToolFlipped } from "../../../../tools/tool_slot_edit_components";
 import { ToolbaySlot } from "../../tool_graphics/slot";
 import { GantryToolSlot } from "../../tool_graphics/seed_trough";
-import { reduceToolName } from "../../tool_graphics/all_tools";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { Circle } from "../plants/circle";
 import { useNavigate } from "react-router";
+import { MountStage } from "farmbot/dist/resources/api_resources";
+import { BotPosition } from "../../../../devices/interfaces";
+import { resolveMountPosition } from "../../../../tools/mount_stage";
 
 export interface TSPProps {
   slot: SlotWithTool;
-  botPositionX: number | undefined;
+  botPosition: BotPosition;
   mapTransformProps: MapTransformProps;
   dispatch: Function;
   hoveredToolSlot: UUID | undefined;
@@ -28,12 +30,15 @@ export interface TSPProps {
 export const ToolSlotPoint = (props: TSPProps) => {
   const { tool, toolSlot } = props.slot;
   const {
-    id, x, y, pullout_direction, gantry_mounted
+    id, pullout_direction, mount_stage,
   } = toolSlot.body;
-  const { mapTransformProps, botPositionX, current, animate } = props;
+  const mounted = mount_stage != MountStage.NONE;
+  const { mapTransformProps, current, animate } = props;
   const { quadrant, xySwap } = mapTransformProps;
-  const xPosition = gantry_mounted ? (botPositionX || 0) : x;
-  const { qx, qy } = transformXY(xPosition, y, props.mapTransformProps);
+  const position = resolveMountPosition(
+    toolSlot.body, props.botPosition, mount_stage);
+  const { qx, qy } = transformXY(
+    position.x, position.y, props.mapTransformProps);
   const toolName = tool ? tool.body.name : t("Empty");
   const hovered = toolSlot.uuid === props.hoveredToolSlot;
   const toolProps = {
@@ -65,7 +70,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
         Path.toolSlots(id))();
       props.dispatch(setHoveredPlant(undefined));
     }}>
-    {pullout_direction && !gantry_mounted &&
+    {pullout_direction && !mounted &&
       <ToolbaySlot
         id={id}
         x={qx}
@@ -75,7 +80,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
         occupied={!!props.slot.tool}
         xySwap={xySwap} />}
 
-    {gantry_mounted && <GantryToolSlot x={qx} y={qy} xySwap={xySwap} />}
+    {mounted && <GantryToolSlot x={qx} y={qy} xySwap={xySwap} />}
 
     {selected &&
       <g id="selected-tool-slot-indicator">
@@ -87,9 +92,9 @@ export const ToolSlotPoint = (props: TSPProps) => {
           selected={true} />
       </g>}
 
-    {(props.slot.tool || (!pullout_direction && !gantry_mounted)) &&
+    {(props.slot.tool || (!pullout_direction && !mounted)) &&
       <RotatedTool
-        tool={reduceToolName(toolName)}
+        toolType={tool?.body.type}
         toolProps={toolProps} />}
 
     <ToolLabel
@@ -98,7 +103,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
       x={qx}
       y={qy}
       pulloutDirection={pullout_direction}
-      gantryMounted={gantry_mounted}
+      mountStage={mount_stage}
       quadrant={quadrant}
       xySwap={xySwap} />
   </g>;

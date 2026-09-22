@@ -10,11 +10,12 @@ describe Api::PeripheralsController do
       sign_in user
       before = Peripheral.count
       post :create,
-        body: { pin: 13, label: "LED" }.to_json,
+        body: { pin: 13, label: "LED", type: "lighting" }.to_json,
         params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:pin]).to eq(13)
       expect(json[:label]).to eq("LED")
+      expect(json[:type]).to eq("lighting")
       expect(before < Peripheral.count).to be_truthy
     end
 
@@ -27,7 +28,9 @@ describe Api::PeripheralsController do
       sign_in user
       before = Peripheral.count
       post :create,
-        body: { pin: 13, label: ("LED" * 1000) }.to_json,
+        body: { pin: 13,
+                label: ("LED" * 1000),
+                type: "lighting" }.to_json,
         params: { format: :json }
       expect(json[:error]).to include("use reasonable lengths")
       expect(response.status).to eq(422)

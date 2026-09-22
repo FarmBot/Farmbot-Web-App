@@ -24,7 +24,9 @@ import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findCropIcon, findCropMetadata } from "../crops/metadata";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import {
+  DeviceAccountSettings, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import {
   findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENES, TEXTURES,
 } from "../settings/three_d_settings";
@@ -74,7 +76,8 @@ export interface ThreeDGardenMapProps {
   bot?: BotState;
   botPosition: BotPosition;
   toolSlots?: SlotWithTool[];
-  mountedToolName: string | undefined;
+  mountedToolId: number | undefined;
+  mountedToolType: ToolType | undefined;
   peripheralValues: PeripheralValues;
   peripherals: TaggedPeripheral[];
   device: DeviceAccountSettings;
@@ -287,11 +290,11 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   const { latitude, longitude } = latLng(props.device);
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
   const waterFlow = isPeripheralActive("water");
-  const light = isPeripheralActive("light");
+  const light = isPeripheralActive("lighting");
   const vacuum = isPeripheralActive("vacuum");
   const rotary = (() => {
-    const fwd = isPeripheralActive("rotary", "reverse");
-    const rev = isPeripheralActive("reverse");
+    const fwd = isPeripheralActive("rotary_tool", 2);
+    const rev = isPeripheralActive("rotary_tool", 3);
     if (rev && !fwd) { return -1; }
     if (fwd && !rev) { return 1; }
     return 0;
@@ -585,7 +588,8 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     bot={props.bot}
     firmwareSettings={props.firmwareSettings}
     encoderVisibility={encoderVisibility}
-    mountedToolName={props.mountedToolName}
+    mountedToolId={props.mountedToolId}
+    mountedToolType={props.mountedToolType}
     allPoints={props.allPoints}
     groups={props.groups}
     images={props.images}

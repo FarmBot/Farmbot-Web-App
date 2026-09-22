@@ -35,7 +35,8 @@ describe("<MoistureSurface />", () => {
     p.sensorReadings = [reading];
     const sensor = fakeSensor();
     sensor.body.pin = 1;
-    sensor.body.label = "soil moisture";
+    sensor.body.label = "arbitrary sensor";
+    sensor.body.type = "soil_moisture";
     p.sensors = [sensor];
     const { container } = render(<MoistureSurface {...p} />);
     expect(container).toContainHTML("moisture-layer");

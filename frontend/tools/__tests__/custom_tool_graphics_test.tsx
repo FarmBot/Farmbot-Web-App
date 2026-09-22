@@ -46,6 +46,7 @@ afterEach(() => {
 describe("<CustomToolGraphicsInput />", () => {
   const fakeProps = (): CustomToolGraphicsInputProps => ({
     toolName: "tool",
+    toolType: "none",
     dispatch: jest.fn(),
     saveFarmwareEnv: jest.fn(),
     env: {},
@@ -59,8 +60,18 @@ describe("<CustomToolGraphicsInput />", () => {
 
   it("renders inputs", () => {
     mockDev = true;
-    const { container } = render(<CustomToolGraphicsInput {...fakeProps()} />);
+    const p = fakeProps();
+    p.toolName = "arbitrary name";
+    const { container } = render(<CustomToolGraphicsInput {...p} />);
     expect(container.innerHTML).toContain("custom-tool-graphics-input");
+  });
+
+  it("doesn't render inputs for a typed tool", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.toolType = "seeder";
+    const { container } = render(<CustomToolGraphicsInput {...p} />);
+    expect(container.innerHTML).not.toContain("custom-tool-graphics-input");
   });
 
   it("edits inputs", () => {

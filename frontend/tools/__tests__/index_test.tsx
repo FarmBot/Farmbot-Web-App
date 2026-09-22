@@ -26,6 +26,7 @@ import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { Path } from "../../internal_urls";
 import * as deviceModule from "../../device";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../../routes_helpers";
 import * as toolSlotEditComponents from "../tool_slot_edit_components";
 import { findElement } from "../../__test_support__/react_element_search";
@@ -95,11 +96,12 @@ describe("<Tools />", () => {
     p.toolSlots[0].body.tool_id = 2;
     p.toolSlots[0].body.x = 1;
     p.toolSlots[1].body.tool_id = 3;
-    p.toolSlots[1].body.gantry_mounted = true;
+    p.toolSlots[1].body.mount_stage = MountStage.X;
     p.toolSlots[1].body.y = 2;
     const { container } = render(<Tools {...p} />);
     [
-      "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown", "(gantry, 2, 0)",
+      "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown",
+      "(x axis, 2, 0)",
     ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
@@ -223,6 +225,7 @@ describe("<Tools />", () => {
     const mountedTool = ref.current?.MountedToolInfo();
     const toolSelection = findElement<ToolSelectionProps>(
       mountedTool, type => type === ToolSelection);
+    expect(toolSelection?.props.filterUtmMountable).toBeTruthy();
     act(() => {
       toolSelection?.props.onChange({ tool_id: 123 });
     });
@@ -233,7 +236,8 @@ describe("<Tools />", () => {
   it("displays tool verification result: disconnected", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
-    p.sensors[0].body.label = "tool verification";
+    p.sensors[0].body.label = "arbitrary sensor";
+    p.sensors[0].body.type = "tool_verification";
     p.sensors[0].body.pin = undefined;
     p.bot.hardware.pins = { "63": { value: 1, mode: 0 } };
     const { container } = render(<Tools {...p} />);
@@ -243,7 +247,8 @@ describe("<Tools />", () => {
   it("displays tool verification result: connected", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
-    p.sensors[0].body.label = "tool verification";
+    p.sensors[0].body.label = "arbitrary sensor";
+    p.sensors[0].body.type = "tool_verification";
     p.sensors[0].body.pin = 64;
     p.bot.hardware.pins = { "64": { value: 0, mode: 0 } };
     const { container } = render(<Tools {...p} />);
@@ -257,7 +262,8 @@ describe("<Tools />", () => {
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 0 };
     const { container } = render(<Tools {...p} />);
     expect(container.textContent?.toLowerCase()).toContain("mounted tool");
-    fireEvent.click(container.querySelector(".yellow") as Element);
+    fireEvent.click(container.querySelector(
+      ".tool-verification-status button") as Element);
     expect(mockDevice.readPin).toHaveBeenCalledWith({
       label: "pin63", pin_mode: 0, pin_number: 63,
     });
@@ -268,7 +274,8 @@ describe("<Tools />", () => {
     p.tools = [fakeTool()];
     p.bot.connectivity.uptime["bot.mqtt"] = undefined;
     const { container } = render(<Tools {...p} />);
-    fireEvent.click(container.querySelector(".yellow") as Element);
+    fireEvent.click(container.querySelector(
+      ".tool-verification-status button") as Element);
     expect(mockDevice.readPin).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.NOT_AVAILABLE_WHEN_OFFLINE);
   });

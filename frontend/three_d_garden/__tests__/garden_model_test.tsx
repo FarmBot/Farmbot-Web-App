@@ -2,6 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 import {
   OrbitControls, PerspectiveCamera, useGLTF, useTexture,
 } from "@react-three/drei";
@@ -16,6 +17,7 @@ import {
   createCameraFitRequest, createGardenRouteSnapshot,
   createStartingCameraSelector,
   createViewDirectionRequest,
+  farmbotLayerLoadProgress,
   FarmDesignerViewPrism,
   GardenCameraRig,
   GardenSceneBackground,
@@ -33,6 +35,7 @@ import {
   useGardenCameraController,
   useShiftModifier,
   usePanelCameraViewOffset,
+  useStableNavigate,
   SPACEFLIGHT_CAMERA,
   SPACEFLIGHT_FOV,
   SPACEFLIGHT_VIEWPORT_MARGIN_RATIO,
@@ -378,6 +381,15 @@ describe("<GardenModel />", () => {
     const size = { width: 800, height: 600 };
     expect(selectGardenViewportWidth({ size } as never)).toEqual(800);
     expect(selectGardenViewportHeight({ size } as never)).toEqual(600);
+  });
+
+  it("provides a stable navigation callback", () => {
+    const { result, rerender } = renderHook(() => useStableNavigate());
+    const navigate = result.current;
+    act(() => result.current("/test"));
+    expect(mockNavigate).toHaveBeenCalledWith("/test");
+    rerender();
+    expect(result.current).toBe(navigate);
   });
 
   it("notifies when the progressive reveal completes", async () => {
@@ -2088,6 +2100,8 @@ describe("<GardenModel />", () => {
       });
     });
     expect(progressNodes.length).toBeGreaterThan(0);
+    expect(farmbotLayerLoadProgress.markStep("farmbot")).toBeUndefined();
+    expect(farmbotLayerLoadProgress.isStepAllowed("farmbot")).toBeTruthy();
   });
 
   it("renders other options", async () => {
@@ -2116,7 +2130,8 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const sensor = fakeSensor();
     sensor.body.id = 1;
-    sensor.body.label = "soil moisture";
+    sensor.body.label = "arbitrary sensor";
+    sensor.body.type = "soil_moisture";
     p.sensors = [sensor];
     const reading0 = fakeSensorReading();
     reading0.body.pin = 1;
@@ -2601,13 +2616,23 @@ describe("<GardenModel />", () => {
     gantrySlot.body.id = 4;
     gantrySlot.body.x = 0;
     gantrySlot.body.y = 250;
-    gantrySlot.body.gantry_mounted = true;
+    gantrySlot.body.mount_stage = MountStage.X;
+    gantrySlot.body.mount_offset_x = 500;
+    const yStageSlot = fakeToolSlot();
+    yStageSlot.body.id = 5;
+    yStageSlot.body.x = 0;
+    yStageSlot.body.y = 250;
+    yStageSlot.body.mount_stage = MountStage.Y;
+    yStageSlot.body.mount_offset_y = 250;
     const p = fakeProps();
     p.config.pan = true;
     p.plants = [plant, outsidePlant];
     p.weeds = [weed];
-    p.toolSlots = [{ toolSlot: gantrySlot, tool: undefined }];
-    p.allPoints = [weed, gantrySlot];
+    p.toolSlots = [
+      { toolSlot: gantrySlot, tool: undefined },
+      { toolSlot: yStageSlot, tool: undefined },
+    ];
+    p.allPoints = [weed, gantrySlot, yStageSlot];
     p.currentBotLocation = { x: 250, y: 0, z: 0 };
     p.addPlantProps = fakeAddPlantProps();
     const dispatch = jest.fn();
@@ -2759,7 +2784,7 @@ describe("<GardenModel />", () => {
     overlay = wrapper.root.findByType(GardenAreaSelectionOverlay);
     expect(overlay.props.selectedCount).toEqual(1);
     expect(wrapper.root.findByType(ThreeDObjectSelectionLayer)
-      .props.selectedObjects).toEqual([{ kind: "slot", id: 4 }]);
+      .props.selectedObjects).toEqual([{ kind: "slot", id: 5 }]);
     actRenderer(() => overlay.props.onPointTypeChange("Weed"));
     p.addPlantProps = {
       ...p.addPlantProps,
@@ -2997,6 +3022,16 @@ describe("<GardenModel />", () => {
     });
     expect(getSelectionLayer().popupSelection).toBeUndefined();
 
+    const onMissingSelection = jest.fn();
+    requestMapSelection(onMissingSelection, jest.fn());
+    actRenderer(() => {
+      objectSelected = selectObject({ kind: "plant", id: 999 });
+    });
+    expect(objectSelected).toBeTruthy();
+    expect(onMissingSelection).not.toHaveBeenCalled();
+    expect(getSelectionLayer().popupSelection)
+      .toEqual({ kind: "plant", id: 999 });
+
     const onSoilSelection = jest.fn();
     requestMapSelection(onSoilSelection, jest.fn());
     actRenderer(() => hoverTarget.props.onClick(event));
@@ -3024,7 +3059,9 @@ describe("<GardenModel />", () => {
 
   it("updates selection callbacks from the model", () => {
     const p = fakeProps();
-    p.peripheralValues = [{ label: "Vacuum", value: true }];
+    p.peripheralValues = [{
+      uuid: "Peripheral.1.1", type: "vacuum", pin: 9, value: true,
+    }];
     p.addPlantProps = fakeAddPlantProps();
     const sceneObject = fakeSceneObject({ id: 42 });
     p.sceneObjects = [sceneObject];

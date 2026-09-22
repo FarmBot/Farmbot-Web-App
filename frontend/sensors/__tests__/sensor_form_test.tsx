@@ -1,7 +1,10 @@
 import React from "react";
-import { SensorForm } from "../sensor_form";
+import {
+  SensorForm, SensorTypeDropdown,
+} from "../sensor_form";
 import { SensorFormProps } from "../interfaces";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
+import { Actions } from "../../constants";
 
 describe("<SensorForm/>", function () {
   const fakeProps = (): SensorFormProps => {
@@ -20,7 +23,8 @@ describe("<SensorForm/>", function () {
   };
 
   it("renders a list of editable sensors, in sorted order", () => {
-    const form = SensorForm(fakeProps());
+    const p = fakeProps();
+    const form = SensorForm(p);
     const typedForm = form as React.ReactElement<{ children?: React.ReactNode }>;
     const rows = React.Children.toArray(typedForm.props.children) as
       React.ReactElement<{ children?: React.ReactNode }>[];
@@ -38,5 +42,28 @@ describe("<SensorForm/>", function () {
     expect(secondRowChildren[1]?.props.value).toEqual(50);
     expect(firstRowChildren[2]?.props.value).toEqual(0);
     expect(secondRowChildren[2]?.props.value).toEqual(0);
+    expect(firstRowChildren[3]?.props.sensor).toEqual(p.sensors[1]);
+    expect(secondRowChildren[3]?.props.sensor).toEqual(p.sensors[0]);
+  });
+
+  it("updates the sensor type", () => {
+    const sensor = fakeSensor();
+    sensor.body.type = "current";
+    const dispatch = jest.fn();
+    const dropdown = SensorTypeDropdown({ dispatch, sensor });
+    expect(dropdown.props.list.map((item: { value: string }) => item.value))
+      .toEqual([
+        "soil_moisture", "tool_verification", "current", "none",
+      ]);
+    expect(dropdown.props.selectedItem)
+      .toEqual({ label: "Current", value: "current" });
+    dropdown.props.onChange({ label: "Soil Moisture", value: "soil_moisture" });
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.EDIT_RESOURCE,
+      payload: expect.objectContaining({
+        uuid: sensor.uuid,
+        update: { type: "soil_moisture" },
+      }),
+    }));
   });
 });

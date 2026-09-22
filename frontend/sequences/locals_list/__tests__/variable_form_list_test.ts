@@ -10,6 +10,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { VariableType } from "../locals_list_support";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 describe("variableFormList()", () => {
   it("returns dropdown list", () => {
@@ -119,11 +120,11 @@ describe("formatTool()", () => {
     expect(ddi.label).toEqual("Foo (0, 0, 0)");
   });
 
-  it("returns ddi for tool when gantry mounted", () => {
+  it("returns ddi for tool mounted to the X stage", () => {
     const toolSlot = fakeToolSlot();
-    toolSlot.body.gantry_mounted = true;
+    toolSlot.body.mount_stage = MountStage.X;
     const ddi = formatTool(fakeTool(), toolSlot);
-    expect(ddi.label).toEqual("Foo (gantry, 0, 0)");
+    expect(ddi.label).toEqual("Foo (X axis, 0, 0)");
   });
 });
 
@@ -194,6 +195,16 @@ describe("dropDownName()", () => {
     const label = dropDownName("Plant 1",
       { x: undefined, y: undefined, z: undefined });
     expect(label).toEqual("Plant 1 (---, ---, ---)");
+  });
+
+  it.each([
+    [MountStage.X, "Tool (X axis, 20, 30)"],
+    [MountStage.Y, "Tool (Y axis, Y axis, 30)"],
+    [MountStage.Z, "Tool (Z axis, Z axis, Z axis)"],
+  ])("returns mount-stage label: %s", (mountStage, expected) => {
+    const label = dropDownName(
+      "Tool", { x: 10, y: 20, z: 30 }, mountStage);
+    expect(label).toEqual(expected);
   });
 });
 

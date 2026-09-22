@@ -267,7 +267,8 @@ export class RawFarmDesigner
             defaultAxes={this.props.defaultAxes}
             noUTM={this.props.mountedToolInfo.noUTM}
             toolSlots={this.props.toolSlots}
-            mountedToolName={this.props.mountedToolInfo.name}
+            mountedToolId={this.props.mountedToolInfo.id}
+            mountedToolType={this.props.mountedToolInfo.type}
             botPosition={this.props.botLocationData.position}
             peripheralValues={this.props.peripheralValues}
             peripherals={this.props.peripherals}

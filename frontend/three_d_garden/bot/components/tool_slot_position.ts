@@ -5,12 +5,14 @@ import {
   get3DPositionFunc, get3DPositionNoMirrorFunc,
   zDir as zDirFunc, zZero as zZeroFunc,
 } from "../../helpers";
+import { MountStage } from "farmbot/dist/resources/api_resources";
+import { resolveMountPosition } from "../../../tools/mount_stage";
 
 export interface ThreeDToolPositionInput {
   x: number;
   y: number;
   z: number;
-  gantryMounted?: boolean;
+  mountStage: MountStage;
 }
 
 export interface ToolPositionHelpers {
@@ -40,7 +42,7 @@ export const getToolRenderPosition = (
     helpers.get3DPositionNoMirror({ x: tool.x, y: tool.y });
   return {
     x: inToolbay ? mirroredPosition.x : noMirrorPosition.x,
-    y: inToolbay && !tool.gantryMounted
+    y: inToolbay && tool.mountStage == MountStage.NONE
       ? mirroredPosition.y
       : noMirrorPosition.y,
     z: helpers.zZero
@@ -58,13 +60,18 @@ export const getToolSlotRenderPosition = (
   const mirroredBotX = config.mirrorX
     ? config.botSizeX - configPosition.x
     : configPosition.x;
+  const slotPosition = resolveMountPosition(slotBody, {
+    x: mirroredBotX,
+    y: configPosition.y,
+    z: configPosition.z,
+  }, slotBody.mount_stage);
   const position = getToolRenderPosition(config, {
-    x: slotBody.gantry_mounted ? mirroredBotX : slotBody.x,
-    y: slotBody.gantry_mounted
-      ? slotBody.y - config.bedYOffset
-      : slotBody.y,
-    z: slotBody.z,
-    gantryMounted: slotBody.gantry_mounted,
+    x: slotPosition.x,
+    y: slotBody.mount_stage == MountStage.X
+      ? slotPosition.y - config.bedYOffset
+      : slotPosition.y,
+    z: slotPosition.z,
+    mountStage: slotBody.mount_stage,
   }, true);
   return {
     x: position.x,

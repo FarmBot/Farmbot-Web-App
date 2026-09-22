@@ -4,14 +4,16 @@ import {
   ProfilePointProps, ProfileToolProps, ProfileUtmProps, SlotProfileProps,
 } from "./interfaces";
 import { Color } from "../../../ui";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import { isToolFlipped } from "../../../tools/tool_slot_edit_components";
 import { withinProfileRange } from "./content";
 import { ToolDimensions } from "../tool_graphics/tool";
 import { SlotFrontProfile, SlotSideProfile } from "../tool_graphics/slot";
 import { troughSize } from "../tool_graphics/seed_trough";
 import {
-  getToolColor, reduceToolName, ToolImplementProfile, ToolName,
+  getToolColor, ToolImplementProfile,
 } from "../tool_graphics/all_tools";
 import { TaggedToolSlotPointer } from "farmbot";
 import { CustomToolProfile } from "../../../tools/custom_tool_graphics_display";
@@ -90,8 +92,8 @@ export const UTMProfile = (props: ProfileUtmProps) => {
         width={4} height={4} />}
     <image x={profileUtmH - 25} y={profileUtmV - 35} width={50} height={30}
       xlinkHref={FilePath.image("farmbot")} opacity={1} />
-    {toolInfo.name
-      ? <ToolProfile toolName={toolInfo.name}
+    {toolInfo.type
+      ? <ToolProfile toolName={toolInfo.name} toolType={toolInfo.type}
         x={profileUtmH - ToolDimensions.radius} y={profileUtmV}
         width={ToolDimensions.diameter}
         height={ToolDimensions.thickness}
@@ -162,18 +164,18 @@ const SlotProfile = (props: SlotProfileProps) => {
 
 /** SVG tool profile element with color and label. */
 export const ToolProfile = (props: ProfileToolProps) => {
-  const { toolName, x, y, width, height, sideView } = props;
-  const toolType = reduceToolName(toolName);
-  const fontColor = toolType == ToolName.seeder
+  const { toolName, toolType, x, y, width, height, sideView } = props;
+  const graphicType = toolType || "none";
+  const fontColor = toolType == "seeder"
     ? Color.darkGray
     : Color.offWhite;
-  const bodyColor = getToolColor(toolName);
-  const bodyFill = toolType == ToolName.seedTrough
+  const bodyColor = getToolColor(toolType);
+  const bodyFill = toolType == "seed_trough"
     ? bodyColor
-    : `url(#tool-body-gradient-${toolType})`;
+    : `url(#tool-body-gradient-${graphicType})`;
   return <g id={"profile-tool"}>
     <defs>
-      <linearGradient id={`tool-body-gradient-${toolType}`}>
+      <linearGradient id={`tool-body-gradient-${graphicType}`}>
         <stop offset={"0%"} stopColor={bodyColor} stopOpacity={1} />
         <stop offset={"10%"} stopColor={bodyColor} stopOpacity={0.75} />
         <stop offset={"90%"} stopColor={bodyColor} stopOpacity={0.75} />
@@ -191,9 +193,10 @@ export const ToolProfile = (props: ProfileToolProps) => {
       x={x} y={y} width={width} height={height} />
     <CustomToolProfile toolName={toolName} sideView={sideView}
       xToolMiddle={x + width / 2} yToolBottom={y + height} />
-    <ToolImplementProfile x={x + width / 2} y={y + height} toolName={toolName}
+    <ToolImplementProfile x={x + width / 2} y={y + height}
+      toolType={toolType}
       toolFlipped={props.toolFlipped} sideView={sideView} />
-    {!(toolType == ToolName.seedTrough && !sideView) &&
+    {!(toolType == "seed_trough" && !sideView) &&
       <text x={x + 5} y={y + height - 2.5} opacity={1}
         textLength={width - 10} lengthAdjust={"spacingAndGlyphs"}
         stroke={"none"} fill={fontColor} fontWeight={"bold"}>
@@ -210,16 +213,19 @@ export const ToolProfile = (props: ProfileToolProps) => {
 export const ToolProfilePoint =
   (props: ProfilePointProps<TaggedToolSlotPointer>) => {
     const { point, tools } = props;
-    const { tool_id, gantry_mounted, pullout_direction } = point.body;
-    const toolName = tools.filter(tool => tool.body.id == tool_id)[0]?.body.name;
-    const trough = reduceToolName(toolName) == ToolName.seedTrough;
+    const { tool_id, mount_stage, pullout_direction } = point.body;
+    const tool = tools.filter(tool => tool.body.id == tool_id)[0];
+    const toolName = tool?.body.name;
+    const toolType = tool?.body.type;
+    const trough = toolType == "seed_trough";
     const width = trough
       ? troughSize(props.profileAxis == "y").width
       : ToolDimensions.diameter;
-    const slotDirection = gantry_mounted
+    const slotDirection = mount_stage != MountStage.NONE
       ? ToolPulloutDirection.NONE
       : pullout_direction;
-    return <ToolProfile toolName={toolName} reversed={props.reversed}
+    return <ToolProfile toolName={toolName} toolType={toolType}
+      reversed={props.reversed}
       x={props.getX(point.body) - width / 2} y={Math.abs(point.body.z)}
       width={width} height={ToolDimensions.thickness}
       sideView={props.profileAxis == slotPulloutAxis(slotDirection)}

@@ -112,7 +112,9 @@ describe("<BotTrail />", () => {
   it("updates water circle size", () => {
     const p = fakeProps();
     p.position = { x: 4, y: 40, z: 400 };
-    p.peripheralValues = [{ label: "water", value: true }];
+    p.peripheralValues = [{
+      uuid: "Peripheral.1.1", type: "water", pin: 8, value: true,
+    }];
     const { container } = renderTrail(p);
     const circles = container.querySelectorAll(".virtual-bot-trail circle");
     const water = circles[circles.length - 1];

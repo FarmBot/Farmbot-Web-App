@@ -8,12 +8,14 @@ import {
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeState } from "../../__test_support__/fake_state";
+import { selectAllPeripherals } from "../../resources/selectors";
 
 describe("<DesignerSensors />", () => {
   const fakeProps = (): DesignerSensorsProps => ({
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     sensors: [],
+    peripherals: [],
     bot: bot,
     firmwareHardware: undefined,
     sensorReadings: [],
@@ -31,5 +33,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const props = mapStateToProps(state);
     expect(props.firmwareHardware).toEqual(undefined);
+    expect(props.peripherals)
+      .toEqual(selectAllPeripherals(state.resources.index));
   });
 });

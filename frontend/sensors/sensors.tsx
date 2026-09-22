@@ -6,7 +6,9 @@ import {
 import { Panel } from "../farm_designer/panel_header";
 import { uniq } from "lodash";
 import { BotState } from "../devices/interfaces";
-import { TaggedSensor, FirmwareHardware, TaggedSensorReading } from "farmbot";
+import {
+  FirmwareHardware, TaggedPeripheral, TaggedSensor, TaggedSensorReading,
+} from "farmbot";
 import { SensorState } from "./interfaces";
 import { Everything, TimeSettings } from "../interfaces";
 import { getFbosConfig } from "../resources/getters";
@@ -14,7 +16,8 @@ import {
   getFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import {
-  selectAllSensors, selectAllSensorReadings, maybeGetTimeSettings,
+  maybeGetTimeSettings, selectAllPeripherals, selectAllSensorReadings,
+  selectAllSensors,
 } from "../resources/selectors";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { Sensors } from ".";
@@ -23,6 +26,7 @@ import { isBotOnlineFromState } from "../devices/must_be_online";
 export interface DesignerSensorsProps {
   bot: BotState;
   sensors: TaggedSensor[];
+  peripherals: TaggedPeripheral[];
   dispatch: Function;
   firmwareHardware: FirmwareHardware | undefined;
   sensorReadings: TaggedSensorReading[];
@@ -34,6 +38,7 @@ export const mapStateToProps = (props: Everything): DesignerSensorsProps => {
     dispatch: props.dispatch,
     bot: props.bot,
     sensors: uniq(selectAllSensors(props.resources.index)),
+    peripherals: uniq(selectAllPeripherals(props.resources.index)),
     sensorReadings: selectAllSensorReadings(props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
@@ -59,6 +64,7 @@ export class RawDesignerSensors
           firmwareHardware={this.props.firmwareHardware}
           bot={this.props.bot}
           sensors={this.props.sensors}
+          peripherals={this.props.peripherals}
           dispatch={this.props.dispatch}
           disabled={this.arduinoBusy || !this.botOnline} />
         <hr />

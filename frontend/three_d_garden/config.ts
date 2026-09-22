@@ -1,3 +1,5 @@
+import { ToolType } from "farmbot/dist/resources/api_resources";
+
 export interface Config {
   sizePreset: string;
   bedType: string;
@@ -53,7 +55,7 @@ export interface Config {
   cameraFitDebug: boolean;
   bot: boolean;
   laser: boolean;
-  tool: string;
+  tool: ToolType | "";
   cableCarriers: boolean;
   viewCube: boolean;
   stats: boolean;
@@ -218,7 +220,7 @@ export const INITIAL: ConfigWithPosition = {
   cameraFitDebug: false,
   bot: true,
   laser: false,
-  tool: "rotaryTool",
+  tool: "rotary_tool",
   cableCarriers: true,
   viewCube: false,
   stats: false,

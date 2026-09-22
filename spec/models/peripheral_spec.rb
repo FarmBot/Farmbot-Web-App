@@ -1,6 +1,10 @@
 require "spec_helper"
 
 describe Peripheral do
+  it "defaults type to none" do
+    expect(FactoryBot.create(:peripheral).type).to eq("none")
+  end
+
   it 'requires a device' do
     peripheral = Peripheral.new(pin: 1, label: "LED")
     expect(peripheral.valid?).to be false
@@ -50,5 +54,12 @@ describe Peripheral do
     invalid = Peripheral.new(device: device, pin: 1.5, label: "LED")
     expect(invalid.valid?).to be false
     expect(invalid.errors[:pin]).to include("must be an integer")
+  end
+
+  it "validates type" do
+    peripheral = FactoryBot.build(:peripheral, type: "invalid")
+
+    expect(peripheral.valid?).to be false
+    expect(peripheral.errors[:type].first).to include("must be one of")
   end
 end

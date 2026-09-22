@@ -20,7 +20,7 @@ import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import axios from "axios";
 import {
-  AlertCard, changeFirmwareHardware, maybeShowStressSeedOptions,
+  AlertCard, changeFirmwareHardware, filterSeedOptions,
   ReSeedAccount, SEED_DATA_OPTIONS,
 } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
@@ -176,7 +176,7 @@ describe("<AlertCard />", () => {
     expect(container.textContent).toContain("FarmBot");
     expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
-    expect(selectProps.itemListFilter).toEqual(maybeShowStressSeedOptions);
+    expect(selectProps.itemListFilter).toEqual(filterSeedOptions);
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
   });
 
@@ -340,11 +340,11 @@ describe("SEED_DATA_OPTIONS()", () => {
   });
 
   it("shows stress options only after a stress search", () => {
-    const defaultLabels = maybeShowStressSeedOptions(
-      SEED_DATA_OPTIONS(true), "").map(option => option.label);
-    const stressLabels = maybeShowStressSeedOptions(
+    const defaultLabels = filterSeedOptions(
+      SEED_DATA_OPTIONS(), "").map(option => option.label);
+    const stressLabels = filterSeedOptions(
       SEED_DATA_OPTIONS(), "stress").map(option => option.label);
-    const upperCaseLabels = maybeShowStressSeedOptions(
+    const upperCaseLabels = filterSeedOptions(
       SEED_DATA_OPTIONS(), "Stress").map(option => option.label);
 
     expect(SEED_DATA_OPTIONS().map(option => option.label))
@@ -358,6 +358,14 @@ describe("SEED_DATA_OPTIONS()", () => {
     ]));
     expect(upperCaseLabels).toContain("Stress 1000");
   });
+
+  it("shows custom option only after a search", () => {
+    const noneLabels = filterSeedOptions(
+      SEED_DATA_OPTIONS(), "custom").map(option => option.label);
+    expect(noneLabels).toEqual(expect.arrayContaining([
+      "Custom Bot",
+    ]));
+  });
 });
 
 describe("<ReSeedAccount />", () => {
@@ -366,7 +374,7 @@ describe("<ReSeedAccount />", () => {
     const { container } = render(<ReSeedAccount />);
     const selectProps = fbSelectSpy.mock.calls[0][0] as FBSelectProps;
 
-    expect(selectProps.itemListFilter).toEqual(maybeShowStressSeedOptions);
+    expect(selectProps.itemListFilter).toEqual(filterSeedOptions);
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     const buttons = container.querySelectorAll("button");
     fireEvent.click(buttons[buttons.length - 1]);

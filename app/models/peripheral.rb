@@ -2,6 +2,10 @@
 # This is used for reference and is not used to directly control the device.
 # Examples: temperature probes, LEDs, etc.
 class Peripheral < ApplicationRecord
+  TYPES = %w[lighting rotary_tool vacuum water none].freeze
+  TYPES_ERR = "must be one of #{TYPES.join(", ")}. %{value} is not valid."
+
+  self.inheritance_column = "none"
   belongs_to :device
   validates :device, presence: true
   validates :pin, presence: true
@@ -10,4 +14,5 @@ class Peripheral < ApplicationRecord
                                   greater_than_or_equal_to: 0,
                                   less_than_or_equal_to: 1000 }
   validates :label, presence: true
+  validates :type, inclusion: { in: TYPES, message: TYPES_ERR }
 end

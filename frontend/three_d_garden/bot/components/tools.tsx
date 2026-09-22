@@ -18,16 +18,16 @@ import {
 } from "../../components";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { isUndefined, sortBy } from "lodash";
-import {
-  reduceToolName, ToolName,
-} from "../../../farm_designer/map/tool_graphics/all_tools";
 import { Xyz } from "farmbot";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection, ToolType,
+} from "farmbot/dist/resources/api_resources";
 import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
 import { setPanelOpen3D } from "../../panel_actions";
 import { getMode } from "../../../farm_designer/map/util";
 import { Mode } from "../../../farm_designer/map/interfaces";
+import { resolveMountPosition } from "../../../tools/mount_stage";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
@@ -45,6 +45,7 @@ import { clickWasDragged } from "../../click_event";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
 import { frontSideMaterial } from "../../geometry_batching";
+import { CustomToolModel } from "./custom_tool";
 
 const distinguishableBlack = "#333";
 
@@ -97,7 +98,8 @@ export interface ToolsProps {
   config: Config;
   configPosition: PositionConfig;
   toolSlots?: SlotWithTool[];
-  mountedToolName?: string | undefined;
+  mountedToolId?: number | undefined;
+  mountedToolType?: ToolType | undefined;
   dispatch?: Function;
   getZ(x: number, y: number): number;
   onSelectObject?: ThreeDObjectSelectionHandler;
@@ -107,17 +109,22 @@ export interface ToolsProps {
   frame?: "all" | ToolMountFrame;
 }
 
-export type ToolMountFrame = "stationary" | "gantry" | "z-axis";
+export type ToolMountFrame = "stationary" | "gantry" | "y-axis" | "z-axis";
 
 export interface ThreeDTool {
   id?: number | undefined;
   x: number;
   y: number;
   z: number;
-  toolName: string | undefined;
+  mount_offset_x: number;
+  mount_offset_y: number;
+  mount_offset_z: number;
+  toolId: number | undefined;
+  toolName?: string | undefined;
+  toolType: ToolType | undefined;
   toolPulloutDirection: ToolPulloutDirection;
   firstTrough?: boolean;
-  gantryMounted?: boolean;
+  mountStage: MountStage;
   mountFrame: ToolMountFrame;
 }
 
@@ -155,7 +162,8 @@ const toolPositionsEqual = (prev: ToolsProps, next: ToolsProps) => {
 
 export const toolsPropsEqual = (prev: ToolsProps, next: ToolsProps) => {
   return prev.toolSlots === next.toolSlots &&
-    prev.mountedToolName === next.mountedToolName &&
+    prev.mountedToolId === next.mountedToolId &&
+    prev.mountedToolType === next.mountedToolType &&
     prev.dispatch === next.dispatch &&
     prev.getZ === next.getZ &&
     prev.onSelectObject === next.onSelectObject &&
@@ -172,20 +180,28 @@ export const convertSlotsWithTools =
   (slotsWithTools: SlotWithTool[]): ThreeDTool[] => {
     let troughIndex = 0;
     return sortBy(slotsWithTools, "toolSlot.body.y").map(swt => {
-      const toolName = reduceToolName(swt.tool?.body.name);
-      if (toolName == ToolName.seedTrough) { troughIndex++; }
+      const toolType = swt.tool?.body.type;
+      if (toolType == "seed_trough") { troughIndex++; }
+      const mountStage = swt.toolSlot.body.mount_stage;
+      let mountFrame: ToolMountFrame = "stationary";
+      if (mountStage == MountStage.X) { mountFrame = "gantry"; }
+      if (mountStage == MountStage.Y) { mountFrame = "y-axis"; }
+      if (mountStage == MountStage.Z) { mountFrame = "z-axis"; }
       return {
         id: swt.toolSlot.body.id,
         x: swt.toolSlot.body.x,
         y: swt.toolSlot.body.y,
         z: swt.toolSlot.body.z,
-        toolName,
+        mount_offset_x: swt.toolSlot.body.mount_offset_x ?? 0,
+        mount_offset_y: swt.toolSlot.body.mount_offset_y ?? 0,
+        mount_offset_z: swt.toolSlot.body.mount_offset_z ?? 0,
+        toolId: swt.tool?.body.id,
+        toolName: swt.tool?.body.name,
+        toolType,
         toolPulloutDirection: swt.toolSlot.body.pullout_direction,
         firstTrough: troughIndex < 2,
-        gantryMounted: swt.toolSlot.body.gantry_mounted,
-        mountFrame: swt.toolSlot.body.gantry_mounted
-          ? "gantry"
-          : "stationary",
+        mountStage,
+        mountFrame,
       };
     });
   };
@@ -270,15 +286,18 @@ const PromoToolbay5 = (props: PromoToolbay3Props) => {
   </Group>;
 };
 
+// eslint-disable-next-line complexity
 const ToolsBase = (props: ToolsProps) => {
   const frame = props.frame || "all";
+  const promoTools = isUndefined(props.toolSlots);
   const mirroredBotX = props.config.mirrorX
     ? props.config.botSizeX - props.configPosition.x
     : props.configPosition.x;
-  const mountedToolName = isUndefined(props.toolSlots)
-    ? props.config.tool
-    : reduceToolName(props.mountedToolName);
-
+  const mountedToolType = promoTools
+    ? props.config.tool || undefined
+    : props.mountedToolType;
+  const mountedToolName = props.toolSlots?.find(slot =>
+    slot.tool?.body.id == props.mountedToolId)?.tool?.body.name;
   const configuredTools = React.useMemo(
     () => isUndefined(props.toolSlots)
       ? undefined
@@ -306,12 +325,20 @@ const ToolsBase = (props: ToolsProps) => {
       onHoverObject={props.onHoverObject}
       onToolSlotHoverObject={props.onToolSlotHoverObject}
       positionHelpers={positionHelpers}
-      mountedToolName={mountedToolName}
+      mountedToolId={props.mountedToolId}
+      mountedToolType={mountedToolType}
+      promoTools={promoTools}
+      toolType={mountedToolType}
       x={props.configPosition.x}
       y={props.configPosition.y}
       z={props.configPosition.z + (isUndefined(props.toolSlots) ? 1 : -2)}
+      mount_offset_x={0}
+      mount_offset_y={0}
+      mount_offset_z={0}
+      toolId={props.mountedToolId}
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
+      mountStage={MountStage.Z}
       mountFrame={"z-axis"}
       renderFrame={frame}
       onHoverLabel={props.onHoverLabel}
@@ -320,8 +347,13 @@ const ToolsBase = (props: ToolsProps) => {
       (version.promoToolbay == "five-slot"
         ? <PromoToolbay5 config={props.config} local={frame != "all"} />
         : <PromoToolbay3 config={props.config} local={frame != "all"} />)}
-    {visibleTools.map((tool, i) =>
-      <Tool key={i}
+    {visibleTools.map((tool, i) => {
+      const position = resolveMountPosition(tool, {
+        x: mirroredBotX,
+        y: props.configPosition.y,
+        z: props.configPosition.z,
+      }, tool.mountStage);
+      return <Tool key={i}
         config={props.config}
         botPosition={props.configPosition}
         dispatch={props.dispatch}
@@ -330,14 +362,18 @@ const ToolsBase = (props: ToolsProps) => {
         onToolSlotHoverObject={props.onToolSlotHoverObject}
         onHoverLabel={props.onHoverLabel}
         positionHelpers={positionHelpers}
-        mountedToolName={mountedToolName}
+        mountedToolId={props.mountedToolId}
+        mountedToolType={mountedToolType}
+        promoTools={promoTools}
         renderFrame={frame}
         {...tool}
-        x={tool.gantryMounted ? mirroredBotX : tool.x}
-        y={tool.gantryMounted
-          ? tool.y - props.config.bedYOffset
-          : tool.y}
-        inToolbay={true} />)}
+        x={position.x}
+        y={tool.mountStage == MountStage.X
+          ? position.y - props.config.bedYOffset
+          : position.y}
+        z={position.z}
+        inToolbay={true} />;
+    })}
   </Group>;
 };
 
@@ -532,7 +568,9 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
 
 interface ToolProps extends ThreeDTool {
   inToolbay: boolean;
-  mountedToolName: string | undefined;
+  mountedToolId: number | undefined;
+  mountedToolType: ToolType | undefined;
+  promoTools: boolean;
   config: Config;
   dispatch?: Function;
   onSelectObject?: ThreeDObjectSelectionHandler;
@@ -770,9 +808,13 @@ const ActiveRotaryToolSlot = (props: ActiveRotaryToolSlotProps) => {
 // eslint-disable-next-line complexity
 const ToolBase = (props: ToolProps) => {
   const {
-    toolPulloutDirection, inToolbay, id, mountedToolName, config, dispatch,
+    toolPulloutDirection, inToolbay, id, mountedToolId, mountedToolType,
+    config, dispatch,
   } = props;
-  const mounted = inToolbay && props.toolName == mountedToolName;
+  const mountedById = !!mountedToolId && props.toolId == mountedToolId;
+  const mountedByType = props.promoTools &&
+    !!mountedToolType && props.toolType == mountedToolType;
+  const mounted = inToolbay && (mountedById || mountedByType);
   const worldPosition =
     getToolRenderPosition(config, props, inToolbay, props.positionHelpers);
   const kinematics = getBotKinematics(config, props.botPosition);
@@ -783,6 +825,14 @@ const ToolBase = (props: ToolProps) => {
         kinematics.machineOrigin[0] + kinematics.gantryPosition[0],
         kinematics.machineOrigin[1] + kinematics.gantryPosition[1],
         kinematics.machineOrigin[2] + kinematics.gantryPosition[2],
+      ];
+      case "y-axis": return [
+        kinematics.machineOrigin[0] + kinematics.gantryPosition[0]
+        + kinematics.crossSlidePosition[0],
+        kinematics.machineOrigin[1] + kinematics.gantryPosition[1]
+        + kinematics.crossSlidePosition[1],
+        kinematics.machineOrigin[2] + kinematics.gantryPosition[2]
+        + kinematics.crossSlidePosition[2],
       ];
       case "z-axis": return kinematics.anchors.utm.worldPosition;
       case "all": return [0, 0, 0];
@@ -802,8 +852,8 @@ const ToolBase = (props: ToolProps) => {
     onHoverObject,
     onHoverLabel: props.onHoverLabel,
   };
-  switch (props.toolName) {
-    case ToolName.rotaryTool:
+  switch (props.toolType) {
+    case "rotary_tool":
       return inToolbay
         ? <ToolbaySlot {...common}>
           <RotaryToolModel />
@@ -811,34 +861,38 @@ const ToolBase = (props: ToolProps) => {
         : <ActiveRotaryToolSlot
           {...common}
           rotary={props.config.rotary} />;
-    case ToolName.wateringNozzle:
+    case "watering_nozzle":
       return <ToolbaySlot {...common}>
         <WateringNozzleToolModel />
       </ToolbaySlot>;
-    case ToolName.seedBin:
+    case "seed_bin":
       return <ToolbaySlot {...common}>
         <SeedBinToolModel />
       </ToolbaySlot>;
-    case ToolName.seedTray:
+    case "seed_tray":
       return <ToolbaySlot {...common}>
         <SeedTrayToolModel />
       </ToolbaySlot>;
-    case ToolName.soilSensor:
+    case "soil_sensor":
       return <ToolbaySlot {...common}>
         <SoilSensorToolModel />
       </ToolbaySlot>;
-    case ToolName.seeder:
+    case "seeder":
       return <ToolbaySlot {...common}>
         <SeederToolModel config={props.config} inToolbay={inToolbay} />
       </ToolbaySlot>;
-    case ToolName.weeder:
+    case "weeder":
       return <ToolbaySlot {...common}>
         <WeederToolModel />
       </ToolbaySlot>;
-    case ToolName.seedTrough:
+    case "seed_trough":
       return <SeedTroughToolSlot
         {...common}
         firstTrough={props.firstTrough} />;
+    case "none":
+      return <ToolbaySlot {...common}>
+        <CustomToolModel toolName={props.toolName} />
+      </ToolbaySlot>;
     default:
       return <ToolbaySlot {...common} />;
   }

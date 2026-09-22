@@ -537,6 +537,38 @@
         }
       }
 
+      .object-popup-gantry-beam-sensor-row {
+        grid-template-columns: 1fr minmax(8rem, 1fr) auto;
+
+        .sensor-reading-display {
+          margin-top: 0;
+        }
+      }
+
+      .object-popup-tool-action-row {
+        grid-template-columns: auto minmax(0, 1fr);
+
+        .tool-action-buttons {
+          min-width: 0;
+          width: 100%;
+          justify-self: stretch;
+        }
+
+        .tool-sensor-action {
+          grid-template-columns: minmax(7rem, 1fr) minmax(8rem, 1fr) auto;
+          min-width: 0;
+
+          > span {
+            min-width: 0;
+            overflow-wrap: anywhere;
+          }
+
+          .sensor-reading-display {
+            margin-top: 0;
+          }
+        }
+      }
+
       .tool-action-buttons,
       .tool-peripheral-action {
         align-items: center;

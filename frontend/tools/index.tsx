@@ -73,13 +73,16 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         noUTM={this.noUTM}
         isActive={this.props.isActive}
         filterSelectedTool={true}
-        filterActiveTools={false} />
+        filterActiveTools={false}
+        filterUtmMountable={true} />
       <svg className={"utm-and-mounted-tool-graphic"}
         viewBox={"-60 -50 120 140"}>
         <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
           position={{ x: 0, y: 0 }} selectionWidth={1}
           mountedToolInfo={{
+            id: this.mountedToolId,
             name: this.mountedTool?.body.name,
+            type: this.mountedTool?.body.type,
             pulloutDirection: ToolPulloutDirection.POSITIVE_X,
             noUTM: this.noUTM,
             flipped: false,
@@ -94,6 +97,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         sensors={this.props.sensors}
         peripherals={this.props.peripherals}
         peripheralValues={this.props.peripheralValues}
+        pins={this.props.bot.hardware.pins}
         botOnline={isBotOnlineFromState(this.props.bot)}
         arduinoBusy={this.props.bot.hardware.informational_settings.busy}
         locked={this.props.bot.hardware.informational_settings.locked} />
@@ -142,6 +146,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
             toolId={tool.body.id}
+            toolType={tool.body.type}
             active={this.props.isActive(tool.body.id)}
             mounted={this.mountedTool?.uuid == tool.uuid}
             toolName={tool.body.name || t("Unnamed")} />)}
@@ -236,9 +241,9 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 }
 
 export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
-  const { x, y, z, id, tool_id, gantry_mounted } = props.toolSlot.body;
-  const toolName = props.tools
-    .filter(tool => tool.body.id == tool_id)[0]?.body.name;
+  const { x, y, z, id, tool_id, mount_stage } = props.toolSlot.body;
+  const tool = props.tools.filter(tool => tool.body.id == tool_id)[0];
+  const toolName = tool?.body.name;
   const navigate = useNavigate();
   return <div
     className={`tool-slot-search-item ${props.hovered ? "hovered" : ""}`}
@@ -254,11 +259,14 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
-    <Row className="grid-exp-2">
+    <Row className="grid-exp-3">
       <div className={"tool-slot-search-item-icon"}>
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
+          toolType={tool_id
+            ? tool?.body.type
+            : undefined}
           toolTransformProps={props.toolTransformProps} />
       </div>
       {props.hideDropdown
@@ -278,10 +286,13 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
             noUTM={props.noUTM}
             isActive={props.isActive}
             filterSelectedTool={false}
-            filterActiveTools={true} />
+            filterActiveTools={true}
+            filterUtmMountable={false} />
         </div>}
       <p className="tool-slot-position">
-        <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
+        <i>{botPositionLabel({ x, y, z }, {
+          mountStage: mount_stage,
+        })}</i>
       </p>
     </Row>
   </div>;
@@ -292,8 +303,8 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const navigate = useNavigate();
   return <div className={"tool-search-item"}
     onClick={() => { navigate(Path.tools(props.toolId)); }}>
-    <Row className="grid-exp-2">
-      <ToolSVG toolName={props.toolName} />
+    <Row className="grid-exp-3">
+      <ToolSVG toolName={props.toolName} toolType={props.toolType} />
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
       <p className="tool-status">
         <i>{props.mounted ? t("mounted") : activeText}</i>

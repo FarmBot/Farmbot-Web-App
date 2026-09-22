@@ -8,7 +8,15 @@ describe Api::PointsController do
 
     it "creates a tool slot" do
       sign_in user
-      payload = { name: "Fooo", x: 4, y: 5, z: 6, pointer_type: "ToolSlot" }
+      payload = { name: "Fooo",
+                  x: 4,
+                  y: 5,
+                  z: 6,
+                  pointer_type: "ToolSlot",
+                  mount_offset_x: 1.5,
+                  mount_offset_y: 2.5,
+                  mount_offset_z: 3.5,
+                  mount_stage: ToolSlot::MOUNT_STAGE_Y }
       before = ToolSlot.count
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
@@ -19,6 +27,10 @@ describe Api::PointsController do
       expect(json[:x]).to eq(payload[:x])
       expect(json[:y]).to eq(payload[:y])
       expect(json[:z]).to eq(payload[:z])
+      expect(json[:mount_offset_x]).to eq(payload[:mount_offset_x])
+      expect(json[:mount_offset_y]).to eq(payload[:mount_offset_y])
+      expect(json[:mount_offset_z]).to eq(payload[:mount_offset_z])
+      expect(json[:mount_stage]).to eq(payload[:mount_stage])
     end
     it "creates a weed" do
       sign_in user

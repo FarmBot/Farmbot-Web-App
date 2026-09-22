@@ -1,4 +1,5 @@
 import React from "react";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 import { Object3D } from "three";
 import { Config, PositionConfig } from "../config";
 import { Group } from "../components";
@@ -55,7 +56,8 @@ export interface FarmbotModelProps {
   getZ(x: number, y: number): number;
   trailReady?: boolean;
   toolSlots?: SlotWithTool[];
-  mountedToolName?: string | undefined;
+  mountedToolId?: number | undefined;
+  mountedToolType?: ToolType | undefined;
   navigate?(path: string): void;
   dispatch?: Function;
   axisActions?: NativeJogAxisActionsContext;
@@ -373,7 +375,8 @@ const EnabledBot = (props: FarmbotModelProps) => {
     config={config}
     configPosition={configPosition}
     toolSlots={props.toolSlots}
-    mountedToolName={props.mountedToolName}
+    mountedToolId={props.mountedToolId}
+    mountedToolType={props.mountedToolType}
     getZ={props.getZ}
     frame={"z-axis"} />;
 
@@ -444,6 +447,10 @@ const EnabledBot = (props: FarmbotModelProps) => {
               version={version}
               onSelectObject={props.onSelectObject}
               onHoverObject={props.onHoverObject} />
+            <Tools
+              {...props}
+              configPosition={configPosition}
+              frame={"y-axis"} />
             <Group ref={zAxis} name={"bot-z-axis"}
               position={initialKinematics.zAxisPosition}>
               {config.controlsOverlay &&

@@ -19,7 +19,8 @@ module Points
       super(hash)
       self.device    = FactoryBot.create(:device)
       self.tool      = Tools::Create.run!(device: self.device,
-                                          name: "Scenario Tool")
+                                          name: "Scenario Tool",
+                                          type: "none")
       self.tool_slot = Points::Create.run!(device:     self.device,
                                            name:       "Scenario Tool Slot",
                                            x:          0,

@@ -33,7 +33,7 @@ import {
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType, Folder,
+  ExecutableType, PinBindingType, Folder, MountStage,
   SceneObject,
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
@@ -135,10 +135,15 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("Tool", {
+  return fakeResource<TaggedTool>("Tool", {
     name: "Foo",
     flow_rate_ml_per_s: 0,
     seeder_tip_z_offset: 80,
+    type: "seeder",
+    utm_mountable: true,
+    effector_offset_x: 1.5,
+    effector_offset_y: 2.5,
+    effector_offset_z: 3.5,
   });
 }
 
@@ -164,6 +169,10 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     name: "Tool Slot",
     pullout_direction: 0,
     gantry_mounted: false,
+    mount_stage: MountStage.NONE,
+    mount_offset_x: 0,
+    mount_offset_y: 0,
+    mount_offset_z: 0,
   });
 }
 
@@ -286,7 +295,8 @@ export function fakeSensor(): TaggedSensor {
     id: nextFakeId(),
     label: "Fake Pin",
     mode: 0,
-    pin: 1
+    pin: 1,
+    type: "none",
   });
 }
 
@@ -310,6 +320,7 @@ export function fakePeripheral(): TaggedPeripheral {
     label: "Fake Pin",
     pin: 1,
     mode: 0,
+    type: "none",
   });
 }
 

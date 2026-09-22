@@ -28,6 +28,7 @@ module Devices
         # SENSORS ================================
         :sensors_soil_sensor,
         :sensors_tool_verification,
+        :sensors_all_current,
 
         # SETTINGS ===============================
         :settings_default_map_size_x,
@@ -99,6 +100,7 @@ module Devices
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
+      def sensors_all_current; end
       def sequences_mount_tool; end
       def sequences_dismount_tool; end
       def sequences_pick_up_seed; end
@@ -257,8 +259,19 @@ module Devices
         end
       end
 
-      def add_tool(name)
-        Tools::Create.run!(name: name, device: device)
+      def add_tool(name,
+                   effector_offset_x: 0,
+                   effector_offset_y: 0,
+                   effector_offset_z: 0)
+        type = TOOL_TYPES.fetch(name)
+        utm_mountable = TOOL_MOUNTABLE_VALUES.fetch(name)
+        Tools::Create.run!(name: name,
+                           device: device,
+                           type: type,
+                           utm_mountable: utm_mountable,
+                           effector_offset_x: effector_offset_x,
+                           effector_offset_y: effector_offset_y,
+                           effector_offset_z: effector_offset_z)
       end
 
       def add_pin_binding(pin, label, action)
@@ -269,16 +282,20 @@ module Devices
       end
 
       def add_peripheral(pin, label)
+        type = PERIPHERAL_TYPES.fetch(label)
         Peripherals::Create.run!(device: device,
                                  pin: pin,
-                                 label: label)
+                                 label: label,
+                                 type: type)
       end
 
       def add_sensor(pin, label, mode)
+        type = SENSOR_TYPES.fetch(label)
         Sensors::Create.run!(device: device,
                              pin: pin,
                              label: label,
-                             mode: mode)
+                             mode: mode,
+                             type: type)
       end
 
       def add_tool_slot(x:,
@@ -286,7 +303,8 @@ module Devices
                         z:,
                         tool:,
                         pullout_direction: ToolSlot::POSITIVE_X,
-                        gantry_mounted: false)
+                        gantry_mounted: false,
+                        mount_stage: MountStage::NONE)
         Points::Create.run!(pointer_type: "ToolSlot",
                             name: "Slot",
                             x: x,
@@ -295,6 +313,7 @@ module Devices
                             tool_id: tool && tool.id,
                             pullout_direction: pullout_direction,
                             gantry_mounted: gantry_mounted,
+                            mount_stage: mount_stage,
                             device: device)
       end
 

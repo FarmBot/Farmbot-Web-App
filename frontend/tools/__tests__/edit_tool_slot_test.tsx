@@ -86,7 +86,7 @@ describe("<EditToolSlot />", () => {
     const { container } = render(<EditToolSlot {...p} />);
     const text = container.textContent?.toLowerCase() || "";
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "gantry-mounted", "meta value",
+      "mount stage", "meta value",
     ].map(string => expect(text).toContain(string));
     expect(text.includes("direction")
       || text.includes("rotate tool 180 degrees")).toEqual(true);

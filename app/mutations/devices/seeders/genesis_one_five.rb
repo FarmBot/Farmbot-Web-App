@@ -9,7 +9,8 @@ module Devices
                       z: TROUGH_Z,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
-                      gantry_mounted: true)
+                      gantry_mounted: true,
+                      mount_stage: MountStage::X)
       end
 
       def tool_slots_slot_8
@@ -18,7 +19,8 @@ module Devices
                       z: TROUGH_Z,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
-                      gantry_mounted: true)
+                      gantry_mounted: true,
+                      mount_stage: MountStage::X)
       end
 
       def tools_seed_trough_1

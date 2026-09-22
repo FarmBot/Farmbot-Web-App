@@ -13,6 +13,13 @@ module Devices
       TROUGH_Z = -300
       TROUGH_SPACING = 25
 
+      module MountStage
+        NONE = 0
+        X = 1
+        Y = 2
+        Z = 3
+      end
+
       module Names
         EXPRESS = "FarmBot Express"
         EXPRESS_XL = "FarmBot Express XL"
@@ -33,9 +40,62 @@ module Devices
         ROTARY_TOOL = "Rotary Tool"
         ROTARY_TOOL_REVERSE = "Rotary Tool Reverse"
         LIGHTING = "Lighting"
+        PERIPHERAL_4 = "Peripheral 4"
+        PERIPHERAL_5 = "Peripheral 5"
         SEED_TROUGH_1 = "Seed Trough 1"
         SEED_TROUGH_2 = "Seed Trough 2"
+        WATER_LOAD_SENSE = "Water Load Sense"
+        LIGHTING_LOAD_SENSE = "Lighting Load Sense"
+        VACUUM_LOAD_SENSE = "Vacuum Load Sense"
+        PERIPHERAL_4_LOAD_SENSE = "Peripheral 4 Load Sense"
+        PERIPHERAL_5_LOAD_SENSE = "Peripheral 5 Load Sense"
+        ROTARY_TOOL_LOAD_SENSE = "Rotary Tool Load Sense"
       end
+
+      TOOL_TYPES = {
+        ToolNames::ROTARY_TOOL => "rotary_tool",
+        ToolNames::SOIL_SENSOR => "soil_sensor",
+        ToolNames::SEED_BIN => "seed_bin",
+        ToolNames::SEED_TRAY => "seed_tray",
+        ToolNames::SEEDER => "seeder",
+        ToolNames::WEEDER => "weeder",
+        ToolNames::WATERING_NOZZLE => "watering_nozzle",
+        ToolNames::SEED_TROUGH_1 => "seed_trough",
+        ToolNames::SEED_TROUGH_2 => "seed_trough",
+      }.freeze
+
+      TOOL_MOUNTABLE_VALUES = {
+        ToolNames::ROTARY_TOOL => true,
+        ToolNames::SOIL_SENSOR => true,
+        ToolNames::SEED_BIN => false,
+        ToolNames::SEED_TRAY => false,
+        ToolNames::SEEDER => true,
+        ToolNames::WEEDER => true,
+        ToolNames::WATERING_NOZZLE => true,
+        ToolNames::SEED_TROUGH_1 => false,
+        ToolNames::SEED_TROUGH_2 => false,
+      }.freeze
+
+      PERIPHERAL_TYPES = {
+        ToolNames::LIGHTING => "lighting",
+        ToolNames::WATER => "water",
+        ToolNames::VACUUM => "vacuum",
+        ToolNames::ROTARY_TOOL => "rotary_tool",
+        ToolNames::ROTARY_TOOL_REVERSE => "rotary_tool",
+        ToolNames::PERIPHERAL_4 => "none",
+        ToolNames::PERIPHERAL_5 => "none",
+      }.freeze
+
+      SENSOR_TYPES = {
+        ToolNames::SOIL_SENSOR => "soil_moisture",
+        ToolNames::TOOL_VERIFICATION => "tool_verification",
+        ToolNames::WATER_LOAD_SENSE => "current",
+        ToolNames::LIGHTING_LOAD_SENSE => "current",
+        ToolNames::VACUUM_LOAD_SENSE => "current",
+        ToolNames::PERIPHERAL_4_LOAD_SENSE => "current",
+        ToolNames::PERIPHERAL_5_LOAD_SENSE => "current",
+        ToolNames::ROTARY_TOOL_LOAD_SENSE => "current",
+      }.freeze
 
       # Stub sequences ===========================
       SEQUENCE_FIXTURE_PATH =

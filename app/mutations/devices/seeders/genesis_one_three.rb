@@ -16,11 +16,11 @@ module Devices
       end
 
       def peripherals_peripheral_4
-        add_peripheral(10, "Peripheral 4")
+        add_peripheral(10, ToolNames::PERIPHERAL_4)
       end
 
       def peripherals_peripheral_5
-        add_peripheral(12, "Peripheral 5")
+        add_peripheral(12, ToolNames::PERIPHERAL_5)
       end
     end
   end

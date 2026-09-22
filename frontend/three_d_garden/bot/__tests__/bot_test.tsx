@@ -523,7 +523,8 @@ describe("<Bot />", () => {
       firmwareSettings: fakeBot.hardware.mcu_params,
       locked: false,
     };
-    p.mountedToolName = "Seeder";
+    p.mountedToolId = 1;
+    p.mountedToolType = "seeder";
     p.toolSlots = [];
     const wrapper = createRenderer(<Bot {...p} />);
     const xControl = wrapper.root.findAllByType(NativeJogControlPair)
@@ -551,7 +552,8 @@ describe("<Bot />", () => {
       configPosition: p.configPosition,
       frame: "z-axis",
       getZ: p.getZ,
-      mountedToolName: "Seeder",
+      mountedToolId: 1,
+      mountedToolType: "seeder",
       toolSlots: [],
     });
     unmountRenderer(wrapper);

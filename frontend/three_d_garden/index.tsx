@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import * as ReactThreeFiber from "@react-three/fiber";
 import React from "react";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 import { Config, PositionConfig } from "./config";
 import {
   FarmDesignerViewPrism, GardenModel, getViewPrismCameraProjection,
@@ -69,7 +70,8 @@ export interface ThreeDGardenProps {
   bot?: BotState;
   firmwareSettings?: McuParams;
   encoderVisibility?: NativeJogEncoderVisibility;
-  mountedToolName?: string;
+  mountedToolId?: number;
+  mountedToolType?: ToolType;
   allPoints?: TaggedPoint[];
   groups?: TaggedPointGroup[];
   images?: TaggedImage[];
@@ -163,7 +165,8 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             bot={props.bot}
             firmwareSettings={props.firmwareSettings}
             encoderVisibility={props.encoderVisibility}
-            mountedToolName={props.mountedToolName}
+            mountedToolId={props.mountedToolId}
+            mountedToolType={props.mountedToolType}
             allPoints={props.allPoints}
             groups={props.groups}
             images={props.images}

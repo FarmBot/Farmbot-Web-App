@@ -10,7 +10,9 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as crud from "../../api/crud";
 import { SpecialStatus } from "farmbot";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import {
+  MountStage, ToolPulloutDirection,
+} from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
@@ -61,13 +63,14 @@ describe("<AddToolSlot />", () => {
   it("renders", () => {
     const { container } = render(<AddToolSlot {...fakeProps()} />);
     ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "direction", "gantry-mounted",
+      "direction", "mount stage",
     ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
     expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
+      mount_offset_x: 0, mount_offset_y: 0, mount_offset_z: 0,
       pullout_direction: ToolPulloutDirection.NONE,
-      gantry_mounted: false,
+      mount_stage: MountStage.NONE,
     });
   });
 
@@ -99,6 +102,14 @@ describe("<AddToolSlot />", () => {
     expect(crud.save).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.tools());
     unmountRenderer(wrapper);
+  });
+
+  it("navigates using context", () => {
+    const instance = new AddToolSlot(fakeProps());
+    const navigate = jest.fn();
+    instance.context = navigate;
+    instance.navigate(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("saves on unmount", () => {
@@ -153,8 +164,9 @@ describe("<AddToolSlot />", () => {
     expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
+      mount_offset_x: 0, mount_offset_y: 0, mount_offset_z: 0,
       pullout_direction: ToolPulloutDirection.NONE,
-      gantry_mounted: true,
+      mount_stage: MountStage.X,
     });
   });
 });

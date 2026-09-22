@@ -21,9 +21,10 @@ import {
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
 import { get } from "lodash";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 export interface Vector3Plus extends Vector3 {
-  gantry_mounted: boolean;
+  mount_stage: MountStage;
 }
 
 export interface SequenceMeta {

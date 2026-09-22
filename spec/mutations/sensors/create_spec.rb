@@ -4,13 +4,13 @@ describe Sensors::Create do
   let(:device) { FactoryBot.create(:device) }
 
   it "instantiates a sensor object" do
-    props = {device: device, pin: 1, label: "One", mode: 0}
+    props = {device: device, pin: 1, label: "One", mode: 0, type: "current"}
     obj = Sensors::Create.run!(props)
     props.to_a.map { |(key, val)| expect(obj.send(key)).to eq(val)}
   end
 
   it "disallows bad PIN_MODEs" do
-    props = {device: device, pin: 1, label: "One", mode: -1}
+    props = {device: device, pin: 1, label: "One", mode: -1, type: "none"}
     result = Sensors::Create.run(props)
     err = result.errors["mode"]
     expect(err).to be

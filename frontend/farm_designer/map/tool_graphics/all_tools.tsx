@@ -1,5 +1,5 @@
 import React from "react";
-import { includes } from "lodash";
+import { ToolType } from "farmbot/dist/resources/api_resources";
 import { ToolImplementProfileProps, ToolProps } from "./interfaces";
 import { Seeder, SeederImplementProfile } from "./seeder";
 import { SeedBin, SeedBinImplementProfile } from "./seed_bin";
@@ -23,72 +23,46 @@ export enum ToolColor {
   none = "rgba(102, 102, 102)",
 }
 
-export enum ToolName {
-  rotaryTool = "rotaryTool",
-  weeder = "weeder",
-  wateringNozzle = "wateringNozzle",
-  seeder = "seeder",
-  soilSensor = "soilSensor",
-  seedBin = "seedBin",
-  seedTray = "seedTray",
-  seedTrough = "seedTrough",
-  tool = "tool",
-  emptyToolSlot = "emptyToolSlot",
-}
-
-const TOOL_COLOR_LOOKUP: Record<ToolName, ToolColor> = {
-  [ToolName.rotaryTool]: ToolColor.rotaryTool,
-  [ToolName.weeder]: ToolColor.weeder,
-  [ToolName.wateringNozzle]: ToolColor.wateringNozzle,
-  [ToolName.seeder]: ToolColor.seeder,
-  [ToolName.soilSensor]: ToolColor.soilSensor,
-  [ToolName.seedBin]: ToolColor.seedBin,
-  [ToolName.seedTray]: ToolColor.seedTray,
-  [ToolName.seedTrough]: ToolColor.seedTray,
-  [ToolName.emptyToolSlot]: ToolColor.none,
-  [ToolName.tool]: ToolColor.none,
+const TOOL_COLOR_LOOKUP: Record<ToolType, ToolColor> = {
+  rotary_tool: ToolColor.rotaryTool,
+  weeder: ToolColor.weeder,
+  watering_nozzle: ToolColor.wateringNozzle,
+  seeder: ToolColor.seeder,
+  soil_sensor: ToolColor.soilSensor,
+  seed_bin: ToolColor.seedBin,
+  seed_tray: ToolColor.seedTray,
+  seed_trough: ToolColor.seedTray,
+  none: ToolColor.none,
 };
 
-export const reduceToolName = (raw: string | undefined) => {
-  const lower = (raw || "").toLowerCase();
-  if (raw == "Empty") { return ToolName.emptyToolSlot; }
-  if (includes(lower, "rotary")) { return ToolName.rotaryTool; }
-  if (includes(lower, "weeder")) { return ToolName.weeder; }
-  if (includes(lower, "watering nozzle")) { return ToolName.wateringNozzle; }
-  if (includes(lower, "seeder")) { return ToolName.seeder; }
-  if (includes(lower, "soil sensor")) { return ToolName.soilSensor; }
-  if (includes(lower, "seed bin")) { return ToolName.seedBin; }
-  if (includes(lower, "seed tray")) { return ToolName.seedTray; }
-  if (includes(lower, "seed trough")) { return ToolName.seedTrough; }
-  return ToolName.tool;
-};
-
-export const getToolColor = (toolName: string | undefined) =>
-  TOOL_COLOR_LOOKUP[reduceToolName(toolName)];
+export const getToolColor = (toolType: ToolType | undefined) =>
+  toolType
+    ? TOOL_COLOR_LOOKUP[toolType]
+    : ToolColor.none;
 
 export const Tool = (props: ToolProps) => {
-  switch (props.tool) {
-    case ToolName.rotaryTool: return <RotaryTool {...props.toolProps} />;
-    case ToolName.weeder: return <Weeder {...props.toolProps} />;
-    case ToolName.wateringNozzle: return <WateringNozzle {...props.toolProps} />;
-    case ToolName.seeder: return <Seeder {...props.toolProps} />;
-    case ToolName.soilSensor: return <SoilSensor {...props.toolProps} />;
-    case ToolName.seedBin: return <SeedBin {...props.toolProps} />;
-    case ToolName.seedTray: return <SeedTray {...props.toolProps} />;
-    case ToolName.seedTrough: return <SeedTrough {...props.toolProps} />;
-    case ToolName.emptyToolSlot: return <EmptySlot {...props.toolProps} />;
+  switch (props.toolType) {
+    case "rotary_tool": return <RotaryTool {...props.toolProps} />;
+    case "weeder": return <Weeder {...props.toolProps} />;
+    case "watering_nozzle": return <WateringNozzle {...props.toolProps} />;
+    case "seeder": return <Seeder {...props.toolProps} />;
+    case "soil_sensor": return <SoilSensor {...props.toolProps} />;
+    case "seed_bin": return <SeedBin {...props.toolProps} />;
+    case "seed_tray": return <SeedTray {...props.toolProps} />;
+    case "seed_trough": return <SeedTrough {...props.toolProps} />;
+    case undefined: return <EmptySlot {...props.toolProps} />;
     default: return <StandardTool {...props.toolProps} />;
   }
 };
 
 /** Tool implement profile (base not included). */
 export const ToolImplementProfile = (props: ToolImplementProfileProps) => {
-  switch (reduceToolName(props.toolName)) {
-    case ToolName.rotaryTool: return <RotaryToolImplementProfile {...props} />;
-    case ToolName.weeder: return <WeederImplementProfile {...props} />;
-    case ToolName.seeder: return <SeederImplementProfile {...props} />;
-    case ToolName.soilSensor: return <SoilSensorImplementProfile {...props} />;
-    case ToolName.seedBin: return <SeedBinImplementProfile {...props} />;
+  switch (props.toolType) {
+    case "rotary_tool": return <RotaryToolImplementProfile {...props} />;
+    case "weeder": return <WeederImplementProfile {...props} />;
+    case "seeder": return <SeederImplementProfile {...props} />;
+    case "soil_sensor": return <SoilSensorImplementProfile {...props} />;
+    case "seed_bin": return <SeedBinImplementProfile {...props} />;
     default: return <g id={"no-tool-implement-profile"} />;
   }
 };

@@ -11,6 +11,7 @@ import {
 import { resourceReducer, emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 import { chain } from "lodash";
+import { MountStage } from "farmbot/dist/resources/api_resources";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
@@ -18,6 +19,11 @@ const fakeTool: TaggedTool = arrayUnwrap(newTaggedResource("Tool", {
   name: "yadda yadda",
   flow_rate_ml_per_s: 0,
   seeder_tip_z_offset: 80,
+  type: "none",
+  utm_mountable: true,
+  effector_offset_x: 0,
+  effector_offset_y: 0,
+  effector_offset_z: 0,
   id: TOOL_ID
 }));
 const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
@@ -32,6 +38,10 @@ const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
     meta: {},
     pullout_direction: 0,
     gantry_mounted: false,
+    mount_stage: MountStage.NONE,
+    mount_offset_x: 0,
+    mount_offset_y: 0,
+    mount_offset_z: 0,
   }));
 
 const fakeIndex = buildResourceIndex().index;

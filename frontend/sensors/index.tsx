@@ -11,6 +11,9 @@ import { saveAll, init } from "../api/crud";
 import { Content } from "../constants";
 import { uniq } from "lodash";
 import { t } from "../i18next_wrapper";
+import { SensorType } from "farmbot/dist/resources/api_resources";
+import { hasCurrentSensors } from
+  "../settings/firmware/firmware_hardware_support";
 
 export class Sensors extends React.Component<SensorsProps, SensorState> {
   constructor(props: SensorsProps) {
@@ -33,7 +36,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
   };
 
   showPins = () => {
-    const { sensors, dispatch, bot, disabled } = this.props;
+    const { sensors, peripherals, dispatch, bot, disabled } = this.props;
 
     const pins = bot.hardware.pins;
     if (this.state.isEditing) {
@@ -41,19 +44,41 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
         dispatch={dispatch} />;
     } else {
       return <SensorList sensors={sensors}
+        peripherals={peripherals}
         dispatch={dispatch}
         pins={pins}
-        disabled={disabled} />;
+        disabled={disabled}
+        locked={bot.hardware.informational_settings.locked} />;
     }
   };
 
-  newSensor = (pin = 0, label = t("New Sensor"), mode: 0 | 1 = 0) => {
-    this.props.dispatch(init("Sensor", { pin, label, mode: mode || 0 }));
+  newSensor = (
+    pin = 0,
+    label = t("New Sensor"),
+    mode: 0 | 1 = 0,
+    type: SensorType = "none",
+  ) => {
+    if (!this.props.sensors.map(sensor => sensor.body.pin).includes(pin)) {
+      this.props.dispatch(init("Sensor", {
+        pin,
+        label,
+        mode,
+        type,
+      }));
+    }
   };
 
   stockSensors = () => {
-    this.newSensor(63, t("Tool Verification"), 0);
-    this.newSensor(59, t("Soil Moisture"), 1);
+    this.newSensor(63, t("Tool Verification"), 0, "tool_verification");
+    this.newSensor(59, t("Soil Moisture"), 1, "soil_moisture");
+    if (hasCurrentSensors(this.props.firmwareHardware)) {
+      this.newSensor(54, t("Lighting Load Sense"), 1, "current");
+      this.newSensor(55, t("Water Load Sense"), 1, "current");
+      this.newSensor(56, t("Peripheral 5 Load Sense"), 1, "current");
+      this.newSensor(57, t("Peripheral 4 Load Sense"), 1, "current");
+      this.newSensor(58, t("Vacuum Load Sense"), 1, "current");
+      this.newSensor(60, t("Rotary Tool Load Sense"), 1, "current");
+    }
   };
 
   render() {

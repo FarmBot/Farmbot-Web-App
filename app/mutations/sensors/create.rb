@@ -8,6 +8,7 @@ module Sensors
       integer :pin
       string :label
       integer :mode
+      string :type, in: Sensor::TYPES
     end
 
     def validate

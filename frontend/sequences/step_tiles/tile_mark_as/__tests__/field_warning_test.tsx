@@ -62,6 +62,18 @@ describe("<CustomFieldWarning />", () => {
     expect(container.textContent?.toLowerCase()).not.toContain("meta");
   });
 
+  it.each([
+    "mount_stage", "mount_offset_x", "mount_offset_y", "mount_offset_z",
+  ])("accepts mount field for tool slots: %s", field => {
+    const p = fakeProps();
+    p.resource = {
+      kind: "resource", args: { resource_type: "ToolSlot", resource_id: 1 }
+    };
+    p.field = field;
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid property");
+  });
+
   it("displays warning: Weed resource", () => {
     const p = fakeProps();
     p.resource = {

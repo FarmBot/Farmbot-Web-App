@@ -34,6 +34,10 @@ describe Points::Create do
           z: -100,
           device: FactoryBot.create(:device),
           gantry_mounted: true,
+          mount_offset_x: 1.5,
+          mount_offset_y: 2.5,
+          mount_offset_z: 3.5,
+          mount_stage: ToolSlot::MOUNT_STAGE_X,
           pointer_type: "ToolSlot" }
     slot = Points::Create.run!(p)
 

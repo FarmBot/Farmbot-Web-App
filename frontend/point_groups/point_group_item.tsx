@@ -120,12 +120,15 @@ export class PointGroupItem
       return <div className={"no-slot-icon"} />;
     }
     const { tool_id } = this.props.point.body;
-    const toolName = this.props.tools
-      .filter(tool => tool.body.id == tool_id)[0]?.body.name;
+    const tool = this.props.tools.filter(tool => tool.body.id == tool_id)[0];
+    const toolName = tool?.body.name;
     return <div className={"slot-icon"} style={{ position: "absolute" }}>
       <ToolSlotSVG size={2}
         toolSlot={this.props.point as TaggedToolSlotPointer}
         toolName={tool_id ? toolName : "Empty"}
+        toolType={tool_id
+          ? tool?.body.type
+          : undefined}
         toolTransformProps={this.props.toolTransformProps} />
     </div>;
   };

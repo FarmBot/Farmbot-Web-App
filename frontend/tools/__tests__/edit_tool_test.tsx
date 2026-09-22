@@ -3,8 +3,12 @@ import { act, fireEvent, render } from "@testing-library/react";
 import {
   RawEditTool as EditTool, mapStateToProps, isActive, WaterFlowRateInput,
   WaterFlowRateInputProps, LUA_WATER_FLOW_RATE,
-  TipZOffsetInput,
-  TipZOffsetInputProps,
+  EffectorOffsetInput,
+  EffectorOffsetInputProps,
+  ToolTypeInput,
+  ToolTypeInputProps,
+  UtmMountableInput,
+  UtmMountableInputProps,
 } from "../edit_tool";
 import {
   fakeTool, fakeToolSlot,
@@ -18,6 +22,7 @@ import { EditToolProps } from "../interfaces";
 import * as deviceActions from "../../devices/actions";
 import { Path } from "../../internal_urls";
 import { NavigationContext } from "../../routes_helpers";
+import { FBSelect, FBSelectProps } from "../../ui";
 
 const renderWithContext = (element: React.ReactElement) =>
   render(
@@ -57,6 +62,15 @@ describe("<EditTool />", () => {
   it("renders", () => {
     const { container } = renderWithContext(<EditTool {...fakeProps()} />);
     expect(container.textContent).toContain("Edit tool");
+    expect(container.textContent).toContain("Type");
+    expect(container.textContent).toContain("Seeder");
+    expect(container.textContent).toContain("UTM Mountable");
+    expect((container.querySelector(
+      "input[name='utmMountable']") as HTMLInputElement).checked).toBeTruthy();
+    expect(container.textContent).toContain("Effector Offset");
+    expect(container.textContent).toContain("X (mm)");
+    expect(container.textContent).toContain("Y (mm)");
+    expect(container.textContent).toContain("Z (mm)");
     expect(container.textContent?.toLowerCase()).not.toContain("flow rate");
   });
 
@@ -64,18 +78,12 @@ describe("<EditTool />", () => {
     const ref = React.createRef<EditTool>();
     const { container } = renderWithContext(<EditTool {...fakeProps()} ref={ref} />);
     act(() => {
-      ref.current?.setState({ toolName: "watering nozzle" });
+      ref.current?.setState({
+        toolName: "arbitrary name",
+        toolType: "watering_nozzle",
+      });
     });
     expect(container.textContent?.toLowerCase()).toContain("flow rate");
-  });
-
-  it("renders seeder", () => {
-    const ref = React.createRef<EditTool>();
-    const { container } = renderWithContext(<EditTool {...fakeProps()} ref={ref} />);
-    act(() => {
-      ref.current?.setState({ toolName: "seeder" });
-    });
-    expect(container.textContent?.toLowerCase()).toContain("tip z offset");
   });
 
   it("changes flow rate", () => {
@@ -87,13 +95,56 @@ describe("<EditTool />", () => {
     expect(ref.current?.state.flowRate).toEqual(1);
   });
 
-  it("changes tip z offset", () => {
+  it("loads and changes tool type", () => {
     const ref = React.createRef<EditTool>();
     renderWithContext(<EditTool {...fakeProps()} ref={ref} />);
+    expect(ref.current?.state.toolType).toEqual("seeder");
     act(() => {
-      ref.current?.changeTipZOffset(1);
+      ref.current?.changeToolType("soil_sensor");
     });
-    expect(ref.current?.state.tipZOffset).toEqual(1);
+    expect(ref.current?.state.toolType).toEqual("soil_sensor");
+  });
+
+  it("loads and changes UTM mountable", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.utm_mountable = false;
+    p.findTool = () => tool;
+    const ref = React.createRef<EditTool>();
+    const { container } = renderWithContext(<EditTool {...p} ref={ref} />);
+    expect(ref.current?.state.utmMountable).toBeFalsy();
+    fireEvent.click(container.querySelector(
+      "input[name='utmMountable']") as Element);
+    expect(ref.current?.state.utmMountable).toBeTruthy();
+  });
+
+  it("loads and changes effector offsets", () => {
+    const ref = React.createRef<EditTool>();
+    renderWithContext(<EditTool {...fakeProps()} ref={ref} />);
+    expect(ref.current?.state.effectorOffset)
+      .toEqual({ x: 1.5, y: 2.5, z: 3.5 });
+    act(() => {
+      ref.current?.changeEffectorOffset("y", 12.5);
+    });
+    expect(ref.current?.state.effectorOffset)
+      .toEqual({ x: 1.5, y: 12.5, z: 3.5 });
+  });
+
+  it("defaults missing effector offsets", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    Object.assign(tool.body, {
+      type: undefined,
+      effector_offset_x: undefined,
+      effector_offset_y: undefined,
+      effector_offset_z: undefined,
+    });
+    p.findTool = () => tool;
+    const ref = React.createRef<EditTool>();
+    renderWithContext(<EditTool {...p} ref={ref} />);
+    expect(ref.current?.state.effectorOffset)
+      .toEqual({ x: 0, y: 0, z: 0 });
+    expect(ref.current?.state.toolType).toEqual("none");
   });
 
   it("handles missing tool name", () => {
@@ -129,6 +180,7 @@ describe("<EditTool />", () => {
     const input = document.querySelector("input[name='toolName']") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "new name" } });
     expect(ref.current?.state.toolName).toEqual("new name");
+    expect(ref.current?.state.toolType).toEqual("seeder");
   });
 
   it("disables save until name in entered", () => {
@@ -165,8 +217,12 @@ describe("<EditTool />", () => {
     fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), {
       name: "Foo",
+      type: "seeder",
+      utm_mountable: true,
       flow_rate_ml_per_s: 0,
-      seeder_tip_z_offset: 80,
+      effector_offset_x: 1.5,
+      effector_offset_y: 2.5,
+      effector_offset_z: 3.5,
     });
     expect(crud.save).toHaveBeenCalledWith(tool.uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
@@ -264,17 +320,69 @@ describe("<WaterFlowRateInput />", () => {
   });
 });
 
-describe("<TipZOffsetInput />", () => {
-  const fakeProps = (): TipZOffsetInputProps => ({
-    value: 1,
+describe("<EffectorOffsetInput />", () => {
+  const fakeProps = (): EffectorOffsetInputProps => ({
+    value: { x: 1, y: 2, z: 3 },
+    onChange: jest.fn(),
+  });
+
+  it("changes decimal values", () => {
+    const p = fakeProps();
+    const { container } = render(<EffectorOffsetInput {...p} />);
+    const change = (axis: string, value: string) =>
+      fireEvent.change(
+        container.querySelector(
+          `input[name='effectorOffset${axis}']`) as HTMLInputElement,
+        { target: { value } });
+    change("X", "11.5");
+    change("Y", "12.5");
+    change("Z", "13.5");
+    expect(p.onChange).toHaveBeenNthCalledWith(1, "x", 11.5);
+    expect(p.onChange).toHaveBeenNthCalledWith(2, "y", 12.5);
+    expect(p.onChange).toHaveBeenNthCalledWith(3, "z", 13.5);
+  });
+});
+
+describe("<ToolTypeInput />", () => {
+  const fakeProps = (): ToolTypeInputProps => ({
+    value: "seeder",
+    onChange: jest.fn(),
+  });
+
+  it("selects a tool type", () => {
+    const p = fakeProps();
+    const input = ToolTypeInput(p);
+    const select = input.props.children[1] as React.ReactElement<FBSelectProps>;
+    expect(select.type).toEqual(FBSelect);
+    expect(select.props.list.map(choice => choice.value))
+      .toEqual([
+        "rotary_tool",
+        "seed_bin",
+        "seed_tray",
+        "seed_trough",
+        "seeder",
+        "soil_sensor",
+        "watering_nozzle",
+        "weeder",
+        "none",
+      ]);
+    expect(select.props.selectedItem)
+      .toEqual({ label: "Seeder", value: "seeder" });
+    select.props.onChange({ label: "Weeder", value: "weeder" });
+    expect(p.onChange).toHaveBeenCalledWith("weeder");
+  });
+});
+
+describe("<UtmMountableInput />", () => {
+  const fakeProps = (): UtmMountableInputProps => ({
+    value: true,
     onChange: jest.fn(),
   });
 
   it("changes value", () => {
     const p = fakeProps();
-    const { container } = render(<TipZOffsetInput {...p} />);
-    const input = container.querySelector("input") as HTMLInputElement;
-    fireEvent.change(input, { target: { value: "12" } });
-    expect(p.onChange).toHaveBeenCalledWith(12);
+    const { getByRole } = render(<UtmMountableInput {...p} />);
+    fireEvent.click(getByRole("checkbox"));
+    expect(p.onChange).toHaveBeenCalledWith(false);
   });
 });
