@@ -3,6 +3,13 @@ module Devices
     class GenesisOneNine < GenesisOneEight
       FIRMWARE_HARDWARE = FbosConfig::FARMDUINO_K19
 
+      def tools_watering_nozzle
+        @tools_watering_nozzle ||=
+          add_tool(ToolNames::WATERING_NOZZLE,
+                   effector_offset_x: -67,
+                   effector_offset_y: 101)
+      end
+
       def tool_slots_slot_4
         add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 4 * TOOL_SPACING,

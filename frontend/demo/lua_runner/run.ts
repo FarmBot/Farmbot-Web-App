@@ -31,13 +31,18 @@ import { collectDemoSequenceActions } from "./index";
 import { get, last } from "lodash";
 import { XYZ } from "../../devices/constants";
 
-export const runLua =
+interface LuaResult {
+  actions: Action[];
+  returnValue: unknown;
+}
+
+export const executeLua =
   (
     depth: number,
     luaCode: string,
     variables: ParameterApplication[],
     currentPosition?: XyzNumber,
-  ): Action[] => {
+  ): LuaResult => {
     const actions: Action[] = [];
     const L = lauxlib.luaL_newstate(); // stack: []
     const resources = store.getState().resources.index;
@@ -64,7 +69,7 @@ export const runLua =
     const groupIdsCache: Record<number, (number | undefined)[]> = {};
 
     lua.lua_newtable(L); // stack: [env]
-    const envIndex = lua.lua_gettop(L);
+    const envIndex: number = lua.lua_gettop(L);
 
     lauxlib.luaL_requiref(L, to_luastring("_G"), lualib.luaopen_base, 1);
     const gIndex = lua.lua_gettop(L);
@@ -643,7 +648,7 @@ export const runLua =
     if (statusLoad !== lua.LUA_OK) {
       const errorMsg = `Lua load error: ${luaToJs(L, -1)}`;
       error(errorMsg);
-      return [];
+      return { actions: [], returnValue: undefined };
     }
 
     lua.lua_pushvalue(L, -2);
@@ -653,7 +658,30 @@ export const runLua =
     if (statusCall !== lua.LUA_OK) {
       const errorMsg = `Lua call error: ${luaToJs(L, -1)}`;
       error(errorMsg);
-      return [];
+      return { actions: [], returnValue: undefined };
     }
-    return actions;
+    const returnValue = lua.lua_gettop(L) > envIndex
+      ? luaToJs(L, envIndex + 1)
+      : undefined;
+    return { actions, returnValue };
   };
+
+
+export const runLua =
+  (
+    depth: number,
+    luaCode: string,
+    variables: ParameterApplication[],
+    currentPosition?: XyzNumber,
+  ): Action[] => {
+    return executeLua(depth, luaCode, variables, currentPosition).actions;
+  };
+
+export const evalLua = (
+  luaCode: string,
+  variables: ParameterApplication[] = [],
+  currentPosition?: XyzNumber,
+): unknown => {
+  const code = luaCode.startsWith("return") ? luaCode : `return ${luaCode}`;
+  return executeLua(0, code, variables, currentPosition).returnValue;
+};

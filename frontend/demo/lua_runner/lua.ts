@@ -334,20 +334,29 @@ end
 
 function dispense(ml, params)
     params = params or {}
-    local tool_name = params.tool_name or "Watering Nozzle"
     local pin_number = params.pin or 8
 
     -- Get flow_rate
-    local tool = get_tool{name = tool_name}
-    if not tool then
-        toast('Tool "' .. tool_name .. '" not found', 'error')
-        return
+    local tool
+    if params.tool_name then
+        tool = get_tool{name = params.tool_name}
+        if not tool then
+            toast('Tool "' .. params.tool_name .. '" not found', 'error')
+            return
+        end
+    else
+        tool = get_tool{type = "watering_nozzle"}
+        if not tool then
+            toast('Watering nozzle not found', 'error')
+            return
+        end
     end
+    local tool_name = tool.name
     local flow_rate = tool.flow_rate_ml_per_s
 
     -- Checks
     if not flow_rate then
-        toast('You must have a tool named "' .. tool_name .. '" to use this sequence.', 'error')
+        toast('You must have a watering nozzle to use this sequence.', 'error')
         return
     elseif flow_rate == 0 then
         toast("**FLOW RATE (mL/s)** must be greater than 0 for the " .. tool_name .. " tool.", "error")
@@ -458,7 +467,6 @@ end
 
 function get_seed_tray_cell(tray, tray_cell)
   local cell = string.upper(tray_cell)
-  local seeder_needle_offset = 17.5
   local cell_spacing = 12.5
   local cells = {
       A1 = {label = "A1", x = 0, y = 0},
@@ -501,7 +509,7 @@ function get_seed_tray_cell(tray, tray_cell)
 
   -- A1 coordinates
   local A1 = {
-      x = tray.x - seeder_needle_offset + (1.5 * cell_spacing * flip),
+      x = tray.x - (1.5 * cell_spacing * flip),
       y = tray.y - (1.5 * cell_spacing * flip),
       z = tray.z
   }
@@ -775,9 +783,32 @@ function water(plant, params)
         return
     end
 
+    -- Get watering nozzle
+    params = params or {}
+    local tool
+    local nozzle_offset_x = 0
+    local nozzle_offset_y = 0
+    if params.tool_name then
+        tool = get_tool{name = params.tool_name}
+        if not tool then
+            toast('Tool "' .. params.tool_name .. '" not found', 'warn')
+        end
+    else
+        tool = get_tool{type = "watering_nozzle"}
+        if not tool then
+            toast('Watering nozzle not found', 'warn')
+        end
+    end
+    nozzle_offset_x = tool.effector_offset_x
+    nozzle_offset_y = tool.effector_offset_y
+
     -- Move to the plant
     set_job(job_name, { status = "Moving" })
-    move{ x = plant.x, y = plant.y, z = safe_z() }
+    move{
+        x = plant.x - nozzle_offset_x,
+        y = plant.y - nozzle_offset_y,
+        z = safe_z()
+    }
 
     -- Water the plant
     set_job(job_name, { status = "Watering", percent = 50 })
@@ -851,10 +882,11 @@ end
 function get_tool(params)
   local tool_id = params.id or 0
   local tool_name = params.name or ""
+  local tool_type = params.type or ""
   local tools = api({ url = "/api/tools" })
   tools = tools or {}
   for _, tool in ipairs(tools) do
-    if tool.id == tool_id or tool.name == tool_name then
+    if tool.id == tool_id or tool.name == tool_name or tool.type == tool_type then
       return tool
     end
   end

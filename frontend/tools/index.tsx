@@ -93,6 +93,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       </svg>
       <ToolActionRow
         className={"mounted-tool-action-row"}
+        showTitle={true}
         mountedTool={this.mountedTool}
         sensors={this.props.sensors}
         peripherals={this.props.peripherals}

@@ -102,7 +102,24 @@ module Devices
         "app/mutations/devices/seeders/sequence_fixtures.yml"
 
       module SequenceSeeds
-        ALL = YAML.load_file(SEQUENCE_FIXTURE_PATH)
+        def self.normalize_lua_indentation(node)
+          case node
+          when Array
+            node.each { |child| normalize_lua_indentation(child) }
+          when Hash
+            lua = node.dig(:args, :lua)
+            if node[:kind].to_s == "lua" && lua.is_a?(String)
+              node[:args][:lua] = lua.strip_heredoc.gsub(/^ +/) do |spaces|
+                ("  " * (spaces.length / 4)) + (" " * (spaces.length % 4))
+              end
+            end
+            node.each_value { |child| normalize_lua_indentation(child) }
+          end
+
+          node
+        end
+
+        ALL = normalize_lua_indentation(YAML.load_file(SEQUENCE_FIXTURE_PATH))
         PICK_UP_SEED_EXPRESS = ALL.fetch(:PICK_UP_SEED_EXPRESS)
         PLANT_SEED_GENESIS = ALL.fetch(:PLANT_SEED_GENESIS)
         PLANT_SEED_EXPRESS = ALL.fetch(:PLANT_SEED_EXPRESS)

@@ -34,7 +34,7 @@ describe("<TileMarkAs />", () => {
   it("renders if step", () => {
     const { container } = render(<TileMarkAs {...fakeProps()} />);
     const text = container.textContent || "";
-    ["Mark", "Strawberry plant 1 (100, 200, 0)", "property", "as"]
+    ["Mark", "Strawberry Plant 1 (100, 200, 0)", "property", "as"]
       .map(string => expect(text).toContain(string));
   });
 });

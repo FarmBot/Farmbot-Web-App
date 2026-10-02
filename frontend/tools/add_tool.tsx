@@ -130,14 +130,14 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         type: "seeder",
         utm_mountable: true,
         effector_offset_x: 17.5,
-        effector_offset_z: 80,
+        effector_offset_z: -80,
       },
       { name: t("Weeder"), type: "weeder", utm_mountable: true },
       {
         name: t("Soil Sensor"),
         type: "soil_sensor",
         utm_mountable: true,
-        effector_offset_z: 60,
+        effector_offset_z: -60,
       },
       { name: t("Seed Bin"), type: "seed_bin", utm_mountable: false },
       { name: t("Seed Tray"), type: "seed_tray", utm_mountable: false },
@@ -147,7 +147,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         name: t("Rotary Tool"),
         type: "rotary_tool",
         utm_mountable: true,
-        effector_offset_z: 80,
+        effector_offset_z: -80,
       },
     ];
     switch (this.props.firmwareHardware) {
@@ -278,10 +278,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           </div>
           <ToolTypeInput value={this.state.toolType}
             onChange={this.changeToolType} />
-          <UtmMountableInput value={this.state.utmMountable}
-            onChange={utmMountable => this.setState({ utmMountable })} />
           <EffectorOffsetInput value={this.state.effectorOffset}
             onChange={this.changeEffectorOffset} />
+          <UtmMountableInput value={this.state.utmMountable}
+            onChange={utmMountable => this.setState({ utmMountable })} />
           {this.state.toolType == "watering_nozzle" &&
             <WaterFlowRateInput value={this.state.flowRate}
               onChange={this.changeFlowRate} />}

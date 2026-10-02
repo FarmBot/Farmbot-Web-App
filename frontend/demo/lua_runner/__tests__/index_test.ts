@@ -616,6 +616,50 @@ describe("collectDemoSequenceActions()", () => {
     expect(error).not.toHaveBeenCalled();
   });
 
+  it("carries the current position through point group iterations", () => {
+    const point1 = fakePoint();
+    point1.body.id = 1;
+    const point2 = fakePoint();
+    point2.body.id = 2;
+    const group = fakePointGroup();
+    group.body.id = 1;
+    group.body.point_ids = [1, 2];
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    sequence.body.body = [{
+      kind: "lua",
+      args: { lua: "move_relative(10, 0, 0)" },
+    }];
+    mockResources = buildResourceIndex([
+      point1, point2, group, sequence,
+      fakeFirmwareConfig(), fakeWebAppConfig(),
+    ]);
+    runLuaSpy.mockReturnValue([{ type: "move_relative", args: [10, 0, 0] }]);
+    const variables: ParameterApplication[] = [{
+      kind: "parameter_application",
+      args: {
+        label: "Location",
+        data_value: { kind: "point_group", args: { point_group_id: 1 } },
+      },
+    }];
+
+    const actions = collectDemoSequenceActions(
+      0, mockResources.index, 1, variables, [], { x: 100, y: 0, z: 0 });
+
+    expect(actions).toEqual([
+      { type: "busy", args: [1] },
+      { type: "animated_move_absolute", args: [110, 0, 0] },
+      { type: "busy", args: [0] },
+      { type: "busy", args: [1] },
+      { type: "animated_move_absolute", args: [120, 0, 0] },
+      { type: "busy", args: [0] },
+    ]);
+    expect(runLuaSpy.mock.calls.map(call => call[3])).toEqual([
+      { x: 100, y: 0, z: 0 },
+      { x: 110, y: 0, z: 0 },
+    ]);
+  });
+
   it("stops after the maximum call depth", () => {
     const actions = collectDemoSequenceActions(
       101,

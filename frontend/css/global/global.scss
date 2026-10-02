@@ -334,6 +334,9 @@ a {
     .input {
       &.lua {
         border-color: $yellow;
+        input {
+          padding-right: 1.5rem;
+        }
         &:after {
           content: "lua";
           position: absolute;

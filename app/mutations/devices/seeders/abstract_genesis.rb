@@ -74,7 +74,7 @@ module Devices
           add_tool(ToolNames::SEEDER,
                    effector_offset_x: 17.5,
                    effector_offset_y: 0,
-                   effector_offset_z: 80)
+                   effector_offset_z: -80)
       end
 
       def tools_soil_sensor
@@ -82,7 +82,7 @@ module Devices
           add_tool(ToolNames::SOIL_SENSOR,
                    effector_offset_x: 0,
                    effector_offset_y: 0,
-                   effector_offset_z: 60)
+                   effector_offset_z: -60)
       end
 
       def tools_weeder

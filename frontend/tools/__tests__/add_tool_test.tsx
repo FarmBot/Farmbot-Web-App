@@ -269,7 +269,7 @@ describe("<AddTool />", () => {
       name: "Rotary Tool",
       type: "rotary_tool",
       utm_mountable: true,
-      effector_offset_z: 80,
+      effector_offset_z: -80,
     });
     expect(getInstance(wrapper).stockToolNames()).toContainEqual({
       name: "Seed Trough 1",
@@ -281,7 +281,7 @@ describe("<AddTool />", () => {
       type: "seeder",
       utm_mountable: true,
       effector_offset_x: 17.5,
-      effector_offset_z: 80,
+      effector_offset_z: -80,
     });
     unmountRenderer(wrapper);
   });
@@ -297,7 +297,7 @@ describe("<AddTool />", () => {
     expect(ref.current?.state.toolType).toEqual("seeder");
     expect(ref.current?.state.utmMountable).toBeTruthy();
     expect(ref.current?.state.effectorOffset)
-      .toEqual({ x: 17.5, y: 0, z: 80 });
+      .toEqual({ x: 17.5, y: 0, z: -80 });
   });
 
   it("creates a stock tool with offsets", () => {
@@ -313,7 +313,7 @@ describe("<AddTool />", () => {
       type: "seeder",
       utm_mountable: true,
       effector_offset_x: 17.5,
-      effector_offset_z: 80,
+      effector_offset_z: -80,
     });
     unmountRenderer(wrapper);
   });

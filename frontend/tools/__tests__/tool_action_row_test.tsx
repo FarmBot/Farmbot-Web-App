@@ -46,7 +46,6 @@ describe("<ToolActionRow />", () => {
     p.mountedTool!.body.type = "seeder";
     addPeripheral(p, "arbitrary peripheral", 0, "vacuum", true);
     const { getByText } = render(<ToolActionRow {...p} />);
-    expect(getByText("TOOL ACTION")).toBeVisible();
     const toggle = getByText("on");
     expect(toggle).toHaveClass("green");
     fireEvent.click(toggle);
@@ -75,7 +74,6 @@ describe("<ToolActionRow />", () => {
     };
     const { container, getAllByText, getByText } =
       render(<ToolActionRow {...p} />);
-    expect(getByText("TOOL ACTIONS")).toBeVisible();
     expect(getByText("first sensor")).toBeVisible();
     expect(getByText("second sensor")).toBeVisible();
     const readings = container.querySelectorAll(".sensor-reading-display");
@@ -86,17 +84,16 @@ describe("<ToolActionRow />", () => {
     expect(readPin).toHaveBeenNthCalledWith(2, 60, "pin60", 0);
   });
 
-  it.each<[ToolType, string[], string]>([
-    ["rotary_tool", ["first rotary", "second rotary"], "TOOL ACTIONS"],
-    ["watering_nozzle", ["arbitrary water"], "TOOL ACTION"],
-  ])("renders %s actions", (toolType, labels, actionLabel) => {
+  it.each<[ToolType, string[]]>([
+    ["rotary_tool", ["first rotary", "second rotary"]],
+    ["watering_nozzle", ["arbitrary water"]],
+  ])("renders %s actions", (toolType, labels) => {
     const p = fakeProps();
     p.mountedTool!.body.type = toolType;
     addPeripheral(p, "first rotary", 2, "rotary_tool");
     addPeripheral(p, "second rotary", 3, "rotary_tool");
     addPeripheral(p, "arbitrary water", 8, "water");
     const { getByText } = render(<ToolActionRow {...p} />);
-    expect(getByText(actionLabel)).toBeVisible();
     labels.forEach(label => expect(getByText(label)).toBeVisible());
   });
 

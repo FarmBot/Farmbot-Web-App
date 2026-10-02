@@ -25,6 +25,7 @@ export interface ToolActionRowProps {
   arduinoBusy: boolean;
   locked: boolean;
   className?: string;
+  showTitle?: boolean;
 }
 
 interface PeripheralToggleProps extends ToolActionRowProps {
@@ -123,7 +124,7 @@ export const ToolActionRow = (props: ToolActionRowProps) => {
     props.className,
   ].filter(Boolean).join(" ");
   return <div className={className}>
-    <label>{t(actionLabel)}</label>
+    {props.showTitle && <label>{t(actionLabel)}</label>}
     <div className={"tool-action-buttons grid half-gap"}>
       {peripherals.map(peripheral =>
         <PeripheralToggle

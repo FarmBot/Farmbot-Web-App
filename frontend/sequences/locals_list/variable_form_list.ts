@@ -15,7 +15,7 @@ import {
   TaggedSensor,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { capitalize, isNumber, sortBy } from "lodash";
+import { isNumber, sortBy } from "lodash";
 import { MountStage, Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { SequenceMeta } from "../../resources/sequence_meta";
@@ -186,7 +186,7 @@ export const formatTool =
 /** Uniformly generate a label for things that have an X/Y/Z value. */
 export function dropDownName(name: string, v?: Record<Xyz, number | undefined>,
   mountStage = MountStage.NONE) {
-  let label = capitalize(name || "untitled");
+  let label = name || "Untitled";
   if (v) {
     const labelFor = (axis: number | undefined) => isNumber(axis) ? axis : "---";
     const axisLabel = (axis: Xyz) => axisIsMounted(mountStage, axis)

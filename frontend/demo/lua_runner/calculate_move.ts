@@ -15,6 +15,7 @@ import {
 import { getDefaultAxisOrder, getSafeZ, getSoilHeight } from "./stubs";
 import { clone } from "lodash";
 import { resolveMountPosition } from "../../tools/mount_stage";
+import { evalLua } from "./run";
 
 export const addDefaults = (body: MoveBodyItem[]): MoveBodyItem[] => {
   if (body.some(item => item.kind === "axis_order")) {
@@ -54,6 +55,18 @@ export const calculateMove = (
               pos[item.args.axis] += item.args.axis_operand.args[item.args.axis];
             }
             break;
+          case "lua": {
+            if (item.args.axis == "all") {
+              break;
+            }
+            const value =
+              evalLua(item.args.axis_operand.args.lua);
+            if (typeof value != "number") {
+              break;
+            }
+            pos[item.args.axis] += value;
+            break;
+          }
           default:
             warnings.push(
               `axis_addition axis_operand kind: ${item.args.axis_operand.kind}`);

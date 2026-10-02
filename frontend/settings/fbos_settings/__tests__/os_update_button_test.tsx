@@ -169,6 +169,7 @@ describe("<OsUpdateButton />", () => {
 
   it("fetches releases from API", async () => {
     console.error = jest.fn();
+    jest.clearAllMocks();
     API.setBaseUrl("");
     const p = fakeProps();
     const dispatch = jest.fn();

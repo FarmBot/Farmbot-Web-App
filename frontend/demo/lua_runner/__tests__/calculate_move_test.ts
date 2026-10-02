@@ -943,6 +943,20 @@ describe("calculateMove()", () => {
     expect(calculateMove(command.body, { x: 0, y: 0, z: 0 }, []))
       .toEqual({ moves: [{ x: 0, y: 0, z: 0 }], warnings: [] });
   });
+
+  it.each([
+    ["2 + 3", "x", { x: 6, y: 2, z: 3 }],
+    ["'not a number'", "x", { x: 1, y: 2, z: 3 }],
+    ["2 + 3", "all", { x: 1, y: 2, z: 3 }],
+  ] as const)("handles Lua axis addition: %s on %s", (lua, axis, expected) => {
+    const body: MoveBodyItem[] = [{
+      kind: "axis_addition",
+      args: { axis, axis_operand: { kind: "lua", args: { lua } } },
+    }];
+
+    expect(calculateMove(body, { x: 1, y: 2, z: 3 }, []))
+      .toEqual({ moves: [expected], warnings: [] });
+  });
 });
 
 afterAll(() => {

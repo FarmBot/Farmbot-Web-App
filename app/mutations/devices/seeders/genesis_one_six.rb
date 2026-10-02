@@ -52,7 +52,7 @@ module Devices
           add_tool(ToolNames::ROTARY_TOOL,
                    effector_offset_x: 0,
                    effector_offset_y: 0,
-                   effector_offset_z: 80)
+                   effector_offset_z: -80)
       end
 
       def sequences_mow_all_weeds

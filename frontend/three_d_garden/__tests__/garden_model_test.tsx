@@ -441,6 +441,25 @@ describe("<GardenModel />", () => {
     expect(wrapper.root.findAllByType(GridRevealGroup)).toHaveLength(0);
   });
 
+  it("marks each visible garden layer after its reveal rests", () => {
+    const p = fakeProps();
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
+    p.weeds = [fakeWeed()];
+    p.mapPoints = [fakePoint()];
+    const wrapper = createWrapper(p);
+    const revealGroups = [
+      ...wrapper.root.findAllByType(PopInGroup),
+      ...wrapper.root.findAllByType(GridRevealGroup),
+    ];
+
+    ["bed-load-in", "grid-load-in", "plants-load-in",
+      "weeds-load-in", "points-load-in"].forEach(name => {
+      const group = revealGroups.find(node => node.props.name == name);
+      expect(group).toBeDefined();
+      actRenderer(() => group?.props.onRest());
+    });
+  });
+
   it("skips disabled default-off helper mounts", () => {
     const p = fakeProps();
     p.config.bot = false;

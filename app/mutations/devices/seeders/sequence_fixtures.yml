@@ -98,6 +98,20 @@
             :kind: identifier
             :args:
               :label: parent
+      - :kind: axis_addition
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"watering_nozzle\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"watering_nozzle\"}).effector_offset_y"
       - :kind: axis_overwrite
         :args:
           :axis: z
@@ -177,11 +191,25 @@
               :label: "soil_height"
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: 150
+              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: safe_z
         :args: {}
     :comment: Move to above plant
@@ -211,11 +239,25 @@
               :label: "soil_height"
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: -25
+              :lua: "-25-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: speed_overwrite
         :args:
           :axis: z
@@ -260,11 +302,25 @@
               :label: "soil_height"
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: 150
+              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
     :comment: Retract needle
   - :kind: find_home
     :args:
@@ -321,6 +377,27 @@
             :kind: numeric
             :args:
               :number: 150
+      - :kind: axis_addition
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: safe_z
         :args: {}
     :comment: Move to above plant
@@ -350,11 +427,25 @@
               :label: "soil_height"
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: -25
+              :lua: "-25-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: speed_overwrite
         :args:
           :axis: z
@@ -399,11 +490,25 @@
               :label: "soil_height"
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: 150
+              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
     :comment: Retract needle
   - :kind: move
     :args: {}
@@ -451,11 +556,25 @@
               :tool_id: 0
       - :kind: axis_addition
         :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
           :axis: z
           :axis_operand:
-            :kind: numeric
+            :kind: lua
             :args:
-              :number: 50
+              :lua: "50-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: safe_z
         :args: {}
     :comment: Move above seed trough
@@ -493,6 +612,27 @@
             :kind: tool
             :args:
               :tool_id: 0
+      - :kind: axis_addition
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
       - :kind: speed_overwrite
         :args:
           :axis: z
@@ -532,6 +672,27 @@
             :kind: numeric
             :args:
               :number: 50
+      - :kind: axis_addition
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
+      - :kind: axis_addition
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: lua
+            :args:
+              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
     :comment: Move above seed trough
 
 :WATER_ALL_PLANTS: # =========================
@@ -721,7 +882,9 @@
         cell = get_seed_tray_cell(tray, cell_label)
         cell_depth = variable("Cell Depth")
         seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_z_offset = seeder_tool.seeder_tip_z_offset or 80
+        seeder_tip_x_offset = seeder_tool.effector_offset_x
+        seeder_tip_y_offset = seeder_tool.effector_offset_y
+        seeder_tip_z_offset = seeder_tool.effector_offset_z
         vacuum_pump_pin = 9
 
         -- Checks
@@ -743,9 +906,9 @@
         -- Move to above the cell
         job("Moving to seed tray", 25)
         move{
-            x = cell.x,
-            y = cell.y,
-            z = cell.z + seeder_tip_z_offset + 25,
+            x = cell.x - seeder_tip_x_offset,
+            y = cell.y - seeder_tip_y_offset,
+            z = cell.z - seeder_tip_z_offset + 25,
             grouping = "xy,z",
             route = "high"
         }
@@ -791,7 +954,8 @@
         trough = variable("Seed Trough")
         trough_depth = variable("Trough Depth")
         seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_z_offset = seeder_tool.seeder_tip_z_offset or 80
+        seeder_tip_y_offset = seeder_tool.effector_offset_y
+        seeder_tip_z_offset = seeder_tool.effector_offset_z
         vacuum_pump_pin = 9
 
         -- Checks
@@ -813,8 +977,8 @@
         -- Move to above the trough
         job("Moving to seed trough", 25)
         move{
-            y = trough.y,
-            z = trough.z + seeder_tip_z_offset + 25,
+            y = trough.y - seeder_tip_y_offset,
+            z = trough.z - seeder_tip_z_offset + 25,
             grouping = "xy,z",
             route = "high"
         }
@@ -823,13 +987,13 @@
         job("Picking up seed", 75)
         on(vacuum_pump_pin)
         move{
-            z = trough.z + seeder_tip_z_offset - trough_depth,
+            z = trough.z - seeder_tip_z_offset - trough_depth,
             speed = 50
         }
 
         -- Retract Z
         job("Retracting Z", 90)
-        move{z=trough.z + seeder_tip_z_offset + 25}
+        move{z=trough.z - seeder_tip_z_offset + 25}
         job("Complete", 100)
 
 :PICK_FROM_SEED_BIN: # ===================================
@@ -860,7 +1024,9 @@
         bin = variable("Seed Bin")
         bin_depth = variable("Bin Depth")
         seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_z_offset = seeder_tool.seeder_tip_z_offset or 80
+        seeder_tip_x_offset = seeder_tool.effector_offset_x
+        seeder_tip_y_offset = seeder_tool.effector_offset_y
+        seeder_tip_z_offset = seeder_tool.effector_offset_z
         vacuum_pump_pin = 9
 
         -- Checks
@@ -882,9 +1048,9 @@
         -- Move to above the bin
         job("Moving to seed bin", 25)
         move{
-            x = bin.x,
-            y = bin.y,
-            z = bin.z + seeder_tip_z_offset + 25,
+            x = bin.x - seeder_tip_x_offset,
+            y = bin.y - seeder_tip_y_offset,
+            z = bin.z - seeder_tip_z_offset + 25,
             grouping = "xy,z",
             route = "high"
         }
@@ -893,13 +1059,13 @@
         job("Picking up seed", 75)
         on(vacuum_pump_pin)
         move{
-            z = bin.z + seeder_tip_z_offset - bin_depth,
+            z = bin.z - seeder_tip_z_offset - bin_depth,
             speed = 50
         }
 
         -- Retract Z
         job("Retracting Z", 90)
-        move{z=bin.z + seeder_tip_z_offset + 25}
+        move{z=bin.z - seeder_tip_z_offset + 25}
         job("Complete", 100)
 
 :PHOTO_GRID: # ===================================
@@ -946,7 +1112,10 @@
       :lua: |
         rotary_tool_pin = 2 -- 3 for REV
         max_load = tonumber(env("rotary_tool_max_load")) or 90
-        rotary_tool_height = tonumber(env("rotary_tool_height")) or 80
+        tool = get_tool({name = "Rotary Tool"})
+        rotary_tool_x_offset = tool.effector_offset_x
+        rotary_tool_y_offset = tool.effector_offset_y
+        rotary_tool_z_offset = tool.effector_offset_z
         max_attempts = tonumber(env("rotary_tool_max_attempts")) or 3
         count = 0
 
@@ -978,9 +1147,9 @@
             env("load", "nominal")
             job("Moving to weed", 10)
             move{
-                x = weed.x - (weed.radius + 50),
-                y = weed.y,
-                z = weed.z + rotary_tool_height + 20,
+                x = weed.x - (weed.radius + 50) - rotary_tool_x_offset,
+                y = weed.y - rotary_tool_y_offset,
+                z = weed.z - rotary_tool_z_offset + 20,
                 safe_z = true
             }
 
@@ -992,7 +1161,7 @@
             end
             job("Descending", 40)
             move{
-                z = weed.z + rotary_tool_height,
+                z = weed.z - rotary_tool_z_offset,
                 speed = 25
             }
 
@@ -1002,7 +1171,7 @@
             end
             job("Mowing", 50)
             move{
-                x = weed.x + (weed.radius + 50),
+                x = weed.x + (weed.radius + 50) - rotary_tool_x_offset,
                 speed = 25
             }
 
@@ -1012,7 +1181,7 @@
             end
             job("Ascending", 90)
             move{
-                z = weed.z + rotary_tool_height + 20,
+                z = weed.z - rotary_tool_z_offset + 20,
                 speed = 25
             }
 

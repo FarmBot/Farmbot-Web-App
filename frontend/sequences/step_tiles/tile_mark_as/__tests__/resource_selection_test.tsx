@@ -95,7 +95,7 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(select.props.selectedItem?.label).toContain("Strawberry plant 1");
+    expect(select.props.selectedItem?.label).toContain("Strawberry Plant 1");
   });
 
   it("renders point", () => {
@@ -107,7 +107,7 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(select.props.selectedItem?.label).toContain("Strawberry plant 1");
+    expect(select.props.selectedItem?.label).toContain("Strawberry Plant 1");
   });
 
   it("renders identifier", () => {

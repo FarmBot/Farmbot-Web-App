@@ -723,10 +723,10 @@ describe Api::DevicesController do
       expect(tools_seeder?(device).attributes).to include(
         "effector_offset_x" => 17.5,
         "effector_offset_y" => 0.0,
-        "effector_offset_z" => 80.0,
+        "effector_offset_z" => -80.0,
       )
-      expect(tools_soil_sensor?(device).effector_offset_z).to eq(60)
-      expect(tools_rotary?(device).effector_offset_z).to eq(80)
+      expect(tools_soil_sensor?(device).effector_offset_z).to eq(-60)
+      expect(tools_rotary?(device).effector_offset_z).to eq(-80)
       expect(sequences_pickup_seed?(device)).to_not be
       expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
       expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)

@@ -63,7 +63,7 @@ describe("variableFormList()", () => {
       .filter(ddi => ddi.heading)
       .map(ddi => ddi.headingId))
       .toEqual(["Tool", "PointGroup", "Plant", "GenericPointer", "Weed"]);
-    expect(list.find(ddi => ddi.label == "Generic tool (100, 200, 300)"))
+    expect(list.find(ddi => ddi.label == "Generic Tool (100, 200, 300)"))
       .toEqual(expect.objectContaining({ headingId: "Tool" }));
     expect(list.find(ddi => ddi.label == "Dandelion (100, 200, 300)"))
       .toEqual(expect.objectContaining({ headingId: "Plant" }));

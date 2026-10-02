@@ -1,4 +1,4 @@
-import { runLua } from "../run";
+import { evalLua, executeLua, runLua } from "../run";
 import { ParameterApplication } from "farmbot";
 
 describe("runLua()", () => {
@@ -90,4 +90,36 @@ describe("runLua()", () => {
       { type: "send_message", args: ["error", "not deleted", "toast"] },
     ]);
   });
+});
+
+describe("Lua return values", () => {
+  it("returns a value alongside actions", () => {
+    expect(executeLua(0, "wait_ms(100)\nreturn 2 + 3", []))
+      .toEqual({
+        actions: [{ type: "wait_ms", args: [100] }],
+        returnValue: 5,
+      });
+  });
+
+  it("returns undefined when the script has no return value", () => {
+    expect(executeLua(0, "wait_ms(100)", []))
+      .toEqual({
+        actions: [{ type: "wait_ms", args: [100] }],
+        returnValue: undefined,
+      });
+  });
+
+  it.each([
+    ["2 + 3", 5],
+    ["return 2 + 3", 5],
+    ["'text'", "text"],
+  ])("evaluates %s", (code, expected) => {
+    expect(evalLua(code)).toEqual(expected);
+  });
+
+  it.each(["return (", "return blah + 5"])(
+    "returns no value for invalid Lua: %s", code => {
+      expect(executeLua(0, code, []))
+        .toEqual({ actions: [], returnValue: undefined });
+    });
 });
