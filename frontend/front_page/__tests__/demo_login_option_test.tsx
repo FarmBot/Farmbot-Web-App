@@ -6,7 +6,7 @@ const mockMqttClient = {
 };
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { DemoLoginOption } from "../demo_login_option";
 import axios from "axios";
 import mqtt from "mqtt";
@@ -15,7 +15,10 @@ describe("<DemoLoginOption />", () => {
   let axiosPostSpy: jest.SpyInstance;
   let mqttConnectSpy: jest.SpyInstance;
 
+  const originalSearch = location.search;
+
   beforeEach(() => {
+    location.search = "";
     jest.clearAllMocks();
     mockResponse = "12345";
     mqttConnectSpy = jest.spyOn(mqtt, "connect")
@@ -28,6 +31,7 @@ describe("<DemoLoginOption />", () => {
   });
 
   afterEach(() => {
+    location.search = originalSearch;
     mqttConnectSpy.mockRestore();
     axiosPostSpy.mockRestore();
   });
@@ -55,6 +59,22 @@ describe("<DemoLoginOption />", () => {
 
     expect(connectMqtt).toHaveBeenCalled();
     expect(connectApi).toHaveBeenCalled();
+  });
+
+  it.each([
+    ["", false],
+    ["?force_fallback_install=false", false],
+    ["?force_fallback_install=true", true],
+    ["?force_fallback_install=1", false],
+    ["?force_fallback_install=", false],
+  ])("sends the bundled-sequence choice for %s", async (query, expected) => {
+    location.search = query;
+    mockResponse = "ok";
+    const ref = React.createRef<DemoLoginOption>();
+    render(<DemoLoginOption ref={ref} />);
+    await act(async () => { await ref.current?.connectApi(); });
+    expect(axiosPostSpy).toHaveBeenCalledWith("/api/demo_account",
+      expect.objectContaining({ force_fallback_install: expected }));
   });
 
   it("changes model", () => {

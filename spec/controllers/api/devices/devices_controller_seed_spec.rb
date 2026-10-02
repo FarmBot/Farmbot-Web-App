@@ -282,7 +282,8 @@ describe Api::DevicesController do
       expect(device.reload.name).to eq(old_name)
     end
 
-    def start_tests(product_line, publish = true, demo = false)
+    def start_tests(product_line, publish = true, demo = false,
+                    force_fallback_install: nil)
       u = FactoryBot.create(:user)
       ClimateControl.modify AUTHORIZED_PUBLISHER: u.email do
         if publish
@@ -309,7 +310,11 @@ describe Api::DevicesController do
         end
         sign_in user
         run_jobs_now do
-          post :seed, body: { product_line: product_line, demo: demo }.to_json
+          params = { product_line: product_line, demo: demo }
+          unless force_fallback_install.nil?
+            params[:force_fallback_install] = force_fallback_install
+          end
+          post :seed, body: params.to_json
         end
         expect(response.status).to eq(200)
         device.reload
@@ -1899,6 +1904,51 @@ describe Api::DevicesController do
       expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
       expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
       expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+    end
+
+    it "forces bundled sequences even when public versions exist" do
+      expect(SequenceVersion).not_to receive(:publicly_available)
+      expect(Sequences::Install).not_to receive(:run!)
+      expect(Rollbar).not_to receive(:error)
+
+      start_tests "genesis_1.8", true, false, force_fallback_install: true
+
+      [
+        sequences_grid?(device),
+        sequences_mount_tool?(device),
+        sequences_mow_all_weeds?(device),
+      ].each do |sequence|
+        expect(sequence).to be_kind_of(Sequence)
+        expect(sequence.sequence_version_id).to be_nil
+        expect(Sequences::Show.run!(sequence: sequence).fetch(:body)).not_to be_empty
+      end
+    end
+
+    it "installs public versions when forced fallback is false" do
+      start_tests "genesis_1.8", true, false, force_fallback_install: false
+
+      [
+        sequences_grid?(device),
+        sequences_mount_tool?(device),
+        sequences_mow_all_weeds?(device),
+      ].each do |sequence|
+        expect(sequence.sequence_version_id).to be_present
+        expect(Sequences::Show.run!(sequence: sequence).fetch(:body, [])).to be_empty
+      end
+    end
+
+    it "uses bundled sequences when public versions are unavailable" do
+      start_tests "genesis_1.8", false, false, force_fallback_install: false
+
+      [
+        sequences_grid?(device),
+        sequences_mount_tool?(device),
+        sequences_mow_all_weeds?(device),
+      ].each do |sequence|
+        expect(sequence).to be_kind_of(Sequence)
+        expect(sequence.sequence_version_id).to be_nil
+        expect(Sequences::Show.run!(sequence: sequence).fetch(:body)).not_to be_empty
+      end
     end
 
     it "seeds accounts when sequence versions not available: demo account" do

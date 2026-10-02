@@ -24,7 +24,10 @@ describe("<DemoIframe />", () => {
   let seedDataOptionsDdiSpy: jest.SpyInstance;
   let fbSelectSpy: jest.SpyInstance;
 
+  const originalSearch = location.search;
+
   beforeEach(() => {
+    location.search = "";
     seedDataOptionsSpy = jest.spyOn(messageCards, "SEED_DATA_OPTIONS")
       .mockReturnValue([
         { label: "Genesis", value: "genesis_1.8" },
@@ -61,6 +64,7 @@ describe("<DemoIframe />", () => {
   });
 
   afterEach(() => {
+    location.search = originalSearch;
     seedDataOptionsSpy.mockRestore();
     seedDataOptionsDdiSpy.mockRestore();
     fbSelectSpy.mockRestore();
@@ -86,6 +90,22 @@ describe("<DemoIframe />", () => {
     expect(mockPost).toHaveBeenCalled();
     expect(ref.current?.state.error).toBe(mockResponse);
     expect(console.error).toHaveBeenCalledWith(mockResponse);
+  });
+
+  it.each([
+    ["", false],
+    ["?force_fallback_install=false", false],
+    ["?force_fallback_install=true", true],
+    ["?force_fallback_install=1", false],
+    ["?force_fallback_install=", false],
+  ])("sends the bundled-sequence choice for %s", async (query, expected) => {
+    location.search = query;
+    mockResponse = "ok";
+    const ref = React.createRef<DemoIframe>();
+    render(<DemoIframe ref={ref} />);
+    await act(async () => { await ref.current?.connectApi(); });
+    expect(mockPost).toHaveBeenCalledWith("/api/demo_account",
+      expect.objectContaining({ force_fallback_install: expected }));
   });
 
   it("changes model", () => {

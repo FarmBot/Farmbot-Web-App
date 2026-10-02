@@ -4,6 +4,30 @@ describe Api::DemoAccountsController do
   include Devise::Test::ControllerHelpers
 
   describe "#create" do
+    it "passes forced fallback through queued demo seeding", :slow do
+      Transport.current.clear!
+      expect(SequenceVersion).not_to receive(:publicly_available)
+      expect(Sequences::Install).not_to receive(:run!)
+      expect(Rollbar).not_to receive(:error)
+      params = {
+        secret: SecureRandom.alphanumeric.downcase,
+        product_line: "genesis_1.8",
+        force_fallback_install: true,
+      }
+
+      run_jobs_now { post :create, body: params.to_json }
+
+      expect(response.status).to eq(200)
+      user = Transport.current.calls.fetch(:send_demo_token_to).last.first
+      names = Devices::Seeders::Constants::PublicSequenceNames
+      [names::GRID, names::MOUNT_TOOL, names::MOW_ALL_WEEDS].each do |name|
+        sequence = user.device.sequences.find_by!(name: name)
+        expect(sequence.sequence_version_id).to be_nil
+        expect(Sequences::Show.run!(sequence: sequence).fetch(:body)).not_to be_empty
+      end
+      expect(user.device.reload.account_seeded_at).to be_present
+    end
+
     it "creates a guest account", :slow do
       Transport.current.clear!
       secret = SecureRandom.alphanumeric.downcase

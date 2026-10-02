@@ -3,7 +3,7 @@ module Devices
     class AbstractSeeder
       include Constants
 
-      attr_reader :device
+      attr_reader :device, :force_fallback_install
 
       # DO NOT ALPHABETIZE. ORDER MATTERS! - RC
       COMMAND_ORDER = [
@@ -83,8 +83,9 @@ module Devices
         :sequences_pick_from_seed_bin,
       ]
 
-      def initialize(device)
+      def initialize(device, force_fallback_install: false)
         @device = device
+        @force_fallback_install = force_fallback_install
       end
 
       def settings_hide_sensors; end
@@ -239,6 +240,11 @@ module Devices
       private
 
       def install_sequence_version_by_name(name)
+        if force_fallback_install
+          msg = "Using bundled sequence: #{name}"
+          device.tell(msg)
+          return false
+        end
         sv = SequenceVersion
         .publicly_available
         .where(sequence_publications: { cached_author_email: ENV["AUTHORIZED_PUBLISHER"] })

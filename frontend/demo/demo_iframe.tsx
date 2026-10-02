@@ -7,6 +7,7 @@ import { t } from "../i18next_wrapper";
 import { tourPath } from "../help/tours";
 import { Path } from "../internal_urls";
 import { FBSelect } from "../ui";
+import { getUrlQuery } from "../util/urls";
 import {
   filterSeedOptions, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
 } from "../messages/cards";
@@ -15,6 +16,7 @@ export interface DemoAccountState {
   error: Error | undefined;
   stage: string;
   productLine: string;
+  forceFallbackInstall: boolean;
 }
 
 const WS_CONFIG = {
@@ -35,6 +37,7 @@ export abstract class DemoAccountBase<P = {}>
     error: undefined,
     stage: t("DEMO THE APP"),
     productLine: "genesis_1.8",
+    forceFallbackInstall: getUrlQuery("force_fallback_install") === "true",
   };
 
   setError = (error?: Error) => this.setState({ error });
@@ -56,6 +59,7 @@ export abstract class DemoAccountBase<P = {}>
       .post<string>(HTTP_URL, {
         secret: SECRET,
         product_line: this.state.productLine,
+        force_fallback_install: this.state.forceFallbackInstall,
       })
       .then(() => this.setState({ stage: WAITING_ON_API }))
       .catch(this.setError);

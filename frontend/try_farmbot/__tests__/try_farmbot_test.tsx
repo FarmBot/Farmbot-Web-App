@@ -67,6 +67,7 @@ describe("<TryFarmbot />", () => {
     expect(mockPost).toHaveBeenCalledWith("/api/demo_account", {
       secret: expect.any(String),
       product_line: "express_xl_1.2",
+      force_fallback_install: false,
     });
   });
 });

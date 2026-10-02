@@ -12,6 +12,7 @@ module Api
       @create_params ||= {
         secret: raw_json.fetch(:secret),
         product_line: raw_json.fetch(:product_line),
+        force_fallback_install: raw_json.fetch(:force_fallback_install, false),
       }
     end
   end

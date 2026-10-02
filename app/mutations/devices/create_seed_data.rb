@@ -39,6 +39,7 @@ module Devices
 
     optional do
       boolean :demo
+      boolean :force_fallback_install, default: false
     end
 
     def validate
@@ -58,7 +59,8 @@ module Devices
     end
 
     def seeder
-      @seeder ||= PRODUCT_LINES.fetch(product_line).new(device)
+      @seeder ||= PRODUCT_LINES.fetch(product_line).new(
+        device, force_fallback_install: force_fallback_install)
     end
 
     def run_seeds!
