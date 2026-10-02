@@ -120,6 +120,7 @@ describe Api::UsersController do
     old_email_count = ActionMailer::Base.deliveries.length
     run_jobs_now do
       post :create, body: params.to_json
+      expect(response.status).to eq(200), response.body
       user = User.last
       if User::SKIP_EMAIL_VALIDATION
         puts BIG_WARNING
