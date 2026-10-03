@@ -7,7 +7,7 @@ import { HelpState } from "../reducer";
 import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
 import { TOURS } from "./data";
 import { NavigationContext } from "../../routes_helpers";
-import { NavigateFunction } from "react-router";
+import { NavigateFunction, useLocation } from "react-router";
 
 export const tourPath = (
   stepUrl: string | undefined,
@@ -15,6 +15,21 @@ export const tourPath = (
   tourStep: string | undefined,
 ) =>
   `${stepUrl || location.pathname}?tour=${tour}&tourStep=${tourStep}`;
+
+interface TourStateSyncProps {
+  helpState: HelpState;
+  synchronize(): void;
+}
+
+const TourStateSync = (props: TourStateSyncProps) => {
+  const { currentTour, currentTourStep } = props.helpState;
+  const { pathname, search } = useLocation();
+  const synchronize = props.synchronize;
+  React.useEffect(() => {
+    synchronize();
+  }, [currentTour, currentTourStep, pathname, search, synchronize]);
+  return undefined;
+};
 
 export class TourStepContainer
   extends React.Component<TourStepContainerProps, TourStepContainerState> {
@@ -81,10 +96,15 @@ export class TourStepContainer
   render() {
     const { urlTourSlug, urlTourStepSlug } = this.tourState;
 
-    this.updateStateAndUrl();
+    const tourStateSync = <TourStateSync
+      helpState={this.props.helpState}
+      synchronize={this.updateStateAndUrl} />;
 
     if (!urlTourSlug || !urlTourStepSlug) {
-      return <div className={"tour-closed"} />;
+      return <>
+        {tourStateSync}
+        <div className={"tour-closed"} />
+      </>;
     }
 
     const tourSteps = TOURS(this.props.firmwareHardware)[urlTourSlug]?.steps;
@@ -125,6 +145,7 @@ export class TourStepContainer
     };
 
     return <div className={"tour-container"}>
+      {tourStateSync}
       <div className={"tour-toast toast dark-blue active"}>
         <h4 className={"toast-title"} style={{ opacity: getOpacity() }}>
           {this.state.title || newTitle || t("Error: tour step does not exist")}

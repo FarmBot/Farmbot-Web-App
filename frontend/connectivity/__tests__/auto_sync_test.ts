@@ -1,4 +1,9 @@
+import React from "react";
+import { act, renderHook } from "@testing-library/react";
+import { createStore } from "redux";
+import { rootReducer } from "../../redux/root_reducer";
 import {
+  autoSync,
   decodeBinary,
   routeMqttData,
   asTaggedResource,
@@ -10,12 +15,15 @@ import * as crud from "../../api/crud";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakeSequence,
+} from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GetState } from "../../redux/interfaces";
 import { SyncPayload, UpdateMqttData, Reason } from "../interfaces";
 import { outstandingRequests, storeUUID } from "../data_consistency";
 import { unpackUUID } from "../../util";
+import { cloneDeep, omit, range } from "lodash";
 
 function toBinary(input: object): Buffer {
   return Buffer.from(JSON.stringify(input), "utf8");
@@ -68,6 +76,62 @@ describe("handleCreateOrUpdate", () => {
     const result = handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(result).toBe(true);
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("ignores unchanged saved records from another session", () => {
+    const sequence = fakeSequence({ id: 1234 });
+    const state = fakeState();
+    state.resources = buildResourceIndex([sequence]);
+    const dispatch = jest.fn();
+    const data = { ...payload(), id: 1234, body: cloneDeep(sequence.body) };
+
+    expect(handleCreateOrUpdate(dispatch, () => state, data)).toBe(true);
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it.each([SpecialStatus.DIRTY, SpecialStatus.SAVING])(
+    "saves unchanged records with pending status %s", specialStatus => {
+      const sequence = fakeSequence({ id: 1234 });
+      sequence.specialStatus = specialStatus;
+      const state = fakeState();
+      state.resources = buildResourceIndex([sequence]);
+      const dispatch = jest.fn();
+      const data = { ...payload(), id: 1234, body: cloneDeep(sequence.body) };
+
+      handleCreateOrUpdate(dispatch, () => state, data);
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: Actions.OVERWRITE_RESOURCE,
+        payload: {
+          uuid: sequence.uuid,
+          update: sequence.body,
+          specialStatus: SpecialStatus.SAVED,
+        },
+      });
+    });
+
+  it("ignores an XL demo burst already loaded through the API", () => {
+    const plants = range(253).map(() => fakePlant());
+    const state = fakeState();
+    state.resources = buildResourceIndex(plants);
+    const store = createStore(rootReducer, omit(state, "dispatch"));
+    const dispatch = jest.spyOn(store, "dispatch");
+    const receive = autoSync(store.dispatch, () => ({
+      ...store.getState(), dispatch: store.dispatch,
+    }));
+    const { result } = renderHook(() => React.useSyncExternalStore(
+      store.subscribe, store.getState,
+    ));
+    const initialSnapshot = result.current;
+
+    act(() => plants.forEach(plant => receive(
+      `bot/device_9/sync/Point/${plant.body.id}`,
+      toBinary({ args: { label: "demo-seeding" }, body: plant.body }),
+    )));
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(result.current).toBe(initialSnapshot);
+    dispatch.mockRestore();
   });
 
   it("updates existing records when found locally", () => {

@@ -98,18 +98,21 @@ describe Api::SequencesController do
       expect(json[:body].length).to eq(nodes.length)
     end
 
-    it "disregards extra attrs (like `uuid`) on sequence body nodes" do
-      sign_in user
-      input = { name: "Scare Birds",
-                body: nodes }
-      input[:body].first[:uuid] = SecureRandom.uuid
-      input[:body].first["uuid"] = SecureRandom.uuid
-      sequence_body_for(user)
-      post :create, body: input.to_json, params: { format: :json }
-      expect(response.status).to eq(200)
-      expect(json[:args]).to be_kind_of(Hash)
-      expect(json[:body]).to be_kind_of(Array)
-      expect(json[:body].length).to eq(nodes.length)
+    [:uuid, "uuid"].each do |uuid_key|
+      it "disregards #{uuid_key.inspect} on sequence body nodes" do
+        sign_in user
+        input = { name: "Scare Birds",
+                  body: nodes }
+        input[:body].first[uuid_key] = SecureRandom.uuid
+        sequence_body_for(user)
+        post :create, body: input.to_json, params: { format: :json }
+        expect(response.status).to eq(200)
+        expect(json[:args]).to be_kind_of(Hash)
+        expect(json[:body]).to be_kind_of(Array)
+        expect(json[:body].length).to eq(nodes.length)
+        expect(json[:body].first).not_to have_key(:uuid)
+        expect(json[:body].first).not_to have_key("uuid")
+      end
     end
 
     it "creates a new sequences for a user" do

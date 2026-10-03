@@ -8,6 +8,7 @@ import {
 } from "./interfaces";
 import { outstandingRequests } from "./data_consistency";
 import { newTaggedResource } from "../sync/actions";
+import { isEqual } from "lodash";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
@@ -76,8 +77,17 @@ export function handleCreateOrUpdate(dispatch: Function,
   // UPDATE-ing data or INSERTing data. It also prevents us from double updating
   // data when an update comes in twice.
 
+  if (isEcho) { return true; }
+
+  // Seed broadcasts can arrive after the same records load through the API.
+  const existing = hasCopy ? index.references[hasCopy] : undefined;
+  if (existing && existing.specialStatus === SpecialStatus.SAVED
+    && isEqual(existing.body, data.body)) {
+    return true;
+  }
+
   const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
-  return isEcho || dispatch(action);
+  return dispatch(action);
 }
 
 export const autoSync =

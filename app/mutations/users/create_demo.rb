@@ -47,10 +47,12 @@ module Users
     end
 
     def seed_user
-      Devices::CreateSeedData.run!(device: user.device,
-                                   product_line: product_line,
-                                   demo: true,
-                                   force_fallback_install: force_fallback_install)
+      Devices::CreateSeedDataInline.run!(
+        device: user.device,
+        product_line: product_line,
+        demo: true,
+        force_fallback_install: force_fallback_install,
+      )
     end
 
     def broadcast_the_token

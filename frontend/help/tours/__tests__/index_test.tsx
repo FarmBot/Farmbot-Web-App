@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import {
   getCurrentTourStepBeacons, maybeBeacon, TourStepContainer,
 } from "../index";
@@ -7,6 +7,10 @@ import { fakeHelpState } from "../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../constants";
 import { TourStepContainerProps } from "../interfaces";
 import { renderWithContext } from "../../../__test_support__/mount_with_context";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { combineReducers, createStore } from "redux";
+import { HelpState, helpReducer } from "../../reducer";
+import { NavigationContext } from "../../../routes_helpers";
 
 const originalQuerySelector = document.querySelector.bind(document);
 
@@ -117,6 +121,70 @@ describe("<TourStepContainer />", () => {
     const { container } = render(<TourStepContainer {...p} />);
     expect(container.textContent?.toLowerCase()?.trim())
       .toEqual("error: tour step does not exist");
+  });
+
+  it("synchronizes the demo tour after the initial render commits", () => {
+    jest.useFakeTimers();
+    location.search = "?tour=gettingStarted&tourStep=intro";
+    const p = fakeProps();
+    let committed = false;
+    p.dispatch = jest.fn(() => {
+      expect(committed).toBe(true);
+    });
+    const navigate = jest.fn(() => {
+      expect(committed).toBe(true);
+    });
+    const DemoTour = () => {
+      React.useLayoutEffect(() => { committed = true; }, []);
+      return <NavigationContext.Provider value={navigate}>
+        <TourStepContainer {...p} />
+      </NavigationContext.Provider>;
+    };
+
+    const { rerender } = render(<DemoTour />);
+    expectStateUpdate(p.dispatch, "gettingStarted", "intro");
+    expect(p.dispatch).toHaveBeenCalledTimes(2);
+    expect(navigate).toHaveBeenCalledTimes(1);
+
+    p.helpState = { ...p.helpState };
+    rerender(<DemoTour />);
+    expect(p.dispatch).toHaveBeenCalledTimes(2);
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("settles demo tour initialization with a subscribed Redux store", () => {
+    jest.useFakeTimers();
+    location.search = "?tour=gettingStarted&tourStep=intro";
+    const store = createStore(combineReducers({ help: helpReducer }));
+    const dispatch = jest.spyOn(store, "dispatch");
+    const DemoTour = () => {
+      const helpState = useSelector((state: { help: HelpState }) => state.help);
+      const tourDispatch = useDispatch();
+      return <TourStepContainer
+        key={JSON.stringify(helpState)}
+        helpState={helpState}
+        dispatch={tourDispatch}
+        firmwareHardware={undefined} />;
+    };
+
+    const { container } = renderWithContext(<Provider store={store}>
+      <DemoTour />
+    </Provider>);
+    expect(store.getState().help).toEqual({
+      currentTour: "gettingStarted",
+      currentTourStep: "intro",
+    });
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(container.textContent?.toLowerCase()).toContain("getting started");
+
+    act(() => {
+      store.dispatch({
+        type: "MQTT_UPDATE" as Actions,
+        payload: undefined,
+      });
+    });
+    expect(dispatch).toHaveBeenCalledTimes(3);
+    dispatch.mockRestore();
   });
 
   it("updates tour state from url", () => {

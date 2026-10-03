@@ -267,6 +267,26 @@ describe Api::DevicesController do
       device.farmware_envs.find_by(key: "3D_zAxisLength")&.value
     end
 
+    it "queues demo seeding without running it in the request" do
+      original_delay_jobs = Delayed::Worker.delay_jobs
+      Delayed::Worker.delay_jobs = true
+      sign_in user
+      expect_any_instance_of(Devices::CreateSeedData).not_to receive(:run_seeds!)
+
+      expect do
+        post :seed, body: { product_line: "genesis_xl_1.9", demo: true }.to_json
+      end.to change(Delayed::Job, :count).by(1)
+
+      expect(response.status).to eq(200)
+      expect(device.reload.account_seeded_at).to be_present
+      expect(device.plants.count).to eq(0)
+      job = Delayed::Job.order(:id).last!
+      expect(job.payload_object.object).to be_a(Devices::CreateSeedData)
+      expect(job.payload_object.method_name).to eq(:run_seeds!)
+    ensure
+      Delayed::Worker.delay_jobs = original_delay_jobs
+    end
+
     it "seeds accounts with default data" do
       sign_in user
       device = user.device

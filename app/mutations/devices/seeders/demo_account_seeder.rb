@@ -30,18 +30,20 @@ module Devices
       end
 
       def add_curves
-        Curves::Create.run!(
-          device: device,
-          name: "Spinach water curve",
-          type: "water",
-          data: { 1 => 200, 30 => 500, 40 => 500, 45 => 300, 60 => 300 },
-        )
-        Curves::Create.run!(
-          device: device,
-          name: "Broccoli water curve",
-          type: "water",
-          data: { 1 => 300, 45 => 1200, 60 => 1200, 65 => 900, 75 => 900 },
-        )
+        [
+          {
+            name: "Spinach water curve",
+            data: { 1 => 200, 30 => 500, 40 => 500, 45 => 300, 60 => 300 },
+          },
+          {
+            name: "Broccoli water curve",
+            data: { 1 => 300, 45 => 1200, 60 => 1200, 65 => 900, 75 => 900 },
+          },
+        ].each do |curve|
+          next if device.curves.exists?(name: curve.fetch(:name))
+
+          Curves::Create.run!(curve, device: device, type: "water")
+        end
       end
 
       def add_plants(product_line)

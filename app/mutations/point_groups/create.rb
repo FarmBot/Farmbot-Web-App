@@ -25,7 +25,7 @@ module PointGroups
           pg = PointGroup.new(name: name,
                               device: device,
                               sort_type: sort_type,
-                              criteria: PointGroup::DEFAULT_CRITERIA.merge(criteria || {}))
+                              criteria: PointGroup::DEFAULT_CRITERIA.merge((criteria || {}).deep_symbolize_keys))
           add_point_group_items(pg)
           pg.save!
           pg

@@ -54,7 +54,7 @@ module Devices
       end
 
       device.update(account_seeded_at: Time.now)
-      self.delay.run_seeds!
+      schedule_seeds!
       { done: "Loading resources now." }
     end
 
@@ -64,17 +64,43 @@ module Devices
     end
 
     def run_seeds!
-      if demo
-        Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder(product_line)
-      end
+      seed_step = :select_seeder
+      Rails.logger.info(
+        "SEED DATA STARTED: device_id=#{device.id} product_line=#{product_line} " \
+        "seeder=#{seeder.class.name}")
+      Device.transaction do
+        if demo
+          seed_step = :demo_setup
+          Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder(product_line)
+        end
 
-      seeder.class::COMMAND_ORDER.map do |cmd|
-        seeder.send(cmd)
-      end
+        seeder.class::COMMAND_ORDER.map do |cmd|
+          seed_step = cmd
+          seeder.send(cmd)
+        end
 
-      if demo
-        Devices::Seeders::DemoAccountSeeder.new(device).after_product_line_seeder(product_line)
+        if demo
+          seed_step = :demo_resources
+          Devices::Seeders::DemoAccountSeeder.new(device).after_product_line_seeder(product_line)
+        end
       end
+      Rails.logger.info(
+        "SEED DATA COMPLETED: device_id=#{device.id} product_line=#{product_line} " \
+        "seeder=#{seeder.class.name}")
+    rescue StandardError => error
+      device.update!(account_seeded_at: nil)
+      Rails.logger.error(
+        "SEED DATA FAILED: device_id=#{device.id} product_line=#{product_line} " \
+        "step=#{seed_step} error=#{error.class}; " \
+        "transaction rolled back and account_seeded_at cleared.")
+      device.tell("Seed data failed to load. Please try again.", ["toast"], "error").save!
+      raise
+    end
+
+    protected
+
+    def schedule_seeds!
+      self.delay.run_seeds!
     end
   end
 end

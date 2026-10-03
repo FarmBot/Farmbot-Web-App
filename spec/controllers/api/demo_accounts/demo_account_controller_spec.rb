@@ -28,6 +28,36 @@ describe Api::DemoAccountsController do
       expect(user.device.reload.account_seeded_at).to be_present
     end
 
+    it "persists XL settings before a queued demo sends its login token", :slow do
+      original_delay_jobs = Delayed::Worker.delay_jobs
+      Delayed::Worker.delay_jobs = true
+      params = {
+        secret: SecureRandom.alphanumeric.downcase,
+        product_line: "genesis_xl_1.9",
+        force_fallback_install: true,
+      }
+      expect(Transport.current).to receive(:send_demo_token_to)
+        .and_wrap_original do |method, user, secret|
+          configs = WebAppConfig.where(device_id: user.device_id)
+          expect(configs.count).to eq(1)
+          config = configs.first!
+          expect(config.map_size_x).to eq(5_900)
+          expect(config.map_size_y).to eq(2_730)
+          expect(config.discard_unsaved).to be(true)
+          expect(user.device.reload.name).to eq("FarmBot Genesis XL")
+          method.call(user, secret)
+        end
+
+      post :create, body: params.to_json
+
+      expect(response.status).to eq(200)
+      job = Delayed::Job.order(:id).last!
+      expect(job.payload_object.object).to be_a(Users::CreateDemo)
+      job.payload_object.perform
+    ensure
+      Delayed::Worker.delay_jobs = original_delay_jobs
+    end
+
     it "creates a guest account", :slow do
       Transport.current.clear!
       secret = SecureRandom.alphanumeric.downcase

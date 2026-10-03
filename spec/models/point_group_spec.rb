@@ -54,6 +54,28 @@ describe PointGroup do
                            ])
   end
 
+  [:deep_symbolize_keys, :deep_stringify_keys].each do |key_conversion|
+    it "merges #{key_conversion} criteria without duplicate JSON keys" do
+      criteria = {
+        day: { op: ">", days_ago: 10 },
+        string_eq: { pointer_type: ["Plant"] },
+        number_eq: {},
+        number_lt: {},
+        number_gt: {},
+      }
+      group = PointGroups::Create.run!(device: device,
+                                       name: "All plants",
+                                       point_ids: [],
+                                       criteria: criteria.public_send(key_conversion))
+      expected = PointGroup::DEFAULT_CRITERIA.merge(criteria)
+
+      expect(group.reload.criteria).to eq(expected)
+      payload = JSON.parse(group.broadcast_payload("test-label"))
+      expect(payload.fetch("body").fetch("criteria"))
+        .to eq(expected.deep_stringify_keys)
+    end
+  end
+
   it "maintains referential integrity" do
     PointGroupItem.destroy_all
     Point.destroy_all

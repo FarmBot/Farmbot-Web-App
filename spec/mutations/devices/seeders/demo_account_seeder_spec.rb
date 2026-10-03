@@ -3,6 +3,26 @@ require "spec_helper"
 describe Devices::Seeders::DemoAccountSeeder do
   let(:device) { FactoryBot.create(:device) }
 
+  it "reuses existing demo curves when retrying partial seed data" do
+    existing_curve = Curves::Create.run!(
+      device: device,
+      name: "Spinach water curve",
+      type: "water",
+      data: { 1 => 999 },
+    )
+    seeder = described_class.new(device)
+
+    seeder.add_curves
+    seeder.add_curves
+
+    expect(device.curves.count).to eq(2)
+    expect(existing_curve.reload.data).to eq({ 1 => 999 })
+    expect(device.curves.find_by!(name: "Spinach water curve").id)
+      .to eq(existing_curve.id)
+    expect(device.curves.find_by!(name: "Broccoli water curve").type)
+      .to eq("water")
+  end
+
   it "updates stress demo settings before product line seeding" do
     stress_data = instance_double(Devices::Seeders::StressData)
 
