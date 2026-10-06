@@ -784,23 +784,23 @@ function water(plant, params)
     end
 
     -- Get watering nozzle
-    params = params or {}
+    local tool_name = params and params.tool_name
     local tool
-    local nozzle_offset_x = 0
-    local nozzle_offset_y = 0
-    if params.tool_name then
-        tool = get_tool{name = params.tool_name}
+    if tool_name then
+        tool = get_tool{name = tool_name}
         if not tool then
-            toast('Tool "' .. params.tool_name .. '" not found', 'warn')
+            toast('Tool "' .. tool_name .. '" not found', 'warn')
+            return
         end
     else
         tool = get_tool{type = "watering_nozzle"}
         if not tool then
             toast('Watering nozzle not found', 'warn')
+            return
         end
     end
-    nozzle_offset_x = tool.effector_offset_x
-    nozzle_offset_y = tool.effector_offset_y
+    local nozzle_offset_x = tool.effector_offset_x or 0
+    local nozzle_offset_y = tool.effector_offset_y or 0
 
     -- Move to the plant
     set_job(job_name, { status = "Moving" })
