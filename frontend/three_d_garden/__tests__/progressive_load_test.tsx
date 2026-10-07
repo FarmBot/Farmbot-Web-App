@@ -1,5 +1,7 @@
 import React from "react";
 import * as reactSpring from "@react-spring/three";
+import * as fiber from "@react-three/fiber";
+import * as drei from "@react-three/drei";
 import TestRenderer from "react-test-renderer";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
@@ -318,6 +320,42 @@ describe("3D load progress", () => {
     });
     expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
     jest.useRealTimers();
+  });
+
+  it("keeps the same portal target when Canvas events connect", () => {
+    const eventWrapper = document.createElement("div");
+    const canvasWrapper = document.createElement("div");
+    const canvas = document.createElement("canvas");
+    eventWrapper.appendChild(canvasWrapper);
+    canvasWrapper.appendChild(canvas);
+    const state = {
+      gl: { domElement: canvas },
+      events: { connected: undefined as HTMLElement | undefined },
+    };
+    jest.spyOn(fiber, "useThree").mockImplementation(selector => {
+      return selector?.(state as never);
+    });
+    const html = jest.spyOn(drei, "Html").mockImplementation(props =>
+      <div>{props.children}</div>);
+    const progress = {
+      readyStepTimes: {},
+      currentStep: THREE_D_LOAD_STEPS[0],
+      progress: 0,
+      complete: false,
+      markStep: jest.fn(),
+      isStepAllowed: jest.fn(),
+    };
+    const { rerender } = render(
+      <ThreeDLoadProgressOverlay progress={progress} />);
+    const portal = html.mock.calls[0][0].portal;
+    expect(portal?.current).toBe(eventWrapper);
+
+    state.events.connected = eventWrapper;
+    rerender(<ThreeDLoadProgressOverlay
+      progress={{ ...progress, progress: 12.5 }} />);
+    const calls = html.mock.calls;
+    expect(calls[calls.length - 1][0].portal).toBe(portal);
+    expect(calls[calls.length - 1][0].portal?.current).toBe(eventWrapper);
   });
 
   it("doesn't block clicks outside the progress bar", () => {

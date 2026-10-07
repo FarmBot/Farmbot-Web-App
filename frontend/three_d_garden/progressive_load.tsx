@@ -5,7 +5,7 @@ import { Group } from "./components";
 import { Object3D } from "three";
 import { createFocusMaterialBinding } from "./focus_transition";
 import { perfEnabled } from "../performance/perf";
-import { ThreeElements } from "@react-three/fiber";
+import { ThreeElements, useThree } from "@react-three/fiber";
 
 const AnimatedGroup = animated(Group);
 
@@ -145,6 +145,15 @@ interface ThreeDLoadProgressOverlayProps {
 
 export const ThreeDLoadProgressOverlay =
   (props: ThreeDLoadProgressOverlayProps) => {
+    const canvas = useThree(state => state.gl.domElement);
+    // Use Canvas's event wrapper from the first mount. Html's default target
+    // changes when events connect, recreating a root in the same container.
+    const [portal] = React.useState(() => {
+      const target = canvas?.parentElement?.parentElement;
+      return target
+        ? { current: target }
+        : undefined;
+    });
     const complete = props.complete || props.progress.complete;
     const [mounted, setMounted] = React.useState(!complete);
 
@@ -164,7 +173,8 @@ export const ThreeDLoadProgressOverlay =
       "three-d-load-progress",
       complete ? "three-d-load-progress-complete" : "",
     ].join(" ");
-    return <Html fullscreen={true} style={{ pointerEvents: "none" }}>
+    return <Html portal={portal}
+      fullscreen={true} style={{ pointerEvents: "none" }}>
       <div className={className}>
         <div className={"three-d-load-progress-bar"}
           aria-hidden={true}>
