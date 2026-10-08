@@ -27,7 +27,9 @@ module Api
       violation = THROTTLE_POLICY.violation_for(current_device.id)
 
       if violation
-        puts "AI #{context_key} error: throttled" unless Rails.env.test?
+        msg = "AI #{context_key} error: throttled"
+        puts msg unless Rails.env.test?
+        Rollbar.error(msg)
         render json: { error: "Too many requests. Try again later." }, status: 403
       else
         THROTTLE_POLICY.track(current_device.id)
@@ -148,9 +150,10 @@ module Api
             boundary = buffer.index("\n\n")
             begin
               err_msg = JSON.parse(buffer)["error"]
-              puts "AI #{context_key} error:" \
-                  " (#{err_msg})" unless Rails.env.test?
+              msg = "AI #{context_key} error: (#{err_msg})"
+              puts msg unless Rails.env.test?
               current_device.tell("Please try again", ["toast"], "error")
+              Rollbar.error(msg)
               return { "error" => { "message" => err_msg } }
             rescue JSON::ParserError
               nil
@@ -178,9 +181,10 @@ module Api
         end
         {}
       rescue => exception
-        puts "AI #{context_key} error:" \
-             " (#{exception.message})" unless Rails.env.test?
+        msg = "AI #{context_key} error: (#{exception.message})"
+        puts msg unless Rails.env.test?
         current_device.tell("Please try again", ["toast"], "error")
+        Rollbar.error(msg)
         stream.close
         return { "error" => { "message" => exception.message } }
       end
