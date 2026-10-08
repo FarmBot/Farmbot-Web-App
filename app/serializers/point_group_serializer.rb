@@ -6,6 +6,7 @@ class PointGroupSerializer < ApplicationSerializer
   end
 
   def criteria
-    object.criteria || PointGroup::DEFAULT_CRITERIA
+    # Older records can contain both symbol and string keys for the same field.
+    (object.criteria || PointGroup::DEFAULT_CRITERIA).deep_symbolize_keys
   end
 end

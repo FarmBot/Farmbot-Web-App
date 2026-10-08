@@ -76,6 +76,23 @@ describe PointGroup do
     end
   end
 
+  it "broadcasts legacy criteria without duplicate JSON keys" do
+    criteria = {
+      day: { op: ">", days_ago: 10 },
+      string_eq: { pointer_type: ["GenericPointer"] },
+      number_eq: {},
+      number_lt: {},
+      number_gt: {},
+    }
+    legacy_criteria = PointGroup::DEFAULT_CRITERIA.merge(criteria.deep_stringify_keys)
+    point_group.update_column(:criteria, legacy_criteria)
+
+    payload = JSON.parse(point_group.reload.broadcast_payload("test-label"))
+
+    expect(payload.fetch("body").fetch("criteria")).to eq(criteria.deep_stringify_keys)
+    expect(point_group.criteria).to eq(legacy_criteria)
+  end
+
   it "maintains referential integrity" do
     PointGroupItem.destroy_all
     Point.destroy_all
