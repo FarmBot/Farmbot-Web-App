@@ -256,7 +256,7 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
         z: props.toolSlot.body.mount_offset_z ?? 0,
       }}
       onChange={props.updateToolSlot} />
-    {!props.noUTM &&
+    {!props.noUTM && !props.is3D &&
       <FlipToolDirection
         toolSlotMeta={props.toolSlot.body.meta}
         onChange={props.updateToolSlot} />}

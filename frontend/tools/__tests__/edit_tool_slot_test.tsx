@@ -16,6 +16,7 @@ import * as toolGraphics from "../../farm_designer/map/layers/tool_slots/tool_gr
 import { SpecialStatus } from "farmbot";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import { BooleanSetting } from "../../session_keys";
 import {
   actRenderer,
   createRenderer,
@@ -62,6 +63,7 @@ describe("<EditToolSlot />", () => {
     arduinoBusy: false,
     defaultAxes: "XY",
     movementState: fakeMovementState(),
+    getValue: jest.fn(() => false),
   });
 
   it("redirects", () => {
@@ -77,6 +79,17 @@ describe("<EditToolSlot />", () => {
     expect(container.textContent?.toLowerCase()).toContain("redirecting");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
+
+  it.each([false, true, undefined])(
+    "renders rotation control for 3D setting %s", is3D => {
+      const p = fakeProps();
+      p.getValue = jest.fn(() => is3D);
+      p.findToolSlot = () => fakeToolSlot();
+      const { container } = render(<EditToolSlot {...p} />);
+      expect(p.getValue).toHaveBeenCalledWith(BooleanSetting.three_d_garden);
+      expect(!!container.querySelector("input[name='tool_direction']"))
+        .toEqual(!is3D);
+    });
 
   it("renders", () => {
     const p = fakeProps();

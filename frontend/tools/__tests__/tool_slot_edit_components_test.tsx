@@ -502,6 +502,7 @@ describe("<SlotEditRows />", () => {
     botPosition: { x: undefined, y: undefined, z: undefined },
     updateToolSlot: jest.fn(),
     noUTM: false,
+    is3D: false,
     toolTransformProps: fakeToolTransformProps(),
     isActive: () => false,
     botOnline: true,
@@ -509,6 +510,21 @@ describe("<SlotEditRows />", () => {
     defaultAxes: "XY",
     dispatch: jest.fn(),
     movementState: fakeMovementState(),
+  });
+
+  it.each([
+    [false, false, true],
+    [false, true, false],
+    [true, false, false],
+    [true, true, false],
+  ])("shows rotation control: noUTM=%s, is3D=%s", (noUTM, is3D, visible) => {
+    const p = fakeProps();
+    p.noUTM = noUTM;
+    p.is3D = is3D;
+    const { container } = render(<SlotEditRows {...p} />);
+    expect(!!container.querySelector("input[name='tool_direction']"))
+      .toEqual(visible);
+    expect(container.textContent?.toLowerCase()).toContain("slot direction");
   });
 
   it("handles missing tool", () => {

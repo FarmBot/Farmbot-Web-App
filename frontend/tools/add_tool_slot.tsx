@@ -18,6 +18,7 @@ import { AddToolSlotState, AddToolSlotProps } from "./interfaces";
 import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
+import { BooleanSetting } from "../session_keys";
 
 export class RawAddToolSlot
   extends React.Component<AddToolSlotProps, AddToolSlotState> {
@@ -70,6 +71,7 @@ export class RawAddToolSlot
   };
 
   render() {
+    const is3D = !!this.props.getValue(BooleanSetting.three_d_garden);
     const panelName = "add-tool-slot";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
@@ -85,6 +87,7 @@ export class RawAddToolSlot
         {this.toolSlot
           ? <SlotEditRows
             noUTM={!hasUTM(this.props.firmwareHardware)}
+            is3D={is3D}
             toolSlot={this.toolSlot}
             tools={this.props.tools}
             tool={this.tool}

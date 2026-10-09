@@ -70,6 +70,7 @@ const mapStateToPropsAddEditBase = (props: Everything):
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     botOnline: isBotOnlineFromState(props.bot),
     arduinoBusy: props.bot.hardware.informational_settings.busy,
+    getValue: getWebAppConfig,
     defaultAxes: validGoButtonAxes(getWebAppConfig),
     movementState: props.app.movement,
   };

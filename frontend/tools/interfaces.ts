@@ -11,6 +11,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { SaveFarmwareEnv } from "../farmware/interfaces";
 import { MovementState } from "../interfaces";
+import type { GetWebAppConfigValue } from "../config_storage/actions";
 import { PeripheralValues } from
   "../farm_designer/map/layers/farmbot/bot_trail";
 
@@ -103,6 +104,7 @@ export interface ToolInventoryItemProps {
 }
 
 export interface AddEditToolSlotPropsBase {
+  getValue: GetWebAppConfigValue;
   tools: TaggedTool[];
   dispatch: Function;
   botPosition: BotPosition;
@@ -194,6 +196,7 @@ export interface SlotEditRowsProps {
   arduinoBusy: boolean;
   dispatch: Function;
   movementState: MovementState;
+  is3D: boolean;
 }
 
 export interface ToolVerificationProps {

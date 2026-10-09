@@ -17,6 +17,7 @@ import { mapStateToPropsAdd } from "../state_to_props";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
+import { BooleanSetting } from "../../session_keys";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import {
   createRenderer,
@@ -58,7 +59,19 @@ describe("<AddToolSlot />", () => {
     arduinoBusy: false,
     defaultAxes: "XY",
     movementState: fakeMovementState(),
+    getValue: jest.fn(() => false),
   });
+
+  it.each([false, true, undefined])(
+    "renders rotation control for 3D setting %s", is3D => {
+      const p = fakeProps();
+      p.getValue = jest.fn(() => is3D);
+      p.findToolSlot = () => fakeToolSlot();
+      const { container } = render(<AddToolSlot {...p} />);
+      expect(p.getValue).toHaveBeenCalledWith(BooleanSetting.three_d_garden);
+      expect(!!container.querySelector("input[name='tool_direction']"))
+        .toEqual(!is3D);
+    });
 
   it("renders", () => {
     const { container } = render(<AddToolSlot {...fakeProps()} />);

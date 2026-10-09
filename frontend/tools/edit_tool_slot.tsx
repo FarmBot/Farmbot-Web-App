@@ -15,6 +15,7 @@ import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphi
 import { Popover } from "../ui";
 import { Path } from "../internal_urls";
 import { Navigate } from "react-router";
+import { BooleanSetting } from "../session_keys";
 
 export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {
@@ -38,6 +39,7 @@ export class RawEditToolSlot
 
   render() {
     const { toolSlot } = this;
+    const is3D = !!this.props.getValue(BooleanSetting.three_d_garden);
     const toolsPath = Path.tools();
     const toolSlotsPath = Path.toolSlots();
     const panelName = "edit-tool-slot";
@@ -66,6 +68,7 @@ export class RawEditToolSlot
           ? <div className={"edit-tool-slot-content-wrapper"}>
             <SlotEditRows
               noUTM={!hasUTM(this.props.firmwareHardware)}
+              is3D={is3D}
               toolSlot={toolSlot}
               tools={this.props.tools}
               tool={this.tool}
