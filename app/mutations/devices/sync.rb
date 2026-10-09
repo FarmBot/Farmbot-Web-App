@@ -9,6 +9,7 @@ module Devices
     end
 
     QUERIES = {
+      curves: basic_query("curves"),
       devices: basic_query("devices", "WHERE id = "),
       farm_events: basic_query("farm_events"),
       farmware_envs: basic_query("farmware_envs"),

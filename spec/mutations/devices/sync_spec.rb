@@ -5,6 +5,7 @@ describe Devices::Sync do
   let(:device) { user.device }
 
   TABLES = Set.new([
+    :curves,
     :devices,
     :farm_events,
     :farmware_envs,

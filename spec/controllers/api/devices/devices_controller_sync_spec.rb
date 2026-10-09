@@ -29,6 +29,7 @@ describe Api::DevicesController do
       FactoryBot.create(:tool_slot, device: device)
       FactoryBot.create(:tool, device: device)
       FactoryBot.create(:point_group, device: device)
+      FactoryBot.create(:curve, device: device)
       FakeSequence.create(device: device)
 
       get :sync, params: {}, session: { format: :json }
