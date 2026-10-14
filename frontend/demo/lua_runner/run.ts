@@ -230,6 +230,9 @@ export const executeLua =
         actions.push({ type: "create_point", args: [point] });
         jsToLua(L, true);
         return 1;
+      } else if (method == "GET" && url == "/api/firmware_config") {
+        jsToLua(L, clean(getFirmwareSettings()));
+        return 1;
       } else if (method == "GET" && url == "/api/tools") {
         const results = allTools()
           .map(p => p.body).map(clean);

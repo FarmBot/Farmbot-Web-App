@@ -1958,6 +1958,9 @@ describe("csToLua()", () => {
  * [ y ] string.
  *
  * Other:
+ * [ y ] axis_order
+ * [ y ] move_body
+ * [ y ] is_demo
  * [ y ] move_relative
  * [ y ] round
  * [ y ] angleRound
@@ -1998,11 +2001,14 @@ describe("csToLua()", () => {
  * [ y ] get_curve
  * [ y ] get_device
  * [   ] get_fbos_config
- * [   ] get_firmware_config
+ * [ y ] get_firmware_config
  * [ y ] get_job
  * [ y ] get_job_progress
+ * [ y ] get_mounted_tool
  * [   ] get_position
+ * [ y ] get_raw_curve
  * [ y ] get_seed_tray_cell
+ * [ y ] get_slot_for_tool
  * [   ] get_xyz
  * [ y ] get_tool
  * [ y ] get_plants
@@ -2048,6 +2054,7 @@ describe("csToLua()", () => {
  * [ y ] utc
  * [   ] local_time
  * [ y ] to_unix
+ * [ y ] verify_in_bounds
  * [ y ] verify_tool
  * [ y ] wait_ms
  * [ y ] wait

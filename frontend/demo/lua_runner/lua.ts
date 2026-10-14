@@ -249,22 +249,8 @@ function dismount_tool()
         return
     end
 
-    -- Get all points
-    local points = api({ url = "/api/points/" })
-    if not points then
-        toast("API error", "error")
-        return
-    end
-
     -- Pluck the tool slot point where the currently mounted tool belongs
-    local slot
-    local slot_dir
-    for key, point in pairs(points) do
-        if point.tool_id == tool_id then
-            slot = point
-            slot_dir = slot.pullout_direction
-        end
-    end
+    local slot = get_slot_for_tool{id = tool_id}
 
     -- Get tool name
     local tool_name = get_tool{id = tool_id}.name
@@ -273,7 +259,10 @@ function dismount_tool()
     if not slot then
         toast("No slot found for the currently mounted tool (" .. tool_name .. ") - check the Tools panel", "error")
         return
-    elseif slot_dir == 0 then
+    end
+
+    local slot_dir = slot.pullout_direction
+    if slot_dir == 0 then
         toast("Tool slot must have a direction", "error")
         return
     elseif (slot.mount_stage or 0) ~= 0 then
@@ -385,23 +374,23 @@ function dispense(ml, params)
 end
 
 function get_curve(curve_id)
-  local api_curve_data = api({ url = "/api/curves/" .. curve_id })
-  if not api_curve_data then
-      toast("API error. Is your curve ID correct?", "error")
+  local curve_data = get_raw_curve{id = curve_id}
+  if not curve_data then
+      toast("Failed to fetch curve. Is your curve ID correct?", "error")
       return
   end
 
   function get_day_value(day)
     local day = tonumber(day)
     local day_string = tostring(day)
-    local value = api_curve_data.data[day_string]
+    local value = curve_data.data[day_string]
     if value ~= nil then
       return value
     end
 
     local data_days = {}
     local i = 0
-    for day_key, _ in pairs(api_curve_data.data) do
+    for day_key, _ in pairs(curve_data.data) do
       i = i + 1
       data_days[i] = tonumber(day_key)
     end
@@ -432,16 +421,16 @@ function get_curve(curve_id)
 
     if prev_day == nil then
       local first_day = tostring(math.floor(data_days[1]))
-      return api_curve_data.data[first_day]
+      return curve_data.data[first_day]
     end
 
     if next_day == nil then
       local last_day = tostring(math.floor(data_days[#data_days]))
-      return api_curve_data.data[last_day]
+      return curve_data.data[last_day]
     end
 
-    local prev_value = api_curve_data.data[tostring(math.floor(prev_day))]
-    local next_value = api_curve_data.data[tostring(math.floor(next_day))]
+    local prev_value = curve_data.data[tostring(math.floor(prev_day))]
+    local next_value = curve_data.data[tostring(math.floor(next_day))]
 
     local exact_value = (prev_value * (next_day - day) + next_value * (day - prev_day))
       / (next_day - prev_day)
@@ -449,15 +438,15 @@ function get_curve(curve_id)
   end
 
   local unit
-  if api_curve_data.type == "water" then
+  if curve_data.type == "water" then
     unit = "mL"
   else
     unit = "mm"
   end
 
   local curve = {
-    name = api_curve_data.name,
-    type = api_curve_data.type,
+    name = curve_data.name,
+    type = curve_data.type,
     unit = unit,
     day = get_day_value,
   }
@@ -531,24 +520,7 @@ end
 function mount_tool(input)
     local slot
     if type(input) == "string" then
-      local prelim_tool
-      local tool_name = input
-      prelim_tool = get_tool{name = tool_name}
-      if not prelim_tool then
-          toast("'" .. tool_name .. "' tool not found", "error")
-          return
-      end
-
-      local points = api({ url = "/api/points/" })
-      if not points then
-          toast("API error", "error")
-          return
-      end
-      for key, point in pairs(points) do
-        if point.tool_id == prelim_tool.id then
-          slot = point
-        end
-      end
+      slot = get_slot_for_tool{name = input}
     else
       slot = input
     end
@@ -658,6 +630,21 @@ function axis_order(params)
     return { kind = "axis_order", args = { grouping = grouping, route = route } }
 end
 
+function move_body(input)
+    local body = {}
+
+    if input.x then body[#body + 1] = axis_overwrite("x", input.x) end
+    if input.y then body[#body + 1] = axis_overwrite("y", input.y) end
+    if input.z then body[#body + 1] = axis_overwrite("z", input.z) end
+    if input.speed then body[#body + 1] = speed_overwrite("x", input.speed) end
+    if input.speed then body[#body + 1] = speed_overwrite("y", input.speed) end
+    if input.speed then body[#body + 1] = speed_overwrite("z", input.speed) end
+    if input.grouping or input.route then body[#body + 1] = axis_order(input) end
+    if input.safe_z then body[#body + 1] = {kind = "safe_z", args = {}} end
+
+    return body
+end
+
 function move(input)
     cs_eval({
         kind = "rpc_request",
@@ -666,16 +653,7 @@ function move(input)
             {
                 kind = "move",
                 args = {},
-                body = {
-                    input.x and axis_overwrite("x", input.x),
-                    input.y and axis_overwrite("y", input.y),
-                    input.z and axis_overwrite("z", input.z),
-                    input.speed and speed_overwrite("x", input.speed),
-                    input.speed and speed_overwrite("y", input.speed),
-                    input.speed and speed_overwrite("z", input.speed),
-                    (input.grouping or input.route) and axis_order(input),
-                    input.safe_z and {kind = "safe_z", args = {}}
-                }
+                body = move_body(input)
             }
         }
     })
@@ -713,7 +691,8 @@ function sequence(sequence_id, params)
     })
 end
 
-function verify_tool()
+function verify_tool(params)
+  params = params or {}
   local mounted_tool_id = get_device("mounted_tool_id")
 
   if read_pin(63) == 1 then
@@ -726,8 +705,35 @@ function verify_tool()
       return false
   end
 
-  local mounted_tool_name = get_tool{id = mounted_tool_id}.name
-  send_message("success", "The " .. mounted_tool_name .. " is mounted on the UTM")
+  local mounted_tool = get_tool{id = mounted_tool_id}
+  if not mounted_tool then
+      toast("Mounted tool not found - check the **MOUNTED TOOL** dropdown in the Tools panel.", "error")
+      return false
+  end
+
+  if params.name and params.name ~= mounted_tool.name then
+      toast("Expected the " .. params.name .. " to be mounted, but the " .. mounted_tool.name .. " is.", "error")
+      return false
+  end
+
+  if params.type and params.type ~= mounted_tool.type then
+      toast("Expected a " .. params.type .. " tool to be mounted, but a " .. mounted_tool.type .. " tool is.", "error")
+      return false
+  end
+
+  if params.id then
+      local expected_mounted_tool = get_tool{id = params.id}
+      if not expected_mounted_tool then
+        toast("Expected tool not found - check the provided tool ID.", "error")
+        return false
+      end
+      if params.id ~= mounted_tool_id then
+        toast("Expected the " .. expected_mounted_tool.name .. " to be mounted, but the " .. mounted_tool.name .. " tool is.", "error")
+        return false
+      end
+  end
+
+  send_message("success", "The " .. mounted_tool.name .. " is mounted on the UTM")
   return true
 end
 
@@ -816,6 +822,56 @@ function water(plant, params)
     dispense(water_ml, params)
     complete_job(job_name)
 end
+
+function verify_in_bounds(params)
+    local bounds = garden_size()
+    local settings = get_firmware_config()
+    local negative_z = settings.movement_home_up_z == 1
+
+    local bound_exceeded = ""
+    for _, axis in ipairs({"x", "y", "z"}) do
+        local coordinate = params[axis]
+        local stop_at_home = settings["movement_stop_at_home_" .. axis] == 1
+        local stop_at_max = settings["movement_stop_at_max_" .. axis] == 1
+        local direction = 1
+        if axis == "z" and negative_z then
+            direction = -1
+        end
+
+        if coordinate then
+            local distance = coordinate * direction
+            if stop_at_home and distance < 0 then
+                if direction == -1 then
+                    bound_exceeded = bound_exceeded .. coordinate .. "mm is above 0mm z-axis maximum. "
+                else
+                    bound_exceeded = bound_exceeded .. coordinate .. "mm is below 0mm " .. axis .. "-axis minimum. "
+                end
+            elseif stop_at_max and bounds[axis] > 0 and distance > bounds[axis] then
+                if direction == -1 then
+                    bound_exceeded = bound_exceeded .. coordinate .. "mm is below " .. -bounds.z .. "mm z-axis minimum. "
+                else
+                    bound_exceeded = bound_exceeded .. coordinate .. "mm exceeds " .. bounds[axis] .. "mm " .. axis .. "-axis length. "
+                end
+            end
+        end
+    end
+
+    if #bound_exceeded > 0 then
+        toast("The target coordinate is out of bounds: " .. bound_exceeded, "error")
+        return false
+    end
+
+    return true
+end
+
+function get_mounted_tool()
+    local tool_id = get_device("mounted_tool_id")
+    if not tool_id then
+        return nil
+    end
+
+    return get_tool{id = tool_id}
+end
 `;
 
 const ALIASES = `
@@ -879,15 +935,46 @@ function current_second()
   return utc("second")
 end
 
+function get_firmware_config(field)
+  local config = api({ url = "/api/firmware_config" })
+  if field ~= nil then
+    return config[field]
+  end
+  return config
+end
+
+function get_raw_curve(params)
+  if not params.id then
+    return nil
+  end
+  return api({ url = "/api/curves/" .. params.id })
+end
+
 function get_tool(params)
-  local tool_id = params.id or 0
-  local tool_name = params.name or ""
-  local tool_type = params.type or ""
   local tools = api({ url = "/api/tools" })
   tools = tools or {}
   for _, tool in ipairs(tools) do
-    if tool.id == tool_id or tool.name == tool_name or tool.type == tool_type then
+    if (not params.id or tool.id == params.id)
+      and (not params.name or tool.name == params.name)
+      and (not params.type or tool.type == params.type) then
       return tool
+    end
+  end
+  return nil
+end
+
+function get_slot_for_tool(params)
+  local tool = get_tool(params)
+  if not tool then
+    return nil
+  end
+  local points = api({ url = "/api/points" })
+  points = points or {}
+  for _, point in ipairs(points) do
+    if point.pointer_type == "ToolSlot"
+      and point.tool_id == tool.id
+      and point.discarded_at == nil then
+      return point
     end
   end
   return nil
