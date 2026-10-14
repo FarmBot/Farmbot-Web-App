@@ -361,6 +361,7 @@ describe("expandActions()", () => {
 
   afterEach(() => {
     randomSpy.mockRestore();
+    sessionStorage.removeItem("soilSurfaceTriangles");
   });
 
   it("expands an absolute movement to one target", () => {
@@ -643,6 +644,24 @@ describe("expandActions()", () => {
       [-320, 320],
       [10, 30],
     ]);
+  });
+
+  it.each([
+    [-425.4, -425],
+    [-425.6, -426],
+  ])("rounds detected weed Z from %s to %s", (soilHeight, expectedZ) => {
+    sessionStorage.setItem("soilSurfaceTriangles", JSON.stringify([
+      [0, 0, soilHeight, 100, 0, soilHeight, 0, 100, soilHeight],
+    ]));
+    randomSpy.mockReset()
+      .mockReturnValueOnce(2)
+      .mockReturnValue(10);
+    const weeds = expandActions([
+      { type: "detect_weeds", args: [] },
+    ], []).filter(action => action.type == "create_point");
+    expect(weeds).toHaveLength(2);
+    expect(weeds.map(weed => JSON.parse("" + weed.args[0]).z))
+      .toEqual([expectedZ, expectedZ]);
   });
 
   it("keeps detected weeds inside garden bounds when configured", () => {

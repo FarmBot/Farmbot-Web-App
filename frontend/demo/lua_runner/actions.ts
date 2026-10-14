@@ -314,7 +314,7 @@ export const expandActionsFromPosition = (
               pointer_type: "Weed",
               x: position.x,
               y: position.y,
-              z: getSoilHeight(position.x, position.y),
+              z: Math.round(getSoilHeight(position.x, position.y)),
               meta: { color: "red", created_by: "plant-detection" },
               radius: random(10, 30),
               plant_stage: "pending",
