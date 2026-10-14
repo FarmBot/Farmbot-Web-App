@@ -3,7 +3,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterApplication, Point, SequenceBodyItem } from "farmbot";
 import { runLua } from "./run";
 import {
-  expandActions, expandActionsFromPosition, runActions,
+  expandActions, expandActionsFromPosition, getPositionAfterActions, runActions,
   syncCurrentFromBotPosition,
 } from "./actions";
 import { Action, XyzNumber } from "./interfaces";
@@ -63,7 +63,8 @@ export const collectDemoSequenceActions = (
   if (firstVarArgs?.data_value.kind == "point_group") {
     const variableLabel = firstVarArgs.label;
     const groupId = firstVarArgs.data_value.args.point_group_id;
-    let loopCurrent = currentPosition && { ...currentPosition };
+    let loopCurrent =
+      getPositionAfterActions(actions, variables, currentPosition);
     getGroupPoints(resources, groupId).map(p => {
       const pointValue: Point = {
         kind: "point", args: {
@@ -98,18 +99,20 @@ export const collectDemoSequenceActions = (
     return actions;
   }
   (sequence.body.body as SequenceBodyItem[]).map(step => {
+    const position = getPositionAfterActions(actions, variables, currentPosition);
     if (step.kind == "execute") {
       const seqActions = collectDemoSequenceActions(
         depth + 1,
         resources,
         step.args.sequence_id,
         step.body,
-        sequenceStack);
+        sequenceStack,
+        position);
       actions.push(...seqActions);
     } else {
       const lua = step.kind === "lua" ? step.args.lua : csToLua(step);
-      const stepActions = currentPosition
-        ? runLua(depth, lua, variables, currentPosition)
+      const stepActions = position
+        ? runLua(depth, lua, variables, position)
         : runLua(depth, lua, variables);
       actions.push(...stepActions);
     }

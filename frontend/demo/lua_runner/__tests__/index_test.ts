@@ -1946,6 +1946,7 @@ describe("csToLua()", () => {
  *
  * builtins/lib:
  * [ y ] print
+ * [ y ] error
  * [ y ] type
  * [ y ] tostring
  * [ y ] tonumber
@@ -1979,9 +1980,9 @@ describe("csToLua()", () => {
  * [   ] base64.decode
  * [   ] base64.encode
  * [ y ] calibrate_camera
- * [   ] check_position
+ * [ y ] check_position
  * [ y ] complete_job
- * [   ] coordinate
+ * [ y ] coordinate
  * [ y ] cs_eval
  * [ y ] current_hour
  * [ y ] current_minute
@@ -1992,24 +1993,24 @@ describe("csToLua()", () => {
  * [ y ] emergency_lock
  * [ y ] emergency_unlock
  * [ y ] env
- * [   ] fbos_version
+ * [ y ] fbos_version
  * [ y ] find_axis_length
  * [ y ] find_home
- * [   ] firmware_version
+ * [ y ] firmware_version
  * [ y ] garden_size
  * [   ] gcode
  * [ y ] get_curve
  * [ y ] get_device
- * [   ] get_fbos_config
+ * [ y ] get_fbos_config
  * [ y ] get_firmware_config
  * [ y ] get_job
  * [ y ] get_job_progress
  * [ y ] get_mounted_tool
- * [   ] get_position
+ * [ y ] get_position
  * [ y ] get_raw_curve
  * [ y ] get_seed_tray_cell
  * [ y ] get_slot_for_tool
- * [   ] get_xyz
+ * [ y ] get_xyz
  * [ y ] get_tool
  * [ y ] get_plants
  * [ y ] get_weeds
@@ -2052,14 +2053,14 @@ describe("csToLua()", () => {
  * [   ] update_fbos_config
  * [   ] update_firmware_config
  * [ y ] utc
- * [   ] local_time
+ * [ y ] local_time
  * [ y ] to_unix
  * [ y ] verify_in_bounds
  * [ y ] verify_tool
  * [ y ] wait_ms
  * [ y ] wait
  * [ y ] water
- * [   ] watch_pin
+ * [ y ] watch_pin
  * [ y ] on
  * [ y ] off
  * [ y ] write_pin

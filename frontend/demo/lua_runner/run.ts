@@ -22,14 +22,15 @@ import {
   DeviceAccountSettings, Point, PointGroupSortType,
 } from "farmbot/dist/resources/api_resources";
 import {
-  getFirmwareSettings, getGardenSize, getSafeZ, getSoilHeight,
-  getGroupPoints, getJob,
+  getFbosSettings, getFirmwareSettings, getGardenSize, getSafeZ, getSoilHeight,
+  getGroupPoints, getJob, getLocalTime,
   getDeviceStatus,
 } from "./stubs";
 import { error } from "../../toast/toast";
 import { collectDemoSequenceActions } from "./index";
 import { get, last } from "lodash";
 import { XYZ } from "../../devices/constants";
+import { getPositionAfterActions } from "./actions";
 
 interface LuaResult {
   actions: Action[];
@@ -44,6 +45,8 @@ export const executeLua =
     currentPosition?: XyzNumber,
   ): LuaResult => {
     const actions: Action[] = [];
+    const getCurrentPosition = () =>
+      getPositionAfterActions(actions, variables, currentPosition);
     const L = lauxlib.luaL_newstate(); // stack: []
     const resources = store.getState().resources.index;
     let allPointsCache: ReturnType<typeof selectAllPoints> | undefined;
@@ -73,6 +76,9 @@ export const executeLua =
 
     lauxlib.luaL_requiref(L, to_luastring("_G"), lualib.luaopen_base, 1);
     const gIndex = lua.lua_gettop(L);
+
+    lua.lua_getfield(L, gIndex, to_luastring("error"));
+    lua.lua_setfield(L, envIndex, to_luastring("error"));
 
     lua.lua_getfield(L, gIndex, to_luastring("type"));
     lua.lua_setfield(L, envIndex, to_luastring("type"));
@@ -204,6 +210,24 @@ export const executeLua =
     lua.lua_pop(L, 1); // stack: [env]
 
     lua.lua_pushjsfunction(L, () => {
+      const timezone = getDeviceAccountSettings(resources).body.timezone
+        || "Etc/UTC";
+      const localTime = getLocalTime(timezone);
+      const part = lua.lua_gettop(L) == 1 ? luaToJs(L, 1) : undefined;
+      const fields: Record<string, number> = {
+        year: localTime.year, month: localTime.month, day: localTime.day,
+        hour: localTime.hour, minute: localTime.minute, second: localTime.second,
+      };
+      const value = typeof part == "string"
+        && Object.prototype.hasOwnProperty.call(fields, part)
+        ? fields[part]
+        : localTime.iso8601;
+      jsToLua(L, value);
+      return 1;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("local_time"));
+
+    lua.lua_pushjsfunction(L, () => {
       lua.lua_getfield(L, 1, to_luastring("method"));
       const rawMethod = lua.lua_isnil(L, -1)
         ? "GET"
@@ -229,6 +253,9 @@ export const executeLua =
         const point = JSON.stringify(body);
         actions.push({ type: "create_point", args: [point] });
         jsToLua(L, true);
+        return 1;
+      } else if (method == "GET" && url == "/api/fbos_config") {
+        jsToLua(L, clean(getFbosSettings()));
         return 1;
       } else if (method == "GET" && url == "/api/firmware_config") {
         jsToLua(L, clean(getFirmwareSettings()));
@@ -335,18 +362,19 @@ export const executeLua =
     lua.lua_pushjsfunction(L, () => {
       const cmd = (luaToJs(L, 1) as RpcRequest).body?.[0];
       if (!cmd) { return 0; }
+      const position = getCurrentPosition();
       if (cmd.kind == "execute") {
         const sequenceId = cmd.args.sequence_id;
         const seqVariables = cmd.body;
-        const seqActions = currentPosition
+        const seqActions = position
           ? collectDemoSequenceActions(
-            depth + 1, resources, sequenceId, seqVariables, [], currentPosition)
+            depth + 1, resources, sequenceId, seqVariables, [], position)
           : collectDemoSequenceActions(
             depth + 1, resources, sequenceId, seqVariables);
         actions.push(...seqActions);
       } else {
-        const luaActions = currentPosition
-          ? runLua(depth, csToLua(cmd), variables, currentPosition)
+        const luaActions = position
+          ? runLua(depth, csToLua(cmd), variables, position)
           : runLua(depth, csToLua(cmd), variables);
         actions.push(...luaActions);
       }
@@ -610,7 +638,17 @@ export const executeLua =
     lua.lua_setfield(L, envIndex, to_luastring("garden_size"));
 
     lua.lua_pushjsfunction(L, () => {
-      const status = getDeviceStatus();
+      const deviceStatus = getDeviceStatus();
+      const position = getCurrentPosition();
+      const status = position
+        ? {
+          ...deviceStatus,
+          location_data: {
+            ...deviceStatus.location_data,
+            position,
+          },
+        }
+        : deviceStatus;
       const n = lua.lua_gettop(L);
       const path: unknown[] = [];
       for (let i = 1; i <= n; i++) {

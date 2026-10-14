@@ -386,6 +386,27 @@ export const expandActionsFromPosition = (
   };
 };
 
+export const getPositionAfterActions = (
+  actions: Action[],
+  variables: ParameterApplication[] | undefined,
+  startPosition?: XyzNumber,
+): XyzNumber | undefined => {
+  const position = startPosition
+    || store.getState().bot.hardware.location_data?.position;
+  if (typeof position?.x != "number"
+    || typeof position.y != "number"
+    || typeof position.z != "number") { return undefined; }
+  const movementActions = actions.filter(action => [
+    "move_absolute", "move_relative", "_move", "find_home", "go_to_home",
+    "animated_move_absolute",
+  ].includes(action.type));
+  return expandActionsFromPosition(movementActions, variables, {
+    x: position.x,
+    y: position.y,
+    z: position.z,
+  }).current;
+};
+
 export const expandActions = (
   actions: Action[],
   variables: ParameterApplication[] | undefined,

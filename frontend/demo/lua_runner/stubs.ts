@@ -116,3 +116,32 @@ export const getDeviceStatus = () => {
   const status = store.getState().bot.hardware;
   return status;
 };
+
+export const getLocalTime = (timezone: string) => {
+  const now = new Date();
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now).map(part => [part.type, part.value]));
+  const fields = {
+    year: Number(parts.year), month: Number(parts.month),
+    day: Number(parts.day), hour: Number(parts.hour),
+    minute: Number(parts.minute), second: Number(parts.second),
+  };
+  const localTimestamp = Date.UTC(fields.year, fields.month - 1, fields.day,
+    fields.hour, fields.minute, fields.second);
+  const offset = (localTimestamp - Math.floor(now.getTime() / 1000) * 1000)
+    / 60000;
+  const sign = offset < 0 ? "-" : "+";
+  const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, "0");
+  const minutes = String(Math.abs(offset) % 60).padStart(2, "0");
+  const milliseconds = String(now.getUTCMilliseconds()).padStart(3, "0");
+  const date = `${parts.year}-${parts.month}-${parts.day}`;
+  const time = `${parts.hour}:${parts.minute}:${parts.second}`;
+  return {
+    ...fields,
+    iso8601: `${date}T${time}.${milliseconds}${sign}${hours}:${minutes}`,
+  };
+};

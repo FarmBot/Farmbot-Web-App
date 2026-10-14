@@ -898,8 +898,9 @@ function iso8601(date)
     date.hour, date.min, date.sec)
 end
 
-function utc(part)
-  local now = os.date("*t")
+function utc(...)
+  local args = table.pack(...)
+  local now = os.date("!*t")
   local map = {
     year = now.year,
     month = now.month,
@@ -908,7 +909,10 @@ function utc(part)
     minute = now.min,
     second = now.sec,
   }
-  return map[part] or iso8601(now)
+  if args.n == 1 and map[args[1]] ~= nil then
+    return map[args[1]]
+  end
+  return iso8601(now)
 end
 
 function current_year()
@@ -933,6 +937,73 @@ end
 
 function current_second()
   return utc("second")
+end
+
+function firmware_version(...)
+  return read_status("informational_settings", "firmware_version"), nil
+end
+
+function fbos_version(...)
+  return read_status("informational_settings", "controller_version"), nil
+end
+
+function coordinate(...)
+  local args = table.pack(...)
+  if args.n ~= 3 or type(args[1]) ~= "number"
+    or type(args[2]) ~= "number" or type(args[3]) ~= "number" then
+    error("coordinate expects three numbers")
+  end
+  return {x = args[1], y = args[2], z = args[3]}
+end
+
+function get_fbos_config(...)
+  local args = table.pack(...)
+  local config = api({ url = "/api/fbos_config" })
+  if args.n == 1 then
+    if type(args[1]) ~= "string" then
+      error("get_fbos_config expects a string field name")
+    end
+    return config[args[1]]
+  end
+  return config
+end
+
+function get_xyz(...)
+  return read_status("location_data", "position")
+end
+
+function get_position(...)
+  local args = table.pack(...)
+  local axis = args[1]
+  local position = read_status("location_data", "position") or {}
+  if args.n == 1 and (axis == "x" or axis == "y" or axis == "z") then
+    if type(position[axis]) ~= "number" then
+      return nil, "Current " .. axis .. " position is unavailable"
+    end
+    return position[axis]
+  end
+  for _, axis in ipairs({"x", "y", "z"}) do
+    if type(position[axis]) ~= "number" then
+      return nil, "Current " .. axis .. " position is unavailable"
+    end
+  end
+  return {x = position.x, y = position.y, z = position.z}
+end
+
+function check_position(vec3, tolerance)
+  local current = read_status("location_data", "position") or {}
+  local matches = true
+  for _, axis in ipairs({"x", "y", "z"}) do
+    local coordinate = current[axis]
+    if type(coordinate) ~= "number" then
+      return nil, "Current " .. axis .. " position is unavailable"
+    end
+    local target = vec3[axis] or coordinate
+    if target < coordinate - tolerance or target > coordinate + tolerance then
+      matches = false
+    end
+  end
+  return matches
 end
 
 function get_firmware_config(field)
@@ -990,6 +1061,10 @@ end
 
 function get_job_progress(name)
   get_job(name)
+end
+
+function watch_pin(pin, callback)
+  -- Demo pin watchers never invoke callbacks, so load limits never trigger.
 end
 
 function is_demo()
