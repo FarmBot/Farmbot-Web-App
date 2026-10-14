@@ -4,7 +4,7 @@ const mockDevice = {
 };
 
 import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import { SensorList } from "../sensor_list";
 import { Pins } from "farmbot";
 import {
@@ -116,11 +116,13 @@ describe("<SensorList/>", function () {
     expect(typeEmojis[1]).not.toHaveAttribute("aria-label");
   });
 
-  it("opens and toggles the corresponding peripheral", async () => {
-    const { getByText, getByTitle, queryByText } = render(
+  it("opens and toggles the corresponding peripheral", () => {
+    const { getByText, getByTitle } = render(
       <SensorList {...fakeProps()} />);
     const target = getByTitle("Show arbitrary lighting controls");
+    expect(target).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(target);
+    expect(target).toHaveAttribute("aria-expanded", "true");
     expect(getByText("arbitrary lighting")).toBeVisible();
     const toggle = getByText("on");
     expect(toggle).toBeEnabled();
@@ -128,10 +130,10 @@ describe("<SensorList/>", function () {
     expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 7 });
     expect(getByText("arbitrary lighting")).toBeVisible();
     fireEvent.mouseDown(document.body);
+    expect(target).toHaveAttribute("aria-expanded", "true");
     expect(getByText("arbitrary lighting")).toBeVisible();
-    fireEvent.click(getByTitle("Show arbitrary lighting controls"));
-    await waitFor(() =>
-      expect(queryByText("arbitrary lighting")).not.toBeInTheDocument());
+    fireEvent.click(target);
+    expect(target).toHaveAttribute("aria-expanded", "false");
   });
 
   it("uses the peripheral analog control", () => {

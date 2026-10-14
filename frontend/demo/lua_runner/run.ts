@@ -227,6 +227,7 @@ export const executeLua =
     });
     lua.lua_setfield(L, envIndex, to_luastring("local_time"));
 
+    // eslint-disable-next-line complexity
     lua.lua_pushjsfunction(L, () => {
       lua.lua_getfield(L, 1, to_luastring("method"));
       const rawMethod = lua.lua_isnil(L, -1)

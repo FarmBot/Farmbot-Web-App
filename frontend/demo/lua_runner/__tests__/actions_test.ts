@@ -16,7 +16,8 @@ import { Actions } from "../../../constants";
 import { error, info } from "../../../toast/toast";
 import { store } from "../../../redux/store";
 import {
-  eStop, expandActions, runActions, runDemoMovementCommand, setCurrent,
+  eStop, expandActions, getPositionAfterActions, runActions,
+  runDemoMovementCommand, setCurrent,
 } from "../actions";
 import * as lodash from "lodash";
 import {
@@ -362,7 +363,46 @@ describe("expandActions()", () => {
   afterEach(() => {
     randomSpy.mockRestore();
     sessionStorage.removeItem("soilSurfaceTriangles");
+    (store as unknown as { getState: Function }).getState = originalGetState;
   });
+
+  it("predicts position without expanding nonmovement actions", () => {
+    mockBotPosition = { x: 10, y: 20, z: 0 };
+    expect(getPositionAfterActions([
+      { type: "move_relative", args: [5, 10, 0] },
+      { type: "detect_weeds", args: [] },
+      { type: "read_pin", args: [5] },
+    ], [])).toEqual({ x: 15, y: 30, z: 0 });
+    expect(randomSpy).not.toHaveBeenCalled();
+    expect(mockBotPosition).toEqual({ x: 10, y: 20, z: 0 });
+  });
+
+  it("predicts position from the supplied starting position", () => {
+    expect(getPositionAfterActions([
+      { type: "animated_move_absolute", args: [10, 20, 0] },
+      { type: "move_relative", args: [5, 10, 0] },
+    ], undefined, { x: 100, y: 200, z: 0 }))
+      .toEqual({ x: 15, y: 30, z: 0 });
+    expect(getPositionAfterActions([], [], { x: 100, y: 200, z: 0 }))
+      .toEqual({ x: 100, y: 200, z: 0 });
+  });
+
+  it.each(["x", "y", "z"])(
+    "cannot predict position without a numeric %s coordinate", axis => {
+      const position = { x: 0, y: 0, z: 0, [axis]: undefined };
+      const state = mockGetState();
+      (store as unknown as { getState: Function }).getState = () => ({
+        ...state,
+        bot: {
+          ...state.bot,
+          hardware: {
+            ...state.bot.hardware,
+            location_data: { position },
+          },
+        },
+      });
+      expect(getPositionAfterActions([], [])).toBeUndefined();
+    });
 
   it("expands an absolute movement to one target", () => {
     expect(expandActions([

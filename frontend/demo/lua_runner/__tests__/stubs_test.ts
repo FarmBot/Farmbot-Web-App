@@ -13,6 +13,7 @@ import {
   getDefaultAxisOrder,
   getDeviceStatus,
   getGardenSize,
+  getLocalTime,
   getSafeZ,
 } from "../stubs";
 import { store } from "../../../redux/store";
@@ -110,5 +111,38 @@ describe("getDeviceStatus()", () => {
     expect(getDeviceStatus()).toEqual(hardware);
 
     (store as unknown as { getState: Function }).getState = originalGetState;
+  });
+});
+
+describe("getLocalTime()", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it.each([
+    ["Etc/UTC", "2026-01-01T02:03:04.005Z", {
+      year: 2026, month: 1, day: 1, hour: 2, minute: 3, second: 4,
+      iso8601: "2026-01-01T02:03:04.005+00:00",
+    }],
+    ["America/Los_Angeles", "2026-01-01T02:03:04.005Z", {
+      year: 2025, month: 12, day: 31, hour: 18, minute: 3, second: 4,
+      iso8601: "2025-12-31T18:03:04.005-08:00",
+    }],
+    ["America/Los_Angeles", "2026-07-01T02:03:04.005Z", {
+      year: 2026, month: 6, day: 30, hour: 19, minute: 3, second: 4,
+      iso8601: "2026-06-30T19:03:04.005-07:00",
+    }],
+    ["Asia/Kathmandu", "2026-01-01T02:03:04.005Z", {
+      year: 2026, month: 1, day: 1, hour: 7, minute: 48, second: 4,
+      iso8601: "2026-01-01T07:48:04.005+05:45",
+    }],
+    ["Etc/UTC", "2026-01-01T00:00:00.000Z", {
+      year: 2026, month: 1, day: 1, hour: 0, minute: 0, second: 0,
+      iso8601: "2026-01-01T00:00:00.000+00:00",
+    }],
+  ])("formats %s at %s", (timezone, timestamp, expected) => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(timestamp));
+    expect(getLocalTime(timezone)).toEqual(expected);
   });
 });
