@@ -733,6 +733,7 @@ export const THREE_D_DEFAULTS: Partial<Record<keyof Config, number>> = {
   lowDetail: 0,
   eventDebug: 0,
   cableDebug: 0,
+  toolDebug: 0,
   lightsDebug: 0,
   moistureDebug: 0,
   cameraFitDebug: 0,

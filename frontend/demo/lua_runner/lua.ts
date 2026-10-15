@@ -614,6 +614,16 @@ function axis_overwrite(axis, num)
     }
 end
 
+function axis_addition(axis, num)
+    return {
+        kind = "axis_addition",
+        args = {
+            axis = axis,
+            axis_operand = {kind = "numeric", args = {number = num}}
+        }
+    }
+end
+
 function speed_overwrite(axis, num)
     return {
         kind = "speed_overwrite",
@@ -632,10 +642,14 @@ end
 
 function move_body(input)
     local body = {}
+    local offset = input.offset or {}
 
     if input.x then body[#body + 1] = axis_overwrite("x", input.x) end
     if input.y then body[#body + 1] = axis_overwrite("y", input.y) end
     if input.z then body[#body + 1] = axis_overwrite("z", input.z) end
+    if offset.x then body[#body + 1] = axis_addition("x", offset.x) end
+    if offset.y then body[#body + 1] = axis_addition("y", offset.y) end
+    if offset.z then body[#body + 1] = axis_addition("z", offset.z) end
     if input.speed then body[#body + 1] = speed_overwrite("x", input.speed) end
     if input.speed then body[#body + 1] = speed_overwrite("y", input.speed) end
     if input.speed then body[#body + 1] = speed_overwrite("z", input.speed) end
@@ -657,6 +671,35 @@ function move(input)
             }
         }
     })
+end
+
+function move_with_tool(input)
+    local selector = {id = input.id, name = input.name, type = input.type}
+    local tool = get_tool(selector)
+    if not tool then
+        error("Tool not found")
+    end
+    local slot = get_slot_for_tool(selector) or {}
+    local stage = slot.mount_stage or 0
+    local offset = input.offset or {}
+    local body = {}
+
+    for key, value in pairs(input) do
+        body[key] = value
+    end
+    body.offset = {}
+
+    for index, axis in ipairs({"x", "y", "z"}) do
+        local mount_offset = 0
+        if stage >= index then
+            mount_offset = slot["mount_offset_" .. axis] or 0
+        end
+        body.offset[axis] = -mount_offset
+            - (tool["effector_offset_" .. axis] or 0)
+            + (offset[axis] or 0)
+    end
+
+    move(body)
 end
 
 function rpc(rpc_node)

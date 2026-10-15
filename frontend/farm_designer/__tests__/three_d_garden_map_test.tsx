@@ -129,6 +129,22 @@ describe("<ThreeDGardenMap />", () => {
     logs: [],
   });
 
+  it("updates tool debug when its saved setting changes", () => {
+    const p = fakeProps();
+    p.farmwareEnvs = [];
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.toolDebug).toBeFalsy();
+
+    const debug = fakeFarmwareEnv();
+    debug.body.key = namespace3D("toolDebug");
+    debug.body.value = "1";
+    rerender(<ThreeDGardenMap {...p} farmwareEnvs={[debug]} />);
+    expect(lastThreeDGardenProps().config.toolDebug).toBeTruthy();
+
+    rerender(<ThreeDGardenMap {...p} farmwareEnvs={[]} />);
+    expect(lastThreeDGardenProps().config.toolDebug).toBeFalsy();
+  });
+
   it("converts props", () => {
     const p = fakeProps();
     render(<ThreeDGardenMap {...p} />);
@@ -164,6 +180,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedBrightness = 1;
     expectedConfig.soilBrightness = 1;
     expectedConfig.cableDebug = true;
+    expectedConfig.toolDebug = true;
     expectedConfig.constellations = true;
     expectedConfig.constellationsDebug = true;
     expectedConfig.eventDebug = true;

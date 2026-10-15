@@ -84,6 +84,7 @@ export interface Config {
   lowDetail: boolean;
   eventDebug: boolean;
   cableDebug: boolean;
+  toolDebug: boolean;
   zoomBeaconDebug: boolean;
   lightsDebug: boolean;
   moistureDebug: boolean;
@@ -249,6 +250,7 @@ export const INITIAL: ConfigWithPosition = {
   lowDetail: false,
   eventDebug: false,
   cableDebug: false,
+  toolDebug: false,
   zoomBeaconDebug: false,
   lightsDebug: false,
   moistureDebug: false,
@@ -326,7 +328,8 @@ export const BOOLEAN_KEYS = [
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "sceneObjects", "controlsOverlay",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
+  "eventDebug", "cableDebug", "toolDebug", "zoomBeaconDebug", "lightsDebug",
+  "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "urlCameraPos",
@@ -507,6 +510,7 @@ export const PRESETS: Record<string, Config> = {
     lowDetail: false,
     eventDebug: false,
     cableDebug: true,
+    toolDebug: true,
     zoomBeaconDebug: true,
     lightsDebug: true,
     moistureDebug: true,
@@ -549,7 +553,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "sceneObjects", "controlsOverlay",
   "solar", "utilitiesPost", "packaging", "groundTexture",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
+  "eventDebug", "cableDebug", "toolDebug", "zoomBeaconDebug", "lightsDebug",
+  "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary", "animateSeasons", "outdoorObjects",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",

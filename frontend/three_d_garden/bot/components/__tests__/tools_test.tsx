@@ -37,6 +37,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { ASSETS } from "../../../constants";
+import * as components from "../../../components";
 import { clone } from "lodash";
 import {
   convertSlotsWithTools, OpacityFilter, Tools, ToolsProps, toolsPropsEqual,
@@ -212,6 +213,94 @@ describe("<Tools />", () => {
     const { container } = render(<Tools {...fakeProps()} />);
     expect(container).toContainHTML("toolbay5");
   });
+
+  it("hides offset markers by default and updates the debug toggle", () => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots(["seeder"]);
+    const { container, rerender } = render(<Tools {...p} />);
+    expect(container.querySelector("[name='mount-offset']")).toBeFalsy();
+    rerender(<Tools {...p} config={{ ...p.config, toolDebug: true }} />);
+    expect(container.querySelectorAll("[name='mount-offset']")).toHaveLength(2);
+    expect(container.querySelectorAll("[name='effector-offset']"))
+      .toHaveLength(2);
+  });
+
+  it("keeps debug spheres out of raycasting", () => {
+    const Mesh = components.Mesh;
+    const raycasts: THREE.Mesh["raycast"][] = [];
+    const meshSpy = jest.spyOn(components, "Mesh").mockImplementation(props => {
+      if (["mount-offset", "effector-offset"].includes(props.name || "") &&
+        props.raycast) {
+        raycasts.push(props.raycast as THREE.Mesh["raycast"]);
+      }
+      return <Mesh {...props} />;
+    });
+    try {
+      const p = fakeProps();
+      p.config.toolDebug = true;
+      p.toolSlots = savedToolSlots(["seeder"]);
+      render(<Tools {...p} />);
+      expect(raycasts).toHaveLength(4);
+      const intersections: THREE.Intersection[] = [];
+      raycasts.forEach(raycast => {
+        expect(raycast.call(new THREE.Mesh(), new THREE.Raycaster(),
+          intersections)).toBeUndefined();
+      });
+      expect(intersections).toEqual([]);
+    } finally {
+      meshSpy.mockRestore();
+    }
+  });
+
+  it.each<[boolean, boolean, boolean, MountStage]>([
+    [false, false, true, MountStage.Z],
+    [true, true, false, MountStage.Z],
+    [false, true, true, MountStage.NONE],
+    [true, false, false, MountStage.NONE],
+  ])("renders offsets with mirrors=%s,%s negativeZ=%s stage=%s",
+    (mirrorX: boolean, mirrorY: boolean, negativeZ: boolean,
+      mountStage: MountStage) => {
+      const p = fakeProps();
+      p.config.toolDebug = true;
+      p.config.mirrorX = mirrorX;
+      p.config.mirrorY = mirrorY;
+      p.config.negativeZ = negativeZ;
+      p.toolSlots = savedToolSlots(["seeder"]);
+      const { toolSlot, tool } = p.toolSlots[0];
+      toolSlot.body.mount_stage = mountStage;
+      toolSlot.body.mount_offset_x = 12;
+      toolSlot.body.mount_offset_y = -23;
+      toolSlot.body.mount_offset_z = 34;
+      if (!tool) { throw new Error("Missing test tool"); }
+      tool.body.effector_offset_x = 10;
+      tool.body.effector_offset_y = -20;
+      tool.body.effector_offset_z = 30;
+      p.mountedToolId = tool.body.id;
+      const { container } = render(<Tools {...p} />);
+      const mounts = container.querySelectorAll("[name='mount-offset']");
+      const effectors = container.querySelectorAll("[name='effector-offset']");
+      const slotPosition = getToolSlotRenderPosition(
+        p.config, p.configPosition, p.toolSlots[0]);
+      expect(mounts[1].getAttribute("position")).toEqual(
+        [slotPosition.x, slotPosition.y, slotPosition.z + 9].join(","));
+      mounts.forEach((mount, index) => {
+        const origin = (mount.getAttribute("position") || "").split(",").map(Number);
+        const effector = (effectors[index].getAttribute("position") || "")
+          .split(",").map(Number);
+        const xOffset = index == 1 && mirrorX ? -10 : 10;
+        const mirrorOffsetY = index == 1 && mirrorY &&
+          mountStage == MountStage.NONE;
+        const yOffset = mirrorOffsetY ? 20 : -20;
+        const zOffset = negativeZ ? 30 : -30;
+        expect(effector).toEqual([
+          origin[0] + xOffset, origin[1] + yOffset, origin[2] + zOffset,
+        ]);
+        expect(mount.querySelector("[color]")?.getAttribute("color"))
+          .toEqual("#00ffff");
+        expect(effectors[index].querySelector("[color]")
+          ?.getAttribute("color")).toEqual("#ff00ff");
+      });
+    });
 
   it("makes ghost contents translucent and non-interactive", () => {
     const mesh = new THREE.Mesh();

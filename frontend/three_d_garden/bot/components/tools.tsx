@@ -15,6 +15,7 @@ import {
 } from "../parts";
 import {
   Group, Mesh, MeshBasicMaterial, MeshPhongMaterial, PlaneGeometry,
+  SphereGeometry,
 } from "../../components";
 import { SlotWithTool } from "../../../resources/interfaces";
 import { isUndefined, sortBy } from "lodash";
@@ -119,6 +120,9 @@ export interface ThreeDTool {
   mount_offset_x: number;
   mount_offset_y: number;
   mount_offset_z: number;
+  effector_offset_x?: number;
+  effector_offset_y?: number;
+  effector_offset_z?: number;
   toolId: number | undefined;
   toolName?: string | undefined;
   toolType: ToolType | undefined;
@@ -143,6 +147,7 @@ const TOOLS_CONFIG_FIELDS: (keyof Config)[] = [
   "rotary",
   "sizePreset",
   "tool",
+  "toolDebug",
   "vacuum",
   "zGantryOffset",
 ];
@@ -179,6 +184,7 @@ export const toolsPropsEqual = (prev: ToolsProps, next: ToolsProps) => {
 export const convertSlotsWithTools =
   (slotsWithTools: SlotWithTool[]): ThreeDTool[] => {
     let troughIndex = 0;
+    // eslint-disable-next-line complexity
     return sortBy(slotsWithTools, "toolSlot.body.y").map(swt => {
       const toolType = swt.tool?.body.type;
       if (toolType == "seed_trough") { troughIndex++; }
@@ -195,6 +201,9 @@ export const convertSlotsWithTools =
         mount_offset_x: swt.toolSlot.body.mount_offset_x ?? 0,
         mount_offset_y: swt.toolSlot.body.mount_offset_y ?? 0,
         mount_offset_z: swt.toolSlot.body.mount_offset_z ?? 0,
+        effector_offset_x: swt.tool?.body.effector_offset_x ?? 0,
+        effector_offset_y: swt.tool?.body.effector_offset_y ?? 0,
+        effector_offset_z: swt.tool?.body.effector_offset_z ?? 0,
         toolId: swt.tool?.body.id,
         toolName: swt.tool?.body.name,
         toolType,
@@ -296,8 +305,9 @@ const ToolsBase = (props: ToolsProps) => {
   const mountedToolType = promoTools
     ? props.config.tool || undefined
     : props.mountedToolType;
-  const mountedToolName = props.toolSlots?.find(slot =>
-    slot.tool?.body.id == props.mountedToolId)?.tool?.body.name;
+  const mountedTool = props.toolSlots?.find(slot =>
+    slot.tool?.body.id == props.mountedToolId)?.tool;
+  const mountedToolName = mountedTool?.body.name;
   const configuredTools = React.useMemo(
     () => isUndefined(props.toolSlots)
       ? undefined
@@ -335,6 +345,9 @@ const ToolsBase = (props: ToolsProps) => {
       mount_offset_x={0}
       mount_offset_y={0}
       mount_offset_z={0}
+      effector_offset_x={mountedTool?.body.effector_offset_x ?? 0}
+      effector_offset_y={mountedTool?.body.effector_offset_y ?? 0}
+      effector_offset_z={mountedTool?.body.effector_offset_z ?? 0}
       toolId={props.mountedToolId}
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
@@ -852,50 +865,81 @@ const ToolBase = (props: ToolProps) => {
     onHoverObject,
     onHoverLabel: props.onHoverLabel,
   };
-  switch (props.toolType) {
-    case "rotary_tool":
-      return inToolbay
-        ? <ToolbaySlot {...common}>
-          <RotaryToolModel />
-        </ToolbaySlot>
-        : <ActiveRotaryToolSlot
+  const model = (() => {
+    switch (props.toolType) {
+      case "rotary_tool":
+        return inToolbay
+          ? <ToolbaySlot {...common}>
+            <RotaryToolModel />
+          </ToolbaySlot>
+          : <ActiveRotaryToolSlot
+            {...common}
+            rotary={props.config.rotary} />;
+      case "watering_nozzle":
+        return <ToolbaySlot {...common}>
+          <WateringNozzleToolModel />
+        </ToolbaySlot>;
+      case "seed_bin":
+        return <ToolbaySlot {...common}>
+          <SeedBinToolModel />
+        </ToolbaySlot>;
+      case "seed_tray":
+        return <ToolbaySlot {...common}>
+          <SeedTrayToolModel />
+        </ToolbaySlot>;
+      case "soil_sensor":
+        return <ToolbaySlot {...common}>
+          <SoilSensorToolModel />
+        </ToolbaySlot>;
+      case "seeder":
+        return <ToolbaySlot {...common}>
+          <SeederToolModel config={props.config} inToolbay={inToolbay} />
+        </ToolbaySlot>;
+      case "weeder":
+        return <ToolbaySlot {...common}>
+          <WeederToolModel />
+        </ToolbaySlot>;
+      case "seed_trough":
+        return <SeedTroughToolSlot
           {...common}
-          rotary={props.config.rotary} />;
-    case "watering_nozzle":
-      return <ToolbaySlot {...common}>
-        <WateringNozzleToolModel />
-      </ToolbaySlot>;
-    case "seed_bin":
-      return <ToolbaySlot {...common}>
-        <SeedBinToolModel />
-      </ToolbaySlot>;
-    case "seed_tray":
-      return <ToolbaySlot {...common}>
-        <SeedTrayToolModel />
-      </ToolbaySlot>;
-    case "soil_sensor":
-      return <ToolbaySlot {...common}>
-        <SoilSensorToolModel />
-      </ToolbaySlot>;
-    case "seeder":
-      return <ToolbaySlot {...common}>
-        <SeederToolModel config={props.config} inToolbay={inToolbay} />
-      </ToolbaySlot>;
-    case "weeder":
-      return <ToolbaySlot {...common}>
-        <WeederToolModel />
-      </ToolbaySlot>;
-    case "seed_trough":
-      return <SeedTroughToolSlot
-        {...common}
-        firstTrough={props.firstTrough} />;
-    case "none":
-      return <ToolbaySlot {...common}>
-        <CustomToolModel toolName={props.toolName} />
-      </ToolbaySlot>;
-    default:
-      return <ToolbaySlot {...common} />;
-  }
+          firstTrough={props.firstTrough} />;
+      case "none":
+        return <ToolbaySlot {...common}>
+          <CustomToolModel toolName={props.toolName} />
+        </ToolbaySlot>;
+      default:
+        return <ToolbaySlot {...common} />;
+    }
+  })();
+  if (!config.toolDebug) { return model; }
+  const effectorPosition = getToolRenderPosition(config, {
+    ...props,
+    x: props.x + (props.effector_offset_x ?? 0),
+    y: props.y + (props.effector_offset_y ?? 0),
+    z: props.z + (props.effector_offset_z ?? 0),
+  }, inToolbay, props.positionHelpers);
+  return <>
+    {model}
+    {[
+      { name: "mount-offset", color: "#00ffff", radius: 8, position },
+      {
+        name: "effector-offset", color: "#ff00ff", radius: 5,
+        position: {
+          x: effectorPosition.x - frameOrigin[0],
+          y: effectorPosition.y - frameOrigin[1],
+          z: effectorPosition.z - frameOrigin[2],
+        },
+      },
+    ].map(marker =>
+      <Mesh key={marker.name} name={marker.name}
+        position={[marker.position.x, marker.position.y, marker.position.z]}
+        renderOrder={RenderOrder.plantLabels}
+        raycast={() => undefined}>
+        <SphereGeometry args={[marker.radius, 16, 16]} />
+        <MeshBasicMaterial color={marker.color} toneMapped={false}
+          depthTest={false} depthWrite={false} />
+      </Mesh>)}
+  </>;
 };
 
 const Tool = React.memo(ToolBase);

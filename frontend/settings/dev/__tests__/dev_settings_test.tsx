@@ -260,6 +260,16 @@ describe("<Dev3dDebugSettings />", () => {
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
+  it("adds the tool debug setting", () => {
+    mockState.resources = buildResourceIndex([]);
+    const { container } = render(<Dev3dDebugSettings />);
+    fireEvent.click(toggleFor(container, "3D_toolDebug"));
+    expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv", {
+      key: "3D_toolDebug",
+      value: 1,
+    });
+  });
+
   it("shows the prefixed camera-fit debug setting", () => {
     mockState.resources = buildResourceIndex([]);
     const { container } = render(<Dev3dDebugSettings />);

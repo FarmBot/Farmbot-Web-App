@@ -212,6 +212,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     lowDetail: getValue("lowDetail"),
     eventDebug: getValue("eventDebug"),
     cableDebug: getValue("cableDebug"),
+    toolDebug: getValue("toolDebug"),
     lightsDebug: getValue("lightsDebug"),
     moistureDebug: getValue("moistureDebug"),
     cameraFitDebug: getValue("cameraFitDebug"),
@@ -380,6 +381,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.lowDetail = !!configValues.lowDetail;
     nextConfig.eventDebug = !!configValues.eventDebug;
     nextConfig.cableDebug = !!configValues.cableDebug;
+    nextConfig.toolDebug = !!configValues.toolDebug;
     nextConfig.lightsDebug = !!configValues.lightsDebug;
     nextConfig.moistureDebug = !!configValues.moistureDebug;
     nextConfig.cameraFitDebug = !!configValues.cameraFitDebug;
@@ -461,6 +463,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     configValues.bounds,
     configValues.cableCarriers,
     configValues.cableDebug,
+    configValues.toolDebug,
     configValues.cameraFitDebug,
     configValues.ccSupportSize,
     configValues.clouds,
