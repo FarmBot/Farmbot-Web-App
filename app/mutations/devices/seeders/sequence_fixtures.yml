@@ -155,7 +155,7 @@
       :body:
       - :kind: parameter_declaration
         :args:
-          :label: parent
+          :label: Plant
           :default_value:
             :kind: coordinate
             :args:
@@ -165,168 +165,78 @@
   :color: yellow
   :name: Plant seed
   :body:
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: safe_z
-        :args: {}
-    :comment: Move to above plant
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-25-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: speed_overwrite
-        :args:
-          :axis: z
-          :speed_setting:
-            :kind: numeric
-            :args:
-              :number: 25
-    :comment: Plant seed
-  - :kind: write_pin
+  - :kind: lua
     :args:
-      :pin_mode: 0
-      :pin_value: 0
-      :pin_number:
-        :kind: named_pin
-        :args:
-          :pin_id: 0
-          :pin_type: Peripheral
-    :comment: Turn off vacuum pump
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
-    :comment: Retract needle
-  - :kind: find_home
-    :args:
-      :speed: 100
-      :axis: z
-    :comment: Move to safe Z position
+      :lua: |
+        local function job(status, percent)
+          set_job("Plant seed", {status = status, percent = percent})
+        end
+
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
+        if not verify_tool{type = "seeder"} then
+          fail()
+          return
+        end
+        local seeder = get_mounted_tool()
+
+        local plant = variable("Plant")
+        local depth = plant.depth or 25
+
+        -- Check vacuum state
+        local vacuum_pump_pin = 9
+        if read_pin(vacuum_pump_pin) ~= 1 then
+          fail("Vacuum must be on to carry seed.")
+          return
+        end
+
+        -- Calculate tool-compensated destinations
+        local soil_z = soil_height(plant.x, plant.y)
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          x = plant.x,
+          y = plant.y,
+          z = soil_z + 150,
+          safe_z = true
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = soil_z - depth,
+          speed = 25
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
+            return
+          end
+        end
+
+        -- Move to above plant
+        job("Moving to plant", 25)
+        move(approach)
+
+        -- Plant seed
+        job("Planting seed", 50)
+        move(insertion)
+
+        -- Turn off vacuum pump
+        off(vacuum_pump_pin)
+
+        -- Retract needle
+        job("Retracting needle", 75)
+        move{z = approach.z, speed = 25}
+
+        -- Find Z home
+        job("Finding Z home", 90)
+        find_home("z")
+        job("Complete", 100)
 
 :PLANT_SEED_EXPRESS: # ===================================
   :args:
@@ -336,7 +246,7 @@
       :body:
       - :kind: parameter_declaration
         :args:
-          :label: parent
+          :label: Plant
           :default_value:
             :kind: coordinate
             :args:
@@ -346,354 +256,152 @@
   :color: yellow
   :name: Plant seed
   :body:
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: numeric
-            :args:
-              :number: 150
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: safe_z
-        :args: {}
-    :comment: Move to above plant
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-25-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: speed_overwrite
-        :args:
-          :axis: z
-          :speed_setting:
-            :kind: numeric
-            :args:
-              :number: 25
-    :comment: Plant seed
-  - :kind: write_pin
+  - :kind: lua
     :args:
-      :pin_mode: 0
-      :pin_value: 0
-      :pin_number:
-        :kind: named_pin
-        :args:
-          :pin_id: 0
-          :pin_type: Peripheral
-    :comment: Turn off vacuum pump
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: identifier
-            :args:
-              :label: parent
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: special_value
-            :args:
-              :label: "soil_height"
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "150-get_tool({type=\"seeder\"}).effector_offset_z"
-    :comment: Retract needle
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: numeric
-            :args:
-              :number: 0
-    :comment: Move Z to home position
+      :lua: |
+        local function job(status, percent)
+          set_job("Plant seed", {status = status, percent = percent})
+        end
+
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
+        local seeder = get_tool{type = "seeder"}
+
+        local plant = variable("Plant")
+        local depth = plant.depth or 25
+
+        -- Check vacuum state
+        local vacuum_pump_pin = 9
+        if read_pin(vacuum_pump_pin) ~= 1 then
+          fail("Vacuum must be on to carry seed.")
+          return
+        end
+
+        -- Calculate tool-compensated destinations
+        local soil_z = soil_height(plant.x, plant.y)
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          x = plant.x,
+          y = plant.y,
+          z = soil_z + 150,
+          safe_z = true
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = soil_z - depth,
+          speed = 25
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
+            return
+          end
+        end
+
+        -- Move to above plant
+        job("Moving to plant", 25)
+        move(approach)
+
+        -- Plant seed
+        job("Planting seed", 50)
+        move(insertion)
+
+        -- Turn off vacuum pump
+        off(vacuum_pump_pin)
+
+        -- Retract needle
+        job("Retracting needle", 75)
+        move{z = approach.z, speed = 25}
+
+        -- Move Z to home position
+        job("Moving Z home", 90)
+        move{z = 0}
+        job("Complete", 100)
 
 :PICK_UP_SEED_EXPRESS: # =========================
   :args:
     :locals:
       :kind: scope_declaration
       :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Seed Trough
+          :default_value:
+            :kind: location_placeholder
+            :args: {}
+      - :kind: variable_declaration
+        :args:
+          :label: Trough Depth
+          :data_value:
+            :kind: numeric
+            :args:
+              :number: 10
   :color: yellow
   :name: Pick up seed
   :body:
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "50-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: safe_z
-        :args: {}
-    :comment: Move above seed trough
-  - :kind: write_pin
+  - :kind: lua
     :args:
-      :pin_mode: 0
-      :pin_value: 1
-      :pin_number:
-        :kind: named_pin
-        :args:
-          :pin_id: 0
-          :pin_type: Peripheral
-    :comment: Turn on vacuum pump
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
-      - :kind: speed_overwrite
-        :args:
-          :axis: z
-          :speed_setting:
-            :kind: numeric
-            :args:
-              :number: 25
-    :comment: Pick up seed
-  - :kind: move
-    :args: {}
-    :body:
-      - :kind: axis_overwrite
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_overwrite
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: tool
-            :args:
-              :tool_id: 0
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: numeric
-            :args:
-              :number: 50
-      - :kind: axis_addition
-        :args:
-          :axis: x
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_x"
-      - :kind: axis_addition
-        :args:
-          :axis: y
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_y"
-      - :kind: axis_addition
-        :args:
-          :axis: z
-          :axis_operand:
-            :kind: lua
-            :args:
-              :lua: "-get_tool({type=\"seeder\"}).effector_offset_z"
-    :comment: Move above seed trough
+      :lua: |
+        local function job(status, percent)
+          set_job("Pick up seed", {status = status, percent = percent})
+        end
+
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
+        local seeder = get_tool{type = "seeder"}
+
+        local container = variable("Seed Trough")
+        local depth = variable("Trough Depth")
+        local location = container
+
+        -- Calculate tool-compensated destinations
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          y = location.y,
+          z = location.z + 50,
+          safe_z = true
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = location.z - depth,
+          speed = 25
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
+            return
+          end
+        end
+
+        -- Move above seed trough
+        job("Moving to seed trough", 25)
+        move(approach)
+
+        -- Turn on vacuum pump and pick up seed
+        job("Picking up seed", 75)
+        local vacuum_pump_pin = 9
+        on(vacuum_pump_pin)
+        move(insertion)
+
+        -- Retract needle
+        job("Retracting needle", 90)
+        move{z = approach.z, speed = 25}
+        job("Complete", 100)
 
 :WATER_ALL_PLANTS: # =========================
   :args:
@@ -877,53 +585,69 @@
   - :kind: lua
     :args:
       :lua: |
-        tray = variable("Seed Tray")
-        cell_label = variable("Seed Tray Cell")
-        cell = get_seed_tray_cell(tray, cell_label)
-        cell_depth = variable("Cell Depth")
-        seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_x_offset = seeder_tool.effector_offset_x
-        seeder_tip_y_offset = seeder_tool.effector_offset_y
-        seeder_tip_z_offset = seeder_tool.effector_offset_z
-        vacuum_pump_pin = 9
-
-        -- Checks
-        if not verify_tool{type = "seeder"} then
-            return
+        local function job(status, percent)
+          set_job("Pick from Seed Tray", {status = status, percent = percent})
         end
 
-        -- Send message with cell info
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
+        if not verify_tool{type = "seeder"} then
+          fail()
+          return
+        end
+        local seeder = get_mounted_tool()
+
+        local container = variable("Seed Tray")
+        local depth = variable("Cell Depth")
+        local cell_label = variable("Seed Tray Cell")
+        local location = get_seed_tray_cell(container, cell_label)
+        if not location then
+          fail()
+          return
+        end
         toast("Picking up seed from cell " .. cell_label)
 
-        -- Job
-        function job(status, percent)
-            set_job("Pick from Seed Tray", {
-                status = status,
-                percent = percent
-            })
+        -- Calculate tool-compensated destinations
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          x = location.x,
+          y = location.y,
+          z = location.z + 25,
+          grouping = "xy,z",
+          route = "high"
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = location.z - depth,
+          speed = 50
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
+            return
+          end
         end
 
-        -- Move to above the cell
+        -- Move above seed tray
         job("Moving to seed tray", 25)
-        move{
-            x = cell.x - seeder_tip_x_offset,
-            y = cell.y - seeder_tip_y_offset,
-            z = cell.z - seeder_tip_z_offset + 25,
-            grouping = "xy,z",
-            route = "high"
-        }
+        move(approach)
 
-        -- Pick up seed
+        -- Turn on vacuum pump and pick up seed
         job("Picking up seed", 75)
+        local vacuum_pump_pin = 9
         on(vacuum_pump_pin)
-        move{
-            z = cell.z + seeder_tip_z_offset - cell_depth,
-            speed = 50
-        }
+        move(insertion)
 
-        -- Retract Z
-        job("Retracting Z", 90)
-        move{z=cell.z + seeder_tip_z_offset + 25}
+        -- Retract needle
+        job("Retracting needle", 90)
+        move{z = approach.z, speed = 50}
         job("Complete", 100)
 
 :PICK_FROM_SEED_TROUGH: # ===================================
@@ -951,49 +675,62 @@
   - :kind: lua
     :args:
       :lua: |
-        trough = variable("Seed Trough")
-        trough_depth = variable("Trough Depth")
-        seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_y_offset = seeder_tool.effector_offset_y
-        seeder_tip_z_offset = seeder_tool.effector_offset_z
-        vacuum_pump_pin = 9
+        local function job(status, percent)
+          set_job("Pick from Seed Trough", {status = status, percent = percent})
+        end
 
-        -- Checks
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
         if not verify_tool{type = "seeder"} then
+          fail()
+          return
+        end
+        local seeder = get_mounted_tool()
+
+        local container = variable("Seed Trough")
+        local depth = variable("Trough Depth")
+        local location = container
+
+        -- Calculate tool-compensated destinations
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          y = location.y,
+          z = location.z + 25,
+          grouping = "xy,z",
+          route = "high"
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = location.z - depth,
+          speed = 50
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
             return
+          end
         end
 
-        -- Send message with trough info
-        toast("Picking up seed from " .. trough.name)
-
-        -- Job
-        function job(status, percent)
-            set_job("Pick from Seed trough", {
-                status = status,
-                percent = percent
-            })
-        end
-
-        -- Move to above the trough
+        -- Move above seed trough
         job("Moving to seed trough", 25)
-        move{
-            y = trough.y - seeder_tip_y_offset,
-            z = trough.z - seeder_tip_z_offset + 25,
-            grouping = "xy,z",
-            route = "high"
-        }
+        move(approach)
 
-        -- Pick up seed
+        -- Turn on vacuum pump and pick up seed
         job("Picking up seed", 75)
+        local vacuum_pump_pin = 9
         on(vacuum_pump_pin)
-        move{
-            z = trough.z - seeder_tip_z_offset - trough_depth,
-            speed = 50
-        }
+        move(insertion)
 
-        -- Retract Z
-        job("Retracting Z", 90)
-        move{z=trough.z - seeder_tip_z_offset + 25}
+        -- Retract needle
+        job("Retracting needle", 90)
+        move{z = approach.z, speed = 50}
         job("Complete", 100)
 
 :PICK_FROM_SEED_BIN: # ===================================
@@ -1021,51 +758,63 @@
   - :kind: lua
     :args:
       :lua: |
-        bin = variable("Seed Bin")
-        bin_depth = variable("Bin Depth")
-        seeder_tool = get_tool({name = "Seeder"})
-        seeder_tip_x_offset = seeder_tool.effector_offset_x
-        seeder_tip_y_offset = seeder_tool.effector_offset_y
-        seeder_tip_z_offset = seeder_tool.effector_offset_z
-        vacuum_pump_pin = 9
+        local function job(status, percent)
+          set_job("Pick from Seed Bin", {status = status, percent = percent})
+        end
 
-        -- Checks
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
         if not verify_tool{type = "seeder"} then
+          fail()
+          return
+        end
+        local seeder = get_mounted_tool()
+
+        local container = variable("Seed Bin")
+        local depth = variable("Bin Depth")
+        local location = container
+
+        -- Calculate tool-compensated destinations
+        local approach = resolve_tool_move{
+          id = seeder.id,
+          x = location.x,
+          y = location.y,
+          z = location.z + 25,
+          grouping = "xy,z",
+          route = "high"
+        }
+        local insertion = resolve_tool_move{
+          id = seeder.id,
+          z = location.z - depth,
+          speed = 50
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
             return
+          end
         end
 
-        -- Send message with bin info
-        toast("Picking up seed from " .. bin.name)
-
-        -- Job
-        function job(status, percent)
-            set_job("Pick from Seed Bin", {
-                status = status,
-                percent = percent
-            })
-        end
-
-        -- Move to above the bin
+        -- Move above seed bin
         job("Moving to seed bin", 25)
-        move{
-            x = bin.x - seeder_tip_x_offset,
-            y = bin.y - seeder_tip_y_offset,
-            z = bin.z - seeder_tip_z_offset + 25,
-            grouping = "xy,z",
-            route = "high"
-        }
+        move(approach)
 
-        -- Pick up seed
+        -- Turn on vacuum pump and pick up seed
         job("Picking up seed", 75)
+        local vacuum_pump_pin = 9
         on(vacuum_pump_pin)
-        move{
-            z = bin.z - seeder_tip_z_offset - bin_depth,
-            speed = 50
-        }
+        move(insertion)
 
-        -- Retract Z
-        job("Retracting Z", 90)
-        move{z=bin.z - seeder_tip_z_offset + 25}
+        -- Retract needle
+        job("Retracting needle", 90)
+        move{z = approach.z, speed = 50}
         job("Complete", 100)
 
 :PHOTO_GRID: # ===================================

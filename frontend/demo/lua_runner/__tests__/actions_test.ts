@@ -16,7 +16,8 @@ import { Actions } from "../../../constants";
 import { error, info } from "../../../toast/toast";
 import { store } from "../../../redux/store";
 import {
-  eStop, expandActions, getPositionAfterActions, runActions,
+  eStop, expandActions, getPinValuesAfterActions, getPositionAfterActions,
+  runActions,
   runDemoMovementCommand, setCurrent,
 } from "../actions";
 import * as lodash from "lodash";
@@ -331,6 +332,51 @@ describe("runActions()", () => {
   });
 });
 
+describe("getPinValuesAfterActions()", () => {
+  let getStateMock: jest.Mock;
+  let pins: Record<number, { value: number; mode: number } | undefined>
+    | undefined;
+
+  beforeEach(() => {
+    pins = { 9: { value: 1, mode: 0 }, 5: undefined };
+    getStateMock = jest.fn(() => ({
+      ...mockGetState(),
+      bot: { hardware: { ...mockGetState().bot.hardware, pins } },
+    }));
+    (store as unknown as { getState: Function }).getState = getStateMock;
+  });
+
+  afterEach(() => {
+    (store as unknown as { getState: Function }).getState = originalGetState;
+  });
+
+  it("copies persisted values and defaults missing entries to zero", () => {
+    const values = getPinValuesAfterActions([]);
+    expect(values).toEqual({ 9: 1, 5: 0 });
+    values[9] = 0;
+    expect(pins?.[9]?.value).toEqual(1);
+  });
+
+  it("handles missing persisted pins", () => {
+    pins = undefined;
+    expect(getPinValuesAfterActions([])).toEqual({});
+  });
+
+  it("replays writes and toggles in order without changing the snapshot", () => {
+    const snapshot = { 9: 1 };
+    expect(getPinValuesAfterActions([
+      { type: "write_pin", args: [9, "digital", 0] },
+      { type: "toggle_pin", args: [9] },
+      { type: "toggle_pin", args: [9] },
+      { type: "write_pin", args: [5, "analog", 120] },
+      { type: "toggle_pin", args: [99] },
+      { type: "read_pin", args: [9, "digital"] },
+    ], snapshot)).toEqual({ 9: 0, 5: 120, 99: 1 });
+    expect(snapshot).toEqual({ 9: 1 });
+    expect(getStateMock).not.toHaveBeenCalled();
+  });
+});
+
 describe("expandActions()", () => {
   const defaultMove = (x: number, y = 0, z = 0) => ({
     type: "animated_move_absolute",
@@ -416,6 +462,13 @@ describe("expandActions()", () => {
     ], [])).toEqual([
       { type: "animated_move_absolute", args: [100, 200, 0] },
     ]);
+  });
+
+  it("does not expand a digital read into a pin write", () => {
+    expect(expandActions([
+      { type: "read_pin", args: [9, "digital"] },
+    ], [])).toEqual([]);
+    expect(randomSpy).not.toHaveBeenCalled();
   });
 
   it("expands an analog pin read", () => {

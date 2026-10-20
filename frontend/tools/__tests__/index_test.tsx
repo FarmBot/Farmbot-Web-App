@@ -97,11 +97,12 @@ describe("<Tools />", () => {
     p.toolSlots[0].body.x = 1;
     p.toolSlots[1].body.tool_id = 3;
     p.toolSlots[1].body.mount_stage = MountStage.X;
+    p.toolSlots[1].body.mount_offset_x = 4;
     p.toolSlots[1].body.y = 2;
     const { container } = render(<Tools {...p} />);
     [
       "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown",
-      "(x axis, 2, 0)",
+      "(x+4, 2, 0)",
     ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
   });
 

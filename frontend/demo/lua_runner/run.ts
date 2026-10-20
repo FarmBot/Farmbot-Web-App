@@ -30,7 +30,7 @@ import { error } from "../../toast/toast";
 import { collectDemoSequenceActions } from "./index";
 import { get, last } from "lodash";
 import { XYZ } from "../../devices/constants";
-import { getPositionAfterActions } from "./actions";
+import { getPinValuesAfterActions, getPositionAfterActions } from "./actions";
 
 interface LuaResult {
   actions: Action[];
@@ -43,10 +43,13 @@ export const executeLua =
     luaCode: string,
     variables: ParameterApplication[],
     currentPosition?: XyzNumber,
+    currentPins?: Record<number, number>,
   ): LuaResult => {
     const actions: Action[] = [];
     const getCurrentPosition = () =>
       getPositionAfterActions(actions, variables, currentPosition);
+    const getCurrentPinValues = () =>
+      getPinValuesAfterActions(actions, currentPins);
     const L = lauxlib.luaL_newstate(); // stack: []
     const resources = store.getState().resources.index;
     let allPointsCache: ReturnType<typeof selectAllPoints> | undefined;
@@ -367,16 +370,13 @@ export const executeLua =
       if (cmd.kind == "execute") {
         const sequenceId = cmd.args.sequence_id;
         const seqVariables = cmd.body;
-        const seqActions = position
-          ? collectDemoSequenceActions(
-            depth + 1, resources, sequenceId, seqVariables, [], position)
-          : collectDemoSequenceActions(
-            depth + 1, resources, sequenceId, seqVariables);
+        const seqActions = collectDemoSequenceActions(
+          depth + 1, resources, sequenceId, seqVariables, [], position,
+          getCurrentPinValues());
         actions.push(...seqActions);
       } else {
-        const luaActions = position
-          ? runLua(depth, csToLua(cmd), variables, position)
-          : runLua(depth, csToLua(cmd), variables);
+        const luaActions = runLua(depth, csToLua(cmd), variables, position,
+          getCurrentPinValues());
         actions.push(...luaActions);
       }
       return 0;
@@ -609,8 +609,12 @@ export const executeLua =
         jsToLua(L, value);
         return 1;
       }
-      actions.push({ type: "read_pin", args: [pin] });
-      jsToLua(L, 0);
+      const value = getCurrentPinValues()[pin] ?? 0;
+      const mode = lua.lua_gettop(L) > 1 && luaToJs(L, 2) == "analog"
+        ? "analog"
+        : "digital";
+      actions.push({ type: "read_pin", args: [pin, mode] });
+      jsToLua(L, value);
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("read_pin"));
@@ -715,8 +719,10 @@ export const runLua =
     luaCode: string,
     variables: ParameterApplication[],
     currentPosition?: XyzNumber,
+    currentPins?: Record<number, number>,
   ): Action[] => {
-    return executeLua(depth, luaCode, variables, currentPosition).actions;
+    return executeLua(depth, luaCode, variables,
+      currentPosition, currentPins).actions;
   };
 
 export const evalLua = (

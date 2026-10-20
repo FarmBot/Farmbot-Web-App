@@ -701,7 +701,7 @@ describe("collectDemoSequenceActions()", () => {
           }),
         }),
       },
-    ]);
+    ], undefined, {});
   });
 
   it("handles circular references", () => {
@@ -1662,10 +1662,10 @@ describe("runDemoLuaCode()", () => {
     });
   });
 
-  it("runs read_pin 5", () => {
+  it("runs analog read_pin 5", () => {
     setCurrent({ x: 1, y: 2, z: 0 });
     mockResources = buildResourceIndex([]);
-    runDemoLuaCode("print(read_pin(5))");
+    runDemoLuaCode('print(read_pin(5, "analog"))');
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("0");

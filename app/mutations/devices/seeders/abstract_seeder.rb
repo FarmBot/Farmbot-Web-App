@@ -351,10 +351,6 @@ module Devices
       def water_id
         @water_id ||= device.peripherals.find_by!(label: "Water").id
       end
-
-      def vacuum_id
-        @vacuum_id ||= device.peripherals.find_by!(label: ToolNames::VACUUM).id
-      end
     end
   end
 end

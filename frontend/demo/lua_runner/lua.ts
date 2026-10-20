@@ -498,7 +498,7 @@ function get_seed_tray_cell(tray, tray_cell)
 
   -- A1 coordinates
   local A1 = {
-      x = tray.x - (1.5 * cell_spacing * flip),
+      x = tray.x + (1.5 * cell_spacing * flip),
       y = tray.y - (1.5 * cell_spacing * flip),
       z = tray.z
   }
@@ -673,7 +673,7 @@ function move(input)
     })
 end
 
-function move_with_tool(input)
+function resolve_tool_move(input)
     local selector = {id = input.id, name = input.name, type = input.type}
     local tool = get_tool(selector)
     if not tool then
@@ -682,24 +682,36 @@ function move_with_tool(input)
     local slot = get_slot_for_tool(selector) or {}
     local stage = slot.mount_stage or 0
     local offset = input.offset or {}
-    local body = {}
+    local result = {}
 
     for key, value in pairs(input) do
-        body[key] = value
+        if key ~= "id" and key ~= "name"
+            and key ~= "type" and key ~= "offset" then
+            result[key] = value
+        end
     end
-    body.offset = {}
 
     for index, axis in ipairs({"x", "y", "z"}) do
-        local mount_offset = 0
-        if stage >= index then
-            mount_offset = slot["mount_offset_" .. axis] or 0
+        if input[axis] ~= nil then
+            local mount_offset = 0
+            if stage >= index then
+                mount_offset = slot["mount_offset_" .. axis] or 0
+            end
+            result[axis] = input[axis]
+                - mount_offset
+                - (tool["effector_offset_" .. axis] or 0)
+                + (offset[axis] or 0)
+        elseif offset[axis] ~= nil then
+            result.offset = result.offset or {}
+            result.offset[axis] = offset[axis]
         end
-        body.offset[axis] = -mount_offset
-            - (tool["effector_offset_" .. axis] or 0)
-            + (offset[axis] or 0)
     end
 
-    move(body)
+    return result
+end
+
+function move_with_tool(input)
+    move(resolve_tool_move(input))
 end
 
 function rpc(rpc_node)

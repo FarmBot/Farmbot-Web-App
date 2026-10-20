@@ -73,24 +73,11 @@ module Devices
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup
-
-        s.dig(:body, 0, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 0, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 0, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 1, :args, :pin_number, :args)[:pin_id] = vacuum_id
-        s.dig(:body, 2, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 2, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 2, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 3, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 3, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 3, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         Sequences::Create.run!(s, device: device)
       end
 
       def sequences_plant_seed
         s = SequenceSeeds::PLANT_SEED_EXPRESS.deep_dup
-
-        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
         Sequences::Create.run!(s, device: device)
       end
 
@@ -115,12 +102,6 @@ module Devices
         FarmwareEnvs::Create.run(
           { key: "3D_beamLength", value: "1200" },
           device: device)
-      end
-
-      private
-
-      def seed_trough_1_id
-        @seed_trough_1_id ||= device.tools.find_by!(name: ToolNames::SEED_TROUGH_1).id
       end
     end
   end

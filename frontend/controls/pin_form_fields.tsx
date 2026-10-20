@@ -15,7 +15,7 @@ const PIN_TYPE_INFO: Record<PinType, { emoji: string; label: string }> = {
   lighting: { emoji: "💡", label: "Lighting" },
   rotary_tool: { emoji: "꩜", label: "Rotary Tool" },
   vacuum: { emoji: "💨", label: "Vacuum" },
-  water: { emoji: "💧", label: "Water" },
+  water: { emoji: "🚰", label: "Water" },
   soil_moisture: { emoji: "💧", label: "Soil Moisture" },
   tool_verification: { emoji: "🔧", label: "Tool Verification" },
   current: { emoji: "⚡", label: "Current" },

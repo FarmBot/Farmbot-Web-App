@@ -26,7 +26,10 @@ describe("<Visualization />", () => {
     console.log = jest.fn();
     originalGetState = store.getState;
     (store as unknown as { getState: () => { resources: typeof mockResources } })
-      .getState = () => ({ resources: mockResources });
+      .getState = () => ({
+        resources: mockResources,
+        bot: { hardware: { pins: {} } },
+      });
   });
 
   afterEach(() => {

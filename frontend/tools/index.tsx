@@ -293,6 +293,11 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
       <p className="tool-slot-position">
         <i>{botPositionLabel({ x, y, z }, {
           mountStage: mount_stage,
+          mountOffset: {
+            x: props.toolSlot.body.mount_offset_x ?? 0,
+            y: props.toolSlot.body.mount_offset_y ?? 0,
+            z: props.toolSlot.body.mount_offset_z ?? 0,
+          },
         })}</i>
       </p>
     </Row>

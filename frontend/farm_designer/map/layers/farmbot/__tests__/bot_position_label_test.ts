@@ -13,12 +13,29 @@ describe("botPositionLabel()", () => {
   });
 
   it.each<[MountStage, string]>([
-    [MountStage.X, "(X axis, 2, 3)"],
-    [MountStage.Y, "(Y axis, Y axis, 3)"],
-    [MountStage.Z, "(Z axis, Z axis, Z axis)"],
+    [MountStage.NONE, "(1.1, 2, 3)"],
+    [MountStage.X, "(X+4, 2, 3)"],
+    [MountStage.Y, "(X+4, Y-5, 3)"],
+    [MountStage.Z, "(X+4, Y-5, Z)"],
   ])("returns stage position: %s", (mountStage, expected) => {
     const position = { x: 1.1, y: 2, z: 3 };
-    expect(botPositionLabel(position, { mountStage })).toEqual(expected);
+    const mountOffset = { x: 4, y: -5, z: 0 };
+    expect(botPositionLabel(position, { mountStage, mountOffset }))
+      .toEqual(expected);
+  });
+
+  it("returns mounted axes without offsets", () => {
+    const position = { x: 1, y: 2, z: 3 };
+    expect(botPositionLabel(position, { mountStage: MountStage.Z }))
+      .toEqual("(X, Y, Z)");
+  });
+
+  it("returns signed offsets for each axis", () => {
+    const position = { x: 1, y: 2, z: 3 };
+    expect(botPositionLabel(position, {
+      mountStage: MountStage.Z,
+      mountOffset: { x: -4.5, y: 5.5, z: 6 },
+    })).toEqual("(X-4.5, Y+5.5, Z+6)");
   });
 
   it("returns partial position", () => {

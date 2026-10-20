@@ -3,8 +3,8 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterApplication, Point, SequenceBodyItem } from "farmbot";
 import { runLua } from "./run";
 import {
-  expandActions, expandActionsFromPosition, getPositionAfterActions, runActions,
-  syncCurrentFromBotPosition,
+  expandActions, expandActionsFromPosition, getPinValuesAfterActions,
+  getPositionAfterActions, runActions, syncCurrentFromBotPosition,
 } from "./actions";
 import { Action, XyzNumber } from "./interfaces";
 import { csToLua } from "./util";
@@ -36,6 +36,7 @@ export const collectDemoSequenceActions = (
   bodyVariables: ParameterApplication[] | undefined,
   sequenceStack: string[] = [],
   currentPosition?: XyzNumber,
+  currentPins?: Record<number, number>,
 ): Action[] => {
   if (depth > 100) {
     error("Maximum call depth exceeded.");
@@ -82,7 +83,8 @@ export const collectDemoSequenceActions = (
         sequence.body.id as number,
         pointVariables,
         sequenceStack,
-        loopCurrent);
+        loopCurrent,
+        getPinValuesAfterActions(actions, currentPins));
       if (loopCurrent) {
         const expanded = expandActionsFromPosition(
           loopSeqActions,
@@ -107,13 +109,13 @@ export const collectDemoSequenceActions = (
         step.args.sequence_id,
         step.body,
         sequenceStack,
-        position);
+        position,
+        getPinValuesAfterActions(actions, currentPins));
       actions.push(...seqActions);
     } else {
       const lua = step.kind === "lua" ? step.args.lua : csToLua(step);
-      const stepActions = position
-        ? runLua(depth, lua, variables, position)
-        : runLua(depth, lua, variables);
+      const stepActions = runLua(depth, lua, variables, position,
+        getPinValuesAfterActions(actions, currentPins));
       actions.push(...stepActions);
     }
   });

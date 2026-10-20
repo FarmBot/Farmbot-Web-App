@@ -340,6 +340,7 @@ export const expandActionsFromPosition = (
         stop();
         break;
       case "read_pin":
+        if (action.args[1] == "digital") { break; }
         const pin = action.args[0] as number;
         expanded.push({
           type: "sensor_reading",
@@ -384,6 +385,26 @@ export const expandActionsFromPosition = (
     actions: expanded,
     current: { ...expansionCurrent },
   };
+};
+
+export const getPinValuesAfterActions = (
+  actions: Action[],
+  startPins?: Record<number, number>,
+): Record<number, number> => {
+  const pins = startPins
+    ? { ...startPins }
+    : Object.fromEntries(
+      Object.entries(store.getState().bot.hardware.pins || {})
+        .map(([pin, state]) => [pin, state?.value ?? 0]));
+  actions.forEach(action => {
+    const pin = action.args[0] as number;
+    if (action.type == "write_pin") {
+      pins[pin] = action.args[2] as number;
+    } else if (action.type == "toggle_pin") {
+      pins[pin] = Number(!(pins[pin] ?? 0));
+    }
+  });
+  return pins;
 };
 
 export const getPositionAfterActions = (
