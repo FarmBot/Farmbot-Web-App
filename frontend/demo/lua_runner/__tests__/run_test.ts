@@ -51,6 +51,20 @@ describe("runLua()", () => {
       ]);
     });
 
+  it("captures positional and table move speed percentages", () => {
+    expect(runLua(0, `
+      move_absolute(1, 2, 3, 50)
+      move_relative(4, 5, 6, 25)
+      move_absolute{ x = 7, y = 8, z = 9, speed = 75 }
+      move_absolute{ x = 10, y = 11, z = 12 }
+    `, [])).toEqual([
+      { type: "move_absolute", args: [1, 2, 3, 50] },
+      { type: "move_relative", args: [4, 5, 6, 25] },
+      { type: "move_absolute", args: [7, 8, 9, 75] },
+      { type: "move_absolute", args: [10, 11, 12] },
+    ]);
+  });
+
   it("captures move variables", () => {
     const variables: ParameterApplication[] = [{
       kind: "parameter_application",

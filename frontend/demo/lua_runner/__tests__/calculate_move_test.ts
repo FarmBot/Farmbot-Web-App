@@ -66,6 +66,35 @@ describe("calculateMove()", () => {
     ]);
   });
 
+  it("resolves numeric, Lua, and all-axis speed overrides in order", () => {
+    const body: MoveBodyItem[] = [
+      { kind: "speed_overwrite", args: {
+        axis: "all", speed_setting: { kind: "numeric", args: { number: 50 } },
+      } },
+      { kind: "speed_overwrite", args: {
+        axis: "y", speed_setting: { kind: "lua", args: { lua: "10 + 15" } },
+      } },
+      { kind: "speed_overwrite", args: {
+        axis: "z", speed_setting: { kind: "numeric", args: { number: 0 } },
+      } },
+    ];
+    expect(calculateMove(body, { x: 0, y: 0, z: 0 }, []).speed)
+      .toEqual({ x: 50, y: 25, z: 1 });
+  });
+
+  it("defaults omitted axes and nonnumeric Lua speed to full speed", () => {
+    const body: MoveBodyItem[] = [
+      { kind: "speed_overwrite", args: {
+        axis: "x", speed_setting: { kind: "numeric", args: { number: 25 } },
+      } },
+      { kind: "speed_overwrite", args: {
+        axis: "y", speed_setting: { kind: "lua", args: { lua: "'slow'" } },
+      } },
+    ];
+    expect(calculateMove(body, { x: 0, y: 0, z: 0 }, []).speed)
+      .toEqual({ x: 25, y: 100, z: 100 });
+  });
+
   it("handles number single axis addition", () => {
     const command: Move = {
       kind: "move",
@@ -620,6 +649,7 @@ describe("calculateMove()", () => {
           { x: 100, y: 100, z: 0 },
           { x: 100, y: 100, z: 100 },
         ],
+        speed: { x: 100, y: 100, z: 100 },
         warnings: [],
       });
   });

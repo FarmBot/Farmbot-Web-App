@@ -23,6 +23,7 @@ import {
 import * as lodash from "lodash";
 import {
   getDemoMovementTarget,
+  getDemoMovementSpeed,
   getDemoMovementStopVersion,
   registerDemoMovementDriver,
   reportDemoMovementComplete,
@@ -120,6 +121,29 @@ describe("runActions()", () => {
     );
     jest.runAllTimers();
     expect(info).toHaveBeenCalledTimes(1);
+  });
+
+  it("executes queued moves with their own speed percentages", () => {
+    jest.useFakeTimers();
+    unregisterMovementDriver = registerDemoMovementDriver();
+    reportDemoMovementPosition({ x: 0, y: 0, z: 0 });
+    setCurrent({ x: 0, y: 0, z: 0 });
+    runActions(expandActions([
+      { type: "move_absolute", args: [100, 0, 0, 50] },
+      { type: "move_relative", args: [100, 0, 0, 25] },
+      { type: "move_absolute", args: [300, 0, 0] },
+    ], []));
+    jest.runAllTimers();
+    expect(getDemoMovementSpeed()).toEqual({ x: 50, y: 50, z: 50 });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementSpeed()).toEqual({ x: 25, y: 25, z: 25 });
+    reportDemoMovementComplete({ x: 200, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementSpeed()).toEqual({ x: 100, y: 100, z: 100 });
+    reportDemoMovementComplete({ x: 300, y: 0, z: 0 });
+    jest.runAllTimers();
+    expect(getDemoMovementSpeed()).toBeUndefined();
   });
 
   it("waits for the movement callback before continuing", () => {
@@ -449,6 +473,46 @@ describe("expandActions()", () => {
       });
       expect(getPositionAfterActions([], [])).toBeUndefined();
     });
+
+  it.each(["move_absolute", "move_relative"] as const)(
+    "preserves %s speed through repeated expansion", type => {
+      const actions = expandActions([{ type, args: [100, 0, 0, 50] }], []);
+      const movement = actions.find(a => a.type == "animated_move_absolute");
+      expect(movement?.speed).toEqual({ x: 50, y: 50, z: 50 });
+      expect(expandActions(actions, []).find(a =>
+        a.type == "animated_move_absolute")?.speed).toEqual(movement?.speed);
+    });
+
+  it.each(["safe_z", "axis_order"])(
+    "propagates per-axis speed to every %s segment", kind => {
+      const routing = { kind, args: {} };
+      if (kind == "axis_order") {
+        Object.assign(routing.args, { grouping: "x,y,z", route: "in_order" });
+      }
+      const actions = expandActions([{
+        type: "_move",
+        args: [JSON.stringify([
+          { kind: "axis_overwrite", args: {
+            axis: "all", axis_operand: { kind: "numeric", args: { number: 100 } },
+          } },
+          { kind: "speed_overwrite", args: {
+            axis: "x", speed_setting: { kind: "numeric", args: { number: 25 } },
+          } },
+          routing,
+        ])],
+      }], []).filter(action => action.type == "animated_move_absolute");
+      expect(actions).toHaveLength(3);
+      actions.map(action =>
+        expect(action.speed).toEqual({ x: 25, y: 100, z: 100 }));
+    });
+
+  it("preserves the fourth speed argument of internal animated moves", () => {
+    expect(expandActions([
+      { type: "animated_move_absolute", args: [100, 0, 0, 50] },
+    ], [])).toEqual([{
+      ...defaultMove(100), speed: { x: 50, y: 50, z: 50 },
+    }]);
+  });
 
   it("expands an absolute movement to one target", () => {
     expect(expandActions([

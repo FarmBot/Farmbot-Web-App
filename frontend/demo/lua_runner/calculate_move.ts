@@ -7,6 +7,7 @@ import {
   Xyz,
 } from "farmbot";
 import { store } from "../../redux/store";
+import { movementSpeed, normalizeMovementSpeed } from "./movement_speed";
 import { XyzNumber } from "./interfaces";
 import {
   maybeFindPointById,
@@ -28,9 +29,10 @@ export const calculateMove = (
   body: MoveBodyItem[] | undefined,
   current: XyzNumber,
   variables: ParameterApplication[] | undefined,
-): { moves: XyzNumber[], warnings: string[] } => {
+): { moves: XyzNumber[], warnings: string[], speed?: XyzNumber } => {
   const pos = clone(current);
   const warnings: string[] = [];
+  let speed: XyzNumber | undefined;
   const moveBodyItems = addDefaults(body || []);
   // eslint-disable-next-line complexity
   moveBodyItems.map(item => {
@@ -164,8 +166,20 @@ export const calculateMove = (
             break;
         }
         return;
-      case "speed_overwrite":
+      case "speed_overwrite": {
+        speed = speed || movementSpeed(100);
+        const setting = item.args.speed_setting;
+        const value = setting.kind == "numeric"
+          ? setting.args.number
+          : evalLua(setting.args.lua, variables, current);
+        const percentage = normalizeMovementSpeed(value);
+        if (item.args.axis == "all") {
+          speed = movementSpeed(percentage);
+        } else {
+          speed[item.args.axis] = percentage;
+        }
         return;
+      }
       case "safe_z":
         return;
       case "axis_order":
@@ -184,15 +198,16 @@ export const calculateMove = (
         pos,
       ],
       warnings,
+      ...(speed && { speed }),
     };
   }
   const axisOrderItems = moveBodyItems.filter(item => item.kind === "axis_order");
   if (axisOrderItems.length > 0) {
     const { grouping, route } = axisOrderItems[0].args;
     const moves = generateMoves(grouping, route, current, pos);
-    return { moves, warnings };
+    return { moves, warnings, ...(speed && { speed }) };
   }
-  return { moves: [pos], warnings };
+  return { moves: [pos], warnings, ...(speed && { speed }) };
 };
 
 const generateMoves = (

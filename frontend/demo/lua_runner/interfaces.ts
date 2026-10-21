@@ -28,6 +28,7 @@ export interface Action {
     | "set_job_progress";
     args: (number | string | undefined)[];
     variables?: ParameterApplication[];
+    speed?: XyzNumber;
 }
 
 export type XyzNumber = Record<Xyz, number>;

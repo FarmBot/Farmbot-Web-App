@@ -447,8 +447,9 @@ export const executeLua =
       const args: number[] = [];
       const n = lua.lua_gettop(L);
       if (n == 1) {
-        const params = luaToJs(L, 1) as XyzNumber;
+        const params = luaToJs(L, 1) as XyzNumber & { speed?: number };
         XYZ.map((axis: Xyz) => args.push(params[axis]));
+        if (params.speed !== undefined) { args.push(params.speed); }
       } else {
         for (let i = 1; i <= n; i++) {
           args.push(luaToJs(L, i) as number);

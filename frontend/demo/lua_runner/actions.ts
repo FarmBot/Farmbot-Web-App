@@ -19,6 +19,7 @@ import {
 } from "./stubs";
 import { clamp, random, range } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
+import { getActionMovementSpeed } from "./movement_speed";
 import { calculateMove } from "./calculate_move";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
@@ -153,10 +154,11 @@ export const expandActionsFromPosition = (
     expansionCurrent.y = position.y;
     expansionCurrent.z = position.z;
   };
-  const addPosition = (position: XyzNumber) => {
+  const addPosition = (position: XyzNumber, speed?: XyzNumber) => {
     expanded.push({
       type: "animated_move_absolute",
       args: [position.x, position.y, position.z],
+      ...(speed && { speed }),
     });
   };
   const start = () => { expanded.push({ type: "busy", args: [1] }); };
@@ -171,7 +173,7 @@ export const expandActionsFromPosition = (
           z: action.args[2] as number,
         });
         start();
-        addPosition(moveAbsoluteTarget);
+        addPosition(moveAbsoluteTarget, getActionMovementSpeed(action));
         stop();
         setExpansionCurrent(moveAbsoluteTarget);
         break;
@@ -182,13 +184,13 @@ export const expandActionsFromPosition = (
           z: expansionCurrent.z + (action.args[2] as number),
         });
         start();
-        addPosition(moveRelativeTarget);
+        addPosition(moveRelativeTarget, getActionMovementSpeed(action));
         stop();
         setExpansionCurrent(moveRelativeTarget);
         break;
       case "_move":
         const moveItems = JSON.parse("" + action.args[0]) as MoveBodyItem[];
-        const { moves, warnings } =
+        const { moves, warnings, speed } =
           calculateMove(
             moveItems,
             expansionCurrent,
@@ -206,7 +208,7 @@ export const expandActionsFromPosition = (
         const actualMoveTargets = moves.map(clampTarget);
         start();
         actualMoveTargets.map(actualMoveTarget => {
-          addPosition(actualMoveTarget);
+          addPosition(actualMoveTarget, speed);
           setExpansionCurrent(actualMoveTarget);
         });
         stop();
@@ -366,14 +368,7 @@ export const expandActionsFromPosition = (
           y: action.args[1] as number,
           z: action.args[2] as number,
         };
-        expanded.push({
-          type: "animated_move_absolute",
-          args: [
-            expandedMoveTarget.x,
-            expandedMoveTarget.y,
-            expandedMoveTarget.z,
-          ],
-        });
+        addPosition(expandedMoveTarget, getActionMovementSpeed(action));
         setExpansionCurrent(expandedMoveTarget);
         break;
       default:
@@ -511,7 +506,8 @@ export const runActions = (
       };
       pending.push({
         delay,
-        func: done => startDemoMovement(position, done),
+        func: done => startDemoMovement(
+          position, done, getActionMovementSpeed(action)),
       });
       delay = 0;
       runNext();

@@ -26,6 +26,7 @@ import {
 } from "./position_spring";
 import {
   getDemoMovementStopVersion,
+  getDemoMovementSpeed,
   getDemoMovementPosition,
   getDemoMovementTarget,
   demoMovementActive,
@@ -266,6 +267,7 @@ const EnabledBot = (props: FarmbotModelProps) => {
       springCallbacks,
       springResetKey,
       props.positionStore,
+      getDemoMovementSpeed,
     );
   React.useLayoutEffect(() => {
     applyPosition(currentPosition.current);

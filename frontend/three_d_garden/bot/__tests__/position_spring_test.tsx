@@ -11,6 +11,28 @@ import {
 import { PositionConfig } from "../../config";
 
 describe("bot position spring", () => {
+  it("caps each axis independently using its speed percentage", () => {
+    const next = stepMechanicalPosition({
+      position: { x: 0, y: 0, z: 0 },
+      velocity: { x: 800, y: 800, z: 800 },
+    }, { x: 10000, y: 10000, z: 10000 }, 1 / 60,
+    { x: 50, y: 25, z: 100 });
+    expect(next.velocity).toEqual({ x: 400, y: 200, z: 800 });
+    expect(stepMechanicalAxis({ position: 0, velocity: 0 }, 1000, 1 / 60, 50))
+      .toEqual(stepMechanicalAxis({ position: 0, velocity: 0 }, 1000, 1 / 60));
+  });
+
+  it.each([1, 25, 50, 100])(
+    "settles at %s percent without overshoot or exceeding its speed cap", speed => {
+      let state = { position: 0, velocity: 0 };
+      for (let frame = 0; frame < 2000; frame++) {
+        state = stepMechanicalAxis(state, 100, 1 / 60, speed);
+        expect(state.position).toBeLessThanOrEqual(100);
+        expect(state.velocity).toBeLessThanOrEqual(800 * speed / 100);
+      }
+      expect(state).toEqual({ position: 100, velocity: 0 });
+    });
+
   it("smoothly accelerates without exceeding its top speed", () => {
     const accelerated = stepMechanicalAxis(
       { position: 0, velocity: 0 },
@@ -112,6 +134,29 @@ describe("useBotPositionSpring()", () => {
       frameCallback = callback;
       return undefined;
     });
+  });
+
+  it("reads movement speed every frame without a React rerender", () => {
+    let speed = { x: 100, y: 100, z: 100 };
+    const getSpeed = jest.fn(() => speed);
+    const { result, rerender } = renderHook(
+      ({ target }: { target: PositionConfig }) =>
+        useBotPositionSpring(target, true, {}, 0, undefined, getSpeed),
+      { initialProps: { target: { x: 0, y: 0, z: 0 } } },
+    );
+    rerender({ target: { x: 10000, y: 10000, z: 10000 } });
+    for (let frame = 0; frame < 60; frame++) { runFrame(); }
+    const previous = { ...result.current.currentPosition.current };
+    speed = { x: 50, y: 25, z: 100 };
+    runFrame();
+    const capped = { ...result.current.currentPosition.current };
+    runFrame();
+    const next = result.current.currentPosition.current;
+    expect(next.x - capped.x).toBeCloseTo(400 / 60);
+    expect(next.y - capped.y).toBeCloseTo(200 / 60);
+    expect(next.z - capped.z).toBeCloseTo(800 / 60);
+    expect(capped.x).toBeGreaterThan(previous.x);
+    expect(getSpeed).toHaveBeenCalledTimes(62);
   });
 
   it("advances rigid motion every frame and retargets in flight", () => {

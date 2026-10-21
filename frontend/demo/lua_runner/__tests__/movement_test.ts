@@ -5,6 +5,7 @@ import {
   DEMO_POSITION_PUBLISH_INTERVAL_MS,
   demoMovementActive,
   getDemoMovementTarget,
+  getDemoMovementSpeed,
   registerDemoMovementDriver,
   reportDemoMovementComplete,
   reportDemoMovementPosition,
@@ -49,9 +50,41 @@ describe("demo movement coordinator", () => {
     (store as unknown as { getState: Function }).getState = originalGetState;
   });
 
+  it("normalizes and copies speed, and clears it on cancellation", () => {
+    unregisterMovementDriver = registerDemoMovementDriver();
+    const speed = { x: 50, y: 0, z: Infinity };
+    const cancel = startDemoMovement({ x: 100, y: 0, z: 0 }, jest.fn(), speed);
+    speed.x = 75;
+    const snapshot = getDemoMovementSpeed();
+    expect(snapshot).toEqual({ x: 50, y: 1, z: 100 });
+    if (snapshot) { snapshot.x = 25; }
+    expect(getDemoMovementSpeed()?.x).toEqual(50);
+    cancel();
+    expect(getDemoMovementSpeed()).toBeUndefined();
+    startDemoMovement({ x: 100, y: 0, z: 0 }, jest.fn());
+    expect(getDemoMovementSpeed()).toEqual({ x: 100, y: 100, z: 100 });
+    cancelDemoMovement();
+    expect(getDemoMovementSpeed()).toBeUndefined();
+  });
+
+  it("uses the next move's speed when completion starts it synchronously", () => {
+    unregisterMovementDriver = registerDemoMovementDriver();
+    const nextSpeed = { x: 25, y: 50, z: 75 };
+    startDemoMovement({ x: 100, y: 0, z: 0 }, () => {
+      expect(getDemoMovementSpeed()).toBeUndefined();
+      startDemoMovement({ x: 200, y: 0, z: 0 }, jest.fn(), nextSpeed);
+    }, { x: 50, y: 50, z: 50 });
+    reportDemoMovementComplete({ x: 100, y: 0, z: 0 });
+    expect(getDemoMovementSpeed()).toEqual(nextSpeed);
+    reportDemoMovementComplete({ x: 200, y: 0, z: 0 });
+    expect(getDemoMovementSpeed()).toBeUndefined();
+  });
+
   it("completes asynchronously when no animation driver is mounted", () => {
     const onTargetReached = jest.fn();
-    startDemoMovement({ x: 100, y: 200, z: 300 }, onTargetReached);
+    startDemoMovement({ x: 100, y: 200, z: 300 }, onTargetReached,
+      { x: 50, y: 25, z: 75 });
+    expect(getDemoMovementSpeed()).toEqual({ x: 50, y: 25, z: 75 });
 
     expect(mockDispatch).toHaveBeenCalledWith({
       type: Actions.DEMO_SET_POSITION,
@@ -65,6 +98,7 @@ describe("demo movement coordinator", () => {
     });
     expect(onTargetReached).toHaveBeenCalledTimes(1);
     expect(demoMovementActive()).toBeFalsy();
+    expect(getDemoMovementSpeed()).toBeUndefined();
   });
 
   it("waits for a mounted driver to report the matching target", () => {

@@ -109,9 +109,9 @@ describe("csToLua()", () => {
   it("converts celery script to lua: move_relative", () => {
     const command: MoveRelative = {
       kind: "move_relative",
-      args: { x: 1, y: 2, z: 3, speed: 100 },
+      args: { x: 1, y: 2, z: 3, speed: 50 },
     };
-    expect(csToLua(command)).toEqual("move_relative(1, 2, 3)");
+    expect(csToLua(command)).toEqual("move_relative(1, 2, 3, 50)");
   });
 
   it("converts celery script to lua: move_absolute coordinate", () => {
@@ -120,10 +120,10 @@ describe("csToLua()", () => {
       args: {
         location: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } },
         offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
-        speed: 100,
+        speed: 50,
       },
     };
-    expect(csToLua(command)).toEqual("move_absolute(1, 2, 3)");
+    expect(csToLua(command)).toEqual("move_absolute(1, 2, 3, 50)");
   });
 
   it("converts celery script to lua: move_absolute other", () => {

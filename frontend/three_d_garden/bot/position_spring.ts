@@ -1,6 +1,7 @@
 import React from "react";
 import { useFrame } from "@react-three/fiber";
 import { PositionConfig } from "../config";
+import { normalizeMovementSpeed } from "../../demo/lua_runner/movement_speed";
 import { perfCount } from "../../performance/perf";
 
 // Millimetres and seconds; damping is critical for unit mass.
@@ -32,6 +33,7 @@ export const stepMechanicalAxis = (
   state: MechanicalAxisState,
   target: number,
   deltaSeconds: number,
+  speed = 100,
 ): MechanicalAxisState => {
   if (axisAtRest(state, target)) {
     return { position: target, velocity: 0 };
@@ -48,7 +50,7 @@ export const stepMechanicalAxis = (
   );
   const velocity = clamp(
     state.velocity + acceleration * delta,
-    BOT_POSITION_SPRING.maxSpeed,
+    BOT_POSITION_SPRING.maxSpeed * normalizeMovementSpeed(speed) / 100,
   );
   const position = state.position +
     (state.velocity + velocity) * delta / 2;
@@ -72,10 +74,17 @@ export const stepMechanicalPosition = (
   state: MechanicalPositionState,
   target: PositionConfig,
   deltaSeconds: number,
+  speed?: PositionConfig,
 ): MechanicalPositionState => {
-  const x = stepMechanicalAxis(axisState(state, "x"), target.x, deltaSeconds);
-  const y = stepMechanicalAxis(axisState(state, "y"), target.y, deltaSeconds);
-  const z = stepMechanicalAxis(axisState(state, "z"), target.z, deltaSeconds);
+  const x = stepMechanicalAxis(
+    axisState(state, "x"), target.x, deltaSeconds, speed?.x,
+  );
+  const y = stepMechanicalAxis(
+    axisState(state, "y"), target.y, deltaSeconds, speed?.y,
+  );
+  const z = stepMechanicalAxis(
+    axisState(state, "z"), target.z, deltaSeconds, speed?.z,
+  );
   return {
     position: { x: x.position, y: y.position, z: z.position },
     velocity: { x: x.velocity, y: y.velocity, z: z.velocity },
@@ -149,6 +158,7 @@ export const useBotPositionSpring = (
   callbacks: BotPositionSpringCallbacks = {},
   resetKey = 0,
   sharedSnapshotStore?: BotPositionSnapshotStore,
+  getSpeed?: () => PositionConfig | undefined,
 ): BotPositionSpringResult => {
   const [initialPosition] = React.useState(() => copyPosition(target));
   const motion = React.useRef(positionState(initialPosition));
@@ -212,6 +222,7 @@ export const useBotPositionSpring = (
       motion.current,
       targetRef.current,
       deltaSeconds,
+      getSpeed?.(),
     );
     motion.current = next;
     currentPosition.current = next.position;

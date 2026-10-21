@@ -143,12 +143,12 @@ export const csToLua = (command: RpcRequestBodyItem): string => {
       }
       return "";
     case "move_relative":
-      return `move_relative(${args.x}, ${args.y}, ${args.z})`;
+      return `move_relative(${args.x}, ${args.y}, ${args.z}, ${args.speed})`;
     case "move_absolute":
       const lKind = args.location.kind;
       if (lKind == "coordinate") {
         const cArgs = args.location.args;
-        return `move_absolute(${cArgs.x}, ${cArgs.y}, ${cArgs.z})`;
+        return `move_absolute(${cArgs.x}, ${cArgs.y}, ${cArgs.z}, ${args.speed})`;
       }
       return `toast("move_absolute ${lKind} is not implemented", "error")`;
     case "move":

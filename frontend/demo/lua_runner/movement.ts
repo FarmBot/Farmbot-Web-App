@@ -1,6 +1,7 @@
 import { Actions } from "../../constants";
 import { store } from "../../redux/store";
 import { XyzNumber } from "./interfaces";
+import { normalizeMovementSpeed } from "./movement_speed";
 import { perfCount } from "../../performance/perf";
 
 const POSITION_EPSILON = 0.01;
@@ -9,6 +10,7 @@ export const DEMO_POSITION_PUBLISH_INTERVAL_MS = 1000 / 30;
 interface ActiveMovement {
   id: number;
   target: XyzNumber;
+  speed: XyzNumber;
   onTargetReached(): void;
   fallbackTimer?: ReturnType<typeof setTimeout>;
 }
@@ -94,11 +96,17 @@ export const reportDemoMovementComplete = (position: XyzNumber) => {
 export const startDemoMovement = (
   target: XyzNumber,
   onTargetReached: () => void,
+  speed?: XyzNumber,
 ) => {
   const startingPosition = renderedPosition || getStorePosition();
   const movement: ActiveMovement = {
     id: ++movementId,
     target: { ...target },
+    speed: {
+      x: normalizeMovementSpeed(speed?.x),
+      y: normalizeMovementSpeed(speed?.y),
+      z: normalizeMovementSpeed(speed?.z),
+    },
     onTargetReached,
   };
   activeMovement = movement;
@@ -134,5 +142,8 @@ export const getDemoMovementTarget = (): XyzNumber | undefined =>
 
 export const getDemoMovementPosition = (): XyzNumber | undefined =>
   renderedPosition && { ...renderedPosition };
+
+export const getDemoMovementSpeed = (): XyzNumber | undefined =>
+  activeMovement && { ...activeMovement.speed };
 
 export const getDemoMovementStopVersion = () => stopVersion;
