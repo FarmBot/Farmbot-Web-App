@@ -9,4 +9,5 @@ fi
 
 sudo docker compose run --rm \
   -e CHANGED_FILES="$changed" \
-  web bundle exec rake check_file_coverage:fe
+  -e CHANGED_FILES_BASE="$merge_base" \
+  web bundle exec rake check_file_coverage:fe "$@"

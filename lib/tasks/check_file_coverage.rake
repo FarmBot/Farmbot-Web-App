@@ -125,12 +125,13 @@ namespace :check_file_coverage do
     lcov_coverage = load_lcov_coverage(lcov_file_path, frontend_root)
     abort("Run `bun test` first.") if lcov_coverage.empty?
 
-    check_changed_files = ENV.key?('CHANGED_FILES')
+    check_changed_files = paths_args.empty? && ENV.key?('CHANGED_FILES')
     changed_files = changed_files_from_env
     no_changed_files = check_changed_files && changed_files.empty?
     print_file_statuses = !paths_args.empty? || (check_changed_files && changed_files.any?)
 
     if check_changed_files && changed_files.any?
+      scope_note = "files changed since origin/staging"
       paths = lcov_coverage.keys.select do |frontend_path|
         normalized_frontend_path = frontend_path.sub(/^frontend\//, '')
         changed_files.any? { |file| file.end_with?(normalized_frontend_path) }
@@ -145,8 +146,17 @@ namespace :check_file_coverage do
         puts "↷ #{file}: skipped (not in frontend coverage report)"
       end
     elsif paths_args.empty?
+      scope_note = "files checked from LCOV"
+      if no_changed_files
+        if ENV.key?('CHANGED_FILES_BASE') && ENV['CHANGED_FILES_BASE'].empty?
+          scope_note += " (origin/staging merge base unavailable)"
+        else
+          scope_note += " (no changed files)"
+        end
+      end
       paths = lcov_coverage.keys
     else
+      scope_note = "explicitly selected files checked"
       paths = paths_args.map do |path|
         normalize_frontend_path(path.sub(%r{^#{Regexp.escape(coverage_root)}/}, ''), frontend_root)
       end
@@ -200,18 +210,20 @@ namespace :check_file_coverage do
       end
     end
 
+    puts "\n#{checked_count} #{scope_note}"
+
     if failed
-      puts "\n\nNo changed frontend files found; checked all frontend files." if no_changed_files
-      abort("One or more files did not meet coverage requirements. (FAIL)")
+      puts "One or more files did not meet coverage requirements. (FAIL)"
     else
       if no_changed_files
-        puts "All files at 100%! (PASS)"
-        puts "\n\nNo changed frontend files found."
+        puts "All checked files at 100%! (PASS)"
       elsif check_changed_files
         puts "All changed files at 100%! (PASS)"
       elsif paths_args.empty?
-        puts "All files at 100%! (PASS)"
+        puts "All checked files at 100%! (PASS)"
       end
     end
+
+    abort if failed
   end
 end

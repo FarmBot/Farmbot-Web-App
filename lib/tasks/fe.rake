@@ -30,10 +30,10 @@ def parse_bun_outdated_versions(output)
     cleaned_line = line.gsub(ansi_escape, "").strip
     next if cleaned_line.empty?
 
-    if cleaned_line.start_with?("│")
-      columns = cleaned_line.split("│").map(&:strip)
+    if cleaned_line.start_with?("│", "|")
+      columns = cleaned_line.split(/[│|]/).map(&:strip)
       next unless columns.length >= 5
-      next if columns[1] == "Package"
+      next if columns[1] == "Package" || columns[1].match?(/\A[-:]+\z/)
 
       package = columns[1].sub(/\s+\(dev\)\z/, "")
       versions[package] = { current: columns[2], latest: columns[4] }

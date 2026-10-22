@@ -27,6 +27,21 @@ describe "fe.rake helpers" do
       })
     end
 
+    it "parses bun outdated ASCII table output captured without a terminal" do
+      output = <<~TEXT
+        bun outdated v1.4.3 (c6da4a4d3)
+        | Package                             | Current | Update | Latest |
+        | ----------------------------------- | ------- | ------ | ------ |
+        | \e[1m@react-three/fiber\e[0m          | 9.8.1   | 9.8.1  | 9.8.2  |
+        | @happy-dom/global-registrator (dev)  | 21.0.1  | 21.0.1 | 21.0.4 |
+      TEXT
+
+      expect(parse_bun_outdated_versions(output)).to eq({
+        "@react-three/fiber" => { current: "9.8.1", latest: "9.8.2" },
+        "@happy-dom/global-registrator" => { current: "21.0.1", latest: "21.0.4" },
+      })
+    end
+
     it "parses bun outdated colored key-value output" do
       output = <<~TEXT
         {"\\e[1m\\e[34mPackage\\e[0m" => "\\e[1m\\e[34mLatest\\e[0m", "@blueprintjs/core\\e[2m\\e[0m" => "\\e[2m6.\\e[0m\\e[1m\\e[33m11.1\\e[0m", "@happy-dom/global-registrator\\e[2m (dev)\\e[0m" => "\\e[2m20.8.\\e[0m\\e[1m\\e[32m9\\e[0m"}
@@ -48,6 +63,22 @@ describe "fe.rake helpers" do
   end
 
   describe "#fetch_available_upgrades" do
+    it "finds latest upgrades from captured ASCII output with pinned versions" do
+      output = <<~TEXT
+        | Package          | Current | Update | Latest |
+        | ---------------- | ------- | ------ | ------ |
+        | react            | 19.3.0  | 19.3.0 | 19.3.1 |
+        | happy-dom (dev)  | 21.0.1  | 21.0.1 | 21.0.4 |
+      TEXT
+      allow(self).to receive(:`).with("bun outdated").and_return(output)
+      stub_const("EXCLUDE", [])
+
+      expect(fetch_available_upgrades).to eq({
+        "react" => "19.3.1",
+        "happy-dom" => "21.0.4",
+      })
+    end
+
     it "reports the latest version of each dependency in an exclusion reason" do
       output = <<~TEXT
         │ Package          │ Current │ Update │ Latest │
