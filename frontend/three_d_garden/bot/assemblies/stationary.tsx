@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { Extrude, useGLTF } from "@react-three/drei";
 import { DoubleSide, RepeatWrapping, Shape } from "three";
 import type { GLTF } from "three-stdlib";
+import { getBotVersion } from "../bot_versions";
 import { Config } from "../../config";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import { Group, Mesh, MeshPhongMaterial } from "../../components";
@@ -27,6 +28,7 @@ export interface StationaryAssemblyProps {
 const StationaryAssemblyBase = (props: StationaryAssemblyProps) => {
   const { config } = props;
   const { bedWidthOuter, botSizeX, tracks } = config;
+  const version = getBotVersion(config.kitVersion);
   const beltClip = useGLTF(
     ASSETS.models.beltClip,
     LIB_DIR,
@@ -72,7 +74,7 @@ const StationaryAssemblyBase = (props: StationaryAssemblyProps) => {
             0,
           ]}>
           <MeshPhongMaterial
-            color={"white"}
+            color={version.extrusionColor}
             map={aluminumTexture}
             side={DoubleSide} />
         </Extrude>}
@@ -112,6 +114,7 @@ const STATIONARY_CONFIG_FIELDS: (keyof Config)[] = [
   "bedYOffset",
   "botSizeX",
   "tracks",
+  "kitVersion",
 ];
 
 export const StationaryAssembly = React.memo(

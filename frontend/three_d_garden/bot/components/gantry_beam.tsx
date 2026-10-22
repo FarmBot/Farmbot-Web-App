@@ -101,7 +101,7 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
           { steps: 1, depth: beamLength, bevelEnabled: false },
         ]}>
         <MeshPhongMaterial
-          color={"white"}
+          color={version.extrusionColor}
           map={props.aluminumTexture}
           side={DoubleSide} />
       </Extrude>

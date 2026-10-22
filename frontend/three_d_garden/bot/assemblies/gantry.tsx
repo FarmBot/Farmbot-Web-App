@@ -187,7 +187,7 @@ const GantrySide = (props: GantrySideProps) => {
         version.columnBaseZ,
       ]}
       rotation={[0, 0, Math.PI / 2]}>
-      <MeshPhongMaterial color={"white"}
+      <MeshPhongMaterial color={version.extrusionColor}
         map={props.aluminumTexture}
         side={DoubleSide} />
     </Extrude>

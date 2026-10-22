@@ -1,9 +1,13 @@
+const BOT_BLACK = "#333";
+
 export type BotVersionNumber = "v1.7" | "v1.8" | "v1.9";
 export type BotCameraFrame = "cross-slide" | "z-axis";
 export type YCCSupportType = "models" | "extrusion";
 
 export type BotVersion = Readonly<{
   number: BotVersionNumber;
+  extrusionColor: typeof BOT_BLACK | "white";
+  toolColor?: typeof BOT_BLACK;
   gantry: "v1.7" | "v1.9";
   leadscrewDrive: boolean;
   beamShape: "beam" | "beamV19";
@@ -31,6 +35,7 @@ export type BotVersion = Readonly<{
 const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
   "v1.7": {
     number: "v1.7",
+    extrusionColor: "white",
     gantry: "v1.7",
     leadscrewDrive: true,
     beamShape: "beam",
@@ -56,6 +61,7 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
   },
   "v1.8": {
     number: "v1.8",
+    extrusionColor: "white",
     gantry: "v1.7",
     leadscrewDrive: true,
     beamShape: "beam",
@@ -81,6 +87,7 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
   },
   "v1.9": {
     number: "v1.9",
+    extrusionColor: "white",
     gantry: "v1.9",
     leadscrewDrive: false,
     beamShape: "beamV19",
@@ -106,8 +113,22 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
   },
 };
 
+const BLACK_EXTRUSION_VERSION: BotVersion = {
+  ...BOT_VERSIONS["v1.7"],
+  extrusionColor: BOT_BLACK,
+};
+
+const V12_VERSION: BotVersion = {
+  ...BLACK_EXTRUSION_VERSION,
+  toolColor: BOT_BLACK,
+};
+
 export const getBotVersion = (kitVersion: string): BotVersion => {
   switch (kitVersion) {
+    case "v1.2":
+      return V12_VERSION;
+    case "v1.3":
+      return BLACK_EXTRUSION_VERSION;
     case "v1.7":
     case "v1.8":
       return BOT_VERSIONS[kitVersion];

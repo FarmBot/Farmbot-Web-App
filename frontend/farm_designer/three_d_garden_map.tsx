@@ -94,6 +94,8 @@ export interface ThreeDGardenMapProps {
 }
 
 const kitVersionFromFirmware = (firmwareHardware: unknown): string => {
+  if (firmwareHardware == "arduino") { return "v1.2"; }
+  if (firmwareHardware == "farmduino") { return "v1.3"; }
   if (firmwareHardware == "farmduino_k19") { return "v1.9"; }
   if (firmwareHardware == "farmduino_k18") { return "v1.8"; }
   return "v1.7";

@@ -26,17 +26,18 @@ type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
 
 interface SoilSensorProps extends PartGroupProps {
   model: SoilSensorFull;
+  bodyMaterial?: THREE.MeshStandardMaterial;
 }
 
 export const SoilSensorModel = (props: SoilSensorProps) => {
-  const { model, ...groupProps } = props;
+  const { model, bodyMaterial, ...groupProps } = props;
   const { nodes, materials } = model;
   const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
   // eslint-disable-next-line no-null/no-null
   return <Group {...groupProps} dispose={null}>
     <MeshComponent
       geometry={nodes.Soil_Sensor.geometry}
-      material={materials.PaletteMaterial001}
+      material={bodyMaterial ?? materials.PaletteMaterial001}
       position={[0, 0, -15]}
       scale={1000} />
     {mergedGeometry

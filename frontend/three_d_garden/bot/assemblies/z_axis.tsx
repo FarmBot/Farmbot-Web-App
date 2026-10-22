@@ -232,13 +232,14 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh
         geometry={utm.nodes.M5_Barb.geometry}
-        material={utm.materials.PaletteMaterial001}
         position={[15, 9, 36]}
         scale={1000}
         onClick={selectUtm}
         onPointerOver={() => props.onHoverObject?.(true)}
         onPointerOut={() => props.onHoverObject?.(false)}
-        rotation={[0, 0, 2.094]} />
+        rotation={[0, 0, 2.094]}>
+        <MeshPhongMaterial color={version.toolColor ?? "#ccc"} />
+      </Mesh>
     </Group>
   </Highlight>;
 
@@ -250,7 +251,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
         { steps: 1, depth: zAxisLength, bevelEnabled: false },
       ]}
       position={[-11, UTM_RADIUS, 0]}>
-      <MeshPhongMaterial color={"white"}
+      <MeshPhongMaterial color={version.extrusionColor}
         map={aluminumTexture}
         side={DoubleSide} />
     </Extrude>

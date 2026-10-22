@@ -81,6 +81,32 @@ describe("<GantryBeam />", () => {
     expect(lightStrip(container)).toBeNull();
   });
 
+  it.each([
+    ["v1.2", "#333"],
+    ["v1.3", "#333"],
+    ["v1.7", "white"],
+    ["v1.8", "white"],
+    ["v1.9", "white"],
+  ])("renders %s extrusions in %s", (kitVersion, color) => {
+    const p = fakeProps();
+    p.config.kitVersion = kitVersion;
+    const { container } = render(<GantryBeam {...p} />);
+    const material = container.querySelector(
+      "[data-extrude-name='gantry-beam-extrusion'] > [color]",
+    );
+    expect(material).toHaveAttribute("color", color);
+  });
+
+  it("updates extrusion color when the kit version changes", () => {
+    const p = fakeProps();
+    const { container, rerender } = render(<GantryBeam {...p} />);
+    rerender(<GantryBeam {...p} config={{ ...p.config, kitVersion: "v1.2" }} />);
+    const material = container.querySelector(
+      "[data-extrude-name='gantry-beam-extrusion'] > [color]",
+    );
+    expect(material).toHaveAttribute("color", "#333");
+  });
+
   it("renders lights", () => {
     const p = fakeProps();
     p.config.light = true;

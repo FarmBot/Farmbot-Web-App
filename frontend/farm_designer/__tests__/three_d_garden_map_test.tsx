@@ -542,7 +542,11 @@ describe("<ThreeDGardenMap />", () => {
   });
 
   it.each<[FirmwareHardware, string]>([
-    ["farmduino", "v1.7"],
+    ["arduino", "v1.2"],
+    ["farmduino", "v1.3"],
+    ["farmduino_k14", "v1.7"],
+    ["farmduino_k15", "v1.7"],
+    ["farmduino_k16", "v1.7"],
     ["farmduino_k17", "v1.7"],
     ["farmduino_k18", "v1.8"],
   ])("converts props: kitVersion", (firmwareHardware, kitVersion) => {

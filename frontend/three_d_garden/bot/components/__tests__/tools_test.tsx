@@ -521,6 +521,89 @@ describe("<Tools />", () => {
     })).toBeFalsy();
   });
 
+  it.each<[ToolType, string]>([
+    ["seed_bin", "seedBin"],
+    ["seed_tray", "seedTray"],
+  ])("uses black material for the v1.2 %s", (toolType, name) => {
+    const p = fakeProps();
+    p.toolSlots = savedToolSlots([toolType]);
+    p.mountedToolType = toolType;
+    const { container, rerender } = render(<Tools {...p} />);
+    const selector = `[name='${name}'] > [color]`;
+    const expectColors = (color: string) => {
+      const materials = container.querySelectorAll(selector);
+      expect(materials).toHaveLength(2);
+      materials.forEach(material =>
+        expect(material).toHaveAttribute("color", color));
+    };
+    expectColors("silver");
+    rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.2" }} />);
+    expectColors("#333");
+    rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.3" }} />);
+    expectColors("silver");
+  });
+
+  it.each<[ToolType, string]>([
+    ["watering_nozzle", ASSETS.models.wateringNozzle],
+    ["seeder", ASSETS.models.seeder],
+    ["weeder", ASSETS.models.weeder],
+    ["soil_sensor", ASSETS.models.soilSensor],
+  ])(
+    "recolors the v1.2 %s plastic palette", (toolType, asset) => {
+      const p = fakeProps();
+      p.toolSlots = [];
+      p.mountedToolType = toolType;
+      const useGltfMock = useGLTF as jest.MockedFunction<typeof useGLTF<string>>;
+      const implementation = useGltfMock.getMockImplementation()!;
+      const image = document.createElement("canvas");
+      image.width = toolType == "soil_sensor"
+        ? 64
+        : 32;
+      image.height = 4;
+      const originalMap = new THREE.CanvasTexture(image);
+      const original = new THREE.MeshStandardMaterial({ map: originalMap });
+      useGltfMock.mockImplementation((key, ...args) => {
+        const model = implementation(key, ...args);
+        return key == asset
+          ? { ...model, materials: { PaletteMaterial001: original } }
+          : model;
+      });
+      const materials: THREE.MeshStandardMaterial[] = [];
+      const Mesh = components.Mesh;
+      const meshSpy = jest.spyOn(components, "Mesh")
+        .mockImplementation(props => {
+          if (props.material instanceof THREE.MeshStandardMaterial) {
+            materials.push(props.material);
+          }
+          return <Mesh {...props} />;
+        });
+      try {
+        const { rerender, unmount } = render(<Tools {...p} />);
+        expect(materials).toContain(original);
+        const originalColor = original.color.clone();
+        materials.length = 0;
+        rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.2" }} />);
+        expect(materials.length).toBeGreaterThan(0);
+        const bodyMaterials = materials.filter(material => material != original);
+        expect(bodyMaterials).toHaveLength(1);
+        bodyMaterials.forEach(material => {
+          expect(material.color).toEqual(originalColor);
+          expect(material.map).not.toBe(originalMap);
+          expect(material.map?.source).not.toBe(originalMap.source);
+        });
+        expect(originalMap.image).toBe(image);
+        expect(original.color).toEqual(originalColor);
+        materials.length = 0;
+        rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.3" }} />);
+        expect(materials).toContain(original);
+        unmount();
+      } finally {
+        meshSpy.mockRestore();
+        useGltfMock.mockImplementation(implementation);
+      }
+    },
+  );
+
   it("reuses static tool models while x position changes", () => {
     const p = fakeProps();
     const useGltfMock = useGLTF as unknown as jest.Mock;

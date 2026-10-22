@@ -45,6 +45,7 @@ import {
 import { clickWasDragged } from "../../click_event";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
+import { useToolPlasticMaterial } from "../tool_palettes";
 import { frontSideMaterial } from "../../geometry_batching";
 import { CustomToolModel } from "./custom_tool";
 
@@ -627,9 +628,15 @@ const RotaryToolModel = React.memo(
 );
 RotaryToolModel.displayName = "RotaryToolModel";
 
-const WateringNozzleToolModel = React.memo(() => {
+interface VersionedToolModelProps {
+  kitVersion: string;
+}
+
+const WateringNozzleToolModel = React.memo((props: VersionedToolModelProps) => {
   const wateringNozzle = useGLTF(
     ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
+  const material = useToolPlasticMaterial(
+    wateringNozzle.materials.PaletteMaterial001, props.kitVersion, "wateringNozzle");
   return <Mesh name={"wateringNozzle"}
     position={[
       6.25,
@@ -639,11 +646,12 @@ const WateringNozzleToolModel = React.memo(() => {
     rotation={[0, 0, 2.094 + Math.PI / 2]}
     scale={1000}
     geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
-    material={wateringNozzle.materials.PaletteMaterial001} />;
+    material={material} />;
 });
 
-const SeedBinToolModel = React.memo(() => {
+const SeedBinToolModel = React.memo((props: VersionedToolModelProps) => {
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as unknown as SeedBin;
+  const color = getBotVersion(props.kitVersion).toolColor ?? "silver";
   return <Mesh name={"seedBin"}
     position={[
       0,
@@ -653,12 +661,13 @@ const SeedBinToolModel = React.memo(() => {
     rotation={[0, 0, Math.PI / 2]}
     scale={1000}
     geometry={seedBin.nodes[PartName.seedBin].geometry}>
-    <MeshPhongMaterial color={"silver"} />
+    <MeshPhongMaterial color={color} />
   </Mesh>;
 });
 
-const SeedTrayToolModel = React.memo(() => {
+const SeedTrayToolModel = React.memo((props: VersionedToolModelProps) => {
   const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as unknown as SeedTray;
+  const color = getBotVersion(props.kitVersion).toolColor ?? "silver";
   return <Mesh name={"seedTray"}
     position={[
       0,
@@ -668,14 +677,17 @@ const SeedTrayToolModel = React.memo(() => {
     rotation={[0, 0, Math.PI / 2]}
     scale={1000}
     geometry={seedTray.nodes[PartName.seedTray].geometry}>
-    <MeshPhongMaterial color={"silver"} />
+    <MeshPhongMaterial color={color} />
   </Mesh>;
 });
 
-const SoilSensorToolModel = React.memo(() => {
+const SoilSensorToolModel = React.memo((props: VersionedToolModelProps) => {
   const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as unknown as SoilSensorFull;
+  const material = useToolPlasticMaterial(
+    soilSensor.materials.PaletteMaterial001, props.kitVersion, "soilSensor");
   return <SoilSensorModel
     model={soilSensor}
+    bodyMaterial={material}
     name={"soilSensor"}
     position={[
       0,
@@ -687,6 +699,8 @@ const SoilSensorToolModel = React.memo(() => {
 
 const SeederToolModel = React.memo((props: ToolModelProps) => {
   const seeder = useGLTF(ASSETS.models.seeder, LIB_DIR) as unknown as Seeder;
+  const material = useToolPlasticMaterial(
+    seeder.materials.PaletteMaterial001, props.config.kitVersion, "seeder");
   return <>
     <Mesh name={"seeder"}
       position={[
@@ -697,7 +711,7 @@ const SeederToolModel = React.memo((props: ToolModelProps) => {
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}
       geometry={seeder.nodes[PartName.seeder].geometry}
-      material={seeder.materials.PaletteMaterial001} />
+      material={material} />
     {!props.inToolbay && props.config.vacuum &&
       <Group position={[20, 0, -30]}>
         <React.Suspense fallback={undefined}>
@@ -707,10 +721,13 @@ const SeederToolModel = React.memo((props: ToolModelProps) => {
   </>;
 }, (prev, next) =>
   prev.inToolbay == next.inToolbay &&
-  prev.config.vacuum == next.config.vacuum);
+  prev.config.vacuum == next.config.vacuum &&
+  prev.config.kitVersion == next.config.kitVersion);
 
-const WeederToolModel = React.memo(() => {
+const WeederToolModel = React.memo((props: VersionedToolModelProps) => {
   const weeder = useGLTF(ASSETS.models.weeder, LIB_DIR) as unknown as Weeder;
+  const material = useToolPlasticMaterial(
+    weeder.materials.PaletteMaterial001, props.kitVersion, "weeder");
   return <Mesh name={"weeder"}
     position={[
       -25,
@@ -720,7 +737,7 @@ const WeederToolModel = React.memo(() => {
     rotation={[0, 0, -Math.PI]}
     scale={1000}
     geometry={weeder.nodes[PartName.weeder].geometry}
-    material={weeder.materials.PaletteMaterial001} />;
+    material={material} />;
 });
 
 interface SeedTroughToolModelProps {
@@ -877,19 +894,19 @@ const ToolBase = (props: ToolProps) => {
             rotary={props.config.rotary} />;
       case "watering_nozzle":
         return <ToolbaySlot {...common}>
-          <WateringNozzleToolModel />
+          <WateringNozzleToolModel kitVersion={config.kitVersion} />
         </ToolbaySlot>;
       case "seed_bin":
         return <ToolbaySlot {...common}>
-          <SeedBinToolModel />
+          <SeedBinToolModel kitVersion={config.kitVersion} />
         </ToolbaySlot>;
       case "seed_tray":
         return <ToolbaySlot {...common}>
-          <SeedTrayToolModel />
+          <SeedTrayToolModel kitVersion={config.kitVersion} />
         </ToolbaySlot>;
       case "soil_sensor":
         return <ToolbaySlot {...common}>
-          <SoilSensorToolModel />
+          <SoilSensorToolModel kitVersion={config.kitVersion} />
         </ToolbaySlot>;
       case "seeder":
         return <ToolbaySlot {...common}>
@@ -897,7 +914,7 @@ const ToolBase = (props: ToolProps) => {
         </ToolbaySlot>;
       case "weeder":
         return <ToolbaySlot {...common}>
-          <WeederToolModel />
+          <WeederToolModel kitVersion={config.kitVersion} />
         </ToolbaySlot>;
       case "seed_trough":
         return <SeedTroughToolSlot
