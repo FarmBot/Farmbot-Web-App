@@ -1,6 +1,7 @@
 let mockDemo = false;
 import React from "react";
 import { useTexture } from "@react-three/drei";
+import * as drei from "@react-three/drei";
 import { render, screen } from "@testing-library/react";
 import TestRenderer from "react-test-renderer";
 import {
@@ -17,6 +18,8 @@ import {
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import * as mustBeOnline from "../../../devices/must_be_online";
 import { Texture, Vector3 } from "three";
+import { soilSurfaceExtents } from "../../triangles";
+import * as components from "../../components";
 
 beforeEach(() => {
   jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
@@ -38,6 +41,76 @@ describe("<ImageTexture />", () => {
     showMoistureReadings: true,
     showMoistureMap: true,
     env: {},
+  });
+
+  it("scales portrait soil textures and omits soil in blank mode", () => {
+    const p = fakeProps();
+    p.config.bedLengthOuter = 1000;
+    p.config.bedWidthOuter = 2000;
+    p.config.surfaceDebug = SurfaceDebugOption.blank;
+    p.showMoistureMap = false;
+    p.showMoistureReadings = false;
+    const renderTexture = jest.spyOn(drei, "RenderTexture")
+      .mockImplementation(({ children, width, height }) =>
+        <div data-testid="soil-texture" data-width={width} data-height={height}>
+          {children}
+        </div>);
+    const material = jest.spyOn(components, "MeshBasicMaterial")
+      .mockImplementation(({ map }) =>
+        <div data-testid="soil-material" data-has-map={!!map} />);
+    const { getByTestId, rerender } = render(<ImageTexture {...p} />);
+    const extents = soilSurfaceExtents(p.config);
+    const width = extents.x.max - extents.x.min;
+    const height = extents.y.max - extents.y.min;
+
+    expect(getByTestId("soil-texture")).toHaveAttribute(
+      "data-width", String(Math.round(1024 * width / height)));
+    expect(getByTestId("soil-texture")).toHaveAttribute("data-height", "1024");
+    expect(getByTestId("soil-material"))
+      .toHaveAttribute("data-has-map", "false");
+
+    rerender(<ImageTexture {...p} config={{
+      ...p.config, surfaceDebug: SurfaceDebugOption.none,
+    }} />);
+    expect(getByTestId("soil-material"))
+      .toHaveAttribute("data-has-map", "true");
+    material.mockRestore();
+    renderTexture.mockRestore();
+  });
+
+  it("renders a cropped camera image without changing the source texture", () => {
+    const p = fakeProps();
+    p.config.cropImages = true;
+    p.config.imgRotation = 20;
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
+    const image = fakeImage();
+    image.body.meta.x = 1;
+    image.body.meta.y = 1;
+    image.body.attachment_url = "https://example.com/cropped-image.jpg";
+    p.images = [image];
+    const addPlantProps = fakeAddPlantProps();
+    const webConfig = fakeWebAppConfig();
+    webConfig.body.show_images = true;
+    webConfig.body.photo_filter_begin = "";
+    webConfig.body.photo_filter_end = "";
+    addPlantProps.getConfigValue = key => webConfig.body[key];
+    p.addPlantProps = addPlantProps;
+    const texture = new Texture();
+    texture.image = { width: 400, height: 200 };
+    const cloneTexture = jest.spyOn(texture, "clone");
+    const useTextureMock = useTexture as unknown as jest.Mock;
+    useTextureMock.mockImplementationOnce(() => new Texture());
+    useTextureMock.mockImplementationOnce(() => texture);
+
+    render(<ImageTexture {...p} />);
+
+    expect(cloneTexture).toHaveBeenCalledTimes(1);
+    const cropped = cloneTexture.mock.results[0].value as Texture;
+    expect(cropped.repeat.x).toBeLessThan(1);
+    expect(cropped.offset.x).toBeGreaterThan(0);
+    expect(texture.repeat.toArray()).toEqual([1, 1]);
+    cloneTexture.mockRestore();
   });
 
   it("crops camera images when enabled", () => {

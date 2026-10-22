@@ -46,6 +46,18 @@ describe("botReducer", () => {
     expect(step2.isUpdating).toBe(false);
   });
 
+  it("sets and clears the demo busy state", () => {
+    const busy = botReducer(initialState(), {
+      type: Actions.DEMO_SET_BUSY, payload: true,
+    });
+    expect(busy.hardware.informational_settings.busy).toBeTruthy();
+
+    const idle = botReducer(busy, {
+      type: Actions.DEMO_SET_BUSY, payload: false,
+    });
+    expect(idle.hardware.informational_settings.busy).toBeFalsy();
+  });
+
   it("changes step size", () => {
     const state = botReducer(initialState(), {
       type: Actions.CHANGE_STEP_SIZE,

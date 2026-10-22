@@ -2,6 +2,7 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { Help, HelpProps } from "../help";
 import * as popover from "../popover";
+import { PopoverInteractionKind } from "@blueprintjs/core";
 
 let popoverSpy: jest.SpyInstance;
 
@@ -25,6 +26,15 @@ describe("<Help />", () => {
   it("returns help", () => {
     const { container } = render(<Help {...fakeProps()} />);
     expect(container.textContent).toContain("tip");
+  });
+
+  it("opens help on hover when requested", () => {
+    render(<Help {...fakeProps()} onHover={true} />);
+
+    expect(popoverSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ interactionKind: PopoverInteractionKind.HOVER }),
+      undefined,
+    );
   });
 
   it("returns help markdown", () => {

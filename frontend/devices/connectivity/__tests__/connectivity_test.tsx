@@ -177,6 +177,22 @@ describe("<Connectivity />", () => {
     expect(container.textContent?.toLowerCase()).toContain("connection type: wifi");
   });
 
+  it("shows unknown port status for disconnected services", () => {
+    const p = fakeProps();
+    p.metricPanelState.realtime = false;
+    p.metricPanelState.network = true;
+    p.flags = {
+      userMQTT: false, userAPI: false, botMQTT: false,
+      botAPI: false, botFirmware: false,
+    };
+
+    const { container } = render(<Connectivity {...p} />);
+    const statuses = container.querySelectorAll(".port-info p span");
+
+    expect(statuses).toHaveLength(6);
+    statuses.forEach(status => expect(status).toHaveTextContent("Unknown"));
+  });
+
   it("displays more network info", () => {
     mockIsMobile = false;
     const p = fakeProps();

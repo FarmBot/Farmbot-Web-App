@@ -121,6 +121,17 @@ describe("<FarmDesigner />", () => {
     expect(mapTransformProps?.gridSize.y).toEqual(1230);
   });
 
+  it("updates map settings when saved configuration changes", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.show_images;
+    const { rerender } = render(<FarmDesigner {...p} />);
+    expect(lastLegendProps?.showImages).toBeTruthy();
+
+    rerender(<FarmDesigner {...p} getConfigValue={() => false} />);
+
+    expect(lastLegendProps?.showImages).toBeFalsy();
+  });
+
   it("loads image info", () => {
     const p = fakeProps();
     const image1 = fakeImage();

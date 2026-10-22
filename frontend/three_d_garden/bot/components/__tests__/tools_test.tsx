@@ -767,21 +767,29 @@ describe("<Tools />", () => {
     expect(container).toContainHTML("position=\"1250,460,391\"");
   });
 
-  it("flips rendered pullout direction for mirrored axis", () => {
-    const p = fakeProps();
-    p.config.mirrorX = true;
-    const tool = fakeTool();
-    tool.body.name = "soil sensor";
-    tool.body.id = 2;
-    tool.body.type = "soil_sensor";
-    const toolSlot = fakeToolSlot();
-    toolSlot.body.id = 1;
-    toolSlot.body.tool_id = tool.body.id;
-    toolSlot.body.pullout_direction = ToolPulloutDirection.POSITIVE_X;
-    p.toolSlots = [{ toolSlot, tool }];
-    const { container } = render(<Tools {...p} />);
-    expect(container).toContainHTML(`rotation="0,0,${Math.PI / 2}"`);
-  });
+  it.each<[ToolPulloutDirection, boolean, boolean, number]>([
+    [ToolPulloutDirection.POSITIVE_X, true, false, 1],
+    [ToolPulloutDirection.NEGATIVE_X, true, false, 3],
+    [ToolPulloutDirection.POSITIVE_Y, false, true, 2],
+    [ToolPulloutDirection.NEGATIVE_Y, false, true, 4],
+  ])("mirrors pullout direction %s with axes %s %s",
+    (direction, mirrorX, mirrorY, rotation) => {
+      const p = fakeProps();
+      p.config.mirrorX = mirrorX;
+      p.config.mirrorY = mirrorY;
+      const tool = fakeTool();
+      tool.body.name = "soil sensor";
+      tool.body.id = 2;
+      tool.body.type = "soil_sensor";
+      const toolSlot = fakeToolSlot();
+      toolSlot.body.id = 1;
+      toolSlot.body.tool_id = tool.body.id;
+      toolSlot.body.pullout_direction = direction;
+      p.toolSlots = [{ toolSlot, tool }];
+      const { container } = render(<Tools {...p} />);
+      expect(container)
+        .toContainHTML(`rotation="0,0,${rotation * Math.PI / 2}"`);
+    });
 
   it("uses mirrored bot x for X-stage tools when mirrorX is active", () => {
     const p = fakeProps();

@@ -92,6 +92,16 @@ describe("<PointGroupItem/>", () => {
     expect(container.querySelectorAll(".slot-icon").length).toEqual(0);
   });
 
+  it("omits the icon for an unknown pointer type", () => {
+    const p = fakeProps();
+    p.point = fakePoint();
+    p.point.body.pointer_type = "unknown" as never;
+
+    const { container } = render(<PointGroupItem {...p} />);
+
+    expect(container.querySelector("img")).not.toHaveAttribute("src");
+  });
+
   it("displays tool slot icon", () => {
     const p = fakeProps();
     p.point = fakeToolSlot();

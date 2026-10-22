@@ -101,6 +101,22 @@ describe("demo movement coordinator", () => {
     expect(getDemoMovementSpeed()).toBeUndefined();
   });
 
+  it("cancels the pending fallback completion", () => {
+    const onTargetReached = jest.fn();
+    const target = { x: 100, y: 200, z: 300 };
+    startDemoMovement(target, onTargetReached);
+
+    expect(demoMovementActive()).toBeTruthy();
+    expect(cancelDemoMovement()).toEqual({ x: 0, y: 0, z: 0 });
+    jest.runAllTimers();
+
+    expect(demoMovementActive()).toBeFalsy();
+    expect(onTargetReached).not.toHaveBeenCalled();
+    expect(mockDispatch).not.toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION, payload: target,
+    });
+  });
+
   it("waits for a mounted driver to report the matching target", () => {
     unregisterMovementDriver = registerDemoMovementDriver();
     const onTargetReached = jest.fn();

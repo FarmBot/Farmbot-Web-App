@@ -6,7 +6,7 @@ import {
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import {
-  fakeFarmwareEnv, fakeLog, fakePlant, fakePoint,
+  fakeFarmwareEnv, fakeFbosConfig, fakeLog, fakePlant, fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
 import { clone, cloneDeep } from "lodash";
@@ -144,6 +144,17 @@ describe("<ThreeDGardenMap />", () => {
     rerender(<ThreeDGardenMap {...p} farmwareEnvs={[]} />);
     expect(lastThreeDGardenProps().config.toolDebug).toBeFalsy();
   });
+
+  it.each([[0, 0], [150, -150], [-150, -150]])(
+    "converts configured safe height %s to %s", (height, expected) => {
+      const p = fakeProps();
+      p.fbosConfig = fakeFbosConfig();
+      p.fbosConfig.body.safe_height = height;
+
+      render(<ThreeDGardenMap {...p} />);
+
+      expect(lastThreeDGardenProps().config.safeHeight).toEqual(expected);
+    });
 
   it("converts props", () => {
     const p = fakeProps();

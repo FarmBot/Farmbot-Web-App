@@ -1,11 +1,14 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
-  StockPinBindingsButton, StockPinBindingsButtonProps,
+  pinBindingBody, StockPinBindingsButton, StockPinBindingsButtonProps,
 } from "../tagged_pin_binding_init";
 import { initSave } from "../../../api/crud";
 import * as crud from "../../../api/crud";
 import { stockPinBindings } from "../list_and_label_support";
+import {
+  PinBindingType, PinBindingSpecialAction,
+} from "farmbot/dist/resources/api_resources";
 
 let initSaveSpy: jest.SpyInstance;
 
@@ -20,6 +23,16 @@ describe("<StockPinBindingsButton />", () => {
   const fakeProps = (): StockPinBindingsButtonProps => ({
     dispatch: jest.fn(),
     firmwareHardware: undefined,
+  });
+
+  it("defaults special bindings to emergency stop", () => {
+    expect(pinBindingBody({
+      pin_num: 16, binding_type: PinBindingType.special,
+    })).toEqual({
+      pin_num: 16,
+      binding_type: PinBindingType.special,
+      special_action: PinBindingSpecialAction.emergency_lock,
+    });
   });
 
   it("adds bindings", () => {

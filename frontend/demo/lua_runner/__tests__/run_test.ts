@@ -51,6 +51,13 @@ describe("runLua()", () => {
       ]);
     });
 
+  it.each(["read_pin(13)", 'read_pin(13, "digital")'])(
+    "reads a digital pin: %s", code => {
+      expect(runLua(0, code, [])).toEqual([
+        { type: "read_pin", args: [13, "digital"] },
+      ]);
+    });
+
   it("captures positional and table move speed percentages", () => {
     expect(runLua(0, `
       move_absolute(1, 2, 3, 50)

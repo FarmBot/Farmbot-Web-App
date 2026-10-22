@@ -49,6 +49,20 @@ describe("<WateringAnimations />", () => {
     useFrameSpy.mockRestore();
   });
 
+  it("updates older-kit watering animations when Z changes", () => {
+    const previous = fakeProps();
+    previous.config.kitVersion = "v1.8";
+    const moved = {
+      ...previous,
+      configPosition: {
+        ...previous.configPosition, z: previous.configPosition.z + 1,
+      },
+    };
+
+    expect(wateringAnimationsPropsEqual(previous, { ...previous })).toBeTruthy();
+    expect(wateringAnimationsPropsEqual(previous, moved)).toBeFalsy();
+  });
+
   it("compares only watering animation inputs that affect rendering", () => {
     const previous = fakeProps();
     const unrelatedConfig = fakeProps();

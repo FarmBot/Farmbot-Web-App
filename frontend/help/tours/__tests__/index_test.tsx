@@ -48,8 +48,10 @@ describe("<TourStepContainer />", () => {
     p.helpState.currentTour = "gettingStarted";
     p.helpState.currentTourStep = "intro";
     const { container } = render(<TourStepContainer {...p} />);
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(container.textContent?.toLowerCase()).toContain("getting started");
+    expect(container.querySelector(".toast-title"))
+      .toHaveStyle({ opacity: "1" });
   });
 
   it("renders second tour step", () => {

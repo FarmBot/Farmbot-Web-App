@@ -104,6 +104,17 @@ describe("<NavLinks />", () => {
     expect(container.innerHTML).toContain("beacon soft");
   });
 
+  it("marks the map active when the side panel is closed", () => {
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    p.designer.panelOpen = false;
+
+    const { container } = render(<NavLinks {...p} />);
+
+    expect(container.querySelector("#map")).toHaveClass("active");
+    expect(plantsLink(container)).not.toHaveClass("active");
+  });
+
   it("shows active link", () => {
     location.pathname = Path.mock(Path.plants());
     const { container } = render(<NavLinks {...fakeProps()} />);

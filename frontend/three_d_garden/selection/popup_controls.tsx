@@ -900,9 +900,7 @@ const GantryBeamPopupControls = (props: PopupControlProps) => {
       <GantryBeamCurrentSensorRow
         key={sensor.uuid}
         sensor={sensor}
-        value={isNumber(sensor.body.pin)
-          ? props.bot?.hardware.pins[sensor.body.pin]?.value
-          : undefined}
+        value={props.bot?.hardware.pins[sensor.body.pin as number]?.value}
         botOnline={props.botOnline}
         arduinoBusy={props.arduinoBusy}
         locked={locked} />)}

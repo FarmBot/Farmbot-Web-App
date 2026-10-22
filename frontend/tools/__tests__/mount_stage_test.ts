@@ -29,6 +29,11 @@ describe("mount stage helpers", () => {
     expect(mountStageLabel(mountStage)).toEqual(label);
   });
 
+  it("uses the stationary label for an unknown mount stage", () => {
+    expect(mountStageLabel("unknown" as unknown as MountStage))
+      .toEqual("Stationary");
+  });
+
   it("returns dropdown choices", () => {
     expect(MOUNT_STAGE_CHOICES()).toEqual([
       { label: "Stationary", value: MountStage.NONE },

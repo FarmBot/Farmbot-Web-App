@@ -1321,6 +1321,34 @@ describe("<GardenModel />", () => {
       type: Actions.SET_3D_CAMERA_FOLLOW,
       payload: false,
     });
+
+    location.pathname = Path.mock(Path.designer());
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    const currentSelectionLayer = () =>
+      wrapper.root.findByType(ThreeDObjectSelectionLayer);
+    actRenderer(() => currentSelectionLayer().props.onUpdateLocationSelection({
+      kind: "location", x: 1, y: 2, z: 3,
+    }));
+    expect(currentSelectionLayer().props.locationSelection).toBeDefined();
+    dispatch.mockClear();
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Escape", cancelable: true,
+      }));
+    });
+    expect(currentSelectionLayer().props.locationSelection).toBeUndefined();
+    expect(dispatch).not.toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW, payload: false,
+    });
+
+    actRenderer(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", {
+        key: "Escape", cancelable: true,
+      }));
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_3D_CAMERA_FOLLOW, payload: false,
+    });
   });
 
   it("exits UTM follow from the view prism", () => {
@@ -1377,7 +1405,15 @@ describe("<GardenModel />", () => {
     const bridgeRef = {
       current: { camera: sourceCamera, selectDirection },
     };
-    const useThreeCallCount = (threeFiber.useThree as jest.Mock).mock.calls.length;
+    const element = document.createElement("canvas");
+    element.style.setProperty("--main-bg", "rgb(1, 2, 3)");
+    document.body.appendChild(element);
+    const useThreeMock = threeFiber.useThree as jest.Mock;
+    const state = useThreeMock() as { gl: object };
+    useThreeMock.mockReturnValueOnce({
+      ...state, gl: { ...state.gl, domElement: element },
+    });
+    const useThreeCallCount = useThreeMock.mock.calls.length;
     const wrapper = createRenderer(
       <FarmDesignerViewPrism
         bridgeRef={bridgeRef} />,
@@ -1400,8 +1436,10 @@ describe("<GardenModel />", () => {
     expect(gizmoCamera.position.toArray()[1]).toEqual(0);
     expect(gizmoCamera.fov).toEqual(40);
     const gizmo = wrapper.root.findByType(ViewPrism);
+    expect(gizmo.props.color).toEqual("rgb(1, 2, 3)");
     actRenderer(() => gizmo.props.onDirection([1, 0, 0]));
     expect(selectDirection).toHaveBeenCalledWith([1, 0, 0]);
+    element.remove();
   });
 
   it("preserves gizmo scale throughout perspective transitions", () => {
@@ -2307,6 +2345,7 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     p.config.labels = true;
     p.config.labelsOnHover = false;
+    p.threeDPlants = convertPlants(p.config, [fakePlant()]);
     const wrapper = createWrapper(p);
     const e = { stopPropagation: jest.fn() };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
@@ -3201,6 +3240,16 @@ describe("<GardenModel />", () => {
         x1: p.config.botSizeX,
         y1: p.config.botSizeY,
       });
+    getModeSpy.mockReturnValue(Mode.boxSelect);
+    location.pathname = Path.mock(Path.plants("select"));
+    p.addPlantProps.designer.selectionPointType = ["ToolSlot"];
+    actRenderer(() => wrapper.update(<GardenModel {...p} />));
+    const farmbot = wrapper.root.findAll(node =>
+      typeof node.props.onToolSlotHoverObject == "function")[0];
+    expect(farmbot).toBeDefined();
+    expect(farmbot.props.onHoverObject).toBeUndefined();
+    expect(farmbot.props.onSelectObject).toEqual(expect.any(Function));
+    actRenderer(() => farmbot.props.onToolSlotHoverObject(true));
     getModeSpy.mockRestore();
   });
 
@@ -3631,21 +3680,23 @@ describe("<GardenModel />", () => {
     expect(springSpy).toHaveBeenCalled();
   });
 
-  it("preloads inactive environment scenes", async () => {
-    const p = fakeProps();
-    p.preloadEnvironmentScenes = true;
-    p.config.bot = false;
-    p.config.zoomBeacons = false;
-    p.onLoadComplete = jest.fn();
-    (useTexture as unknown as jest.Mock).mockClear();
-    render(<GardenModel {...p} />);
-    await waitFor(() =>
-      expect(p.onLoadComplete).toHaveBeenCalled());
-    const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
-      .map(([url]) => url);
-    GROUND_TEXTURE_URLS.forEach(texture =>
-      expect(loadedTextures).toContain(texture));
-  });
+  it.each(["Genesis", "Genesis XL"])(
+    "preloads inactive environment scenes for %s", async sizePreset => {
+      const p = fakeProps();
+      p.config.sizePreset = sizePreset;
+      p.preloadEnvironmentScenes = true;
+      p.config.bot = false;
+      p.config.zoomBeacons = false;
+      p.onLoadComplete = jest.fn();
+      (useTexture as unknown as jest.Mock).mockClear();
+      render(<GardenModel {...p} />);
+      await waitFor(() =>
+        expect(p.onLoadComplete).toHaveBeenCalled());
+      const loadedTextures = (useTexture as unknown as jest.Mock).mock.calls
+        .map(([url]) => url);
+      GROUND_TEXTURE_URLS.forEach(texture =>
+        expect(loadedTextures).toContain(texture));
+    });
 
   it("adds a scene object from ground clicks", async () => {
     useStateSpy.mockRestore();

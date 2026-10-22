@@ -60,6 +60,13 @@ describe("command palette recents", () => {
     expect(localStorage.getItem(COMMAND_PALETTE_RECENTS)).toBeFalsy();
   });
 
+  it("ignores stored JSON that is not an array", () => {
+    localStorage.setItem(COMMAND_PALETTE_RECENTS,
+      JSON.stringify({ id: "move" }));
+
+    expect(readRecentCommands()).toEqual([]);
+  });
+
   it("ignores invalid storage and stale commands", () => {
     localStorage.setItem(COMMAND_PALETTE_RECENTS, "{");
     expect(readRecentCommandIds()).toEqual([]);

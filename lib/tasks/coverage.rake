@@ -180,6 +180,67 @@ rescue OpenURI::HTTPError, SocketError, CSV::MalformedCSVError
   { branch: branch, commit: nil, percent: nil }
 end
 
+# Select the comparison baseline, optionally preferring CSV to Coveralls.
+def coverage_baseline(base_branch, prefer_csv: false)
+  if prefer_csv
+    puts "Attempting to use CSV coverage history first."
+    csv = latest_csv_coverage(base_branch)
+    return csv unless csv[:percent].nil?
+    puts "CSV coverage history not available. Falling back to Coveralls."
+  end
+
+  coverage_history_data = fetch_build_data()
+  remote = latest_build_data(coverage_history_data, base_branch)
+
+  if remote[:percent].nil?
+    puts "Coveralls data for '#{base_branch}' not found within history."
+    puts "Attempting to get coveralls build data for latest commit."
+    remote = fetch_latest_branch_build(base_branch)
+  end
+
+  if remote[:percent].nil?
+    puts "Coverage data for latest '#{base_branch}' commit not available."
+    puts "Attempting to use data from the previous commit (latest PR base)."
+    remote = fetch_latest_pr_base_branch_build(base_branch)
+  end
+
+  if remote[:percent].nil? && base_branch != "staging"
+    puts "Error getting coveralls data for '#{base_branch}'."
+    puts "Attempting to use staging build coveralls data from history."
+    remote = latest_build_data(coverage_history_data, "staging")
+  end
+
+  if remote[:percent].nil?
+    puts "Error getting coveralls data for staging."
+    puts "Attempting to use latest build coveralls data in history."
+    remote = latest_build_data(coverage_history_data, "*")
+  end
+
+  if remote[:percent].nil?
+    puts "Error getting coveralls data."
+    puts "Checking for override."
+    percent = REMOTE_COVERAGE_OVERRIDE
+    if percent > 0
+      puts "Using override of #{percent}% for remote coverage value."
+      remote = { branch: "N/A", commit: "", percent: percent }
+    end
+  end
+
+  if remote[:percent].nil? && !prefer_csv
+    puts "No override available."
+    puts "Attempting to use CSV coverage history."
+    remote = latest_csv_coverage(base_branch)
+  end
+
+  if remote[:percent].nil?
+    puts "CSV coverage history not available."
+    puts "Using 100 instead of nil for remote coverage value."
+    remote = { branch: "N/A", commit: "", percent: 100 }
+  end
+
+  remote
+end
+
 # Calculate coverage results from JSON coverage report.
 def get_json_coverage_results()
   results = { lines: { covered: 0, total: 0 }, branches: { covered: 0, total: 0 } }
@@ -345,8 +406,9 @@ namespace :coverage do
        "decreases significantly and can also be run locally after running" \
        "`bun test`." \
        "The Coveralls stats reporter used to perform this check, but didn't" \
-       "compare against a PR's base branch and would always return 0% change."
-  task run: :environment do
+       "compare against a PR's base branch and would always return 0% change." \
+       " Use rake 'coverage:run[csv]' to prefer CSV coverage history."
+  task :run, [:source] => :environment do |_task, args|
     begin
       # Fetch current build coverage data from the HTML summary.
       statements, branches, functions, lines =
@@ -418,57 +480,8 @@ namespace :coverage do
 
     # Fetch remote build coverage data for the current branch.
     pull_request_data = fetch_pull_data()
-    coverage_history_data = fetch_build_data()
-
-    # Use fetched data.
     base_branch = get_base_branch(pull_request_data)
-    remote = latest_build_data(coverage_history_data, base_branch)
-
-    if remote[:percent].nil?
-      puts "Coveralls data for '#{base_branch}' not found within history."
-      puts "Attempting to get coveralls build data for latest commit."
-      remote = fetch_latest_branch_build(base_branch)
-    end
-
-    if remote[:percent].nil?
-      puts "Coverage data for latest '#{base_branch}' commit not available."
-      puts "Attempting to use data from the previous commit (latest PR base)."
-      remote = fetch_latest_pr_base_branch_build(base_branch)
-    end
-
-    if remote[:percent].nil? && base_branch != "staging"
-      puts "Error getting coveralls data for '#{base_branch}'."
-      puts "Attempting to use staging build coveralls data from history."
-      remote = latest_build_data(coverage_history_data, "staging")
-    end
-
-    if remote[:percent].nil?
-      puts "Error getting coveralls data for staging."
-      puts "Attempting to use latest build coveralls data in history."
-      remote = latest_build_data(coverage_history_data, "*")
-    end
-
-    if remote[:percent].nil?
-      puts "Error getting coveralls data."
-      puts "Checking for override."
-      percent = REMOTE_COVERAGE_OVERRIDE
-      if percent > 0
-        puts "Using override of #{percent}% for remote coverage value."
-        remote = { branch: "N/A", commit: "", percent: percent }
-      end
-    end
-
-    if remote[:percent].nil?
-      puts "No override available."
-      puts "Attempting to use CSV coverage history."
-      remote = latest_csv_coverage(base_branch)
-    end
-
-    if remote[:percent].nil?
-      puts "CSV coverage history not available."
-      puts "Using 100 instead of nil for remote coverage value."
-      remote = { branch: "N/A", commit: "", percent: 100 }
-    end
+    remote = coverage_baseline(base_branch, prefer_csv: args[:source] == "csv")
 
     # Adjust remote build data values for printing.
     r = {

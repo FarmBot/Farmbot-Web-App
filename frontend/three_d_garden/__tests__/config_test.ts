@@ -2,7 +2,7 @@ import { clone } from "lodash";
 import {
   cameraOperationDurationMs, CAMERA_OPERATION_DURATION_MS,
   CAMERA_OPERATION_RPI_DURATION_MS, DEMO_CAMERA_OPERATION_DURATION_MS,
-  getSeasonProperties, INITIAL, modifyConfig, modifyConfigsFromUrlParams,
+  getSeasonProperties, INITIAL, modifyConfig, modifyConfigsFromUrlParams, PRESETS,
 } from "../config";
 
 describe("modifyConfig()", () => {
@@ -85,6 +85,22 @@ describe("modifyConfig()", () => {
     initial.bedHeight = 1;
     const result = modifyConfig(initial, { otherPreset: "Initial" });
     expect(result.bedHeight).toEqual(300);
+  });
+
+  it.each(["v1.7", "v1.8"])("uses the full Z axis for kit %s", kitVersion => {
+    const result = modifyConfig(clone(INITIAL), { kitVersion });
+
+    expect(result.zAxisLength).toEqual(PRESETS[INITIAL.sizePreset].zAxisLength);
+  });
+
+  it("restores grass when returning outdoors", () => {
+    const initial = { ...INITIAL, scene: "Mars", groundTexture: "sand" };
+
+    const result = modifyConfig(initial, { scene: "Outdoor" });
+
+    expect(result.groundTexture).toEqual("grass");
+    expect(result.clouds).toBeTruthy();
+    expect(result.people).toBeFalsy();
   });
 
   it("uses the latest geometry for an unknown kit version", () => {

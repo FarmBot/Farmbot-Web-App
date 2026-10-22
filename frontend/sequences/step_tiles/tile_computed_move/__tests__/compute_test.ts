@@ -26,6 +26,21 @@ describe("computeCoordinate()", () => {
     expect(coordinate).toEqual({ x: 12, y: 15, z: 18 });
   });
 
+  it("leaves the preview position unchanged for Lua offsets", () => {
+    const step = cloneDeep(fakeNumericMoveStepCeleryScript);
+    step.body = [{
+      kind: "axis_addition",
+      args: { axis: "x", axis_operand: { kind: "lua", args: { lua: "42" } } },
+    }];
+
+    expect(computeCoordinate({
+      step,
+      botPosition: { x: 10, y: 20, z: 30 },
+      resourceIndex: buildResourceIndex([]).index,
+      sequenceUuid: "seqUuid",
+    })).toEqual({ x: 10, y: 20, z: 30 });
+  });
+
   it("computes coordinate with variable", () => {
     const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
     const botPosition = { x: 0, y: 0, z: 0 };

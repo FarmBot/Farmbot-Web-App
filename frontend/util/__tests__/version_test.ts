@@ -120,6 +120,24 @@ describe("shouldDisplay()", () => {
     delete globalConfig.FBOS_END_OF_LIFE_VERSION;
   });
 
+  it("uses version zero when the installed and fallback versions are absent",
+    () => {
+      const previous = globalConfig.FBOS_END_OF_LIFE_VERSION;
+      globalConfig.FBOS_END_OF_LIFE_VERSION = "";
+      try {
+        expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
+          Feature.jest_feature)).toBeFalsy();
+        expect(createShouldDisplayFn(undefined, { jest_feature: "0.0.0" },
+          undefined)(Feature.jest_feature)).toBeTruthy();
+      } finally {
+        if (previous === undefined) {
+          delete globalConfig.FBOS_END_OF_LIFE_VERSION;
+        } else {
+          globalConfig.FBOS_END_OF_LIFE_VERSION = previous;
+        }
+      }
+    });
+
   it("shouldn't display", () => {
     expect(createShouldDisplayFn("0.9.0", fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeFalsy();

@@ -7,7 +7,9 @@ import { INITIAL, PRESETS } from "../config";
 import { clone } from "lodash";
 import * as zoomBeaconConstants from "../zoom_beacons_constants";
 import * as camera from "../camera";
-import { getSeasonAnimationElapsed } from "../garden/sun";
+import {
+  getSeasonAnimationElapsed, getSeasonAnimationElapsedAtSunPosition,
+} from "../garden/sun";
 
 let setUrlParamSpy: jest.SpyInstance;
 let clearCameraUrlParamsSpy: jest.SpyInstance | undefined;
@@ -95,6 +97,27 @@ describe("<PublicOverlay />", () => {
     expect(p.seasonAnimationElapsedRef.current).toBeUndefined();
     expect(getSeasonAnimationElapsed(true, p.startTimeRef))
       .toBeCloseTo(elapsed);
+    now.mockRestore();
+  });
+
+  it("starts a season preset from a custom sun inclination", () => {
+    const p = fakeProps();
+    p.config.sunInclination = INITIAL.sunInclination + 10;
+    p.startTimeRef = { current: 0 };
+    p.seasonAnimationElapsedRef = { current: undefined };
+    const now = jest.spyOn(performance, "now").mockReturnValue(20_000);
+    const { getByRole } = render(<PublicOverlay {...p} />);
+
+    fireEvent.click(getByRole("button", { name: "Winter" }));
+
+    expect(p.setConfig).toHaveBeenCalledWith(expect.objectContaining({
+      plants: "Winter",
+      sunInclination: p.config.sunInclination,
+    }));
+    expect(p.startTimeRef.current).toEqual(20);
+    expect(p.seasonAnimationElapsedRef.current).toEqual(
+      getSeasonAnimationElapsedAtSunPosition(
+        "Winter", p.config.sunInclination, p.config.sunAzimuth));
     now.mockRestore();
   });
 

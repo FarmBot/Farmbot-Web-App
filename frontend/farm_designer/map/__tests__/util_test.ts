@@ -420,6 +420,22 @@ describe("transformForQuadrant()", () => {
 });
 
 describe("getMode()", () => {
+  it("prioritizes the open profile over camera selection", () => {
+    const state = fakeState();
+    state.resources.consumers.farm_designer = fakeDesignerState();
+    state.resources.consumers.farm_designer.profileOpen = true;
+    state.resources.consumers.farm_designer.threeDCameraSelection = true;
+    const originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof state }).getState = () => state;
+    try {
+      location.pathname = Path.mock(Path.app());
+      expect(getMode()).toEqual(Mode.profile);
+    } finally {
+      (store as unknown as { getState: typeof originalGetState }).getState =
+        originalGetState;
+    }
+  });
+
   it("returns correct Mode", () => {
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(getMode()).toEqual(Mode.clickToAdd);

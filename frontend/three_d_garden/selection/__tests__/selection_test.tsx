@@ -451,6 +451,21 @@ describe("selection resolve", () => {
       .toBeUndefined();
   });
 
+  it("offsets the selection ring for a seed trough", () => {
+    const p = resolveProps();
+    const slot = p.toolSlots[1];
+    const original = resolveSelectedObject(p, { kind: "slot", id: 6 });
+    slot.tool!.body.type = "seed_trough";
+
+    const trough = resolveSelectedObject(p, { kind: "slot", id: 6 });
+
+    expect(trough?.worldPosition[1])
+      .toEqual((original?.worldPosition[1] || 0) + 20);
+    expect(trough?.popupPosition[1])
+      .toEqual((original?.popupPosition[1] || 0) + 20);
+    expect(trough?.locationCoordinate).toEqual(original?.locationCoordinate);
+  });
+
   it("resolves plant, point, and weed selections", () => {
     const props = resolveProps();
     const plant = resolveSelectedObject(props, { kind: "plant", id: 1 });
@@ -1200,6 +1215,25 @@ describe("selection popup controls", () => {
     controls.unmount();
     pinToggleSpy.mockRestore();
     readPinSpy.mockRestore();
+  });
+
+  it("omits current sensors without a pin", () => {
+    const p = layerProps();
+    const sensor = fakeSensor();
+    sensor.body.type = "current";
+    sensor.body.pin = undefined;
+    p.sensors = [sensor];
+    const lighting = fakePeripheral();
+    lighting.body.type = "lighting";
+    lighting.body.pin = 7;
+    p.peripherals = [lighting];
+
+    const controls = render(<ObjectPopupControls
+      {...p} object={gantryBeamObject()} />);
+
+    expect(controls.queryByText("Read sensor")).not.toBeInTheDocument();
+    expect(controls.container.querySelector(".sensor-reading-display"))
+      .not.toBeInTheDocument();
   });
 
   it("disables unavailable gantry beam controls", () => {
