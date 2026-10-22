@@ -167,6 +167,14 @@ jobs:
           path: test-results
           if-no-files-found: warn
 
+      - name: Upload frontend LCOV report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fe-coverage-lcov
+          path: coverage_fe/lcov.info
+          if-no-files-found: warn
+
       - name: Upload coverage artifacts
         if: always()
         uses: actions/upload-artifact@v7
