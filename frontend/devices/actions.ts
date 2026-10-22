@@ -490,7 +490,8 @@ export function readPin(
 ) {
   const noun = t("Read pin");
   if (forceOnline()) {
-    return runDemoLuaCode(`read_pin(${pin_number})`);
+    const mode = pin_mode ? "analog" : "digital";
+    return runDemoLuaCode(`read_pin(${pin_number}, "${mode}")`);
   }
   return getDevice()
     .readPin({ pin_number, label, pin_mode })

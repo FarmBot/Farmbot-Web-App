@@ -719,11 +719,15 @@ describe("readPin()", () => {
     expect(success).not.toHaveBeenCalled();
   });
 
-  it("reads demo account pin", async () => {
+  it.each([
+    [0, "digital"],
+    [1, "analog"],
+  ])("reads demo account pin in mode %s", async (pinMode, mode) => {
     localStorage.setItem("myBotIs", "online");
-    await deviceActions().readPin(1, "label", 0);
+    await deviceActions().readPin(1, "label", pinMode);
     expect(mockDevice.current.readPin).not.toHaveBeenCalled();
-    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("read_pin(1)");
+    expect(demoLuaRunner.runDemoLuaCode)
+      .toHaveBeenCalledWith(`read_pin(1, "${mode}")`);
   });
 });
 
