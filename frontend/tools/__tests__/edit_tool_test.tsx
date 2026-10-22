@@ -11,7 +11,7 @@ import {
   UtmMountableInputProps,
 } from "../edit_tool";
 import {
-  fakeTool, fakeToolSlot,
+  fakeTool, fakeToolSlot, fakeWebAppConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -23,6 +23,7 @@ import * as deviceActions from "../../devices/actions";
 import { Path } from "../../internal_urls";
 import { NavigationContext } from "../../routes_helpers";
 import { FBSelect, FBSelectProps } from "../../ui";
+import * as toolGraphics from "../tool_graphics";
 
 const renderWithContext = (element: React.ReactElement) =>
   render(
@@ -50,6 +51,7 @@ describe("<EditTool />", () => {
   });
 
   const fakeProps = (): EditToolProps => ({
+    threeDimensions: false,
     findTool: jest.fn(() => fakeTool()),
     dispatch: jest.fn(),
     mountedToolId: undefined,
@@ -57,6 +59,22 @@ describe("<EditTool />", () => {
     existingToolNames: [],
     saveFarmwareEnv: jest.fn(),
     env: {},
+  });
+
+  it.each([false, true])("renders 3D graphics: %s", threeDimensions => {
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div className={"tool-graphic-3d"} />);
+    const p = fakeProps();
+    p.threeDimensions = threeDimensions;
+    p.firmwareHardware = "arduino";
+    const { container } = renderWithContext(<EditTool {...p} />);
+    expect(!!container.querySelector(".tool-graphic-3d"))
+      .toEqual(threeDimensions);
+    expect(!!container.querySelector(".tool-svg")).toEqual(!threeDimensions);
+    if (threeDimensions) {
+      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
+    }
+    graphic.mockRestore();
   });
 
   it("renders", () => {
@@ -266,12 +284,23 @@ describe("<EditTool />", () => {
 });
 
 describe("mapStateToProps()", () => {
+  it.each([false, true])("uses the electronics box setting: %s", enabled => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.enable_3d_electronics_box_top = enabled;
+    state.resources = buildResourceIndex([fakeDevice(), config]);
+    expect(mapStateToProps(state).threeDimensions).toEqual(enabled);
+  });
+
   it("returns props", () => {
     const state = fakeState();
     const tool = fakeTool();
     tool.body.id = 123;
-    state.resources = buildResourceIndex([tool, fakeDevice()]);
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = "arduino";
+    state.resources = buildResourceIndex([tool, fakeDevice(), fbosConfig]);
     const props = mapStateToProps(state);
+    expect(props.firmwareHardware).toEqual("arduino");
     expect(props.findTool("" + tool.body.id)).toEqual(tool);
   });
 });

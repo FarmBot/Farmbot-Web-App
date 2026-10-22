@@ -86,6 +86,9 @@ export class RawAddToolSlot
       <DesignerPanelContent panelName={panelName}>
         {this.toolSlot
           ? <SlotEditRows
+            firmwareHardware={this.props.firmwareHardware}
+            threeDimensions={!!this.props.getValue(
+              BooleanSetting.enable_3d_electronics_box_top)}
             noUTM={!hasUTM(this.props.firmwareHardware)}
             is3D={is3D}
             toolSlot={this.toolSlot}

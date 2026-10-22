@@ -4,6 +4,10 @@ import { getBotVersion } from "./bot_versions";
 
 // Zero-based columns in the GLB palette textures. Each column is four pixels.
 export const TOOL_PALETTES = {
+  utm: {
+    columns: 16,
+    entries: { barbs: 0, plasticBody: 2 },
+  },
   seeder: {
     columns: 8,
     entries: {
@@ -42,7 +46,7 @@ export const TOOL_PALETTES = {
   soilSensor: {
     columns: 16,
     entries: {
-      plasticBody: 0, // Instanced nuts share this swatch: keep their original map.
+      plasticBody: 0,
       screws: 1,
       magnetFasteners: 2,
       magnets: 3,

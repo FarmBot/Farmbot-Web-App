@@ -1,4 +1,5 @@
 import React from "react";
+import { kitVersionFromFirmware } from "../three_d_garden/bot/bot_versions";
 import { ThreeDGarden } from "../three_d_garden";
 import {
   cameraOperationDurationMs, CameraOperation, Config, INITIAL,
@@ -92,14 +93,6 @@ export interface ThreeDGardenMapProps {
   farmwareEnvs: TaggedFarmwareEnv[];
   logs: TaggedLog[];
 }
-
-const kitVersionFromFirmware = (firmwareHardware: unknown): string => {
-  if (firmwareHardware == "arduino") { return "v1.2"; }
-  if (firmwareHardware == "farmduino") { return "v1.3"; }
-  if (firmwareHardware == "farmduino_k19") { return "v1.9"; }
-  if (firmwareHardware == "farmduino_k18") { return "v1.8"; }
-  return "v1.7";
-};
 
 const localIdFromUuid = (uuid: string) => {
   const index = uuid.lastIndexOf(".");

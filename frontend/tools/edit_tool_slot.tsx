@@ -67,6 +67,9 @@ export class RawEditToolSlot
         {toolSlot
           ? <div className={"edit-tool-slot-content-wrapper"}>
             <SlotEditRows
+              firmwareHardware={this.props.firmwareHardware}
+              threeDimensions={!!this.props.getValue(
+                BooleanSetting.enable_3d_electronics_box_top)}
               noUTM={!hasUTM(this.props.firmwareHardware)}
               is3D={is3D}
               toolSlot={toolSlot}

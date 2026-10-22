@@ -41,6 +41,7 @@ import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../routes_helpers";
 import { ToolActionRow } from "./tool_action_row";
 import { isBotOnlineFromState } from "../devices/must_be_online";
+import { ToolGraphic3D } from "./tool_graphics";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -75,22 +76,27 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         filterSelectedTool={true}
         filterActiveTools={false}
         filterUtmMountable={true} />
-      <svg className={"utm-and-mounted-tool-graphic"}
-        viewBox={"-60 -50 120 140"}>
-        <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
-          position={{ x: 0, y: 0 }} selectionWidth={1}
-          mountedToolInfo={{
-            id: this.mountedToolId,
-            name: this.mountedTool?.body.name,
-            type: this.mountedTool?.body.type,
-            pulloutDirection: ToolPulloutDirection.POSITIVE_X,
-            noUTM: this.noUTM,
-            flipped: false,
-          }} reversed={false}
-          hidePositionIndicator={true}
-          gantryHeight={0}
-          botPosition={{ x: 0, y: 0, z: 0 }} />
-      </svg>
+      {this.props.threeDimensions
+        ? <ToolGraphic3D mounted={true}
+          firmwareHardware={this.props.firmwareHardware}
+          toolName={this.mountedTool?.body.name}
+          toolType={this.mountedTool?.body.type} />
+        : <svg className={"utm-and-mounted-tool-graphic"}
+          viewBox={"-60 -50 120 140"}>
+          <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
+            position={{ x: 0, y: 0 }} selectionWidth={1}
+            mountedToolInfo={{
+              id: this.mountedToolId,
+              name: this.mountedTool?.body.name,
+              type: this.mountedTool?.body.type,
+              pulloutDirection: ToolPulloutDirection.POSITIVE_X,
+              noUTM: this.noUTM,
+              flipped: false,
+            }} reversed={false}
+            hidePositionIndicator={true}
+            gantryHeight={0}
+            botPosition={{ x: 0, y: 0, z: 0 }} />
+        </svg>}
       <ToolActionRow
         className={"mounted-tool-action-row"}
         showTitle={true}
@@ -120,6 +126,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           .includes(this.state.searchTerm.toLowerCase()))
         .map(toolSlot =>
           <ToolSlotInventoryItem key={toolSlot.uuid}
+            firmwareHardware={this.props.firmwareHardware}
+            threeDimensions={this.props.threeDimensions}
             hovered={toolSlot.uuid === this.props.hoveredToolSlot}
             dispatch={this.props.dispatch}
             toolSlot={toolSlot}
@@ -146,6 +154,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .filter(tool => tool.body.id)
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
+            firmwareHardware={this.props.firmwareHardware}
+            threeDimensions={this.props.threeDimensions}
             toolId={tool.body.id}
             toolType={tool.body.type}
             active={this.props.isActive(tool.body.id)}
@@ -245,6 +255,12 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
   const { x, y, z, id, tool_id, mount_stage } = props.toolSlot.body;
   const tool = props.tools.filter(tool => tool.body.id == tool_id)[0];
   const toolName = tool?.body.name;
+  const toolType = tool_id
+    ? tool?.body.type
+    : undefined;
+  const slotToolName = tool_id
+    ? toolName
+    : "Empty";
   const navigate = useNavigate();
   return <div
     className={`tool-slot-search-item ${props.hovered ? "hovered" : ""}`}
@@ -262,13 +278,16 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
     <Row className="grid-exp-3">
       <div className={"tool-slot-search-item-icon"}>
-        <ToolSlotSVG
-          toolSlot={props.toolSlot}
-          toolName={tool_id ? toolName : "Empty"}
-          toolType={tool_id
-            ? tool?.body.type
-            : undefined}
-          toolTransformProps={props.toolTransformProps} />
+        {props.threeDimensions
+          ? <ToolGraphic3D toolName={toolName}
+            firmwareHardware={props.firmwareHardware}
+            toolType={toolType}
+            pulloutDirection={props.toolSlot.body.pullout_direction} />
+          : <ToolSlotSVG
+            toolSlot={props.toolSlot}
+            toolName={slotToolName}
+            toolType={toolType}
+            toolTransformProps={props.toolTransformProps} />}
       </div>
       {props.hideDropdown
         ? <span className={"tool-slot-search-item-name"}>
@@ -310,7 +329,10 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   return <div className={"tool-search-item"}
     onClick={() => { navigate(Path.tools(props.toolId)); }}>
     <Row className="grid-exp-3">
-      <ToolSVG toolName={props.toolName} toolType={props.toolType} />
+      {props.threeDimensions
+        ? <ToolGraphic3D toolName={props.toolName} toolType={props.toolType}
+          firmwareHardware={props.firmwareHardware} />
+        : <ToolSVG toolName={props.toolName} toolType={props.toolType} />}
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
       <p className="tool-status">
         <i>{props.mounted ? t("mounted") : activeText}</i>

@@ -15,14 +15,19 @@ describe("<SoilSensor />", () => {
     expect(container.innerHTML).toContain("instancedmesh");
   });
 
-  it.each([false, true])(
-    "keeps hardware on its original material with merged geometry: %s", merged => {
+  it.each([
+    [false, false], [false, true], [true, false], [true, true],
+  ])(
+    "selects hardware material: merged=%s, override=%s", (merged, override) => {
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.BufferAttribute(
         new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), 3,
       ));
       const original = new THREE.MeshStandardMaterial();
       const bodyMaterial = new THREE.MeshStandardMaterial({ color: "#333" });
+      const hardwareMaterial = override
+        ? new THREE.MeshStandardMaterial({ color: "silver" })
+        : undefined;
       const hardware = new THREE.Mesh(geometry) as THREE.Mesh & {
         instanceMatrix?: THREE.InstancedBufferAttribute;
       };
@@ -53,9 +58,10 @@ describe("<SoilSensor />", () => {
           return <InstancedMesh {...props} />;
         });
       try {
-        render(<SoilSensorModel model={model} bodyMaterial={bodyMaterial} />);
+        render(<SoilSensorModel model={model} bodyMaterial={bodyMaterial}
+          hardwareMaterial={hardwareMaterial} />);
         expect([...meshMaterials, ...hardwareMaterials])
-          .toEqual([bodyMaterial, original]);
+          .toEqual([bodyMaterial, hardwareMaterial ?? original]);
       } finally {
         meshSpy.mockRestore();
         hardwareSpy.mockRestore();

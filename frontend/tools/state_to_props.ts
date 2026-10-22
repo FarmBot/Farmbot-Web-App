@@ -35,6 +35,8 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
   const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
   const peripherals = selectAllPeripherals(props.resources.index);
   return {
+    threeDimensions: !!getWebAppConfig(
+      BooleanSetting.enable_3d_electronics_box_top),
     tools: selectAllTools(props.resources.index),
     toolSlots: selectAllToolSlotPointers(props.resources.index),
     dispatch: props.dispatch,

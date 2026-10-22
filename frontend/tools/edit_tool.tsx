@@ -32,6 +32,12 @@ import { NavigationContext } from "../routes_helpers";
 import { Navigate, NavigateFunction } from "react-router";
 import { XYZ } from "../devices/constants";
 import { ToolType } from "farmbot/dist/resources/api_resources";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
+import { ToolGraphic3D } from "./tool_graphics";
+import { getFwHardwareValue } from
+  "../settings/firmware/firmware_hardware_support";
+import { getFbosConfig } from "../resources/getters";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -137,6 +143,9 @@ export const UtmMountableInput = (props: UtmMountableInputProps) =>
   </div>;
 
 export const mapStateToProps = (props: Everything): EditToolProps => ({
+  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
+  threeDimensions: !!getWebAppConfigValue(() => props)(
+    BooleanSetting.enable_3d_electronics_box_top),
   findTool: (id: string) =>
     maybeFindToolById(props.resources.index, parseInt(id)),
   dispatch: props.dispatch,
@@ -224,8 +233,12 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
             : dispatch(destroy(tool.uuid))} />
       </div>}>
       <div className="edit-tool grid">
-        <ToolSVG toolName={toolName}
-          toolType={this.state.toolType} profile={true} />
+        {this.props.threeDimensions
+          ? <ToolGraphic3D toolName={toolName}
+            firmwareHardware={this.props.firmwareHardware}
+            toolType={this.state.toolType} profile={true} />
+          : <ToolSVG toolName={toolName}
+            toolType={this.state.toolType} profile={true} />}
         <CustomToolGraphicsInput
           toolName={toolName}
           toolType={this.state.toolType}

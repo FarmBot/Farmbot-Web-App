@@ -579,12 +579,13 @@ describe("<Tools />", () => {
         });
       try {
         const { rerender, unmount } = render(<Tools {...p} />);
-        expect(materials).toContain(original);
+        expect(materials.some(material => material.map)).toEqual(true);
         const originalColor = original.color.clone();
         materials.length = 0;
         rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.2" }} />);
         expect(materials.length).toBeGreaterThan(0);
-        const bodyMaterials = materials.filter(material => material != original);
+        const bodyMaterials = materials.filter(material =>
+          material != original && material.map);
         expect(bodyMaterials).toHaveLength(1);
         bodyMaterials.forEach(material => {
           expect(material.color).toEqual(originalColor);
@@ -595,7 +596,7 @@ describe("<Tools />", () => {
         expect(original.color).toEqual(originalColor);
         materials.length = 0;
         rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.3" }} />);
-        expect(materials).toContain(original);
+        expect(materials.some(material => material.map)).toEqual(true);
         unmount();
       } finally {
         meshSpy.mockRestore();
@@ -603,6 +604,65 @@ describe("<Tools />", () => {
       }
     },
   );
+
+  it.each([
+    ASSETS.models.rotaryToolBase,
+    ASSETS.models.rotaryToolImplement,
+  ])("recolors the rotary hardware palette: %s", asset => {
+    const p = fakeProps();
+    p.toolSlots = [];
+    p.mountedToolType = "rotary_tool";
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute([
+      0, 0, 0.005, 1, 0, 0.005, 0, 1, 0.005,
+      0, 0, -0.03, 1, 0, -0.03, 0, 1, -0.03,
+    ], 3));
+    geometry.setAttribute("uv", new THREE.Float32BufferAttribute([
+      5.5 / 32, 0.5, 5.5 / 32, 0.5, 5.5 / 32, 0.5,
+      5.5 / 32, 0.5, 5.5 / 32, 0.5, 5.5 / 32, 0.5,
+    ], 2));
+    const image = document.createElement("canvas");
+    image.width = 128;
+    image.height = 4;
+    const original = new THREE.MeshStandardMaterial({
+      map: new THREE.CanvasTexture(image),
+    });
+    const loader = useGLTF as jest.MockedFunction<typeof useGLTF<string>>;
+    const implementation = loader.getMockImplementation()!;
+    loader.mockImplementation((key, ...args) => {
+      const model = implementation(key, ...args);
+      return key == asset
+        ? {
+          ...model,
+          nodes: { mesh: new THREE.Mesh(geometry, original) },
+          materials: { material: original },
+        }
+        : model;
+    });
+    const baseProps: React.ComponentProps<typeof components.Mesh>[] = [];
+    const meshName = asset == ASSETS.models.rotaryToolBase
+      ? "rotaryToolBase"
+      : "rotaryToolImplement";
+    const Mesh = components.Mesh;
+    const spy = jest.spyOn(components, "Mesh").mockImplementation(props => {
+      if (props.name == meshName) { baseProps.push(props); }
+      return <Mesh {...props} />;
+    });
+    try {
+      const { unmount } = render(<Tools {...p} />);
+      const material = baseProps[0].material as THREE.MeshStandardMaterial;
+      expect(material).not.toBe(original);
+      const canvas = material.map?.image as HTMLCanvasElement;
+      expect(canvas.getContext("2d")?.fillRect)
+        .toHaveBeenCalledWith(5 * 4, 0, 4, 4);
+      expect(baseProps[0].geometry).toBe(geometry);
+      expect(geometry.groups).toHaveLength(0);
+      unmount();
+    } finally {
+      spy.mockRestore();
+      loader.mockImplementation(implementation);
+    }
+  });
 
   it("reuses static tool models while x position changes", () => {
     const p = fakeProps();

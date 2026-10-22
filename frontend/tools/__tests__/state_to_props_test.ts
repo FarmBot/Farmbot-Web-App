@@ -13,6 +13,14 @@ beforeEach(() => {
 });
 
 describe("mapStateToProps()", () => {
+  it.each([false, true])("uses the electronics box 3D setting: %s", enabled => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.enable_3d_electronics_box_top = enabled;
+    state.resources = buildResourceIndex([fakeDevice(), config]);
+    expect(mapStateToProps(state).threeDimensions).toEqual(enabled);
+  });
+
   it("returns props", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();

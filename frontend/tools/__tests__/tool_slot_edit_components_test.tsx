@@ -40,6 +40,7 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import { changeBlurableInputRTL } from "../../__test_support__/helpers";
+import * as toolGraphics from "../tool_graphics";
 
 const wrappers: ReturnType<typeof createRenderer>[] = [];
 const createWrapper = (element: React.ReactElement) => {
@@ -496,6 +497,7 @@ describe("<UseCurrentLocation />", () => {
 
 describe("<SlotEditRows />", () => {
   const fakeProps = (): SlotEditRowsProps => ({
+    threeDimensions: false,
     toolSlot: fakeToolSlot(),
     tools: [],
     tool: undefined,
@@ -525,6 +527,22 @@ describe("<SlotEditRows />", () => {
     expect(!!container.querySelector("input[name='tool_direction']"))
       .toEqual(visible);
     expect(container.textContent?.toLowerCase()).toContain("slot direction");
+  });
+
+  it.each([false, true])("renders 3D graphics: %s", threeDimensions => {
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div className={"tool-graphic-3d"} />);
+    const p = fakeProps();
+    p.threeDimensions = threeDimensions;
+    p.firmwareHardware = "arduino";
+    const { container } = render(<SlotEditRows {...p} />);
+    expect(!!container.querySelector(".tool-graphic-3d"))
+      .toEqual(threeDimensions);
+    expect(!!container.querySelector(".tool-svg")).toEqual(!threeDimensions);
+    if (threeDimensions) {
+      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
+    }
+    graphic.mockRestore();
   });
 
   it("handles missing tool", () => {

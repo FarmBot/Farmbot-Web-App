@@ -48,6 +48,9 @@
       .utm-and-mounted-tool-graphic {
         width: 30%;
         margin-left: 32%;
+        &.tool-graphic-3d {
+          height: 16rem;
+        }
       }
     }
     .mounted-tool-header {
@@ -232,6 +235,22 @@
       margin-top: 2rem;
     }
   }
+}
+
+.add-tool-panel-content,
+.edit-tool-panel-content,
+.add-tool-slot-panel-content,
+.edit-tool-slot-panel-content {
+  .tool-graphic-3d {
+    width: 100%;
+    height: 20rem;
+    margin-top: 2rem;
+  }
+}
+
+.tool-graphic-3d {
+  width: 3rem;
+  height: 3rem;
 }
 
 .tool-svg {

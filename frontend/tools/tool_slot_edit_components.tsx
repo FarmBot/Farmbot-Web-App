@@ -9,6 +9,7 @@ import {
   MountStage, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
+import { ToolGraphic3D } from "./tool_graphics";
 import { isNumber } from "lodash";
 import {
   MountOffsetInputProps, MountStageInputProps, SlotDirectionInputRowProps,
@@ -221,10 +222,16 @@ export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="grid">
-    <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
-      toolName={props.tool ? props.tool.body.name : "Empty"}
-      toolType={props.tool?.body.type}
-      toolTransformProps={props.toolTransformProps} />
+    {props.threeDimensions
+      ? <ToolGraphic3D profile={true}
+        firmwareHardware={props.firmwareHardware}
+        toolName={props.tool?.body.name}
+        toolType={props.tool?.body.type}
+        pulloutDirection={props.toolSlot.body.pullout_direction} />
+      : <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
+        toolName={props.tool?.body.name ?? "Empty"}
+        toolType={props.tool?.body.type}
+        toolTransformProps={props.toolTransformProps} />}
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
       mountStage={props.toolSlot.body.mount_stage}

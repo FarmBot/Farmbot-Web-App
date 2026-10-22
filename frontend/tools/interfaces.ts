@@ -20,6 +20,7 @@ export interface AddToolSlotState {
 }
 
 export interface AddToolProps {
+  threeDimensions: boolean;
   dispatch: Function;
   existingToolNames: string[];
   firmwareHardware: FirmwareHardware | undefined;
@@ -38,6 +39,8 @@ export interface AddToolState {
 }
 
 export interface EditToolProps {
+  firmwareHardware?: FirmwareHardware;
+  threeDimensions: boolean;
   findTool(id: string): TaggedTool | undefined;
   dispatch: Function;
   mountedToolId: number | undefined;
@@ -61,6 +64,7 @@ export interface ToolTransformProps {
 }
 
 export interface ToolsProps {
+  threeDimensions: boolean;
   tools: TaggedTool[];
   toolSlots: TaggedToolSlotPointer[];
   dispatch: Function;
@@ -84,6 +88,8 @@ export interface ToolsState {
 }
 
 export interface ToolSlotInventoryItemProps {
+  firmwareHardware?: FirmwareHardware;
+  threeDimensions?: boolean;
   toolSlot: TaggedToolSlotPointer;
   tools: TaggedTool[];
   hovered: boolean;
@@ -96,6 +102,8 @@ export interface ToolSlotInventoryItemProps {
 }
 
 export interface ToolInventoryItemProps {
+  firmwareHardware?: FirmwareHardware;
+  threeDimensions: boolean;
   toolName: string;
   toolType: ToolType;
   toolId: number | undefined;
@@ -183,6 +191,8 @@ export interface SlotLocationInputRowProps {
 }
 
 export interface SlotEditRowsProps {
+  firmwareHardware?: FirmwareHardware;
+  threeDimensions: boolean;
   toolSlot: TaggedToolSlotPointer;
   tools: TaggedTool[];
   tool: TaggedTool | undefined;

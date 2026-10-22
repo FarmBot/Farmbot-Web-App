@@ -8,6 +8,7 @@ import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import {
   Group, Mesh, MeshBasicMaterial, MeshPhongMaterial,
 } from "../../components";
+import { useToolHardware } from "../tool_hardware";
 
 type WateringNozzle = GLTF & {
   nodes: { [PartName.wateringNozzle]: THREE.Mesh };
@@ -97,6 +98,8 @@ const CustomToolName = (props: CustomToolNameProps) => {
 export const CustomToolModel = React.memo((props: CustomToolModelProps) => {
   const wateringNozzle = useGLTF(
     ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
+  const { material } = useToolHardware(
+    wateringNozzle.materials.PaletteMaterial001, "wateringNozzle");
   const rotation: [number, number, number] = [0, 0, 2.094 + Math.PI / 2];
   const fillHeight = 12.5;
   const fillCenterZ = 1.25;
@@ -110,7 +113,7 @@ export const CustomToolModel = React.memo((props: CustomToolModelProps) => {
       rotation={rotation}
       scale={1000}
       geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
-      material={wateringNozzle.materials.PaletteMaterial001} />
+      material={material} />
     <Extrude name={"custom-tool-label-base"}
       args={[
         CUSTOM_TOOL_LABEL_SHAPE,

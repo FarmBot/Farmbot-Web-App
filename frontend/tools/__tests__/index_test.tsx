@@ -30,6 +30,7 @@ import { MountStage } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../../routes_helpers";
 import * as toolSlotEditComponents from "../tool_slot_edit_components";
 import { findElement } from "../../__test_support__/react_element_search";
+import * as toolGraphics from "../tool_graphics";
 
 const originalPathname = location.pathname;
 
@@ -61,6 +62,7 @@ describe("<Tools />", () => {
   });
 
   const fakeProps = (): ToolsProps => ({
+    threeDimensions: false,
     tools: [],
     toolSlots: [],
     dispatch: jest.fn(),
@@ -81,6 +83,35 @@ describe("<Tools />", () => {
   it("renders with no tools", () => {
     const { container } = render(<Tools {...fakeProps()} />);
     expect(container.textContent).toContain("Add a tool");
+  });
+
+  it.each([false, true])("renders tool graphics in 3D: %s", threeDimensions => {
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div className={"tool-graphic-3d"} />);
+    const p = fakeProps();
+    p.threeDimensions = threeDimensions;
+    p.firmwareHardware = "arduino";
+    p.tools = [fakeTool()];
+    p.tools[0].body.id = 1;
+    p.toolSlots = [fakeToolSlot()];
+    const { container } = render(<Tools {...p} />);
+    expect(container.querySelectorAll(".tool-graphic-3d").length)
+      .toEqual(threeDimensions
+        ? 3
+        : 0);
+    expect(container.querySelectorAll(".tool-svg").length)
+      .toEqual(threeDimensions
+        ? 0
+        : 2);
+    expect(container.querySelectorAll("svg.utm-and-mounted-tool-graphic").length)
+      .toEqual(threeDimensions
+        ? 0
+        : 1);
+    if (threeDimensions) {
+      expect(graphic.mock.calls.map(([props]) => props.firmwareHardware))
+        .toEqual(["arduino", "arduino", "arduino"]);
+    }
+    graphic.mockRestore();
   });
 
   it("renders with tools", () => {

@@ -31,7 +31,7 @@ import { Mode } from "../../../farm_designer/map/interfaces";
 import { resolveMountPosition } from "../../../tools/mount_stage";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
-import { Model, ModelMesh } from "../../model_mesh";
+import { Model } from "../../model_mesh";
 import { SuctionAnimations } from "./suction_animation";
 import { Highlight } from "../../elements";
 import {
@@ -45,7 +45,7 @@ import {
 import { clickWasDragged } from "../../click_event";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
-import { useToolPlasticMaterial } from "../tool_palettes";
+import { useToolHardware, useToolMaterials } from "../tool_hardware";
 import { frontSideMaterial } from "../../geometry_batching";
 import { CustomToolModel } from "./custom_tool";
 
@@ -607,6 +607,9 @@ const RotaryToolModel = React.memo(
       useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as unknown as Model;
     const rotaryToolImplement =
       useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as unknown as Model;
+    const base = useToolHardware(rotaryToolBase.materials.material, "rotaryTool");
+    const implement = useToolHardware(
+      rotaryToolImplement.materials.material, "rotaryTool");
     return <Group name={"rotaryTool"}
       position={[
         0,
@@ -614,14 +617,16 @@ const RotaryToolModel = React.memo(
         10,
       ]}
       rotation={[0, 0, Math.PI / 2]}>
-      <ModelMesh name={"rotaryToolBase"}
-        model={rotaryToolBase} />
+      <Mesh name={"rotaryToolBase"}
+        geometry={rotaryToolBase.nodes.mesh.geometry}
+        material={base.material} scale={1000} />
       <Group
         position={[0, -3, -52]}
         rotation={[-10 * Math.PI / 180, 0, 0]}>
-        <ModelMesh name={"rotaryToolImplement"}
+        <Mesh name={"rotaryToolImplement"}
           ref={ref}
-          model={rotaryToolImplement} />
+          geometry={rotaryToolImplement.nodes.mesh.geometry}
+          material={implement.material} scale={1000} />
       </Group>
     </Group>;
   }),
@@ -635,7 +640,7 @@ interface VersionedToolModelProps {
 const WateringNozzleToolModel = React.memo((props: VersionedToolModelProps) => {
   const wateringNozzle = useGLTF(
     ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
-  const material = useToolPlasticMaterial(
+  const { material } = useToolMaterials(
     wateringNozzle.materials.PaletteMaterial001, props.kitVersion, "wateringNozzle");
   return <Mesh name={"wateringNozzle"}
     position={[
@@ -683,11 +688,12 @@ const SeedTrayToolModel = React.memo((props: VersionedToolModelProps) => {
 
 const SoilSensorToolModel = React.memo((props: VersionedToolModelProps) => {
   const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as unknown as SoilSensorFull;
-  const material = useToolPlasticMaterial(
+  const { material, hardwareMaterial } = useToolMaterials(
     soilSensor.materials.PaletteMaterial001, props.kitVersion, "soilSensor");
   return <SoilSensorModel
     model={soilSensor}
     bodyMaterial={material}
+    hardwareMaterial={hardwareMaterial}
     name={"soilSensor"}
     position={[
       0,
@@ -699,7 +705,7 @@ const SoilSensorToolModel = React.memo((props: VersionedToolModelProps) => {
 
 const SeederToolModel = React.memo((props: ToolModelProps) => {
   const seeder = useGLTF(ASSETS.models.seeder, LIB_DIR) as unknown as Seeder;
-  const material = useToolPlasticMaterial(
+  const { material } = useToolMaterials(
     seeder.materials.PaletteMaterial001, props.config.kitVersion, "seeder");
   return <>
     <Mesh name={"seeder"}
@@ -726,7 +732,7 @@ const SeederToolModel = React.memo((props: ToolModelProps) => {
 
 const WeederToolModel = React.memo((props: VersionedToolModelProps) => {
   const weeder = useGLTF(ASSETS.models.weeder, LIB_DIR) as unknown as Weeder;
-  const material = useToolPlasticMaterial(
+  const { material } = useToolMaterials(
     weeder.materials.PaletteMaterial001, props.kitVersion, "weeder");
   return <Mesh name={"weeder"}
     position={[
@@ -882,52 +888,10 @@ const ToolBase = (props: ToolProps) => {
     onHoverObject,
     onHoverLabel: props.onHoverLabel,
   };
-  const model = (() => {
-    switch (props.toolType) {
-      case "rotary_tool":
-        return inToolbay
-          ? <ToolbaySlot {...common}>
-            <RotaryToolModel />
-          </ToolbaySlot>
-          : <ActiveRotaryToolSlot
-            {...common}
-            rotary={props.config.rotary} />;
-      case "watering_nozzle":
-        return <ToolbaySlot {...common}>
-          <WateringNozzleToolModel kitVersion={config.kitVersion} />
-        </ToolbaySlot>;
-      case "seed_bin":
-        return <ToolbaySlot {...common}>
-          <SeedBinToolModel kitVersion={config.kitVersion} />
-        </ToolbaySlot>;
-      case "seed_tray":
-        return <ToolbaySlot {...common}>
-          <SeedTrayToolModel kitVersion={config.kitVersion} />
-        </ToolbaySlot>;
-      case "soil_sensor":
-        return <ToolbaySlot {...common}>
-          <SoilSensorToolModel kitVersion={config.kitVersion} />
-        </ToolbaySlot>;
-      case "seeder":
-        return <ToolbaySlot {...common}>
-          <SeederToolModel config={props.config} inToolbay={inToolbay} />
-        </ToolbaySlot>;
-      case "weeder":
-        return <ToolbaySlot {...common}>
-          <WeederToolModel kitVersion={config.kitVersion} />
-        </ToolbaySlot>;
-      case "seed_trough":
-        return <SeedTroughToolSlot
-          {...common}
-          firstTrough={props.firstTrough} />;
-      case "none":
-        return <ToolbaySlot {...common}>
-          <CustomToolModel toolName={props.toolName} />
-        </ToolbaySlot>;
-      default:
-        return <ToolbaySlot {...common} />;
-    }
-  })();
+  const model = <ToolModel {...common}
+    toolType={props.toolType}
+    toolName={props.toolName}
+    firstTrough={props.firstTrough} />;
   if (!config.toolDebug) { return model; }
   const effectorPosition = getToolRenderPosition(config, {
     ...props,
@@ -957,6 +921,62 @@ const ToolBase = (props: ToolProps) => {
           depthTest={false} depthWrite={false} />
       </Mesh>)}
   </>;
+};
+
+interface ToolPreviewModelProps extends ToolbaySlotProps {
+  toolType: ToolType | undefined;
+  toolName?: string;
+  firstTrough?: boolean;
+}
+
+// eslint-disable-next-line complexity
+export const ToolModel = (props: ToolPreviewModelProps) => {
+  const { config, inToolbay } = props;
+  const common = props;
+  switch (props.toolType) {
+    case "rotary_tool":
+      return inToolbay
+        ? <ToolbaySlot {...common}>
+          <RotaryToolModel />
+        </ToolbaySlot>
+        : <ActiveRotaryToolSlot
+          {...common}
+          rotary={props.config.rotary} />;
+    case "watering_nozzle":
+      return <ToolbaySlot {...common}>
+        <WateringNozzleToolModel kitVersion={config.kitVersion} />
+      </ToolbaySlot>;
+    case "seed_bin":
+      return <ToolbaySlot {...common}>
+        <SeedBinToolModel kitVersion={config.kitVersion} />
+      </ToolbaySlot>;
+    case "seed_tray":
+      return <ToolbaySlot {...common}>
+        <SeedTrayToolModel kitVersion={config.kitVersion} />
+      </ToolbaySlot>;
+    case "soil_sensor":
+      return <ToolbaySlot {...common}>
+        <SoilSensorToolModel kitVersion={config.kitVersion} />
+      </ToolbaySlot>;
+    case "seeder":
+      return <ToolbaySlot {...common}>
+        <SeederToolModel config={props.config} inToolbay={inToolbay} />
+      </ToolbaySlot>;
+    case "weeder":
+      return <ToolbaySlot {...common}>
+        <WeederToolModel kitVersion={config.kitVersion} />
+      </ToolbaySlot>;
+    case "seed_trough":
+      return <SeedTroughToolSlot
+        {...common}
+        firstTrough={props.firstTrough} />;
+    case "none":
+      return <ToolbaySlot {...common}>
+        <CustomToolModel toolName={props.toolName} />
+      </ToolbaySlot>;
+    default:
+      return <ToolbaySlot {...common} />;
+  }
 };
 
 const Tool = React.memo(ToolBase);

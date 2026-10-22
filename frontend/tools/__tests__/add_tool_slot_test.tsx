@@ -19,6 +19,7 @@ import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
 import { BooleanSetting } from "../../session_keys";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import * as toolPreview from "../tool_graphics";
 import {
   createRenderer,
   getRendererInstance,
@@ -62,10 +63,29 @@ describe("<AddToolSlot />", () => {
     getValue: jest.fn(() => false),
   });
 
+  it.each([false, true])("uses the electronics box setting: %s", enabled => {
+    const graphic = jest.spyOn(toolPreview, "ToolGraphic3D")
+      .mockImplementation(() => <div className={"tool-graphic-3d"} />);
+    const p = fakeProps();
+    p.getValue = jest.fn(key =>
+      key == BooleanSetting.enable_3d_electronics_box_top && enabled);
+    p.firmwareHardware = "arduino";
+    const { container } = render(<AddToolSlot {...p} />);
+    expect(!!container.querySelector(".tool-graphic-3d")).toEqual(enabled);
+    expect(!!container.querySelector("input[name='tool_direction']"))
+      .toEqual(true);
+    if (enabled) {
+      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
+    }
+    graphic.mockRestore();
+  });
+
   it.each([false, true, undefined])(
     "renders rotation control for 3D setting %s", is3D => {
       const p = fakeProps();
-      p.getValue = jest.fn(() => is3D);
+      p.getValue = jest.fn(key => key == BooleanSetting.three_d_garden
+        ? is3D
+        : false);
       p.findToolSlot = () => fakeToolSlot();
       const { container } = render(<AddToolSlot {...p} />);
       expect(p.getValue).toHaveBeenCalledWith(BooleanSetting.three_d_garden);

@@ -27,6 +27,7 @@ import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode } from "../../../farm_designer/map/util";
 import { EXTRUSION_WIDTH, UTM_RADIUS } from "./constants";
 import { Highlight } from "../../elements";
+import { useToolMaterials } from "../tool_hardware";
 
 type ZStop = GLTF & {
   nodes: { [PartName.zStop]: THREE.Mesh };
@@ -183,6 +184,8 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     LIB_DIR,
   );
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
+  const { material: utmMaterial } = useToolMaterials(
+    utm.materials.PaletteMaterial001, config.kitVersion, "utm");
   const aluminumTexture = useTextureVariant(ASSETS.textures.aluminum, {
     wrapS: RepeatWrapping,
     wrapT: RepeatWrapping,
@@ -232,14 +235,13 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh
         geometry={utm.nodes.M5_Barb.geometry}
+        material={utmMaterial}
         position={[15, 9, 36]}
         scale={1000}
         onClick={selectUtm}
         onPointerOver={() => props.onHoverObject?.(true)}
         onPointerOut={() => props.onHoverObject?.(false)}
-        rotation={[0, 0, 2.094]}>
-        <MeshPhongMaterial color={version.toolColor ?? "#ccc"} />
-      </Mesh>
+        rotation={[0, 0, 2.094]} />
     </Group>
   </Highlight>;
 
