@@ -112,6 +112,12 @@ describe("modifyConfig()", () => {
 });
 
 describe("modifyConfigsFromUrlParams()", () => {
+  it("reads an extrusion color override from the URL", () => {
+    window.location.search = "?extrusionColor=%23123456";
+    expect(modifyConfigsFromUrlParams(clone(INITIAL)).extrusionColor)
+      .toEqual("#123456");
+  });
+
   it("sets config scene", () => {
     window.location.search = "?scene=Lab";
     const initial = clone(INITIAL);

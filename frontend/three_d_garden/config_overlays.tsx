@@ -576,7 +576,10 @@ export const PrivateOverlay = (props: OverlayProps) => {
           <Radio {...common} configKey={"label"} addLabel={"packaging"}
             options={["FarmBot Genesis", "FarmBot Genesis XL", "FarmBot Jr", "box"]} />
           <Radio {...common} configKey={"kitVersion"}
-            options={["v1.9", "v1.8", "v1.7", "v1000"]} />
+            options={["v1.9", "v1.8", "v1.7", "v1.3", "v1.2", "v1000"]} />
+          <Radio {...common} configKey={"extrusionColor"}
+            addLabel={"empty uses kit color"}
+            options={["", "white", "#333"]} />
           <Radio {...common} configKey={"sizePreset"}
             options={["Jr", "Genesis", "Genesis XL"]} />
           <Radio {...common} configKey={"bedType"}

@@ -253,7 +253,8 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
         { steps: 1, depth: zAxisLength, bevelEnabled: false },
       ]}
       position={[-11, UTM_RADIUS, 0]}>
-      <MeshPhongMaterial color={version.extrusionColor}
+      <MeshPhongMaterial
+        color={config.extrusionColor || version.extrusionColor}
         map={aluminumTexture}
         side={DoubleSide} />
     </Extrude>
@@ -307,6 +308,7 @@ const Z_AXIS_CONFIG_FIELDS: (keyof Config)[] = [
   "cableCarriers",
   "columnLength",
   "kitVersion",
+  "extrusionColor",
   "motorLoad",
   "negativeZ",
   "perspective",

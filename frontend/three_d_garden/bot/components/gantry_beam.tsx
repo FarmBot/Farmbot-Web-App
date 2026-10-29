@@ -49,7 +49,8 @@ const gantryBeamPropsEqual = (
     && prevConfig.bedLengthOuter == nextConfig.bedLengthOuter
     && prevConfig.light == nextConfig.light
     && prevConfig.lightsDebug == nextConfig.lightsDebug
-    && prevConfig.kitVersion == nextConfig.kitVersion;
+    && prevConfig.kitVersion == nextConfig.kitVersion
+    && prevConfig.extrusionColor == nextConfig.extrusionColor;
 };
 
 const GantryBeamComponent = (props: GantryBeamProps) => {
@@ -101,7 +102,7 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
           { steps: 1, depth: beamLength, bevelEnabled: false },
         ]}>
         <MeshPhongMaterial
-          color={version.extrusionColor}
+          color={props.config.extrusionColor || version.extrusionColor}
           map={props.aluminumTexture}
           side={DoubleSide} />
       </Extrude>

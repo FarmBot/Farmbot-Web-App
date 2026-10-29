@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  findOrCreate3DConfigFunction, get3DConfigStringValueFunction,
   get3DConfigValueFunction, namespace3D, SCENE_DDI_LIST, SCENE_DDIS,
   TEXTURE_DDIS, ThreeDConfig, ThreeDSettings,
 } from "../three_d_settings";
@@ -168,6 +169,59 @@ describe("get3DConfigValueFunction()", () => {
     const getValue = get3DConfigValueFunction([first, second]);
 
     expect(getValue("grid")).toEqual(1);
+  });
+});
+
+describe("string 3D config persistence", () => {
+  it("defaults to the kit color without creating an empty setting", () => {
+    expect(get3DConfigStringValueFunction([])("extrusionColor")).toEqual("");
+    const dispatch = jest.fn();
+    findOrCreate3DConfigFunction(dispatch, [])("extrusionColor", "");
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(crud.initSave).not.toHaveBeenCalled();
+  });
+
+  it.each(["white", "#333", "#123456", ""])(
+    "saves and loads the exact color string %s", value => {
+      const env = fakeFarmwareEnv();
+      env.body.key = namespace3D("extrusionColor");
+      env.body.value = "white";
+      const dispatch = jest.fn();
+      findOrCreate3DConfigFunction(dispatch, [env])("extrusionColor", value);
+      expect(crud.edit).toHaveBeenCalledWith(env, { value });
+      expect(crud.save).toHaveBeenCalledWith(env.uuid);
+      env.body.value = value;
+      expect(get3DConfigStringValueFunction([env])("extrusionColor"))
+        .toEqual(value);
+    });
+
+  it.each([0, 123, true, false])("reads %s as a string", value => {
+    const env = fakeFarmwareEnv();
+    env.body.key = namespace3D("extrusionColor");
+    env.body.value = value;
+    expect(get3DConfigStringValueFunction([env])("extrusionColor"))
+      .toEqual(String(value));
+  });
+
+  it("creates a saved string override", () => {
+    findOrCreate3DConfigFunction(jest.fn(), [])("extrusionColor", "#123456");
+    expect(crud.initSave).toHaveBeenCalledWith("FarmwareEnv", {
+      key: namespace3D("extrusionColor"), value: "#123456",
+    });
+  });
+
+  it("uses the first prefixed string setting", () => {
+    const unrelated = fakeFarmwareEnv();
+    unrelated.body.key = "extrusionColor";
+    unrelated.body.value = "red";
+    const first = fakeFarmwareEnv();
+    first.body.key = namespace3D("extrusionColor");
+    first.body.value = "#333";
+    const second = fakeFarmwareEnv();
+    second.body.key = first.body.key;
+    second.body.value = "white";
+    const getValue = get3DConfigStringValueFunction([unrelated, first, second]);
+    expect(getValue("extrusionColor")).toEqual("#333");
   });
 });
 

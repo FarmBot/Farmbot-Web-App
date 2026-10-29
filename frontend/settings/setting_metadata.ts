@@ -707,6 +707,10 @@ export interface ThreeDSettingMetadata extends PaletteSettingMetadata {
   key: string;
 }
 
+export const THREE_D_STRING_DEFAULTS = {
+  extrusionColor: "",
+} satisfies Partial<Record<keyof Config, string>>;
+
 export const THREE_D_DEFAULTS: Partial<Record<keyof Config, number>> = {
   bedWallThickness: 40,
   bedHeight: 300,

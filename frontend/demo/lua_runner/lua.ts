@@ -1117,7 +1117,7 @@ function complete_job(name)
 end
 
 function get_job_progress(name)
-  get_job(name)
+  return get_job(name)
 end
 
 function watch_pin(pin, callback)

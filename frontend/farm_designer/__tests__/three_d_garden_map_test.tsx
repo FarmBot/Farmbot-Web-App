@@ -129,6 +129,22 @@ describe("<ThreeDGardenMap />", () => {
     logs: [],
   });
 
+  it("loads, updates, and clears the saved extrusion color string", () => {
+    const p = fakeProps();
+    p.farmwareEnvs = [];
+    const { rerender } = render(<ThreeDGardenMap {...p} />);
+    expect(lastThreeDGardenProps().config.extrusionColor).toEqual("");
+    ["#123456", "white", "#333", ""].forEach(value => {
+      const env = fakeFarmwareEnv();
+      env.body.key = namespace3D("extrusionColor");
+      env.body.value = value;
+      rerender(<ThreeDGardenMap {...p} farmwareEnvs={[env]} />);
+      expect(lastThreeDGardenProps().config.extrusionColor).toEqual(value);
+    });
+    rerender(<ThreeDGardenMap {...p} farmwareEnvs={[]} />);
+    expect(lastThreeDGardenProps().config.extrusionColor).toEqual("");
+  });
+
   it("updates tool debug when its saved setting changes", () => {
     const p = fakeProps();
     p.farmwareEnvs = [];
@@ -189,6 +205,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.ambient = 1;
     expectedConfig.sun = 1;
     expectedConfig.bedBrightness = 1;
+    expectedConfig.extrusionColor = "1";
     expectedConfig.soilBrightness = 1;
     expectedConfig.cableDebug = true;
     expectedConfig.toolDebug = true;

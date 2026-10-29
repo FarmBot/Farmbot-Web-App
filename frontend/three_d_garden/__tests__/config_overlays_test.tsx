@@ -180,6 +180,29 @@ describe("<PublicOverlay />", () => {
 });
 
 describe("<PrivateOverlay />", () => {
+  it.each(["white", "#333"])(
+    "selects and clears the %s extrusion color override", extrusionColor => {
+      const p = fakeProps();
+      p.config.urlParamAutoAdd = true;
+      const { getByTitle, rerender } = render(<PrivateOverlay {...p} />);
+      expect(getByTitle(/^extrusionColor\s*$/)).toBeChecked();
+      fireEvent.click(getByTitle(`extrusionColor ${extrusionColor}`));
+      expect(p.setConfig).toHaveBeenLastCalledWith({
+        ...p.config, extrusionColor,
+      });
+      expect(setUrlParamSpy)
+        .toHaveBeenLastCalledWith("extrusionColor", extrusionColor);
+      rerender(<PrivateOverlay {...p}
+        config={{ ...p.config, extrusionColor }} />);
+      expect(getByTitle(`extrusionColor ${extrusionColor}`)).toBeChecked();
+      fireEvent.click(getByTitle(/^extrusionColor\s*$/));
+      expect(p.setConfig).toHaveBeenLastCalledWith({
+        ...p.config, extrusionColor: "",
+      });
+      expect(setUrlParamSpy).toHaveBeenLastCalledWith("extrusionColor", "");
+    },
+  );
+
   const fakeProps = (): OverlayProps => ({
     config: clone(INITIAL),
     setConfig: jest.fn(),

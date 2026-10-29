@@ -122,7 +122,9 @@ const GantryCornerBracket = (props: GantrySideProps & {
     return <LeftGantryCornerBracketModel
       model={model as unknown as LeftGantryCornerBracketFull}
       name={"leftBracket"}
-      position={[-38, sideY(outerY + props.bedColumnYOffset - 35),
+      position={[
+        -38,
+        sideY(outerY + props.bedColumnYOffset - 35),
         config.columnLength - 15]}
       rotation={[0, 0, Math.PI / 2]} />;
   }
@@ -130,7 +132,9 @@ const GantryCornerBracket = (props: GantrySideProps & {
     return <RightGantryCornerBracketModel
       model={model as unknown as RightGantryCornerBracketFull}
       name={"rightBracket"}
-      position={[-38, sideY(outerY - 10 + props.bedColumnYOffset),
+      position={[
+        -38,
+        sideY(outerY - 10 + props.bedColumnYOffset),
         config.columnLength + 80]}
       rotation={[0, 0, Math.PI / 2]} />;
   }
@@ -187,7 +191,8 @@ const GantrySide = (props: GantrySideProps) => {
         version.columnBaseZ,
       ]}
       rotation={[0, 0, Math.PI / 2]}>
-      <MeshPhongMaterial color={version.extrusionColor}
+      <MeshPhongMaterial
+        color={config.extrusionColor || version.extrusionColor}
         map={props.aluminumTexture}
         side={DoubleSide} />
     </Extrude>
@@ -302,6 +307,7 @@ const GANTRY_CONFIG_FIELDS: (keyof Config)[] = [
   "cableCarriers",
   "columnLength",
   "kitVersion",
+  "extrusionColor",
   "light",
   "lightsDebug",
   "negativeZ",

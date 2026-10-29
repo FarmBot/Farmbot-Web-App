@@ -107,6 +107,19 @@ describe("<GantryBeam />", () => {
     expect(material).toHaveAttribute("color", "#333");
   });
 
+  it("updates and clears the extrusion color override", () => {
+    const p = fakeProps();
+    const { container, rerender } = render(<GantryBeam {...p} />);
+    const material = () => container.querySelector(
+      "[data-extrude-name='gantry-beam-extrusion'] > [color]",
+    );
+    rerender(<GantryBeam {...p}
+      config={{ ...p.config, extrusionColor: "#123456" }} />);
+    expect(material()).toHaveAttribute("color", "#123456");
+    rerender(<GantryBeam {...p} />);
+    expect(material()).toHaveAttribute("color", "white");
+  });
+
   it("renders lights", () => {
     const p = fakeProps();
     p.config.light = true;

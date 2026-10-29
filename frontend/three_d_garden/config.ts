@@ -95,6 +95,7 @@ export interface Config {
   animateSeasons: boolean;
   distanceIndicator: string;
   kitVersion: string;
+  extrusionColor: string;
   negativeZ: boolean;
   exaggeratedZ: boolean;
   waterFlow: boolean;
@@ -261,6 +262,7 @@ export const INITIAL: ConfigWithPosition = {
   animateSeasons: false,
   distanceIndicator: "",
   kitVersion: "v1.9",
+  extrusionColor: "",
   negativeZ: true,
   exaggeratedZ: false,
   waterFlow: false,
@@ -304,7 +306,7 @@ export const INITIAL_POSITION: PositionConfig = {
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
   "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin", "groundTexture",
-  "cameraOperation",
+  "cameraOperation", "extrusionColor",
 ];
 
 export const NUMBER_KEYS = [
@@ -554,7 +556,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "solar", "utilitiesPost", "packaging", "groundTexture",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "toolDebug", "zoomBeaconDebug", "lightsDebug",
-  "surfaceDebug",
+  "surfaceDebug", "extrusionColor",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary", "animateSeasons", "outdoorObjects",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",

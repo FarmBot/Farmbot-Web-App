@@ -29,7 +29,8 @@ import {
   DeviceAccountSettings, ToolType,
 } from "farmbot/dist/resources/api_resources";
 import {
-  findOrCreate3DConfigFunction, get3DConfigValueFunction, SCENES, TEXTURES,
+  findOrCreate3DConfigFunction, get3DConfigStringValueFunction,
+  get3DConfigValueFunction, SCENES, TEXTURES,
 } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
@@ -171,6 +172,10 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     () => get3DConfigValueFunction(props.farmwareEnvs),
     [props.farmwareEnvs],
   );
+  const getStringValue = React.useMemo(
+    () => get3DConfigStringValueFunction(props.farmwareEnvs),
+    [props.farmwareEnvs],
+  );
   const set3DConfigValue = React.useMemo(
     () => findOrCreate3DConfigFunction(
       props.dispatch,
@@ -180,6 +185,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
   );
   const { designer } = props;
   const configValues = {
+    extrusionColor: getStringValue("extrusionColor"),
     mirrorX: getValue("mirrorX"),
     mirrorY: getValue("mirrorY"),
     bedXOffset: getValue("bedXOffset"),
@@ -341,6 +347,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     nextConfig.clipImages = clipImages;
     nextConfig.showUncroppedCameraView = showUncroppedCameraView;
     nextConfig.kitVersion = kitVersionFromFirmware(firmwareHardware);
+    nextConfig.extrusionColor = configValues.extrusionColor;
     nextConfig.negativeZ = props.negativeZ;
     nextConfig.exaggeratedZ = designer.threeDExaggeratedZ;
     nextConfig.mirrorX = mirrorX;
@@ -466,6 +473,7 @@ const ThreeDGardenMapSceneBase = (props: ThreeDGardenMapSceneProps) => {
     configValues.constellations,
     configValues.constellationsDebug,
     configValues.eventDebug,
+    configValues.extrusionColor,
     configValues.extraLegsX,
     configValues.extraLegsY,
     configValues.grid,

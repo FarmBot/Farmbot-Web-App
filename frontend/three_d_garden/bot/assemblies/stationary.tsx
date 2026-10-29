@@ -74,7 +74,7 @@ const StationaryAssemblyBase = (props: StationaryAssemblyProps) => {
             0,
           ]}>
           <MeshPhongMaterial
-            color={version.extrusionColor}
+            color={config.extrusionColor || version.extrusionColor}
             map={aluminumTexture}
             side={DoubleSide} />
         </Extrude>}
@@ -115,6 +115,7 @@ const STATIONARY_CONFIG_FIELDS: (keyof Config)[] = [
   "botSizeX",
   "tracks",
   "kitVersion",
+  "extrusionColor",
 ];
 
 export const StationaryAssembly = React.memo(

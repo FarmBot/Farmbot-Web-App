@@ -346,6 +346,31 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it.each([
+    ["v1.2", "#333"],
+    ["v1.9", "white"],
+  ])("overrides and restores all %s extrusion colors", (kitVersion, color) => {
+    const p = fakeProps();
+    p.config.kitVersion = kitVersion;
+    const { container, rerender } = render(<Bot {...p} />);
+    const materials = () => container.querySelectorAll([
+      "[data-extrude-name='tracks'] > [color]",
+      "[data-extrude-name='columns'] > [color]",
+      "[data-extrude-name='gantry-beam-extrusion'] > [color]",
+      "[data-extrude-name='z-axis'] > [color]",
+    ].join(", "));
+    expect(materials()).toHaveLength(6);
+    materials().forEach(material =>
+      expect(material).toHaveAttribute("color", color));
+    rerender(<Bot {...p}
+      config={{ ...p.config, extrusionColor: "#123456" }} />);
+    materials().forEach(material =>
+      expect(material).toHaveAttribute("color", "#123456"));
+    rerender(<Bot {...p} />);
+    materials().forEach(material =>
+      expect(material).toHaveAttribute("color", color));
+  });
+
   it("preserves the Jr column length adjustment", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.9";

@@ -1968,6 +1968,7 @@ describe("csToLua()", () => {
  * [ y ] cropAmount
  * [ y ] fwe
  * [ y ] axis_overwrite
+ * [ y ] axis_addition
  * [ y ] speed_overwrite
  * [ y ] iso8601
  * [ y ] current_year
@@ -1976,7 +1977,7 @@ describe("csToLua()", () => {
  * FBOS:
  * [ y ] variable
  * [   ] auth_token
- * [ y ] api
+ * [ y ] api (limited)
  * [   ] base64.decode
  * [   ] base64.encode
  * [ y ] calibrate_camera
@@ -1992,7 +1993,7 @@ describe("csToLua()", () => {
  * [ y ] dispense
  * [ y ] emergency_lock
  * [ y ] emergency_unlock
- * [ y ] env
+ * [ y ] env (limited)
  * [ y ] fbos_version
  * [ y ] find_axis_length
  * [ y ] find_home
@@ -2028,6 +2029,8 @@ describe("csToLua()", () => {
  * [ y ] dismount_tool
  * [ y ] move_absolute
  * [ y ] move
+ * [ y ] move_with_tool
+ * [ y ] resolve_tool_move
  * [   ] new_sensor_reading
  * [ y ] photo_grid
  * [ y ] read_pin
@@ -2049,7 +2052,7 @@ describe("csToLua()", () => {
  * [ y ] toggle_pin
  * [   ] uart.open
  * [   ] uart.list
- * [ y ] update_device
+ * [ y ] update_device (limited)
  * [   ] update_fbos_config
  * [   ] update_firmware_config
  * [ y ] utc
@@ -2060,7 +2063,7 @@ describe("csToLua()", () => {
  * [ y ] wait_ms
  * [ y ] wait
  * [ y ] water
- * [ y ] watch_pin
+ * [ y ] watch_pin (limited)
  * [ y ] on
  * [ y ] off
  * [ y ] write_pin

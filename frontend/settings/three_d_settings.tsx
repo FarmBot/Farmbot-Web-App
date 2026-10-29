@@ -13,7 +13,9 @@ import { isUndefined } from "lodash";
 import { destroy, edit, initSave, save } from "../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "./default_values";
 import { Config } from "../three_d_garden/config";
-import { THREE_D_DEFAULTS } from "./setting_metadata";
+import {
+  THREE_D_DEFAULTS, THREE_D_STRING_DEFAULTS,
+} from "./setting_metadata";
 
 export const SCENES: Record<number, string> = {
   0: "Custom",
@@ -100,12 +102,23 @@ export const get3DConfigValueFunction = (envs: TaggedFarmwareEnv[]) => {
   };
 };
 
+export const get3DConfigStringValueFunction = (envs: TaggedFarmwareEnv[]) => {
+  const configs = index3DConfigs(envs);
+  return (key: keyof typeof THREE_D_STRING_DEFAULTS): string => {
+    const maybe = configs[namespace3D(key)];
+    return isUndefined(maybe)
+      ? THREE_D_STRING_DEFAULTS[key]
+      : String(maybe.body.value);
+  };
+};
+
 export const findOrCreate3DConfigFunction =
   (dispatch: Function, envs: TaggedFarmwareEnv[]) =>
     (key: keyof Config, value: string) => {
       const maybe = find(envs, key);
       if (isUndefined(maybe)) {
-        if (value != "" + THREE_D_DEFAULTS[key]) {
+        const defaults = { ...THREE_D_DEFAULTS, ...THREE_D_STRING_DEFAULTS };
+        if (value != "" + defaults[key]) {
           dispatch(initSave("FarmwareEnv", { key: namespace3D(key), value }));
         }
       } else {
