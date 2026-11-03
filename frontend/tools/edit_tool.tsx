@@ -1,4 +1,5 @@
 import React from "react";
+import { ResourceTitle } from "../sequences/panel/editor";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -172,6 +173,11 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
     },
   };
 
+  componentDidMount() {
+    const panel = document.querySelector(".farm-designer-panels");
+    if (panel) { panel.scrollTop = 0; }
+  }
+
   get stringyID() { return Path.getSlug(Path.tools()); }
 
   get tool() { return this.props.findTool(this.stringyID); }
@@ -245,12 +251,6 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           dispatch={this.props.dispatch}
           saveFarmwareEnv={this.props.saveFarmwareEnv}
           env={this.props.env} />
-        <div className="row grid-exp-2">
-          <label>{t("Name")}</label>
-          <input name="toolName"
-            value={toolName}
-            onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-        </div>
         <ToolTypeInput value={this.state.toolType}
           onChange={this.changeToolType} />
         <UtmMountableInput value={this.state.utmMountable}
@@ -275,7 +275,13 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
-        title={t("Edit tool")}
+        titleElement={<ResourceTitle
+          name={this.state.toolName}
+          resource={this.tool}
+          fallback={t("Edit tool")}
+          readOnly={!this.tool}
+          dispatch={this.props.dispatch}
+          onChange={name => this.setState({ toolName: name })} />}
         backTo={Path.tools()}
         panel={Panel.Tools}>
         {props.headerElement}

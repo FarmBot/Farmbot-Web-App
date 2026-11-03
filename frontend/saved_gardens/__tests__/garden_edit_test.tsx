@@ -5,7 +5,7 @@ import { EditGardenProps } from "../interfaces";
 import {
   fakePlantTemplate, fakeSavedGarden,
 } from "../../__test_support__/fake_state/resources";
-import { clickButton, changeBlurableInput } from "../../__test_support__/helpers";
+import { clickButton } from "../../__test_support__/helpers";
 import * as savedGardenActions from "../actions";
 import { error } from "../../toast/toast";
 import * as crud from "../../api/crud";
@@ -42,7 +42,14 @@ describe("<EditGarden />", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     const { container } = render(<EditGarden {...p} />);
-    changeBlurableInput(container, "new name");
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent(p.savedGarden.body.name || "");
+    expect(container.querySelector(".panel-content input")).toBeNull();
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
+    fireEvent.change(input, { target: { value: "new name" } });
+    fireEvent.blur(input);
+    expect(crud.save).toHaveBeenCalledWith(p.savedGarden.uuid);
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { name: "new name" });
   });
 

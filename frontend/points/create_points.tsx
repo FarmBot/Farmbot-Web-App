@@ -1,7 +1,9 @@
 import React from "react";
+import { ResourceTitle } from "../sequences/panel/editor";
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../interfaces";
-import { Row, BlurableInput, ColorPicker } from "../ui";
+import { Row, BlurableInput, ColorPickerCluster, Popover } from "../ui";
+import { Position } from "@blueprintjs/core";
 import {
   DrawnPointPayl, GridPlantingRequest,
 } from "../farm_designer/interfaces";
@@ -16,6 +18,7 @@ import { validBotLocationData } from "../util/location";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ListItem } from "../plants/plant_panel";
+import { EditPointRadius } from "./point_edit_actions";
 import { PlantGrid } from "../plants/grid/plant_grid";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
@@ -236,50 +239,34 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 
   PointProperties = ({ drawnPoint }: { drawnPoint: DrawnPointPayl }) =>
     <ul className="grid">
-      <div className="info-box">
-        <div className="row grid-exp-1" style={{ alignItems: "end" }}>
-          <div className={"point-name-input grid half-gap"}>
-            <label>{t("Name")}</label>
-            <BlurableInput
-              name="pointName"
-              type="text"
-              onCommit={this.updateValue("name")}
-              value={drawnPoint.name} />
-          </div>
-          <ColorPicker
-            current={drawnPoint.color as ResourceColor}
-            onChange={color => this.updateAttr("color", color)} />
-        </div>
-      </div>
       <ListItem>
-        <Row className="add-point-grid">
+        <Row className="edit-point-location">
           <div>
-            <label>{t("radius (mm)")}</label>
-            <BlurableInput
-              name="r"
-              type="number"
-              onCommit={this.updateValue("r")}
-              value={drawnPoint.r}
-              min={0} />
-          </div>
-          <div>
-            <label>{t("X")}</label>
+            <label style={{ marginTop: 0 }}>
+              {t("{{axis}} (mm)", { axis: "x" })}
+            </label>
             <BlurableInput
               name="cx"
               type="number"
+              min={0}
               onCommit={this.updateValue("cx")}
               value={drawnPoint.cx ?? ""} />
           </div>
           <div>
-            <label>{t("Y")}</label>
+            <label style={{ marginTop: 0 }}>
+              {t("{{axis}} (mm)", { axis: "y" })}
+            </label>
             <BlurableInput
               name="cy"
               type="number"
+              min={0}
               onCommit={this.updateValue("cy")}
               value={drawnPoint.cy ?? ""} />
           </div>
           <div>
-            <label>{t("Z")}</label>
+            <label style={{ marginTop: 0 }}>
+              {t("{{axis}} (mm)", { axis: "z" })}
+            </label>
             <BlurableInput
               name="z"
               type="number"
@@ -302,6 +289,15 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
             }} />
         </Row>
       </ListItem>
+      <ListItem>
+        <EditPointRadius
+          radius={drawnPoint.r}
+          updatePoint={update => {
+            if (update.radius != undefined) {
+              this.updateAttr("r", "" + update.radius);
+            }
+          }} />
+      </ListItem>
       {this.panel == "points" &&
         <ListItem>
           <Row className="grid-exp-1">
@@ -316,6 +312,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
         </ListItem>}
     </ul>;
 
+  // eslint-disable-next-line complexity
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
     const pointDescription = this.props.is3D
@@ -330,10 +327,29 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
       <DesignerPanelHeader
         panelName={"point-creation"}
         panel={panelType}
-        title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
+        colorClass={drawnPoint.color}
+        titleElement={<ResourceTitle
+          key={drawnPoint.name}
+          name={drawnPoint.name}
+          resource={undefined}
+          fallback={this.panel == "weeds"
+            ? t("Created Weed")
+            : t("Created Point")}
+          dispatch={this.props.dispatch}
+          onChange={name => this.updateAttr("name", name)} />}
         backTo={Path.designer(this.panel)}
         description={panelDescription}>
-        <div className={"point-creation-header-actions"}>
+        <div className={[
+          "panel-header-icon-group", "point-creation-header-actions",
+        ].join(" ")}>
+          <Popover className={"color-picker"}
+            position={Position.BOTTOM}
+            popoverClassName={"colorpicker-menu gray"}
+            target={<i title={t("select color")}
+              className={"fa fa-paint-brush fb-icon-button"} />}
+            content={<ColorPickerCluster
+              current={drawnPoint.color as ResourceColor}
+              onChange={color => this.updateAttr("color", color)} />} />
           {!this.pointGridRequest &&
             <button className="fb-button green save"
               title={t("save")}
@@ -361,7 +377,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties drawnPoint={drawnPoint} />
-        {panelType == Panel.Points && <hr />}
+        {panelType == Panel.Points && !this.props.is3D && <hr />}
         {panelType == Panel.Points && !this.props.is3D &&
           <PlantGrid
             xy_swap={this.props.xySwap}

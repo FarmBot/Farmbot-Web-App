@@ -63,6 +63,20 @@ describe("<AddToolSlot />", () => {
     getValue: jest.fn(() => false),
   });
 
+  it("resets the shared panel scroll position when opened", () => {
+    const panel = document.createElement("div");
+    panel.className = "farm-designer-panels";
+    panel.scrollTop = 300;
+    document.body.appendChild(panel);
+    try {
+      const { unmount } = render(<AddToolSlot {...fakeProps()} />);
+      expect(panel.scrollTop).toEqual(0);
+      unmount();
+    } finally {
+      panel.remove();
+    }
+  });
+
   it.each([false, true])("uses the electronics box setting: %s", enabled => {
     const graphic = jest.spyOn(toolPreview, "ToolGraphic3D")
       .mockImplementation(() => <div className={"tool-graphic-3d"} />);

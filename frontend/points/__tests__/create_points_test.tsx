@@ -245,6 +245,32 @@ describe("<CreatePoints />", () => {
     });
   });
 
+  it.each([false, true])(
+    "handles the grid hotkey in contentEditable: %s", editable => {
+      const p = fakeProps();
+      p.drawnPoint = fakeDrawnPoint();
+      p.is3D = true;
+      const { getByTestId } = render(<>
+        <CreatePoints {...p} />
+        <div data-testid="shortcut-target" contentEditable={editable} />
+      </>);
+      const target = getByTestId("shortcut-target");
+      // The test DOM does not implement this browser property.
+      Object.defineProperty(target, "isContentEditable", { value: editable });
+      jest.clearAllMocks();
+
+      fireEvent.keyDown(target, { key: "g" });
+
+      if (editable) {
+        expect(p.dispatch).not.toHaveBeenCalled();
+      } else {
+        expect(p.dispatch).toHaveBeenCalledWith({
+          type: Actions.SET_GRID_PLANTING,
+          payload: expect.objectContaining({ gridType: "point" }),
+        });
+      }
+    });
+
   it("exits 3D point grid mode with the g hotkey", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
@@ -269,7 +295,7 @@ describe("<CreatePoints />", () => {
     jest.clearAllMocks();
 
     const radiusInput =
-      container.querySelector("input[name='r']") as HTMLInputElement;
+      container.querySelector("input[name='radius']") as HTMLInputElement;
     fireEvent.keyDown(radiusInput, { key: "g" });
     fireEvent.keyDown(window, { key: "g", ctrlKey: true });
 
@@ -354,6 +380,37 @@ describe("<CreatePoints />", () => {
       payload: { ...p.drawnPoint, color: "cheerful hue" },
     });
   });
+
+  it.each(["points", "weeds"])(
+    "uses the edit panel field layout for %s", panel => {
+      location.pathname = Path.mock(Path.designer(panel) + "/add");
+      const p = fakeProps();
+      p.drawnPoint = fakeDrawnPoint();
+      const { container } = render(<CreatePoints {...p} />);
+      const locationRow = container.querySelector(".edit-point-location");
+      expect(locationRow).toBeTruthy();
+      expect(locationRow?.textContent).toContain("x (mm)");
+      expect(locationRow?.textContent).toContain("y (mm)");
+      expect(locationRow?.textContent).toContain("z (mm)");
+      expect(locationRow?.querySelectorAll("input")).toHaveLength(3);
+      expect(locationRow?.querySelector("input[name='radius']")).toBeNull();
+      expect(locationRow?.querySelector(".fa-crosshairs")).toBeTruthy();
+      const radius = container.querySelector("input[name='radius']") as Element;
+      const fields = container.querySelectorAll(".panel-content input");
+      expect(fields[0]).toHaveAttribute("name", "cx");
+      expect(fields[1]).toHaveAttribute("name", "cy");
+      expect(fields[2]).toHaveAttribute("name", "z");
+      expect(fields[3]).toEqual(radius);
+      expect(container.querySelector(".panel-header-icon-group .fa-paint-brush"))
+        .toBeTruthy();
+      fireEvent.focus(radius);
+      fireEvent.change(radius, { target: { value: "75" } });
+      fireEvent.blur(radius);
+      expect(p.dispatch).toHaveBeenCalledWith({
+        type: Actions.SET_DRAWN_POINT_DATA,
+        payload: { ...p.drawnPoint, r: 75 },
+      });
+    });
 
   it("updates radius", () => {
     const p = fakeProps();
@@ -501,17 +558,40 @@ describe("<CreatePoints />", () => {
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
-  it("updates weed name", () => {
-    location.pathname = Path.mock(Path.weeds("add"));
+  it.each([
+    ["points", false], ["points", true],
+    ["weeds", false], ["weeds", true],
+  ] as const)("updates %s header name in 3D: %s", (panel, is3D) => {
+    location.pathname = Path.mock(Path.designer(panel) + "/add");
     const p = fakeProps();
+    p.is3D = is3D;
     p.drawnPoint = fakeDrawnPoint();
-    const { ref } = renderCreatePoints(p);
-    const panel = render(ref.current?.PointProperties({ drawnPoint: p.drawnPoint }));
-    changeBlurableInput(panel, "new name", 0);
+    if (panel == "points" && is3D) {
+      p.gridPlanting = {
+        token: "point-grid", gridId: "point-grid", gridType: "point",
+        itemName: p.drawnPoint.name, defaultSpacing: 100, radius: 0, z: 0,
+        meta: { color: "green", at_soil_level: "false" },
+      };
+    }
+    const { container } = render(<CreatePoints {...p} />);
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent(p.drawnPoint.name);
+    expect(container.querySelector(".panel-content input[name='pointName']"))
+      .toBeNull();
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
+    fireEvent.change(input, { target: { value: "new name" } });
+    fireEvent.blur(input);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, name: "new name" },
     });
+    if (p.gridPlanting) {
+      expect(p.dispatch).toHaveBeenCalledWith({
+        type: Actions.SET_GRID_PLANTING,
+        payload: { ...p.gridPlanting, itemName: "new name" },
+      });
+    }
   });
 
   it("creates point", () => {
@@ -540,17 +620,29 @@ describe("<CreatePoints />", () => {
     });
   });
 
-  it("changes point color from the picker", () => {
+  it.each([
+    ["points", false], ["points", true],
+    ["weeds", false], ["weeds", true],
+  ] as const)("changes %s header color in 3D: %s", (panel, is3D) => {
+    location.pathname = Path.mock(Path.designer(panel) + "/add");
     const p = fakeProps();
+    p.is3D = is3D;
     p.drawnPoint = fakeDrawnPoint();
-    const { container } = render(<CreatePoints {...p} />);
-    fireEvent.click(container.querySelector(".saucer") as Element);
+    const { container, rerender } = render(<CreatePoints {...p} />);
+    expect(container.querySelector(".panel-header"))
+      .toHaveClass(p.drawnPoint.color);
+    expect(container.querySelector(".panel-content .color-picker")).toBeNull();
+    fireEvent.click(container.querySelector(
+      ".panel-header .fa-paint-brush") as Element);
     fireEvent.click(document.querySelector("[title='blue']") as Element);
 
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { ...p.drawnPoint, color: "blue" },
       type: Actions.SET_DRAWN_POINT_DATA,
     });
+    p.drawnPoint = { ...p.drawnPoint, color: "blue" };
+    rerender(<CreatePoints {...p} />);
+    expect(container.querySelector(".panel-header")).toHaveClass("blue");
   });
 
   it("updates value", () => {
@@ -560,7 +652,7 @@ describe("<CreatePoints />", () => {
     p.drawnPoint.cy = undefined;
     const { ref } = renderCreatePoints(p);
     const panel = render(ref.current?.PointProperties({ drawnPoint: p.drawnPoint }));
-    changeBlurableInput(panel, "100", 2);
+    changeBlurableInput(panel, "100", 0);
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { ...p.drawnPoint, cx: 100 },
       type: Actions.SET_DRAWN_POINT_DATA

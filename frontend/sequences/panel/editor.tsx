@@ -22,7 +22,7 @@ import { colors, urlFriendly } from "../../util";
 import { edit, save } from "../../api/crud";
 import {
   Color,
-  TaggedCurve,
+  TaggedCurve, TaggedTool, TaggedSavedGarden,
   TaggedPoint, TaggedPointGroup, TaggedRegimen, TaggedSequence,
 } from "farmbot";
 import { Path } from "../../internal_urls";
@@ -138,7 +138,10 @@ export interface ResourceTitleProps {
   | TaggedPoint
   | TaggedPointGroup
   | TaggedCurve
+  | TaggedTool
+  | TaggedSavedGarden
   | undefined;
+  name?: string;
   readOnly?: boolean;
   fallback: string;
   save?: boolean;
@@ -147,7 +150,8 @@ export interface ResourceTitleProps {
 
 export const ResourceTitle = (props: ResourceTitleProps) => {
   const [isEditing, setIsEditing] = React.useState(false);
-  const [nameValue, setNameValue] = React.useState(props.resource?.body.name);
+  const name = props.name ?? props.resource?.body.name;
+  const [nameValue, setNameValue] = React.useState(name || "");
   return isEditing
     ? <input
       value={nameValue}
@@ -170,8 +174,11 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
     : <span className={"title"}
       style={props.readOnly ? { pointerEvents: "none" } : {}}
       title={t("click to edit")}
-      onClick={() => setIsEditing(true)}>
-      {props.resource?.body.name || props.fallback}
+      onClick={() => {
+        setNameValue(name || "");
+        setIsEditing(true);
+      }}>
+      {name || props.fallback}
     </span>;
 };
 

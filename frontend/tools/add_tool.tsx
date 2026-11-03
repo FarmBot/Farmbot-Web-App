@@ -1,4 +1,5 @@
 import React from "react";
+import { ResourceTitle } from "../sequences/panel/editor";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
@@ -54,7 +55,7 @@ export type StockTool = {
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   state: AddToolState = {
-    toolName: "",
+    toolName: t("New Tool"),
     toolType: "none",
     utmMountable: true,
     toAdd: [],
@@ -71,11 +72,15 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   remove = (n: string) =>
     this.setState({ toAdd: this.state.toAdd.filter(name => name != n) });
 
-  componentDidMount = () => this.setState({
-    toAdd: this.stockToolNames()
-      .filter(tool => this.filterExisting(tool.name))
-      .map(tool => tool.name),
-  });
+  componentDidMount = () => {
+    const panel = document.querySelector(".farm-designer-panels");
+    if (panel) { panel.scrollTop = 0; }
+    this.setState({
+      toAdd: this.stockToolNames()
+        .filter(tool => this.filterExisting(tool.name))
+        .map(tool => tool.name),
+    });
+  };
 
   newTool = (tool: StockTool) => this.props.dispatch(initSave(
     "Tool", tool));
@@ -254,7 +259,12 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
-        title={t("Add new")}
+        titleElement={<ResourceTitle
+          name={toolName}
+          resource={undefined}
+          fallback={t("New Tool")}
+          dispatch={this.props.dispatch}
+          onChange={name => this.setState({ toolName: name })} />}
         backTo={Path.tools()}
         panel={Panel.Tools}>
         <div className={"tool-action-btn-group"}>
@@ -278,13 +288,6 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
             dispatch={this.props.dispatch}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             env={this.props.env} />
-          <div className="row grid-exp-2">
-            <label>{t("Name")}</label>
-            <input defaultValue={this.state.toolName}
-              name="toolName"
-              onChange={e =>
-                this.setState({ toolName: e.currentTarget.value })} />
-          </div>
           <ToolTypeInput value={this.state.toolType}
             onChange={this.changeToolType} />
           <EffectorOffsetInput value={this.state.effectorOffset}

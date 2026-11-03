@@ -25,6 +25,8 @@ export class RawAddToolSlot
   state: AddToolSlotState = { uuid: undefined };
 
   componentDidMount() {
+    const panel = document.querySelector(".farm-designer-panels");
+    if (panel) { panel.scrollTop = 0; }
     const action = init("Point", {
       pointer_type: "ToolSlot", name: t("Slot"), meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,

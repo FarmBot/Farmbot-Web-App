@@ -61,6 +61,20 @@ describe("<EditTool />", () => {
     env: {},
   });
 
+  it("resets the shared panel scroll position when opened", () => {
+    const panel = document.createElement("div");
+    panel.className = "farm-designer-panels";
+    panel.scrollTop = 300;
+    document.body.appendChild(panel);
+    try {
+      const { unmount } = renderWithContext(<EditTool {...fakeProps()} />);
+      expect(panel.scrollTop).toEqual(0);
+      unmount();
+    } finally {
+      panel.remove();
+    }
+  });
+
   it.each([false, true])("renders 3D graphics: %s", threeDimensions => {
     const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
       .mockImplementation(() => <div className={"tool-graphic-3d"} />);
@@ -79,7 +93,8 @@ describe("<EditTool />", () => {
 
   it("renders", () => {
     const { container } = renderWithContext(<EditTool {...fakeProps()} />);
-    expect(container.textContent).toContain("Edit tool");
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent("Foo");
     expect(container.textContent).toContain("Type");
     expect(container.textContent).toContain("Seeder");
     expect(container.textContent).toContain("UTM Mountable");
@@ -194,9 +209,21 @@ describe("<EditTool />", () => {
 
   it("edits tool name", () => {
     const ref = React.createRef<EditTool>();
-    renderWithContext(<EditTool {...fakeProps()} ref={ref} />);
-    const input = document.querySelector("input[name='toolName']") as HTMLInputElement;
+    const { container } = renderWithContext(
+      <EditTool {...fakeProps()} ref={ref} />);
+    expect(container.querySelector(".panel-content input[name='toolName']"))
+      .toBeNull();
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
     fireEvent.change(input, { target: { value: "new name" } });
+    expect(crud.edit).not.toHaveBeenCalled();
+    fireEvent.blur(input);
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent("new name");
+    fireEvent.click(container.querySelector(".save-btn") as Element);
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({ name: "new name" }));
     expect(ref.current?.state.toolName).toEqual("new name");
     expect(ref.current?.state.toolType).toEqual("seeder");
   });
@@ -219,8 +246,10 @@ describe("<EditTool />", () => {
     const p = fakeProps();
     p.existingToolNames = ["tool"];
     const { container } = renderWithContext(<EditTool {...p} />);
-    const input = container.querySelector("input[name='toolName']") as HTMLInputElement;
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
     fireEvent.change(input, { target: { value: "tool" } });
+    fireEvent.blur(input);
     expect(container.querySelector(".name-error")?.textContent)
       .toEqual("Name already taken.");
     expect((container.querySelector(".save-btn") as HTMLButtonElement)?.disabled)

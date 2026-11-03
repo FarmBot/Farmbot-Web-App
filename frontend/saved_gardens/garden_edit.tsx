@@ -3,7 +3,7 @@ import { GardenViewButtonProps, EditGardenProps } from "./interfaces";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import { error } from "../toast/toast";
 import { trim } from "../util";
-import { BlurableInput } from "../ui";
+import { ResourceTitle } from "../sequences/panel/editor";
 import { edit, save } from "../api/crud";
 import { connect } from "react-redux";
 import {
@@ -111,7 +111,13 @@ export const RawEditGarden = (props: EditGardenProps) => {
     <DesignerPanelHeader
       panelName={"saved-garden"}
       panel={Panel.SavedGardens}
-      title={t("Edit garden")}
+      titleElement={<ResourceTitle
+        key={savedGarden?.uuid}
+        resource={savedGarden}
+        fallback={t("Edit garden")}
+        readOnly={!savedGarden}
+        save={true}
+        dispatch={props.dispatch} />}
       backTo={plantsPath}>
       {savedGarden &&
         <div className={"buttons"}>
@@ -134,15 +140,6 @@ export const RawEditGarden = (props: EditGardenProps) => {
     <DesignerPanelContent panelName={"saved-garden-edit"}>
       {savedGarden
         ? <div className={"grid saved-garden-grid"}>
-          <label>{t("name")}</label>
-          <BlurableInput
-            value={savedGarden.body.name || ""}
-            onCommit={e => {
-              props.dispatch(edit(savedGarden, {
-                name: e.currentTarget.value
-              }));
-              props.dispatch(save(savedGarden.uuid));
-            }} />
           <label>{t("notes")}</label>
           <textarea
             value={notes}

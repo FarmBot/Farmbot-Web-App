@@ -1,4 +1,5 @@
 import React from "react";
+import { ResourceTitle } from "../sequences/panel/editor";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { GardenSnapshotProps, GardenSnapshot } from "./garden_snapshot";
@@ -24,17 +25,29 @@ export const mapStateToProps = (props: Everything): GardenSnapshotProps => {
   };
 };
 
-export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
+export class RawAddGarden extends React.Component<GardenSnapshotProps, {
+  gardenName: string;
+}> {
+  state = { gardenName: t("Untitled Garden") };
   render() {
     return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
       <DesignerPanelHeader
         panelName={"saved-garden"}
         panel={Panel.SavedGardens}
-        title={t("Add garden")}
+        titleElement={<ResourceTitle
+          key={this.state.gardenName}
+          name={this.state.gardenName}
+          resource={undefined}
+          fallback={t("Untitled Garden")}
+          dispatch={this.props.dispatch}
+          onChange={gardenName => this.setState({ gardenName })} />}
         description={Content.SAVED_GARDENS}
         backTo={Path.plants()} />
       <DesignerPanelContent panelName={"saved-garden"}>
         <GardenSnapshot
+          gardenName={this.state.gardenName}
+          resetName={() =>
+            this.setState({ gardenName: t("Untitled Garden") })}
           currentSavedGarden={this.props.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}
           dispatch={this.props.dispatch} />

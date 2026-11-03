@@ -10,9 +10,14 @@ export interface GardenSnapshotProps {
   dispatch: Function;
 }
 
-/** New SavedGarden name input and snapshot/create buttons. */
-export const GardenSnapshot = (props: GardenSnapshotProps) => {
-  const [gardenName, setGardenName] = React.useState("");
+export interface GardenSnapshotFormProps extends GardenSnapshotProps {
+  gardenName: string;
+  resetName(): void;
+}
+
+/** New SavedGarden notes and snapshot/create buttons. */
+export const GardenSnapshot = (props: GardenSnapshotFormProps) => {
+  const { gardenName } = props;
   const [gardenNotes, setGardenNotes] = React.useState("");
   const navigate = useNavigate();
 
@@ -26,7 +31,7 @@ export const GardenSnapshot = (props: GardenSnapshotProps) => {
         savedGarden: currentSavedGarden,
         plantTemplates
       }));
-    setGardenName("");
+    props.resetName();
     setGardenNotes("");
   };
 
@@ -36,16 +41,12 @@ export const GardenSnapshot = (props: GardenSnapshotProps) => {
       gardenName,
       gardenNotes,
     ));
-    setGardenName("");
+    props.resetName();
     setGardenNotes("");
   };
 
   return <div className="grid">
     <div className="grid add-garden-grid">
-      <label>{t("name")}</label>
-      <input name="gardenName"
-        onChange={e => setGardenName(e.currentTarget.value)}
-        value={gardenName} />
       <label>{t("notes")}</label>
       <textarea name="notes"
         onChange={e => setGardenNotes(e.currentTarget.value)}

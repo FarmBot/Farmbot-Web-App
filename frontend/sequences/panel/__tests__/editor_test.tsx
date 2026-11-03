@@ -216,6 +216,28 @@ describe("<ResourceTitle />", () => {
     expect(editSpy).not.toHaveBeenCalled();
   });
 
+  it("edits and clears a draft name without saving a resource", () => {
+    const p = fakeProps();
+    p.resource = undefined;
+    p.name = "Draft name";
+    p.onChange = jest.fn();
+    const { container, rerender } = render(<ResourceTitle {...p} />);
+    expect(container.querySelector(".title")).toHaveTextContent("Draft name");
+    p.name = "Selected name";
+    rerender(<ResourceTitle {...p} />);
+    fireEvent.click(container.querySelector(".title") as Element);
+    const input = container.querySelector("input") as HTMLInputElement;
+    expect(input.value).toEqual("Selected name");
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.blur(input);
+    expect(p.onChange).toHaveBeenCalledWith("");
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
+    p.name = "";
+    rerender(<ResourceTitle {...p} />);
+    expect(container.querySelector(".title")).toHaveTextContent(p.fallback);
+  });
+
   it("is read-only", () => {
     const p = fakeProps();
     p.readOnly = true;

@@ -21,6 +21,11 @@ export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {
   state: EditToolSlotState = { saveError: true };
 
+  componentDidMount() {
+    const panel = document.querySelector(".farm-designer-panels");
+    if (panel) { panel.scrollTop = 0; }
+  }
+
   get stringyID() { return Path.getSlug(Path.toolSlots()); }
   get toolSlot() { return this.props.findToolSlot(this.stringyID); }
   get tool() {

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import { GardenSnapshotProps, GardenSnapshot } from "../garden_snapshot";
+import { GardenSnapshotFormProps, GardenSnapshot } from "../garden_snapshot";
 import { clickButton } from "../../__test_support__/helpers";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "../actions";
 import * as savedGardenActions from "../actions";
@@ -30,10 +30,12 @@ afterEach(() => {
   copySavedGardenSpy.mockRestore();
 });
 describe("<GardenSnapshot />", () => {
-  const fakeProps = (): GardenSnapshotProps => ({
+  const fakeProps = (): GardenSnapshotFormProps => ({
     currentSavedGarden: undefined,
     plantTemplates: [],
     dispatch: jest.fn(),
+    gardenName: "",
+    resetName: jest.fn(),
   });
 
   it("saves garden", () => {
@@ -45,25 +47,16 @@ describe("<GardenSnapshot />", () => {
   it("copies saved garden", () => {
     const p = fakeProps();
     p.currentSavedGarden = fakeSavedGarden();
+    p.gardenName = "copied garden";
     const { container } = render(<GardenSnapshot {...p} />);
     clickButton(container, 0, "snapshot current garden");
     expect(snapshotGarden).not.toHaveBeenCalled();
     expect(copySavedGarden).toHaveBeenCalledWith({
       navigate: expect.any(Function),
-      newSGName: "",
+      newSGName: "copied garden",
       plantTemplates: [],
       savedGarden: p.currentSavedGarden
     });
-  });
-
-  it("changes name", () => {
-    const { container } = render(<GardenSnapshot {...fakeProps()} />);
-    fireEvent.change(container.querySelector("input") as Element, {
-      currentTarget: { value: "new name" },
-      target: { value: "new name" },
-    });
-    expect((container.querySelector("input") as HTMLInputElement).value)
-      .toEqual("new name");
   });
 
   it("changes notes", () => {
@@ -77,13 +70,15 @@ describe("<GardenSnapshot />", () => {
   });
 
   it("creates new garden", () => {
-    const { container } = render(<GardenSnapshot {...fakeProps()} />);
-    fireEvent.change(container.querySelector("input") as Element, {
-      currentTarget: { value: "new saved garden" },
-      target: { value: "new saved garden" },
-    });
+    const p = fakeProps();
+    p.gardenName = "new saved garden";
+    const { container } = render(<GardenSnapshot {...p} />);
+    fireEvent.change(container.querySelector("textarea") as Element,
+      { target: { value: "garden notes" } });
     fireEvent.click(container.querySelectorAll("button")[1]);
     expect(newSavedGarden).toHaveBeenCalledWith(expect.any(Function),
-      "new saved garden", "");
+      "new saved garden", "garden notes");
+    expect(p.resetName).toHaveBeenCalled();
+    expect(container.querySelector("textarea")).toHaveValue("");
   });
 });

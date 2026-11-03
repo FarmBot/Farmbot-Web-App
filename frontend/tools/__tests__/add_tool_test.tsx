@@ -72,9 +72,26 @@ describe("<AddTool />", () => {
     graphic.mockRestore();
   });
 
+  it("resets the shared panel scroll position when opened", () => {
+    const panel = document.createElement("div");
+    panel.className = "farm-designer-panels";
+    panel.scrollTop = 300;
+    document.body.appendChild(panel);
+    try {
+      const { ref } = renderTool();
+      expect(panel.scrollTop).toEqual(0);
+      panel.scrollTop = 100;
+      act(() => { ref.current?.setState({ toolType: "weeder" }); });
+      expect(panel.scrollTop).toEqual(100);
+    } finally {
+      panel.remove();
+    }
+  });
+
   it("renders", () => {
     const { container } = render(<AddTool {...fakeProps()} />);
-    expect(container.textContent).toContain("Add new");
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent("New Tool");
     expect(container.textContent).toContain("Type");
     expect(container.textContent).toContain("None");
     expect(container.textContent).toContain("UTM Mountable");
@@ -141,17 +158,27 @@ describe("<AddTool />", () => {
 
   it("edits tool name", () => {
     const { container, ref } = renderTool();
-    expect(ref.current?.state.toolName).toEqual("");
-    fireEvent.change(
-      container.querySelector(
-        'input[name="toolName"]:not([type="checkbox"])') as Element,
-      { target: { value: "new name" } });
+    expect(ref.current?.state.toolName).toEqual("New Tool");
+    expect(container.querySelector(
+      ".panel-content input[name='toolName']:not([type='checkbox'])"))
+      .toBeNull();
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
+    fireEvent.change(input, { target: { value: "new name" } });
+    fireEvent.blur(input);
+    expect(container.querySelector(".panel-header .title"))
+      .toHaveTextContent("new name");
     expect(ref.current?.state.toolName).toEqual("new name");
     expect(ref.current?.state.toolType).toEqual("none");
   });
 
-  it("disables save until name in entered", () => {
+  it("disables save when the header name is cleared", () => {
     const { container, ref } = renderTool();
+    fireEvent.click(container.querySelector(".panel-header .title") as Element);
+    const input = container.querySelector(".panel-header input") as Element;
+    expect(input).toHaveValue("New Tool");
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.blur(input);
     expect(ref.current?.state.toolName).toEqual("");
     expect((container.querySelector(".save-btn") as HTMLButtonElement).disabled)
       .toBeTruthy();
