@@ -14,7 +14,7 @@ import {
   maybeFindSlotByToolId,
 } from "../../resources/selectors";
 import { getDefaultAxisOrder, getSafeZ, getSoilHeight } from "./stubs";
-import { clone } from "lodash";
+import { clone, random } from "lodash";
 import { resolveMountPosition } from "../../tools/mount_stage";
 import { evalLua } from "./run";
 
@@ -39,6 +39,14 @@ export const calculateMove = (
     switch (item.kind) {
       case "axis_addition":
         switch (item.args.axis_operand.kind) {
+          case "random": {
+            const variance = item.args.axis_operand.args.variance;
+            const axes: Xyz[] = item.args.axis == "all"
+              ? ["x", "y", "z"]
+              : [item.args.axis];
+            axes.map(axis => pos[axis] += random(-variance, variance));
+            break;
+          }
           case "numeric":
             if (item.args.axis == "all") {
               pos.x += item.args.axis_operand.args.number;

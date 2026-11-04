@@ -18,6 +18,7 @@ import { addDefaults, calculateMove } from "../calculate_move";
 import { setCurrent } from "../actions";
 import { store } from "../../../redux/store";
 import * as triangleFunctions from "../../../three_d_garden/triangle_functions";
+import * as lodash from "lodash";
 import { MountStage } from "farmbot/dist/resources/api_resources";
 
 const originalGetState = store.getState;
@@ -53,6 +54,53 @@ describe("addDefaults()", () => {
 });
 
 describe("calculateMove()", () => {
+  it.each(["x", "all"] as const)(
+    "adds independent integer variance on %s", axis => {
+      const random = jest.spyOn(lodash, "random")
+        .mockReturnValueOnce(-10)
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(10);
+      const body: MoveBodyItem[] = [
+        {
+          kind: "axis_addition",
+          args: {
+            axis,
+            axis_operand: { kind: "random", args: { variance: 10 } },
+          },
+        },
+        { kind: "axis_order", args: { grouping: "xyz", route: "in_order" } },
+      ];
+      try {
+        const z = axis == "all"
+          ? 310
+          : 300;
+        expect(calculateMove(body, { x: 100, y: 200, z: 300 }, []))
+          .toEqual({ moves: [{ x: 90, y: 200, z }], warnings: [] });
+        const samples = axis == "all"
+          ? 3
+          : 1;
+        expect(random).toHaveBeenCalledTimes(samples);
+        expect(random).toHaveBeenCalledWith(-10, 10);
+      } finally {
+        random.mockRestore();
+      }
+    });
+
+  it("keeps the position when variance is zero", () => {
+    const body: MoveBodyItem[] = [
+      {
+        kind: "axis_addition",
+        args: {
+          axis: "z",
+          axis_operand: { kind: "random", args: { variance: 0 } },
+        },
+      },
+      { kind: "axis_order", args: { grouping: "xyz", route: "in_order" } },
+    ];
+    expect(calculateMove(body, { x: 1, y: 2, z: 3 }, []))
+      .toEqual({ moves: [{ x: 1, y: 2, z: 3 }], warnings: [] });
+  });
+
   beforeEach(() => {
     (store as unknown as { getState: Function }).getState = mockGetState;
     jest.spyOn(triangleFunctions, "getZFunc")

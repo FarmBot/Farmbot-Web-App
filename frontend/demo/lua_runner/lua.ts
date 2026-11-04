@@ -643,6 +643,7 @@ end
 function move_body(input)
     local body = {}
     local offset = input.offset or {}
+    local variance = input.variance or {}
 
     if input.x then body[#body + 1] = axis_overwrite("x", input.x) end
     if input.y then body[#body + 1] = axis_overwrite("y", input.y) end
@@ -650,6 +651,20 @@ function move_body(input)
     if offset.x then body[#body + 1] = axis_addition("x", offset.x) end
     if offset.y then body[#body + 1] = axis_addition("y", offset.y) end
     if offset.z then body[#body + 1] = axis_addition("z", offset.z) end
+    for _, axis in ipairs({"x", "y", "z"}) do
+        if variance[axis] then
+            body[#body + 1] = {
+                kind = "axis_addition",
+                args = {
+                    axis = axis,
+                    axis_operand = {
+                        kind = "random",
+                        args = {variance = variance[axis]}
+                    }
+                }
+            }
+        end
+    end
     if input.speed then body[#body + 1] = speed_overwrite("x", input.speed) end
     if input.speed then body[#body + 1] = speed_overwrite("y", input.speed) end
     if input.speed then body[#body + 1] = speed_overwrite("z", input.speed) end

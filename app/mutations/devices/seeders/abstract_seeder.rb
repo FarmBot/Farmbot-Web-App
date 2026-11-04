@@ -81,6 +81,7 @@ module Devices
         :sequences_pick_from_seed_tray,
         :sequences_pick_from_seed_trough,
         :sequences_pick_from_seed_bin,
+        :sequences_measure_soil_moisture,
       ]
 
       def initialize(device, force_fallback_install: false)
@@ -110,6 +111,7 @@ module Devices
       def sequences_pick_from_seed_tray; end
       def sequences_pick_from_seed_trough; end
       def sequences_pick_from_seed_bin; end
+      def sequences_measure_soil_moisture; end
 
       def sequences_take_photo_of_plant
         s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup

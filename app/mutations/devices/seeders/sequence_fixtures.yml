@@ -1111,3 +1111,81 @@
         end)
 
         complete_job(job)
+
+:MEASURE_SOIL_MOISTURE: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Location
+          :default_value:
+            :kind: coordinate
+            :args:
+              :x: 0
+              :y: 0
+              :z: 0
+  :color: orange
+  :name: Measure soil moisture
+  :body:
+  - :kind: lua
+    :args:
+      :lua: |
+        local function job(status, percent)
+          set_job("Measure soil moisture", {status = status, percent = percent})
+        end
+
+        local function fail(message)
+          job("Failed", 0)
+          if message then
+            toast(message, "error")
+          end
+        end
+
+        job("Checking prerequisites", 0)
+
+        if not verify_tool{type = "soil_sensor"} then
+          fail()
+          return
+        end
+        local soil_sensor = get_mounted_tool()
+
+        local location = variable("Location")
+
+        -- Calculate tool-compensated destinations
+        local approach = resolve_tool_move{
+          id = soil_sensor.id,
+          x = location.x,
+          y = location.y,
+          z = safe_z(),
+          grouping = "xy,z",
+          route = "high"
+        }
+        local insertion = resolve_tool_move{
+          id = soil_sensor.id,
+          z = soil_height(location.x, location.y),
+          variance = {x = 10, y = 10},
+          speed = 50
+        }
+        for _, target in ipairs({approach, insertion}) do
+          if not verify_in_bounds(target) then
+            fail()
+            return
+          end
+        end
+
+        -- Move above location
+        job("Moving to location", 25)
+        move(approach)
+
+        -- Measure soil moisture
+        job("Measuring", 75)
+        move(insertion)
+        read_pin(59, "analog")
+
+        -- Retract sensor
+        job("Retracting sensor", 90)
+        move{z = approach.z, speed = 50}
+        job("Complete", 100)

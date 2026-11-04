@@ -140,6 +140,7 @@ module Devices
         PICK_FROM_SEED_TRAY = ALL.fetch(:PICK_FROM_SEED_TRAY)
         PICK_FROM_SEED_TROUGH = ALL.fetch(:PICK_FROM_SEED_TROUGH)
         PICK_FROM_SEED_BIN = ALL.fetch(:PICK_FROM_SEED_BIN)
+        MEASURE_SOIL_MOISTURE = ALL.fetch(:MEASURE_SOIL_MOISTURE)
       end
 
       module PublicSequenceNames
@@ -155,6 +156,7 @@ module Devices
         PICK_FROM_SEED_TRAY = "Pick from Seed Tray"
         PICK_FROM_SEED_TROUGH = "Pick from Seed Trough"
         PICK_FROM_SEED_BIN = "Pick from Seed Bin"
+        MEASURE_SOIL_MOISTURE = "Measure soil moisture"
       end
     end
   end

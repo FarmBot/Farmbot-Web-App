@@ -175,6 +175,10 @@ describe Api::DevicesController do
       device.sequences.find_by(name: PublicSequenceNames::PICK_FROM_SEED_BIN)
     end
 
+    def sequences_measure_soil_moisture?(device)
+      device.sequences.find_by(name: PublicSequenceNames::MEASURE_SOIL_MOISTURE)
+    end
+
     def sequences_pickup_seed?(device)
       device.sequences.find_by(name: "Pick up seed")
     end
@@ -318,6 +322,7 @@ describe Api::DevicesController do
             PublicSequenceNames::DISMOUNT_TOOL,
             PublicSequenceNames::MOW_ALL_WEEDS,
             PublicSequenceNames::PICK_FROM_SEED_TRAY,
+            PublicSequenceNames::MEASURE_SOIL_MOISTURE,
           ].map do |name|
             s = Sequences::Create.run!(device: u.device,
                                         name: name,
@@ -428,6 +433,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -503,6 +509,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -578,6 +585,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -655,6 +663,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -776,6 +785,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -853,6 +863,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -930,6 +941,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -1007,6 +1019,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
@@ -1082,6 +1095,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1159,6 +1173,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1236,6 +1251,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1313,6 +1329,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1390,6 +1407,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1468,6 +1486,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_trough?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_bin?(device)).to be_kind_of(Sequence)
+      expect(sequences_measure_soil_moisture?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2730)
     end
@@ -1539,6 +1558,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(930)
     end
@@ -1610,6 +1630,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(930)
     end
@@ -1681,6 +1702,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(930)
     end
@@ -1752,6 +1774,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2130)
     end
@@ -1823,6 +1846,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2130)
     end
@@ -1894,6 +1918,7 @@ describe Api::DevicesController do
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(sequences_pick_from_seed_trough?(device)).to_not be
       expect(sequences_pick_from_seed_bin?(device)).to_not be
+      expect(sequences_measure_soil_moisture?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2130)
     end
@@ -1937,6 +1962,7 @@ describe Api::DevicesController do
         sequences_grid?(device),
         sequences_mount_tool?(device),
         sequences_mow_all_weeds?(device),
+        sequences_measure_soil_moisture?(device),
       ].each do |sequence|
         expect(sequence).to be_kind_of(Sequence)
         expect(sequence.sequence_version_id).to be_nil
@@ -1951,6 +1977,7 @@ describe Api::DevicesController do
         sequences_grid?(device),
         sequences_mount_tool?(device),
         sequences_mow_all_weeds?(device),
+        sequences_measure_soil_moisture?(device),
       ].each do |sequence|
         expect(sequence.sequence_version_id).to be_present
         expect(Sequences::Show.run!(sequence: sequence).fetch(:body, [])).to be_empty
@@ -1964,6 +1991,7 @@ describe Api::DevicesController do
         sequences_grid?(device),
         sequences_mount_tool?(device),
         sequences_mow_all_weeds?(device),
+        sequences_measure_soil_moisture?(device),
       ].each do |sequence|
         expect(sequence).to be_kind_of(Sequence)
         expect(sequence.sequence_version_id).to be_nil

@@ -7,7 +7,7 @@ import {
 import {
   ObjectPopupControls, ObjectPopupCopyButton, ObjectPopupDeleteButton,
   ObjectPopupHeaderColor, ObjectPopupVisibilityButton,
-  PopupObjectLocationRow, PopupSelectedLocationRow,
+  PopupObjectLocationRow, PopupSelectedLocationRow, SequenceDropdown,
 } from "./popup_controls";
 import { t } from "../../i18next_wrapper";
 import { DiagnosisSaucer } from "../../devices/connectivity/diagnosis";
@@ -150,5 +150,13 @@ export const LocationPopup = (props: LocationPopupProps) => {
         onClick={() => props.onOpenLocationPanel(props.object.selection)} />}
     onClose={props.onClosePopup}>
     <PopupSelectedLocationRow {...props} />
+    <SequenceDropdown
+      sequences={props.sequences}
+      defaultValueKinds={["coordinate", "point"]}
+      variable={{
+        label: "",
+        value: JSON.stringify(props.object.locationCoordinate),
+        headingId: "Coordinate",
+      }} />
   </ThreeDPopup>;
 };

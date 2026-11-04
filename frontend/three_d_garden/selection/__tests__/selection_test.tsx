@@ -1,7 +1,7 @@
 import React from "react";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
-import { clone } from "lodash";
+import { clone, cloneDeep } from "lodash";
 import { MountStage } from "farmbot/dist/resources/api_resources";
 import {
   fakeFbosConfig, fakePlant, fakePoint, fakeSequence, fakeTool,
@@ -781,6 +781,30 @@ describe("selection overlay and popups", () => {
     expect(container.querySelector(".object-popup-location-row")).toBeNull();
   });
 
+  it.each(["bot", "deviceAccount"] as const)(
+    "renders the connectivity popup without %s",
+    missing => {
+      const p = layerProps();
+      p.bot = clone(fakeBot);
+      p[missing] = undefined;
+      const object = {
+        kind: "connectivity" as const,
+        ...objectBase({ kind: "connectivity", id: 0 }),
+      };
+      const { container } = render(<ObjectPopup
+        {...p}
+        object={object}
+        visible={true} />);
+
+      expect(container.querySelector("h3")).toHaveTextContent("connectivity");
+      expect(container.querySelector(".diagnosis-indicator"))
+        .not.toBeInTheDocument();
+      expect(container.querySelector(".connectivity-popup-content"))
+        .not.toBeInTheDocument();
+      expect(container.querySelector(".object-popup-location-row"))
+        .not.toBeInTheDocument();
+    });
+
   it("renders scene object popup actions", () => {
     const p = layerProps();
     const object = sceneObjectObject();
@@ -845,6 +869,70 @@ describe("selection overlay and popups", () => {
       z: 3,
     });
     expect(p.onClosePopup).toHaveBeenCalled();
+  });
+
+  it("runs location sequences with the current popup coordinates", () => {
+    const execSequence = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+    const fbSelect = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button
+          data-testid={"location-sequence"}
+          onClick={() => props.onChange(props.list[0])}>
+          {props.list.map(item => item.label).join(", ")}
+        </button>) as never);
+    const p = layerProps();
+    const matching = fakeSequence({ id: 10, name: "Water location" });
+    matching.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "location",
+        default_value: {
+          kind: "coordinate",
+          args: { x: 0, y: 0, z: 0 },
+        },
+      },
+    }];
+    const other = fakeSequence({ id: 11, name: "Other sequence" });
+    other.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "duration",
+        default_value: { kind: "numeric", args: { number: 1 } },
+      },
+    }];
+    p.sequences = [matching, other];
+    const object = locationObject();
+    const popup = render(<LocationPopup
+      {...p} object={object} visible={true} />);
+    expect(popup.getByTestId("location-sequence"))
+      .toHaveTextContent("Water location");
+    expect(popup.getByTestId("location-sequence"))
+      .not.toHaveTextContent("Other sequence");
+    fireEvent.click(popup.getByTestId("location-sequence"));
+    expect(execSequence).toHaveBeenLastCalledWith(10, [{
+      kind: "parameter_application",
+      args: {
+        label: "location",
+        data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } },
+      },
+    }]);
+
+    popup.rerender(<LocationPopup
+      {...p}
+      object={{ ...object, locationCoordinate: { x: 0, y: 20, z: -30 } }}
+      visible={true} />);
+    fireEvent.click(popup.getByTestId("location-sequence"));
+    expect(execSequence).toHaveBeenLastCalledWith(10, [{
+      kind: "parameter_application",
+      args: {
+        label: "location",
+        data_value: { kind: "coordinate", args: { x: 0, y: 20, z: -30 } },
+      },
+    }]);
+    popup.unmount();
+    fbSelect.mockRestore();
+    execSequence.mockRestore();
   });
 
   it("animates selection layer popup state", async () => {
@@ -1366,7 +1454,15 @@ describe("selection popup controls", () => {
     noLocals.body.args.locals.body = undefined;
     const noId = fakeSequence({ id: 0, name: "No id" });
     noId.body.id = undefined;
-    p.sequences = [matching, other, multiple, noLocals, noId];
+    const moisture = cloneDeep(matching);
+    moisture.body.id = 14;
+    moisture.body.name = "Measure soil moisture";
+    const titledMoisture = cloneDeep(moisture);
+    titledMoisture.body.id = 15;
+    titledMoisture.body.name = "Measure Soil Moisture";
+    p.sequences = [
+      matching, other, multiple, noLocals, noId, moisture, titledMoisture,
+    ];
     const object = plantObject();
     object.plant.body.id = 123;
     const controls = render(<ObjectPopupControls {...p} object={object} />);
@@ -1377,6 +1473,10 @@ describe("selection popup controls", () => {
       .not.toHaveTextContent("Other sequence");
     expect(controls.getByTestId("plant-sequence"))
       .not.toHaveTextContent("Multiple variables");
+    expect(controls.getByTestId("plant-sequence"))
+      .not.toHaveTextContent("Measure soil moisture");
+    expect(controls.getByTestId("plant-sequence"))
+      .not.toHaveTextContent("Measure Soil Moisture");
     fireEvent.click(controls.getByTestId("plant-sequence"));
     expect(execSequence).toHaveBeenCalledWith(10, [{
       kind: "parameter_application",
@@ -1393,6 +1493,88 @@ describe("selection popup controls", () => {
     const noVariable = render(<ObjectPopupControls {...p} object={object} />);
     expect(noVariable.queryByTestId("plant-sequence")).not.toBeInTheDocument();
     noVariable.unmount();
+    fbSelect.mockRestore();
+    execSequence.mockRestore();
+  });
+
+  it.each([
+    ["Measure soil moisture", "coordinate"],
+    ["Water point", "point"],
+  ])("runs point sequence %s with a point reference", (name, kind) => {
+    const execSequence = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+    const fbSelect = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button data-testid={"point-sequence"}
+          onClick={() => props.onChange(props.list[0])}>
+          {props.list.map(item => item.label).join(", ")}
+        </button>) as never);
+    const p = layerProps();
+    const sequence = fakeSequence({ id: 30, name });
+    sequence.body.args.locals.body = [{
+      kind: "parameter_declaration",
+      args: {
+        label: "location",
+        default_value: kind == "coordinate"
+          ? { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+          : { kind: "point",
+            args: { pointer_type: "GenericPointer", pointer_id: 1 } },
+      },
+    }];
+    p.sequences = [sequence];
+    const object = pointObject();
+    const controls = render(<ObjectPopupControls {...p} object={object} />);
+    expect(controls.getByTestId("point-sequence")).toHaveTextContent(name);
+    fireEvent.click(controls.getByTestId("point-sequence"));
+    expect(execSequence).toHaveBeenCalledWith(30, [{
+      kind: "parameter_application",
+      args: {
+        label: "location",
+        data_value: {
+          kind: "point",
+          args: { pointer_type: "GenericPointer", pointer_id: 2 },
+        },
+      },
+    }]);
+    controls.unmount();
+    if (object.kind == "point") { object.point.body.id = undefined; }
+    const unsaved = render(<ObjectPopupControls {...p} object={object} />);
+    expect(unsaved.queryByTestId("point-sequence")).not.toBeInTheDocument();
+    unsaved.unmount();
+    fbSelect.mockRestore();
+    execSequence.mockRestore();
+  });
+
+  it("only offers Mow All Weeds in weed popups", () => {
+    const execSequence = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+    const fbSelect = jest.spyOn(ui, "FBSelect")
+      .mockImplementation(((props: ui.FBSelectProps) =>
+        <button
+          data-testid={props.customNullLabel == "Run sequence"
+            ? "weed-sequence"
+            : "weed-status"}
+          onClick={() => props.onChange(props.list[0])}>
+          {props.list.map(item => item.label).join(", ")}
+        </button>) as never);
+    const p = layerProps();
+    const mow = fakeSequence({ id: 40, name: "Mow All Weeds" });
+    mow.body.args.locals.body = undefined;
+    const other = cloneDeep(mow);
+    other.body.id = 41;
+    other.body.name = "Measure soil moisture";
+    p.sequences = [mow, other];
+    const object = weedObject();
+    const controls = render(<ObjectPopupControls {...p} object={object} />);
+    expect(controls.getByTestId("weed-sequence"))
+      .toHaveTextContent(/^Mow All Weeds$/);
+    fireEvent.click(controls.getByTestId("weed-sequence"));
+    expect(execSequence).toHaveBeenCalledWith(40, []);
+    controls.unmount();
+    if (object.kind == "weed") { object.weed.body.id = undefined; }
+    const unsaved = render(<ObjectPopupControls {...p} object={object} />);
+    expect(unsaved.queryByTestId("weed-sequence")).not.toBeInTheDocument();
+    unsaved.unmount();
     fbSelect.mockRestore();
     execSequence.mockRestore();
   });

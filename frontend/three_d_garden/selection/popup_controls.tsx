@@ -229,15 +229,18 @@ const sequenceParameter = (
 interface SequenceDropdownProps {
   sequences: TaggedSequence[];
   defaultValueKinds: ParameterDefaultValueKind[];
+  allowNoVariables?: boolean;
   variable: DropDownItem | undefined;
 }
 
-const SequenceDropdown = (props: SequenceDropdownProps) => {
+export const SequenceDropdown = (props: SequenceDropdownProps) => {
   const { variable } = props;
   if (!variable) { return undefined; }
+  const hasNoVariables = (sequence: TaggedSequence) =>
+    props.allowNoVariables && !sequence.body.args.locals.body?.length;
   const sequences = betterCompact(props.sequences.map(sequence => {
-    return sequenceParameter(sequence, props.defaultValueKinds)
-      && isNumber(sequence.body.id)
+    return (sequenceParameter(sequence, props.defaultValueKinds)
+      || hasNoVariables(sequence)) && isNumber(sequence.body.id)
       ? { label: sequence.body.name, value: sequence.body.id }
       : undefined;
   }));
@@ -252,6 +255,10 @@ const SequenceDropdown = (props: SequenceDropdownProps) => {
       onChange={item => {
         const sequence = props.sequences.find(candidate =>
           candidate.body.id == item.value);
+        if (sequence && hasNoVariables(sequence)) {
+          execSequence(sequence.body.id, []);
+          return;
+        }
         const declaration = sequence && sequenceParameter(
           sequence, props.defaultValueKinds);
         const bodyVariable = declaration && convertDDItoVariable({
@@ -302,7 +309,8 @@ const PlantPopupControls = (props: PopupControlProps) => {
           depth={plant.body.depth} />}
     </div>
     <SequenceDropdown
-      sequences={props.sequences}
+      sequences={props.sequences.filter(sequence =>
+        sequence.body.name.toLowerCase() != "measure soil moisture")}
       defaultValueKinds={["coordinate", "point"]}
       variable={isNumber(plant.body.id)
         ? {
@@ -327,6 +335,16 @@ const PointPopupControls = (props: PopupControlProps) => {
         point={point}
         updatePoint={update} />
     </div>
+    <SequenceDropdown
+      sequences={props.sequences}
+      defaultValueKinds={["coordinate", "point"]}
+      variable={isNumber(point.body.id)
+        ? {
+          label: "",
+          value: point.body.id,
+          headingId: "GenericPointer",
+        }
+        : undefined} />
   </>;
 };
 
@@ -344,6 +362,18 @@ const WeedPopupControls = (props: PopupControlProps) => {
         radius={weed.body.radius}
         updatePoint={update} />
     </div>
+    <SequenceDropdown
+      sequences={props.sequences.filter(sequence =>
+        sequence.body.name == "Mow All Weeds")}
+      defaultValueKinds={["coordinate", "point"]}
+      allowNoVariables={true}
+      variable={isNumber(weed.body.id)
+        ? {
+          label: "",
+          value: weed.body.id,
+          headingId: "Weed",
+        }
+        : undefined} />
   </>;
 };
 

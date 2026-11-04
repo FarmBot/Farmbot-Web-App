@@ -43,6 +43,15 @@ describe Devices::Seeders::Constants::SequenceSeeds do
     end
   end
 
+  it "uses public sequence names for bundled fixtures" do
+    public_names = Devices::Seeders::Constants::PublicSequenceNames
+
+    public_names.constants.each do |name|
+      expect(described_class::ALL.fetch(name).fetch(:name))
+        .to eq(public_names.const_get(name))
+    end
+  end
+
   it "loads every nonempty fixture Lua script at the left margin" do
     lua_scripts = []
     collect_lua = lambda do |node|

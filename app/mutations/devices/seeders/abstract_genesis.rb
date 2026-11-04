@@ -130,6 +130,14 @@ module Devices
         end
       end
 
+      def sequences_measure_soil_moisture
+        success = install_sequence_version_by_name(PublicSequenceNames::MEASURE_SOIL_MOISTURE)
+        unless success
+          s = SequenceSeeds::MEASURE_SOIL_MOISTURE.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
+      end
+
       def sequences_plant_seed
         s = SequenceSeeds::PLANT_SEED_GENESIS.deep_dup
         Sequences::Create.run!(s, device: device)

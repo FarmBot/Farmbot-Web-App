@@ -22,6 +22,7 @@ module Devices
       def sequences_pick_from_seed_tray; end
       def sequences_pick_from_seed_trough; end
       def sequences_pick_from_seed_bin; end
+      def sequences_measure_soil_moisture; end
       def point_groups_all_plants; end
       def point_groups_all_points; end
       def point_groups_all_weeds; end

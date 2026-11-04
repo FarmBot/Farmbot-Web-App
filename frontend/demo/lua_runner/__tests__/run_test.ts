@@ -87,6 +87,40 @@ describe("runLua()", () => {
       .toEqual(expect.objectContaining({ variables }));
   });
 
+  it.each<[string, string[], number[]]>([
+    ["{x = 10, y = 10, z = 0}", ["x", "y", "z"], [10, 10, 0]],
+    ["{y = 5}", ["y"], [5]],
+  ])("captures move variance: %s", (variance, axes, values) => {
+    const actions = runLua(0, `move{variance = ${variance}}`, []);
+    expect(actions).toHaveLength(1);
+    expect(actions[0].type).toEqual("_move");
+    expect(JSON.parse(actions[0].args[0] as string)).toEqual(
+      axes.map((axis, index) => ({
+        kind: "axis_addition",
+        args: {
+          axis,
+          axis_operand: {
+            kind: "random", args: { variance: values[index] },
+          },
+        },
+      })));
+  });
+
+  it("applies move variance after coordinates and offsets", () => {
+    const actions = runLua(0,
+      "move{x = 100, offset = {x = 5}, variance = {x = 10}}", []);
+    const body = JSON.parse(actions[0].args[0] as string);
+    expect(body.map((item: { kind: string }) => item.kind)).toEqual([
+      "axis_overwrite", "axis_addition", "axis_addition",
+    ]);
+    expect(body.map((item: { args: { axis_operand: unknown } }) =>
+      item.args.axis_operand)).toEqual([
+      { kind: "numeric", args: { number: 100 } },
+      { kind: "numeric", args: { number: 5 } },
+      { kind: "random", args: { variance: 10 } },
+    ]);
+  });
+
   it("posts points through the api shim", () => {
     const code = `
     local created = api{
