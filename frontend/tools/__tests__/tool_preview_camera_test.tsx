@@ -129,6 +129,72 @@ describe("<ToolPreviewCamera />", () => {
     expectInFrame();
   });
 
+  it("keeps zoom and position when rerendered after orbiting", () => {
+    const { rerender } = render(<ToolPreviewCamera
+      margin={1.2} onCentered={onCentered}><group /></ToolPreviewCamera>);
+    finishLoading();
+    const zoom = camera.zoom;
+    const distance = camera.position.length();
+    for (const direction of [[0, 1, 0], [1, 1, 1], [1, 0, 0]]) {
+      camera.position.fromArray(direction).setLength(distance);
+      camera.lookAt(0, 0, 0);
+      const position = camera.position.clone();
+      const rotation = camera.quaternion.clone();
+      rerender(<ToolPreviewCamera margin={1.2} onCentered={onCentered}>
+        <group />
+      </ToolPreviewCamera>);
+      finishLoading();
+      expect(camera.zoom).toEqual(zoom);
+      expect(camera.position).toEqual(position);
+      expect(camera.quaternion.toArray()).toEqual(rotation.toArray());
+      expect(container.visible).toEqual(true);
+    }
+    expect(onCentered).toHaveBeenCalledTimes(4);
+    expect(invalidate).toHaveBeenCalledTimes(4);
+  });
+
+  it("keeps all corners between the clipping planes while orbiting", () => {
+    render(<ToolPreviewCamera margin={1.2} onCentered={onCentered}>
+      <group />
+    </ToolPreviewCamera>);
+    finishLoading();
+    const distance = camera.position.length();
+    const box = new Box3().setFromObject(container);
+    const near = camera.near;
+    const far = camera.far;
+    for (const direction of [
+      [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0],
+      [0, 0, 1], [0, 0, -1], [1, 1, 1], [-1, -1, -1],
+    ]) {
+      camera.position.fromArray(direction).setLength(distance);
+      camera.lookAt(0, 0, 0);
+      camera.updateMatrixWorld();
+      for (const x of [box.min.x, box.max.x]) {
+        for (const y of [box.min.y, box.max.y]) {
+          for (const z of [box.min.z, box.max.z]) {
+            const point = new Vector3(x, y, z).project(camera);
+            expect(Math.abs(point.z)).toBeLessThan(1);
+          }
+        }
+      }
+      expect(camera.near).toEqual(near);
+      expect(camera.far).toEqual(far);
+    }
+  });
+
+  it("refits when the margin changes", () => {
+    const { rerender } = render(<ToolPreviewCamera
+      margin={1.2} onCentered={onCentered}><group /></ToolPreviewCamera>);
+    finishLoading();
+    const zoom = camera.zoom;
+    rerender(<ToolPreviewCamera margin={2.4} onCentered={onCentered}>
+      <group />
+    </ToolPreviewCamera>);
+    finishLoading();
+    expect(camera.zoom).toBeCloseTo(zoom / 2);
+    expectInFrame();
+  });
+
   it("handles an empty slot without invalid camera values", () => {
     container.clear();
     render(<ToolPreviewCamera margin={1.2} onCentered={onCentered}>
