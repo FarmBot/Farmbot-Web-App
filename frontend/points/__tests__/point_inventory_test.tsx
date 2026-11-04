@@ -168,6 +168,40 @@ describe("<Points />", () => {
     expect(navigate).toHaveBeenCalledWith(Path.points("add"));
   });
 
+  it("adds soil height point", () => {
+    location.pathname = Path.mock(Path.points());
+    const p = fakeProps();
+    p.pointsPanelState.soilHeight = true;
+    const { container } = renderWithContext(<Points {...p} />);
+
+    fireEvent.click(container.querySelector(
+      ".plus-soil-height-point") as Element);
+
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: {
+        name: "Created Point",
+        cx: undefined,
+        cy: undefined,
+        z: 0,
+        r: 0,
+        color: "green",
+        at_soil_level: true,
+      },
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points("add"));
+  });
+
+  it("hides add soil height point button when section is collapsed", () => {
+    const p = fakeProps();
+    p.pointsPanelState.soilHeight = false;
+    const { container } = render(<Points {...p} />);
+
+    expect(container.querySelector(".plus-soil-height-point")).toBeNull();
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
   it("navigates to point info", () => {
     location.pathname = Path.mock(Path.points());
     const p = fakeProps();
@@ -287,10 +321,14 @@ describe("<Points />", () => {
     p.genericPoints = [fakePoint(), gridPoint];
     const { container, ref } = renderWithRef(p);
     expect(container.textContent?.toLowerCase()).toContain("mesh grid");
+    const gridHeader = Array.from(container.querySelectorAll(
+      ".points-section-header"))
+      .find(header => header.textContent?.toLowerCase().includes("mesh grid"));
+    expect(gridHeader).toBeTruthy();
     expect(ref.current?.state.gridIds).toEqual([]);
-    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1]);
+    fireEvent.click(gridHeader as Element);
     expect(ref.current?.state.gridIds).toEqual(["123"]);
-    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1]);
+    fireEvent.click(gridHeader as Element);
     expect(ref.current?.state.gridIds).toEqual([]);
   });
 

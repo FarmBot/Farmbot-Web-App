@@ -50,12 +50,14 @@ import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { resetDrawnPointDataAction } from "./create_points";
 
 interface PointsSectionProps {
   title: string;
   color?: string;
   isOpen: boolean;
   toggleOpen(): void;
+  addNew?(): void;
   toggleValue?: boolean;
   toggleAction?(): void;
   genericPoints: TaggedGenericPointer[];
@@ -77,6 +79,15 @@ const PointsSection = (props: PointsSectionProps) => {
       onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
+      {isOpen && props.addNew && <button
+        className={"fb-button green plus-soil-height-point"}
+        title={t("add soil height point")}
+        onClick={e => {
+          e.stopPropagation();
+          props.addNew?.();
+        }}>
+        <i className={"fa fa-plus"} />
+      </button>}
       {isOpen && <button className={"fb-button red delete"}
         title={t("delete all")}
         onClick={e => {
@@ -271,27 +282,34 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
                 dispatch={dispatch} />)}
           </EmptyStateWrapper>
         </PanelSection>
-        {sortedSoilHeightPoints.length > 0 &&
-          <PointsSection
-            title={soilHeightPointColors.length > 1
-              ? t("All Soil Height")
-              : t("Soil Height")}
-            isOpen={this.props.pointsPanelState.soilHeight}
-            toggleOpen={this.toggleOpen("soilHeight")}
-            toggleValue={this.props.soilHeightLabels}
-            toggleAction={() => dispatch({
-              type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
-            })}
-            genericPoints={sortedSoilHeightPoints}
-            metaQuery={soilHeightQuery}
-            getColorOverride={getSoilHeightColor(sortedSoilHeightPoints)}
-            averageZ={round(mean(sortedSoilHeightPoints.map(p => p.body.z)))}
-            minZ={Math.min(...sortedSoilHeightPoints.map(p => p.body.z))}
-            maxZ={Math.max(...sortedSoilHeightPoints.map(p => p.body.z))}
-            sourceFbosConfig={this.props.sourceFbosConfig}
-            hoveredPoint={this.props.hoveredPoint}
-            layerDisabled={!showPoints}
-            dispatch={dispatch} />}
+        <PointsSection
+          title={soilHeightPointColors.length > 1
+            ? t("All Soil Height")
+            : t("Soil Height")}
+          addNew={() => {
+            const action = resetDrawnPointDataAction();
+            dispatch({
+              ...action,
+              payload: { ...action.payload, at_soil_level: true },
+            });
+            this.navigate(Path.points("add"));
+          }}
+          isOpen={this.props.pointsPanelState.soilHeight}
+          toggleOpen={this.toggleOpen("soilHeight")}
+          toggleValue={this.props.soilHeightLabels}
+          toggleAction={() => dispatch({
+            type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
+          })}
+          genericPoints={sortedSoilHeightPoints}
+          metaQuery={soilHeightQuery}
+          getColorOverride={getSoilHeightColor(sortedSoilHeightPoints)}
+          averageZ={round(mean(sortedSoilHeightPoints.map(p => p.body.z)))}
+          minZ={Math.min(...sortedSoilHeightPoints.map(p => p.body.z))}
+          maxZ={Math.max(...sortedSoilHeightPoints.map(p => p.body.z))}
+          sourceFbosConfig={this.props.sourceFbosConfig}
+          hoveredPoint={this.props.hoveredPoint}
+          layerDisabled={!showPoints}
+          dispatch={dispatch} />
         {soilHeightPointColors.length > 1 &&
           soilHeightPointColors.map(color =>
             <PointsSection key={color}

@@ -35,15 +35,16 @@ export interface EditSoilHeightProps {
 }
 
 export const EditSoilHeight = (props: EditSoilHeightProps) => {
-  const { sourceFbosConfig } = props;
+  const { sourceFbosConfig, averageZ } = props;
   return <div className={"grid soil-height-summary"}>
     <Row className="grid-exp-1">
       {sourceFbosConfig && <label>{t("FarmBot soil z")}</label>}
-      <button className={"fb-button gray"}
-        title={t("use average soil height")}
-        onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
-        {t("use average z: {{ value }}", { value: props.averageZ })}
-      </button>
+      {isFinite(averageZ) &&
+        <button className={"fb-button gray"}
+          title={t("use average soil height")}
+          onClick={() => props.dispatch(setSoilHeight(averageZ))}>
+          {t("use average z: {{ value }}", { value: averageZ })}
+        </button>}
       {sourceFbosConfig && <BlurableInput type="number"
         onCommit={e =>
           props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
