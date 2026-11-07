@@ -229,6 +229,26 @@ describe("<PlantDateBulkUpdate />", () => {
       planted_at: "2017-05-29T05:00:00.000Z",
     });
   });
+
+  it.each<[number, string]>([
+    [-11, "2017-05-29T11:00:00.000Z"],
+    [-5, "2017-05-29T05:00:00.000Z"],
+    [0, "2017-05-29T00:00:00.000Z"],
+    [5, "2017-05-28T19:00:00.000Z"],
+    [13, "2017-05-28T11:00:00.000Z"],
+  ])("updates plant dates: utc offset %s", (offset, plantedAt) => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = offset;
+    const plant = fakePlant();
+    p.allPoints = [plant];
+    p.selected = [plant.uuid];
+    const { container } = render(<PlantDateBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    const input = container.querySelector(".mock-blurable-input") as Element;
+    fireEvent.change(input, { target: { value: "2017-05-29" } });
+    fireEvent.blur(input);
+    expect(crud.edit).toHaveBeenCalledWith(plant, { planted_at: plantedAt });
+  });
 });
 
 describe("<PointSizeBulkUpdate />", () => {
