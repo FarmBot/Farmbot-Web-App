@@ -233,6 +233,24 @@ describe("<EditDatePlanted />", () => {
       planted_at: expect.stringContaining("Z"),
     });
   });
+
+  it.each<[number, string]>([
+    [-11, "2010-10-10T11:00:00.000Z"],
+    [-5, "2010-10-10T05:00:00.000Z"],
+    [0, "2010-10-10T00:00:00.000Z"],
+    [5, "2010-10-09T19:00:00.000Z"],
+    [13, "2010-10-09T11:00:00.000Z"],
+  ])("changes date planted: utc offset %s", (offset, plantedAt) => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = offset;
+    render(<EditDatePlanted {...p} />);
+    const input = screen.getByDisplayValue(p.datePlanted?.utcOffset(offset)
+      .format("YYYY-MM-DD") || "");
+    fireEvent.change(input, { target: { value: "2010-10-10" } });
+    expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
+      planted_at: plantedAt,
+    });
+  });
 });
 
 describe("<EditPlantLocation />", () => {

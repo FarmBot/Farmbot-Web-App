@@ -169,8 +169,8 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
           }))
           && plants.map(plant => {
             props.dispatch(edit(plant, {
-              planted_at: "" + moment(e.currentTarget.value)
-                .utcOffset(props.timeSettings.utcOffset).toISOString()
+              planted_at: "" + moment.utc(e.currentTarget.value)
+                .utcOffset(props.timeSettings.utcOffset, true).toISOString()
             }));
             props.dispatch(save(plant.uuid));
           });
