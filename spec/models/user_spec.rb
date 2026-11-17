@@ -48,4 +48,39 @@ describe User do
       expect(user.verified?).to be(false)
     end
   end
+
+  describe ".env_setting" do
+    it "treats a blank value as unset" do
+      ClimateControl.modify(TOS_URL: "") do
+        expect(User.env_setting("TOS_URL")).to be(nil)
+      end
+      ClimateControl.modify(TOS_URL: "  ") do
+        expect(User.env_setting("TOS_URL")).to be(nil)
+      end
+    end
+
+    it "returns a value that is set" do
+      ClimateControl.modify(TOS_URL: "https://example.com/tos") do
+        expect(User.env_setting("TOS_URL")).to eq("https://example.com/tos")
+      end
+    end
+  end
+
+  describe ".env_flag" do
+    it "parses on values" do
+      %w[TRUE true 1 yes Yes on].each do |value|
+        ClimateControl.modify(NO_EMAILS: value) do
+          expect(User.env_flag("NO_EMAILS")).to be(true)
+        end
+      end
+    end
+
+    it "parses off, blank and unset values" do
+      ["FALSE", "false", "0", "no", "off", "", nil].each do |value|
+        ClimateControl.modify(NO_EMAILS: value) do
+          expect(User.env_flag("NO_EMAILS")).to be(false)
+        end
+      end
+    end
+  end
 end

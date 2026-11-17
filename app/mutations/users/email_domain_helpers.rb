@@ -5,7 +5,7 @@ module Users
     INVALID_EMAIL = "Please enter a valid email address."
 
     def allowed_domains
-      @allowed_domains ||= ENV["TRUSTED_DOMAINS"].split(",").map(&:strip)
+      @allowed_domains ||= ENV["TRUSTED_DOMAINS"].to_s.split(",").map(&:strip)
     end
 
     def actual_domain
@@ -13,7 +13,10 @@ module Users
     end
 
     def domain_is_ok?
-      ENV["TRUSTED_DOMAINS"] ? allowed_domains.include?(actual_domain) : true
+      # A blank TRUSTED_DOMAINS means "no restriction", same as unset.
+      return true if User.env_setting("TRUSTED_DOMAINS").nil?
+
+      allowed_domains.include?(actual_domain)
     end
 
     def email_is_ok?

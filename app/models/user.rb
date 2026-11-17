@@ -2,8 +2,22 @@
 class User < ApplicationRecord
   class AlreadyVerified < StandardError; end
 
-  ENFORCE_TOS = ENV.fetch("TOS_URL", false)
-  SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS", false)
+  # A line like `TOS_URL=` in .env arrives as an empty string. Treat that the
+  # same as an unset variable, which is also what the frontend does.
+  def self.env_setting(key)
+    ENV[key].presence
+  end
+
+  TRUE_ENV_VALUES = %w[true 1 yes on].freeze
+
+  # Parses an on/off env var into a real boolean. "true", "1", "yes" and "on"
+  # (any case) mean true. Anything else, blank or unset, means false.
+  def self.env_flag(key)
+    TRUE_ENV_VALUES.include?(env_setting(key).to_s.strip.downcase)
+  end
+
+  ENFORCE_TOS = env_setting("TOS_URL") || false
+  SKIP_EMAIL_VALIDATION = env_flag("NO_EMAILS")
   validates :email, uniqueness: true
 
   belongs_to :device, dependent: :destroy

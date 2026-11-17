@@ -50,6 +50,30 @@ describe Users::Create do
       end
     end
 
+    it "treats a blank TRUSTED_DOMAINS as no restriction" do
+      ClimateControl.modify(TRUSTED_DOMAINS: "") do
+        email   = "#{SecureRandom.hex(8)}@qwerty.io"
+        results = Users::Create.run(email:                 email,
+                                    name:                  "Faker",
+                                    password:              "password12345",
+                                    password_confirmation: "password12345",
+                                    agree_to_terms:        false)
+        expect(results.success?).to be true
+      end
+    end
+
+    it "accepts the parsed NO_EMAILS flag as skip_email" do
+      ClimateControl.modify(NO_EMAILS: "yes") do
+        results = Users::Create.run(email:                 "#{SecureRandom.hex(8)}@qwerty.io",
+                                    name:                  "Faker",
+                                    password:              "password12345",
+                                    password_confirmation: "password12345",
+                                    agree_to_terms:        false,
+                                    skip_email:            User.env_flag("NO_EMAILS"))
+        expect(results.success?).to be true
+      end
+    end
+
     it "allows people on the TRUSTED_DOMAINS list to register" do
       emails = ["farmbot.io","farm.bot"]
       ClimateControl.modify(TRUSTED_DOMAINS: emails.join(",")) do
