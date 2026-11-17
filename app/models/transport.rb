@@ -4,12 +4,19 @@ require "bunny"
 # change protocols
 class Transport
   OPTS = { read_timeout: 10, heartbeat: 10, log_level: "warn" }
-  CLOUDAMQP_ENV_KEY = ENV.fetch("WHERE_IS_CLOUDAMQP_URL", "CLOUDAMQP_URL")
+  # Blank values (eg: `RABBITMQ_URL=` in a docker `.env` file) count as unset.
+  CLOUDAMQP_ENV_KEY = ENV["WHERE_IS_CLOUDAMQP_URL"].presence || "CLOUDAMQP_URL"
 
   def self.amqp_url
-    @amqp_url ||= ENV[CLOUDAMQP_ENV_KEY] ||
-                  ENV["RABBITMQ_URL"] ||
-                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@mqtt:5672"
+    @amqp_url ||= ENV[CLOUDAMQP_ENV_KEY].presence ||
+                  ENV["RABBITMQ_URL"].presence ||
+                  default_amqp_url
+  end
+
+  # The password is escaped so that characters such as `@`, `#` or `/` do not
+  # produce an invalid URL.
+  def self.default_amqp_url(password = ENV.fetch("ADMIN_PASSWORD"))
+    "amqp://admin:#{URI.encode_www_form_component(password)}@mqtt:5672"
   end
 
   def self.default_amqp_adapter=(value)
@@ -91,11 +98,15 @@ class Transport
     require "rabbitmq/http/client"
 
     def self.username
-      @username ||= URI(Transport.amqp_url).user || "admin"
+      @username ||= decode(URI(Transport.amqp_url).user) || "admin"
     end
 
     def self.password
-      @password ||= URI(Transport.amqp_url).password
+      @password ||= decode(URI(Transport.amqp_url).password)
+    end
+
+    def self.decode(value)
+      value && URI.decode_www_form_component(value)
     end
 
     def self.api_url
@@ -107,7 +118,7 @@ class Transport
     end
 
     def self.client
-      @client ||= RabbitMQ::HTTP::Client.new(ENV["RABBIT_MGMT_URL"] || api_url,
+      @client ||= RabbitMQ::HTTP::Client.new(ENV["RABBIT_MGMT_URL"].presence || api_url,
                                              username: self.username,
                                              password: self.password)
     end
