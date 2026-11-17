@@ -61,6 +61,9 @@ input:not([role="combobox"]) {
       background: color.adjust($medium_light_gray, $lightness: -2%) !important;
     }
   }
+  &.pending {
+    box-shadow: 0 0 0 3px $cyan !important;
+  }
   &.error {
     border: 2px solid $red;
     background-color: $white !important;

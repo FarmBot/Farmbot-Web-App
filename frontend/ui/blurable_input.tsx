@@ -92,7 +92,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       e.target.setSelectionRange(0, e.target.value.length);
     this.setState({
       isEditing: true,
-      buffer: "" + (value || ""),
+      buffer: "" + value,
       error: undefined
     });
   };
@@ -119,6 +119,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     const value = this.state.isEditing
       ? this.state.buffer
       : this.props.value;
+    const pending = this.state.isEditing
+      && this.state.buffer !== "" + this.props.value && !this.error;
     return {
       value,
       hidden: !!this.props.hidden,
@@ -133,7 +135,9 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       max: this.props.max,
       type: this.props.type || "text",
       disabled: this.props.disabled,
-      className: (this.props.className || "") + (this.error ? " error" : ""),
+      className: [
+        this.props.className, this.error && "error", pending && "pending",
+      ].filter(Boolean).join(" "),
       title: this.props.title || "",
       placeholder: this.props.placeholder,
       autoFocus: this.props.autoFocus,

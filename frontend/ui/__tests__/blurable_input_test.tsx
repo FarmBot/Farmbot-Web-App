@@ -1,4 +1,5 @@
 import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BlurableInput, BIProps } from "../blurable_input";
 import { error } from "../../toast/toast";
 import {
@@ -36,6 +37,41 @@ describe("<BlurableInput />", () => {
       const wrapper = wrappers.pop();
       wrapper && unmountRenderer(wrapper);
     }
+  });
+
+  it.each<[BIProps["type"], string | number, string]>([
+    ["text", "original", "changed"],
+    ["number", 0, "1"],
+    ["date", "2017-05-29", "2017-05-30"],
+    ["time", "09:00", "10:00"],
+    ["email", "old@example.com", "new@example.com"],
+  ])("highlights pending edits until restore or blur: %s", (type, value, next) => {
+    const p = { ...fakeProps(), type, value, className: "custom modified" };
+    render(<BlurableInput {...p} />);
+    const input = screen.getByDisplayValue(String(value));
+    fireEvent.focus(input);
+    expect(input).toHaveValue(value);
+    expect(input).not.toHaveClass("pending");
+    fireEvent.change(input, { target: { value: next } });
+    expect(input).toHaveClass("custom", "modified", "pending");
+    expect(p.onCommit).not.toHaveBeenCalled();
+    fireEvent.change(input, { target: { value: String(value) } });
+    expect(input).not.toHaveClass("pending");
+    fireEvent.change(input, { target: { value: next } });
+    fireEvent.blur(input);
+    expect(p.onCommit).toHaveBeenCalledTimes(1);
+    expect(input).not.toHaveClass("pending");
+    expect(input).toHaveClass("custom", "modified");
+  });
+
+  it("prioritizes errors over pending edit highlighting", () => {
+    const p = { ...fakeProps(), type: "number" as const, value: 1, min: 0 };
+    render(<BlurableInput {...p} />);
+    const input = screen.getByDisplayValue("1");
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "-1" } });
+    expect(input).toHaveClass("error");
+    expect(input).not.toHaveClass("pending");
   });
 
   it("focuses", () => {
