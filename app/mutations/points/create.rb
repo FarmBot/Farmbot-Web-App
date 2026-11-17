@@ -90,7 +90,7 @@ module Points
 
       year, month, day = date.split("-").map(&:to_i)
       inputs[:planted_at] = Time.new(year, month, day, 0, 0, 0,
-                                    device.tz_offset_hrs * 3600)
+                                     device.tz_offset_hrs * 3600)
     end
 
     def validate_resource_count

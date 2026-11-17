@@ -17,7 +17,15 @@ class RmqConfigWriter
   NO_API_HOST = "\nYou MUST set API_HOST to a real IP address or " +
                 "domain name (not localhost).\n" +
                 "API_PORT is also mandatory."
-  PROTO = ENV["FORCE_SSL"] ? "https:" : "http:"
+  def self.ssl_protocol
+    if ENV["FORCE_SSL"].to_s.strip.casecmp?("TRUE")
+      "https:"
+    else
+      "http:"
+    end
+  end
+
+  PROTO = ssl_protocol
   ADMIN_PASSWORD = ENV["ADMIN_PASSWORD"]
   CFG_DATA = { admin_password: ADMIN_PASSWORD,
                fully_formed_url: PROTO + ($API_URL || "") }

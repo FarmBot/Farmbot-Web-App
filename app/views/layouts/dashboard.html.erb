@@ -44,7 +44,7 @@
     <%= yield %>
     <%= javascript_include_tag *@js_assets, type: "module" %>
     <% if Rails.env.development? &&
-         ENV.fetch("ASSET_LIVERELOAD", "true") == "true" %>
+         ENV.fetch("ASSET_LIVERELOAD", "TRUE").strip.casecmp?("TRUE") %>
       <% asset_host = ENV.fetch("ASSET_HOST",
                                 ENV.fetch("API_HOST", "localhost")) %>
       <% asset_port = ENV.fetch("ASSET_PORT", "3808") %>

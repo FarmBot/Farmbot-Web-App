@@ -16,6 +16,14 @@ Bundler.require(*Rails.groups)
 
 module FarmBot
   class Application < Rails::Application
+    def self.csp_websocket_scheme
+      if ENV["FORCE_SSL"].to_s.strip.casecmp?("TRUE")
+        "wss:"
+      else
+        "ws:"
+      end
+    end
+
     Delayed::Worker.max_attempts = 4
     REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
     REDIS_URL = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
@@ -92,7 +100,7 @@ module FarmBot
         "raw.githubusercontent.com",
         "api.rollbar.com",
         ASSET_DEV_URL,
-        ENV["FORCE_SSL"] ? "wss:" : "ws:",
+        FarmBot::Application.csp_websocket_scheme,
         "localhost:#{API_PORT}",
         "localhost:#{ASSET_DEV_PORT}",
         "browser-http-intake.logs.datadoghq.com",

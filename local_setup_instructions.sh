@@ -50,6 +50,7 @@ cd Farmbot-Web-App
 # ⚠ SKIP THIS IF UPGRADING!
 cp example.env .env
 # Open `.env` in a text editor and change all the values.
+# Pay attention to guidance on which lines need to be deleted.
 # ⚠ SKIP THIS STEP IF UPGRADING!
 nano .env
 

@@ -63,7 +63,7 @@ describe Users::Create do
     end
 
     it "accepts the parsed NO_EMAILS flag as skip_email" do
-      ClimateControl.modify(NO_EMAILS: "yes") do
+      ClimateControl.modify(NO_EMAILS: "TRUE") do
         results = Users::Create.run(email:                 "#{SecureRandom.hex(8)}@qwerty.io",
                                     name:                  "Faker",
                                     password:              "password12345",

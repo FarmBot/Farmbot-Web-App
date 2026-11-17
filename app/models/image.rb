@@ -17,7 +17,15 @@ class Image < ApplicationRecord
   end
 
   PLACEHOLDER = "/placeholder_farmbot.jpg?text=Processing..."
-  PROTO = ENV["FORCE_SSL"] ? "https:" : "http:"
+  def self.ssl_protocol
+    if ENV["FORCE_SSL"].to_s.strip.casecmp?("TRUE")
+      "https:"
+    else
+      "http:"
+    end
+  end
+
+  PROTO = ssl_protocol
   DEFAULT_URL = "#{PROTO}#{$API_URL}#{PLACEHOLDER}"
   RMAGICK_STYLES = {
     x1280: "1280x1280>",

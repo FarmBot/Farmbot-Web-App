@@ -1,4 +1,4 @@
-DO_INTEGRATION = !!ENV["RUN_CAPYBARA"]
+DO_INTEGRATION = ENV["RUN_CAPYBARA"].to_s.strip.casecmp?("TRUE")
 ENV["MQTT_HOST"] = "blooper.io"
 # require "deep_cover/builtin_takeover"
 require "simplecov"

@@ -53,12 +53,15 @@ describe Transport do
     end
   end
 
-  it "escapes special characters in ADMIN_PASSWORD" do
-    password = "p@ss#w/rd?%{x} y"
-    uri = URI(Transport.default_amqp_url(password)) # Raises if not escaped.
+  it "preserves spaces, plus signs and punctuation in ADMIN_PASSWORD" do
+    password = "p@ss#w/rd?%{x} y+z"
+    url = Transport.default_amqp_url(password)
+    uri = URI(url)
     expect(uri.host).to eq("mqtt")
     expect(uri.port).to eq(5672)
     expect(uri.user).to eq("admin")
+    expect(uri.password).to include("%20", "%2B")
+    expect(Bunny::Session.parse_uri(url).fetch(:pass)).to eq(password)
     expect(Transport::Mgmt.decode(uri.password)).to eq(password)
   end
 end

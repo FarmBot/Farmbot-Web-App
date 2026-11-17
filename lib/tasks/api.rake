@@ -45,15 +45,19 @@ def truthy_env?(key)
   value = ENV[key]
   return false if value.nil?
 
-  value.match?(/\A(true|1|yes|y)\z/i)
+  value.strip.casecmp?("TRUE")
 end
 
 namespace :api do
   desc "Runs pending email digests. " \
-       "Use the `FOREVER` ENV var to continually check."
+       "Set `FOREVER=TRUE` to continually check."
   task log_digest: :environment do
     puts "Running log digest loop..."
-    ENV["FOREVER"] ? loop { check_for_digests } : check_for_digests
+    if truthy_env?("FOREVER")
+      loop { check_for_digests }
+    else
+      check_for_digests
+    end
   end
 
   desc "Run Rails _ONLY_. No asset server."

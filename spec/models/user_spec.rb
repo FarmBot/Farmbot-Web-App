@@ -67,16 +67,17 @@ describe User do
   end
 
   describe ".env_flag" do
-    it "parses on values" do
-      %w[TRUE true 1 yes Yes on].each do |value|
+    it "accepts TRUE regardless of case or surrounding whitespace" do
+      ["TRUE", "true", "TrUe", " TRUE "].each do |value|
         ClimateControl.modify(NO_EMAILS: value) do
           expect(User.env_flag("NO_EMAILS")).to be(true)
         end
       end
     end
 
-    it "parses off, blank and unset values" do
-      ["FALSE", "false", "0", "no", "off", "", nil].each do |value|
+    it "rejects other values, including aliases, blank and unset" do
+      ["FALSE", "false", "0", "1", "yes", "YES", "on", "ON",
+       "y", "no", "off", "OFF", "", "  ", nil].each do |value|
         ClimateControl.modify(NO_EMAILS: value) do
           expect(User.env_flag("NO_EMAILS")).to be(false)
         end

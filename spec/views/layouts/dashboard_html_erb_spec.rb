@@ -44,4 +44,45 @@ RSpec.describe "layouts/dashboard.html.erb", type: :view do
       expect(manifest["icons"][0]["src"]).to include(cfg[:icon])
     end
   end
+
+  [
+    { template: "layouts/dashboard" },
+    { partial: "dashboard/common_assets" },
+  ].each do |render_options|
+    describe "asset live reload in #{render_options.values.first}" do
+      [
+        [nil, true],
+        ["TRUE", true],
+        ["true", true],
+        ["TrUe", true],
+        [" TRUE ", true],
+        ["FALSE", false],
+        ["false", false],
+        ["1", false],
+        ["0", false],
+        ["yes", false],
+        ["y", false],
+        ["on", false],
+        ["off", false],
+        ["", false],
+        ["  ", false],
+      ].each do |value, enabled|
+        it "renders the expected reload script for #{value.inspect}" do
+          allow(Rails.env).to receive(:development?).and_return(true)
+          ClimateControl.modify(ASSET_LIVERELOAD: value) do
+            render render_options
+            expect(rendered.include?("new WebSocket")).to eq(enabled)
+          end
+        end
+      end
+
+      it "does not render the reload script outside development" do
+        allow(Rails.env).to receive(:development?).and_return(false)
+        ClimateControl.modify(ASSET_LIVERELOAD: "TRUE") do
+          render render_options
+          expect(rendered).not_to include("new WebSocket")
+        end
+      end
+    end
+  end
 end

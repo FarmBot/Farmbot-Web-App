@@ -4,7 +4,6 @@ require "bunny"
 # change protocols
 class Transport
   OPTS = { read_timeout: 10, heartbeat: 10, log_level: "warn" }
-  # Blank values (eg: `RABBITMQ_URL=` in a docker `.env` file) count as unset.
   CLOUDAMQP_ENV_KEY = ENV["WHERE_IS_CLOUDAMQP_URL"].presence || "CLOUDAMQP_URL"
 
   def self.amqp_url
@@ -13,10 +12,8 @@ class Transport
                   default_amqp_url
   end
 
-  # The password is escaped so that characters such as `@`, `#` or `/` do not
-  # produce an invalid URL.
   def self.default_amqp_url(password = ENV.fetch("ADMIN_PASSWORD"))
-    "amqp://admin:#{URI.encode_www_form_component(password)}@mqtt:5672"
+    "amqp://admin:#{URI.encode_uri_component(password)}@mqtt:5672"
   end
 
   def self.default_amqp_adapter=(value)
@@ -106,12 +103,16 @@ class Transport
     end
 
     def self.decode(value)
-      value && URI.decode_www_form_component(value)
+      value && URI.decode_uri_component(value)
     end
 
     def self.api_url
       uri = URI(Transport.amqp_url)
-      uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
+      uri.scheme = if ENV["FORCE_SSL"].to_s.strip.casecmp?("TRUE")
+                     "https"
+                   else
+                     "http"
+                   end
       uri.user = nil
       uri.port = 15672
       uri.to_s

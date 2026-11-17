@@ -13,7 +13,6 @@ module Users
     end
 
     def domain_is_ok?
-      # A blank TRUSTED_DOMAINS means "no restriction", same as unset.
       return true if User.env_setting("TRUSTED_DOMAINS").nil?
 
       allowed_domains.include?(actual_domain)

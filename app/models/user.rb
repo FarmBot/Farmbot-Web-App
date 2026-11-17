@@ -8,12 +8,10 @@ class User < ApplicationRecord
     ENV[key].presence
   end
 
-  TRUE_ENV_VALUES = %w[true 1 yes on].freeze
-
-  # Parses an on/off env var into a real boolean. "true", "1", "yes" and "on"
-  # (any case) mean true. Anything else, blank or unset, means false.
+  # Only TRUE (case-insensitive) enables this setting.
+  # Anything else, including blank or unset, means false.
   def self.env_flag(key)
-    TRUE_ENV_VALUES.include?(env_setting(key).to_s.strip.downcase)
+    env_setting(key).to_s.strip.casecmp?("TRUE")
   end
 
   ENFORCE_TOS = env_setting("TOS_URL") || false

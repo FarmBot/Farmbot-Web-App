@@ -9,7 +9,7 @@ Rails.application.configure do
   config.enable_reloading            = false
   config.consider_all_requests_local = false
   config.eager_load                  = true
-  config.force_ssl                   = true if ENV["FORCE_SSL"]
+  config.force_ssl                   = true if ENV["FORCE_SSL"].to_s.strip.casecmp?("TRUE")
   config.i18n.fallbacks              = true
   config.log_formatter               = ::Logger::Formatter.new
   config.log_level                   = :info

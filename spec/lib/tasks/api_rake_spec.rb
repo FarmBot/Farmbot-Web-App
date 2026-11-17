@@ -8,32 +8,23 @@ Rake::Task.define_task("assets:clean")
 load Rails.root.join("lib/tasks/api.rake").to_s
 
 describe "api.rake helpers" do
-  describe "#truthy_env?" do
-    it "treats true-like values as true" do
-      with_modified_env("NO_CLEAN" => "true") do
-        expect(truthy_env?("NO_CLEAN")).to be(true)
+  %w[NO_CLEAN FOREVER].each do |key|
+    describe "#truthy_env? for #{key}" do
+      it "accepts TRUE regardless of case or surrounding whitespace" do
+        ["TRUE", "true", "TrUe", " TRUE "].each do |value|
+          with_modified_env(key => value) do
+            expect(truthy_env?(key)).to be(true)
+          end
+        end
       end
 
-      with_modified_env("NO_CLEAN" => "1") do
-        expect(truthy_env?("NO_CLEAN")).to be(true)
-      end
-
-      with_modified_env("NO_CLEAN" => "yes") do
-        expect(truthy_env?("NO_CLEAN")).to be(true)
-      end
-    end
-
-    it "treats false-like values as false" do
-      with_modified_env("NO_CLEAN" => "false") do
-        expect(truthy_env?("NO_CLEAN")).to be(false)
-      end
-
-      with_modified_env("NO_CLEAN" => "0") do
-        expect(truthy_env?("NO_CLEAN")).to be(false)
-      end
-
-      with_modified_env("NO_CLEAN" => nil) do
-        expect(truthy_env?("NO_CLEAN")).to be(false)
+      it "rejects other values, including aliases, blank and unset" do
+        ["FALSE", "false", "0", "1", "yes", "YES", "on", "ON",
+         "y", "no", "off", "OFF", "", "  ", nil].each do |value|
+          with_modified_env(key => value) do
+            expect(truthy_env?(key)).to be(false)
+          end
+        end
       end
     end
   end
