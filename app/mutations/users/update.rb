@@ -43,7 +43,7 @@ module Users
     # Self hosted users will often not have an email server.
     # We can update emails immediately in those circumstances.
     def skip_email_stuff
-      ENV["NO_EMAILS"] || (email == user.email)
+      User.env_flag("NO_EMAILS") || (email == user.email)
     end
 
     # Revoke all session tokens except for the person who requested

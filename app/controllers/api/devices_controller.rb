@@ -3,7 +3,7 @@
 module Api
   class DevicesController < Api::AbstractController
     cattr_accessor :send_emails
-    self.send_emails = !ENV["NO_EMAILS"]
+    self.send_emails = !User.env_flag("NO_EMAILS")
 
     # GET /api/device
     def show
