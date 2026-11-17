@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
   fakeImage,
@@ -228,6 +229,30 @@ describe("<ImageFilterMenu />", () => {
     expect(screen.getByText("Jan-3")).toBeInTheDocument();
     fireEvent.click(screen.getByText("release slider"));
     expect(screen.getByDisplayValue("2001-01-03")).toBeInTheDocument();
+  });
+
+  it.each<[1 | -1, string, string]>([
+    [1, "2001-01-03T05:00:00.000Z", "2001-01-04T05:00:00.000Z"],
+    [-1, "2001-01-01T05:00:00.000Z", "2001-01-02T05:00:00.000Z"],
+  ])("steps from device today without a selected date: %s", (step, begin, end) => {
+    const nowSpy = jest.spyOn(moment, "now")
+      .mockReturnValue(Date.parse("2001-01-03T02:00:00.000Z"));
+    try {
+      const p = fakeProps();
+      p.timeSettings.utcOffset = -5;
+      const config = fakeWebAppConfig();
+      setConfigDispatch(p, [config]);
+      const instance = new ImageFilterMenu(p);
+      setStateSync(instance);
+      instance.dateStep(step)();
+      expect(editSpy).toHaveBeenCalledWith(config, {
+        photo_filter_begin: begin, photo_filter_end: end,
+      });
+      expect(instance.state.beginTime).toEqual("00:00");
+      expect(instance.state.endTime).toEqual("00:00");
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 
   it("steps calendar dates at the device offset", () => {

@@ -31,6 +31,7 @@ import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
 import { Content } from "../../constants";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
+import * as repeatForm from "../farm_event_repeat_form";
 
 const mockSequence = fakeSequence();
 let saveSpy: jest.SpyInstance;
@@ -767,6 +768,42 @@ describe("<RepeatForm />", () => {
       } as FarmEventViewModel)[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
+  });
+
+  it("hides repeat controls for regimens", () => {
+    const p = fakeProps();
+    p.isRegimen = true;
+    const { container, queryByRole } = render(<RepeatForm {...p} />);
+    expect(queryByRole("checkbox")).toBeNull();
+    expect(container.querySelector(".no-repeat")).not.toBeNull();
+    expect(p.fieldSet).not.toHaveBeenCalled();
+  });
+
+  it("reports end dates and times before the start", () => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = -5;
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        timeUnit: "daily",
+        endDate: "2017-07-24",
+        endTime: "08:57",
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
+    const repeatSpy = jest.spyOn(repeatForm, "FarmEventRepeatForm")
+      .mockImplementation(props => <div>
+        <p>{props.dateError}</p>
+        <p>{props.timeError}</p>
+      </div>);
+    try {
+      const { getByText } = render(<RepeatForm {...p} />);
+      expect(getByText("End date must not be before start date."))
+        .toBeInTheDocument();
+      expect(getByText("End time must be after start time."))
+        .toBeInTheDocument();
+    } finally {
+      repeatSpy.mockRestore();
+    }
   });
 
   it("toggles repeat on", () => {
