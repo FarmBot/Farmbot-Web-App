@@ -131,12 +131,8 @@ export function recombine(vm: FarmEventViewModel,
 
 export function offsetTime(
   date: string, time: string, timeSettings: TimeSettings): string {
-  const out = moment(date);
-  const [hrs, min] = time.split(":").map(x => parseInt(x));
-  out.hours(hrs);
-  out.minutes(min);
-  const utcOffsetDifference = moment().utcOffset() / 60 - timeSettings.utcOffset;
-  return out.add(utcOffsetDifference, "hours").toISOString();
+  return moment.utc(`${date}T${time}`)
+    .utcOffset(timeSettings.utcOffset, true).toISOString();
 }
 
 export interface EditFEProps {

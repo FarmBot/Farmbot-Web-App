@@ -75,10 +75,23 @@ module Points
 
     def execute
       inputs[:plant_stage] ||= "active" if pointer_type == "Weed"
+      normalize_plant_date
       klass_.create!(inputs)
     end
 
     private
+
+    # A date selected without a time means midnight at the device's current
+    # offset, matching the plant date editor. Explicit timestamps stay intact.
+    def normalize_plant_date
+      date = raw_inputs[:planted_at]
+      return unless pointer_type == "Plant" && date.is_a?(String)
+      return unless date.match?(/\A\d{4}-\d{2}-\d{2}\z/)
+
+      year, month, day = date.split("-").map(&:to_i)
+      inputs[:planted_at] = Time.new(year, month, day, 0, 0, 0,
+                                    device.tz_offset_hrs * 3600)
+    end
 
     def validate_resource_count
       actual =

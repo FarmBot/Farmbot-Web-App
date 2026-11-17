@@ -171,6 +171,81 @@ describe("<ImageFilterMenu />", () => {
     });
   });
 
+  it.each<[number, string, string, string]>([
+    [-5, "2001-01-03T02:00:00.000Z",
+      "2001-01-02T05:00:00.000Z", "2001-01-03T05:00:00.000Z"],
+    [5.5, "2001-01-03T23:00:00.000Z",
+      "2001-01-03T18:30:00.000Z", "2001-01-04T18:30:00.000Z"],
+  ])("selects device calendar days: offset %s", (offset, newest, begin, end) => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = offset;
+    p.imageAgeInfo = { newestDate: newest, toOldest: 1 };
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    const setValuesSpy = jest.spyOn(instance, "setValues");
+    instance.newest();
+    expect(setValuesSpy).toHaveBeenLastCalledWith({
+      photo_filter_begin: begin, photo_filter_end: end,
+    });
+    expect(instance.sliderValue).toEqual(1);
+    expect(instance.renderLabel(1)).toEqual(
+      offset < 0
+        ? "Jan-2"
+        : "Jan-4");
+    const image = fakeImage();
+    image.body.created_at = newest;
+    expect(instance.getImageOffset(image)).toEqual(1);
+    instance.sliderChange(instance.imageAgeInfo.toOldest);
+    expect(setValuesSpy).toHaveBeenLastCalledWith({
+      photo_filter_begin: begin, photo_filter_end: end,
+    });
+    setValuesSpy.mockRestore();
+  });
+
+  it("handles navigation with no photos", () => {
+    const p = fakeProps();
+    const { container } = render(<ImageFilterMenu {...p} />);
+    expect(screen.queryByTestId("marked-slider")).not.toBeInTheDocument();
+    const oldest = container.querySelector(".fa-step-backward") as Element;
+    fireEvent.click(oldest);
+    expect(p.dispatch).not.toHaveBeenCalled();
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.sliderChange(1);
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("keeps slider selection on the device calendar after navigating", () => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = 5.5;
+    p.imageAgeInfo = { newestDate: "2001-01-03T23:00:00.000Z", toOldest: 2 };
+    const { container } = render(<ImageFilterMenu {...p} />);
+    fireEvent.click(container.querySelector(".fa-step-forward") as Element);
+    expect(screen.getByDisplayValue("2001-01-04")).toBeInTheDocument();
+    fireEvent.click(container.querySelector(".fa-caret-left") as Element);
+    expect(screen.getByDisplayValue("2001-01-03")).toBeInTheDocument();
+    expect(screen.getByTestId("slider-value")).toHaveTextContent("1");
+    expect(screen.getByText("Jan-3")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("release slider"));
+    expect(screen.getByDisplayValue("2001-01-03")).toBeInTheDocument();
+  });
+
+  it("steps calendar dates at the device offset", () => {
+    const p = fakeProps();
+    p.timeSettings.utcOffset = 5.5;
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.state.beginDate = "2001-01-03";
+    const setValuesSpy = jest.spyOn(instance, "setValues")
+      .mockImplementation(jest.fn());
+    instance.dateStep(1)();
+    expect(setValuesSpy).toHaveBeenCalledWith({
+      photo_filter_begin: "2001-01-03T18:30:00.000Z",
+      photo_filter_end: "2001-01-04T18:30:00.000Z",
+    });
+    setValuesSpy.mockRestore();
+  });
+
   it("commits slider change", () => {
     const p = fakeProps();
     const config = fakeWebAppConfig();
@@ -210,7 +285,7 @@ describe("<ImageFilterMenu />", () => {
     setStateSync(instance);
     instance.updateState();
     expect(instance.imageAgeInfo).toEqual({
-      newestDate: "2001-01-10T00:00:00.000Z", toOldest: 9,
+      newestDate: "2001-01-10", toOldest: 9,
     });
   });
 
@@ -223,7 +298,7 @@ describe("<ImageFilterMenu />", () => {
     setStateSync(instance);
     instance.updateState();
     expect(instance.imageAgeInfo).toEqual({
-      newestDate: "2001-01-21T00:00:00.000Z", toOldest: 13,
+      newestDate: "2001-01-21", toOldest: 12,
     });
   });
 

@@ -578,6 +578,30 @@ describe("recombine()", () => {
 });
 
 describe("offsetTime()", () => {
+  it.each<[string, number, string]>([
+    ["2017-01-22", -5, "2017-01-22T11:00:00.000Z"],
+    ["2017-07-22", -5, "2017-07-22T11:00:00.000Z"],
+    ["2017-05-22", 5.5, "2017-05-22T00:30:00.000Z"],
+    ["2017-05-22", 13, "2017-05-21T17:00:00.000Z"],
+  ])("uses device time: %s, offset %s", (date, offset, expected) => {
+    const timeSettings = fakeTimeSettings();
+    timeSettings.utcOffset = offset;
+    expect(offsetTime(date, "06:00", timeSettings)).toEqual(expected);
+  });
+
+  it.each([-120, 480])("ignores browser UTC offset: %s minutes", browserOffset => {
+    const offsetSpy = jest.spyOn(Date.prototype, "getTimezoneOffset")
+      .mockReturnValue(browserOffset);
+    try {
+      const timeSettings = fakeTimeSettings();
+      timeSettings.utcOffset = -5;
+      expect(offsetTime("2017-05-22", "00:00", timeSettings))
+        .toEqual("2017-05-22T05:00:00.000Z");
+    } finally {
+      offsetSpy.mockRestore();
+    }
+  });
+
   it("handles matching timezones", () => {
     const timeSettings = fakeTimeSettings();
     timeSettings.utcOffset = 0;

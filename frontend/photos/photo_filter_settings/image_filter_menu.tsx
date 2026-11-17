@@ -25,8 +25,8 @@ export class ImageFilterMenu
   get sliderValue() {
     const { newestDate, toOldest } = this.imageAgeInfo;
     const offset = this.state.beginDate
-      ? Math.abs(moment(this.state.beginDate)
-        .diff(moment(newestDate).clone(), "days"))
+      ? Math.abs(moment.utc(this.state.beginDate)
+        .diff(moment.utc(newestDate), "days"))
       : 0;
     return toOldest - offset;
   }
@@ -112,61 +112,65 @@ export class ImageFilterMenu
   };
 
   get imageAgeInfo() {
-    const begin = moment(this.state.beginDate
-      || this.props.imageAgeInfo.newestDate);
-    const newest = moment(this.props.imageAgeInfo.newestDate);
-    const newestDate = begin.isAfter(newest)
-      ? begin.add(1, "days").toISOString()
-      : newest.toISOString();
-    const dateRange = this.props.imageAgeInfo.toOldest;
-    const newRange = begin.isAfter(newest)
-      ? dateRange + begin.diff(newest, "days") + 1
-      : dateRange;
-    const oldestDate = moment(newestDate).subtract(newRange, "days");
-    const toOldest = begin.isBefore(oldestDate)
-      ? newRange + oldestDate.diff(begin, "days")
-      : newRange;
-    return { newestDate, toOldest };
+    const { newestDate, toOldest } = this.props.imageAgeInfo;
+    if (!newestDate) { return { newestDate: "", toOldest }; }
+    // Compare device calendar dates without introducing browser-local time.
+    const newest = moment.utc(formatDateField(newestDate,
+      this.props.timeSettings));
+    const begin = moment.utc(this.state.beginDate || newest.format("YYYY-MM-DD"));
+    const end = begin.isAfter(newest)
+      ? begin.clone().add(1, "days")
+      : newest;
+    const oldest = newest.clone().subtract(toOldest, "days");
+    const start = begin.isBefore(oldest)
+      ? begin
+      : oldest;
+    return {
+      newestDate: end.format("YYYY-MM-DD"),
+      toOldest: end.diff(start, "days"),
+    };
   }
 
   sliderChange = (slider: number) => {
     this.setState({ slider: undefined });
     const { newestDate, toOldest } = this.imageAgeInfo;
-    const day = moment(newestDate).subtract(toOldest - slider, "days")
-      .toISOString();
-    const begin = offsetTime(day, "00:00", this.props.timeSettings);
-    this.setSingleDay(begin);
+    if (!newestDate) { return; }
+    const day = moment.utc(newestDate).subtract(toOldest - slider, "days")
+      .format("YYYY-MM-DD");
+    this.setSingleDay(day);
   };
 
-  setSingleDay = (date: string | undefined) => {
-    const day = moment(date).toISOString();
-    const begin = offsetTime(day, "00:00", this.props.timeSettings);
-    const nextDay = moment(day).add(1, "days").toISOString();
+  /** Select a calendar date in the device's UTC offset. */
+  setSingleDay = (date: string) => {
+    const begin = offsetTime(date, "00:00", this.props.timeSettings);
+    const nextDay = moment.utc(date).add(1, "days").format("YYYY-MM-DD");
     const end = offsetTime(nextDay, "00:00", this.props.timeSettings);
     this.setValues({ photo_filter_begin: begin, photo_filter_end: end });
   };
 
   dateStep = (direction: 1 | -1) => () => {
-    const day = moment(this.state.beginDate).add(direction, "days")
-      .toISOString();
+    const date = this.state.beginDate
+      || formatDateField(moment().toISOString(), this.props.timeSettings);
+    const day = moment.utc(date).add(direction, "days").format("YYYY-MM-DD");
     this.setSingleDay(day);
   };
 
   oldest = () => {
     const { newestDate, toOldest } = this.props.imageAgeInfo;
-    const oldest = moment(newestDate).subtract(toOldest + 1, "days")
-      .toISOString();
+    if (!newestDate) { return; }
+    const oldest = moment.utc(formatDateField(newestDate, this.props.timeSettings))
+      .subtract(toOldest + 1, "days").format("YYYY-MM-DD");
     this.setSingleDay(oldest);
   };
 
   newest = () => {
-    this.setSingleDay(this.props.imageAgeInfo.newestDate);
+    const date = this.props.imageAgeInfo.newestDate || moment().toISOString();
+    this.setSingleDay(formatDateField(date, this.props.timeSettings));
   };
 
   renderLabel = (day: number) => {
     const { newestDate, toOldest } = this.imageAgeInfo;
-    return moment(newestDate)
-      .utcOffset(this.props.timeSettings.utcOffset)
+    return moment.utc(newestDate)
       .subtract(toOldest - day, "days")
       .format("MMM-D");
   };
@@ -177,8 +181,9 @@ export class ImageFilterMenu
 
   getImageOffset = (image: TaggedImage) =>
     this.imageAgeInfo.toOldest -
-    Math.abs(moment(image.body.created_at)
-      .diff(moment(this.imageAgeInfo.newestDate), "days"));
+    Math.abs(moment.utc(formatDateField(image.body.created_at,
+      this.props.timeSettings))
+      .diff(moment.utc(this.imageAgeInfo.newestDate), "days"));
 
   render() {
     const { beginDate, beginTime, endDate, endTime } = this.state;
