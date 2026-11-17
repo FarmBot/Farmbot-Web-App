@@ -29,6 +29,7 @@ services:
   redis:
     env_file: ".env"
     image: valkey/valkey:9.0
+    restart: unless-stopped
     volumes: ["./docker_volumes/valkey/data:/data"]
     expose: ["6379"]
 
@@ -42,13 +43,14 @@ services:
     env_file: ".env"
     depends_on: ["db", "redis"]
     image: farmbot_web
+    restart: unless-stopped
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     stdin_open: true
     tty: true
     build:
       context: "."
       dockerfile: docker_configs/api.Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec passenger start --max-pool-size ${MAX_POOL_SIZE:-1} --max-requests ${MAX_REQUESTS:-1000}"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec passenger start --port ${API_PORT:-3000} --max-pool-size ${MAX_POOL_SIZE:-1} --max-requests ${MAX_REQUESTS:-1000}"
     ports: ["${API_PORT}:${API_PORT}"]
 
   mqtt:
@@ -56,6 +58,7 @@ services:
     build:
       context: "."
       dockerfile: docker_configs/rabbitmq.Dockerfile
+    restart: unless-stopped
     ports: ["5672:5672", "1883:1883", "8883:8883", "3002:15675", "15672:15672"]
     depends_on: ["web"]
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
@@ -66,6 +69,7 @@ services:
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["db"]
+    restart: unless-stopped
     command: bundle exec rake api:serve_assets
     ports: ["3808:3808"]
 
@@ -98,4 +102,5 @@ services:
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
+    restart: unless-stopped
     command: bundle exec rails r lib/rabbit_workers.rb
