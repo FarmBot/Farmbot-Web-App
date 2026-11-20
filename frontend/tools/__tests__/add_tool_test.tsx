@@ -72,6 +72,27 @@ describe("<AddTool />", () => {
     graphic.mockRestore();
   });
 
+  it("updates nozzle preview mountability from the form", () => {
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div />);
+    try {
+      const p = fakeProps();
+      p.threeDimensions = true;
+      const { ref } = renderTool(p);
+      act(() => ref.current?.setState({
+        toolType: "watering_nozzle", utmMountable: false,
+      }));
+      const lastProps = () => graphic.mock.calls[graphic.mock.calls.length - 1][0];
+      expect(lastProps()).toEqual(expect.objectContaining({
+        toolType: "watering_nozzle", utmMountable: false,
+      }));
+      act(() => ref.current?.setState({ utmMountable: true }));
+      expect(lastProps().utmMountable).toBe(true);
+    } finally {
+      graphic.mockRestore();
+    }
+  });
+
   it("resets the shared panel scroll position when opened", () => {
     const panel = document.createElement("div");
     panel.className = "farm-designer-panels";

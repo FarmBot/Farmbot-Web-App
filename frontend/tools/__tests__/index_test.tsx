@@ -93,7 +93,10 @@ describe("<Tools />", () => {
     p.firmwareHardware = "arduino";
     p.tools = [fakeTool()];
     p.tools[0].body.id = 1;
+    p.tools[0].body.type = "watering_nozzle";
+    p.tools[0].body.utm_mountable = false;
     p.toolSlots = [fakeToolSlot()];
+    p.toolSlots[0].body.tool_id = 1;
     const { container } = render(<Tools {...p} />);
     expect(container.querySelectorAll(".tool-graphic-3d").length)
       .toEqual(threeDimensions
@@ -110,6 +113,10 @@ describe("<Tools />", () => {
     if (threeDimensions) {
       expect(graphic.mock.calls.map(([props]) => props.firmwareHardware))
         .toEqual(["arduino", "arduino", "arduino"]);
+      const nozzles = graphic.mock.calls.map(([props]) => props)
+        .filter(props => props.toolType == "watering_nozzle");
+      expect(nozzles).toHaveLength(2);
+      nozzles.forEach(props => expect(props.utmMountable).toBe(false));
     }
     graphic.mockRestore();
   });

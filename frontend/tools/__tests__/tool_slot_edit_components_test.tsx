@@ -535,12 +535,19 @@ describe("<SlotEditRows />", () => {
     const p = fakeProps();
     p.threeDimensions = threeDimensions;
     p.firmwareHardware = "arduino";
+    p.tool = fakeTool();
+    p.tool.body.type = "watering_nozzle";
+    p.tool.body.utm_mountable = false;
     const { container } = render(<SlotEditRows {...p} />);
     expect(!!container.querySelector(".tool-graphic-3d"))
       .toEqual(threeDimensions);
     expect(!!container.querySelector(".tool-svg")).toEqual(!threeDimensions);
     if (threeDimensions) {
-      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
+      expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
+        firmwareHardware: "arduino",
+        toolType: "watering_nozzle",
+        utmMountable: false,
+      }));
     }
     graphic.mockRestore();
   });

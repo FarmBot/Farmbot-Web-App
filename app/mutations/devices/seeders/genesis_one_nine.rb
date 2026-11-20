@@ -5,9 +5,7 @@ module Devices
 
       def tools_watering_nozzle
         @tools_watering_nozzle ||=
-          add_tool(ToolNames::WATERING_NOZZLE,
-                   effector_offset_x: -67,
-                   effector_offset_y: 101)
+          add_tool(ToolNames::WATERING_NOZZLE, utm_mountable: false)
       end
 
       def tool_slots_slot_4
@@ -27,7 +25,7 @@ module Devices
       def tool_slots_slot_6
         add_tool_slot(x: 0,
                       y: TROUGH_Y,
-                      z: TROUGH_Z,
+                      z: TROUGH_Z_V19,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true,
@@ -37,14 +35,23 @@ module Devices
       def tool_slots_slot_7
         add_tool_slot(x: 0,
                       y: TROUGH_Y + TROUGH_SPACING,
-                      z: TROUGH_Z,
+                      z: TROUGH_Z_V19,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true,
                       mount_stage: MountStage::X)
       end
 
-      def tool_slots_slot_8; end
+      def tool_slots_slot_8
+        add_tool_slot(x: 0,
+                      y: 0,
+                      z: 165,
+                      tool: tools_watering_nozzle,
+                      pullout_direction: ToolSlot::NONE,
+                      mount_offset_x: -100,
+                      mount_offset_y: 66,
+                      mount_stage: MountStage::Y)
+      end
 
       def settings_three_d
         FarmwareEnvs::Create.run(

@@ -6,7 +6,7 @@ import { getBotVersion } from "./bot_versions";
 export const TOOL_PALETTES = {
   utm: {
     columns: 16,
-    entries: { barbs: 0, plasticBody: 2 },
+    entries: { barbs: 7, topBarb: 5, plasticBody: 3 },
   },
   seeder: {
     columns: 8,

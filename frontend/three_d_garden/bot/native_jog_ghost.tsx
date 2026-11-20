@@ -28,11 +28,11 @@ const NativeJogUtm = React.memo((props: NativeJogUtmProps) => {
     name={props.name}
     rotation={[0, 0, Math.PI / 2]}>
     <Mesh
-      geometry={utm.nodes.M5_Barb.geometry}
+      geometry={utm.nodes[PartName.utm].geometry}
       material={utm.materials.PaletteMaterial001}
-      position={[15, 9, 36]}
+      position={[-11, -6, 17]}
       scale={1000}
-      rotation={[0, 0, 2.094]} />
+      rotation={[Math.PI, 0, -2.094]} />
   </Group>;
 });
 

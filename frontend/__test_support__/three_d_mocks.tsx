@@ -671,6 +671,14 @@ jest.mock("@react-three/drei", () => {
         [SeedTroughHolderMaterial.one]: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.vacuumPump]: {
+      nodes: { [PartName.vacuumPump]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.vacuumPumpV19]: {
+      nodes: { [PartName.vacuumPump]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
     [ASSETS.models.vacuumPumpCover]: {
       nodes: {
         M5_x_10mm_Screw: {} as THREE.Mesh,
@@ -791,6 +799,10 @@ jest.mock("@react-three/drei", () => {
     [ASSETS.models.seedBin]: {
       nodes: { [PartName.seedBin]: {} as THREE.Mesh },
     },
+    [ASSETS.models.wateringNozzleV19]: {
+      nodes: { [PartName.wateringNozzleV19]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
     [ASSETS.models.wateringNozzle]: {
       nodes: { [PartName.wateringNozzle]: {} as THREE.Mesh },
       materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
@@ -808,6 +820,10 @@ jest.mock("@react-three/drei", () => {
     },
     [ASSETS.models.solenoid]: {
       nodes: { [PartName.solenoid]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.solenoidV19]: {
+      nodes: { [PartName.solenoidV19]: {} as THREE.Mesh },
       materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
     },
     [ASSETS.models.xAxisCCMount]: {

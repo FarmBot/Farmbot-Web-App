@@ -808,10 +808,22 @@ describe("<Bot />", () => {
     unmountRenderer(wrapper);
   });
 
+  it("mounts the v1.9 pump and housing on the gantry column", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    const { container } = render(<Bot {...p} />);
+    expect(container.querySelector(
+      "[name='bot-gantry'] [name='column-vacuum-pump']",
+    )).toBeTruthy();
+    expect(container.querySelectorAll("[name='vacuumPump']")).toHaveLength(1);
+    expect(container.querySelectorAll("[name='vacuumPumpHousing']"))
+      .toHaveLength(1);
+  });
+
   it("loads shapes", () => {
     const p = fakeProps();
     render(<Bot {...p} />);
-    expect(createShapesMock).toHaveBeenCalledTimes(14);
+    expect(createShapesMock).toHaveBeenCalledTimes(16);
   });
 
   it("skips track shape loading when tracks are disabled", () => {
@@ -952,6 +964,6 @@ describe("<Bot />", () => {
     const second = render(<Bot {...p} />);
     second.unmount();
 
-    expect(createShapesMock).toHaveBeenCalledTimes(14);
+    expect(createShapesMock).toHaveBeenCalledTimes(16);
   });
 });

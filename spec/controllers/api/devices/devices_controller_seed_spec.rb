@@ -915,6 +915,7 @@ describe Api::DevicesController do
       expect(tools_seeder?(device)).to be_kind_of(Tool)
       expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device).utm_mountable).to be(true)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to be_kind_of(Tool)
       expect(sequences_pickup_seed?(device)).to_not be
@@ -975,7 +976,7 @@ describe Api::DevicesController do
       expect(tool_slots_slot_5?(device).name).to eq("Slot")
       expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device).name).to eq("Slot")
-      expect(tool_slots_slot_8?(device)).to_not be
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
       expect(tool_slots_slot_9?(device)).to_not be
 
       check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
@@ -993,6 +994,7 @@ describe Api::DevicesController do
       expect(tools_seeder?(device)).to be_kind_of(Tool)
       expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device).utm_mountable).to be(false)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to be_kind_of(Tool)
       expect(sequences_pickup_seed?(device)).to_not be
@@ -1303,6 +1305,7 @@ describe Api::DevicesController do
       expect(tools_seeder?(device)).to be_kind_of(Tool)
       expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device).utm_mountable).to be(true)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to be_kind_of(Tool)
       expect(sequences_pickup_seed?(device)).to_not be
@@ -1363,7 +1366,7 @@ describe Api::DevicesController do
       expect(tool_slots_slot_5?(device).name).to eq("Slot")
       expect(tool_slots_slot_6?(device).name).to eq("Slot")
       expect(tool_slots_slot_7?(device).name).to eq("Slot")
-      expect(tool_slots_slot_8?(device)).to_not be
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
       expect(tool_slots_slot_9?(device)).to_not be
 
       check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
@@ -1381,6 +1384,7 @@ describe Api::DevicesController do
       expect(tools_seeder?(device)).to be_kind_of(Tool)
       expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
       expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device).utm_mountable).to be(false)
       expect(tools_weeder?(device)).to_not be
       expect(tools_rotary?(device)).to be_kind_of(Tool)
       expect(sequences_pickup_seed?(device)).to_not be

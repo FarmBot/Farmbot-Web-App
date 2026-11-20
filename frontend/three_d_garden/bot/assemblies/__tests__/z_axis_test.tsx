@@ -17,6 +17,25 @@ describe("<ZAxisAssembly />", () => {
     trailTarget: { current: new Object3D() },
   });
 
+  it.each(["v1.7", "v1.8", "v1.9"])(
+    "keeps the vacuum pump on the correct assembly for %s", kitVersion => {
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.version = getBotVersion(kitVersion);
+      const { container } = render(<ZAxisAssembly {...p} />);
+      const pump = container.querySelector("[name='vacuumPump']");
+      expect(Boolean(pump)).toEqual(kitVersion != "v1.9");
+    },
+  );
+
+  it("applies the UTM magnet transform in millimeters", () => {
+    const { container } = render(<ZAxisAssembly {...fakeProps()} />);
+    const utm = container.querySelector("[name='UTM'] mesh");
+    expect(utm).toHaveAttribute("position", "-11,-6,17");
+    expect(utm).toHaveAttribute("rotation", `${Math.PI},0,-2.094`);
+    expect(utm).toHaveAttribute("scale", "1000");
+  });
+
   it.each(["v1.3", "v1.7", "v1.8", "v1.9"])(
     "uses gold-barb materials for %s and v1.2", kitVersion => {
       const p = fakeProps();

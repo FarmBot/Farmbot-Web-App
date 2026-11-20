@@ -63,10 +63,8 @@ const CrossSlideAssemblyBase = (props: CrossSlideAssemblyProps) => {
   };
   const vacuumPosition: [number, number, number] = [
     3.5,
-    props.version.number == "v1.9" ? 65 : 105,
-    props.version.number == "v1.9"
-      ? props.config.columnLength - props.config.zGantryOffset - 32
-      : props.config.columnLength - props.config.zGantryOffset - 40,
+    105,
+    props.config.columnLength - props.config.zGantryOffset - 40,
   ];
 
   return <Group name={"cross-slide-assembly"}>
@@ -87,7 +85,7 @@ const CrossSlideAssemblyBase = (props: CrossSlideAssemblyProps) => {
         model={crossSlide as unknown as CrossSlideFull}
         name={"crossSlide"}
         rotation={[0, 0, Math.PI / 2]} />}
-    {props.version.number != "v1.7" &&
+    {props.version.number == "v1.8" &&
       <CrossSlideMountedVacuumCover position={vacuumPosition} />}
   </Group>;
 };

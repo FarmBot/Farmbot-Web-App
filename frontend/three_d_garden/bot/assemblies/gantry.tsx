@@ -23,6 +23,8 @@ import {
 import { BotVersion } from "../bot_versions";
 import { EXTRUSION_WIDTH, machineOuterY } from "./constants";
 
+import { ColumnVacuumPump } from "../components/vacuum_pump";
+
 const BASE_COLUMN_LENGTH = 500;
 
 type LeftBracket = GLTF & {
@@ -289,6 +291,7 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
       onSelectObject={props.onSelectObject}
       onHoverObject={props.onHoverObject}
       local={true} />
+    {version.number == "v1.9" && <ColumnVacuumPump config={config} />}
     <Solenoid
       config={config}
       configPosition={props.configPosition}

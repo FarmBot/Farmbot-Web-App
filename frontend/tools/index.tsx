@@ -80,7 +80,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         ? <ToolGraphic3D mounted={true}
           firmwareHardware={this.props.firmwareHardware}
           toolName={this.mountedTool?.body.name}
-          toolType={this.mountedTool?.body.type} />
+          toolType={this.mountedTool?.body.type}
+          utmMountable={this.mountedTool?.body.utm_mountable} />
         : <svg className={"utm-and-mounted-tool-graphic"}
           viewBox={"-60 -50 120 140"}>
           <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
@@ -158,6 +159,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             threeDimensions={this.props.threeDimensions}
             toolId={tool.body.id}
             toolType={tool.body.type}
+            utmMountable={tool.body.utm_mountable}
             active={this.props.isActive(tool.body.id)}
             mounted={this.mountedTool?.uuid == tool.uuid}
             toolName={tool.body.name || t("Unnamed")} />)}
@@ -282,6 +284,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
           ? <ToolGraphic3D toolName={toolName}
             firmwareHardware={props.firmwareHardware}
             toolType={toolType}
+            utmMountable={tool?.body.utm_mountable}
             pulloutDirection={props.toolSlot.body.pullout_direction} />
           : <ToolSlotSVG
             toolSlot={props.toolSlot}
@@ -331,7 +334,8 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
     <Row className="grid-exp-3">
       {props.threeDimensions
         ? <ToolGraphic3D toolName={props.toolName} toolType={props.toolType}
-          firmwareHardware={props.firmwareHardware} />
+          firmwareHardware={props.firmwareHardware}
+          utmMountable={props.utmMountable} />
         : <ToolSVG toolName={props.toolName} toolType={props.toolType} />}
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
       <p className="tool-status">

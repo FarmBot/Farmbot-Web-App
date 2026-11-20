@@ -26,6 +26,7 @@ export interface ToolGraphic3DProps {
   firmwareHardware?: FirmwareHardware;
   toolName?: string;
   toolType: ToolType | undefined;
+  utmMountable?: boolean;
   mounted?: boolean;
   profile?: boolean;
   pulloutDirection?: ToolPulloutDirection;
@@ -68,7 +69,9 @@ export const MountedToolUTM = (props: { kitVersion: string }) => {
   return <Group rotation={[0, 0, Math.PI / 2]}>
     <Mesh geometry={model.nodes[PartName.utm].geometry}
       material={material}
-      position={[15, 9, 36]} scale={1000} rotation={[0, 0, 2.094]} />
+      position={[-11, -6, 17]}
+      scale={1000}
+      rotation={[Math.PI, 0, -2.094]} />
   </Group>;
 };
 
@@ -120,6 +123,7 @@ export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
               position={{ x: 0, y: 0, z: 0 }}
               toolName={props.toolName}
               toolType={props.toolType}
+              utmMountable={props.utmMountable}
               toolPulloutDirection={props.pulloutDirection
                 ?? ToolPulloutDirection.NONE}
               inToolbay={!props.mounted}

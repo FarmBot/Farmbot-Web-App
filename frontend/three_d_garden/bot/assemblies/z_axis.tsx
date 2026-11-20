@@ -234,14 +234,14 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     <Group name={"UTM"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh
-        geometry={utm.nodes.M5_Barb.geometry}
+        geometry={utm.nodes[PartName.utm].geometry}
         material={utmMaterial}
-        position={[15, 9, 36]}
+        position={[-11, -6, 17]}
         scale={1000}
         onClick={selectUtm}
         onPointerOver={() => props.onHoverObject?.(true)}
         onPointerOut={() => props.onHoverObject?.(false)}
-        rotation={[0, 0, 2.094]} />
+        rotation={[Math.PI, 0, -2.094]} />
     </Group>
   </Highlight>;
 
@@ -274,12 +274,12 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
       UTM_RADIUS + EXTRUSION_WIDTH / 2,
       botSizeZ + 140 + zGantryOffset,
     ])}
-    <Mesh name={"vacuumPump"}
+    {version.number != "v1.9" && <Mesh name={"vacuumPump"}
       position={[17, 0, 40]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}
       geometry={undefined}
-      material={undefined} />
+      material={undefined} />}
     {version.number == "v1.7" && <V17VacuumPumpCover />}
     {version.cameraFrame == "z-axis" && <ZAxisCamera
       onClick={selectCamera}

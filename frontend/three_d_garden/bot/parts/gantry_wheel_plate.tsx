@@ -35,7 +35,7 @@ export const GantryWheelPlate = (
     const { mirrorY, ...groupProps } = props;
     const { nodes, materials } = model;
     const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
-    return <Group {...groupProps} scale={[1, mirrorY ? -1 : 1, 1]}>
+    return <Group {...groupProps} scale={[isV19 ? -1 : 1, mirrorY ? -1 : 1, 1]}>
       <MeshComponent
         geometry={nodes.Gantry_Wheel_Plate.geometry}
         material={materials.PaletteMaterial001}

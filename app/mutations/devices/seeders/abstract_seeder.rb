@@ -268,11 +268,11 @@ module Devices
       end
 
       def add_tool(name,
+                   utm_mountable: TOOL_MOUNTABLE_VALUES.fetch(name),
                    effector_offset_x: 0,
                    effector_offset_y: 0,
                    effector_offset_z: 0)
         type = TOOL_TYPES.fetch(name)
-        utm_mountable = TOOL_MOUNTABLE_VALUES.fetch(name)
         Tools::Create.run!(name: name,
                            device: device,
                            type: type,
@@ -312,6 +312,8 @@ module Devices
                         tool:,
                         pullout_direction: ToolSlot::POSITIVE_X,
                         gantry_mounted: false,
+                        mount_offset_x: 0,
+                        mount_offset_y: 0,
                         mount_stage: MountStage::NONE)
         Points::Create.run!(pointer_type: "ToolSlot",
                             name: "Slot",
@@ -321,6 +323,8 @@ module Devices
                             tool_id: tool && tool.id,
                             pullout_direction: pullout_direction,
                             gantry_mounted: gantry_mounted,
+                            mount_offset_x: mount_offset_x,
+                            mount_offset_y: mount_offset_y,
                             mount_stage: mount_stage,
                             device: device)
       end

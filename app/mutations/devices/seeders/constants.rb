@@ -11,6 +11,7 @@ module Devices
 
       TROUGH_Y = 0
       TROUGH_Z = -300
+      TROUGH_Z_V19 = -85
       TROUGH_SPACING = 25
 
       module MountStage

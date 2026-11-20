@@ -107,6 +107,29 @@ describe("<EditTool />", () => {
     expect(container.textContent?.toLowerCase()).not.toContain("flow rate");
   });
 
+  it("updates nozzle preview mountability from the form", () => {
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div />);
+    try {
+      const p = fakeProps();
+      p.threeDimensions = true;
+      const tool = fakeTool();
+      tool.body.type = "watering_nozzle";
+      tool.body.utm_mountable = false;
+      p.findTool = () => tool;
+      const ref = React.createRef<EditTool>();
+      renderWithContext(<EditTool {...p} ref={ref} />);
+      const lastProps = () => graphic.mock.calls[graphic.mock.calls.length - 1][0];
+      expect(lastProps()).toEqual(expect.objectContaining({
+        toolType: "watering_nozzle", utmMountable: false,
+      }));
+      act(() => ref.current?.setState({ utmMountable: true }));
+      expect(lastProps().utmMountable).toBe(true);
+    } finally {
+      graphic.mockRestore();
+    }
+  });
+
   it("renders watering nozzle", () => {
     const ref = React.createRef<EditTool>();
     const { container } = renderWithContext(<EditTool {...fakeProps()} ref={ref} />);

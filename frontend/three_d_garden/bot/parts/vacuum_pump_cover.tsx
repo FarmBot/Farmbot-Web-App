@@ -20,18 +20,19 @@ type PartGroupProps = Omit<ThreeElements["group"], "ref" | "scale">;
 
 interface VacuumPumpCoverProps extends PartGroupProps {
   model: VacuumPumpCoverFull;
+  reverseMountScrews?: boolean;
 }
 
 export const VacuumPumpCoverModel = (props: VacuumPumpCoverProps) => {
-  const { model, ...groupProps } = props;
+  const { model, reverseMountScrews, ...groupProps } = props;
   const { nodes, materials } = model;
   // eslint-disable-next-line no-null/no-null
   return <Group {...groupProps} dispose={null}>
     <MeshComponent geometry={nodes.M5_x_10mm_Screw.geometry}
       material={materials[VacuumPumpCoverMaterial.zero]}
-      position={[-10, -13, -145]}
+      position={[-10, -13, reverseMountScrews ? -245 : -145]}
       scale={1000}
-      rotation={[Math.PI / 2, 0, 0]} />
+      rotation={[reverseMountScrews ? -Math.PI / 2 : Math.PI / 2, 0, 0]} />
     <MeshComponent geometry={nodes.Vacuum_Pump_Cover.geometry}
       material={materials[VacuumPumpCoverMaterial.one]}
       position={[57, -8, -255]}
@@ -41,5 +42,5 @@ export const VacuumPumpCoverModel = (props: VacuumPumpCoverProps) => {
 };
 
 export const VacuumPumpCover = (model: VacuumPumpCoverFull) =>
-  (props: PartGroupProps) =>
+  (props: Omit<VacuumPumpCoverProps, "model">) =>
     <VacuumPumpCoverModel {...props} model={model} />;

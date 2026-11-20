@@ -127,7 +127,12 @@ describe("useToolMaterials()", () => {
       const { result, unmount } = renderHook(() =>
         useToolMaterials(original, version, "utm"));
       expect(fills).toContainEqual({ color: bodyColor, rect: [0, 0, 64, 4] });
-      expect(fills).toContainEqual({ color: "#ffd700", rect: [0, 0, 4, 4] });
+      expect(fills).toContainEqual({ color: "#ffd700", rect: [28, 0, 4, 4] });
+      expect(fills.filter(fill => fill.color == "#ffd700"))
+        .toEqual([
+          { color: "#ffd700", rect: [28, 0, 4, 4] },
+          { color: "#ffd700", rect: [20, 0, 4, 4] },
+        ]);
       expect(result.current.material.metalnessMap).toBeDefined();
       expect(result.current.material.roughnessMap).toBeDefined();
       const image = original.map?.image as HTMLCanvasElement;

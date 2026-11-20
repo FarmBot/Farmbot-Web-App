@@ -64,7 +64,10 @@ export const createToolHardwareMaterial = (
     });
   };
   paint(SILVER_SWATCHES[palette], "silver");
-  if (palette == "utm") { paint([TOOL_PALETTES.utm.entries.barbs], "gold"); }
+  if (palette == "utm") {
+    const { barbs, topBarb } = TOOL_PALETTES.utm.entries;
+    paint([barbs, topBarb], "gold");
+  }
   const textures = canvases.map((canvas, i) => {
     const texture = original.map!.clone();
     texture.source = new TextureSource(canvas);

@@ -7,6 +7,7 @@ import { BotVersion } from "./bot_versions";
 
 interface RequestedShapes {
   track: boolean;
+  trackV18: boolean;
   beam: boolean;
   beamV19: boolean;
   column: boolean;
@@ -22,6 +23,7 @@ export interface BotShapes {
 
 interface BotShapeCache {
   track?: Shape;
+  trackV18?: Shape;
   beam?: Shape;
   beamV19?: Shape;
   column?: Shape;
@@ -32,6 +34,7 @@ const botShapeCache: BotShapeCache = {};
 
 export const clearBotShapeCache = () => {
   botShapeCache.track = undefined;
+  botShapeCache.trackV18 = undefined;
   botShapeCache.beam = undefined;
   botShapeCache.beamV19 = undefined;
   botShapeCache.column = undefined;
@@ -44,6 +47,8 @@ export const useBotShapes = (
 ): BotShapes => {
   const [track, setTrack] =
     React.useState<Shape | undefined>(() => botShapeCache.track);
+  const [trackV18, setTrackV18] =
+    React.useState<Shape | undefined>(() => botShapeCache.trackV18);
   const [beam, setBeam] =
     React.useState<Shape | undefined>(() => botShapeCache.beam);
   const [beamV19, setBeamV19] =
@@ -54,6 +59,7 @@ export const useBotShapes = (
     React.useState<Shape | undefined>(() => botShapeCache.zAxis);
   const requested = React.useRef<RequestedShapes>({
     track: false,
+    trackV18: false,
     beam: false,
     beamV19: false,
     column: false,
@@ -66,19 +72,27 @@ export const useBotShapes = (
       loader ||= new SVGLoader();
       return loader;
     };
-    if (tracks && !track && !requested.current.track) {
-      requested.current.track = true;
-      getLoader().load(ASSETS.shapes.track, svg => {
-        const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
-        const largeCutout = SVGLoader.createShapes(svg.paths[1])[0];
-        const outline = SVGLoader.createShapes(svg.paths[2])[0];
-        outline.holes.push(smallCutout);
-        outline.holes.push(largeCutout);
-        botShapeCache.track = outline;
-        setTrack(outline);
+    const selectedTrack = version.trackShape == "trackV18"
+      ? trackV18
+      : track;
+    if (tracks && !selectedTrack && !requested.current[version.trackShape]) {
+      requested.current[version.trackShape] = true;
+      getLoader().load(ASSETS.shapes[version.trackShape], svg => {
+        const outlineIndex = svg.paths.length - 1;
+        const outline = SVGLoader.createShapes(svg.paths[outlineIndex])[0];
+        range(outlineIndex).map(i => {
+          const hole = SVGLoader.createShapes(svg.paths[i])[0];
+          outline.holes.push(hole);
+        });
+        botShapeCache[version.trackShape] = outline;
+        version.trackShape == "trackV18"
+          ? setTrackV18(outline)
+          : setTrack(outline);
       });
     }
-    const selectedBeam = version.beamShape == "beamV19" ? beamV19 : beam;
+    const selectedBeam = version.beamShape == "beamV19"
+      ? beamV19
+      : beam;
     if (!selectedBeam && !requested.current[version.beamShape]) {
       requested.current[version.beamShape] = true;
       getLoader().load(ASSETS.shapes[version.beamShape], svg => {
@@ -115,11 +129,18 @@ export const useBotShapes = (
         setZAxis(outline);
       });
     }
-  }, [beam, beamV19, column, track, tracks, version.beamShape, zAxis]);
+  }, [
+    beam, beamV19, column, track, trackV18, tracks,
+    version.beamShape, version.trackShape, zAxis,
+  ]);
 
   return {
-    track,
-    beam: version.beamShape == "beamV19" ? beamV19 : beam,
+    track: version.trackShape == "trackV18"
+      ? trackV18
+      : track,
+    beam: version.beamShape == "beamV19"
+      ? beamV19
+      : beam,
     column,
     zAxis,
   };

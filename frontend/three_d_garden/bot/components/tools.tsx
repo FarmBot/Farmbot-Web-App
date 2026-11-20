@@ -75,6 +75,10 @@ type WateringNozzle = GLTF & {
   nodes: { [PartName.wateringNozzle]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
+type WateringNozzleV19 = GLTF & {
+  nodes: { [PartName.wateringNozzleV19]: THREE.Mesh };
+  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
+}
 type SeedBin = GLTF & {
   nodes: { [PartName.seedBin]: THREE.Mesh };
   materials: never;
@@ -127,6 +131,7 @@ export interface ThreeDTool {
   toolId: number | undefined;
   toolName?: string | undefined;
   toolType: ToolType | undefined;
+  utmMountable?: boolean;
   toolPulloutDirection: ToolPulloutDirection;
   firstTrough?: boolean;
   mountStage: MountStage;
@@ -208,6 +213,7 @@ export const convertSlotsWithTools =
         toolId: swt.tool?.body.id,
         toolName: swt.tool?.body.name,
         toolType,
+        utmMountable: swt.tool?.body.utm_mountable,
         toolPulloutDirection: swt.toolSlot.body.pullout_direction,
         firstTrough: troughIndex < 2,
         mountStage,
@@ -351,6 +357,7 @@ const ToolsBase = (props: ToolsProps) => {
       effector_offset_z={mountedTool?.body.effector_offset_z ?? 0}
       toolId={props.mountedToolId}
       toolName={mountedToolName}
+      utmMountable={mountedTool?.body.utm_mountable}
       toolPulloutDirection={ToolPulloutDirection.NONE}
       mountStage={MountStage.Z}
       mountFrame={"z-axis"}
@@ -654,6 +661,19 @@ const WateringNozzleToolModel = React.memo((props: VersionedToolModelProps) => {
     material={material} />;
 });
 
+const WateringNozzleV19ToolModel = React.memo(() => {
+  const nozzle = useGLTF(
+    ASSETS.models.wateringNozzleV19, LIB_DIR) as unknown as WateringNozzleV19;
+  // The extracted mesh uses cross-slide coordinates. Put its outlet at the
+  // tool origin and point the spray down along -Z (dimensions are in mm).
+  return <Mesh name={"wateringNozzleV19"}
+    position={[89, 20, 66.31]}
+    rotation={[0, Math.PI / 2, 0]}
+    scale={1000}
+    geometry={nozzle.nodes[PartName.wateringNozzleV19].geometry}
+    material={nozzle.materials.PaletteMaterial001} />;
+});
+
 const SeedBinToolModel = React.memo((props: VersionedToolModelProps) => {
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as unknown as SeedBin;
   const color = getBotVersion(props.kitVersion).toolColor ?? "silver";
@@ -891,6 +911,7 @@ const ToolBase = (props: ToolProps) => {
   const model = <ToolModel {...common}
     toolType={props.toolType}
     toolName={props.toolName}
+    utmMountable={props.utmMountable}
     firstTrough={props.firstTrough} />;
   if (!config.toolDebug) { return model; }
   const effectorPosition = getToolRenderPosition(config, {
@@ -925,6 +946,7 @@ const ToolBase = (props: ToolProps) => {
 
 interface ToolPreviewModelProps extends ToolbaySlotProps {
   toolType: ToolType | undefined;
+  utmMountable?: boolean;
   toolName?: string;
   firstTrough?: boolean;
 }
@@ -944,7 +966,9 @@ export const ToolModel = (props: ToolPreviewModelProps) => {
           rotary={props.config.rotary} />;
     case "watering_nozzle":
       return <ToolbaySlot {...common}>
-        <WateringNozzleToolModel kitVersion={config.kitVersion} />
+        {props.utmMountable === false
+          ? <WateringNozzleV19ToolModel />
+          : <WateringNozzleToolModel kitVersion={config.kitVersion} />}
       </ToolbaySlot>;
     case "seed_bin":
       return <ToolbaySlot {...common}>

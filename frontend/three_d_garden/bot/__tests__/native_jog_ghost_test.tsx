@@ -28,6 +28,10 @@ describe("<NativeJogGhost />", () => {
       .toHaveAttribute("position", "100,0,0");
     expect(container.querySelector("[name='bot-jog-x-ghost-utm']"))
       .toBeInTheDocument();
+    const utm = container.querySelector("[name='bot-jog-x-ghost-utm'] mesh");
+    expect(utm).toHaveAttribute("position", "-11,-6,17");
+    expect(utm).toHaveAttribute("rotation", `${Math.PI},0,-2.094`);
+    expect(utm).toHaveAttribute("scale", "1000");
     expect(screen.getByTestId("mounted-tool")).toBeInTheDocument();
     expect(screen.getByTestId("ghost-opacity"))
       .toHaveAttribute("data-opacity", "0.5");

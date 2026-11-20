@@ -102,6 +102,7 @@ export interface ToolSlotInventoryItemProps {
 }
 
 export interface ToolInventoryItemProps {
+  utmMountable?: boolean;
   firmwareHardware?: FirmwareHardware;
   threeDimensions: boolean;
   toolName: string;

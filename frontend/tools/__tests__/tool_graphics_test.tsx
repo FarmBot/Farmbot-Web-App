@@ -227,6 +227,16 @@ describe("<ToolGraphic3D />", () => {
     expect(!!findElementByType(scene, OrbitControls)).toEqual(mounted);
   });
 
+  it.each([false, true, undefined])(
+    "passes UTM mountability to the tool model: %s", utmMountable => {
+      render(<ToolGraphic3D toolType={"watering_nozzle"}
+        utmMountable={utmMountable} />);
+      const scene = canvas.mock.calls[0][0].children;
+      const model = findElementByType<React.ComponentProps<typeof ToolModel>>(
+        scene, ToolModel);
+      expect(model?.props.utmMountable).toBe(utmMountable);
+    });
+
   it("renders an empty slot with its pullout direction", () => {
     render(<ToolGraphic3D toolType={undefined}
       pulloutDirection={ToolPulloutDirection.NEGATIVE_Y} />);
@@ -264,7 +274,7 @@ describe("<ToolGraphic3D />", () => {
 
 describe("<MountedToolUTM />", () => {
   it.each(["v1.2", "v1.3", "v1.7", "v1.8", "v1.9"])(
-    "uses the gold-barb material for %s", kitVersion => {
+    "uses the garden UTM transform and material for %s", kitVersion => {
       const material = new MeshStandardMaterial();
       const hook = jest.spyOn(hardware, "useToolMaterials")
         .mockReturnValue({ material, hardwareMaterial: material });
@@ -272,9 +282,16 @@ describe("<MountedToolUTM />", () => {
       const mesh = jest.spyOn(components, "Mesh")
         .mockImplementation(props => <Mesh {...props} />);
       try {
-        render(<MountedToolUTM kitVersion={kitVersion} />);
+        const { container } = render(<MountedToolUTM kitVersion={kitVersion} />);
         expect(hook).toHaveBeenCalledWith(expect.anything(), kitVersion, "utm");
-        expect(mesh.mock.calls[0][0].material).toBe(material);
+        expect(mesh.mock.calls[0][0]).toEqual(expect.objectContaining({
+          material,
+          position: [-11, -6, 17],
+          rotation: [Math.PI, 0, -2.094],
+          scale: 1000,
+        }));
+        expect(container.querySelector("group"))
+          .toHaveAttribute("rotation", `0,0,${Math.PI / 2}`);
       } finally {
         mesh.mockRestore();
         hook.mockRestore();

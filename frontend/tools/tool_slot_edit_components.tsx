@@ -227,6 +227,7 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
         firmwareHardware={props.firmwareHardware}
         toolName={props.tool?.body.name}
         toolType={props.tool?.body.type}
+        utmMountable={props.tool?.body.utm_mountable}
         pulloutDirection={props.toolSlot.body.pullout_direction} />
       : <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
         toolName={props.tool?.body.name ?? "Empty"}

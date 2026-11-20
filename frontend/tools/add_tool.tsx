@@ -279,7 +279,8 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           {this.props.threeDimensions
             ? <ToolGraphic3D toolName={this.state.toolName}
               firmwareHardware={this.props.firmwareHardware}
-              toolType={this.state.toolType} profile={true} />
+              toolType={this.state.toolType}
+              utmMountable={this.state.utmMountable} profile={true} />
             : <ToolSVG toolName={this.state.toolName}
               toolType={this.state.toolType} profile={true} />}
           <CustomToolGraphicsInput

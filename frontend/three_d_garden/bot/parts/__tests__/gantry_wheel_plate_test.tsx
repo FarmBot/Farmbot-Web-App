@@ -14,6 +14,26 @@ describe("<GantryWheelPlate />", () => {
     expect(container.querySelector("mesh, instancedmesh")).toBeTruthy();
   });
 
+  it.each([
+    [false, false, "1,1,1"],
+    [false, true, "1,-1,1"],
+    [true, false, "-1,1,1"],
+    [true, true, "-1,-1,1"],
+  ] as const)(
+    "orients v1.9=%s with mirrorY=%s as %s", (isV19, mirrorY, scale) => {
+      const asset = isV19
+        ? ASSETS.models.gantryWheelPlateV19
+        : ASSETS.models.gantryWheelPlate;
+      const model = useGLTF(asset) as unknown as GantryWheelPlateFull;
+      const Component = GantryWheelPlate(model, isV19);
+      const { container } = render(
+        <Component name={"wheel-plate"} mirrorY={mirrorY} />,
+      );
+      expect(container.querySelector("[name='wheel-plate']"))
+        .toHaveAttribute("scale", scale);
+    },
+  );
+
   it("renders merged instanced geometry", () => {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(

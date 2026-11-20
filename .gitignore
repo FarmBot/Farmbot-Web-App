@@ -36,4 +36,5 @@ storage/*
 tmp
 scripts/graphs/*.svg
 scripts/graphs/*.dot
+scripts/__pycache__
 scripts/ci/__pycache__

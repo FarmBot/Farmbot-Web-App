@@ -36,7 +36,7 @@ const mockRotaryRef = () => {
 import { fireEvent, render } from "@testing-library/react";
 import { useGLTF } from "@react-three/drei";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
-import { ASSETS } from "../../../constants";
+import { ASSETS, LIB_DIR } from "../../../constants";
 import * as components from "../../../components";
 import { clone } from "lodash";
 import {
@@ -403,6 +403,75 @@ describe("<Tools />", () => {
       .toEqual([6, 7]);
     expect(tools.find(tool => tool.toolId == 1)?.toolName)
       .toEqual("soil sensor");
+  });
+
+  it.each<[ToolType, boolean | undefined, string, string]>([
+    ["watering_nozzle", false, ASSETS.models.wateringNozzleV19,
+      "wateringNozzleV19"],
+    ["watering_nozzle", true, ASSETS.models.wateringNozzle, "wateringNozzle"],
+    ["watering_nozzle", undefined, ASSETS.models.wateringNozzle, "wateringNozzle"],
+    ["seeder", false, ASSETS.models.seeder, "seeder"],
+  ])("selects %s model for UTM mountability %s", (
+    toolType, utmMountable, asset, name,
+  ) => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.type = toolType;
+    tool.body.utm_mountable = utmMountable as boolean;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = tool.body.id;
+    toolSlot.body.pullout_direction = ToolPulloutDirection.NONE;
+    toolSlot.body.mount_stage = MountStage.Y;
+    p.toolSlots = [{ toolSlot, tool }];
+    const Mesh = components.Mesh;
+    const meshSpy = jest.spyOn(components, "Mesh")
+      .mockImplementation(props => <Mesh {...props} />);
+    try {
+      const useGltfMock = useGLTF as unknown as jest.Mock;
+      useGltfMock.mockClear();
+      const { container, rerender } = render(<Tools {...p} />);
+      expect(container.querySelector(`[name="${name}"]`)).toBeTruthy();
+      expect(convertSlotsWithTools(p.toolSlots)[0].utmMountable)
+        .toBe(utmMountable);
+      expect(useGLTF).toHaveBeenCalledWith(asset, LIB_DIR);
+      if (asset != ASSETS.models.wateringNozzleV19) {
+        expect(useGLTF).not.toHaveBeenCalledWith(
+          ASSETS.models.wateringNozzleV19, LIB_DIR);
+      }
+      if (asset == ASSETS.models.wateringNozzleV19) {
+        expect(meshSpy).toHaveBeenCalledWith(expect.objectContaining({
+          name: "wateringNozzleV19",
+          scale: 1000,
+          position: [89, 20, 66.31],
+          rotation: [0, Math.PI / 2, 0],
+        }), undefined);
+        expect(useGLTF).not.toHaveBeenCalledWith(
+          ASSETS.models.wateringNozzle, LIB_DIR);
+        useGltfMock.mockClear();
+        rerender(<Tools {...p} config={{ ...p.config, kitVersion: "v1.9" }} />);
+        expect(container.querySelector('[name="wateringNozzleV19"]'))
+          .toBeTruthy();
+      }
+    } finally {
+      meshSpy.mockRestore();
+    }
+  });
+
+  it("updates the nozzle when UTM mountability changes", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.type = "watering_nozzle";
+    tool.body.utm_mountable = true;
+    const toolSlot = fakeToolSlot();
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container, rerender } = render(<Tools {...p} />);
+    expect(container.querySelector('[name="wateringNozzle"]')).toBeTruthy();
+    rerender(<Tools {...p} toolSlots={[{
+      toolSlot,
+      tool: { ...tool, body: { ...tool.body, utm_mountable: false } },
+    }]} />);
+    expect(container.querySelector('[name="wateringNozzleV19"]')).toBeTruthy();
+    expect(container.querySelector('[name="wateringNozzle"]')).toBeFalsy();
   });
 
   it("renders user tools", () => {

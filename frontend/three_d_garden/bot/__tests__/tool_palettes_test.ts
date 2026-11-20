@@ -17,6 +17,7 @@ describe("tool plastic palettes", () => {
   };
 
   it.each<[ToolPaletteName, number, number]>([
+    ["utm", 16, 3],
     ["seeder", 8, 1],
     ["weeder", 8, 0],
     ["wateringNozzle", 8, 2],

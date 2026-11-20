@@ -18,6 +18,7 @@ export type BotVersion = Readonly<{
   toolColor?: typeof BOT_BLACK;
   gantry: "v1.7" | "v1.9";
   leadscrewDrive: boolean;
+  trackShape: "track" | "trackV18";
   beamShape: "beam" | "beamV19";
   beamEndOffset: number;
   columnBaseZ: number;
@@ -46,6 +47,7 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
     extrusionColor: "white",
     gantry: "v1.7",
     leadscrewDrive: true,
+    trackShape: "track",
     beamShape: "beam",
     beamEndOffset: 130,
     columnBaseZ: 30,
@@ -72,6 +74,7 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
     extrusionColor: "white",
     gantry: "v1.7",
     leadscrewDrive: true,
+    trackShape: "trackV18",
     beamShape: "beam",
     beamEndOffset: 130,
     columnBaseZ: 30,
@@ -98,6 +101,7 @@ const BOT_VERSIONS: Record<BotVersionNumber, BotVersion> = {
     extrusionColor: "white",
     gantry: "v1.9",
     leadscrewDrive: false,
+    trackShape: "trackV18",
     beamShape: "beamV19",
     beamEndOffset: 50,
     columnBaseZ: 90,
