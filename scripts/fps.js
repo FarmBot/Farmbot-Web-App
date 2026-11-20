@@ -224,6 +224,12 @@ async function performAction(page, action) {
     }
 
     if (action.hover) {
+        if (action.hover.title) {
+            const title = stringActionValue(action, 'hover', ['title']);
+            await page.getByTitle(title).hover({ timeout });
+            console.log(`HOVER=${title}`);
+            return;
+        }
         const className = action.classname
             || action.class
             || action.className

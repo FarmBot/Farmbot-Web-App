@@ -64,7 +64,7 @@
       },
       {
         "hover": {
-          "class": "bp6-icon-cross"
+          "title": "Clear filter query"
         }
       }
     ],
