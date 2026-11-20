@@ -1,5 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
+import { useGLTF } from "@react-three/drei";
+import { ASSETS, LIB_DIR } from "../../../constants";
 import { MeshStandardMaterial, Object3D } from "three";
 import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { getBotVersion } from "../../bot_versions";
@@ -27,6 +29,13 @@ describe("<ZAxisAssembly />", () => {
       expect(Boolean(pump)).toEqual(kitVersion != "v1.9");
     },
   );
+
+  it("requests the updated UTM model with a cache-busting version", () => {
+    render(<ZAxisAssembly {...fakeProps()} />);
+    expect(useGLTF).toHaveBeenCalledWith(
+      ASSETS.models.utm, LIB_DIR);
+    expect(ASSETS.models.utm).toMatch(/utm\.glb\?v=[a-f0-9]{64}$/);
+  });
 
   it("applies the UTM magnet transform in millimeters", () => {
     const { container } = render(<ZAxisAssembly {...fakeProps()} />);

@@ -1,6 +1,8 @@
 import { mkdirSync } from "fs";
 import { dirname, join, parse, relative, resolve } from "path";
 
+import { generateModelAssetHashes } from "./model_asset_hashes";
+
 declare const Bun: any;
 
 type EntryPair = [string, string];
@@ -23,6 +25,7 @@ const readJson = <T>({ key, fallback }: JsonFallback<T>): T => {
 };
 
 const projectRoot = process.cwd();
+generateModelAssetHashes(projectRoot);
 const frontendRoot = resolve(projectRoot, "frontend");
 
 const normalizeEntry = (entry: string) =>

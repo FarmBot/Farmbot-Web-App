@@ -1,4 +1,5 @@
 import { Mode } from "../farm_designer/map/interfaces";
+import { modelAssetUrls } from "./model_assets";
 
 export enum BigDistance {
   sunAffect = 20000,
@@ -37,7 +38,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     beamV19: "/3D/shapes/beam_v19.svg",
     zAxis: "/3D/shapes/z_axis.svg",
   },
-  models: {
+  models: modelAssetUrls({
     gantryWheelPlate: "/3D/models/gantry_wheel_plate.glb",
     gantryWheelPlateV19: "/3D/models/gantry_wheel_plate_v19.glb",
     leftBracket: "/3D/models/left_bracket.glb",
@@ -84,7 +85,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     box: "/3D/models/box.glb",
     btn: "/3D/models/push_button.glb",
     led: "/3D/models/led_indicator.glb",
-  },
+  }),
   other: {
     farmbotLogo: "/app-resources/img/farmbot.avif",
     gear: "/app-resources/img/icons/settings.svg",

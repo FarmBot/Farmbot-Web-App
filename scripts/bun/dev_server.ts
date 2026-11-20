@@ -1,5 +1,7 @@
-import { mkdirSync } from "fs";
+import { mkdirSync, watch } from "fs";
 import { dirname, join, parse, relative, resolve } from "path";
+
+import { generateModelAssetHashes } from "./model_asset_hashes";
 
 declare const Bun: any;
 
@@ -23,6 +25,7 @@ const readJson = <T>({ key, fallback }: JsonFallback<T>): T => {
 };
 
 const projectRoot = process.cwd();
+generateModelAssetHashes(projectRoot);
 const frontendRoot = resolve(projectRoot, "frontend");
 
 const normalizeEntry = (entry: string) =>
@@ -98,6 +101,17 @@ const bunArgs = [
   "--watch",
 ];
 
+// Refresh imported hashes so Bun rebuilds when a model is edited or replaced.
+let modelChangeTimer: ReturnType<typeof setTimeout> | undefined;
+const modelWatcher = watch(join(projectRoot, "public/3D/models"),
+  (_event, filename) => {
+    if (filename && !filename.toString().endsWith(".glb")) { return; }
+    clearTimeout(modelChangeTimer);
+    modelChangeTimer = setTimeout(() => {
+      generateModelAssetHashes(projectRoot);
+    }, 100);
+  });
+
 const bunProc = Bun.spawn(["bun", ...bunArgs], {
   cwd: frontendRoot,
   stdout: "inherit",
@@ -128,4 +142,6 @@ const bunExit = bunProc.exited;
 const exitCode = sassExit ?
   await Promise.race([bunExit, sassExit]) :
   await bunExit;
+modelWatcher.close();
+clearTimeout(modelChangeTimer);
 process.exit(exitCode || 0);
