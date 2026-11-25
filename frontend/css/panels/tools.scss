@@ -280,6 +280,21 @@
   }
 }
 
+.slot-scene-preview {
+  display: block;
+  cursor: grab;
+  touch-action: none;
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.edit-tool-slot-panel-content .slot-scene-preview {
+  // Extend over the panel content's padding.
+  width: calc(100% + 2rem);
+  margin: -1rem -1rem 0;
+}
+
 .tool-graphic-3d {
   width: 3rem;
   height: 3rem;

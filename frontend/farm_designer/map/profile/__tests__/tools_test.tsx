@@ -81,4 +81,15 @@ describe("<UTMProfile />", () => {
     expect(wrapper.container.innerHTML).not.toContain("front");
     expect(wrapper.container.innerHTML).toContain("side");
   });
+
+  it("shows the liquid ports at the UTM position when no tool is mounted", () => {
+    const p = fakeProps();
+    p.mountedToolInfo = { ...p.mountedToolInfo, name: undefined, type: undefined };
+    p.botPosition.z = -25;
+    p.getX = () => 100;
+    const { container } = svgMount(<UTMProfile {...p} />);
+    const ports = [...container.querySelectorAll("#liquid-ports rect")];
+    expect(ports.map(port => port.getAttribute("x"))).toEqual(["76", "116", "96"]);
+    expect(ports.map(port => port.getAttribute("y"))).toEqual(["25", "25", "25"]);
+  });
 });

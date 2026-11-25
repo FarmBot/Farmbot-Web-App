@@ -34,6 +34,9 @@ import { isDesktop, isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
 import { StargazingControls } from "../three_d_garden/stargazing/stargazing";
 import { ThreeDGuard } from "../three_d_garden/three_d_required_overlay";
+import {
+  SlotScenePreviewBridge, SlotScenePreviewContext,
+} from "../three_d_garden/slot_scene_preview";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -62,6 +65,8 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 export class RawFarmDesigner
   extends React.Component<FarmDesignerProps, Partial<State>> {
+
+  private slotScenePreview: SlotScenePreviewBridge = {};
 
   initializeSetting =
     (key: keyof State, defaultValue: boolean): boolean => {
@@ -180,7 +185,7 @@ export class RawFarmDesigner
     const set3DConfigValue = findOrCreate3DConfigFunction(
       this.props.dispatch, this.props.farmwareEnvs);
 
-    return <div className="farm-designer">
+    const designer = <div className="farm-designer">
 
       {threeDGarden &&
         <StargazingControls
@@ -359,6 +364,12 @@ export class RawFarmDesigner
           mapTransformProps={this.mapTransformProps}
           allPoints={this.props.allPoints} />}
     </div>;
+    const slotPreview = threeDGarden && show_farmbot
+      ? this.slotScenePreview
+      : undefined;
+    return <SlotScenePreviewContext.Provider value={slotPreview}>
+      {designer}
+    </SlotScenePreviewContext.Provider>;
   }
 }
 

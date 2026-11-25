@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import * as fiber from "@react-three/fiber";
 import { OrthographicCamera, Scene } from "three";
 import * as graphics from "../tool_graphics";
@@ -11,10 +11,12 @@ describe("<ToolPreviewPanel />", () => {
   let scene: jest.SpiedFunction<typeof graphics.ToolGraphicScene>;
   const invalidate = jest.fn();
   const disconnect = jest.fn();
+  const resizeCallbacks = new Map<Element, ResizeObserverCallback>();
 
   beforeEach(() => {
     invalidate.mockClear();
     disconnect.mockClear();
+    resizeCallbacks.clear();
     canvas = jest.spyOn(fiber, "Canvas").mockImplementation(({ children }) =>
       <div>{children}</div>);
     frame = jest.spyOn(fiber, "useFrame").mockImplementation(jest.fn());
@@ -24,9 +26,10 @@ describe("<ToolPreviewPanel />", () => {
       disconnect,
       unobserve: jest.fn(),
       observe: target => {
+        resizeCallbacks.set(target, callback);
         Object.defineProperties(target, {
-          clientWidth: { value: 50 },
-          clientHeight: { value: 60 },
+          clientWidth: { configurable: true, value: 50 },
+          clientHeight: { configurable: true, value: 60 },
         });
         callback([], {} as ResizeObserver);
       },
@@ -82,6 +85,29 @@ describe("<ToolPreviewPanel />", () => {
     }), undefined]);
     unmount();
     expect(disconnect).toHaveBeenCalledTimes(2);
+  });
+
+  it("updates scene framing when the preview changes size", () => {
+    const { container } = render(<ToolPreviewPanel hasTools={true}>
+      <ToolPreviewView toolType={"seeder"} />
+    </ToolPreviewPanel>);
+    const target = container.querySelector(".tool-graphic-3d");
+    if (!target) { throw new Error("Missing tool preview target"); }
+    const resize = resizeCallbacks.get(target);
+    if (!resize) { throw new Error("Missing tool preview resize callback"); }
+    const notifyResize = () => act(() => resize([], {} as ResizeObserver));
+    scene.mockClear();
+    notifyResize();
+    expect(scene).not.toHaveBeenCalled();
+    Object.defineProperties(target, {
+      clientWidth: { value: 80 },
+      clientHeight: { value: 90 },
+    });
+    notifyResize();
+    expect(scene).toHaveBeenLastCalledWith(expect.objectContaining({
+      orbitTarget: target,
+      viewportSize: { width: 80, height: 90 },
+    }), undefined);
   });
 
   it("releases the single WebGL probe used by all views", () => {

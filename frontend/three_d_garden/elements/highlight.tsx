@@ -1,7 +1,7 @@
 import React from "react";
 import { type ThreeElements, useFrame, useThree } from "@react-three/fiber";
 import {
-  type Group as GroupType, type Object3D, Vector2,
+  type Camera, type Group as GroupType, type Object3D, type Scene, Vector2,
 } from "three";
 import { EffectComposer } from
   "three/examples/jsm/postprocessing/EffectComposer.js";
@@ -56,6 +56,7 @@ const replaceShaderChunk = (
 export const configureObjectIdOutlinePass = (
   outlinePass: OutlinePass,
   registrations: HighlightRegistration[],
+  thicknessScale = 1,
 ) => {
   const maskMaterial = outlinePass.prepareMaskMaterial;
   maskMaterial.uniforms[OBJECT_ID_UNIFORM] = { value: 0 };
@@ -73,11 +74,30 @@ export const configureObjectIdOutlinePass = (
   maskMaterial.needsUpdate = true;
 
   const edgeMaterial = outlinePass.edgeDetectionMaterial;
+  const thinOutline = thicknessScale < 1;
+  if (thinOutline) {
+    // Downsampling and a hard cutoff impose a minimum visible line width.
+    outlinePass.downSampleRatio = 1;
+    outlinePass.setSize(outlinePass.resolution.x, outlinePass.resolution.y);
+    edgeMaterial.uniforms.outlineSampleRadius = { value: 2 * thicknessScale };
+    edgeMaterial.fragmentShader = replaceShaderChunk(
+      edgeMaterial.fragmentShader,
+      "uniform vec2 texSize;",
+      "uniform vec2 texSize; uniform float outlineSampleRadius;",
+    );
+    edgeMaterial.fragmentShader = replaceShaderChunk(
+      edgeMaterial.fragmentShader,
+      "vec4(invSize, invSize);",
+      "vec4(invSize, invSize) * outlineSampleRadius;",
+    );
+  }
+  const coverage = thinOutline
+    ? "smoothstep(0.0, 0.2, length(vec2(diff1, diff2)))"
+    : "step(0.0001, length(vec2(diff1, diff2)))";
   edgeMaterial.fragmentShader = replaceShaderChunk(
     edgeMaterial.fragmentShader,
     "float d = length( vec2(diff1, diff2) );",
-    `float d = ${OBJECT_ID_EDGE_INTENSITY}
-      * step(0.0001, length(vec2(diff1, diff2)));`,
+    `float d = ${OBJECT_ID_EDGE_INTENSITY} * ${coverage};`,
   );
   edgeMaterial.needsUpdate = true;
 
@@ -127,30 +147,37 @@ export const configureObjectIdOutlinePass = (
   };
 };
 
+export const createYellowOutlinePass = (
+  resolution: Vector2,
+  scene: Scene,
+  camera: Camera,
+  registrations: HighlightRegistration[],
+  { thicknessScale = 1, spreadScale = 1 } = {},
+) => {
+  const objects = registrations.map(registration => registration.object);
+  const outlinePass = new OutlinePass(resolution, scene, camera, objects);
+  const restoreObjectIds = configureObjectIdOutlinePass(
+    outlinePass, registrations, thicknessScale);
+  outlinePass.visibleEdgeColor.set(Color.yellow);
+  outlinePass.hiddenEdgeColor.set(Color.yellow);
+  outlinePass.edgeStrength = EDGE_STRENGTH;
+  outlinePass.edgeGlow = EDGE_GLOW;
+  outlinePass.edgeThickness = EDGE_THICKNESS * thicknessScale;
+  outlinePass.separableBlurMaterial2.uniforms.kernelRadius.value *= spreadScale;
+  outlinePass.pulsePeriod = 0;
+  return { outlinePass, restoreObjectIds };
+};
+
 const HighlightRenderer = (props: HighlightRendererProps) => {
   const { gl, scene, camera, size } = useThree();
   const { composer, outlinePass, restoreObjectIds } = React.useMemo(() => {
     const nextComposer = new EffectComposer(gl);
-    const objects = props.registrations.map(
-      registration => registration.object);
-    const nextOutlinePass = new OutlinePass(
-      new Vector2(size.width, size.height), scene, camera, objects,
+    const next = createYellowOutlinePass(
+      new Vector2(size.width, size.height), scene, camera, props.registrations,
     );
-    const restoreIds = configureObjectIdOutlinePass(
-      nextOutlinePass, props.registrations);
-    nextOutlinePass.visibleEdgeColor.set(Color.yellow);
-    nextOutlinePass.hiddenEdgeColor.set(Color.yellow);
-    nextOutlinePass.edgeStrength = EDGE_STRENGTH;
-    nextOutlinePass.edgeGlow = EDGE_GLOW;
-    nextOutlinePass.edgeThickness = EDGE_THICKNESS;
-    nextOutlinePass.pulsePeriod = 0;
     nextComposer.addPass(new RenderPass(scene, camera));
-    nextComposer.addPass(nextOutlinePass);
-    return {
-      composer: nextComposer,
-      outlinePass: nextOutlinePass,
-      restoreObjectIds: restoreIds,
-    };
+    nextComposer.addPass(next.outlinePass);
+    return { composer: nextComposer, ...next };
   }, [camera, gl, props.registrations, scene, size.height, size.width]);
 
   React.useEffect(() => {

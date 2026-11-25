@@ -568,6 +568,7 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
   const onClick = useToolSlotClick(props);
   return <UtmToolHighlight inToolbay={props.inToolbay}>
     <Group name={props.inToolbay ? "slot" : "utm-tool"}
+      userData={{ toolSlotId: props.id }}
       position={[
         position.x,
         position.y,
@@ -830,7 +831,7 @@ const SeedTroughToolSlot = (props: SeedTroughToolSlotProps) => {
     ? { kind: "slot", id: props.id }
     : undefined;
   return <UtmToolHighlight inToolbay={props.inToolbay}>
-    <Group
+    <Group userData={{ toolSlotId: props.id }}
       position={[
         props.position.x - 19,
         props.position.y + 5,

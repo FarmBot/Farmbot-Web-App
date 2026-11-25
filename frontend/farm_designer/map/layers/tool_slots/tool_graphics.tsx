@@ -129,37 +129,3 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
       </div>}
   </div>;
 };
-
-export interface ToolSVGProps {
-  toolName: string | undefined;
-  toolType: ToolType | undefined;
-  profile?: boolean;
-}
-
-export const ToolSVG = (props: ToolSVGProps) => {
-  const toolProps = {
-    toolName: props.toolName,
-    x: 0, y: 0, hovered: false, dispatch: noop, uuid: "", flipped: false,
-    pulloutDirection: 0, toolTransformProps: { xySwap: false, quadrant: 2 },
-  };
-  const viewBox = "-40 0 80 1";
-  return <div className={"tool-svg"}>
-    <div className={"top"}>
-      <svg width="3rem" height="3rem" viewBox={viewBox}>
-        <Tool toolType={props.toolType} toolProps={toolProps} />
-      </svg>
-      {props.profile && <p>{t("top")}</p>}
-    </div>
-    {props.profile &&
-      <div className={"front"}>
-        <svg width="3rem" height="3rem" viewBox={"-5 40 80 1"}>
-          <ToolProfile toolName={props.toolName} toolType={props.toolType}
-            reversed={false} x={0} y={0}
-            width={ToolDimensions.diameter} height={ToolDimensions.thickness}
-            sideView={false} slotDirection={ToolPulloutDirection.NONE}
-            toolFlipped={false} coordinate={false} />
-        </svg>
-        <p>{t("front")}</p>
-      </div>}
-  </div>;
-};

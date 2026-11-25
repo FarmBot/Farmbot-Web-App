@@ -9,6 +9,7 @@ import {
   MountStage, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { ToolGraphic3D } from "./tool_graphics";
+import { SlotScenePreview } from "../three_d_garden/slot_scene_preview";
 import { isNumber } from "lodash";
 import {
   MountOffsetInputProps, MountStageInputProps, SlotDirectionInputRowProps,
@@ -221,12 +222,14 @@ export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="grid">
-    <ToolGraphic3D profile={true}
-      firmwareHardware={props.firmwareHardware}
-      toolName={props.tool?.body.name}
-      toolType={props.tool?.body.type}
-      utmMountable={props.tool?.body.utm_mountable}
-      pulloutDirection={props.toolSlot.body.pullout_direction} />
+    <SlotScenePreview slotId={props.toolSlot.body.id}>
+      <ToolGraphic3D profile={true}
+        firmwareHardware={props.firmwareHardware}
+        toolName={props.tool?.body.name}
+        toolType={props.tool?.body.type}
+        utmMountable={props.tool?.body.utm_mountable}
+        pulloutDirection={props.toolSlot.body.pullout_direction} />
+    </SlotScenePreview>
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
       mountStage={props.toolSlot.body.mount_stage}

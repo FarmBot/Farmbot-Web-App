@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  RotatedTool, ToolSVG, ToolSVGProps, ToolSlotSVG, ToolSlotSVGProps,
-} from "../tool_graphics";
+import { RotatedTool, ToolSlotSVG, ToolSlotSVGProps } from "../tool_graphics";
 import {
   ToolSlotGraphicProps, ToolGraphicProps, ToolProps,
 } from "../../../tool_graphics/interfaces";
@@ -321,19 +319,6 @@ describe("<RotatedTool/>", () => {
     if (!elements) { throw new Error("Missing seed trough"); }
     expect(elements.querySelectorAll("circle").length).toEqual(0);
     expect(elements.querySelectorAll("rect").length).toEqual(1);
-  });
-});
-
-describe("<ToolSVG />", () => {
-  const fakeProps = (): ToolSVGProps => ({
-    toolName: "seed trough",
-    toolType: "seed_trough",
-  });
-
-  it("renders trough", () => {
-    const { container } = render(<ToolSVG {...fakeProps()} />);
-    expect(container.querySelector("svg")?.getAttribute("viewBox"))
-      .toEqual("-40 0 80 1");
   });
 });
 

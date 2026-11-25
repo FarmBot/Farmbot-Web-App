@@ -39,6 +39,9 @@ import { Actions } from "../constants";
 import type { NativeJogEncoderVisibility } from
   "./bot/native_jog_controls";
 import { safePointerEvents } from "./pointer_events";
+import {
+  SlotScenePreviewContext, SlotScenePreviewRenderer,
+} from "./slot_scene_preview";
 
 const sectionAwareEvents: typeof ReactThreeFiber.events = store => ({
   ...safePointerEvents(store),
@@ -116,6 +119,7 @@ export const ViewPrismViewport = (props: ViewPrismViewportProps) => {
 
 export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
   usePerfRenderCount("ThreeDGarden");
+  const slotPreview = React.useContext(SlotScenePreviewContext);
   const viewPrismBridgeRef = React.useRef<ViewPrismBridge | null>({});
   React.useEffect(() => {
     perfMark("three_d_garden_mounted");
@@ -181,6 +185,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             addPlantProps={props.addPlantProps} />
         </HighlightProvider>
         <PanelCameraController store={props.panelCameraStore} />
+        {slotPreview && <SlotScenePreviewRenderer bridge={slotPreview} />}
       </Canvas>
     </div>
     {props.config.viewCube &&
