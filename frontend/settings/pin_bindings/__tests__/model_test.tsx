@@ -13,11 +13,16 @@ const mockSetColor = jest.fn();
 import React, * as ReactModule from "react";
 import type { ThreeEvent } from "@react-three/fiber";
 import * as threeFiber from "@react-three/fiber";
+import { render } from "@testing-library/react";
+import {
+  BoxGeometry, Group, LineSegments, Mesh, MeshStandardMaterial, PerspectiveCamera,
+  Scene, WebGLRenderer,
+} from "three";
 import {
   actRenderer,
   createRenderer,
 } from "../../../__test_support__/test_renderer";
-import { IColor, Model, setZForAllInGroup } from "../model";
+import { ElectronicsBoxModel, IColor, Model, setZForAllInGroup } from "../model";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -111,6 +116,26 @@ describe("<ElectronicsBoxModel />", () => {
           { name: "button-center", position: { z: 0 }, children: [] },
         ]
       }
+    }
+  });
+
+  it("renders model edges inside the electronics preview canvas", () => {
+    const lid = new Mesh(new BoxGeometry(), new MeshStandardMaterial());
+    const scene = new Scene().add(lid);
+    const state = { scene } as threeFiber.RootState;
+    const useThree = jest.spyOn(threeFiber, "useThree").mockImplementation(
+      (selector = value => value) => selector(state));
+    try {
+      const { container, unmount } = render(<ElectronicsBoxModel {...fakeProps()} />);
+      expect(container.querySelector(".electronics-box-3d-model"))
+        .toBeInTheDocument();
+      scene.onBeforeRender({} as WebGLRenderer, scene, new PerspectiveCamera(),
+        lid.geometry, lid.material, new Group());
+      expect(scene.children[1]).toBeInstanceOf(LineSegments);
+      unmount();
+      expect(scene.children).toEqual([lid]);
+    } finally {
+      useThree.mockRestore();
     }
   });
 

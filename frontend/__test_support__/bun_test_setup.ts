@@ -239,7 +239,7 @@ const defaultThreeFiberState = () => ({
       memory: { geometries: 0, textures: 0 },
     },
   },
-  scene: { traverse: jest.fn() },
+  scene: new THREE.Scene(),
   size: { width: 800, height: 600 },
   pointer: { x: 0, y: 0 },
   raycaster: {

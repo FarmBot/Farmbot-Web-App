@@ -6,8 +6,10 @@ import {
   buildBeltGeometry, XAxisBelt, XAxisBeltPair, YAxisBelt, ZAxisBelt,
   xAxisBeltPairPropsEqual, xAxisBeltPropsEqual, yAxisBeltPropsEqual,
 } from "../belts";
-import { BufferGeometry, Vector3 } from "three";
+import { BufferAttribute, BufferGeometry, Vector3 } from "three";
 import { BeltPath } from "../belt_path";
+import { MutableBeltGeometry } from "../components/mutable_routing_geometry";
+import * as components from "../../components";
 
 describe("belts", () => {
   it.each([0, 700, 1230])("builds routes at axis position %s", position => {
@@ -147,7 +149,7 @@ describe("belts", () => {
     disposeSpy.mockRestore();
   });
 
-  it("replaces moving geometry inside the render frame", () => {
+  it("updates the moving belt and its outline in the render frame", () => {
     const frameCallbacks: Parameters<typeof useFrame>[0][] = [];
     (useFrame as jest.Mock).mockImplementation(
       (callback: Parameters<typeof useFrame>[0]) => {
@@ -157,7 +159,7 @@ describe("belts", () => {
     const positionRef = {
       current: { x: -50, y: 0, z: 0 },
     };
-    const disposeSpy = jest.spyOn(BufferGeometry.prototype, "dispose");
+    const meshSpy = jest.spyOn(components, "Mesh");
     const { container, unmount } = render(<XAxisBelt
       name={"x1Belt"}
       position={[4, 5, 6]}
@@ -165,6 +167,14 @@ describe("belts", () => {
       length={2987}
       x={300}
       columnLength={500} />);
+    const { geometry } = meshSpy.mock.calls[0][0];
+    if (!(geometry instanceof MutableBeltGeometry)) {
+      throw new Error("Missing moving belt geometry");
+    }
+    const disposeSpy = jest.spyOn(geometry, "dispose");
+    const disposeEdges = jest.spyOn(geometry.modelEdgeGeometry, "dispose");
+    const position = geometry.modelEdgeGeometry.getAttribute("position");
+    const version = (position as BufferAttribute).version;
     const group = container.querySelector("group") as unknown as {
       position: Vector3;
     };
@@ -175,8 +185,13 @@ describe("belts", () => {
       callback({} as never, 0)));
 
     expect(disposeSpy).not.toHaveBeenCalled();
+    expect(disposeEdges).not.toHaveBeenCalled();
+    expect(geometry.modelEdgeGeometry.getAttribute("position")).toBe(position);
+    expect((position as BufferAttribute).version).toBeGreaterThan(version);
     unmount();
     expect(disposeSpy).toHaveBeenCalledTimes(1);
+    expect(disposeEdges).toHaveBeenCalledTimes(1);
+    meshSpy.mockRestore();
     disposeSpy.mockRestore();
     (useFrame as jest.Mock).mockReset();
   });

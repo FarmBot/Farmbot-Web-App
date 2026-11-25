@@ -50,7 +50,10 @@ describe("mutable routing geometry", () => {
     const changedShape = shape.clone();
     changedShape.lineTo(0, 5);
     carrier.update(changedShape);
-    expect(carrier.getAttribute("position")).not.toBe(position);
+    const updated = carrier.getAttribute("position");
+    expect(updated).not.toBe(position);
+    expect(carrier.getAttribute("normal").count).toBe(updated.count);
+    expect(carrier.modelEdgeGeometry.getAttribute("position")).toBe(updated);
     carrier.dispose();
   });
 

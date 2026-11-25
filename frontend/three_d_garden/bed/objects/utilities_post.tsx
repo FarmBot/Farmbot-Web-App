@@ -24,6 +24,7 @@ import {
   getUtilitiesPostWorldPosition, UTILITIES_POST_SIZE, WIFI_ROUTER_LOCAL_Z,
 } from "./utilities_post_position";
 import { Highlight } from "../../elements";
+import { mergedTubeParts } from "../../tube_silhouette";
 
 const AnimatedGroup = animated(Group);
 const UTILITIES_POST_FOCUS_DEPTH_SCALE = 1.5;
@@ -50,6 +51,10 @@ export const makeUtilitiesPostGeometry = (
   props: UtilitiesPostGeometryProps,
 ) => {
   const { hosePathCurved, hosePathStraight, legSize } = props;
+  const tubes = [
+    new THREE.TubeGeometry(hosePathCurved, 10, 15, 8),
+    new THREE.TubeGeometry(hosePathStraight, 1, 15, 8),
+  ];
   const handlePosition: Vector3 = [0, -legSize / 2 - 65, 105];
   const handleRotation: Vector3 = [-Math.PI / 4, 0, 0];
   const parts: SolidGeometryPart[] = [
@@ -105,17 +110,18 @@ export const makeUtilitiesPostGeometry = (
       position: handlePosition,
       rotation: handleRotation,
     },
-    {
-      geometry: new THREE.TubeGeometry(hosePathCurved, 10, 15, 8),
-      color: "darkgreen",
-    },
-    {
-      geometry: new THREE.TubeGeometry(hosePathStraight, 1, 15, 8),
-      color: "darkgreen",
-    },
+    ...tubes.map(geometry => ({ geometry, color: "darkgreen" })),
   ];
   const geometry = mergeSolidGeometries(parts);
   parts.forEach(part => part.geometry?.dispose());
+  if (geometry) {
+    const tubeVertexCount = tubes.reduce((total, tube) =>
+      total + (tube.index as THREE.BufferAttribute).count, 0);
+    mergedTubeParts.set(geometry, {
+      tubes,
+      solidVertexCount: geometry.getAttribute("position").count - tubeVertexCount,
+    });
+  }
   return geometry;
 };
 

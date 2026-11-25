@@ -24,6 +24,7 @@ import { t } from "../i18next_wrapper";
 import { kitVersionFromFirmware } from "../three_d_garden/bot/bot_versions";
 import { useToolMaterials } from "../three_d_garden/bot/tool_hardware";
 import { ToolPreviewCamera } from "./tool_preview_camera";
+import { ModelEdges } from "../three_d_garden/model_edges";
 
 export interface ToolGraphic3DProps {
   firmwareHardware?: FirmwareHardware;
@@ -126,6 +127,7 @@ export const ToolGraphicScene = (props: ToolGraphic3DProps & {
   const kitVersion = kitVersionFromFirmware(props.firmwareHardware);
   const config = React.useMemo(() => ({ ...INITIAL, kitVersion }), [kitVersion]);
   return <>
+    <ModelEdges />
     <AmbientLight intensity={1} />
     <DirectionalLight ref={lightRef}
       position={[300, -200, 700]} intensity={2}

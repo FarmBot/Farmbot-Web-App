@@ -271,7 +271,7 @@ jest.mock("@react-three/fiber", () => ({
         memory: { geometries: 0, textures: 0 },
       },
     },
-    scene: { traverse: jest.fn() },
+    scene: new THREE.Scene(),
     size: { width: 800, height: 600 },
     pointer: { x: 0, y: 0 },
     raycaster: {
@@ -288,7 +288,7 @@ jest.mock("@react-three/fiber", () => ({
           memory: { geometries: 0, textures: 0 },
         },
       },
-      scene: { traverse: jest.fn() },
+      scene: new THREE.Scene(),
       pointer: { x: 0, y: 0 },
       camera: new THREE.PerspectiveCamera(),
       raycaster: {

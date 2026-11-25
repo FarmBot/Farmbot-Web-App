@@ -45,14 +45,45 @@ const setPoint = (
   return offset + 3;
 };
 
-const updateGeometry = (geometry: BufferGeometry) => {
-  geometry.getAttribute("position").needsUpdate = true;
-  geometry.computeVertexNormals();
-  geometry.computeBoundingBox();
-  geometry.computeBoundingSphere();
+class MutableRoutingGeometry extends BufferGeometry {
+  readonly modelEdgeGeometry = new BufferGeometry();
+
+  protected setPositions(attribute: BufferAttribute) {
+    if (this.hasAttribute("position")) {
+      this.dispose();
+      this.deleteAttribute("normal");
+    }
+    this.setAttribute("position", attribute);
+    this.modelEdgeGeometry.setAttribute("position", attribute);
+  }
+
+  protected updateBuffers() {
+    this.getAttribute("position").needsUpdate = true;
+    this.computeVertexNormals();
+    this.computeBoundingBox();
+    this.computeBoundingSphere();
+    this.modelEdgeGeometry.boundingBox = this.boundingBox;
+    this.modelEdgeGeometry.boundingSphere = this.boundingSphere;
+  }
+
+  override dispose() {
+    // The surface owns the vertex buffer shared by the two geometries.
+    this.modelEdgeGeometry.deleteAttribute("position");
+    this.modelEdgeGeometry.dispose();
+    super.dispose();
+  }
+}
+
+const isSharpCorner = (previous: Vector2, point: Vector2, next: Vector2) => {
+  const ax = point.x - previous.x;
+  const ay = point.y - previous.y;
+  const bx = next.x - point.x;
+  const by = next.y - point.y;
+  return ax * bx + ay * by
+    < Math.hypot(ax, ay) * Math.hypot(bx, by) * Math.cos(25 * Math.PI / 180);
 };
 
-export class MutableCarrierGeometry extends BufferGeometry {
+export class MutableCarrierGeometry extends MutableRoutingGeometry {
   private depth: number;
   private faces: number[][];
   private pointCount: number;
@@ -76,7 +107,40 @@ export class MutableCarrierGeometry extends BufferGeometry {
       3,
     );
     attribute.setUsage(DynamicDrawUsage);
-    this.setAttribute("position", attribute);
+    this.setPositions(attribute);
+    // Two rim edges and up to one vertical crease per point.
+    this.modelEdgeGeometry.setIndex(new BufferAttribute(
+      new Uint32Array(this.pointCount * 6), 1,
+    ).setUsage(DynamicDrawUsage));
+  }
+
+  private updateEdgeIndices(points: Vector2[]) {
+    const index = this.modelEdgeGeometry.getIndex() as BufferAttribute;
+    let cursor = 0;
+    let changed = false;
+    const write = (a: number, b: number) => {
+      if (index.getX(cursor) != a || index.getX(cursor + 1) != b) {
+        index.setX(cursor, a);
+        index.setX(cursor + 1, b);
+        changed = true;
+      }
+      cursor += 2;
+    };
+    const capVertices = this.faces.length * 6;
+    points.forEach((point, i) => {
+      const side = capVertices + i * 6;
+      write(side, side + 1);
+      write(side + 2, side + 4);
+      if (isSharpCorner(
+        points[(i + points.length - 1) % points.length],
+        point,
+        points[(i + 1) % points.length],
+      )) {
+        write(side, side + 2);
+      }
+    });
+    this.modelEdgeGeometry.setDrawRange(0, cursor);
+    if (changed) { index.needsUpdate = true; }
   }
 
   update(shape: Shape) {
@@ -104,7 +168,8 @@ export class MutableCarrierGeometry extends BufferGeometry {
       offset = setPoint(array, offset, previous, this.depth);
       offset = setPoint(array, offset, point, this.depth);
     });
-    updateGeometry(this);
+    this.updateEdgeIndices(points);
+    this.updateBuffers();
   }
 }
 
@@ -115,7 +180,29 @@ interface BeltSegmentLayout {
 
 const beltSegmentVertexCount = (steps: number) => steps * 24 + 12;
 
-export class MutableBeltGeometry extends BufferGeometry {
+const beltEdgeIndices = (layouts: BeltSegmentLayout[]) => {
+  const indices: number[] = [];
+  const addRim = (corners: number[]) => {
+    corners.forEach((corner, index) =>
+      indices.push(corner, corners[(index + 1) % corners.length]));
+  };
+  layouts.forEach(({ offset, steps }, index) => {
+    if (index == 0) { addRim([offset, offset + 2, offset + 1, offset + 4]); }
+    for (let step = 0; step < steps; step++) {
+      for (let side = 0; side < 4; side++) {
+        const start = offset + 6 + step * 24 + side * 6;
+        indices.push(start, start + 1);
+      }
+    }
+    if (index == layouts.length - 1) {
+      const end = offset + 6 + steps * 24;
+      addRim([end, end + 1, end + 2, end + 5]);
+    }
+  });
+  return indices;
+};
+
+export class MutableBeltGeometry extends MutableRoutingGeometry {
   private binormal = new Vector3();
   private centerA = new Vector3();
   private centerB = new Vector3();
@@ -142,7 +229,8 @@ export class MutableBeltGeometry extends BufferGeometry {
       3,
     );
     attribute.setUsage(DynamicDrawUsage);
-    this.setAttribute("position", attribute);
+    this.setPositions(attribute);
+    this.modelEdgeGeometry.setIndex(beltEdgeIndices(this.layouts));
     this.update(path);
   }
 
@@ -221,6 +309,6 @@ export class MutableBeltGeometry extends BufferGeometry {
     const array = this.getAttribute("position").array as Float32Array;
     segments.forEach((segment, index) =>
       this.writeSegment(array, segment, this.layouts[index]));
-    updateGeometry(this);
+    this.updateBuffers();
   }
 }

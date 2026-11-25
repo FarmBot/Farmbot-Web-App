@@ -39,6 +39,7 @@ import { Actions } from "../constants";
 import type { NativeJogEncoderVisibility } from
   "./bot/native_jog_controls";
 import { safePointerEvents } from "./pointer_events";
+import { ModelEdges } from "./model_edges";
 import {
   ToolScenePreviewContext, ToolScenePreviewRenderer,
 } from "./tool_scene_preview";
@@ -184,6 +185,7 @@ export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
             viewPrismBridgeRef={viewPrismBridgeRef}
             addPlantProps={props.addPlantProps} />
         </HighlightProvider>
+        <ModelEdges batchScene={false} />
         <PanelCameraController store={props.panelCameraStore} />
         {toolPreview && <ToolScenePreviewRenderer bridge={toolPreview} />}
       </Canvas>
