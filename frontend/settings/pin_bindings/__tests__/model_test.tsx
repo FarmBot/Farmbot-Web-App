@@ -21,7 +21,6 @@ import {
 import {
   actRenderer,
   createRenderer,
-  unmountRenderer,
 } from "../../../__test_support__/test_renderer";
 import { ElectronicsBoxModel, IColor, Model, setZForAllInGroup } from "../model";
 import {
@@ -138,15 +137,6 @@ describe("<ElectronicsBoxModel />", () => {
     } finally {
       useThree.mockRestore();
     }
-  });
-
-  it("opts the translucent lid into outlines in the electronics preview", () => {
-    const wrapper = createRenderer(<Model {...fakeProps()} />);
-    const [lid] = wrapper.root.findAllByProps({ name: "electronicsBoxLid" });
-    expect(lid.props.userData).toEqual({
-      outlineTransparent: true, preciseModelEdges: true,
-    });
-    unmountRenderer(wrapper);
   });
 
   it("preserves scale in a short viewport", () => {

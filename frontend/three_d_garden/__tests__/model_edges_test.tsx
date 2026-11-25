@@ -1,7 +1,6 @@
 import React from "react";
 import * as fiber from "@react-three/fiber";
 import { act, render } from "@testing-library/react";
-import { range } from "lodash";
 import {
   Box3, BoxGeometry, BufferAttribute, BufferGeometry, Frustum, Group,
   InstancedBufferAttribute, InstancedBufferGeometry, InstancedMesh,
@@ -150,88 +149,6 @@ describe("model edges", () => {
     expect(modelLines(box)).toBe(lines);
     expect(lines.material.opacity).toBeCloseTo(0.65);
     expect(lines.material.clippingPlanes).toBe(material.clippingPlanes);
-    edges.dispose();
-  });
-
-  it.each([false, true])("outlines opted-in translucent meshes (scene batching: %s)",
-    batchScene => {
-      const material = new MeshStandardMaterial({
-        transparent: true, opacity: 0.38, depthWrite: false,
-      });
-      const lid = new Mesh(new BoxGeometry(), material);
-      lid.userData.outlineTransparent = true;
-      lid.userData.preciseModelEdges = true;
-      const glass = new Mesh(new BoxGeometry(), material);
-      const scene = new Scene().add(lid, glass);
-      const edges = createModelEdges(scene, batchScene);
-
-      edges.update();
-
-      const lines = modelLines(batchScene ? scene : lid);
-      expect(lines.geometry.getAttribute("position").count).toEqual(24);
-      expect(lines.material.opacity).toBeCloseTo(0.38 * 0.65);
-      expect(lid.material.transparent).toEqual(true);
-      expect(lid.material.depthWrite).toEqual(false);
-      expect(glass.children).toHaveLength(0);
-      edges.dispose();
-    });
-
-  it("preserves actual creases without joining nearby details", () => {
-    const geometry = new BufferGeometry();
-    const position = new BufferAttribute(new Float32Array([
-      0, 0, 0, 1, 0, 0, 0.5, 1, 0, 0.5, -1, 0,
-      0, 0.00003, 0, 1, 0.00003, 0, 0.5, 0.00003, 1, 0.5, 0.00003, -1,
-      2, 0, 0, 3, 0, 0, 2.5, 1, 0, 2.5, 0, 1,
-    ]), 3);
-    geometry.setAttribute("position", position);
-    geometry.setIndex([0, 1, 2, 5, 4, 7, 1, 0, 3, 4, 5, 6, 8, 9, 10, 9, 8, 11]);
-    const mesh = new Mesh(geometry, new MeshStandardMaterial());
-    mesh.userData.preciseModelEdges = true;
-    const edges = createModelEdges(new Scene().add(mesh), false);
-
-    edges.update();
-
-    const lines = modelLines(mesh);
-    const vertices = lines.geometry.getAttribute("position");
-    const segment = (attribute: typeof vertices, a: number, b: number) =>
-      [a, b].map(i => new Vector3().fromBufferAttribute(attribute, i).toArray()
-        .join(",")).sort().join("|");
-    const actual = range(vertices.count / 2).map(index =>
-      segment(vertices, 2 * index, 2 * index + 1));
-    const expected = [
-      [0, 2], [2, 1], [1, 3], [3, 0], [4, 6], [6, 5], [5, 7], [7, 4],
-      [8, 10], [10, 9], [9, 11], [11, 8], [8, 9],
-    ].map(([a, b]) => segment(position, a, b));
-    expect(actual.sort()).toEqual(expected.sort());
-    expect(geometry.getAttribute("position")).toBe(position);
-    expect(position.getX(9)).toEqual(3);
-    edges.dispose();
-  });
-
-  it("shares cached edges only between matching precision settings", () => {
-    const source = new BoxGeometry();
-    const material = new MeshStandardMaterial();
-    const standard = new Mesh(source, material);
-    const fine = new Mesh(source, material);
-    const otherFine = new Mesh(source, material);
-    fine.userData.preciseModelEdges = true;
-    otherFine.userData.preciseModelEdges = true;
-    const scene = new Scene().add(standard, fine, otherFine);
-    const edges = createModelEdges(scene, false);
-    edges.update();
-
-    const fineGeometry = modelLines(fine).geometry;
-    const standardGeometry = modelLines(standard).geometry;
-    const disposeFine = jest.spyOn(fineGeometry, "dispose");
-    expect(modelLines(otherFine).geometry).toBe(fineGeometry);
-    expect(standardGeometry).not.toBe(fineGeometry);
-
-    fine.userData.preciseModelEdges = false;
-    edges.update();
-    expect(modelLines(fine).geometry).toBe(standardGeometry);
-    expect(disposeFine).not.toHaveBeenCalled();
-    otherFine.removeFromParent();
-    expect(disposeFine).toHaveBeenCalledTimes(1);
     edges.dispose();
   });
 

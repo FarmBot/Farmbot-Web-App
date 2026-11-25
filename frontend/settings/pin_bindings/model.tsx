@@ -290,7 +290,6 @@ export const Model = (props: ModelProps) => {
     <Mesh name={"electronicsBoxLid"}
       geometry={box.nodes.Electronics_Box_Lid.geometry}
       material={box.materials[ElectronicsBoxMaterial.lid]}
-      userData={{ outlineTransparent: true, preciseModelEdges: true }}
       scale={SCALE} />
     {/* eslint-disable-next-line react-hooks/refs */}
     {BUTTONS

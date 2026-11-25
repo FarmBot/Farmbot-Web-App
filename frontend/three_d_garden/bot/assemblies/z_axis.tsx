@@ -239,7 +239,6 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
       <Mesh
         geometry={utm.nodes[PartName.utm].geometry}
         material={utmMaterial}
-        userData={{ preciseModelEdges: true }}
         position={[-11, -6, 17]}
         scale={1000}
         onClick={selectUtm}

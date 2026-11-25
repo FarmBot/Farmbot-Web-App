@@ -8,9 +8,6 @@ import { getBotVersion } from "../../bot_versions";
 import { ZAxisAssembly, ZAxisAssemblyProps } from "../z_axis";
 import * as hardware from "../../tool_hardware";
 import * as components from "../../../components";
-import {
-  createRenderer, unmountRenderer,
-} from "../../../../__test_support__/test_renderer";
 
 describe("<ZAxisAssembly />", () => {
   const fakeProps = (): ZAxisAssemblyProps => ({
@@ -46,14 +43,6 @@ describe("<ZAxisAssembly />", () => {
     expect(utm).toHaveAttribute("position", "-11,-6,17");
     expect(utm).toHaveAttribute("rotation", `${Math.PI},0,-2.094`);
     expect(utm).toHaveAttribute("scale", "1000");
-  });
-
-  it("uses precise edge matching for the UTM magnet", () => {
-    const wrapper = createRenderer(<ZAxisAssembly {...fakeProps()} />);
-    const [utm] = wrapper.root.findAllByProps({ name: "UTM" });
-    const mesh = utm.findByType(components.Mesh);
-    expect(mesh.props.userData).toEqual({ preciseModelEdges: true });
-    unmountRenderer(wrapper);
   });
 
   it.each(["v1.3", "v1.7", "v1.8", "v1.9"])(

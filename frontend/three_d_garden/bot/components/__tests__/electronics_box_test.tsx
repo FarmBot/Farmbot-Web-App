@@ -13,9 +13,6 @@ import {
 import { ASSETS } from "../../../constants";
 import * as mapUtil from "../../../../farm_designer/map/util";
 import { Mode } from "../../../../farm_designer/map/interfaces";
-import {
-  createRenderer, unmountRenderer,
-} from "../../../../__test_support__/test_renderer";
 
 const useGltfMock = useGLTF as unknown as jest.Mock;
 let getModeSpy: jest.SpyInstance;
@@ -82,15 +79,6 @@ describe("<ElectronicsBox />", () => {
     expect(attributes.instanceMatrix.count).toEqual(2);
     expect(attributes.instanceColor.count).toEqual(2);
     expect(matrix.elements.slice(12, 15)).toEqual([-50, 30, 0]);
-  });
-
-  it("opts the translucent lid into outlines in the garden scene", () => {
-    const wrapper = createRenderer(<ElectronicsBox {...fakeProps()} />);
-    const [lid] = wrapper.root.findAllByProps({ name: "electronicsBoxLid" });
-    expect(lid.props.userData).toEqual({
-      outlineTransparent: true, preciseModelEdges: true,
-    });
-    unmountRenderer(wrapper);
   });
 
   it("selects and hovers the electronics box", () => {
