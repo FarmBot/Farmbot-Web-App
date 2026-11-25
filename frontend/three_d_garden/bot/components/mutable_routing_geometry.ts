@@ -204,12 +204,11 @@ const beltEdgeIndices = (layouts: BeltSegmentLayout[]) => {
 
 export class MutableBeltGeometry extends MutableRoutingGeometry {
   private binormal = new Vector3();
-  private centerA = new Vector3();
-  private centerB = new Vector3();
-  private cornersA = [
+  private sampleCenter = new Vector3();
+  private readonly cornersA = [
     new Vector3(), new Vector3(), new Vector3(), new Vector3(),
   ];
-  private cornersB = [
+  private readonly cornersB = [
     new Vector3(), new Vector3(), new Vector3(), new Vector3(),
   ];
   private layouts: BeltSegmentLayout[];
@@ -237,9 +236,9 @@ export class MutableBeltGeometry extends MutableRoutingGeometry {
   private setCorners(
     segment: BeltPathSegment,
     t: number,
-    center: Vector3,
     corners: Vector3[],
   ) {
+    const center = this.sampleCenter;
     segment.path.getPointAt(t, center);
     segment.path.getTangentAt(t, this.tangent).normalize();
     this.binormal.crossVectors(this.tangent, segment.normal).normalize();
@@ -260,43 +259,36 @@ export class MutableBeltGeometry extends MutableRoutingGeometry {
     layout: BeltSegmentLayout,
   ) {
     let offset = layout.offset * 3;
-    this.setCorners(segment, 0, this.centerA, this.cornersA);
-    offset = setXYZ(array, offset, this.cornersA[0]);
-    offset = setXYZ(array, offset, this.cornersA[2]);
-    offset = setXYZ(array, offset, this.cornersA[1]);
-    offset = setXYZ(array, offset, this.cornersA[0]);
-    offset = setXYZ(array, offset, this.cornersA[3]);
-    offset = setXYZ(array, offset, this.cornersA[2]);
+    let startCorners = this.cornersA;
+    let endCorners = this.cornersB;
+    this.setCorners(segment, 0, startCorners);
+    offset = setXYZ(array, offset, startCorners[0]);
+    offset = setXYZ(array, offset, startCorners[2]);
+    offset = setXYZ(array, offset, startCorners[1]);
+    offset = setXYZ(array, offset, startCorners[0]);
+    offset = setXYZ(array, offset, startCorners[3]);
+    offset = setXYZ(array, offset, startCorners[2]);
     for (let step = 0; step < layout.steps; step++) {
-      this.setCorners(
-        segment,
-        step / layout.steps,
-        this.centerA,
-        this.cornersA,
-      );
-      this.setCorners(
-        segment,
-        (step + 1) / layout.steps,
-        this.centerB,
-        this.cornersB,
-      );
+      this.setCorners(segment, (step + 1) / layout.steps, endCorners);
       for (let side = 0; side < 4; side++) {
         const nextSide = (side + 1) % 4;
-        offset = setXYZ(array, offset, this.cornersA[side]);
-        offset = setXYZ(array, offset, this.cornersB[side]);
-        offset = setXYZ(array, offset, this.cornersB[nextSide]);
-        offset = setXYZ(array, offset, this.cornersA[side]);
-        offset = setXYZ(array, offset, this.cornersB[nextSide]);
-        offset = setXYZ(array, offset, this.cornersA[nextSide]);
+        offset = setXYZ(array, offset, startCorners[side]);
+        offset = setXYZ(array, offset, endCorners[side]);
+        offset = setXYZ(array, offset, endCorners[nextSide]);
+        offset = setXYZ(array, offset, startCorners[side]);
+        offset = setXYZ(array, offset, endCorners[nextSide]);
+        offset = setXYZ(array, offset, startCorners[nextSide]);
       }
+      const previousCorners = startCorners;
+      startCorners = endCorners;
+      endCorners = previousCorners;
     }
-    this.setCorners(segment, 1, this.centerB, this.cornersB);
-    offset = setXYZ(array, offset, this.cornersB[0]);
-    offset = setXYZ(array, offset, this.cornersB[1]);
-    offset = setXYZ(array, offset, this.cornersB[2]);
-    offset = setXYZ(array, offset, this.cornersB[0]);
-    offset = setXYZ(array, offset, this.cornersB[2]);
-    setXYZ(array, offset, this.cornersB[3]);
+    offset = setXYZ(array, offset, startCorners[0]);
+    offset = setXYZ(array, offset, startCorners[1]);
+    offset = setXYZ(array, offset, startCorners[2]);
+    offset = setXYZ(array, offset, startCorners[0]);
+    offset = setXYZ(array, offset, startCorners[2]);
+    setXYZ(array, offset, startCorners[3]);
   }
 
   update(path: BeltPath) {

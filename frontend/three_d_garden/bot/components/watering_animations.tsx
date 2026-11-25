@@ -1,14 +1,16 @@
 import React from "react";
-import { range } from "lodash";
-import { Group } from "../../components";
+import { Group, Mesh, MeshPhongMaterial } from "../../components";
 import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
 import {
-  WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
+  useSharedWaterFlowTexture, useWaterFlowTexture,
 } from "./water_stream";
-import { easyCubicBezierCurve3 } from "../../helpers";
 import { Texture } from "three";
 import { Vector3Tuple } from "../kinematics";
+import { WaterSprayGeometry } from "./water_spray_geometry";
+
+const waterfallMistSegments = 30;
+const groundMistSegments = 25;
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
@@ -53,19 +55,12 @@ export const WateringAnimations = React.memo(
 const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   const { waterFlow, nozzlePosition, nozzleToSoil, nozzleRadius } = props;
   const geometryDistance = Math.round(nozzleToSoil);
-  const streamPaths = React.useMemo(() => range(16).map(i => {
-    const angle = (i * Math.PI * 2) / 16;
-    return easyCubicBezierCurve3(
-      [nozzleRadius * Math.sin(angle), nozzleRadius * Math.cos(angle), 0],
-      [10 * Math.sin(angle), 0, -10],
-      [0, 0, 10],
-      [
-        25 * Math.sin(angle),
-        25 * Math.cos(angle),
-        geometryDistance,
-      ],
-    );
-  }), [geometryDistance, nozzleRadius]);
+  const [geometry] = React.useState(() =>
+    new WaterSprayGeometry(nozzleRadius, geometryDistance));
+  React.useLayoutEffect(() => {
+    geometry.update(nozzleRadius, geometryDistance);
+  }, [geometry, geometryDistance, nozzleRadius]);
+  React.useLayoutEffect(() => () => geometry.dispose(), [geometry]);
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -76,20 +71,20 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   return <Group name={"watering-animations"}
     visible={visible}
     position={nozzlePosition}>
-    {streamPaths.map((path, i) =>
-      <WaterStream key={i}
-        name={`water-stream-${i}`}
-        waterFlow={waterFlow}
-        waterTexture={props.waterTexture}
-        position={[0, 0, 0]}
-        args={[path, 8, 1.5, 6]} />)}
-    <Clouds name={"waterfall-mist"}
+    <Mesh name={"water-spray"}
+      geometry={geometry}
+      castShadow={true}
+      receiveShadow={true}
+      visible={waterFlow}>
+      <MeshPhongMaterial map={props.waterTexture} />
+    </Mesh>
+    <Clouds name={"water-mist"} limit={waterfallMistSegments + groundMistSegments}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}
         position={[0, 0, nozzleToSoil / 2 - 40]}
         seed={0}
         bounds={[15, 15, nozzleToSoil / 2]}
-        segments={30}
+        segments={waterfallMistSegments}
         volume={15}
         smallestVolume={0.1}
         concentrate={"inside"}
@@ -98,14 +93,11 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
         speed={3}
         opacity={0.4}
         fade={5} />
-    </Clouds>
-    <Clouds name={"water-spot-mist"}
-      texture={ASSETS.textures.cloud}>
-      <Cloud name={"waterfall-mist-cloud"}
+      <Cloud name={"water-spot-mist-cloud"}
         position={[0, 0, nozzleToSoil]}
         seed={0}
         bounds={[30, 30, 30]}
-        segments={25}
+        segments={groundMistSegments}
         volume={100}
         smallestVolume={0.1}
         concentrate={"inside"}

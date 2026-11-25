@@ -24,28 +24,26 @@ export type GantryWheelPlateFull = GLTF & {
 
 interface GantryWheelPlateProps
   extends Omit<ThreeElements["group"], "ref" | "scale"> {
+  model: GantryWheelPlateFull;
+  isV19?: boolean;
   mirrorY?: boolean;
 }
 
-export const GantryWheelPlate = (
-  model: GantryWheelPlateFull,
-  isV19 = false,
-) =>
-  (props: GantryWheelPlateProps) => {
-    const { mirrorY, ...groupProps } = props;
-    const { nodes, materials } = model;
-    const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
-    return <Group {...groupProps} scale={[isV19 ? -1 : 1, mirrorY ? -1 : 1, 1]}>
-      <MeshComponent
-        geometry={nodes.Gantry_Wheel_Plate.geometry}
-        material={materials.PaletteMaterial001}
-        position={[2, 50, isV19 ? 162 : 0]}
-        scale={1000}
-        rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
-      {mergedGeometry
-        ? <MeshComponent
-          geometry={mergedGeometry}
-          material={materials.PaletteMaterial001} />
-        : fallbackInstancedMeshes(model, /^mesh/, materials.PaletteMaterial001)}
-    </Group>;
-  };
+export const GantryWheelPlate = (props: GantryWheelPlateProps) => {
+  const { model, isV19, mirrorY, ...groupProps } = props;
+  const { nodes, materials } = model;
+  const mergedGeometry = mergedInstancedGeometry(model, /^mesh/);
+  return <Group {...groupProps} scale={[isV19 ? -1 : 1, mirrorY ? -1 : 1, 1]}>
+    <MeshComponent
+      geometry={nodes.Gantry_Wheel_Plate.geometry}
+      material={materials.PaletteMaterial001}
+      position={[2, 50, isV19 ? 162 : 0]}
+      scale={1000}
+      rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
+    {mergedGeometry
+      ? <MeshComponent
+        geometry={mergedGeometry}
+        material={materials.PaletteMaterial001} />
+      : fallbackInstancedMeshes(model, /^mesh/, materials.PaletteMaterial001)}
+  </Group>;
+};

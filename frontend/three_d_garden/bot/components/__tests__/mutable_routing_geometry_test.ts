@@ -39,6 +39,25 @@ describe("mutable routing geometry", () => {
     geometry.dispose();
   });
 
+  it("aligns belt outline vertices with the surface and end caps", () => {
+    const route = (end: number) => new BeltPath().start(0, 0, 10).end(end, 0, 10);
+    const belt = new MutableBeltGeometry(route(10));
+    belt.update(route(20));
+
+    const position = belt.getAttribute("position");
+    const index = belt.modelEdgeGeometry.getIndex();
+    const vertex = (i: number) =>
+      [position.getX(i), position.getY(i), position.getZ(i)];
+    expect(belt.modelEdgeGeometry.getAttribute("position")).toBe(position);
+    expect(index?.count).toEqual(24);
+    expect([index?.getX(8), index?.getX(9)]).toEqual([6, 7]);
+    expect(vertex(6)).toEqual([0, 2.5, 10.75]);
+    expect(vertex(7)).toEqual([20, 2.5, 10.75]);
+    expect(vertex(0)).toEqual(vertex(6));
+    expect(vertex(30)).toEqual(vertex(7));
+    belt.dispose();
+  });
+
   it("rebuilds carrier geometry when its topology changes", () => {
     const shape = new Shape();
     shape.moveTo(0, 0);

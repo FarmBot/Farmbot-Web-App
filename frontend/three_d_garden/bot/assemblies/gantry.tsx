@@ -100,7 +100,7 @@ interface GantrySideProps {
   index: number;
   outerY: number;
   version: BotVersion;
-  WheelPlate: ReturnType<typeof GantryWheelPlate>;
+  wheelPlate: GantryWheelPlateFull;
 }
 
 const gantryBracketUrl = (version: BotVersion, index: number) => {
@@ -170,23 +170,18 @@ const V19YIdler = (props: {
 };
 
 const GantrySide = (props: GantrySideProps) => {
-  const { config, index, outerY, version, WheelPlate } = props;
+  const { config, index, outerY, version, wheelPlate } = props;
+  const columnDepth = config.columnLength + version.columnLength - BASE_COLUMN_LENGTH;
+  const columnOptions = React.useMemo(() => ({
+    steps: 1, depth: columnDepth, bevelEnabled: false,
+  }), [columnDepth]);
   const bedColumnYOffset =
     (config.tracks ? 0 : EXTRUSION_WIDTH) * (index == 0 ? 1 : -1);
   const sideY = (value: number) => machineOuterY(config, value);
   return <Group>
     <Extrude name={"columns"}
       castShadow={true}
-      args={[
-        props.columnShape,
-        {
-          steps: 1,
-          depth: config.columnLength
-            + version.columnLength
-            - BASE_COLUMN_LENGTH,
-          bevelEnabled: false,
-        },
-      ]}
+      args={[props.columnShape, columnOptions]}
       position={[
         -43,
         sideY(outerY + bedColumnYOffset),
@@ -213,7 +208,9 @@ const GantrySide = (props: GantrySideProps) => {
       ), config.columnLength + 55]}>
       <MeshPhongMaterial color={"#999"} />
     </Cylinder>}
-    <WheelPlate name={"gantryWheelPlate"}
+    <GantryWheelPlate name={"gantryWheelPlate"}
+      model={wheelPlate}
+      isV19={version.number == "v1.9"}
       position={[-53, sideY(
         outerY + (index == 0 ? 0 : EXTRUSION_WIDTH + 5)
         - 2 - (index == 0 ? 1 : 0) + bedColumnYOffset,
@@ -237,10 +234,6 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
       : ASSETS.models.gantryWheelPlate,
     LIB_DIR,
   ) as unknown as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(
-    wheelPlate,
-    version.number == "v1.9",
-  );
   const beltClip = useGLTF(
     ASSETS.models.beltClip,
     LIB_DIR,
@@ -254,7 +247,7 @@ const GantryAssemblyBase = (props: GantryAssemblyProps) => {
         index={index}
         outerY={outerY}
         version={version}
-        WheelPlate={GantryWheelPlateComponent} />)}
+        wheelPlate={wheelPlate} />)}
     {config.cableCarriers && version.xCableCarrierMount &&
       <XAxisCCMountModel bedYOffset={config.bedYOffset} />}
     <GantryBeam

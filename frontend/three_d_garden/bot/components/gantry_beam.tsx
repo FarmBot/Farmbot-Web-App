@@ -57,6 +57,9 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
   const {
     beamLength, columnLength, kitVersion,
   } = props.config;
+  const beamOptions = React.useMemo(() => ({
+    steps: 1, depth: beamLength, bevelEnabled: false,
+  }), [beamLength]);
   const { x } = props.configPosition;
   const version = getBotVersion(kitVersion);
   const get3DPosition = get3DPositionNoMirrorFunc(props.config);
@@ -97,10 +100,7 @@ const GantryBeamComponent = (props: GantryBeamProps) => {
       rotation={[Math.PI / 2, 0, 0]}>
       <Extrude name={"gantry-beam-extrusion"}
         castShadow={true}
-        args={[
-          props.beamShape,
-          { steps: 1, depth: beamLength, bevelEnabled: false },
-        ]}>
+        args={[props.beamShape, beamOptions]}>
         <MeshPhongMaterial
           color={props.config.extrusionColor || version.extrusionColor}
           map={props.aluminumTexture}

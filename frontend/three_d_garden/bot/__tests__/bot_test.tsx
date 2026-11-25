@@ -1,6 +1,6 @@
 import React from "react";
 import { act, fireEvent, render } from "@testing-library/react";
-import { Trail, useGLTF } from "@react-three/drei";
+import { Extrude, Trail, Tube, useGLTF } from "@react-three/drei";
 import {
   Bot, clearBotShapeCache, FarmbotModelProps,
   applyBotKinematicFrame,
@@ -957,6 +957,48 @@ describe("<Bot />", () => {
     expect(urls).toHaveLength(0);
     unmountRenderer(wrapper);
   });
+
+  it("keeps wheel plates mounted when gantry appearance changes", () => {
+    const p = fakeProps();
+    const { container, rerender } = render(<Bot {...p} />);
+    const plates = () => [...container.querySelectorAll("[name='gantryWheelPlate']")];
+    const initialPlates = plates();
+    rerender(<Bot {...p} config={{ ...p.config, extrusionColor: "black" }} />);
+
+    expect(plates()).toHaveLength(2);
+    plates().forEach((plate, index) => expect(plate).toBe(initialPlates[index]));
+  });
+
+  it("keeps extrusion and camera cable inputs stable during appearance changes",
+    () => {
+      const p = fakeProps();
+      const wrapper = createRenderer(<Bot {...p} />);
+      const extrusionNames = ["columns", "gantry-beam-extrusion", "z-axis"];
+      const extrusionOptions = () => wrapper.root.findAllByType(Extrude)
+        .filter(node => extrusionNames.some(name => name === node.props.name))
+        .map(node => node.props.args[1]);
+      const cablePath = () => wrapper.root.findAllByType(Tube)
+        .find(node => node.props.name == "cameraCable")?.props.args[0];
+      const initialOptions = extrusionOptions();
+      const initialCablePath = cablePath();
+
+      actRenderer(() => wrapper.update(<Bot {...p}
+        config={{ ...p.config, extrusionColor: "black" }} />));
+
+      expect(initialCablePath).toBeDefined();
+      expect(cablePath()).toBe(initialCablePath);
+      expect(extrusionOptions()).toHaveLength(4);
+      extrusionOptions().forEach((options, index) =>
+        expect(options).toBe(initialOptions[index]));
+
+      const zAxisLength = p.config.zAxisLength + 100;
+      actRenderer(() => wrapper.update(<Bot {...p}
+        config={{ ...p.config, zAxisLength }} />));
+      expect(wrapper.root.findAllByType(Extrude)
+        .find(node => node.props.name == "z-axis")?.props.args[1].depth)
+        .toEqual(zAxisLength);
+      unmountRenderer(wrapper);
+    });
 
   it("reuses parsed shapes across remounts", () => {
     const p = fakeProps();

@@ -55,10 +55,9 @@ export const useSharedWaterFlowTexture = () =>
   React.useContext(WaterFlowTextureContext);
 
 export const WaterStream = (props: WaterStreamProps) => {
-  const { waterFlow, waterTexture, ...tubeProps } = props;
-  const name = "" + props.name;
+  const { waterFlow, waterTexture, args, ...meshProps } = props;
   const [path, tubularSegments = 64, radius = 1,
-    radialSegments = 8] = tubeProps.args as unknown as [
+    radialSegments = 8] = args as unknown as [
       Curve<Vector3>, number?, number?, number?,
     ];
   const geometry = useManagedTubeGeometry(
@@ -66,11 +65,8 @@ export const WaterStream = (props: WaterStreamProps) => {
     tubularSegments,
     radius,
     radialSegments,
-    name.startsWith("water-stream-")
-      ? "bot.geometry.waterSpray"
-      : "bot.geometry.tube.solenoidStream",
+    "bot.geometry.tube.solenoidStream",
   );
-  const { args: _args, ...meshProps } = tubeProps;
 
   return <Mesh
     {...meshProps}

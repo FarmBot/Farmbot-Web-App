@@ -176,6 +176,9 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
   const {
     botSizeZ, perspective, trail, zAxisLength, zGantryOffset,
   } = config;
+  const zAxisOptions = React.useMemo(() => ({
+    steps: 1, depth: zAxisLength, bevelEnabled: false,
+  }), [zAxisLength]);
   const motorLoad = maxMotorLoad(props.encoderData);
   const zStop = useGLTF(
     version.number == "v1.9"
@@ -248,10 +251,7 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
   return <Group name={"z-axis-assembly"}>
     <Extrude name={"z-axis"}
       castShadow={true}
-      args={[
-        props.zAxisShape,
-        { steps: 1, depth: zAxisLength, bevelEnabled: false },
-      ]}
+      args={[props.zAxisShape, zAxisOptions]}
       position={[-11, UTM_RADIUS, 0]}>
       <MeshPhongMaterial
         color={config.extrusionColor || version.extrusionColor}

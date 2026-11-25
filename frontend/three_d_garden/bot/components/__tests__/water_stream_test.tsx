@@ -1,7 +1,11 @@
 import React from "react";
 import { render, renderHook } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
-import { RepeatWrapping, Texture, TextureLoader } from "three";
+import { LineCurve3, RepeatWrapping, Texture, TextureLoader, Vector3 } from "three";
+import {
+  createRenderer, unmountRenderer,
+} from "../../../../__test_support__/test_renderer";
+import { Mesh } from "../../../components";
 import {
   WaterFlowTextureProvider,
   WaterStream,
@@ -44,6 +48,19 @@ describe("<WaterStream />", () => {
     expect(() => render(<WaterStream {...props} />)).not.toThrow();
     expect(loadTextureSpy).not.toHaveBeenCalled();
     expect(useFrameSpy).not.toHaveBeenCalled();
+  });
+
+  it("draws the flowing water inside the tube using the supplied path", () => {
+    const path = new LineCurve3(new Vector3(), new Vector3(0, 0, 50));
+    const wrapper = createRenderer(<WaterStream {...fakeProps()}
+      args={[path, 8, 3, 6]} />);
+    const mesh = wrapper.root.findByType(Mesh);
+    expect(mesh.props.geometry.parameters).toMatchObject({
+      path, tubularSegments: 8, radius: 3, radialSegments: 6,
+    });
+    expect(mesh.props.args).toBeUndefined();
+    expect(mesh.props.visible).toEqual(true);
+    unmountRenderer(wrapper);
   });
 });
 

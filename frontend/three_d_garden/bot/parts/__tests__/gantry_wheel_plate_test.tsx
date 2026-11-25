@@ -7,9 +7,9 @@ import * as THREE from "three";
 
 describe("<GantryWheelPlate />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.gantryWheelPlate) as unknown as GantryWheelPlateFull;
-    const Component = GantryWheelPlate(model);
-    const { container } = render(<Component name={"name"} />);
+    const model = useGLTF(ASSETS.models.gantryWheelPlate) as
+      unknown as GantryWheelPlateFull;
+    const { container } = render(<GantryWheelPlate model={model} name={"name"} />);
     expect(container.innerHTML).toContain("name");
     expect(container.querySelector("mesh, instancedmesh")).toBeTruthy();
   });
@@ -25,9 +25,9 @@ describe("<GantryWheelPlate />", () => {
         ? ASSETS.models.gantryWheelPlateV19
         : ASSETS.models.gantryWheelPlate;
       const model = useGLTF(asset) as unknown as GantryWheelPlateFull;
-      const Component = GantryWheelPlate(model, isV19);
       const { container } = render(
-        <Component name={"wheel-plate"} mirrorY={mirrorY} />,
+        <GantryWheelPlate
+          model={model} name={"wheel-plate"} isV19={isV19} mirrorY={mirrorY} />,
       );
       expect(container.querySelector("[name='wheel-plate']"))
         .toHaveAttribute("scale", scale);
@@ -54,9 +54,7 @@ describe("<GantryWheelPlate />", () => {
         PaletteMaterial001: new THREE.MeshStandardMaterial(),
       },
     } as unknown as GantryWheelPlateFull;
-    const Component = GantryWheelPlate(model);
-
-    const { container } = render(<Component name={"name"} />);
+    const { container } = render(<GantryWheelPlate model={model} name={"name"} />);
 
     expect(container.querySelectorAll("mesh").length).toEqual(2);
     expect(container.querySelector("instancedmesh")).toBeNull();

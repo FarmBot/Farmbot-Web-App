@@ -1,6 +1,4 @@
-import {
-  Curve, CurvePath, EllipseCurve, LineCurve3, Vector3,
-} from "three";
+import { Curve, CurvePath, LineCurve3, Vector3 } from "three";
 
 const maxArcSegmentLength = 2;
 
@@ -62,34 +60,65 @@ export interface BeltPathSegment {
   type: "arc" | "span";
 }
 
+const setBeltVector = (
+  target: Vector3,
+  axis: BeltProjection["axis"],
+  x: number,
+  y: number,
+  normalOffset: number,
+) => {
+  switch (axis) {
+    case "x": return target.set(normalOffset, x, y);
+    case "y": return target.set(x, normalOffset, y);
+    case "z": return target.set(x, y, normalOffset);
+  }
+};
+
+const pulleySweep = (start: number, end: number, clockwise: boolean) => {
+  const travel = clockwise ? start - end : end - start;
+  if (Math.abs(travel) < Number.EPSILON) { return 0; }
+  const turn = 2 * Math.PI;
+  const sweep = travel > 0 ? travel : turn + travel;
+  return (sweep || turn) * (clockwise ? -1 : 1);
+};
+
 class BeltArcCurve extends Curve<Vector3> {
-  private arc: EllipseCurve;
-  private projection: BeltProjection;
+  private sweep: number;
+  private direction: number;
 
   constructor(
-    center: BeltPoint,
-    radius: number,
-    startAngle: number,
+    private center: BeltPoint,
+    private radius: number,
+    private startAngle: number,
     endAngle: number,
     clockwise: boolean,
-    projection: BeltProjection,
+    private projection: BeltProjection,
   ) {
     super();
-    this.projection = projection;
-    this.arc = new EllipseCurve(
-      center.x,
-      center.y,
-      radius,
-      radius,
-      startAngle,
-      endAngle,
-      clockwise,
-    );
+    this.sweep = pulleySweep(startAngle, endAngle, clockwise);
+    this.direction = Math.sign(this.sweep);
   }
 
-  getPoint(t: number, target = new Vector3()): Vector3 {
-    const point = this.arc.getPoint(t);
-    return target.copy(beltVector(this.projection, point));
+  override getPoint(t: number, target = new Vector3()): Vector3 {
+    const angle = this.startAngle + t * this.sweep;
+    const { axis, origin } = this.projection;
+    return setBeltVector(target, axis,
+      this.center.x + this.radius * Math.cos(angle),
+      this.center.y + this.radius * Math.sin(angle), origin[axis]);
+  }
+
+  override getPointAt(t: number, target = new Vector3()): Vector3 {
+    return this.getPoint(t, target);
+  }
+
+  override getLength(): number {
+    return this.radius * Math.abs(this.sweep);
+  }
+
+  override getTangent(t: number, target = new Vector3()): Vector3 {
+    const angle = this.startAngle + t * this.sweep;
+    return setBeltVector(target, this.projection.axis,
+      -this.direction * Math.sin(angle), this.direction * Math.cos(angle), 0);
   }
 }
 
@@ -339,13 +368,8 @@ const projectBeltPoint = (
 const beltVector = (
   projection: BeltProjection,
   point: BeltPoint,
-): Vector3 => {
-  switch (projection.axis) {
-    case "x": return new Vector3(projection.origin.x, point.x, point.y);
-    case "y": return new Vector3(point.x, projection.origin.y, point.y);
-    case "z": return new Vector3(point.x, point.y, projection.origin.z);
-  }
-};
+): Vector3 => setBeltVector(new Vector3(), projection.axis,
+  point.x, point.y, projection.origin[projection.axis]);
 
 const projectNodes = (
   nodes: BeltPathNode3D[],
@@ -376,6 +400,15 @@ class BeltSegmentPath extends CurvePath<Vector3> {
     super();
     this.axisNormal = axisNormal;
     this.add(curve);
+  }
+
+  // Each segment is a line or a circular arc, both at constant speed in t.
+  override getPointAt(t: number, target?: Vector3): Vector3 {
+    return this.curves[0].getPoint(t, target);
+  }
+
+  override getTangentAt(t: number, target?: Vector3): Vector3 {
+    return this.curves[0].getTangent(t, target);
   }
 
   override computeFrenetFrames(segments: number) {

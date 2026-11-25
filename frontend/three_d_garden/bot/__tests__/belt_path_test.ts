@@ -82,6 +82,36 @@ describe("BeltPath", () => {
     expect(segments[1].path.curves[0].getPoint(0.5, target)).toEqual(target);
   });
 
+  it("samples a semicircular belt wrap by exact distance", () => {
+    const segments = new BeltPath()
+      .start(-5, -20, 10)
+      .pulley(0, 0, 10, 5, 1)
+      .end(5, -20, 10)
+      .getSegments();
+    const [span, arc] = segments;
+    const midpoint = new Vector3();
+
+    expect(arc.path.getLength()).toBeCloseTo(5 * Math.PI, 12);
+    expect(arc.path.getPointAt(0.5, midpoint)).toBe(midpoint);
+    expect(midpoint.distanceTo(new Vector3(0, 5, 10))).toBeLessThan(1e-12);
+    expect(arc.path.getTangentAt(0.5)
+      .distanceTo(new Vector3(1, 0, 0))).toBeLessThan(1e-12);
+    expectVector(span.path.getPointAt(0.5), [-5, -10, 10]);
+    expectContinuous(segments);
+  });
+
+  it("has a zero-length wrap when both spans share a contact point", () => {
+    const [, arc] = new BeltPath()
+      .start(-20, 5, 0)
+      .pulley(0, 0, 0, 5, 1)
+      .end(20, 5, 0)
+      .getSegments();
+
+    expect(arc.path.getLength()).toEqual(0);
+    expect(arc.path.getPointAt(0).distanceTo(arc.path.getPointAt(1))).toEqual(0);
+    expect(arc.path.getTangentAt(0.5).length()).toEqual(0);
+  });
+
   it("validates path construction", () => {
     expect(() => new BeltPath().getSegments())
       .toThrow("Belt path must end before reading segments.");

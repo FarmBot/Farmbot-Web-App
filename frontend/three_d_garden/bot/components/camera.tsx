@@ -22,13 +22,13 @@ const cameraCableEnd = (kitVersion: string) =>
     };
 
 export const Camera = (props: CameraProps) => {
-  const cableEnd = cameraCableEnd(props.kitVersion);
-  const cablePath = easyCubicBezierCurve3(
-    [0, 0, -40],
-    [0, 0, -40],
-    cableEnd.direction,
-    cableEnd.position,
-  );
+  const { kitVersion } = props;
+  const cablePath = React.useMemo(() => {
+    const cableEnd = cameraCableEnd(kitVersion);
+    return easyCubicBezierCurve3(
+      [0, 0, -40], [0, 0, -40], cableEnd.direction, cableEnd.position,
+    );
+  }, [kitVersion]);
   return <>
     <Cylinder name={"cameraBody"}
       args={[5, 5, 40]}
