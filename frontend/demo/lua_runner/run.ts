@@ -336,10 +336,20 @@ export const executeLua =
     ] as const).forEach(([name, select]) => {
       lua.lua_pushjsfunction(L, () => {
         const params = luaToJs(L, 1) as Record<string, string | number>;
+        if (params.label === undefined) { params.label = params.name; }
         const fields = ["id", "pin", "mode", "label", "type"] as const;
-        const result = select().find(resource => fields.every(field =>
+        const matches = select().filter(resource => fields.every(field =>
           params[field] === undefined || resource.body[field] === params[field]));
-        jsToLua(L, clean(result?.body));
+        if (matches.length !== 1) {
+          const message = matches.length === 0
+            ? `${name}(): No matching ${name.replace("get_", "")} found.`
+            : `${name}(): Multiple matches found. Use more specific filters.`;
+          actions.push({ type: "send_message", args: ["error", message, "toast"] });
+          jsToLua(L, undefined);
+          return 1;
+        }
+        const result = matches[0];
+        jsToLua(L, clean({ ...result.body, name: result.body.label }));
         return 1;
       });
       lua.lua_setfield(L, envIndex, to_luastring(name));
