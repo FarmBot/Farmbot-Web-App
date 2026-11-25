@@ -74,7 +74,6 @@ export const MountedToolScenePreview = (props: { children: React.ReactNode }) =>
   <ToolScenePreview subject={"utm"}>{props.children}</ToolScenePreview>;
 
 const FOCUS_LAYER = 31;
-const FRAME_INTERVAL_MS = 1000 / 30;
 const DIM_OPACITY = 0.62;
 const SLOT_DIRECTION = new Vector3(1, -1, 1).normalize();
 const UTM_DIRECTION = new Vector3(1, 0, 0);
@@ -165,7 +164,9 @@ const openToolScenePreview = (request: ToolScenePreviewRequest) => {
   const shift = new Vector3();
   const viewport = new Vector4();
   const scissor = new Vector4();
-  const renderTarget = new WebGLRenderTarget(1, 1, { type: HalfFloatType });
+  const renderTarget = new WebGLRenderTarget(1, 1, {
+    type: HalfFloatType, samples: 2, resolveDepthBuffer: false,
+  });
   const output = new OutputPass();
   output.renderToScreen = true;
   output.material.depthTest = false;
@@ -181,7 +182,6 @@ const openToolScenePreview = (request: ToolScenePreviewRequest) => {
   dimmer.add(new Mesh(dimGeometry, dimMaterial));
   let cameraAnchor: Object3D | undefined;
   let highlight: ReturnType<typeof createYellowOutlinePass> | undefined;
-  let lastFrame = -Infinity;
 
   const disposeHighlight = () => {
     highlight?.restoreObjectIds();
@@ -237,8 +237,7 @@ const openToolScenePreview = (request: ToolScenePreviewRequest) => {
       renderTarget.dispose();
     },
     render: (gl: WebGLRenderer, scene: Scene) => {
-      const now = performance.now();
-      if (now - lastFrame < FRAME_INTERVAL_MS || gl.getRenderTarget()) { return; }
+      if (gl.getRenderTarget()) { return; }
       const dimensions = measurePreview(gl, canvas);
       if (!dimensions) { return; }
       const { anchor, focus, lights, overlays } = findPreviewObjects(scene, subject);
@@ -282,7 +281,6 @@ const openToolScenePreview = (request: ToolScenePreviewRequest) => {
         context.clearRect(0, 0, width, height);
         context.drawImage(source, 0, source.height - height, width, height,
           0, 0, width, height);
-        lastFrame = now;
       } finally {
         gl.setRenderTarget(null); // eslint-disable-line no-null/no-null
         gl.setViewport(viewport);

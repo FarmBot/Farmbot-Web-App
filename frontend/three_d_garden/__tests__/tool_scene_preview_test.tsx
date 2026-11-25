@@ -139,6 +139,8 @@ describe("tool scene preview", () => {
     const target = gl.setRenderTarget.mock.calls[0][0] as WebGLRenderTarget;
     expect(target.width).toBe(800);
     expect(target.height).toBe(400);
+    expect(target.samples).toBe(2);
+    expect(target.resolveDepthBuffer).toBe(false);
     expect(outline).toHaveBeenCalledWith(gl, target, target, 0, false);
     expect(renderOutput).toHaveBeenCalledWith(gl, target, target, 0, false);
     // eslint-disable-next-line no-null/no-null
@@ -160,9 +162,14 @@ describe("tool scene preview", () => {
 
     const startX = camera.position.x;
     slot.position.x += 60;
-    now.mockReturnValue(150);
-    draw(state, 0);
+    now.mockReturnValue(100 + 1000 / 120);
+    draw(state, 1 / 120);
     expect(camera.position.x).toBeCloseTo(startX + 60);
+    expect(ctx.drawImage).toHaveBeenCalledTimes(2);
+
+    gl.getRenderTarget.mockReturnValueOnce(target);
+    draw(state, 1 / 120);
+    expect(ctx.drawImage).toHaveBeenCalledTimes(2);
 
     bridge.current = undefined;
     gl.render.mockClear();
@@ -172,7 +179,6 @@ describe("tool scene preview", () => {
   });
 
   it("keeps the UTM view fixed when the mounted model changes", () => {
-    const now = jest.spyOn(performance, "now").mockReturnValue(100);
     const subscribe = jest.spyOn(fiber, "useFrame").mockImplementation(jest.fn());
     jest.spyOn(OutputPass.prototype, "render").mockImplementation(jest.fn());
     const view = jest.fn();
@@ -231,7 +237,6 @@ describe("tool scene preview", () => {
     toolMesh.position.z = -80;
     tool.add(toolMesh);
     zAxis.add(tool);
-    now.mockReturnValue(150);
     const initialPosition = camera.position.clone();
     const initialRotation = camera.quaternion.clone();
     draw(state, 0);
@@ -246,7 +251,6 @@ describe("tool scene preview", () => {
     const orbitedRotation = camera.quaternion.clone();
     zAxis.remove(tool);
     utmGroup.remove(utm).add(utm.clone());
-    now.mockReturnValue(200);
     draw(state, 0);
     expect(view).toHaveBeenLastCalledWith([utmGroup], camera);
     expect(camera.position.distanceTo(orbitedPosition)).toBeCloseTo(0);
@@ -255,7 +259,6 @@ describe("tool scene preview", () => {
     expect([canvas.width, canvas.height]).toEqual([900, 400]);
 
     zAxis.position.x += 40;
-    now.mockReturnValue(250);
     draw(state, 0);
     expect(camera.position.x).toBeCloseTo(orbitedPosition.x + 40);
     expect(camera.quaternion.angleTo(orbitedRotation)).toBeCloseTo(0);
