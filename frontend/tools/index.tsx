@@ -40,6 +40,7 @@ import { NavigationContext } from "../routes_helpers";
 import { ToolActionRow } from "./tool_action_row";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { ToolPreviewPanel, ToolPreviewView } from "./tool_preview_panel";
+import { MountedToolScenePreview } from "../three_d_garden/tool_scene_preview";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -57,28 +58,32 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   MountedToolInfo = () =>
     <div className="mounted-tool">
-      <div className="mounted-tool-header">
-        <label>{t("mounted tool")}</label>
-        <Help text={Content.MOUNTED_TOOL} />
-      </div>
-      <ToolSelection
-        tools={this.props.tools}
-        selectedTool={this.mountedTool}
-        onChange={({ tool_id }) => {
-          this.props.dispatch(edit(this.props.device,
-            { mounted_tool_id: tool_id }));
-          this.props.dispatch(save(this.props.device.uuid));
-        }}
-        noUTM={this.noUTM}
-        isActive={this.props.isActive}
-        filterSelectedTool={true}
-        filterActiveTools={false}
-        filterUtmMountable={true} />
-      <ToolPreviewView mounted={true}
-        firmwareHardware={this.props.firmwareHardware}
-        toolName={this.mountedTool?.body.name}
-        toolType={this.mountedTool?.body.type}
-        utmMountable={this.mountedTool?.body.utm_mountable} />
+      <MountedToolScenePreview>
+        <ToolPreviewView mounted={true}
+          firmwareHardware={this.props.firmwareHardware}
+          toolName={this.mountedTool?.body.name}
+          toolType={this.mountedTool?.body.type}
+          utmMountable={this.mountedTool?.body.utm_mountable} />
+      </MountedToolScenePreview>
+      <Row className="grid-2-col mounted-tool-selection">
+        <div className="mounted-tool-header">
+          <label>{t("mounted tool")}</label>
+          <Help text={Content.MOUNTED_TOOL} />
+        </div>
+        <ToolSelection
+          tools={this.props.tools}
+          selectedTool={this.mountedTool}
+          onChange={({ tool_id }) => {
+            this.props.dispatch(edit(this.props.device,
+              { mounted_tool_id: tool_id }));
+            this.props.dispatch(save(this.props.device.uuid));
+          }}
+          noUTM={this.noUTM}
+          isActive={this.props.isActive}
+          filterSelectedTool={true}
+          filterActiveTools={false}
+          filterUtmMountable={true} />
+      </Row>
       <ToolActionRow
         className={"mounted-tool-action-row"}
         showTitle={true}

@@ -70,8 +70,13 @@ describe("<ToolGraphic3D />", () => {
     const { container } = render(<ToolGraphic3D
       {...fakeProps()} mounted={mounted} profile={profile} />);
     expect(canvas.mock.calls[0][0].camera).toEqual({
-      position: [200, 0, 0], up: [0, 0, 1], zoom: 1,
+      position: [200, 0, mounted ? -35 : 0], up: [0, 0, 1], zoom: 1,
     });
+    if (mounted) {
+      const bounds = getCenter()?.fixedBounds;
+      expect(bounds?.getCenter(new Vector3()).toArray()).toEqual([0, 0, -35]);
+      expect(bounds?.getSize(new Vector3()).z).toBe(144);
+    }
     expect(canvas.mock.calls[0][0].shadows).toEqual({ type: PCFShadowMap });
     expect(!!container.querySelector(".orbit-controls"))
       .toEqual(mounted || profile);

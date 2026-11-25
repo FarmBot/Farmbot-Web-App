@@ -214,6 +214,30 @@ describe("<ToolPreviewCamera />", () => {
     expectInFrame();
   });
 
+  it("keeps the fixed frame when the mounted geometry changes", () => {
+    const fixedBounds = new Box3(
+      new Vector3(-90, -64, -107), new Vector3(90, 64, 37));
+    camera.position.z = -35;
+    camera.lookAt(0, 0, 0);
+    const view = () => <ToolPreviewCamera margin={1.2} fixedBounds={fixedBounds}
+      onCentered={onCentered} viewportSize={{ width: 200, height: 160 }}>
+      <group />
+    </ToolPreviewCamera>;
+    const { rerender } = render(view());
+    expect(center.mock.calls[0][0].disable).toBe(true);
+    finishLoading();
+    const position = camera.position.clone();
+    const projection = camera.projectionMatrix.clone();
+    expect(position.z).toBeCloseTo(-35);
+    expect(camera.getWorldDirection(new Vector3())
+      .distanceTo(new Vector3(-1, 0, 0))).toBeCloseTo(0);
+    container.scale.z = 4;
+    rerender(view());
+    finishLoading();
+    expect(camera.position).toEqual(position);
+    expect(camera.projectionMatrix).toEqual(projection);
+  });
+
   it("handles an empty slot without invalid camera values", () => {
     container.clear();
     render(<ToolPreviewCamera margin={1.2} onCentered={onCentered}>

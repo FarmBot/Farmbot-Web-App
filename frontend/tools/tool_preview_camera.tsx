@@ -5,6 +5,7 @@ import { Box3, OrthographicCamera, Vector3 } from "three";
 
 export interface ToolPreviewCameraProps {
   margin: number;
+  fixedBounds?: Box3;
   viewportSize?: { width: number; height: number };
   onCentered(props: OnCenterCallbackProps): void;
   children: React.ReactNode;
@@ -46,11 +47,11 @@ const fitCamera = (
 export const ToolPreviewCamera = (props: ToolPreviewCameraProps) => {
   const { camera, invalidate } = useThree();
   const lastFit = React.useRef<string | undefined>(undefined);
-  return <Center visible={false} onCentered={centered => {
+  const onCentered = (centered: OnCenterCallbackProps) => {
     const { container } = centered;
     container.visible = false;
     container.updateWorldMatrix(true, true);
-    const box = new Box3().setFromObject(container);
+    const box = props.fixedBounds || new Box3().setFromObject(container);
     if (camera instanceof OrthographicCamera && !box.isEmpty()) {
       const viewport = props.viewportSize
         ? [props.viewportSize.width, props.viewportSize.height]
@@ -60,6 +61,7 @@ export const ToolPreviewCamera = (props: ToolPreviewCameraProps) => {
       ]);
       // Center can run again after orbiting without a model or viewport change.
       if (fitKey !== lastFit.current) {
+        if (props.fixedBounds) { camera.lookAt(box.getCenter(new Vector3())); }
         fitCamera(camera, box, props.margin, props.viewportSize);
         lastFit.current = fitKey;
       }
@@ -67,7 +69,9 @@ export const ToolPreviewCamera = (props: ToolPreviewCameraProps) => {
     props.onCentered(centered);
     container.visible = true;
     invalidate();
-  }}>
+  };
+  return <Center visible={false} disable={!!props.fixedBounds}
+    onCentered={onCentered}>
     {props.children}
   </Center>;
 };

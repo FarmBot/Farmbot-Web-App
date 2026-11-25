@@ -3,6 +3,7 @@ import { Canvas, createPortal, useFrame } from "@react-three/fiber";
 import { OrthographicCamera, PCFShadowMap, Scene } from "three";
 import { ErrorBoundary } from "../error_boundary";
 import { DesignerPanelContent } from "../farm_designer/designer_panel";
+import { UTM_PREVIEW_Z_OFFSET } from "../three_d_garden/constants";
 import {
   ToolGraphic3DProps, ToolGraphicScene, ToolPreviewUnavailable, toolPreviewAvailable,
 } from "./tool_graphics";
@@ -37,9 +38,10 @@ const ToolPreviewScene = ({ target, graphic }: ToolPreview) => {
   const [scene] = React.useState(() => new Scene());
   const [camera] = React.useState(() => {
     const previewCamera = new OrthographicCamera();
-    previewCamera.position.set(200, 0, 0);
+    const z = graphic.mounted ? UTM_PREVIEW_Z_OFFSET : 0;
+    previewCamera.position.set(200, 0, z);
     previewCamera.up.set(0, 0, 1);
-    previewCamera.lookAt(0, 0, 0);
+    previewCamera.lookAt(0, 0, z);
     return previewCamera;
   });
   const [size, setSize] = React.useState(() => ({
@@ -84,6 +86,8 @@ const ToolPreviewScene = ({ target, graphic }: ToolPreview) => {
 const ClearToolPreviewCanvas = () => {
   useFrame(({ gl }) => {
     gl.setScissorTest(false);
+    // This can clear before the first scene initializes the clear alpha.
+    gl.setClearAlpha(0);
     gl.clear();
   }, 1);
   return undefined;

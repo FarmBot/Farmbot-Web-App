@@ -9,7 +9,7 @@ import {
   MountStage, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { ToolGraphic3D } from "./tool_graphics";
-import { SlotScenePreview } from "../three_d_garden/slot_scene_preview";
+import { SlotScenePreview } from "../three_d_garden/tool_scene_preview";
 import { isNumber } from "lodash";
 import {
   MountOffsetInputProps, MountStageInputProps, SlotDirectionInputRowProps,

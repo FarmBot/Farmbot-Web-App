@@ -13,6 +13,7 @@ export enum BigDistance {
 }
 
 export const LIB_DIR = "/3D/lib/";
+export const UTM_PREVIEW_Z_OFFSET = -35;
 
 export const ASSETS: Record<string, Record<string, string>> = {
   fonts: {

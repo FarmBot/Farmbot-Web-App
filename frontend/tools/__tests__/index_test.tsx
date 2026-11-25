@@ -32,6 +32,9 @@ import * as toolSlotEditComponents from "../tool_slot_edit_components";
 import { findElement } from "../../__test_support__/react_element_search";
 import * as fiber from "@react-three/fiber";
 import { range } from "lodash";
+import {
+  ToolScenePreviewBridge, ToolScenePreviewContext,
+} from "../../three_d_garden/tool_scene_preview";
 
 const originalPathname = location.pathname;
 
@@ -133,6 +136,36 @@ describe("<Tools />", () => {
       "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown",
       "(x+4, 2, 0)",
     ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
+  });
+
+  it("keeps the live UTM canvas when the mounted tool changes", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 12;
+    p.tools = [tool];
+    p.findTool = id => p.tools.find(item => item.body.id == id);
+    const bridge: ToolScenePreviewBridge = {};
+    const view = () => <ToolScenePreviewContext.Provider value={bridge}>
+      <Tools {...p} />
+    </ToolScenePreviewContext.Provider>;
+    const { container, rerender } = render(view());
+    const canvas = container.querySelector("canvas.mounted-tool-scene-preview");
+    expect(canvas).toBeInTheDocument();
+    const selectionRow = canvas?.nextElementSibling;
+    expect(selectionRow).toHaveClass("mounted-tool-selection");
+    expect(selectionRow?.querySelector("label")).toHaveTextContent("mounted tool");
+    expect(selectionRow?.querySelector("button")).toHaveTextContent("None");
+    expect(container.querySelector(".utm-and-mounted-tool-graphic")).toBeNull();
+    const request = bridge.current;
+    expect(request).toEqual({ subject: "utm", canvas });
+    p.device = { ...p.device, body: { ...p.device.body, mounted_tool_id: 12 } };
+    rerender(view());
+    expect(bridge.current).toBe(request);
+    p.device = {
+      ...p.device, body: { ...p.device.body, mounted_tool_id: undefined },
+    };
+    rerender(view());
+    expect(bridge.current).toBe(request);
   });
 
   it("toggles section", () => {

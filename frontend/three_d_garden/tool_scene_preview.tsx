@@ -9,22 +9,25 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { OrbitControls } from "three-stdlib";
 import { t } from "../i18next_wrapper";
 import { createYellowOutlinePass } from "./elements/highlight";
+import { UTM_PREVIEW_Z_OFFSET } from "./constants";
 
-interface SlotScenePreviewRequest {
-  slotId: number;
+type ToolScenePreviewSubject = number | "utm";
+
+interface ToolScenePreviewRequest {
+  subject: ToolScenePreviewSubject;
   canvas: HTMLCanvasElement;
 }
 
-export interface SlotScenePreviewBridge {
-  current?: SlotScenePreviewRequest;
+export interface ToolScenePreviewBridge {
+  current?: ToolScenePreviewRequest;
 }
 
-export const SlotScenePreviewContext =
-  React.createContext<SlotScenePreviewBridge | undefined>(undefined);
+export const ToolScenePreviewContext =
+  React.createContext<ToolScenePreviewBridge | undefined>(undefined);
 
-const registerSlotPreview = (
-  bridge: SlotScenePreviewBridge,
-  request: SlotScenePreviewRequest,
+const registerToolPreview = (
+  bridge: ToolScenePreviewBridge,
+  request: ToolScenePreviewRequest,
 ) => {
   bridge.current = request;
   return () => {
@@ -32,49 +35,80 @@ const registerSlotPreview = (
   };
 };
 
-const SlotScenePreviewCanvas = (props: {
-  slotId: number;
-  bridge: SlotScenePreviewBridge;
+const ToolScenePreviewCanvas = (props: {
+  subject: ToolScenePreviewSubject;
+  bridge: ToolScenePreviewBridge;
 }) => {
   // eslint-disable-next-line no-null/no-null
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   React.useLayoutEffect(() => {
     if (!canvasRef.current) { return; }
-    return registerSlotPreview(props.bridge, {
-      slotId: props.slotId, canvas: canvasRef.current,
+    return registerToolPreview(props.bridge, {
+      subject: props.subject, canvas: canvasRef.current,
     });
-  }, [props.bridge, props.slotId]);
-  return <canvas ref={canvasRef} className="tool-graphic-3d slot-scene-preview"
-    aria-label={t("3D tool slot preview")} title={t("Drag to rotate")} />;
+  }, [props.bridge, props.subject]);
+  const mounted = props.subject == "utm";
+  const className = mounted ? "mounted-tool-scene-preview" : "slot-scene-preview";
+  return <canvas ref={canvasRef}
+    className={`tool-graphic-3d tool-scene-preview ${className}`}
+    aria-label={mounted ? t("3D mounted tool preview") : t("3D tool slot preview")}
+    title={t("Drag to rotate")} />;
+};
+
+const ToolScenePreview = (props: {
+  subject: ToolScenePreviewSubject | undefined;
+  children: React.ReactNode;
+}) => {
+  const bridge = React.useContext(ToolScenePreviewContext);
+  return bridge && props.subject !== undefined
+    ? <ToolScenePreviewCanvas bridge={bridge} subject={props.subject} />
+    : props.children;
 };
 
 export const SlotScenePreview = (props: {
   slotId: number | undefined;
   children: React.ReactNode;
-}) => {
-  const bridge = React.useContext(SlotScenePreviewContext);
-  return bridge && props.slotId !== undefined
-    ? <SlotScenePreviewCanvas bridge={bridge} slotId={props.slotId} />
-    : props.children;
-};
+}) => <ToolScenePreview subject={props.slotId}>{props.children}</ToolScenePreview>;
+
+export const MountedToolScenePreview = (props: { children: React.ReactNode }) =>
+  <ToolScenePreview subject={"utm"}>{props.children}</ToolScenePreview>;
 
 const FOCUS_LAYER = 31;
 const FRAME_INTERVAL_MS = 1000 / 30;
 const DIM_OPACITY = 0.62;
-const INITIAL_DIRECTION = new Vector3(1, -1, 1).normalize();
+const SLOT_DIRECTION = new Vector3(1, -1, 1).normalize();
+const UTM_DIRECTION = new Vector3(1, 0, 0);
+const UTM_CAMERA_DISTANCE = 310;
 
-const findPreviewObjects = (scene: Scene, slotId: number) => {
+const findUtmFocus = (zAxis: Object3D | undefined) => {
+  let anchor: Object3D | undefined;
+  const focus: Object3D[] = [];
+  // Only the live Z axis owns the tool. Jog ghosts can contain a copy.
+  zAxis?.traverseVisible(object => {
+    if (object.name == "UTM") { anchor = object; }
+    if (object.name == "utm-highlight-selection") { focus.push(object); }
+  });
+  return { anchor, focus };
+};
+
+const findPreviewObjects = (scene: Scene, subject: ToolScenePreviewSubject) => {
   const lights: Light[] = [];
   const overlays: Object3D[] = [];
   let slot: Object3D | undefined;
+  let zAxis: Object3D | undefined;
   scene.traverseVisible(object => {
     if (object instanceof Light) { lights.push(object); }
-    if (object.userData.toolSlotId == slotId) { slot = object; }
-    if (object.name.endsWith("-crosshair") || object.name == "selected-object-ring") {
+    if (object.userData.toolSlotId == subject) { slot = object; }
+    if (object.name == "bot-z-axis") { zAxis = object; }
+    if (object.name.endsWith("-crosshair")
+      || object.name == "selected-object-ring") {
       overlays.push(object);
     }
   });
-  return { slot, lights, overlays };
+  const selection = subject == "utm"
+    ? findUtmFocus(zAxis)
+    : { anchor: slot, focus: slot ? [slot] : [] };
+  return { ...selection, lights, overlays };
 };
 
 const measurePreview = (gl: WebGLRenderer, canvas: HTMLCanvasElement) => {
@@ -88,24 +122,24 @@ const measurePreview = (gl: WebGLRenderer, canvas: HTMLCanvasElement) => {
   return width && height ? { source, dpr, width, height } : undefined;
 };
 
-const renderFocusedSlot = (
+const renderFocusedObjects = (
   gl: WebGLRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
-  slot: Object3D,
+  focus: Object3D[],
   lights: Light[],
 ) => {
   const background = scene.background;
   const cameraLayers = camera.layers.mask;
   const layers = new Map<Object3D, number>();
   const include = (object: Object3D) => {
-    layers.set(object, object.layers.mask);
+    layers.set(object, layers.get(object) ?? object.layers.mask);
     object.layers.enable(FOCUS_LAYER);
   };
-  slot.traverse(include);
+  focus.forEach(root => root.traverse(include));
   lights.forEach(include);
   try {
-    // Preserve the first pass's depth and shadows when redrawing the slot.
+    // Preserve the first pass's depth and shadows when redrawing the selection.
     // eslint-disable-next-line no-null/no-null
     scene.background = null;
     camera.layers.set(FOCUS_LAYER);
@@ -117,8 +151,8 @@ const renderFocusedSlot = (
   }
 };
 
-const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
-  const { canvas, slotId } = request;
+const openToolScenePreview = (request: ToolScenePreviewRequest) => {
+  const { canvas, subject } = request;
   const context = canvas.getContext("2d");
   if (!context) { return undefined; }
   const camera = new PerspectiveCamera(35, 1, 5, 100000);
@@ -145,12 +179,51 @@ const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
     depthTest: false, depthWrite: false, toneMapped: false,
   });
   dimmer.add(new Mesh(dimGeometry, dimMaterial));
+  let cameraAnchor: Object3D | undefined;
   let highlight: ReturnType<typeof createYellowOutlinePass> | undefined;
   let lastFrame = -Infinity;
 
   const disposeHighlight = () => {
     highlight?.restoreObjectIds();
     highlight?.outlinePass.dispose();
+  };
+
+  const getOutline = (scene: Scene, focus: Object3D[]) => {
+    const pass = highlight?.outlinePass;
+    if (pass && pass.selectedObjects.length == focus.length
+      && focus.every((object, index) => object == pass.selectedObjects[index])) {
+      return pass;
+    }
+    disposeHighlight();
+    highlight = createYellowOutlinePass(
+      new Vector2(renderTarget.width, renderTarget.height), scene, camera,
+      focus.map(object => ({ object, highlightName: "tool-preview" })),
+      { thicknessScale: 0.25, spreadScale: 0.25 });
+    return highlight.outlinePass;
+  };
+
+  const frameCamera = (anchor: Object3D) => {
+    const mounted = subject == "utm";
+    anchor.updateWorldMatrix(true, false);
+    bounds.setFromObject(anchor);
+    if (bounds.isEmpty()) {
+      anchor.getWorldPosition(target);
+    } else {
+      bounds.getCenter(target);
+    }
+    if (mounted) { target.z += UTM_PREVIEW_Z_OFFSET; }
+    if (!cameraAnchor || (!mounted && cameraAnchor != anchor)) {
+      const distance = mounted
+        ? UTM_CAMERA_DISTANCE
+        : Math.max(280, bounds.getSize(shift).length() * 1.65);
+      camera.position.copy(target)
+        .addScaledVector(mounted ? UTM_DIRECTION : SLOT_DIRECTION, distance);
+    } else {
+      camera.position.add(shift.subVectors(target, controls.target));
+    }
+    cameraAnchor = anchor;
+    controls.target.copy(target);
+    controls.update();
   };
 
   return {
@@ -168,8 +241,8 @@ const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
       if (now - lastFrame < FRAME_INTERVAL_MS || gl.getRenderTarget()) { return; }
       const dimensions = measurePreview(gl, canvas);
       if (!dimensions) { return; }
-      const { slot, lights, overlays } = findPreviewObjects(scene, slotId);
-      if (!slot) { return; }
+      const { anchor, focus, lights, overlays } = findPreviewObjects(scene, subject);
+      if (!anchor) { return; }
 
       const { source, dpr, width, height } = dimensions;
       if (renderTarget.width != width || renderTarget.height != height) {
@@ -181,25 +254,8 @@ const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
         highlight?.outlinePass.setSize(width, height);
       }
 
-      bounds.setFromObject(slot);
-      if (bounds.isEmpty()) {
-        slot.getWorldPosition(target);
-      } else {
-        bounds.getCenter(target);
-      }
-      if (!highlight || highlight.outlinePass.selectedObjects[0] != slot) {
-        disposeHighlight();
-        highlight = createYellowOutlinePass(new Vector2(width, height), scene,
-          camera, [{ object: slot, highlightName: "tool-slot" }],
-          { thicknessScale: 0.25, spreadScale: 0.25 });
-        const size = bounds.getSize(shift).length();
-        camera.position.copy(target)
-          .addScaledVector(INITIAL_DIRECTION, Math.max(280, size * 1.65));
-      } else {
-        camera.position.add(shift.subVectors(target, controls.target));
-      }
-      controls.target.copy(target);
-      controls.update();
+      frameCamera(anchor);
+      const outline = getOutline(scene, focus);
 
       gl.getViewport(viewport);
       gl.getScissor(scissor);
@@ -214,8 +270,8 @@ const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
         gl.autoClear = false;
         gl.shadowMap.autoUpdate = false;
         gl.render(dimmer, dimCamera);
-        renderFocusedSlot(gl, scene, camera, slot, lights);
-        highlight.outlinePass.render(gl, renderTarget, renderTarget, 0, false);
+        renderFocusedObjects(gl, scene, camera, focus, lights);
+        outline.render(gl, renderTarget, renderTarget, 0, false);
 
         // Present before the map draws. The panel canvas only needs 2D access.
         gl.setRenderTarget(null); // eslint-disable-line no-null/no-null
@@ -240,16 +296,16 @@ const openSlotScenePreview = (request: SlotScenePreviewRequest) => {
   };
 };
 
-export const SlotScenePreviewRenderer = (props: {
-  bridge: SlotScenePreviewBridge;
+export const ToolScenePreviewRenderer = (props: {
+  bridge: ToolScenePreviewBridge;
 }) => {
-  const preview = React.useRef<ReturnType<typeof openSlotScenePreview>>(undefined);
+  const preview = React.useRef<ReturnType<typeof openToolScenePreview>>(undefined);
   React.useEffect(() => () => preview.current?.dispose(), []);
   useFrame(({ gl, scene }) => {
     const request = props.bridge.current;
     if (preview.current?.request != request) {
       preview.current?.dispose();
-      preview.current = request && openSlotScenePreview(request);
+      preview.current = request && openToolScenePreview(request);
     }
     preview.current?.render(gl, scene);
   });

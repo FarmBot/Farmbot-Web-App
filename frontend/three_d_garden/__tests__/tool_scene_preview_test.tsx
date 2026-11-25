@@ -9,11 +9,11 @@ import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { Color as UiColor } from "../../ui/colors";
 import {
-  SlotScenePreview, SlotScenePreviewBridge, SlotScenePreviewContext,
-  SlotScenePreviewRenderer,
-} from "../slot_scene_preview";
+  SlotScenePreview, ToolScenePreviewBridge, ToolScenePreviewContext,
+  ToolScenePreviewRenderer,
+} from "../tool_scene_preview";
 
-describe("slot scene preview", () => {
+describe("tool scene preview", () => {
   afterEach(() => jest.restoreAllMocks());
 
   it("uses the standalone preview when the garden view is unavailable", () => {
@@ -24,20 +24,20 @@ describe("slot scene preview", () => {
   });
 
   it("registers only saved slots and releases the canvas on close", () => {
-    const bridge: SlotScenePreviewBridge = {};
+    const bridge: ToolScenePreviewBridge = {};
     const preview = (slotId: number | undefined) =>
-      <SlotScenePreviewContext.Provider value={bridge}>
+      <ToolScenePreviewContext.Provider value={bridge}>
         <SlotScenePreview slotId={slotId}>Standalone slot preview</SlotScenePreview>
-      </SlotScenePreviewContext.Provider>;
+      </ToolScenePreviewContext.Provider>;
     const { container, rerender, unmount } = render(preview(undefined));
     expect(bridge.current).toBeUndefined();
     rerender(preview(7));
     expect(bridge.current).toEqual({
-      slotId: 7,
+      subject: 7,
       canvas: container.querySelector(".slot-scene-preview"),
     });
     rerender(preview(8));
-    expect(bridge.current).toEqual(expect.objectContaining({ slotId: 8 }));
+    expect(bridge.current).toEqual(expect.objectContaining({ subject: 8 }));
     unmount();
     expect(bridge.current).toBeUndefined();
   });
@@ -87,8 +87,8 @@ describe("slot scene preview", () => {
       });
     const renderOutput = jest.spyOn(OutputPass.prototype, "render")
       .mockImplementation(jest.fn());
-    const bridge: SlotScenePreviewBridge = { current: { slotId: 7, canvas } };
-    const { unmount } = render(<SlotScenePreviewRenderer bridge={bridge} />);
+    const bridge: ToolScenePreviewBridge = { current: { subject: 7, canvas } };
+    const { unmount } = render(<ToolScenePreviewRenderer bridge={bridge} />);
     const draw = subscribe.mock.calls[0][0];
     jest.spyOn(canvas, "getBoundingClientRect")
       .mockReturnValue(new DOMRect(0, 20, 400, 200));
@@ -169,5 +169,95 @@ describe("slot scene preview", () => {
     draw(state, 0);
     expect(gl.render).not.toHaveBeenCalled();
     unmount();
+  });
+
+  it("keeps the UTM view fixed when the mounted model changes", () => {
+    const now = jest.spyOn(performance, "now").mockReturnValue(100);
+    const subscribe = jest.spyOn(fiber, "useFrame").mockImplementation(jest.fn());
+    jest.spyOn(OutputPass.prototype, "render").mockImplementation(jest.fn());
+    const view = jest.fn();
+    const outline = jest.spyOn(OutlinePass.prototype, "render")
+      .mockImplementation(function (this: OutlinePass) {
+        view([...this.selectedObjects], this.renderCamera);
+      });
+    const canvas = document.createElement("canvas");
+    jest.spyOn(canvas, "getBoundingClientRect")
+      .mockReturnValue(new DOMRect(0, 20, 450, 200));
+    const source = document.createElement("canvas");
+    source.width = 1800;
+    source.height = 1200;
+    const gl = {
+      autoClear: true, domElement: source, shadowMap: { autoUpdate: true },
+      getRenderTarget: jest.fn(), setRenderTarget: jest.fn(), getPixelRatio: () => 2,
+      getViewport: jest.fn(), getScissor: jest.fn(), getScissorTest: () => false,
+      setViewport: jest.fn(), setScissor: jest.fn(), setScissorTest: jest.fn(),
+      render: jest.fn(),
+    };
+    const scene = new Scene();
+    const zAxis = new Group();
+    zAxis.name = "bot-z-axis";
+    zAxis.position.set(80, 20, 40);
+    const utmGroup = new Group();
+    utmGroup.name = "utm-highlight-selection";
+    const utm = new Mesh(new BoxGeometry(60, 80, 40));
+    utm.name = "UTM";
+    utmGroup.add(utm);
+    zAxis.add(utmGroup);
+    const ghost = utmGroup.clone();
+    scene.add(ghost);
+    const bridge: ToolScenePreviewBridge = { current: { subject: "utm", canvas } };
+    render(<ToolScenePreviewRenderer bridge={bridge} />);
+    const draw = subscribe.mock.calls[0][0];
+    const state = { gl, scene } as unknown as fiber.RootState;
+    draw(state, 0);
+    expect(outline).not.toHaveBeenCalled();
+
+    scene.add(zAxis);
+    draw(state, 0);
+    const camera = view.mock.calls[0][1] as PerspectiveCamera;
+    const anchor = utm.getWorldPosition(new Vector3());
+    const target = anchor.clone().add(new Vector3(0, 0, -35));
+    expect(view).toHaveBeenLastCalledWith([utmGroup], camera);
+    expect(camera.position.clone().sub(anchor)
+      .distanceTo(new Vector3(310, 0, -35))).toBeCloseTo(0);
+    expect(camera.getWorldDirection(new Vector3())
+      .distanceTo(new Vector3(-1, 0, 0))).toBeCloseTo(0);
+    expect([canvas.width, canvas.height]).toEqual([900, 400]);
+    const projection = camera.projectionMatrix.clone();
+
+    const tool = new Group();
+    tool.name = "utm-highlight-selection";
+    const toolMesh = new Mesh(new BoxGeometry(50, 50, 100));
+    toolMesh.position.z = -80;
+    tool.add(toolMesh);
+    zAxis.add(tool);
+    now.mockReturnValue(150);
+    const initialPosition = camera.position.clone();
+    const initialRotation = camera.quaternion.clone();
+    draw(state, 0);
+    expect(view).toHaveBeenLastCalledWith([utmGroup, tool], camera);
+    expect(camera.position.distanceTo(initialPosition)).toBeCloseTo(0);
+    expect(camera.quaternion.angleTo(initialRotation)).toBeCloseTo(0);
+    expect(camera.projectionMatrix).toEqual(projection);
+
+    camera.position.set(300, 130, 60);
+    camera.lookAt(target);
+    const orbitedPosition = camera.position.clone();
+    const orbitedRotation = camera.quaternion.clone();
+    zAxis.remove(tool);
+    utmGroup.remove(utm).add(utm.clone());
+    now.mockReturnValue(200);
+    draw(state, 0);
+    expect(view).toHaveBeenLastCalledWith([utmGroup], camera);
+    expect(camera.position.distanceTo(orbitedPosition)).toBeCloseTo(0);
+    expect(camera.quaternion.angleTo(orbitedRotation)).toBeCloseTo(0);
+    expect(camera.projectionMatrix).toEqual(projection);
+    expect([canvas.width, canvas.height]).toEqual([900, 400]);
+
+    zAxis.position.x += 40;
+    now.mockReturnValue(250);
+    draw(state, 0);
+    expect(camera.position.x).toBeCloseTo(orbitedPosition.x + 40);
+    expect(camera.quaternion.angleTo(orbitedRotation)).toBeCloseTo(0);
   });
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import * as fiber from "@react-three/fiber";
-import { OrthographicCamera, Scene } from "three";
+import { OrthographicCamera, Scene, Vector3 } from "three";
 import * as graphics from "../tool_graphics";
 import { ToolPreviewPanel, ToolPreviewView } from "../tool_preview_panel";
 
@@ -54,6 +54,7 @@ describe("<ToolPreviewPanel />", () => {
       domElement: { getBoundingClientRect: () => new DOMRect(10, 100, 180, 200) },
       autoClear: true,
       clear: jest.fn(),
+      setClearAlpha: jest.fn(),
       setViewport: jest.fn(),
       setScissor: jest.fn(),
       setScissorTest: jest.fn(),
@@ -73,12 +74,19 @@ describe("<ToolPreviewPanel />", () => {
     for (const [callback] of views.slice(-2)) {
       callback(state, 0);
     }
+    expect(gl.setClearAlpha).toHaveBeenCalledWith(0);
+    expect(gl.setClearAlpha.mock.invocationCallOrder[0])
+      .toBeLessThan(gl.clear.mock.invocationCallOrder[0]);
     expect(gl.clear).toHaveBeenCalledTimes(1);
     expect(gl.setViewport).toHaveBeenCalledWith(10, 150, 50, 60);
     expect(gl.setScissor).toHaveBeenCalledWith(10, 150, 50, 50);
     expect(gl.render).toHaveBeenCalledTimes(1);
     expect(gl.render).toHaveBeenCalledWith(
       expect.any(Scene), expect.any(OrthographicCamera));
+    const camera = gl.render.mock.calls[0][1] as OrthographicCamera;
+    expect(camera.position.toArray()).toEqual([200, 0, -35]);
+    expect(camera.getWorldDirection(new Vector3())
+      .distanceTo(new Vector3(-1, 0, 0))).toBeCloseTo(0);
     expect(scene.mock.calls).toContainEqual([expect.objectContaining({
       toolType: "seeder", orbitTarget: mounted,
       viewportSize: { width: 50, height: 60 },

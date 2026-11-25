@@ -35,8 +35,8 @@ import { NavigationContext } from "../routes_helpers";
 import { StargazingControls } from "../three_d_garden/stargazing/stargazing";
 import { ThreeDGuard } from "../three_d_garden/three_d_required_overlay";
 import {
-  SlotScenePreviewBridge, SlotScenePreviewContext,
-} from "../three_d_garden/slot_scene_preview";
+  ToolScenePreviewBridge, ToolScenePreviewContext,
+} from "../three_d_garden/tool_scene_preview";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -66,7 +66,7 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 export class RawFarmDesigner
   extends React.Component<FarmDesignerProps, Partial<State>> {
 
-  private slotScenePreview: SlotScenePreviewBridge = {};
+  private toolScenePreview: ToolScenePreviewBridge = {};
 
   initializeSetting =
     (key: keyof State, defaultValue: boolean): boolean => {
@@ -364,12 +364,12 @@ export class RawFarmDesigner
           mapTransformProps={this.mapTransformProps}
           allPoints={this.props.allPoints} />}
     </div>;
-    const slotPreview = threeDGarden && show_farmbot
-      ? this.slotScenePreview
+    const toolPreview = threeDGarden && show_farmbot
+      ? this.toolScenePreview
       : undefined;
-    return <SlotScenePreviewContext.Provider value={slotPreview}>
+    return <ToolScenePreviewContext.Provider value={toolPreview}>
       {designer}
-    </SlotScenePreviewContext.Provider>;
+    </ToolScenePreviewContext.Provider>;
   }
 }
 

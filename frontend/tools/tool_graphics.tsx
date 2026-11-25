@@ -4,14 +4,16 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import {
-  DirectionalLight as ThreeDirectionalLight, Mesh as ThreeMesh,
+  Box3, DirectionalLight as ThreeDirectionalLight, Mesh as ThreeMesh,
   type MeshStandardMaterial, Object3D,
-  PCFShadowMap,
+  PCFShadowMap, Vector3,
 } from "three";
 import { ToolPulloutDirection, ToolType } from
   "farmbot/dist/resources/api_resources";
 import { INITIAL } from "../three_d_garden/config";
-import { ASSETS, LIB_DIR, PartName } from "../three_d_garden/constants";
+import {
+  ASSETS, LIB_DIR, PartName, UTM_PREVIEW_Z_OFFSET,
+} from "../three_d_garden/constants";
 import {
   AmbientLight, DirectionalLight, Group, Mesh,
 } from "../three_d_garden/components";
@@ -91,13 +93,17 @@ export const ToolPreviewUnavailable = () =>
     {t("3D graphics unavailable")}
   </p>;
 
+const MOUNTED_TOOL_TARGET = new Vector3(0, 0, UTM_PREVIEW_Z_OFFSET);
+const MOUNTED_TOOL_BOUNDS = new Box3().setFromCenterAndSize(
+  MOUNTED_TOOL_TARGET, new Vector3(180, 128, 144));
+
 export const ToolGraphicScene = (props: ToolGraphic3DProps & {
   orbitTarget?: HTMLElement;
   viewportSize?: { width: number; height: number };
 }) => {
   const lightRef = React.useRef<ThreeDirectionalLight | undefined>(undefined);
   const interactive = props.mounted || props.profile;
-  const margin = props.toolType == "seed_trough"
+  const margin = !props.mounted && props.toolType == "seed_trough"
     ? 3
     : 1.2;
   const shadowMapSize = interactive
@@ -119,6 +125,7 @@ export const ToolGraphicScene = (props: ToolGraphic3DProps & {
       castShadow={false} />
     <React.Suspense fallback={undefined}>
       <ToolPreviewCamera margin={margin} viewportSize={props.viewportSize}
+        fixedBounds={props.mounted ? MOUNTED_TOOL_BOUNDS : undefined}
         onCentered={({ container, boundingSphere }) => {
           if (lightRef.current) {
             configurePreviewShadows(
@@ -140,19 +147,22 @@ export const ToolGraphicScene = (props: ToolGraphic3DProps & {
       </ToolPreviewCamera>
     </React.Suspense>
     {interactive && <OrbitControls
-      domElement={props.orbitTarget} enablePan={false} enableZoom={false} />}
+      domElement={props.orbitTarget}
+      target={props.mounted ? MOUNTED_TOOL_TARGET : undefined}
+      enablePan={false} enableZoom={false} />}
   </>;
 };
 
 export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
   const [available] = React.useState(toolPreviewAvailable);
+  const z = props.mounted ? UTM_PREVIEW_Z_OFFSET : 0;
   return <div className="tool-graphic-3d">
     <ErrorBoundary fallback={<ToolPreviewUnavailable />}>
       {available
         ? <Canvas
           shadows={{ type: PCFShadowMap }}
           orthographic={true}
-          camera={{ position: [200, 0, 0], up: [0, 0, 1], zoom: 1 }}
+          camera={{ position: [200, 0, z], up: [0, 0, 1], zoom: 1 }}
           events={safePointerEvents}
           frameloop="demand">
           <ToolGraphicScene {...props} />

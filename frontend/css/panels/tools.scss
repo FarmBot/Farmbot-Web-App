@@ -70,13 +70,9 @@
       }
     }
     .mounted-tool {
-      .filter-search {
-        width: 50%;
-        float: right;
-      }
       .utm-and-mounted-tool-graphic {
         width: 30%;
-        margin-left: 32%;
+        margin-inline: auto;
         height: 16rem;
         cursor: grab;
         touch-action: none;
@@ -84,19 +80,23 @@
           cursor: grabbing;
         }
       }
+      .mounted-tool-scene-preview {
+        width: calc(100% + 2rem);
+        height: 20rem;
+        margin: -1rem -1rem 0;
+      }
+    }
+    .mounted-tool-selection {
+      margin-top: 1rem;
     }
     .mounted-tool-header {
-      display: inline;
-      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       label {
         margin: 0;
       }
-      .bp6-popover-wrapper {
-        display: inline;
-      }
       .help-icon {
-        margin-left: 1rem;
-        vertical-align: top;
         font-size: 1.4rem;
       }
     }
@@ -280,7 +280,7 @@
   }
 }
 
-.slot-scene-preview {
+.tool-scene-preview {
   display: block;
   cursor: grab;
   touch-action: none;
