@@ -89,8 +89,6 @@ export class RawAddToolSlot
         {this.toolSlot
           ? <SlotEditRows
             firmwareHardware={this.props.firmwareHardware}
-            threeDimensions={!!this.props.getValue(
-              BooleanSetting.enable_3d_electronics_box_top)}
             noUTM={!hasUTM(this.props.firmwareHardware)}
             is3D={is3D}
             toolSlot={this.toolSlot}
@@ -102,7 +100,6 @@ export class RawAddToolSlot
             defaultAxes={this.props.defaultAxes}
             arduinoBusy={this.props.arduinoBusy}
             dispatch={this.props.dispatch}
-            toolTransformProps={this.props.toolTransformProps}
             isActive={this.props.isActive}
             updateToolSlot={this.updateSlot(this.toolSlot)} />
           : "initializing"}

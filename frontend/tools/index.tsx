@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelTop, DesignerPanelContent,
+  DesignerPanel, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { Panel } from "../farm_designer/panel_header";
 import {
@@ -17,7 +17,7 @@ import {
 import { Link } from "../link";
 import { edit, save } from "../api/crud";
 import {
-  setToolHover, ToolSlotSVG, ToolSVG,
+  setToolHover, ToolSlotSVG,
 } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolSelection } from "./tool_slot_edit_components";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
@@ -36,12 +36,10 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { pointGroupSubset } from "../plants/select_plants";
 import { Path } from "../internal_urls";
-import { UTMProfile } from "../farm_designer/map/profile/tools";
-import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../routes_helpers";
 import { ToolActionRow } from "./tool_action_row";
 import { isBotOnlineFromState } from "../devices/must_be_online";
-import { ToolGraphic3D } from "./tool_graphics";
+import { ToolPreviewPanel, ToolPreviewView } from "./tool_preview_panel";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -76,28 +74,11 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         filterSelectedTool={true}
         filterActiveTools={false}
         filterUtmMountable={true} />
-      {this.props.threeDimensions
-        ? <ToolGraphic3D mounted={true}
-          firmwareHardware={this.props.firmwareHardware}
-          toolName={this.mountedTool?.body.name}
-          toolType={this.mountedTool?.body.type}
-          utmMountable={this.mountedTool?.body.utm_mountable} />
-        : <svg className={"utm-and-mounted-tool-graphic"}
-          viewBox={"-60 -50 120 140"}>
-          <UTMProfile profileAxis={"y"} expanded={true} getX={() => 0}
-            position={{ x: 0, y: 0 }} selectionWidth={1}
-            mountedToolInfo={{
-              id: this.mountedToolId,
-              name: this.mountedTool?.body.name,
-              type: this.mountedTool?.body.type,
-              pulloutDirection: ToolPulloutDirection.POSITIVE_X,
-              noUTM: this.noUTM,
-              flipped: false,
-            }} reversed={false}
-            hidePositionIndicator={true}
-            gantryHeight={0}
-            botPosition={{ x: 0, y: 0, z: 0 }} />
-        </svg>}
+      <ToolPreviewView mounted={true}
+        firmwareHardware={this.props.firmwareHardware}
+        toolName={this.mountedTool?.body.name}
+        toolType={this.mountedTool?.body.type}
+        utmMountable={this.mountedTool?.body.utm_mountable} />
       <ToolActionRow
         className={"mounted-tool-action-row"}
         showTitle={true}
@@ -128,14 +109,13 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .map(toolSlot =>
           <ToolSlotInventoryItem key={toolSlot.uuid}
             firmwareHardware={this.props.firmwareHardware}
-            threeDimensions={this.props.threeDimensions}
+            preview3D={true}
             hovered={toolSlot.uuid === this.props.hoveredToolSlot}
             dispatch={this.props.dispatch}
             toolSlot={toolSlot}
             isActive={this.props.isActive}
             tools={this.props.tools}
-            noUTM={this.noUTM}
-            toolTransformProps={this.props.toolTransformProps} />)}
+            noUTM={this.noUTM} />)}
     </div>;
 
   Tools = () =>
@@ -156,7 +136,6 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
             firmwareHardware={this.props.firmwareHardware}
-            threeDimensions={this.props.threeDimensions}
             toolId={tool.body.id}
             toolType={tool.body.type}
             utmMountable={tool.body.utm_mountable}
@@ -211,7 +190,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           placeholder={this.strings.placeholder}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
-      <DesignerPanelContent panelName={"tools"}>
+      <ToolPreviewPanel hasTools={hasTools}>
         <EmptyStateWrapper
           notEmpty={hasTools}
           graphic={EmptyStateGraphic.tools}
@@ -248,7 +227,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
               </PanelSection>}
           </div>
         </EmptyStateWrapper>
-      </DesignerPanelContent>
+      </ToolPreviewPanel>
     </DesignerPanel>;
   }
 }
@@ -280,8 +259,8 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
     <Row className="grid-exp-3">
       <div className={"tool-slot-search-item-icon"}>
-        {props.threeDimensions
-          ? <ToolGraphic3D toolName={toolName}
+        {props.preview3D
+          ? <ToolPreviewView toolName={toolName}
             firmwareHardware={props.firmwareHardware}
             toolType={toolType}
             utmMountable={tool?.body.utm_mountable}
@@ -332,11 +311,9 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   return <div className={"tool-search-item"}
     onClick={() => { navigate(Path.tools(props.toolId)); }}>
     <Row className="grid-exp-3">
-      {props.threeDimensions
-        ? <ToolGraphic3D toolName={props.toolName} toolType={props.toolType}
-          firmwareHardware={props.firmwareHardware}
-          utmMountable={props.utmMountable} />
-        : <ToolSVG toolName={props.toolName} toolType={props.toolType} />}
+      <ToolPreviewView toolName={props.toolName} toolType={props.toolType}
+        firmwareHardware={props.firmwareHardware}
+        utmMountable={props.utmMountable} />
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
       <p className="tool-status">
         <i>{props.mounted ? t("mounted") : activeText}</i>

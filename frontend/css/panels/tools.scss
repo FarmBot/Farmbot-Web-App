@@ -1,6 +1,35 @@
 @use "../variables" as *;
 @use "sass:color";
 
+.farm-designer-panels .tools-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  > .panel-top {
+    flex: none;
+  }
+}
+
+.tool-preview-panel {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  > .tools-panel-content {
+    width: 100%;
+  }
+}
+
+.tool-preview-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tool-preview-unavailable {
+  margin: 1rem;
+  text-align: center;
+}
+
 .tool-slots-panel,
 .tools-panel {
   .tool-slots-panel-content,
@@ -48,8 +77,11 @@
       .utm-and-mounted-tool-graphic {
         width: 30%;
         margin-left: 32%;
-        &.tool-graphic-3d {
-          height: 16rem;
+        height: 16rem;
+        cursor: grab;
+        touch-action: none;
+        &:active {
+          cursor: grabbing;
         }
       }
     }

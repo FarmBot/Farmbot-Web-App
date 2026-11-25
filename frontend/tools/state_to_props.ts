@@ -15,8 +15,6 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting, NumericSetting } from "../session_keys";
-import { isBotOriginQuadrant } from "../farm_designer/interfaces";
 import {
   AddEditToolSlotPropsBase, AddToolSlotProps, EditToolSlotProps, ToolsProps,
 } from "./interfaces";
@@ -29,14 +27,8 @@ const isActive = (toolSlots: ReturnType<typeof selectAllToolSlotPointers>) =>
     !!(toolId && toolSlots.map(x => x.body.tool_id).includes(toolId));
 
 export const mapStateToProps = (props: Everything): ToolsProps => {
-  const getWebAppConfig = getWebAppConfigValue(() => props);
-  const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
-  const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
-  const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
   const peripherals = selectAllPeripherals(props.resources.index);
   return {
-    threeDimensions: !!getWebAppConfig(
-      BooleanSetting.enable_3d_electronics_box_top),
     tools: selectAllTools(props.resources.index),
     toolSlots: selectAllToolSlotPointers(props.resources.index),
     dispatch: props.dispatch,
@@ -50,7 +42,6 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
     hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
-    toolTransformProps: { xySwap, quadrant },
     groups: selectAllPointGroups(props.resources.index),
     allPoints: selectAllActivePoints(props.resources.index),
   };
@@ -59,16 +50,12 @@ export const mapStateToProps = (props: Everything): ToolsProps => {
 const mapStateToPropsAddEditBase = (props: Everything):
   AddEditToolSlotPropsBase => {
   const getWebAppConfig = getWebAppConfigValue(() => props);
-  const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
-  const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
-  const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
   return {
     tools: selectAllTools(props.resources.index),
     dispatch: props.dispatch,
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
     findTool: (id: number) => maybeFindToolById(props.resources.index, id),
     firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
-    toolTransformProps: { xySwap, quadrant },
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
     botOnline: isBotOnlineFromState(props.bot),
     arduinoBusy: props.bot.hardware.informational_settings.busy,

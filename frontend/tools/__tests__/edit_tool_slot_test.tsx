@@ -10,7 +10,6 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as crud from "../../api/crud";
 import { mapStateToPropsEdit } from "../state_to_props";
-import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { EditToolSlotProps } from "../interfaces";
 import * as toolGraphics from "../../farm_designer/map/layers/tool_slots/tool_graphics";
 import { SpecialStatus } from "farmbot";
@@ -30,7 +29,6 @@ beforeEach(() => {
   jest.spyOn(crud, "save").mockImplementation(jest.fn(() => () => "mockSave"));
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
   jest.spyOn(toolGraphics, "setToolHover").mockImplementation(jest.fn());
-  jest.spyOn(toolGraphics, "ToolSlotSVG").mockImplementation(() => <div />);
 });
 
 describe("<EditToolSlot />", () => {
@@ -58,7 +56,6 @@ describe("<EditToolSlot />", () => {
     botPosition: { x: undefined, y: undefined, z: undefined },
     dispatch: jest.fn(),
     firmwareHardware: undefined,
-    toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
     botOnline: true,
     arduinoBusy: false,
@@ -97,21 +94,19 @@ describe("<EditToolSlot />", () => {
     }
   });
 
-  it.each([false, true])("uses the electronics box setting: %s", enabled => {
+  it("renders an interactive slot preview", () => {
     const graphic = jest.spyOn(toolPreview, "ToolGraphic3D")
       .mockImplementation(() => <div className={"tool-graphic-3d"} />);
     const p = fakeProps();
     p.findToolSlot = () => fakeToolSlot();
-    p.getValue = jest.fn(key =>
-      key == BooleanSetting.enable_3d_electronics_box_top && enabled);
     p.firmwareHardware = "arduino";
     const { container } = render(<EditToolSlot {...p} />);
-    expect(!!container.querySelector(".tool-graphic-3d")).toEqual(enabled);
+    expect(container.querySelector(".tool-graphic-3d")).toBeInTheDocument();
     expect(!!container.querySelector("input[name='tool_direction']"))
       .toEqual(true);
-    if (enabled) {
-      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
-    }
+    expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
+      firmwareHardware: "arduino", profile: true,
+    }));
     graphic.mockRestore();
   });
 

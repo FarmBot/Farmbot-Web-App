@@ -16,7 +16,6 @@ import {
   getFwHardwareValue,
 } from "../settings/firmware/firmware_hardware_support";
 import { getFbosConfig } from "../resources/getters";
-import { ToolSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import {
   AddToolProps, AddToolState,
 } from "./interfaces";
@@ -31,13 +30,9 @@ import {
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
 import { ToolType } from "farmbot/dist/resources/api_resources";
-import { getWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting } from "../session_keys";
 import { ToolGraphic3D } from "./tool_graphics";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
-  threeDimensions: !!getWebAppConfigValue(() => props)(
-    BooleanSetting.enable_3d_electronics_box_top),
   dispatch: props.dispatch,
   existingToolNames: betterCompact(selectAllTools(props.resources.index)
     .map(tool => tool.body.name)),
@@ -276,13 +271,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool grid">
-          {this.props.threeDimensions
-            ? <ToolGraphic3D toolName={this.state.toolName}
-              firmwareHardware={this.props.firmwareHardware}
-              toolType={this.state.toolType}
-              utmMountable={this.state.utmMountable} profile={true} />
-            : <ToolSVG toolName={this.state.toolName}
-              toolType={this.state.toolType} profile={true} />}
+          <ToolGraphic3D toolName={this.state.toolName}
+            firmwareHardware={this.props.firmwareHardware}
+            toolType={this.state.toolType}
+            utmMountable={this.state.utmMountable} profile={true} />
           <CustomToolGraphicsInput
             toolName={this.state.toolName}
             toolType={this.state.toolType}

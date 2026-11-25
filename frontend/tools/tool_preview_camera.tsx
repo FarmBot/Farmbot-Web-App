@@ -5,11 +5,24 @@ import { Box3, OrthographicCamera, Vector3 } from "three";
 
 export interface ToolPreviewCameraProps {
   margin: number;
+  viewportSize?: { width: number; height: number };
   onCentered(props: OnCenterCallbackProps): void;
   children: React.ReactNode;
 }
 
-const fitCamera = (camera: OrthographicCamera, box: Box3, margin: number) => {
+const fitCamera = (
+  camera: OrthographicCamera,
+  box: Box3,
+  margin: number,
+  viewportSize: ToolPreviewCameraProps["viewportSize"],
+) => {
+  if (viewportSize) {
+    const { width, height } = viewportSize;
+    camera.left = -width / 2;
+    camera.right = width / 2;
+    camera.top = height / 2;
+    camera.bottom = -height / 2;
+  }
   const center = box.getCenter(new Vector3());
   const radius = box.getSize(new Vector3()).length() / 2;
   const distance = Math.max(1, radius * 4 * margin);
@@ -39,13 +52,15 @@ export const ToolPreviewCamera = (props: ToolPreviewCameraProps) => {
     container.updateWorldMatrix(true, true);
     const box = new Box3().setFromObject(container);
     if (camera instanceof OrthographicCamera && !box.isEmpty()) {
+      const viewport = props.viewportSize
+        ? [props.viewportSize.width, props.viewportSize.height]
+        : [camera.left, camera.right, camera.top, camera.bottom];
       const fitKey = JSON.stringify([
-        camera.uuid, camera.left, camera.right, camera.top, camera.bottom,
-        props.margin, box.min.toArray(), box.max.toArray(),
+        camera.uuid, viewport, props.margin, box.min.toArray(), box.max.toArray(),
       ]);
       // Center can run again after orbiting without a model or viewport change.
       if (fitKey !== lastFit.current) {
-        fitCamera(camera, box, props.margin);
+        fitCamera(camera, box, props.margin, props.viewportSize);
         lastFit.current = fitKey;
       }
     }

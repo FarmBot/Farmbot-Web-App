@@ -17,7 +17,8 @@ import {
 } from "../three_d_garden/components";
 import { ToolModel } from "../three_d_garden/bot/components/tools";
 import { safePointerEvents } from "../three_d_garden/pointer_events";
-import { ThreeDGuard } from "../three_d_garden/three_d_required_overlay";
+import { ErrorBoundary } from "../error_boundary";
+import { t } from "../i18next_wrapper";
 import { kitVersionFromFirmware } from "../three_d_garden/bot/bot_versions";
 import { useToolMaterials } from "../three_d_garden/bot/tool_hardware";
 import { ToolPreviewCamera } from "./tool_preview_camera";
@@ -75,7 +76,25 @@ export const MountedToolUTM = (props: { kitVersion: string }) => {
   </Group>;
 };
 
-export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
+export const toolPreviewAvailable = () => {
+  try {
+    const context = document.createElement("canvas").getContext("webgl2");
+    context?.getExtension("WEBGL_lose_context")?.loseContext();
+    return !!context;
+  } catch {
+    return false;
+  }
+};
+
+export const ToolPreviewUnavailable = () =>
+  <p className="tool-preview-unavailable" role="status">
+    {t("3D graphics unavailable")}
+  </p>;
+
+export const ToolGraphicScene = (props: ToolGraphic3DProps & {
+  orbitTarget?: HTMLElement;
+  viewportSize?: { width: number; height: number };
+}) => {
   const lightRef = React.useRef<ThreeDirectionalLight | undefined>(undefined);
   const interactive = props.mounted || props.profile;
   const margin = props.toolType == "seed_trough"
@@ -86,53 +105,59 @@ export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
     : 512;
   const kitVersion = kitVersionFromFirmware(props.firmwareHardware);
   const config = React.useMemo(() => ({ ...INITIAL, kitVersion }), [kitVersion]);
-  return <div className={props.mounted
-    ? "utm-and-mounted-tool-graphic tool-graphic-3d"
-    : "tool-graphic-3d"}>
-    <ThreeDGuard>
-      <Canvas
-        shadows={{ type: PCFShadowMap }}
-        orthographic={true}
-        camera={{
-          position: [200, 0, 0], up: [0, 0, 1], zoom: 1,
-        }}
-        events={safePointerEvents}
-        frameloop={"demand"}>
-        <AmbientLight intensity={1} />
-        <DirectionalLight ref={lightRef}
-          position={[300, -200, 700]} intensity={2}
-          castShadow={true}
-          shadow-autoUpdate={false}
-          shadow-mapSize-width={shadowMapSize}
-          shadow-mapSize-height={shadowMapSize}
-          shadow-bias={-0.00001}
-          shadow-normalBias={0.01} />
-        <DirectionalLight position={[10, 10, -400]} intensity={1}
-          castShadow={false} />
-        <React.Suspense fallback={undefined}>
-          <ToolPreviewCamera margin={margin}
-            onCentered={({ container, boundingSphere }) => {
-              if (lightRef.current) {
-                configurePreviewShadows(
-                  container, boundingSphere.radius, lightRef.current);
-              }
-            }}>
-            {props.mounted && <MountedToolUTM kitVersion={kitVersion} />}
-            <ToolModel
-              config={config}
-              position={{ x: 0, y: 0, z: 0 }}
-              toolName={props.toolName}
-              toolType={props.toolType}
-              utmMountable={props.utmMountable}
-              toolPulloutDirection={props.pulloutDirection
-                ?? ToolPulloutDirection.NONE}
-              inToolbay={!props.mounted}
-              mounted={false}
-              id={undefined} />
-          </ToolPreviewCamera>
-        </React.Suspense>
-        {interactive && <OrbitControls enablePan={false} enableZoom={false} />}
-      </Canvas>
-    </ThreeDGuard>
+  return <>
+    <AmbientLight intensity={1} />
+    <DirectionalLight ref={lightRef}
+      position={[300, -200, 700]} intensity={2}
+      castShadow={true}
+      shadow-autoUpdate={false}
+      shadow-mapSize-width={shadowMapSize}
+      shadow-mapSize-height={shadowMapSize}
+      shadow-bias={-0.00001}
+      shadow-normalBias={0.01} />
+    <DirectionalLight position={[10, 10, -400]} intensity={1}
+      castShadow={false} />
+    <React.Suspense fallback={undefined}>
+      <ToolPreviewCamera margin={margin} viewportSize={props.viewportSize}
+        onCentered={({ container, boundingSphere }) => {
+          if (lightRef.current) {
+            configurePreviewShadows(
+              container, boundingSphere.radius, lightRef.current);
+          }
+        }}>
+        {props.mounted && <MountedToolUTM kitVersion={kitVersion} />}
+        <ToolModel
+          config={config}
+          position={{ x: 0, y: 0, z: 0 }}
+          toolName={props.toolName}
+          toolType={props.toolType}
+          utmMountable={props.utmMountable}
+          toolPulloutDirection={props.pulloutDirection
+            ?? ToolPulloutDirection.NONE}
+          inToolbay={!props.mounted}
+          mounted={false}
+          id={undefined} />
+      </ToolPreviewCamera>
+    </React.Suspense>
+    {interactive && <OrbitControls
+      domElement={props.orbitTarget} enablePan={false} enableZoom={false} />}
+  </>;
+};
+
+export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
+  const [available] = React.useState(toolPreviewAvailable);
+  return <div className="tool-graphic-3d">
+    <ErrorBoundary fallback={<ToolPreviewUnavailable />}>
+      {available
+        ? <Canvas
+          shadows={{ type: PCFShadowMap }}
+          orthographic={true}
+          camera={{ position: [200, 0, 0], up: [0, 0, 1], zoom: 1 }}
+          events={safePointerEvents}
+          frameloop="demand">
+          <ToolGraphicScene {...props} />
+        </Canvas>
+        : <ToolPreviewUnavailable />}
+    </ErrorBoundary>
   </div>;
 };

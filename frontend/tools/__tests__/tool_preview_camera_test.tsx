@@ -93,6 +93,25 @@ describe("<ToolPreviewCamera />", () => {
     expect(camera.getWorldDirection(new Vector3()).x).toBeCloseTo(-1);
   });
 
+  it("fits an independent camera to the preview viewport", () => {
+    const { rerender } = render(<ToolPreviewCamera margin={2}
+      onCentered={onCentered} viewportSize={{ width: 90, height: 180 }}>
+      <group />
+    </ToolPreviewCamera>);
+    finishLoading();
+    expect([camera.left, camera.right, camera.top, camera.bottom])
+      .toEqual([-45, 45, 90, -90]);
+    expectInFrame();
+    rerender(<ToolPreviewCamera margin={2}
+      onCentered={onCentered} viewportSize={{ width: 160, height: 120 }}>
+      <group />
+    </ToolPreviewCamera>);
+    finishLoading();
+    expect([camera.left, camera.right, camera.top, camera.bottom])
+      .toEqual([-80, 80, 60, -60]);
+    expectInFrame();
+  });
+
   it("refits a changed model and viewport before drawing again", () => {
     const { rerender } = render(<ToolPreviewCamera
       margin={3} onCentered={onCentered}><group /></ToolPreviewCamera>);

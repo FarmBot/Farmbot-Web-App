@@ -15,7 +15,7 @@ HTMLCanvasElement.prototype.getContext = function (
   options?: unknown,
 ) {
   if (contextId == "webgl" || contextId == "webgl2") {
-    return {} as WebGLRenderingContext;
+    return { getExtension: () => undefined } as unknown as WebGLRenderingContext;
   }
   return canvasGetContext.call(this, contextId, options);
 } as typeof HTMLCanvasElement.prototype.getContext;

@@ -14,7 +14,6 @@ import {
   MountStage, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
-import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
 import { BooleanSetting } from "../../session_keys";
@@ -54,7 +53,6 @@ describe("<AddToolSlot />", () => {
     dispatch: jest.fn(),
     findToolSlot: fakeToolSlot,
     firmwareHardware: undefined,
-    toolTransformProps: fakeToolTransformProps(),
     isActive: jest.fn(),
     botOnline: true,
     arduinoBusy: false,
@@ -77,20 +75,18 @@ describe("<AddToolSlot />", () => {
     }
   });
 
-  it.each([false, true])("uses the electronics box setting: %s", enabled => {
+  it("renders an interactive slot preview", () => {
     const graphic = jest.spyOn(toolPreview, "ToolGraphic3D")
       .mockImplementation(() => <div className={"tool-graphic-3d"} />);
     const p = fakeProps();
-    p.getValue = jest.fn(key =>
-      key == BooleanSetting.enable_3d_electronics_box_top && enabled);
     p.firmwareHardware = "arduino";
     const { container } = render(<AddToolSlot {...p} />);
-    expect(!!container.querySelector(".tool-graphic-3d")).toEqual(enabled);
+    expect(container.querySelector(".tool-graphic-3d")).toBeInTheDocument();
     expect(!!container.querySelector("input[name='tool_direction']"))
       .toEqual(true);
-    if (enabled) {
-      expect(graphic.mock.calls[0][0].firmwareHardware).toEqual("arduino");
-    }
+    expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
+      firmwareHardware: "arduino", profile: true,
+    }));
     graphic.mockRestore();
   });
 
@@ -229,7 +225,6 @@ describe("mapStateToPropsAdd()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([tool, toolSlot, webAppConfig]);
     const props = mapStateToPropsAdd(state);
-    expect([1, 2, 3, 4]).toContain(props.toolTransformProps.quadrant);
     expect(props.findTool(1)).toEqual(tool);
     expect(props.findToolSlot(toolSlot.uuid)).toEqual(toolSlot);
   });

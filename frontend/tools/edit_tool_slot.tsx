@@ -73,8 +73,6 @@ export class RawEditToolSlot
           ? <div className={"edit-tool-slot-content-wrapper"}>
             <SlotEditRows
               firmwareHardware={this.props.firmwareHardware}
-              threeDimensions={!!this.props.getValue(
-                BooleanSetting.enable_3d_electronics_box_top)}
               noUTM={!hasUTM(this.props.firmwareHardware)}
               is3D={is3D}
               toolSlot={toolSlot}
@@ -86,7 +84,6 @@ export class RawEditToolSlot
               dispatch={this.props.dispatch}
               arduinoBusy={this.props.arduinoBusy}
               defaultAxes={this.props.defaultAxes}
-              toolTransformProps={this.props.toolTransformProps}
               isActive={this.props.isActive}
               updateToolSlot={this.updateSlot(toolSlot)} />
             <ul className="meta">

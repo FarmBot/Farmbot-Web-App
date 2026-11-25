@@ -258,6 +258,7 @@ jest.mock("@react-three/fiber", () => ({
     props.onCreated?.({ gl: { localClippingEnabled: false } });
     return <div>{props.children}</div>;
   },
+  createPortal: (children: ReactNode) => <>{children}</>,
   events: jest.fn(() => ({ enabled: true })),
   addEffect: jest.fn(),
   applyProps: jest.fn(),

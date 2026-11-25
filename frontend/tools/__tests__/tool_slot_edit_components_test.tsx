@@ -18,7 +18,6 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import * as ui from "../../ui";
 import { BlurableInput, FBSelect, NULL_CHOICE } from "../../ui";
-import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import {
   MountStage, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
@@ -34,7 +33,6 @@ import {
 } from "../interfaces";
 import * as deviceActions from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
-import { ToolSlotSVG } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
 import {
   createRenderer,
   unmountRenderer,
@@ -497,7 +495,6 @@ describe("<UseCurrentLocation />", () => {
 
 describe("<SlotEditRows />", () => {
   const fakeProps = (): SlotEditRowsProps => ({
-    threeDimensions: false,
     toolSlot: fakeToolSlot(),
     tools: [],
     tool: undefined,
@@ -505,7 +502,6 @@ describe("<SlotEditRows />", () => {
     updateToolSlot: jest.fn(),
     noUTM: false,
     is3D: false,
-    toolTransformProps: fakeToolTransformProps(),
     isActive: () => false,
     botOnline: true,
     arduinoBusy: false,
@@ -529,35 +525,36 @@ describe("<SlotEditRows />", () => {
     expect(container.textContent?.toLowerCase()).toContain("slot direction");
   });
 
-  it.each([false, true])("renders 3D graphics: %s", threeDimensions => {
+  it("renders the assigned tool in the slot preview", () => {
     const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
       .mockImplementation(() => <div className={"tool-graphic-3d"} />);
     const p = fakeProps();
-    p.threeDimensions = threeDimensions;
     p.firmwareHardware = "arduino";
     p.tool = fakeTool();
     p.tool.body.type = "watering_nozzle";
     p.tool.body.utm_mountable = false;
     const { container } = render(<SlotEditRows {...p} />);
-    expect(!!container.querySelector(".tool-graphic-3d"))
-      .toEqual(threeDimensions);
-    expect(!!container.querySelector(".tool-svg")).toEqual(!threeDimensions);
-    if (threeDimensions) {
-      expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
-        firmwareHardware: "arduino",
-        toolType: "watering_nozzle",
-        utmMountable: false,
-      }));
-    }
+    expect(container.querySelector(".tool-graphic-3d")).toBeInTheDocument();
+    expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
+      firmwareHardware: "arduino",
+      toolType: "watering_nozzle",
+      utmMountable: false,
+      profile: true,
+    }));
     graphic.mockRestore();
   });
 
   it("handles missing tool", () => {
     const p = fakeProps();
     p.tool = undefined;
-    const wrapper = createWrapper(<SlotEditRows {...p} />);
-    expect(wrapper.root.findByType(ToolSlotSVG).props.toolName).toEqual("Empty");
-    expect(wrapper.root.findByType(ToolSlotSVG).props.toolType).toBeUndefined();
+    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
+      .mockImplementation(() => <div />);
+    render(<SlotEditRows {...p} />);
+    expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
+      toolType: undefined,
+      pulloutDirection: p.toolSlot.body.pullout_direction,
+    }));
+    graphic.mockRestore();
   });
 
   it.each([

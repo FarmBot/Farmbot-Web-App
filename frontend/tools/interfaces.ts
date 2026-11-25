@@ -20,7 +20,6 @@ export interface AddToolSlotState {
 }
 
 export interface AddToolProps {
-  threeDimensions: boolean;
   dispatch: Function;
   existingToolNames: string[];
   firmwareHardware: FirmwareHardware | undefined;
@@ -40,7 +39,6 @@ export interface AddToolState {
 
 export interface EditToolProps {
   firmwareHardware?: FirmwareHardware;
-  threeDimensions: boolean;
   findTool(id: string): TaggedTool | undefined;
   dispatch: Function;
   mountedToolId: number | undefined;
@@ -64,7 +62,6 @@ export interface ToolTransformProps {
 }
 
 export interface ToolsProps {
-  threeDimensions: boolean;
   tools: TaggedTool[];
   toolSlots: TaggedToolSlotPointer[];
   dispatch: Function;
@@ -77,7 +74,6 @@ export interface ToolsProps {
   hoveredToolSlot: string | undefined;
   firmwareHardware: FirmwareHardware | undefined;
   isActive(id: number | undefined): boolean;
-  toolTransformProps: ToolTransformProps;
   groups: TaggedPointGroup[];
   allPoints: TaggedPoint[];
 }
@@ -87,24 +83,23 @@ export interface ToolsState {
   groups: boolean;
 }
 
-export interface ToolSlotInventoryItemProps {
-  firmwareHardware?: FirmwareHardware;
-  threeDimensions?: boolean;
+export type ToolSlotInventoryItemProps = {
   toolSlot: TaggedToolSlotPointer;
   tools: TaggedTool[];
   hovered: boolean;
   dispatch: Function;
   isActive(id: number | undefined): boolean;
   hideDropdown?: boolean;
-  toolTransformProps: ToolTransformProps;
   noUTM: boolean;
   disableNavigate?: boolean;
-}
+} & (
+  | { preview3D: true; firmwareHardware?: FirmwareHardware }
+  | { preview3D?: false; toolTransformProps: ToolTransformProps }
+);
 
 export interface ToolInventoryItemProps {
   utmMountable?: boolean;
   firmwareHardware?: FirmwareHardware;
-  threeDimensions: boolean;
   toolName: string;
   toolType: ToolType;
   toolId: number | undefined;
@@ -119,7 +114,6 @@ export interface AddEditToolSlotPropsBase {
   botPosition: BotPosition;
   findTool(id: number): TaggedTool | undefined;
   firmwareHardware: FirmwareHardware | undefined;
-  toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   botOnline: boolean;
   defaultAxes: string;
@@ -193,14 +187,12 @@ export interface SlotLocationInputRowProps {
 
 export interface SlotEditRowsProps {
   firmwareHardware?: FirmwareHardware;
-  threeDimensions: boolean;
   toolSlot: TaggedToolSlotPointer;
   tools: TaggedTool[];
   tool: TaggedTool | undefined;
   botPosition: BotPosition;
   updateToolSlot(update: Partial<TaggedToolSlotPointer["body"]>): void;
   noUTM: boolean;
-  toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   botOnline: boolean;
   defaultAxes: string;

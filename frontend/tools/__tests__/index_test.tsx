@@ -30,7 +30,8 @@ import { MountStage } from "farmbot/dist/resources/api_resources";
 import { NavigationContext } from "../../routes_helpers";
 import * as toolSlotEditComponents from "../tool_slot_edit_components";
 import { findElement } from "../../__test_support__/react_element_search";
-import * as toolGraphics from "../tool_graphics";
+import * as fiber from "@react-three/fiber";
+import { range } from "lodash";
 
 const originalPathname = location.pathname;
 
@@ -48,6 +49,7 @@ describe("<Tools />", () => {
   });
 
   beforeEach(() => {
+    jest.spyOn(fiber, "Canvas").mockImplementation(() => <canvas />);
     jest.spyOn(pointGroupActions, "createGroup")
       .mockImplementation(jest.fn());
     jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -62,7 +64,6 @@ describe("<Tools />", () => {
   });
 
   const fakeProps = (): ToolsProps => ({
-    threeDimensions: false,
     tools: [],
     toolSlots: [],
     dispatch: jest.fn(),
@@ -75,7 +76,6 @@ describe("<Tools />", () => {
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
     isActive: jest.fn(),
-    toolTransformProps: fakeToolTransformProps(),
     groups: [],
     allPoints: [],
   });
@@ -85,40 +85,31 @@ describe("<Tools />", () => {
     expect(container.textContent).toContain("Add a tool");
   });
 
-  it.each([false, true])("renders tool graphics in 3D: %s", threeDimensions => {
-    const graphic = jest.spyOn(toolGraphics, "ToolGraphic3D")
-      .mockImplementation(() => <div className={"tool-graphic-3d"} />);
+  it("shares one canvas among the mounted tool, slots, and tool inventory", () => {
     const p = fakeProps();
-    p.threeDimensions = threeDimensions;
     p.firmwareHardware = "arduino";
-    p.tools = [fakeTool()];
-    p.tools[0].body.id = 1;
-    p.tools[0].body.type = "watering_nozzle";
-    p.tools[0].body.utm_mountable = false;
-    p.toolSlots = [fakeToolSlot()];
-    p.toolSlots[0].body.tool_id = 1;
+    p.tools = range(1, 25).map(id => {
+      const tool = fakeTool();
+      tool.body.id = id;
+      tool.body.name = `Tool ${id}`;
+      return tool;
+    });
+    p.toolSlots = p.tools.map(tool => {
+      const slot = fakeToolSlot();
+      slot.body.tool_id = tool.body.id;
+      return slot;
+    });
     const { container } = render(<Tools {...p} />);
-    expect(container.querySelectorAll(".tool-graphic-3d").length)
-      .toEqual(threeDimensions
-        ? 3
-        : 0);
-    expect(container.querySelectorAll(".tool-svg").length)
-      .toEqual(threeDimensions
-        ? 0
-        : 2);
-    expect(container.querySelectorAll("svg.utm-and-mounted-tool-graphic").length)
-      .toEqual(threeDimensions
-        ? 0
-        : 1);
-    if (threeDimensions) {
-      expect(graphic.mock.calls.map(([props]) => props.firmwareHardware))
-        .toEqual(["arduino", "arduino", "arduino"]);
-      const nozzles = graphic.mock.calls.map(([props]) => props)
-        .filter(props => props.toolType == "watering_nozzle");
-      expect(nozzles).toHaveLength(2);
-      nozzles.forEach(props => expect(props.utmMountable).toBe(false));
-    }
-    graphic.mockRestore();
+    const canvas = container.querySelector(".tool-preview-canvas canvas");
+    expect(canvas).toBeInTheDocument();
+    expect(container.querySelectorAll("canvas")).toHaveLength(1);
+    expect(container.querySelectorAll(".tool-graphic-3d")).toHaveLength(49);
+
+    fireEvent.change(container.querySelector("input") as HTMLInputElement, {
+      target: { value: "Tool 24" },
+    });
+    expect(container.querySelector(".tool-preview-canvas canvas")).toBe(canvas);
+    expect(container.querySelectorAll(".tool-graphic-3d")).toHaveLength(3);
   });
 
   it("renders with tools", () => {
