@@ -284,7 +284,11 @@ a {
 }
 
 .update-resource-step {
+  .filter-search {
+    min-width: 0;
+  }
   .update-resource-pair {
+    margin-top: 1rem;
     .custom-meta-field {
       position: relative;
       .fa-undo {

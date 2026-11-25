@@ -69,6 +69,22 @@ describe("<MarkAs/>", () => {
       expect(text).toContain(string));
   });
 
+  it("disables the automatic planted at now row", () => {
+    const p = fakeProps();
+    p.currentStep = ResourceUpdateResourceStep(
+      "Plant", 1, "plant_stage", "planted");
+    p.currentStep.body?.push({
+      kind: "pair", args: { label: "planted_at", value: "{{ timeNow }}" },
+    });
+    const { container } = render(<MarkAs {...p} />);
+    const rows = container.querySelectorAll(".update-resource-pair");
+    expect(rows).toHaveLength(2);
+    expect(rows[0].querySelectorAll(".filter-search.disabled")).toHaveLength(0);
+    expect(rows[1].textContent).toContain("Date Planted");
+    expect(rows[1].textContent).toContain("Now");
+    expect(rows[1].querySelectorAll(".filter-search.disabled")).toHaveLength(2);
+  });
+
   it("resets step", () => {
     const p = fakeProps();
     const instance = setStateSync(new MarkAs(p));

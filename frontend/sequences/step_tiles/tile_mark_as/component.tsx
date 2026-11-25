@@ -112,7 +112,7 @@ export class MarkAs
         return <Row key={index}>
           <div className={`update-resource-pair grid ${index == 0 ? "first" : ""}`}>
             <FieldSelection
-              key={selectionKey}
+              key={selectionKey + index}
               {...commonProps}
               field={fieldAndValue.field}
               disabled={isPlantedAtRow}

@@ -193,10 +193,11 @@ export interface StepInputProps {
   sequence: TaggedSequence;
   field: LegalArgString;
   dispatch: Function;
-  type_?: "text" | "hidden" | undefined;
+  type_?: "text" | "hidden" | "number" | undefined;
   index: number;
   fieldOverride?: boolean;
   keyCallback?: (key: string, buffer: string) => void;
+  min?: number;
 }
 
 export interface StepTitleBarProps {

@@ -12,6 +12,8 @@ export const TileWait = (props: StepParams) =>
     <div className="row grid-2-col">
       <label>{t("Time in milliseconds")}</label>
       <StepInputBox field={"milliseconds"}
+        type_={"number"}
+        min={0}
         dispatch={props.dispatch}
         step={props.currentStep}
         sequence={props.currentSequence}
