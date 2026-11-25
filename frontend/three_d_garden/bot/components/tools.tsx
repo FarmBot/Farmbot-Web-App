@@ -1,7 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { useGLTF, useTexture } from "@react-three/drei";
-import { threeSpace } from "../../helpers";
+import { threeSpace, zZero } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import {
@@ -32,6 +32,7 @@ import { resolveMountPosition } from "../../../tools/mount_stage";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Model } from "../../model_mesh";
+import { WateringAnimations } from "./watering_animations";
 import { SuctionAnimations } from "./suction_animation";
 import { Highlight } from "../../elements";
 import {
@@ -155,12 +156,13 @@ const TOOLS_CONFIG_FIELDS: (keyof Config)[] = [
   "tool",
   "toolDebug",
   "vacuum",
+  "waterFlow",
   "zGantryOffset",
 ];
 
 const toolPositionsEqual = (prev: ToolsProps, next: ToolsProps) => {
   const frame = prev.frame || "all";
-  if (frame == "all") {
+  if (frame == "all" || prev.config.waterFlow) {
     return prev.configPosition.x === next.configPosition.x &&
       prev.configPosition.y === next.configPosition.y &&
       prev.configPosition.z === next.configPosition.z;
@@ -323,6 +325,8 @@ const ToolsBase = (props: ToolsProps) => {
   const tools = isUndefined(configuredTools)
     ? PROMO_TOOLS(props.config, props.configPosition)
     : configuredTools;
+  const fixedWateringNozzle = tools.find(tool =>
+    tool.toolType == "watering_nozzle" && tool.utmMountable === false);
   const positionHelpers =
     React.useMemo(() => getToolPositionHelpers(props.config), [props.config]);
 
@@ -335,6 +339,9 @@ const ToolsBase = (props: ToolsProps) => {
 
   return <Group name={"tools"}>
     {showMountedTool && <Tool
+      wateringSource={!fixedWateringNozzle}
+      defaultWateringPosition={mountedToolType != "watering_nozzle"}
+      getZ={props.getZ}
       config={props.config}
       botPosition={props.configPosition}
       dispatch={props.dispatch}
@@ -375,6 +382,8 @@ const ToolsBase = (props: ToolsProps) => {
         z: props.configPosition.z,
       }, tool.mountStage);
       return <Tool key={i}
+        wateringSource={tool === fixedWateringNozzle}
+        getZ={props.getZ}
         config={props.config}
         botPosition={props.configPosition}
         dispatch={props.dispatch}
@@ -588,6 +597,9 @@ const ToolbaySlot = (props: ToolbaySlotProps) => {
 };
 
 interface ToolProps extends ThreeDTool {
+  wateringSource: boolean;
+  defaultWateringPosition?: boolean;
+  getZ(x: number, y: number): number;
   inToolbay: boolean;
   mountedToolId: number | undefined;
   mountedToolType: ToolType | undefined;
@@ -908,11 +920,38 @@ const ToolBase = (props: ToolProps) => {
     onHoverObject,
     onHoverLabel: props.onHoverLabel,
   };
-  const model = <ToolModel {...common}
+  const toolModel = <ToolModel {...common}
     toolType={props.toolType}
     toolName={props.toolName}
     utmMountable={props.utmMountable}
     firstTrough={props.firstTrough} />;
+  const watering = config.waterFlow && props.wateringSource;
+  const nozzleWorld = props.defaultWateringPosition
+    ? kinematics.anchors.wateringNozzle.worldPosition
+    : [worldPosition.x, worldPosition.y,
+      worldPosition.z + TOOLBAY_SLOT_Z_OFFSET];
+  let nozzleRadius = 12.5;
+  if (props.utmMountable === false || (props.defaultWateringPosition &&
+    getBotVersion(config.kitVersion).number == "v1.9")) {
+    nozzleRadius = 9;
+  }
+  const model = <>
+    {toolModel}
+    {watering && <React.Suspense fallback={undefined}>
+      <WateringAnimations
+        waterFlow={true}
+        nozzlePosition={[
+          nozzleWorld[0] - frameOrigin[0],
+          nozzleWorld[1] - frameOrigin[1],
+          nozzleWorld[2] - frameOrigin[2],
+        ]}
+        nozzleToSoil={zZero(config) + props.getZ(
+          nozzleWorld[0] - kinematics.machineOrigin[0],
+          nozzleWorld[1] - kinematics.machineOrigin[1],
+        ) - nozzleWorld[2]}
+        nozzleRadius={nozzleRadius} />
+    </React.Suspense>}
+  </>;
   if (!config.toolDebug) { return model; }
   const effectorPosition = getToolRenderPosition(config, {
     ...props,

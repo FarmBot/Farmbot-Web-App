@@ -5,7 +5,6 @@ import { Config, PositionConfig } from "../../config";
 import { zDir } from "../../helpers";
 import { Group } from "../../components";
 import { Bounds, CameraView } from "../components";
-import { WateringAnimations } from "../components/watering_animations";
 import {
   getBotKinematics, getCameraDistanceToSoil,
 } from "../kinematics";
@@ -64,23 +63,12 @@ const LaserEffect = (props: EffectsAssemblyProps) => {
     rotation={[Math.PI / 2, 0, 0]} />;
 };
 
-const WaterEffect = (props: EffectsAssemblyProps) => {
-  const getZ = useMeasuredGetZ(props.getZ);
-  return <React.Suspense fallback={undefined}>
-    <WateringAnimations
-      waterFlow={props.config.waterFlow}
-      config={props.config}
-      configPosition={props.configPosition}
-      getZ={getZ} />
-  </React.Suspense>;
-};
-
 const cameraEffectActive = (config: Config) =>
   config.cameraView || !!config.lastImageCapture ||
   !!config.lastCameraOperation;
 
 const activeEffects = (config: Config) => cameraEffectActive(config) ||
-  config.laser || config.waterFlow || config.bounds || config.zDimension ||
+  config.laser || config.bounds || config.zDimension ||
   !!config.distanceIndicator;
 
 const effectPositionDependencies = (
@@ -89,7 +77,7 @@ const effectPositionDependencies = (
 ): PositionConfig => {
   const indicator = config.distanceIndicator;
   const movingEffect = cameraEffectActive(config) ||
-    config.laser || config.waterFlow;
+    config.laser;
   return {
     x: Number(movingEffect || indicator == "beamLength" ||
       indicator == "columnLength" || indicator == "zAxisLength"),
@@ -97,7 +85,7 @@ const effectPositionDependencies = (
     z: Number(config.laser || config.zDimension ||
       indicator == "zAxisLength" ||
       version.number != "v1.9" &&
-      (cameraEffectActive(config) || config.waterFlow)),
+      cameraEffectActive(config)),
   };
 };
 
@@ -133,7 +121,6 @@ const EffectsAssemblyBase = (props: EffectsAssemblyProps) => {
   return <Group name={"effects-and-diagnostics"}>
     {cameraEffectActive(config) && <CameraEffect {...props} />}
     {config.laser && <LaserEffect {...props} />}
-    {config.waterFlow && <WaterEffect {...props} />}
     {(config.bounds || config.zDimension || !!config.distanceIndicator) &&
       <Bounds config={config} configPosition={configPosition}
         onSelectObject={props.onSelectObject} />}

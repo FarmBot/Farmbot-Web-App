@@ -6,8 +6,6 @@ import {
   WateringAnimations, wateringAnimationsPropsEqual,
   WateringAnimationsProps,
 } from "../watering_animations";
-import { clone } from "lodash";
-import { INITIAL, INITIAL_POSITION } from "../../../config";
 
 describe("<WateringAnimations />", () => {
   afterEach(() => {
@@ -16,9 +14,9 @@ describe("<WateringAnimations />", () => {
 
   const fakeProps = (): WateringAnimationsProps => ({
     waterFlow: true,
-    config: clone(INITIAL),
-    configPosition: clone(INITIAL_POSITION),
-    getZ: () => 0,
+    nozzlePosition: [10, 20, 200],
+    nozzleToSoil: -200,
+    nozzleRadius: 9,
   });
 
   it("renders", () => {
@@ -49,53 +47,20 @@ describe("<WateringAnimations />", () => {
     useFrameSpy.mockRestore();
   });
 
-  it("updates older-kit watering animations when Z changes", () => {
+  it("updates when the nozzle moves or the soil distance changes", () => {
     const previous = fakeProps();
-    previous.config.kitVersion = "v1.8";
-    const moved = {
-      ...previous,
-      configPosition: {
-        ...previous.configPosition, z: previous.configPosition.z + 1,
-      },
-    };
-
-    expect(wateringAnimationsPropsEqual(previous, { ...previous })).toBeTruthy();
-    expect(wateringAnimationsPropsEqual(previous, moved)).toBeFalsy();
-  });
-
-  it("compares only watering animation inputs that affect rendering", () => {
-    const previous = fakeProps();
-    const unrelatedConfig = fakeProps();
-    unrelatedConfig.getZ = previous.getZ;
-    unrelatedConfig.config.sun = previous.config.sun + 1;
-    expect(wateringAnimationsPropsEqual(previous, unrelatedConfig)).toBeTruthy();
-
-    const waterFlowChanged = fakeProps();
-    waterFlowChanged.waterFlow = false;
-    expect(wateringAnimationsPropsEqual(previous, waterFlowChanged)).toBeFalsy();
-
-    const terrainChanged = fakeProps();
-    terrainChanged.getZ = () => 1;
-    expect(wateringAnimationsPropsEqual(previous, terrainChanged)).toBeFalsy();
-
-    const positionChanged = fakeProps();
-    positionChanged.configPosition.x += 1;
-    expect(wateringAnimationsPropsEqual(previous, positionChanged)).toBeFalsy();
-
-    const routingChanged = fakeProps();
-    routingChanged.config.zGantryOffset += 1;
-    expect(wateringAnimationsPropsEqual(previous, routingChanged)).toBeFalsy();
-
-    const v19Previous = fakeProps();
-    v19Previous.config.kitVersion = "v1.9";
-    const v19ZChanged = {
-      ...v19Previous,
-      configPosition: {
-        ...v19Previous.configPosition,
-        z: v19Previous.configPosition.z + 1,
-      },
-    };
-    expect(wateringAnimationsPropsEqual(v19Previous, v19ZChanged))
-      .toBeTruthy();
+    expect(wateringAnimationsPropsEqual(previous, fakeProps())).toBeTruthy();
+    expect(wateringAnimationsPropsEqual(previous, {
+      ...previous, nozzlePosition: [10, 20, 201],
+    })).toBeFalsy();
+    expect(wateringAnimationsPropsEqual(previous, {
+      ...previous, nozzleToSoil: -201,
+    })).toBeFalsy();
+    expect(wateringAnimationsPropsEqual(previous, {
+      ...previous, nozzleRadius: 12.5,
+    })).toBeFalsy();
+    expect(wateringAnimationsPropsEqual(previous, {
+      ...previous, waterFlow: false,
+    })).toBeFalsy();
   });
 });

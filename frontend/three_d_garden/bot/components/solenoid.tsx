@@ -192,12 +192,14 @@ const SolenoidBase = (props: SolenoidProps) => {
     ...gardenXY(x - (version.number == "v1.9" ? 60 : 70), y + 80),
     columnLength + 140,
   ];
+  // The v1.9 elbow inlet center, measured from the cross-slide GLB,
+  // faces +X. Approach it along that axis rather than diagonally in XY.
   const yzEnd: Vector3Tuple = [
     ...gardenXY(
-      x - (version.number == "v1.9" ? 83.5 : 43.5),
-      y + (version.number == "v1.9" ? 40 : -10),
+      x - (version.number == "v1.9" ? 77 : 43.5),
+      y + (version.number == "v1.9" ? 65 : -10),
     ),
-    columnLength + (version.number == "v1.9" ? 151 : 180),
+    columnLength + (version.number == "v1.9" ? 158.75 : 180),
   ];
   const utmStart: Vector3Tuple = [
     ...gardenXY(x + 21.5, y - 10),
@@ -236,7 +238,7 @@ const SolenoidBase = (props: SolenoidProps) => {
       start={yzStart}
       end={yzEnd}
       startControl={[0, -50, 0]}
-      endControl={version.number == "v1.9" ? [20, 20, 0] : [0, 0, -50]}
+      endControl={version.number == "v1.9" ? [20, 0, 0] : [0, 0, -50]}
       tubeName={"y-z-water-tube"}
       waterFlow={config.waterFlow}
       tubularSegments={20} />}

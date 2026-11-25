@@ -6,44 +6,24 @@ import { Cloud, Clouds } from "@react-three/drei";
 import {
   WaterStream, useSharedWaterFlowTexture, useWaterFlowTexture,
 } from "./water_stream";
-import { easyCubicBezierCurve3, zZero } from "../../helpers";
-import { Config, PositionConfig } from "../../config";
+import { easyCubicBezierCurve3 } from "../../helpers";
 import { Texture } from "three";
-import { getBotKinematics } from "../kinematics";
-import { getBotVersion } from "../bot_versions";
+import { Vector3Tuple } from "../kinematics";
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
-  config: Config;
-  configPosition: PositionConfig;
-  getZ(x: number, y: number): number;
+  nozzlePosition: Vector3Tuple;
+  nozzleToSoil: number;
+  nozzleRadius: number;
 }
-
-const WATERING_ANIMATION_CONFIG_FIELDS: (keyof Config)[] = [
-  "bedLengthOuter",
-  "bedWidthOuter",
-  "bedXOffset",
-  "bedYOffset",
-  "columnLength",
-  "kitVersion",
-  "negativeZ",
-  "zGantryOffset",
-];
 
 export const wateringAnimationsPropsEqual = (
   prev: WateringAnimationsProps,
   next: WateringAnimationsProps,
-) => {
-  const sameZ = getBotVersion(prev.config.kitVersion).number == "v1.9" ||
-    prev.configPosition.z === next.configPosition.z;
-  return prev.waterFlow === next.waterFlow &&
-  prev.getZ === next.getZ &&
-  prev.configPosition.x === next.configPosition.x &&
-  prev.configPosition.y === next.configPosition.y &&
-  sameZ &&
-  WATERING_ANIMATION_CONFIG_FIELDS.every(field =>
-    prev.config[field] === next.config[field]);
-};
+) => prev.waterFlow === next.waterFlow &&
+  prev.nozzleToSoil === next.nozzleToSoil &&
+  prev.nozzleRadius === next.nozzleRadius &&
+  prev.nozzlePosition.every((value, i) => value === next.nozzlePosition[i]);
 
 interface WateringAnimationsContentProps extends WateringAnimationsProps {
   waterTexture: Texture | undefined;
@@ -71,14 +51,7 @@ export const WateringAnimations = React.memo(
 );
 
 const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
-  const { waterFlow, getZ, config } = props;
-  const version = getBotVersion(config.kitVersion);
-  const nozzle = getBotKinematics(config, props.configPosition, version)
-    .anchors.wateringNozzle;
-  const soilZ = zZero(config) +
-    getZ(nozzle.gardenPosition.x, nozzle.gardenPosition.y);
-  const nozzleToSoil = soilZ - nozzle.worldPosition[2];
-  const nozzleRadius = version.number == "v1.9" ? 9 : 12.5;
+  const { waterFlow, nozzlePosition, nozzleToSoil, nozzleRadius } = props;
   const geometryDistance = Math.round(nozzleToSoil);
   const streamPaths = React.useMemo(() => range(16).map(i => {
     const angle = (i * Math.PI * 2) / 16;
@@ -102,7 +75,7 @@ const WateringAnimationsContent = (props: WateringAnimationsContentProps) => {
   }, []);
   return <Group name={"watering-animations"}
     visible={visible}
-    position={nozzle.worldPosition}>
+    position={nozzlePosition}>
     {streamPaths.map((path, i) =>
       <WaterStream key={i}
         name={`water-stream-${i}`}

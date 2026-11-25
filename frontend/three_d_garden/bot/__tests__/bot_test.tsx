@@ -727,6 +727,7 @@ describe("<Bot />", () => {
   it("renders watering animation", () => {
     const p = fakeProps();
     p.config.waterFlow = true;
+    p.config.tool = "watering_nozzle";
     jest.useFakeTimers();
     const { container, rerender } = render(<Bot {...p} />);
     jest.runAllTimers();

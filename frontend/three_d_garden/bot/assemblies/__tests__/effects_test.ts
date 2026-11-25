@@ -6,8 +6,6 @@ import { getBotVersion } from "../../bot_versions";
 import {
   EffectsAssembly, EffectsAssemblyProps, effectsAssemblyPropsEqual,
 } from "../effects";
-import * as wateringAnimationsModule from
-  "../../components/watering_animations";
 
 describe("effects dependency matrix", () => {
   const fakeProps = (): EffectsAssemblyProps => ({
@@ -34,22 +32,18 @@ describe("effects dependency matrix", () => {
     expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeTruthy();
   });
 
-  it("ignores Z-only motion for v1.9 camera and watering", () => {
+  it("ignores Z-only motion for the v1.9 camera", () => {
     const p = fakeProps();
     p.config.cameraView = true;
-    p.config.waterFlow = true;
     p.version = getBotVersion("v1.9");
     expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeTruthy();
     expect(effectsAssemblyPropsEqual(p, move(p, "x"))).toBeFalsy();
     expect(effectsAssemblyPropsEqual(p, move(p, "y"))).toBeFalsy();
   });
 
-  it("updates legacy watering and laser for Z movement", () => {
+  it("updates the laser for Z movement", () => {
     const p = fakeProps();
-    p.config.waterFlow = true;
     p.version = getBotVersion("v1.8");
-    expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeFalsy();
-    p.config.waterFlow = false;
     p.config.laser = true;
     expect(effectsAssemblyPropsEqual(p, move(p, "z"))).toBeFalsy();
   });
@@ -89,31 +83,6 @@ describe("effects dependency matrix", () => {
     expect(container.querySelector("[name='camera-operation-animation']"))
       .toBeTruthy();
     expect(p.getZ).toHaveBeenCalled();
-  });
-
-  it("renders watering effects", () => {
-    const wateringSpy = jest.spyOn(
-      wateringAnimationsModule,
-      "WateringAnimations",
-    ).mockImplementation(() => React.createElement(
-      "div",
-      { "data-testid": "watering-animations" },
-    ));
-    const p = fakeProps();
-    p.config.waterFlow = true;
-    p.getZ = jest.fn(() => -25);
-    const { container } = render(React.createElement(EffectsAssembly, p));
-    const wateringProps = wateringSpy.mock.calls[0][0];
-    wateringSpy.mockRestore();
-    expect(container.querySelector("[data-testid='watering-animations']"))
-      .toBeTruthy();
-    expect(wateringProps).toMatchObject({
-      waterFlow: true,
-      config: p.config,
-      configPosition: p.configPosition,
-    });
-    wateringProps.getZ(12, 34);
-    expect(p.getZ).toHaveBeenCalledWith(12, 34);
   });
 
   it("updates when non-position effect inputs change", () => {

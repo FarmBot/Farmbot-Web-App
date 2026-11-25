@@ -10,7 +10,7 @@ export const useManagedTubeGeometry = (
   radialSegments: number,
   metric: string,
 ) => {
-  const [geometry] = React.useState(() => {
+  const geometry = React.useMemo(() => {
     perfCount(metric);
     return new TubeGeometry(
       tubePath,
@@ -18,11 +18,13 @@ export const useManagedTubeGeometry = (
       radius,
       radialSegments,
     );
-  });
-  const initialized = React.useRef(false);
+    // Path and radius changes reuse buffers; segment changes need new buffers.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tubularSegments, radialSegments]);
+  const initialized = React.useRef<TubeGeometry | undefined>(undefined);
   React.useLayoutEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
+    if (initialized.current !== geometry) {
+      initialized.current = geometry;
       return;
     }
     perfCount(metric);

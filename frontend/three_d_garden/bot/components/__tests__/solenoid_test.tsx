@@ -216,6 +216,53 @@ describe("<Solenoid />", () => {
     },
   );
 
+  it.each(["v1.8", "v1.9"])(
+    "aligns the %s cross-slide water tube with its inlet", kitVersion => {
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.frame = "machine";
+      let path: Curve<Vector3> | undefined;
+      const tube = jest.spyOn(waterTubes, "WaterTube")
+        .mockImplementation(props => {
+          if (props.tubeName == "y-z-water-tube") {
+            path = props.tubePath;
+          }
+          return <></>;
+        });
+      try {
+        const { rerender } = render(<Solenoid {...p} />);
+        const isV19 = kitVersion == "v1.9";
+        const start = new Vector3(
+          p.configPosition.x - (isV19 ? 60 : 70),
+          p.configPosition.y + 80,
+          p.config.columnLength + 140,
+        );
+        const inlet = path!.getPoint(1).add(start);
+        expect(inlet.x).toBeCloseTo(
+          p.configPosition.x - (isV19 ? 77 : 43.5),
+        );
+        expect(inlet.y).toBeCloseTo(
+          p.configPosition.y + (isV19 ? 65 : -10),
+        );
+        expect(inlet.z).toBeCloseTo(
+          p.config.columnLength + (isV19 ? 158.75 : 180),
+        );
+        const direction = path!.getTangent(1);
+        expect(direction.x).toBeCloseTo(isV19 ? -1 : 0, 3);
+        expect(direction.y).toBeCloseTo(0, 3);
+        expect(direction.z).toBeCloseTo(isV19 ? 0 : 1, 3);
+        const before = path!.getPoint(1);
+        rerender(<Solenoid {...p} configPosition={{
+          x: p.configPosition.x + 50,
+          y: p.configPosition.y + 20,
+          z: p.configPosition.z - 30,
+        }} />);
+        expect(path!.getPoint(1)).toEqual(before);
+      } finally {
+        tube.mockRestore();
+      }
+    });
+
   it.each([
     [500, true],
     [650, true],

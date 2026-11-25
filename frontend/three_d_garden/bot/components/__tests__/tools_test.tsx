@@ -42,6 +42,7 @@ import { clone } from "lodash";
 import {
   convertSlotsWithTools, OpacityFilter, Tools, ToolsProps, toolsPropsEqual,
 } from "../tools";
+import { getBotKinematics } from "../../kinematics";
 import { getToolSlotRenderPosition } from "../tool_slot_position";
 import {
   fakeTool, fakeToolSlot,
@@ -978,6 +979,114 @@ describe("<Tools />", () => {
       useRefSpy.mockRestore();
     });
 
+  it.each(["v1.8", "v1.9"])(
+    "keeps the stream on a mounted nozzle as Z moves for %s", kitVersion => {
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.config.waterFlow = true;
+      p.toolSlots = [];
+      p.mountedToolType = "watering_nozzle";
+      p.getZ = jest.fn(() => -25);
+      const { container, rerender } = render(<Tools {...p} />);
+      const nozzle = container.querySelector("[name='utm-tool']");
+      const initial = wateringAnimationsSpy.mock.calls.slice(-1)[0][0];
+      expect(initial.nozzlePosition.join(","))
+        .toEqual(nozzle?.getAttribute("position"));
+      expect(p.getZ).toHaveBeenCalledWith(
+        p.configPosition.x, p.configPosition.y,
+      );
+      rerender(<Tools {...p} configPosition={{
+        ...p.configPosition, z: p.configPosition.z - 20,
+      }} />);
+      const moved = wateringAnimationsSpy.mock.calls.slice(-1)[0][0];
+      expect(moved.nozzlePosition[2] - initial.nozzlePosition[2]).toEqual(-20);
+      expect(moved.nozzleToSoil - initial.nozzleToSoil).toEqual(20);
+    });
+
+  it.each(["v1.8", "v1.9"])(
+    "uses the original %s fallback when no nozzle is mounted", kitVersion => {
+      const p = fakeProps();
+      p.config.kitVersion = kitVersion;
+      p.config.waterFlow = true;
+      p.toolSlots = [];
+      p.getZ = jest.fn(() => -25);
+      const { rerender } = render(<Tools {...p} />);
+      expect(wateringAnimationsSpy).toHaveBeenCalledTimes(1);
+      const initial = wateringAnimationsSpy.mock.calls[0][0];
+      const kinematics = getBotKinematics(p.config, p.configPosition);
+      const utm = kinematics.anchors.utm.worldPosition;
+      const expected = kitVersion == "v1.9"
+        ? [utm[0] - 100, utm[1] + 66, p.config.columnLength + 77]
+        : [utm[0], utm[1], utm[2] + 2.5];
+      expect(initial.nozzlePosition).toEqual(expected);
+      expect(p.getZ).toHaveBeenCalledWith(
+        expected[0] - kinematics.machineOrigin[0],
+        expected[1] - kinematics.machineOrigin[1],
+      );
+      rerender(<Tools {...p} configPosition={{
+        ...p.configPosition, z: p.configPosition.z - 20,
+      }} />);
+      const moved = wateringAnimationsSpy.mock.calls.slice(-1)[0][0];
+      expect(moved.nozzlePosition[2] - initial.nozzlePosition[2])
+        .toEqual(kitVersion == "v1.9" ? 0 : -20);
+    });
+
+  it("converts the v1.9 fallback to the enclosing axis frame", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.9";
+    p.config.waterFlow = true;
+    p.frame = "z-axis";
+    p.toolSlots = [];
+    render(<Tools {...p} />);
+    const initial = wateringAnimationsSpy.mock.calls[0][0];
+    const utm = getBotKinematics(p.config, p.configPosition)
+      .anchors.utm.worldPosition;
+    expect(initial.nozzlePosition).toEqual([
+      -100, 66, p.config.columnLength + 77 - utm[2],
+    ]);
+  });
+
+  it("prioritizes a fixed nozzle over the mounted nozzle and fallback", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    p.mountedToolType = "watering_nozzle";
+    const tool = fakeTool();
+    tool.body.type = "watering_nozzle";
+    tool.body.utm_mountable = false;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = tool.body.id;
+    toolSlot.body.mount_stage = MountStage.Y;
+    toolSlot.body.mount_offset_x = -90;
+    toolSlot.body.mount_offset_y = 30;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { rerender } = render(<Tools {...p} />);
+    expect(wateringAnimationsSpy).toHaveBeenCalledTimes(1);
+    const initial = wateringAnimationsSpy.mock.calls[0][0];
+    const slotPosition = getToolSlotRenderPosition(
+      p.config, p.configPosition, p.toolSlots[0],
+    );
+    expect(initial.nozzlePosition)
+      .toEqual([slotPosition.x, slotPosition.y, slotPosition.z]);
+    expect(initial.nozzleRadius).toEqual(9);
+    rerender(<Tools {...p} configPosition={{
+      ...p.configPosition, x: p.configPosition.x + 10,
+    }} />);
+    const moved = wateringAnimationsSpy.mock.calls.slice(-1)[0][0];
+    expect(moved.nozzlePosition[0] - initial.nozzlePosition[0]).toEqual(10);
+  });
+
+  it("updates watering in an axis frame when Z or flow changes", () => {
+    const p = fakeProps();
+    p.frame = "z-axis";
+    p.config.waterFlow = true;
+    expect(toolsPropsEqual(p, {
+      ...p, configPosition: { ...p.configPosition, z: -123 },
+    })).toBeFalsy();
+    expect(toolsPropsEqual(p, {
+      ...p, config: { ...p.config, waterFlow: false },
+    })).toBeFalsy();
+  });
+
   it("doesn't render watering animations when water not flowing", () => {
     const p = fakeProps();
     p.config.waterFlow = false;
@@ -991,17 +1100,22 @@ describe("<Tools />", () => {
     expect(wateringAnimationsSpy).not.toHaveBeenCalled();
   });
 
-  it("doesn't render watering animations when in toolbay", () => {
+  it("keeps the fallback when a UTM nozzle is stored in the toolbay", () => {
     const p = fakeProps();
     p.config.waterFlow = true;
     const tool = fakeTool();
     tool.body.name = "watering nozzle";
     tool.body.type = "watering_nozzle";
+    tool.body.utm_mountable = true;
     const toolSlot = fakeToolSlot();
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     render(<Tools {...p} />);
-    expect(wateringAnimationsSpy).not.toHaveBeenCalled();
+    expect(wateringAnimationsSpy).toHaveBeenCalledTimes(1);
+    expect(wateringAnimationsSpy.mock.calls[0][0].nozzlePosition).toEqual(
+      getBotKinematics(p.config, p.configPosition)
+        .anchors.wateringNozzle.worldPosition,
+    );
   });
 
   it("navigates to tool info", () => {

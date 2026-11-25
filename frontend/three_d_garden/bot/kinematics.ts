@@ -80,13 +80,13 @@ export const getBotKinematics = (
     config.columnLength - 190,
   ];
   const nozzleLocal: Vector3Tuple = version.number == "v1.9"
-    ? [-87, -13.5, -20]
+    ? [-87.5, 21, -0]
     : [0, 0, 2.5];
   const nozzleWorld = version.number == "v1.9"
     ? add(crossSlideWorld, nozzleLocal)
     : add(zAxisWorld, nozzleLocal);
   const nozzleGarden: BotGardenPosition = version.number == "v1.9"
-    ? { x: position.x - 99.5, y: position.y + 31.5 }
+    ? { x: position.x - 100, y: position.y + 66 }
     : { x: position.x, y: position.y };
 
   return {
