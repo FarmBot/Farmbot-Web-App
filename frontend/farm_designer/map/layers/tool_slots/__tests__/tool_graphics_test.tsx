@@ -335,6 +335,19 @@ describe("<ToolSVG />", () => {
     expect(container.querySelector("svg")?.getAttribute("viewBox"))
       .toEqual("-40 0 80 1");
   });
+
+  it("renders top and front profiles", () => {
+    const p = fakeProps();
+    p.profile = true;
+    const { container, getByText } = render(<ToolSVG {...p} />);
+    expect(getByText("top")).toBeInTheDocument();
+    expect(getByText("front")).toBeInTheDocument();
+    expect(container.querySelector(".front svg")?.getAttribute("viewBox"))
+      .toEqual("-5 40 80 1");
+    expect(container.querySelector(".front #profile-tool")).toBeInTheDocument();
+    expect(container.querySelector("#point-coordinate-indicator"))
+      .not.toBeInTheDocument();
+  });
 });
 
 describe("<ToolSlotSVG />", () => {

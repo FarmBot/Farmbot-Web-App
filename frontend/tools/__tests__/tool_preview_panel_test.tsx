@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import * as fiber from "@react-three/fiber";
 import { OrthographicCamera, Scene } from "three";
 import * as graphics from "../tool_graphics";
@@ -100,6 +100,20 @@ describe("<ToolPreviewPanel />", () => {
     expect(getContext).toHaveBeenCalledWith("webgl2");
     expect(getExtension).toHaveBeenCalledWith("WEBGL_lose_context");
     expect(loseContext).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the scene unchanged when preview dimensions stay the same", () => {
+    const observer = jest.spyOn(globalThis, "ResizeObserver");
+    render(<ToolPreviewPanel hasTools={true}>
+      <ToolPreviewView toolType={"seeder"} />
+    </ToolPreviewPanel>);
+    expect(scene).toHaveBeenCalledWith(expect.objectContaining({
+      viewportSize: { width: 50, height: 60 },
+    }), undefined);
+    scene.mockClear();
+    const callback = observer.mock.calls[0][0];
+    act(() => callback([], {} as ResizeObserver));
+    expect(scene).not.toHaveBeenCalled();
   });
 
   it("keeps tool controls available when WebGL is unavailable", () => {
