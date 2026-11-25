@@ -27,8 +27,16 @@ describe("Lua resource lookups", () => {
     ["get_peripheral", fakePeripheral],
     ["get_sensor", fakeSensor],
   ] as const)("%s", (name, factory) => {
+    const noMatchAction = {
+      type: "send_message",
+      args: ["error",
+        `${name}(): No matching ${name.replace("get_", "")} found.`, "toast"],
+    };
     it.each([
       "id = 123", "pin = 0", "mode = 0", 'label = "Configured pin"',
+      'name = "Configured pin"', 'name = "Configured pin", pin = 0',
+      'label = "Configured pin", name = "Ignored"',
+      'label = nil, name = "Configured pin"',
       'type = "none"', 'id = 123, type = "none"',
       'id = 123, ignored = "value"', "", "id = nil",
     ])("finds a resource using %s", filter => {
@@ -37,26 +45,66 @@ describe("Lua resource lookups", () => {
         id: 123, pin: 0, mode: 0, label: "Configured pin",
       });
       state.resources = buildResourceIndex([resource]);
-      expect(evalLua(`${name}{${filter}}`)).toEqual(resource.body);
+      expect(evalLua(`${name}{${filter}}`)).toEqual({
+        ...resource.body, name: resource.body.label,
+      });
+      expect(resource.body).not.toHaveProperty("name");
     });
 
-    it.each(["id = -1", 'id = 123, label = "Different"'])(
+    it.each([
+      "id = -1", 'id = 123, label = "Different"',
+      'name = "Different"', 'id = 123, name = "Different"',
+      'label = "Different", name = "Configured pin"',
+    ])(
       "returns nil for unmatched filters: %s", filter => {
         const resource = factory();
         resource.body.id = 123;
+        resource.body.label = "Configured pin";
         state.resources = buildResourceIndex([resource]);
-        expect(evalLua(`${name}{${filter}}`)).toBeUndefined();
+        expect(executeLua(0, `return ${name}{${filter}}`, [])).toEqual({
+          returnValue: undefined,
+          actions: [noMatchAction],
+        });
       });
 
-    it("returns nil when no resources exist", () => {
-      expect(evalLua(`${name}{}`)).toBeUndefined();
+    it("returns nil and an error toast when no resources exist", () => {
+      expect(executeLua(0, `return ${name}{}`, [])).toEqual({
+        returnValue: undefined,
+        actions: [noMatchAction],
+      });
     });
 
-    it("returns the first matching resource", () => {
+    it.each(["", 'type = "none"', 'name = "Configured pin"'])(
+      "returns nil and an error toast for multiple matches: %s", filter => {
+        const first = factory();
+        const second = factory();
+        first.body.label = "Configured pin";
+        second.body.label = "Configured pin";
+        state.resources = buildResourceIndex([first, second]);
+        expect(executeLua(0, `return ${name}{${filter}}`, [])).toEqual({
+          returnValue: undefined,
+          actions: [{
+            type: "send_message",
+            args: ["error",
+              `${name}(): Multiple matches found. Use more specific filters.`,
+              "toast"],
+          }],
+        });
+      });
+
+    it("finds a unique match among multiple resources", () => {
       const first = factory();
       const second = factory();
+      first.body.id = 123;
+      second.body.id = 456;
       state.resources = buildResourceIndex([first, second]);
-      expect(evalLua(`${name}{type = "none"}`)).toEqual(first.body);
+      expect(executeLua(0, `return ${name}{id = 123}`, [])).toEqual({
+        returnValue: { ...first.body, name: first.body.label },
+        actions: [],
+      });
+      expect(evalLua(`${name}{id = 123}`)).toEqual({
+        ...first.body, name: first.body.label,
+      });
     });
   });
 
@@ -101,11 +149,19 @@ describe("Lua resource lookups", () => {
         peripheral.body.pin = undefined;
         state.resources = buildResourceIndex([tool, peripheral]);
       }
-      expect(runLua(0, "dispense(10)", [])).toEqual([{
+      const expectedActions = [{
         type: "send_message",
         args: ["error",
           "Water peripheral not found or has no pin configured", "toast"],
-      }]);
+      }];
+      if (!exists) {
+        expectedActions.unshift({
+          type: "send_message",
+          args: ["error", "get_peripheral(): No matching peripheral found.",
+            "toast"],
+        });
+      }
+      expect(runLua(0, "dispense(10)", [])).toEqual(expectedActions);
     });
   });
 
@@ -118,12 +174,20 @@ describe("Lua resource lookups", () => {
       state.resources = buildResourceIndex(exists ? [device, sensor] : [device]);
       expect(executeLua(0, "return verify_tool()", [])).toEqual({
         returnValue: false,
-        actions: [{
-          type: "send_message",
-          args: ["error",
-            "Tool verification sensor not found or has no pin configured",
-            "toast"],
-        }],
+        actions: [
+          ...(exists
+            ? []
+            : [{
+              type: "send_message",
+              args: ["error", "get_sensor(): No matching sensor found.", "toast"],
+            }]),
+          {
+            type: "send_message",
+            args: ["error",
+              "Tool verification sensor not found or has no pin configured",
+              "toast"],
+          },
+        ],
       });
     });
 
