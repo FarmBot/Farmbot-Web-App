@@ -1004,7 +1004,7 @@ describe("<Tools />", () => {
     });
 
   it.each(["v1.8", "v1.9"])(
-    "uses the original %s fallback when no nozzle is mounted", kitVersion => {
+    "uses the %s fallback when no nozzle is mounted", kitVersion => {
       const p = fakeProps();
       p.config.kitVersion = kitVersion;
       p.config.waterFlow = true;
@@ -1016,7 +1016,7 @@ describe("<Tools />", () => {
       const kinematics = getBotKinematics(p.config, p.configPosition);
       const utm = kinematics.anchors.utm.worldPosition;
       const expected = kitVersion == "v1.9"
-        ? [utm[0] - 100, utm[1] + 66, p.config.columnLength + 77]
+        ? [utm[0] - 100, utm[1] + 66, p.config.columnLength + 97]
         : [utm[0], utm[1], utm[2] + 2.5];
       expect(initial.nozzlePosition).toEqual(expected);
       expect(p.getZ).toHaveBeenCalledWith(
@@ -1042,7 +1042,7 @@ describe("<Tools />", () => {
     const utm = getBotKinematics(p.config, p.configPosition)
       .anchors.utm.worldPosition;
     expect(initial.nozzlePosition).toEqual([
-      -100, 66, p.config.columnLength + 77 - utm[2],
+      -100, 66, p.config.columnLength + 97 - utm[2],
     ]);
   });
 

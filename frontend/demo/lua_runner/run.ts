@@ -2,6 +2,8 @@ import { lua, lauxlib, lualib, to_luastring } from "fengari-web";
 import {
   getDeviceAccountSettings,
   selectAllCurves,
+  selectAllPeripherals,
+  selectAllSensors,
   selectAllGenericPointers,
   selectAllPlantPointers,
   selectAllPoints, selectAllTools, selectAllToolSlotPointers,
@@ -55,6 +57,8 @@ export const executeLua =
     let allPointsCache: ReturnType<typeof selectAllPoints> | undefined;
     let allToolSlotsCache: ReturnType<typeof selectAllToolSlotPointers> | undefined;
     let allToolsCache: ReturnType<typeof selectAllTools> | undefined;
+    let allSensorsCache: ReturnType<typeof selectAllSensors> | undefined;
+    let allPeripheralsCache: ReturnType<typeof selectAllPeripherals> | undefined;
     let allCurvesCache: ReturnType<typeof selectAllCurves> | undefined;
     let allPlantsCache: ReturnType<typeof selectAllPlantPointers> | undefined;
     let allWeedsCache: ReturnType<typeof selectAllWeedPointers> | undefined;
@@ -64,6 +68,9 @@ export const executeLua =
     const allToolSlots = () =>
       allToolSlotsCache ||= selectAllToolSlotPointers(resources);
     const allTools = () => allToolsCache ||= selectAllTools(resources);
+    const allSensors = () => allSensorsCache ||= selectAllSensors(resources);
+    const allPeripherals = () =>
+      allPeripheralsCache ||= selectAllPeripherals(resources);
     const allCurves = () => allCurvesCache ||= selectAllCurves(resources);
     const allPlants = () =>
       allPlantsCache ||= selectAllPlantPointers(resources);
@@ -322,6 +329,21 @@ export const executeLua =
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("get_generic_points"));
+
+    ([
+      ["get_peripheral", allPeripherals],
+      ["get_sensor", allSensors],
+    ] as const).forEach(([name, select]) => {
+      lua.lua_pushjsfunction(L, () => {
+        const params = luaToJs(L, 1) as Record<string, string | number>;
+        const fields = ["id", "pin", "mode", "label", "type"] as const;
+        const result = select().find(resource => fields.every(field =>
+          params[field] === undefined || resource.body[field] === params[field]));
+        jsToLua(L, clean(result?.body));
+        return 1;
+      });
+      lua.lua_setfield(L, envIndex, to_luastring(name));
+    });
 
     lua.lua_pushjsfunction(L, () => {
       const groupId = luaToJs(L, 1) as number;
@@ -598,7 +620,9 @@ export const executeLua =
 
     lua.lua_pushjsfunction(L, () => {
       const pin = luaToJs(L, 1) as number;
-      if (pin == 63) {
+      const toolSensor = allSensors()
+        .find(sensor => sensor.body.type == "tool_verification");
+      if (pin == 63 || pin === toolSensor?.body.pin) {
         const toolMounted =
           !!getDeviceAccountSettings(store.getState().resources.index)
             .body.mounted_tool_id;

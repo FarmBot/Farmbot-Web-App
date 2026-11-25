@@ -323,7 +323,7 @@ end
 
 function dispense(ml, params)
     params = params or {}
-    local pin_number = params.pin or 8
+    local pin_number = params.pin
 
     -- Get flow_rate
     local tool
@@ -356,6 +356,15 @@ function dispense(ml, params)
     elseif ml > 10000 then
         toast("Liquid volume cannot be more than 10,000mL", "error")
         return
+    end
+
+    if not pin_number then
+        local peripheral = get_peripheral{type = "water"}
+        if not peripheral or not peripheral.pin then
+            toast("Water peripheral not found or has no pin configured", "error")
+            return
+        end
+        pin_number = peripheral.pin
     end
 
     local seconds = math.floor(ml / flow_rate * 10) / 10
@@ -765,7 +774,13 @@ function verify_tool(params)
   params = params or {}
   local mounted_tool_id = get_device("mounted_tool_id")
 
-  if read_pin(63) == 1 then
+  local sensor = get_sensor{type = "tool_verification"}
+  if not sensor or not sensor.pin then
+      toast("Tool verification sensor not found or has no pin configured", "error")
+      return false
+  end
+
+  if read_pin(sensor.pin) == 1 then
       toast("No tool detected on the UTM - there is no electrical connection between UTM pins B and C.", "error")
       return false
   end

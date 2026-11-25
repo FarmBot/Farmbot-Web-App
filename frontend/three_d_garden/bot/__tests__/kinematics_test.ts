@@ -84,6 +84,22 @@ describe("FarmBot kinematics", () => {
     expect(result.anchors.utm.worldPosition[2]).toEqual(200);
   });
 
+  it.each([
+    ["v1.7", true],
+    ["v1.7", false],
+    ["v1.8", true],
+    ["v1.8", false],
+  ] as const)(
+    "calculates legacy camera distance for %s with negativeZ=%s",
+    (kitVersion, negativeZ) => {
+      const config = { ...clone(INITIAL), kitVersion, negativeZ };
+      const position = { x: 123, y: 456, z: negativeZ ? -80 : 80 };
+      const getZ = jest.fn(() => -100);
+      expect(getCameraDistanceToSoil(config, position, getZ)).toEqual(20);
+      expect(getZ).toHaveBeenCalledWith(112, 456);
+    },
+  );
+
   it("calculates camera distance from the shared camera anchor", () => {
     const config = clone(INITIAL);
     const getZ = jest.fn(() => -100);

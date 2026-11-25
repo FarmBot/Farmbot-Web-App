@@ -2007,9 +2007,11 @@ describe("csToLua()", () => {
  * [ y ] get_job
  * [ y ] get_job_progress
  * [ y ] get_mounted_tool
+ * [ y ] get_peripheral
  * [ y ] get_position
  * [ y ] get_raw_curve
  * [ y ] get_seed_tray_cell
+ * [ y ] get_sensor
  * [ y ] get_slot_for_tool
  * [ y ] get_xyz
  * [ y ] get_tool
