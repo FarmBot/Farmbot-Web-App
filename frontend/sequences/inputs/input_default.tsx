@@ -12,6 +12,7 @@ export function InputDefault({
   sequence,
   type_,
   index,
+  min,
   keyCallback,
 }: StepInputProps) {
   const raw = (step.args as Dictionary<string | number | undefined>)[field];
@@ -19,6 +20,7 @@ export function InputDefault({
 
   return <BlurableInput
     type={type_ || "text"}
+    min={min}
     value={val}
     keyCallback={keyCallback}
     onCommit={updateStep({ dispatch, step, field, index, sequence })} />;

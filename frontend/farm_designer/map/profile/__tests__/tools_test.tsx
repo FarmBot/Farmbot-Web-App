@@ -1,4 +1,5 @@
 import React from "react";
+import { render } from "@testing-library/react";
 import { svgMount } from "../../../../__test_support__/svg_mount";
 import { ToolProfilePoint, UTMProfile } from "../tools";
 import { ProfilePointProps, ProfileUtmProps } from "../interfaces";
@@ -82,14 +83,21 @@ describe("<UTMProfile />", () => {
     expect(wrapper.container.innerHTML).toContain("side");
   });
 
-  it("shows the liquid ports at the UTM position when no tool is mounted", () => {
+  it("renders liquid ports when no tool is mounted", () => {
     const p = fakeProps();
-    p.mountedToolInfo = { ...p.mountedToolInfo, name: undefined, type: undefined };
-    p.botPosition.z = -25;
+    p.mountedToolInfo.type = undefined;
     p.getX = () => 100;
-    const { container } = svgMount(<UTMProfile {...p} />);
-    const ports = [...container.querySelectorAll("#liquid-ports rect")];
-    expect(ports.map(port => port.getAttribute("x"))).toEqual(["76", "116", "96"]);
-    expect(ports.map(port => port.getAttribute("y"))).toEqual(["25", "25", "25"]);
+    p.botPosition.z = -50;
+    const { container } = render(<svg><UTMProfile {...p} /></svg>);
+    const ports = container.querySelectorAll("#liquid-ports rect");
+    expect(ports).toHaveLength(3);
+    expect(Array.from(ports, port => port.getAttribute("x")))
+      .toEqual(["76", "116", "96"]);
+    ports.forEach(port => {
+      expect(port).toHaveAttribute("y", "50");
+      expect(port).toHaveAttribute("width", "8");
+      expect(port).toHaveAttribute("height", "2");
+    });
+    expect(container.querySelector("#profile-tool")).not.toBeInTheDocument();
   });
 });
