@@ -15,6 +15,7 @@ import {
 } from "./tube_silhouette";
 
 const EDGE_ANGLE = 25;
+const FINE_EDGE_SCALE = 128;
 const INSTANCE_MATRIX = "edgeInstanceMatrix";
 const ASSEMBLIES = new Set([
   "bed-group", "bot-static-hardware", "gantry-assembly",
@@ -22,11 +23,19 @@ const ASSEMBLIES = new Set([
 ]);
 
 interface EdgeGeometry {
-  geometry: EdgesGeometry;
+  geometry: BufferGeometry;
   references: number;
 }
 
-const geometryCache = new WeakMap<BufferGeometry, EdgeGeometry>();
+interface CreaseExtraction {
+  vertexScale: number;
+  cache: WeakMap<BufferGeometry, EdgeGeometry>;
+}
+
+const standardCreases: CreaseExtraction = { vertexScale: 1, cache: new WeakMap() };
+const fineCreases: CreaseExtraction = {
+  vertexScale: FINE_EDGE_SCALE, cache: new WeakMap(),
+};
 
 const creaseSource = (source: BufferGeometry) => {
   const parts = mergedTubeParts.get(source);
@@ -36,30 +45,50 @@ const creaseSource = (source: BufferGeometry) => {
     positions.subarray(0, parts.solidVertexCount * 3), 3));
 };
 
-const acquireGeometry = (source: BufferGeometry) => {
-  const cached = geometryCache.get(source);
+const extractCreases = (source: BufferGeometry, vertexScale: number) => {
+  const input = creaseSource(source);
+  if (vertexScale == 1) { return new EdgesGeometry(input, EDGE_ANGLE); }
+  // EdgesGeometry rounds positions on a fixed grid. Scaling only its input
+  // tightens vertex matching without changing face angles or the rendered mesh.
+  const scaled = new BufferGeometry()
+    .setAttribute("position", input.getAttribute("position").clone())
+    .setIndex(input.getIndex())
+    .scale(vertexScale, vertexScale, vertexScale);
+  const edges = new EdgesGeometry(scaled, EDGE_ANGLE);
+  const restoreScale = 1 / vertexScale;
+  return new BufferGeometry()
+    .setAttribute("position", edges.getAttribute("position"))
+    .scale(restoreScale, restoreScale, restoreScale);
+};
+
+const acquireGeometry = (source: BufferGeometry, extraction: CreaseExtraction) => {
+  const { cache, vertexScale } = extraction;
+  const cached = cache.get(source);
   if (cached) {
     cached.references++;
     return cached.geometry;
   }
-  const geometry = new EdgesGeometry(creaseSource(source), EDGE_ANGLE);
-  geometryCache.set(source, { geometry, references: 1 });
+  const geometry = extractCreases(source, vertexScale);
+  cache.set(source, { geometry, references: 1 });
   return geometry;
 };
 
-const releaseGeometry = (source: BufferGeometry) => {
-  const cached = geometryCache.get(source);
+const releaseGeometry = (source: BufferGeometry, { cache }: CreaseExtraction) => {
+  const cached = cache.get(source);
   if (cached && --cached.references == 0) {
-    geometryCache.delete(source);
+    cache.delete(source);
     cached.geometry.dispose();
   }
 };
 
-const isSolidMaterial = (material: Material | Material[]): material is Material =>
+const supportsModelEdges = (
+  material: Material | Material[],
+  outlineTransparent: boolean,
+): material is Material =>
   (material instanceof MeshStandardMaterial
     || material instanceof MeshPhongMaterial
     || material instanceof MeshLambertMaterial)
-  && material.visible && material.depthWrite
+  && material.visible && (material.depthWrite || outlineTransparent)
   && !material.alphaMap && material.alphaTest == 0;
 
 const isBatchRoot = (object: Object3D) =>
@@ -77,7 +106,7 @@ const createLines = (geometry: BufferGeometry) => {
   return lines;
 };
 
-const createInstanceLines = (source: EdgesGeometry, mesh: InstancedMesh) => {
+const createInstanceLines = (source: BufferGeometry, mesh: InstancedMesh) => {
   const geometry = new InstancedBufferGeometry();
   geometry.setAttribute("position", source.getAttribute("position").clone());
   const lines = createLines(geometry);
@@ -123,7 +152,7 @@ interface TrackedMesh {
   assembly: Assembly;
   transforms: LocalTransform[];
   source?: BufferGeometry;
-  hasCreases?: boolean;
+  creaseExtraction?: CreaseExtraction;
   part?: EdgePart;
   instances?: ReturnType<typeof createInstanceLines>;
   routing?: EdgeLines;
@@ -136,7 +165,9 @@ const disposeLine = (lines: EdgeLines) => {
 };
 
 const releasePart = (record: TrackedMesh) => {
-  if (record.source && record.hasCreases) { releaseGeometry(record.source); }
+  if (record.source && record.creaseExtraction) {
+    releaseGeometry(record.source, record.creaseExtraction);
+  }
   const { instances, routing, outline } = record;
   if (instances) {
     disposeLine(instances.lines);
@@ -150,7 +181,7 @@ const releasePart = (record: TrackedMesh) => {
     outline.lines.geometry.dispose();
   }
   record.source = undefined;
-  record.hasCreases = false;
+  record.creaseExtraction = undefined;
   record.part = undefined;
   record.instances = undefined;
   record.routing = undefined;
@@ -198,7 +229,11 @@ const syncTubeLines = (
   syncDirectLines(mesh, lines, material);
 };
 
-const createParts = (record: TrackedMesh, geometry: BufferGeometry) => {
+const createParts = (
+  record: TrackedMesh,
+  geometry: BufferGeometry,
+  extraction: CreaseExtraction,
+) => {
   const { mesh } = record;
   record.source = geometry;
   if ("modelEdgeGeometry" in geometry
@@ -212,8 +247,8 @@ const createParts = (record: TrackedMesh, geometry: BufferGeometry) => {
   }
   const tubes = mergedTubeParts.get(geometry)?.tubes;
   if (tubes) { record.outline = createTubeLines(tubes); }
-  const creases = acquireGeometry(geometry);
-  record.hasCreases = true;
+  const creases = acquireGeometry(geometry, extraction);
+  record.creaseExtraction = extraction;
   if (creases.getAttribute("position").count == 0) { return; }
   if (mesh instanceof InstancedMesh) {
     record.instances = createInstanceLines(creases, mesh as InstancedMesh);
@@ -313,14 +348,20 @@ export const createModelEdges = (root: Scene, batchScene: boolean) => {
     const { mesh, parents } = record;
     const { material, geometry } = mesh;
     const visible = mesh.visible && parents.every(parent => parent.visible);
-    if (!visible || !isSolidMaterial(material) || geometry.type == "PlaneGeometry"
+    const outlineTransparent = mesh.userData.outlineTransparent === true;
+    if (!visible || !supportsModelEdges(material, outlineTransparent)
+      || geometry.type == "PlaneGeometry"
       || !geometry.hasAttribute("position")) {
       if (record.source) { releasePart(record); }
       return;
     }
-    if (record.source != geometry) {
+    const extraction = mesh.userData.preciseModelEdges === true
+      ? fineCreases
+      : standardCreases;
+    if (record.source != geometry ||
+      (record.creaseExtraction && record.creaseExtraction != extraction)) {
       releasePart(record);
-      createParts(record, geometry);
+      createParts(record, geometry, extraction);
     }
     if (record.routing) { syncDirectLines(mesh, record.routing, material); }
     if (record.outline) { syncTubeLines(mesh, record.outline, material); }

@@ -296,6 +296,7 @@ const ElectronicsBoxModelBase = (props: ElectronicsBoxModelProps) => {
       <Mesh name={"electronicsBoxLid"}
         geometry={box.nodes.Electronics_Box_Lid.geometry}
         material={box.materials[ElectronicsBoxMaterial.lid]}
+        userData={{ outlineTransparent: true, preciseModelEdges: true }}
         scale={1000} />
       <ButtonInstances btn={btn} kitVersion={props.kitVersion} />
       {ledsPresent(props.kitVersion) && <LedIndicators />}
