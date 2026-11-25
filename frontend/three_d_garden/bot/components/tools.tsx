@@ -47,6 +47,7 @@ import { clickWasDragged } from "../../click_event";
 import { getBotKinematics } from "../kinematics";
 import { getBotVersion } from "../bot_versions";
 import { useToolHardware, useToolMaterials } from "../tool_hardware";
+import { letteredToolGeometry } from "../tool_lettering";
 import { frontSideMaterial } from "../../geometry_batching";
 import { CustomToolModel } from "./custom_tool";
 
@@ -638,7 +639,8 @@ const RotaryToolModel = React.memo(
       ]}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh name={"rotaryToolBase"}
-        geometry={rotaryToolBase.nodes.mesh.geometry}
+        geometry={letteredToolGeometry(
+          rotaryToolBase.nodes.mesh.geometry, "rotaryTool", base.material)}
         material={base.material} scale={1000} />
       <Group
         position={[0, -3, -52]}
@@ -670,7 +672,9 @@ const WateringNozzleToolModel = React.memo((props: VersionedToolModelProps) => {
     ]}
     rotation={[0, 0, 2.094 + Math.PI / 2]}
     scale={1000}
-    geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
+    geometry={letteredToolGeometry(
+      wateringNozzle.nodes[PartName.wateringNozzle].geometry, "wateringNozzle",
+      material)}
     material={material} />;
 });
 
@@ -698,8 +702,9 @@ const SeedBinToolModel = React.memo((props: VersionedToolModelProps) => {
     ]}
     rotation={[0, 0, Math.PI / 2]}
     scale={1000}
-    geometry={seedBin.nodes[PartName.seedBin].geometry}>
-    <MeshPhongMaterial color={color} />
+    geometry={letteredToolGeometry(seedBin.nodes[PartName.seedBin].geometry,
+      "seedBin")}>
+    <MeshPhongMaterial color={color} vertexColors={true} />
   </Mesh>;
 });
 
@@ -714,8 +719,9 @@ const SeedTrayToolModel = React.memo((props: VersionedToolModelProps) => {
     ]}
     rotation={[0, 0, Math.PI / 2]}
     scale={1000}
-    geometry={seedTray.nodes[PartName.seedTray].geometry}>
-    <MeshPhongMaterial color={color} />
+    geometry={letteredToolGeometry(seedTray.nodes[PartName.seedTray].geometry,
+      "seedTray")}>
+    <MeshPhongMaterial color={color} vertexColors={true} />
   </Mesh>;
 });
 
@@ -723,6 +729,8 @@ const SoilSensorToolModel = React.memo((props: VersionedToolModelProps) => {
   const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as unknown as SoilSensorFull;
   const { material, hardwareMaterial } = useToolMaterials(
     soilSensor.materials.PaletteMaterial001, props.kitVersion, "soilSensor");
+  letteredToolGeometry(soilSensor.nodes.Soil_Sensor.geometry,
+    "soilSensor", material);
   return <SoilSensorModel
     model={soilSensor}
     bodyMaterial={material}
@@ -749,7 +757,8 @@ const SeederToolModel = React.memo((props: ToolModelProps) => {
       ]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}
-      geometry={seeder.nodes[PartName.seeder].geometry}
+      geometry={letteredToolGeometry(
+        seeder.nodes[PartName.seeder].geometry, "seeder", material)}
       material={material} />
     {!props.inToolbay && props.config.vacuum &&
       <Group position={[20, 0, -30]}>
@@ -775,7 +784,8 @@ const WeederToolModel = React.memo((props: VersionedToolModelProps) => {
     ]}
     rotation={[0, 0, -Math.PI]}
     scale={1000}
-    geometry={weeder.nodes[PartName.weeder].geometry}
+    geometry={letteredToolGeometry(
+      weeder.nodes[PartName.weeder].geometry, "weeder", material)}
     material={material} />;
 });
 

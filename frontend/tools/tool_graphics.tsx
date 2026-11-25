@@ -23,6 +23,7 @@ import { ErrorBoundary } from "../error_boundary";
 import { t } from "../i18next_wrapper";
 import { kitVersionFromFirmware } from "../three_d_garden/bot/bot_versions";
 import { useToolMaterials } from "../three_d_garden/bot/tool_hardware";
+import { letteredToolGeometry } from "../three_d_garden/bot/tool_lettering";
 import { ToolPreviewCamera } from "./tool_preview_camera";
 import { ModelEdges } from "../three_d_garden/model_edges";
 
@@ -71,8 +72,10 @@ export const MountedToolUTM = (props: { kitVersion: string }) => {
   const { material } = useToolMaterials(
     model.materials.PaletteMaterial001,
     props.kitVersion, "utm");
+  const geometry = letteredToolGeometry(
+    model.nodes[PartName.utm].geometry, "utm", material);
   return <Group rotation={[0, 0, Math.PI / 2]}>
-    <Mesh geometry={model.nodes[PartName.utm].geometry}
+    <Mesh geometry={geometry}
       material={material}
       position={[-11, -6, 17]}
       scale={1000}

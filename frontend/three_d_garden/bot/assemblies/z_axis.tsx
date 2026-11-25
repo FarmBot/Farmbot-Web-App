@@ -28,6 +28,7 @@ import { getMode } from "../../../farm_designer/map/util";
 import { EXTRUSION_WIDTH, UTM_RADIUS } from "./constants";
 import { Highlight } from "../../elements";
 import { useToolMaterials } from "../tool_hardware";
+import { letteredToolGeometry } from "../tool_lettering";
 
 type ZStop = GLTF & {
   nodes: { [PartName.zStop]: THREE.Mesh };
@@ -237,7 +238,8 @@ const ZAxisAssemblyBase = (props: ZAxisAssemblyProps) => {
     <Group name={"UTM"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh
-        geometry={utm.nodes[PartName.utm].geometry}
+        geometry={letteredToolGeometry(
+          utm.nodes[PartName.utm].geometry, "utm", utmMaterial)}
         material={utmMaterial}
         position={[-11, -6, 17]}
         scale={1000}
