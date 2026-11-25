@@ -237,7 +237,8 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         <ToolGraphic3D toolName={toolName}
           firmwareHardware={this.props.firmwareHardware}
           toolType={this.state.toolType}
-          utmMountable={this.state.utmMountable} profile={true} />
+          utmMountable={this.state.utmMountable} profile={true}
+          toolDetails={true} />
         <CustomToolGraphicsInput
           toolName={toolName}
           toolType={this.state.toolType}

@@ -82,7 +82,7 @@ describe("<EditTool />", () => {
     const { container } = renderWithContext(<EditTool {...p} />);
     expect(container.querySelector(".tool-graphic-3d")).toBeInTheDocument();
     expect(graphic.mock.calls[0][0]).toEqual(expect.objectContaining({
-      firmwareHardware: "arduino", profile: true,
+      firmwareHardware: "arduino", profile: true, toolDetails: true,
     }));
     graphic.mockRestore();
   });

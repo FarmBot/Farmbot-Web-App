@@ -62,6 +62,21 @@ describe("<ToolGraphic3D />", () => {
     expect(getCenter()?.margin).toEqual(margin);
   });
 
+  it("uses a fixed diagonal camera for tool details", () => {
+    const { rerender, container } = render(<ToolGraphic3D
+      {...fakeProps()} profile={true} toolDetails={true} />);
+    const view = canvas.mock.calls[0][0];
+    const offset = 250 / Math.sqrt(3);
+    expect(view.orthographic).toBe(false);
+    expect(view.camera).toEqual(expect.objectContaining({
+      position: [offset, -offset, offset], up: [0, 0, 1], fov: 30,
+    }));
+    expect(container.querySelector(".orbit-controls")).toBeInTheDocument();
+    rerender(<ToolGraphic3D toolType={"seed_trough"}
+      profile={true} toolDetails={true} />);
+    expect(last(canvas.mock.calls)?.[0].camera).toBe(view.camera);
+  });
+
   it.each([
     { mounted: false, profile: false },
     { mounted: true, profile: false },

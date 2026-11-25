@@ -32,6 +32,7 @@ export interface ToolGraphic3DProps {
   utmMountable?: boolean;
   mounted?: boolean;
   profile?: boolean;
+  toolDetails?: boolean;
   pulloutDirection?: ToolPulloutDirection;
 }
 
@@ -96,6 +97,19 @@ export const ToolPreviewUnavailable = () =>
 const MOUNTED_TOOL_TARGET = new Vector3(0, 0, UTM_PREVIEW_Z_OFFSET);
 const MOUNTED_TOOL_BOUNDS = new Box3().setFromCenterAndSize(
   MOUNTED_TOOL_TARGET, new Vector3(180, 128, 144));
+const TOOL_DETAILS_CAMERA_DISTANCE = 250;
+const TOOL_DETAILS_CAMERA_OFFSET = TOOL_DETAILS_CAMERA_DISTANCE / Math.sqrt(3);
+const TOOL_DETAILS_CAMERA = {
+  position: [
+    TOOL_DETAILS_CAMERA_OFFSET,
+    -TOOL_DETAILS_CAMERA_OFFSET,
+    TOOL_DETAILS_CAMERA_OFFSET,
+  ],
+  up: [0, 0, 1],
+  fov: 30,
+  near: 1,
+  far: 1000,
+} satisfies React.ComponentProps<typeof Canvas>["camera"];
 
 export const ToolGraphicScene = (props: ToolGraphic3DProps & {
   orbitTarget?: HTMLElement;
@@ -161,8 +175,10 @@ export const ToolGraphic3D = (props: ToolGraphic3DProps) => {
       {available
         ? <Canvas
           shadows={{ type: PCFShadowMap }}
-          orthographic={true}
-          camera={{ position: [200, 0, z], up: [0, 0, 1], zoom: 1 }}
+          orthographic={!props.toolDetails}
+          camera={props.toolDetails
+            ? TOOL_DETAILS_CAMERA
+            : { position: [200, 0, z], up: [0, 0, 1], zoom: 1 }}
           events={safePointerEvents}
           frameloop="demand">
           <ToolGraphicScene {...props} />

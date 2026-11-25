@@ -3,7 +3,8 @@ import { render } from "@testing-library/react";
 import * as fiber from "@react-three/fiber";
 import * as drei from "@react-three/drei";
 import {
-  Box3, BoxGeometry, Group, Mesh, OrthographicCamera, Sphere, Vector3,
+  Box3, BoxGeometry, Group, Mesh, OrthographicCamera, PerspectiveCamera,
+  Sphere, Vector3,
 } from "three";
 import { ToolPreviewCamera } from "../tool_preview_camera";
 
@@ -236,6 +237,32 @@ describe("<ToolPreviewCamera />", () => {
     finishLoading();
     expect(camera.position).toEqual(position);
     expect(camera.projectionMatrix).toEqual(projection);
+  });
+
+  it("centers perspective previews without refitting to the model", () => {
+    const previewCamera = new PerspectiveCamera(30, 2.25, 1, 1000);
+    previewCamera.position.set(1, -1, 1).setLength(250);
+    previewCamera.up.set(0, 0, 1);
+    previewCamera.lookAt(0, 0, 0);
+    useThree.mockReturnValue({ camera: previewCamera, invalidate });
+    const view = (margin: number) =>
+      <ToolPreviewCamera margin={margin} onCentered={onCentered}>
+        <group />
+      </ToolPreviewCamera>;
+    const { rerender } = render(view(1.2));
+    expect(center.mock.calls[0][0].disable).toBe(false);
+    const position = previewCamera.position.clone();
+    const rotation = previewCamera.quaternion.toArray();
+    const projection = previewCamera.projectionMatrix.clone();
+    finishLoading();
+    container.scale.x = 2;
+    rerender(view(3));
+    finishLoading();
+    expect(previewCamera.position).toEqual(position);
+    expect(previewCamera.quaternion.toArray()).toEqual(rotation);
+    expect(previewCamera.projectionMatrix).toEqual(projection);
+    expect(onCentered).toHaveBeenCalledTimes(2);
+    expect(container.visible).toBe(true);
   });
 
   it("handles an empty slot without invalid camera values", () => {

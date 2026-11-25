@@ -289,6 +289,8 @@
   }
 }
 
+.add-tool-panel-content .tool-graphic-3d,
+.edit-tool-panel-content .tool-graphic-3d,
 .edit-tool-slot-panel-content .slot-scene-preview {
   // Extend over the panel content's padding.
   width: calc(100% + 2rem);
